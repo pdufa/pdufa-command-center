@@ -35,6 +35,13 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 #science-details{min-height:26px;margin-top:10px;overflow-wrap:anywhere}
 #science-source a{color:#14634a;overflow-wrap:anywhere}
 #quantitative-results{margin:18px 0}
+.evidence-ledger{margin:18px 0;padding:16px;border:1px solid #d9e4df;border-radius:9px;background:#f8fbf9}
+.evidence-ledger h3{margin:0 0 8px}
+.evidence-ledger details{border:1px solid #d9e4df;border-radius:7px;background:white;padding:12px;margin:8px 0}
+.evidence-ledger summary{cursor:pointer;font-weight:650}
+.evidence-ledger a{color:#14634a;overflow-wrap:anywhere}
+.evidence-ledger li{padding:7px 0;overflow-wrap:anywhere}
+.evidence-ledger small{display:block}
 .readiness-grades{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
 .readiness-grade{padding:16px;border:1px solid #d9e4df;background:#f7faf8;border-radius:10px;min-width:0}
 .readiness-grade .letter{font-size:2rem;line-height:1.2;font-weight:750;margin:8px 0}
@@ -112,6 +119,7 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 <div id="science-source"></div>
 <div class="science-domains" id="science-domains" aria-label="Six scientific evidence domains"></div>
 <div id="readiness-grades" aria-live="polite"></div>
+<div id="evidence-ledger" aria-live="polite"></div>
 <div id="quantitative-results" aria-live="polite"></div>
 <div id="investigation-20" aria-live="polite"></div>
 </section>
@@ -215,6 +223,93 @@ function clearScience() {
   $("investigation-20").replaceChildren();
   $("quantitative-results").replaceChildren();
   $("readiness-grades").replaceChildren();
+  $("evidence-ledger").replaceChildren();
+}
+function paintEvidenceLedger(data, status) {
+  const root=$("evidence-ledger");root.replaceChildren();
+  const section=document.createElement("section");section.className="evidence-ledger";
+  const title=document.createElement("h3");
+  title.textContent="Independent source evidence ledger";
+  section.appendChild(title);
+  if(status!=="candidate_inventory_loaded" || !data){
+    const info=document.createElement("p");
+    info.textContent=(status==="ledger_unavailable_or_invalid")
+       ?"Evidence ledger unavailable or failed integrity validation. Existing scientific grades are unchanged."
+       :"Independent evidence ledger not loaded for this trial.";
+    section.appendChild(info);root.appendChild(section);return;
+  }
+  const intro=document.createElement("p");
+  intro.textContent=(data.candidateCount||0)+" preidentified bibliographic citations · "
+     +(data.entryCount||0)+" stored candidate revisions · "
+     +(data.verifiedGateCount||0)+"/4 independently verified gates. "
+     +"None of these candidates automatically change scientific grades.";
+  section.appendChild(intro);
+  const gates=document.createElement("details");gates.open=false;
+  const gatesHeading=document.createElement("summary");
+  gatesHeading.textContent="View required independent evidence gates";gates.appendChild(gatesHeading);
+  const gateList=document.createElement("ul");
+  for(const g of data.externalGateStatuses||[]){
+    const li=document.createElement("li");
+    li.textContent=g.label+" — "+(g.independentlyVerified?"Independently verified":"Needs independent review");
+    gateList.appendChild(li);
+  }
+  gates.appendChild(gateList);section.appendChild(gates);
+  function safeLink(parent,url,label){
+    try{
+      const parsed=new URL(url);
+      if(parsed.protocol!=="https:"||parsed.username||parsed.password||!parsed.hostname)return;
+      const link=document.createElement("a");
+      link.href=parsed.href;link.target="_blank";link.rel="noopener noreferrer";
+      link.textContent=label;parent.appendChild(link);
+    }catch{}
+  }
+  const candidates=document.createElement("details");
+  const candidateHeading=document.createElement("summary");
+  candidateHeading.textContent="Preidentified published/agency citations ("+(data.candidateCount||0)+") — not adjudicated";
+  candidates.appendChild(candidateHeading);
+  const candidateList=document.createElement("ol");
+  for(const item of data.identifiedSourceCandidates||[]){
+    const li=document.createElement("li");
+    safeLink(li,item.sourceUrl,item.title||item.sourceType||"Source citation");
+    const meta=document.createElement("small");
+    meta.textContent="Evidence gate: "+item.gateId+" · "+item.reviewStatus+" · Independently verified: NO";
+    li.appendChild(meta);
+    const caveat=document.createElement("small");caveat.textContent=item.caution||"Requires appraisal";
+    li.appendChild(caveat);candidateList.appendChild(li);
+  }
+  if(!candidateList.children.length){
+    const note=document.createElement("li");
+    note.textContent="No preidentified independent citations for this archived trial.";
+    candidateList.appendChild(note);
+  }
+  candidates.appendChild(candidateList);section.appendChild(candidates);
+  const ledger=document.createElement("details");
+  const ledgerHeading=document.createElement("summary");
+  ledgerHeading.textContent="Persistent source revision history ("+(data.entryCount||0)+")";
+  ledger.appendChild(ledgerHeading);
+  const entries=document.createElement("ol");
+  for(const entry of data.entries||[]){
+    const li=document.createElement("li");
+    safeLink(li,entry.sourceUrl,entry.gateId+" · "+entry.sourceType);
+    const info=document.createElement("small");
+    info.textContent="Version "+entry.revision
+        +" · "+entry.relationship+" · "+entry.reviewStatus
+        +" · Entered by "+entry.recordedBy+" on "+entry.recordedAt;
+    li.appendChild(info);
+    const claim=document.createElement("p");claim.textContent=entry.claimText;
+    li.appendChild(claim);
+    const caution=document.createElement("small");
+    caution.textContent="Uncertainty: "+entry.caution+" · SHA-256: "+entry.contentSha256;
+    li.appendChild(caution);entries.appendChild(li);
+  }
+  if(!entries.children.length){
+    const empty=document.createElement("li");empty.textContent="No persisted review candidates yet.";
+    entries.appendChild(empty);
+  }
+  ledger.appendChild(entries);section.appendChild(ledger);
+  const warning=document.createElement("p");
+  warning.textContent="Source citations and audit entries are candidates, not independent adjudications. No FDA approval prediction or scientific verdict is assigned.";
+  section.appendChild(warning);root.appendChild(section);
 }
 function paintReadinessGrades(data) {
   const root=$("readiness-grades");root.replaceChildren();
@@ -432,6 +527,7 @@ async function inspectScience() {
     paintInvestigation20(result.investigation20);
     paintQuantitativeResults(result.quantitativeResults);
     paintReadinessGrades(result.readinessGrades);
+    paintEvidenceLedger(result.evidenceLedger, result.evidenceLedgerStatus);
     const archived=result.registryEvidenceStatus==="source_record_loaded" && evidence
         && evidence.nctId===id && evidence.verificationStatus==="source_record_only";
     const overall=assessment.overall_score;
