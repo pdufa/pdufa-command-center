@@ -1004,6 +1004,21 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 
 
+@app.get("/api/scientific-assessment/reviewer/auth-status", dependencies=[Depends(require_internal_key)])
+def scientific_reviewer_auth_status():
+    """Configuration diagnostics without disclosing tokens, IDs or credentials."""
+    configured = bool(os.getenv("PDUFA_SCIENTIFIC_GOOGLE_CLIENT_ID", "").strip())
+    return {
+        "googleClientConfigured": configured,
+        "googleIdentityVerificationEnabled": configured,
+        "reviewerSelfRegistrationAllowed": False,
+        "credentialAutoVerificationAllowed": False,
+        "scientificScoreAutoPromotionAllowed": False,
+        "nextAction": "admin_provision_and_real_google_signin" if configured
+                      else "configure_google_oauth_client_id_in_isolated_service",
+    }
+
+
 def require_scientific_google_reviewer(
     authorization: Annotated[str | None, Header()] = None,
 ) -> dict:
