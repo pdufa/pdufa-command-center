@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
 import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, compareTwoLocalSourcePdfSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch, type DualLocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
+import { compareLocalPdfWithCapturedArchive, type CapturedArchiveComparison } from "../lib/scientific-captured-archive-check";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -298,6 +299,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [dualSourceBytes, setDualSourceBytes] = useState<DualLocalSourceByteMatch | null>(null);
   const [dualSourceError, setDualSourceError] = useState("");
   const [checkingDualSource, setCheckingDualSource] = useState(false);
+  const [capturedArchiveCheck, setCapturedArchiveCheck] = useState<CapturedArchiveComparison | null>(null);
+  const [capturedArchiveError, setCapturedArchiveError] = useState("");
+  const [checkingCapturedArchive, setCheckingCapturedArchive] = useState(false);
   const auditRevision = useRef(0);
   const pending = useRef<AbortController | null>(null);
   const pendingConnection = useRef<AbortController | null>(null);
@@ -313,6 +317,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setLocalSourcePdf(null);
     setLocalSourceTaskKey("");
     setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false);
     setLocalSourceByteError("");
     setHashingLocalPdf(false);
     setLocalReviewerBPdf(null);
@@ -341,6 +348,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setLocalSourcePdf(null);
     setLocalSourceTaskKey("");
     setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false);
     setLocalSourceByteError("");
     setHashingLocalPdf(false);
     setLocalReviewerBPdf(null);
@@ -457,6 +467,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setDualSourceBytes(null);
     setDualSourceError("");
     setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false);
     setLocalSourceByteError("");
     if (!result?.investigation40 || !reviewInventoryFile || !reviewerAFile || !reviewerBFile) return;
     const token = ++auditRevision.current;
@@ -508,6 +521,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
         || !localSourceTaskKey || !reviewInventoryFile || !reviewerAFile || !reviewerBFile) return;
     const token = ++auditRevision.current;
     setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false);
     setLocalSourceByteError("");
     setHashingLocalPdf(true);
     try {
@@ -577,6 +593,35 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       );
     } finally {
       if (token === auditRevision.current) setCheckingDualSource(false);
+    }
+  }
+
+  /** On-demand read-only pinned archive metadata: NEVER admits or certifies a source. */
+  async function compareLocalPdfWithArchivedSnapshot() {
+    if (!localSourceByteMatch || !localSourcePdf || !result?.investigation40
+        || result.investigation40.nctId !== "NCT02142738") return;
+    const token = ++auditRevision.current;
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(true);
+    try {
+      const response = await fetch(
+        "/api/scientific-assessment/captured-source-manifest?nct_id=NCT02142738",
+        { cache: "no-store" },
+      );
+      if (!response.ok) throw new Error("Archived PDF metadata unavailable");
+      const data: unknown = await response.json();
+      const report = compareLocalPdfWithCapturedArchive(
+        result.investigation40.nctId, localSourceByteMatch.calculatedSha256,
+        localSourcePdf.size, data,
+      );
+      if (token === auditRevision.current) setCapturedArchiveCheck(report);
+    } catch {
+      if (token === auditRevision.current) setCapturedArchiveError(
+        "Captured archive hash comparison unavailable or rejected. No PDF was uploaded or evidence accepted."
+      );
+    } finally {
+      if (token === auditRevision.current) setCheckingCapturedArchive(false);
     }
   }
 
@@ -675,7 +720,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 auditRevision.current++;
                 setReviewInventoryFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
-                setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
+                setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false); setLocalSourceByteError(""); setHashingLocalPdf(false);
                 setDualSourceBytes(null); setDualSourceError(""); setCheckingDualSource(false);
               }} /></label>
           </div>
@@ -685,7 +733,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 auditRevision.current++;
                 setReviewerAFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
-                setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
+                setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false); setLocalSourceByteError(""); setHashingLocalPdf(false);
                 setDualSourceBytes(null); setDualSourceError(""); setCheckingDualSource(false);
               }} /></label>
           </div>
@@ -695,7 +746,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 auditRevision.current++;
                 setReviewerBFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
-                setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
+                setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false); setLocalSourceByteError(""); setHashingLocalPdf(false);
                 setDualSourceBytes(null); setDualSourceError(""); setCheckingDualSource(false);
               }} /></label>
           </div>
@@ -732,6 +786,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                     auditRevision.current++;
                     setLocalSourceTaskKey(event.target.value);
                     setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false);
                     setLocalSourceByteError("");
                     setHashingLocalPdf(false);
                     setDualSourceBytes(null);
@@ -751,6 +808,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                     auditRevision.current++;
                     setLocalSourcePdf(event.target.files?.[0] ?? null);
                     setLocalSourceByteMatch(null);
+    setCapturedArchiveCheck(null);
+    setCapturedArchiveError("");
+    setCheckingCapturedArchive(false);
                     setLocalSourceByteError("");
                     setHashingLocalPdf(false);
                     setDualSourceBytes(null);
@@ -791,6 +851,24 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 <p>Reviewer B own hash claim: {dualSourceBytes.reviewerBClaim.replaceAll("_", " ")}.</p>
                 <p><strong>PDF byte relationship: {dualSourceBytes.pdfByteRelation.replaceAll("_", " ")}.</strong></p>
                 <small>Identical bytes do not prove independent review; different bytes may represent legitimate document versions. Original-source authentication, qualified reviewer identity, clinical adjudication and FDA predictions remain unverified.</small>
+              </section>}
+              {localSourceByteMatch && result.investigation40?.nctId === "NCT02142738" && <div>
+                <button type="button" disabled={checkingCapturedArchive}
+                  onClick={() => void compareLocalPdfWithArchivedSnapshot()}>
+                  {checkingCapturedArchive ? "Checking captured archive hashes…" : "Compare local PDF against captured scientific archive (read-only)"}
+                </button>
+                <small> Checks a protected, rehashed PDF archive snapshot for this pilot trial, not reviewer-entered hashes. No local PDF bytes leave the browser. Archived capture alone does NOT establish original authorship or verified clinical evidence.</small>
+              </div>}
+              {capturedArchiveError && <p role="alert">{capturedArchiveError}</p>}
+              {capturedArchiveCheck && <section aria-label="Unverified captured archive byte comparison" role="status">
+                <p><strong>Archive comparison: {capturedArchiveCheck.status.replaceAll("_", " ")}.</strong></p>
+                <p>Captured PDF snapshots: {capturedArchiveCheck.capturedSnapshotCount}. Exact byte matches: {capturedArchiveCheck.matches.length}.</p>
+                {capturedArchiveCheck.matches.map(item =>
+                  <p key={item.documentId}>Captured record <code>{item.documentId.slice(0, 8)}</code> ·
+                    {" "}{item.gateId.replaceAll("_", " ")} · {item.sourceType.replaceAll("_", " ")}
+                  </p>)}
+                <p><strong>Source authorship authenticated: NO. Scientific review complete: NO. FDA probability: NOT ASSIGNED.</strong></p>
+                <small>Archive snapshot integrity is not independent verification of clinical validity, regulatory provenance or reviewer qualifications.</small>
               </section>}
               {localSourceByteMatch && <div role="status">
                 <p><strong>Exact trial task:</strong> {localSourceByteMatch.assessmentTaskKey}</p>
