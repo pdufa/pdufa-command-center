@@ -57,24 +57,38 @@ class IsolatedScientificReadOnlyCredentialTests(unittest.TestCase):
                     main.require_isolated_scientific_read_key(supplied)
                 self.assertEqual(caught.exception.status_code, 401)
 
-    def test_explicit_api_dependency_cannot_unlock_other_endpoints(self):
-        route = next(r for r in main.app.routes
-                     if getattr(r, "path", "") == "/api/scientific-assessment"
-                     and "GET" in getattr(r, "methods", ()))
-        self.assertTrue(any(dep.call is main.require_isolated_scientific_read_key
-                            for dep in route.dependant.dependencies))
-        all_other_paths = [
-            "/api/scientific-assessment/batches",
-            "/api/scientific-assessment/storage-status",
+    def test_preview_key_cannot_unlock_any_other_scientific_endpoint(self):
+        permitted = {
+            "/api/scientific-assessment",
             "/api/scientific-assessment/pilot/keynote024",
-            "/api/scientific-assessment/review-packet/NCT02142738",
-        ]
-        for pathname in all_other_paths:
-            for other in [r for r in main.app.routes if getattr(r, "path", "") == pathname
-                          or (pathname.endswith("/NCT02142738")
-                              and getattr(r, "path", "").endswith("/review-packet/{nct_id}"))]:
-                self.assertFalse(any(dep.call is main.require_isolated_scientific_read_key
-                                     for dep in other.dependant.dependencies), pathname)
+            "/api/scientific-assessment/dossier",
+        }
+        permitted_seen = set()
+        for route in main.app.routes:
+            if not getattr(route, "path", "").startswith("/api/scientific-assessment"):
+                continue
+            dependencies = getattr(route, "dependant", None)
+            if dependencies is None:
+                continue
+            uses_preview = any(dep.call is main.require_isolated_scientific_read_key
+                               for dep in dependencies.dependencies)
+            if uses_preview:
+                self.assertEqual(route.methods, {"GET"},
+                                 "Preview key must never reach a write route")
+                self.assertIn(route.path, permitted,
+                              "Preview read key must not reach any other endpoint")
+                permitted_seen.add(route.path)
+        self.assertEqual(permitted_seen, permitted)
+        # The underlying ordinary key remains mandatory for storage,
+        # reviewers, bulk archives, and other non-public operations.
+        for path in (
+            "/api/scientific-assessment/storage-status",
+            "/api/scientific-assessment/batches",
+            "/api/scientific-assessment/dossier/references",
+        ):
+            route = next(r for r in main.app.routes if getattr(r, "path", "") == path)
+            self.assertTrue(any(dep.call is main.require_internal_key
+                                for dep in route.dependant.dependencies), path)
 
     def test_legacy_key_preserved_and_http_contract_marks_only_transport(self):
         with context():
