@@ -10,6 +10,7 @@ on:
       - 'scripts/scan_email.py'
       - 'tests/test_nightly_missing_sources.py'
       - 'tests/test_source_verification.py'
+      - 'tests/test_ryzumvi_fda_decision_evidence.py'
       - 'tests/test_fda_weekday_delta.py'
       - 'tests/test_scan_completion_repairs.py'
       - 'tests/test_scan_email_notifications.py'
@@ -44,6 +45,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_nightly_missing_sources.py' -v
           python -m unittest discover -s tests -p 'test_source_verification.py' -v
+          python -m unittest discover -s tests -p 'test_ryzumvi_fda_decision_evidence.py' -v
           python -m unittest discover -s tests -p 'test_fda_weekday_delta.py' -v
           python -m unittest discover -s tests -p 'test_scan_completion_repairs.py' -v
           python -m unittest discover -s tests -p 'test_scan_email_notifications.py' -v
