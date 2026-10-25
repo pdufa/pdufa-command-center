@@ -271,6 +271,32 @@ async def lifespan(app: FastAPI):
                 "PDUFA_DATABASE_COPY_FAILED error_type=%s", type(exc).__name__
             )
             raise RuntimeError("PDUFA migration verification failed; source left unchanged") from None
+    # Read back and checksum-verify one archived record after every startup.
+    # Diagnostic is read-only and does not log the trial payload.
+    if _DB_STATE["available"] and REQUIRE_POSTGRES:
+        try:
+            from .scientific_stored_record import evidence_from_archive
+            with Session(ENGINE) as verify_session:
+                sample = verify_session.scalars(
+                    select(FullTrialRecord).order_by(FullTrialRecord.nct_id).limit(1)
+                ).first()
+                if sample is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_ARCHIVE_READBACK status=EMPTY"
+                    )
+                else:
+                    verified = evidence_from_archive(
+                        sample.nct_id, sample.payload_gzip, sample.sha256
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_ARCHIVE_READBACK status=PASS nct_id=%s evidence_status=%s",
+                        sample.nct_id, verified.get("verificationStatus"),
+                    )
+        except Exception as verify_exc:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_ARCHIVE_READBACK status=FAIL error_type=%s",
+                type(verify_exc).__name__,
+            )
     # Explicit one-record bootstrap for isolated review; disabled by default.
     # Never runs for production unless separately and deliberately configured.
     bootstrap_nct = os.getenv("PDUFA_SCIENTIFIC_BOOTSTRAP_NCT", "").strip()
