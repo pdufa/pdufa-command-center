@@ -28,7 +28,7 @@ def audit_cohort_manifest(manifest: Mapping) -> dict:
                 "independently_verified": False, "model_eligible": False}
     parsed = urlparse(str(manifest["source_url"]))
     if parsed.scheme != "https" or parsed.hostname not in (
-            "fda.gov", "www.fda.gov", "accessdata.fda.gov"):
+            "fda.gov", "www.fda.gov", "accessdata.fda.gov", "open.fda.gov"):
         blockers.append("source_not_official_fda")
     try:
         if any(type(manifest[key]) is not str for key in ("start_date", "end_date", "source_retrieved_on")):
