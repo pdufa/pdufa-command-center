@@ -195,3 +195,23 @@ def test_empty_archived_trial_integration_is_read_only_and_authenticated(monkeyp
         assert session.query(main.ScientificReviewerFinding).count() == 0
         assert session.query(main.ScientificEvidenceLedgerEntry).count() == 0
     engine.dispose()
+
+
+@pytest.mark.parametrize("change", [
+    {"revision": 0},
+    {"revision": "2"},
+    {"threadId": ""},
+    {"findingType": "verified"},
+    {"sourceUrl": None},
+])
+def test_malformed_reviewer_statement_fails_closed(change):
+    bad = {**observation("thread-a", 1, "supports"), **change}
+    with pytest.raises(ValueError, match="Malformed adjudication reviewer statement"):
+        adjudication_preflight(NCT, reconciliation_worklist(NCT), history(bad))
+
+
+def test_malformed_question_fails_closed():
+    worklist = reconciliation_worklist(NCT)
+    worklist["checks"][0]["priority"] = None
+    with pytest.raises(ValueError, match="Malformed adjudication question"):
+        adjudication_preflight(NCT, worklist, history())
