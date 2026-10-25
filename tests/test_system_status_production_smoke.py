@@ -1,5 +1,6 @@
 import io
 import json
+from email.message import Message
 import sys
 import unittest
 import urllib.error
@@ -11,9 +12,11 @@ from check_system_status_production import REQUIRED_TEXT, verify_html, verify_un
 
 
 def http_error(status: int, body: dict):
+    headers = Message()
+    headers["Content-Type"] = "application/json"
     return urllib.error.HTTPError(
         "https://pdufa-new-dashboard.vercel.app/api/assessments",
-        status, "Unauthenticated", {"Content-Type": "application/json"},
+        status, "Unauthenticated", headers,
         io.BytesIO(json.dumps(body).encode("utf-8")),
     )
 
