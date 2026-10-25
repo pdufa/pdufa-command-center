@@ -282,9 +282,11 @@ async def lifespan(app: FastAPI):
                 "SCIENTIFIC_BOOTSTRAP nct_id=%s status=%s", bootstrap_nct, bootstrap_result
             )
         except Exception as bootstrap_exc:
+            # Log only HTTP status code and exception class; never URLs or secrets.
             logging.getLogger(__name__).error(
-                "SCIENTIFIC_BOOTSTRAP status=ERROR error_type=%s",
+                "SCIENTIFIC_BOOTSTRAP status=ERROR error_type=%s http_status=%s",
                 type(bootstrap_exc).__name__,
+                getattr(bootstrap_exc, "code", None),
             )
     logging.getLogger(__name__).warning(
         "PDUFA checklist write freeze active: %s",
