@@ -49,3 +49,11 @@ def test_non_string_coverage_date_fails_closed():
     result = audit_cohort_manifest(data)
     assert "invalid_coverage_dates" in result["blockers"]
     assert result["model_eligible"] is False
+
+def test_official_openfda_domain_is_accepted_but_not_self_verified():
+    data = manifest()
+    data["source_url"] = "https://open.fda.gov/apis/transparency/completeresponseletters/"
+    result = audit_cohort_manifest(data)
+    assert "source_not_official_fda" not in result["blockers"]
+    assert "external_source_verification_required" in result["blockers"]
+    assert result["model_eligible"] is False
