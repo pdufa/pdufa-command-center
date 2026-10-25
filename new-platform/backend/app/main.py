@@ -985,6 +985,42 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 
 
+def require_scientific_google_reviewer(
+    authorization: Annotated[str | None, Header()] = None,
+) -> dict:
+    """Google token + isolated allowlist; fail closed, no signoff authorization."""
+    from .scientific_google_identity import verified_google_identity
+    from .scientific_reviewer_accounts import reviewer_access_preflight
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Google identity token required")
+    try:
+        identity = verified_google_identity(authorization[7:])
+    except ValueError as exc:
+        if "not configured" in str(exc):
+            raise HTTPException(status_code=503, detail="Google reviewer sign-in not configured")
+        raise HTTPException(status_code=401, detail="Invalid Google identity token")
+    access = reviewer_access_preflight(identity["providerSubject"])
+    if not access["roleAuthorized"]:
+        raise HTTPException(status_code=403, detail="Scientific reviewer access not authorized")
+    return {
+        "provider": "google",
+        "providerSubject": identity["providerSubject"],
+        "verifiedEmail": identity["verifiedEmail"],
+        "roleAuthorized": True,
+        "credentialsVerified": access["credentialsVerified"],
+        "maySignOff": False,
+    }
+
+
+@app.get("/api/scientific-assessment/reviewer/me")
+def scientific_reviewer_me(
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Authenticated identity preflight; never grants evidence signoff."""
+    return reviewer
+
+
 @app.get("/api/scientific-assessment/storage-status", dependencies=[Depends(require_internal_key)])
 def scientific_assessment_storage_status():
     """Authenticated, read-only schema and record-count diagnostic."""
