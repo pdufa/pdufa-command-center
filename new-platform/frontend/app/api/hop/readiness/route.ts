@@ -8,6 +8,12 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 const headers = { "Cache-Control": "private, no-store" };
+type SourceFailure = "SOURCE_UNREACHABLE" | "SOURCE_AUTHENTICATION_FAILED" | "SOURCE_ROUTE_MISSING" | "SOURCE_HTTP_ERROR" | "SOURCE_INVALID_RESPONSE";
+function unavailable(reason: SourceFailure) {
+  return NextResponse.json({
+    error: "HOP source audit could not be verified; historical counts withheld", reason,
+  }, { status: 503, headers });
+}
 
 export async function GET(req: NextRequest) {
   if (!authConfigured() || !hasSession(req.cookies.get(COOKIE_NAME)?.value)) {
@@ -18,17 +24,24 @@ export async function GET(req: NextRequest) {
   if (!base || !secret) {
     return NextResponse.json({ error: "HOP evidence source is not configured" }, { status: 503, headers });
   }
+  let upstream: Response;
   try {
-    const upstream = await fetchReadOnlyWithWarmRetry(base + "/api/hop/readiness", {
+    upstream = await fetchReadOnlyWithWarmRetry(base + "/api/hop/readiness", {
       headers: { "x-pdufa-internal-key": secret },
       cache: "no-store", redirect: "error", signal: AbortSignal.timeout(45000),
     });
-    if (!upstream.ok) throw new Error("HOP evidence source unavailable");
+  } catch {
+    return unavailable("SOURCE_UNREACHABLE");
+  }
+  if (!upstream.ok) {
+    return unavailable(upstream.status === 401 || upstream.status === 403
+      ? "SOURCE_AUTHENTICATION_FAILED" : upstream.status === 404
+      ? "SOURCE_ROUTE_MISSING" : "SOURCE_HTTP_ERROR");
+  }
+  try {
     const parsed = normalizeHopReadiness(await upstream.json());
     return NextResponse.json(parsed, { headers });
   } catch {
-    return NextResponse.json({ error: "HOP source audit could not be verified; historical counts withheld" }, {
-      status: 503, headers,
-    });
+    return unavailable("SOURCE_INVALID_RESPONSE");
   }
 }
