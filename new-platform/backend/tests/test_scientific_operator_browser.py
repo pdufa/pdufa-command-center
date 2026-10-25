@@ -206,7 +206,7 @@ def test_browser_single_operator_loads_twenty_stages_and_forty_unscored_assessme
             page.get_by_text("Signed in as the configured operator.", exact=False).wait_for(timeout=10000)
             assert page.locator("#research").is_visible()
             assert Handler.identity_calls == 1
-            page.locator("#load").click()
+            # The exact archived pilot loads automatically after authorized sign-in.
             page.get_by_text("Read-only source inventory loaded.", exact=False).wait_for(timeout=10000)
             assert Handler.research_calls == 1
             assert page.locator("#levels details").count() == 20
