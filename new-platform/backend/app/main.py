@@ -1110,6 +1110,49 @@ def get_scientific_review_packet(nct_id: str):
     )
 
 
+class ScientificReviewerStatementSubmission(BaseModel):
+    """A source-anchored reviewer statement; not a verified medical finding."""
+    model_config = ConfigDict(extra="forbid")
+
+    question_id: str = Field(
+        min_length=4, max_length=70, pattern=r"^[a-z0-9_]+$", alias="questionId"
+    )
+    source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
+    source_locator: str = Field(min_length=5, max_length=200, alias="sourceLocator")
+    finding_type: Literal[
+        "supports", "contradicts", "uncertain", "not_assessable"
+    ] = Field(alias="findingType")
+    assertion: str = Field(min_length=30, max_length=1500)
+    uncertainty: str = Field(min_length=20, max_length=1000)
+    reviewer_label: str = Field(min_length=2, max_length=80, alias="reviewerLabel")
+    reviewer_attests_read_source: Literal[True] = Field(alias="reviewerAttestsReadSource")
+    supersedes_id: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{32}$", alias="supersedesId"
+    )
+
+
+@app.post(
+    "/api/scientific-assessment/reviewer-statements/{nct_id}",
+    status_code=201,
+    dependencies=[Depends(require_internal_key), Depends(require_storage),
+                  Depends(require_scientific_evidence_write_key)],
+)
+def submit_scientific_reviewer_statement(
+    nct_id: str,
+    payload: ScientificReviewerStatementSubmission,
+):
+    """Append unverified evidence commentary; no gate or approval score changes."""
+    from .scientific_reviewer_findings import append_reviewer_statement
+    try:
+        return append_reviewer_statement(nct_id, payload.model_dump(by_alias=True))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except IntegrityError:
+        raise HTTPException(
+            status_code=409, detail="Reviewer statement revision already recorded"
+        ) from None
+
+
 class ScientificEvidenceCandidateSubmission(BaseModel):
     """A submitted citation is always unverified; never an FDA/science score."""
     model_config = ConfigDict(extra="forbid")
