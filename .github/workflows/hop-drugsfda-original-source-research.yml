@@ -1,0 +1,50 @@
+name: HOP original NDA BLA submission-source audit (research only)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/hop-drugsfda-original-source-research.yml'
+      - 'new-platform/backend/app/hop_drugsfda_submission_spine.py'
+      - 'new-platform/backend/scripts/collect_hop_drugsfda_original_submissions.py'
+      - 'new-platform/backend/tests/test_hop_drugsfda_original_collector.py'
+      - 'new-platform/backend/tests/test_hop_drugsfda_submission_spine.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hop-fda-original-sources-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-submission-coverage-only:
+    name: Collect original NDA BLA submissions without FDA outcome claims
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate synthetic-only source parser and ZIP safety tests
+        working-directory: new-platform/backend
+        run: |
+          python -m pip install pytest
+          PYTHONPATH=. python -m pytest -q \
+            tests/test_hop_drugsfda_submission_spine.py \
+            tests/test_hop_drugsfda_original_collector.py
+      - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/collect_hop_drugsfda_original_submissions.py \
+            --as-of 2026-10-25 \
+            --output-dir "${{ runner.temp }}/hop-fda-original-source-research"
+      - name: Retain only aggregate FDA source coverage counts and fingerprints
+        uses: actions/upload-artifact@v4
+        with:
+          name: hop-fda-original-submissions-quarantined-aggregate
+          path: ${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/
+          if-no-files-found: error
+          retention-days: 14
