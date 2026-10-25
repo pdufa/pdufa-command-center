@@ -247,3 +247,39 @@ signatures, certifies independent corroboration, or licenses a retrospective
 FDA approval model. It intentionally exits nonzero even if every candidate
 claim is populated and syntactically valid. An audited independent human
 adjudication process and a complete application-cycle cohort remain missing.
+
+
+## Cross-check historical outcome CSV claims against review-cycle source claims
+
+Use the **existing quarantined** historical CSV intake, private source-triage
+queue, and unverified cycle-claim register to detect contradictions before
+any potential training-data review:
+
+```bash
+PYTHONPATH=new-platform/backend python \
+  new-platform/backend/scripts/crosscheck_hop_fda_outcomes_to_sources.py \
+  /path/to/hop_historical_outcomes.csv \
+  /path/to/unverified_fda_review_queue.csv \
+  /path/to/private/fda_cycle_claims.csv \
+  --as-of 2026-10-25 \
+  --output-dir /path/to/private/local/outcome_crosscheck
+```
+
+This tool repeats the quarantined source-register screening and accepts only
+valid, historically dated outcome entries. It joins by **exact application
+ID and review-cycle number**, rather than ticker, drug name, or publication
+year. It reports unsupported historical review cycles; multiple letter
+references for a cycle; contradictions between those letters; mismatched
+claimed action date or outcome classification; and CSV source URLs that
+are not exactly linked to the registered FDA PDF or claimed independent
+FDA URL. Records with an exact text match are still labeled
+`MATCHING_UNVERIFIED_CLAIMS_REQUIRES_HUMAN_ADJUDICATION`.
+
+A missing match is not proof a real FDA decision did not occur: the CRL
+published-letter collection is source-selected and incomplete as a denominator.
+A URL match, source digest string or matching human claim is **not proof the
+underlying PDF bytes were independently examined**. No model is trained,
+approval rate computed, or clinical-science result promoted. All model
+eligibility counts stay zero and prediction probabilities remain null.
+The CLI deliberately exits nonzero, even with entirely matching assertions.
+Keep private register submissions and locally generated output out of git.
