@@ -54,6 +54,14 @@ Before running, confirm `RESTORE_TEST_DATABASE_URL` is **not** any existing live
 
 ## Source rebuild versus database recovery
 
-The isolated-source recovery workflow at commit `362df0f7e045f8346d96f5a942dd6d578f8d7f06` successfully rebuilt the frontend from a fresh source archive and ran the recovered backend regression suite: [verified workflow run](https://github.com/pdufa/pdufa-command-center/actions/runs/40161239079).
+The isolated-source recovery workflow at deployed commit `6d20d91295adada8accf4253a3d5d824451dedee` successfully rebuilt the frontend from a fresh source archive and ran the recovered backend regression suite: [verified workflow run](https://github.com/pdufa/pdufa-command-center/actions/runs/40194148115).
 
 That verifies source reconstruction, not a live PostgreSQL dump, durable backup, point-in-time recovery, or database restoration. Those criteria remain pending until their own artifacts and isolated restore results exist. The hosted Render query connector cannot reach the databases while their external IP allowlists are empty; keep that network isolation in place and use an authorized internal runtime for exports. Dashboard-only backup controls require an authenticated Render browser session.
+
+## Scientific platform installation verification — 2026-10-25
+
+The isolated review deployment `dep-dbevhlbrjlhs7391sk9g` became live at `2026-10-25T12:41:31Z`, running commit `6d20d91295adada8accf4253a3d5d824451dedee` (including installation fixes in `65756bf8bd8020b02f3824e0676da081d28ecdd5`). The public `/health` check returned HTTP 200 with PostgreSQL storage `READY`. No runtime errors were returned in the post-deploy error-log check.
+
+At `2026-10-25T12:41:39Z`, `SCIENTIFIC_API_READ_PROBE status=PASS checks=7 stored_trials=2 batch_jobs=2 domains=8 read_only=True scores_assigned=False` confirmed real loopback HTTP responses using the existing environment-held key. It checked missing/wrong credential rejection, persistent archive status, batch history, the exact archived assessment, the eight-domain pilot and the checksum-verified review packet. The probe performs GETs only and never exports credentials or response bodies.
+
+All workflow runs for that deployed revision completed successfully, including scientific integration, backup export safety, browser acceptance, source reconstruction and the main CI checks. The backup-export fix is installed, but it has not yet produced a live database backup or verified restoration. The remaining recovery step requires an authenticated Render dashboard/internal execution path; the browser is currently at Render's sign-in screen. Do not label the full platform installation or database recovery complete on the strength of these checks alone.
