@@ -106,7 +106,7 @@ def test_duplicate_unknown_or_missing_source_digest_fails_closed():
     row = record("a", ["NDA 123456"])
     one = link(row, STATUS_UNRESOLVED)
     with pytest.raises(ValueError, match="duplicate or unknown source digest"):
-        create_fda_identity_review_queue(*sources([row], [one, one]))
+        create_fda_identity_review_queue(*sources([row, record("b", ["NDA 987654"])], [one, one]))
     with pytest.raises(ValueError, match="counts differ"):
         create_fda_identity_review_queue(*sources([row], []))
 
