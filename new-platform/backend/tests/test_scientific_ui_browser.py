@@ -287,10 +287,11 @@ def test_chromium_scientific_batch_and_evidence_display():
             candidate.get_by_text("citation_identified_not_adjudicated", exact=False).wait_for()
             reconciler=page.locator("#evidence-ledger details").nth(2)
             reconciler.locator("summary").click()
-            assert reconciler.locator(".reconciliation-questions li").count()==8
-            reconciler.get_by_text("Do not confuse 2015 and 2016 FDA NSCLC actions").wait_for()
-            reconciler.get_by_text("Potential discrepancy:",exact=False).first.wait_for()
-            assert reconciler.get_by_role("link",name="View source").count()>=8
+            # This fixture inspects NCT04280705, not KEYNOTE-024.
+            # Unresearched studies correctly receive four generic open gates.
+            assert reconciler.locator(".reconciliation-questions li").count()==4
+            reconciler.get_by_text("Original protocol and statistical analysis plan independently reconciled",exact=False).wait_for()
+            assert reconciler.get_by_role("link",name="View source").count()==0
             trail=page.locator("#evidence-ledger details").nth(3)
             trail.locator("summary").click()
             trail.get_by_text("Version 2 · contradicts", exact=False).wait_for()
