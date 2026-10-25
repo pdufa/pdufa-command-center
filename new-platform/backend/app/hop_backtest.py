@@ -56,6 +56,15 @@ def walk_forward_backtest(
                   and r.ascertainment_source in DENOMINATOR_SOURCES
                   and r.outcome in OUTCOMES and r.cohort_id
                   and r.cohort_complete_verified is True]
+        # A single application must not contribute multiple held-out labels
+        # within a fold, even when review-cycle identifiers differ.
+        heldout_ids = set()
+        unique_usable = []
+        for row in sorted(usable, key=lambda r: (r.decision_date, r.review_cycle)):
+            if row.application_id not in heldout_ids:
+                unique_usable.append(row)
+                heldout_ids.add(row.application_id)
+        usable = unique_usable
         losses = []
         if len(train) >= min_train:
             for row in usable:
