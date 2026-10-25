@@ -104,7 +104,7 @@ function finiteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
-function pair(value: unknown): value is { pembrolizumab: number; chemotherapy: number } {
+function pair(value: unknown): value is Record<string, unknown> & { pembrolizumab: number; chemotherapy: number } {
   return obj(value) && finiteNumber(value.pembrolizumab) && finiteNumber(value.chemotherapy);
 }
 
