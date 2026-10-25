@@ -3,7 +3,7 @@ import copy
 import unittest
 
 from app.scientific_pilot_regulatory_timeline import (
-    NCT, MERCK_DMC, MERCK_REVIEW, NEJM, NCI_APPROVAL,
+    NCT, MERCK_DMC, MERCK_REVIEW, NEJM, NCI_APPROVAL, FDA_2016_APPROVAL,
     keynote024_historical_pdufa_timeline,
 )
 from app.scientific_pilot_keynote024_results import keynote024_published_results
@@ -64,11 +64,58 @@ class HistoricalRegulatoryTimelineTests(unittest.TestCase):
         self.assertEqual(keyed["first_line_priority_review_notice"]["sourceUrl"], MERCK_REVIEW)
         self.assertEqual(keyed["announced_pdufa_goal"]["sourceTemporalStatus"],
                          "historical_target_not_decision")
-        self.assertEqual(keyed["fda_first_line_approval"]["sourceUrl"], NCI_APPROVAL)
+        self.assertEqual(keyed["fda_first_line_approval"]["sourceUrl"], FDA_2016_APPROVAL)
         self.assertEqual(keyed["fda_first_line_approval"]["sourcePublicationOrEntryDate"],
-                         "2016-11-17")
+                         "2016-10-24")
         self.assertEqual(keyed["announced_pdufa_goal"]["eventDate"], "2016-12-24")
         self.assertEqual(keyed["fda_first_line_approval"]["eventDate"], "2016-10-24")
+
+    def test_original_fda_letter_separates_s8_s12_and_future_commitment(self):
+        report = keynote024_historical_pdufa_timeline(*sources())
+        original = report["primaryFdaActionLetter"]
+        self.assertEqual(original["sourceUrl"], FDA_2016_APPROVAL)
+        self.assertEqual(original["referenceId"], "4003165")
+        self.assertEqual(original["pdfPagesObserved"], 6)
+        self.assertEqual(original["regulatoryActionDate"], "2016-10-24")
+        self.assertEqual(original["signedDatePrintedInPdf"], "2016-10-24")
+        self.assertEqual(original["sourceLocators"]["electronicSignature"], "PDF page 6")
+        self.assertTrue(original["sameDocumentContainsDistinctS8AndS12Actions"])
+
+        s8, s12 = original["s8"], original["s12"]
+        self.assertEqual(s8["supplement"], "125514/S-8")
+        self.assertEqual(s8["pdl1TpsMinimumPercent"], 1)
+        self.assertFalse(s8["isFirstLineApproval"])
+        self.assertEqual(s8["previousAcceleratedApprovalDate"], "2015-10-02")
+        self.assertEqual(s12["supplement"], "125514/S-12")
+        self.assertEqual(s12["pdl1TpsMinimumPercent"], 50)
+        self.assertTrue(s12["egfrAndAlkGenomicAberrationsExcluded"])
+        self.assertEqual(s12["trialReportedAsSupport"], "NCT02142738")
+        self.assertEqual(original["secondaryNciReportUrl"], NCI_APPROVAL)
+
+        commitment = original["keynote024PostmarketingCommitment"]
+        self.assertEqual(commitment["commitmentId"], "3127-1")
+        self.assertEqual(commitment["originalTargetFinalReportMonth"], "2018-06")
+        self.assertTrue(commitment["letterDoesNotEstablishActualFinalReportSubmission"])
+        self.assertFalse(commitment["originalReportSubmissionIndependentlyVerified"])
+        self.assertFalse(original["fdaDocumentSha256VerifiedByThisReview"])
+        self.assertFalse(original["fullSignedClinicalSapVerified"])
+        self.assertTrue(original["sourceCitationNotIndependentClinicalAdjudication"])
+        self.assertFalse(original["modelEligibleForProspectiveOutcomeCalibration"])
+        self.assertIsNone(report["scientificScore"])
+        self.assertIsNone(report["fdaApprovalProbability"])
+
+    def test_fda_letter_event_is_primary_regulator_document_not_later_news(self):
+        report = keynote024_historical_pdufa_timeline(*sources())
+        event = next(event for event in report["events"]
+                     if event["key"] == "fda_first_line_approval")
+        self.assertEqual(event["eventDate"], "2016-10-24")
+        self.assertEqual(event["sourceUrl"], FDA_2016_APPROVAL)
+        self.assertEqual(event["sourceTemporalStatus"],
+                         "primary_fda_regulatory_action_letter")
+        self.assertIn("p. 1", event["sourceLocator"])
+        self.assertIn("S-8", event["caveat"])
+        self.assertIn("S-12", event["caveat"])
+        self.assertNotEqual(event["sourceUrl"], NCI_APPROVAL)
 
     def test_historical_success_does_not_raise_science_grades(self):
         result = keynote024_historical_pdufa_timeline(*sources())
