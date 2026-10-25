@@ -5,6 +5,7 @@ evidence-gated scientific rendering. Live service HTTP E2E is tested separately.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import threading
 from contextlib import contextmanager
@@ -29,6 +30,9 @@ from app.scientific_batch_ui import render_batch_panel
 
 NCT = "NCT04280705"
 SECRET = "test-browser-key"
+DOCUMENT_ID = "d"*32
+DOCUMENT_BYTES = b"%PDF-1.7\n1 0 obj<</Type/Catalog>>endobj\nTest document bytes only\n%%EOF\n"
+DOCUMENT_SHA = hashlib.sha256(DOCUMENT_BYTES).hexdigest()
 JOB_ID = "c" * 32
 DOMAINS = ("Trial design", "Efficacy", "Safety", "Biology", "Reliability", "Regulatory")
 
@@ -39,6 +43,7 @@ class TestServer(BaseHTTPRequestHandler):
     post_requests = 0
     science_requests = 0
     packet_requests = 0
+    document_requests = 0
     stale = False
 
     def log_message(self, *args):
@@ -75,6 +80,17 @@ class TestServer(BaseHTTPRequestHandler):
             self.reply(200, {"jobs": type(self).jobs})
         elif parsed.path == "/api/scientific-assessment/batches/" + JOB_ID:
             self.reply(200, type(self).jobs[0] if type(self).jobs else {})
+        elif parsed.path == "/api/scientific-assessment/source-documents/" + NCT + "/" + DOCUMENT_ID:
+            type(self).document_requests += 1
+            self.send_response(200)
+            self.send_header("Content-Type", "application/pdf")
+            self.send_header("Content-Length", str(len(DOCUMENT_BYTES)))
+            self.send_header("Content-Disposition",
+                             'attachment; filename="'+NCT+'_'+DOCUMENT_ID+'.pdf"')
+            self.send_header("Cache-Control", "no-store, private")
+            self.send_header("X-Source-Document-SHA256", DOCUMENT_SHA)
+            self.end_headers()
+            self.wfile.write(DOCUMENT_BYTES)
         elif parsed.path == "/api/scientific-assessment/review-packet/" + NCT:
             type(self).packet_requests += 1
             self.reply(200, {
@@ -145,6 +161,25 @@ class TestServer(BaseHTTPRequestHandler):
                 "evidenceLedgerStatus": "candidate_inventory_loaded" if record_found else "not_available",
                 "evidenceLedger": ({
                     "candidateCount": 1, "entryCount": 1, "verifiedGateCount": 0,
+                    "capturedSourceDocuments": {
+                        "nctId": NCT, "sourceDocumentCount": 1,
+                        "totalBytesStored": len(DOCUMENT_BYTES),
+                        "independentSourceVerificationCompleted": False,
+                        "documents": [{
+                            "documentId": DOCUMENT_ID,
+                            "nctId": NCT, "gateId": "protocol_sap",
+                            "sourceType": "protocol_sap",
+                            "sourceUrl": "https://clinicaltrials.gov/study/" + NCT,
+                            "filename": NCT+"_"+DOCUMENT_ID+".pdf",
+                            "byteLength": len(DOCUMENT_BYTES),
+                            "sha256": DOCUMENT_SHA,
+                            "manifestSha256": "a"*64,
+                            "capturedAt": "2026-10-25T03:15:00+00:00",
+                            "contentType": "application/pdf",
+                            "sourceAuthorshipVerified": False,
+                            "documentContentScientificallyVerified": False,
+                        }],
+                    },
                     "sourceReconciliation": reconciliation_worklist(NCT),
                     "adjudicationPreflight": adjudication_preflight(
                         NCT, reconciliation_worklist(NCT), {
@@ -250,6 +285,7 @@ def local_server():
     TestServer.post_requests = 0
     TestServer.science_requests = 0
     TestServer.packet_requests = 0
+    TestServer.document_requests = 0
     TestServer.stale = False
     server = ThreadingHTTPServer(("127.0.0.1", 0), TestServer)
     runner = threading.Thread(target=server.serve_forever, daemon=True)
@@ -381,6 +417,20 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert statements.locator(".reviewer-statements li").count()==2
             statements.get_by_text("not independently confirmed",exact=False).first.wait_for()
             statements.get_by_text("Claim: A different version may contain an eligibility change.").wait_for()
+            captured_pdf=page.locator("#evidence-ledger .captured-source-documents")
+            assert captured_pdf.count()==1
+            assert "Preserved source PDFs (1)" in captured_pdf.locator("summary").inner_text()
+            captured_pdf.locator("summary").click()
+            captured_pdf.get_by_text("Publisher authorship verified: NO",exact=False).wait_for()
+            with page.expect_download() as pdf_download_event:
+                captured_pdf.get_by_role("button",name="Download checked PDF").click()
+            pdf_download=pdf_download_event.value
+            assert pdf_download.suggested_filename==NCT+"_"+DOCUMENT_ID+".pdf"
+            with open(pdf_download.path(),"rb") as saved_pdf:
+                assert saved_pdf.read()==DOCUMENT_BYTES
+            assert TestServer.document_requests==1
+            page.get_by_text("Archived source PDF downloaded with matching SHA-256",exact=False).wait_for()
+
             assert page.get_by_role("button",name="Approve evidence").count()==0
             blocker_report=page.locator("#evidence-ledger .adjudication-preflight")
             assert blocker_report.count()==1
