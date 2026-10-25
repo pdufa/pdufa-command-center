@@ -10,13 +10,15 @@
       "outcome": "APPROVED",
       "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2013/205123Orig1s000TOC.cfm",
       "source_type": "FDA_DRUG_APPROVAL_PACKAGE",
-      "indication": null,
-      "therapeutic_area": null,
-      "modality": null,
+      "indication": "Chronic hepatitis C genotype 1 infection in combination antiviral regimen",
+      "therapeutic_area": "Infectious diseases / hepatitis C",
+      "modality": "Small-molecule NS3/4A protease inhibitor",
       "phase": null,
       "evidence_as_of": null,
-      "review_status": "INCOMPLETE_COMPARATOR_FEATURES",
-      "model_eligible": false
+      "review_status": "FDA_INDICATION_MODALITY_VERIFIED_TRIAL_PHASE_AND_ASOF_PENDING",
+      "model_eligible": false,
+      "source_review_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2013/205123Orig1s000ODMemo.pdf",
+      "source_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2013/205123s000lbl.pdf"
     }
   ]
 }
