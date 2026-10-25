@@ -132,3 +132,51 @@ def probe_fda_review_documents(queue: dict, *, offset: int = 0,
         ],
     }
     return {"schema_version": 1, "status": audited["status"], "records": out}, audited
+
+
+def probe_all_fda_review_documents(queue: dict, *, batch_size: int = 20,
+                                   fetcher=None) -> tuple[dict, dict]:
+    """Check each quarantined queue record once, in bounded sequential batches.
+
+    All HTTP/PDF checks are preliminary provenance, NOT decision adjudication.
+    Nonresponsive or invalid files remain explicitly unverified.
+    """
+    if type(batch_size) is not int or not 1 <= batch_size <= MAX_BATCH:
+        raise ValueError("invalid FDA PDF batch size")
+    if queue.get("status") != "IDENTITY_REVIEW_QUEUE_NOT_OUTCOME_COHORT":
+        raise ValueError("not an identity-only FDA source queue")
+    rows = queue.get("records")
+    if not isinstance(rows, list):
+        raise ValueError("FDA identity-review queue records missing")
+    all_records = []
+    totals = Counter()
+    for offset in range(0, len(rows), batch_size):
+        batch, audit = probe_fda_review_documents(
+            queue, offset=offset, limit=batch_size, fetcher=fetcher,
+        )
+        for checked in batch["records"][offset:offset + batch_size]:
+            if checked["document_fetch_status"] == "NOT_CHECKED":
+                raise ValueError("FDA evidence probe skipped an in-range record")
+            all_records.append(checked)
+            totals[checked["document_fetch_status"]] += 1
+    if len(all_records) != len(rows) or sum(totals.values()) != len(rows):
+        raise ValueError("not every FDA identity review record was checked")
+    verified = totals["OFFICIAL_PDF_BYTES_CONFIRMED"]
+    audit = {
+        "status": "PDF_FETCH_CHECK_ONLY_NOT_HISTORICAL_OUTCOME_VERIFICATION",
+        "total_identity_review_cases": len(rows),
+        "document_fetch_status_counts": dict(sorted(totals.items())),
+        "official_pdf_bytes_confirmed": verified,
+        "all_cases_checked_for_document_availability": True,
+        "independently_verified_review_cycles": 0,
+        "complete_application_denominator_verified": False,
+        "model_eligible_records": 0,
+        "prediction_probability": None,
+        "limitations": [
+            "Availability check does not determine letter authenticity, identity or effective regulatory action date.",
+            "PDFs can be corrections published after an earlier FDA action.",
+            "An inaccessible PDF is not evidence of FDA approval or permanent rejection.",
+            "Only publication-selected FDA source records were checked; the full denominator is unknown.",
+        ],
+    }
+    return {"schema_version": 1, "status": audit["status"], "records": all_records}, audit
