@@ -5,6 +5,7 @@ on:
       - feature/scientific-assessment-v1
     paths:
       - 'new-platform/backend/app/scientific_investigation_contract.py'
+      - 'new-platform/backend/app/main.py'
       - 'new-platform/backend/tests/test_scientific_investigation_contract.py'
       - '.github/workflows/scientific-investigation-tests.yml'
   workflow_dispatch:
@@ -18,7 +19,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install test runner
-        run: python -m pip install pytest
+        run: python -m pip install -r new-platform/backend/requirements.txt pytest
       - name: Verify eight-layer contract
         working-directory: new-platform/backend
         run: python -m pytest -q tests/test_scientific_investigation_contract.py
