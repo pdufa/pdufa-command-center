@@ -30,6 +30,8 @@ PUBLIC_COUNTS = (
     "source_submissions_tsv_encoding",
     "application_rows_in_extract",
     "application_type_counts",
+    "validated_application_identity_rows",
+    "quarantined_application_row_reason_counts",
     "submission_rows_in_extract",
     "original_nda_bla_submission_rows",
     "distinct_nda_bla_applications_in_original_submission_inventory",
