@@ -122,7 +122,7 @@ def test_queue_sorts_conflicts_missing_reviews_and_unverified_agreement():
         complete(record, "reviewer_b")
     # Different synthetic source states: first (a) conflicts,
     # second (c) missing, third (d) agrees but is NOT independently verified.
-    second[0]["observed_action_date"] = "2020-01-02"
+    second[0]["observed_review_cycle"] = "2"
     second[1]["source_evidence_notes"] = ""
     comparison = compare(original, first, second)
     queue, audit = build_review_triage(
@@ -136,7 +136,7 @@ def test_queue_sorts_conflicts_missing_reviews_and_unverified_agreement():
     assert [row["source_record_sha256"] for row in queue] == [
         "a" * 64, "c" * 64, "d" * 64
     ]
-    assert queue[0]["disputed_fields"] == "observed_action_date"
+    assert queue[0]["disputed_fields"] == "observed_review_cycle"
     assert queue[1]["claimed_second_review_complete"] == "false"
     assert queue[2]["claimed_first_review_complete"] == "true"
     assert audit["status"] == "UNVERIFIED_REVIEW_QUEUE_ONLY"
@@ -346,4 +346,97 @@ def test_correct_matching_metadata_remains_priority_four_not_verified():
                and not r["source_metadata_warning_flags"] for r in queue)
     assert audit["source_metadata_warning_references"] == 0
     assert audit["independent_source_metadata_verified"] is False
+    assert audit["prediction_probability"] is None
+
+
+def test_matching_reviewers_with_wrong_application_trigger_priority_one():
+    original, first, second = prepare()
+    for review in first:
+        complete(review, "reviewer_a")
+    for review in second:
+        complete(review, "reviewer_b")
+    for review in (first[0], second[0]):
+        review["observed_application_ids"] = "BLA000002"
+    comparison = compare(original, first, second)
+    assert comparison["matching_unverified_claims"] == 3
+    queue, audit = build_review_triage(
+        original, first, second, comparison, pinned_index(), as_of=AS_OF
+    )
+    assert queue[0]["source_record_sha256"] == "a" * 64
+    assert queue[0]["triage_status"] == "SOURCE_METADATA_DISCREPANCY"
+    assert queue[0]["review_queue_priority"] == "1"
+    assert queue[0]["source_metadata_warning_flags"] == (
+        "REVIEWED_APPLICATION_NOT_IN_SOURCE_CANDIDATES"
+    )
+    assert audit["source_metadata_warning_references"] == 1
+    assert audit["queue_status_counts"]["SOURCE_METADATA_DISCREPANCY"] == 1
+    assert audit["queue_status_counts"]["MATCHING_TEXT_STILL_UNVERIFIED"] == 2
+    assert audit["independent_source_metadata_verified"] is False
+    assert audit["independently_verified_review_cycles"] == 0
+    assert audit["prediction_probability"] is None
+
+
+def test_matching_wrong_date_and_letter_type_raise_both_metadata_warnings():
+    original, first, second = prepare()
+    for review in first:
+        complete(review, "reviewer_a")
+    for review in second:
+        complete(review, "reviewer_b")
+    for review in (first[0], second[0]):
+        review["observed_action_date"] = "2020-01-02"
+        review["observed_document_type"] = "TENTATIVE APPROVAL"
+    queue, audit = build_review_triage(
+        original, first, second, compare(original, first, second),
+        pinned_index(), as_of=AS_OF
+    )
+    flags = queue[0]["source_metadata_warning_flags"]
+    assert "ACTION_DATE_DIFFERS_FROM_PUBLISHED_LETTER_DATE" in flags
+    assert "DOCUMENT_TYPE_DIFFERS_FROM_PUBLISHED_LETTER_TYPE" in flags
+    assert audit["source_metadata_warning_references"] == 1
+    assert audit["model_eligible_records"] == 0
+
+
+def test_metadata_warning_and_reviewer_conflict_overlap_without_double_counting():
+    original, first, second = prepare()
+    for review in first:
+        complete(review, "reviewer_a")
+    for review in second:
+        complete(review, "reviewer_b")
+    first[0]["observed_application_ids"] = "BLA000002"
+    comparison = compare(original, first, second)
+    assert comparison["disagreeing_unverified_claims"] == 1
+    queue, audit = build_review_triage(
+        original, first, second, comparison, pinned_index(), as_of=AS_OF
+    )
+    assert queue[0]["triage_status"] == "SOURCE_METADATA_DISCREPANCY"
+    assert queue[0]["disputed_fields"] == "observed_application_ids"
+    assert "REVIEWED_APPLICATION_NOT_IN_SOURCE_CANDIDATES" in (
+        queue[0]["source_metadata_warning_flags"]
+    )
+    assert audit["queue_status_counts"]["SOURCE_METADATA_DISCREPANCY"] == 1
+    assert sum(audit["queue_status_counts"].values()) == 3
+    assert audit["independently_verified_review_cycles"] == 0
+
+
+def test_missing_publication_metadata_is_a_warning_not_verified_evidence():
+    original, first, second = prepare()
+    original[0]["published_application_ids"] = ""
+    original[0]["canonical_application_candidates"] = ""
+    original[0]["source_letter_date_as_published"] = ""
+    original[0]["published_letter_type"] = ""
+    # Create packets from the modified, still unadjudicated source worksheet.
+    first, second, _ = build_dual_review_packets(original)
+    for review in first:
+        complete(review, "reviewer_a")
+    for review in second:
+        complete(review, "reviewer_b")
+    queue, audit = build_review_triage(
+        original, first, second, compare(original, first, second),
+        pinned_index(), as_of=AS_OF
+    )
+    flags = queue[0]["source_metadata_warning_flags"]
+    assert "PUBLISHED_SOURCE_APPLICATION_ID_MISSING" in flags
+    assert "PUBLISHED_LETTER_DATE_MISSING_OR_INVALID" in flags
+    assert "PUBLISHED_LETTER_TYPE_MISSING" in flags
+    assert audit["independently_verified_review_cycles"] == 0
     assert audit["prediction_probability"] is None
