@@ -13,8 +13,19 @@ type Domain = {
   required_fields: number;
   missing_fields: string[];
 };
+type EvidenceRequirement = {
+  id: string;
+  label: string;
+  available: boolean;
+  evidenceLevel: "archive_verified" | "registry_field_present" | "missing_in_archive" | "independent_review_not_loaded";
+  sourcePath: string | null;
+  nextAction: string;
+  independentlyVerified: false;
+};
 type GradePair = {
   nctId: string;
+  requirements: EvidenceRequirement[];
+  missingRequirementIds: string[];
   analysisReadiness: {
     grade: string;
     coveragePercent: number;
@@ -98,6 +109,49 @@ const object = (value: unknown): value is Record<string, unknown> =>
 const count = (value: unknown): value is number =>
   typeof value === "number" && Number.isInteger(value) && value >= 0;
 
+const EXPECTED_REQUIREMENT_IDS = [
+  "archive_integrity", "indication", "design", "eligibility", "interventions",
+  "enrollment", "timeline", "registered_primary", "primary_analysis",
+  "safety_denominators", "participant_flow", "baseline", "protocol_sap",
+  "published_results", "independent_replication", "official_regulatory",
+] as const;
+
+/** Presence of registry fields is not independent confirmation of the science. */
+function validRequirementList(value: Record<string, unknown>, analysis: Record<string, unknown>): boolean {
+  const rows = value.requirements;
+  const missing = value.missingRequirementIds;
+  if (!Array.isArray(rows) || rows.length !== 16 || !Array.isArray(missing)) return false;
+  let present = 0;
+  const missingIds: string[] = [];
+  for (let i = 0; i < EXPECTED_REQUIREMENT_IDS.length; i++) {
+    const row: unknown = rows[i];
+    if (!object(row) || row.id !== EXPECTED_REQUIREMENT_IDS[i]
+        || typeof row.label !== "string" || !row.label.trim() || row.label.length > 180
+        || typeof row.nextAction !== "string" || !row.nextAction.trim()
+        || row.nextAction.length > 600 || typeof row.available !== "boolean"
+        || row.independentlyVerified !== false) return false;
+    const external = i >= 12;
+    if (external) {
+      // The current implementation has NO independently authenticated evidence.
+      if (row.available !== false || row.evidenceLevel !== "independent_review_not_loaded"
+          || row.sourcePath !== null) return false;
+    } else {
+      if (typeof row.sourcePath !== "string" || !row.sourcePath.trim()
+          || row.sourcePath.length > 300) return false;
+      const expectedLevel = i === 0 ? "archive_verified"
+        : row.available ? "registry_field_present" : "missing_in_archive";
+      if (row.evidenceLevel !== expectedLevel || (i === 0 && row.available !== true)) return false;
+    }
+    if (row.available) present++;
+    else missingIds.push(row.id as string);
+  }
+  return missing.length === missingIds.length
+    && missing.every((id: unknown, i: number) => id === missingIds[i])
+    && analysis.requirementsTotal === 16 && analysis.requirementsCovered === present
+    && typeof analysis.coveragePercent === "number"
+    && Math.abs(analysis.coveragePercent - present * 100 / 16) <= 0.5;
+}
+
 function validGradePair(value: unknown, nctId: string): value is GradePair {
   if (!object(value) || !object(value.analysisReadiness)
       || !object(value.scientificReluctance) || value.nctId !== nctId
@@ -105,7 +159,8 @@ function validGradePair(value: unknown, nctId: string): value is GradePair {
       || value.scientificScore !== null || value.fdaApprovalProbability !== null) return false;
   const a = value.analysisReadiness;
   const r = value.scientificReluctance;
-  return typeof a.grade === "string" && /^[A-F]$/.test(a.grade)
+  return validRequirementList(value, a)
+    && typeof a.grade === "string" && /^[A-F]$/.test(a.grade)
     && count(a.coveragePercent) && a.coveragePercent <= 100
     && count(a.requirementsCovered) && a.requirementsTotal === 16
     && a.requirementsCovered <= a.requirementsTotal
@@ -330,6 +385,23 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           {" · "} Maximum reluctance to draw a scientific conclusion.
         </p>
         <small>These grade the completeness of evidence inputs and the need to withhold judgment. A reluctance F does NOT mean the drug failed. Neither grade predicts FDA approval.</small>
+        <details aria-label="Scientific input requirement checklist">
+          <summary><strong>Scientific evidence input checklist</strong> · {result.readinessGrades.analysisReadiness.requirementsCovered}/16 source inputs available · 4 independent reviews required</summary>
+          <p>Archived source presence is not independent scientific verification. Missing requirements and next actions are shown separately for this exact trial.</p>
+          <ol>{result.readinessGrades.requirements.map((requirement, i) =>
+            <li key={requirement.id}>
+              <details>
+                <summary><strong>{requirement.label}</strong>{" · "}
+                  {i >= 12 ? "Independent review not completed"
+                    : requirement.available ? "Source input available; not scientifically verified" : "Input missing in archive"}
+                </summary>
+                <p>Evidence level: {pretty(requirement.evidenceLevel)}.</p>
+                {requirement.sourcePath && <p>Source field or integrity reference: <code>{requirement.sourcePath}</code></p>}
+                <p>Required next action: {requirement.nextAction}</p>
+                <small>Independently verified: NO. This requirement does not establish clinical efficacy or FDA approval.</small>
+              </details>
+            </li>)}</ol>
+        </details>
       </section> : <p>Both evidence-readiness grades are unavailable until a verified archived record is loaded.</p>}
 
       {result.investigation20 ? <details>
