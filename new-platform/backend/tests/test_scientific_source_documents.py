@@ -129,7 +129,7 @@ def test_archive_exact_bytes_readback_manifest_and_no_scientific_promotion(isola
     assert receipt.status_code==200
     assert receipt.content==document
     assert receipt.headers["cache-control"]=="private, no-store"
-    assert receipt.headers["content-disposition"].endswith('".pdf"')
+    assert receipt.headers["content-disposition"].endswith('.pdf"')
     assert receipt.headers["x-content-type-options"]=="nosniff"
     assert receipt.headers["x-source-document-sha256"]==meta["sha256"]
     assert receipt.headers["x-source-scientific-status"]=="not-independently-verified"
