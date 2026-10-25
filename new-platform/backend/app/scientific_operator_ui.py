@@ -35,6 +35,9 @@ _PAGE = r'''<!doctype html>
     summary {cursor:pointer;font-weight:650} ul {line-height:1.55}
     .footer {font-size:.83rem;color:#50647a}
     a {color:#0d517d}
+    .source-links {padding-left:23px;overflow-wrap:anywhere}
+    .priority {color:#634509;text-transform:uppercase;font-size:.78rem}
+    .evidence-note {border-left:3px solid #ba8125;padding-left:12px}
   </style>
   <script nonce="__NONCE__" src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -61,6 +64,9 @@ _PAGE = r'''<!doctype html>
       <div id="metrics" class="grid"></div>
       <h2 style="margin-top:24px">20-stage investigation</h2><div id="levels"></div>
       <h2 style="margin-top:24px">40 assessments · 8 scientific layers</h2><div id="layers"></div>
+      <h2 style="margin-top:24px">Evidence reconciliation · unresolved questions</h2>
+      <p class="muted evidence-note">These are review questions and candidate source links, not proven discrepancies or independently verified results. Opening a source does not resolve a scientific evidence gate.</p>
+      <div id="evidence-questions"></div>
     </div>
   </section>
   <p class="footer">Scientific review requires original dated sources and independent corroboration. One operator cannot generate two independent confirmations. <a href="/health">Service health</a></p>
@@ -154,13 +160,21 @@ _PAGE = r'''<!doctype html>
       var metrics = document.getElementById("metrics");
       var levels = document.getElementById("levels");
       var layers = document.getElementById("layers");
-      metrics.replaceChildren(); levels.replaceChildren(); layers.replaceChildren();
+      var questions = document.getElementById("evidence-questions");
+      var ledger = item.evidenceLedger;
+      var worklist = ledger && ledger.sourceReconciliation;
+      var documents = ledger && ledger.capturedSourceDocuments;
+      metrics.replaceChildren(); levels.replaceChildren(); layers.replaceChildren(); questions.replaceChildren();
       metrics.appendChild(metric("Trial", id));
       metrics.appendChild(metric("Archive", item.registryEvidenceStatus || "not available"));
       metrics.appendChild(metric("Input coverage grade", grades && grades.analysisReadiness ? grades.analysisReadiness.grade : "Not available"));
       metrics.appendChild(metric("Reluctance grade", grades && grades.scientificReluctance ? grades.scientificReluctance.grade : "Not available"));
       metrics.appendChild(metric("Independently verified", "0 / 40"));
       metrics.appendChild(metric("Scientific score", "Not assigned"));
+      metrics.appendChild(metric("Open evidence questions",
+        worklist && Number.isInteger(worklist.unresolvedChecks) ? worklist.unresolvedChecks : "Not available"));
+      metrics.appendChild(metric("Archived source PDFs",
+        documents && Number.isInteger(documents.sourceDocumentCount) ? documents.sourceDocumentCount : "Not available"));
       if (twenty && Array.isArray(twenty.levels)) {
         twenty.levels.forEach(function (level) {
           var detail = element("details");
@@ -182,6 +196,39 @@ _PAGE = r'''<!doctype html>
           layers.appendChild(detail);
         });
       } else layers.appendChild(element("p", "Forty-assessment inventory unavailable for this trial."));
+      if (worklist && Array.isArray(worklist.checks)) {
+        worklist.checks.forEach(function (check, index) {
+          var detail = element("details");
+          detail.appendChild(element("summary", (index + 1) + ". " + check.title +
+            " · " + String(check.priority || "review").toUpperCase() + " · OPEN"));
+          detail.appendChild(element("p", "Evidence gate: " + String(check.gateId || "unknown"), "priority"));
+          detail.appendChild(element("p", check.question || "Independent scientific review required"));
+          if (check.observedDiscrepancy) {
+            detail.appendChild(element("p", "Source-reconciliation concern: " + check.observedDiscrepancy, "evidence-note"));
+          }
+          detail.appendChild(element("p", "Next step: " + (check.nextAction || "Review dated original sources"), "muted"));
+          if (Array.isArray(check.sourceUrls) && check.sourceUrls.length) {
+            detail.appendChild(element("p", "Candidate sources (not independently verified):"));
+            var links = element("ul", undefined, "source-links");
+            check.sourceUrls.forEach(function (url) {
+              try {
+                var target = new URL(url);
+                if (target.protocol !== "https:") return;
+                var li = element("li");
+                var a = element("a", target.hostname + target.pathname);
+                a.href = target.href;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                li.appendChild(a);
+                links.appendChild(li);
+              } catch (err) { /* Skip malformed untrusted source URL */ }
+            });
+            detail.appendChild(links);
+          } else detail.appendChild(element("p", "Source documents still need to be identified.", "muted"));
+          questions.appendChild(detail);
+        });
+      } else questions.appendChild(element("p",
+        "Evidence reconciliation inventory unavailable; no source is independently verified."));
       report.classList.remove("hide");
       msg.textContent = "Read-only source inventory loaded. Nothing has been scientifically approved or independently verified.";
     } catch (err) { msg.textContent = String(err.message || err); }
