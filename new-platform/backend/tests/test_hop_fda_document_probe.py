@@ -191,3 +191,22 @@ def test_full_action_worklist_pdfs_checked_without_elevating_regulatory_labels()
     with pytest.raises(ValueError, match="cannot self-certify outcomes"):
         probe_all_fda_review_documents(source,
             fetcher=lambda url: ("OFFICIAL_PDF_BYTES_CONFIRMED", "b" * 64))
+
+
+@pytest.mark.parametrize("filename", [
+    "208574Orig1s000,Orig2s000OtherActionLtrs.pdf",
+    "212887Orig1s000,212888Orig1s000OtherActionLtrs.pdf",
+    "212479Orig1,Orig2,Orig3,Orig4s000OtherActionLtrs.pdf",
+    "215973,215974Orig1s000OtherActionLtrs.pdf",
+])
+def test_real_multi_submission_fda_filenames_use_exact_comma_encoding(filename):
+    expected = "https://download.open.fda.gov/crl/" + filename.replace(",", "%2C")
+    assert official_document_candidate(filename) == expected
+
+
+@pytest.mark.parametrize("name", [
+    ",leading.pdf", "trailing,.pdf", "double,,comma.pdf",
+    "bad, name.pdf", "bad  spaces.pdf", "bad;evil.pdf", "bad/other.pdf",
+])
+def test_ambiguous_multi_submission_filename_patterns_rejected(name):
+    assert official_document_candidate(name) is None
