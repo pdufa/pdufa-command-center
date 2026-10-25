@@ -35,7 +35,7 @@ function makeRoute({ authenticated = true, configured = true, response, rejectFe
       fetchReadOnlyWithWarmRetry: async (url, init) => {
         calls.push({ url, init });
         if (rejectFetch) throw new Error("network unavailable");
-        return response ?? {
+        const result = response ?? {
           ok: true, status: 200,
           json: async () => ({
             exactId: ID,
@@ -43,6 +43,11 @@ function makeRoute({ authenticated = true, configured = true, response, rejectFe
             assessment: { overall_score: null },
             registryEvidence: { source: "checksum_verified_registry_only" },
           }),
+        };
+        return {
+          ...result,
+          headers: result.headers ?? { get: name =>
+            name === "x-pdufa-scientific-api-contract" ? "science-integrated-v1" : null },
         };
       },
     };
@@ -120,6 +125,23 @@ test("authenticated isolated GET proves exact-trial connection without publishin
   assert.equal(result.body.scoresAssignedByConnectionTest, false);
   assert.equal(result.headers["Cache-Control"], "private, no-store");
   assert.doesNotMatch(JSON.stringify(result.body), /TEST_INTERNAL_KEY|checksum_verified_registry_only/);
+}));
+
+test("older isolated Render backend cannot claim integrated scientific readiness", async () => withEnv(async () => {
+  const route = makeRoute({ response: {
+    ok: true, status: 200,
+    headers: { get: () => null },
+    json: async () => ({
+      exactId: ID, independentOfQualificationPresets: true,
+      assessment: { overall_score: null },
+      registryEvidence: { source: "old_backend" },
+    }),
+  } });
+  const result = await route.request();
+  assert.equal(result.status, 503);
+  assert.equal(result.body.connection, "scientific_backend_contract_mismatch");
+  assert.equal(route.calls.length, 1);
+  assert.equal(result.body.approvalProbability, undefined);
 }));
 
 test("an upstream internal credential failure does not count as connectivity success", async () => withEnv(async () => {
