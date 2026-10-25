@@ -1067,6 +1067,21 @@ def scientific_reviewer_submit(
         raise HTTPException(status_code=409, detail=str(exc))
 
 
+@app.get("/api/scientific-assessment/reviewer/pairing")
+def scientific_reviewer_pairing(
+    nct_id: str,
+    question_id: str,
+    source_sha256: str,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Read-only two-identity comparison; no adjudication or score promotion."""
+    from .scientific_review_pairing import review_pairing_status
+    try:
+        return review_pairing_status(nct_id, question_id, source_sha256)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
 @app.get("/api/scientific-assessment/reviewer/audit")
 def scientific_reviewer_audit(
     nct_id: str,
