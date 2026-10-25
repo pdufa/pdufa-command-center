@@ -7,6 +7,7 @@ import { validSourceEvidenceAudit, type SourceEvidenceAudit } from "./trial-scie
 import { validSafetyChronology, type SafetyChronology } from "./trial-science-safety-chronology";
 import { validPublishedInterimDesign, type PublishedInterimDesign } from "./trial-science-interim-design";
 import { validEuProtocolCrosscheck, type EuProtocolCrosscheck } from "./trial-science-eu-crosscheck";
+import { validHistoricalRegulatoryTimeline, type HistoricalRegulatoryTimeline } from "./trial-science-regulatory-timeline";
 
 export const PILOT_NCT = "NCT02142738";
 
@@ -130,6 +131,7 @@ export type TrialSciencePilot = {
   publishedSafetyReconciliation?: SafetyChronology;
   publishedInterimDesign?: PublishedInterimDesign;
   europeanRegistryCrosscheck?: EuProtocolCrosscheck;
+  historicalRegulatoryTimeline?: HistoricalRegulatoryTimeline;
   publishedResults: {
     nct_id: string;
     randomized_population: number;
@@ -279,6 +281,20 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
   if (input.publishedInterimDesign !== undefined && !validPublishedInterimDesign(input.publishedInterimDesign)) return false;
   if (input.europeanRegistryCrosscheck !== undefined &&
       !validEuProtocolCrosscheck(input.europeanRegistryCrosscheck)) return false;
+  if (input.historicalRegulatoryTimeline !== undefined &&
+      !validHistoricalRegulatoryTimeline(input.historicalRegulatoryTimeline)) return false;
+  if (input.historicalRegulatoryTimeline !== undefined &&
+      (input.publishedInterimDesign === undefined ||
+       input.europeanRegistryCrosscheck === undefined ||
+       input.scientificReadiness === undefined ||
+       input.scientificReadiness.inputReadiness.grade !== "FAIL" ||
+       input.scientificReadiness.reluctance.grade !== "HIGH" ||
+       input.publishedInterimDesign.observedInterim.reportedPfsEvents !==
+         input.historicalRegulatoryTimeline.interim.observedPfsEvents ||
+       input.publishedInterimDesign.observedInterim.reportedDeaths !==
+         input.historicalRegulatoryTimeline.interim.observedOsDeaths ||
+       input.europeanRegistryCrosscheck.registry.firstRecordEnteredDate !==
+         input.historicalRegulatoryTimeline.events[0].eventDate)) return false;
   if (input.europeanRegistryCrosscheck !== undefined &&
       (input.publishedInterimDesign === undefined ||
        input.scientificReadiness === undefined ||
