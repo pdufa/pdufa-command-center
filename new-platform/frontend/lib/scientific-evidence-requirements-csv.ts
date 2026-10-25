@@ -26,10 +26,10 @@ export type ScientificInputAudit = {
     passFail: "FAIL_INCOMPLETE_INPUTS";
   };
   scientificReluctance: {
-    grade: "F";
-    level: "CRITICAL";
-    reluctanceToConclude: "MAXIMUM";
-    verdict: "WITHHOLD_SCIENTIFIC_CONCLUSION";
+    grade: string;
+    level: string;
+    reluctanceToConclude: string;
+    verdict: string;
   };
   externalEvidenceVerified: false;
   scientificScore: null;
