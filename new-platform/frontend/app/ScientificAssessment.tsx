@@ -181,14 +181,20 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [result, setResult] = useState<Assessment | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingConnection, setCheckingConnection] = useState(false);
+  const [connectionMessage, setConnectionMessage] = useState("");
   const pending = useRef<AbortController | null>(null);
+  const pendingConnection = useRef<AbortController | null>(null);
 
   useEffect(() => {
     pending.current?.abort();
+    pendingConnection.current?.abort();
     setResult(null);
     setError("");
     setLoading(false);
-    return () => pending.current?.abort();
+    setCheckingConnection(false);
+    setConnectionMessage("");
+    return () => { pending.current?.abort(); pendingConnection.current?.abort(); };
   }, [exactId]);
 
   async function load() {
@@ -215,11 +221,53 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
-  const valid = /^TRIAL\|NCT[0-9]{8}$/.test(exactId);
+  async function checkConnection() {
+    if (!/^TRIAL\\|NCT[0-9]{8}$/.test(exactId)) return;
+    pendingConnection.current?.abort();
+    const controller = new AbortController();
+    pendingConnection.current = controller;
+    setCheckingConnection(true);
+    setConnectionMessage("");
+    try {
+      const response = await fetch(
+        "/api/scientific-assessment/connection?exact_id=" + encodeURIComponent(exactId),
+        { cache: "no-store", signal: controller.signal },
+      );
+      if (response.status === 401) throw new Error("Dashboard sign-in required to check the scientific service.");
+      if (response.status === 502) throw new Error("Scientific API access key was rejected. Check the isolated service configuration.");
+      if (!response.ok) throw new Error("Scientific service connection is not verified (" + response.status + ").");
+      const data: unknown = await response.json();
+      if (!object(data) || data.connection !== "connected"
+          || data.exactTrialIdentityMatched !== true
+          || typeof data.archivedRecordPresent !== "boolean"
+          || data.approvalProbability !== null
+          || data.scoresAssignedByConnectionTest !== false) {
+        throw new Error("Scientific service connection response failed validation.");
+      }
+      if (!controller.signal.aborted) setConnectionMessage(
+        "Connected to the isolated scientific API for this exact trial. "
+        + (data.archivedRecordPresent ? "Archived registry source is present. " : "Archived registry source is not yet loaded. ")
+        + "Independent scientific verification and FDA outcome prediction remain unavailable."
+      );
+    } catch (e) {
+      if (!controller.signal.aborted) setConnectionMessage(
+        e instanceof Error ? e.message : "Scientific service connection could not be verified."
+      );
+    } finally {
+      if (!controller.signal.aborted) setCheckingConnection(false);
+    }
+  }
+
+  const valid = /^TRIAL\\|NCT[0-9]{8}$/.test(exactId);
   return <section aria-label="Scientific Assessment">
     <button type="button" disabled={!valid || loading} onClick={() => void load()}>
       {loading ? "Checking scientific evidence…" : "Scientific Assessment · 20 levels / 40 assessments"}
     </button>
+    <button type="button" disabled={!valid || checkingConnection}
+      onClick={() => void checkConnection()}>
+      {checkingConnection ? "Checking isolated scientific API…" : "Verify scientific service connection"}
+    </button>
+    {connectionMessage && <p role="status">{connectionMessage}</p>}
     {error && <p role="alert">{error}</p>}
     {result && <div>
       <p><strong>Trial:</strong> {result.exactId}</p>
