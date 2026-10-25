@@ -13,7 +13,7 @@ const compiled = ts.transpileModule(
 
 function data() {
   return {
-    asOf: "2026-10-25", mode: "LIVE_READ_ONLY_GITHUB_SOURCE",
+    asOf: new Date().toISOString().slice(0, 10), mode: "LIVE_READ_ONLY_GITHUB_SOURCE",
     pipeline: [
       { id: "TRIAL|NCT02142738", programId: "PDUFA-000101", nctId: "NCT02142738" },
       { id: "APPLICATION|DBVT|2020-08-03|viaskin-peanut", programId: "PDUFA-000071" },
@@ -22,7 +22,7 @@ function data() {
       GEM_JR: { rows: [{ id: "TRIAL|NCT02142738", programId: "PDUFA-000101" }] },
       GEM: { rows: [] },
     },
-    sourceHealth: { state: "FULL", pipelineSourceParity: { exactPrograms: 2 } },
+    sourceHealth: { state: "COMPLETE_PUBLISHED", pipelineSourceParity: { exactPrograms: 2 } },
   };
 }
 function audit(dataOverride = data()) {
