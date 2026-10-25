@@ -155,7 +155,52 @@ def pilot_candidates(nct_id: str) -> list[dict]:
             "independentlyVerified": False,
             "canCountTowardReadiness": False,
         })
-    assert len(candidate) == 5
+    # Independent source identities preidentified from ClinicalTrials.gov and
+    # the 2016 FDA approval letter. These are hyperlinks for critical review,
+    # NOT proof that the dated protocol was the prospectively locked SAP or
+    # that historical FDA approval establishes future PDUFA odds.
+    candidate.extend([
+        {
+            "gateId": "protocol_sap",
+            "sourceUrl": (
+                "https://cdn.clinicaltrials.gov/large-docs/38/"
+                "NCT02142738/Prot_SAP_000.pdf"
+            ),
+            "sourceType": "protocol_sap",
+            "sourcePublishedAt": "2017-12-20",
+            "title": "ClinicalTrials.gov-hosted trial protocol and SAP",
+            "relationship": "context",
+            "reviewStatus": "document_locator_identified_not_adjudicated",
+            "caution": (
+                "2017 uploaded protocol/SAP may incorporate amendments after "
+                "the original analysis and October 2016 FDA action. Compare "
+                "versions, original endpoint lock and interim alpha spending."
+            ),
+            "independentlyVerified": False,
+            "canCountTowardReadiness": False,
+        },
+        {
+            "gateId": "official_regulatory",
+            "sourceUrl": (
+                "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/"
+                "2016/125514Orig1s008,125514Orig1s012ltr.pdf"
+            ),
+            "sourceType": "official_agency_document",
+            "sourcePublishedAt": "2016-10-24",
+            "title": "FDA 2016 sBLA S-8 and S-12 approval letter",
+            "relationship": "context",
+            "reviewStatus": "document_locator_identified_not_adjudicated",
+            "caution": (
+                "S-8 modifies a previously treated NSCLC indication, while "
+                "S-12 expands first-line PD-L1 TPS >=50% NSCLC without "
+                "EGFR/ALK genomic aberrations. Do not infer a prospective "
+                "approval probability or confuse the two indications."
+            ),
+            "independentlyVerified": False,
+            "canCountTowardReadiness": False,
+        },
+    ])
+    assert len(candidate) == 7
     return candidate
 
 
