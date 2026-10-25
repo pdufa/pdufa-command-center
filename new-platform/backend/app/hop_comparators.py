@@ -4,10 +4,11 @@ Only adjudicated historical FDA outcomes with contemporaneous, dated evidence
 may enter the comparator pool. Missing dates or uncertain outcomes are excluded.
 """
 from __future__ import annotations
+from collections import Counter
 from dataclasses import dataclass
 from datetime import date
 from typing import Iterable
-from urllib.parse import urlparse
+from .hop_outcomes_import import _fda_url
 
 @dataclass(frozen=True)
 class HistoricalCase:
@@ -20,6 +21,8 @@ class HistoricalCase:
     outcome: str
     evidence_as_of: date
     source_url: str
+    public_features_as_of: date | None = None
+    independently_adjudicated: bool = False
 
 @dataclass(frozen=True)
 class TargetCase:
@@ -40,21 +43,33 @@ class Comparator:
 VALID_OUTCOMES = {"APPROVED", "COMPLETE_RESPONSE"}
 
 def match_historical_cases(target: TargetCase, history: Iterable[HistoricalCase], limit: int = 20) -> list[Comparator]:
-    """Rank prior, verifiable decisions; never use outcomes known after as-of.
+    """Rank dated, independently adjudicated prior decisions without leakage.
 
-    Similarity is a descriptive matching score, NOT approval probability.
+    HistoricalCase is research input, not proof of independent adjudication.
+    Its `independently_adjudicated` flag must never be set from CSV-schema
+    validation, successful PDF downloading, or archive existence alone.
+    Similarity is descriptive, NOT an FDA approval probability.
     """
     if limit < 1:
         raise ValueError("limit must be positive")
+    cases = tuple(history)
+    duplicates = Counter(case.case_id for case in cases if case.case_id)
     matched: list[Comparator] = []
-    for case in history:
-        parsed = urlparse(case.source_url)
-        if (not case.case_id or parsed.scheme != "https"
-            or parsed.hostname not in {"fda.gov", "www.fda.gov", "accessdata.fda.gov"}
+    for case in cases:
+        if (not case.case_id or duplicates[case.case_id] != 1
+            or not _fda_url(case.source_url)
+            or case.independently_adjudicated is not True
             or case.outcome not in VALID_OUTCOMES
             or case.decision_date >= target.prediction_as_of
-            or case.evidence_as_of >= case.decision_date
+            # Outcome evidence can only exist on/after the FDA decision;
+            # it must be public before the target prediction cutoff.
+            or case.evidence_as_of < case.decision_date
             or case.evidence_as_of > target.prediction_as_of
+            # Clinical comparison features must have been public BEFORE
+            # the historical FDA decision, never reconstructed afterward.
+            or case.public_features_as_of is None
+            or case.public_features_as_of >= case.decision_date
+            or case.public_features_as_of > target.prediction_as_of
             or case.phase < 3):
             continue
         score = (
