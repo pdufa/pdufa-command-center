@@ -263,6 +263,26 @@ async def lifespan(app: FastAPI):
                     "SCIENTIFIC_ARCHIVE_STATUS unavailable error_type=%s",
                     type(diagnostic_error).__name__,
                 )
+            # Read-only verification of the persistent batch-history table.
+            try:
+                from sqlalchemy import func
+                with Session(ENGINE) as session:
+                    batch_count = session.scalar(
+                        select(func.count()).select_from(ScientificBatchJob)
+                    )
+                    active_count = session.scalar(
+                        select(func.count()).select_from(ScientificBatchJob)
+                        .where(ScientificBatchJob.active_slot.is_not(None))
+                    )
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_BATCH_STORAGE_STATUS status=PASS stored_job_count=%s active_job_count=%s",
+                    batch_count, active_count,
+                )
+            except Exception as batch_diagnostic_error:
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_BATCH_STORAGE_STATUS status=FAIL error_type=%s",
+                    type(batch_diagnostic_error).__name__,
+                )
         except Exception as exc:
             # Neon's free-plan quota can return HTTP 402 while Postgres tables
             # and identities remain intact. Keep the health endpoint available
