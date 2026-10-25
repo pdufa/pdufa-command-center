@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
-import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
+import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, compareTwoLocalSourcePdfSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch, type DualLocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -294,6 +294,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [localSourceByteMatch, setLocalSourceByteMatch] = useState<LocalSourceByteMatch | null>(null);
   const [localSourceByteError, setLocalSourceByteError] = useState("");
   const [hashingLocalPdf, setHashingLocalPdf] = useState(false);
+  const [localReviewerBPdf, setLocalReviewerBPdf] = useState<File | null>(null);
+  const [dualSourceBytes, setDualSourceBytes] = useState<DualLocalSourceByteMatch | null>(null);
+  const [dualSourceError, setDualSourceError] = useState("");
+  const [checkingDualSource, setCheckingDualSource] = useState(false);
   const auditRevision = useRef(0);
   const pending = useRef<AbortController | null>(null);
   const pendingConnection = useRef<AbortController | null>(null);
@@ -311,6 +315,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setLocalSourceByteMatch(null);
     setLocalSourceByteError("");
     setHashingLocalPdf(false);
+    setLocalReviewerBPdf(null);
+    setDualSourceBytes(null);
+    setDualSourceError("");
+    setCheckingDualSource(false);
     pending.current?.abort();
     pendingConnection.current?.abort();
     setResult(null);
@@ -335,6 +343,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setLocalSourceByteMatch(null);
     setLocalSourceByteError("");
     setHashingLocalPdf(false);
+    setLocalReviewerBPdf(null);
+    setDualSourceBytes(null);
+    setDualSourceError("");
+    setCheckingDualSource(false);
     setLoading(true);
     setResult(null);
     setError("");
@@ -442,6 +454,8 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
 
   /** Only reads three user-selected local CSV files in this browser. No API call. */
   async function compareLocalReviewerWorksheets() {
+    setDualSourceBytes(null);
+    setDualSourceError("");
     setLocalSourceByteMatch(null);
     setLocalSourceByteError("");
     if (!result?.investigation40 || !reviewInventoryFile || !reviewerAFile || !reviewerBFile) return;
@@ -488,6 +502,8 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
 
   /** Byte consistency only: SHA-256 equality to typed A/B CSV claims is NOT source authentication. */
   async function compareLocalSourcePdfBytes() {
+    setDualSourceBytes(null);
+    setDualSourceError("");
     if (!result?.investigation40 || !localAudit || !localSourcePdf
         || !localSourceTaskKey || !reviewInventoryFile || !reviewerAFile || !reviewerBFile) return;
     const token = ++auditRevision.current;
@@ -518,6 +534,49 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       );
     } finally {
       if (token === auditRevision.current) setHashingLocalPdf(false);
+    }
+  }
+
+  /** SHA-256 from actual local PDF bytes, with bounded size and PDF boundary checks. */
+  async function sha256LocalPdf(file: File): Promise<string> {
+    if (file.size < 32 || file.size > 25 * 1024 * 1024) throw new Error("Invalid local PDF size");
+    const bytes = await file.arrayBuffer();
+    const data = new Uint8Array(bytes);
+    if (String.fromCharCode(...data.subarray(0, 5)) !== "%PDF-") throw new Error("PDF header missing");
+    const tail = new TextDecoder("latin1").decode(data.subarray(Math.max(0, data.length - 1024)));
+    if (!tail.includes("%%EOF")) throw new Error("PDF end marker missing");
+    if (typeof crypto === "undefined" || !crypto.subtle) throw new Error("Secure SHA-256 unavailable");
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(digest))
+      .map(byte => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  /** Compare each actual local PDF with its own A/B claim, never accept scientific evidence. */
+  async function compareTwoLocalPdfBytes() {
+    if (!result?.investigation40 || !localAudit || !localSourcePdf || !localReviewerBPdf
+        || !localSourceTaskKey || !reviewInventoryFile || !reviewerAFile || !reviewerBFile) return;
+    const token = ++auditRevision.current;
+    setDualSourceBytes(null);
+    setDualSourceError("");
+    setCheckingDualSource(true);
+    try {
+      if ([reviewInventoryFile, reviewerAFile, reviewerBFile].some(f => f.size > 1024 * 1024)) {
+        throw new Error("CSV file too large");
+      }
+      const [digestA, digestB, inventoryCsv, aCsv, bCsv] = await Promise.all([
+        sha256LocalPdf(localSourcePdf), sha256LocalPdf(localReviewerBPdf),
+        reviewInventoryFile.text(), reviewerAFile.text(), reviewerBFile.text(),
+      ]);
+      const comparison = compareTwoLocalSourcePdfSha256Claims(
+        result.investigation40, inventoryCsv, aCsv, bCsv, localSourceTaskKey, digestA, digestB,
+      );
+      if (token === auditRevision.current) setDualSourceBytes(comparison);
+    } catch {
+      if (token === auditRevision.current) setDualSourceError(
+        "Two-PDF byte comparison blocked: invalid PDF, incomplete file or changed worksheet. No evidence was accepted."
+      );
+    } finally {
+      if (token === auditRevision.current) setCheckingDualSource(false);
     }
   }
 
@@ -617,6 +676,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 setReviewInventoryFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
                 setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
+                setDualSourceBytes(null); setDualSourceError(""); setCheckingDualSource(false);
               }} /></label>
           </div>
           <div>
@@ -626,6 +686,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 setReviewerAFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
                 setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
+                setDualSourceBytes(null); setDualSourceError(""); setCheckingDualSource(false);
               }} /></label>
           </div>
           <div>
@@ -635,6 +696,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 setReviewerBFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
                 setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
+                setDualSourceBytes(null); setDualSourceError(""); setCheckingDualSource(false);
               }} /></label>
           </div>
           <button type="button"
@@ -672,6 +734,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                     setLocalSourceByteMatch(null);
                     setLocalSourceByteError("");
                     setHashingLocalPdf(false);
+                    setDualSourceBytes(null);
+                    setDualSourceError("");
+                    setCheckingDualSource(false);
                   }}>
                   <option value="">Select one task</option>
                   {result.investigation40!.depthReview.tasks.map(task => {
@@ -688,6 +753,19 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                     setLocalSourceByteMatch(null);
                     setLocalSourceByteError("");
                     setHashingLocalPdf(false);
+                    setDualSourceBytes(null);
+                    setDualSourceError("");
+                    setCheckingDualSource(false);
+                  }} />
+              </label>
+              <label>Reviewer B local PDF (optional)
+                <input type="file" accept=".pdf,application/pdf" aria-label="Choose reviewer B local source PDF"
+                  onChange={event => {
+                    auditRevision.current++;
+                    setLocalReviewerBPdf(event.target.files?.[0] ?? null);
+                    setDualSourceBytes(null);
+                    setDualSourceError("");
+                    setCheckingDualSource(false);
                   }} />
               </label>
               <button type="button" disabled={!localSourcePdf || !localSourceTaskKey || hashingLocalPdf}
@@ -695,6 +773,25 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 {hashingLocalPdf ? "Checking local PDF SHA-256…" : "Compare PDF bytes with A/B hash claims"}
               </button>
               {localSourceByteError && <p role="alert">{localSourceByteError}</p>}
+              <p>
+                <button type="button"
+                  disabled={!localSourcePdf || !localReviewerBPdf || !localSourceTaskKey
+                    || hashingLocalPdf || checkingDualSource}
+                  onClick={() => void compareTwoLocalPdfBytes()}>
+                  {checkingDualSource ? "Checking two local source PDFs…" : "Compare reviewer A and B PDF bytes independently"}
+                </button>
+                <small> Both PDFs are hashed inside this browser and checked against their respective untrusted worksheet claims. Files are not uploaded or stored.</small>
+              </p>
+              {dualSourceError && <p role="alert">{dualSourceError}</p>}
+              {dualSourceBytes && <section aria-label="Two local PDF byte comparison" role="status">
+                <p><strong>Trial task:</strong> {dualSourceBytes.assessmentTaskKey}</p>
+                <p>Reviewer A local PDF SHA-256: <code>{dualSourceBytes.reviewerAPdfSha256}</code></p>
+                <p>Reviewer B local PDF SHA-256: <code>{dualSourceBytes.reviewerBPdfSha256}</code></p>
+                <p>Reviewer A own hash claim: {dualSourceBytes.reviewerAClaim.replaceAll("_", " ")}.</p>
+                <p>Reviewer B own hash claim: {dualSourceBytes.reviewerBClaim.replaceAll("_", " ")}.</p>
+                <p><strong>PDF byte relationship: {dualSourceBytes.pdfByteRelation.replaceAll("_", " ")}.</strong></p>
+                <small>Identical bytes do not prove independent review; different bytes may represent legitimate document versions. Original-source authentication, qualified reviewer identity, clinical adjudication and FDA predictions remain unverified.</small>
+              </section>}
               {localSourceByteMatch && <div role="status">
                 <p><strong>Exact trial task:</strong> {localSourceByteMatch.assessmentTaskKey}</p>
                 <p><strong>Calculated local PDF SHA-256:</strong> <code>{localSourceByteMatch.calculatedSha256}</code></p>
