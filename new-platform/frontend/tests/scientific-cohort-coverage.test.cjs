@@ -114,6 +114,13 @@ test("an invalid, stale, or mismatched published source fails closed or states n
   snap.sourceHealth.state = "STALE";
   assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
     "SOURCE_NOT_FRESHLY_VERIFIED");
+  snap.sourceHealth.state = "PARTIAL";
+  assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
+    "SOURCE_NOT_FRESHLY_VERIFIED");
+  snap.sourceHealth.state = "FULL";
+  snap.mode = "FALLBACK_SOURCE";
+  assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
+    "SOURCE_NOT_FRESHLY_VERIFIED");
   assert.throws(() => computePublishedScienceCoverage({}, { watch: [], trade: [] }));
   assert.throws(() => computePublishedScienceCoverage(workspace(), { watch: ["DBVT"], trade: [] }));
   assert.throws(() => computePublishedScienceCoverage(workspace(), { watch: [], trade: ["PDUFA-XXX"] }));
