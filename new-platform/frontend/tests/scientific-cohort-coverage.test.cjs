@@ -22,7 +22,7 @@ const application = (programId, ticker) => ({
 const p = (...nums) => "PDUFA-" + String(nums[0]).padStart(6, "0");
 function workspace() {
   return {
-    asOf: "2026-10-25T19:15:00Z", mode: "LIVE_READ_ONLY_GITHUB_SOURCE",
+    asOf: new Date().toISOString().slice(0, 10), mode: "LIVE_READ_ONLY_GITHUB_SOURCE",
     pipeline: [
       application(p(71), "DBVT"),
       application(p(76), "ESPR"),
@@ -34,7 +34,7 @@ function workspace() {
       GEM: { rows: [trial("NCT04280705", p(102)), trial("NCT02142738", p(101))] },
     },
     sourceHealth: {
-      state: "FULL", pipelineSourceParity: { exactPrograms: 4 },
+      state: "COMPLETE_PUBLISHED", pipelineSourceParity: { exactPrograms: 4 },
     },
   };
 }
@@ -143,4 +143,34 @@ test("coverage page requires an explicit click and refuses scientific score clai
   assert.doesNotMatch(page, /runScan\(|placeOrder\(|startBatchImport\(/);
   const home = fs.readFileSync(require("node:path").join(__dirname, "../app/page.tsx"), "utf8");
   assert.match(home, /href="\/science\/coverage"/);
+});
+
+test("source health reflects real COMPLETE_PUBLISHED semantics, not invented FULL", () => {
+  const snap = workspace();
+  assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
+    "PUBLISHED_SNAPSHOT_AUDIT");
+  for (const state of ["FULL", "PARTIAL", "STALE", "UNKNOWN", "BROKEN"]) {
+    snap.sourceHealth.state = state;
+    assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
+      "SOURCE_NOT_FRESHLY_VERIFIED", state);
+  }
+  snap.sourceHealth.state = "COMPLETE_PUBLISHED";
+  snap.sourceHealth.issues = ["source temporarily incomplete"];
+  assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
+    "SOURCE_NOT_FRESHLY_VERIFIED");
+});
+
+test("stale or future published dates cannot claim current NCT coverage", () => {
+  const snap = workspace();
+  snap.asOf = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
+  assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
+    "SOURCE_NOT_FRESHLY_VERIFIED");
+  snap.asOf = new Date(Date.now() + 4 * 86400000).toISOString().slice(0, 10);
+  assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
+    "SOURCE_NOT_FRESHLY_VERIFIED");
+  for (const invalid of ["garbage", "2026-02-30", "2026-13-11", "2026/10/25"]) {
+    snap.asOf = invalid;
+    assert.throws(() => computePublishedScienceCoverage(snap, { watch: [], trade: [] }),
+      /Published source date/);
+  }
 });

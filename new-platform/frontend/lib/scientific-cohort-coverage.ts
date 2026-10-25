@@ -61,6 +61,26 @@ const PROGRAM = /^PDUFA-[0-9]{6,}$/;
 const WTS = /^PDUFA-[0-9]{6,}$/;
 const SAMPLE_CAP = 12;
 const MAX_ROWS = 50000;
+const MAX_SOURCE_AGE_MS = 48 * 60 * 60 * 1000;
+const MAX_FUTURE_SKEW_MS = 24 * 60 * 60 * 1000;
+const SOURCE_DATE = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2}))?$/;
+
+/** Published source uses a Pacific calendar date; allow that or an explicit
+ * timezone-bearing timestamp. Neither format proves a completed live scan.
+ */
+function publishedAsOfMs(value: string): number {
+  if (!SOURCE_DATE.test(value)) throw new Error("Published source date is malformed");
+  const milliseconds = Date.parse(value);
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(5, 7));
+  const day = Number(value.slice(8, 10));
+  if (!Number.isFinite(milliseconds)
+      || new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10)
+        !== value.slice(0, 10)) {
+    throw new Error("Published source date is invalid");
+  }
+  return milliseconds;
+}
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -184,12 +204,17 @@ export function computePublishedScienceCoverage(
     else missing++;
   }
   const state = typeof sourceHealth.state === "string" ? sourceHealth.state : "UNKNOWN";
+  const ageMs = Date.now() - publishedAsOfMs(workspace.asOf);
+  const publishedSourceIsCurrent = state === "COMPLETE_PUBLISHED"
+    && workspace.mode === "LIVE_READ_ONLY_GITHUB_SOURCE"
+    && ageMs >= -MAX_FUTURE_SKEW_MS && ageMs <= MAX_SOURCE_AGE_MS
+    && (!Array.isArray(sourceHealth.issues) || sourceHealth.issues.length === 0);
   return {
     asOf: workspace.asOf,
     sourceMode: workspace.mode,
     sourceHealthState: state,
-    status: state !== "FULL" || workspace.mode !== "LIVE_READ_ONLY_GITHUB_SOURCE"
-      ? "SOURCE_NOT_FRESHLY_VERIFIED" : "PUBLISHED_SNAPSHOT_AUDIT",
+    status: publishedSourceIsCurrent
+      ? "PUBLISHED_SNAPSHOT_AUDIT" : "SOURCE_NOT_FRESHLY_VERIFIED",
     pipelineRows: pipeline.length,
     stages: [
       auditedRows("GEM JR", jr as PublishedCandidate[], 0),
