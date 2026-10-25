@@ -388,6 +388,20 @@ async def lifespan(app: FastAPI):
                         "PASS" if ok else "FAIL",
                         dossier["levelCount"], dossier["levelsWithSourceFields"],
                     )
+                    reported = reported_quantitative_results(depth_record.nct_id, snapshot)
+                    quantitative_ok = (
+                        reported["independentlyVerified"] is False
+                        and reported["effectivenessConclusion"] is None
+                        and reported["approvalProbability"] is None
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_QUANTITATIVE_READBACK status=%s "
+                        "outcomes=%d analyses=%d pvalues_shown=%d source_only=True",
+                        "PASS" if quantitative_ok else "FAIL",
+                        reported["outcomeCountTotal"],
+                        reported["analysisCountTotal"],
+                        reported["reportedPValuesShown"],
+                    )
         except Exception as depth_error:
             logging.getLogger(__name__).error(
                 "SCIENTIFIC_INVESTIGATION20_READBACK status=FAIL error_type=%s",
@@ -799,6 +813,7 @@ def get_scientific_assessment(exact_id: str):
             from .scientific_stored_record import verified_record_from_archive
             from .scientific_registry_evidence import extract_trial_evidence
             from .scientific_investigation_20 import investigation_20
+            from .scientific_quantitative_results import reported_quantitative_results
             with Session(ENGINE) as session:
                 record = session.get(FullTrialRecord, match.group(1))
                 if record is not None:
