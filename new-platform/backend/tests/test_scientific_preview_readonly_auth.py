@@ -62,6 +62,7 @@ class IsolatedScientificReadOnlyCredentialTests(unittest.TestCase):
             "/api/scientific-assessment",
             "/api/scientific-assessment/pilot/keynote024",
             "/api/scientific-assessment/dossier",
+            "/api/scientific-assessment/captured-source-manifest/{nct_id}",
         }
         permitted_seen = set()
         for route in main.app.routes:
@@ -79,6 +80,17 @@ class IsolatedScientificReadOnlyCredentialTests(unittest.TestCase):
                               "Preview read key must not reach any other endpoint")
                 permitted_seen.add(route.path)
         self.assertEqual(permitted_seen, permitted)
+        # This fourth permission can expose only hash metadata for the one
+        # frozen pilot; never document bytes, reviewer data or other NCTs.
+        metadata_route = next(r for r in main.app.routes if getattr(r, "path", "") ==
+                              "/api/scientific-assessment/captured-source-manifest/{nct_id}")
+        self.assertEqual(metadata_route.methods, {"GET"})
+        with context():
+            with self.assertRaises(HTTPException) as caught:
+                main.scientific_pilot_captured_source_manifest("NCT00000001", Response())
+            # In a unit invocation the extra service guard fails unless
+            # DATABASE_URL is configured for the isolated PostgreSQL service.
+            self.assertIn(caught.exception.status_code, (403, 422))
         # The underlying ordinary key remains mandatory for storage,
         # reviewers, bulk archives, and other non-public operations.
         for path in (

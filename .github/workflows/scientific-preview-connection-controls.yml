@@ -8,6 +8,7 @@ on:
     paths:
       - "new-platform/frontend/app/ScientificAssessment.tsx"
       - "new-platform/frontend/app/api/scientific-assessment/connection/route.ts"
+      - "new-platform/frontend/app/api/scientific-assessment/captured-source-manifest/route.ts"
       - "new-platform/frontend/app/api/scientific-assessment/route.ts"
       - "new-platform/frontend/app/api/scientific-assessment/pilot/keynote024/route.ts"
       - "new-platform/frontend/app/api/scientific-assessment/archived/[nctId]/route.ts"
@@ -16,9 +17,11 @@ on:
       - "new-platform/frontend/tests/scientific-connection-check.test.cjs"
       - "new-platform/frontend/lib/scientific-depth-review-csv.ts"
       - "new-platform/frontend/lib/scientific-reviewer-local-audit.ts"
+      - "new-platform/frontend/lib/scientific-captured-archive-check.ts"
       - "new-platform/frontend/lib/scientific-evidence-requirements-csv.ts"
       - "new-platform/frontend/tests/scientific-depth-review-csv.test.cjs"
       - "new-platform/frontend/tests/scientific-reviewer-local-audit.test.cjs"
+      - "new-platform/frontend/tests/scientific-captured-archive-check.test.cjs"
       - "new-platform/frontend/tests/scientific-evidence-requirements-csv.test.cjs"
       - "new-platform/frontend/tests/scientific-connection-route-handler.test.cjs"
       - ".github/workflows/scientific-preview-connection-controls.yml"
@@ -28,6 +31,7 @@ on:
     paths:
       - "new-platform/frontend/app/ScientificAssessment.tsx"
       - "new-platform/frontend/app/api/scientific-assessment/connection/route.ts"
+      - "new-platform/frontend/app/api/scientific-assessment/captured-source-manifest/route.ts"
       - "new-platform/frontend/app/api/scientific-assessment/route.ts"
       - "new-platform/frontend/app/api/scientific-assessment/pilot/keynote024/route.ts"
       - "new-platform/frontend/app/api/scientific-assessment/archived/[nctId]/route.ts"
@@ -36,9 +40,11 @@ on:
       - "new-platform/frontend/tests/scientific-connection-check.test.cjs"
       - "new-platform/frontend/lib/scientific-depth-review-csv.ts"
       - "new-platform/frontend/lib/scientific-reviewer-local-audit.ts"
+      - "new-platform/frontend/lib/scientific-captured-archive-check.ts"
       - "new-platform/frontend/lib/scientific-evidence-requirements-csv.ts"
       - "new-platform/frontend/tests/scientific-depth-review-csv.test.cjs"
       - "new-platform/frontend/tests/scientific-reviewer-local-audit.test.cjs"
+      - "new-platform/frontend/tests/scientific-captured-archive-check.test.cjs"
       - "new-platform/frontend/tests/scientific-evidence-requirements-csv.test.cjs"
       - "new-platform/frontend/tests/scientific-connection-route-handler.test.cjs"
       - ".github/workflows/scientific-preview-connection-controls.yml"
@@ -62,6 +68,6 @@ jobs:
           cache-dependency-path: new-platform/frontend/package-lock.json
       - run: npm ci
       - name: Validate scientific connection and identity protection
-        run: node --test tests/scientific-assessment-evidence-grades.test.cjs tests/scientific-reviewer-local-audit.test.cjs tests/scientific-depth-review-csv.test.cjs tests/scientific-evidence-requirements-csv.test.cjs tests/scientific-connection-check.test.cjs tests/scientific-connection-route-handler.test.cjs tests/scientific-read-key-isolation.test.cjs
+        run: node --test tests/scientific-captured-archive-check.test.cjs tests/scientific-assessment-evidence-grades.test.cjs tests/scientific-reviewer-local-audit.test.cjs tests/scientific-depth-review-csv.test.cjs tests/scientific-evidence-requirements-csv.test.cjs tests/scientific-connection-check.test.cjs tests/scientific-connection-route-handler.test.cjs tests/scientific-read-key-isolation.test.cjs
       - name: Typecheck frontend
         run: npx tsc --noEmit
