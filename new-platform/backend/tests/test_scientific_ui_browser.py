@@ -24,6 +24,7 @@ from app.scientific_investigation_20 import investigation_20
 from app.scientific_quantitative_results import reported_quantitative_results
 from app.scientific_readiness_grades import review_readiness
 from app.scientific_reconciliation_worklist import reconciliation_worklist
+from app.scientific_adjudication_preflight import adjudication_preflight
 from app.scientific_batch_ui import render_batch_panel
 
 NCT = "NCT04280705"
@@ -145,6 +146,25 @@ class TestServer(BaseHTTPRequestHandler):
                 "evidenceLedger": ({
                     "candidateCount": 1, "entryCount": 1, "verifiedGateCount": 0,
                     "sourceReconciliation": reconciliation_worklist(NCT),
+                    "adjudicationPreflight": adjudication_preflight(
+                        NCT, reconciliation_worklist(NCT), {
+                            "nctId": NCT, "totalStatements": 2,
+                            "truncated": False, "statements": [
+                                {"nctId": NCT, "questionId": "external_protocol_sap",
+                                 "threadId": "thread-a", "revision": 1,
+                                 "findingType": "supports",
+                                 "sourceUrl": "https://clinicaltrials.gov/study/" + NCT,
+                                 "reviewerLabel": "Test reviewer A",
+                                 "independentlyVerified": False},
+                                {"nctId": NCT, "questionId": "external_protocol_sap",
+                                 "threadId": "thread-b", "revision": 1,
+                                 "findingType": "contradicts",
+                                 "sourceUrl": "https://clinicaltrials.gov/study/" + NCT,
+                                 "reviewerLabel": "Test reviewer B",
+                                 "independentlyVerified": False},
+                            ],
+                        },
+                    ),
                     "reviewerFindings": {
                         "totalStatements": 2,
                         "questionsWithConflictingStatements": 1,
@@ -362,6 +382,21 @@ def test_chromium_scientific_batch_and_evidence_display():
             statements.get_by_text("not independently confirmed",exact=False).first.wait_for()
             statements.get_by_text("Claim: A different version may contain an eligibility change.").wait_for()
             assert page.get_by_role("button",name="Approve evidence").count()==0
+            blocker_report=page.locator("#evidence-ledger .adjudication-preflight")
+            assert blocker_report.count()==1
+            assert "0/4 questions ready" in blocker_report.locator("summary").inner_text()
+            blocker_report.locator("summary").click()
+            blocker_report.get_by_text(
+                "Reviewer identities and qualifications have not been authenticated."
+            ).wait_for()
+            blocker_report.get_by_text(
+                "Independent review and a signed second-person decision are not implemented."
+            ).wait_for()
+            blocker_report.get_by_text(
+                "0 independently resolved.",exact=False
+            ).wait_for()
+            assert blocker_report.locator("li").count()>=8
+
             assert page.get_by_role("button", name="Mark verified").count() == 0
 
             # Neither address bar nor browser storage may contain the secret.
