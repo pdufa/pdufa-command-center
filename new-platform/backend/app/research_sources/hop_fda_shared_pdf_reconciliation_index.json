@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "FDA_PDF_SHARED_DOCUMENT_RECONCILIATION_NOT_OUTCOME_ADJUDICATION",
+  "fda_crl_source_export_date": "2026-10-21",
+  "acquired_on": "2026-10-25",
+  "source_collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40233763233",
+  "source_collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40233763233/artifacts/12614051677",
+  "artifact_retention_days": 30,
+  "original_fda_archive_sha256": "744de010761c9ba445c3756ff7e47d5715c3e9d5aef48f5b1fd663646b5d6732",
+  "published_letter_source_records": 458,
+  "official_pdf_confirmed_letter_references": 457,
+  "unique_confirmed_pdf_documents": 364,
+  "distinct_shared_pdf_groups": 61,
+  "letter_records_in_shared_pdf_groups": 154,
+  "additional_letter_links_beyond_unique_pdfs": 93,
+  "shared_documents_containing_multiple_applications": 2,
+  "same_date_and_letter_type_collision_groups": 2,
+  "source_records_without_confirmed_pdf": 1,
+  "source_records_without_confirmed_pdf_sha256": [
+    "75d0e6c5d88b49f7be336cf3649b3eb08a2ba1f930c2c0f9cfc1ac8ae88f6515"
+  ],
+  "individual_letter_page_ranges_verified": 0,
+  "independently_verified_fda_action_dates": 0,
+  "independently_verified_review_cycle_outcomes": 0,
+  "complete_application_denominator_verified": false,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "limitations": [
+    "PDF content identity and SHA are not adjudication of individual FDA action pages.",
+    "Shared PDF sources can contain different years' letters or separate applications.",
+    "The review queue lists shared documents needing page-level mapping and independent action-date review.",
+    "The record count is a selectively published FDA letter corpus, not a complete decision cohort."
+  ]
+}
