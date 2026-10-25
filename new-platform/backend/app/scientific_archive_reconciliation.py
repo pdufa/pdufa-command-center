@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .scientific_cohort_import_plan import plan_from_inventory
+from .scientific_cohort_import_plan import NCT_RE, plan_from_inventory
 from .scientific_program_identity_audit import audit_exact_programs
 
 
@@ -23,7 +23,7 @@ def reconcile_sources(program_rows: Any, archive_rows: Any) -> dict:
         if not isinstance(row, dict):
             raise ValueError("Archive metadata row must be an object")
         nct = row.get("nct_id")
-        if not isinstance(nct, str) or not nct.startswith("NCT"):
+        if not isinstance(nct, str) or not NCT_RE.fullmatch(nct):
             raise ValueError("Archive metadata requires exact NCT identity")
         if nct in archived:
             if archived[nct] != row:
