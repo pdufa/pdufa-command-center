@@ -157,6 +157,48 @@ class Handler(BaseHTTPRequestHandler):
                 "assessment": {"overall_score": None},
             })
             return
+        if self.path == "/api/scientific-assessment/operator/source-comparison/NCT02142738":
+            if self.headers.get("Authorization") != "Bearer " + FAKE_TOKEN or (
+                not type(self).accept_operator
+            ):
+                self.respond(403, {"detail": "Google operator required"})
+                return
+            self.respond(200, {
+                "schemaVersion": "historical-pilot-preliminary-evidence-comparison-v1",
+                "scientificallyVerified": False,
+                "verifiedIndependentGates": 0,
+                "independentlyResolvedCount": 0,
+                "unresolvedCount": 8,
+                "mayAssignScientificScore": False,
+                "checkCount": 8,
+                "archivedPdfCount": 2 if type(self).pdf_bytes is not None else 0,
+                "sources": {
+                    "official": {
+                        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2016/125514Orig1s008,125514Orig1s012ltr.pdf",
+                        "label": "Original FDA S-12 approval letter",
+                        "locator": "FDA page 1 and signature page 6",
+                    },
+                    "protocol": {
+                        "url": "https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf",
+                        "label": "Japan-only December 2017 amendment",
+                        "locator": "Cover and page 1",
+                    },
+                },
+                "checks": [
+                    {
+                        "title": "Preliminary finding "+str(i),
+                        "risk": "critical",
+                        "preliminaryObservation": ("2017 Japan-only amendment does not validate a 2016 SAP"
+                                                   if i == 1 else "Published observations remain preliminary"),
+                        "stillMissing": "Independent historical source adjudication",
+                        "sourceIds": ["official", "protocol"],
+                        "independentlyResolved": False,
+                        "evidenceGateApproved": False,
+                    }
+                    for i in range(1, 9)
+                ],
+            })
+            return
         if self.path == "/api/scientific-assessment/operator/worksheet/NCT02142738":
             type(self).worksheet_calls += 1
             if self.headers.get("Authorization") != "Bearer " + FAKE_TOKEN:
@@ -300,6 +342,12 @@ def test_browser_single_operator_loads_twenty_stages_and_forty_unscored_assessme
             assert page.locator("#levels details").count() == 20
             assert page.locator("#layers details").count() == 8
             assert page.locator("#evidence-questions details").count() == 8
+            page.get_by_text("Preliminary evidence comparison ready: 8 questions still open", exact=False).wait_for(timeout=15000)
+            assert page.locator("#source-comparison details").count() == 8
+            page.locator("#source-comparison details").first.locator("summary").click()
+            assert page.get_by_text("2017 Japan-only amendment does not validate a 2016 SAP").is_visible()
+            assert page.locator("#source-comparison a").count() == 16
+            assert page.locator("#source-comparison a[href^='javascript:']").count() == 0
             assert page.get_by_text("Source reconciliation question 1", exact=False).count() >= 1
             page.locator("#evidence-questions details").first.locator("summary").click()
             assert page.locator("#evidence-questions a[href='https://clinicaltrials.gov/study/NCT02142738']").count() == 7
