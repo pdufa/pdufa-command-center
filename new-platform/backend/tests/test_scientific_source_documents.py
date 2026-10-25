@@ -251,3 +251,15 @@ def test_capture_budget_is_bounded(isolated,monkeypatch):
         headers=WRITE_HEADERS).status_code==422
     with Session(engine) as session:
         assert session.query(main.ScientificSourceDocument).count()==0
+
+
+
+def test_archival_status_and_pinned_source_labels_fit_postgres_varchars():
+    """SQLite doesn't enforce VARCHAR widths; PostgreSQL does."""
+    table = main.ScientificSourceDocument.__table__.columns
+    assert len(CAPTURE_STATUS) <= table["capture_status"].type.length
+    assert len("Verified Google operator: pinned source") <= table["captured_by"].type.length
+    assert len("official_regulatory") <= table["gate_id"].type.length
+    assert len("official_agency_document") <= table["source_type"].type.length
+    assert len(FDA_2016_APPROVAL) <= table["source_url"].type.length
+    assert len(NCT + "_" + "a"*32 + ".pdf") <= table["filename"].type.length
