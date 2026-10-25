@@ -74,7 +74,7 @@ def fetch_official_pdf(source: Literal["protocol", "fda", "csr", "ema"]) -> byte
         raise ValueError("Unknown official source")
     # The source dict above is static, reviewed source code, not client input.
     url = selected["sourceUrl"]
-    # No change to the global 4 MiB limit: 16 MiB is limited to this single,
+    # No change to the global 4 MiB limit: 5 MiB is limited to this single,
     # hard-coded EMA PDF, and remains bounded by Content-Length + stream size.
     source_limit = MAX_EMA_PDF_BYTES if source == "ema" else MAX_PDF_BYTES
     if not url.startswith("https://"):
