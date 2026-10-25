@@ -195,3 +195,53 @@ def test_empty_archived_trial_integration_is_read_only_and_authenticated(monkeyp
         assert session.query(main.ScientificReviewerFinding).count() == 0
         assert session.query(main.ScientificEvidenceLedgerEntry).count() == 0
     engine.dispose()
+
+
+@pytest.mark.parametrize("change", [
+    {"revision": 0},
+    {"revision": "2"},
+    {"threadId": ""},
+    {"findingType": "verified"},
+    {"sourceUrl": None},
+])
+def test_malformed_reviewer_statement_fails_closed(change):
+    bad = {**observation("thread-a", 1, "supports"), **change}
+    with pytest.raises(ValueError, match="Malformed adjudication reviewer statement"):
+        adjudication_preflight(NCT, reconciliation_worklist(NCT), history(bad))
+
+
+def test_malformed_question_fails_closed():
+    worklist = reconciliation_worklist(NCT)
+    worklist["checks"][0]["priority"] = None
+    with pytest.raises(ValueError, match="Malformed adjudication question"):
+        adjudication_preflight(NCT, worklist, history())
+
+
+def test_duplicate_thread_revision_fails_closed():
+    first = observation("thread-a", 1, "supports")
+    duplicate = observation("thread-a", 1, "contradicts")
+    with pytest.raises(ValueError, match="Duplicate adjudication reviewer revision"):
+        adjudication_preflight(NCT, reconciliation_worklist(NCT), history(first, duplicate))
+
+
+@pytest.mark.parametrize("invalid", [None, [], "invalid"])
+def test_invalid_preflight_payloads_fail_closed(invalid):
+    with pytest.raises(ValueError, match="Adjudication evidence payloads unavailable"):
+        adjudication_preflight(NCT, invalid, history())
+    with pytest.raises(ValueError, match="Adjudication evidence payloads unavailable"):
+        adjudication_preflight(NCT, reconciliation_worklist(NCT), invalid)
+
+
+@pytest.mark.parametrize("invalid", [None, "not-a-list", [None], [123]])
+def test_invalid_question_source_url_list_fails_closed(invalid):
+    worklist = reconciliation_worklist(NCT)
+    worklist["checks"][0]["sourceUrls"] = invalid
+    with pytest.raises(ValueError, match="Malformed adjudication question"):
+        adjudication_preflight(NCT, worklist, history())
+
+
+@pytest.mark.parametrize("change", [{"questionId": None}, {"reviewerLabel": None}])
+def test_invalid_reviewer_reference_fields_fail_closed(change):
+    bad = {**observation("thread-a", 1, "supports"), **change}
+    with pytest.raises(ValueError, match="Malformed adjudication reviewer statement"):
+        adjudication_preflight(NCT, reconciliation_worklist(NCT), history(bad))
