@@ -15,7 +15,7 @@ def test_audit_readback_detects_modified_statement(monkeypatch, tmp_path):
     monkeypatch.setattr(main, "ENGINE", engine)
     from app.scientific_source_documents import CAPTURE_STATUS, _metadata_hash
     from app.scientific_reconciliation_worklist import REGISTRY
-    pdf = b"%PDF-1.4\\narchived-test-source"
+    pdf = b"%PDF-1.4\\narchived-test-source\\n%%EOF"
     digest = hashlib.sha256(pdf).hexdigest()
     with Session(engine) as session:
         source = main.ScientificSourceDocument(
@@ -35,7 +35,7 @@ def test_audit_readback_detects_modified_statement(monkeypatch, tmp_path):
         session.commit()
     record_reviewer_submission(
         google_subject="reviewer-a", nct_id="NCT02142738",
-        question_id="safety_endpoint_taxonomy", source_sha256=hashlib.sha256(b"%PDF-1.4\\narchived-test-source").hexdigest(),
+        question_id="safety_endpoint_taxonomy", source_sha256=hashlib.sha256(b"%PDF-1.4\\narchived-test-source\\n%%EOF").hexdigest(),
         decision="requires_review", attestation={
             "sourceLocator": "page 2", "reviewNote": "Uncertainty remains",
             "uncertaintyDisclosed": True})
