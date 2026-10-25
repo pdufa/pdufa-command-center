@@ -1118,6 +1118,51 @@ class Verifier:
             return plain, ""
         return plain + " " + label_text, label_url
 
+    def mapped_fda_action_applicant(self, event, url, letter_text, label_url):
+        """Validate an exact FDA applicant-to-company crosswalk, never a broad alias.
+
+        A licensed company can differ from the FDA applicant on a signed letter.
+        Permit that only for a configured exact event/application/supplement, an
+        independently matching FDA label, and a freshly checked company-owned
+        announcement naming the same drug, indication and FDA approval.
+        """
+        config = self.event_sources(event)
+        applicant = str(config.get("fda_regulatory_applicant", "")).strip()
+        application = str(config.get("fda_application_number", "")).strip()
+        supplement = str(config.get("fda_supplement_number", "")).strip()
+        issuer_url = str(config.get("fda_issuer_approval_url", "")).strip()
+        letter = re.fullmatch(
+            r"/drugsatfda_docs/appletter/(20\d{2})/(\d{6})Orig1s(\d{3})ltr\.pdf",
+            urllib.parse.urlsplit(url).path,
+        )
+        if (not applicant or not re.fullmatch(r"\d{6}", application)
+                or not re.fullmatch(r"\d{3}", supplement)
+                or not letter or letter.group(2) != application
+                or letter.group(3) != supplement
+                or not label_url or label_url != config.get("approval_label_url")
+                or self.primary(event, url) != "FDA"
+                or self.primary(event, label_url) != "FDA"
+                or url not in config.get("urls", ())
+                or not re.search(r"\bNDA\s+" + re.escape(application)
+                                 + r"/S-" + re.escape(supplement) + r"\b", letter_text)
+                or not company_matches({"company": applicant}, letter_text[:1400])
+                or issuer_url not in config.get("urls", ())
+                or self.primary(event, issuer_url) != "ISSUER"):
+            return ""
+        # An arbitrary signed FDA letter is NOT proof of the tracked issuer's
+        # program. Reopen the exact mapped issuer approval announcement.
+        try:
+            _, issuer_text = self.document(issuer_url)
+        except Exception:
+            return ""
+        if (not company_matches(event, issuer_text)
+                or not drug_matches(event, issuer_text)
+                or not indication_matches(event, issuer_text)
+                or not re.search(r"\bFDA\s+(?:has\s+)?approved\b",
+                                 issuer_text, re.I)):
+            return ""
+        return applicant
+
     def primary(self, event, url):
         host = (urllib.parse.urlsplit(url).hostname or "").lower()
         if host == "fda.gov" or host.endswith(".fda.gov"):
@@ -1184,12 +1229,18 @@ class Verifier:
         for url in refs[:4 if saved_refs else 12]:
             try:
                 _, plain = self.document(url)
+                original_letter = plain
                 label_url = ""
+                mapped_applicant = ""
                 if claim == "FDA_DECISION":
                     plain, label_url = self.approval_label_context(event, url, plain)
+                    mapped_applicant = self.mapped_fda_action_applicant(
+                        event, url, original_letter, label_url)
                 if not drug_matches(event, plain) or not indication_matches(event, plain):
                     continue
-                if self.primary(event, url) in {"FDA", "ISSUER"} and not company_matches(event, plain):
+                if (self.primary(event, url) in {"FDA", "ISSUER"}
+                        and not company_matches(event, plain)
+                        and not (self.primary(event, url) == "FDA" and mapped_applicant)):
                     continue
                 application = event.get("application_number", "").strip()
                 if application and not re.search(r"(?<!\d)" + re.escape(application) + r"(?!\d)", plain):
@@ -1260,7 +1311,9 @@ class Verifier:
                     # Official FDA-signed supplement letters state approval is
                     # effective on the date of the signed letter, not a press date.
                     signed_action = (
-                        (documented_fda_signed_approval(event, plain)
+                        (documented_fda_signed_approval(
+                            {**event, "company": mapped_applicant} if mapped_applicant else event,
+                            plain)
                          or documented_fda_signed_original_bla_approval(event, url, plain))
                         if self.primary(event, url) == "FDA"
                         and url.lower().endswith(".pdf") else None)

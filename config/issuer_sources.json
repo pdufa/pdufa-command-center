@@ -277,7 +277,11 @@
           "https://ir.opusgtx.com/press-releases/detail/519/opus-genetics-announces-fda-acceptance-of-supplemental-new-drug-application-for-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia"
         ],
         "primary_target_anchor": "The FDA has assigned a PDUFA goal date of October 17, 2026",
-        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf"
+        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf",
+        "fda_application_number": "217064",
+        "fda_supplement_number": "005",
+        "fda_regulatory_applicant": "FamyGen Life Sciences, Inc.",
+        "fda_issuer_approval_url": "https://ir.opusgtx.com/press-releases/detail/546/opus-genetics-announces-fda-approval-of-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia"
       }
     },
     "hosts": [
@@ -508,7 +512,11 @@
         "financing_urls": [
           "https://www.sec.gov/Archives/edgar/data/1792044/000114036126025744/ef20076340_8k.htm"
         ],
-        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf"
+        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf",
+        "fda_application_number": "217064",
+        "fda_supplement_number": "005",
+        "fda_regulatory_applicant": "FamyGen Life Sciences, Inc.",
+        "fda_issuer_approval_url": "https://newsroom.viatris.com/2026-10-16-Viatris-Receives-U-S-FDA-Approval-for-RYZUMVI-R-for-the-Treatment-of-Presbyopia"
       }
     },
     "hosts": [
