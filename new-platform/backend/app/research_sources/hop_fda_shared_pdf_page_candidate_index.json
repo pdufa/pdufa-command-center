@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "FDA_SHARED_PDF_PAGE_CANDIDATES_REQUIRE_HUMAN_ADJUDICATION",
+  "source_export_date": "2026-10-21",
+  "source_collected_on": "2026-10-25",
+  "source_collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40235011704",
+  "source_collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40235011704/artifacts/12614537968",
+  "source_archive_sha256": "744de010761c9ba445c3756ff7e47d5715c3e9d5aef48f5b1fd663646b5d6732",
+  "artifact_retention_days": 30,
+  "shared_pdf_groups_examined": 61,
+  "pdf_text_extraction_status_counts": {
+    "PDF_TEXT_EXTRACTED": 61
+  },
+  "source_letter_records_examined": 154,
+  "letter_candidate_status_counts": {
+    "DATE_AND_ID_PAGE_CANDIDATES": 74,
+    "ID_ONLY_PAGE_CANDIDATES": 75,
+    "NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES": 3,
+    "TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW": 2
+  },
+  "letter_date_id_one_candidate_page_records": 53,
+  "letter_date_id_multiple_candidate_pages_records": 21,
+  "id_only_multiple_candidate_pages_records": 75,
+  "uniquely_independently_verified_letter_page_ranges": 0,
+  "effective_fda_action_dates_independently_verified": 0,
+  "independently_verified_review_cycle_outcomes": 0,
+  "complete_application_denominator_verified": false,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "limitations": [
+    "A single matching application-ID and letter-date page is a candidate, not independent FDA letter adjudication.",
+    "ID-only matches can represent footers, appendices, historical references or a document-wide application number.",
+    "21 records have multiple apparent page candidates despite an application-ID/date match.",
+    "No OCR, independent confirmation of letter page boundaries, review-cycle outcomes, clinical predictor cutoffs or complete FDA denominator was performed."
+  ]
+}
