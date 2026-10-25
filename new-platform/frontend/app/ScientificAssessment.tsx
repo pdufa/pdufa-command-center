@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv } from "../lib/scientific-depth-review-csv";
+import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -362,6 +363,25 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
+  /** Browser-local report of source-input gaps. Never signs a clinical review. */
+  function downloadEvidenceRequirementsCsv() {
+    if (!result?.readinessGrades) return;
+    try {
+      const csv = buildScientificEvidenceRequirementsCsv(result.readinessGrades);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = result.readinessGrades.nctId + "_scientific_16_evidence_requirements.csv";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch {
+      setError("Scientific input checklist export blocked: incomplete or unverified data.");
+    }
+  }
+
   /** Browser-local export of ONLY pending tasks from a validated archived inventory. */
   function downloadDepthReviewCsv() {
     if (!result?.investigation40) return;
@@ -406,6 +426,12 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           {" · "} Maximum reluctance to draw a scientific conclusion.
         </p>
         <small>These grade the completeness of evidence inputs and the need to withhold judgment. A reluctance F does NOT mean the drug failed. Neither grade predicts FDA approval.</small>
+        <p>
+          <button type="button" onClick={() => downloadEvidenceRequirementsCsv()}>
+            Download 16-requirement evidence checklist (CSV)
+          </button>
+          <small> Archived source fields and required next actions only. Independent scientific review is not certified by this download.</small>
+        </p>
         <details aria-label="Scientific input requirement checklist">
           <summary><strong>Scientific evidence input checklist</strong> · {result.readinessGrades.analysisReadiness.requirementsCovered}/16 source inputs available · 4 independent reviews required</summary>
           <p>Archived source presence is not independent scientific verification. Missing requirements and next actions are shown separately for this exact trial.</p>
