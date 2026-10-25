@@ -22,6 +22,7 @@ sync_playwright = pytest.importorskip(
 from app.scientific_assessment import assess
 from app.scientific_investigation_20 import investigation_20
 from app.scientific_quantitative_results import reported_quantitative_results
+from app.scientific_readiness_grades import review_readiness
 from app.scientific_batch_ui import render_batch_panel
 
 NCT = "NCT04280705"
@@ -115,6 +116,13 @@ class TestServer(BaseHTTPRequestHandler):
                             "seriousEvents": [{"term": "Example serious event",
                                 "stats": [{"groupId": "EG000", "numAffected": "3",
                                            "numAtRisk": "100"}]}]}
+                    }
+                }) if record_found else None),
+                "readinessGrades": (review_readiness(NCT, {
+                    "protocolSection": {
+                        "identificationModule": {"nctId": NCT, "briefTitle": "Pilot trial"},
+                        "designModule": {"studyType": "INTERVENTIONAL",
+                                         "phases": ["PHASE3"]},
                     }
                 }) if record_found else None),
             })
@@ -228,6 +236,17 @@ def test_chromium_scientific_batch_and_evidence_display():
             adverse.locator("summary").click()
             adverse.get_by_text("Affected: 3 · At risk: 100", exact=False).wait_for()
 
+            # Both evidence grades are displayed without claiming trial failure.
+            page.get_by_role("heading", name="Two evidence grades — readiness and reluctance").wait_for()
+            page.get_by_text("Full scientific conclusion: NOT READY", exact=False).wait_for()
+            page.get_by_text("F · CRITICAL", exact=True).wait_for()
+            page.get_by_text("It does NOT mean the clinical trial failed.", exact=False).wait_for()
+            gates = page.locator("#readiness-grades details")
+            assert gates.count() == 1
+            gates.locator("summary").click()
+            assert page.locator("#readiness-grades li").count() == 16
+            page.get_by_text("Original protocol and statistical analysis plan independently reconciled").wait_for()
+
             # Neither address bar nor browser storage may contain the secret.
             assert SECRET not in page.url
             assert page.evaluate("Object.keys(localStorage).length") == 0
@@ -239,6 +258,7 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert page.locator("#science-domains .science-domain").count() == 0
             assert page.locator("#investigation-20 details").count() == 0
             assert page.locator("#quantitative-results details").count() == 0
+            assert page.locator("#readiness-grades .readiness-grade").count() == 0
             page.get_by_role("button", name="Refresh history").click()
             page.get_by_text("Enter the internal API key first.").wait_for()
 
