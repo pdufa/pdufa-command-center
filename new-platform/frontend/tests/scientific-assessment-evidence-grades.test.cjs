@@ -71,7 +71,7 @@ function payload(id = ID) {
           "identity", "registry", "source", "methods", "quantitative",
           "triangulation", "regulatory", "adjudication",
         ].map((id, i) => ({ level: i + 1, id, objective: "Review " + id + " evidence independently" })),
-        tasks: LAYERS.flatMap(layer => Array.from({ length: 5 }, (_, i) => 
+        tasks: LAYERS.flatMap(layer => Array.from({ length: 5 }, (_, i) =>
           Array.from({ length: 8 }, (_, j) => ({
             assessmentId: layer + ".assessment_" + (i + 1),
             depthLevel: j + 1,
@@ -123,8 +123,8 @@ test("two evidence grades, 20 stages, 40 assessments and all 320 pending depth t
   assert.match(displayed, /NOT ASSIGNED/);
   assert.doesNotMatch(displayed, /Scientific score: [0-9]/);
   assert.equal(tree.root.findAllByType("li").length, 380);
-  assert.match(displayed, /Depth 1:\\s*identity/);
-  assert.match(displayed, /Depth 8:\\s*adjudication/);
+  assert.match(displayed, /Depth 1:\s*identity/);
+  assert.match(displayed, /Depth 8:\s*adjudication/);
   assert.match(displayed, /Open a layer and then an assessment to inspect each of the 320 pending tasks/);
   await act(async () => tree.unmount());
 });
