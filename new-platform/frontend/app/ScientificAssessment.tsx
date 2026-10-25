@@ -518,7 +518,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
         )}</ol>
       </details> : <p>20-level investigation: no checksum-verified trial archive available.</p>}
 
-      {result.investigation40 && <p>
+      {result.investigation40 && <div>
         <button type="button" disabled={!result.investigation40}
           onClick={() => downloadDepthReviewCsv()}>
           Download 320-task review matrix (CSV)
@@ -584,7 +584,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
             <small>Typed names, signatures and supplied SHA-256 strings are not independently authenticated. Source bytes are not fetched. The review ledger and production system are unchanged.</small>
           </section>}
         </details>
-      </p>}
+      </div>}
 
       {result.investigation40 ? <details>
         <summary><strong>8 scientific layers · 40 assessments</strong>
