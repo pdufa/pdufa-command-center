@@ -67,3 +67,39 @@ The audit intentionally always reports:
 
 **No production merge, clinical rating, approval probability, scan, trade,
 new paid service or import is authorized by these packets.**
+
+
+## Later: compare submitted reviewer claims (still not an adjudication)
+
+Once both original blank packet copies have been returned by separate people,
+use the **unchanged original worksheet** as the reference. Keep completed
+submissions and reviewer notes private; do not commit them to GitHub.
+
+From repository root:
+
+```bash
+PYTHONPATH=new-platform/backend python \
+  new-platform/backend/scripts/reconcile_hop_fda_review_packets.py \
+  /path/to/original_worksheet.csv \
+  /path/to/first_completed_or_blank.csv \
+  /path/to/second_completed_or_blank.csv \
+  --as-of 2026-10-25
+```
+
+The tool refuses altered original-source columns, unknown or duplicated source
+identities, missing rows, swapped packet roles, unsupported document hashes,
+invalid date/page/application formats, and matching reviewer *tokens*. It
+compares only the observed source digest, letter pages, application IDs,
+action date, document type and claimed review cycle. It reports:
+
+- Blank or incomplete review claims that require follow-up.
+- Matching claims that still need authenticated original-source verification.
+- Disagreements by FDA source-record SHA256 and disputed *field names*, without
+  printing reviewer identities or textual evidence notes.
+
+The tool intentionally exits nonzero and reports `REVIEW_REQUIRED` even if
+every claimed answer agrees. Textual reviewer IDs do **not** prove separate
+reviewer identities; matching claims do **not** prove correct source content or
+regulatory decisions. An independent adjudicator and separate complete
+approval/nonapproval decision denominator remain mandatory before FDA outcome
+modeling. Do not feed this diagnostic report into prediction or scoring.
