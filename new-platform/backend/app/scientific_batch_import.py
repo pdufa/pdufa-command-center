@@ -23,7 +23,7 @@ from . import scientific_import
 
 MAX_TRIALS = 25
 MAX_INPUT_BYTES = 4096
-NCT_PATTERN = re.compile(r"NCT[0-9]{8}\\Z")
+NCT_PATTERN = re.compile(r"NCT[0-9]{8}\Z")
 
 
 def parse_batch_file(path: Path) -> list[str]:
