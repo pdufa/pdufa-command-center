@@ -7,6 +7,7 @@ import WorkflowStageIcon from "./WorkflowStageIcon";
 import AlpacaStockChart from "./AlpacaStockChart";
 import ProgramMarketEnrichment from "./ProgramMarketEnrichment";
 import TradingDashboard, { type TradingTicker } from "./TradingDashboard";
+import HopReadinessPanel from "./HopReadinessPanel";
 import EntrySignal from "./EntrySignal";
 import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
@@ -1772,6 +1773,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <h2>PREDICTION</h2>
       <p>Historical Outcome Prediction (HOP) · Published GEM JR, GEM and W/T lists</p>
       <p role="status"><strong>Research only:</strong> Historical matching and validated approval probabilities are not available yet. Existing PoA values are not HOP predictions.</p>
+      <HopReadinessPanel />
       {!snapshot ? <p>Load published candidates to see the source-linked trial inventory. No estimates will be generated.</p> : <>
         <p className="subtle">Published snapshot: {snapshot.asOf} · Membership and W/T labels reflect their respective saved sources.</p>
         {([
