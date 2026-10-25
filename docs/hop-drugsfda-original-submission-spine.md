@@ -84,3 +84,50 @@ parse successfully, because scientific completeness is not established.
 The current research branch **does not contain or claim an installed
 29,416-row original-review-cycle dataset**; that prior number refers to
 approval-centric application references, not this new extractor's output.
+
+## Actual official FDA collection: October 25, 2026
+
+The research-only pull-request workflow
+[HOP original NDA/BLA source audit](https://github.com/pdufa/pdufa-command-center/actions/runs/40246351051)
+successfully downloaded the FDA ZIP through the pinned `www.fda.gov`
+media URL, examined the tab-delimited `Applications` and `Submissions`
+tables, and saved the **aggregate-only** audit as
+[GitHub Actions artifact 12618966198](https://github.com/pdufa/pdufa-command-center/actions/runs/40246351051/artifacts/12618966198).
+Its captured, byte-fingerprinted aggregate record is committed in
+`new-platform/backend/app/research_sources/hop_drugsfda_original_submissions_20261025.json`.
+
+| Raw-source observation | Observed result | Interpretation |
+|---|---:|---|
+| Raw application table rows | 29,417 | FDA source-table observations, not FDA decisions |
+| Valid non-placeholder application IDs | 29,415 | Includes ANDAs as well as NDAs and BLAs |
+| Invalid/placeholder application IDs quarantined | 2 | Do not silently treat as a valid FDA application |
+| Raw submission rows | 194,280 | Includes supplements and ANDA histories |
+| Original NDA/BLA submission rows | **6,033** | Raw original submission *history entries*, not review cycles |
+| Distinct NDA/BLA application IDs in original submission rows | **5,973** | Approval-centric registry subset with apparent original-submission history |
+| Submissions excluding NDA/BLA application types | 101,547 | Mutually exclusive first-pass classification |
+| Nonoriginal submission histories excluded | 81,325 | Predominantly supplements and other types |
+| Submissions with no matching valid application identity | 5,375 | Require source reconciliation; do not assign |
+| Raw submission status missing | 1 | Data-quality flag, not a nonapproval outcome |
+| Independently verified original FDA review-cycle decisions | **0** | Nothing qualifies for predictive model training |
+
+The original `Applications` file decoded as UTF-8; `Submissions` used a
+strict Windows-1252 fallback for source text with legacy punctuation. Neither
+raw table was modified in the deployed application or committed as a bulk
+database. The archive hash, table hashes, run link, source URL and download
+timestamp are preserved in the aggregate index. Source CSV/TSV data are not
+part of the GitHub workflow artifact; it contains only counts and checksums.
+
+The 5,973 applications, 6,033 original-submission records and 458 selectively
+published response-letter references have **different units and coverage**.
+They cannot be combined into an FDA approval/decline denominator, and a
+submission `SubmissionNo` does not identify an independently verified FDA
+review cycle. Also, Drugs@FDA primarily describes *approved* drugs; its
+source rows do not enumerate all applications never approved. Differences from
+other previously collected approved-drug snapshots are possible and require
+source/version reconciliation, not averaging or inferring new decisions.
+
+**All subsequent steps are blocked on independent original action chronology,
+cycle reconstruction, explicit inclusion of unapproved NDA/BLA candidates,
+verified predecision evidence and out-of-time model calibration.** Approval
+rates, accuracy and per-drug FDA approval probabilities remain unavailable.
+No PIPELINE, GEM JR, GEM, WT, scan, trading or production configuration changed.
