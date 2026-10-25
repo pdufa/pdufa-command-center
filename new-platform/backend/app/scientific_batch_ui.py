@@ -386,6 +386,49 @@ function paintEvidenceLedger(data, status) {
     }
     notes.appendChild(list);section.appendChild(notes);
   }
+  const preflight=data.adjudicationPreflight;
+  if(preflight && preflight.mode==="read_only_blocker_diagnostic"){
+    const report=document.createElement("details");
+    report.className="adjudication-preflight";
+    const summary=document.createElement("summary");
+    summary.textContent="Scientific adjudication blockers — "
+      +preflight.questionsReadyForAdjudication+"/"
+      +preflight.questionCount+" questions ready · "
+      +preflight.questionsWithCurrentDisputes+" disputed";
+    report.appendChild(summary);
+    const caution=document.createElement("p");
+    caution.textContent="Reviewer labels are unverified, cited document contents are not independently authenticated, and there is no final reviewer sign-off. Notes never resolve a question.";
+    report.appendChild(caution);
+    const blockers=document.createElement("ol");
+    for(const reason of preflight.globalBlockers||[]){
+      const item=document.createElement("li");
+      const label=document.createElement("strong");label.textContent=reason.reason;
+      item.appendChild(label);
+      const action=document.createElement("small");
+      action.textContent="Next: "+reason.nextAction;
+      item.appendChild(action);blockers.appendChild(item);
+    }
+    report.appendChild(blockers);
+    const title=document.createElement("p");
+    title.textContent="Per-question audit status: "
+      +preflight.questionsWithRecordedObservations+" with source-linked reviewer observations, "
+      +preflight.questionsIndependentlyResolved+" independently resolved.";
+    report.appendChild(title);
+    const questions=document.createElement("ol");
+    for(const item of preflight.questions||[]){
+      const line=document.createElement("li");
+      const heading=document.createElement("strong");
+      heading.textContent=item.question+" — BLOCKED";
+      line.appendChild(heading);
+      const detail=document.createElement("small");
+      detail.textContent=item.currentReviewerThreadCount+" current statement threads · "
+        +item.distinctSourceCount+" linked sources · "
+        +(item.conflictingCurrentStatements?"CONFLICTING STATEMENTS":"No current support/contradiction pair")
+        +" · reviewer identity NOT authenticated";
+      line.appendChild(detail);questions.appendChild(line);
+    }
+    report.appendChild(questions);section.appendChild(report);
+  }
   const warning=document.createElement("p");
   warning.textContent="Source citations and audit entries are candidates, not independent adjudications. No FDA approval prediction or scientific verdict is assigned.";
   section.appendChild(warning);root.appendChild(section);
