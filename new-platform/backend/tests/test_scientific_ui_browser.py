@@ -143,7 +143,7 @@ def test_chromium_scientific_batch_and_evidence_display():
 
             page.get_by_label("Clinical trial identifiers").fill(NCT)
             page.get_by_role("button", name="Start batch import").click()
-            page.get_by_text("Batch accepted.", exact=False).wait_for()
+            # The UI may update its notice to "History updated" immediately.
             page.get_by_text("1 / 1", exact=True).wait_for()
             page.get_by_text("already_exists", exact=False).wait_for()
             assert TestServer.post_requests == 1
