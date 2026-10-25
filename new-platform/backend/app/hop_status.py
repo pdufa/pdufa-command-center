@@ -77,12 +77,26 @@ def _quarantined_identity_crosswalk(path: Path) -> dict | None:
         counts = index["identity_link_status_counts"]
         letters = index["published_letter_records"]
         registry = index["approved_registry_source_application_records"]
+        qualified = index["qualified_reference_letter_records"]
+        legacy = index["unresolved_legacy_bl_letter_records"]
+        missing = index["letters_without_application_identifiers"]
+        allowed_statuses = {
+            "APPLICATION_ID_UNRESOLVED",
+            "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS",
+            "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT",
+            "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT",
+        }
         if (index.get("status") != "QUARANTINED_IDENTITY_LINKAGE_ONLY_NOT_OUTCOME_COHORT"
                 or type(letters) is not int or letters < 1
                 or type(registry) is not int or registry < 1
                 or not isinstance(counts, dict)
+                or set(counts) != allowed_statuses
                 or any(type(n) is not int or n < 0 for n in counts.values())
                 or sum(counts.values()) != letters
+                or type(qualified) is not int or not 0 <= qualified <= letters
+                or type(legacy) is not int or not 0 <= legacy <= counts["APPLICATION_ID_UNRESOLVED"]
+                or type(missing) is not int or not 0 <= missing <= counts["APPLICATION_ID_UNRESOLVED"]
+                or legacy + missing > counts["APPLICATION_ID_UNRESOLVED"]
                 or index.get("complete_application_denominator_verified") is not False
                 or type(index.get("model_eligible_records")) is not int
                 or index["model_eligible_records"] != 0
@@ -92,7 +106,12 @@ def _quarantined_identity_crosswalk(path: Path) -> dict | None:
         return {"status": "IDENTITY_MATCH_ONLY", "published_letter_records": letters,
                 "approved_registry_source_application_records": registry,
                 "identity_link_status_counts": counts,
+                "qualified_reference_letter_records": qualified,
+                "unresolved_legacy_bl_letter_records": legacy,
+                "letters_without_application_identifiers": missing,
+                "application_identity_normalization": index["application_identity_normalization"],
                 "collection_run_url": index["collection_run_url"],
+                "collection_artifact_url": index["collection_artifact_url"],
                 "model_eligible_records": 0, "verified_review_cycle_outcomes": 0}
     except (OSError, ValueError, TypeError, KeyError):
         return None

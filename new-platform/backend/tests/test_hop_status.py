@@ -75,12 +75,16 @@ def test_real_approved_registry_and_source_linkage_remain_quarantined():
     assert registry["complete_denominator_verified"] is False
     assert links["published_letter_records"] == 458
     assert links["identity_link_status_counts"] == {
-        "APPLICATION_ID_UNRESOLVED": 23,
-        "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS": 1,
-        "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 105,
-        "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 329,
+        "APPLICATION_ID_UNRESOLVED": 15,
+        "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS": 2,
+        "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 107,
+        "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 334,
     }
     assert links["verified_review_cycle_outcomes"] == 0
+    assert links["qualified_reference_letter_records"] == 19
+    assert links["unresolved_legacy_bl_letter_records"] == 14
+    assert links["letters_without_application_identifiers"] == 1
+    assert links["collection_artifact_url"].endswith("/12610973480")
     assert result["prediction_probability"] is None
 
 
@@ -114,3 +118,20 @@ def test_identity_linkage_cannot_claim_eligible_review_cycles(tmp_path: Path):
     status = hop_readiness_status(crosswalk_audit_path=path)
     assert status["fda_identity_crosswalk"] is None
     assert status["model_validated"] is False
+
+
+def test_unresolved_or_qualified_source_counts_cannot_exceed_audit_totals(tmp_path: Path):
+    from app.hop_status import CROSSWALK_AUDIT_PATH
+    src = json.loads(CROSSWALK_AUDIT_PATH.read_text())
+    path = tmp_path / "crosswalk.json"
+    src["unresolved_legacy_bl_letter_records"] = 16
+    path.write_text(json.dumps(src))
+    assert hop_readiness_status(crosswalk_audit_path=path)["fda_identity_crosswalk"] is None
+    src["unresolved_legacy_bl_letter_records"] = 14
+    src["qualified_reference_letter_records"] = 459
+    path.write_text(json.dumps(src))
+    assert hop_readiness_status(crosswalk_audit_path=path)["fda_identity_crosswalk"] is None
+    src["qualified_reference_letter_records"] = 19
+    src["identity_link_status_counts"]["NOT_IN_COHORT"] = 1
+    path.write_text(json.dumps(src))
+    assert hop_readiness_status(crosswalk_audit_path=path)["fda_identity_crosswalk"] is None

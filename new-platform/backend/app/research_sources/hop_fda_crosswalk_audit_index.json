@@ -4,16 +4,16 @@
   "crl_source_export_date": "2026-10-21",
   "approved_registry_source_export_date": "2026-10-23",
   "retrieved_on": "2026-10-25",
-  "collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40225154278",
-  "collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40225154278/artifacts/12611046414",
+  "collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40226219810",
+  "collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40226219810/artifacts/12610973480",
   "collection_artifact_retention_days": 30,
   "published_letter_records": 458,
   "approved_registry_source_application_records": 29416,
   "identity_link_status_counts": {
-    "APPLICATION_ID_UNRESOLVED": 23,
-    "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS": 1,
-    "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 105,
-    "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 329
+    "APPLICATION_ID_UNRESOLVED": 15,
+    "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS": 2,
+    "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 107,
+    "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 334
   },
   "verified_review_cycle_outcomes": 0,
   "complete_application_denominator_verified": false,
@@ -23,6 +23,18 @@
     "Application-ID match is not an FDA approval at the historical CRL review cycle",
     "Nonmatch does not mean permanent FDA rejection",
     "Duplicate letters are not confirmed distinct review cycles",
-    "Publication-selected archives are not an unbiased denominator"
-  ]
+    "Publication-selected archives are not an unbiased denominator",
+    "Qualifiers identify original/supplement submissions, but only parent application identity is matched; no review-cycle outcome is inferred",
+    "Legacy BL numbers remain unassigned until official independently verified identifier crosswalk"
+  ],
+  "qualified_reference_letter_records": 19,
+  "unresolved_legacy_bl_letter_records": 14,
+  "letters_without_application_identifiers": 1,
+  "application_identity_normalization": "QUALIFIED_NDA_BLA_ANDA_ORIG_SUPPLEMENT_PARENT_ONLY",
+  "source_letter_archive_sha256": {
+    "https://download.open.fda.gov/transparency/crl/transparency-crl-0001-of-0001.json.zip": "744de010761c9ba445c3756ff7e47d5715c3e9d5aef48f5b1fd663646b5d6732"
+  },
+  "source_registry_archive_sha256": {
+    "https://download.open.fda.gov/drug/drugsfda/drug-drugsfda-0001-of-0001.json.zip": "d218e3d6ced00a6d117612529faa1eafa223ee65668a69f8139b5cd35054b3de"
+  }
 }
