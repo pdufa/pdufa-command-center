@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "FDA_PDF_OBSERVATION_NOT_INDEPENDENT_REVIEW_CYCLE_ADJUDICATION",
+  "reviewed_on": "2026-10-25",
+  "observations": [
+    {
+      "application_as_published": "BLA 761401",
+      "source_record_sha256": "bea5aea2da89cab0a2a3c19ba6893e0f3239d4fd12ff2f2fcc9d04ad0406e7ee",
+      "source_letter_date_as_published": "04/10/2026",
+      "official_pdf_url": "https://download.open.fda.gov/crl/CRL_BLA761401_20260410.pdf",
+      "source_page": 1,
+      "document_observation": "The corrected complete response letter states that it replaces a CRL issued August 27, 2025 and that the original action date remains unchanged.",
+      "reported_original_action_date": "2025-08-27",
+      "effective_action_date_proposed": "2025-08-27",
+      "effective_action_date_independently_adjudicated": false,
+      "reported_corrected_letter_date_as_published": "2026-04-10",
+      "date_discrepancy_requires_review": true,
+      "review_cycle_verified": false,
+      "model_eligible": false,
+      "note": "The publication's corrected-letter date is not safely interchangeable with the effective FDA regulatory action date; verify the complete FDA letter history before constructing a label."
+    },
+    {
+      "application_as_published": "BL 125845",
+      "source_record_sha256": "3d75ff30d6ce714e2af76cd60214a0c47208254cff7707ca238f0d294abbbb68",
+      "source_letter_date_as_published": "07/07/2025",
+      "official_pdf_url": "https://download.open.fda.gov/crl/CRL_BLA125845_20250707.pdf",
+      "source_page": 1,
+      "document_observation": "The FDA letter's first page states Our STN: BL 125845/0 and identifies a biologics license application.",
+      "reported_original_action_date": null,
+      "effective_action_date_proposed": null,
+      "effective_action_date_independently_adjudicated": false,
+      "date_discrepancy_requires_review": false,
+      "review_cycle_verified": false,
+      "model_eligible": false,
+      "note": "The legacy BL identifier is preserved as published; do not infer an equivalent BLA registry application number without an official cross-reference."
+    }
+  ],
+  "complete_denominator_verified": false,
+  "model_eligible_records": 0,
+  "prediction_probability": null
+}
