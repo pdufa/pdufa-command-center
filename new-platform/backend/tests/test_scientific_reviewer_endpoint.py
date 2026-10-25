@@ -14,7 +14,7 @@ def test_google_reviewer_endpoint_denies_unprovisioned_subject(monkeypatch):
                         lambda token: {"providerSubject": "unknown-google-sub",
                                        "verifiedEmail": "unprovisioned@example.org"})
     monkeypatch.setattr(scientific_reviewer_accounts, "reviewer_access_preflight",
-                        lambda subject: {"roleAuthorized": False,
+                        lambda subject, email: {"roleAuthorized": False,
                                          "credentialsVerified": False})
     with TestClient(main.app) as client:
         response = client.get("/api/scientific-assessment/reviewer/me",
@@ -28,7 +28,7 @@ def test_google_reviewer_endpoint_does_not_authorize_signoff(monkeypatch):
                         lambda token: {"providerSubject": "test-sub",
                                        "verifiedEmail": "reviewer@example.org"})
     monkeypatch.setattr(scientific_reviewer_accounts, "reviewer_access_preflight",
-                        lambda subject: {"roleAuthorized": True,
+                        lambda subject, email: {"roleAuthorized": True,
                                          "credentialsVerified": True})
     with TestClient(main.app) as client:
         response = client.get("/api/scientific-assessment/reviewer/me",
