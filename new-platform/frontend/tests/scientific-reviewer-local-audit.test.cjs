@@ -146,7 +146,8 @@ test("preview exposes local two-file diagnostic without a network submission or 
   const ui = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
   assert.match(ui, /Local A\/B reviewer worksheet audit/);
   assert.match(ui, /Audit A\/B worksheets locally/);
-  assert.match(ui, /reconcileLocalReviewerWorksheets\(result\.investigation40/);
+  assert.match(ui, /const matrix = result\.investigation40;/);
+  assert.match(ui, /reconcileLocalReviewerWorksheets\(matrix, a, b\)/);
   assert.match(ui, /reconcileLocalReviewerWorksheets/);
   assert.match(ui, /No files are uploaded/);
   assert.doesNotMatch(ui, /submitReviewerDecision\(|saveGrade\(|uploadReviewerWorksheet\(/);
