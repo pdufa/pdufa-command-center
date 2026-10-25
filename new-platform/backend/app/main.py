@@ -491,6 +491,26 @@ async def lifespan(app: FastAPI):
                         analysis["grade"], analysis["coveragePercent"],
                         reluctance["grade"],
                     )
+                    from .scientific_review_packet import (
+                        build_review_packet, check_packet_integrity,
+                    )
+                    packet = build_review_packet(depth_record.nct_id)
+                    packet_ok = (
+                        check_packet_integrity(packet)
+                        and packet["investigation20"]["levelCount"] == 20
+                        and len(packet["evidenceInputGrades"]["requirements"]) == 16
+                        and packet["reconciliation"]["independentlyResolvedCount"] == 0
+                        and packet["scientificConclusion"] is None
+                        and packet["fdaApprovalProbability"] is None
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_REVIEW_PACKET_READBACK status=%s "
+                        "nct_id=%s questions=%d sha256_verified=%s "
+                        "scored=False read_only=True",
+                        "PASS" if packet_ok else "FAIL",
+                        depth_record.nct_id,
+                        packet["reconciliation"]["unresolvedCount"], packet_ok,
+                    )
         except Exception as depth_error:
             logging.getLogger(__name__).error(
                 "SCIENTIFIC_INVESTIGATION20_READBACK status=FAIL error_type=%s",
