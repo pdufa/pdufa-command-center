@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { buildScientificDepthReviewCsv } from "../lib/scientific-depth-review-csv";
+import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
 
 /**
@@ -383,15 +383,19 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   }
 
   /** Browser-local export of ONLY pending tasks from a validated archived inventory. */
-  function downloadDepthReviewCsv() {
+  function downloadDepthReviewCsv(reviewerSlot?: "A" | "B") {
     if (!result?.investigation40) return;
     try {
-      const csv = buildScientificDepthReviewCsv(result.investigation40);
+      const csv = reviewerSlot
+        ? buildScientificReviewerHandoffCsv(result.investigation40, reviewerSlot)
+        : buildScientificDepthReviewCsv(result.investigation40);
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = result.investigation40.nctId + "_scientific_320_depth_review.csv";
+      anchor.download = result.investigation40.nctId + (reviewerSlot
+        ? "_scientific_reviewer_" + reviewerSlot + "_320_tasks.csv"
+        : "_scientific_320_depth_review.csv");
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -473,6 +477,21 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           Download 320-task review matrix (CSV)
         </button>
         <small> Read-only pending-task export for independent review. No reviewer attestation or scientific decision is created by downloading.</small>
+        <details>
+          <summary><strong>Independent reviewer handoff — two blank worksheets</strong></summary>
+          <p>Generate distinct, unsubmitted worksheets for two independent reviewer slots.
+            They include all 320 pending tasks, blank document provenance and reviewer fields.
+            Slots A and B are not verified reviewer identities or approved decisions.</p>
+          <button type="button" onClick={() => downloadDepthReviewCsv("A")}>
+            Download reviewer A worksheet (CSV)
+          </button>
+          <button type="button" onClick={() => downloadDepthReviewCsv("B")}>
+            Download reviewer B worksheet (CSV)
+          </button>
+          <small>These local CSV files do not authenticate anyone, sign a review,
+            upload evidence, or change scientific completion counts. Genuine independent
+            identity checks, document review, signed disagreement reconciliation and release approval remain outstanding.</small>
+        </details>
       </p>}
 
       {result.investigation40 ? <details>
