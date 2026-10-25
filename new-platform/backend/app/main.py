@@ -952,7 +952,17 @@ def get_keynote024_scientific_pilot(response: Response):
         raise HTTPException(
             status_code=503, detail="Pilot statistical source comparison failed validation",
         ) from None
+    from .scientific_pilot_eu_plan_crosscheck import keynote024_eu_protocol_crosscheck
+    try:
+        eu_registry_crosscheck = keynote024_eu_protocol_crosscheck(
+            interim_design, published, scientific_readiness,
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Historical EU endpoint cross-source check failed validation",
+        ) from None
     return {
+        "europeanRegistryCrosscheck": eu_registry_crosscheck,
         "publishedInterimDesign": interim_design,
         "publishedSafetyReconciliation": published_safety,
         "sourceEvidenceAudit": evidence_audit,

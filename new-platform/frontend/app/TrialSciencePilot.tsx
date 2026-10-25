@@ -131,6 +131,62 @@ function Evidence({ pilot }: { pilot: TrialSciencePilot }) {
         </div>
       </details>
     </section> : null}
+    {pilot.europeanRegistryCrosscheck ? <section aria-label="EU regulatory trial-registration cross-source review">
+      <h3>Early European registry crosscheck · KEYNOTE-024</h3>
+      <p className={styles.metadata}>
+        EU Clinical Trials Register EudraCT {pilot.europeanRegistryCrosscheck.registry.eudractNumber}
+        {" "}· sponsor protocol {pilot.europeanRegistryCrosscheck.registry.sponsorProtocolCode}
+        {" "}· first entered {pilot.europeanRegistryCrosscheck.registry.firstRecordEnteredDate}.
+        This register is hosted by a regulator but its study information is sponsor supplied,
+        not independent clinical replication.
+      </p>
+      <p className={styles.caution}>
+        Important date limitation: the entry was first recorded in 2014, but the public
+        page does not establish the version/effective date for each currently displayed
+        endpoint field. It therefore does not prove what the original signed 2016
+        protocol/SAP specified. Input Readiness remains FAIL; Reluctance remains HIGH.
+      </p>
+      <details className={styles.caveats}>
+        <summary>Compare six EU registry endpoint and design statements with the journal</summary>
+        <div className={styles.scroll}>
+          <table className={styles.resultTable}>
+            <thead><tr><th scope="col">EU section</th>
+              <th scope="col">Register's reported plan</th>
+              <th scope="col">Comparison</th></tr></thead>
+            <tbody>{pilot.europeanRegistryCrosscheck.comparisons.map(item => (
+              <tr key={item.key}>
+                <th scope="row">{item.euSection}</th>
+                <td>{item.euReportedFinding}</td>
+                <td>Consistent with published description; historical field version unverified</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+        <p className={styles.metadata}>
+          <a href={pilot.europeanRegistryCrosscheck.registry.sourceUrl}
+             target="_blank" rel="noopener noreferrer">Original EU regulatory trial register</a>
+          {" "}·{" "}
+          <a href={pilot.europeanRegistryCrosscheck.identityBridge.nciSourceUrl}
+             target="_blank" rel="noopener noreferrer">NCI trial ID cross-reference</a>
+          {" "}·{" "}
+          <a href={pilot.europeanRegistryCrosscheck.earlierPublicDescription.sourceUrl}
+             target="_blank" rel="noopener noreferrer">2015 ASCO trial design abstract</a>.
+        </p>
+      </details>
+      <p className={styles.metadata}>
+        EU target ≈ {pilot.europeanRegistryCrosscheck.eventTiming.euPfsEventsTargetApprox} PFS events;
+        observed {pilot.europeanRegistryCrosscheck.eventTiming.reportedPfsEventsObserved}.
+        EU first OS target ≈ {pilot.europeanRegistryCrosscheck.eventTiming.euOsFirstDeathsTargetApprox} deaths;
+        observed {pilot.europeanRegistryCrosscheck.eventTiming.reportedOsInterimDeathsObserved}.
+        The register allows timing flexibility if the OS count is below its target.
+        Differences from approximate targets are not automatically protocol deviations.
+      </p>
+      <p className={styles.caution}>
+        Historical field revisions and data monitoring committee decision dates remain unverified.
+        Original signed SAP, statistical alpha-spending reconstruction, and independent
+        scientific adjudication are still outstanding. No clinical success score is assigned.
+      </p>
+    </section> : null}
     {pilot.publishedInterimDesign ? <section aria-label="Original published interim testing plan and observed outcomes">
       <h3>2016 interim statistical design — reported plan versus observed</h3>
       <p className={styles.caution}>
