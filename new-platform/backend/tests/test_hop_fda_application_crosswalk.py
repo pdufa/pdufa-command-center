@@ -37,6 +37,14 @@ def sources(letters, drugs):
     ("NDA 213378/Original 1", "NDA213378"),
     ("BLA 761303/Original 2", "BLA761303"),
     ("NDA 018680/S-074", "NDA018680"),
+    ("NDA 212097/S-012", "NDA212097"),
+    ("BL 125827", None),
+    ("NDA 209510/Unknown", None),
+    ("NDA 209510/S-9999", None),
+    ("NDA 209510/S-000", "NDA209510"),
+    ("NDA 213378/Original 1", "NDA213378"),
+    ("BLA 761303/Original 2", "BLA761303"),
+    ("NDA 018680/S-074", "NDA018680"),
     ("nda 209531/s-016", "NDA209531"),
     ("BL 125845", None),
     ("NDA 209531/S-016/Extra", None),
@@ -139,4 +147,50 @@ def test_mixed_qualified_and_unparseable_source_identifier_abstains():
     assert row["canonical_application_candidates"] == ["NDA209531"]
     assert row["unresolved_source_identifiers_as_published"] == ["BL 125845"]
     assert row["identity_link_status"] == "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS"
+    assert audit["model_eligible_records"] == 0
+
+
+def test_original_and_supplement_suffixes_link_only_applications():
+    cases = [
+        "NDA 213378/Original 1",
+        "NDA 213378/Original 2",
+        "NDA 213378",
+    ]
+    crosswalk, audit = crosswalk_public_fda_sources(
+        *sources([letter(cases)], [drug("NDA213378")]))
+    row = crosswalk["records"][0]
+    assert row["identity_link_status"] == "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT"
+    assert row["canonical_application_candidates"] == ["NDA213378"]
+    assert row["qualified_source_references_as_published"] == cases[:2]
+    assert row["source_application_identifiers_as_published"] == cases
+    assert audit["qualified_reference_letter_records"] == 1
+    assert audit["verified_review_cycle_outcomes"] == 0
+    assert audit["model_eligible_records"] == 0
+
+
+def test_legacy_bl_identifiers_stay_unresolved():
+    crosswalk, audit = crosswalk_public_fda_sources(
+        *sources([letter(["BL 125845"])], [drug("BLA125845")]))
+    row = crosswalk["records"][0]
+    assert row["canonical_application_candidates"] == []
+    assert row["identity_link_status"] == "APPLICATION_ID_UNRESOLVED"
+    assert row["unresolved_source_identifiers_as_published"] == ["BL 125845"]
+    assert audit["unresolved_legacy_bl_letter_records"] == 1
+    assert audit["verified_review_cycle_outcomes"] == 0
+
+
+def test_multiple_applications_not_mistaken_for_one_after_suffix_stripping():
+    sources_of_letter = ["NDA 214410/Original 2", "NDA 210854/S-05", "NDA 210854/S-09"]
+    crosswalk, audit = crosswalk_public_fda_sources(
+        *sources([letter(sources_of_letter)], [drug("NDA210854")]))
+    assert crosswalk["records"][0]["canonical_application_candidates"] == ["NDA210854", "NDA214410"]
+    assert crosswalk["records"][0]["identity_link_status"] == "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS"
+    assert audit["qualified_reference_letter_records"] == 1
+    assert audit["prediction_probability"] is None
+
+
+def test_missing_id_count_explicit_and_no_model_promotion():
+    crosswalk, audit = crosswalk_public_fda_sources(*sources([letter([])], []))
+    assert crosswalk["records"][0]["identity_link_status"] == "APPLICATION_ID_UNRESOLVED"
+    assert audit["letters_without_application_identifiers"] == 1
     assert audit["model_eligible_records"] == 0
