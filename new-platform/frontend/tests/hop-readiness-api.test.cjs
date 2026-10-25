@@ -93,7 +93,7 @@ test("HOP readiness uses its installed service independently of both other backe
 });
 
 test("Authenticated HOP proxy reads only approved backend endpoint and hides credentials", async () => {
-  const keys = ["DASHBOARD_PASSWORD", "SESSION_SIGNING_KEY", "PDUFA_API_BASE_URL", "PDUFA_INTERNAL_API_KEY", "PDUFA_HOP_API_BASE_URL"];
+  const keys = ["DASHBOARD_PASSWORD", "SESSION_SIGNING_KEY", "PDUFA_API_BASE_URL", "PDUFA_INTERNAL_API_KEY", "PDUFA_HOP_API_BASE_URL", "PDUFA_HOP_INTERNAL_API_KEY"];
   const originals = Object.fromEntries(keys.map(k => [k, process.env[k]]));
   const originalFetch = global.fetch;
   Object.assign(process.env, {
@@ -103,6 +103,7 @@ test("Authenticated HOP proxy reads only approved backend endpoint and hides cre
     PDUFA_INTERNAL_API_KEY: "internal-hop-test-only-secret",
   });
   delete process.env.PDUFA_HOP_API_BASE_URL;
+  delete process.env.PDUFA_HOP_INTERNAL_API_KEY;
   let calls = 0;
   global.fetch = async (url, init) => {
     calls += 1;
@@ -124,6 +125,24 @@ test("Authenticated HOP proxy reads only approved backend endpoint and hides cre
     assert.equal(response.headers.get("cache-control"), "private, no-store");
     assert.equal(calls, 1);
     assert.ok(!JSON.stringify(body).includes("internal-hop-test-only-secret"));
+    // A separately installed HOP service can authenticate independently of
+    // storage. Neither credential may appear in the projected response.
+    process.env.PDUFA_HOP_INTERNAL_API_KEY = "dedicated-hop-test-only-secret";
+    global.fetch = async (url, init) => {
+      assert.equal(url, "https://pdufa-hop-readonly-review.onrender.com/api/hop/readiness");
+      assert.equal(init.headers["x-pdufa-internal-key"], "dedicated-hop-test-only-secret");
+      return new Response(JSON.stringify(sourceFixture()));
+    };
+    const dedicated = await route.GET(request);
+    assert.equal(dedicated.status, 200);
+    assert.doesNotMatch(JSON.stringify(await dedicated.json()), /dedicated-hop-test-only-secret|internal-hop-test-only-secret/);
+    assert.equal(process.env.PDUFA_INTERNAL_API_KEY, "internal-hop-test-only-secret");
+    // An explicitly empty HOP credential fails before a request, without
+    // silently substituting storage credentials.
+    process.env.PDUFA_HOP_INTERNAL_API_KEY = "";
+    global.fetch = async () => assert.fail("An empty HOP credential must not contact upstream");
+    assert.equal((await route.GET(request)).status, 503);
+    delete process.env.PDUFA_HOP_INTERNAL_API_KEY;
     // A future model flag cannot silently activate an unreviewed UI prediction.
     global.fetch = async () => new Response(JSON.stringify({ ...sourceFixture(), prediction_available: true }));
     const denied = await route.GET(request);
