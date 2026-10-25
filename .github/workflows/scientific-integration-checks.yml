@@ -1,7 +1,7 @@
 name: Scientific Integration Checks
 on:
   push:
-    branches: [feature/scientific-assessment-v1]
+    branches: [feature/scientific-assessment-v1, integration/scientific-assessment-validation-20261025]
   pull_request:
     branches: [main]
   workflow_dispatch:
