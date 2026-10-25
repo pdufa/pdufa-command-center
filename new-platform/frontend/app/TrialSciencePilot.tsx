@@ -131,6 +131,66 @@ function Evidence({ pilot }: { pilot: TrialSciencePilot }) {
         </div>
       </details>
     </section> : null}
+    {pilot.publishedInterimDesign ? <section aria-label="Original published interim testing plan and observed outcomes">
+      <h3>2016 interim statistical design — reported plan versus observed</h3>
+      <p className={styles.caution}>
+        The 2016 journal publication describes the planned testing rules after the
+        {pilot.publishedInterimDesign.sourceDateContext.originalInterimDataCutoff} data cutoff.
+        These are reported methodological descriptions, not independent verification
+        of the signed, prospectively effective protocol or statistical analysis plan.
+        Neither evidence grade is upgraded.
+      </p>
+      <details className={styles.caveats}>
+        <summary>Compare interim testing schedule, alpha and observed event counts</summary>
+        <div className={styles.scroll}>
+          <table className={styles.resultTable}>
+            <thead><tr><th scope="col">Analysis</th>
+              <th scope="col">2016-published plan</th>
+              <th scope="col">Reported interim evidence</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Overall familywise Type I error</th>
+                <td>One-sided {pilot.publishedInterimDesign.reportedDesign.overallOneSidedAlphaPercent}%</td>
+                <td>Original signed SAP and full alpha spending not yet independently verified</td>
+              </tr>
+              <tr><th scope="row">First interim · objective response</th>
+                <td>After {pilot.publishedInterimDesign.reportedDesign.firstInterim.plannedMinimumRandomized} randomized with at least
+                  {" "}{pilot.publishedInterimDesign.reportedDesign.firstInterim.plannedMinimumFollowupMonths} months follow-up;
+                  one-sided alpha {pilot.publishedInterimDesign.reportedDesign.firstInterim.reportedAllocatedOneSidedAlphaPercent}%</td>
+                <td>No independent first-interim SAP/decision-boundary reconstruction</td>
+              </tr>
+              <tr><th scope="row">Second interim · primary PFS</th>
+                <td>Approximately {pilot.publishedInterimDesign.reportedDesign.secondInterim.plannedApproximatePfsEvents} progression/death events;
+                  one-sided alpha {pilot.publishedInterimDesign.reportedDesign.secondInterim.reportedAllocatedOneSidedAlphaPercent}%</td>
+                <td>{pilot.publishedInterimDesign.observedInterim.reportedPfsEvents} reported events · HR
+                  {" "}{pilot.publishedInterimDesign.observedInterim.pfsHR} · p{pilot.publishedInterimDesign.observedInterim.reportedPfsPValue}</td>
+              </tr>
+              <tr><th scope="row">Group-sequential overall survival</th>
+                <td>Approximately {pilot.publishedInterimDesign.reportedDesign.osGroupSequential.plannedApproximateDeaths.join(" and ")} deaths</td>
+                <td>{pilot.publishedInterimDesign.observedInterim.reportedDeaths} reported interim deaths · OS HR
+                  {" "}{pilot.publishedInterimDesign.observedInterim.osHR} · p={pilot.publishedInterimDesign.observedInterim.reportedOsPValue};
+                  FDA-staff-reported allocated alpha
+                  {" "}{pilot.publishedInterimDesign.observedInterim.fdaStaffReportedOsAllocatedAlpha}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className={styles.metadata}>
+          <a href={pilot.publishedInterimDesign.sourceDateContext.journalSourceUrl}
+             target="_blank" rel="noopener noreferrer">2016 original journal article</a>
+          {" "}·{" "}
+          <a href={pilot.publishedInterimDesign.sourceDateContext.fdaStaffSourceUrl}
+             target="_blank" rel="noopener noreferrer">FDA-staff-authored efficacy summary</a>
+          {" "}·{" "}
+          <a href={pilot.publishedInterimDesign.sourceDateContext.originalSupplementSourceUrl}
+             target="_blank" rel="noopener noreferrer">Original article and listed protocol supplement</a>.
+          The FDA-staff-authored article is not the complete underlying FDA clinical review.
+        </p>
+      </details>
+      <p className={styles.caution}>
+        Signed original SAP unverified · Alpha spending not independently recomputed ·
+        No patient-level reanalysis · No scientific score or FDA approval forecast.
+      </p>
+    </section> : null}
     {pilot.sourceEvidenceAudit ? <section aria-label="Historical design chronology and registry safety audit">
       <h3>Trial evidence timeline · 2015 to 2021</h3>
       <p className={styles.metadata}>
