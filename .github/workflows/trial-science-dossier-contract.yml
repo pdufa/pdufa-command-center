@@ -17,4 +17,4 @@ jobs:
       - name: Verify eight-domain evidence identity and no-score rules
         env:
           PYTHONPATH: new-platform/backend
-        run: python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_dossier.py' -v
+        run: |\n          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_dossier.py' -v\n          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_dossier_archive.py' -v
