@@ -46,8 +46,6 @@ export async function GET(req: NextRequest) {
         || data.documents.length !== data.sourceDocumentCount) {
       throw Error("Invalid manifest");
     }
-    const allowedGates = new Set(["protocol_sap", "official_regulatory",
-      "primary_efficacy", "safety", "independent_replication"]);
     const hashes = new Set<string>();
     const ids = new Set<string>();
     const documents = data.documents.map((entry: unknown) => {
