@@ -520,7 +520,7 @@ def get_scientific_dossier(exact_id: str, response: Response):
     This endpoint cannot import sources or change existing rankings, presets,
     scores, scanning, trade lists, or database records.
     """
-    match = re.fullmatch(r"TRIAL\\|(NCT[0-9]{8})", exact_id or "")
+    match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id or "")
     if match is None:
         raise HTTPException(status_code=422, detail="Exact TRIAL|NCT######## identity required")
     nct_id = match.group(1)
