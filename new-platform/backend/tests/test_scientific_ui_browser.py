@@ -275,7 +275,7 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert gates.count() == 1
             gates.locator("summary").click()
             assert page.locator("#readiness-grades li").count() == 16
-            page.get_by_text("Original protocol and statistical analysis plan independently reconciled").wait_for()
+            gates.get_by_text("Original protocol and statistical analysis plan independently reconciled", exact=True).wait_for()
 
             page.get_by_role("heading", name="Independent source evidence ledger").wait_for()
             page.get_by_text("0/4 independently verified gates", exact=False).wait_for()
