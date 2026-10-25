@@ -14,10 +14,12 @@ on:
       - "new-platform/backend/app/scientific_stored_record.py"
       - "new-platform/backend/app/scientific_assessment.py"
       - "new-platform/backend/app/scientific_investigation_20.py"
+      - "new-platform/backend/app/scientific_quantitative_results.py"
       - "new-platform/backend/app/scientific_registry_evidence.py"
       - "new-platform/backend/tests/test_scientific_import.py"
       - "new-platform/backend/tests/test_scientific_integrity.py"
       - "new-platform/backend/tests/test_scientific_investigation_20.py"
+      - "new-platform/backend/tests/test_scientific_quantitative_results.py"
       - "new-platform/backend/tests/test_scientific_batch_import.py"
       - "new-platform/backend/tests/test_scientific_batch_api.py"
       - "new-platform/backend/tests/test_scientific_live_smoke.py"
@@ -44,4 +46,4 @@ jobs:
         env:
           DATABASE_URL: "sqlite:///./scientific_import_ci.sqlite3"
           PDUFA_REQUIRE_POSTGRES: "0"
-        run: python -m pytest -q tests/test_scientific_import.py tests/test_scientific_batch_import.py tests/test_scientific_batch_api.py tests/test_scientific_live_smoke.py tests/test_scientific_integrity.py tests/test_scientific_investigation_20.py
+        run: python -m pytest -q tests/test_scientific_import.py tests/test_scientific_batch_import.py tests/test_scientific_batch_api.py tests/test_scientific_live_smoke.py tests/test_scientific_integrity.py tests/test_scientific_investigation_20.py tests/test_scientific_quantitative_results.py
