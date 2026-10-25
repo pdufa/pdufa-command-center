@@ -492,3 +492,94 @@ def test_browser_hides_remote_fetch_when_explicitly_disabled():
             assert Handler.remote_fetch_calls == 0
         finally:
             browser.close()
+
+
+
+def test_operator_candidate_nomination_is_pending_only_with_no_invitation_or_reviewer_access():
+    """A real Chromium interaction must never submit an approved reviewer grant."""
+    saved = []
+    def reviewer_setup(route):
+        route.fulfill(status=200, content_type="application/json", body=json.dumps({
+            "activeCredentialVerifiedIdentities": 0,
+            "requiredDistinctReviewerIdentities": 2,
+            "selfRegistrationAllowed": False,
+            "operatorMayActAsIndependentReviewer": False,
+            "maySignOff": False,
+            "independentScientificAdjudicationImplemented": False,
+        }))
+    def nominations(route):
+        request = route.request
+        if request.method == "GET":
+            route.fulfill(status=200, content_type="application/json", body=json.dumps({
+                "nominations": saved,
+                "listedCount": len(saved),
+                "operatorOnly": True,
+                "selfRegistrationEnabled": False,
+                "invitationsSent": False,
+                "reviewerAccessGrantedByNomination": False,
+                "maySignOff": False,
+            }))
+            return
+        assert request.method == "POST"
+        assert request.headers.get("authorization") == "Bearer " + FAKE_TOKEN
+        payload = request.post_data_json
+        assert payload["nominationOnlyAcknowledged"] is True
+        assert "role" not in payload
+        assert "credentialsVerified" not in payload
+        assert "maySignOff" not in payload
+        item = {
+            "id": "1"*32,
+            "candidateEmail": payload["candidateEmail"].casefold(),
+            "displayName": payload["displayName"],
+            "specialty": payload["specialty"],
+            "qualificationsNote": payload["qualificationsNote"],
+            "status": "pending_independent_verification",
+            "googleIdentityVerified": False,
+            "credentialsVerified": False,
+            "independenceVerified": False,
+            "invitationSent": False,
+            "reviewerAccessGranted": False,
+            "maySubmitAuditedStatements": False,
+            "maySignOff": False,
+        }
+        saved.append(item)
+        route.fulfill(status=201, content_type="application/json", body=json.dumps(item))
+
+    with stub_service(accepted=True) as url, playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        try:
+            page = browser.new_page(viewport={"width": 1200, "height": 900})
+            page.route("https://accounts.google.com/gsi/client", mock_google_script)
+            page.route("**/api/scientific-assessment/operator/reviewer-setup", reviewer_setup)
+            page.route("**/api/scientific-assessment/operator/reviewer-nominations", nominations)
+            page.goto(url + "/scientific/operator")
+            page.locator("#test-google-button").wait_for(timeout=10000)
+            assert not page.locator("#reviewer-setup").is_visible()
+            page.locator("#test-google-button").click()
+            page.get_by_text("0 provisioned reviewer identities out of 2", exact=False
+                             ).wait_for(timeout=10000)
+            assert page.locator("#reviewer-setup").is_visible()
+            assert not saved
+            page.locator("#reviewer-nomination-panel summary").click()
+            page.locator("#candidate-email").fill("Qualified.Reviewer@Example.org")
+            page.locator("#candidate-name").fill("Candidate Name")
+            page.locator("#candidate-specialty").select_option("biostatistics")
+            page.locator("#candidate-qualifications").fill("Credentials remain to be checked")
+            page.locator("#nominate-reviewer").click()
+            page.get_by_text("Confirm that this nomination grants no reviewer access").wait_for(timeout=10000)
+            assert len(saved) == 0
+            page.locator("#candidate-pending-confirm").check()
+            page.locator("#nominate-reviewer").click()
+            page.get_by_text("Candidate saved as pending", exact=False).wait_for(timeout=10000)
+            page.get_by_text("qualified.reviewer@example.org", exact=False).first.wait_for(timeout=10000)
+            assert len(saved) == 1
+            assert saved[0]["reviewerAccessGranted"] is False
+            assert saved[0]["invitationSent"] is False
+            assert saved[0]["credentialsVerified"] is False
+            assert saved[0]["maySignOff"] is False
+            page.locator("#signout").click()
+            assert not page.locator("#reviewer-setup").is_visible()
+            assert page.evaluate("Object.keys(localStorage).length") == 0
+            assert page.evaluate("Object.keys(sessionStorage).length") == 0
+        finally:
+            browser.close()
