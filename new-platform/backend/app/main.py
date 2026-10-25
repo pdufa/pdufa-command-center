@@ -1032,6 +1032,41 @@ def require_scientific_google_reviewer(
     }
 
 
+class ScientificReviewSubmissionInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    nctId: str = Field(min_length=11, max_length=11)
+    questionId: str = Field(min_length=3, max_length=70)
+    sourceSha256: str = Field(min_length=64, max_length=64)
+    decision: Literal["requires_review", "supports_reconciliation", "disputes_reconciliation"]
+    sourceLocator: str = Field(min_length=1, max_length=200)
+    reviewNote: str = Field(min_length=1, max_length=1500)
+    uncertaintyDisclosed: Literal[True]
+
+
+@app.post("/api/scientific-assessment/reviewer/submissions", status_code=201)
+def scientific_reviewer_submit(
+    body: ScientificReviewSubmissionInput,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Append an authenticated reviewer statement and audit event atomically."""
+    from .scientific_review_submission import record_reviewer_submission
+    try:
+        return record_reviewer_submission(
+            google_subject=reviewer["providerSubject"], nct_id=body.nctId,
+            question_id=body.questionId, source_sha256=body.sourceSha256,
+            decision=body.decision,
+            attestation={
+                "sourceLocator": body.sourceLocator,
+                "reviewNote": body.reviewNote,
+                "uncertaintyDisclosed": body.uncertaintyDisclosed,
+            },
+        )
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="Reviewer not authorized")
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+
+
 @app.get("/api/scientific-assessment/reviewer/me")
 def scientific_reviewer_me(
     reviewer: dict = Depends(require_scientific_google_reviewer),
