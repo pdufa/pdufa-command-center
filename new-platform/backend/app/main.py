@@ -748,16 +748,24 @@ def get_scientific_assessment(exact_id: str):
     result = scientific_trial_payload(exact_id)
     result["registryEvidence"] = None
     result["registryEvidenceStatus"] = "not_available"
+    result["investigation20"] = None
     # Never use an ephemeral SQLite fallback on hosted review services.
     match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id)
     if match and storage_ready() and _DB_STATE["available"]:
         try:
-            from .scientific_stored_record import evidence_from_archive
+            from .scientific_stored_record import verified_record_from_archive
+            from .scientific_registry_evidence import extract_trial_evidence
+            from .scientific_investigation_20 import investigation_20
             with Session(ENGINE) as session:
                 record = session.get(FullTrialRecord, match.group(1))
                 if record is not None:
-                    result["registryEvidence"] = evidence_from_archive(
+                    snapshot = verified_record_from_archive(
                         match.group(1), record.payload_gzip, record.sha256
+                    )
+                    result["registryEvidence"] = extract_trial_evidence(match.group(1), snapshot)
+                    result["investigation20"] = investigation_20(
+                        match.group(1), snapshot,
+                        retrieved_at=record.fetched_at.isoformat() if record.fetched_at else None,
                     )
                     result["registryEvidenceStatus"] = "source_record_loaded"
                 else:
