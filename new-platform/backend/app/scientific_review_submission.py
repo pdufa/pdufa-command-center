@@ -40,7 +40,24 @@ def record_reviewer_submission(*, google_subject: str, nct_id: str,
             or not 1 <= len(attestation["reviewNote"]) <= 1500
             or attestation["uncertaintyDisclosed"] is not True):
         raise ValueError("Review statement must disclose uncertainty")
+    from .scientific_reconciliation_worklist import reconciliation_worklist
+    checks = reconciliation_worklist(nct_id)["checks"]
+    if question_id not in {check["id"] for check in checks}:
+        raise ValueError("Question not present in server reconciliation worklist")
     with Session(main.ENGINE) as session:
+        # A client-provided digest is never sufficient to establish source custody.
+        source = session.scalar(select(main.ScientificSourceDocument).where(
+            main.ScientificSourceDocument.nct_id == nct_id,
+            main.ScientificSourceDocument.sha256 == source_sha256,
+        ))
+        if source is None:
+            raise ValueError("Source document is not archived for this trial")
+        from .scientific_source_documents import _capture_meta
+        _capture_meta(source)  # Checks archived PDF bytes and metadata digest.
+        allowed_urls = next(check["sourceUrls"] for check in checks
+                            if check["id"] == question_id)
+        if source.source_url not in allowed_urls:
+            raise ValueError("Archived source is not linked to this review question")
         account = session.get(main.ScientificReviewerAccount, google_subject)
         if (account is None or not account.enabled
                 or not account.credentials_verified
