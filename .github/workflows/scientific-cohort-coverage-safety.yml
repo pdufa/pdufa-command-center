@@ -7,6 +7,8 @@ on:
       - main
     paths:
       - "new-platform/frontend/lib/scientific-cohort-coverage.ts"
+      - "new-platform/frontend/lib/scientific-installation-gates.ts"
+      - "new-platform/frontend/tests/scientific-installation-gates.test.cjs"
       - "new-platform/frontend/app/api/scientific-cohort/coverage/route.ts"
       - "new-platform/frontend/app/science/coverage/page.tsx"
       - "new-platform/frontend/tests/scientific-cohort-coverage*.test.cjs"
@@ -17,6 +19,8 @@ on:
       - integration/scientific-assessment-validation-20261025
     paths:
       - "new-platform/frontend/lib/scientific-cohort-coverage.ts"
+      - "new-platform/frontend/lib/scientific-installation-gates.ts"
+      - "new-platform/frontend/tests/scientific-installation-gates.test.cjs"
       - "new-platform/frontend/app/api/scientific-cohort/coverage/route.ts"
       - "new-platform/frontend/app/science/coverage/page.tsx"
       - "new-platform/frontend/tests/scientific-cohort-coverage*.test.cjs"
@@ -42,6 +46,6 @@ jobs:
           cache-dependency-path: new-platform/frontend/package-lock.json
       - run: npm ci
       - name: Verify current source health, exact-NCT membership and session-only reads
-        run: node --test tests/scientific-cohort-coverage.test.cjs tests/scientific-cohort-coverage-route.test.cjs tests/scientific-coverage-live-connection.test.cjs
+        run: node --test tests/scientific-cohort-coverage.test.cjs tests/scientific-cohort-coverage-route.test.cjs tests/scientific-coverage-live-connection.test.cjs tests/scientific-installation-gates.test.cjs
       - name: Validate frontend types
         run: npx tsc --noEmit
