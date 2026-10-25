@@ -1,0 +1,434 @@
+{
+  "schema_version": "science-historical-candidate-review-queue-v1",
+  "source_snapshot_as_of": "2026-10-16",
+  "audit_date": "2026-10-25",
+  "data_sources": [
+    "GitHub saved historical GEM/GEM_JR snapshot",
+    "main Neon full_trial_records read-only metadata"
+  ],
+  "current_list_membership_verified": false,
+  "historical_application_crosswalks_approved": 0,
+  "independent_scientific_sources_verified": 0,
+  "regulatory_outcome_probability": null,
+  "import_executed": false,
+  "source_archive_record_count": 17,
+  "with_posted_results": 5,
+  "with_reported_pvalue_presence": 4,
+  "review_priority_only": true,
+  "review_priority_description": "Posted-results and p-value field presence order for manual source validation; no endpoint efficacy, safety or FDA approval inference.",
+  "records": [
+    {
+      "nct_id": "NCT03881852",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|AXSM|AXS12_CATAPLEXY_20270501",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": true,
+        "p_value_presence": "REPORTED",
+        "phases": [
+          "PHASE2"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT04308590",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|CORT|RELACORILANT_CUSHINGS_20261217",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": true,
+        "p_value_presence": "REPORTED",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT04544293",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM",
+          "source_key": "APPLICATION|SVRA|MOLBREEVI_PAP_20261122",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": true,
+        "p_value_presence": "REPORTED",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT06542497",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        },
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": true,
+        "p_value_presence": "REPORTED",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT03406780",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|CAPR|DERAMIOCEL_DMD_20261122",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": true,
+        "p_value_presence": "NOT_REPORTED",
+        "phases": [
+          "PHASE2"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT05208047",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT05630807",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|IONS|BEPIROVIRSEN_CHB_20261026",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT05630820",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|IONS|BEPIROVIRSEN_CHB_20261026",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT05662241",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM",
+          "source_key": "APPLICATION|ZBIO|OBEXELIMAB_IGG4RD_20270527",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT05680818",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|BBIO|ENCALERET_ADH1",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT06087276",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM",
+          "source_key": "APPLICATION|PRAX|ULIXACALTAMIDE_ET_20270129",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT06153693",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM",
+          "source_key": "APPLICATION|MLYS|LORUNDROSTAT_20261222",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT06445023",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "TRIAL|NCT06445023",
+          "association_type": "DIRECT_TRIAL_SOURCE_IDENTITY"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT06455202",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "TRIAL|NCT06455202",
+          "association_type": "DIRECT_TRIAL_SOURCE_IDENTITY"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT06634420",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM",
+          "source_key": "APPLICATION|NTLA|LONVOZ_HAE_20270310",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT06641076",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "TRIAL|NCT06641076",
+          "association_type": "DIRECT_TRIAL_SOURCE_IDENTITY"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    },
+    {
+      "nct_id": "NCT07678775",
+      "candidate_associations": [
+        {
+          "historical_stage": "GEM_JR",
+          "source_key": "APPLICATION|BBIO|BBP418_LGMD2IR9_20261127",
+          "association_type": "UNVERIFIED_APPLICATION_HINT"
+        }
+      ],
+      "archive_metadata": {
+        "present_in_main_neon": true,
+        "has_posted_results": false,
+        "p_value_presence": "NO_POSTED_RESULTS",
+        "phases": [
+          "PHASE3"
+        ],
+        "digest_field_present": true
+      },
+      "independent_regulatory_crosswalk_approved": false,
+      "independent_scientific_evidence_verified": false,
+      "completed_scientific_assessments": 0,
+      "approval_probability": null,
+      "imported_into_scientific_render": false
+    }
+  ]
+}
