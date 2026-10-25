@@ -356,6 +356,7 @@ async def lifespan(app: FastAPI):
         try:
             from .scientific_stored_record import verified_record_from_archive
             from .scientific_investigation_20 import investigation_20
+            from .scientific_quantitative_results import reported_quantitative_results
             with Session(ENGINE) as depth_session:
                 depth_record = depth_session.scalars(
                     select(FullTrialRecord).order_by(FullTrialRecord.nct_id).limit(1)
@@ -790,6 +791,7 @@ def get_scientific_assessment(exact_id: str):
     result["registryEvidence"] = None
     result["registryEvidenceStatus"] = "not_available"
     result["investigation20"] = None
+    result["quantitativeResults"] = None
     # Never use an ephemeral SQLite fallback on hosted review services.
     match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id)
     if match and storage_ready() and _DB_STATE["available"]:
@@ -807,6 +809,9 @@ def get_scientific_assessment(exact_id: str):
                     result["investigation20"] = investigation_20(
                         match.group(1), snapshot,
                         retrieved_at=record.fetched_at.isoformat() if record.fetched_at else None,
+                    )
+                    result["quantitativeResults"] = reported_quantitative_results(
+                        match.group(1), snapshot,
                     )
                     result["registryEvidenceStatus"] = "source_record_loaded"
                 else:
