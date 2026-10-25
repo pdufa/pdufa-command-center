@@ -12,6 +12,7 @@ from app.hop_drugsfda_snapshot import stage_drugsfda_manifest
 from app.hop_fda_application_crosswalk import crosswalk_public_fda_sources
 from app.hop_fda_review_cycle_triage import triage_published_letter_cycles
 from app.hop_fda_identity_review_queue import create_fda_identity_review_queue
+from app.hop_fda_document_probe import probe_fda_review_documents, probe_all_fda_review_documents
 
 MANIFEST_URL = "https://api.fda.gov/download.json"
 
@@ -28,6 +29,10 @@ def fetch(url: str, max_bytes: int) -> bytes:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--pdf-probe-offset", type=int, default=0)
+    parser.add_argument("--pdf-probe-limit", type=int, default=20)
+    parser.add_argument("--pdf-probe-all", action="store_true",
+                        help="Verify all queued official PDF files in conservative bounded batches")
     args = parser.parse_args()
     manifest = json.loads(fetch(MANIFEST_URL, 8_000_000))
     crl_parts = manifest["results"]["transparency"]["crl"]["partitions"]
@@ -45,6 +50,12 @@ def main() -> None:
     crosswalk, audit = crosswalk_public_fda_sources(letters, registry)
     triage_cases, triage_audit = triage_published_letter_cycles(crosswalk, date.today())
     identity_queue, identity_audit = create_fda_identity_review_queue(crosswalk, letters)
+    if args.pdf_probe_all:
+        pdf_sources, pdf_audit = probe_all_fda_review_documents(
+            identity_queue, batch_size=args.pdf_probe_limit)
+    else:
+        pdf_sources, pdf_audit = probe_fda_review_documents(
+            identity_queue, offset=args.pdf_probe_offset, limit=args.pdf_probe_limit)
     audit["source_letter_archive_sha256"] = letter_audit["archive_sha256_by_url"]
     audit["source_registry_archive_sha256"] = registry_audit["source_archive_sha256"]
     dest = Path(args.output_dir)
@@ -61,6 +72,10 @@ def main() -> None:
         json.dumps(identity_queue, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (dest / "fda_identity_review_queue_audit.json").write_text(
         json.dumps(identity_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (dest / "fda_identity_review_official_pdf_checks.json").write_text(
+        json.dumps(pdf_sources, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (dest / "fda_identity_review_official_pdf_checks_audit.json").write_text(
+        json.dumps(pdf_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({
         "status": audit["status"],
         "published_letter_records": audit["published_letter_records"],
@@ -72,6 +87,8 @@ def main() -> None:
         "verified_review_cycle_outcomes": triage_audit["independently_verified_review_cycles"],
         "identity_review_queue_records": identity_audit["review_queue_records"],
         "identity_review_reason_counts": identity_audit["review_reason_counts"],
+        "official_pdf_probe_counts": pdf_audit["document_fetch_status_counts"],
+        "official_pdf_bytes_confirmed": pdf_audit["official_pdf_bytes_confirmed"],
     }, sort_keys=True))
 
 
