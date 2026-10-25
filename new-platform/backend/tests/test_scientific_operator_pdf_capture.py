@@ -1,0 +1,361 @@
+"""Isolated Google operator PDF capture tests; never independent scientific verification.
+
+No public-source fetches, production writes, real Google tokens or trading actions.
+"""
+import base64
+import gzip
+import hashlib
+import json
+from datetime import datetime, timezone
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
+
+from app import main, scientific_google_identity
+from app.scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL, GERMAN_REGULATOR_CSR, EMA_2016_ASSESSMENT
+from app.scientific_source_documents import read_document_manifest
+
+NCT = "NCT02142738"
+OTHER = "NCT04280705"
+TOKEN = "Bearer simulated-google-auth-token"
+HEADERS = {"Authorization": TOKEN}
+
+
+def sample_pdf(content=b"Archived source bytes, not independently verified"):
+    return b"%PDF-1.7\n1 0 obj<</Type/Catalog>>endobj\n" + content + b"\n%%EOF\n"
+
+
+def submission(raw=None, *, regulatory=False, **changes):
+    raw = raw if raw is not None else sample_pdf()
+    data = {
+        "gateId": "official_regulatory" if regulatory else "protocol_sap",
+        "sourceType": "official_agency_document" if regulatory else "protocol_sap",
+        "sourceUrl": FDA_2016_APPROVAL if regulatory else PROTOCOL_SAP,
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "contentBase64": base64.b64encode(raw).decode("ascii"),
+    }
+    data.update(changes)
+    return data
+
+
+@pytest.fixture
+def isolated(monkeypatch):
+    engine = create_engine("sqlite://", poolclass=StaticPool,
+                           connect_args={"check_same_thread": False})
+    main.Base.metadata.create_all(engine)
+    monkeypatch.setattr(main, "ENGINE", engine)
+    monkeypatch.setattr(main, "_DB_STATE", {"available": True, "reason": "READY"})
+    monkeypatch.setattr(main, "DATABASE_URL", "postgresql+psycopg://isolated.invalid/pilot")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "single_operator")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "owner@example.org")
+    monkeypatch.setenv("RENDER_SERVICE_ID", "srv-dbehn9fb9u1s739ok5vg")
+    monkeypatch.delenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED", raising=False)
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_DOCUMENT_CAPTURE_ENABLED", "0")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_LEDGER_WRITE_ENABLED", "0")
+    monkeypatch.setattr(scientific_google_identity, "verified_google_identity",
+                        lambda _: {"providerSubject": "a-google-subject",
+                                   "verifiedEmail": "owner@example.org"})
+    for identifier in [NCT, OTHER]:
+        record = {"protocolSection": {"identificationModule": {"nctId": identifier}},
+                  "hasResults": False}
+        raw = json.dumps(record, sort_keys=True).encode("utf-8")
+        with Session(engine) as session:
+            session.add(main.FullTrialRecord(
+                nct_id=identifier, payload_gzip=gzip.compress(raw),
+                sha256=hashlib.sha256(raw).hexdigest(),
+                summary={"nctId": identifier}, statistics=[],
+                fetched_at=datetime(2026, 10, 25, tzinfo=timezone.utc),
+            ))
+            session.commit()
+    yield TestClient(main.app), engine
+    engine.dispose()
+
+
+def enabled(monkeypatch):
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED", "1")
+
+
+def test_operator_document_archive_disabled_by_default(isolated):
+    client, engine = isolated
+    r = client.post("/api/scientific-assessment/operator/source-documents/"+NCT,
+                    headers=HEADERS, json=submission())
+    assert r.status_code == 403
+    assert client.get("/api/scientific-assessment/operator/me", headers=HEADERS
+                      ).json()["mayArchiveSourcePdf"] is False
+    with Session(engine) as session:
+        assert session.query(main.ScientificSourceDocument).count() == 0
+
+
+def test_no_google_identity_or_wrong_user_can_archive(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    path="/api/scientific-assessment/operator/source-documents/"+NCT
+    assert client.post(path, json=submission()).status_code == 401
+    monkeypatch.setattr(scientific_google_identity, "verified_google_identity",
+                        lambda _: {"verifiedEmail": "other-person@example.org"})
+    assert client.post(path, headers=HEADERS, json=submission()).status_code == 403
+    with Session(engine) as session:
+        assert session.query(main.ScientificSourceDocument).count() == 0
+
+
+def test_operator_capture_requires_isolated_postgres_and_service(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    path="/api/scientific-assessment/operator/source-documents/"+NCT
+    monkeypatch.setenv("RENDER_SERVICE_ID", "srv-production")
+    assert client.post(path, headers=HEADERS, json=submission()).status_code == 403
+    monkeypatch.setenv("RENDER_SERVICE_ID", "srv-dbehn9fb9u1s739ok5vg")
+    monkeypatch.setattr(main, "DATABASE_URL", "sqlite:///not-isolated.db")
+    assert client.post(path, headers=HEADERS, json=submission()).status_code == 403
+    with Session(engine) as session:
+        assert session.query(main.ScientificSourceDocument).count() == 0
+
+
+def test_capture_exact_pdf_bytes_with_google_only_no_review_key(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    raw = sample_pdf()
+    path="/api/scientific-assessment/operator/source-documents/"+NCT
+    r=client.post(path, headers=HEADERS, json=submission(raw))
+    assert r.status_code == 201, r.text
+    body=r.json()
+    assert body["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert body["byteLength"] == len(raw)
+    assert body["capturedBy"] == "Verified Google operator"
+    assert body["byteIntegrityChecked"] is True
+    assert body["sourceAuthorshipVerified"] is False
+    assert body["documentContentScientificallyVerified"] is False
+    assert body["canCountTowardReadiness"] is False
+    assert body["gateId"] == "protocol_sap"
+    assert "contentBase64" not in r.text
+
+    download=path+"/"+body["documentId"]
+    assert client.get(download).status_code == 401
+    r2=client.get(download, headers=HEADERS)
+    assert r2.status_code == 200
+    assert r2.content == raw
+    assert r2.headers["x-source-document-sha256"] == body["sha256"]
+    assert r2.headers["x-source-scientific-status"] == "not-independently-verified"
+    assert "no-store" in r2.headers["cache-control"]
+    assert client.get(download.replace(NCT, OTHER), headers=HEADERS).status_code == 404
+
+    manifest=read_document_manifest(NCT)
+    assert manifest["sourceDocumentCount"] == 1
+    assert manifest["documents"][0] == body
+    from app.scientific_review_packet import build_review_packet
+    packet = build_review_packet(NCT)
+    assert packet["scientificallyVerified"] is False
+    assert packet["readyForFullScientificConclusion"] is False
+    assert packet["independentSourceLedger"]["verifiedGateCount"] == 0
+    assert packet["independentSourceLedger"]["capturedSourceDocuments"]["sourceDocumentCount"] == 1
+    assert packet["scientificConclusion"] is None
+    assert packet["fdaApprovalProbability"] is None
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewerAccount).count() == 0
+        assert session.query(main.ScientificReviewSubmission).count() == 0
+        assert session.query(main.ScientificReviewerFinding).count() == 0
+
+
+def test_reject_wrong_source_gate_digest_forged_claims_and_duplicate(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    path="/api/scientific-assessment/operator/source-documents/"+NCT
+    invalid=[
+        submission(sourceUrl="https://example.com/research.pdf"),
+        submission(gateId="official_regulatory"),
+        submission(sourceType="official_agency_document"),
+        submission(sha256="0"*64),
+        submission(raw=b"not a PDF file, too invalid for this capture"),
+        submission(capturedBy="forged independent reviewer"),
+        submission(independentlyVerified=True),
+    ]
+    for value in invalid:
+        r=client.post(path,headers=HEADERS,json=value)
+        assert r.status_code == 422, (r.status_code, r.text)
+    assert client.post(path,headers=HEADERS,json=submission(),).status_code == 201
+    assert client.post(path,headers=HEADERS,json=submission(),).status_code in (409,422)
+    assert client.post(path.replace(NCT, OTHER),headers=HEADERS,json=submission()).status_code == 403
+    with Session(engine) as session:
+        assert session.query(main.ScientificSourceDocument).count() == 1
+
+
+def test_capture_rejects_corrupt_pilot_record_without_mutation(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    with Session(engine) as session:
+        archived = session.get(main.FullTrialRecord,NCT)
+        archived.sha256 = "0"*64
+        session.commit()
+    path="/api/scientific-assessment/operator/source-documents/"+NCT
+    r=client.post(path,headers=HEADERS,json=submission())
+    assert r.status_code == 422
+    with Session(engine) as session:
+        assert session.query(main.ScientificSourceDocument).count() == 0
+
+
+def test_tampered_pdf_fails_closed_after_google_upload(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    path="/api/scientific-assessment/operator/source-documents/"+NCT
+    r=client.post(path,headers=HEADERS,json=submission())
+    assert r.status_code == 201
+    doc=r.json()["documentId"]
+    with Session(engine) as session:
+        row=session.get(main.ScientificSourceDocument,doc)
+        row.payload=sample_pdf(b"incorrect modified bytes")
+        session.commit()
+    read=client.get(path+"/"+doc,headers=HEADERS)
+    assert read.status_code == 409
+    with pytest.raises(ValueError,match="mismatch"):
+        read_document_manifest(NCT)
+
+
+
+def test_official_pdf_fetch_requires_google_and_separate_feature_flag(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    route="/api/scientific-assessment/operator/source-documents/"+NCT+"/fetch/protocol"
+    from app import scientific_official_pdf_fetch
+    calls=[]
+    monkeypatch.setattr(scientific_official_pdf_fetch, "archive_official_pdf",
+                        lambda nct, source: calls.append((nct, source)) or {
+                            "scientificallyVerified": False,
+                            "byteIntegrityChecked": True,
+                            "documentContentScientificallyVerified": False,
+                            "independentReviewRequired": True,
+                        })
+    assert client.post(route, headers=HEADERS).status_code == 403
+    assert client.post(route).status_code == 401
+    assert not calls
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED", "1")
+    assert client.post(route).status_code == 401
+    other=route.replace(NCT, OTHER)
+    assert client.post(other, headers=HEADERS).status_code == 403
+    malformed=route.replace("/fetch/protocol", "/fetch/https://evil.example")
+    assert client.post(malformed, headers=HEADERS).status_code in (404, 422)
+    assert not calls
+    assert client.get("/api/scientific-assessment/operator/me",headers=HEADERS
+                      ).json()["mayFetchOfficialPdf"] is True
+    response=client.post(route, headers=HEADERS)
+    assert response.status_code == 200
+    assert response.json()["independentReviewRequired"] is True
+    assert response.json()["scientificallyVerified"] is False
+    assert calls == [(NCT,"protocol")]
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewerFinding).count() == 0
+        assert session.query(main.ScientificReviewSubmission).count() == 0
+
+
+def test_official_pdf_fetch_wrong_google_account_forbidden(isolated, monkeypatch):
+    client, _=isolated
+    enabled(monkeypatch)
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED", "1")
+    monkeypatch.setattr(scientific_google_identity, "verified_google_identity",
+                        lambda _: {"verifiedEmail": "unauthorized@example.org"})
+    r=client.post("/api/scientific-assessment/operator/source-documents/"+NCT+"/fetch/fda",
+                  headers=HEADERS)
+    assert r.status_code == 403
+
+
+def test_official_pdf_fetch_external_failure_returns_safe_error(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED", "1")
+    from app import scientific_official_pdf_fetch as fetch
+    monkeypatch.setattr(fetch, "archive_official_pdf",
+                        lambda *_: (_ for _ in ()).throw(
+                            fetch.OfficialSourceUnavailable("Private source diagnostics")))
+    r=client.post("/api/scientific-assessment/operator/source-documents/"+NCT+"/fetch/fda",
+                  headers=HEADERS)
+    assert r.status_code == 502
+    assert "Private source diagnostics" not in r.text
+    with Session(engine) as session:
+        assert session.query(main.ScientificSourceDocument).count() == 0
+
+
+
+def test_manual_original_german_csr_requires_exact_source_mapping(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    route="/api/scientific-assessment/operator/source-documents/"+NCT
+    csr=submission(
+        raw=sample_pdf(b"Historical German regulator CSR amendment table"),
+        gateId="protocol_sap",
+        sourceType="clinical_study_report",
+        sourceUrl=GERMAN_REGULATOR_CSR,
+    )
+    assert client.post(route, json=csr).status_code == 401
+    false_sap={**csr,"sourceType":"protocol_sap"}
+    assert client.post(route,headers=HEADERS,json=false_sap).status_code == 422
+    false_agency={**csr,"gateId":"official_regulatory"}
+    assert client.post(route,headers=HEADERS,json=false_agency).status_code == 422
+    forged={**csr,"sourceUrl":"https://portal.dimdi.de/data/ctr/not-the-official-keynote024.pdf"}
+    assert client.post(route,headers=HEADERS,json=forged).status_code == 422
+    okay=client.post(route,headers=HEADERS,json=csr)
+    assert okay.status_code == 201, okay.text
+    assert okay.json()["sourceType"] == "clinical_study_report"
+    assert okay.json()["gateId"] == "protocol_sap"
+    assert okay.json()["sourceUrl"] == GERMAN_REGULATOR_CSR
+    assert okay.json()["documentContentScientificallyVerified"] is False
+    assert okay.json()["canCountTowardReadiness"] is False
+    assert okay.json()["sourceAuthorshipVerified"] is False
+    assert read_document_manifest(NCT)["sourceDocumentCount"] == 1
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewSubmission).count() == 0
+        assert session.query(main.ScientificReviewerFinding).count() == 0
+
+
+def test_operator_can_trigger_only_specific_third_pinned_csr_fetch(isolated, monkeypatch):
+    client, engine=isolated
+    enabled(monkeypatch)
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED","1")
+    from app import scientific_official_pdf_fetch
+    called=[]
+    def mock_capture(nct, kind):
+        called.append((nct,kind))
+        return {"scientificallyVerified":False,
+                "byteIntegrityChecked":True,
+                "documentContentScientificallyVerified":False,
+                "independentReviewRequired":True}
+    monkeypatch.setattr(scientific_official_pdf_fetch,"archive_official_pdf",mock_capture)
+    url="/api/scientific-assessment/operator/source-documents/"+NCT+"/fetch/csr"
+    assert client.post(url).status_code==401
+    response=client.post(url,headers=HEADERS)
+    assert response.status_code==200,response.text
+    assert called==[(NCT,"csr")]
+    assert response.json()["scientificallyVerified"] is False
+    assert response.json()["independentReviewRequired"] is True
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewSubmission).count()==0
+
+
+
+def test_ema_statistical_review_cannot_be_spoofed_or_certify_sap(isolated, monkeypatch):
+    client,engine=isolated
+    enabled(monkeypatch)
+    path="/api/scientific-assessment/operator/source-documents/"+NCT
+    payload=submission(
+        raw=sample_pdf(b"Official EMA December 2016 statistical methods"),
+        gateId="protocol_sap",sourceType="official_agency_document",
+        sourceUrl=EMA_2016_ASSESSMENT,
+    )
+    assert client.post(path, json=payload).status_code==401
+    assert client.post(path,headers=HEADERS,
+                       json={**payload,"gateId":"official_regulatory"}).status_code==422
+    assert client.post(path,headers=HEADERS,
+                       json={**payload,"sourceUrl":"https://www.ema.europa.eu/fake.pdf"}).status_code==422
+    response=client.post(path,headers=HEADERS,json=payload)
+    assert response.status_code==201,response.text
+    body=response.json()
+    assert body["gateId"]=="protocol_sap"
+    assert body["sourceType"]=="official_agency_document"
+    assert body["sourceUrl"]==EMA_2016_ASSESSMENT
+    assert body["documentContentScientificallyVerified"] is False
+    assert body["canCountTowardReadiness"] is False
+    assert body["sourceAuthorshipVerified"] is False
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewSubmission).count()==0
+        assert session.query(main.ScientificReviewerFinding).count()==0
