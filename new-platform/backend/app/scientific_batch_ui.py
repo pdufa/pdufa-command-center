@@ -28,6 +28,14 @@ small{color:#587166} .status{min-height:25px;color:#245c4a;white-space:pre-wrap}
 progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8px}#history button{width:100%;text-align:left;background:#eef4f0;color:#153b2c}
 #history button.selected{outline:2px solid #28775f} #events{padding-left:22px}
 #events li{margin:7px 0;overflow-wrap:anywhere} .layout{display:grid;grid-template-columns:1fr 1.45fr;gap:20px}
+.science-domains{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.science-domain{border:1px solid #d9e4df;border-radius:8px;padding:13px;background:#f8faf8}
+.science-domain strong{display:block;margin:3px 0}
+.science-domain small{display:block}
+#science-details{min-height:26px;margin-top:10px;overflow-wrap:anywhere}
+#science-source a{color:#14634a;overflow-wrap:anywhere}
+@media(max-width:760px){.science-domains{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:400px){.science-domains{grid-template-columns:1fr}}
 @media(max-width:760px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -66,6 +74,19 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 <ol id="events"><li class="muted">Select a job to view its recorded results.</li></ol>
 </section>
 </div>
+<section>
+<h2>Scientific evidence assessment</h2>
+<p>Inspect the six scientific domains for an exact archived clinical trial. Descriptive registry records are not independently verified efficacy, safety, or FDA evidence. Unverified domains display <strong>Not scored</strong>, not a zero or an invented probability.</p>
+<label for="science-id">Exact ClinicalTrials.gov trial ID</label>
+<div class="row">
+<input id="science-id" style="flex:1;min-width:180px;width:auto" placeholder="NCT04280705" maxlength="11" autocomplete="off" spellcheck="false">
+<button id="science-inspect">Inspect scientific evidence</button>
+</div>
+<div class="status" id="science-status" role="status" aria-live="polite"></div>
+<div id="science-details"></div>
+<div id="science-source"></div>
+<div class="science-domains" id="science-domains" aria-label="Six scientific evidence domains"></div>
+</section>
 <section><div class="row" style="justify-content:space-between"><h2>Recent batches</h2><small>Last 20 jobs, newest first</small></div><div id="history" class="muted">Authenticate to load history.</div></section>
 </main>
 <script>
@@ -154,11 +175,82 @@ async function refreshHistory() {
   } catch (err) {notice(err.message,true);}
   finally {refreshInProgress=false;}
 }
+const DOMAIN_LABELS = {
+  trial_design:"Trial design", efficacy:"Efficacy", safety:"Safety",
+  biology:"Biology", reliability:"Reliability", regulatory:"Regulatory"
+};
+function clearScience() {
+  $("science-status").textContent="";
+  $("science-details").textContent="";
+  $("science-source").replaceChildren();
+  $("science-domains").replaceChildren();
+}
+async function inspectScience() {
+  const id = $("science-id").value.trim();
+  clearScience();
+  if(!/^NCT\d{8}$/.test(id)) {
+    $("science-status").textContent="Enter an exact NCT identifier (NCT followed by eight digits).";
+    $("science-status").className="status error";
+    return;
+  }
+  $("science-inspect").disabled=true;
+  $("science-status").textContent="Loading verified archive metadata...";
+  $("science-status").className="status";
+  try {
+    const result=await api("/api/scientific-assessment?exact_id="+encodeURIComponent("TRIAL|"+id));
+    const assessment=result.assessment||{};
+    const evidence=result.registryEvidence;
+    const archived=result.registryEvidenceStatus==="source_record_loaded" && evidence
+        && evidence.nctId===id && evidence.verificationStatus==="source_record_only";
+    const overall=assessment.overall_score;
+    $("science-status").textContent="Evidence: "+(archived ? "archived source record, descriptive only" :
+       result.registryEvidenceStatus==="record_not_found" ? "no archived record" :
+       result.registryEvidenceStatus==="record_unavailable_or_invalid" ? "archived record unavailable or invalid" :
+       "independent evidence not available")+
+       " · Overall scientific score: "+(overall === null || overall === undefined ? "Not scored" : String(overall));
+    if(archived) {
+      const meta=evidence.metadata||{};
+      const n=meta.enrollment;
+      $("science-details").textContent="Registry status: "+(meta.overallStatus||"not reported")
+        +" · Enrollment: "+(Number.isInteger(n) ? n : "not reported")
+        +" · Primary endpoints listed: "+(Array.isArray(meta.primaryOutcomes)?meta.primaryOutcomes.length:0);
+      const link=document.createElement("a");
+      const expected="https://clinicaltrials.gov/study/"+id;
+      link.href=expected;link.target="_blank";link.rel="noopener noreferrer";
+      link.textContent="View source record on ClinicalTrials.gov";
+      $("science-source").appendChild(link);
+    }
+    const domains=assessment.domains||{};
+    for(const [key,label] of Object.entries(DOMAIN_LABELS)) {
+      const domain=domains[key]||{};
+      const card=document.createElement("div");
+      card.className="science-domain";
+      const name=document.createElement("strong");name.textContent=label;card.appendChild(name);
+      const value=document.createElement("strong");
+      value.textContent=(domain.verified && typeof domain.score==="number" && Number.isFinite(domain.score))
+          ? domain.score.toFixed(2)+"/100" : "Not scored";
+      card.appendChild(value);
+      const coverage=document.createElement("small");
+      coverage.textContent="Verified fields: "+(domain.verified_fields||0)+"/"+(domain.required_fields||0);
+      card.appendChild(coverage);
+      const missing=document.createElement("small");
+      const fields=Array.isArray(domain.missing_fields)?domain.missing_fields:[];
+      missing.textContent=fields.length?"Missing: "+fields.join(", ").replaceAll("_"," "):"All required fields verified";
+      card.appendChild(missing);
+      $("science-domains").appendChild(card);
+    }
+  } catch(err) {
+    $("science-status").textContent=err.message;
+    $("science-status").className="status error";
+  } finally {$("science-inspect").disabled=false;}
+}
+$("science-inspect").addEventListener("click",inspectScience);
 $("refresh").addEventListener("click",refreshHistory);
 $("clear").addEventListener("click",()=>{
   $("key").value="";stopPolling(); selectedId=null;
   $("history").textContent="Authenticate to load history.";
   $("recovery").textContent="";
+  clearScience();
   $("events").replaceChildren();notice("Key cleared from the page.");});
 $("submit").addEventListener("click",async()=>{
   if(posting)return;
