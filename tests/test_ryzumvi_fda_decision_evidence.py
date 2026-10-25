@@ -9,7 +9,7 @@ import json
 import unittest
 from datetime import date
 
-from scripts.source_verification import Verifier
+from scripts.source_verification import Verifier, company_matches, drug_matches, indication_matches
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -100,6 +100,11 @@ class RyzumviOutcomeEvidenceTests(unittest.TestCase):
                         return b"issuer-approval", issuer_text
                     return b"unrelated", "Unrelated filing with no FDA decision"
                 verifier.document = document
+                self.assertTrue(company_matches({"company": "FamyGen Life Sciences, Inc."}, letter))
+                self.assertTrue(company_matches(event, issuer_text), ticker)
+                self.assertTrue(drug_matches(event, issuer_text), ticker)
+                self.assertTrue(indication_matches(event, issuer_text), ticker)
+                self.assertEqual(verifier.primary(event, mapping["fda_issuer_approval_url"]), "ISSUER")
                 self.assertEqual(
                     verifier.mapped_fda_action_applicant(
                         event, FDA_LETTER, letter, FDA_LABEL),
