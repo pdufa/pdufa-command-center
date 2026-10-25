@@ -4,7 +4,7 @@ Evaluation only: the score callback is a candidate model supplied by callers.
 No trained model, approval probabilities or deployment are created here.
 """
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from typing import Callable, Sequence
 from .hop_outcome_cohort import OutcomeObservation, DENOMINATOR_SOURCES, OUTCOMES
@@ -28,7 +28,7 @@ def walk_forward_backtest(
     """Evaluate only on later decisions; no same-application outcome leakage.
 
     The score function must be fitted exclusively on the supplied train rows.
-    This interface cannot itself verify its internals; external audit required.
+    Test outcomes are withheld from score_fn. The callback must not fetch\n    outcome labels through external sources; independent audit still required.
     """
     if min_train < 1:
         raise ValueError("min_train must be positive")
@@ -53,7 +53,7 @@ def walk_forward_backtest(
         losses = []
         if len(train) >= min_train:
             for row in usable:
-                value = score_fn(tuple(train), row)
+                value = score_fn(tuple(train), replace(row, outcome="WITHHELD"))
                 if value is not None:
                     if not isinstance(value, (int, float)) or not 0 <= value <= 1:
                         raise ValueError("score must be a probability in [0,1] or None")
