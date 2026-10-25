@@ -77,3 +77,13 @@ def test_archive_rejects_invalid_gzip():
     from app.scientific_stored_record import evidence_from_archive
     with pytest.raises(OSError):
         evidence_from_archive("NCT04280705", b"not-gzip", "0" * 64)
+
+
+def test_archive_rejects_wrong_trial_identity():
+    from app.scientific_stored_record import evidence_from_archive
+    record = {"protocolSection": {"identificationModule": {"nctId": "NCT04280705"}}}
+    canonical = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    with pytest.raises(ValueError, match="identity mismatch"):
+        evidence_from_archive(
+            "NCT00000001", gzip.compress(canonical), hashlib.sha256(canonical).hexdigest()
+        )
