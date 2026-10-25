@@ -71,6 +71,30 @@ class ProtocolReadinessTests(unittest.TestCase):
         self.assertFalse(r["tradingActionsEnabled"])
         self.assertFalse(r["fsFaModified"])
 
+    def test_2016_original_supplement_listing_does_not_unlock_preinterim_sap(self):
+        r = keynote024_protocol_readiness(stub_dossier(), stub_published())
+        source = r["original2016ProtocolSource"]
+        self.assertEqual(source["listedFilename"], "nejmoa1606774_protocol.pdf")
+        self.assertEqual(source["sourceUrl"],
+                         "https://www.nejm.org/doi/full/10.1056/nejmoa1606774")
+        self.assertTrue(source["listingVerified"])
+        self.assertFalse(source["pdfContentReviewed"])
+        self.assertFalse(source["effectiveAmendmentsVerified"])
+        self.assertFalse(source["originalSignedSapVerified"])
+        self.assertFalse(source["preInterimAlphaSpendingVerified"])
+        self.assertTrue(source["blocking"])
+        self.assertEqual(source["status"], "source_listed_not_adjudicated")
+        pre = next(c for c in r["checks"] if c["id"] == "pre_cutoff_protocol")
+        self.assertEqual(pre["status"], BLOCKED)
+        self.assertTrue(pre["critical"])
+        self.assertEqual(len(pre["sources"]), 3)
+        self.assertTrue(any("Supplementary Material" in x["locator"]
+                            for x in pre["sources"]))
+        self.assertEqual(r["inputReadiness"]["grade"], "FAIL")
+        self.assertEqual(r["reluctance"]["grade"], "HIGH")
+        self.assertIsNone(r["scientificScore"])
+        self.assertIsNone(r["fdaApprovalProbability"])
+
     def test_all_checks_have_vetted_links_and_locators(self):
         r = keynote024_protocol_readiness(stub_dossier(), stub_published())
         ids = [c["id"] for c in r["checks"]]
