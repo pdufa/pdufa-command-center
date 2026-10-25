@@ -29,3 +29,4 @@ jobs:
           python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_external_sources.py' -v
           python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_reference_http.py' -v
           python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_evidence_review.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024.py' -v
