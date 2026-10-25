@@ -42,6 +42,12 @@ FDA-staff-authored historical summary:
 https://pmc.ncbi.nlm.nih.gov/articles/PMC5679831/
 (KEYNOTE-024 efficacy table, footnote b).
 
+**Provenance validation:** The source URLs and reported event/alpha values
+are exact-checked by the frontend and bounded backend adapter. The backend
+requires the existing pre-cutoff protocol checklist item to remain BLOCKED
+and the publisher supplement to remain unreviewed. No reviewer statement
+or source-candidate submission can silently upgrade a clinical finding.
+
 The first and second interim planned event counts are approximate design
 targets, not statements that the realized events must equal those counts.
 Do not treat the numerical difference as a protocol violation.
