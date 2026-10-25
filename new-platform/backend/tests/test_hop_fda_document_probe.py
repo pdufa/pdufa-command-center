@@ -154,3 +154,16 @@ def test_complete_probe_reports_invalid_and_unavailable_without_fake_links():
 def test_complete_probe_rejects_unbounded_batches(batch_size):
     with pytest.raises(ValueError, match="invalid FDA PDF batch size"):
         probe_all_fda_review_documents(queue(case()), batch_size=batch_size)
+
+
+def test_exact_published_fda_pdf_name_with_one_space_is_safely_encoded():
+    name = "CRL_NDA 217711_20250827.pdf"
+    expected = "https://download.open.fda.gov/crl/CRL_NDA%20217711_20250827.pdf"
+    assert official_document_candidate(name) == expected
+    result, audit = probe_fda_review_documents(
+        queue(case(name)), fetcher=lambda url: (
+            "OFFICIAL_PDF_BYTES_CONFIRMED", "a" * 64,
+        ))
+    assert result["records"][0]["official_fda_pdf_url_if_confirmed"] == expected
+    assert result["records"][0]["model_eligible"] is False
+    assert audit["model_eligible_records"] == 0
