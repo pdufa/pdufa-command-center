@@ -1,0 +1,43 @@
+name: Scientific Preview Read-only Backend Auth
+
+on:
+  pull_request:
+    branches:
+      - feature/scientific-assessment-v1
+      - integration/scientific-assessment-validation-20261025
+      - main
+    paths:
+      - "new-platform/backend/app/main.py"
+      - "new-platform/backend/tests/test_scientific_preview_readonly_auth.py"
+      - ".github/workflows/scientific-preview-readonly-backend-auth.yml"
+  push:
+    branches:
+      - feature/scientific-assessment-v1
+      - integration/scientific-assessment-validation-20261025
+    paths:
+      - "new-platform/backend/app/main.py"
+      - "new-platform/backend/tests/test_scientific_preview_readonly_auth.py"
+      - ".github/workflows/scientific-preview-readonly-backend-auth.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-read-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt pytest
+      - name: Ensure scientific preview key cannot grant any privileged API access
+        run: python -m unittest discover -s tests -p 'test_scientific_preview_readonly_auth.py' -v
+      - name: Existing scientific API key compatibility
+        run: python -m unittest discover -s tests -p 'test_scientific_assessment_auth.py' -v
+      - name: Verify scientific source-archive read-only API invariants
+        run: python -m pytest -q tests/test_scientific_api_read_probe.py
