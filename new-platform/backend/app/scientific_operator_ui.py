@@ -186,6 +186,28 @@ _PAGE = r'''<!doctype html>
     if (!r.ok) throw Error("Scientific API unavailable (" + r.status + ")");
     return r.json();
   }
+  async function checkReviewerSetup() {
+    reviewerSetupStatus.textContent = "Reading reviewer-access status…";
+    try {
+      var data = await authorizedFetch("/api/scientific-assessment/operator/reviewer-setup");
+      if (data.selfRegistrationAllowed !== false ||
+          data.operatorMayActAsIndependentReviewer !== false ||
+          data.maySignOff !== false ||
+          data.independentScientificAdjudicationImplemented !== false) {
+        throw Error("Reviewer setup security policy not satisfied");
+      }
+      reviewerSetupStatus.textContent =
+        String(data.activeCredentialVerifiedIdentities) +
+        " provisioned reviewer identities out of " +
+        String(data.requiredDistinctReviewerIdentities) +
+        " needed for two-person review. Scientific sign-off remains disabled.";
+    } catch (err) {
+      reviewerSetupStatus.textContent =
+        "Reviewer setup status unavailable; no new access has been granted. " +
+        String(err.message || err);
+    }
+  }
+
   async function receivedGoogleCredential(credential) {
     var received = credential && credential.credential;
     if (typeof received !== "string" || received.length < 20) {
