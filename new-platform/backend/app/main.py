@@ -814,6 +814,7 @@ def get_scientific_assessment(exact_id: str):
     result["registryEvidenceStatus"] = "not_available"
     result["investigation20"] = None
     result["quantitativeResults"] = None
+    result["readinessGrades"] = None
     # Never use an ephemeral SQLite fallback on hosted review services.
     match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id)
     if match and storage_ready() and _DB_STATE["available"]:
@@ -822,6 +823,7 @@ def get_scientific_assessment(exact_id: str):
             from .scientific_registry_evidence import extract_trial_evidence
             from .scientific_investigation_20 import investigation_20
             from .scientific_quantitative_results import reported_quantitative_results
+            from .scientific_readiness_grades import review_readiness
             with Session(ENGINE) as session:
                 record = session.get(FullTrialRecord, match.group(1))
                 if record is not None:
@@ -835,6 +837,10 @@ def get_scientific_assessment(exact_id: str):
                     )
                     result["quantitativeResults"] = reported_quantitative_results(
                         match.group(1), snapshot,
+                    )
+                    result["readinessGrades"] = review_readiness(
+                        match.group(1), snapshot,
+                        archive_retrieved_at=record.fetched_at.isoformat() if record.fetched_at else None,
                     )
                     result["registryEvidenceStatus"] = "source_record_loaded"
                 else:
