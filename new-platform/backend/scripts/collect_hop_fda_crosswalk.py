@@ -10,6 +10,7 @@ from urllib.request import Request, urlopen
 from app.hop_openfda_snapshot import build_crl_snapshot
 from app.hop_drugsfda_snapshot import stage_drugsfda_manifest
 from app.hop_fda_application_crosswalk import crosswalk_public_fda_sources
+from app.hop_fda_review_cycle_triage import triage_published_letter_cycles
 
 MANIFEST_URL = "https://api.fda.gov/download.json"
 
@@ -41,6 +42,7 @@ def main() -> None:
         date.today(),
     )
     crosswalk, audit = crosswalk_public_fda_sources(letters, registry)
+    triage_cases, triage_audit = triage_published_letter_cycles(crosswalk, date.today())
     audit["source_letter_archive_sha256"] = letter_audit["archive_sha256_by_url"]
     audit["source_registry_archive_sha256"] = registry_audit["source_archive_sha256"]
     dest = Path(args.output_dir)
@@ -49,12 +51,19 @@ def main() -> None:
         json.dumps(crosswalk, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (dest / "fda_crl_registry_identity_audit.json").write_text(
         json.dumps(audit, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (dest / "fda_repeat_letter_review_candidates.json").write_text(
+        json.dumps(triage_cases, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (dest / "fda_repeat_letter_triage_audit.json").write_text(
+        json.dumps(triage_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({
         "status": audit["status"],
         "published_letter_records": audit["published_letter_records"],
         "approved_registry_source_application_records": audit["approved_registry_source_application_records"],
         "identity_link_status_counts": audit["identity_link_status_counts"],
         "model_eligible_records": audit["model_eligible_records"],
+        "repeated_letter_application_groups": triage_audit["repeated_letter_application_groups"],
+        "potential_same_day_type_duplicate_groups": triage_audit["potential_same_day_type_duplicate_groups"],
+        "verified_review_cycle_outcomes": triage_audit["independently_verified_review_cycles"],
     }, sort_keys=True))
 
 
