@@ -390,7 +390,7 @@ def gather(today: date | None = None) -> dict:
     }
 
 
-def _stale_snapshot(snapshot: dict, reason: str) -> dict:
+def _stale_snapshot(snapshot: dict, reason: str, *, refreshing: bool = False) -> dict:
     """Preserve identities while explicitly denying current-source verification."""
     return {
         **snapshot,
@@ -398,6 +398,7 @@ def _stale_snapshot(snapshot: dict, reason: str) -> dict:
         "sourceHealth": {
             **snapshot.get("sourceHealth", {}),
             "state": "STALE",
+            "refreshInProgress": refreshing,
             "issues": [*snapshot.get("sourceHealth", {}).get("issues", []), reason],
         },
     }
@@ -418,7 +419,7 @@ def workspace() -> dict:
         with _LOCK:
             cached = _CACHE["payload"]
         if cached is not None:
-            return _stale_snapshot(cached, "Published-source refresh in progress")
+            return _stale_snapshot(cached, "Published-source refresh in progress", refreshing=True)
         # Initial cold start: wait for the first refresh to finish.
         with _REFRESH_LOCK:
             with _LOCK:

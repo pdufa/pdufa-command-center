@@ -1,0 +1,56 @@
+"""Source refreshes poll without returning stale scores or changing the DB."""
+import copy
+import threading
+
+import pytest
+from fastapi import HTTPException
+from fastapi.testclient import TestClient
+
+from app import main, source_workspace, assessment_service, workspace_response
+
+
+def test_refresh_in_progress_is_pending_without_scores_or_database(monkeypatch):
+    cached = {"pipeline": [{"id": "TRIAL|NCT00000001"}], "sourceHealth": {"state": "PARTIAL", "issues": []}}
+    original = copy.deepcopy(cached)
+    lock = threading.Lock()
+    lock.acquire()
+    monkeypatch.setattr(source_workspace, "_REFRESH_LOCK", lock)
+    monkeypatch.setattr(source_workspace, "_CACHE", {"payload": cached, "as_time": -1000})
+    def forbidden(*args, **kwargs):
+        raise AssertionError("A pending source refresh must not access the registry or scoring DB")
+    monkeypatch.setattr(workspace_response, "prepared", forbidden)
+    monkeypatch.setattr(assessment_service, "Session", forbidden)
+    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "refresh-test-only")
+    main.app.dependency_overrides[main.require_storage] = lambda: None
+    try:
+        source = source_workspace.workspace()
+        assert source["sourceHealth"]["state"] == "STALE"
+        assert source["sourceHealth"]["refreshInProgress"] is True
+        client = TestClient(main.app)
+        try:
+            response = client.get("/api/candidate-assessments", headers={"X-PDUFA-Internal-Key": "refresh-test-only"})
+            assert response.status_code == 200
+            assert response.json() == {"modelVersion": assessment_service.MODEL,
+                                       "status": "BUILDING", "total": 1,
+                                       "reason": "SOURCE_REFRESH_IN_PROGRESS"}
+            assert "records" not in response.json() and "version" not in response.json()
+            detail = client.get("/api/candidate-assessments/detail", params={"identity": "TRIAL|NCT00000001"},
+                                headers={"X-PDUFA-Internal-Key": "refresh-test-only"})
+            assert detail.status_code == 409
+        finally:
+            client.close()
+    finally:
+        main.app.dependency_overrides.pop(main.require_storage, None)
+        lock.release()
+    assert cached == original
+
+
+def test_failed_refresh_still_rejects_stale_source(monkeypatch):
+    cached = {"pipeline": [{"id": "TRIAL|NCT00000001"}], "sourceHealth": {"state": "PARTIAL", "issues": []}}
+    stale = source_workspace._stale_snapshot(cached, "Published-source refresh failed")
+    assert stale["sourceHealth"]["refreshInProgress"] is False
+    monkeypatch.setattr(source_workspace, "workspace", lambda: stale)
+    monkeypatch.setattr(workspace_response, "prepared", lambda value: value)
+    with pytest.raises(HTTPException) as error:
+        assessment_service.get_index()
+    assert error.value.status_code == 503
