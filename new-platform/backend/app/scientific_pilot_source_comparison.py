@@ -75,7 +75,7 @@ SOURCES = {
     "german_regulator_2022_csr": {
         "label": "German Paul-Ehrlich-Institut published KEYNOTE-024 study-report amendment history",
         "url": "https://portal.dimdi.de/data/ctr/O-2145_01-2-0-CE336C-20220110151635.pdf",
-        "documentDate": "2022-01-10",
+        "documentDate": None,
         "kind": "official_regulator_hosted_sponsor_report_retrospective",
         "locator": "PDF page 47 (zero-index 46), Protocol MK-3475-024 amendment table, P024-03",
     },
