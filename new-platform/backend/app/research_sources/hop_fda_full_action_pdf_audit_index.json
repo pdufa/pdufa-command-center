@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "ALL_PUBLISHED_FDA_ACTION_PDFS_QUARANTINED_NOT_VALIDATED_OUTCOMES",
+  "official_fda_crl_export_date": "2026-10-21",
+  "acquired_on": "2026-10-25",
+  "source_collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40232393298",
+  "source_collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40232393298/artifacts/12612773759",
+  "artifact_retention_days": 30,
+  "original_fda_archive_sha256": "744de010761c9ba445c3756ff7e47d5715c3e9d5aef48f5b1fd663646b5d6732",
+  "published_letter_records": 458,
+  "full_official_pdf_bytes_confirmed": 457,
+  "source_records_without_safe_pdf_filename": 1,
+  "source_record_without_released_pdf": "75d0e6c5d88b49f7be336cf3649b3eb08a2ba1f930c2c0f9cfc1ac8ae88f6515",
+  "source_status_without_pdf": "Under Review for Release",
+  "published_letter_type_counts": {
+    "COMPLETE RESPONSE": 445,
+    "CORRECTED PROVISIONAL DETERMINATION": 1,
+    "PROVISIONAL DETERMINATION": 1,
+    "REFUSAL TO FILE": 1,
+    "RESCIND COMPLETE RESPONSE": 1,
+    "TENTATIVE APPROVAL": 4,
+    "UNCLASSIFIED": 5
+  },
+  "special_document_actions_requiring_prior_action_review": 2,
+  "effective_fda_action_dates_independently_verified": 0,
+  "adjudicated_review_cycle_outcomes": 0,
+  "clinical_predecision_evidence_verified": 0,
+  "complete_application_denominator_verified": false,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "limitations": [
+    "457 official source PDF byte checks confirm retrieval and hash, not actual FDA action-date verification or scientific outcome classification.",
+    "One official FDA source record is unavailable for source-PDF review because the publication says Under Review for Release.",
+    "CRLs and corrections, tentative approvals, rescissions, refusals to file, and provisional/unclassified letters must remain distinct regulatory events.",
+    "The source archive includes selectively published documents and cannot establish complete NDA/BLA review-cycle population.",
+    "No FDA letter source automatically authorizes a backtest training label."
+  ]
+}

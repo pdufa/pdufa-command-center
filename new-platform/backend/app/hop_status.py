@@ -16,6 +16,7 @@ REPEAT_LETTER_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda
 IDENTITY_REVIEW_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_identity_review_queue_index.json"
 OFFICIAL_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_pdf_document_verification_index.json"
 FILING_BENCHMARK_PATH = Path(__file__).parent / "research_sources" / "hop_fda_pdufa_filing_benchmarks.json"
+ALL_ACTION_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_full_action_pdf_audit_index.json"
 
 
 def _published_letter_source_audit(path: Path) -> dict | None:
@@ -272,13 +273,72 @@ def _fda_annual_filing_reference(path: Path) -> dict | None:
         return None
 
 
+
+def _quarantined_all_fda_action_pdf_audit(path: Path) -> dict | None:
+    """All public FDA letters: source PDF bytes are not FDA action labels."""
+    allowed_types = {
+        "COMPLETE RESPONSE", "CORRECTED PROVISIONAL DETERMINATION",
+        "PROVISIONAL DETERMINATION", "REFUSAL TO FILE",
+        "RESCIND COMPLETE RESPONSE", "TENTATIVE APPROVAL", "UNCLASSIFIED",
+    }
+    try:
+        src = json.loads(path.read_text(encoding="utf-8"))
+        total = src["published_letter_records"]
+        verified = src["full_official_pdf_bytes_confirmed"]
+        unreleased = src["source_records_without_safe_pdf_filename"]
+        types = src["published_letter_type_counts"]
+        if (src.get("status") != "ALL_PUBLISHED_FDA_ACTION_PDFS_QUARANTINED_NOT_VALIDATED_OUTCOMES"
+                or any(type(n) is not int or n < 0 for n in (total, verified, unreleased))
+                or total < 1 or verified + unreleased != total
+                or not isinstance(types, dict) or set(types) != allowed_types
+                or any(type(n) is not int or n < 0 for n in types.values())
+                or sum(types.values()) != total
+                or type(src.get("special_document_actions_requiring_prior_action_review")) is not int
+                or src["special_document_actions_requiring_prior_action_review"] != (
+                    types["RESCIND COMPLETE RESPONSE"]
+                    + types["CORRECTED PROVISIONAL DETERMINATION"])
+                or any(type(src.get(field)) is not int or src[field] != 0
+                       for field in (
+                           "effective_fda_action_dates_independently_verified",
+                           "adjudicated_review_cycle_outcomes",
+                           "clinical_predecision_evidence_verified",
+                           "model_eligible_records",
+                       ))
+                or src.get("complete_application_denominator_verified") is not False
+                or src.get("prediction_probability") is not None
+                or not re.fullmatch(r"[0-9a-f]{64}",
+                        src["source_record_without_released_pdf"])
+                or not re.fullmatch(r"[0-9a-f]{64}",
+                        src["original_fda_archive_sha256"])
+                or src["source_status_without_pdf"] != "Under Review for Release"):
+            raise ValueError("published FDA document audit cannot establish review-cycle outcomes")
+        return {
+            "status": "OFFICIAL_SOURCE_DOCUMENTS_CHECKED_ONLY",
+            "fda_source_export_date": src["official_fda_crl_export_date"],
+            "published_letter_records": total,
+            "official_pdf_bytes_confirmed": verified,
+            "source_records_without_pdf": unreleased,
+            "published_letter_type_counts": types,
+            "special_actions_requiring_prior_review":
+                src["special_document_actions_requiring_prior_action_review"],
+            "source_collection_run_url": src["source_collection_run_url"],
+            "source_collection_artifact_url": src["source_collection_artifact_url"],
+            "independently_verified_effective_action_dates": 0,
+            "independently_adjudicated_review_cycle_outcomes": 0,
+            "model_eligible_records": 0,
+            "complete_denominator_verified": False,
+        }
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+
 def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SOURCE_AUDIT_PATH,
                          drugs_audit_path: Path = DRUGS_SOURCE_AUDIT_PATH,
                          crosswalk_audit_path: Path = CROSSWALK_AUDIT_PATH,
                          repeat_letter_audit_path: Path = REPEAT_LETTER_AUDIT_PATH,
                          identity_review_audit_path: Path = IDENTITY_REVIEW_AUDIT_PATH,
                          official_pdf_audit_path: Path = OFFICIAL_PDF_AUDIT_PATH,
-                         filing_benchmark_path: Path = FILING_BENCHMARK_PATH) -> dict:
+                         filing_benchmark_path: Path = FILING_BENCHMARK_PATH,
+                         all_action_pdf_audit_path: Path = ALL_ACTION_PDF_AUDIT_PATH) -> dict:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         records = raw["records"]
@@ -317,6 +377,10 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
                 or source_pdfs["identity_review_cases_checked"] != identity_review[
                     "identity_review_queue_records"]):
             source_pdfs = None
+        all_published_pdfs = _quarantined_all_fda_action_pdf_audit(all_action_pdf_audit_path)
+        if all_published_pdfs and (not letter_source
+                or all_published_pdfs["published_letter_records"] != letter_source["published_letter_records"]):
+            all_published_pdfs = None
         return {
             "status": "RESEARCH_ONLY",
             "historical_staged": staged,
@@ -327,6 +391,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_identity_review_queue": identity_review,
             "fda_official_pdf_checks": source_pdfs,
             "fda_annual_filing_reference": _fda_annual_filing_reference(filing_benchmark_path),
+            "fda_all_published_action_documents": all_published_pdfs,
             "historical_quarantined": quarantined,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
@@ -346,6 +411,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_identity_review_queue": None,
             "fda_official_pdf_checks": None,
             "fda_annual_filing_reference": None,
+            "fda_all_published_action_documents": None,
             "historical_quarantined": None,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
