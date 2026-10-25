@@ -34,7 +34,7 @@ MAX_PDF_BYTES = 4 * 1024 * 1024
 MAX_DOCUMENTS_PER_TRIAL = 8
 SHA_PATTERN = re.compile(r"[a-f0-9]{64}\Z")
 DOCUMENT_ID_PATTERN = re.compile(r"[a-f0-9]{32}\Z")
-CAPTURE_STATUS = "byte_integrity_checked_not_independently_verified"
+CAPTURE_STATUS = "byte_integrity_checked_unverified"
 
 
 def _allowed_urls(session: Session, nct_id: str, gate_id: str) -> set[str]:
