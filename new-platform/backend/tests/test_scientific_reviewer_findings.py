@@ -170,6 +170,10 @@ def test_unverified_statements_conflicts_revisions_and_packet_are_consistent(rev
     assert pkt["independentSourceLedger"]["reviewerFindings"]["totalStatements"]==3
     assert pkt["reconciliation"]["unresolvedCount"]==8
     assert pkt["reconciliation"]["independentlyResolvedCount"]==0
+    question={item["id"]:item for item in pkt["reconciliation"]["checks"]}
+    assert question["protocol_amendment_chronology"]["reviewerStatementCount"]==3
+    assert question["protocol_amendment_chronology"]["conflictingReviewerStatements"] is False
+    assert all(not q["resolved"] for q in pkt["reconciliation"]["checks"])
     assert pkt["scientificConclusion"] is None
     assert REVIEW not in exported.text and INTERNAL not in exported.text
     with Session(engine) as session:
