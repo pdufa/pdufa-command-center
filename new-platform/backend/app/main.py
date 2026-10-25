@@ -1287,7 +1287,7 @@ def scientific_operator_nominate_reviewer(
     require_isolated_scientific_review_service()
     if not storage_ready() or not _DB_STATE["available"]:
         raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
-    from .scientific_reviewer_nominations import nominate_reviewer
+    from .scientific_reviewer_nominations import nominate_reviewer, DuplicateNomination
     try:
         result = nominate_reviewer(
             candidate_email=body.candidateEmail,
@@ -1297,7 +1297,7 @@ def scientific_operator_nominate_reviewer(
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from None
-    except IntegrityError:
+    except (DuplicateNomination, IntegrityError):
         raise HTTPException(status_code=409, detail="Candidate already nominated") from None
     response.headers["Cache-Control"] = "private, no-store"
     return result
