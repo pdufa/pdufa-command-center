@@ -76,6 +76,15 @@ class Keynote024PilotHttpTests(unittest.TestCase):
         self.assertEqual(result["dossier"]["nct_id"], "NCT02142738")
         self.assertEqual(result["pilot"]["nct_id"], "NCT02142738")
         self.assertEqual(result["publishedResults"]["nct_id"], "NCT02142738")
+        audit = result["sourceEvidenceAudit"]
+        self.assertEqual(audit["nctId"], "NCT02142738")
+        self.assertEqual(audit["earlyDesignEvidence"]["publicationDate"], "2015-05-20")
+        self.assertFalse(audit["earlyDesignEvidence"]["signedSapVerified"])
+        self.assertFalse(audit["independentProtocolSapReviewComplete"])
+        self.assertEqual(audit["registrySafety"]["status"], "no_groups_documented_in_snapshot")
+        self.assertTrue(audit["registrySafety"]["missingGroupsDoNotImplyZeroEvents"])
+        self.assertIsNone(audit["scientificScore"])
+        self.assertIsNone(audit["fdaApprovalProbability"])
         self.assertEqual(len(result["publishedResults"]["analysis_snapshots"]), 3)
         self.assertIsNone(result["dossier"]["overall_score"])
         self.assertIsNone(result["publishedResults"]["overall_score"])
@@ -89,6 +98,25 @@ class Keynote024PilotHttpTests(unittest.TestCase):
         self.assertFalse(result["qualificationPresetsModified"])
         self.assertTrue(result["researchOnly"])
         self.Session.return_value.__enter__.return_value.get.assert_called_once()
+
+    def test_corrupt_registry_safety_event_group_rejected_before_response(self):
+        import json
+        source = {
+            "protocolSection": {"identificationModule": {"nctId": "NCT02142738"}},
+            "resultsSection": {
+                "adverseEventsModule": {"eventGroups": [{
+                    "id": "EG000", "title": "bad fixture",
+                    "seriousNumAffected": 11, "seriousNumAtRisk": 10,
+                }]},
+            },
+        }
+        raw = json.dumps(source, sort_keys=True, separators=(",", ":"),
+                         ensure_ascii=False).encode()
+        self.record.payload_gzip = gzip.compress(raw)
+        self.record.sha256 = hashlib.sha256(raw).hexdigest()
+        response = self.get()
+        self.assertEqual(response.status_code, 503)
+        self.assertNotIn("sourceEvidenceAudit", response.json())
 
     def test_no_live_lookup_or_background_scan_in_endpoint(self):
         with patch("app.scientific_external_sources._read_json") as external:
