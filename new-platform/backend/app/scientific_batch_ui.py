@@ -34,6 +34,13 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 .science-domain small{display:block}
 #science-details{min-height:26px;margin-top:10px;overflow-wrap:anywhere}
 #science-source a{color:#14634a;overflow-wrap:anywhere}
+#quantitative-results{margin:18px 0}
+.quant-summary{padding:14px;background:#f4f8f5;border:1px solid #d9e4df;border-radius:8px;line-height:1.55}
+.quant-results{display:grid;gap:9px;margin:12px 0}
+.quant-results details{border:1px solid #d9e4df;background:#fff;border-radius:8px;padding:12px}
+.quant-results summary{cursor:pointer;font-weight:650}
+.quant-analysis{padding:11px;margin:10px 0;background:#f6f9f7;border-radius:6px}
+.quant-result{overflow-wrap:anywhere}
 .investigation-summary{padding:12px 15px;border:1px solid #d9e4df;background:#f4f8f5;border-radius:8px;margin:14px 0}
 .investigation-levels{display:grid;gap:8px;margin:12px 0}
 .investigation-levels details{border:1px solid #d9e4df;border-radius:8px;padding:12px;background:#fafcfb}
@@ -94,6 +101,7 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 <div id="science-details"></div>
 <div id="science-source"></div>
 <div class="science-domains" id="science-domains" aria-label="Six scientific evidence domains"></div>
+<div id="quantitative-results" aria-live="polite"></div>
 <div id="investigation-20" aria-live="polite"></div>
 </section>
 <section><div class="row" style="justify-content:space-between"><h2>Recent batches</h2><small>Last 20 jobs, newest first</small></div><div id="history" class="muted">Authenticate to load history.</div></section>
@@ -194,6 +202,95 @@ function clearScience() {
   $("science-source").replaceChildren();
   $("science-domains").replaceChildren();
   $("investigation-20").replaceChildren();
+  $("quantitative-results").replaceChildren();
+}
+function paintQuantitativeResults(data) {
+  const root=$("quantitative-results");root.replaceChildren();
+  if(!data || data.sourceStatus!=="registry_reported_not_independently_verified")return;
+  const heading=document.createElement("h3");
+  heading.textContent="Reported outcomes and safety — not independently verified";
+  root.appendChild(heading);
+  const summary=document.createElement("p");summary.className="quant-summary";
+  summary.textContent="Registry-reported: "+data.outcomeCountTotal+" outcome measures, "
+    +data.analysisCountTotal+" statistical analyses, "+data.reportedPValuesShown
+    +" displayed p-values and "+data.reportedConfidenceIntervalsShown
+    +" displayed confidence intervals. "
+    +(data.truncated?"Display capped; inspect full registry source for omitted rows. ":"")
+    +"No statistical-success grade, multiplicity adjustment, benefit-risk conclusion, "
+    +"or FDA approval probability has been calculated.";
+  root.appendChild(summary);
+  const outcomes=document.createElement("div");outcomes.className="quant-results";
+  if(!Array.isArray(data.outcomes)||!data.outcomes.length){
+    const empty=document.createElement("p");empty.textContent="No numeric outcome measures were included in this archived registry snapshot.";
+    root.appendChild(empty);
+  } else for(const outcome of data.outcomes){
+    const wrap=document.createElement("details");wrap.className="quant-result";
+    const title=document.createElement("summary");
+    title.textContent=(outcome.outcomeType||"UNCLASSIFIED")+" · "+(outcome.title||"Untitled outcome")
+      +" · "+outcome.reportedAnalyses+" reported analyses";
+    wrap.appendChild(title);
+    const desc=document.createElement("p");
+    desc.textContent="Unit: "+(outcome.unit||"not reported")
+      +" · Time frame: "+(outcome.timeFrame||"not reported");
+    wrap.appendChild(desc);
+    const groups=document.createElement("p");
+    groups.textContent="Registry group labels: "+(
+      Array.isArray(outcome.groups)&&outcome.groups.length
+      ? outcome.groups.map(x=>(x.id||"?")+": "+(x.title||"unnamed")).join(" · ")
+      : "not documented"
+    );
+    wrap.appendChild(groups);
+    const analyses=Array.isArray(outcome.analyses)?outcome.analyses:[];
+    if(!analyses.length){
+      const missing=document.createElement("p");missing.textContent="No reported comparative analyses in this outcome entry.";
+      wrap.appendChild(missing);
+    }
+    for(const a of analyses){
+      const item=document.createElement("div");item.className="quant-analysis";
+      const lines=[
+        "Method: "+(a.method||"not reported")+" · Parameter: "+(a.parameterType||outcome.parameterType||"not reported"),
+        "Estimate: "+(a.reportedEstimate??"not reported")+" · Reported p-value: "+(a.pValueReported??"not reported"),
+        "Confidence interval ("+(a.confidenceIntervalPercent??"?")+"%, "+(a.confidenceIntervalSides||"sides not specified")
+          +"): "+(a.confidenceIntervalLower??"not reported")+" to "+(a.confidenceIntervalUpper??"not reported"),
+        "Compared group IDs: "+(Array.isArray(a.groupIds)&&a.groupIds.length?a.groupIds.join(", "):"not reported"),
+        "Archived JSON path: "+a.sourceFieldPath,
+      ];
+      for(const line of lines){
+        const p=document.createElement("p");p.textContent=line;item.appendChild(p);
+      }
+      wrap.appendChild(item);
+    }
+    outcomes.appendChild(wrap);
+  }
+  root.appendChild(outcomes);
+  const safety=data.safety||{};
+  const safetyTitle=document.createElement("h4");safetyTitle.textContent="Reported adverse events";
+  root.appendChild(safetyTitle);
+  const counts=document.createElement("p");
+  counts.textContent="Serious event terms: "+(safety.seriousEventTermCountTotal??0)
+    +" · Other event terms: "+(safety.otherEventTermCountTotal??0)
+    +" · Registry event groups: "+(safety.adverseEventGroupCount??0)
+    +". Counts and denominators are displayed as reported; comparative risk is not inferred.";
+  root.appendChild(counts);
+  const serious=Array.isArray(safety.seriousEventTermsShown)?safety.seriousEventTermsShown:[];
+  const safetyList=document.createElement("div");safetyList.className="quant-results";
+  for(const event of serious){
+    const card=document.createElement("details");
+    const title=document.createElement("summary");title.textContent=event.term||"Unnamed serious adverse event";
+    card.appendChild(title);
+    for(const g of event.groupStats||[]){
+      const p=document.createElement("p");
+      p.textContent="Group "+(g.groupId||"?")+" · Affected: "+(g.numAffected??"unreported")
+        +" · At risk: "+(g.numAtRisk??"unreported")
+        +" · Events: "+(g.numEvents??"unreported");
+      card.appendChild(p);
+    }
+    safetyList.appendChild(card);
+  }
+  root.appendChild(safetyList);
+  const caveat=document.createElement("p");
+  caveat.textContent="Archived posting only. These figures require denominator, trial-design, source-date, confidence interval, multiplicity, and independent-publication review.";
+  root.appendChild(caveat);
 }
 function paintInvestigation20(data) {
   const root=$("investigation-20");
@@ -263,6 +360,7 @@ async function inspectScience() {
     const assessment=result.assessment||{};
     const evidence=result.registryEvidence;
     paintInvestigation20(result.investigation20);
+    paintQuantitativeResults(result.quantitativeResults);
     const archived=result.registryEvidenceStatus==="source_record_loaded" && evidence
         && evidence.nctId===id && evidence.verificationStatus==="source_record_only";
     const overall=assessment.overall_score;
