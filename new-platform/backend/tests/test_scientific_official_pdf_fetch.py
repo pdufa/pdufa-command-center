@@ -54,6 +54,14 @@ def test_fetch_uses_only_exact_pinned_urls_with_tls_no_redirects(monkeypatch):
     assert sources.fetch_official_pdf("fda") == GOOD_PDF
     assert calls[-1][0] == sources.FDA_2016_APPROVAL
     assert calls[-1][0].startswith("https://www.accessdata.fda.gov/")
+    response3 = Response(length=len(GOOD_PDF))
+    monkeypatch.setattr(sources.requests, "get", lambda url, **kwargs: (
+        calls.append((url, kwargs)) or response3))
+    assert sources.fetch_official_pdf("csr") == GOOD_PDF
+    assert calls[-1][0] == sources.GERMAN_REGULATOR_CSR
+    assert calls[-1][0].startswith("https://portal.dimdi.de/data/ctr/")
+    assert calls[-1][1]["allow_redirects"] is False
+    assert response3.closed is True
 
 
 @pytest.mark.parametrize("invalid", ["https://evil.example/payload", "other", "", None])
@@ -154,7 +162,7 @@ def test_other_trial_cannot_trigger_source_request(monkeypatch):
 
 
 
-def test_bootstrap_pinned_sources_runs_both_once_and_keeps_science_unverified(monkeypatch, caplog):
+def test_bootstrap_pinned_sources_runs_all_three_once_and_keeps_science_unverified(monkeypatch, caplog):
     called=[]
     def capture(nct, source):
         called.append((nct,source))
@@ -164,8 +172,9 @@ def test_bootstrap_pinned_sources_runs_both_once_and_keeps_science_unverified(mo
         }
     monkeypatch.setattr(sources, "archive_official_pdf", capture)
     sources.bootstrap_pinned_pilot_sources()
-    assert called == [(sources.PILOT_NCT, "protocol"), (sources.PILOT_NCT, "fda")]
-    assert caplog.text.count("scientific_verification=False") == 2
+    assert called == [(sources.PILOT_NCT, "protocol"), (sources.PILOT_NCT, "fda"),
+                      (sources.PILOT_NCT, "csr")]
+    assert caplog.text.count("scientific_verification=False") == 3
     assert "status=CAPTURED" in caplog.text
     assert "status=ALREADY_ARCHIVED" in caplog.text
 
@@ -182,7 +191,33 @@ def test_bootstrap_fails_open_for_health_but_closed_for_science(monkeypatch, cap
         }
     monkeypatch.setattr(sources, "archive_official_pdf", capture)
     sources.bootstrap_pinned_pilot_sources()
-    assert called == ["protocol", "fda"]
+    assert called == ["protocol", "fda", "csr"]
     assert "source=protocol status=UNAVAILABLE" in caplog.text
     assert "source=fda status=CAPTURED" in caplog.text
     assert "Private server error" not in caplog.text
+
+
+
+def test_german_csr_read_only_archive_metadata_never_confers_preunblinding_signoff(monkeypatch):
+    captured=[]
+    monkeypatch.setattr(sources, "read_document_manifest",
+                        lambda _: {"documents": [], "sourceDocumentCount": 0})
+    monkeypatch.setattr(sources, "fetch_official_pdf", lambda name: GOOD_PDF)
+    def saved(nct_id,payload):
+        captured.append(payload)
+        return {"documentId":"a"*32,"byteLength":len(GOOD_PDF),
+                "sha256":payload["sha256"],
+                "documentContentScientificallyVerified":False,
+                "canCountTowardReadiness":False}
+    monkeypatch.setattr(sources, "capture_document", saved)
+    receipt=sources.archive_official_pdf("NCT02142738","csr")
+    assert receipt["alreadyArchived"] is False
+    assert receipt["scientificallyVerified"] is False
+    assert receipt["independentReviewRequired"] is True
+    assert "not a signed contemporaneous 2016 SAP" in receipt["documentDateNote"]
+    assert captured[0]["sourceUrl"] == sources.GERMAN_REGULATOR_CSR
+    assert captured[0]["gateId"] == "protocol_sap"
+    assert captured[0]["sourceType"] == "clinical_study_report"
+    assert captured[0]["capturedBy"] == "Verified Google operator: pinned source"
+    assert "independentlyVerified" not in captured[0]
+    assert "scientificallyVerified" not in captured[0]
