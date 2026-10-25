@@ -63,8 +63,17 @@ def adjudication_preflight(
         raise ValueError("Adjudication evidence collections unavailable")
     if findings.get("truncated") or findings.get("totalStatements") != len(statements):
         raise ValueError("Adjudication preflight requires complete statement history")
-    if any(x.get("nctId") != nct_id for x in statements):
+    if any(not isinstance(x, Mapping) or x.get("nctId") != nct_id for x in statements):
         raise ValueError("Adjudication statement identity mismatch")
+    if any(not isinstance(q, Mapping) or not isinstance(q.get("id"), str) or not q["id"]
+           or not isinstance(q.get("gateId"), str) or not isinstance(q.get("priority"), str)
+           or not isinstance(q.get("title"), str) for q in questions):
+        raise ValueError("Malformed adjudication question")
+    if any(not isinstance(x.get("threadId"), str) or not x["threadId"]
+           or type(x.get("revision")) is not int or x["revision"] < 1
+           or x.get("findingType") not in ("supports", "contradicts", "uncertain", "not_assessable")
+           or not isinstance(x.get("sourceUrl"), str) for x in statements):
+        raise ValueError("Malformed adjudication reviewer statement")
 
     grouped: dict[str, list[dict]] = {q["id"]: [] for q in questions}
     if len(grouped) != len(questions):
