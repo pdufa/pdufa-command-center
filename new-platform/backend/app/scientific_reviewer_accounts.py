@@ -1,7 +1,7 @@
 """Read-only Google reviewer authorization; no self-registration or signoff."""
 from __future__ import annotations
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from . import main
@@ -46,6 +46,8 @@ def reviewer_setup_summary() -> dict:
     """
     with Session(main.ENGINE) as session:
         rows = session.scalars(select(main.ScientificReviewerAccount)).all()
+        pending_nomination_count = session.scalar(
+            select(func.count()).select_from(main.ScientificReviewerNomination))
     supported = {"reviewer", "second_reviewer"}
     eligible = [
         account for account in rows
@@ -55,6 +57,7 @@ def reviewer_setup_summary() -> dict:
     return {
         "status": "reviewer_infrastructure_ready" if eligible else "awaiting_reviewer_provisioning",
         "totalProvisioningRecords": len(rows),
+        "pendingCandidateNominations": int(pending_nomination_count or 0),
         "activeCredentialVerifiedIdentities": len(distinct),
         "pendingOrDisabledIdentities": len(rows) - len(eligible),
         "requiredDistinctReviewerIdentities": 2,
