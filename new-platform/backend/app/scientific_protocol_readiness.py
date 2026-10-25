@@ -17,6 +17,7 @@ PILOT_NCT_ID = "NCT02142738"
 REGISTRY_URL = "https://clinicaltrials.gov/study/NCT02142738"
 PROTOCOL_URL = "https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf"
 ORIGINAL_URL = "https://pubmed.ncbi.nlm.nih.gov/27718847/"
+ORIGINAL_MANUSCRIPT_URL = "https://www.nejm.org/doi/full/10.1056/nejmoa1606774"
 REGULATORY_URL = "https://pmc.ncbi.nlm.nih.gov/articles/PMC5679831/"
 FOLLOWUP_URL = "https://pubmed.ncbi.nlm.nih.gov/33872070/"
 QOL_URL = "https://pubmed.ncbi.nlm.nih.gov/29129441/"
@@ -26,7 +27,8 @@ BLOCKED = "BLOCKED"
 _STATUSES = frozenset((SOURCE_SUPPORTED, REVIEW_REQUIRED, BLOCKED))
 _HASH_RE = re.compile(r"[0-9a-f]{64}\Z")
 _ALLOWED_SOURCES = frozenset((REGISTRY_URL, PROTOCOL_URL, ORIGINAL_URL,
-                              REGULATORY_URL, FOLLOWUP_URL, QOL_URL))
+                              REGULATORY_URL, FOLLOWUP_URL, QOL_URL,
+                              ORIGINAL_MANUSCRIPT_URL))
 
 
 def grade_review_inputs(checks: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
@@ -196,8 +198,9 @@ def keynote024_protocol_readiness(
               (ORIGINAL_URL, "2016 abstract, treatment-related adverse events")),
         check("pre_cutoff_protocol", "Contemporaneous original protocol", BLOCKED, True,
               "Registry-linked protocol is amendment 024-11 dated 2017-12-20, after 2016 interim cutoff; marked Japan-only.",
-              "Retrieve version and amendments effective before the 2016 interim analysis.",
+              "Retrieve original 2016 NEJM protocol PDF, inspect dated amendments and signed pre-cutoff SAP, then validate alpha-spending and censoring.",
               (PROTOCOL_URL, "Cover page 1, amendment 024-11, 2017-12-20, Japan-only"),
+              (ORIGINAL_MANUSCRIPT_URL, "Supplementary Material: nejmoa1606774_protocol.pdf is listed, but full content, effective dates and signature remain unverified"),
               (ORIGINAL_URL, "Original electronic publication 2016-10-08")),
         check("multiplicity_alpha", "Prospective multiplicity and alpha spending", REVIEW_REQUIRED, True,
               "2017 SAP pp.113 and 122 specify one-sided 2.5% error control, ORR/PFS/OS ordering and OS alpha spending. FDA cites p=0.005 vs alpha 0.0118.",
@@ -244,6 +247,19 @@ def keynote024_protocol_readiness(
             "documentClassification": "later_protocol_and_sap",
         },
         **grade_review_inputs(checks),
+        "original2016ProtocolSource": {
+            "sourceUrl": ORIGINAL_MANUSCRIPT_URL,
+            "listedFilename": "nejmoa1606774_protocol.pdf",
+            "listingVerified": True,
+            "pdfContentReviewed": False,
+            "effectiveAmendmentsVerified": False,
+            "originalSignedSapVerified": False,
+            "preInterimAlphaSpendingVerified": False,
+            "status": "source_listed_not_adjudicated",
+            "blocking": True,
+            "sourceLocator": "NEJM original article, Supplementary Material: Protocol",
+            "caution": "Publication-linked supplement is not proof of the protocol/SAP version in force at the May 9, 2016 cutoff.",
+        },
         "checks": checks,
         "preliminarySourceReviewAllowed": True,
         "independentReanalysisPerformed": False,
