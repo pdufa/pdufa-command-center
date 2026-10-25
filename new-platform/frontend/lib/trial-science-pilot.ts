@@ -171,6 +171,7 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
         || ids.has(snapshot.analysis_id)
         || snapshot.source_id !== expectedPmids[snapshot.analysis_id]
         || !str(snapshot.report_type) || !/^20[0-9]{2}-[0-9]{2}-[0-9]{2}$/.test(String(snapshot.publication_date))
+        || (snapshot.data_cutoff_date !== undefined && !/^20[0-9]{2}-[0-9]{2}-[0-9]{2}$/.test(String(snapshot.data_cutoff_date)))
         || !str(snapshot.source_id) || !/^[1-9][0-9]{0,11}$/.test(snapshot.source_id)
         || snapshot.source_url !== "https://pubmed.ncbi.nlm.nih.gov/" + snapshot.source_id + "/"
         || !strings(snapshot.methodological_caveats)
