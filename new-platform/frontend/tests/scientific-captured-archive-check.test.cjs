@@ -40,6 +40,22 @@ function manifest(documents = [DOCUMENT]) {
     documents,
   };
 }
+function upstreamManifest() {
+  const base = manifest();
+  return {
+    ...base,
+    reviewerIdentityVerified: false,
+    scientificGradePromotionAllowed: false,
+    documents: base.documents.map(item => ({
+      ...item,
+      nctId: NCT,
+      byteIntegrityChecked: true,
+      sourceAuthorshipVerified: false,
+      documentContentScientificallyVerified: false,
+      canCountTowardReadiness: false,
+    })),
+  };
+}
 const { compareLocalPdfWithCapturedArchive } = loadTs(
   path.join(__dirname, "../lib/scientific-captured-archive-check.ts"),
 );
@@ -92,7 +108,7 @@ test("malformed source manifests and forged independent review block comparisons
 });
 
 const routeFile = path.join(__dirname, "../app/api/scientific-assessment/captured-source-manifest/route.ts");
-function route({ authenticated = true, response = manifest(), upstreamOk = true, contract = true } = {}) {
+function route({ authenticated = true, response = upstreamManifest(), upstreamOk = true, contract = true } = {}) {
   const calls = [];
   const routeExports = loadTs(routeFile, {
     "next/server": { NextResponse: { json: (body, options = {}) => ({
@@ -176,8 +192,8 @@ test("preview proxy refuses fallback, malformed archive, or outdated isolated co
   withKeys(async () => {
     assert.equal((await route({ contract: false }).request()).status, 503);
     assert.equal((await route({ upstreamOk: false }).request()).status, 503);
-    const invalid = manifest();
-    invalid.documents[0] = { ...DOCUMENT, scientificVerificationComplete: true };
+    const invalid = upstreamManifest();
+    invalid.documents[0].documentContentScientificallyVerified = true;
     assert.equal((await route({ response: invalid }).request()).status, 503);
   }));
 
