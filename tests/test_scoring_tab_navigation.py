@@ -4,6 +4,7 @@ The PDUFA operator workspace moved from removed Streamlit app.py to
 new-platform/frontend/app/Workspace.tsx. Keep this test on the live UI.
 """
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -18,7 +19,12 @@ def test_scans_is_top_level_before_results_and_pdufa_subtabs_keep_trading():
     assert '["GEM_JR","GEM JR"]' in source
     assert '["GEM","GEM"]' in source
     # SCANS was intentionally moved out of the inner PDUFA tabs, before RESULTS.
-    assert 'type TopNav = "SCANS" | "RESULTS" | "PDUFA"' in source
+    # New first-class tabs (GOAL, BACKUP, etc.) may be added over time.
+    # Verify the allowed tabs without freezing the entire TypeScript union.
+    top_nav = re.search(r"\btype\s+TopNav\s*=\s*([^;]+);", source)
+    assert top_nav is not None
+    top_sections = set(re.findall(r'"([A-Z_]+)"', top_nav.group(1)))
+    assert {"SCANS", "RESULTS", "PDUFA", "GOAL", "BACKUP"} <= top_sections
     assert '["SCANS","SCANS"]' not in source
     assert '>SCANS</button>' in source and '>RESULTS</button>' in source
     assert source.index('>SCANS</button>') < source.index('>RESULTS</button>')
