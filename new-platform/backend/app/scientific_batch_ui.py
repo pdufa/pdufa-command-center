@@ -113,6 +113,7 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 <div class="row">
 <input id="science-id" style="flex:1;min-width:180px;width:auto" placeholder="NCT04280705" maxlength="11" autocomplete="off" spellcheck="false">
 <button id="science-inspect">Inspect scientific evidence</button>
+<button class="secondary" id="science-download" disabled>Download 20-stage review packet (JSON)</button>
 </div>
 <div class="status" id="science-status" role="status" aria-live="polite"></div>
 <div id="science-details"></div>
@@ -132,6 +133,8 @@ let selectedId = null;
 let refreshInProgress = false;
 let pollTimer = null;
 let posting = false;
+let inspectedNct = null;
+let downloadingPacket = false;
 function notice(message, isError=false) {
   $("notice").textContent = message;
   $("notice").className = "status" + (isError ? " error" : "");
@@ -216,6 +219,8 @@ const DOMAIN_LABELS = {
   biology:"Biology", reliability:"Reliability", regulatory:"Regulatory"
 };
 function clearScience() {
+  inspectedNct=null;
+  $("science-download").disabled=true;
   $("science-status").textContent="";
   $("science-details").textContent="";
   $("science-source").replaceChildren();
@@ -566,6 +571,11 @@ async function inspectScience() {
     paintEvidenceLedger(result.evidenceLedger, result.evidenceLedgerStatus);
     const archived=result.registryEvidenceStatus==="source_record_loaded" && evidence
         && evidence.nctId===id && evidence.verificationStatus==="source_record_only";
+    if(archived && result.evidenceLedgerStatus==="candidate_inventory_loaded"
+        && result.evidenceLedger){
+      inspectedNct=id;
+      $("science-download").disabled=false;
+    }
     const overall=assessment.overall_score;
     $("science-status").textContent="Evidence: "+(archived ? "archived source record, descriptive only" :
        result.registryEvidenceStatus==="record_not_found" ? "no archived record" :
@@ -608,7 +618,46 @@ async function inspectScience() {
     $("science-status").className="status error";
   } finally {$("science-inspect").disabled=false;}
 }
+async function downloadReviewPacket() {
+  const nct=inspectedNct;
+  if(downloadingPacket || !nct || $("science-id").value.trim()!==nct
+     || !/^NCT\d{8}$/.test(nct)){
+    $("science-status").textContent="Inspect an exact archived trial before downloading its review packet.";
+    $("science-status").className="status error";
+    return;
+  }
+  downloadingPacket=true;$("science-download").disabled=true;
+  try {
+    const packet=await api("/api/scientific-assessment/review-packet/"+nct);
+    if(packet.nctId!==nct || packet.packetSchemaVersion!=="scientific-source-review-packet-v1"
+       || packet.scientificConclusion!==null
+       || !packet.packetIntegrity || !/^[0-9a-f]{64}$/.test(packet.packetIntegrity.digest)
+       || packet.readyForFullScientificConclusion!==false){
+      throw new Error("Scientific packet identity or evidence safety validation failed.");
+    }
+    const payload=JSON.stringify(packet,null,2);
+    const blob=new Blob([payload],{type:"application/json;charset=utf-8"});
+    const href=URL.createObjectURL(blob);
+    try {
+      const a=document.createElement("a");
+      a.href=href;a.download=nct+"_scientific_review_packet.json";
+      document.body.appendChild(a);a.click();a.remove();
+    } finally {
+      setTimeout(()=>URL.revokeObjectURL(href),2000);
+    }
+    $("science-status").textContent="Unadjudicated scientific review packet downloaded for "+nct
+        +". Verify its SHA-256 integrity before any independent analysis.";
+    $("science-status").className="status";
+  } catch(err){
+    $("science-status").textContent=err.message;
+    $("science-status").className="status error";
+  } finally {
+    downloadingPacket=false;
+    $("science-download").disabled=inspectedNct!==nct;
+  }
+}
 $("science-inspect").addEventListener("click",inspectScience);
+$("science-download").addEventListener("click",downloadReviewPacket);
 $("refresh").addEventListener("click",refreshHistory);
 $("clear").addEventListener("click",()=>{
   $("key").value="";stopPolling(); selectedId=null;
