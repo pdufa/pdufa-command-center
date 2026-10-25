@@ -17,6 +17,8 @@ from copy import deepcopy
 from datetime import date
 from typing import Any
 
+from .scientific_reconciliation_worklist import FDA_2016_APPROVAL
+
 NCT = "NCT02142738"
 NEJM = "https://www.nejm.org/doi/abs/10.1056/NEJMoa1606774"
 EU = "https://www.clinicaltrialsregister.eu/ctr-search/trial/2014-000323-25/NL"
@@ -87,11 +89,13 @@ _SOURCES = (
      "original_journal_publication", "2016-10-08",
      "Publication describes earlier results and monitoring; not a prospective prediction."),
     ("2016-10-24", "fda_first_line_approval", "FDA decision",
-     "FDA approves first-line pembrolizumab for PD-L1-high metastatic NSCLC",
-     NCI_APPROVAL, "NCI November 17 2016 report; original Oct 24 FDA first-line decision",
-     "federal_historical_confirmation", "2016-11-17",
-     "This first-line action relied on KEYNOTE-024; a simultaneous conversion "
-     "of second-line approval relied separately on KEYNOTE-010."),
+     "FDA S-12 first-line approval for PD-L1-high metastatic NSCLC",
+     FDA_2016_APPROVAL,
+     "FDA original BLA 125514/S-8 and S-12 letter p. 1; signed p. 6",
+     "primary_fda_regulatory_action_letter", "2016-10-24",
+     "The original signed FDA letter distinguishes S-12 first-line TPS >=50% "
+     "without EGFR/ALK aberrations from S-8's prior treated-setting change. "
+     "It is an historical decision, not independent clinical trial adjudication."),
     ("2016-12-24", "announced_pdufa_goal", "Superseded target",
      "Previously announced first-line sBLA PDUFA goal; action already taken Oct 24",
      MERCK_REVIEW, "September 7 2016 release; December 24 PDUFA goal date",
@@ -213,6 +217,53 @@ def keynote024_historical_pdufa_timeline(
         },
         "eventCount": len(history),
         "events": history,
+        "primaryFdaActionLetter": {
+            "documentType": "fda_original_supplement_approval_letter",
+            "sourceUrl": FDA_2016_APPROVAL,
+            "sourceHost": "www.accessdata.fda.gov",
+            "sourceLocators": {
+                "distinctSupplementIndications": "PDF page 1",
+                "s8PostmarketingRequirement": "PDF page 2",
+                "keynote024MatureOsCommitment": "PDF page 3, item 3127-1",
+                "electronicSignature": "PDF page 6",
+            },
+            "referenceId": "4003165",
+            "pdfPagesObserved": 6,
+            "regulatoryActionDate": "2016-10-24",
+            "signedDatePrintedInPdf": "2016-10-24",
+            "electronicSignatureShownButCryptographicIdentityNotIndependentlyVerified": True,
+            "sameDocumentContainsDistinctS8AndS12Actions": True,
+            "s8": {
+                "supplement": "125514/S-8",
+                "setting": "previously_treated_metastatic_nsclc",
+                "previousAcceleratedApprovalDate": "2015-10-02",
+                "pdl1TpsMinimumPercent": 1,
+                "action": "remove_accelerated_approval_limitation_language",
+                "isFirstLineApproval": False,
+                "trialForS12MustNotBeAttributedToS8": True,
+            },
+            "s12": {
+                "supplement": "125514/S-12",
+                "setting": "first_line_metastatic_nsclc",
+                "pdl1TpsMinimumPercent": 50,
+                "egfrAndAlkGenomicAberrationsExcluded": True,
+                "action": "approved_first_line_indication",
+                "trialReportedAsSupport": NCT,
+            },
+            "keynote024PostmarketingCommitment": {
+                "commitmentId": "3127-1",
+                "reportPurpose": "mature_overall_survival_label_update",
+                "originalTargetFinalReportMonth": "2018-06",
+                "letterDoesNotEstablishActualFinalReportSubmission": True,
+                "originalReportSubmissionIndependentlyVerified": False,
+            },
+            "fdaDocumentBytesPreservedByThisReview": False,
+            "fdaDocumentSha256VerifiedByThisReview": False,
+            "fullSignedClinicalSapVerified": False,
+            "sourceCitationNotIndependentClinicalAdjudication": True,
+            "modelEligibleForProspectiveOutcomeCalibration": False,
+            "secondaryNciReportUrl": NCI_APPROVAL,
+        },
         "interim": {
             "dataCutoff": "2016-05-09",
             "independentCommitteeReviewDatesReportedByJournal": [
