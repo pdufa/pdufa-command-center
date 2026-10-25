@@ -5,6 +5,16 @@ const fs = require("node:fs");
 const path = require("node:path");
 const ts = require("typescript");
 
+require.extensions[".ts"] = (mod, file) => mod._compile(
+  ts.transpileModule(fs.readFileSync(file, "utf8"), {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+      esModuleInterop: true,
+    },
+  }).outputText, file,
+);
+
 const compiled = ts.transpileModule(
   fs.readFileSync(path.join(__dirname, "../app/api/scientific-cohort/coverage/route.ts"), "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
