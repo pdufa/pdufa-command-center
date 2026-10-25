@@ -349,3 +349,49 @@ def test_all_published_source_summary_requires_original_fda_letter_count(tmp_pat
     result = hop_readiness_status(source_audit_path=path)
     assert result["fda_all_published_action_documents"] is None
     assert result["prediction_probability"] is None
+
+
+def test_unique_fda_pdf_source_count_distinguished_from_published_letters():
+    result = hop_readiness_status()
+    pdfs = result["fda_shared_pdf_source_reconciliation"]
+    assert pdfs["published_letter_records"] == 458
+    assert pdfs["confirmed_pdf_references"] == 457
+    assert pdfs["distinct_verified_pdf_documents"] == 364
+    assert pdfs["shared_pdf_groups_needing_page_mapping"] == 61
+    assert pdfs["published_letter_records_in_shared_pdf_groups"] == 154
+    assert pdfs["duplicate_document_links"] == 93
+    assert pdfs["cross_application_shared_pdf_groups"] == 2
+    assert pdfs["same_date_type_collision_groups"] == 2
+    assert pdfs["source_records_without_confirmed_pdf"] == 1
+    assert pdfs["independently_verified_review_cycle_outcomes"] == 0
+    assert pdfs["complete_denominator_verified"] is False
+    assert result["prediction_probability"] is None
+
+
+def test_shared_pdf_report_fails_closed_on_false_uniqueness_and_outcomes(tmp_path: Path):
+    from app.hop_status import SHARED_PDF_AUDIT_PATH
+    original = json.loads(SHARED_PDF_AUDIT_PATH.read_text())
+    p = tmp_path / "shared_pdfs.json"
+    p.write_text(json.dumps(original))
+    assert hop_readiness_status(shared_pdf_audit_path=p)["fda_shared_pdf_source_reconciliation"]
+    original["unique_confirmed_pdf_documents"] = 365
+    p.write_text(json.dumps(original))
+    assert hop_readiness_status(shared_pdf_audit_path=p)["fda_shared_pdf_source_reconciliation"] is None
+    original["unique_confirmed_pdf_documents"] = 364
+    original["independently_verified_review_cycle_outcomes"] = 457
+    p.write_text(json.dumps(original))
+    result = hop_readiness_status(shared_pdf_audit_path=p)
+    assert result["fda_shared_pdf_source_reconciliation"] is None
+    assert result["prediction_available"] is False
+
+
+def test_pdf_reconciliation_requires_matching_original_fda_archive(tmp_path: Path):
+    from app.hop_status import ALL_ACTION_PDF_AUDIT_PATH
+    source = json.loads(ALL_ACTION_PDF_AUDIT_PATH.read_text())
+    source["full_official_pdf_bytes_confirmed"] -= 1
+    source["source_records_without_safe_pdf_filename"] += 1
+    p = tmp_path / "full_pdfs.json"
+    p.write_text(json.dumps(source))
+    result = hop_readiness_status(all_action_pdf_audit_path=p)
+    assert result["fda_shared_pdf_source_reconciliation"] is None
+    assert result["model_validated"] is False
