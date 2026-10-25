@@ -235,6 +235,12 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       );
       if (response.status === 401) throw new Error("Dashboard sign-in required to check the scientific service.");
       if (response.status === 502) throw new Error("Scientific API access key was rejected. Check the isolated service configuration.");
+      if (response.status === 503) {
+        const diagnosis: unknown = await response.json().catch(() => null);
+        if (object(diagnosis) && diagnosis.connection === "scientific_backend_contract_mismatch") {
+          throw new Error("Scientific Render service runs an older backend release. The integrated scientific backend must be deployed before this check can pass.");
+        }
+      }
       if (!response.ok) throw new Error("Scientific service connection is not verified (" + response.status + ").");
       const data: unknown = await response.json();
       if (!object(data) || data.connection !== "connected"
