@@ -106,6 +106,13 @@ def test_source_scoped_claims_protect_2016_vs_2020_2021_2017_windows(archive):
     assert efficacy["longTermOs"]["cutoff"] == "2020-06-01"
     assert efficacy["longTermOs"]["hazardRatio"] == 0.62
     crossover=rows["crossover_adjustment"]
+    assert crossover["originalAnalysisCrossover"]["patientsReceivingOnStudyPembrolizumabAfterProgression"] == 66
+    assert crossover["originalAnalysisCrossover"]["reportedPercent"] == 43.7
+    assert crossover["originalAnalysisCrossover"]["cutoff"] == "2016-05-09"
+    assert crossover["documentedPostAnalysisCrossoverAmendment"]["number"] == "P024-06"
+    assert crossover["documentedPostAnalysisCrossoverAmendment"]["dateFinalized"] == "2016-07-29"
+    assert crossover["documentedPostAnalysisCrossoverAmendment"]["afterInitialAnalysisCutoff"] is True
+    assert crossover["documentedPostAnalysisCrossoverAmendment"]["patientLevelCrossoverTimingIndependentlyVerified"] is False
     assert crossover["effectiveCrossover"]["patientsWithSubsequentAntiPd1Pdl1"] == 99
     assert crossover["effectiveCrossover"]["reportedPercent"] == 66.0
     assert "not automatically" in crossover["preliminaryObservation"]
