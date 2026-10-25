@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
-import { auditScientificReviewerCsvs, type LocalReviewerAuditReport } from "../lib/scientific-reviewer-local-audit";
+import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, type LocalReviewerAuditReport } from "../lib/scientific-reviewer-local-audit";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -450,6 +450,25 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
+  /** Local diagnostic download; creates no attestation or back-end write. */
+  function downloadLocalReviewerAuditReceipt() {
+    if (!result?.investigation40 || !localAudit) return;
+    try {
+      const body = buildScientificReviewerAuditReceipt(result.investigation40, localAudit);
+      const blob = new Blob([body], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = result.investigation40.nctId + "_unverified_reviewer_ab_diagnostic.json";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch {
+      setLocalAuditError("Local reviewer audit receipt blocked: unverifiable diagnostic report.");
+    }
+  }
+
   const valid = /^TRIAL\|NCT[0-9]{8}$/.test(exactId);
   return <section aria-label="Scientific Assessment">
     <button type="button" disabled={!valid || loading} onClick={() => void load()}>
@@ -580,6 +599,12 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
               <ul>{localAudit.conflictTaskKeys.map(key => <li key={key}><code>{key}</code></li>)}</ul>
             </details>}
             <p><strong>Independent adjudication: 0/320. Scientific score: NOT ASSIGNED. FDA approval probability: NOT ASSIGNED.</strong></p>
+            <p>
+              <button type="button" onClick={() => downloadLocalReviewerAuditReceipt()}>
+                Download unverified A/B comparison receipt (JSON)
+              </button>
+              <small> Local, privacy-minimized diagnostic only; no reviewer identities, raw documents or statements are included. A receipt is not a scientific or regulatory signoff.</small>
+            </p>
             <small>Reviewer names, document URLs, claimed hashes and worksheet signatures have not been authenticated; these observations cannot be promoted to verified evidence.</small>
           </section>}
         </details>

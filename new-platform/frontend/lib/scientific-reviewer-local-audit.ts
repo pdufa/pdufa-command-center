@@ -160,3 +160,88 @@ export function auditScientificReviewerCsvs(
     promotionAllowed: false,
   };
 }
+
+
+/**
+ * Export a deliberately NON-ATTESTED, reviewer-PII-free receipt of an already
+ * completed local comparison. It is not a cryptographic signature or evidence
+ * admission record. The receipt copies only a fixed allowlist of diagnostics.
+ */
+export function buildScientificReviewerAuditReceipt(
+  matrix: ScientificDepthMatrix, report: LocalReviewerAuditReport,
+): string {
+  // Revalidate the same current exact-NCT 320-task inventory used by the page.
+  buildScientificDepthReviewCsv(matrix);
+  if (!report || report.nctId !== matrix.nctId || report.validatedTaskRows !== 320
+      || report.reviewerIdentitiesVerified !== false
+      || report.sourceBytesVerified !== false
+      || report.signaturesVerified !== false
+      || report.independentlyAdjudicatedTasks !== 0
+      || report.scientificScore !== null
+      || report.fdaApprovalProbability !== null
+      || report.promotionAllowed !== false) problem();
+
+  const bounded = (count: unknown): count is number =>
+    Number.isSafeInteger(count) && (count as number) >= 0 && (count as number) <= 320;
+  if (!report.candidateObservations || !report.missingProvenance
+      || !report.incompleteObservations) problem();
+  for (const slot of ["A", "B"] as const) {
+    const candidate = report.candidateObservations[slot];
+    const provenance = report.missingProvenance[slot];
+    const incomplete = report.incompleteObservations[slot];
+    if (!bounded(candidate) || !bounded(provenance) || !bounded(incomplete)
+        || candidate + provenance > 320 || candidate + incomplete > 320) problem();
+  }
+  if (!bounded(report.oneSidedObservations)
+      || !bounded(report.conflictingCandidateDecisions)
+      || !Array.isArray(report.conflictTaskKeys)
+      || report.conflictTaskKeys.length !== report.conflictingCandidateDecisions
+      || report.conflictingCandidateDecisions > Math.min(
+        report.candidateObservations.A, report.candidateObservations.B,
+      )) problem();
+  const validKeys = new Set(matrix.layers.flatMap(layer =>
+    layer.assessments.flatMap(assessment =>
+      matrix.depthReview.depthLevels.map(depth =>
+        layer.id + "." + assessment + ":" + depth.level))));
+  const seen = new Set<string>();
+  for (const key of report.conflictTaskKeys) {
+    if (typeof key !== "string" || !validKeys.has(key) || seen.has(key)) problem();
+    seen.add(key);
+  }
+  if (report.oneSidedObservations > report.candidateObservations.A
+      + report.candidateObservations.B) problem();
+
+  const receipt = {
+    schemaVersion: "pdufa-local-science-reviewer-a-b-diagnostic-v1",
+    nctId: matrix.nctId,
+    status: "UNVERIFIED_OFFLINE_WORKSHEET_COMPARISON",
+    exactTrialTasksValidated: 320,
+    reviewerSlots: ["A", "B"],
+    syntacticallyCompleteCandidateObservations: {
+      A: report.candidateObservations.A, B: report.candidateObservations.B,
+    },
+    observationsMissingSyntacticProvenance: {
+      A: report.missingProvenance.A, B: report.missingProvenance.B,
+    },
+    observationsMissingNamesOrNotes: {
+      A: report.incompleteObservations.A, B: report.incompleteObservations.B,
+    },
+    tasksWithOnlyOneCandidateObservation: report.oneSidedObservations,
+    unresolvedCandidateDisagreementCount: report.conflictingCandidateDecisions,
+    unresolvedCandidateDisagreementTaskKeys: [...report.conflictTaskKeys],
+    reviewGates: {
+      reviewerIdentitiesVerified: false,
+      originalDocumentBytesIndependentlyAuthenticated: false,
+      reviewerQualificationsVerified: false,
+      signedIndependentDecisionsVerified: false,
+      disagreementReconciliationSigned: false,
+      independentlyAdjudicatedTasks: 0,
+      promoteEvidenceAllowed: false,
+      scientificScore: null,
+      fdaApprovalProbability: null,
+    },
+    disclaimer:
+      "Local CSV consistency diagnostic ONLY. No reviewer names, findings, source URLs or claimed signatures are recorded in this receipt. A match is NOT clinical review completion, authentic document provenance, reviewer accreditation, adjudication or an FDA approval prediction.",
+  };
+  return JSON.stringify(receipt, null, 2) + "\n";
+}
