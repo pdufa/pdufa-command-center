@@ -219,6 +219,8 @@ def read_ledger(nct_id: str) -> dict:
         ).all()
         entries = [_entry(v) for v in items]
     candidates = pilot_candidates(nct_id)
+    from .scientific_reconciliation_worklist import reconciliation_worklist
+    worklist = reconciliation_worklist(nct_id)
     return {
         "nctId": nct_id,
         "ledgerSchemaVersion": SCHEMA_VERSION,
@@ -228,6 +230,7 @@ def read_ledger(nct_id: str) -> dict:
         "entries": entries,
         "identifiedSourceCandidates": candidates,
         "candidateCount": len(candidates),
+        "sourceReconciliation": worklist,
         "externalGateStatuses": [
             {"gateId": gate_id, "label": label, "independentlyVerified": False,
              "status": "requires_independent_adjudication"}
