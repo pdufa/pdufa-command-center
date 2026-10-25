@@ -131,6 +131,77 @@ function Evidence({ pilot }: { pilot: TrialSciencePilot }) {
         </div>
       </details>
     </section> : null}
+    {pilot.sourceEvidenceAudit ? <section aria-label="Historical design chronology and registry safety audit">
+      <h3>Trial evidence timeline · 2015 to 2021</h3>
+      <p className={styles.metadata}>
+        A May 2015 trial-in-progress abstract describes the primary progression-free
+        survival endpoint before the May 2016 interim data cutoff. It does not
+        supply a signed pre-interim statistical analysis plan or confirm multiplicity boundaries.
+      </p>
+      <p className={styles.caution}>
+        Pre-interim original protocol/SAP still unverified; the original 2016 NEJM
+        protocol supplement is listed, not independently reviewed. The registry-linked
+        December 2017 Japan-only amendment remains later than the 2016 data cutoff.
+        Input readiness and reluctance grades have not changed.
+      </p>
+      <details className={styles.caveats}>
+        <summary>View dated evidence and source references ({pilot.sourceEvidenceAudit.timeline.length})</summary>
+        <ol>
+          {pilot.sourceEvidenceAudit.timeline.map(item => <li key={item.id}>
+            <strong>{item.date} · {item.title}</strong>
+            <p>{item.finding}</p>
+            <p><a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">
+              {item.sourceLocator}</a></p>
+            <small>Evidence: {item.evidenceStatus.replaceAll("_", " ")}.
+              {" "}{item.limitation}</small>
+          </li>)}
+        </ol>
+      </details>
+      <h3>Registry adverse-event denominators · no pooling</h3>
+      <p className={styles.metadata}>
+        This view preserves each ClinicalTrials.gov adverse-event treatment-course
+        group separately. The counts are aggregate registry reports, not
+        confirmed treatment-related AE rates or randomized efficacy statistics.
+      </p>
+      {pilot.sourceEvidenceAudit.registrySafety.groups.length ? <details className={styles.caveats}>
+        <summary>Inspect {pilot.sourceEvidenceAudit.registrySafety.groupCount} registry safety groups</summary>
+        <div className={styles.scroll}>
+          <table className={styles.resultTable}>
+            <thead><tr><th scope="col">Registry group</th>
+              <th scope="col">Serious AE affected / at risk</th>
+              <th scope="col">Other AE affected / at risk</th>
+              <th scope="col">Deaths affected / at risk</th>
+            </tr></thead>
+            <tbody>
+              {pilot.sourceEvidenceAudit.registrySafety.groups.map(group => <tr key={group.groupId}>
+                <th scope="row">{group.title}</th>
+                {(["seriousEvents", "otherEvents", "deaths"] as const).map(category => {
+                  const counts = group.counts[category];
+                  return <td key={category}>
+                    {counts.numAffected === null || counts.numAtRisk === null
+                      ? "Not reported"
+                      : `${counts.numAffected} / ${counts.numAtRisk}`}
+                  </td>;
+                })}
+              </tr>)}
+            </tbody>
+          </table>
+        </div>
+        <p className={styles.metadata}>
+          <a href={pilot.sourceEvidenceAudit.registrySafety.sourceUrl}
+            target="_blank" rel="noopener noreferrer">Inspect the source registry record</a>.
+          Switching treatment groups and first-course groups are distinct
+          and must not be pooled or converted to all-cause / treatment-related percentages.
+        </p>
+      </details> : <p className={styles.caution}>
+        No event-group counts were documented in this archived snapshot.
+        This does not mean that there were zero adverse events.
+      </p>}
+      <p className={styles.metadata}>
+        The safety audit does not change the trial efficacy estimates,
+        the two readiness grades, or any GEM/WT/PIPELINE decision.
+      </p>
+    </section> : null}
     <h3>Eight scientific research domains</h3>
     <div className={styles.domains}>
       {DOMAIN_KEYS.map(domain => {
