@@ -72,6 +72,24 @@ def validate_public_https(url: str) -> str:
     return url
 
 
+def require_registry_trial_identity(url: str, nct_id: str) -> None:
+    """Prevent citing a different NCT on ClinicalTrials.gov as this trial.
+
+    This cannot verify the study identity of arbitrary non-registry publishers,
+    which must still be adjudicated by an independent reviewer.
+    """
+    from urllib.parse import unquote
+    import re
+    parts = urlsplit(url)
+    host = (parts.hostname or "").lower().rstrip(".")
+    if host == "clinicaltrials.gov" or host.endswith(".clinicaltrials.gov"):
+        path = unquote(parts.path)
+        claimed = set(re.findall(r"(?<![A-Za-z0-9])NCT[0-9]{8}(?![A-Za-z0-9])",
+                                 path, flags=re.IGNORECASE))
+        if claimed != {nct_id.upper()}:
+            raise ValueError("ClinicalTrials.gov source must reference this exact NCT trial")
+
+
 def _fields(item: main.ScientificEvidenceLedgerEntry) -> dict:
     return {
         "id": item.id, "nct_id": item.nct_id, "thread_id": item.thread_id,
@@ -264,6 +282,7 @@ def append_candidate(nct_id: str, data: dict) -> dict:
     if gate not in GATES or kind not in TYPES or relationship not in RELATIONSHIPS:
         raise ValueError("Unsupported evidence gate/source type/relationship")
     url = validate_public_https(data["sourceUrl"])
+    require_registry_trial_identity(url, nct_id)
     now = datetime.now(timezone.utc)
     row_id = uuid.uuid4().hex
     prior_id = data.get("supersedesId")
