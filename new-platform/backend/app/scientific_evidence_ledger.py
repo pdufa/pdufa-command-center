@@ -81,7 +81,7 @@ def _fields(item: main.ScientificEvidenceLedgerEntry) -> dict:
         "claim_text": item.claim_text, "relationship": item.relationship,
         "caution": item.caution, "review_status": item.review_status,
         "recorded_by": item.recorded_by,
-        "created_at": item.created_at.isoformat() if item.created_at else None,
+        "created_at": ((item.created_at.replace(tzinfo=timezone.utc) if item.created_at.tzinfo is None else item.created_at.astimezone(timezone.utc)).isoformat() if item.created_at else None),
     }
 
 
@@ -217,8 +217,11 @@ def append_candidate(nct_id: str, data: dict) -> dict:
                                 not ID_PATTERN.fullmatch(prior_id)):
         raise ValueError("Invalid prior evidence entry identifier")
     with Session(main.ENGINE) as session:
-        if session.get(main.FullTrialRecord, nct_id) is None:
+        archived = session.get(main.FullTrialRecord, nct_id)
+        if archived is None:
             raise ValueError("Trial must already be archived in isolated review storage")
+        from .scientific_stored_record import verified_record_from_archive
+        verified_record_from_archive(nct_id, archived.payload_gzip, archived.sha256)
         if prior_id:
             prior = session.get(main.ScientificEvidenceLedgerEntry, prior_id)
             if prior is None or prior.nct_id != nct_id:
