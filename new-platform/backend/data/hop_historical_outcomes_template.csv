@@ -1,1 +1,1 @@
-case_id,application_id,drug_name,sponsor,indication,therapeutic_area,modality,phase,decision_date,outcome,evidence_as_of,source_url,source_title
+case_id,application_id,review_cycle,drug_name,sponsor,indication,therapeutic_area,modality,phase,decision_date,outcome,public_features_as_of,evidence_as_of,source_url,source_title
