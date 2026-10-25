@@ -60,3 +60,5 @@ jobs:
         run: python -m pytest -q tests/test_scientific_investigation_contract.py tests/test_scientific_review_packet.py tests/test_scientific_adjudication_preflight.py tests/test_scientific_google_identity.py tests/test_scientific_dual_review.py tests/test_scientific_reviewer_accounts.py tests/test_scientific_reviewer_endpoint.py tests/test_scientific_review_submission.py tests/test_scientific_review_audit.py tests/test_scientific_review_pairing.py tests/test_scientific_auth_status.py
 
 # Archived-source validation regression suite.
+
+# Reviewer audit completeness and empty-history regression.
