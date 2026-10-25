@@ -80,6 +80,7 @@ jobs:
               html = response.read(40000).decode("utf-8")
               assert response.status == 200, response.status
               assert "Sign in with your Google account" in html
+              assert "Nominate a reviewer candidate" in html
               assert "accounts.google.com/gsi/client" in html
               assert response.headers.get("X-Frame-Options") == "DENY"
               assert "no-store" in response.headers.get("Cache-Control", "")
@@ -87,13 +88,34 @@ jobs:
           for path in ("/api/scientific-assessment/operator/me",
                        "/api/scientific-assessment/operator/research?exact_id=TRIAL%7CNCT02142738",
                        "/api/scientific-assessment/operator/worksheet/NCT02142738",
-                       "/api/scientific-assessment/operator/source-comparison/NCT02142738"):
+                       "/api/scientific-assessment/operator/source-comparison/NCT02142738",
+                       "/api/scientific-assessment/operator/reviewer-nominations"):
               try:
                   with urllib.request.urlopen(root + path, timeout=90) as response:
                       status = response.status
               except urllib.error.HTTPError as exc:
                   status = exc.code
               assert status == 401, (path, status)
+          # Valid synthetic request must still be denied before any candidate write.
+          import json
+          candidate = json.dumps({
+              "candidateEmail": "security-test@example.invalid",
+              "specialty": "biostatistics",
+              "nominationOnlyAcknowledged": True,
+          }).encode("utf-8")
+          request = urllib.request.Request(
+              root + "/api/scientific-assessment/operator/reviewer-nominations",
+              data=candidate,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=90) as response:
+                  post_status = response.status
+          except urllib.error.HTTPError as exc:
+              post_status = exc.code
+          assert post_status == 401, ("anonymous reviewer nomination", post_status)
+          print("PASS: live candidate nomination form served; anonymous GET/POST denied")
           print("PASS: Google sign-in page served; anonymous operator/science calls denied")
           PY
 
