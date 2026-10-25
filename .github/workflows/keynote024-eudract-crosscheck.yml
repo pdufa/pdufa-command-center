@@ -1,0 +1,47 @@
+name: KEYNOTE-024 European Registry Endpoint Crosscheck
+on:
+  push:
+    branches: [feature/keynote024-eudract-primary-endpoint-crosscheck-20261024]
+  pull_request:
+    branches: [feature/scientific-assessment-v1]
+permissions:
+  contents: read
+jobs:
+  eu-registry-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install requirements
+        run: python -m pip install -r new-platform/backend/requirements.txt
+      - name: Test EU endpoint match, prior interim design, archived API and blocked signed SAP
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_eu_plan_crosscheck.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_interim_design.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_http.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_protocol_readiness.py' -v
+  eu-registry-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install locked packages
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Verify original EU field-version safeguards and source-linked UI
+        run: |
+          node --test tests/trial-science-eu-crosscheck.test.cjs
+          node --test tests/trial-science-interim-design.test.cjs
+          node --test tests/trial-science-readiness.test.cjs
+          node --test tests/trial-science-safety-chronology.test.cjs
+          node --test tests/trial-science-evidence-audit.test.cjs
