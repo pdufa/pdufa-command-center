@@ -348,6 +348,44 @@ function paintEvidenceLedger(data, status) {
     entries.appendChild(empty);
   }
   ledger.appendChild(entries);section.appendChild(ledger);
+  const findings=data.reviewerFindings;
+  if(findings){
+    const notes=document.createElement("details");
+    const title=document.createElement("summary");
+    title.textContent="Source-linked reviewer statements ("+(findings.totalStatements||0)+
+      ") · "+(findings.questionsWithConflictingStatements||0)+" questions disputed";
+    notes.appendChild(title);
+    const note=document.createElement("p");
+    note.textContent="Reviewer names are self-declared. These assertions are NOT authenticated professional opinions, independent findings, or resolved evidence gates.";
+    notes.appendChild(note);
+    const list=document.createElement("ol");list.className="reviewer-statements";
+    for(const item of findings.statements||[]){
+      const li=document.createElement("li");
+      const descriptor=document.createElement("strong");
+      descriptor.textContent=item.questionId+" · "+item.findingType+
+        " · version "+item.revision+" · not independently confirmed";
+      li.appendChild(descriptor);
+      const link=document.createElement("div");
+      safeLink(link,item.sourceUrl,"View source");
+      li.appendChild(link);
+      for(const line of [
+        "Source location: "+item.sourceLocator,
+        "Claim: "+item.assertion,
+        "Uncertainty: "+item.uncertainty,
+        "Reviewer label: "+item.reviewerLabel+" (identity not authenticated)",
+        "Recorded: "+item.reviewedAt+" · SHA-256: "+item.contentSha256,
+      ]){
+        const p=document.createElement("p");p.textContent=line;li.appendChild(p);
+      }
+      list.appendChild(li);
+    }
+    if(!list.children.length){
+      const empty=document.createElement("li");
+      empty.textContent="No reviewer source statements recorded yet. All questions remain open.";
+      list.appendChild(empty);
+    }
+    notes.appendChild(list);section.appendChild(notes);
+  }
   const warning=document.createElement("p");
   warning.textContent="Source citations and audit entries are candidates, not independent adjudications. No FDA approval prediction or scientific verdict is assigned.";
   section.appendChild(warning);root.appendChild(section);
