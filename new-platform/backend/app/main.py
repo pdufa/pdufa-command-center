@@ -1067,6 +1067,20 @@ def scientific_reviewer_submit(
         raise HTTPException(status_code=409, detail=str(exc))
 
 
+@app.get("/api/scientific-assessment/reviewer/audit")
+def scientific_reviewer_audit(
+    nct_id: str,
+    question_id: str,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Authorized read-only integrity check of reviewer submission history."""
+    from .scientific_review_audit import audit_readback
+    try:
+        return audit_readback(nct_id, question_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
 @app.get("/api/scientific-assessment/reviewer/me")
 def scientific_reviewer_me(
     reviewer: dict = Depends(require_scientific_google_reviewer),
