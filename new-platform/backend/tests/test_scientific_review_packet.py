@@ -76,6 +76,11 @@ def test_pilot_packet_has_all_review_layers_and_unresolved_acceptance_criteria(s
     assert data["archive"]["archiveIdentityAndSha256Verified"] is True
     assert data["nctId"] == NCT
     assert data["investigation20"]["levelCount"] == 20
+    assert data["assessmentStageCrosswalk"]["stageCount"] == 20
+    assert data["assessmentStageCrosswalk"]["assessmentCount"] == 40
+    assert data["assessmentStageCrosswalk"]["stagesWithLinkedAssessments"] == 20
+    assert data["assessmentStageCrosswalk"]["independentlyVerifiedAssessments"] == 0
+    assert data["assessmentStageCrosswalk"]["approvalProbability"] is None
     assert len(data["evidenceInputGrades"]["requirements"]) == 16
     assert data["evidenceInputGrades"]["analysisReadiness"]["verdict"] == "NOT_READY"
     assert data["evidenceInputGrades"]["scientificReluctance"]["grade"] == "F"
@@ -111,6 +116,7 @@ def test_unknown_trial_packet_has_four_generic_independent_review_gates(storage)
     assert body["independentSourceLedger"]["candidateCount"] == 0
     assert body["reconciliation"]["scope"] == "unreviewed_trial"
     assert body["reconciliation"]["unresolvedCount"] == 4
+    assert body["assessmentStageCrosswalk"]["stageCount"] == 20
     assert all(len(item["resolutionCriteria"]) == 3
                for item in body["reconciliation"]["checks"])
     assert body["scientificConclusion"] is None
@@ -124,6 +130,11 @@ def test_packet_determinism_and_detected_payload_edits(storage):
     assert canonical_bytes(a) == canonical_bytes(b)
     assert check_packet_integrity(a)
     a["reconciliation"]["checks"][0]["resolved"] = True
+    # A misleading edited crosswalk must also invalidate the signed-contents
+    # checksum, even when the registry fields themselves remain unchanged.
+    a["assessmentStageCrosswalk"]["stages"][0]["independentlyVerifiedAssessments"] = 1
+    assert check_packet_integrity(a) is False
+    a["assessmentStageCrosswalk"]["stages"][0]["independentlyVerifiedAssessments"] = 0
     assert check_packet_integrity(a) is False
     b["packetIntegrity"]["digest"] = "0" * 64
     assert check_packet_integrity(b) is False
