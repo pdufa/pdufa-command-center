@@ -1,0 +1,45 @@
+name: Scientific FDA Primary Letter Safety
+
+on:
+  pull_request:
+    branches:
+      - integration/scientific-assessment-validation-20261025
+      - main
+    paths:
+      - "new-platform/backend/app/scientific_pilot_regulatory_timeline.py"
+      - "new-platform/backend/tests/test_scientific_pilot_regulatory_timeline.py"
+      - "new-platform/backend/SCIENTIFIC_KEYNOTE024_FDA_PRIMARY_REVIEW.md"
+      - ".github/workflows/scientific-fda-primary-letter-safety.yml"
+  push:
+    branches:
+      - integration/scientific-assessment-validation-20261025
+    paths:
+      - "new-platform/backend/app/scientific_pilot_regulatory_timeline.py"
+      - "new-platform/backend/tests/test_scientific_pilot_regulatory_timeline.py"
+      - "new-platform/backend/SCIENTIFIC_KEYNOTE024_FDA_PRIMARY_REVIEW.md"
+      - ".github/workflows/scientific-fda-primary-letter-safety.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  historical-fda-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: new-platform/backend/requirements.txt
+      - run: python -m pip install -r requirements.txt
+      - name: Validate original FDA S-8 and S-12 distinctions
+        run: python -m unittest discover -s tests -p 'test_scientific_pilot_regulatory_timeline.py' -v
+      - name: Recheck historic published regulatory provenance contracts
+        run: python -m unittest discover -s tests -p 'test_scientific_pilot_keynote024_results.py' -v
+      - name: Prevent false promotion of scientific readiness
+        run: python -m unittest discover -s tests -p 'test_scientific_protocol_readiness.py' -v
