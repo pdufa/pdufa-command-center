@@ -1,0 +1,25 @@
+name: Scientific Assessment Live Authentication Probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/scientific-assessment-v1]
+    paths:
+      - .github/workflows/scientific-live-probe.yml
+jobs:
+  unauthenticated-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify endpoint requires internal authentication
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://pdufa-scientific-assessment-review.onrender.com/api/scientific-assessment?exact_id=TRIAL%7CNCT00000001"
+          code="$(curl --silent --show-error --location --retry 3 --retry-delay 5 --max-time 90 --output /dev/null --write-out '%{http_code}' "$url")"
+          echo "Unauthenticated HTTP status: $code"
+          case "$code" in
+            401) echo "PASS: endpoint rejects unauthenticated requests" ;;
+            503) echo "::error::API internal key not configured (503)"; exit 1 ;;
+            200) echo "::error::SECURITY FAILURE: endpoint accessible without authentication"; exit 1 ;;
+            *) echo "::error::Unexpected HTTP status $code"; exit 1 ;;
+          esac
