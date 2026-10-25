@@ -37,6 +37,7 @@ class TestServer(BaseHTTPRequestHandler):
     history_requests = 0
     post_requests = 0
     science_requests = 0
+    packet_requests = 0
     stale = False
 
     def log_message(self, *args):
@@ -73,6 +74,20 @@ class TestServer(BaseHTTPRequestHandler):
             self.reply(200, {"jobs": type(self).jobs})
         elif parsed.path == "/api/scientific-assessment/batches/" + JOB_ID:
             self.reply(200, type(self).jobs[0] if type(self).jobs else {})
+        elif parsed.path == "/api/scientific-assessment/review-packet/" + NCT:
+            type(self).packet_requests += 1
+            self.reply(200, {
+                "packetSchemaVersion": "scientific-source-review-packet-v1",
+                "nctId": NCT,
+                "archive": {"nctId": NCT, "archiveIdentityAndSha256Verified": True},
+                "investigation20": {"levelCount": 20},
+                "reconciliation": {"unresolvedCount": 4,
+                                   "independentlyResolvedCount": 0},
+                "readyForFullScientificConclusion": False,
+                "scientificConclusion": None,
+                "fdaApprovalProbability": None,
+                "packetIntegrity": {"algorithm": "SHA-256", "digest": "a"*64},
+            })
         elif parsed.path == "/api/scientific-assessment":
             type(self).science_requests += 1
             exact = parse_qs(parsed.query).get("exact_id", [""])[0]
@@ -185,6 +200,7 @@ def local_server():
     TestServer.history_requests = 0
     TestServer.post_requests = 0
     TestServer.science_requests = 0
+    TestServer.packet_requests = 0
     TestServer.stale = False
     server = ThreadingHTTPServer(("127.0.0.1", 0), TestServer)
     runner = threading.Thread(target=server.serve_forever, daemon=True)
@@ -241,6 +257,20 @@ def test_chromium_scientific_batch_and_evidence_display():
                 "https://clinicaltrials.gov/study/" + NCT
             )
             assert TestServer.science_requests == 1
+            # Review packet download is a deliberate authenticated action.
+            # Secret remains request-header only, not in the exported JSON.
+            with page.expect_download() as download_event:
+                page.get_by_role("button", name="Download 20-stage review packet (JSON)").click()
+            download=download_event.value
+            assert download.suggested_filename == NCT+"_scientific_review_packet.json"
+            with open(download.path(),encoding="utf-8") as exported:
+                packet=json.load(exported)
+            assert packet["nctId"]==NCT
+            assert packet["investigation20"]["levelCount"]==20
+            assert packet["reconciliation"]["independentlyResolvedCount"]==0
+            assert packet["scientificConclusion"] is None
+            assert SECRET not in json.dumps(packet)
+            assert TestServer.packet_requests==1
 
             # Depth-20 source coverage is genuinely rendered by the browser,
             # with no invented score or FDA approval probability.
@@ -311,6 +341,7 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert page.locator("#quantitative-results details").count() == 0
             assert page.locator("#readiness-grades .readiness-grade").count() == 0
             assert page.locator("#evidence-ledger details").count() == 0
+            assert page.get_by_role("button", name="Download 20-stage review packet (JSON)").is_disabled()
             page.get_by_role("button", name="Refresh history").click()
             page.get_by_text("Enter the internal API key first.").wait_for()
 
