@@ -58,6 +58,29 @@ _PAGE = r'''<!doctype html>
     <p class="muted">Reviewer identities must be separate from the operator. Qualifications and roles require independent administrator validation. Scientific sign-off remains disabled.</p>
     <p id="reviewer-setup-status" class="status" role="status">Reviewer access configuration not checked.</p>
     <p><a href="/scientific/reviewer" target="_blank" rel="noopener noreferrer">Open separate reviewer sign-in</a></p>
+    <details id="reviewer-nomination-panel">
+      <summary>Nominate a reviewer candidate (no access granted)</summary>
+      <p class="muted">This saves a pending candidate to the isolated scientific database. It does not contact the person, invite them, verify qualifications or identity, or grant reviewer access.</p>
+      <label for="candidate-email">Candidate's Google email</label>
+      <input id="candidate-email" type="email" autocomplete="off" maxlength="320" placeholder="reviewer@example.org">
+      <label for="candidate-name">Name (optional)</label>
+      <input id="candidate-name" type="text" autocomplete="off" maxlength="160" placeholder="Candidate's professional name">
+      <label for="candidate-specialty">Independent specialty</label>
+      <select id="candidate-specialty">
+        <option value="clinical_oncology">Clinical oncology</option>
+        <option value="biostatistics">Biostatistics</option>
+        <option value="drug_safety">Drug safety</option>
+        <option value="regulatory_science">Regulatory science</option>
+      </select>
+      <label for="candidate-qualifications">Qualifications to verify (optional; not yet verified)</label>
+      <textarea id="candidate-qualifications" maxlength="1200" placeholder="Professional qualification, experience, organization, and any potential conflicts to check"></textarea>
+      <p><label><input type="checkbox" id="candidate-pending-confirm"> I understand this is a pending nomination only; no email will be sent and no reviewer permission granted.</label></p>
+      <button id="nominate-reviewer" type="button">Save pending nomination</button>
+      <p id="nomination-status" class="muted" role="status"></p>
+    </details>
+    <h3 style="margin-top:20px">Candidate verification queue</h3>
+    <p class="muted">These are nominations, not approved reviewer accounts. Independent Google identity, relevant credentials, conflicts and final role authorization must be verified separately.</p>
+    <div id="reviewer-nominations"></div>
   </section>
   <section id="research" class="panel hide" aria-label="Scientific research">
     <h2>Archived-trial investigation</h2>
@@ -186,6 +209,92 @@ _PAGE = r'''<!doctype html>
     if (!r.ok) throw Error("Scientific API unavailable (" + r.status + ")");
     return r.json();
   }
+  async function showPendingNominations() {
+    var list = document.getElementById("reviewer-nominations");
+    list.replaceChildren();
+    if (!token) return;
+    try {
+      var data = await authorizedFetch("/api/scientific-assessment/operator/reviewer-nominations");
+      if (data.operatorOnly !== true || data.selfRegistrationEnabled !== false ||
+          data.reviewerAccessGrantedByNomination !== false ||
+          data.invitationsSent !== false || data.maySignOff !== false ||
+          !Array.isArray(data.nominations)) {
+        throw Error("Reviewer nomination data did not meet access safeguards");
+      }
+      if (!data.nominations.length) {
+        list.appendChild(element("p", "No candidate nominations yet.", "muted"));
+      } else {
+        data.nominations.forEach(function (item) {
+          if (item.reviewerAccessGranted !== false || item.maySignOff !== false ||
+              item.credentialsVerified !== false || item.invitationSent !== false) {
+            throw Error("Candidate was unexpectedly granted reviewer authority");
+          }
+          var box = element("div", undefined, "panel");
+          box.appendChild(element("p",
+            (item.displayName || item.candidateEmail) + " · " + item.specialty));
+          box.appendChild(element("p", item.candidateEmail, "muted"));
+          box.appendChild(element("p", "Pending identity, credentials, and independence checks.", "evidence-note"));
+          list.appendChild(box);
+        });
+      }
+    } catch (err) {
+      list.replaceChildren();
+      list.appendChild(element("p", "Candidate queue unavailable: " + String(err.message || err), "muted"));
+    }
+  }
+
+  document.getElementById("nominate-reviewer").addEventListener("click", async function () {
+    var statusText = document.getElementById("nomination-status");
+    var submit = document.getElementById("nominate-reviewer");
+    if (!token) { statusText.textContent = "Sign in as the operator first."; return; }
+    if (!document.getElementById("candidate-pending-confirm").checked) {
+      statusText.textContent = "Confirm that this nomination grants no reviewer access.";
+      return;
+    }
+    var candidateEmail = document.getElementById("candidate-email").value.trim();
+    var body = {
+      candidateEmail: candidateEmail,
+      displayName: document.getElementById("candidate-name").value.trim(),
+      specialty: document.getElementById("candidate-specialty").value,
+      qualificationsNote: document.getElementById("candidate-qualifications").value.trim(),
+      nominationOnlyAcknowledged: true
+    };
+    if (!candidateEmail || !candidateEmail.includes("@")) {
+      statusText.textContent = "Enter the candidate's Google email."; return;
+    }
+    submit.disabled = true;
+    statusText.textContent = "Saving candidate details without granting access…";
+    try {
+      var response = await fetch("/api/scientific-assessment/operator/reviewer-nominations", {
+        method: "POST", cache: "no-store", credentials: "omit",
+        headers: {"Authorization": "Bearer " + token, "Content-Type": "application/json"},
+        body: JSON.stringify(body)
+      });
+      var data = await response.json().catch(function () { return {}; });
+      if (response.status === 401 || response.status === 403) {
+        clear();
+        throw Error("Operator authorization expired");
+      }
+      if (!response.ok) {
+        throw Error("Nomination was not saved (" + response.status + "). " +
+          String(data.detail || ""));
+      }
+      if (data.googleIdentityVerified !== false || data.credentialsVerified !== false ||
+          data.independenceVerified !== false || data.invitationSent !== false ||
+          data.reviewerAccessGranted !== false || data.maySignOff !== false ||
+          data.status !== "pending_independent_verification") {
+        throw Error("Nomination permission receipt failed verification");
+      }
+      statusText.textContent = "Candidate saved as pending. No invitation or access was granted.";
+      document.getElementById("candidate-email").value = "";
+      document.getElementById("candidate-name").value = "";
+      document.getElementById("candidate-qualifications").value = "";
+      document.getElementById("candidate-pending-confirm").checked = false;
+      void showPendingNominations();
+    } catch (err) { statusText.textContent = String(err.message || err); }
+    finally { submit.disabled = false; }
+  });
+
   async function checkReviewerSetup() {
     reviewerSetupStatus.textContent = "Reading reviewer-access status…";
     try {
@@ -201,6 +310,7 @@ _PAGE = r'''<!doctype html>
         " provisioned reviewer identities out of " +
         String(data.requiredDistinctReviewerIdentities) +
         " needed for two-person review. Scientific sign-off remains disabled.";
+      void showPendingNominations();
     } catch (err) {
       reviewerSetupStatus.textContent =
         "Reviewer setup status unavailable; no new access has been granted. " +
