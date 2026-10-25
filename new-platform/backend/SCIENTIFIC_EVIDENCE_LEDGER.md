@@ -68,3 +68,39 @@ The KEYNOTE-024 panel now includes **eight prioritized, linked, unadjudicated qu
 All eight entries have `status=open_unadjudicated`, `independentlyVerified=false` and no score. They link to the **source candidate documents** but do not assert scientific appraisal or retrospectively invent prior verification. Other exact trial records receive a four-gate generic checklist until their own evidence is investigated.
 
 No new trial, candidate ranking, financial scan, trade order, or live scientific score is created. The isolated staging startup log `SCIENTIFIC_SOURCE_RECONCILIATION` confirms seven pilot source URLs and eight open tasks without any write.
+
+## Source-linked reviewer statements — recorded, not independently confirmed
+
+The isolated review backend now has a separate append-only `scientific_reviewer_findings` table for documenting the human evidence-analysis process. This stores a **reviewer-authored statement**, not a verified scientific result or a professional-license check.
+
+Each statement must identify an **exact archived NCT trial**, a valid question ID from that trial's reconciliation worklist, a known question citation or a same-gate source candidate in the validated ledger, and a **specific source locator** such as a section, table or PDF page. It also records one of `supports`, `contradicts`, `uncertain`, or `not_assessable`; a bounded factual assertion; a reason for uncertainty; a reviewer *label*; the date; and SHA-256 checksum.
+
+Corrections **never rewrite** an earlier statement. Use `supersedesId` to append a new version in the same thread. The database enforces one successor per parent to prevent competing revisions. The read-only view shows all historic versions and identifies disputes **only between latest independent threads** (a retracted contradiction does not remain a current dispute). A tampered statement prevents the whole ledger or packet from being displayed as trustworthy. A SHA-256 integrity check is not a cryptographic signature or an identity-verification mechanism.
+
+### Review-only submission API
+
+`POST /api/scientific-assessment/reviewer-statements/NCT########` accepts:
+
+```json
+{
+  "questionId": "protocol_amendment_chronology",
+  "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf",
+  "sourceLocator": "Protocol amendment table, PDF page 5",
+  "findingType": "uncertain",
+  "assertion": "The posted amendment chronology must be reconciled with the prospectively effective analysis plan.",
+  "uncertainty": "The linked protocol version was posted after the original interim analysis.",
+  "reviewerLabel": "Independent source reviewer",
+  "reviewerAttestsReadSource": true,
+  "supersedesId": null
+}
+```
+
+This API uses **both** the ordinary internal API key and the distinct evidence-review write key; it is accessible only from the exact isolated service with the separate `PDUFA_SCIENTIFIC_LEDGER_WRITE_ENABLED=1` setting. Writes remain disabled unless the operator explicitly enables this gated facility in Render. The browser **does not** store the review key or provide a way to bypass the gate. Do not put credentials in a GitHub commit, URL, screenshot or chat.
+
+The source URL is checked against the question's known citations or an existing same-gate ledger candidate. Claims of `verified=true`, `resolved=true`, `approvalProbability`, and any extra fields are rejected. Attesting to reading a document is **not** proof of reviewer qualifications or independent evidence validation.
+
+### Scientific meaning of reviewer-statement statuses
+
+A document with two contradictory reviewer statements is **disputed**, not disproven. An apparently supportive review statement is **unconfirmed**, not scientific success. All questions remain `open_unadjudicated`, both existing evidence grades stay on the same conservative rubric, and no FDA approval probability or independent scientific score is assigned. A separate, authenticated independent-review attestation, conflict-resolution procedure and clinical verification process will be needed before any gate can legitimately become verified.
+
+The read-only trial page and downloadable scientific packet now expose source locators, revision history, dispute flags and the number of reviewer statements per unresolved question. Initial production deployment contains **no prefilled reviewer findings**; these records can only arise from a deliberately authenticated, review-service-only write.
