@@ -10,6 +10,7 @@ on:
       - 'new-platform/backend/app/hop_fda_action_review.py'
       - 'new-platform/backend/app/hop_fda_document_probe.py'
       - 'new-platform/backend/app/hop_fda_pdf_evidence_groups.py'
+      - 'new-platform/backend/app/hop_fda_pdf_page_candidates.py'
 
 permissions:
   contents: read
@@ -18,18 +19,18 @@ jobs:
   action-evidence-worklist:
     name: Check FDA publication types and source PDFs without model labels
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install test dependency
-        run: python -m pip install pytest
+        run: python -m pip install pytest 'pypdf>=4,<7'
       - name: Validate FDA source action and PDF safeguards
         working-directory: new-platform/backend
-        run: PYTHONPATH=. python -m pytest -q tests/test_hop_fda_action_review.py tests/test_hop_fda_document_probe.py tests/test_hop_fda_pdf_evidence_groups.py
-      - name: Collect action-review worklist and check all published FDA document URLs
+        run: PYTHONPATH=. python -m pytest -q tests/test_hop_fda_action_review.py tests/test_hop_fda_document_probe.py tests/test_hop_fda_pdf_evidence_groups.py tests/test_hop_fda_pdf_page_candidates.py
+      - name: Collect FDA source evidence and index candidate pages across shared PDFs
         working-directory: new-platform/backend
         run: PYTHONPATH=. python scripts/collect_hop_fda_action_review.py --output-dir "${{ runner.temp }}/hop-fda-action-review" --pdf-batch-size 20
       - name: Retain research-only FDA action evidence audit
