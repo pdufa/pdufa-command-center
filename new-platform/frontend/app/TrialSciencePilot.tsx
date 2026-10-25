@@ -234,7 +234,7 @@ function Evidence({ pilot }: { pilot: TrialSciencePilot }) {
         2016 immune-mediated adverse events (regardless of investigator treatment-attribution)
         were {pilot.publishedSafetyReconciliation.immuneMediated2016.anyGradePercent.pembrolizumab}%
         versus {pilot.publishedSafetyReconciliation.immuneMediated2016.anyGradePercent.chemotherapy}%.
-        Those are **not** the same category as treatment-related adverse events.
+        Those are not the same category as treatment-related adverse events.
       </p>
       <details className={styles.caveats}>
         <summary>2019 published follow-up · 2017 data cutoff · never overwrite 2016</summary>
