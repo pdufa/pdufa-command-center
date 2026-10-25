@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-10-24T03:43:50.539391+00:00",
+  "generated_at_utc": "2026-10-25T03:37:40.287371+00:00",
   "status": "REVIEW_REQUIRED",
   "source_scan": {
     "workflow": "PDUFA Overnight Sequential Scans",
-    "run_id": 40057578041,
+    "run_id": 40157554535,
     "conclusion": "success"
   },
   "counts": {
@@ -42,7 +42,7 @@
       "Test": "Post Phase 3 entry gates",
       "Status": "DATA GAP",
       "Result": "0/38 financing-review rows contain at least one gate PASS",
-      "Why it matters": "No verified PASS is not evidence of an eligible entry; gate status overrides scores."
+      "Why it matters": "A recorded PASS covers only its named gate, not the whole event or a trading authorization; unresolved records remain blocked."
     },
     {
       "Test": "Market data overlap",
