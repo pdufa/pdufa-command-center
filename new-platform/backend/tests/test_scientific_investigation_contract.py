@@ -1,5 +1,5 @@
 """Tests for the isolated scientific investigation readiness contract."""
-from app.scientific_investigation_contract import LAYERS, readiness
+from app.scientific_investigation_contract import LAYERS, DEPTH_LEVELS, investigation_plan, readiness
 
 
 def test_exactly_eight_layers_and_forty_unique_questions():
@@ -52,3 +52,17 @@ def test_all_verified_is_readiness_not_approval_prediction():
     assert result["verified_assessments"] == 40
     assert result["scientific_score"] is None
     assert result["approval_probability"] is None
+
+
+def test_eight_depth_levels_create_320_unscored_tasks():
+    plan = investigation_plan()
+    assert len(DEPTH_LEVELS) == 8
+    assert plan["assessments"] == 40
+    assert plan["requiredTasks"] == 320
+    assert len(plan["tasks"]) == 320
+    assert len({(task["assessmentId"], task["depthLevel"]) for task in plan["tasks"]}) == 320
+    assert plan["completedTasks"] == 0
+    assert all(task["status"] == "pending_independent_review" for task in plan["tasks"])
+    assert all(task["scientificScore"] is None for task in plan["tasks"])
+    assert not plan["readyForScientificConclusion"]
+    assert plan["approvalProbability"] is None
