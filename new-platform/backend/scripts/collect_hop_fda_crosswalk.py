@@ -52,9 +52,9 @@ def main() -> None:
     (dest / "fda_crl_registry_identity_audit.json").write_text(
         json.dumps(audit, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (dest / "fda_repeat_letter_review_candidates.json").write_text(
-        json.dumps(triage_cases, indent=2, sort_keys=True) + "\\n", encoding="utf-8")
+        json.dumps(triage_cases, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (dest / "fda_repeat_letter_triage_audit.json").write_text(
-        json.dumps(triage_audit, indent=2, sort_keys=True) + "\\n", encoding="utf-8")
+        json.dumps(triage_audit, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({
         "status": audit["status"],
         "published_letter_records": audit["published_letter_records"],
