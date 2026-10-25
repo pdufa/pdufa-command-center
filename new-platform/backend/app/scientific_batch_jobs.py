@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from . import main, scientific_batch_import
 
 ACTIVE_SLOT = "scientific-import"
-ID_PATTERN = re.compile(r"[0-9a-f]{32}\\Z")
+ID_PATTERN = re.compile(r"[0-9a-f]{32}\Z")
 
 
 def _now() -> datetime:
