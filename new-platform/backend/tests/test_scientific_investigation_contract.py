@@ -66,3 +66,52 @@ def test_eight_depth_levels_create_320_unscored_tasks():
     assert all(task["scientificScore"] is None for task in plan["tasks"])
     assert not plan["readyForScientificConclusion"]
     assert plan["approvalProbability"] is None
+
+
+def test_api_exposes_320_pending_tasks_for_verified_archived_trial(monkeypatch):
+    """Exercise the real API handler with an isolated in-memory archive stub."""
+    from types import SimpleNamespace
+    from app import main
+    from app import scientific_stored_record
+    from app import scientific_registry_evidence
+    from app import scientific_investigation_20
+    from app import scientific_quantitative_results
+    from app import scientific_readiness_grades
+
+    class FakeSession:
+        def __init__(self, engine):
+            pass
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            return False
+        def get(self, model, nct_id):
+            assert nct_id == "NCT02142738"
+            return SimpleNamespace(payload_gzip=b"archived", sha256="0" * 64,
+                                   fetched_at=None)
+
+    monkeypatch.setattr(main, "storage_ready", lambda: True)
+    monkeypatch.setitem(main._DB_STATE, "available", True)
+    monkeypatch.setattr(main, "Session", FakeSession)
+    monkeypatch.setattr(scientific_stored_record, "verified_record_from_archive",
+                        lambda *args: {"verified": True})
+    monkeypatch.setattr(scientific_registry_evidence, "extract_trial_evidence",
+                        lambda *args: {"status": "source_only"})
+    monkeypatch.setattr(scientific_investigation_20, "investigation_20",
+                        lambda *args, **kwargs: {"status": "source_only"})
+    monkeypatch.setattr(scientific_quantitative_results, "reported_quantitative_results",
+                        lambda *args: {"status": "source_only"})
+    monkeypatch.setattr(scientific_readiness_grades, "review_readiness",
+                        lambda *args, **kwargs: {"analysisReadiness": {"grade": "C"}})
+    # The evidence ledger is optional and must never self-promote candidates.
+    result = main.get_scientific_assessment("TRIAL|NCT02142738")
+    assert result["registryEvidenceStatus"] == "source_record_loaded"
+    forty = result["investigation40"]
+    assert forty["nctId"] == "NCT02142738"
+    assert len(forty["layers"]) == 8
+    assert forty["verification"]["verified_assessments"] == 0
+    assert forty["depthReview"]["requiredTasks"] == 320
+    assert len(forty["depthReview"]["tasks"]) == 320
+    assert forty["depthReview"]["completedTasks"] == 0
+    assert result["readinessGrades"]["analysisReadiness"]["grade"] == "C"
+    assert result["assessment"]["overall_score"] is None
