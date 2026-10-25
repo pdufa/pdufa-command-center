@@ -52,6 +52,7 @@ function payload() {
       analysis_snapshots:[
         {
           ...ref("27718847","keynote024_initial_2016","2016-10-08"),
+          data_cutoff_date:"2016-05-09",
           effects:{
             progression_free_survival:{
               metric:"median_months",pembrolizumab:10.3,chemotherapy:6,
@@ -69,10 +70,12 @@ function payload() {
           ...ref("29129441","keynote024_pros_2017","2017-11-09"),
           outcomes:{quality_of_life_week15_change:{
             pembrolizumab:6.9,chemotherapy:-0.9,nominal_p_value:"0.0020",
+            between_group_difference:7.8,difference_95pct_ci:[2.9,12.8],
           }},
         },
         {
           ...ref("33872070","keynote024_five_year_2021","2021-04-19"),
+          data_cutoff_date:"2020-06-01",
           effects:{overall_survival:{
             hazard_ratio:0.62,
             five_year_kaplan_meier_survival_percent:{
@@ -123,6 +126,7 @@ test("mismatched, scored, tampered, or unsafe pilot response fails closed",()=>{
     x=>x.qualificationPresetsModified=true,
     x=>x.publishedResults.analysis_snapshots[0].nct_id="NCT12345678",
     x=>x.publishedResults.analysis_snapshots[0].source_url="https://attacker.invalid",
+    x=>x.publishedResults.analysis_snapshots[0].data_cutoff_date="bad",
     x=>x.publishedResults.corroborating_sources[0].source_url="https://pubmed.ncbi.nlm.nih.gov.attacker.invalid/fake",
     x=>x.publishedResults.analysis_snapshots.pop(),
   ];
@@ -169,6 +173,9 @@ test("historical panel loads only on explicit click, preserving cited outcomes a
     assert.match(output, /"26\.6"/);
     assert.match(output, /"53\.3"/);
     assert.match(output,/Progression-free survival/);
+    assert.match(output,/6.9 vs -0.9 points/);
+    assert.match(output,/Difference 7.8 points/);
+    assert.match(output,/data cutoff 2020-06-01/);
     assert.match(output,/long term followup/i);
     assert.match(output,/Independent appraisal pending/);
     assert.match(output,/No independently validated eight-domain score/);
