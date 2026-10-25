@@ -13,6 +13,7 @@ import base64
 import binascii
 import hashlib
 import hmac
+import json
 import re
 import uuid
 from datetime import datetime, timezone
@@ -58,6 +59,26 @@ def _allowed_urls(session: Session, nct_id: str, gate_id: str) -> set[str]:
     return urls
 
 
+def _metadata_fields(item: main.ScientificSourceDocument) -> dict:
+    dt = item.captured_at
+    utc = (dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None
+           else dt.astimezone(timezone.utc))
+    return {
+        "id": item.id, "nctId": item.nct_id,
+        "gateId": item.gate_id, "sourceUrl": item.source_url,
+        "sourceType": item.source_type, "filename": item.filename,
+        "capturedBy": item.captured_by, "capturedAt": utc.isoformat(),
+        "sha256": item.sha256, "byteLength": item.byte_length,
+        "captureStatus": item.capture_status,
+    }
+
+
+def _metadata_hash(item: main.ScientificSourceDocument) -> str:
+    canonical = json.dumps(_metadata_fields(item), sort_keys=True,
+                           separators=(",", ":"), ensure_ascii=False).encode()
+    return hashlib.sha256(canonical).hexdigest()
+
+
 def _capture_meta(item: main.ScientificSourceDocument) -> dict:
     """Check every byte before allowing metadata into a review packet."""
     if len(item.payload) != item.byte_length:
@@ -67,10 +88,11 @@ def _capture_meta(item: main.ScientificSourceDocument) -> dict:
         raise ValueError("Scientific document stored SHA-256 mismatch")
     if item.capture_status != CAPTURE_STATUS:
         raise ValueError("Scientific document unexpectedly marked verified")
+    if not hmac.compare_digest(_metadata_hash(item), item.manifest_sha256):
+        raise ValueError("Scientific document provenance metadata integrity mismatch")
     if not item.payload.startswith(b"%PDF-") or b"%%EOF" not in item.payload[-1024:]:
         raise ValueError("Scientific document PDF boundary mismatch")
-    dt = item.captured_at
-    when = dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    fields = _metadata_fields(item)
     return {
         "documentId": item.id,
         "nctId": item.nct_id,
@@ -80,9 +102,10 @@ def _capture_meta(item: main.ScientificSourceDocument) -> dict:
         "filename": item.filename,
         "contentType": "application/pdf",
         "capturedBy": item.captured_by,
-        "capturedAt": when.isoformat(),
+        "capturedAt": fields["capturedAt"],
         "byteLength": item.byte_length,
         "sha256": item.sha256,
+        "manifestSha256": item.manifest_sha256,
         "captureStatus": CAPTURE_STATUS,
         "byteIntegrityChecked": True,
         "sourceAuthorshipVerified": False,
@@ -147,8 +170,9 @@ def capture_document(nct_id: str, item: dict) -> dict:
             captured_by=item["capturedBy"],
             captured_at=datetime.now(timezone.utc),
             sha256=actual_digest, byte_length=len(raw), payload=raw,
-            capture_status=CAPTURE_STATUS,
+            capture_status=CAPTURE_STATUS, manifest_sha256="0"*64,
         )
+        row.manifest_sha256 = _metadata_hash(row)
         session.add(row)
         session.commit()
         return _capture_meta(row)
