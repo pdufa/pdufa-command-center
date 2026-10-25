@@ -35,7 +35,7 @@ from .scientific_stored_record import verified_record_from_archive
 MAX_PDF_BYTES = 4 * 1024 * 1024
 # Strict exception for ONE pinned historical regulator-hosted PDF. Manual
 # uploads and every other source still use the original 4 MiB ceiling.
-MAX_EMA_PDF_BYTES = 16 * 1024 * 1024
+MAX_EMA_PDF_BYTES = 5 * 1024 * 1024
 MAX_DOCUMENTS_PER_TRIAL = 8
 SHA_PATTERN = re.compile(r"[a-f0-9]{64}\Z")
 DOCUMENT_ID_PATTERN = re.compile(r"[a-f0-9]{32}\Z")
