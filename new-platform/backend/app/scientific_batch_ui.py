@@ -728,10 +728,6 @@ async function inspectScience() {
     const result=await api("/api/scientific-assessment?exact_id="+encodeURIComponent("TRIAL|"+id));
     const assessment=result.assessment||{};
     const evidence=result.registryEvidence;
-    paintInvestigation20(result.investigation20);
-    paintQuantitativeResults(result.quantitativeResults);
-    paintReadinessGrades(result.readinessGrades);
-    paintEvidenceLedger(result.evidenceLedger, result.evidenceLedgerStatus);
     const archived=result.registryEvidenceStatus==="source_record_loaded" && evidence
         && evidence.nctId===id && evidence.verificationStatus==="source_record_only";
     if(archived && result.evidenceLedgerStatus==="candidate_inventory_loaded"
@@ -739,6 +735,10 @@ async function inspectScience() {
       inspectedNct=id;
       $("science-download").disabled=false;
     }
+    paintInvestigation20(result.investigation20);
+    paintQuantitativeResults(result.quantitativeResults);
+    paintReadinessGrades(result.readinessGrades);
+    paintEvidenceLedger(result.evidenceLedger, result.evidenceLedgerStatus);
     const overall=assessment.overall_score;
     $("science-status").textContent="Evidence: "+(archived ? "archived source record, descriptive only" :
        result.registryEvidenceStatus==="record_not_found" ? "no archived record" :
