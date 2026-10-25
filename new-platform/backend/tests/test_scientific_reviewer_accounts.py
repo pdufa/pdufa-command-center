@@ -37,3 +37,18 @@ def test_disabled_account_never_authorized(monkeypatch, tmp_path):
 def test_invalid_subject_rejected(subject):
     with pytest.raises(ValueError):
         reviewer_access_preflight(subject)
+
+
+def test_google_email_must_match_provisioned_account(monkeypatch, tmp_path):
+    from datetime import datetime, timezone
+    engine = create_engine("sqlite:///" + str(tmp_path / "email-match.db"))
+    main.Base.metadata.create_all(engine)
+    monkeypatch.setattr(main, "ENGINE", engine)
+    with Session(engine) as session:
+        session.add(main.ScientificReviewerAccount(
+            google_subject="google-sub", verified_email="authorized@example.org",
+            role="reviewer", credentials_verified=True, enabled=True,
+            created_at=datetime.now(timezone.utc)))
+        session.commit()
+    assert reviewer_access_preflight("google-sub", "authorized@example.org")["roleAuthorized"] is True
+    assert reviewer_access_preflight("google-sub", "different@example.org")["roleAuthorized"] is False
