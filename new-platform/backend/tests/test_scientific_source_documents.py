@@ -305,3 +305,62 @@ def test_default_cap_never_increases_for_non_ema_sources():
     assert max_source_pdf_bytes(
         NCT,"official_regulatory",FDA_2016_APPROVAL,"official_agency_document"
     ) == MAX_PDF_BYTES
+
+
+
+def test_pilot_manifest_preview_key_is_pinned_read_only_and_does_not_leak_pdf_or_reviewer_data(isolated, monkeypatch):
+    client, engine = isolated
+    capture = capture_document(NCT, payload())
+    path = "/api/scientific-assessment/captured-source-manifest/" + NCT
+    scoped = "frozen-isolated-read-key-test-value-at-least-32chars"
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_PREVIEW_READ_KEY", scoped)
+    monkeypatch.setenv("PDUFA_MIGRATION_READ_ONLY", "1")
+    assert client.get(path).status_code == 401
+    assert client.get(path, headers={"x-pdufa-internal-key": "not-authorized"}).status_code == 401
+    assert client.get(path.replace(NCT, OTHER), headers={"x-pdufa-internal-key": scoped}).status_code == 422
+    with Session(engine) as session:
+        before_documents = session.query(main.ScientificSourceDocument).count()
+        before_findings = session.query(main.ScientificReviewerFinding).count()
+    response = client.get(path, headers={"x-pdufa-internal-key": scoped})
+    assert response.status_code == 200, response.text
+    assert response.headers["cache-control"] == "private, no-store"
+    assert response.headers["x-pdufa-scientific-api-contract"] == "science-captured-hashes-v1"
+    info = response.json()
+    assert info["nctId"] == NCT and info["sourceDocumentCount"] == 1
+    assert info["documents"] == [{
+        "documentId": capture["documentId"], "nctId": NCT,
+        "gateId": "official_regulatory", "sourceType": "official_agency_document",
+        "sha256": capture["sha256"], "byteLength": capture["byteLength"],
+        "captureStatus": CAPTURE_STATUS, "byteIntegrityChecked": True,
+        "sourceAuthorshipVerified": False,
+        "documentContentScientificallyVerified": False, "canCountTowardReadiness": False,
+    }]
+    for raw_field in ["sourceUrl", "capturedBy", "manifestSha256", "payload",
+                      "contentBase64", "filename", "reviewerEmail", "source_url"]:
+        assert raw_field not in response.text
+    assert info["independentSourceVerificationCompleted"] is False
+    assert info["scientificGradePromotionAllowed"] is False
+    assert info["scientificScore"] is None
+    assert info["fdaApprovalProbability"] is None
+    with Session(engine) as session:
+        assert session.query(main.ScientificSourceDocument).count() == before_documents
+        assert session.query(main.ScientificReviewerFinding).count() == before_findings
+    monkeypatch.setenv("RENDER_SERVICE_ID", "not-the-frozen-scientific-service")
+    assert client.get(path, headers={"x-pdufa-internal-key": scoped}).status_code in (401, 403)
+
+
+def test_pilot_manifest_read_fails_closed_when_stored_pdf_bytes_are_tampered(isolated, monkeypatch):
+    client, engine = isolated
+    capture_document(NCT, payload())
+    route = "/api/scientific-assessment/captured-source-manifest/" + NCT
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_PREVIEW_READ_KEY", "frozen-pilot-scientific-key-test-at-least-32")
+    monkeypatch.setenv("PDUFA_MIGRATION_READ_ONLY", "1")
+    headers = {"x-pdufa-internal-key": "frozen-pilot-scientific-key-test-at-least-32"}
+    assert client.get(route, headers=headers).status_code == 200
+    with Session(engine) as session:
+        doc = session.query(main.ScientificSourceDocument).one()
+        doc.payload = b"%PDF-1.7\naltered bytes cannot pass\n%%EOF"
+        session.commit()
+    response = client.get(route, headers=headers)
+    assert response.status_code == 409
+    assert "sha256" not in response.text.lower()
