@@ -541,6 +541,9 @@ async def lifespan(app: FastAPI):
                         and packet["investigation20"]["levelCount"] == 20
                         and len(packet["evidenceInputGrades"]["requirements"]) == 16
                         and packet["reconciliation"]["independentlyResolvedCount"] == 0
+                        and packet["adjudicationPreflight"]["questionsReadyForAdjudication"] == 0
+                        and packet["adjudicationPreflight"]["questionsIndependentlyResolved"] == 0
+                        and packet["adjudicationPreflight"]["independentDualReviewImplemented"] is False
                         and packet["scientificConclusion"] is None
                         and packet["fdaApprovalProbability"] is None
                     )
@@ -551,6 +554,18 @@ async def lifespan(app: FastAPI):
                         "PASS" if packet_ok else "FAIL",
                         depth_record.nct_id,
                         packet["reconciliation"]["unresolvedCount"], packet_ok,
+                    )
+                    preflight = packet["adjudicationPreflight"]
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_ADJUDICATION_PREFLIGHT status=%s "
+                        "nct_id=%s total_questions=%d reviewer_observed=%d "
+                        "current_disputes=%d eligible=0 resolved=0 "
+                        "identity_verified=False source_content_verified=False",
+                        "PASS" if packet_ok else "FAIL",
+                        depth_record.nct_id,
+                        preflight["questionCount"],
+                        preflight["questionsWithRecordedObservations"],
+                        preflight["questionsWithCurrentDisputes"],
                     )
         except Exception as depth_error:
             logging.getLogger(__name__).error(
