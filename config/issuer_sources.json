@@ -272,10 +272,12 @@
           "https://www.sec.gov/Archives/edgar/data/1228627/000114036126006176/ef20066083_form8k.htm"
         ],
         "urls": [
-          "https://ir.opusgtx.com/press-releases/detail/519/opus-genetics-announces-fda-acceptance-of-supplemental-new-drug-application-for-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia",
-          "https://ir.opusgtx.com/press-releases/detail/546/opus-genetics-announces-fda-approval-of-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia"
+          "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217064Orig1s005ltr.pdf",
+          "https://ir.opusgtx.com/press-releases/detail/546/opus-genetics-announces-fda-approval-of-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia",
+          "https://ir.opusgtx.com/press-releases/detail/519/opus-genetics-announces-fda-acceptance-of-supplemental-new-drug-application-for-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia"
         ],
-        "primary_target_anchor": "The FDA has assigned a PDUFA goal date of October 17, 2026"
+        "primary_target_anchor": "The FDA has assigned a PDUFA goal date of October 17, 2026",
+        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf"
       }
     },
     "hosts": [
@@ -492,9 +494,10 @@
       },
       "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017": {
         "urls": [
+          "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217064Orig1s005ltr.pdf",
+          "https://newsroom.viatris.com/2026-10-16-Viatris-Receives-U-S-FDA-Approval-for-RYZUMVI-R-for-the-Treatment-of-Presbyopia",
           "https://investor.viatris.com/news-releases/news-release-details/fda-accepts-viatris-supplemental-new-drug-application-mr-141",
-          "https://newsroom.viatris.com/2026-02-25-FDA-Accepts-Viatris-Supplemental-New-Drug-Application-for-MR-141-Phentolamine-Ophthalmic-Solution-0-75-for-the-Treatment-of-Presbyopia",
-          "https://newsroom.viatris.com/2026-10-16-Viatris-Receives-U-S-FDA-Approval-for-RYZUMVI-R-for-the-Treatment-of-Presbyopia"
+          "https://newsroom.viatris.com/2026-02-25-FDA-Accepts-Viatris-Supplemental-New-Drug-Application-for-MR-141-Phentolamine-Ophthalmic-Solution-0-75-for-the-Treatment-of-Presbyopia"
         ],
         "individual_financing_close": {
           "date": "2026-06-17",
@@ -504,7 +507,8 @@
         },
         "financing_urls": [
           "https://www.sec.gov/Archives/edgar/data/1792044/000114036126025744/ef20076340_8k.htm"
-        ]
+        ],
+        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf"
       }
     },
     "hosts": [
