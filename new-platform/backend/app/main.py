@@ -120,6 +120,16 @@ class ScientificBatchJob(Base):
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
+class ScientificSmokeClaim(Base):
+    """One durable execution claim per trial for temporary isolated live smoke."""
+    __tablename__ = "scientific_smoke_claims"
+
+    nct_id: Mapped[str] = mapped_column(String(11), primary_key=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    claimed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
 class CandidateAssessmentHistory(Base):
     """Append-only score/evidence changes for one immutable exact program."""
     __tablename__ = "candidate_assessment_history"
