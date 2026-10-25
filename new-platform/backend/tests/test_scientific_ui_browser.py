@@ -145,6 +145,35 @@ class TestServer(BaseHTTPRequestHandler):
                 "evidenceLedger": ({
                     "candidateCount": 1, "entryCount": 1, "verifiedGateCount": 0,
                     "sourceReconciliation": reconciliation_worklist(NCT),
+                    "reviewerFindings": {
+                        "totalStatements": 2,
+                        "questionsWithConflictingStatements": 1,
+                        "independentConfirmationImplemented": False,
+                        "statements": [
+                            {
+                                "questionId": "external_protocol_sap",
+                                "findingType": "supports", "revision": 1,
+                                "sourceUrl": "https://clinicaltrials.gov/study/" + NCT,
+                                "sourceLocator": "Protocol page 5, section 2",
+                                "assertion": "A registry field seems to support the stated eligibility criterion.",
+                                "uncertainty": "The prospectively locked version has not been independently checked.",
+                                "reviewerLabel": "Test reviewer A",
+                                "reviewedAt": "2026-10-25T03:00:00+00:00",
+                                "contentSha256": "a"*64
+                            },
+                            {
+                                "questionId": "external_protocol_sap",
+                                "findingType": "contradicts", "revision": 1,
+                                "sourceUrl": "https://clinicaltrials.gov/study/" + NCT,
+                                "sourceLocator": "Protocol page 8, section 4",
+                                "assertion": "A different version may contain an eligibility change.",
+                                "uncertainty": "We cannot reconcile the original protocol amendments yet.",
+                                "reviewerLabel": "Test reviewer B",
+                                "reviewedAt": "2026-10-25T03:01:00+00:00",
+                                "contentSha256": "b"*64
+                            },
+                        ],
+                    },
                     "externalGateStatuses": [
                         {"gateId": "published_results", "label": "Published results independently reviewed",
                          "independentlyVerified": False}
@@ -326,6 +355,13 @@ def test_chromium_scientific_batch_and_evidence_display():
             trail.locator("summary").click()
             trail.get_by_text("Version 2 · contradicts", exact=False).wait_for()
             trail.get_by_text("Unresolved discrepancy between trial follow-up analyses.").wait_for()
+            statements=page.locator("#evidence-ledger details").nth(4)
+            statements.locator("summary").click()
+            statements.get_by_text("2 questions disputed",exact=False).count() == 0
+            assert statements.locator(".reviewer-statements li").count()==2
+            statements.get_by_text("not independently confirmed",exact=False).first.wait_for()
+            statements.get_by_text("Claim: A different version may contain an eligibility change.").wait_for()
+            assert page.get_by_role("button",name="Approve evidence").count()==0
             assert page.get_by_role("button", name="Mark verified").count() == 0
 
             # Neither address bar nor browser storage may contain the secret.
