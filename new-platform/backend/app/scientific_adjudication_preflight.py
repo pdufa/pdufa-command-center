@@ -129,6 +129,7 @@ def adjudication_preflight(
         not item["conflictingCurrentStatements"],
         not item["hasUncertainStatement"],
         not item["reviewObservationsRecorded"],
+        {"critical": 0, "high": 1, "medium": 2, "low": 3}.get(item["priority"], 4),
         item["questionId"],
     ))
     source_index = {q["id"]: q.get("sourceUrls", []) for q in questions}
