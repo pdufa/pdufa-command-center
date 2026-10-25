@@ -125,6 +125,34 @@ class TestServer(BaseHTTPRequestHandler):
                                          "phases": ["PHASE3"]},
                     }
                 }) if record_found else None),
+                "evidenceLedgerStatus": "candidate_inventory_loaded" if record_found else "not_available",
+                "evidenceLedger": ({
+                    "candidateCount": 1, "entryCount": 1, "verifiedGateCount": 0,
+                    "externalGateStatuses": [
+                        {"gateId": "published_results", "label": "Published results independently reviewed",
+                         "independentlyVerified": False}
+                    ],
+                    "identifiedSourceCandidates": [
+                        {"gateId": "published_results",
+                         "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27718847/",
+                         "sourceType": "peer_reviewed_publication",
+                         "title": "KEYNOTE-024 original published analysis",
+                         "reviewStatus": "citation_identified_not_adjudicated",
+                         "caution": "Protocol and statistical plan independently reviewed: NO"}
+                    ],
+                    "entries": [
+                        {"id":"a"*32,"revision":2,"gateId":"published_results",
+                         "sourceUrl":"https://pubmed.ncbi.nlm.nih.gov/27718847/",
+                         "sourceType":"peer_reviewed_publication",
+                         "relationship":"contradicts",
+                         "reviewStatus":"pending_independent_review",
+                         "recordedBy":"Review curator",
+                         "recordedAt":"2026-10-25T02:02:00+00:00",
+                         "claimText":"Unresolved discrepancy between trial follow-up analyses.",
+                         "caution":"Check protocol and censoring differences.",
+                         "contentSha256":"a"*64}
+                    ],
+                } if record_found else None),
             })
         else:
             self.reply(404, {"error": "not_found"})
@@ -247,6 +275,20 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert page.locator("#readiness-grades li").count() == 16
             page.get_by_text("Original protocol and statistical analysis plan independently reconciled").wait_for()
 
+            page.get_by_role("heading", name="Independent source evidence ledger").wait_for()
+            page.get_by_text("0/4 independently verified gates", exact=False).wait_for()
+            candidate = page.locator("#evidence-ledger details").nth(1)
+            candidate.locator("summary").click()
+            assert candidate.get_by_role("link", name="KEYNOTE-024 original published analysis").get_attribute("href") == (
+                "https://pubmed.ncbi.nlm.nih.gov/27718847/"
+            )
+            candidate.get_by_text("citation_identified_not_adjudicated", exact=False).wait_for()
+            trail=page.locator("#evidence-ledger details").nth(2)
+            trail.locator("summary").click()
+            trail.get_by_text("Version 2 · contradicts", exact=False).wait_for()
+            trail.get_by_text("Unresolved discrepancy between trial follow-up analyses.").wait_for()
+            assert page.get_by_role("button", name="Mark verified").count() == 0
+
             # Neither address bar nor browser storage may contain the secret.
             assert SECRET not in page.url
             assert page.evaluate("Object.keys(localStorage).length") == 0
@@ -259,6 +301,7 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert page.locator("#investigation-20 details").count() == 0
             assert page.locator("#quantitative-results details").count() == 0
             assert page.locator("#readiness-grades .readiness-grade").count() == 0
+            assert page.locator("#evidence-ledger details").count() == 0
             page.get_by_role("button", name="Refresh history").click()
             page.get_by_text("Enter the internal API key first.").wait_for()
 
