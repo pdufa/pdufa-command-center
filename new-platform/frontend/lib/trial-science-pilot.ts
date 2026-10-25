@@ -38,6 +38,7 @@ export type StudySnapshot = {
   analysis_id: string;
   report_type: string;
   publication_date: string;
+  data_cutoff_date?: string;
   source_id: string;
   source_url: string;
   nct_id: string;
@@ -206,8 +207,15 @@ export function pilotEffectSummary(result: TrialEffect | undefined): string {
       && interval.every(finite) ? ` (95% CI ${interval[0]}–${interval[1]})` : "";
     return `HR ${result.hazard_ratio.toFixed(2)}${ci}`;
   }
+  if (finite(result.between_group_difference)) {
+    const interval = result.difference_95pct_ci;
+    const ci = Array.isArray(interval) && interval.length === 2 && interval.every(finite)
+      ? ` (95% CI ${interval[0]}–${interval[1]})` : "";
+    return `Difference ${result.between_group_difference} points${ci}`;
+  }
   if (finite(result.pembrolizumab) && finite(result.chemotherapy)) {
-    const suffix = result.metric === "median_months" ? " months" : "%";
+    const suffix = result.metric === "median_months" ? " months" :
+      result.metric === "percent" ? "%" : " units";
     return `${result.pembrolizumab} vs ${result.chemotherapy}${suffix}`;
   }
   return "See cited publication";
