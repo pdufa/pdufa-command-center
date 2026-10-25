@@ -18,6 +18,7 @@ from app.hop_drugsfda_snapshot import stage_drugsfda_manifest
 from app.hop_fda_application_crosswalk import crosswalk_public_fda_sources
 from app.hop_fda_action_review import build_fda_action_review_worklist
 from app.hop_fda_document_probe import probe_all_fda_review_documents
+from app.hop_fda_pdf_evidence_groups import reconcile_fda_pdf_evidence_groups
 
 
 def fetch(url: str, max_bytes: int) -> bytes:
@@ -64,6 +65,7 @@ def main() -> None:
     pdfs, pdf_audit = probe_all_fda_review_documents(
         cases, batch_size=args.pdf_batch_size
     )
+    shared_documents, shared_document_audit = reconcile_fda_pdf_evidence_groups(cases, pdfs)
     if (len(cases["records"]) != len(pdfs["records"])
             or case_audit["published_letter_records"] != crosswalk_audit["published_letter_records"]
             or case_audit["published_letter_records"] != letters_audit["published_letter_records"]
@@ -75,6 +77,7 @@ def main() -> None:
         **drugs_audit["source_archive_sha256"],
     }
     pdf_audit["source_letter_archive_sha256"] = letters_audit["archive_sha256_by_url"]
+    shared_document_audit["source_letter_archive_sha256"] = letters_audit["archive_sha256_by_url"]
 
     dest = Path(args.output_dir)
     dest.mkdir(parents=True, exist_ok=True)
@@ -82,11 +85,18 @@ def main() -> None:
     output_json(dest, "fda_all_published_action_review_audit.json", case_audit)
     output_json(dest, "fda_all_published_action_pdf_checks.json", pdfs)
     output_json(dest, "fda_all_published_action_pdf_checks_audit.json", pdf_audit)
+    output_json(dest, "fda_shared_pdf_document_page_mapping_review.json", shared_documents)
+    output_json(dest, "fda_shared_pdf_document_reconciliation_audit.json", shared_document_audit)
     print(json.dumps({
         "publication_only": True,
         "published_letter_records": case_audit["published_letter_records"],
         "letter_type_counts": case_audit["published_letter_type_counts"],
         "pdf_check_counts": pdf_audit["document_fetch_status_counts"],
+        "distinct_confirmed_pdf_files": shared_document_audit["unique_confirmed_pdf_documents"],
+        "shared_pdf_groups_needing_page_mapping": shared_document_audit["distinct_shared_pdf_groups"],
+        "letter_records_in_shared_pdfs": shared_document_audit["letter_records_in_shared_pdf_groups"],
+        "multiple_application_pdf_groups": shared_document_audit["shared_documents_containing_multiple_applications"],
+        "same_date_type_collision_groups": shared_document_audit["same_date_and_letter_type_collision_groups"],
         "effective_action_dates_verified":
             case_audit["effective_fda_action_dates_independently_verified"],
         "verified_review_cycle_outcomes":
