@@ -82,6 +82,7 @@ _PAGE = r'''<!doctype html>
           <option value="protocol">ClinicalTrials.gov · Protocol and SAP</option>
           <option value="fda">FDA · 2016 approval letter</option>
           <option value="csr">German regulator · KEYNOTE-024 clinical study report (amendment history)</option>
+          <option value="ema">EMA · December 2016 regulatory statistical assessment</option>
         </select>
         <p><a id="source-pdf-link" href="https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf" target="_blank" rel="noopener noreferrer">Open original PDF source</a></p>
         <p id="official-source-note" class="muted evidence-note">The publicly posted protocol is dated 2017, after the 2016 interim analysis. Capturing it cannot verify the earlier locked protocol/SAP.</p>
@@ -130,6 +131,10 @@ _PAGE = r'''<!doctype html>
     csr: {
       gateId: "protocol_sap", sourceType: "clinical_study_report",
       sourceUrl: "https://portal.dimdi.de/data/ctr/O-2145_01-2-0-CE336C-20220110151635.pdf"
+    },
+    ema: {
+      gateId: "protocol_sap", sourceType: "official_agency_document",
+      sourceUrl: "https://www.ema.europa.eu/en/documents/variation-report/keytruda-h-c-3820-ii-0011-epar-assessment-report-variation_en.pdf"
     }
   };
   var report = document.getElementById("report");
@@ -316,7 +321,9 @@ _PAGE = r'''<!doctype html>
         ? "The posted protocol is dated December 20, 2017, after the 2016 interim analysis. It does not prove which SAP was prospectively locked."
         : sourceSelect.value === "csr"
           ? "The German regulator-hosted retrospective report lists P024-03 (Jan 28, 2016) and P024-06 (Jul 29, 2016). It is not an original signed SAP."
-          : "The 2016 FDA letter contains S-8 and S-12. Only S-12 covers first-line PD-L1-high NSCLC; clinical interpretation remains unverified.";
+          : sourceSelect.value === "ema"
+            ? "The EMA December 2016 assessment documents conditional PFS alpha 2.5%/2.0% and group-sequential OS. A signed pre-May-2016 SAP is still required."
+            : "The 2016 FDA letter contains S-8 and S-12. Only S-12 covers first-line PD-L1-high NSCLC; clinical interpretation remains unverified.";
   }
   sourceSelect.addEventListener("change", syncSource);
   syncSource();
@@ -376,7 +383,7 @@ _PAGE = r'''<!doctype html>
       return;
     }
     var source = sourceSelect.value;
-    if (source !== "protocol" && source !== "fda" && source !== "csr") return;
+    if (source !== "protocol" && source !== "fda" && source !== "csr" && source !== "ema") return;
     officialFetchButton.disabled = true;
     uploadStatus.textContent = "Retrieving only the selected original official PDF; no scientific verification is performed…";
     try {
