@@ -1133,6 +1133,11 @@ def require_scientific_google_reviewer(
         if "not configured" in str(exc):
             raise HTTPException(status_code=503, detail="Google reviewer sign-in not configured")
         raise HTTPException(status_code=401, detail="Invalid Google identity token")
+    # The existing single Google operator can never become their own
+    # "independent" reviewer, even if a database allowlist row was created.
+    operator_email = os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip()
+    if (operator_email and identity["verifiedEmail"].casefold() == operator_email.casefold()):
+        raise HTTPException(status_code=403, detail="Operator cannot be an independent reviewer")
     access = reviewer_access_preflight(identity["providerSubject"], identity["verifiedEmail"])
     if not access["roleAuthorized"]:
         raise HTTPException(status_code=403, detail="Scientific reviewer access not authorized")
@@ -1208,6 +1213,144 @@ def scientific_reviewer_audit(
         return audit_readback(nct_id, question_id)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+
+
+@app.get("/api/scientific-assessment/operator/reviewer-setup")
+def scientific_operator_reviewer_setup(
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Operator-only provisioning counts; no reviewer identities or grants."""
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
+    from .scientific_reviewer_accounts import reviewer_setup_summary
+    result = reviewer_setup_summary()
+    response.headers["Cache-Control"] = "private, no-store"
+    return result
+
+
+@app.get("/api/scientific-assessment/reviewer/onboarding-status")
+def scientific_reviewer_onboarding_status(
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Identity-only onboarding diagnostic; never creates a reviewer account."""
+    from .scientific_google_identity import verified_google_identity
+    from .scientific_reviewer_accounts import reviewer_access_preflight
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Google reviewer identity required")
+    try:
+        identity = verified_google_identity(authorization[7:])
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google reviewer identity token")
+    operator_email = os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip()
+    if operator_email and identity["verifiedEmail"].casefold() == operator_email.casefold():
+        raise HTTPException(status_code=403, detail="Operator identity cannot be an independent reviewer")
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
+    access = reviewer_access_preflight(identity["providerSubject"], identity["verifiedEmail"])
+    response.headers["Cache-Control"] = "private, no-store"
+    return {
+        "identityVerified": True,
+        "separateGoogleIdentity": True,
+        "registered": access["registered"],
+        "roleAuthorized": access["roleAuthorized"],
+        "credentialsVerified": access["credentialsVerified"],
+        "maySubmitAuditedStatements": access["roleAuthorized"],
+        "maySignOff": False,
+        "independentScientificAdjudicationImplemented": False,
+        "status": access["status"],
+        "adminProvisioningRequired": not access["roleAuthorized"],
+        "selfRegistrationAvailable": False,
+        "automaticCredentialVerification": False,
+    }
+
+
+@app.get("/api/scientific-assessment/reviewer/packet/{nct_id}")
+def scientific_reviewer_review_packet(
+    nct_id: str,
+    response: Response,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Authorized, source-integrity-checked review worksheet; no grading."""
+    from .scientific_review_packet import build_review_packet
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id or ""):
+        raise HTTPException(status_code=422, detail="Exact trial identifier required")
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Scientific source archive unavailable")
+    try:
+        packet = build_review_packet(nct_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Exact archived trial not found") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Archived scientific packet integrity failed") from None
+    if packet["scientificallyVerified"] is not False or packet["readyForFullScientificConclusion"] is not False:
+        raise HTTPException(status_code=409, detail="Scientific review safety contract violated")
+    response.headers["Cache-Control"] = "private, no-store"
+    return packet
+
+
+@app.get("/api/scientific-assessment/reviewer/source-documents/{nct_id}/{document_id}")
+def scientific_reviewer_download_source_document(
+    nct_id: str,
+    document_id: str,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Only vetted reviewer accounts may inspect source-checked PDF bytes."""
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id or "") or not re.fullmatch(r"[a-f0-9]{32}", document_id or ""):
+        raise HTTPException(status_code=422, detail="Exact trial and PDF identifiers required")
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Scientific source archive unavailable")
+    from .scientific_source_documents import get_captured_document
+    try:
+        meta, payload = get_captured_document(nct_id, document_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Exact archived PDF not found") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Archived PDF integrity failed") from None
+    return Response(content=payload, media_type="application/pdf", headers={
+        "Content-Disposition": 'attachment; filename="' + meta["filename"] + '"',
+        "Cache-Control": "private, no-store",
+        "Pragma": "no-cache",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Security-Policy": "sandbox",
+        "X-Source-Document-SHA256": meta["sha256"],
+        "X-Source-Scientific-Status": "not-independently-verified",
+    })
+
+
+@app.get("/scientific/reviewer", response_class=HTMLResponse)
+def scientific_independent_reviewer_page():
+    """Distinct Google reviewer login; no self-provisioning or signoff."""
+    from .scientific_reviewer_ui import reviewer_html
+
+    client_id = os.getenv("PDUFA_SCIENTIFIC_GOOGLE_CLIENT_ID", "").strip()
+    if not client_id:
+        raise HTTPException(status_code=503, detail="Scientific Google sign-in not configured")
+    if os.getenv("RENDER_SERVICE_ID", "") != "srv-dbehn9fb9u1s739ok5vg":
+        raise HTTPException(status_code=503, detail="Separate reviewer page requires isolated service")
+    nonce = secrets.token_urlsafe(24)
+    response = HTMLResponse(content=reviewer_html(client_id, nonce))
+    response.headers["Cache-Control"] = "no-store, private"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; base-uri 'none'; form-action 'none'; "
+        "frame-ancestors 'none'; object-src 'none'; "
+        f"script-src 'nonce-{nonce}' https://accounts.google.com https://ssl.gstatic.com; "
+        f"style-src 'nonce-{nonce}' https://accounts.google.com; "
+        "connect-src 'self' https://accounts.google.com; "
+        "frame-src https://accounts.google.com; "
+        "img-src https://accounts.google.com https://ssl.gstatic.com data:"
+    )
+    return response
 
 
 @app.get("/api/scientific-assessment/reviewer/me")
