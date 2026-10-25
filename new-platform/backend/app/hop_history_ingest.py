@@ -32,6 +32,9 @@ def parse_history(text: str) -> list[HistoricalCase]:
         parsed = urlparse(item["source_url"])
         if parsed.scheme != "https" or parsed.hostname not in {"fda.gov", "www.fda.gov", "accessdata.fda.gov"}:
             raise ValueError(f"Historical case {index}: official FDA source required")
+        if any(not isinstance(item[k], str) or not item[k].strip()
+               for k in ("decision_date", "evidence_as_of")):
+            raise ValueError(f"Historical case {index}: dates must be nonempty strings")
         decision = date.fromisoformat(item["decision_date"])
         evidence = date.fromisoformat(item["evidence_as_of"])
         if evidence >= decision:
