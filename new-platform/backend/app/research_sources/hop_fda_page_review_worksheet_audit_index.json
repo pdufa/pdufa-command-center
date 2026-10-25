@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "FDA_PDF_PAGE_WORKSHEET_UNADJUDICATED",
+  "source_export_date": "2026-10-21",
+  "reviewed_sources_as_of": "2026-10-25",
+  "source_collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40236833550",
+  "source_collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40236833550/artifacts/12615481622",
+  "source_archive_sha256": "744de010761c9ba445c3756ff7e47d5715c3e9d5aef48f5b1fd663646b5d6732",
+  "artifact_retention_days": 30,
+  "shared_pdf_groups": 61,
+  "published_letter_rows": 154,
+  "candidate_status_counts": {
+    "DATE_AND_ID_PAGE_CANDIDATES": 74,
+    "ID_ONLY_PAGE_CANDIDATES": 75,
+    "NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES": 3,
+    "TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW": 2
+  },
+  "review_priority_counts": {
+    "1": 4,
+    "3": 53,
+    "4": 21,
+    "5": 71,
+    "6": 5
+  },
+  "source_record_reconciled": true,
+  "all_reviewer_fields_initially_blank": true,
+  "independently_verified_page_ranges": 0,
+  "independently_verified_action_dates": 0,
+  "independently_verified_review_cycle_outcomes": 0,
+  "model_eligible_records": 0,
+  "complete_application_denominator_verified": false,
+  "prediction_probability": null,
+  "limitations": [
+    "Page-review priority is a workflow sequence, not scientific probability or outcome.",
+    "Four cross-application source conflicts are high priority, not independently confirmed regulatory actions.",
+    "The 154 rows are published-letter evidence references in shared PDFs, not a census of FDA application review cycles.",
+    "All human reviewer fields start blank, and model-eligible remains false."
+  ]
+}
