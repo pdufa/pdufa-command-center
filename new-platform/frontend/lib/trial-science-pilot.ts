@@ -128,6 +128,8 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
   if (!object(input) || !object(input.pilot) || !object(input.dossier)
       || !object(input.publishedResults)) return false;
   const { pilot, dossier, publishedResults: data } = input;
+  const scores = data.domain_scores;
+  if (!object(scores)) return false;
   if (pilot.nct_id !== PILOT_NCT || dossier.nct_id !== PILOT_NCT
       || data.nct_id !== PILOT_NCT
       || dossier.exact_program_id !== "TRIAL|" + PILOT_NCT
@@ -136,9 +138,8 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
       || pilot.enrollment !== 305 || data.randomized_population !== 305
       || !str(pilot.program) || !str(pilot.condition)
       || !exactDomains(pilot.domains, false) || !exactDomains(dossier.domains, true)
-      || !object(data.domain_scores)
-      || Object.keys(data.domain_scores).length !== SCIENCE_DOMAINS.length
-      || !SCIENCE_DOMAINS.every(domain => data.domain_scores[domain] === null)
+      || Object.keys(scores).length !== SCIENCE_DOMAINS.length
+      || !SCIENCE_DOMAINS.every(domain => scores[domain] === null)
       || !str(dossier.source_sha256) || !/^[a-f0-9]{64}$/.test(dossier.source_sha256)
       || dossier.source_url !== "https://clinicaltrials.gov/study/" + PILOT_NCT
       || dossier.overall_score !== null || dossier.fda_approval_probability !== null
