@@ -124,6 +124,33 @@ def adjudication_preflight(
             "independentlyVerified": False,
         })
 
+    # Queue order is advisory. It cannot resolve any scientific evidence gate.
+    order = sorted(checks, key=lambda item: (
+        not item["conflictingCurrentStatements"],
+        not item["hasUncertainStatement"],
+        not item["reviewObservationsRecorded"],
+        item["questionId"],
+    ))
+    review_queue = [
+        {
+            "questionId": item["questionId"],
+            "gateId": item["gateId"],
+            "priority": item["priority"],
+            "nextAction": (
+                "Reconcile conflicting source-anchored claims"
+                if item["conflictingCurrentStatements"] else
+                "Locate missing source information"
+                if item["hasUncertainStatement"] else
+                "Independently inspect cited sources"
+                if item["reviewObservationsRecorded"] else
+                "Collect an initial source-anchored observation"
+            ),
+            "status": "requires_independent_review",
+            "mayAutoResolve": False,
+        }
+        for item in order
+    ]
+
     return {
         "nctId": nct_id,
         "preflightVersion": PREFLIGHT_VERSION,
@@ -138,6 +165,7 @@ def adjudication_preflight(
         "sourceContentIndependentlyVerified": False,
         "independentDualReviewImplemented": False,
         "documentedSignoffs": 0,
+        "reviewQueue": review_queue,
         "globalBlockers": [
             {"id": key, "reason": reason, "nextAction": action}
             for key, reason, action in GLOBAL_BLOCKERS
