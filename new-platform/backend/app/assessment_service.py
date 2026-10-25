@@ -119,7 +119,15 @@ def get_index(*, synchronous=False):
     from .source_workspace import workspace
     from .workspace_response import prepared
     from zoneinfo import ZoneInfo
-    snapshot = prepared(workspace())
+    source = workspace()
+    health = source.get("sourceHealth", {})
+    if health.get("state") == "STALE" and health.get("refreshInProgress") is True:
+        # A concurrent source refresh is pending work, not a failed service.
+        # Return no old scores and perform no registry/history writes. The
+        # existing client BUILDING poll resumes against the fresh snapshot.
+        return {"modelVersion": MODEL, "status": "BUILDING",
+                "reason": "SOURCE_REFRESH_IN_PROGRESS", "total": len(source.get("pipeline", []))}
+    snapshot = prepared(source)
     if not snapshot.get("workspaceVersion") or snapshot.get("sourceHealth", {}).get("state") == "STALE":
         raise HTTPException(status_code=503, detail="Fresh versioned candidate source unavailable")
     reviews, review_status = review_evidence()

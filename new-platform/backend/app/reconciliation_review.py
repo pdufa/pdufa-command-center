@@ -24,6 +24,27 @@ class ReviewPackage(BaseModel):
     kind: str
     records: list[ReviewItem] = Field(max_length=10000)
 
+def valid_review_source(value: str) -> bool:
+    # Match the browser's explicit HTTPS authority form. Never silently trim
+    # or reinterpret an evidence pointer supplied by an imported package.
+    if not value.lower().startswith("https://") or any(ch.isspace() for ch in value) or "\\" in value:
+        return False
+    try:
+        parsed = urlparse(value)
+        port = parsed.port  # Invalid and out-of-range ports must be rejected.
+        return (parsed.scheme == "https" and bool(parsed.hostname)
+                and "@" not in parsed.netloc and not parsed.username and not parsed.password
+                and (port is None or 0 <= port <= 65535))
+    except ValueError:
+        return False
+
+def valid_review_date(value: str, *, today: date | None = None) -> bool:
+    try:
+        day = date.fromisoformat(value)
+        return day.isoformat() == value and day <= (today or datetime.now(timezone.utc).date())
+    except ValueError:
+        return False
+
 def validate_review_package(payload: ReviewPackage, engine, identity_model):
     if payload.schemaVersion != 1 or payload.kind != "pdufa-reconciliation-review-export":
         raise ValueError("Unsupported review package schema")
@@ -33,16 +54,8 @@ def validate_review_package(payload: ReviewPackage, engine, identity_model):
             identity_model.source_key.in_(keys))).all()) if keys else set()
     results = []
     for row in payload.records:
-        parsed = urlparse(row.evidenceUrl)
-        try:
-            date.fromisoformat(row.reviewedOn)
-            valid_date = len(row.reviewedOn) == 10 and date.fromisoformat(row.reviewedOn) <= datetime.now(timezone.utc).date()
-        except ValueError:
-            valid_date = False
         valid = (row.status in ("confirmed", "separate")
-                 and parsed.scheme == "https" and bool(parsed.hostname)
-                 and not parsed.username and not parsed.password and valid_date
-                 and not any(ch.isspace() for ch in row.evidenceUrl))
+                 and valid_review_source(row.evidenceUrl) and valid_review_date(row.reviewedOn))
         # A composite UI key alone is insufficient to identify a backend application.
         outcome = ("INVALID_EVIDENCE" if not valid else
                    "EXACT_IDENTITY_MATCH" if row.exactSourceKey in known else

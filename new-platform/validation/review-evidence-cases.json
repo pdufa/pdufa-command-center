@@ -1,0 +1,23 @@
+{
+  "today": "2026-10-25",
+  "cases": [
+    {"name":"dated primary source", "source":"https://clinicaltrials.gov/study/NCT00000001", "reviewedOn":"2026-10-25", "sourceValid":true, "dateValid":true},
+    {"name":"leap day", "source":"https://example.org/result%20table", "reviewedOn":"2024-02-29", "sourceValid":true, "dateValid":true},
+    {"name":"future review", "source":"https://example.org/source", "reviewedOn":"2026-10-26", "sourceValid":true, "dateValid":false},
+    {"name":"impossible calendar date", "source":"https://example.org/source", "reviewedOn":"2026-02-30", "sourceValid":true, "dateValid":false},
+    {"name":"zero year", "source":"https://example.org/source", "reviewedOn":"0000-01-01", "sourceValid":true, "dateValid":false},
+    {"name":"noncanonical date", "source":"https://example.org/source", "reviewedOn":"20261025", "sourceValid":true, "dateValid":false},
+    {"name":"leading whitespace", "source":" https://example.org/source", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"embedded whitespace", "source":"https://example.org/result table", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"trailing whitespace", "source":"https://example.org/source\n", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"credentials", "source":"https://user:password@example.org/source", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"empty user info", "source":"https://@example.org/source", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"insecure source", "source":"http://example.org/source", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"missing authority", "source":"https:///example.org/source", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"backslash reinterpretation", "source":"https://example.org\\source", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"malformed IPv6", "source":"https://[invalid-ipv6/source", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"out of range port", "source":"https://example.org:99999/source", "reviewedOn":"2026-10-25", "sourceValid":false, "dateValid":true},
+    {"name":"IPv6 HTTPS source", "source":"https://[2001:db8::1]:443/source", "reviewedOn":"2026-10-25", "sourceValid":true, "dateValid":true},
+    {"name":"uppercase HTTPS", "source":"HTTPS://example.org/source", "reviewedOn":"2026-10-25", "sourceValid":true, "dateValid":true}
+  ]
+}
