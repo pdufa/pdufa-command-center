@@ -35,6 +35,16 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 #science-details{min-height:26px;margin-top:10px;overflow-wrap:anywhere}
 #science-source a{color:#14634a;overflow-wrap:anywhere}
 #quantitative-results{margin:18px 0}
+.readiness-grades{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.readiness-grade{padding:16px;border:1px solid #d9e4df;background:#f7faf8;border-radius:10px;min-width:0}
+.readiness-grade .letter{font-size:2rem;line-height:1.2;font-weight:750;margin:8px 0}
+.readiness-grade strong{display:block}
+.readiness-grade p{overflow-wrap:anywhere}
+.readiness-requirements{border:1px solid #d9e4df;border-radius:8px;padding:12px;background:#fcfdfc;margin:12px 0}
+.readiness-requirements summary{cursor:pointer;font-weight:650}
+.readiness-requirements li{margin:10px 0;overflow-wrap:anywhere}
+.readiness-requirements small{display:block}
+@media(max-width:520px){.readiness-grades{grid-template-columns:1fr}}
 .quant-summary{padding:14px;background:#f4f8f5;border:1px solid #d9e4df;border-radius:8px;line-height:1.55}
 .quant-results{display:grid;gap:9px;margin:12px 0}
 .quant-results details{border:1px solid #d9e4df;background:#fff;border-radius:8px;padding:12px}
@@ -101,6 +111,7 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 <div id="science-details"></div>
 <div id="science-source"></div>
 <div class="science-domains" id="science-domains" aria-label="Six scientific evidence domains"></div>
+<div id="readiness-grades" aria-live="polite"></div>
 <div id="quantitative-results" aria-live="polite"></div>
 <div id="investigation-20" aria-live="polite"></div>
 </section>
@@ -203,6 +214,65 @@ function clearScience() {
   $("science-domains").replaceChildren();
   $("investigation-20").replaceChildren();
   $("quantitative-results").replaceChildren();
+  $("readiness-grades").replaceChildren();
+}
+function paintReadinessGrades(data) {
+  const root=$("readiness-grades");root.replaceChildren();
+  if(!data || data.sourceStatus!=="archived_registry_input_audit_only"
+      || !Array.isArray(data.requirements)
+      || !data.analysisReadiness || !data.scientificReluctance)return;
+  const heading=document.createElement("h3");
+  heading.textContent="Two evidence grades — readiness and reluctance";
+  root.appendChild(heading);
+  const lead=document.createElement("p");
+  lead.textContent="Both grades measure evidence availability and uncertainty—not whether the trial succeeded or whether FDA will approve the drug.";
+  root.appendChild(lead);
+  const cards=document.createElement("div");cards.className="readiness-grades";
+  const first=document.createElement("div");first.className="readiness-grade";
+  const firstTitle=document.createElement("strong");firstTitle.textContent="1. Analysis input readiness";first.appendChild(firstTitle);
+  const firstLetter=document.createElement("div");firstLetter.className="letter";
+  firstLetter.textContent=data.analysisReadiness.grade+" · "+data.analysisReadiness.coveragePercent+"% inputs";first.appendChild(firstLetter);
+  const firstVerdict=document.createElement("p");
+  firstVerdict.textContent="Full scientific conclusion: "+(data.analysisReadiness.readyForFullScientificConclusion?"READY":"NOT READY")
+      +" · "+data.analysisReadiness.requirementsCovered+"/"+data.analysisReadiness.requirementsTotal
+      +" evidence requirements documented.";
+  first.appendChild(firstVerdict);
+  const firstExplanation=document.createElement("p");
+  firstExplanation.textContent="Letter grade is input coverage only. It is not a drug efficacy score.";
+  first.appendChild(firstExplanation);cards.appendChild(first);
+  const second=document.createElement("div");second.className="readiness-grade";
+  const secondTitle=document.createElement("strong");secondTitle.textContent="2. Scientific reluctance";second.appendChild(secondTitle);
+  const secondLetter=document.createElement("div");secondLetter.className="letter";
+  secondLetter.textContent=data.scientificReluctance.grade+" · "+data.scientificReluctance.level;second.appendChild(secondLetter);
+  const secondVerdict=document.createElement("p");
+  secondVerdict.textContent="Reluctance to reach a scientific conclusion: "+data.scientificReluctance.reluctanceToConclude+".";
+  second.appendChild(secondVerdict);
+  const secondExplanation=document.createElement("p");
+  secondExplanation.textContent="F means withhold a scientific conclusion because independent inputs are missing. It does NOT mean the clinical trial failed.";
+  second.appendChild(secondExplanation);cards.appendChild(second);
+  root.appendChild(cards);
+  const requirements=document.createElement("details");requirements.className="readiness-requirements";
+  const requirementsTitle=document.createElement("summary");
+  requirementsTitle.textContent="Inspect all "+data.requirements.length+" evidence gates and missing inputs";
+  requirements.appendChild(requirementsTitle);
+  const items=document.createElement("ol");
+  for(const gate of data.requirements){
+    const li=document.createElement("li");
+    const label=document.createElement("strong");
+    label.textContent=gate.label+" — "+(gate.available?"Source available":"Missing / not independently verified");
+    li.appendChild(label);
+    const source=document.createElement("small");
+    source.textContent="Evidence: "+gate.evidenceLevel
+        +(gate.sourcePath?" · "+gate.sourcePath:"");
+    li.appendChild(source);
+    const next=document.createElement("small");
+    next.textContent="Next: "+gate.nextAction;
+    li.appendChild(next);items.appendChild(li);
+  }
+  requirements.appendChild(items);root.appendChild(requirements);
+  const note=document.createElement("p");
+  note.textContent="No FDA approval probability, efficacy verdict or verified scientific score is assigned by these grades.";
+  root.appendChild(note);
 }
 function paintQuantitativeResults(data) {
   const root=$("quantitative-results");root.replaceChildren();
@@ -361,6 +431,7 @@ async function inspectScience() {
     const evidence=result.registryEvidence;
     paintInvestigation20(result.investigation20);
     paintQuantitativeResults(result.quantitativeResults);
+    paintReadinessGrades(result.readinessGrades);
     const archived=result.registryEvidenceStatus==="source_record_loaded" && evidence
         && evidence.nctId===id && evidence.verificationStatus==="source_record_only";
     const overall=assessment.overall_score;
