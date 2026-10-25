@@ -194,7 +194,15 @@ def triage(queue, companies, config):
         if category not in {"SEC", "FINANCIAL"}:
             continue
         ticker = item.get("ticker", "").upper()
-        if not ticker or item["event_key"].split("|")[0].upper() != ticker:
+        event_key = item["event_key"]
+        # Company SEC filings-inventory checks have exact REGISTRY:TICKER IDs,
+        # not program-event TICKER|PROGRAM IDs. Keep both identity rules strict.
+        registry_inventory = (category == "SEC" and
+                              item["claim"] == "FILINGS_INVENTORY" and
+                              event_key.startswith("REGISTRY:"))
+        prefix = (event_key[len("REGISTRY:"):] if registry_inventory
+                  else event_key.split("|", 1)[0] if "|" in event_key else "")
+        if not ticker or prefix.upper() != ticker:
             raise ValueError("Claim event/ticker mismatch")
         company = registry.get(ticker, {})
         cik = company.get("cik10", "")
@@ -210,7 +218,16 @@ def triage(queue, companies, config):
         # The mapped deal can differ from the prior ledger's deal. Never let
         # a newly found close silently replace an old recorded transaction.
         date_different = date_mapped if date_mapped and date_mapped != date_saved else ""
-        if category == "FINANCIAL":
+        if registry_inventory:
+            research_class = "SEC_ISSUER_CIK_TICKER_IDENTITY_RECONCILIATION"
+            priority = "1"
+            next_evidence = (
+                "Independently reconcile this company's current ticker and "
+                "CIK against SEC company submissions and dated corporate actions. "
+                "Do not mark the inventory VERIFIED or infer any financing close "
+                "until the mismatch is resolved."
+            )
+        elif category == "FINANCIAL":
             research_class = "CASH_AND_RUNWAY_PRIMARY_RECONCILIATION"
             priority = "2"
             next_evidence = (
