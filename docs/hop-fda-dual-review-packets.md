@@ -141,9 +141,13 @@ The private output directory receives:
 - `unverified_fda_review_queue_audit.json`: reconciled counts, local source
   fingerprint, and zero model/outcome clearance fields.
 
-Queue ordering distinguishes conflicts (first), missing/incomplete submissions
-(second), and *matching but still unverified* claims (third). The original
-worksheet priority breaks ties within each group. No reviewer identities,
+Queue ordering first flags **claims inconsistent with published source metadata**,
+then reviewer disagreements, missing/incomplete submissions, and finally
+*matching but still unverified* claims. Metadata warnings can overlap reviewer
+conflicts or missing responses and may reflect legitimate multi-application
+exceptions. They are not proof a reviewer is wrong; an independent adjudicator
+must inspect the original FDA document. The original worksheet priority breaks
+ties within each group. No reviewer identities,
 evidence notes, patient records, signed determinations, or FDA outcome
 probabilities are exported. Source-page links remain provisional.
 
@@ -174,3 +178,18 @@ The worksheet output includes
 identities, prose notes, verified action labels, approval probabilities, or
 trading recommendations. No date, ID, or document-type mismatch is
 automatically reclassified as an FDA decision or used as a training example.
+
+
+### Detecting agreement on the wrong published source reference
+
+Both reviewer packets may agree on an application ID, action date or letter type
+that differs from **publication-derived** source metadata. The triage engine
+now checks these independently of the reviewer-to-reviewer comparison and
+outputs only fixed warning names in `source_metadata_warning_flags`:
+application candidate mismatch or absence, invalid/missing published letter
+date, differing action date, and differing/missing letter type. These are
+**review flags**, not automatic adjudications or true outcome labels. All
+matching and mismatching records remain unverified, with training eligibility
+zero and probability null. The original source hash, independent human review,
+qualified signoff and complete approval/nonapproval denominator remain separate
+requirements.
