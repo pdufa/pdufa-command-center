@@ -196,6 +196,32 @@ class ScientificSourceDocument(Base):
     manifest_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
 
 
+class ScientificReviewerAccount(Base):
+    """Isolated Google subject allowlist; a login alone grants no review role."""
+    __tablename__ = "scientific_reviewer_accounts"
+
+    google_subject: Mapped[str] = mapped_column(String(255), primary_key=True)
+    verified_email: Mapped[str] = mapped_column(String(320), nullable=False)
+    role: Mapped[str] = mapped_column(String(32), nullable=False, default="pending")
+    credentials_verified: Mapped[bool] = mapped_column(nullable=False, default=False)
+    enabled: Mapped[bool] = mapped_column(nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ScientificReviewAuditEvent(Base):
+    """Append-only audit envelope. Never constitutes clinical adjudication."""
+    __tablename__ = "scientific_review_audit_events"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    question_id: Mapped[str] = mapped_column(String(70), nullable=False)
+    google_subject: Mapped[str] = mapped_column(String(255), nullable=False)
+    event_type: Mapped[str] = mapped_column(String(48), nullable=False)
+    event_payload: Mapped[dict] = mapped_column(JSON, nullable=False)
+    event_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class ScientificSmokeClaim(Base):
     """One durable execution claim per trial for temporary isolated live smoke."""
     __tablename__ = "scientific_smoke_claims"
