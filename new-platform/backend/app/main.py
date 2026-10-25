@@ -361,6 +361,28 @@ def require_internal_key(
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
+
+def require_isolated_scientific_read_key(
+    x_pdufa_internal_key: Annotated[str | None, Header()] = None,
+) -> None:
+    """Allow a SECOND, read-only key on three explicit scientific GETs only.
+
+    Production and ordinary review APIs still use require_internal_key.
+    The preview credential is useful only on the isolated Render review
+    service while writes are frozen. No access to evidence submission routes.
+    """
+    configured = os.getenv("PDUFA_SCIENTIFIC_PREVIEW_READ_KEY", "")
+    if (
+        os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"
+        and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes")
+        and len(configured) >= 32
+        and x_pdufa_internal_key
+        and secrets.compare_digest(configured, x_pdufa_internal_key)
+    ):
+        return
+    require_internal_key(x_pdufa_internal_key)
+
+
 def storage_ready() -> bool:
     # Hosted staging must NEVER silently save ticker data to ephemeral SQLite.
     return not REQUIRE_POSTGRES or DATABASE_URL.startswith("postgresql+psycopg://")
@@ -1657,7 +1679,7 @@ def scientific_assessment_storage_status():
 
 
 @app.get("/api/scientific-assessment/pilot/keynote024", dependencies=[
-    Depends(require_internal_key), Depends(require_storage),
+    Depends(require_isolated_scientific_read_key), Depends(require_storage),
 ])
 def get_keynote024_scientific_pilot(response: Response):
     """Source-attributed historical Phase 3 pilot; never a scoring decision.
@@ -1822,7 +1844,7 @@ def get_scientific_dossier_references(
 
 
 @app.get("/api/scientific-assessment/dossier", dependencies=[
-    Depends(require_internal_key), Depends(require_storage),
+    Depends(require_isolated_scientific_read_key), Depends(require_storage),
 ])
 def get_scientific_dossier(exact_id: str, response: Response):
     """Authenticated, read-only dossier from a verified, stored NCT source.
@@ -1851,8 +1873,8 @@ def get_scientific_dossier(exact_id: str, response: Response):
             ) from None
 
 
-@app.get("/api/scientific-assessment", dependencies=[Depends(require_internal_key)])
-def get_scientific_assessment(exact_id: str):
+@app.get("/api/scientific-assessment", dependencies=[Depends(require_isolated_scientific_read_key)])
+def get_scientific_assessment(exact_id: str, response: Response = None):
     """Read-only scientific assessment; never invent missing trial evidence."""
     if not exact_id or len(exact_id) > 512 or not exact_id.startswith(("TRIAL|", "REG|", "PDUFA|")):
         raise HTTPException(status_code=422, detail="Exact trial identity required")
@@ -1931,6 +1953,9 @@ def get_scientific_assessment(exact_id: str):
         except Exception:
             # A corrupt archive or unavailable database must never produce a score.
             result["registryEvidenceStatus"] = "record_unavailable_or_invalid"
+    if response is not None:
+        response.headers["X-Pdufa-Scientific-Api-Contract"] = "science-integrated-v1"
+        response.headers["Cache-Control"] = "private, no-store"
     return result
 
 
