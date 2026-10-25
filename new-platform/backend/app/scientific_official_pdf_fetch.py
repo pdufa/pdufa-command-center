@@ -17,7 +17,7 @@ from .scientific_reconciliation_worklist import (
     FDA_2016_APPROVAL, PROTOCOL_SAP, GERMAN_REGULATOR_CSR, EMA_2016_ASSESSMENT,
 )
 from .scientific_source_documents import (
-    MAX_PDF_BYTES, capture_document, read_document_manifest,
+    MAX_PDF_BYTES, MAX_EMA_PDF_BYTES, capture_document, read_document_manifest,
 )
 
 PILOT_NCT = "NCT02142738"
@@ -74,6 +74,9 @@ def fetch_official_pdf(source: Literal["protocol", "fda", "csr", "ema"]) -> byte
         raise ValueError("Unknown official source")
     # The source dict above is static, reviewed source code, not client input.
     url = selected["sourceUrl"]
+    # No change to the global 4 MiB limit: 16 MiB is limited to this single,
+    # hard-coded EMA PDF, and remains bounded by Content-Length + stream size.
+    source_limit = MAX_EMA_PDF_BYTES if source == "ema" else MAX_PDF_BYTES
     if not url.startswith("https://"):
         raise OfficialSourceUnavailable("Pinned original source requires HTTPS")
     response = None
@@ -99,7 +102,7 @@ def fetch_official_pdf(source: Literal["protocol", "fda", "csr", "ema"]) -> byte
                 length = int(declared_length)
             except ValueError:
                 raise OfficialSourceUnavailable("Unusable official response length") from None
-            if not 32 <= length <= MAX_PDF_BYTES:
+            if not 32 <= length <= source_limit:
                 raise OfficialSourceUnavailable("Official source PDF exceeds archival limit")
 
         pieces = []
@@ -108,7 +111,7 @@ def fetch_official_pdf(source: Literal["protocol", "fda", "csr", "ema"]) -> byte
             if not chunk:
                 continue
             count += len(chunk)
-            if count > MAX_PDF_BYTES:
+            if count > source_limit:
                 raise OfficialSourceUnavailable("Official source PDF exceeds archival limit")
             pieces.append(chunk)
         raw = b"".join(pieces)
