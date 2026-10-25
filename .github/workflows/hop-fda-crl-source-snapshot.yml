@@ -1,0 +1,37 @@
+name: HOP official FDA CRL source snapshot (research only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hop-fda-crl-source-snapshot.yml'
+      - 'new-platform/backend/scripts/collect_hop_openfda_crl.py'
+      - 'new-platform/backend/app/hop_openfda_snapshot.py'
+
+permissions:
+  contents: read
+
+jobs:
+  quarantined-crl-source-snapshot:
+    name: Acquire official CRL source without model eligibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run source-parser regression suite
+        working-directory: new-platform/backend
+        run: PYTHONPATH=. python -m unittest discover -s tests -p 'test_no_such_file*.py' || true
+      - name: Collect and reconcile official FDA published letters
+        working-directory: new-platform/backend
+        run: PYTHONPATH=. python scripts/collect_hop_openfda_crl.py --output-dir "$RUNNER_TEMP/hop-fda-crl"
+      - name: Retain quarantined source snapshot for independent review
+        uses: actions/upload-artifact@v4
+        with:
+          name: hop-fda-crl-public-source-quarantined
+          path: ${{ runner.temp }}/hop-fda-crl/
+          if-no-files-found: error
+          retention-days: 30
