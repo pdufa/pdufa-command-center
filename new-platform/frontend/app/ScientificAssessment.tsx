@@ -222,7 +222,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   }
 
   async function checkConnection() {
-    if (!/^TRIAL\\|NCT[0-9]{8}$/.test(exactId)) return;
+    if (!/^TRIAL\|NCT[0-9]{8}$/.test(exactId)) return;
     pendingConnection.current?.abort();
     const controller = new AbortController();
     pendingConnection.current = controller;
@@ -258,7 +258,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
-  const valid = /^TRIAL\\|NCT[0-9]{8}$/.test(exactId);
+  const valid = /^TRIAL\|NCT[0-9]{8}$/.test(exactId);
   return <section aria-label="Scientific Assessment">
     <button type="button" disabled={!valid || loading} onClick={() => void load()}>
       {loading ? "Checking scientific evidence…" : "Scientific Assessment · 20 levels / 40 assessments"}
