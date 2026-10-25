@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 import threading
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -60,6 +60,36 @@ def list_jobs() -> list[dict]:
             .limit(20)
         ).all()
         return [_as_dict(job, include_events=False) for job in jobs]
+
+
+def recovery_diagnostics(*, now: datetime | None = None) -> dict:
+    """Read-only diagnostics. A stale timestamp never proves a worker is stopped.
+
+    Never automatically free a PostgreSQL active slot, restart, or retry a job.
+    """
+    reference = now or _now()
+    threshold = reference - timedelta(minutes=60)
+    with Session(main.ENGINE) as session:
+        active = session.scalars(
+            select(main.ScientificBatchJob)
+            .where(main.ScientificBatchJob.active_slot == ACTIVE_SLOT)
+            .limit(1)
+        ).first()
+        if active is None:
+            return {"active_job": None, "potentially_interrupted": False,
+                    "manual_review_required": False}
+        job = _as_dict(active, include_events=False)
+        stale = bool(active.updated_at and
+                     (active.updated_at.replace(tzinfo=timezone.utc)
+                      if active.updated_at.tzinfo is None else active.updated_at) < threshold)
+        return {
+            "active_job": job,
+            "potentially_interrupted": stale,
+            "manual_review_required": stale,
+            "message": ("No automatic retry or unlock. Confirm the previous worker "
+                        "has stopped before any operator-led reconciliation."
+                        if stale else "An unfinished batch currently holds the exclusive slot."),
+        }
 
 
 def get_job(job_id: str) -> dict | None:
