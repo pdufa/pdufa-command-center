@@ -72,6 +72,20 @@ SOURCES = {
         "kind": "regulator_authored_publication",
         "locator": "PubMed 28835513 and Table 1 (S-12 clinical/statistical reviews)",
     },
+    "german_regulator_2022_csr": {
+        "label": "German Paul-Ehrlich-Institut published KEYNOTE-024 study-report amendment history",
+        "url": "https://portal.dimdi.de/data/ctr/O-2145_01-2-0-CE336C-20220110151635.pdf",
+        "documentDate": "2022-01-10",
+        "kind": "official_regulator_hosted_sponsor_report_retrospective",
+        "locator": "PDF page 47 (zero-index 46), Protocol MK-3475-024 amendment table, P024-03",
+    },
+    "eu_trial_amendments": {
+        "label": "EU Clinical Trials Register amendment history, EudraCT 2014-000323-25",
+        "url": "https://www.clinicaltrialsregister.eu/ctr-search/trial/2014-000323-25/results",
+        "documentDate": None,
+        "kind": "official_eu_trial_registry_amendment_history",
+        "locator": "Substantial protocol amendments (globally), 28 January 2016",
+    },
     "nejm_2016_protocol_lead": {
         "label": "Original NEJM 2016 article linking study-protocol PDF (uninspected)",
         "url": "https://www.nejm.org/doi/abstract/10.1056/NEJMoa1606774",
@@ -106,19 +120,37 @@ SOURCES = {
 # the existence of a source and its reported facts are not independent review.
 OBSERVATIONS = {
     "protocol_amendment_chronology": {
-        "sourceIds": ["protocol_2017", "reck_2016", "nejm_2016_protocol_lead", "fda_2019_review"],
+        "sourceIds": [
+            "protocol_2017", "german_regulator_2022_csr",
+            "eu_trial_amendments", "reck_2016",
+            "nejm_2016_protocol_lead", "fda_2019_review",
+        ],
         "preliminaryObservation": (
-            "The archived December 20, 2017 Amendment 024-11 is Japan-only and "
-            "postdates the May 2016 efficacy cutoff; it does not establish the "
-            "prospectively locked analysis plan. The original October 2016 "
-            "NEJM article provides a protocol PDF supplement (3.17 MB), but "
-            "that PDF's amendment version, effective date and SAP contents "
-            "have not been inspected. The 2016 article describes the planned "
-            "one-sided family alpha 0.025, PFS interim alpha 0.020 and "
-            "prespecified OS sequence. The 2019 FDA review retrospectively "
-            "reports a KEYNOTE-024 interim OS p-value threshold of 0.0118. "
-            "A retrospectively reported plan is not proof of pre-lock execution."
+            "The German regulator's subsequently published KEYNOTE-024 clinical "
+            "study report lists Global Protocol Amendment P024-03 finalized "
+            "January 28, 2016, which updated the SAP to add an interim efficacy "
+            "analysis for external DMC review. The EU Clinical Trials Register "
+            "independently lists a substantial global amendment on that date. "
+            "German Amendment P024-04 (February 12, 2016) adopted global "
+            "Amendment 03 and P024-05 (March 24) corrected its summary. "
+            "These precede the May 9, 2016 original analysis cutoff, but a "
+            "2022 regulator-published amendment history is not itself the "
+            "contemporaneously signed or approved SAP. The archived December "
+            "20, 2017 Japan-only protocol also does not certify that earlier "
+            "plan. A 2016 NEJM article links a 3.17 MB protocol supplement, "
+            "but its PDF has not been inspected for version or effective date. "
+            "The 2016 trial article reports one-sided family alpha 0.025, "
+            "PFS interim alpha 0.020 and a prespecified OS sequence; "
+            "a retrospective FDA review reports the 0.0118 interim OS "
+            "threshold. Neither observation independently certifies pre-lock execution."
         ),
+        "documentedPreAnalysisAmendment": {
+            "number": "P024-03", "scope": "global", "dateFinalized": "2016-01-28",
+            "change": "SAP interim efficacy analysis for external DMC review",
+            "secondAuthorityDateCorroboration": True,
+            "actualSignedSapRetrieved": False,
+            "prospectiveLockIndependentlyVerified": False,
+        },
         "journalProtocolSupplement": {
             "filename": "nejmoa1606774_protocol.pdf",
             "publisherPage": "https://www.nejm.org/doi/abstract/10.1056/NEJMoa1606774",
@@ -135,10 +167,11 @@ OBSERVATIONS = {
         },
         "analysisBoundary": "2016-05-09",
         "stillMissing": (
-            "Retrieve and inspect the original journal protocol supplement, "
-            "then establish the dated effective pre-unblinding protocol/SAP "
-            "version, endpoint hierarchy, alpha spending, signatures and "
-            "audit trail. A 2016 publication date does not prove earlier lock."
+            "Retrieve the complete January 28, 2016 Global Amendment P024-03 "
+            "and its SAP; inspect the original NEJM protocol supplement; "
+            "establish actual amendment signature, approvals, effective date, "
+            "pre-unblinding lock, analysis version, interim alpha spending "
+            "and decision trail. A 2016 publication date does not prove earlier lock."
         ),
         "risk": "critical",
     },
