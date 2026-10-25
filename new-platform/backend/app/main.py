@@ -1003,7 +1003,18 @@ def get_keynote024_scientific_pilot(response: Response):
         raise HTTPException(
             status_code=503, detail="Historical EU endpoint cross-source check failed validation",
         ) from None
+    from .scientific_pilot_regulatory_timeline import keynote024_historical_pdufa_timeline
+    try:
+        regulatory_history = keynote024_historical_pdufa_timeline(
+            published, scientific_readiness, interim_design, eu_registry_crosscheck,
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=503,
+            detail="Historical interim-to-FDA timeline input verification failed",
+        ) from None
     return {
+        "historicalRegulatoryTimeline": regulatory_history,
         "europeanRegistryCrosscheck": eu_registry_crosscheck,
         "publishedInterimDesign": interim_design,
         "publishedSafetyReconciliation": published_safety,

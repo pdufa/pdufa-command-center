@@ -120,6 +120,25 @@ class Keynote024PilotHttpTests(unittest.TestCase):
         self.assertFalse(european["researchConclusions"]["reluctanceGradeChanged"])
         self.assertIsNone(european["scientificScore"])
         self.assertIsNone(european["fdaApprovalProbability"])
+        history = result["historicalRegulatoryTimeline"]
+        self.assertEqual(history["nctId"], "NCT02142738")
+        self.assertEqual(history["eventCount"], 10)
+        self.assertEqual(history["interim"]["dataCutoff"], "2016-05-09")
+        self.assertEqual(history["interim"]["independentCommitteeReviewDatesReportedByJournal"],
+                         ["2016-06-08", "2016-06-14"])
+        self.assertEqual(history["interim"]["firstPublicStoppingRecommendationDisclosure"],
+                         "2016-06-16")
+        self.assertEqual(history["application"]["targetAnnouncedDate"], "2016-09-07")
+        self.assertEqual(history["application"]["targetPdufaDate"], "2016-12-24")
+        self.assertEqual(history["application"]["actualFdaActionDate"], "2016-10-24")
+        self.assertEqual(history["application"]["sameDaySecondLineConversionDifferentTrial"],
+                         "KEYNOTE-010")
+        self.assertFalse(history["interim"]["dmcMinutesAndSignedRecommendationReviewed"])
+        self.assertFalse(history["conclusions"]["originalProtocolSapAuthenticated"])
+        self.assertFalse(history["conclusions"]["inputReadinessGradeChanged"])
+        self.assertFalse(history["conclusions"]["reluctanceGradeChanged"])
+        self.assertIsNone(history["scientificScore"])
+        self.assertIsNone(history["fdaApprovalProbability"])
         self.assertEqual(interim["reportedDesign"]["overallOneSidedAlphaPercent"], 2.5)
         self.assertEqual(interim["reportedDesign"]["firstInterim"]["reportedAllocatedOneSidedAlphaPercent"], 0.5)
         self.assertEqual(interim["reportedDesign"]["secondInterim"]["reportedAllocatedOneSidedAlphaPercent"], 2.0)

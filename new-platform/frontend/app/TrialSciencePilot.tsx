@@ -131,6 +131,69 @@ function Evidence({ pilot }: { pilot: TrialSciencePilot }) {
         </div>
       </details>
     </section> : null}
+    {pilot.historicalRegulatoryTimeline ? <section aria-label="Original KEYNOTE-024 trial-to-PDUFA regulatory history">
+      <h3>One trial · interim evidence to FDA action and PDUFA goal</h3>
+      <p className={styles.metadata}>
+        A historical, source-linked timeline for KEYNOTE-024 / NCT02142738
+        and first-line application {pilot.historicalRegulatoryTimeline.application.biologicsLicense}.
+        These are past documented events, not a contemporaneous forecast.
+      </p>
+      <div className={styles.domains}>
+        <div className={styles.domain}>
+          <strong>Interim data cutoff</strong>
+          <span>{pilot.historicalRegulatoryTimeline.interim.dataCutoff}</span>
+          <small>Original published PFS/OS data freeze</small>
+        </div>
+        <div className={styles.domain}>
+          <strong>Stop recommendation disclosed</strong>
+          <span>{pilot.historicalRegulatoryTimeline.interim.firstPublicStoppingRecommendationDisclosure}</span>
+          <small>DMC reviewed June 8 and June 14; exact recommendation day unverified</small>
+        </div>
+        <div className={styles.domain}>
+          <strong>Actual FDA action</strong>
+          <span>{pilot.historicalRegulatoryTimeline.application.actualFdaActionDate}</span>
+          <small>First-line NSCLC approval; historically confirmed</small>
+        </div>
+        <div className={styles.domain}>
+          <strong>Original PDUFA target</strong>
+          <span>{pilot.historicalRegulatoryTimeline.application.targetPdufaDate}</span>
+          <small>Goal date only; approval occurred earlier</small>
+        </div>
+      </div>
+      <details className={styles.caveats}>
+        <summary>Open ten dated milestones and their primary evidence</summary>
+        <ol className={styles.historyTimeline}>
+          {pilot.historicalRegulatoryTimeline.events.map(event => (
+            <li key={event.key} className={styles.historyMilestone}>
+              <span className={styles.historyDate}>{event.eventDate}</span>
+              <div>
+                <strong>{event.category}: {event.title}</strong>
+                <small className={styles.metadata}>
+                  Evidence: {event.sourceTemporalStatus.replaceAll("_", " ")}
+                  {" "}· source publication/entry {event.sourcePublicationOrEntryDate}
+                </small>
+                <p><a href={event.sourceUrl} target="_blank" rel="noopener noreferrer">
+                  {event.sourceLocator}</a></p>
+                <p className={styles.metadata}>{event.caveat}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </details>
+      <p className={styles.caution}>
+        The June 8 and June 14 committee reviews are reported by the later 2016 journal
+        publication; the June 16 stopping recommendation was disclosed at that time.
+        Actual DMC minutes, precise recommendation date, and signed original
+        pre-interim SAP have not been independently inspected.
+        The December 24 PDUFA goal is not a second decision.
+      </p>
+      <p className={styles.metadata}>
+        FDA's simultaneous October 24 regularization of the second-line NSCLC
+        indication relied on KEYNOTE-010, not KEYNOTE-024. Retrospectively knowing
+        the first-line approval cannot establish that an approval forecast was justified
+        before the decision. Input Readiness remains FAIL; Reluctance remains HIGH.
+      </p>
+    </section> : null}
     {pilot.europeanRegistryCrosscheck ? <section aria-label="EU regulatory trial-registration cross-source review">
       <h3>Early European registry crosscheck · KEYNOTE-024</h3>
       <p className={styles.metadata}>

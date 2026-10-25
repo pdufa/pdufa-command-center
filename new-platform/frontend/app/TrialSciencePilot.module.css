@@ -62,3 +62,30 @@
   .references { grid-template-columns: minmax(0, 1fr); }
   .summary a { white-space: normal; }
 }
+
+.historyTimeline {
+  list-style: none;
+  padding: 5px 0 5px 13px;
+  margin: 10px 0;
+  border-left: 3px solid #78a486;
+}
+.historyMilestone {
+  display: grid;
+  grid-template-columns: minmax(86px, 118px) minmax(0, 1fr);
+  gap: 11px;
+  padding: 8px 12px;
+  margin: 0 0 7px -13px;
+  border-radius: 6px;
+  border-left: 3px solid #306d46;
+  background: #f4f8f1;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.historyMilestone > div { min-width: 0; overflow-wrap: anywhere; }
+.historyMilestone p { margin: 5px 0; }
+.historyMilestone strong { display: block; font-size: 12px; }
+.historyMilestone a { color: #095b40; }
+.historyDate { color: #173d2c; font-weight: 800; font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) {
+  .historyMilestone { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
