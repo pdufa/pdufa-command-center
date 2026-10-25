@@ -121,9 +121,18 @@ def build_review_packet(nct_id: str, *, generated_at: datetime | None = None) ->
     numbers = reported_quantitative_results(nct_id, raw)
     grades = review_readiness(nct_id, raw, archive_retrieved_at=retrieved)
     worklist = ledger["sourceReconciliation"]
+    reviewer_summary = {
+        item["questionId"]: item
+        for item in ledger["reviewerFindings"]["questionSummaries"]
+    }
     checks = []
     for check in worklist["checks"]:
         item = dict(check)
+        summary = reviewer_summary.get(check["id"], {})
+        item["reviewerStatementCount"] = summary.get("statementCount", 0)
+        item["conflictingReviewerStatements"] = summary.get(
+            "conflictingReviewerStatements", False
+        )
         item["resolutionCriteria"] = list(PILOT_ACCEPTANCE.get(
             check["id"], (
                 "Review dated original source and its exact clinical indication.",
