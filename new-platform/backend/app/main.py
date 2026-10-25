@@ -477,7 +477,10 @@ async def lifespan(app: FastAPI):
                 traceback_entry.tb_frame.f_code.co_name if traceback_entry else "UNKNOWN",
                 traceback_entry.tb_lineno if traceback_entry else "UNKNOWN",
             )
-    if _DB_STATE["available"]:
+    # Offline pytest runs use disposable SQLite engines; a detached background
+    # thread can outlive a test fixture and race engine.dispose().
+    # Keep the read-only smoke probe for deployed services, but skip it in tests.
+    if _DB_STATE["available"] and "PYTEST_CURRENT_TEST" not in os.environ:
         threading.Thread(target=verify_published_sources, daemon=True).start()
     if (_DB_STATE["available"] and os.getenv("PDUFA_FULL_TRIAL_DOWNLOAD_BOOTSTRAP") == "1"
             and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in ("1", "true", "yes")):
