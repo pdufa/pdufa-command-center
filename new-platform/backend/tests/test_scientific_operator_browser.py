@@ -44,7 +44,9 @@ class Handler(BaseHTTPRequestHandler):
     research_calls = 0
     worksheet_calls = 0
     pdf_enabled = False
+    remote_pdf_enabled = False
     archive_calls = 0
+    remote_fetch_calls = 0
     pdf_bytes = None
 
     def log_message(self, *_args):
@@ -90,7 +92,8 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 self.respond(200, {"role": "operator", "identityVerified": True,
                                    "maySignOff": False, "mayPromoteScientificScore": False,
-                                   "mayArchiveSourcePdf": type(self).pdf_enabled})
+                                   "mayArchiveSourcePdf": type(self).pdf_enabled,
+                                   "mayFetchOfficialPdf": type(self).remote_pdf_enabled})
             return
         if self.path.startswith("/api/scientific-assessment/operator/research?"):
             type(self).research_calls += 1
@@ -203,6 +206,23 @@ class Handler(BaseHTTPRequestHandler):
 
 
     def do_POST(self):
+        if self.path == "/api/scientific-assessment/operator/source-documents/NCT02142738/fetch/protocol":
+            type(self).remote_fetch_calls += 1
+            if (self.headers.get("Authorization") != "Bearer " + FAKE_TOKEN
+                    or not type(self).accept_operator or not type(self).remote_pdf_enabled):
+                self.respond(403, {"detail": "Not allowed"})
+                return
+            raw = b"%PDF-1.7\n1 0 obj<</Type/Catalog>>endobj\nOfficial pinned test PDF\n%%EOF\n"
+            type(self).pdf_bytes = raw
+            self.respond(200, {
+                "documentId": "a"*32, "nctId": "NCT02142738",
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "byteIntegrityChecked": True, "byteLength": len(raw),
+                "alreadyArchived": False, "scientificallyVerified": False,
+                "independentReviewRequired": True,
+                "documentContentScientificallyVerified": False,
+            })
+            return
         if self.path != "/api/scientific-assessment/operator/source-documents/NCT02142738":
             self.respond(404, {"detail": "Not found"})
             return
@@ -235,13 +255,15 @@ class Handler(BaseHTTPRequestHandler):
 
 
 @contextmanager
-def stub_service(*, accepted=True, pdf_enabled=False):
+def stub_service(*, accepted=True, pdf_enabled=False, remote_pdf_enabled=False):
     Handler.accept_operator = accepted
     Handler.identity_calls = 0
     Handler.research_calls = 0
     Handler.worksheet_calls = 0
     Handler.pdf_enabled = pdf_enabled
+    Handler.remote_pdf_enabled = remote_pdf_enabled
     Handler.archive_calls = 0
+    Handler.remote_fetch_calls = 0
     Handler.pdf_bytes = None
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -366,5 +388,51 @@ def test_browser_pdf_capture_stays_hidden_for_unauthorized_operator():
             page.get_by_text("Account not authorized or Google session expired (403)", exact=False).wait_for(timeout=10000)
             assert not page.locator("#pdf-capture").is_visible()
             assert Handler.archive_calls == 0
+        finally:
+            browser.close()
+
+
+
+def test_browser_fetches_official_pdf_without_local_upload_or_science_signoff():
+    with stub_service(accepted=True, pdf_enabled=True, remote_pdf_enabled=True) as url, playwright() as p:
+        browser=p.chromium.launch(headless=True)
+        try:
+            page=browser.new_page(viewport={"width": 1200, "height": 800})
+            page.route("https://accounts.google.com/gsi/client", mock_google_script)
+            page.goto(url + "/scientific/operator")
+            page.locator("#test-google-button").wait_for(timeout=10000)
+            assert not page.locator("#fetch-official-pdf").is_visible()
+            page.locator("#test-google-button").click()
+            page.get_by_text("Read-only source inventory loaded.", exact=False).wait_for(timeout=10000)
+            assert page.locator("#fetch-official-pdf").is_visible()
+            assert Handler.remote_fetch_calls == 0
+            assert page.locator("#source-pdf-file").input_value() == ""
+            page.locator("#source-pdf-kind").select_option("protocol")
+            assert "2017" in page.locator("#official-source-note").inner_text()
+            page.locator("#fetch-official-pdf").click()
+            page.get_by_text("Official PDF archived with its SHA-256 byte checksum.", exact=False).wait_for(timeout=10000)
+            assert Handler.remote_fetch_calls == 1
+            assert Handler.archive_calls == 0
+            assert Handler.pdf_bytes.startswith(b"%PDF-")
+            assert page.locator("#captured-pdfs button").count() == 1
+            assert page.get_by_text("0 / 40", exact=True).is_visible()
+            assert page.get_by_text("Not assigned", exact=True).is_visible()
+        finally:
+            browser.close()
+
+
+def test_browser_hides_remote_fetch_when_explicitly_disabled():
+    with stub_service(accepted=True, pdf_enabled=True, remote_pdf_enabled=False) as url, playwright() as p:
+        browser=p.chromium.launch(headless=True)
+        try:
+            page=browser.new_page()
+            page.route("https://accounts.google.com/gsi/client", mock_google_script)
+            page.goto(url + "/scientific/operator")
+            page.locator("#test-google-button").wait_for(timeout=10000)
+            page.locator("#test-google-button").click()
+            page.get_by_text("Read-only source inventory loaded.", exact=False).wait_for(timeout=10000)
+            assert page.locator("#pdf-capture").is_visible()
+            assert not page.locator("#fetch-official-pdf").is_visible()
+            assert Handler.remote_fetch_calls == 0
         finally:
             browser.close()
