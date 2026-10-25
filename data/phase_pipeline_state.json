@@ -1,22 +1,16 @@
 {
-  "started_at": "2026-10-24T03:20:21.204192+00:00",
+  "started_at": "2026-10-25T03:20:47.735531+00:00",
   "status": "COMPLETE",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-10-24",
+  "scope": "Industry Phase 2/3 records updated since 2024-10-25",
   "source_max_age_days": 180,
-  "studies_scanned": 15605,
-  "matched_trials": 3695,
+  "studies_scanned": 15581,
+  "matched_trials": 3692,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [
-    {
-      "ticker": "SVA",
-      "drug": "Participants will receive one dose of vaccine (0.5 mL) of Sinovac QIV",
-      "nct_id": "NCT07211152"
-    }
-  ],
-  "finished_at": "2026-10-24T03:20:54.655846+00:00",
+  "new_master_programs": [],
+  "finished_at": "2026-10-25T03:21:27.994304+00:00",
   "stored_trials": 7381,
   "phase2_programs": 1025,
   "master_programs": 124,
