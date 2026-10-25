@@ -131,11 +131,16 @@ def adjudication_preflight(
         not item["reviewObservationsRecorded"],
         item["questionId"],
     ))
+    source_index = {q["id"]: q.get("sourceUrls", []) for q in questions}
     review_queue = [
         {
             "questionId": item["questionId"],
             "gateId": item["gateId"],
             "priority": item["priority"],
+            "candidateSourceUrls": list(source_index[item["questionId"]]),
+            "sourceDocumentsIndependentlyChecked": False,
+            "requiresAuthenticatedIndependentReviewer": True,
+            "requiresSecondReviewerSignoff": True,
             "nextAction": (
                 "Reconcile conflicting source-anchored claims"
                 if item["conflictingCurrentStatements"] else
@@ -146,6 +151,7 @@ def adjudication_preflight(
                 "Collect an initial source-anchored observation"
             ),
             "status": "requires_independent_review",
+            "sourceUrlsAreOnlyUnverifiedLocators": True,
             "mayAutoResolve": False,
         }
         for item in order
