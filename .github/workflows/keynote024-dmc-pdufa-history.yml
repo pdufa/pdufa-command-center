@@ -1,0 +1,48 @@
+name: KEYNOTE-024 DMC-to-PDUFA Historical Timeline
+on:
+  push:
+    branches: [feature/keynote024-dmc-pdufa-history-20261024]
+  pull_request:
+    branches: [feature/scientific-assessment-v1]
+permissions:
+  contents: read
+jobs:
+  timeline-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend requirements
+        run: python -m pip install -r new-platform/backend/requirements.txt
+      - name: Check original DMC chronology, dates, scientific input guards and protected pilot HTTP
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_regulatory_timeline.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_http.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_eu_plan_crosscheck.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_interim_design.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_protocol_readiness.py' -v
+  timeline-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install locked frontend dependencies
+        run: npm ci
+      - name: Typecheck science dashboard
+        run: npm run typecheck
+      - name: Check source-locked timeline, signed SAP and safety protections
+        run: |
+          node --test tests/trial-science-regulatory-timeline.test.cjs
+          node --test tests/trial-science-eu-crosscheck.test.cjs
+          node --test tests/trial-science-interim-design.test.cjs
+          node --test tests/trial-science-readiness.test.cjs
+          node --test tests/trial-science-safety-chronology.test.cjs

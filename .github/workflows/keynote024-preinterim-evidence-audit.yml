@@ -1,0 +1,46 @@
+name: KEYNOTE-024 Preinterim Evidence Audit Checks
+on:
+  push:
+    branches: [feature/keynote024-preinterim-evidence-audit-20261024]
+  pull_request:
+    branches: [feature/scientific-assessment-v1]
+permissions:
+  contents: read
+jobs:
+  backend-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install locked backend requirements
+        run: python -m pip install -r new-platform/backend/requirements.txt
+      - name: Verify source audit, checksum archive, authenticated API and legacy grade contracts
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_evidence_audit.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_http.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_dossier_archive.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_protocol_readiness.py' -v
+  frontend-audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install locked frontend dependencies
+        run: npm ci
+      - name: TypeScript check
+        run: npm run typecheck
+      - name: Verify linked timeline, safety numerators, and existing pilot grade display
+        run: |
+          node --test tests/trial-science-evidence-audit.test.cjs
+          node --test tests/trial-science-readiness.test.cjs
+          node --test tests/trial-science-pilot.test.cjs
+          node --test tests/trial-science-evidence-ui-contract.test.cjs

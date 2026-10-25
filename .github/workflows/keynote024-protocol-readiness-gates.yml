@@ -1,0 +1,44 @@
+name: Historical Trial Protocol Readiness Gates
+on:
+  push:
+    branches: [feature/keynote024-protocol-readiness-20261024]
+  pull_request:
+    branches: [feature/scientific-assessment-v1]
+permissions:
+  contents: read
+jobs:
+  scientific-protocol:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend test dependencies
+        run: python -m pip install -r new-platform/backend/requirements.txt
+      - name: Check 2017 protocol chronology and two evidence-readiness grades
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_protocol_readiness.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_http.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_live_verify.py' -v
+  frontend-readiness:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install locked frontend dependencies
+        run: npm ci
+      - name: Typecheck dashboard and new evidence-readiness panel
+        run: npm run typecheck
+      - name: Verify grade integrity and legacy historical pilot UI
+        run: |
+          node --test tests/trial-science-readiness.test.cjs
+          node --test tests/trial-science-pilot.test.cjs
+          node --test tests/trial-science-evidence-ui-contract.test.cjs

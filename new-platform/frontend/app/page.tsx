@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Workspace from "./Workspace";
 import SiteHealthStatus from "./SiteHealthStatus";
+import TrialSciencePilot from "./TrialSciencePilot";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Selections = Record<string, boolean>;
@@ -207,8 +208,10 @@ export default function Home() {
         <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT → TRADING · Trial counts directly below navigation</p></div>
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
-      <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a></p>
+      <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a> · <a href="#trial-science-pilot">Open historical Trial Science pilot</a></p>
       <Workspace onInspect={inspectProgram} />
+      <TrialSciencePilot />
+      <p className="subtle">Review a selected archived NCT without starting a scan: <a href="/trial/NCT02142738">KEYNOTE-024 (NCT02142738)</a> · <a href="/trial/NCT04280705">Second archived trial (NCT04280705)</a>. Eight-domain evidence remains unscored.</p>
       {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
       <div className="panel controls">
         <label htmlFor="stage">Stage</label>
