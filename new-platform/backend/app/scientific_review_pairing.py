@@ -32,12 +32,18 @@ def review_pairing_status(nct_id: str, question_id: str, source_sha256: str) -> 
                 main.ScientificReviewAuditEvent.google_subject == row.google_subject,
                 main.ScientificReviewAuditEvent.event_type == "review_statement_submitted",
             )).all()
-            if (audit_digest(payload) == row.content_sha256
-                    and any(isinstance(e.event_payload, dict)
-                            and e.event_payload.get("submissionId") == row.id
-                            and e.event_payload.get("contentSha256") == row.content_sha256
-                            and audit_digest(e.event_payload) == e.event_sha256
-                            for e in events)):
+            try:
+                statement_valid = audit_digest(payload) == row.content_sha256
+                matching_events = [
+                    e for e in events
+                    if isinstance(e.event_payload, dict)
+                    and e.event_payload.get("submissionId") == row.id
+                    and e.event_payload.get("contentSha256") == row.content_sha256
+                    and audit_digest(e.event_payload) == e.event_sha256
+                ]
+            except (ValueError, TypeError, OverflowError):
+                statement_valid, matching_events = False, []
+            if statement_valid and len(matching_events) == 1:
                 valid.append(row)
         subjects = {row.google_subject for row in valid}
         decisions = {row.decision for row in valid}
@@ -47,8 +53,10 @@ def review_pairing_status(nct_id: str, question_id: str, source_sha256: str) -> 
         "integrityVerifiedStatements": len(valid),
         "distinctReviewerCount": len(subjects),
         "twoIndependentStatementsRecorded": len(subjects) >= 2,
+        "twoDistinctIdentityStatementsRecorded": len(subjects) >= 2,
+        "clinicalIndependenceVerified": False,
         "decisionsAgree": len(subjects) >= 2 and len(decisions) == 1,
-        "auditIntegrityPassed": len(rows) == len(valid),
+        "auditIntegrityPassed": bool(rows) and len(rows) == len(valid),
         "sourceContentIndependentlyVerified": False,
         "qualificationsIndependentlyAdjudicated": False,
         "formalSecondPersonSignoff": False,
