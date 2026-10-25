@@ -31,7 +31,7 @@ export function auditScienceIndex(value: unknown): ScienceStatus {
       || !Number.isSafeInteger(data.registryLinked) || data.registryLinked < 0
       || !Number.isSafeInteger(data.registryMissing) || data.registryMissing < 0
       || data.registryLinked + data.registryMissing !== data.total
-      || !Number.isFinite(Date.parse(data.computedAt)) || !/^\\d{4}-\\d{2}-\\d{2}$/.test(data.asOf)
+      || !Number.isFinite(Date.parse(data.computedAt)) || !/^\d{4}-\d{2}-\d{2}$/.test(data.asOf)
       || typeof data.modelVersion !== "string" || !data.modelVersion
       || typeof data.reviewSource !== "string") {
     throw new Error("Candidate index source and registry totals do not reconcile");
