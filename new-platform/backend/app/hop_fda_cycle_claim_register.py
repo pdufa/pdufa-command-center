@@ -232,7 +232,9 @@ def screen_claim_register(
     return {
         "status": "UNVERIFIED_FDA_CYCLE_CLAIMS_QUARANTINED",
         "published_source_references": len(expected),
-        "source_review_status_counts": dict(sorted(counts.items())),
+        "source_review_status_counts": dict(sorted(
+            (status, count) for status, count in counts.items() if count > 0
+        )),
         "source_refs_with_duplicate_application_cycles": sorted(collided),
         "source_refs_with_conflicting_cycle_action_claims": sorted(contradictory),
         "original_source_documents_independently_verified": 0,
