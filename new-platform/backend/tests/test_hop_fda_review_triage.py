@@ -217,3 +217,133 @@ def test_unchanged_blank_packets_result_in_review_queue_not_outcomes():
                for item in queue)
     assert audit["independently_verified_review_cycles"] == 0
     assert audit["prediction_probability"] is None
+
+
+def test_two_matching_reviewers_wrong_fda_date_are_priority_one_and_unverified():
+    original, first, second = prepare()
+    for rec in first:
+        complete(rec, "reviewer_a")
+    for rec in second:
+        complete(rec, "reviewer_b")
+    first[0]["observed_action_date"] = "2020-01-02"
+    second[0]["observed_action_date"] = "2020-01-02"
+    assert compare(original, first, second)["disagreeing_unverified_claims"] == 0
+    queue, audit = build_review_triage(
+        original, first, second, compare(original, first, second),
+        pinned_index(), as_of=AS_OF,
+    )
+    item = queue[0]
+    assert item["source_record_sha256"] == "a" * 64
+    assert item["triage_status"] == "SOURCE_METADATA_DISCREPANCY"
+    assert item["review_queue_priority"] == "1"
+    assert item["source_metadata_warning_flags"] == (
+        "ACTION_DATE_DIFFERS_FROM_PUBLISHED_LETTER_DATE"
+    )
+    assert audit["source_metadata_warning_references"] == 1
+    assert audit["independent_source_metadata_verified"] is False
+    assert audit["model_eligible_records"] == 0
+    assert audit["prediction_probability"] is None
+
+
+@pytest.mark.parametrize("field,wrong_value,expected_flag", [
+    ("observed_application_ids", "BLA000009",
+     "REVIEWED_APPLICATION_NOT_IN_SOURCE_CANDIDATES"),
+    ("observed_document_type", "APPROVAL",
+     "DOCUMENT_TYPE_DIFFERS_FROM_PUBLISHED_LETTER_TYPE"),
+])
+def test_identical_wrong_app_or_document_type_still_flags_source_disagreement(
+    field, wrong_value, expected_flag
+):
+    original, first, second = prepare()
+    for rec in first:
+        complete(rec, "reviewer_a")
+    for rec in second:
+        complete(rec, "reviewer_b")
+    first[0][field] = wrong_value
+    second[0][field] = wrong_value
+    queue, audit = build_review_triage(
+        original, first, second, compare(original, first, second),
+        pinned_index(), as_of=AS_OF,
+    )
+    assert queue[0]["triage_status"] == "SOURCE_METADATA_DISCREPANCY"
+    assert expected_flag in queue[0]["source_metadata_warning_flags"]
+    assert audit["source_metadata_warning_references"] == 1
+    assert audit["independently_verified_review_cycles"] == 0
+
+
+@pytest.mark.parametrize("source_change,expected_flag", [
+    ({"published_application_ids": "", "canonical_application_candidates": ""},
+     "PUBLISHED_SOURCE_APPLICATION_ID_MISSING"),
+    ({"source_letter_date_as_published": "2020-02-31"},
+     "PUBLISHED_LETTER_DATE_MISSING_OR_INVALID"),
+    ({"published_letter_type": ""}, "PUBLISHED_LETTER_TYPE_MISSING"),
+])
+def test_missing_or_invalid_published_metadata_needs_human_investigation(
+    source_change, expected_flag
+):
+    original = example()
+    original[0].update(source_change)
+    first, second, _ = build_dual_review_packets(original)
+    for rec in first:
+        complete(rec, "reviewer_a")
+    for rec in second:
+        complete(rec, "reviewer_b")
+    queue, audit = build_review_triage(
+        original, first, second, compare(original, first, second),
+        pinned_index(), as_of=AS_OF,
+    )
+    assert queue[0]["triage_status"] == "SOURCE_METADATA_DISCREPANCY"
+    assert expected_flag in queue[0]["source_metadata_warning_flags"]
+    assert audit["model_eligible_records"] == 0
+
+
+def test_source_warning_overlaps_reviewer_conflict_without_losing_counts():
+    original, first, second = prepare()
+    for rec in first:
+        complete(rec, "reviewer_a")
+    for rec in second:
+        complete(rec, "reviewer_b")
+    first[0]["observed_action_date"] = "2020-01-02"
+    second[0]["observed_action_date"] = "2020-01-03"
+    comp = compare(original, first, second)
+    assert comp["disagreeing_unverified_claims"] == 1
+    queue, audit = build_review_triage(
+        original, first, second, comp, pinned_index(), as_of=AS_OF,
+    )
+    assert queue[0]["triage_status"] == "SOURCE_METADATA_DISCREPANCY"
+    assert queue[0]["disputed_fields"] == "observed_action_date"
+    assert audit["queue_status_counts"]["SOURCE_METADATA_DISCREPANCY"] == 1
+    assert audit["source_metadata_warning_references"] == 1
+    assert audit["model_eligible_records"] == 0
+
+
+def test_single_complete_claim_with_wrong_metadata_remains_unreviewed():
+    original, first, second = prepare()
+    complete(first[0], "reviewer_a")
+    first[0]["observed_action_date"] = "2020-01-02"
+    queue, audit = build_review_triage(
+        original, first, second, compare(original, first, second),
+        pinned_index(), as_of=AS_OF,
+    )
+    assert queue[0]["triage_status"] == "SOURCE_METADATA_DISCREPANCY"
+    assert queue[0]["claimed_second_review_complete"] == "false"
+    assert audit["source_metadata_warning_references"] == 1
+    assert audit["independently_verified_review_cycles"] == 0
+
+
+def test_correct_matching_metadata_remains_priority_four_not_verified():
+    original, first, second = prepare()
+    for rec in first:
+        complete(rec, "reviewer_a")
+    for rec in second:
+        complete(rec, "reviewer_b")
+    queue, audit = build_review_triage(
+        original, first, second, compare(original, first, second),
+        pinned_index(), as_of=AS_OF,
+    )
+    assert all(r["triage_status"] == "MATCHING_TEXT_STILL_UNVERIFIED"
+               and r["review_queue_priority"] == "4"
+               and not r["source_metadata_warning_flags"] for r in queue)
+    assert audit["source_metadata_warning_references"] == 0
+    assert audit["independent_source_metadata_verified"] is False
+    assert audit["prediction_probability"] is None
