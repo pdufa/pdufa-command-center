@@ -7,6 +7,7 @@ from pathlib import Path
 import csv
 import json
 import unittest
+from datetime import date
 
 from scripts.source_verification import Verifier
 
@@ -62,6 +63,86 @@ class RyzumviOutcomeEvidenceTests(unittest.TestCase):
                 self.assertIn(FDA_LETTER, verifier.references(row))
                 self.assertEqual(verifier.primary(row, FDA_LETTER), "FDA")
                 self.assertEqual(verifier.primary(row, conf["urls"][1]), "ISSUER")
+
+
+    def test_signed_fda_crosswalk_accepts_both_exact_events_only(self):
+        letter = (
+            "NDA 217064/S-005\\nSUPPLEMENT APPROVAL\\n"
+            "FamyGen Life Sciences, Inc.\\n"
+            "Ryzumvi (phentolamine mesylate ophthalmic solution) 0.75%.\\n"
+            "This Prior Approval sNDA adds a new indication for the treatment "
+            "of presbyopia in adults.\\nAPPROVAL & LABELING\\n"
+            "It is approved, effective on the date of this letter.\\n"
+            "Signature Page 1 of 1\\nThis is a representation of an electronic "
+            "record that was signed electronically.\\n/s/ WILLIAM M BOYD\\n"
+            "10/16/2026 08:47:12 AM"
+        )
+        label = (
+            "NDA 217064/S-005 RYZUMVI (phentolamine ophthalmic solution) 0.75% "
+            "indicated for treatment of presbyopia in adults"
+        )
+        for ticker, event_key in EVENTS.items():
+            with self.subTest(ticker=ticker):
+                event = next(r for r in self.candidates if r["event_key"] == event_key)
+                mapping = self.mappings[ticker]["events"][event_key]
+                issuer_text = (
+                    event["company"] + " announces that the FDA has approved "
+                    "phentolamine ophthalmic solution 0.75% for presbyopia"
+                )
+                verifier = Verifier([], as_of=date(2026, 10, 25),
+                                    issuer_sources=self.mappings)
+                def document(url):
+                    if url == FDA_LETTER:
+                        return b"fda-letter", letter
+                    if url == FDA_LABEL:
+                        return b"fda-label", label
+                    if url == mapping["fda_issuer_approval_url"]:
+                        return b"issuer-approval", issuer_text
+                    return b"unrelated", "Unrelated filing with no FDA decision"
+                verifier.document = document
+                self.assertEqual(
+                    verifier.mapped_fda_action_applicant(
+                        event, FDA_LETTER, letter, FDA_LABEL),
+                    "FamyGen Life Sciences, Inc."
+                )
+                outcome = verifier.regulatory(event)[0]
+                self.assertEqual(outcome["claim"], "FDA_DECISION", outcome)
+                self.assertEqual(outcome["verification_status"], "VERIFIED", outcome)
+                self.assertEqual(outcome["observed"], "APPROVED 2026-10-16", outcome)
+                self.assertEqual(event["pdufa_date"], "2026-10-17")
+                self.assertEqual(event["monitor_eligibility"], "REVIEW")
+
+    def test_fda_crosswalk_rejects_wrong_application_holder_and_unrelated_issuer(self):
+        event = next(row for row in self.candidates if row["event_key"] == EVENTS["IRD"])
+        letter = (
+            "NDA 217064/S-005 SUPPLEMENT APPROVAL FamyGen Life Sciences Inc. "
+            "Ryzumvi phentolamine solution for presbyopia."
+        )
+        approved = (
+            "Opus Genetics Inc. announces FDA has approved phentolamine "
+            "ophthalmic solution for presbyopia"
+        )
+        original = self.mappings["IRD"]["events"][EVENTS["IRD"]]
+        def verifier_with(mapping, release=approved):
+            config = json.loads(json.dumps(self.mappings))
+            config["IRD"]["events"][EVENTS["IRD"]] = mapping
+            v = Verifier([], as_of=date(2026, 10, 25), issuer_sources=config)
+            v.document = lambda url: (b"issuer", release)
+            return v
+        for changed in (
+            {**original, "fda_application_number": "217065"},
+            {**original, "fda_supplement_number": "004"},
+            {**original, "fda_regulatory_applicant": "Other Applicant LLC"},
+            {**original, "fda_issuer_approval_url": "https://untrusted.example/approve"},
+            {**original, "approval_label_url": ""},
+        ):
+            with self.subTest(changed=changed):
+                v = verifier_with(changed)
+                self.assertEqual(
+                    v.mapped_fda_action_applicant(event, FDA_LETTER, letter, FDA_LABEL), "")
+        v = verifier_with(original, "Unrelated company announced unrelated approval")
+        self.assertEqual(
+            v.mapped_fda_action_applicant(event, FDA_LETTER, letter, FDA_LABEL), "")
 
 
 if __name__ == "__main__":
