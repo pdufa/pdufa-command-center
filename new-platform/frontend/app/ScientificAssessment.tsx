@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
+import { reconcileLocalReviewerWorksheets, type LocalReviewAudit } from "../lib/scientific-reviewer-local-audit";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -282,6 +283,13 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [loading, setLoading] = useState(false);
   const [checkingConnection, setCheckingConnection] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
+  const [reviewerAFile, setReviewerAFile] = useState<File | null>(null);
+  const [reviewerBFile, setReviewerBFile] = useState<File | null>(null);
+  const [localAuditResult, setLocalAuditResult] = useState<LocalReviewAudit | null>(null);
+  const [localAuditError, setLocalAuditError] = useState("");
+  const [localAuditRunning, setLocalAuditRunning] = useState(false);
+  const [localAuditEpoch, setLocalAuditEpoch] = useState(0);
+  const localAuditRequest = useRef(0);
   const pending = useRef<AbortController | null>(null);
   const pendingConnection = useRef<AbortController | null>(null);
 
@@ -293,12 +301,26 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setLoading(false);
     setCheckingConnection(false);
     setConnectionMessage("");
-    return () => { pending.current?.abort(); pendingConnection.current?.abort(); };
+    localAuditRequest.current += 1;
+    setReviewerAFile(null);
+    setReviewerBFile(null);
+    setLocalAuditResult(null);
+    setLocalAuditError("");
+    setLocalAuditRunning(false);
+    setLocalAuditEpoch(epoch => epoch + 1);
+    return () => { pending.current?.abort(); pendingConnection.current?.abort(); localAuditRequest.current += 1; };
   }, [exactId]);
 
   async function load() {
     if (!exactId || !/^TRIAL\|NCT[0-9]{8}$/.test(exactId)) return;
     pending.current?.abort();
+    localAuditRequest.current += 1;
+    setReviewerAFile(null);
+    setReviewerBFile(null);
+    setLocalAuditResult(null);
+    setLocalAuditError("");
+    setLocalAuditRunning(false);
+    setLocalAuditEpoch(epoch => epoch + 1);
     const controller = new AbortController();
     pending.current = controller;
     setLoading(true);
@@ -360,6 +382,31 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       );
     } finally {
       if (!controller.signal.aborted) setCheckingConnection(false);
+    }
+  }
+
+  /** Strict local-only comparison: neither raw file nor clinical claims leave the browser. */
+  async function auditSelectedReviewerWorksheets() {
+    if (!result?.investigation40 || !reviewerAFile || !reviewerBFile || localAuditRunning) return;
+    const run = ++localAuditRequest.current;
+    const matrix = result.investigation40;
+    const trialId = exactId;
+    setLocalAuditRunning(true);
+    setLocalAuditResult(null);
+    setLocalAuditError("");
+    try {
+      if (reviewerAFile.size > 1024 * 1024 || reviewerBFile.size > 1024 * 1024) {
+        throw new Error("Worksheet exceeds the 1 MB local-audit size limit.");
+      }
+      const [a, b] = await Promise.all([reviewerAFile.text(), reviewerBFile.text()]);
+      const audit = reconcileLocalReviewerWorksheets(matrix, a, b);
+      if (localAuditRequest.current === run && exactId === trialId) setLocalAuditResult(audit);
+    } catch {
+      if (localAuditRequest.current === run && exactId === trialId) {
+        setLocalAuditError("Local reviewer audit blocked: invalid, altered, or incomplete A/B worksheet.");
+      }
+    } finally {
+      if (localAuditRequest.current === run && exactId === trialId) setLocalAuditRunning(false);
     }
   }
 
@@ -491,6 +538,51 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           <small>These local CSV files do not authenticate anyone, sign a review,
             upload evidence, or change scientific completion counts. Genuine independent
             identity checks, document review, signed disagreement reconciliation and release approval remain outstanding.</small>
+        </details>
+        <details aria-label="Local A/B reviewer worksheet audit">
+          <summary><strong>Local A/B reviewer worksheet audit</strong> · compare both returned 320-task files</summary>
+          <p>Select the two reviewer worksheets for this trial. No files are uploaded; all checks run inside this browser session, and no reviewer identity, source, signature, scientific score, or FDA probability can be verified here.</p>
+          <p>
+            <label>Reviewer A worksheet
+              <input key={exactId + "-A-" + localAuditEpoch} type="file" accept=".csv,text/csv"
+                onChange={event => {
+                  localAuditRequest.current += 1;
+                  setReviewerAFile(event.target.files?.[0] ?? null);
+                  setLocalAuditResult(null);
+                  setLocalAuditError("");
+                  setLocalAuditRunning(false);
+                }} />
+            </label>
+          </p>
+          <p>
+            <label>Reviewer B worksheet
+              <input key={exactId + "-B-" + localAuditEpoch} type="file" accept=".csv,text/csv"
+                onChange={event => {
+                  localAuditRequest.current += 1;
+                  setReviewerBFile(event.target.files?.[0] ?? null);
+                  setLocalAuditResult(null);
+                  setLocalAuditError("");
+                  setLocalAuditRunning(false);
+                }} />
+            </label>
+          </p>
+          <button type="button" disabled={!reviewerAFile || !reviewerBFile || localAuditRunning}
+            onClick={() => void auditSelectedReviewerWorksheets()}>
+            {localAuditRunning ? "Checking reviewer worksheets…" : "Audit A/B worksheets locally"}
+          </button>
+          {localAuditError && <p role="alert">{localAuditError}</p>}
+          {localAuditResult && <section aria-label="Unverified reviewer candidate comparison">
+            <p role="status"><strong>Local worksheet audit: BLOCKED for scientific approval.</strong> Exact trial {localAuditResult.exactNctId}; independent evidence verification remains unavailable.</p>
+            <p>Candidate observations with syntactically complete fields: reviewer A {localAuditResult.candidateA}/320; reviewer B {localAuditResult.candidateB}/320.</p>
+            <p>Unverified or incomplete source provenance: A {localAuditResult.missingProvenanceA}, B {localAuditResult.missingProvenanceB}. Missing reviewer identity or notes: A {localAuditResult.incompleteNotesA}, B {localAuditResult.incompleteNotesB}.</p>
+            <p>Tasks with only one candidate: {localAuditResult.oneSidedObservations}. Conflicting candidate decisions: {localAuditResult.candidateDisagreementCount}.</p>
+            {localAuditResult.disagreementTaskIds.length > 0 && <details>
+              <summary>Show disputed task identifiers (first 20)</summary>
+              <ol>{localAuditResult.disagreementTaskIds.slice(0, 20).map(id => <li key={id}>{id}</li>)}</ol>
+            </details>}
+            <p><strong>Independent adjudications: 0. Scientific score: NOT ASSIGNED. FDA approval probability: NOT ASSIGNED.</strong></p>
+            <small>Typed names, signatures and supplied SHA-256 strings are not independently authenticated. Source bytes are not fetched. The review ledger and production system are unchanged.</small>
+          </section>}
         </details>
       </p>}
 
