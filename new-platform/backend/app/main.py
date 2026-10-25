@@ -624,6 +624,7 @@ async def lifespan(app: FastAPI):
             forty = live_trial.get("investigation40") or {}
             plan = forty.get("depthReview") or {}
             tasks = plan.get("tasks") or []
+            stage_links = forty.get("stageCrosswalk") or {}
             ids = {
                 (item.get("assessmentId"), item.get("depthLevel"))
                 for item in tasks
@@ -643,11 +644,17 @@ async def lifespan(app: FastAPI):
                 and plan.get("readyForScientificConclusion") is False
                 and plan.get("approvalProbability") is None
                 and live_trial.get("assessment", {}).get("overall_score") is None
+                and stage_links.get("stageCount") == 20
+                and stage_links.get("assessmentCount") == 40
+                and stage_links.get("stagesWithLinkedAssessments") == 20
+                and stage_links.get("independentlyVerifiedAssessments") == 0
+                and stage_links.get("approvalProbability") is None
             )
             logging.getLogger(__name__).warning(
                 "SCIENTIFIC_INVESTIGATION40_API_READBACK status=%s "
                 "nct_id=NCT02142738 layers=%d assessments=%d tasks=%d "
-                "independently_verified=0 scored=False read_only=True",
+                "stages=20 stage_coverage=20 independently_verified=0 "
+                "scored=False read_only=True",
                 "PASS" if forty_ok else "FAIL",
                 len(forty.get("layers") or []),
                 sum(len(layer.get("assessments") or [])
@@ -1210,6 +1217,7 @@ def get_scientific_assessment(exact_id: str):
                     from .scientific_investigation_contract import (
                         LAYERS, investigation_plan, readiness,
                     )
+                    from .scientific_stage_crosswalk import stage_crosswalk
                     result["investigation40"] = {
                         "schemaVersion": "scientific-investigation40-v1",
                         "nctId": match.group(1),
@@ -1219,6 +1227,7 @@ def get_scientific_assessment(exact_id: str):
                         ],
                         "verification": readiness({}),
                         "depthReview": investigation_plan(),
+                        "stageCrosswalk": stage_crosswalk(result["investigation20"]),
                         "verificationSource": "independent_adjudication_not_available",
                         "note": (
                             "This is the required-question inventory only. No"
