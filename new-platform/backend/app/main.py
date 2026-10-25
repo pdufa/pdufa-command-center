@@ -1110,6 +1110,23 @@ def get_scientific_review_packet(nct_id: str):
     )
 
 
+def require_scientific_evidence_write_key(
+    x_pdufa_scientific_review_key: Annotated[str | None, Header()] = None,
+) -> None:
+    """Separate from the batch API key; disabled on all services by default."""
+    if (os.getenv("RENDER_SERVICE_ID") != "srv-dbehn9fb9u1s739ok5vg"
+            or os.getenv("PDUFA_SCIENTIFIC_LEDGER_WRITE_ENABLED") != "1"
+            or not DATABASE_URL.startswith("postgresql+psycopg://")):
+        raise HTTPException(status_code=403, detail="Scientific evidence writing disabled")
+    expected = os.getenv("PDUFA_SCIENTIFIC_REVIEW_WRITE_KEY")
+    if not expected or expected == os.getenv("PDUFA_INTERNAL_API_KEY"):
+        raise HTTPException(status_code=503, detail="Separate evidence review key not configured")
+    if (not x_pdufa_scientific_review_key or
+            not secrets.compare_digest(expected, x_pdufa_scientific_review_key)):
+        raise HTTPException(status_code=401, detail="Unauthorized scientific evidence curator")
+
+
+
 class ScientificReviewerStatementSubmission(BaseModel):
     """A source-anchored reviewer statement; not a verified medical finding."""
     model_config = ConfigDict(extra="forbid")
@@ -1175,22 +1192,6 @@ class ScientificEvidenceCandidateSubmission(BaseModel):
     supersedes_id: str | None = Field(
         default=None, pattern=r"^[0-9a-f]{32}$", alias="supersedesId"
     )
-
-
-def require_scientific_evidence_write_key(
-    x_pdufa_scientific_review_key: Annotated[str | None, Header()] = None,
-) -> None:
-    """Separate from the batch API key; disabled on all services by default."""
-    if (os.getenv("RENDER_SERVICE_ID") != "srv-dbehn9fb9u1s739ok5vg"
-            or os.getenv("PDUFA_SCIENTIFIC_LEDGER_WRITE_ENABLED") != "1"
-            or not DATABASE_URL.startswith("postgresql+psycopg://")):
-        raise HTTPException(status_code=403, detail="Scientific evidence writing disabled")
-    expected = os.getenv("PDUFA_SCIENTIFIC_REVIEW_WRITE_KEY")
-    if not expected or expected == os.getenv("PDUFA_INTERNAL_API_KEY"):
-        raise HTTPException(status_code=503, detail="Separate evidence review key not configured")
-    if (not x_pdufa_scientific_review_key or
-            not secrets.compare_digest(expected, x_pdufa_scientific_review_key)):
-        raise HTTPException(status_code=401, detail="Unauthorized scientific evidence curator")
 
 
 @app.post("/api/scientific-assessment/evidence-ledger/{nct_id}",
