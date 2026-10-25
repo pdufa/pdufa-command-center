@@ -12,10 +12,11 @@ import io
 import json
 import re
 from collections import Counter
+from datetime import date
 from pathlib import Path
 
 from .hop_fda_dual_review_packets import SOURCE_FIELDS
-from .hop_fda_reviewer_reconciliation import COMPLETE_FIELDS
+from .hop_fda_reviewer_reconciliation import COMPLETE_FIELDS, reconcile_review_claims
 
 INDEX_STATUS = "FDA_PDF_PAGE_WORKSHEET_UNADJUDICATED"
 TRIAGE_FIELDS = (
@@ -123,9 +124,15 @@ def build_review_triage(
     second: list[dict],
     comparison: dict,
     source_index: dict,
+    *, as_of: date,
 ) -> tuple[list[dict[str, str]], dict]:
     """Create a private-data-minimized human-review queue, never a release."""
     inventory = audit_worksheet_inventory(original, source_index)
+    # Recalculate from the submitted files; never trust a separately supplied
+    # comparison JSON, even if its displayed counts look plausible.
+    actual_comparison = reconcile_review_claims(original, first, second, as_of=as_of)
+    if comparison != actual_comparison:
+        raise ValueError("Review comparison does not match independently recomputed claims")
     if (not isinstance(comparison, dict)
             or comparison.get("status") !=
             "REVIEW_CLAIMS_COMPARED_NO_INDEPENDENT_ADJUDICATION"
@@ -203,8 +210,8 @@ def build_review_triage(
                 "matching_unverified_claims")):
         raise ValueError("Review queue conflicts with source comparison")
     return output, {
-        "status": "UNVERIFIED_REVIEW_QUEUE_ONLY",
         **inventory,
+        "status": "UNVERIFIED_REVIEW_QUEUE_ONLY",
         "queue_status_counts": {k: outcomes[k] for k in REVIEW_STATES},
         "reviewer_identity_authenticated": False,
         "independently_verified_review_cycles": 0,
