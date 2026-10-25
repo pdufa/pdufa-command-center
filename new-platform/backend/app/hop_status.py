@@ -17,6 +17,7 @@ IDENTITY_REVIEW_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_f
 OFFICIAL_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_pdf_document_verification_index.json"
 FILING_BENCHMARK_PATH = Path(__file__).parent / "research_sources" / "hop_fda_pdufa_filing_benchmarks.json"
 ALL_ACTION_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_full_action_pdf_audit_index.json"
+SHARED_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_shared_pdf_reconciliation_index.json"
 
 
 def _published_letter_source_audit(path: Path) -> dict | None:
@@ -331,6 +332,65 @@ def _quarantined_all_fda_action_pdf_audit(path: Path) -> dict | None:
     except (OSError, KeyError, ValueError, TypeError):
         return None
 
+
+def _quarantined_shared_fda_pdf_audit(path: Path) -> dict | None:
+    """PDF equality is source evidence, not independently adjudicated actions."""
+    try:
+        src = json.loads(path.read_text(encoding="utf-8"))
+        total = src["published_letter_source_records"]
+        linked = src["official_pdf_confirmed_letter_references"]
+        unique = src["unique_confirmed_pdf_documents"]
+        groups = src["distinct_shared_pdf_groups"]
+        affected = src["letter_records_in_shared_pdf_groups"]
+        extra = src["additional_letter_links_beyond_unique_pdfs"]
+        cross_apps = src["shared_documents_containing_multiple_applications"]
+        same_day = src["same_date_and_letter_type_collision_groups"]
+        unconfirmed = src["source_records_without_confirmed_pdf"]
+        missing = src["source_records_without_confirmed_pdf_sha256"]
+        numbers = (total, linked, unique, groups, affected,
+                   extra, cross_apps, same_day, unconfirmed)
+        if (src.get("status") != "FDA_PDF_SHARED_DOCUMENT_RECONCILIATION_NOT_OUTCOME_ADJUDICATION"
+                or any(type(x) is not int or x < 0 for x in numbers)
+                or total < 1 or unique > linked
+                or linked + unconfirmed != total
+                or linked - unique != extra
+                or not 0 <= groups <= unique
+                or not 2 * groups <= affected <= linked
+                or not 0 <= cross_apps <= groups
+                or not 0 <= same_day <= groups
+                or not isinstance(missing, list) or len(missing) != unconfirmed
+                or any(not isinstance(digest, str)
+                       or not re.fullmatch(r"[0-9a-f]{64}", digest) for digest in missing)
+                or not isinstance(src.get("original_fda_archive_sha256"), str)
+                or not re.fullmatch(r"[0-9a-f]{64}", src["original_fda_archive_sha256"])
+                or any(type(src.get(k)) is not int or src[k] != 0
+                       for k in ("individual_letter_page_ranges_verified",
+                                 "independently_verified_fda_action_dates",
+                                 "independently_verified_review_cycle_outcomes",
+                                 "model_eligible_records"))
+                or src.get("complete_application_denominator_verified") is not False
+                or src.get("prediction_probability") is not None):
+            raise ValueError("FDA shared PDF source audit does not reconcile")
+        return {
+            "status": "SHARED_PDF_PAGE_MAPPING_REQUIRED",
+            "published_letter_records": total,
+            "confirmed_pdf_references": linked,
+            "distinct_verified_pdf_documents": unique,
+            "shared_pdf_groups_needing_page_mapping": groups,
+            "published_letter_records_in_shared_pdf_groups": affected,
+            "duplicate_document_links": extra,
+            "cross_application_shared_pdf_groups": cross_apps,
+            "same_date_type_collision_groups": same_day,
+            "source_records_without_confirmed_pdf": unconfirmed,
+            "source_collection_run_url": src["source_collection_run_url"],
+            "source_collection_artifact_url": src["source_collection_artifact_url"],
+            "independently_verified_review_cycle_outcomes": 0,
+            "model_eligible_records": 0,
+            "complete_denominator_verified": False,
+        }
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+
 def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SOURCE_AUDIT_PATH,
                          drugs_audit_path: Path = DRUGS_SOURCE_AUDIT_PATH,
                          crosswalk_audit_path: Path = CROSSWALK_AUDIT_PATH,
@@ -338,7 +398,8 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
                          identity_review_audit_path: Path = IDENTITY_REVIEW_AUDIT_PATH,
                          official_pdf_audit_path: Path = OFFICIAL_PDF_AUDIT_PATH,
                          filing_benchmark_path: Path = FILING_BENCHMARK_PATH,
-                         all_action_pdf_audit_path: Path = ALL_ACTION_PDF_AUDIT_PATH) -> dict:
+                         all_action_pdf_audit_path: Path = ALL_ACTION_PDF_AUDIT_PATH,
+                         shared_pdf_audit_path: Path = SHARED_PDF_AUDIT_PATH) -> dict:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         records = raw["records"]
@@ -381,6 +442,11 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
         if all_published_pdfs and (not letter_source
                 or all_published_pdfs["published_letter_records"] != letter_source["published_letter_records"]):
             all_published_pdfs = None
+        shared_pdfs = _quarantined_shared_fda_pdf_audit(shared_pdf_audit_path)
+        if shared_pdfs and (not all_published_pdfs
+                or shared_pdfs["published_letter_records"] != all_published_pdfs["published_letter_records"]
+                or shared_pdfs["confirmed_pdf_references"] != all_published_pdfs["official_pdf_bytes_confirmed"]):
+            shared_pdfs = None
         return {
             "status": "RESEARCH_ONLY",
             "historical_staged": staged,
@@ -392,6 +458,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_official_pdf_checks": source_pdfs,
             "fda_annual_filing_reference": _fda_annual_filing_reference(filing_benchmark_path),
             "fda_all_published_action_documents": all_published_pdfs,
+            "fda_shared_pdf_source_reconciliation": shared_pdfs,
             "historical_quarantined": quarantined,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
@@ -412,6 +479,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_official_pdf_checks": None,
             "fda_annual_filing_reference": None,
             "fda_all_published_action_documents": None,
+            "fda_shared_pdf_source_reconciliation": None,
             "historical_quarantined": None,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
