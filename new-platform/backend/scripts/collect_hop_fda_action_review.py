@@ -19,6 +19,7 @@ from app.hop_fda_application_crosswalk import crosswalk_public_fda_sources
 from app.hop_fda_action_review import build_fda_action_review_worklist
 from app.hop_fda_document_probe import probe_all_fda_review_documents
 from app.hop_fda_pdf_evidence_groups import reconcile_fda_pdf_evidence_groups
+from app.hop_fda_pdf_page_candidates import build_fda_shared_pdf_page_candidates
 
 
 def fetch(url: str, max_bytes: int) -> bytes:
@@ -66,6 +67,11 @@ def main() -> None:
         cases, batch_size=args.pdf_batch_size
     )
     shared_documents, shared_document_audit = reconcile_fda_pdf_evidence_groups(cases, pdfs)
+    page_candidates, page_candidate_audit = build_fda_shared_pdf_page_candidates(shared_documents)
+    if (page_candidate_audit["shared_pdf_groups_examined"] != shared_document_audit["distinct_shared_pdf_groups"]
+            or page_candidate_audit["source_letter_records_examined"] != shared_document_audit["letter_records_in_shared_pdf_groups"]
+            or page_candidate_audit["model_eligible_records"] != 0):
+        raise ValueError("FDA PDF page candidate counts do not reconcile to evidence inventory")
     if (len(cases["records"]) != len(pdfs["records"])
             or case_audit["published_letter_records"] != crosswalk_audit["published_letter_records"]
             or case_audit["published_letter_records"] != letters_audit["published_letter_records"]
@@ -78,6 +84,7 @@ def main() -> None:
     }
     pdf_audit["source_letter_archive_sha256"] = letters_audit["archive_sha256_by_url"]
     shared_document_audit["source_letter_archive_sha256"] = letters_audit["archive_sha256_by_url"]
+    page_candidate_audit["source_letter_archive_sha256"] = letters_audit["archive_sha256_by_url"]
 
     dest = Path(args.output_dir)
     dest.mkdir(parents=True, exist_ok=True)
@@ -87,6 +94,8 @@ def main() -> None:
     output_json(dest, "fda_all_published_action_pdf_checks_audit.json", pdf_audit)
     output_json(dest, "fda_shared_pdf_document_page_mapping_review.json", shared_documents)
     output_json(dest, "fda_shared_pdf_document_reconciliation_audit.json", shared_document_audit)
+    output_json(dest, "fda_shared_pdf_provisional_page_candidates.json", page_candidates)
+    output_json(dest, "fda_shared_pdf_provisional_page_candidates_audit.json", page_candidate_audit)
     print(json.dumps({
         "publication_only": True,
         "published_letter_records": case_audit["published_letter_records"],
@@ -97,6 +106,9 @@ def main() -> None:
         "letter_records_in_shared_pdfs": shared_document_audit["letter_records_in_shared_pdf_groups"],
         "multiple_application_pdf_groups": shared_document_audit["shared_documents_containing_multiple_applications"],
         "same_date_type_collision_groups": shared_document_audit["same_date_and_letter_type_collision_groups"],
+        "shared_pdf_page_candidate_extraction_statuses": page_candidate_audit["pdf_extraction_status_counts"],
+        "shared_pdf_letter_candidate_statuses": page_candidate_audit["letter_candidate_status_counts"],
+        "letters_with_provisional_id_and_date_page_matches": page_candidate_audit["letters_with_same_page_id_and_letter_date_candidates"],
         "effective_action_dates_verified":
             case_audit["effective_fda_action_dates_independently_verified"],
         "verified_review_cycle_outcomes":
