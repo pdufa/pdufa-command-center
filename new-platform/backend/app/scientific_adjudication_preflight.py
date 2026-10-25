@@ -75,6 +75,12 @@ def adjudication_preflight(
            or not isinstance(x.get("sourceUrl"), str) for x in statements):
         raise ValueError("Malformed adjudication reviewer statement")
 
+    # A repeated revision in one thread is ambiguous even if both entries agree.
+    # Fail closed instead of silently selecting one as the current finding.
+    revisions = [(x["threadId"], x["revision"]) for x in statements]
+    if len(set(revisions)) != len(revisions):
+        raise ValueError("Duplicate adjudication reviewer revision")
+
     grouped: dict[str, list[dict]] = {q["id"]: [] for q in questions}
     if len(grouped) != len(questions):
         raise ValueError("Duplicate adjudication question identifier")
