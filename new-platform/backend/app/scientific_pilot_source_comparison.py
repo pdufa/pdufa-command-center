@@ -221,22 +221,46 @@ OBSERVATIONS = {
         "risk": "critical",
     },
     "crossover_adjustment": {
-        "sourceIds": ["reck_2016", "reck_2021"],
+        "sourceIds": [
+            "reck_2016", "reck_2021", "german_regulator_2022_csr",
+            "eu_trial_amendments",
+        ],
         "preliminaryObservation": (
-            "Long-term publication reports 99 chemotherapy-assigned patients "
-            "receiving subsequent anti-PD-1/PD-L1 therapy, an effective "
-            "crossover rate of 66.0%. This includes subsequent treatment "
+            "At the original May 2016 cutoff the 2016 paper reports 66 "
+            "chemotherapy-assigned patients (43.7%) crossed over to "
+            "pembrolizumab after progression. German regulator-hosted "
+            "amendment history lists global P024-06 on July 29, 2016, "
+            "after the initial analysis, removing the requirement for "
+            "documented progression before crossover on DMC advice. "
+            "The later follow-up reports 99 chemotherapy-assigned patients "
+            "receiving subsequent anti-PD-1/PD-L1 therapy (66.0% effective "
+            "crossover). This includes subsequent off-study treatment, "
             "and should not automatically be interpreted as 99 on-study "
             "protocol crossovers or as a causal crossover-adjusted OS estimate."
         ),
+        "documentedPostAnalysisCrossoverAmendment": {
+            "number": "P024-06",
+            "scope": "global",
+            "dateFinalized": "2016-07-29",
+            "afterInitialAnalysisCutoff": True,
+            "summary": "Removed documented-progression requirement for crossover",
+            "patientLevelCrossoverTimingIndependentlyVerified": False,
+        },
+        "originalAnalysisCrossover": {
+            "patientsReceivingOnStudyPembrolizumabAfterProgression": 66,
+            "chemotherapyRandomized": 151,
+            "reportedPercent": 43.7,
+            "cutoff": "2016-05-09",
+        },
         "effectiveCrossover": {
             "patientsWithSubsequentAntiPd1Pdl1": 99,
             "chemotherapyRandomized": 151, "reportedPercent": 66.0,
         },
         "stillMissing": (
-            "Verify on-study crossover versus later external treatment, "
-            "and independently appraise prespecified versus post-hoc switching "
-            "adjustments before making a causal interpretation."
+            "Separate crossover before and after the July 2016 amendment, "
+            "adjudicate on-study progression from later off-study treatment, "
+            "and independently evaluate prespecified versus post-hoc switching "
+            "adjustments before causal interpretation of survival."
         ),
         "risk": "high",
     },
