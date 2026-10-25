@@ -997,6 +997,18 @@ async def lifespan(app: FastAPI):
         launch_once_if_requested()
     from .scientific_api_read_probe import launch_if_isolated_review
     launch_if_isolated_review()
+    # Explicitly approved, fixed-source archive-only bootstrap. A background
+    # worker avoids blocking health readiness during government-site delays.
+    # This never starts trial scans, grades, orders or verification.
+    if (os.getenv("PDUFA_SCIENTIFIC_PILOT_PINNED_PDF_BOOTSTRAP") == "1"
+            and os.getenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED") == "1"
+            and os.getenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED") == "1"
+            and os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"
+            and DATABASE_URL.startswith("postgresql+psycopg://")
+            and _DB_STATE["available"]
+            and "PYTEST_CURRENT_TEST" not in os.environ):
+        from .scientific_official_pdf_fetch import bootstrap_pinned_pilot_sources
+        threading.Thread(target=bootstrap_pinned_pilot_sources, daemon=True).start()
     yield
 
 
