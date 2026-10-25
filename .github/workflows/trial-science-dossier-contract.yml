@@ -1,0 +1,20 @@
+name: Trial Science Dossier Contract
+on:
+  push:
+    branches: [feature/trial-science-dossier-20261024]
+  pull_request:
+    branches: [feature/scientific-assessment-v1]
+permissions:
+  contents: read
+jobs:
+  dossier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify eight-domain evidence identity and no-score rules
+        env:
+          PYTHONPATH: new-platform/backend
+        run: python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_dossier.py' -v
