@@ -511,6 +511,36 @@ def scientific_assessment_storage_status():
         return {"storageReady": False, "trialTablePresent": None, "storedTrialCount": None}
 
 
+@app.get("/api/scientific-assessment/dossier", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def get_scientific_dossier(exact_id: str, response: Response):
+    """Authenticated, read-only dossier from a verified, stored NCT source.
+
+    This endpoint cannot import sources or change existing rankings, presets,
+    scores, scanning, trade lists, or database records.
+    """
+    match = re.fullmatch(r"TRIAL\\|(NCT[0-9]{8})", exact_id or "")
+    if match is None:
+        raise HTTPException(status_code=422, detail="Exact TRIAL|NCT######## identity required")
+    nct_id = match.group(1)
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        stored = session.get(FullTrialRecord, nct_id)
+        if stored is None:
+            raise HTTPException(status_code=404, detail="Scientific archive record not found")
+        from .scientific_dossier_archive import dossier_from_archive
+        try:
+            return dossier_from_archive(
+                exact_id, nct_id, stored.payload_gzip, stored.sha256, stored.fetched_at,
+            )
+        except ValueError:
+            # Never return a partially verified trial, even with metadata present.
+            raise HTTPException(
+                status_code=503, detail="Archived scientific source failed verification",
+            ) from None
+
+
 @app.get("/api/scientific-assessment", dependencies=[Depends(require_internal_key)])
 def get_scientific_assessment(exact_id: str):
     """Read-only scientific assessment; never invent missing trial evidence."""
