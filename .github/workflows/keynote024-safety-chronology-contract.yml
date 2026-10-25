@@ -1,0 +1,47 @@
+name: KEYNOTE-024 Safety Date and Denominator Contracts
+on:
+  push:
+    branches: [feature/keynote024-safety-chronology-20261024]
+  pull_request:
+    branches: [feature/scientific-assessment-v1]
+permissions:
+  contents: read
+jobs:
+  backend-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend dependencies
+        run: python -m pip install -r new-platform/backend/requirements.txt
+      - name: Verify pilot as-treated safety, original analyses and archived HTTP safety
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_safety_chronology.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_results.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_http.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_protocol_readiness.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_evidence_audit.py' -v
+  frontend-safety:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install locked frontend dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Verify exact original/follow-up safety and grade-independent UI
+        run: |
+          node --test tests/trial-science-safety-chronology.test.cjs
+          node --test tests/trial-science-evidence-audit.test.cjs
+          node --test tests/trial-science-readiness.test.cjs
+          node --test tests/trial-science-pilot.test.cjs

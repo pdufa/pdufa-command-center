@@ -4,6 +4,7 @@
  * to GEM / GEM JR / Pipeline or an FDA-approval probability.
  */
 import { validSourceEvidenceAudit, type SourceEvidenceAudit } from "./trial-science-evidence-audit";
+import { validSafetyChronology, type SafetyChronology } from "./trial-science-safety-chronology";
 
 export const PILOT_NCT = "NCT02142738";
 
@@ -124,6 +125,7 @@ export type TrialSciencePilot = {
   };
   scientificReadiness?: ScientificReadiness;
   sourceEvidenceAudit?: SourceEvidenceAudit;
+  publishedSafetyReconciliation?: SafetyChronology;
   publishedResults: {
     nct_id: string;
     randomized_population: number;
@@ -269,6 +271,10 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
   const { pilot, dossier, publishedResults: data } = input;
   if (input.scientificReadiness !== undefined && !validScientificReadiness(input.scientificReadiness)) return false;
   if (input.sourceEvidenceAudit !== undefined && !validSourceEvidenceAudit(input.sourceEvidenceAudit)) return false;
+  if (input.publishedSafetyReconciliation !== undefined && !validSafetyChronology(input.publishedSafetyReconciliation)) return false;
+  if (input.publishedSafetyReconciliation !== undefined && input.sourceEvidenceAudit !== undefined &&
+      input.publishedSafetyReconciliation.registryReconciliation.archivedGroupsObserved !==
+      input.sourceEvidenceAudit.registrySafety.groupCount) return false;
   const scores = data.domain_scores;
   if (!object(scores)) return false;
   if (pilot.nct_id !== PILOT_NCT || dossier.nct_id !== PILOT_NCT
