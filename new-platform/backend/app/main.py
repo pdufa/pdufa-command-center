@@ -1019,7 +1019,7 @@ def require_scientific_google_reviewer(
         if "not configured" in str(exc):
             raise HTTPException(status_code=503, detail="Google reviewer sign-in not configured")
         raise HTTPException(status_code=401, detail="Invalid Google identity token")
-    access = reviewer_access_preflight(identity["providerSubject"])
+    access = reviewer_access_preflight(identity["providerSubject"], identity["verifiedEmail"])
     if not access["roleAuthorized"]:
         raise HTTPException(status_code=403, detail="Scientific reviewer access not authorized")
     return {
