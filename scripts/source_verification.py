@@ -1132,18 +1132,18 @@ class Verifier:
         supplement = str(config.get("fda_supplement_number", "")).strip()
         issuer_url = str(config.get("fda_issuer_approval_url", "")).strip()
         letter = re.fullmatch(
-            r"/drugsatfda_docs/appletter/(20\\d{2})/(\\d{6})Orig1s(\\d{3})ltr\\.pdf",
+            r"/drugsatfda_docs/appletter/(20\d{2})/(\d{6})Orig1s(\d{3})ltr\.pdf",
             urllib.parse.urlsplit(url).path,
         )
-        if (not applicant or not re.fullmatch(r"\\d{6}", application)
-                or not re.fullmatch(r"\\d{3}", supplement)
+        if (not applicant or not re.fullmatch(r"\d{6}", application)
+                or not re.fullmatch(r"\d{3}", supplement)
                 or not letter or letter.group(2) != application
                 or letter.group(3) != supplement
                 or not label_url or self.primary(event, url) != "FDA"
                 or self.primary(event, label_url) != "FDA"
                 or url not in config.get("urls", ())
-                or not re.search(r"\\bNDA\\s+" + re.escape(application)
-                                 + r"/S-" + re.escape(supplement) + r"\\b", letter_text)
+                or not re.search(r"\bNDA\s+" + re.escape(application)
+                                 + r"/S-" + re.escape(supplement) + r"\b", letter_text)
                 or not company_matches({"company": applicant}, letter_text[:1400])
                 or issuer_url not in config.get("urls", ())
                 or self.primary(event, issuer_url) != "ISSUER"):
@@ -1157,7 +1157,7 @@ class Verifier:
         if (not company_matches(event, issuer_text)
                 or not drug_matches(event, issuer_text)
                 or not indication_matches(event, issuer_text)
-                or not re.search(r"\\bFDA\\s+(?:has\\s+)?approved\\b",
+                or not re.search(r"\bFDA\s+(?:has\s+)?approved\b",
                                  issuer_text, re.I)):
             return ""
         return applicant
