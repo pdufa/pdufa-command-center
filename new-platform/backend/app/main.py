@@ -1162,7 +1162,9 @@ def get_scientific_assessment(exact_id: str):
                     # Read-only 40-assessment inventory. Candidate citations and
                     # reviewer statements cannot self-certify independent evidence.
                     # This view is never a scientific outcome or approval forecast.
-                    from .scientific_investigation_contract import LAYERS, readiness
+                    from .scientific_investigation_contract import (
+                        LAYERS, investigation_plan, readiness,
+                    )
                     result["investigation40"] = {
                         "schemaVersion": "scientific-investigation40-v1",
                         "nctId": match.group(1),
@@ -1171,6 +1173,7 @@ def get_scientific_assessment(exact_id: str):
                             for layer, fields in LAYERS.items()
                         ],
                         "verification": readiness({}),
+                        "depthReview": investigation_plan(),
                         "verificationSource": "independent_adjudication_not_available",
                         "note": (
                             "This is the required-question inventory only. No"
