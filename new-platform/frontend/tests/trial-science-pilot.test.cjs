@@ -166,7 +166,7 @@ test("historical panel loads only on explicit click, preserving cited outcomes a
     assert.equal(calls[0].opts.cache,"no-store");
     const output=JSON.stringify(view.toJSON());
     assert.match(output,/KEYNOTE-024/);
-    assert.match(output,/26\.6% vs 53\.3%/);
+    assert.match(output,/"26\\.6","% vs ","53\\.3"/);
     assert.match(output,/Progression-free survival/);
     assert.match(output,/long term followup/i);
     assert.match(output,/Independent appraisal pending/);
