@@ -176,7 +176,8 @@ test("historical panel loads only on explicit click, preserving cited outcomes a
     assert.match(output,/6.9 vs -0.9 points/);
     assert.match(output,/Difference 7.8 points/);
     assert.match(output,/data cutoff 2020-06-01/);
-    assert.match(output,/long term followup/i);
+    assert.match(output,/2021-04-19/);
+    assert.match(output,/33872070/);
     assert.match(output,/Independent appraisal pending/);
     assert.match(output,/No independently validated eight-domain score/);
   } finally{
