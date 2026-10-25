@@ -843,7 +843,7 @@ async def lifespan(app: FastAPI):
 
     # Lightweight asynchronous read-only smoke check; never delays service
     # readiness and never starts a survey, crawler, scan or trading order.
-    import threading
+    # Use the module-level threading import so startup controls remain testable.
     def verify_published_sources():
         try:
             from .alpaca_market_chart import _credentials, _feed, get_alpaca_bars
