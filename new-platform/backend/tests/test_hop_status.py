@@ -225,3 +225,49 @@ def test_review_queue_excluded_on_crosswalk_disagreement(tmp_path: Path):
     result = hop_readiness_status(crosswalk_audit_path=p)
     assert result["fda_identity_review_queue"] is None
     assert result["prediction_probability"] is None
+
+
+def test_official_pdf_bytes_available_without_regulatory_outcome_validation():
+    result = hop_readiness_status()
+    pdfs = result["fda_official_pdf_checks"]
+    assert pdfs["identity_review_cases_checked"] == 124
+    assert pdfs["official_pdf_bytes_confirmed"] == 123
+    assert pdfs["source_records_without_pdf_filename"] == 1
+    assert len(pdfs["source_record_unreleased"]) == 64
+    assert pdfs["document_identity_adjudicated"] == 0
+    assert pdfs["effective_action_dates_independently_verified"] == 0
+    assert pdfs["review_cycle_outcomes_independently_verified"] == 0
+    assert pdfs["model_eligible_records"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_official_pdf_audit_fails_closed_on_false_verified_dates(tmp_path: Path):
+    from app.hop_status import OFFICIAL_PDF_AUDIT_PATH
+    audit = json.loads(OFFICIAL_PDF_AUDIT_PATH.read_text())
+    path = tmp_path / "pdf_audit.json"
+    path.write_text(json.dumps(audit))
+    assert hop_readiness_status(official_pdf_audit_path=path)["fda_official_pdf_checks"]
+
+    audit["effective_action_dates_independently_verified"] = 123
+    path.write_text(json.dumps(audit))
+    result = hop_readiness_status(official_pdf_audit_path=path)
+    assert result["fda_official_pdf_checks"] is None
+    assert result["model_validated"] is False
+
+    audit["effective_action_dates_independently_verified"] = 0
+    audit["official_pdf_bytes_confirmed"] = 124
+    path.write_text(json.dumps(audit))
+    assert hop_readiness_status(official_pdf_audit_path=path)["fda_official_pdf_checks"] is None
+
+
+def test_official_pdf_audit_requires_matching_identity_review_queue(tmp_path: Path):
+    from app.hop_status import IDENTITY_REVIEW_AUDIT_PATH
+    audit = json.loads(IDENTITY_REVIEW_AUDIT_PATH.read_text())
+    audit["already_identity_linked_records"] += 1
+    audit["review_queue_records"] -= 1
+    audit["review_reason_counts"]["NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT"] -= 1
+    path = tmp_path / "changed_review_queue.json"
+    path.write_text(json.dumps(audit))
+    result = hop_readiness_status(identity_review_audit_path=path)
+    assert result["fda_official_pdf_checks"] is None
+    assert result["prediction_available"] is False
