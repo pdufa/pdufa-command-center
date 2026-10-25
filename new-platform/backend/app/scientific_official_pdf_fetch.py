@@ -13,7 +13,9 @@ from typing import Literal
 
 import requests
 
-from .scientific_reconciliation_worklist import FDA_2016_APPROVAL, PROTOCOL_SAP
+from .scientific_reconciliation_worklist import (
+    FDA_2016_APPROVAL, PROTOCOL_SAP, GERMAN_REGULATOR_CSR,
+)
 from .scientific_source_documents import (
     MAX_PDF_BYTES, capture_document, read_document_manifest,
 )
@@ -38,6 +40,16 @@ OFFICIAL_SOURCES = {
             "The first-line high PD-L1 indication corresponds to S-12."
         ),
     },
+    "csr": {
+        "gateId": "protocol_sap",
+        "sourceType": "clinical_study_report",
+        "sourceUrl": GERMAN_REGULATOR_CSR,
+        "documentDateNote": (
+            "The regulator-hosted retrospective clinical study report lists "
+            "P024-03 as finalized 28 Jan 2016 and P024-06 on 29 Jul 2016. "
+            "This is not a signed contemporaneous 2016 SAP."
+        ),
+    },
 }
 
 
@@ -45,7 +57,7 @@ class OfficialSourceUnavailable(Exception):
     """No document was archived. Safe diagnostic (does not reveal URLs/tokens)."""
 
 
-def fetch_official_pdf(source: Literal["protocol", "fda"]) -> bytes:
+def fetch_official_pdf(source: Literal["protocol", "fda", "csr"]) -> bytes:
     """Fetch only a hard-coded original HTTPS PDF, not an arbitrary caller URL."""
     selected = OFFICIAL_SOURCES.get(source)
     if selected is None:
@@ -105,7 +117,7 @@ def fetch_official_pdf(source: Literal["protocol", "fda"]) -> bytes:
 
 
 def archive_official_pdf(
-    nct_id: str, source: Literal["protocol", "fda"]
+    nct_id: str, source: Literal["protocol", "fda", "csr"]
 ) -> dict:
     """Store a pinned-source PDF as unreviewed bytes; repeat import is idempotent."""
     if nct_id != PILOT_NCT:
@@ -153,7 +165,7 @@ def bootstrap_pinned_pilot_sources() -> None:
     import logging
 
     logger = logging.getLogger(__name__)
-    for source in ("protocol", "fda"):
+    for source in ("protocol", "fda", "csr"):
         try:
             receipt = archive_official_pdf(PILOT_NCT, source)
             if (receipt["scientificallyVerified"] is not False
