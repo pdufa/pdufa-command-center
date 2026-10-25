@@ -424,7 +424,7 @@ function paintEvidenceLedger(data, status) {
     notes.appendChild(list);section.appendChild(notes);
   }
   const captured=data.capturedSourceDocuments;
-  if(captured && captured.nctId===inspectedNct){
+  if(captured && /^NCT\d{8}$/.test(captured.nctId) && Array.isArray(captured.documents)){
     const docSection=document.createElement("details");
     docSection.className="captured-source-documents";
     const heading=document.createElement("summary");
