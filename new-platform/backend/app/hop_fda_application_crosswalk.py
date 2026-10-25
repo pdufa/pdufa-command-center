@@ -12,7 +12,13 @@ import re
 def canonical_application_id(value: object) -> str | None:
     if not isinstance(value, str):
         return None
-    match = re.fullmatch(r"\s*(NDA|ANDA|BLA)[\s#:\-]*([0-9]{1,6})\s*", value.upper())
+    # Strip only explicitly understood Original/S-number qualifiers.
+    # The normalized ID is an application identity, never a review-cycle label.
+    match = re.fullmatch(
+        r"\s*(NDA|ANDA|BLA)[\s#:\-]*([0-9]{1,6})"
+        r"(?:/(?:Original[ ]+[1-9][0-9]*|S-[0-9]{1,3}))?\s*",
+        value, flags=re.IGNORECASE,
+    )
     if match is None:
         return None
     return match.group(1).upper() + match.group(2).zfill(6)
