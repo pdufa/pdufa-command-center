@@ -245,3 +245,63 @@ export function buildScientificReviewerAuditReceipt(
   };
   return JSON.stringify(receipt, null, 2) + "\n";
 }
+
+
+/**
+ * Compare the SHA-256 of a single user-selected local source PDF against the
+ * UNTRUSTED digest text on one exact-NCT review task in each validated sheet.
+ * Equality demonstrates byte consistency ONLY, never source originality,
+ * reviewer independence, regulatory authenticity or clinical correctness.
+ */
+export type LocalSourceByteMatch = {
+  nctId: string;
+  assessmentTaskKey: string;
+  calculatedSha256: string;
+  reviewerA: "MATCHES_CLAIMED_BYTES" | "DIFFERS_FROM_CLAIM" | "NO_DIGEST_CLAIM" | "INVALID_DIGEST_CLAIM";
+  reviewerB: "MATCHES_CLAIMED_BYTES" | "DIFFERS_FROM_CLAIM" | "NO_DIGEST_CLAIM" | "INVALID_DIGEST_CLAIM";
+  comparisonIsOnlyAgainstUntrustedWorksheetClaims: true;
+  originalSourceAuthenticated: false;
+  sourcePublicationDateVerified: false;
+  reviewerIdentitiesVerified: false;
+  independentlyAdjudicatedTasks: 0;
+  scientificScore: null;
+  fdaApprovalProbability: null;
+  promotionAllowed: false;
+};
+
+export function compareLocalSourceSha256Claims(
+  matrix: ScientificDepthMatrix, inventoryCsv: string,
+  reviewerACsv: string, reviewerBCsv: string,
+  assessmentTaskKey: string, calculatedSha256: string,
+): LocalSourceByteMatch {
+  // Must validate all 320 rows and locked review status BEFORE a task lookup.
+  auditScientificReviewerCsvs(matrix, inventoryCsv, reviewerACsv, reviewerBCsv);
+  if (typeof calculatedSha256 !== "string" || !/^[a-fA-F0-9]{64}$/.test(calculatedSha256)
+      || typeof assessmentTaskKey !== "string") problem();
+  const inventory = readCsv(inventoryCsv);
+  const keyIndex = inventory.findIndex((row, i) =>
+    i > 0 && row[2] + ":" + row[3] === assessmentTaskKey);
+  if (keyIndex < 1) problem();
+  const claims = { A: readCsv(reviewerACsv)[keyIndex][14], B: readCsv(reviewerBCsv)[keyIndex][14] };
+  const verdict = (claim: string): LocalSourceByteMatch["reviewerA"] => {
+    if (!claim) return "NO_DIGEST_CLAIM";
+    if (!/^[a-fA-F0-9]{64}$/.test(claim)) return "INVALID_DIGEST_CLAIM";
+    return claim.toLowerCase() === calculatedSha256.toLowerCase()
+      ? "MATCHES_CLAIMED_BYTES" : "DIFFERS_FROM_CLAIM";
+  };
+  return {
+    nctId: matrix.nctId,
+    assessmentTaskKey,
+    calculatedSha256: calculatedSha256.toLowerCase(),
+    reviewerA: verdict(claims.A),
+    reviewerB: verdict(claims.B),
+    comparisonIsOnlyAgainstUntrustedWorksheetClaims: true,
+    originalSourceAuthenticated: false,
+    sourcePublicationDateVerified: false,
+    reviewerIdentitiesVerified: false,
+    independentlyAdjudicatedTasks: 0,
+    scientificScore: null,
+    fdaApprovalProbability: null,
+    promotionAllowed: false,
+  };
+}
