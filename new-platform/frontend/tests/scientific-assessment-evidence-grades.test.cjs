@@ -81,7 +81,7 @@ async function mountAndLoad(data) {
   global.fetch = async () => ({ ok: true, json: async () => data, status: 200 });
   try {
     await act(async () => {
-      await tree.root.findByType("button").props.onClick();
+      await tree.root.findAllByType("button")[0].props.onClick();
     });
     return tree;
   } finally {
@@ -143,7 +143,7 @@ test("switching NCT clears previous trial grades and archived review levels", as
   const original = global.fetch;
   global.fetch = async () => ({ ok: true, status: 200, json: async () => payload() });
   try {
-    await act(async () => { await tree.root.findByType("button").props.onClick(); });
+    await act(async () => { await tree.root.findAllByType("button")[0].props.onClick(); });
     assert.match(allText(tree.root), /Analysis readiness:\s*C/);
     await act(async () => tree.update(React.createElement(Component, { exactId: "TRIAL|NCT04280705" })));
     assert.doesNotMatch(allText(tree.root), /Analysis readiness:\s*C/);
