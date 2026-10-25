@@ -1093,6 +1093,13 @@ def scientific_single_operator_me(
             and DATABASE_URL.startswith("postgresql+psycopg://")
             and _DB_STATE["available"]
         ),
+        "mayFetchOfficialPdf": (
+            os.getenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED") == "1"
+            and os.getenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED") == "1"
+            and os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"
+            and DATABASE_URL.startswith("postgresql+psycopg://")
+            and _DB_STATE["available"]
+        ),
         "independentlyVerified": False,
         "mayPromoteScientificScore": False,
         "reviewerProvisioningRequired": True,
@@ -1268,6 +1275,40 @@ def require_scientific_operator_pdf_archive() -> None:
     require_isolated_scientific_review_service()
     if not storage_ready() or not _DB_STATE["available"]:
         raise HTTPException(status_code=503, detail="Isolated Postgres archive unavailable")
+
+
+@app.post("/api/scientific-assessment/operator/source-documents/{nct_id}/fetch/{source}")
+def scientific_operator_fetch_official_pdf(
+    nct_id: str,
+    source: Literal["protocol", "fda"],
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Explicit Google-operator action to fetch a fixed vetted public PDF.
+
+    No caller-provided URLs, redirects, scheduled jobs, document scientific
+    verification, reviewer privileges, or evidence-score promotions.
+    """
+    scientific_single_operator_me(authorization)
+    require_scientific_operator_pdf_archive()
+    if os.getenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED") != "1":
+        raise HTTPException(status_code=403, detail="Official PDF fetching disabled")
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=403, detail="Only the historical pilot is supported")
+    from .scientific_official_pdf_fetch import (
+        OfficialSourceUnavailable, archive_official_pdf,
+    )
+
+    try:
+        return archive_official_pdf(nct_id, source)
+    except OfficialSourceUnavailable:
+        raise HTTPException(
+            status_code=502,
+            detail="The original source PDF could not be retrieved; use manual upload",
+        ) from None
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="PDF content already archived") from None
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Original PDF archive validation failed") from None
 
 
 @app.post("/api/scientific-assessment/operator/source-documents/{nct_id}", status_code=201)
