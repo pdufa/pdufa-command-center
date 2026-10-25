@@ -15,7 +15,7 @@ require.extensions[".ts"] = (mod, file) => mod._compile(
 );
 const { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } =
   require("../lib/scientific-depth-review-csv.ts");
-const { auditScientificReviewerCsvs } =
+const { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt } =
   require("../lib/scientific-reviewer-local-audit.ts");
 
 const LAYERS = [
@@ -160,4 +160,67 @@ test("only exact loaded trial inventory may be compared and no browser network/u
   assert.match(source, /reviewInventoryFile\.text\(\), reviewerAFile\.text\(\), reviewerBFile\.text\(\)/);
   assert.match(source, /No clinical review has been independently verified/);
   assert.doesNotMatch(source, /uploadReviewer|promoteScientificReview|saveReviewerApproval/);
+});
+
+
+test("privacy-minimized JSON receipt contains no reviewer names, raw notes, URLs or signature claims", () => {
+  const { m, inventory, a, b } = worksheets();
+  const report = auditScientificReviewerCsvs(
+    m, inventory, observe(a, "supports"), observe(b, "contradicts"),
+  );
+  const raw = buildScientificReviewerAuditReceipt(m, report);
+  const receipt = JSON.parse(raw);
+  assert.equal(receipt.nctId, "NCT02142738");
+  assert.equal(receipt.status, "UNVERIFIED_OFFLINE_WORKSHEET_COMPARISON");
+  assert.equal(receipt.exactTrialTasksValidated, 320);
+  assert.deepEqual(receipt.syntacticallyCompleteCandidateObservations, { A: 1, B: 1 });
+  assert.deepEqual(receipt.unresolvedCandidateDisagreementTaskKeys, ["trial_design.assessment_1:1"]);
+  assert.equal(receipt.reviewGates.independentlyAdjudicatedTasks, 0);
+  assert.equal(receipt.reviewGates.promoteEvidenceAllowed, false);
+  assert.equal(receipt.reviewGates.scientificScore, null);
+  assert.equal(receipt.reviewGates.fdaApprovalProbability, null);
+  for (const privateFragment of ["Reviewer candidate", "Observation candidate", "https://",
+    "typed-name", "primary_document_url", "reviewer_signature", '"reviewer_name"']) {
+    assert.ok(!raw.includes(privateFragment), privateFragment + " leaked into receipt");
+  }
+});
+
+test("refuse receipts with forged success, extra conflicts, invalid keys or inflated candidate counts", () => {
+  const mutations = [
+    r => { r.nctId = "NCT00000001"; },
+    r => { r.reviewerIdentitiesVerified = true; },
+    r => { r.sourceBytesVerified = true; },
+    r => { r.signaturesVerified = true; },
+    r => { r.independentlyAdjudicatedTasks = 1; },
+    r => { r.scientificScore = 90; },
+    r => { r.fdaApprovalProbability = 0.83; },
+    r => { r.promotionAllowed = true; },
+    r => { r.validatedTaskRows = 319; },
+    r => { r.candidateObservations.A = -1; },
+    r => { r.candidateObservations.B = 321; },
+    r => { r.missingProvenance.A = 320; },
+    r => { r.oneSidedObservations = 4; },
+    r => { r.conflictingCandidateDecisions = 2; },
+    r => { r.conflictTaskKeys = ["trial_design.assessment_1:1", "trial_design.assessment_1:1"]; r.conflictingCandidateDecisions=2; },
+    r => { r.conflictTaskKeys = ["unknown:1"]; },
+  ];
+  for (const change of mutations) {
+    const { m, inventory, a, b } = worksheets();
+    const r = auditScientificReviewerCsvs(
+      m, inventory, observe(a, "supports"), observe(b, "contradicts"),
+    );
+    change(r);
+    assert.throws(() => buildScientificReviewerAuditReceipt(m, r),
+      /Reviewer worksheet comparison blocked|Scientific task export blocked/, String(change));
+  }
+});
+
+test("local audit receipt UI is only shown after comparison and does not upload its contents", () => {
+  const source = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
+  assert.match(source, /Download unverified A\/B comparison receipt \(JSON\)/);
+  assert.match(source, /buildScientificReviewerAuditReceipt\(result\.investigation40, localAudit\)/);
+  assert.match(source, /_unverified_reviewer_ab_diagnostic\.json/);
+  assert.match(source, /localAudit && <section/);
+  assert.match(source, /Local, privacy-minimized diagnostic only/);
+  assert.doesNotMatch(source, /uploadAuditReceipt|approveReviewerSignature|registerScientificScore/);
 });
