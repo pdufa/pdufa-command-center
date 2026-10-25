@@ -1,0 +1,218 @@
+"""Single-operator Google login screen for the isolated scientific review service.
+
+Only identity and read-only research; never a reviewer sign-off or score-promotion UI.
+Google ID tokens stay in page memory, are not written to cookies, URLs, or browser storage.
+"""
+from __future__ import annotations
+
+from html import escape
+
+_PAGE = r'''<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>PDUFA · Scientific Review</title>
+  <style nonce="__NONCE__">
+    :root { color-scheme: light; font-family: system-ui,-apple-system,sans-serif; }
+    body { margin:0; background:#f5f8fb; color:#15253a; }
+    main { max-width:980px; margin:0 auto; padding:30px 18px 65px; }
+    h1 { font-size:clamp(1.65rem,4vw,2.4rem); margin:8px 0; }
+    h2 { font-size:1.15rem; margin:0 0 12px; }
+    .eyebrow { color:#375677; font-size:.8rem; font-weight:700; letter-spacing:.11em; }
+    .panel { padding:20px; margin:16px 0; background:#fff; border:1px solid #cedbe7; border-radius:14px; }
+    .muted {color:#4d6175;line-height:1.5} .warning {color:#75410b}
+    .status {font-weight:650;padding:12px 0} .hide {display:none}
+    label {display:block;font-weight:650;margin:10px 0 6px}
+    input {box-sizing:border-box;max-width:100%;width:310px;padding:11px;border:1px solid #879fb6;border-radius:8px;font-size:1rem}
+    button {background:#153f62;color:#fff;border:0;border-radius:8px;padding:11px 15px;font-weight:650;cursor:pointer}
+    button:disabled {background:#83919c;cursor:not-allowed}
+    .grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+    .metric {border:1px solid #d7e1e9;border-radius:10px;padding:13px}
+    .metric strong {font-size:1.2rem;display:block}
+    details {border:1px solid #d7e1e9;border-radius:10px;padding:10px 12px;margin:9px 0;background:white}
+    summary {cursor:pointer;font-weight:650} ul {line-height:1.55}
+    .footer {font-size:.83rem;color:#50647a}
+    a {color:#0d517d}
+  </style>
+  <script nonce="__NONCE__" src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+<main>
+  <div class="eyebrow">PDUFA · ISOLATED SCIENTIFIC REVIEW</div>
+  <h1>Scientific Assessment</h1>
+  <p class="muted">One-account, read-only scientific investigation. Login does not independently verify clinical findings, award a scientific score, or authorize FDA approval predictions.</p>
+  <section class="panel" aria-label="Google operator sign-in">
+    <h2>Sign in with your Google account</h2>
+    <p class="muted">Only the Google account configured for this review workspace is accepted.</p>
+    <div id="google-button"></div>
+    <p class="status" id="signin-status" role="status">Preparing Google sign-in…</p>
+    <button id="signout" type="button" class="hide">Sign out</button>
+  </section>
+  <section id="research" class="panel hide" aria-label="Scientific research">
+    <h2>Archived-trial investigation</h2>
+    <p class="muted">Read-only source review; no scanner, trading, or FS/FA preset modifications.</p>
+    <label for="trial">ClinicalTrials.gov trial ID</label>
+    <input id="trial" type="text" value="NCT02142738" maxlength="11" pattern="NCT[0-9]{8}" inputmode="text" autocomplete="off">
+    <button type="button" id="load">Load scientific report</button>
+    <p id="research-status" class="status" role="status"></p>
+    <div id="report" class="hide">
+      <div id="metrics" class="grid"></div>
+      <h2 style="margin-top:24px">20-stage investigation</h2><div id="levels"></div>
+      <h2 style="margin-top:24px">40 assessments · 8 scientific layers</h2><div id="layers"></div>
+    </div>
+  </section>
+  <p class="footer">Scientific review requires original dated sources and independent corroboration. One operator cannot generate two independent confirmations. <a href="/health">Service health</a></p>
+</main>
+<div id="config" data-google-client-id="__CLIENT_ID__" hidden></div>
+<script nonce="__NONCE__">
+(function () {
+  "use strict";
+  var token = null;
+  var button = document.getElementById("google-button");
+  var signin = document.getElementById("signin-status");
+  var research = document.getElementById("research");
+  var signout = document.getElementById("signout");
+  var loadButton = document.getElementById("load");
+  var clientId = document.getElementById("config").dataset.googleClientId;
+  var report = document.getElementById("report");
+  function element(tag, text, className) {
+    var node = document.createElement(tag);
+    if (text !== undefined) node.textContent = String(text);
+    if (className) node.className = className;
+    return node;
+  }
+  function metric(title, value) {
+    var div = element("div", undefined, "metric");
+    div.appendChild(element("span", title));
+    div.appendChild(element("strong", value));
+    return div;
+  }
+  function status(message) { signin.textContent = message; }
+  function clear() {
+    token = null;
+    research.classList.add("hide");
+    report.classList.add("hide");
+    signout.classList.add("hide");
+    button.classList.remove("hide");
+  }
+  async function authorizedFetch(url) {
+    if (!token) throw Error("Sign in first");
+    var r = await fetch(url, {
+      method:"GET", cache:"no-store", credentials:"omit",
+      headers:{"Authorization":"Bearer " + token,"Accept":"application/json"}
+    });
+    if (r.status === 401 || r.status === 403) {
+      clear();
+      throw Error("Account not authorized or Google session expired (" + r.status + ")");
+    }
+    if (!r.ok) throw Error("Scientific API unavailable (" + r.status + ")");
+    return r.json();
+  }
+  async function receivedGoogleCredential(credential) {
+    var received = credential && credential.credential;
+    if (typeof received !== "string" || received.length < 20) {
+      status("Google did not return a valid identity token.");
+      return;
+    }
+    token = received;
+    status("Verifying your Google identity…");
+    try {
+      var identity = await authorizedFetch("/api/scientific-assessment/operator/me");
+      if (identity.role !== "operator" || identity.maySignOff !== false) {
+        clear(); throw Error("Unexpected operator permission response");
+      }
+      status("Signed in as the configured operator. Scientific findings remain unverified.");
+      button.classList.add("hide");
+      signout.classList.remove("hide");
+      research.classList.remove("hide");
+      document.getElementById("load").focus();
+    } catch (err) { clear(); status(String(err.message || err)); }
+  }
+  signout.addEventListener("click", function () {
+    clear();
+    if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+    status("Signed out. Google identity tokens are not stored.");
+  });
+  loadButton.addEventListener("click", async function () {
+    var id = document.getElementById("trial").value.trim().toUpperCase();
+    var msg = document.getElementById("research-status");
+    report.classList.add("hide");
+    if (!/^NCT[0-9]{8}$/.test(id)) {
+      msg.textContent = "Enter an exact NCT ID, such as NCT02142738.";
+      return;
+    }
+    loadButton.disabled = true;
+    msg.textContent = "Checking the archived scientific source…";
+    try {
+      var item = await authorizedFetch("/api/scientific-assessment/operator/research?exact_id=" +
+        encodeURIComponent("TRIAL|" + id));
+      var twenty = item.investigation20;
+      var forty = item.investigation40;
+      var grades = item.readinessGrades;
+      var metrics = document.getElementById("metrics");
+      var levels = document.getElementById("levels");
+      var layers = document.getElementById("layers");
+      metrics.replaceChildren(); levels.replaceChildren(); layers.replaceChildren();
+      metrics.appendChild(metric("Trial", id));
+      metrics.appendChild(metric("Archive", item.registryEvidenceStatus || "not available"));
+      metrics.appendChild(metric("Input coverage grade", grades && grades.analysisReadiness ? grades.analysisReadiness.grade : "Not available"));
+      metrics.appendChild(metric("Reluctance grade", grades && grades.scientificReluctance ? grades.scientificReluctance.grade : "Not available"));
+      metrics.appendChild(metric("Independently verified", "0 / 40"));
+      metrics.appendChild(metric("Scientific score", "Not assigned"));
+      if (twenty && Array.isArray(twenty.levels)) {
+        twenty.levels.forEach(function (level) {
+          var detail = element("details");
+          detail.appendChild(element("summary", String(level.level) + ". " + level.title));
+          detail.appendChild(element("p", "Source status: " + level.status));
+          detail.appendChild(element("p", level.caution || "Independent review pending", "muted"));
+          levels.appendChild(detail);
+        });
+      } else levels.appendChild(element("p", "Twenty-stage records are unavailable for this trial."));
+      if (forty && Array.isArray(forty.layers)) {
+        forty.layers.forEach(function (layer) {
+          var detail = element("details");
+          detail.appendChild(element("summary", layer.id.replaceAll("_", " ") + " · " + layer.assessments.length + " assessments"));
+          var ul = element("ul");
+          layer.assessments.forEach(function (a) {
+            ul.appendChild(element("li", a.replaceAll("_", " ") + " · pending independent review"));
+          });
+          detail.appendChild(ul);
+          layers.appendChild(detail);
+        });
+      } else layers.appendChild(element("p", "Forty-assessment inventory unavailable for this trial."));
+      report.classList.remove("hide");
+      msg.textContent = "Read-only source inventory loaded. Nothing has been scientifically approved or independently verified.";
+    } catch (err) { msg.textContent = String(err.message || err); }
+    finally { loadButton.disabled = false; }
+  });
+  window.addEventListener("load", function () {
+    if (!clientId || !window.google || !google.accounts || !google.accounts.id) {
+      status("Google sign-in is not available. Check the OAuth client and authorized JavaScript origin.");
+      return;
+    }
+    try {
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: receivedGoogleCredential,
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+      google.accounts.id.renderButton(button, {theme:"outline",size:"large",text:"signin_with",shape:"pill"});
+      status("Choose your configured Google account to continue.");
+    } catch (err) {
+      status("Google sign-in initialization failed. Check the OAuth authorized origin.");
+    }
+  });
+}());
+</script>
+</body>
+</html>'''
+
+
+def operator_html(client_id: str, nonce: str) -> str:
+    """Escape injected config; no secret or identity token is embedded in HTML."""
+    return _PAGE.replace("__NONCE__", escape(nonce, quote=True)).replace(
+        "__CLIENT_ID__", escape(client_id, quote=True)
+    )
