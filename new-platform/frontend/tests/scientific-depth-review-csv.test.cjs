@@ -64,7 +64,7 @@ test("CSV does not permit formulas, newlines, or spreadsheet row injection from 
   m.depthReview.depthLevels[0].objective = '\r\n =HYPERLINK("https://bad.example","click")';
   const csv = buildScientificDepthReviewCsv(m);
   assert.equal(csv.trimEnd().split("\r\n").length, 321);
-  assert.match(csv, /"' =HYPERLINK\(""https:\/\/bad\.example"",""click""\)"/);
+  assert.match(csv, /"'\s+=HYPERLINK\(""https:\/\/bad\.example"",""click""\)"/);
   assert.doesNotMatch(csv, /\r\n =HYPERLINK/);
 });
 
