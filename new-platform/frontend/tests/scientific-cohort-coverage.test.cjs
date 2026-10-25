@@ -145,6 +145,20 @@ test("coverage page requires an explicit click and refuses scientific score clai
   assert.match(home, /href="\/science\/coverage"/);
 });
 
+test("scientific release checklist separates current-session transport checks from unverified source and reviewer gates", () => {
+  const page = fs.readFileSync(require("node:path").join(__dirname, "../app/science/coverage/page.tsx"), "utf8");
+  assert.match(page, /Scientific release checklist/);
+  assert.match(page, /<details>/);
+  assert.match(page, /const currentPublishedSourceVerified = data\?\.status === "PUBLISHED_SNAPSHOT_AUDIT"/);
+  assert.match(page, /const sessionChecksVerified = Number\(currentPublishedSourceVerified\) \+ Number\(connectionSucceeded\)/);
+  assert.match(page, /5 independent requirements/);
+  assert.match(page, /Two independently authenticated, appropriately qualified reviewers/);
+  assert.match(page, /Validated, held-out FDA outcome calibration/);
+  assert.match(page, /Scientific release: HOLD/);
+  assert.match(page, /No independent scientific/);
+  assert.doesNotMatch(page, /approveClinicalFindings\(|enableTrading\(|runScan\(/);
+});
+
 test("source health reflects real COMPLETE_PUBLISHED semantics, not invented FULL", () => {
   const snap = workspace();
   assert.equal(computePublishedScienceCoverage(snap, { watch: [], trade: [] }).status,
