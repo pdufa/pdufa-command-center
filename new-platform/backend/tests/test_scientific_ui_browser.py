@@ -357,7 +357,7 @@ def test_chromium_scientific_batch_and_evidence_display():
             trail.get_by_text("Unresolved discrepancy between trial follow-up analyses.").wait_for()
             statements=page.locator("#evidence-ledger details").nth(4)
             statements.locator("summary").click()
-            statements.get_by_text("2 questions disputed",exact=False).count() == 0
+            assert "1 questions disputed" in statements.locator("summary").inner_text()
             assert statements.locator(".reviewer-statements li").count()==2
             statements.get_by_text("not independently confirmed",exact=False).first.wait_for()
             statements.get_by_text("Claim: A different version may contain an eligibility change.").wait_for()
