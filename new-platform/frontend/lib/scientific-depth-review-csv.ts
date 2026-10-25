@@ -36,8 +36,8 @@ const HEADER = [
 
 /** Quote every cell; escape spreadsheet formula prefixes even after whitespace. */
 function csvCell(value: string | number): string {
-  let safe = String(value);
-  if (/^[\s\u0000-\u001f]*[=+\-@]/.test(safe)) safe = "'" + safe;
+  let safe = String(value).replace(/[\r\n\t]+/g, " ");
+  if (/^\s*[=+\-@]/.test(safe)) safe = "'" + safe;
   return '"' + safe.replaceAll('"', '""') + '"';
 }
 
