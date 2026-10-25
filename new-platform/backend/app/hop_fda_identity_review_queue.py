@@ -69,9 +69,8 @@ def create_fda_identity_review_queue(crosswalk: dict, letter_snapshot: dict) -> 
         status = linked.get("identity_link_status")
         if status not in ALL_STATUSES:
             raise ValueError("unrecognized published identity status")
-        counts[status] += 1
-        if status == STATUS_MATCH:
-            continue
+        # Verify source provenance even for matched letters, which are not
+        # placed into the identity-review queue.
         source_ids = source.get("application_numbers")
         if not isinstance(source_ids, list):
             source_ids = []
@@ -83,6 +82,9 @@ def create_fda_identity_review_queue(crosswalk: dict, letter_snapshot: dict) -> 
         candidates = linked.get("canonical_application_candidates")
         if not isinstance(candidates, list):
             raise ValueError("canonical application candidates missing")
+        counts[status] += 1
+        if status == STATUS_MATCH:
+            continue
         review_items.append({
             "source_record_sha256": digest,
             "source_partition": source.get("source_partition"),
