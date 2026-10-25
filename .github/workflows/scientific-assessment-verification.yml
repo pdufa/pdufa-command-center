@@ -22,7 +22,8 @@ on:
       - 'new-platform/backend/app/scientific_source_documents.py'
       - 'new-platform/backend/app/scientific_official_pdf_fetch.py'
       - 'new-platform/backend/tests/test_scientific_operator_pdf_capture.py'
-      - 'new-platform/backend/tests/test_scientific_official_pdf_fetch.py tests/test_scientific_pilot_source_comparison.py'
+      - 'new-platform/backend/tests/test_scientific_official_pdf_fetch.py'
+      - 'new-platform/backend/tests/test_scientific_pilot_source_comparison.py'
       - 'new-platform/backend/tests/test_scientific_investigation_contract.py'
       - '.github/workflows/scientific-assessment-verification.yml'
   pull_request:
