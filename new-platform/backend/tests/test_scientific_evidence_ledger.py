@@ -88,8 +88,10 @@ def test_unverified_keynote_pilot_citations_are_not_verified_evidence(isolated):
         "protocol_sap", "official_agency_document"}
     assert all(item["independentlyVerified"] is False for item in candidates)
     assert all(item["canCountTowardReadiness"] is False for item in candidates)
-    assert all(item["reviewStatus"] == "citation_identified_not_adjudicated"
-               for item in candidates)
+    assert sum(item["reviewStatus"] == "citation_identified_not_adjudicated"
+               for item in candidates) == 5
+    assert sum(item["reviewStatus"] == "document_locator_identified_not_adjudicated"
+               for item in candidates) == 2
     assert pilot_candidates("NCT04280705") == []
     assert review_readiness(NCT, record)["externalEvidenceVerified"] is False
     assert review_readiness(NCT, record)["scientificScore"] is None
