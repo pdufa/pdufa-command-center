@@ -82,9 +82,10 @@ def isolated(monkeypatch):
 def test_unverified_keynote_pilot_citations_are_not_verified_evidence(isolated):
     client, _, record = isolated
     candidates = pilot_candidates(NCT)
-    assert len(candidates) == 5
+    assert len(candidates) == 7
     assert {item["sourceType"] for item in candidates} == {
-        "peer_reviewed_publication", "institutional_summary"}
+        "peer_reviewed_publication", "institutional_summary",
+        "protocol_sap", "official_agency_document"}
     assert all(item["independentlyVerified"] is False for item in candidates)
     assert all(item["canCountTowardReadiness"] is False for item in candidates)
     assert all(item["reviewStatus"] == "citation_identified_not_adjudicated"
@@ -100,13 +101,42 @@ def test_unverified_keynote_pilot_citations_are_not_verified_evidence(isolated):
     payload = resp.json()
     assert payload["evidenceLedgerStatus"] == "candidate_inventory_loaded"
     ledger = payload["evidenceLedger"]
-    assert ledger["candidateCount"] == 5
+    assert ledger["candidateCount"] == 7
     assert ledger["entryCount"] == 0
     assert ledger["verifiedGateCount"] == 0
     assert len(ledger["externalGateStatuses"]) == 4
     assert all(not item["independentlyVerified"]
                for item in ledger["externalGateStatuses"])
     assert payload["readinessGrades"]["scientificReluctance"]["grade"] == "F"
+    worklist=ledger["sourceReconciliation"]
+    assert worklist["totalChecks"] == worklist["unresolvedChecks"] == 8
+    assert worklist["verifiedChecks"] == 0
+    assert worklist["approvalProbability"] is None
+    assert all(item["status"]=="open_unadjudicated" and not item["independentlyVerified"]
+               for item in worklist["checks"])
+    doc_urls={item["sourceUrl"]:item for item in candidates}
+    protocol="https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf"
+    fda="https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2016/125514Orig1s008,125514Orig1s012ltr.pdf"
+    assert doc_urls[protocol]["gateId"]=="protocol_sap"
+    assert doc_urls[protocol]["reviewStatus"]=="document_locator_identified_not_adjudicated"
+    assert doc_urls[fda]["sourceType"]=="official_agency_document"
+    assert doc_urls[fda]["independentlyVerified"] is False
+    assert "S-8" in doc_urls[fda]["caution"] and "S-12" in doc_urls[fda]["caution"]
+    ids={item["id"]:item for item in worklist["checks"]}
+    assert "2017" in ids["protocol_amendment_chronology"]["observedDiscrepancy"]
+    assert "2015" in ids["2015_vs_2016_fda_actions"]["title"]
+    assert ids["safety_endpoint_taxonomy"]["priority"]=="critical"
+    assert ids["pfs_initial_vs_followup"]["status"]=="open_unadjudicated"
+
+
+def test_other_trial_gets_generic_unverified_checklist():
+    from app.scientific_reconciliation_worklist import reconciliation_worklist
+    generic=reconciliation_worklist("NCT04280705")
+    assert generic["scope"]=="unreviewed_trial"
+    assert generic["totalChecks"]==4
+    assert generic["verifiedChecks"]==0
+    assert all(item["sourceUrls"] == [] for item in generic["checks"])
+    assert all(item["scientificScore"] is None for item in generic["checks"])
 
 
 def test_default_review_write_disabled_even_with_both_credentials(isolated):
