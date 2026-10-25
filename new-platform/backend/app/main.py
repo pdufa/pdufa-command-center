@@ -365,7 +365,7 @@ def require_internal_key(
 def require_isolated_scientific_read_key(
     x_pdufa_internal_key: Annotated[str | None, Header()] = None,
 ) -> None:
-    """Accept a preview-only key on three audited scientific GET routes.
+    """Accept a preview-only key on audited scientific read-only GET routes.
 
     The original internal key protects ordinary API endpoints and remains
     unchanged. Preview key is scoped to one frozen Render scientific service.
@@ -1055,6 +1055,66 @@ async def lifespan(app: FastAPI):
 from .reconciliation_review import ReviewPackage
 
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
+
+
+@app.get(
+    "/api/scientific-assessment/captured-source-manifest/{nct_id}",
+    dependencies=[
+        Depends(require_isolated_scientific_read_key),
+        Depends(require_storage),
+        Depends(require_isolated_scientific_review_service),
+    ],
+)
+def scientific_pilot_captured_source_manifest(nct_id: str, response: Response):
+    """Authenticated, read-only digest inventory; no PDF bytes or reviewer data.
+
+    The pilot manifest is checksum checked at read time. Captured bytes, even
+    captured from pinned URLs, remain UNVERIFIED as scientific source evidence.
+    The preview read key remains limited to this single NCT pilot.
+    """
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=422, detail="Only exact pilot trial supported")
+    from .scientific_source_documents import read_document_manifest
+    try:
+        manifest = read_document_manifest(nct_id)
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Captured archive integrity failed") from None
+    if (
+        manifest["nctId"] != nct_id
+        or manifest["sourceDocumentCount"] > 8
+        or manifest["allCapturedBytesRehashed"] is not True
+        or manifest["independentSourceVerificationCompleted"] is not False
+        or manifest["scientificGradePromotionAllowed"] is not False
+    ):
+        raise HTTPException(status_code=409, detail="Archived source safety contract mismatch")
+    response.headers["X-PDUFA-Scientific-API-Contract"] = "science-captured-hashes-v1"
+    response.headers["Cache-Control"] = "private, no-store"
+    return {
+        "nctId": nct_id,
+        "sourceDocumentCount": manifest["sourceDocumentCount"],
+        "allCapturedBytesRehashed": True,
+        "independentSourceVerificationCompleted": False,
+        "reviewerIdentityVerified": False,
+        "scientificGradePromotionAllowed": False,
+        "scientificScore": None,
+        "fdaApprovalProbability": None,
+        "documents": [
+            {
+                "documentId": item["documentId"],
+                "nctId": nct_id,
+                "gateId": item["gateId"],
+                "sourceType": item["sourceType"],
+                "sha256": item["sha256"],
+                "byteLength": item["byteLength"],
+                "captureStatus": item["captureStatus"],
+                "byteIntegrityChecked": True,
+                "sourceAuthorshipVerified": False,
+                "documentContentScientificallyVerified": False,
+                "canCountTowardReadiness": False,
+            }
+            for item in manifest["documents"]
+        ],
+    }
 
 
 @app.get("/api/scientific-assessment/reviewer/auth-status", dependencies=[Depends(require_internal_key)])
