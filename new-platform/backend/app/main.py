@@ -1240,6 +1240,95 @@ def submit_scientific_reviewer_statement(
         ) from None
 
 
+class ScientificSourceDocumentSubmission(BaseModel):
+    """Curator-supplied PDF bytes, not independently authenticated science."""
+    model_config = ConfigDict(extra="forbid")
+
+    gate_id: Literal[
+        "protocol_sap", "published_results",
+        "independent_replication", "official_regulatory"
+    ] = Field(alias="gateId")
+    source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
+    source_type: Literal[
+        "peer_reviewed_publication", "official_agency_document",
+        "protocol_sap", "clinical_study_report",
+        "institutional_summary", "other"
+    ] = Field(alias="sourceType")
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    content_base64: str = Field(
+        min_length=32, max_length=5592408, alias="contentBase64"
+    )
+    captured_by: str = Field(
+        min_length=2, max_length=80, alias="capturedBy"
+    )
+
+
+def require_isolated_scientific_review_service() -> None:
+    if (os.getenv("RENDER_SERVICE_ID") != "srv-dbehn9fb9u1s739ok5vg"
+            or not DATABASE_URL.startswith("postgresql+psycopg://")):
+        raise HTTPException(status_code=403, detail="Isolated scientific review service required")
+
+
+def require_source_document_capture_enabled() -> None:
+    # An additional opt-in beyond the independent scientific-review write key.
+    if os.getenv("PDUFA_SCIENTIFIC_DOCUMENT_CAPTURE_ENABLED") != "1":
+        raise HTTPException(status_code=403, detail="Scientific document capture disabled")
+
+
+@app.post(
+    "/api/scientific-assessment/source-documents/{nct_id}",
+    status_code=201,
+    dependencies=[
+        Depends(require_internal_key), Depends(require_storage),
+        Depends(require_scientific_evidence_write_key),
+        Depends(require_source_document_capture_enabled),
+    ],
+)
+def submit_scientific_source_document(
+    nct_id: str,
+    payload: ScientificSourceDocumentSubmission,
+):
+    """Store submitted PDF bytes only; never fetch sources or verify their claims."""
+    from .scientific_source_documents import capture_document
+    try:
+        return capture_document(nct_id, payload.model_dump(by_alias=True))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Duplicate document content") from None
+
+
+@app.get(
+    "/api/scientific-assessment/source-documents/{nct_id}/{document_id}",
+    dependencies=[
+        Depends(require_internal_key), Depends(require_storage),
+        Depends(require_isolated_scientific_review_service),
+    ],
+)
+def download_scientific_source_document(nct_id: str, document_id: str):
+    """Authenticated byte-for-byte PDF download from isolated review storage."""
+    from .scientific_source_documents import get_captured_document
+    try:
+        meta, payload = get_captured_document(nct_id, document_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Captured PDF not found") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Captured PDF integrity failure") from None
+    return Response(
+        content=payload,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="' + meta["filename"] + '"',
+            "Cache-Control": "private, no-store",
+            "Pragma": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Security-Policy": "sandbox",
+            "X-Source-Document-SHA256": meta["sha256"],
+            "X-Source-Scientific-Status": "not-independently-verified",
+        },
+    )
+
+
 class ScientificEvidenceCandidateSubmission(BaseModel):
     """A submitted citation is always unverified; never an FDA/science score."""
     model_config = ConfigDict(extra="forbid")
