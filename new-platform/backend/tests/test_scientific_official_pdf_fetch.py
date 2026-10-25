@@ -256,7 +256,7 @@ def test_ema_fourth_source_is_pdf_bytes_only_not_signed_prelock_sap(monkeypatch)
 
 
 
-def test_ema_exact_url_enforces_separate_16_mib_ceiling(monkeypatch):
+def test_ema_exact_url_enforces_separate_5_mib_ceiling(monkeypatch):
     calls=[]
     # A response just above 4 MiB is allowed only for the pinned EMA PDF.
     raw=b"%PDF-1.7\n" + b"0"*(sources.MAX_PDF_BYTES+1) + b"\n%%EOF\n"
