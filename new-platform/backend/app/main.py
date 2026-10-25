@@ -1304,7 +1304,7 @@ class ScientificOperatorPdfSubmission(BaseModel):
 
     gate_id: Literal["protocol_sap", "official_regulatory"] = Field(alias="gateId")
     source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
-    source_type: Literal["protocol_sap", "official_agency_document"] = Field(alias="sourceType")
+    source_type: Literal["protocol_sap", "official_agency_document", "clinical_study_report"] = Field(alias="sourceType")
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     content_base64: str = Field(min_length=32, max_length=5592408, alias="contentBase64")
 
@@ -1321,7 +1321,7 @@ def require_scientific_operator_pdf_archive() -> None:
 @app.post("/api/scientific-assessment/operator/source-documents/{nct_id}/fetch/{source}")
 def scientific_operator_fetch_official_pdf(
     nct_id: str,
-    source: Literal["protocol", "fda"],
+    source: Literal["protocol", "fda", "csr"],
     authorization: Annotated[str | None, Header()] = None,
 ):
     """Explicit Google-operator action to fetch a fixed vetted public PDF.
@@ -1367,13 +1367,14 @@ def scientific_operator_archive_pdf(
     require_scientific_operator_pdf_archive()
     if nct_id != "NCT02142738":
         raise HTTPException(status_code=403, detail="Only the archived pilot can accept operator PDFs")
-    from .scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL
+    from .scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL, GERMAN_REGULATOR_CSR
 
     approved = {
-        "protocol_sap": ("protocol_sap", PROTOCOL_SAP),
-        "official_regulatory": ("official_agency_document", FDA_2016_APPROVAL),
+        ("protocol_sap", "protocol_sap", PROTOCOL_SAP),
+        ("official_regulatory", "official_agency_document", FDA_2016_APPROVAL),
+        ("protocol_sap", "clinical_study_report", GERMAN_REGULATOR_CSR),
     }
-    if (body.source_type, body.source_url) != approved[body.gate_id]:
+    if (body.gate_id, body.source_type, body.source_url) not in approved:
         raise HTTPException(
             status_code=422,
             detail="Pilot PDF URL, source type, and evidence gate must match",
