@@ -211,3 +211,66 @@ def test_tampered_pdf_fails_closed_after_google_upload(isolated, monkeypatch):
     assert read.status_code == 409
     with pytest.raises(ValueError,match="mismatch"):
         read_document_manifest(NCT)
+
+
+
+def test_official_pdf_fetch_requires_google_and_separate_feature_flag(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    route="/api/scientific-assessment/operator/source-documents/"+NCT+"/fetch/protocol"
+    from app import scientific_official_pdf_fetch
+    calls=[]
+    monkeypatch.setattr(scientific_official_pdf_fetch, "archive_official_pdf",
+                        lambda nct, source: calls.append((nct, source)) or {
+                            "scientificallyVerified": False,
+                            "byteIntegrityChecked": True,
+                            "documentContentScientificallyVerified": False,
+                            "independentReviewRequired": True,
+                        })
+    assert client.post(route, headers=HEADERS).status_code == 403
+    assert client.post(route).status_code == 401
+    assert not calls
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED", "1")
+    assert client.post(route).status_code == 401
+    other=route.replace(NCT, OTHER)
+    assert client.post(other, headers=HEADERS).status_code == 403
+    malformed=route.replace("/fetch/protocol", "/fetch/https://evil.example")
+    assert client.post(malformed, headers=HEADERS).status_code in (404, 422)
+    assert not calls
+    assert client.get("/api/scientific-assessment/operator/me",headers=HEADERS
+                      ).json()["mayFetchOfficialPdf"] is True
+    response=client.post(route, headers=HEADERS)
+    assert response.status_code == 200
+    assert response.json()["independentReviewRequired"] is True
+    assert response.json()["scientificallyVerified"] is False
+    assert calls == [(NCT,"protocol")]
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewerFinding).count() == 0
+        assert session.query(main.ScientificReviewSubmission).count() == 0
+
+
+def test_official_pdf_fetch_wrong_google_account_forbidden(isolated, monkeypatch):
+    client, _=isolated
+    enabled(monkeypatch)
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED", "1")
+    monkeypatch.setattr(scientific_google_identity, "verified_google_identity",
+                        lambda _: {"verifiedEmail": "unauthorized@example.org"})
+    r=client.post("/api/scientific-assessment/operator/source-documents/"+NCT+"/fetch/fda",
+                  headers=HEADERS)
+    assert r.status_code == 403
+
+
+def test_official_pdf_fetch_external_failure_returns_safe_error(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED", "1")
+    from app import scientific_official_pdf_fetch as fetch
+    monkeypatch.setattr(fetch, "archive_official_pdf",
+                        lambda *_: (_ for _ in ()).throw(
+                            fetch.OfficialSourceUnavailable("Private source diagnostics")))
+    r=client.post("/api/scientific-assessment/operator/source-documents/"+NCT+"/fetch/fda",
+                  headers=HEADERS)
+    assert r.status_code == 502
+    assert "Private source diagnostics" not in r.text
+    with Session(engine) as session:
+        assert session.query(main.ScientificSourceDocument).count() == 0
