@@ -244,6 +244,8 @@ def read_ledger(nct_id: str) -> dict:
     worklist["reviewerQuestionSummaries"] = findings["questionSummaries"]
     worklist["reviewerStatementCount"] = findings["totalStatements"]
     worklist["questionDisputeCount"] = findings["questionsWithConflictingStatements"]
+    from .scientific_adjudication_preflight import adjudication_preflight
+    preflight = adjudication_preflight(nct_id, worklist, findings)
     return {
         "nctId": nct_id,
         "ledgerSchemaVersion": SCHEMA_VERSION,
@@ -255,6 +257,7 @@ def read_ledger(nct_id: str) -> dict:
         "candidateCount": len(candidates),
         "sourceReconciliation": worklist,
         "reviewerFindings": findings,
+        "adjudicationPreflight": preflight,
         "externalGateStatuses": [
             {"gateId": gate_id, "label": label, "independentlyVerified": False,
              "status": "requires_independent_adjudication"}
