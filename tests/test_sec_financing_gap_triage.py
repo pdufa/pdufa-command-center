@@ -81,6 +81,35 @@ class SecGapTriageTests(unittest.TestCase):
         self.assertNotIn("wrong-company",
                          by_ticker["CAPR"]["known_sec_source_urls"])
 
+    def test_sec_registry_inventory_conflicts_have_exact_ticker_identity(self):
+        # The canonical SEC filings-inventory queue uses REGISTRY:TICKER,
+        # unlike the financing queue's TICKER|PROGRAM event identities.
+        companies = [
+            {"ticker": "QNCX", "company": "Quince Therapeutics",
+             "cik10": "0001662774"},
+            {"ticker": "TBPH", "company": "Theravance Biopharma",
+             "cik10": "0001583107"},
+        ]
+        queue = [
+            record("REGISTRY:QNCX", "QNCX", "SEC", "FILINGS_INVENTORY"),
+            record("REGISTRY:TBPH", "TBPH", "SEC", "FILINGS_INVENTORY"),
+        ]
+        rows = triage(queue, companies, {})
+        self.assertEqual({x["ticker"] for x in rows}, {"QNCX", "TBPH"})
+        for row in rows:
+            self.assertEqual(row["research_class"],
+                             "SEC_ISSUER_CIK_TICKER_IDENTITY_RECONCILIATION")
+            self.assertEqual(row["priority"], "1")
+            self.assertEqual(row["source_claim_verified"], "NO")
+            self.assertEqual(row["second_post_phase3_financing_verified"], "NO")
+            self.assertEqual(row["trade_entry_authorized"], "NO")
+        with self.assertRaisesRegex(ValueError, "Claim event/ticker mismatch"):
+            triage([record("REGISTRY:TBPH", "QNCX", "SEC",
+                           "FILINGS_INVENTORY")], companies, {})
+        with self.assertRaisesRegex(ValueError, "Claim event/ticker mismatch"):
+            triage([record("REGISTRY:QNCX", "QNCX", "SEC",
+                           "FINANCING_CLOSURE")], companies, {})
+
     def test_sec_url_must_be_correct_issuer_and_real_archive_file(self):
         valid = ("https://www.sec.gov/Archives/edgar/data/1133869/"
                  "000110465926097294/capr-20260630x10q.htm")
