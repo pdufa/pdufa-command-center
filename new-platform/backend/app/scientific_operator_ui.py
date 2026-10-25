@@ -79,6 +79,9 @@ _PAGE = r'''<!doctype html>
           <option value="fda">FDA · 2016 approval letter</option>
         </select>
         <p><a id="source-pdf-link" href="https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf" target="_blank" rel="noopener noreferrer">Open original PDF source</a></p>
+        <p id="official-source-note" class="muted evidence-note">The publicly posted protocol is dated 2017, after the 2016 interim analysis. Capturing it cannot verify the earlier locked protocol/SAP.</p>
+        <p><button id="fetch-official-pdf" class="hide" type="button">Fetch selected PDF directly from its official source</button></p>
+        <p class="muted" id="fetch-fallback">Manual upload remains available if the official website blocks automated retrieval.</p>
         <label for="source-pdf-file">PDF from your computer (maximum 4 MB)</label>
         <input id="source-pdf-file" type="file" accept="application/pdf,.pdf">
         <p><button id="archive-pdf" type="button">Archive this PDF for source review</button></p>
@@ -102,6 +105,8 @@ _PAGE = r'''<!doctype html>
   var loadButton = document.getElementById("load");
   var currentReportId = null;
   var canArchivePdf = false;
+  var canFetchOfficialPdf = false;
+  var officialFetchButton = document.getElementById("fetch-official-pdf");
   var clientId = document.getElementById("config").dataset.googleClientId;
   var capturePanel = document.getElementById("pdf-capture");
   var uploadButton = document.getElementById("archive-pdf");
@@ -140,6 +145,8 @@ _PAGE = r'''<!doctype html>
     capturePanel.classList.add("hide");
     currentReportId = null;
     canArchivePdf = false;
+    canFetchOfficialPdf = false;
+    officialFetchButton.classList.add("hide");
     document.getElementById("source-pdf-file").value = "";
     button.classList.remove("hide");
   }
@@ -174,6 +181,8 @@ _PAGE = r'''<!doctype html>
       signout.classList.remove("hide");
       research.classList.remove("hide");
       canArchivePdf = identity.mayArchiveSourcePdf === true;
+      canFetchOfficialPdf = identity.mayFetchOfficialPdf === true;
+      officialFetchButton.classList.toggle("hide", !canFetchOfficialPdf);
       capturePanel.classList.toggle("hide", !canArchivePdf);
       document.getElementById("load").focus();
       // The default archived historical pilot is read-only; no scan or grade write.
@@ -225,7 +234,13 @@ _PAGE = r'''<!doctype html>
     } finally { button.disabled = false; }
   });
   function currentSource() { return sourceChoices[sourceSelect.value] || sourceChoices.protocol; }
-  function syncSource() { sourceLink.href = currentSource().sourceUrl; }
+  function syncSource() {
+    sourceLink.href = currentSource().sourceUrl;
+    document.getElementById("official-source-note").textContent =
+      sourceSelect.value === "protocol"
+        ? "The posted protocol is dated December 20, 2017, after the 2016 interim analysis. It does not prove which SAP was prospectively locked."
+        : "The 2016 FDA letter contains S-8 and S-12. Only S-12 covers first-line PD-L1-high NSCLC; clinical interpretation remains unverified.";
+  }
   sourceSelect.addEventListener("change", syncSource);
   syncSource();
 
@@ -275,6 +290,44 @@ _PAGE = r'''<!doctype html>
       uploadStatus.textContent = "Verified archive bytes downloaded. Scientific content remains unverified.";
     } catch (err) { uploadStatus.textContent = String(err.message || err); }
   }
+
+  officialFetchButton.addEventListener("click", async function () {
+    if (!token || !canFetchOfficialPdf) return;
+    var id = document.getElementById("trial").value.trim().toUpperCase();
+    if (id !== "NCT02142738" || currentReportId !== id) {
+      uploadStatus.textContent = "Load the archived pilot before collecting official PDFs.";
+      return;
+    }
+    var source = sourceSelect.value;
+    if (source !== "protocol" && source !== "fda") return;
+    officialFetchButton.disabled = true;
+    uploadStatus.textContent = "Retrieving only the selected original official PDF; no scientific verification is performed…";
+    try {
+      var r = await fetch("/api/scientific-assessment/operator/source-documents/" +
+        encodeURIComponent(id) + "/fetch/" + source, {
+          method: "POST", cache: "no-store", credentials: "omit",
+          headers: {"Authorization": "Bearer " + token, "Accept": "application/json"}
+        });
+      var data = await r.json().catch(function () { return {}; });
+      if (r.status === 401 || r.status === 403) {
+        clear(); throw Error("Official PDF retrieval is not authorized (" + r.status + ")");
+      }
+      if (!r.ok) throw Error("Official source retrieval failed (" + r.status +
+        "). Use manual PDF upload instead.");
+      if (data.byteIntegrityChecked !== true ||
+          data.scientificallyVerified !== false ||
+          data.independentReviewRequired !== true ||
+          data.documentContentScientificallyVerified !== false) {
+        throw Error("Unexpected source integrity response; scientific status was not accepted.");
+      }
+      uploadStatus.textContent =
+        (data.alreadyArchived ? "The selected official PDF is already archived. " :
+          "Official PDF archived with its SHA-256 byte checksum. ") +
+        "The original document still requires scientific review.";
+      loadButton.click();
+    } catch (err) { uploadStatus.textContent = String(err.message || err); }
+    finally { officialFetchButton.disabled = false; }
+  });
 
   uploadButton.addEventListener("click", async function () {
     var file = document.getElementById("source-pdf-file").files[0];
