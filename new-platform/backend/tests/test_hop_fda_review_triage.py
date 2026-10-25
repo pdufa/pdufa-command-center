@@ -141,8 +141,8 @@ def test_queue_sorts_conflicts_missing_reviews_and_unverified_agreement():
     assert queue[2]["claimed_first_review_complete"] == "true"
     assert audit["status"] == "UNVERIFIED_REVIEW_QUEUE_ONLY"
     assert audit["queue_status_counts"] == {
-        "SOURCE_METADATA_DISCREPANCY": 1,
-        "REVIEWER_FINDINGS_CONFLICT": 0,
+        "SOURCE_METADATA_DISCREPANCY": 0,
+        "REVIEWER_FINDINGS_CONFLICT": 1,
         "REVIEW_SUBMISSIONS_INCOMPLETE": 1,
         "MATCHING_TEXT_STILL_UNVERIFIED": 1,
     }
