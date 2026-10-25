@@ -172,3 +172,56 @@ def test_repeat_letter_triage_counts_and_validation_never_self_promote(tmp_path:
     src["excluded_letter_records"]["unresolved_or_ambiguous_identity"] = 16
     path.write_text(json.dumps(src))
     assert hop_readiness_status(repeat_letter_audit_path=path)["fda_repeat_letter_triage"] is None
+
+
+def test_real_identity_review_queue_is_quarantined_and_reconciled():
+    result = hop_readiness_status()
+    queue = result["fda_identity_review_queue"]
+    assert queue["identity_review_queue_records"] == 124
+    assert queue["identity_linked_records"] == 334
+    assert queue["published_letter_records"] == 458
+    assert queue["review_reason_counts"] == {
+        "APPLICATION_ID_UNRESOLVED": 15,
+        "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS": 2,
+        "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 107,
+    }
+    assert queue["model_eligible_records"] == 0
+    assert queue["independently_verified_review_cycles"] == 0
+    assert queue["complete_denominator_verified"] is False
+    assert result["prediction_probability"] is None
+
+
+def test_review_queue_fails_closed_on_missing_or_false_counts(tmp_path: Path):
+    from app.hop_status import IDENTITY_REVIEW_AUDIT_PATH
+    src = json.loads(IDENTITY_REVIEW_AUDIT_PATH.read_text())
+    p = tmp_path / "source.json"
+    p.write_text(json.dumps(src))
+    assert hop_readiness_status(identity_review_audit_path=p)["fda_identity_review_queue"] is not None
+
+    src["review_queue_records"] = 125
+    p.write_text(json.dumps(src))
+    result = hop_readiness_status(identity_review_audit_path=p)
+    assert result["fda_identity_review_queue"] is None
+    assert result["prediction_available"] is False
+
+    src["review_queue_records"] = 124
+    src["model_eligible_records"] = 1
+    p.write_text(json.dumps(src))
+    assert hop_readiness_status(identity_review_audit_path=p)["fda_identity_review_queue"] is None
+
+    src["model_eligible_records"] = 0
+    src["review_reason_counts"]["NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT"] = 106
+    p.write_text(json.dumps(src))
+    assert hop_readiness_status(identity_review_audit_path=p)["fda_identity_review_queue"] is None
+
+
+def test_review_queue_excluded_on_crosswalk_disagreement(tmp_path: Path):
+    from app.hop_status import CROSSWALK_AUDIT_PATH
+    crosswalk = json.loads(CROSSWALK_AUDIT_PATH.read_text())
+    crosswalk["identity_link_status_counts"]["APPLICATION_ID_UNRESOLVED"] = 14
+    crosswalk["identity_link_status_counts"]["PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT"] = 335
+    p = tmp_path / "crosswalk.json"
+    p.write_text(json.dumps(crosswalk))
+    result = hop_readiness_status(crosswalk_audit_path=p)
+    assert result["fda_identity_review_queue"] is None
+    assert result["prediction_probability"] is None
