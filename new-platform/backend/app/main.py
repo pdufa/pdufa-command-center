@@ -699,7 +699,15 @@ def get_keynote024_scientific_pilot(response: Response):
             or published["overall_score"] is not None
             or published["fda_approval_probability"] is not None):
         raise HTTPException(status_code=503, detail="Pilot evidence identity validation failed")
+    from .scientific_protocol_readiness import keynote024_protocol_readiness
+    try:
+        scientific_readiness = keynote024_protocol_readiness(dossier, published)
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Scientific pilot readiness inputs failed validation",
+        ) from None
     return {
+        "scientificReadiness": scientific_readiness,
         "pilot": pilot,
         "dossier": dossier,
         "publishedResults": published,

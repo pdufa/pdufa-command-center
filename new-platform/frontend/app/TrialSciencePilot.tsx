@@ -95,6 +95,42 @@ function Evidence({ pilot }: { pilot: TrialSciencePilot }) {
       No independently validated eight-domain score or FDA approval probability exists for this pilot.
       Historical efficacy results do not constitute a current regulatory forecast.
     </p>
+    {pilot.scientificReadiness ? <section aria-label="Scientific input readiness and reluctance grades">
+      <h3>Scientific analysis readiness — two independent grades</h3>
+      <p className={styles.metadata}>These grades measure evidence completeness and uncertainty, not clinical-trial success or FDA approval probability.</p>
+      <div className={styles.domains}>
+        <div className={styles.domain}>
+          <strong>Input readiness</strong>
+          <span>{pilot.scientificReadiness.inputReadiness.grade} · {pilot.scientificReadiness.inputReadiness.status.replaceAll("_", " ")}</span>
+          <small>{pilot.scientificReadiness.inputReadiness.sourceSupported} of {pilot.scientificReadiness.inputReadiness.criteriaTotal} source checks documented · {pilot.scientificReadiness.inputReadiness.unresolved} unresolved</small>
+        </div>
+        <div className={styles.domain}>
+          <strong>Reluctance to conclude</strong>
+          <span>{pilot.scientificReadiness.reluctance.grade} · {pilot.scientificReadiness.reluctance.status.replaceAll("_", " ")}</span>
+          <small>{pilot.scientificReadiness.reluctance.criticalBlockedIds.length} critical blocked inputs · {pilot.scientificReadiness.reluctance.criticalReviewIds.length} critical reviews pending</small>
+        </div>
+      </div>
+      <p className={styles.caution}>
+        The publicly linked protocol/SAP is amendment {pilot.scientificReadiness.protocol.amendment},
+        dated {pilot.scientificReadiness.protocol.documentDate}, after the
+        {pilot.scientificReadiness.protocol.interimDataCutoff} original data cutoff.
+        It is labeled {pilot.scientificReadiness.protocol.regionalScope}; it cannot establish the original analysis plan.
+        {" "}<a href={pilot.scientificReadiness.protocol.url} target="_blank" rel="noopener noreferrer">Inspect protocol/SAP</a>.
+      </p>
+      <details className={styles.caveats}>
+        <summary>Open input-readiness checklist ({pilot.scientificReadiness.checks.length})</summary>
+        <div>
+          {pilot.scientificReadiness.checks.map(check => <article key={check.id}>
+            <h4>{check.title} · {check.status.replaceAll("_", " ")}</h4>
+            <p>{check.finding}</p>
+            <p><strong>Next:</strong> {check.next_action}</p>
+            <ul>{check.sources.map((ref, i) => <li key={i}>
+              <a href={ref.url} target="_blank" rel="noopener noreferrer">{ref.locator}</a>
+            </li>)}</ul>
+          </article>)}
+        </div>
+      </details>
+    </section> : null}
     <h3>Eight scientific research domains</h3>
     <div className={styles.domains}>
       {DOMAIN_KEYS.map(domain => {
