@@ -23,7 +23,7 @@ from scripts.source_verification import (
 SOURCES = ("FDA", "SEC", "FINANCIAL", "ISSUER")
 SCOPED_CLAIMS = {
     "FDA": {"PDUFA_TARGET", "FDA_DECISION"},
-    "SEC": {"FINANCING_CLOSURE"},
+    "SEC": {"FINANCING_CLOSURE", "FILINGS_INVENTORY"},
     "FINANCIAL": {"CASH_AND_RUNWAY", "CASH_FACT", "RUNWAY_ESTIMATE", "LIQUIDITY_FACT"},
     "ISSUER": {"PRIMARY_RELEASE"},
 }
@@ -44,13 +44,18 @@ def fresh_result(verifier, event, row):
     if category == "FDA":
         results = verifier.regulatory(event)
     elif category == "SEC":
-        first = verifier.financing(event)
-        if retryable_sec_failure(first):
-            url = first.get("source_url", "")
-            if isinstance(verifier.cache.get(url), Exception):
-                verifier.cache.pop(url, None)
-            first, _ = retry_sec_claim(first, lambda: verifier.financing(event))
-        results = [first]
+        if claim == "FILINGS_INVENTORY":
+            # A registry inventory conflict is a company/CIK check, never
+            # evidence of a financing transaction or its completion.
+            results = [verifier.registry(event)]
+        else:
+            first = verifier.financing(event)
+            if retryable_sec_failure(first):
+                url = first.get("source_url", "")
+                if isinstance(verifier.cache.get(url), Exception):
+                    verifier.cache.pop(url, None)
+                first, _ = retry_sec_claim(first, lambda: verifier.financing(event))
+            results = [first]
     elif category == "FINANCIAL":
         results = verifier.financial(event)
     else:
@@ -125,7 +130,9 @@ def run(args):
     financing = ({r["event_key"]: r for r in read_rows(financing_path)}
                  if financing_path.is_file() else {})
     event_map = {e["event_key"]: e for e in events}
-    if len(event_map) != len(events) or not companies:
+    company_map = {c["ticker"].upper(): c for c in companies if c.get("ticker")}
+    if (len(event_map) != len(events) or not companies or
+            len(company_map) != len([c for c in companies if c.get("ticker")])):
         raise ValueError("Candidate identities/registry incomplete")
     issuer_source_path = args.root / "config" / "issuer_sources.json"
     issuer_sources = read_json(issuer_source_path) if issuer_source_path.is_file() else {}
@@ -142,7 +149,18 @@ def run(args):
             identities.add(identity)
             if row.get("verification_required") != "YES" or row["claim"] not in SCOPED_CLAIMS[source]:
                 raise ValueError("Unexpected unresolved source claim")
-            candidate = event_map.get(row["event_key"])
+            registry_inventory = (source == "SEC" and
+                                  row["claim"] == "FILINGS_INVENTORY")
+            if registry_inventory:
+                # Only SEC's exact REGISTRY:TICKER claim may use company
+                # identity. Do not invent a pipeline program or trade gate.
+                ticker = row.get("ticker", "").upper()
+                if (row["event_key"] != "REGISTRY:" + ticker or
+                        not ticker or ticker not in company_map):
+                    raise ValueError("Missing/conflicted SEC registry identity")
+                candidate = {**company_map[ticker], "event_key": row["event_key"]}
+            else:
+                candidate = event_map.get(row["event_key"])
             if candidate is None or candidate.get("ticker") != row.get("ticker"):
                 raise ValueError("Missing/conflicted exact-event candidate identity")
             event = {**candidate, "_financing_review": financing.get(row["event_key"], {})}
