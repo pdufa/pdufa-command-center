@@ -67,6 +67,10 @@ _PAGE = r'''<!doctype html>
       <h2 style="margin-top:24px">Evidence reconciliation · unresolved questions</h2>
       <p class="muted evidence-note">These are review questions and candidate source links, not proven discrepancies or independently verified results. Opening a source does not resolve a scientific evidence gate.</p>
       <div id="evidence-questions"></div>
+      <h2 style="margin-top:24px">Preliminary cross-source comparison · KEYNOTE-024</h2>
+      <p class="muted evidence-note">These observations compare what dated publications and official documents report. They are not a verified resolution of any of the eight evidence questions, and they must never produce an approval score.</p>
+      <p id="source-comparison-status" class="status" role="status">Historical source comparison has not loaded.</p>
+      <div id="source-comparison"></div>
       <button id="worksheet" type="button">Show source-review acceptance criteria</button>
       <p id="worksheet-status" class="muted" role="status"></p>
       <div id="worksheet-criteria"></div>
@@ -233,6 +237,72 @@ _PAGE = r'''<!doctype html>
       statusText.textContent = String(err.message || err);
     } finally { button.disabled = false; }
   });
+  async function loadPreliminarySourceComparison(id) {
+    var target = document.getElementById("source-comparison");
+    var message = document.getElementById("source-comparison-status");
+    target.replaceChildren();
+    if (id !== "NCT02142738") {
+      message.textContent = "The preliminary comparison is available only for the historical KEYNOTE-024 pilot.";
+      return;
+    }
+    message.textContent = "Checking the original PDF hashes and eight historical evidence questions…";
+    try {
+      var comparison = await authorizedFetch(
+        "/api/scientific-assessment/operator/source-comparison/" + encodeURIComponent(id)
+      );
+      if (currentReportId !== id) return;
+      if (comparison.scientificallyVerified !== false ||
+          comparison.verifiedIndependentGates !== 0 ||
+          comparison.unresolvedCount !== 8 ||
+          comparison.independentlyResolvedCount !== 0 ||
+          comparison.mayAssignScientificScore !== false ||
+          !Array.isArray(comparison.checks) || comparison.checks.length !== 8) {
+        throw Error("Scientific comparison did not satisfy mandatory non-verification safeguards");
+      }
+      var sources = comparison.sources || {};
+      comparison.checks.forEach(function (check, index) {
+        if (check.independentlyResolved !== false || check.evidenceGateApproved !== false) {
+          throw Error("Preliminary source check unexpectedly marked approved");
+        }
+        var panel = element("details");
+        panel.appendChild(element("summary", (index + 1) + ". " + check.title +
+          " · " + String(check.risk).toUpperCase() + " · STILL OPEN"));
+        panel.appendChild(element("p", "What original sources currently report:"));
+        panel.appendChild(element("p", check.preliminaryObservation));
+        panel.appendChild(element("p", "Missing for independent adjudication: " +
+          check.stillMissing, "evidence-note"));
+        var references = element("ul", undefined, "source-links");
+        (check.sourceIds || []).forEach(function (sourceId) {
+          var source = sources[sourceId];
+          if (!source || typeof source.url !== "string") return;
+          try {
+            var url = new URL(source.url);
+            if (url.protocol !== "https:") return;
+            var line = element("li");
+            var link = element("a", source.label);
+            link.href = url.href;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            line.appendChild(link);
+            line.appendChild(element("span", " · " + (source.locator || "original source"), "muted"));
+            references.appendChild(line);
+          } catch (err) { /* Ignore invalid source references */ }
+        });
+        panel.appendChild(references);
+        target.appendChild(panel);
+      });
+      message.textContent = "Preliminary evidence comparison ready: " +
+        comparison.checkCount + " questions still open · " +
+        comparison.archivedPdfCount + " original PDF files hash-checked · " +
+        comparison.verifiedIndependentGates + " independently verified evidence gates.";
+    } catch (err) {
+      if (currentReportId !== id) return;
+      target.replaceChildren();
+      message.textContent = "Source comparison unavailable; no scientific conclusions were inferred. " +
+        String(err.message || err);
+    }
+  }
+
   function currentSource() { return sourceChoices[sourceSelect.value] || sourceChoices.protocol; }
   function syncSource() {
     sourceLink.href = currentSource().sourceUrl;
@@ -387,6 +457,8 @@ _PAGE = r'''<!doctype html>
     report.classList.add("hide");
     currentReportId = null;
     document.getElementById("captured-pdfs").replaceChildren();
+    document.getElementById("source-comparison").replaceChildren();
+    document.getElementById("source-comparison-status").textContent = "Historical source comparison not loaded.";
     document.getElementById("worksheet-criteria").replaceChildren();
     document.getElementById("worksheet-status").textContent = "";
     if (!/^NCT[0-9]{8}$/.test(id)) {
@@ -493,6 +565,9 @@ _PAGE = r'''<!doctype html>
         "Evidence reconciliation inventory unavailable; no source is independently verified."));
       report.classList.remove("hide");
       msg.textContent = "Read-only source inventory loaded. Nothing has been scientifically approved or independently verified.";
+      // Separate evidence-comparison readout runs only for the historical pilot;
+      // it cannot mutate research archives or scientific outcomes.
+      void loadPreliminarySourceComparison(id);
     } catch (err) { msg.textContent = String(err.message || err); }
     finally { loadButton.disabled = false; }
   });
