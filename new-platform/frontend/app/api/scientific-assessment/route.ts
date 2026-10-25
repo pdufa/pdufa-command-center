@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   if (!exactId || exactId.length > 512 || !/^(TRIAL\||REG\||PDUFA\|)/.test(exactId)) {
     return NextResponse.json({ error: "Valid exact trial identity required" }, { status: 422 });
   }
-  const base = process.env.PDUFA_API_BASE_URL?.replace(/\/$/, "");
+  const base = process.env.PDUFA_SCIENTIFIC_API_BASE_URL?.replace(/\/$/, "");
   const key = process.env.PDUFA_INTERNAL_API_KEY;
   if (!base?.startsWith("https://") || !key) {
     return NextResponse.json({ error: "Backend is not configured" }, { status: 503 });
