@@ -65,11 +65,13 @@ async function withEnv(fn, scienceBase = "https://science-review.example.org") {
   const old = {
     PDUFA_SCIENTIFIC_API_BASE_URL: process.env.PDUFA_SCIENTIFIC_API_BASE_URL,
     PDUFA_INTERNAL_API_KEY: process.env.PDUFA_INTERNAL_API_KEY,
+    PDUFA_SCIENTIFIC_PREVIEW_READ_KEY: process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY,
     PDUFA_API_BASE_URL: process.env.PDUFA_API_BASE_URL,
   };
   if (scienceBase) process.env.PDUFA_SCIENTIFIC_API_BASE_URL = scienceBase;
   else delete process.env.PDUFA_SCIENTIFIC_API_BASE_URL;
-  process.env.PDUFA_INTERNAL_API_KEY = "FAKE_TEST_KEY_DO_NOT_SHARE";
+  process.env.PDUFA_INTERNAL_API_KEY = "FAKE_ORDINARY_API_KEY";
+  process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY = "FAKE_SCIENCE_READ_KEY";
   process.env.PDUFA_API_BASE_URL = "https://normal-staging.example.org";
   try { await fn(); }
   finally {
@@ -92,8 +94,10 @@ test("authenticated scientific preview GET requires matching integrated backend 
     "https://science-review.example.org/api/scientific-assessment?exact_id=TRIAL%7CNCT12345678");
   assert.equal(route.calls[0].opts.cache, "no-store");
   assert.equal(route.calls[0].opts.headers["x-pdufa-internal-key"],
+    process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY);
+  assert.notEqual(route.calls[0].opts.headers["x-pdufa-internal-key"],
     process.env.PDUFA_INTERNAL_API_KEY);
-  assert.doesNotMatch(JSON.stringify(result.body), /FAKE_TEST_KEY/);
+  assert.doesNotMatch(JSON.stringify(result.body), /FAKE_SCIENCE_READ_KEY|FAKE_ORDINARY_API_KEY/);
 }));
 
 test("old Render science backend cannot inject unverified scores into trial UI", () => withEnv(async () => {
