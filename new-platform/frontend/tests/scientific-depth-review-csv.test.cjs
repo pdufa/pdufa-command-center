@@ -10,7 +10,7 @@ require.extensions[".ts"] = (mod, file) => mod._compile(
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText, file
 );
-const { buildScientificDepthReviewCsv } = require("../lib/scientific-depth-review-csv.ts");
+const { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } = require("../lib/scientific-depth-review-csv.ts");
 
 const LAYERS = ["trial_design", "efficacy", "safety", "biological_rationale",
   "statistical_integrity", "evidence_reproducibility", "regulatory", "timeline_and_uncertainty"];
@@ -104,4 +104,53 @@ test("trial UI offers CSV export only after validated exact-NCT inventory and do
   assert.match(source, /scientific_320_depth_review\.csv/);
   assert.match(source, /No reviewer attestation or scientific decision/);
   assert.doesNotMatch(source, /runScan\(|placeTrade\(|saveGrade\(/);
+});
+
+
+test("independent reviewer A/B sheets contain 320 separate blank records and no counterfeit signoffs", () => {
+  const matrix = inventory();
+  const snapshot = JSON.stringify(matrix);
+  const a = buildScientificReviewerHandoffCsv(matrix, "A");
+  const b = buildScientificReviewerHandoffCsv(matrix, "B");
+  for (const [csv, slot] of [[a, "A"], [b, "B"]]) {
+    const lines = csv.trimEnd().split("\r\n");
+    assert.equal(lines.length, 321);
+    assert.match(lines[0], /"reviewer_slot","reviewer_name","qualification_verification"/);
+    assert.match(lines[0], /"primary_document_url","document_sha256","public_document_date"/);
+    assert.match(lines[0], /"reviewer_signature","submission_status"/);
+    assert.match(lines[1], new RegExp('"' + slot + '","","NOT_VERIFIED","","","","","","NOT_SUBMITTED","","NOT_SUBMITTED"$'));
+    assert.equal(csv.match(/"PENDING_INDEPENDENT_REVIEW"/g).length, 320);
+    assert.equal(csv.match(/"NOT_VERIFIED"/g).length, 320);
+    assert.equal(csv.match(/"NOT_SUBMITTED"/g).length, 640);
+    assert.equal(csv.match(/"NOT_ASSIGNED"/g).length, 640);
+    assert.doesNotMatch(csv, /"VERIFIED"|"APPROVED"|"SIGNED"/);
+  }
+  assert.notEqual(a, b);
+  assert.equal(JSON.stringify(matrix), snapshot);
+});
+
+test("reviewer export refuses forged review and invalid reviewer slots", () => {
+  assert.throws(() => buildScientificReviewerHandoffCsv(inventory(), "C"),
+    /Reviewer worksheet export blocked/);
+  const corrupted = inventory();
+  corrupted.depthReview.tasks[0].independentlyVerified = true;
+  assert.throws(() => buildScientificReviewerHandoffCsv(corrupted, "A"),
+    /Scientific task export blocked/);
+  const missing = inventory();
+  missing.depthReview.tasks.pop();
+  assert.throws(() => buildScientificReviewerHandoffCsv(missing, "B"),
+    /Scientific task export blocked/);
+});
+
+test("trial UI offers explicit separate reviewer downloads but no silent reviewer completion", () => {
+  const ui = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
+  assert.match(ui, /Independent reviewer handoff — two blank worksheets/);
+  assert.match(ui, /Download reviewer A worksheet \(CSV\)/);
+  assert.match(ui, /Download reviewer B worksheet \(CSV\)/);
+  assert.match(ui, /downloadDepthReviewCsv\("A"\)/);
+  assert.match(ui, /downloadDepthReviewCsv\("B"\)/);
+  assert.match(ui, /buildScientificReviewerHandoffCsv\(result\.investigation40, reviewerSlot\)/);
+  assert.match(ui, /_scientific_reviewer_/);
+  assert.match(ui, /Genuine independent/);
+  assert.doesNotMatch(ui, /submitReviewerDecision\(|confirmReviewerIdentity\(|saveReviewAssertion\(/);
 });
