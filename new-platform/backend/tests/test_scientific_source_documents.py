@@ -16,9 +16,10 @@ from sqlalchemy.pool import StaticPool
 
 from app import main
 from app.scientific_evidence_ledger import read_ledger
-from app.scientific_reconciliation_worklist import FDA_2016_APPROVAL
+from app.scientific_reconciliation_worklist import FDA_2016_APPROVAL, EMA_2016_ASSESSMENT
 from app.scientific_source_documents import (
-    MAX_PDF_BYTES, CAPTURE_STATUS, capture_document,
+    MAX_PDF_BYTES, MAX_EMA_PDF_BYTES, CAPTURE_STATUS, capture_document,
+    max_source_pdf_bytes,
     get_captured_document, read_document_manifest,
 )
 
@@ -263,3 +264,44 @@ def test_archival_status_and_pinned_source_labels_fit_postgres_varchars():
     assert len("official_agency_document") <= table["source_type"].type.length
     assert len(FDA_2016_APPROVAL) <= table["source_url"].type.length
     assert len(NCT + "_" + "a"*32 + ".pdf") <= table["filename"].type.length
+
+
+
+def test_only_exact_pinned_ema_pdf_gets_larger_archival_byte_limit(isolated):
+    _,engine=isolated
+    assert MAX_PDF_BYTES == 4*1024*1024
+    assert MAX_EMA_PDF_BYTES == 16*1024*1024
+    for variation in (
+        (OTHER,"protocol_sap",EMA_2016_ASSESSMENT,"official_agency_document"),
+        (NCT,"official_regulatory",EMA_2016_ASSESSMENT,"official_agency_document"),
+        (NCT,"protocol_sap",FDA_2016_APPROVAL,"official_agency_document"),
+        (NCT,"protocol_sap",EMA_2016_ASSESSMENT,"protocol_sap"),
+    ):
+        assert max_source_pdf_bytes(*variation) == MAX_PDF_BYTES
+    assert max_source_pdf_bytes(
+        NCT,"protocol_sap",EMA_2016_ASSESSMENT,"official_agency_document"
+    ) == MAX_EMA_PDF_BYTES
+
+    # Slightly over the default limit: valid ONLY for this regulator source;
+    # the immutable SHA/manifest and scientific non-verification are retained.
+    raw=pdf_bytes(b"Z"*(MAX_PDF_BYTES+128))
+    body=payload(raw,gateId="protocol_sap",
+                 sourceType="official_agency_document",
+                 sourceUrl=EMA_2016_ASSESSMENT)
+    receipt=capture_document(NCT,body)
+    assert receipt["sha256"]==hashlib.sha256(raw).hexdigest()
+    assert receipt["byteLength"]==len(raw)
+    assert receipt["documentContentScientificallyVerified"] is False
+    assert receipt["canCountTowardReadiness"] is False
+    assert receipt["sourceAuthorshipVerified"] is False
+    assert read_document_manifest(NCT)["sourceDocumentCount"]==1
+    with pytest.raises(ValueError,match="size"):
+        capture_document(NCT,payload(raw))
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewerFinding).count()==0
+
+
+def test_default_cap_never_increases_for_non_ema_sources():
+    assert max_source_pdf_bytes(
+        NCT,"official_regulatory",FDA_2016_APPROVAL,"official_agency_document"
+    ) == MAX_PDF_BYTES
