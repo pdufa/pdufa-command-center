@@ -72,23 +72,73 @@ SOURCES = {
         "kind": "regulator_authored_publication",
         "locator": "PubMed 28835513 and Table 1 (S-12 clinical/statistical reviews)",
     },
+    "nejm_2016_protocol_lead": {
+        "label": "Original NEJM 2016 article linking study-protocol PDF (uninspected)",
+        "url": "https://www.nejm.org/doi/abstract/10.1056/NEJMoa1606774",
+        "documentDate": "2016-10-09",
+        "kind": "publisher_supplement_link_not_content_verified",
+        "locator": "Supplementary Material > Protocol (nejmoa1606774_protocol.pdf; 3.17 MB)",
+    },
+    "fda_2019_review": {
+        "label": "FDA BLA 125514/S-047 clinical/statistical review, KEYNOTE-024 vs -042",
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2022/125514Orig1s047.pdf",
+        "documentDate": "2019-04-11",
+        "kind": "official_fda_multidisciplinary_review_retrospective",
+        "locator": "PDF pages 152-154, Table 21 (printed pages 73-75); KEYNOTE-024 OS alpha footnote",
+    },
+    "keynote042_registry": {
+        "label": "ClinicalTrials.gov independent randomized cohort KEYNOTE-042",
+        "url": "https://clinicaltrials.gov/study/NCT02220894",
+        "documentDate": None,
+        "kind": "distinct_cohort_registry",
+        "locator": "NCT02220894, enrollment 1274, randomized phase III, original hypothesis OS",
+    },
+    "keynote042_original": {
+        "label": "Mok et al., Lancet 2019 original KEYNOTE-042 randomized trial",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/30955977/",
+        "documentDate": "2019-04-04",
+        "kind": "distinct_cohort_trial_publication",
+        "locator": "PubMed 30955977, Methods and Findings, TPS >=50% subgroup",
+    },
 }
 
 # Interpretations intentionally narrower than the underlying reports:
 # the existence of a source and its reported facts are not independent review.
 OBSERVATIONS = {
     "protocol_amendment_chronology": {
-        "sourceIds": ["protocol_2017", "reck_2016"],
+        "sourceIds": ["protocol_2017", "reck_2016", "nejm_2016_protocol_lead", "fda_2019_review"],
         "preliminaryObservation": (
-            "The captured 20-Dec-2017 protocol is Amendment 024-11 and explicitly "
-            "applies only to Japan. Its 2017 statistical section refers back to "
-            "Amendment 08 and a May 9, 2016 cutoff. It is a later version, not "
-            "proof of the protocol/SAP prospectively locked before unblinding."
+            "The archived December 20, 2017 Amendment 024-11 is Japan-only and "
+            "postdates the May 2016 efficacy cutoff; it does not establish the "
+            "prospectively locked analysis plan. The original October 2016 "
+            "NEJM article provides a protocol PDF supplement (3.17 MB), but "
+            "that PDF's amendment version, effective date and SAP contents "
+            "have not been inspected. The 2016 article describes the planned "
+            "one-sided family alpha 0.025, PFS interim alpha 0.020 and "
+            "prespecified OS sequence. The 2019 FDA review retrospectively "
+            "reports a KEYNOTE-024 interim OS p-value threshold of 0.0118. "
+            "A retrospectively reported plan is not proof of pre-lock execution."
         ),
+        "journalProtocolSupplement": {
+            "filename": "nejmoa1606774_protocol.pdf",
+            "publisherPage": "https://www.nejm.org/doi/abstract/10.1056/NEJMoa1606774",
+            "publicationYear": 2016,
+            "estimatedPublishedPdfMb": 3.17,
+            "pdfContentRetrievedAndInspected": False,
+            "effectiveDateConfirmedBeforeAnalysis": False,
+        },
+        "reportedDesignNotYetIndependentlyAudited": {
+            "oneSidedFamilyAlpha": 0.025,
+            "oneSidedPfsInterimAlpha": 0.020,
+            "fdaReportedInterimOsThreshold": 0.0118,
+            "fdaReportedThresholdSourceYear": 2019,
+        },
         "analysisBoundary": "2016-05-09",
         "stillMissing": (
-            "Obtain a dated, effective pre-unblinding protocol and standalone SAP "
-            "or documented contemporaneous FDA statistical-review audit trail."
+            "Retrieve and inspect the original journal protocol supplement, "
+            "then establish the dated effective pre-unblinding protocol/SAP "
+            "version, endpoint hierarchy, alpha spending, signatures and "
+            "audit trail. A 2016 publication date does not prove earlier lock."
         ),
         "risk": "critical",
     },
@@ -108,7 +158,7 @@ OBSERVATIONS = {
         "risk": "high",
     },
     "pfs_initial_vs_followup": {
-        "sourceIds": ["reck_2016", "reck_2021", "fda_peer_review"],
+        "sourceIds": ["reck_2016", "reck_2021", "fda_peer_review", "fda_2019_review"],
         "preliminaryObservation": (
             "Initial May 2016 analysis: PFS 10.3 versus 6.0 months, "
             "HR 0.50 (95% CI 0.37–0.68); interim OS HR 0.60 "
@@ -124,6 +174,8 @@ OBSERVATIONS = {
         "initialInterimOs": {
             "cutoff": "2016-05-09", "hazardRatio": 0.60,
             "ci95": [0.41, 0.89], "reportedP": "0.005",
+            "fda2019RetrospectiveInterimThreshold": "0.0118",
+            "alphaAndPValueAreDifferentMeasures": True,
         },
         "longTermOs": {
             "cutoff": "2020-06-01", "medianMonths": [26.3, 13.4],
@@ -213,17 +265,47 @@ OBSERVATIONS = {
         "risk": "critical",
     },
     "independent_corroboration": {
-        "sourceIds": ["reck_2016", "reck_2021", "fda_peer_review"],
+        "sourceIds": [
+            "reck_2016", "reck_2021", "fda_2019_review",
+            "keynote042_registry", "keynote042_original",
+        ],
         "preliminaryObservation": (
-            "The NEJM original trial, its 2021 follow-up, and the FDA staff "
-            "summary describe the same underlying KEYNOTE-024 cohort. "
-            "Their agreement does not equal an independent replication "
-            "in newly enrolled participants."
+            "A separate randomized cohort has been identified: KEYNOTE-042 "
+            "(NCT02220894), 1274 patients overall, including a PD-L1 TPS "
+            ">=50% subgroup of 599. That prespecified subgroup reported "
+            "an OS HR 0.69 (95% CI 0.56-0.85), supporting the direction "
+            "of the survival result from KEYNOTE-024. However, the FDA's "
+            "2019 cross-trial comparison found KEYNOTE-042 PFS HR 0.81 "
+            "(95% CI 0.67-0.99) not significant under its relevant "
+            "multiplicity-testing sequence. KEYNOTE-042's primary endpoint "
+            "was OS; its enrollment population and chemotherapy crossover "
+            "rules differ from KEYNOTE-024. This is a second trial, but "
+            "not an independent statistical adjudication or exact "
+            "replication of the original KEYNOTE-024 PFS endpoint."
         ),
+        "independentTrialIdentified": True,
+        "distinctEnrollmentTrial": {
+            "trialId": "NCT02220894",
+            "name": "KEYNOTE-042",
+            "totalRandomized": 1274,
+            "highPdL1SubgroupRandomized": 599,
+            "highPdL1SubgroupOs": {
+                "hazardRatio": 0.69, "ci95": [0.56, 0.85],
+                "prespecifiedEndpoint": True,
+            },
+            "highPdL1SubgroupPfs": {
+                "hazardRatio": 0.81, "ci95": [0.67, 0.99],
+                "significantUnderTrialMultiplicityRules": False,
+            },
+            "sameParticipantsAsKeynote024": False,
+            "noOnStudyChemoToPembroCrossover": True,
+            "independentlyMethodologicallyAdjudicated": False,
+        },
         "stillMissing": (
-            "Locate and assess separately randomized cohorts with comparable "
-            "biomarker eligibility, line of therapy, endpoint definitions and "
-            "treatment comparators; document conflicting results."
+            "Critically review KEYNOTE-042's locked SAP and subgroup methods, "
+            "its full FDA analysis and cross-trial differences, including "
+            "crossover, follow-up, population and multiplicity rules; "
+            "explain discordant PFS without pooling these distinct cohorts."
         ),
         "risk": "high",
     },
