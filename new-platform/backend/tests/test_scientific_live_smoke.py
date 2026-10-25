@@ -86,7 +86,7 @@ def test_complete_authenticated_http_sequence_without_leaking_key(review, caplog
         seen.append((method,path,key,payload))
         return result.pop(0)
 
-    with patch.object(smoke, "_request", side_effect=fake_http), \\
+    with patch.object(smoke, "_request", side_effect=fake_http), \
          patch.object(smoke, "time") as time_module:
         assert smoke.run_smoke(NCT, delay_before_start=0, poll_interval=0,
                                max_polls=3) is True
@@ -104,7 +104,7 @@ def test_unexpected_unauthed_success_blocks_submission(review):
     def fake_http(method,path,key,payload=None):
         seen.append(method)
         return (200,{})
-    with patch.object(smoke,"_request",side_effect=fake_http), \\
+    with patch.object(smoke,"_request",side_effect=fake_http), \
          patch.object(smoke,"time"):
         assert smoke.run_smoke(NCT,delay_before_start=0) is False
     assert seen==["GET"]
