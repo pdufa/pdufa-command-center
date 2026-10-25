@@ -7,11 +7,11 @@ import secrets
 import threading
 import time
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-from typing import Annotated
+from datetime import date, datetime, timezone
+from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, UniqueConstraint, create_engine, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
@@ -929,6 +929,8 @@ def get_scientific_assessment(exact_id: str):
     result["investigation20"] = None
     result["quantitativeResults"] = None
     result["readinessGrades"] = None
+    result["evidenceLedger"] = None
+    result["evidenceLedgerStatus"] = "not_available"
     # Never use an ephemeral SQLite fallback on hosted review services.
     match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id)
     if match and storage_ready() and _DB_STATE["available"]:
@@ -956,6 +958,14 @@ def get_scientific_assessment(exact_id: str):
                         match.group(1), snapshot,
                         archive_retrieved_at=record.fetched_at.isoformat() if record.fetched_at else None,
                     )
+                    # Optional read-only source queue: ledger failure cannot
+                    # contaminate verified archive metadata or readiness grades.
+                    try:
+                        from .scientific_evidence_ledger import read_ledger
+                        result["evidenceLedger"] = read_ledger(match.group(1))
+                        result["evidenceLedgerStatus"] = "candidate_inventory_loaded"
+                    except Exception:
+                        result["evidenceLedgerStatus"] = "ledger_unavailable_or_invalid"
                     result["registryEvidenceStatus"] = "source_record_loaded"
                 else:
                     result["registryEvidenceStatus"] = "record_not_found"
@@ -963,6 +973,64 @@ def get_scientific_assessment(exact_id: str):
             # A corrupt archive or unavailable database must never produce a score.
             result["registryEvidenceStatus"] = "record_unavailable_or_invalid"
     return result
+
+
+class ScientificEvidenceCandidateSubmission(BaseModel):
+    """A submitted citation is always unverified; never an FDA/science score."""
+    model_config = ConfigDict(extra="forbid")
+
+    gate_id: Literal[
+        "protocol_sap", "published_results",
+        "independent_replication", "official_regulatory"
+    ] = Field(alias="gateId")
+    source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
+    source_type: Literal[
+        "peer_reviewed_publication", "official_agency_document",
+        "protocol_sap", "clinical_study_report",
+        "institutional_summary", "other"
+    ] = Field(alias="sourceType")
+    source_published_at: date | None = Field(default=None, alias="sourcePublishedAt")
+    claim_text: str = Field(min_length=20, max_length=1000, alias="claimText")
+    relationship: Literal["supports", "contradicts", "context", "unresolved"]
+    caution: str = Field(min_length=15, max_length=1000)
+    recorded_by: str = Field(min_length=2, max_length=80, alias="recordedBy")
+    supersedes_id: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{32}$", alias="supersedesId"
+    )
+
+
+def require_scientific_evidence_write_key(
+    x_pdufa_scientific_review_key: Annotated[str | None, Header()] = None,
+) -> None:
+    """Separate from the batch API key; disabled on all services by default."""
+    if (os.getenv("RENDER_SERVICE_ID") != "srv-dbehn9fb9u1s739ok5vg"
+            or os.getenv("PDUFA_SCIENTIFIC_LEDGER_WRITE_ENABLED") != "1"
+            or not DATABASE_URL.startswith("postgresql+psycopg://")):
+        raise HTTPException(status_code=403, detail="Scientific evidence writing disabled")
+    expected = os.getenv("PDUFA_SCIENTIFIC_REVIEW_WRITE_KEY")
+    if not expected or expected == os.getenv("PDUFA_INTERNAL_API_KEY"):
+        raise HTTPException(status_code=503, detail="Separate evidence review key not configured")
+    if (not x_pdufa_scientific_review_key or
+            not secrets.compare_digest(expected, x_pdufa_scientific_review_key)):
+        raise HTTPException(status_code=401, detail="Unauthorized scientific evidence curator")
+
+
+@app.post("/api/scientific-assessment/evidence-ledger/{nct_id}",
+          status_code=201,
+          dependencies=[Depends(require_internal_key), Depends(require_storage),
+                        Depends(require_scientific_evidence_write_key)])
+def submit_scientific_evidence_candidate(
+    nct_id: str,
+    payload: ScientificEvidenceCandidateSubmission,
+):
+    """Append-only, review-only cited *candidate*; never verifies it by submission."""
+    from .scientific_evidence_ledger import append_candidate
+    try:
+        return append_candidate(nct_id, payload.model_dump(by_alias=True, mode="json"))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Evidence revision already recorded") from None
 
 
 class ScientificBatchSubmission(BaseModel):
