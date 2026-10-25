@@ -20,6 +20,7 @@ from app.hop_fda_action_review import build_fda_action_review_worklist
 from app.hop_fda_document_probe import probe_all_fda_review_documents
 from app.hop_fda_pdf_evidence_groups import reconcile_fda_pdf_evidence_groups
 from app.hop_fda_pdf_page_candidates import build_fda_shared_pdf_page_candidates
+from app.hop_fda_page_review_worksheet import build_pdf_page_review_worksheet, worksheet_csv
 
 
 def fetch(url: str, max_bytes: int) -> bytes:
@@ -72,6 +73,11 @@ def main() -> None:
             or page_candidate_audit["source_letter_records_examined"] != shared_document_audit["letter_records_in_shared_pdf_groups"]
             or page_candidate_audit["model_eligible_records"] != 0):
         raise ValueError("FDA PDF page candidate counts do not reconcile to evidence inventory")
+    reviewer_rows, reviewer_audit = build_pdf_page_review_worksheet(page_candidates, shared_documents)
+    if (reviewer_audit["published_letter_rows"] != page_candidate_audit["source_letter_records_examined"]
+            or reviewer_audit["shared_pdf_groups"] != page_candidate_audit["shared_pdf_groups_examined"]
+            or reviewer_audit["model_eligible_records"] != 0):
+        raise ValueError("review worksheet does not reconcile with extracted FDA source pages")
     if (len(cases["records"]) != len(pdfs["records"])
             or case_audit["published_letter_records"] != crosswalk_audit["published_letter_records"]
             or case_audit["published_letter_records"] != letters_audit["published_letter_records"]
@@ -96,6 +102,9 @@ def main() -> None:
     output_json(dest, "fda_shared_pdf_document_reconciliation_audit.json", shared_document_audit)
     output_json(dest, "fda_shared_pdf_provisional_page_candidates.json", page_candidates)
     output_json(dest, "fda_shared_pdf_provisional_page_candidates_audit.json", page_candidate_audit)
+    output_json(dest, "fda_shared_pdf_review_worksheet_audit.json", reviewer_audit)
+    (dest / "fda_shared_pdf_independent_review_worksheet.csv").write_text(
+        worksheet_csv(reviewer_rows), encoding="utf-8")
     print(json.dumps({
         "publication_only": True,
         "published_letter_records": case_audit["published_letter_records"],
@@ -109,6 +118,8 @@ def main() -> None:
         "shared_pdf_page_candidate_extraction_statuses": page_candidate_audit["pdf_extraction_status_counts"],
         "shared_pdf_letter_candidate_statuses": page_candidate_audit["letter_candidate_status_counts"],
         "letters_with_provisional_id_and_date_page_matches": page_candidate_audit["letters_with_same_page_id_and_letter_date_candidates"],
+        "independent_review_worksheet_rows": reviewer_audit["published_letter_rows"],
+        "page_review_priority_counts": reviewer_audit["review_priority_counts"],
         "effective_action_dates_verified":
             case_audit["effective_fda_action_dates_independently_verified"],
         "verified_review_cycle_outcomes":
