@@ -9,6 +9,9 @@ on:
       - 'new-platform/backend/scripts/collect_hop_drugsfda_original_submissions.py'
       - 'new-platform/backend/tests/test_hop_drugsfda_original_collector.py'
       - 'new-platform/backend/tests/test_hop_drugsfda_submission_spine.py'
+      - 'new-platform/backend/app/hop_fda_original_letter_bridge.py'
+      - 'new-platform/backend/scripts/collect_hop_fda_original_letter_bridge.py'
+      - 'new-platform/backend/tests/test_hop_fda_original_letter_bridge.py'
   workflow_dispatch:
 
 permissions:
@@ -34,13 +37,22 @@ jobs:
           python -m pip install pytest
           PYTHONPATH=. python -m pytest -q \
             tests/test_hop_drugsfda_submission_spine.py \
-            tests/test_hop_drugsfda_original_collector.py
+            tests/test_hop_drugsfda_original_collector.py \
+            tests/test_hop_fda_original_letter_bridge.py
       - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
         working-directory: new-platform/backend
         run: |
           PYTHONPATH=. python scripts/collect_hop_drugsfda_original_submissions.py \
             --as-of 2026-10-25 \
             --output-dir "${{ runner.temp }}/hop-fda-original-source-research"
+      - name: Cross-check official FDA published letters against original application IDs
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/collect_hop_fda_original_letter_bridge.py \
+            --applications "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Applications.txt" \
+            --submissions "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Submissions.txt" \
+            --as-of 2026-10-25 \
+            --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_crl_identity_bridge.json"
       - name: Retain only aggregate FDA source coverage counts and fingerprints
         uses: actions/upload-artifact@v4
         with:
