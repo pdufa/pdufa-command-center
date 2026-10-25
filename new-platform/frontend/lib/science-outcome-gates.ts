@@ -2,7 +2,7 @@
  * Existing P/J/G scores (3x7) are NOT the requested 40 scientific investigations.
  * Never infer clinical success, predict approval, or grant a trading permission.
  */
-import { ASSESSMENT_STAGES, validateAssessmentIndex } from "./candidate-assessments";
+import { ASSESSMENT_STAGES, scoreFor, validateAssessmentIndex } from "./candidate-assessments";
 import type { AssessmentIndex } from "./candidate-assessments";
 import type { HopSourceReadiness } from "./hop-readiness";
 
@@ -37,10 +37,10 @@ export function auditScienceIndex(value: unknown): ScienceStatus {
     throw new Error("Candidate index source and registry totals do not reconcile");
   }
   const scores = {} as ScienceStatus["scores"];
-  for (const [offset, stage] of ASSESSMENT_STAGES.entries()) {
+  for (const stage of ASSESSMENT_STAGES) {
     const counts = { complete: 0, partial: 0, missing: 0 };
     for (const record of data.records) {
-      const tuple = record[offset + 1];
+      const tuple = scoreFor(record, stage);
       if (!Array.isArray(tuple)) throw new Error("Missing model evidence tuple");
       if (tuple[0] !== null) counts.complete++;
       else if (tuple[2] > 0) counts.partial++;
