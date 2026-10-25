@@ -42,6 +42,9 @@ jobs:
       - name: Preserve historical application-to-multiple-NCT source hints as unapproved candidates
         run: python -m unittest discover -s tests -p 'test_scientific_historical_crosswalk.py' -v
         working-directory: new-platform/backend
+      - name: Verify 17-NCT historical source review queue is non-adjudicated and cannot import
+        run: python -m unittest discover -s tests -p 'test_scientific_historical_review_queue.py' -v
+        working-directory: new-platform/backend
   frontend:
     runs-on: ubuntu-latest
     defaults:
