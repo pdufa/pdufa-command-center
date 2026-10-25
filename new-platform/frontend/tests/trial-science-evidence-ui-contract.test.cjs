@@ -126,6 +126,7 @@ test("rejects cross-trial or scored payload, unsafe sources and duplicate analys
     x => { x.qualificationPresetsModified = true; },
     x => { x.publishedResults.analysis_snapshots[1].analysis_id = "keynote024_initial_2016"; },
     x => { x.publishedResults.analysis_snapshots[0].source_url = "https://evil.example/fake"; },
+    x => { x.publishedResults.analysis_snapshots[0].source_id = "99999999"; x.publishedResults.analysis_snapshots[0].source_url = "https://pubmed.ncbi.nlm.nih.gov/99999999/"; },
     x => { x.publishedResults.corroborating_sources[0].source_url = "javascript:alert(1)"; },
     x => { delete x.dossier.domains.advanced_inference; },
   ];
