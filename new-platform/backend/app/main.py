@@ -147,6 +147,32 @@ class ScientificEvidenceLedgerEntry(Base):
     content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
 
 
+class ScientificReviewerFinding(Base):
+    """Immutable, source-linked reviewer claim. NEVER independent verification."""
+    __tablename__ = "scientific_reviewer_findings"
+    __table_args__ = (
+        UniqueConstraint("nct_id", "thread_id", "revision",
+                         name="uq_scientific_reviewer_finding_revision"),
+        UniqueConstraint("supersedes_id", name="uq_scientific_reviewer_finding_parent"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    question_id: Mapped[str] = mapped_column(String(70), nullable=False)
+    gate_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    thread_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    supersedes_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    source_url: Mapped[str] = mapped_column(String(800), nullable=False)
+    source_locator: Mapped[str] = mapped_column(String(200), nullable=False)
+    finding_type: Mapped[str] = mapped_column(String(30), nullable=False)
+    assertion: Mapped[str] = mapped_column(String(1500), nullable=False)
+    uncertainty: Mapped[str] = mapped_column(String(1000), nullable=False)
+    reviewer_label: Mapped[str] = mapped_column(String(80), nullable=False)
+    reviewed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
 class ScientificSmokeClaim(Base):
     """One durable execution claim per trial for temporary isolated live smoke."""
     __tablename__ = "scientific_smoke_claims"
