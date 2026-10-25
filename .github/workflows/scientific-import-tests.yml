@@ -21,6 +21,7 @@ on:
       - "new-platform/backend/app/scientific_review_packet.py"
       - "new-platform/backend/app/scientific_reviewer_findings.py"
       - "new-platform/backend/app/scientific_adjudication_preflight.py"
+      - "new-platform/backend/app/scientific_source_documents.py"
       - "new-platform/backend/app/scientific_registry_evidence.py"
       - "new-platform/backend/tests/test_scientific_import.py"
       - "new-platform/backend/tests/test_scientific_integrity.py"
@@ -30,6 +31,7 @@ on:
       - "new-platform/backend/tests/test_scientific_review_packet.py"
       - "new-platform/backend/tests/test_scientific_reviewer_findings.py"
       - "new-platform/backend/tests/test_scientific_adjudication_preflight.py"
+      - "new-platform/backend/tests/test_scientific_source_documents.py"
       - "new-platform/backend/tests/test_scientific_batch_import.py"
       - "new-platform/backend/tests/test_scientific_batch_api.py"
       - "new-platform/backend/tests/test_scientific_live_smoke.py"
@@ -56,4 +58,4 @@ jobs:
         env:
           DATABASE_URL: "sqlite:///./scientific_import_ci.sqlite3"
           PDUFA_REQUIRE_POSTGRES: "0"
-        run: python -m pytest -q tests/test_scientific_import.py tests/test_scientific_batch_import.py tests/test_scientific_batch_api.py tests/test_scientific_live_smoke.py tests/test_scientific_integrity.py tests/test_scientific_investigation_20.py tests/test_scientific_quantitative_results.py tests/test_scientific_readiness_grades.py tests/test_scientific_evidence_ledger.py tests/test_scientific_review_packet.py tests/test_scientific_reviewer_findings.py tests/test_scientific_adjudication_preflight.py
+        run: python -m pytest -q tests/test_scientific_import.py tests/test_scientific_batch_import.py tests/test_scientific_batch_api.py tests/test_scientific_live_smoke.py tests/test_scientific_integrity.py tests/test_scientific_investigation_20.py tests/test_scientific_quantitative_results.py tests/test_scientific_readiness_grades.py tests/test_scientific_evidence_ledger.py tests/test_scientific_review_packet.py tests/test_scientific_reviewer_findings.py tests/test_scientific_adjudication_preflight.py tests/test_scientific_source_documents.py
