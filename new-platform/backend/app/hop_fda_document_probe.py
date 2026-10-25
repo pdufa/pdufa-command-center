@@ -16,6 +16,10 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 FDA_PDF_PREFIX = "https://download.open.fda.gov/crl/"
 MAX_PDF_BYTES = 20_000_000
 MAX_BATCH = 25
+ALLOWED_SOURCE_QUEUE_STATUSES = {
+    "IDENTITY_REVIEW_QUEUE_NOT_OUTCOME_COHORT",
+    "PUBLISHED_FDA_ACTION_REVIEW_ONLY_NO_VALIDATED_OUTCOMES",
+}
 
 class _RejectRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
@@ -63,8 +67,8 @@ def fetch_official_pdf(url: str) -> tuple[str, str | None]:
 
 def probe_fda_review_documents(queue: dict, *, offset: int = 0,
                                limit: int = 20, fetcher=None) -> tuple[dict, dict]:
-    if queue.get("status") != "IDENTITY_REVIEW_QUEUE_NOT_OUTCOME_COHORT":
-        raise ValueError("not a quarantined FDA identity review queue")
+    if queue.get("status") not in ALLOWED_SOURCE_QUEUE_STATUSES:
+        raise ValueError("not a quarantined FDA source review queue")
     records = queue.get("records")
     if not isinstance(records, list):
         raise ValueError("missing FDA identity review queue records")
@@ -79,6 +83,12 @@ def probe_fda_review_documents(queue: dict, *, offset: int = 0,
                 or row.get("review_cycle_verified") is not False
                 or row.get("complete_denominator_verified") is not False):
             raise ValueError("source queue must remain unverified and model-ineligible")
+        if queue["status"] == "PUBLISHED_FDA_ACTION_REVIEW_ONLY_NO_VALIDATED_OUTCOMES" and (
+                row.get("effective_fda_action_date_independently_verified") is not False
+                or row.get("fda_review_cycle_outcome") is not None
+                or row.get("review_cycle_number_verified") is not False
+                or row.get("independent_review_complete") is not False):
+            raise ValueError("published FDA action review cannot self-certify outcomes")
         digest = row.get("source_record_sha256")
         if not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest):
             raise ValueError("invalid source-record SHA256")
@@ -106,6 +116,7 @@ def probe_fda_review_documents(queue: dict, *, offset: int = 0,
             "source_record_sha256": digest,
             "source_application_ids_as_published": row.get("application_ids_as_published"),
             "source_file_name_as_published": row.get("file_name_as_published"),
+            "letter_type_as_published": row.get("letter_type_as_published"),
             "letter_date_as_published": row.get("letter_date_as_published"),
             "identity_link_status": row.get("identity_link_status"),
             "document_fetch_status": status,
@@ -146,8 +157,8 @@ def probe_all_fda_review_documents(queue: dict, *, batch_size: int = 20,
     """
     if type(batch_size) is not int or not 1 <= batch_size <= MAX_BATCH:
         raise ValueError("invalid FDA PDF batch size")
-    if queue.get("status") != "IDENTITY_REVIEW_QUEUE_NOT_OUTCOME_COHORT":
-        raise ValueError("not an identity-only FDA source queue")
+    if queue.get("status") not in ALLOWED_SOURCE_QUEUE_STATUSES:
+        raise ValueError("not an allowed quarantined FDA source queue")
     rows = queue.get("records")
     if not isinstance(rows, list):
         raise ValueError("FDA identity-review queue records missing")
