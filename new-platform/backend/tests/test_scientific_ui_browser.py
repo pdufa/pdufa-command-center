@@ -21,6 +21,7 @@ sync_playwright = pytest.importorskip(
 
 from app.scientific_assessment import assess
 from app.scientific_investigation_20 import investigation_20
+from app.scientific_quantitative_results import reported_quantitative_results
 from app.scientific_batch_ui import render_batch_panel
 
 NCT = "NCT04280705"
@@ -92,6 +93,28 @@ class TestServer(BaseHTTPRequestHandler):
                         "identificationModule": {"nctId": NCT, "briefTitle": "Pilot trial"},
                         "statusModule": {"overallStatus": "COMPLETED"},
                         "outcomesModule": {"primaryOutcomes": [{"measure": "Endpoint"}]},
+                    }
+                }) if record_found else None),
+                "quantitativeResults": (reported_quantitative_results(NCT, {
+                    "protocolSection": {"identificationModule": {"nctId": NCT}},
+                    "hasResults": True,
+                    "resultsSection": {
+                        "outcomeMeasuresModule": {"outcomeMeasures": [{
+                            "type": "PRIMARY", "title": "Time to Recovery",
+                            "paramType": "MEDIAN", "unitOfMeasure": "Days",
+                            "groups": [{"id": "OG000", "title": "Placebo"},
+                                       {"id": "OG001", "title": "Treatment"}],
+                            "analyses": [{"groupIds": ["OG000", "OG001"],
+                                          "statisticalMethod": "Log Rank",
+                                          "paramType": "Cox Proportional Hazard",
+                                          "paramValue": "1.29", "pValue": "<0.001",
+                                          "ciPctValue": "95", "ciNumSides": "TWO_SIDED",
+                                          "ciLowerLimit": "1.12", "ciUpperLimit": "1.48"}]
+                        }]},
+                        "adverseEventsModule": {"eventGroups": [{"id":"EG000"}],
+                            "seriousEvents": [{"term": "Example serious event",
+                                "stats": [{"groupId": "EG000", "numAffected": "3",
+                                           "numAtRisk": "100"}]}]}
                     }
                 }) if record_found else None),
             })
@@ -192,6 +215,19 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert page.locator("#investigation-20").get_by_text(
                 "FDA approval probability: Not calculated.", exact=False).count() == 1
 
+            # Reported numbers are visible without converting the p-value
+            # into a statistical success or approval probability.
+            page.get_by_role("heading", name="Reported outcomes and safety — not independently verified").wait_for()
+            assert page.locator("#quantitative-results details").count() == 2
+            outcome = page.locator("#quantitative-results details").first
+            outcome.locator("summary").click()
+            outcome.get_by_text("Reported p-value: <0.001", exact=False).wait_for()
+            outcome.get_by_text("1.12 to 1.48", exact=False).wait_for()
+            page.get_by_text("No statistical-success grade", exact=False).wait_for()
+            adverse = page.locator("#quantitative-results details").last
+            adverse.locator("summary").click()
+            adverse.get_by_text("Affected: 3 · At risk: 100", exact=False).wait_for()
+
             # Neither address bar nor browser storage may contain the secret.
             assert SECRET not in page.url
             assert page.evaluate("Object.keys(localStorage).length") == 0
@@ -202,6 +238,7 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert page.get_by_label("Internal API key").input_value() == ""
             assert page.locator("#science-domains .science-domain").count() == 0
             assert page.locator("#investigation-20 details").count() == 0
+            assert page.locator("#quantitative-results details").count() == 0
             page.get_by_role("button", name="Refresh history").click()
             page.get_by_text("Enter the internal API key first.").wait_for()
 
