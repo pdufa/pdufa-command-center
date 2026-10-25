@@ -151,3 +151,38 @@ def test_other_trial_cannot_trigger_source_request(monkeypatch):
                         lambda _: (_ for _ in ()).throw(AssertionError("Must not fetch")))
     with pytest.raises(ValueError):
         sources.archive_official_pdf("NCT99999999", "fda")
+
+
+
+def test_bootstrap_pinned_sources_runs_both_once_and_keeps_science_unverified(monkeypatch, caplog):
+    called=[]
+    def capture(nct, source):
+        called.append((nct,source))
+        return {
+            "alreadyArchived": source=="fda", "byteLength": 1536,
+            "scientificallyVerified": False, "independentReviewRequired": True,
+        }
+    monkeypatch.setattr(sources, "archive_official_pdf", capture)
+    sources.bootstrap_pinned_pilot_sources()
+    assert called == [(sources.PILOT_NCT, "protocol"), (sources.PILOT_NCT, "fda")]
+    assert caplog.text.count("scientific_verification=False") == 2
+    assert "status=CAPTURED" in caplog.text
+    assert "status=ALREADY_ARCHIVED" in caplog.text
+
+
+def test_bootstrap_fails_open_for_health_but_closed_for_science(monkeypatch, caplog):
+    called=[]
+    def capture(nct, source):
+        called.append(source)
+        if source=="protocol":
+            raise sources.OfficialSourceUnavailable("Private server error")
+        return {
+            "alreadyArchived": False, "byteLength": 2048,
+            "scientificallyVerified": False, "independentReviewRequired": True,
+        }
+    monkeypatch.setattr(sources, "archive_official_pdf", capture)
+    sources.bootstrap_pinned_pilot_sources()
+    assert called == ["protocol", "fda"]
+    assert "source=protocol status=UNAVAILABLE" in caplog.text
+    assert "source=fda status=CAPTURED" in caplog.text
+    assert "Private server error" not in caplog.text
