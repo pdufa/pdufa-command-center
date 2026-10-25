@@ -6,7 +6,7 @@ def example():
     return dict(case_id="fda-example-1", indication="lung cancer",
                 therapeutic_area="oncology", modality="antibody", phase=3,
                 decision_date="2020-01-02", outcome="APPROVED",
-                evidence_as_of="2020-01-02",
+                evidence_as_of="2020-01-01",
                 source_url="https://www.fda.gov/drugs")
 
 def test_empty_inventory_is_explicit():
@@ -31,3 +31,10 @@ def test_rejects_invalid_evidence(field, value):
 def test_duplicate_case_rejected():
     with pytest.raises(ValueError, match="duplicate"):
         parse_history(json.dumps([example(), example()]))
+
+@pytest.mark.parametrize("evidence_date", ["2020-01-02", "2020-01-03"])
+def test_rejects_decision_day_or_postdecision_evidence(evidence_date):
+    row = example()
+    row["evidence_as_of"] = evidence_date
+    with pytest.raises(ValueError, match="predate FDA decision"):
+        parse_history(json.dumps([row]))
