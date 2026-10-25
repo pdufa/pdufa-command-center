@@ -100,6 +100,26 @@ class FullTrialRecord(Base):
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class ScientificBatchJob(Base):
+    """Durable, isolated scientific import history; one unfinished batch at a time."""
+    __tablename__ = "scientific_batch_jobs"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    status: Mapped[str] = mapped_column(String(28), nullable=False)
+    nct_ids: Mapped[list] = mapped_column(JSON, nullable=False)
+    events: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    total: Mapped[int] = mapped_column(Integer, nullable=False)
+    processed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    imported: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    already_exists: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    failed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    # Unique nullable slot prevents overlapping unfinished batches, across workers.
+    active_slot: Mapped[str | None] = mapped_column(String(32), nullable=True, unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
 class CandidateAssessmentHistory(Base):
     """Append-only score/evidence changes for one immutable exact program."""
     __tablename__ = "candidate_assessment_history"
@@ -538,6 +558,55 @@ def get_scientific_assessment(exact_id: str):
             # A corrupt archive or unavailable database must never produce a score.
             result["registryEvidenceStatus"] = "record_unavailable_or_invalid"
     return result
+
+
+class ScientificBatchSubmission(BaseModel):
+    nct_ids: list[str] = Field(min_length=1, max_length=25)
+
+
+def require_scientific_batch_review_write() -> None:
+    """Separate opt-in and exact Render service fence; never enable in production."""
+    if (os.getenv("PDUFA_SCIENTIFIC_BATCH_WRITE_ENABLED") != "1"
+            or os.getenv("RENDER_SERVICE_ID") != "srv-dbehn9fb9u1s739ok5vg"
+            or not DATABASE_URL.startswith("postgresql+psycopg://")):
+        raise HTTPException(status_code=403, detail="Scientific batch imports disabled outside isolated review")
+
+
+@app.get("/scientific-assessment/batches")
+def scientific_batch_control_panel():
+    """Static same-origin UI; all job data/actions require the internal API key."""
+    from .scientific_batch_ui import render_batch_panel
+    return render_batch_panel()
+
+
+@app.get("/api/scientific-assessment/batches",
+         dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def list_scientific_batches():
+    from .scientific_batch_jobs import list_jobs
+    return {"jobs": list_jobs()}
+
+
+@app.get("/api/scientific-assessment/batches/{job_id}",
+         dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def get_scientific_batch(job_id: str):
+    from .scientific_batch_jobs import get_job
+    result = get_job(job_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Scientific batch not found")
+    return result
+
+
+@app.post("/api/scientific-assessment/batches", status_code=202,
+          dependencies=[Depends(require_internal_key), Depends(require_storage),
+                        Depends(require_scientific_batch_review_write)])
+def submit_scientific_batch(payload: ScientificBatchSubmission):
+    from .scientific_batch_jobs import submit_job
+    try:
+        return submit_job(payload.nct_ids)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except IntegrityError as exc:
+        raise HTTPException(status_code=409, detail="An unfinished scientific batch already exists") from exc
 
 
 @app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])
