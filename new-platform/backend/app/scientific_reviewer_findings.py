@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from . import main
 from .scientific_evidence_ledger import (
     ID_PATTERN, MAX_RECORDS, _fields as ledger_fields, _hash as ledger_hash,
-    pilot_candidates, validate_public_https,
+    pilot_candidates, require_registry_trial_identity, validate_public_https,
 )
 from .scientific_investigation_20 import NCT_PATTERN
 from .scientific_reconciliation_worklist import reconciliation_worklist
@@ -109,6 +109,7 @@ def append_reviewer_statement(nct_id: str, data: dict) -> dict:
     if kind not in KINDS:
         raise ValueError("Unsupported reviewer statement classification")
     source = validate_public_https(data["sourceUrl"])
+    require_registry_trial_identity(source, nct_id)
     prior_id = data.get("supersedesId")
     if prior_id is not None and (not isinstance(prior_id, str)
                                 or not ID_PATTERN.fullmatch(prior_id)):
