@@ -76,3 +76,24 @@ def test_readonly_mode_does_not_write_histories(isolated, monkeypatch):
     monkeypatch.setenv("PDUFA_MIGRATION_READ_ONLY", "1")
     index = service.get_index(synchronous=True)
     assert index["historyStatus"] == "READ_ONLY" and count(engine) == 0
+
+
+def test_index_reclaims_temporary_memory_without_changing_scores(isolated, monkeypatch):
+    engine, _ = isolated
+    calls = []
+    monkeypatch.setattr(service, "_reclaim_transient_memory", lambda: calls.append("trim"))
+    index = service.get_index(synchronous=True)
+    assert index["status"] == "COMPLETE"
+    assert index["total"] == 2
+    assert calls == ["trim"]
+    assert count(engine) == 2
+    assert service.get_index(synchronous=True) is index
+    assert calls == ["trim"]  # Reuses the verified index; no redundant rebuild.
+
+
+def test_memory_reclamation_is_safe_when_glibc_is_unavailable(monkeypatch):
+    import ctypes
+    def missing_libc(_):
+        raise OSError("libc is unavailable")
+    monkeypatch.setattr(ctypes, "CDLL", missing_libc)
+    service._reclaim_transient_memory()  # No exception and no data mutations.
