@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "STAGING_ONLY_NOT_MODEL_ELIGIBLE",
+  "records": [
+    {
+      "application_number": "NDA 205123",
+      "drug": "Olysio (simeprevir)",
+      "sponsor": "Janssen Research & Development, LLC",
+      "decision_date": "2013-11-22",
+      "outcome": "APPROVED",
+      "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2013/205123Orig1s000TOC.cfm",
+      "source_type": "FDA_DRUG_APPROVAL_PACKAGE",
+      "indication": null,
+      "therapeutic_area": null,
+      "modality": null,
+      "phase": null,
+      "evidence_as_of": null,
+      "review_status": "INCOMPLETE_COMPARATOR_FEATURES",
+      "model_eligible": false
+    }
+  ]
+}
