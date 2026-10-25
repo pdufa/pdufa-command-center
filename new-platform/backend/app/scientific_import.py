@@ -41,6 +41,13 @@ def fetch_trial(nct_id: str) -> tuple[dict, bytes]:
 def import_one(nct_id: str) -> str:
     if not DATABASE_URL.startswith("postgresql+psycopg://"):
         raise RuntimeError("Persistent PostgreSQL required; refusing SQLite import")
+    if not NCT_PATTERN.fullmatch(nct_id):
+        raise ValueError("Exact NCT identifier required")
+    # Idempotent existing archive: avoid a redundant remote request, which also
+    # permits a controlled end-to-end smoke test with zero registry mutations.
+    with Session(ENGINE) as session:
+        if session.get(FullTrialRecord, nct_id) is not None:
+            return "already_exists"
     record, raw = fetch_trial(nct_id)
     canonical = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     checksum = hashlib.sha256(canonical).hexdigest()
