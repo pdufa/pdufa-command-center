@@ -40,6 +40,7 @@ class Handler(BaseHTTPRequestHandler):
     accept_operator = True
     identity_calls = 0
     research_calls = 0
+    worksheet_calls = 0
 
     def log_message(self, *_args):
         return
@@ -139,6 +140,31 @@ class Handler(BaseHTTPRequestHandler):
                 "assessment": {"overall_score": None},
             })
             return
+        if self.path == "/api/scientific-assessment/operator/worksheet/NCT02142738":
+            type(self).worksheet_calls += 1
+            if self.headers.get("Authorization") != "Bearer " + FAKE_TOKEN:
+                self.respond(401, {"detail": "Not signed in"})
+                return
+            self.respond(200, {
+                "nctId": "NCT02142738", "scientificallyVerified": False,
+                "readyForFullScientificConclusion": False,
+                "scientificConclusion": None,
+                "packetIntegrity": {"algorithm": "SHA-256", "digest": "a"*64},
+                "reconciliation": {
+                    "unresolvedCount": 8, "independentlyResolvedCount": 0,
+                    "checks": [
+                        {"title": "Source reconciliation question " + str(i),
+                         "resolutionCriteria": [
+                             "Check dated original protocol",
+                             "Reconcile endpoint and analysis population",
+                             "Document conflicting estimates",
+                             "Obtain independent signoff",
+                         ], "resolved": False}
+                        for i in range(1, 9)
+                    ],
+                },
+            })
+            return
         if self.path == "/health":
             self.respond(200, {"ok": True})
             return
@@ -150,6 +176,7 @@ def stub_service(*, accepted=True):
     Handler.accept_operator = accepted
     Handler.identity_calls = 0
     Handler.research_calls = 0
+    Handler.worksheet_calls = 0
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -189,6 +216,11 @@ def test_browser_single_operator_loads_twenty_stages_and_forty_unscored_assessme
             page.locator("#evidence-questions details").first.locator("summary").click()
             assert page.locator("#evidence-questions a[href='https://clinicaltrials.gov/study/NCT02142738']").count() == 7
             assert page.locator("#evidence-questions a[href^='javascript:']").count() == 0
+            page.locator("#worksheet").click()
+            page.get_by_text("8 review questions loaded.", exact=False).wait_for(timeout=10000)
+            assert Handler.worksheet_calls == 1
+            assert page.locator("#worksheet-criteria details").count() == 8
+            assert page.locator("#worksheet-criteria details").first.locator("li").count() == 4
             assert page.get_by_text("0 / 40").count() == 1
             assert page.get_by_text("Not assigned").count() == 1
             assert page.get_by_text("C", exact=True).count() >= 1
