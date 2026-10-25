@@ -103,3 +103,51 @@ reviewer identities; matching claims do **not** prove correct source content or
 regulatory decisions. An independent adjudicator and separate complete
 approval/nonapproval decision denominator remain mandatory before FDA outcome
 modeling. Do not feed this diagnostic report into prediction or scoring.
+
+
+## Priority queue for an independent adjudicator (new, still unverified)
+
+The reviewer comparison above can be transformed into a field-specific manual
+worklist, tied to the **published FDA page-worksheet source audit index**. The
+command refuses row-count, PDF-group, candidate-status or review-priority
+mismatches against the index, and refuses any index falsely claiming that
+regulatory outcomes were verified.
+
+Run from the repository root after producing the two reviewer CSVs:
+
+```bash
+PYTHONPATH=new-platform/backend python \
+  new-platform/backend/scripts/triage_hop_fda_review_queue.py \
+  /path/to/original_worksheet.csv \
+  /path/to/first_completed_or_blank.csv \
+  /path/to/second_completed_or_blank.csv \
+  --as-of 2026-10-25 \
+  --output-dir /path/to/private/local/review_queue
+```
+
+The default source index is the read-only repository audit summary at
+`new-platform/backend/app/research_sources/hop_fda_page_review_worksheet_audit_index.json`,
+which describes the **October 25 published-letter subset** (154 source
+references in 61 shared FDA PDFs). This index is not a complete cohort of
+FDA review cycles, and its archive SHA is metadata, not a verification of
+original document bytes by this command. A local, order-independent
+fingerprint of the worksheet's source fields assists reproducibility but
+is not an electronic reviewer signature.
+
+The private output directory receives:
+
+- `unverified_fda_review_queue.csv`: original source hash and official FDA
+  document link, plus workflow priority and disputed field names only.
+- `unverified_fda_review_queue_audit.json`: reconciled counts, local source
+  fingerprint, and zero model/outcome clearance fields.
+
+Queue ordering distinguishes conflicts (first), missing/incomplete submissions
+(second), and *matching but still unverified* claims (third). The original
+worksheet priority breaks ties within each group. No reviewer identities,
+evidence notes, patient records, signed determinations, or FDA outcome
+probabilities are exported. Source-page links remain provisional.
+
+**The script intentionally exits with status 1, even with perfect textual
+agreement.** An identity-verified adjudicator must inspect original source
+bytes, resolve differences and validate the complete application decision
+population before any record may be promoted or used to estimate outcomes.
