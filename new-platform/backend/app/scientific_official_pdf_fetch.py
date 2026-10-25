@@ -193,9 +193,21 @@ def bootstrap_pinned_pilot_sources() -> None:
             # arbitrary exception messages, credentials, request URLs, or
             # upstream response bodies. This distinguishes transient blocks
             # from source-size/format failures without weakening validation.
+            safe_messages = {
+                "Pinned original source requires HTTPS",
+                "Official PDF host did not return HTTP 200",
+                "Official host did not return PDF content",
+                "Unusable official response length",
+                "Official source PDF exceeds archival limit",
+                "Official source PDF was empty or truncated",
+                "Official PDF byte length does not match response",
+                "Official source returned invalid PDF boundaries",
+                "Original PDF host connection was unavailable",
+            }
             reason = (
                 str(exc) if isinstance(exc, OfficialSourceUnavailable)
-                else "Local archive validation, conflict, or storage failure"
+                and str(exc) in safe_messages
+                else "Local archive validation, conflict, or source unavailable"
             )
             logger.warning(
                 "SCIENTIFIC_PINNED_SOURCE_CAPTURE source=%s status=UNAVAILABLE "
