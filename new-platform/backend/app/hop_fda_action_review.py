@@ -44,6 +44,7 @@ def build_fda_action_review_worklist(
 ) -> tuple[dict, dict]:
     """Reconcile the complete publication-selected archive into an evidence queue.
 
+    The source letter date is not necessarily the original regulatory action date.
     This does not classify application-level review cycles or authorize model
     training, regardless of how convincing the published source may appear.
     """
@@ -114,9 +115,9 @@ def build_fda_action_review_worklist(
             "canonical_application_candidates": candidates,
             "identity_link_status": link.get("identity_link_status"),
             "letter_type_as_published": letter_type,
-            "source_publication_date_as_published": source_row.get("letter_date_as_published"),
+            "source_letter_date_as_published": source_row.get("letter_date_as_published"),
             "letter_date_as_published": source_row.get("letter_date_as_published"),
-            "normalized_source_publication_date": publication_date,
+            "normalized_source_letter_date": publication_date,
             "published_document_category": DOCUMENT_KIND[letter_type],
             "prior_action_must_be_checked": letter_type in HIGH_PRIORITY_TYPES,
             "effective_fda_action_date_candidate": None,
@@ -155,7 +156,7 @@ def build_fda_action_review_worklist(
         else:
             row["source_review_priority"] = 5
     staged.sort(key=lambda r: (
-        r["source_review_priority"], r["normalized_source_publication_date"],
+        r["source_review_priority"], r["normalized_source_letter_date"],
         r["source_record_sha256"]
     ))
     audit = {
