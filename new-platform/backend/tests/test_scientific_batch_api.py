@@ -1,5 +1,6 @@
 """Offline API and persistence tests for isolated scientific batch control."""
 import json
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 from urllib.error import HTTPError
 
@@ -128,3 +129,27 @@ def test_unexpected_worker_failure_is_recorded_and_unlocks(isolated):
 def test_invalid_detail_id_not_reflected(isolated):
     result=isolated.get("/api/scientific-assessment/batches/something-suspicious",headers=AUTH)
     assert result.status_code==404
+
+
+def test_recovery_status_requires_auth_and_is_read_only(isolated):
+    path="/api/scientific-assessment/batches-recovery-status"
+    assert isolated.get(path).status_code==401
+    initial=isolated.get(path,headers=AUTH).json()
+    assert initial["active_job"] is None
+    assert initial["potentially_interrupted"] is False
+    job=scientific_batch_jobs.submit_job([A],start_worker=False)
+    fresh=isolated.get(path,headers=AUTH).json()
+    assert fresh["active_job"]["id"]==job["id"]
+    assert fresh["potentially_interrupted"] is False
+    # Advance only the diagnostic clock: the database row must remain unchanged.
+    future=datetime.now(timezone.utc)+timedelta(hours=2)
+    with patch("app.scientific_batch_jobs._now",return_value=future):
+        stale=isolated.get(path,headers=AUTH).json()
+    assert stale["potentially_interrupted"] is True
+    assert stale["manual_review_required"] is True
+    assert "No automatic retry" in stale["message"]
+    unchanged=scientific_batch_jobs.get_job(job["id"])
+    assert unchanged["status"]=="queued"
+    assert unchanged["processed"]==0
+    assert isolated.post("/api/scientific-assessment/batches",
+                         json={"nct_ids":[B]},headers=AUTH).status_code==409
