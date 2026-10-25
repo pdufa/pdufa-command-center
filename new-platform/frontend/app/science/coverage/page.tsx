@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { PublishedCoverage, StageCoverage } from "../../../lib/scientific-cohort-coverage";
+import { scienceInstallationGates } from "../../../lib/scientific-installation-gates";
 
 /** No automatic trial downloads, probes or scoring. Checks require explicit clicks. */
 const PILOT_EXACT_ID = "TRIAL|NCT02142738";
@@ -124,6 +125,9 @@ export default function ScientificListCoveragePage() {
     }
   }
 
+  const gates = scienceInstallationGates(data, connectionSucceeded);
+  const browserChecks = gates.filter(g => g.status === "CHECKED_IN_SESSION").length;
+
   return <main className="site">
     <section className="panel">
       <div className="sectionhead">
@@ -160,6 +164,24 @@ export default function ScientificListCoveragePage() {
       {!connectionResult && <p className="subtle">No connection test runs automatically.
         A successful test verifies credentials and one exact trial response only.</p>}
     </section>
+
+    <details className="panel" aria-label="Scientific installation release checklist">
+      <summary><strong>Science installation release checklist</strong> — {browserChecks} of 2
+        limited browser checks confirmed in this session; 5 independent release gates remain unverified</summary>
+      <p className="subtle">Read-only, on-demand installation diagnostics. The two browser checks
+        confirm only a published identity snapshot and one archived trial connection. They are
+        not a percentage of scientific completion, evidence adjudication or regulatory readiness.</p>
+      <ul>{gates.map(gate => <li key={gate.id}>
+        <strong>{gate.label}</strong> — {gate.status === "CHECKED_IN_SESSION"
+          ? "Limited browser check passed"
+          : gate.status === "NOT_CHECKED_IN_SESSION"
+            ? "Not checked in this session"
+            : "Independent verification required"}
+        <p className="subtle">{gate.explanation}</p>
+      </li>)}</ul>
+      <p role="status">Scientific conclusions, FDA approval probabilities, source imports,
+        scores and production release remain unauthorized by these checks.</p>
+    </details>
 
     {data && <section className="panel" aria-label="Published scientific cohort coverage report">
       <div className="sectionhead">
