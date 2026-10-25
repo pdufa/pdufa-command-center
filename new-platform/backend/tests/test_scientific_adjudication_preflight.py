@@ -59,6 +59,7 @@ def test_no_evidence_all_eight_questions_are_blocked():
     assert result["fdaApprovalProbability"] is None
     assert len(result["globalBlockers"]) == 4
     assert len(result["reviewQueue"]) == 8
+    assert [x["priority"] for x in result["reviewQueue"][:2]] == ["critical", "critical"]
     assert all(item["mayAutoResolve"] is False for item in result["reviewQueue"])
     assert all(q["adjudicationStatus"] == "blocked_unverified"
                and q["readyToResolve"] is False
