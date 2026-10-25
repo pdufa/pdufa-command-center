@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401, headers });
   }
   const base = hopBackendBase();
-  const secret = process.env.PDUFA_INTERNAL_API_KEY;
+  const secret = process.env.PDUFA_HOP_INTERNAL_API_KEY ?? process.env.PDUFA_INTERNAL_API_KEY;
   if (!base || !secret) {
     return NextResponse.json({ error: "HOP evidence source is not configured" }, { status: 503, headers });
   }

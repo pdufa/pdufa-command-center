@@ -56,8 +56,16 @@ installed `https://pdufa-hop-readonly-review.onrender.com` service. The ordinary
 storage backend does not have this endpoint. HOP never changes the storage or
 market-enrichment backend selection, and does not fall back to either service
 on an error. `PDUFA_HOP_API_BASE_URL` can explicitly override this source with a
-root HTTPS origin; an invalid override fails closed. The existing
-`PDUFA_INTERNAL_API_KEY` remains server-only and redirects are rejected.
+root HTTPS origin; an invalid override fails closed. Set the server-only
+`PDUFA_HOP_INTERNAL_API_KEY` to the existing HOP service's internal API key.
+Only this proxy consults that credential. If it is absent, the existing
+`PDUFA_INTERNAL_API_KEY` is used for backwards compatibility; an explicitly
+empty HOP credential fails closed. Redirects are rejected.
+
+Save the HOP credential as a Secret in the Vercel environment being configured,
+then redeploy that environment so the new value takes effect. Production and
+Preview configuration are independent. The shared storage credential does not
+need to be changed to connect the HOP source.
 
 Its single 45-second request deadline includes the existing bounded warm-up
 retry. A successful response reports research-source coverage; it cannot certify
