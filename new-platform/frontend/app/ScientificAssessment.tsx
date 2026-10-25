@@ -144,7 +144,7 @@ function verifiedPayload(value: unknown, exactId: string): Assessment {
     // No numeric score should be shown through the unadjudicated archive view.
     throw new Error("An unverified scientific score was returned. Display blocked.");
   }
-  const domains = source.domains;
+  const domains = source.domains as Record<string, unknown>;
   for (const item of Object.values(domains)) {
     if (!object(item) || item.score !== null || !count(item.verified_fields)
         || !count(item.required_fields) || item.verified_fields > item.required_fields
