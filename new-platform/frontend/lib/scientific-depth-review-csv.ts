@@ -119,3 +119,34 @@ export function buildScientificDepthReviewCsv(matrix: ScientificDepthMatrix): st
   }
   return rows.join("\r\n") + "\r\n";
 }
+
+
+/** Independent reviewer A/B are worksheet SLOTS, not authenticated humans.
+ * Both exports begin EMPTY. This is a human handoff, not evidence acceptance,
+ * authorization to write to the archive, or a digital reviewer signature.
+ * Validation is delegated to the same 320-row fail-closed matrix gate.
+ */
+export function buildScientificReviewerHandoffCsv(
+  matrix: ScientificDepthMatrix, reviewerSlot: "A" | "B",
+): string {
+  if (reviewerSlot !== "A" && reviewerSlot !== "B") {
+    throw new Error("Reviewer worksheet export blocked: unrecognized reviewer slot.");
+  }
+  const base = buildScientificDepthReviewCsv(matrix);
+  const lines = base.slice(0, -2).split("\r\n");
+  if (lines.length !== 321 || !base.endsWith("\r\n")) {
+    throw new Error("Reviewer worksheet export blocked: invalid pending task count.");
+  }
+  const columns = [
+    "reviewer_slot", "reviewer_name", "qualification_verification",
+    "primary_document_url", "document_sha256", "public_document_date",
+    "evidence_section_or_table", "finding_notes", "reviewer_decision",
+    "reviewer_signature", "submission_status",
+  ];
+  const header = lines[0] + "," + columns.map(csvCell).join(",");
+  const reviewerCells = [
+    reviewerSlot, "", "NOT_VERIFIED", "", "", "", "", "", "NOT_SUBMITTED",
+    "", "NOT_SUBMITTED",
+  ].map(csvCell).join(",");
+  return [header, ...lines.slice(1).map(line => line + "," + reviewerCells)].join("\r\n") + "\r\n";
+}
