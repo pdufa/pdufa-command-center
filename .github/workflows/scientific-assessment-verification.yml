@@ -19,6 +19,8 @@ on:
       - 'new-platform/backend/app/scientific_reviewer_ui.py'
       - 'new-platform/backend/app/scientific_reviewer_accounts.py'
       - 'new-platform/backend/tests/test_scientific_reviewer_portal.py'
+      - 'new-platform/backend/app/scientific_review_pairing.py'
+      - 'new-platform/backend/tests/test_scientific_review_pairing.py'
       - 'new-platform/backend/app/scientific_reviewer_nominations.py'
       - 'new-platform/backend/tests/test_scientific_reviewer_nominations.py'
       - 'new-platform/backend/app/scientific_operator_ui.py'
@@ -32,7 +34,7 @@ on:
       - 'new-platform/backend/tests/test_scientific_investigation_contract.py'
       - '.github/workflows/scientific-assessment-verification.yml'
   pull_request:
-    branches: [main]
+    branches: [main, feature/scientific-assessment-v1]
     paths:
       - 'scientific_assessment.py'
       - 'scientific_assessment_ui.py'
@@ -47,6 +49,8 @@ on:
       - 'new-platform/backend/app/scientific_reviewer_ui.py'
       - 'new-platform/backend/app/scientific_reviewer_accounts.py'
       - 'new-platform/backend/tests/test_scientific_reviewer_portal.py'
+      - 'new-platform/backend/app/scientific_review_pairing.py'
+      - 'new-platform/backend/tests/test_scientific_review_pairing.py'
       - 'new-platform/backend/app/scientific_reviewer_nominations.py'
       - 'new-platform/backend/tests/test_scientific_reviewer_nominations.py'
       - 'new-platform/backend/app/scientific_operator_ui.py'

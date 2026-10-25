@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from . import main
 from .scientific_review_submission import NCT_RE, QUESTION_RE, SHA_RE
 from .scientific_dual_review import audit_digest
+from .scientific_source_documents import _capture_meta
 
 
 def review_pairing_status(nct_id: str, question_id: str, source_sha256: str) -> dict:
@@ -15,12 +16,27 @@ def review_pairing_status(nct_id: str, question_id: str, source_sha256: str) -> 
             or not isinstance(source_sha256, str) or not SHA_RE.fullmatch(source_sha256)):
         raise ValueError("Exact trial, question and source hash required")
     with Session(main.ENGINE) as session:
+        # The historical statement archive is not enough to make a pairing
+        # currently reviewable: the exact original PDF bytes may be corrupted
+        # and either reviewer may have been disabled since submitting.
+        source = session.scalar(select(main.ScientificSourceDocument).where(
+            main.ScientificSourceDocument.nct_id == nct_id,
+            main.ScientificSourceDocument.sha256 == source_sha256,
+        ))
+        source_integrity = False
+        if source is not None:
+            try:
+                _capture_meta(source)  # Validates bytes, SHA-256 and metadata.
+                source_integrity = True
+            except (ValueError, TypeError, OverflowError):
+                pass
         rows = session.scalars(select(main.ScientificReviewSubmission).where(
             main.ScientificReviewSubmission.nct_id == nct_id,
             main.ScientificReviewSubmission.question_id == question_id,
             main.ScientificReviewSubmission.source_sha256 == source_sha256,
         )).all()
         valid = []
+        currently_authorized_subjects = set()
         for row in rows:
             payload = {"nctId": row.nct_id, "questionId": row.question_id,
                        "sourceSha256": row.source_sha256,
@@ -45,8 +61,15 @@ def review_pairing_status(nct_id: str, question_id: str, source_sha256: str) -> 
                 statement_valid, matching_events = False, []
             if statement_valid and len(matching_events) == 1:
                 valid.append(row)
+                account = session.get(main.ScientificReviewerAccount, row.google_subject)
+                if (account is not None and account.enabled
+                        and account.credentials_verified
+                        and account.role in ("reviewer", "second_reviewer")):
+                    currently_authorized_subjects.add(row.google_subject)
         subjects = {row.google_subject for row in valid}
         decisions = {row.decision for row in valid}
+    history_integrity = bool(rows) and len(rows) == len(valid)
+    two_active_reviewers = len(currently_authorized_subjects) >= 2
     return {
         "nctId": nct_id, "questionId": question_id, "sourceSha256": source_sha256,
         "recordedStatements": len(rows),
@@ -56,7 +79,14 @@ def review_pairing_status(nct_id: str, question_id: str, source_sha256: str) -> 
         "twoDistinctIdentityStatementsRecorded": len(subjects) >= 2,
         "clinicalIndependenceVerified": False,
         "decisionsAgree": len(subjects) >= 2 and len(decisions) == 1,
-        "auditIntegrityPassed": bool(rows) and len(rows) == len(valid),
+        "auditIntegrityPassed": history_integrity,
+        "sourceByteIntegrityPassed": source_integrity,
+        "currentlyAuthorizedReviewerCount": len(currently_authorized_subjects),
+        "twoCurrentlyAuthorizedReviewers": two_active_reviewers,
+        "pairingTechnicalPreflightPassed": (
+            history_integrity and source_integrity and two_active_reviewers
+            and len(decisions) == 1
+        ),
         "sourceContentIndependentlyVerified": False,
         "qualificationsIndependentlyAdjudicated": False,
         "formalSecondPersonSignoff": False,
