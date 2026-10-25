@@ -262,9 +262,8 @@ async def lifespan(app: FastAPI):
         os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes"),
     )
 
-    # Lightweight asynchronous read-only smoke check; never delays service
-    # readiness and never starts a survey, crawler, scan or trading order.
-    import threading
+    # Optional asynchronous source diagnostics; never delay service readiness.
+    # Full workspace/index preparation is explicitly enabled below.
     def verify_published_sources():
         try:
             from .alpaca_market_chart import _credentials, _feed, get_alpaca_bars
@@ -379,7 +378,11 @@ async def lifespan(app: FastAPI):
                 traceback_entry.tb_frame.f_code.co_name if traceback_entry else "UNKNOWN",
                 traceback_entry.tb_lineno if traceback_entry else "UNKNOWN",
             )
-    if _DB_STATE["available"]:
+    # Full source verification can outlive a short-lived API/test instance and
+    # retain database work after shutdown. Run this optional diagnostic only
+    # when explicitly enabled; normal authenticated reads remain on demand.
+    if (_DB_STATE["available"]
+            and os.getenv("PDUFA_STARTUP_FULL_SOURCE_VERIFY", "0").lower() in ("1", "true", "yes")):
         threading.Thread(target=verify_published_sources, daemon=True).start()
     if (_DB_STATE["available"] and os.getenv("PDUFA_FULL_TRIAL_DOWNLOAD_BOOTSTRAP") == "1"
             and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in ("1", "true", "yes")):
@@ -426,6 +429,7 @@ def health():
         "storage_reason": _DB_STATE["reason"],
         "storage_kind": "postgresql" if DATABASE_URL.startswith("postgresql+psycopg://") else "sqlite",
         "production_scans_enabled": False,
+        "startup_source_verification_enabled": os.getenv("PDUFA_STARTUP_FULL_SOURCE_VERIFY", "0").lower() in ("1", "true", "yes"),
         "full_trial_download": archive_status(),
     }
 
