@@ -1005,6 +1005,14 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 
 
+@app.get("/scientific/operator", response_class=HTMLResponse)
+def scientific_operator_signin():
+    """Single Google-account login screen, isolated from the main dashboard."""
+    from .scientific_operator_page import operator_signin_page
+    return operator_signin_page()
+
+
+
 @app.get("/api/scientific-assessment/reviewer/auth-status", dependencies=[Depends(require_internal_key)])
 def scientific_reviewer_auth_status():
     """Configuration diagnostics without disclosing tokens, IDs or credentials."""
