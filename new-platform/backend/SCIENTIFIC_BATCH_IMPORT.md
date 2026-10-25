@@ -60,3 +60,34 @@ Each endpoint requires `x-pdufa-internal-key`. No API secret is included in the 
 **Crash limitations:** A forced instance shutdown can leave a queued or running job row with its active slot reserved. The system deliberately **does not automatically resume or retry** such a job; restarting could duplicate requests while an old instance is still operating. An administrator must verify the old worker is stopped and reconcile the unfinished job before allowing another. Do not manually delete a job without first recording its outcome. A separate safely fenced interrupted-job recovery workflow is needed before high-volume operation.
 
 The browser updates the selected job every four seconds while queued or running. This is **status polling only**, not a scientific source scan.
+
+## One-time authenticated live HTTP smoke verification
+
+The isolated review service can exercise its real loopback HTTP API using its
+**existing environment-held internal API key**. No API key is pasted into chat,
+GitHub, logs, a browser URL, or a test fixture.
+
+1. Confirm the review PostgreSQL database already holds `NCT04280705`,
+   has no active batch, and the isolated review service ID is
+   `srv-dbehn9fb9u1s739ok5vg`. Ensure the review-only import switch is on.
+2. Temporarily set `PDUFA_SCIENTIFIC_SMOKE_NCT=NCT04280705` **only**
+   on that review Render service and deploy the reviewed feature branch.
+3. After app startup, a **one-shot** daemon thread contacts
+   `http://127.0.0.1:8000` to verify unauthorized requests return 401,
+   authenticated list requests return 200, and the authenticated POST
+   returns 202. It polls the new job until one existing trial is confirmed
+   `already_exists` without changing the stored trial archive.
+4. Inspect `SCIENTIFIC_E2E_SMOKE status=PASS` or a sanitized FAIL/SKIPPED
+   reason in review logs. The stored batch history also records the attempt.
+5. **Immediately clear** `PDUFA_SCIENTIFIC_SMOKE_NCT` and redeploy.
+   Leaving it configured can cause repeat attempts after future restarts,
+   although a durable single-ID-job replay guard prevents repeat submission
+   once such a job was recorded.
+
+The smoke test will **skip** instead of importing if the exact trial is not
+already archived, the service identity differs, the DB/key/switch is absent,
+an unfinished batch holds the exclusive slot, or a prior identical single-ID
+batch already exists. If the registry/network fails, it logs FAIL and leaves
+the durable job intact; there is no automatic retry, unlock, or cleanup.
+The smoke does not confirm external-browser functionality and does not
+constitute scientific efficacy or safety verification.
