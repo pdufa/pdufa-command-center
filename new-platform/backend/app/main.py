@@ -284,9 +284,13 @@ async def lifespan(app: FastAPI):
                         select(func.count()).select_from(ScientificBatchJob)
                         .where(ScientificBatchJob.active_slot.is_not(None))
                     )
+                    claim_count = session.scalar(
+                        select(func.count()).select_from(ScientificSmokeClaim)
+                    )
                 logging.getLogger(__name__).warning(
-                    "SCIENTIFIC_BATCH_STORAGE_STATUS status=PASS stored_job_count=%s active_job_count=%s",
-                    batch_count, active_count,
+                    "SCIENTIFIC_BATCH_STORAGE_STATUS status=PASS stored_job_count=%s "
+                    "active_job_count=%s smoke_claim_count=%s",
+                    batch_count, active_count, claim_count,
                 )
             except Exception as batch_diagnostic_error:
                 logging.getLogger(__name__).warning(
