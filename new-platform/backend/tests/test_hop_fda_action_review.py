@@ -79,7 +79,7 @@ def test_corrected_letter_source_date_never_assumed_to_be_action_date():
     result, audit = build_fda_action_review_worklist(
         *archives([row], [identity(row, ["BLA761401"])]), date(2026, 10, 25))
     event = result["records"][0]
-    assert event["normalized_source_publication_date"] == "2026-04-10"
+    assert event["normalized_source_letter_date"] == "2026-04-10"
     assert event["effective_fda_action_date_candidate"] is None
     assert event["effective_fda_action_date_independently_verified"] is False
     assert event["review_cycle_number_verified"] is False
