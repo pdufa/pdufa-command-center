@@ -209,6 +209,25 @@ class ScientificReviewerAccount(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class ScientificReviewerNomination(Base):
+    """Operator-only reviewer candidate queue; NO permissions or invitations.
+
+    Nomination is never a ScientificReviewerAccount and cannot authenticate
+    against reviewer endpoints. Qualifications and independence are unverified.
+    """
+    __tablename__ = "scientific_reviewer_nominations"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    candidate_email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
+    display_name: Mapped[str] = mapped_column(String(160), nullable=False, default="")
+    specialty: Mapped[str] = mapped_column(String(40), nullable=False)
+    qualifications_note: Mapped[str] = mapped_column(String(1200), nullable=False, default="")
+    nomination_status: Mapped[str] = mapped_column(String(40), nullable=False)
+    nominated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    # This table intentionally has no Google subject, credential-verified field,
+    # enabled permission, reviewer role, or scientific adjudication status.
+
+
 class ScientificReviewAuditEvent(Base):
     """Append-only audit envelope. Never constitutes clinical adjudication."""
     __tablename__ = "scientific_review_audit_events"
@@ -1227,6 +1246,59 @@ def scientific_operator_reviewer_setup(
         raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
     from .scientific_reviewer_accounts import reviewer_setup_summary
     result = reviewer_setup_summary()
+    response.headers["Cache-Control"] = "private, no-store"
+    return result
+
+
+class ScientificReviewerNominationInput(BaseModel):
+    """Nominate candidate only: never authorize, contact or credential-check."""
+    model_config = ConfigDict(extra="forbid")
+
+    candidateEmail: str = Field(min_length=5, max_length=320)
+    displayName: str = Field(default="", max_length=160)
+    specialty: Literal["clinical_oncology", "biostatistics", "drug_safety", "regulatory_science"]
+    qualificationsNote: str = Field(default="", max_length=1200)
+    nominationOnlyAcknowledged: Literal[True]
+
+
+@app.get("/api/scientific-assessment/operator/reviewer-nominations")
+def scientific_operator_list_nominations(
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """List nomination-only candidates to the verified Google operator."""
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
+    from .scientific_reviewer_nominations import list_nominations
+    response.headers["Cache-Control"] = "private, no-store"
+    return list_nominations()
+
+
+@app.post("/api/scientific-assessment/operator/reviewer-nominations", status_code=201)
+def scientific_operator_nominate_reviewer(
+    body: ScientificReviewerNominationInput,
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Capture candidate details ONLY; never provision or invite a reviewer."""
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
+    from .scientific_reviewer_nominations import nominate_reviewer
+    try:
+        result = nominate_reviewer(
+            candidate_email=body.candidateEmail,
+            display_name=body.displayName,
+            specialty=body.specialty,
+            qualifications_note=body.qualificationsNote,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Candidate already nominated") from None
     response.headers["Cache-Control"] = "private, no-store"
     return result
 
