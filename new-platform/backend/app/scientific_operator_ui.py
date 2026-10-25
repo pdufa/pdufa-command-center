@@ -53,6 +53,12 @@ _PAGE = r'''<!doctype html>
     <p class="status" id="signin-status" role="status">Preparing Google sign-in…</p>
     <button id="signout" type="button" class="hide">Sign out</button>
   </section>
+  <section id="reviewer-setup" class="panel hide" aria-label="Reviewer access setup">
+    <h2>Independent reviewer installation</h2>
+    <p class="muted">Reviewer identities must be separate from the operator. Qualifications and roles require independent administrator validation. Scientific sign-off remains disabled.</p>
+    <p id="reviewer-setup-status" class="status" role="status">Reviewer access configuration not checked.</p>
+    <p><a href="/scientific/reviewer" target="_blank" rel="noopener noreferrer">Open separate reviewer sign-in</a></p>
+  </section>
   <section id="research" class="panel hide" aria-label="Scientific research">
     <h2>Archived-trial investigation</h2>
     <p class="muted">Read-only source review; no scanner, trading, or FS/FA preset modifications.</p>
