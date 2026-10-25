@@ -5,6 +5,8 @@ Google token, credentials, OAuth consent, source verification or scoring.
 """
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import threading
 from contextlib import contextmanager
@@ -41,6 +43,9 @@ class Handler(BaseHTTPRequestHandler):
     identity_calls = 0
     research_calls = 0
     worksheet_calls = 0
+    pdf_enabled = False
+    archive_calls = 0
+    pdf_bytes = None
 
     def log_message(self, *_args):
         return
@@ -84,7 +89,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.respond(403, {"detail": "Google account not authorized"})
             else:
                 self.respond(200, {"role": "operator", "identityVerified": True,
-                                   "maySignOff": False, "mayPromoteScientificScore": False})
+                                   "maySignOff": False, "mayPromoteScientificScore": False,
+                                   "mayArchiveSourcePdf": type(self).pdf_enabled})
             return
         if self.path.startswith("/api/scientific-assessment/operator/research?"):
             type(self).research_calls += 1
@@ -134,7 +140,15 @@ class Handler(BaseHTTPRequestHandler):
                             for i in range(1, 9)
                         ],
                     },
-                    "capturedSourceDocuments": {"sourceDocumentCount": 0},
+                    "capturedSourceDocuments": {
+                        "sourceDocumentCount": 1 if type(self).pdf_bytes is not None else 0,
+                        "documents": [{
+                            "documentId": "a"*32, "gateId": "protocol_sap",
+                            "byteLength": len(type(self).pdf_bytes),
+                            "sha256": hashlib.sha256(type(self).pdf_bytes).hexdigest(),
+                            "documentContentScientificallyVerified": False,
+                        }] if type(self).pdf_bytes is not None else [],
+                    },
                     "verifiedGateCount": 0,
                 },
                 "assessment": {"overall_score": None},
@@ -165,18 +179,70 @@ class Handler(BaseHTTPRequestHandler):
                 },
             })
             return
+        if self.path == "/api/scientific-assessment/operator/source-documents/NCT02142738/" + "a"*32:
+            if self.headers.get("Authorization") != "Bearer " + FAKE_TOKEN:
+                self.respond(401, {"detail": "Unauthorized"})
+                return
+            if type(self).pdf_bytes is None:
+                self.respond(404, {"detail": "Unknown document"})
+                return
+            raw = type(self).pdf_bytes
+            self.send_response(200)
+            self.send_header("Content-Type", "application/pdf")
+            self.send_header("Content-Length", str(len(raw)))
+            self.send_header("Cache-Control", "private, no-store")
+            self.send_header("Content-Disposition", 'attachment; filename="NCT02142738_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.pdf"')
+            self.send_header("X-Source-Document-SHA256", hashlib.sha256(raw).hexdigest())
+            self.end_headers()
+            self.wfile.write(raw)
+            return
         if self.path == "/health":
             self.respond(200, {"ok": True})
             return
         self.respond(404, {"detail": "Not found"})
 
 
+    def do_POST(self):
+        if self.path != "/api/scientific-assessment/operator/source-documents/NCT02142738":
+            self.respond(404, {"detail": "Not found"})
+            return
+        type(self).archive_calls += 1
+        if not type(self).accept_operator or not type(self).pdf_enabled or (
+            self.headers.get("Authorization") != "Bearer " + FAKE_TOKEN
+        ):
+            self.respond(403, {"detail": "Unauthorized"})
+            return
+        size = int(self.headers.get("Content-Length", "0"))
+        if size <= 0 or size > 5_800_000:
+            self.respond(413, {"detail": "Invalid PDF upload"})
+            return
+        data = json.loads(self.rfile.read(size))
+        raw = base64.b64decode(data["contentBase64"], validate=True)
+        digest = hashlib.sha256(raw).hexdigest()
+        if data["gateId"] != "protocol_sap" or data["sha256"] != digest or (
+            not raw.startswith(b"%PDF-") or b"%%EOF" not in raw[-1024:]
+        ):
+            self.respond(422, {"detail": "PDF bytes failed validation"})
+            return
+        type(self).pdf_bytes = raw
+        self.respond(201, {
+            "documentId": "a"*32, "nctId": "NCT02142738",
+            "sha256": digest, "byteLength": len(raw),
+            "byteIntegrityChecked": True,
+            "documentContentScientificallyVerified": False,
+            "canCountTowardReadiness": False,
+        })
+
+
 @contextmanager
-def stub_service(*, accepted=True):
+def stub_service(*, accepted=True, pdf_enabled=False):
     Handler.accept_operator = accepted
     Handler.identity_calls = 0
     Handler.research_calls = 0
     Handler.worksheet_calls = 0
+    Handler.pdf_enabled = pdf_enabled
+    Handler.archive_calls = 0
+    Handler.pdf_bytes = None
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -247,5 +313,58 @@ def test_browser_rejects_wrong_google_operator_without_exposing_research():
             assert not page.locator("#research").is_visible()
             assert Handler.identity_calls == 1
             assert Handler.research_calls == 0
+        finally:
+            browser.close()
+
+
+
+def test_browser_google_operator_archives_original_pdf_bytes_without_scientific_verification():
+    raw = b"%PDF-1.7\n1 0 obj<</Type/Catalog>>endobj\nOriginal-source-test-bytes\n%%EOF\n"
+    with stub_service(accepted=True, pdf_enabled=True) as url, playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        try:
+            page = browser.new_page(viewport={"width": 1280, "height": 850}, accept_downloads=True)
+            page.route("https://accounts.google.com/gsi/client", mock_google_script)
+            page.goto(url + "/scientific/operator")
+            page.locator("#test-google-button").wait_for(timeout=10000)
+            assert not page.locator("#pdf-capture").is_visible()
+            page.locator("#test-google-button").click()
+            page.get_by_text("Read-only source inventory loaded.", exact=False).wait_for(timeout=10000)
+            assert page.locator("#pdf-capture").is_visible()
+            assert Handler.archive_calls == 0
+            page.locator("#source-pdf-kind").select_option("protocol")
+            page.locator("#source-pdf-file").set_input_files({
+                "name": "Protocol.pdf", "mimeType": "application/pdf", "buffer": raw
+            })
+            page.locator("#archive-pdf").click()
+            page.get_by_text("PDF saved with SHA-256 byte check.", exact=False).wait_for(timeout=10000)
+            assert Handler.archive_calls == 1
+            assert Handler.pdf_bytes == raw
+            page.get_by_text("Read-only source inventory loaded.", exact=False).wait_for(timeout=10000)
+            page.get_by_text("1", exact=True).first.wait_for(timeout=10000)
+            assert page.locator("#captured-pdfs button").count() == 1
+            with page.expect_download() as result:
+                page.locator("#captured-pdfs button").click()
+            download=result.value
+            assert download.suggested_filename.endswith(".pdf")
+            assert page.get_by_text("Scientific score", exact=True).is_visible()
+            assert page.get_by_text("Not assigned", exact=True).is_visible()
+            assert page.get_by_text("0 / 40", exact=True).is_visible()
+        finally:
+            browser.close()
+
+
+def test_browser_pdf_capture_stays_hidden_for_unauthorized_operator():
+    with stub_service(accepted=False, pdf_enabled=True) as url, playwright() as p:
+        browser=p.chromium.launch(headless=True)
+        try:
+            page=browser.new_page()
+            page.route("https://accounts.google.com/gsi/client", mock_google_script)
+            page.goto(url + "/scientific/operator")
+            page.locator("#test-google-button").wait_for(timeout=10000)
+            page.locator("#test-google-button").click()
+            page.get_by_text("Account not authorized or Google session expired (403)", exact=False).wait_for(timeout=10000)
+            assert not page.locator("#pdf-capture").is_visible()
+            assert Handler.archive_calls == 0
         finally:
             browser.close()
