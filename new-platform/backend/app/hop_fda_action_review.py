@@ -10,7 +10,6 @@ from collections import Counter, defaultdict
 from datetime import date
 import re
 
-from .hop_fda_application_crosswalk import canonical_application_id
 
 CROSSWALK_STATUS = "IDENTITY_LINKAGE_ONLY_NOT_A_REVIEW_CYCLE_OUTCOME_COHORT"
 CRL_SOURCE_STATUS = "QUARANTINED_NOT_A_COMPLETE_APPLICATION_COHORT"
@@ -83,6 +82,13 @@ def build_fda_action_review_worklist(
         if (link.get("letter_type_as_published") != source_row.get("letter_type_as_published")
                 or link.get("letter_date_as_published") != source_row.get("letter_date_as_published")):
             raise ValueError("letter source date or type does not reconcile")
+        link_status = link.get("identity_link_status")
+        if link_status not in {
+            "APPLICATION_ID_UNRESOLVED", "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS",
+            "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT",
+            "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT",
+        }:
+            raise ValueError("unexpected FDA identity status")
         letter_type = source_row["letter_type_as_published"]
         if letter_type not in DOCUMENT_KIND:
             raise ValueError("unrecognized official FDA published letter type")
@@ -109,11 +115,14 @@ def build_fda_action_review_worklist(
             "identity_link_status": link.get("identity_link_status"),
             "letter_type_as_published": letter_type,
             "source_publication_date_as_published": source_row.get("letter_date_as_published"),
+            "letter_date_as_published": source_row.get("letter_date_as_published"),
             "normalized_source_publication_date": publication_date,
             "published_document_category": DOCUMENT_KIND[letter_type],
             "prior_action_must_be_checked": letter_type in HIGH_PRIORITY_TYPES,
             "effective_fda_action_date_candidate": None,
             "effective_fda_action_date_independently_verified": False,
+            "identity_verified": False,
+            "review_cycle_verified": False,
             "original_fda_action_document_verified": False,
             "review_cycle_number_verified": False,
             "fda_review_cycle_outcome": None,
