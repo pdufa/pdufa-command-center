@@ -188,7 +188,7 @@ export function computePublishedScienceCoverage(
     asOf: workspace.asOf,
     sourceMode: workspace.mode,
     sourceHealthState: state,
-    status: state === "STALE" || state === "UNAVAILABLE" || state === "UNKNOWN"
+    status: state !== "FULL" || workspace.mode !== "LIVE_READ_ONLY_GITHUB_SOURCE"
       ? "SOURCE_NOT_FRESHLY_VERIFIED" : "PUBLISHED_SNAPSHOT_AUDIT",
     pipelineRows: pipeline.length,
     stages: [
