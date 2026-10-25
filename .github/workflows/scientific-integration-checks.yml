@@ -85,7 +85,9 @@ jobs:
               assert "no-store" in response.headers.get("Cache-Control", "")
               assert "nonce-" in response.headers.get("Content-Security-Policy", "")
           for path in ("/api/scientific-assessment/operator/me",
-                       "/api/scientific-assessment/operator/research?exact_id=TRIAL%7CNCT02142738"):
+                       "/api/scientific-assessment/operator/research?exact_id=TRIAL%7CNCT02142738",
+                       "/api/scientific-assessment/operator/worksheet/NCT02142738",
+                       "/api/scientific-assessment/operator/source-comparison/NCT02142738"):
               try:
                   with urllib.request.urlopen(root + path, timeout=90) as response:
                       status = response.status
