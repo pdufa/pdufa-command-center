@@ -92,6 +92,15 @@ def test_source_scoped_claims_protect_2016_vs_2020_2021_2017_windows(archive):
     assert "P024-04" in protocol["preliminaryObservation"]
     assert "P024-05" in protocol["preliminaryObservation"]
     assert "May 9, 2016" in protocol["preliminaryObservation"]
+    ema = protocol["reportedDesignNotYetIndependentlyAudited"]["ema2016ConditionalTesting"]
+    assert ema["dateOfRegulatorAssessment"] == "2016-12-15"
+    assert ema["oneSidedOrrAlpha"] == 0.005
+    assert ema["oneSidedPfsAlphaIfOrrPositive"] == 0.025
+    assert ema["oneSidedPfsAlphaIfOrrNegative"] == 0.020
+    assert ema["interimOsRequiresPfsSuccess"] is True
+    assert ema["hwangShihDeCaniAlphaSpendingGamma"] == -0.4
+    assert ema["hwangShihDeCaniBetaSpendingGamma"] == -35
+    assert ema["originalSignedSapInspected"] is False
     assert protocol["reportedDesignNotYetIndependentlyAudited"]["oneSidedFamilyAlpha"] == 0.025
     assert protocol["reportedDesignNotYetIndependentlyAudited"]["oneSidedPfsInterimAlpha"] == 0.02
     assert protocol["reportedDesignNotYetIndependentlyAudited"]["fdaReportedInterimOsThreshold"] == 0.0118
@@ -117,6 +126,8 @@ def test_source_scoped_claims_protect_2016_vs_2020_2021_2017_windows(archive):
     assert crossover["documentedPostAnalysisCrossoverAmendment"]["patientLevelCrossoverTimingIndependentlyVerified"] is False
     assert crossover["effectiveCrossover"]["patientsWithSubsequentAntiPd1Pdl1"] == 99
     assert crossover["effectiveCrossover"]["reportedPercent"] == 66.0
+    assert "not conducted" in crossover["preliminaryObservation"]
+    assert "ema_2016_assessment" in crossover["sourceIds"]
     assert "not automatically" in crossover["preliminaryObservation"]
     safety=rows["safety_endpoint_taxonomy"]
     assert safety["reportedGrade3To5TraePercent"]["pembrolizumab"] == 26.6
@@ -244,6 +255,9 @@ def test_protocol_lead_is_not_misrepresented_as_preunblinding_approval(archive):
     assert report["sources"]["german_regulator_2022_csr"]["kind"] == (
         "official_regulator_hosted_sponsor_report_retrospective")
     assert report["sources"]["german_regulator_2022_csr"]["locator"].find("P024-03") >= 0
+    assert report["sources"]["ema_2016_assessment"]["documentDate"] == "2016-12-15"
+    assert report["sources"]["ema_2016_assessment"]["kind"] == "original_regulatory_clinical_statistical_appraisal"
+    assert "ema_2016_assessment" in protocol["sourceIds"]
     assert report["sources"]["eu_trial_amendments"]["kind"] == (
         "official_eu_trial_registry_amendment_history")
     assert report["sources"]["fda_2019_review"]["kind"] == (
