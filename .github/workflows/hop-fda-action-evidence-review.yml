@@ -8,6 +8,7 @@ on:
       - '.github/workflows/hop-fda-action-evidence-review.yml'
       - 'new-platform/backend/scripts/collect_hop_fda_action_review.py'
       - 'new-platform/backend/app/hop_fda_action_review.py'
+      - 'new-platform/backend/app/hop_fda_document_probe.py'
 
 permissions:
   contents: read
