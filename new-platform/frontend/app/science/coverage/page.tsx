@@ -4,13 +4,21 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { PublishedCoverage, StageCoverage } from "../../../lib/scientific-cohort-coverage";
 
-/** No automatic trial download or scoring. One explicit read-only audit click. */
+/** No automatic trial downloads, probes or scoring. Checks require explicit clicks. */
+const PILOT_EXACT_ID = "TRIAL|NCT02142738";
 export default function ScientificListCoveragePage() {
   const [data, setData] = useState<PublishedCoverage | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [connectionLoading, setConnectionLoading] = useState(false);
+  const [connectionResult, setConnectionResult] = useState("");
+  const [connectionSucceeded, setConnectionSucceeded] = useState(false);
   const aborter = useRef<AbortController | null>(null);
-  useEffect(() => () => aborter.current?.abort(), []);
+  const connectionAborter = useRef<AbortController | null>(null);
+  useEffect(() => () => {
+    aborter.current?.abort();
+    connectionAborter.current?.abort();
+  }, []);
 
   async function audit() {
     aborter.current?.abort();
@@ -60,6 +68,62 @@ export default function ScientificListCoveragePage() {
     }
   }
 
+  /** A signed-in live read of one archived pilot, not scientific adjudication. */
+  async function checkScientificConnection() {
+    connectionAborter.current?.abort();
+    const controller = new AbortController();
+    connectionAborter.current = controller;
+    setConnectionLoading(true);
+    setConnectionSucceeded(false);
+    setConnectionResult("");
+    try {
+      const response = await fetch(
+        "/api/scientific-assessment/connection?exact_id=" + encodeURIComponent(PILOT_EXACT_ID),
+        { cache: "no-store", signal: controller.signal },
+      );
+      if (response.status === 401) throw new Error(
+        "Dashboard sign-in required. Sign in to the preview, then try again."
+      );
+      if (response.status === 502) throw new Error(
+        "The isolated scientific service rejected the preview access key. Connection is NOT verified."
+      );
+      if (!response.ok) throw new Error(
+        "Live scientific service connection NOT verified (HTTP " + response.status + ")."
+      );
+      const body: unknown = await response.json();
+      if (!body || typeof body !== "object" || Array.isArray(body)) {
+        throw new Error("Scientific connection response is invalid.");
+      }
+      const result = body as Record<string, unknown>;
+      if (result.connection !== "connected"
+          || result.exactTrialIdentityMatched !== true
+          || typeof result.archivedRecordPresent !== "boolean"
+          || result.independentScientificReview !== "not_certified_by_connection_test"
+          || result.approvalProbability !== null
+          || result.scoresAssignedByConnectionTest !== false) {
+        throw new Error("Scientific connection response failed validation.");
+      }
+      if (!controller.signal.aborted) {
+        setConnectionSucceeded(true);
+        setConnectionResult(
+          "CONNECTED: preview authenticated to isolated scientific service for "
+          + "KEYNOTE-024 (NCT02142738). Exact trial identity matched. "
+          + (result.archivedRecordPresent
+            ? "Archived registry record present. "
+            : "Archived registry record not loaded. ")
+          + "Independent scientific evidence and FDA outcome prediction remain UNVERIFIED."
+        );
+      }
+    } catch (cause) {
+      if (!controller.signal.aborted) {
+        setConnectionResult(cause instanceof Error ? cause.message :
+          "Scientific service connection could not be verified.");
+      }
+    } finally {
+      if (!controller.signal.aborted) setConnectionLoading(false);
+    }
+  }
+
   return <main className="site">
     <section className="panel">
       <div className="sectionhead">
@@ -77,6 +141,24 @@ export default function ScientificListCoveragePage() {
       </button>
       {error && <p role="alert">{error}</p>}
       {!data && !error && <p className="subtle">No sources are fetched until you select the check above. No trial imports are initiated.</p>}
+    </section>
+
+    <section className="panel" aria-label="Isolated scientific service connection">
+      <h2>Verify live scientific service connection</h2>
+      <p className="subtle">Signed-in, read-only pilot test for KEYNOTE-024
+        (NCT02142738): Vercel preview to the isolated Render scientific API.
+        This does not import trials, certify evidence, assign grades or predict FDA decisions.</p>
+      <button type="button" onClick={() => void checkScientificConnection()}
+        disabled={connectionLoading}>
+        {connectionLoading
+          ? "Checking isolated scientific service…"
+          : "Verify isolated scientific API (pilot)"}
+      </button>
+      {connectionResult && <p role={connectionSucceeded ? "status" : "alert"}>
+        {connectionResult}
+      </p>}
+      {!connectionResult && <p className="subtle">No connection test runs automatically.
+        A successful test verifies credentials and one exact trial response only.</p>}
     </section>
 
     {data && <section className="panel" aria-label="Published scientific cohort coverage report">
