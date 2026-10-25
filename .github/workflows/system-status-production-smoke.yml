@@ -12,6 +12,7 @@ on:
       - 'new-platform/frontend/app/api/assessments/route.ts'
       - 'new-platform/frontend/app/api/hop/readiness/route.ts'
       - 'new-platform/frontend/lib/science-outcome-gates.ts'
+      - 'new-platform/frontend/lib/hop-backend.ts'
   push:
     branches: [main]
     paths:
@@ -23,6 +24,7 @@ on:
       - 'new-platform/frontend/app/api/assessments/route.ts'
       - 'new-platform/frontend/app/api/hop/readiness/route.ts'
       - 'new-platform/frontend/lib/science-outcome-gates.ts'
+      - 'new-platform/frontend/lib/hop-backend.ts'
   workflow_dispatch:
 
 permissions:

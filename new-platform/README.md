@@ -49,6 +49,20 @@ Changing the override requires a new deployment for the setting to take
 effect. Disabling it falls back to `PDUFA_API_BASE_URL`; it does not
 automatically copy any Program ID or clinical evidence between services.
 
+### Historical outcome audit source
+
+The session-protected, read-only `/api/hop/readiness` proxy uses the separately
+installed `https://pdufa-hop-readonly-review.onrender.com` service. The ordinary
+storage backend does not have this endpoint. HOP never changes the storage or
+market-enrichment backend selection, and does not fall back to either service
+on an error. `PDUFA_HOP_API_BASE_URL` can explicitly override this source with a
+root HTTPS origin; an invalid override fails closed. The existing
+`PDUFA_INTERNAL_API_KEY` remains server-only and redirects are rejected.
+
+Its single 45-second request deadline includes the existing bounded warm-up
+retry. A successful response reports research-source coverage; it cannot certify
+review-cycle outcomes, enable predictions, or publish an approval probability.
+
 ### Isolated research evidence review
 
 The isolated Program ID readiness endpoint reads the existing selected GEM JR or
