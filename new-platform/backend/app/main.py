@@ -297,6 +297,44 @@ async def lifespan(app: FastAPI):
                 "SCIENTIFIC_ARCHIVE_READBACK status=FAIL error_type=%s",
                 type(verify_exc).__name__,
             )
+    # Isolated review startup: read one known archived Phase 3 pilot, validate
+    # evidence/source identity and eight unscored domains, log only booleans
+    # and counts. Never changes any stored trial or candidate rankings.
+    if (_DB_STATE["available"] and REQUIRE_POSTGRES
+            and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes")):
+        try:
+            from .scientific_pilot_live_verify import verify_archived_keynote024
+            with Session(ENGINE) as pilot_session:
+                pilot_record = pilot_session.get(FullTrialRecord, "NCT02142738")
+                if pilot_record is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=NOT_ARCHIVED"
+                    )
+                else:
+                    pilot_diagnostic = verify_archived_keynote024(
+                        pilot_record.nct_id,
+                        pilot_record.payload_gzip,
+                        pilot_record.sha256,
+                        pilot_record.fetched_at,
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=%s nct_id=%s "
+                        "archive_verified=%s domains=%d publications=%d "
+                        "completed=%s scored=%s read_only=%s",
+                        pilot_diagnostic["status"],
+                        pilot_diagnostic["nct_id"],
+                        pilot_diagnostic["archived_source_verified"],
+                        pilot_diagnostic["scientific_domains"],
+                        pilot_diagnostic["published_analyses"],
+                        pilot_diagnostic["scientific_assessment_completed"],
+                        pilot_diagnostic["score_assigned"],
+                        pilot_diagnostic["read_only"],
+                    )
+        except Exception as pilot_error:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=FAIL error_type=%s",
+                type(pilot_error).__name__,
+            )
     # Explicit one-record bootstrap for isolated review; disabled by default.
     # Never runs for production unless separately and deliberately configured.
     bootstrap_nct = os.getenv("PDUFA_SCIENTIFIC_BOOTSTRAP_NCT", "").strip()
