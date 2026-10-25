@@ -113,6 +113,8 @@ _PAGE = r'''<!doctype html>
   var button = document.getElementById("google-button");
   var signin = document.getElementById("signin-status");
   var research = document.getElementById("research");
+  var reviewerSetup = document.getElementById("reviewer-setup");
+  var reviewerSetupStatus = document.getElementById("reviewer-setup-status");
   var signout = document.getElementById("signout");
   var loadButton = document.getElementById("load");
   var currentReportId = null;
@@ -160,6 +162,7 @@ _PAGE = r'''<!doctype html>
   function clear() {
     token = null;
     research.classList.add("hide");
+    reviewerSetup.classList.add("hide");
     report.classList.add("hide");
     signout.classList.add("hide");
     capturePanel.classList.add("hide");
@@ -200,6 +203,8 @@ _PAGE = r'''<!doctype html>
       button.classList.add("hide");
       signout.classList.remove("hide");
       research.classList.remove("hide");
+      reviewerSetup.classList.remove("hide");
+      void checkReviewerSetup();
       canArchivePdf = identity.mayArchiveSourcePdf === true;
       canFetchOfficialPdf = identity.mayFetchOfficialPdf === true;
       officialFetchButton.classList.toggle("hide", !canFetchOfficialPdf);
