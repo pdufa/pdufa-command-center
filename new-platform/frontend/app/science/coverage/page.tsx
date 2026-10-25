@@ -124,6 +124,11 @@ export default function ScientificListCoveragePage() {
     }
   }
 
+  // The two checks reflect only explicit successful requests in this browser session.
+  // They are not source adjudication or a software release authorization.
+  const currentPublishedSourceVerified = data?.status === "PUBLISHED_SNAPSHOT_AUDIT";
+  const sessionChecksVerified = Number(currentPublishedSourceVerified) + Number(connectionSucceeded);
+
   return <main className="site">
     <section className="panel">
       <div className="sectionhead">
@@ -159,6 +164,39 @@ export default function ScientificListCoveragePage() {
       </p>}
       {!connectionResult && <p className="subtle">No connection test runs automatically.
         A successful test verifies credentials and one exact trial response only.</p>}
+    </section>
+
+    <section className="panel" aria-label="Scientific release readiness checklist">
+      <details>
+        <summary><strong>Scientific release checklist — {sessionChecksVerified} of 2 session checks verified; 5 independent requirements</strong></summary>
+        <p className="subtle">The session checks require the buttons above. They reset on refresh
+          and do not establish a completed live scan, original-document authenticity,
+          independent clinical assessment, or production release approval.</p>
+        <h3>Read-only session checks</h3>
+        <ol>
+          <li><strong>Current published GEM JR / GEM / WT program identity:</strong>{" "}
+            {currentPublishedSourceVerified
+              ? "Published source health and exact-NCT identity checked in this session."
+              : "Not freshly verified in this session. Run Check current list coverage."}
+          </li>
+          <li><strong>Authenticated isolated scientific API transport:</strong>{" "}
+            {connectionSucceeded
+              ? "Pilot exact-NCT connection checked in this session."
+              : "Not verified in this session. Run Verify isolated scientific API (pilot)."}
+          </li>
+        </ol>
+        <h3>Independent release requirements — not certified by these checks</h3>
+        <ol>
+          <li>Authenticated primary-source origin, original PDF bytes, dates and content verification.</li>
+          <li>Original protocol/SAP, endpoint estimates, safety denominators and contradictory findings adjudicated.</li>
+          <li>Two independently authenticated, appropriately qualified reviewers and signed evidence decisions.</li>
+          <li>Validated, held-out FDA outcome calibration before any numeric regulatory prediction.</li>
+          <li>Production credential isolation, rollback rehearsal, current FS/FA parity and explicit release authorization.</li>
+        </ol>
+        <p><strong>Scientific release: HOLD.</strong> No independent scientific
+          conclusions, FDA approval probabilities, trial imports or clinical scores
+          are authorized by this checklist.</p>
+      </details>
     </section>
 
     {data && <section className="panel" aria-label="Published scientific cohort coverage report">
