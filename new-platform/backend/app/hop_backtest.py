@@ -50,7 +50,8 @@ def walk_forward_backtest(
                   and r.public_features_as_of is not None
                   and r.public_features_as_of < r.decision_date
                   and r.ascertainment_source in DENOMINATOR_SOURCES
-                  and r.outcome in OUTCOMES and r.cohort_id]
+                  and r.outcome in OUTCOMES and r.cohort_id
+                  and r.cohort_complete_verified is True]
         losses = []
         if len(train) >= min_train:
             for row in usable:
