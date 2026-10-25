@@ -141,3 +141,36 @@ def archive_official_pdf(
         "scientificallyVerified": False,
         "independentReviewRequired": True,
     }
+
+
+
+def bootstrap_pinned_pilot_sources() -> None:
+    """One deployment opt-in: capture each pinned original once without blocking health.
+
+    This function is called only from the isolated service's startup thread.
+    Repeat deployments are idempotent; failures preserve the existing archive.
+    """
+    import logging
+
+    logger = logging.getLogger(__name__)
+    for source in ("protocol", "fda"):
+        try:
+            receipt = archive_official_pdf(PILOT_NCT, source)
+            if (receipt["scientificallyVerified"] is not False
+                    or receipt["independentReviewRequired"] is not True):
+                raise RuntimeError("Unsafe scientific review flag in PDF receipt")
+            logger.warning(
+                "SCIENTIFIC_PINNED_SOURCE_CAPTURE source=%s status=%s "
+                "bytes=%d scientific_verification=False",
+                source,
+                "ALREADY_ARCHIVED" if receipt["alreadyArchived"] else "CAPTURED",
+                receipt["byteLength"],
+            )
+        except Exception as exc:
+            # Original source could be unavailable, oversized, or already
+            # concurrently captured. Never write a false source or score.
+            logger.warning(
+                "SCIENTIFIC_PINNED_SOURCE_CAPTURE source=%s status=UNAVAILABLE "
+                "error_type=%s scientific_verification=False",
+                source, type(exc).__name__,
+            )
