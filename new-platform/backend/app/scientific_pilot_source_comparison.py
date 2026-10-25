@@ -14,7 +14,8 @@ from copy import deepcopy
 
 from .scientific_reconciliation_worklist import (
     PROTOCOL_SAP, FDA_2016_APPROVAL, ORIGINAL_TRIAL, FOLLOWUP_5YEAR,
-    QUALITY_OF_LIFE, REGISTRY, reconciliation_worklist,
+    QUALITY_OF_LIFE, REGISTRY, GERMAN_REGULATOR_CSR, EMA_2016_ASSESSMENT,
+    reconciliation_worklist,
 )
 from .scientific_source_documents import read_document_manifest
 from .scientific_evidence_ledger import read_ledger
@@ -74,10 +75,17 @@ SOURCES = {
     },
     "german_regulator_2022_csr": {
         "label": "German Paul-Ehrlich-Institut published KEYNOTE-024 study-report amendment history",
-        "url": "https://portal.dimdi.de/data/ctr/O-2145_01-2-0-CE336C-20220110151635.pdf",
+        "url": GERMAN_REGULATOR_CSR,
         "documentDate": None,
         "kind": "official_regulator_hosted_sponsor_report_retrospective",
         "locator": "PDF page 47 (zero-index 46), Protocol MK-3475-024 amendment table, P024-03",
+    },
+    "ema_2016_assessment": {
+        "label": "EMA CHMP assessment, KEYNOTE-024 first-line pembrolizumab, 15 Dec 2016",
+        "url": EMA_2016_ASSESSMENT,
+        "documentDate": "2016-12-15",
+        "kind": "original_regulatory_clinical_statistical_appraisal",
+        "locator": "PDF pages 29-31 (zero-index 28-30): objectives, conditional alpha, planned analyses; page 35 amendments",
     },
     "eu_trial_amendments": {
         "label": "EU Clinical Trials Register amendment history, EudraCT 2014-000323-25",
@@ -122,7 +130,7 @@ OBSERVATIONS = {
     "protocol_amendment_chronology": {
         "sourceIds": [
             "protocol_2017", "german_regulator_2022_csr",
-            "eu_trial_amendments", "reck_2016",
+            "eu_trial_amendments", "ema_2016_assessment", "reck_2016",
             "nejm_2016_protocol_lead", "fda_2019_review",
         ],
         "preliminaryObservation": (
@@ -142,7 +150,12 @@ OBSERVATIONS = {
             "The 2016 trial article reports one-sided family alpha 0.025, "
             "PFS interim alpha 0.020 and a prespecified OS sequence; "
             "a retrospective FDA review reports the 0.0118 interim OS "
-            "threshold. Neither observation independently certifies pre-lock execution."
+            "threshold. The December 2016 EMA CHMP assessment also documents "
+            "the actual conditional alpha scheme: ORR tested at one-sided "
+            "0.5%, PFS at 2.5% if ORR was significant or 2.0% otherwise, "
+            "and sequential OS only after positive PFS. Its Hwang-Shih-DeCani "
+            "alpha-spending model is described with gamma -0.4. A retrospective "
+            "regulator assessment does not independently certify a pre-unblinding lock."
         ),
         "documentedPreAnalysisAmendment": {
             "number": "P024-03", "scope": "global", "dateFinalized": "2016-01-28",
@@ -164,6 +177,16 @@ OBSERVATIONS = {
             "oneSidedPfsInterimAlpha": 0.020,
             "fdaReportedInterimOsThreshold": 0.0118,
             "fdaReportedThresholdSourceYear": 2019,
+            "ema2016ConditionalTesting": {
+                "dateOfRegulatorAssessment": "2016-12-15",
+                "oneSidedOrrAlpha": 0.005,
+                "oneSidedPfsAlphaIfOrrPositive": 0.025,
+                "oneSidedPfsAlphaIfOrrNegative": 0.020,
+                "interimOsRequiresPfsSuccess": True,
+                "hwangShihDeCaniAlphaSpendingGamma": -0.4,
+                "hwangShihDeCaniBetaSpendingGamma": -35,
+                "originalSignedSapInspected": False,
+            },
         },
         "analysisBoundary": "2016-05-09",
         "stillMissing": (
@@ -176,7 +199,7 @@ OBSERVATIONS = {
         "risk": "critical",
     },
     "baseline_population_indication": {
-        "sourceIds": ["reck_2016", "fda_2016", "registry"],
+        "sourceIds": ["reck_2016", "fda_2016", "ema_2016_assessment", "registry"],
         "preliminaryObservation": (
             "The original report randomized 305 patients (154 pembrolizumab; "
             "151 chemotherapy) with PD-L1 TPS at least 50% and no sensitizing "
@@ -191,7 +214,8 @@ OBSERVATIONS = {
         "risk": "high",
     },
     "pfs_initial_vs_followup": {
-        "sourceIds": ["reck_2016", "reck_2021", "fda_peer_review", "fda_2019_review"],
+        "sourceIds": ["reck_2016", "reck_2021", "fda_peer_review",
+                      "fda_2019_review", "ema_2016_assessment"],
         "preliminaryObservation": (
             "Initial May 2016 analysis: PFS 10.3 versus 6.0 months, "
             "HR 0.50 (95% CI 0.37–0.68); interim OS HR 0.60 "
@@ -223,7 +247,7 @@ OBSERVATIONS = {
     "crossover_adjustment": {
         "sourceIds": [
             "reck_2016", "reck_2021", "german_regulator_2022_csr",
-            "eu_trial_amendments",
+            "eu_trial_amendments", "ema_2016_assessment",
         ],
         "preliminaryObservation": (
             "At the original May 2016 cutoff the 2016 paper reports 66 "
@@ -239,7 +263,10 @@ OBSERVATIONS = {
             "receiving subsequent anti-PD-1/PD-L1 therapy (66.0% effective "
             "crossover). This includes subsequent off-study treatment, "
             "and should not automatically be interpreted as 99 on-study "
-            "protocol crossovers or as a causal crossover-adjusted OS estimate."
+            "protocol crossovers or as a causal crossover-adjusted OS estimate. "
+            "The EMA's December 2016 review further says a planned exploratory "
+            "comparison of time to progression before versus after crossover "
+            "was not conducted."
         ),
         "documentedPostAnalysisCrossoverAmendment": {
             "number": "P024-06",
@@ -270,7 +297,7 @@ OBSERVATIONS = {
         "risk": "high",
     },
     "safety_endpoint_taxonomy": {
-        "sourceIds": ["reck_2016", "registry", "fda_peer_review"],
+        "sourceIds": ["reck_2016", "registry", "fda_peer_review", "ema_2016_assessment"],
         "preliminaryObservation": (
             "The 2016 article reports treatment-related grade 3–5 events "
             "in 26.6% versus 53.3%; those are not interchangeable with "
