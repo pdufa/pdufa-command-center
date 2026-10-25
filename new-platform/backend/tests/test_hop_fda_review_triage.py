@@ -129,7 +129,7 @@ def test_queue_sorts_conflicts_missing_reviews_and_unverified_agreement():
         original, first, second, comparison, pinned_index(), as_of=AS_OF
     )
     assert [row["triage_status"] for row in queue] == [
-        "SOURCE_METADATA_DISCREPANCY",
+        "REVIEWER_FINDINGS_CONFLICT",
         "REVIEW_SUBMISSIONS_INCOMPLETE",
         "MATCHING_TEXT_STILL_UNVERIFIED",
     ]
