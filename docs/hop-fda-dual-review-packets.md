@@ -151,3 +151,26 @@ probabilities are exported. Source-page links remain provisional.
 agreement.** An identity-verified adjudicator must inspect original source
 bytes, resolve differences and validate the complete application decision
 population before any record may be promoted or used to estimate outcomes.
+
+
+## Check matching reviewer claims against published FDA metadata
+
+Even when two reviewer packets report matching findings, the original
+publication inventory may disagree about the application ID, listed letter
+date, or document type. The read-only triage tool now compares every complete
+review claim against those three published-source fields. It adds
+`SOURCE_METADATA_DISCREPANCY` as the highest queue priority when a mismatch
+or essential missing source metadata is detected.
+
+This is a **warning, not a source verdict**: a letter may legitimately contain
+multiple applications or an effective action date that differs from the
+publication date. A qualified reviewer must inspect the original FDA document
+to decide. An apparent match to metadata also does **not** independently
+validate the source. Multiple kinds of concern can overlap: the queue counts
+each source once and separately preserves the reviewer-disagreement field list.
+
+The worksheet output includes
+`source_metadata_warning_flags`; it does not include private reviewer
+identities, prose notes, verified action labels, approval probabilities, or
+trading recommendations. No date, ID, or document-type mismatch is
+automatically reclassified as an FDA decision or used as a training example.
