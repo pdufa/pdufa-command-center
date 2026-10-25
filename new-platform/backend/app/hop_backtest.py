@@ -49,7 +49,13 @@ def walk_forward_backtest(
                  and r.ascertainment_source in DENOMINATOR_SOURCES
                  and r.outcome in OUTCOMES and r.cohort_id
                  and r.cohort_complete_verified is True]
-        train_ids = {r.application_id for r in train}
+        # Multiple completed review cycles for one application must not
+        # overweight that application in training. Keep its latest cycle.
+        latest_train = {}
+        for row in sorted(train, key=lambda r: (r.decision_date, r.review_cycle)):
+            latest_train[row.application_id] = row
+        train = list(latest_train.values())
+        train_ids = set(latest_train)
         usable = [r for r in test if r.application_id not in train_ids
                   and r.public_features_as_of is not None
                   and r.public_features_as_of < r.decision_date
