@@ -79,11 +79,20 @@ def test_source_scoped_claims_protect_2016_vs_2020_2021_2017_windows(archive):
     assert "2017" in protocol["preliminaryObservation"]
     assert protocol["analysisBoundary"] == "2016-05-09"
     assert "pre-unblinding" in protocol["stillMissing"]
+    assert protocol["journalProtocolSupplement"]["filename"] == "nejmoa1606774_protocol.pdf"
+    assert protocol["journalProtocolSupplement"]["pdfContentRetrievedAndInspected"] is False
+    assert protocol["journalProtocolSupplement"]["effectiveDateConfirmedBeforeAnalysis"] is False
+    assert protocol["reportedDesignNotYetIndependentlyAudited"]["oneSidedFamilyAlpha"] == 0.025
+    assert protocol["reportedDesignNotYetIndependentlyAudited"]["oneSidedPfsInterimAlpha"] == 0.02
+    assert protocol["reportedDesignNotYetIndependentlyAudited"]["fdaReportedInterimOsThreshold"] == 0.0118
     efficacy=rows["pfs_initial_vs_followup"]
     assert efficacy["initialPfs"]["cutoff"] == "2016-05-09"
     assert efficacy["initialPfs"]["hazardRatio"] == 0.5
     assert efficacy["initialPfs"]["reportedP"] == "<0.001"
     assert efficacy["initialInterimOs"]["hazardRatio"] == 0.60
+    assert efficacy["initialInterimOs"]["reportedP"] == "0.005"
+    assert efficacy["initialInterimOs"]["fda2019RetrospectiveInterimThreshold"] == "0.0118"
+    assert efficacy["initialInterimOs"]["alphaAndPValueAreDifferentMeasures"] is True
     assert efficacy["longTermOs"]["cutoff"] == "2020-06-01"
     assert efficacy["longTermOs"]["hazardRatio"] == 0.62
     crossover=rows["crossover_adjustment"]
@@ -113,9 +122,18 @@ def test_source_urls_are_https_curated_and_no_conflicting_claims(archive):
         assert all(source_id in brief["sources"] for source_id in row["sourceIds"])
         assert row["stillMissing"]
         assert "preliminary" in row["reviewStatus"]
-    assert "same underlying KEYNOTE-024 cohort" in (
-        next(x for x in brief["checks"]
-             if x["questionId"]=="independent_corroboration")["preliminaryObservation"])
+    corroboration = next(x for x in brief["checks"]
+                         if x["questionId"] == "independent_corroboration")
+    assert "KEYNOTE-042" in corroboration["preliminaryObservation"]
+    assert "multiplicity" in corroboration["preliminaryObservation"]
+    assert corroboration["independentTrialIdentified"] is True
+    assert corroboration["distinctEnrollmentTrial"]["trialId"] == "NCT02220894"
+    assert corroboration["distinctEnrollmentTrial"]["totalRandomized"] == 1274
+    assert corroboration["distinctEnrollmentTrial"]["highPdL1SubgroupRandomized"] == 599
+    assert corroboration["distinctEnrollmentTrial"]["highPdL1SubgroupOs"]["hazardRatio"] == 0.69
+    assert corroboration["distinctEnrollmentTrial"]["highPdL1SubgroupPfs"]["hazardRatio"] == 0.81
+    assert corroboration["distinctEnrollmentTrial"]["highPdL1SubgroupPfs"]["significantUnderTrialMultiplicityRules"] is False
+    assert corroboration["distinctEnrollmentTrial"]["independentlyMethodologicallyAdjudicated"] is False
     brief["checks"][0]["sourceIds"].clear()
     assert comparison.OBSERVATIONS["protocol_amendment_chronology"]["sourceIds"]
     brief["sources"]["fda_2016"]["url"]="https://changed.example"
@@ -192,3 +210,38 @@ def test_operator_endpoint_returns_conflict_on_untrusted_archive(operator_api,mo
         headers=GOOGLE)
     assert response.status_code==409
     assert "Metadata tampered" not in response.text
+
+
+
+def test_protocol_lead_is_not_misrepresented_as_preunblinding_approval(archive):
+    report = comparison.preliminary_pilot_evidence_comparison(NCT)
+    protocol = next(row for row in report["checks"]
+                    if row["questionId"] == "protocol_amendment_chronology")
+    assert protocol["independentlyResolved"] is False
+    assert protocol["criteriaSatisfied"] == 0
+    assert protocol["evidenceGateApproved"] is False
+    assert report["sources"]["nejm_2016_protocol_lead"]["kind"] == (
+        "publisher_supplement_link_not_content_verified")
+    assert report["sources"]["fda_2019_review"]["kind"] == (
+        "official_fda_multidisciplinary_review_retrospective")
+    assert protocol["journalProtocolSupplement"]["publicationYear"] == 2016
+    assert "2016 publication date does not prove earlier lock" in protocol["stillMissing"]
+
+
+def test_distinct_trial_replicates_os_direction_but_not_pfs_significance(archive):
+    report = comparison.preliminary_pilot_evidence_comparison(NCT)
+    study = next(row for row in report["checks"]
+                 if row["questionId"] == "independent_corroboration")
+    cohort = study["distinctEnrollmentTrial"]
+    assert cohort["trialId"] != NCT
+    assert cohort["sameParticipantsAsKeynote024"] is False
+    assert cohort["noOnStudyChemoToPembroCrossover"] is True
+    assert cohort["highPdL1SubgroupOs"]["prespecifiedEndpoint"] is True
+    assert cohort["highPdL1SubgroupPfs"]["significantUnderTrialMultiplicityRules"] is False
+    assert "KEYNOTE-042" in study["preliminaryObservation"]
+    assert "discordant PFS" in study["stillMissing"]
+    assert report["independentReplicationEstablished"] is False
+    assert report["verifiedIndependentGates"] == 0
+    assert report["scientificallyVerified"] is False
+    assert report["mayAssignScientificScore"] is False
+    assert report["fdaApprovalProbability"] is None
