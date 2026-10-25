@@ -11,7 +11,13 @@ from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
-from playwright.sync_api import sync_playwright
+import pytest
+
+# The dedicated Chromium workflow installs Playwright. Generic backend/recovery
+# test jobs intentionally do not, so browser-only tests skip collection there.
+sync_playwright = pytest.importorskip(
+    "playwright.sync_api", reason="Run in the scientific Chromium acceptance workflow"
+).sync_playwright
 
 from app.scientific_assessment import assess
 from app.scientific_batch_ui import render_batch_panel
