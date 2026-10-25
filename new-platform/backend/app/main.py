@@ -1285,6 +1285,17 @@ def scientific_operator_archive_pdf(
     require_scientific_operator_pdf_archive()
     if nct_id != "NCT02142738":
         raise HTTPException(status_code=403, detail="Only the archived pilot can accept operator PDFs")
+    from .scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL
+
+    approved = {
+        "protocol_sap": ("protocol_sap", PROTOCOL_SAP),
+        "official_regulatory": ("official_agency_document", FDA_2016_APPROVAL),
+    }
+    if (body.source_type, body.source_url) != approved[body.gate_id]:
+        raise HTTPException(
+            status_code=422,
+            detail="Pilot PDF URL, source type, and evidence gate must match",
+        )
     from .scientific_source_documents import capture_document
 
     try:
