@@ -614,6 +614,51 @@ async def lifespan(app: FastAPI):
                 "SCIENTIFIC_INVESTIGATION20_READBACK status=FAIL error_type=%s",
                 type(depth_error).__name__,
             )
+    # Verify the actual scientific API handler against the persisted archived
+    # pilot (not synthetic pytest stubs). No credentials, payloads, or patient
+    # details are logged, and this cannot promote evidence or trigger jobs.
+    if (_DB_STATE["available"] and REQUIRE_POSTGRES
+            and os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"):
+        try:
+            live_trial = get_scientific_assessment("TRIAL|NCT02142738")
+            forty = live_trial.get("investigation40") or {}
+            plan = forty.get("depthReview") or {}
+            tasks = plan.get("tasks") or []
+            ids = {
+                (item.get("assessmentId"), item.get("depthLevel"))
+                for item in tasks
+            }
+            forty_ok = (
+                live_trial.get("registryEvidenceStatus") == "source_record_loaded"
+                and forty.get("nctId") == "NCT02142738"
+                and len(forty.get("layers") or []) == 8
+                and forty.get("verification", {}).get("verified_assessments") == 0
+                and plan.get("requiredTasks") == 320
+                and plan.get("completedTasks") == 0
+                and len(tasks) == len(ids) == 320
+                and all(item.get("status") == "pending_independent_review"
+                        and item.get("independentlyVerified") is False
+                        and item.get("scientificScore") is None
+                        for item in tasks)
+                and plan.get("readyForScientificConclusion") is False
+                and plan.get("approvalProbability") is None
+                and live_trial.get("assessment", {}).get("overall_score") is None
+            )
+            logging.getLogger(__name__).warning(
+                "SCIENTIFIC_INVESTIGATION40_API_READBACK status=%s "
+                "nct_id=NCT02142738 layers=%d assessments=%d tasks=%d "
+                "independently_verified=0 scored=False read_only=True",
+                "PASS" if forty_ok else "FAIL",
+                len(forty.get("layers") or []),
+                sum(len(layer.get("assessments") or [])
+                    for layer in forty.get("layers") or []),
+                len(tasks),
+            )
+        except Exception as check_exc:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_INVESTIGATION40_API_READBACK status=FAIL error_type=%s",
+                type(check_exc).__name__,
+            )
     # Isolated review startup: read one known archived Phase 3 pilot, validate
     # evidence/source identity and eight unscored domains, log only booleans
     # and counts. Never changes any stored trial or candidate rankings.
