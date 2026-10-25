@@ -13,6 +13,7 @@ from .scientific_readiness_grades import EXTERNAL_GATES
 
 REGISTRY = "https://clinicaltrials.gov/study/NCT02142738"
 PROTOCOL_SAP = "https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf"
+GERMAN_REGULATOR_CSR = "https://portal.dimdi.de/data/ctr/O-2145_01-2-0-CE336C-20220110151635.pdf"
 FDA_2016_APPROVAL = (
     "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/"
     "2016/125514Orig1s008,125514Orig1s012ltr.pdf"
@@ -40,7 +41,7 @@ _PILOT_CHECKS = (
             "Inspect dated amendment history, version signatures, and the "
             "prospective SAP; compare primary and interim endpoint definitions."
         ),
-        "sourceUrls": [REGISTRY, PROTOCOL_SAP, ORIGINAL_TRIAL],
+        "sourceUrls": [REGISTRY, PROTOCOL_SAP, GERMAN_REGULATOR_CSR, ORIGINAL_TRIAL],
     },
     {
         "id": "baseline_population_indication",
@@ -75,7 +76,7 @@ _PILOT_CHECKS = (
             "Build an analysis-level table by endpoint, cutoff, population, "
             "statistical method, estimate, CI, p-value, and multiplicity boundary."
         ),
-        "sourceUrls": [ORIGINAL_TRIAL, FOLLOWUP_5YEAR, PROTOCOL_SAP],
+        "sourceUrls": [ORIGINAL_TRIAL, FOLLOWUP_5YEAR, PROTOCOL_SAP, GERMAN_REGULATOR_CSR],
     },
     {
         "id": "crossover_adjustment",
