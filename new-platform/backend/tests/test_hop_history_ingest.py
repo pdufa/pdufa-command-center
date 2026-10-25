@@ -38,3 +38,14 @@ def test_rejects_decision_day_or_postdecision_evidence(evidence_date):
     row["evidence_as_of"] = evidence_date
     with pytest.raises(ValueError, match="predate FDA decision"):
         parse_history(json.dumps([row]))
+
+@pytest.mark.parametrize("field,value", [
+    ("decision_date", None), ("evidence_as_of", None),
+    ("decision_date", 20200102), ("evidence_as_of", []),
+    ("decision_date", ""), ("evidence_as_of", ""),
+])
+def test_rejects_missing_or_nontext_dates(field, value):
+    record = example()
+    record[field] = value
+    with pytest.raises(ValueError, match="dates must be nonempty strings"):
+        parse_history(json.dumps([record]))
