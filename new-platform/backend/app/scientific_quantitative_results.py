@@ -71,9 +71,9 @@ def _group_ids(value: Any) -> list[str]:
             if isinstance(v, str) and v][:MAX_GROUPS_PER_OUTCOME]
 
 
-def _analysis(item: Mapping[str, Any], index: int) -> dict:
+def _analysis(item: Mapping[str, Any], outcome_index: int, analysis_index: int) -> dict:
     return {
-        "analysisNumber": index,
+        "analysisNumber": analysis_index,
         "groupIds": _group_ids(item.get("groupIds")),
         "comparisonType": _text(item.get("nonInferiorityType")),
         "method": _text(item.get("statisticalMethod")),
@@ -86,7 +86,7 @@ def _analysis(item: Mapping[str, Any], index: int) -> dict:
         "confidenceIntervalUpper": _decimal(item.get("ciUpperLimit")),
         "comments": _text(item.get("otherAnalysisDescription")),
         "sourceFieldPath": ("resultsSection.outcomeMeasuresModule."
-                            f"outcomeMeasures[{index - 1}].analyses"),
+                            f"outcomeMeasures[{outcome_index}].analyses[{analysis_index - 1}]"),
         "independentlyVerified": False,
     }
 
@@ -102,7 +102,7 @@ def _outcome(measure: Mapping[str, Any], index: int) -> dict:
         "unit": _text(measure.get("unitOfMeasure")),
         "reportedAnalyses": len(analyses),
         "analyses": [
-            _analysis(_dict(a), i + 1)
+            _analysis(_dict(a), index, i + 1)
             for i, a in enumerate(analyses[:MAX_ANALYSES_PER_OUTCOME])
         ],
         "groupCount": len(_list(measure.get("groups"))),
