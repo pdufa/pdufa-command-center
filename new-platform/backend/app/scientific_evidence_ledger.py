@@ -86,7 +86,7 @@ def require_registry_trial_identity(url: str, nct_id: str) -> None:
         path = unquote(parts.path)
         claimed = set(re.findall(r"(?<![A-Za-z0-9])NCT[0-9]{8}(?![A-Za-z0-9])",
                                  path, flags=re.IGNORECASE))
-        if claimed != {nct_id.upper()}:
+        if {value.upper() for value in claimed} != {nct_id.upper()}:
             raise ValueError("ClinicalTrials.gov source must reference this exact NCT trial")
 
 
