@@ -73,7 +73,7 @@ export type PublishedInterimDesign = {
 };
 
 const JOURNAL = "https://www.nejm.org/doi/abs/10.1056/NEJMoa1606774";
-const FULL = "https://www.nejm.org/doi/full/10.1056/NEJMoa1606774";
+const FULL = "https://www.nejm.org/doi/full/10.1056/nejmoa1606774";
 const FDA = "https://pmc.ncbi.nlm.nih.gov/articles/PMC5679831/";
 
 function obj(x: unknown): x is Record<string, unknown> {
