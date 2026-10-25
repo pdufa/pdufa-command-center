@@ -55,6 +55,8 @@ def adjudication_preflight(
     """
     if not isinstance(nct_id, str) or not NCT_PATTERN.fullmatch(nct_id):
         raise ValueError("Exact NCT identifier required")
+    if not isinstance(worklist, Mapping) or not isinstance(findings, Mapping):
+        raise ValueError("Adjudication evidence payloads unavailable")
     if worklist.get("nctId") != nct_id or findings.get("nctId") != nct_id:
         raise ValueError("Adjudication evidence refers to another trial")
     questions = worklist.get("checks")
@@ -63,8 +65,29 @@ def adjudication_preflight(
         raise ValueError("Adjudication evidence collections unavailable")
     if findings.get("truncated") or findings.get("totalStatements") != len(statements):
         raise ValueError("Adjudication preflight requires complete statement history")
-    if any(x.get("nctId") != nct_id for x in statements):
+    if any(not isinstance(x, Mapping) or x.get("nctId") != nct_id for x in statements):
         raise ValueError("Adjudication statement identity mismatch")
+    if any(not isinstance(q, Mapping) or not isinstance(q.get("id"), str) or not q["id"]
+           or not isinstance(q.get("gateId"), str) or not isinstance(q.get("priority"), str)
+           or not isinstance(q.get("title"), str)
+           or not isinstance(q.get("sourceUrls", []), list)
+           or any(not isinstance(url, str) for url in q.get("sourceUrls", []))
+           for q in questions):
+        raise ValueError("Malformed adjudication question")
+    if any(not isinstance(x.get("threadId"), str) or not x["threadId"]
+           or type(x.get("revision")) is not int or x["revision"] < 1
+           or x.get("findingType") not in ("supports", "contradicts", "uncertain", "not_assessable")
+           or not isinstance(x.get("sourceUrl"), str)
+           or not isinstance(x.get("questionId"), str)
+           or not isinstance(x.get("reviewerLabel", ""), str)
+           for x in statements):
+        raise ValueError("Malformed adjudication reviewer statement")
+
+    # A repeated revision in one thread is ambiguous even if both entries agree.
+    # Fail closed instead of silently selecting one as the current finding.
+    revisions = [(x["threadId"], x["revision"]) for x in statements]
+    if len(set(revisions)) != len(revisions):
+        raise ValueError("Duplicate adjudication reviewer revision")
 
     grouped: dict[str, list[dict]] = {q["id"]: [] for q in questions}
     if len(grouped) != len(questions):
