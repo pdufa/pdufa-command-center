@@ -16,9 +16,11 @@ import styles from "./TrialSciencePilot.module.css";
 const PILOT_PATH = "/api/scientific-assessment/pilot/keynote024";
 const DOMAIN_KEYS = Object.keys(SCIENCE_DOMAIN_LABELS) as (keyof typeof SCIENCE_DOMAIN_LABELS)[];
 
-function compareArms(effect: TrialEffect): string {
+function compareArms(effect: TrialEffect, outcomeName: string): string {
   if (typeof effect.pembrolizumab !== "number" || typeof effect.chemotherapy !== "number") return "Not extracted";
-  const suffix = effect.metric === "median_months" ? " months" : "%";
+  const suffix = outcomeName === "quality_of_life_week15_change" ? " points" :
+    effect.metric === "median_months" ? " months" :
+    effect.metric === "percent" ? "%" : " units";
   return `${effect.pembrolizumab} vs ${effect.chemotherapy}${suffix}`;
 }
 
@@ -41,7 +43,7 @@ function Snapshot({ source }: { source: StudySnapshot }) {
     <div className={styles.snapshotHead}>
       <div>
         <h4>{source.report_type.replaceAll("_", " ")}</h4>
-        <p className={styles.metadata}>Published {source.publication_date} · PMID {source.source_id}</p>
+        <p className={styles.metadata}>Published {source.publication_date} · PMID {source.source_id}{source.data_cutoff_date ? ` · data cutoff ${source.data_cutoff_date}` : ""}</p>
       </div>
       <a href={source.source_url} target="_blank" rel="noopener noreferrer">Original publication</a>
     </div>
@@ -52,7 +54,7 @@ function Snapshot({ source }: { source: StudySnapshot }) {
           {reported.map(([name, effect]) =>
             <tr key={name}>
               <th scope="row">{prettyField(name)}</th>
-              <td>{compareArms(effect)}</td>
+              <td>{compareArms(effect, name)}</td>
               <td>{pilotEffectSummary(effect)}
                 {effect.analysis_role ? <small> · {effect.analysis_role.replaceAll("_", " ")}</small> : null}
                 {effect.nominal_p_value ? <small> · nominal p={effect.nominal_p_value}</small> : null}
