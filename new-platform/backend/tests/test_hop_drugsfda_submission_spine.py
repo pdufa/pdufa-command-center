@@ -96,7 +96,10 @@ def test_untrusted_status_and_missing_or_future_dates_are_quarantined(tmp_path):
     assert flags["RAW_SUBMISSION_DATE_MISSING"] == 1
     assert flags["RAW_SUBMISSION_DATE_UNPARSEABLE"] == 1
     assert flags["RAW_SUBMISSION_DATE_AFTER_RESEARCH_CUTOFF"] == 1
-    assert result["candidate_original_submissions"][0]["raw_submission_status_code"] == ""
+    unsafe = next(item for item in result["candidate_original_submissions"]
+                  if item["application_id"] == "NDA123456"
+                  and item["original_submission_number"] == 1)
+    assert unsafe["raw_submission_status_code"] == ""
     assert all(not item["model_eligible"] for item in result["candidate_original_submissions"])
 
 
