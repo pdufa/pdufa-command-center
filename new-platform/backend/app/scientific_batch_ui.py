@@ -230,6 +230,43 @@ function clearScience() {
   $("readiness-grades").replaceChildren();
   $("evidence-ledger").replaceChildren();
 }
+async function downloadCapturedSourcePdf(documentMeta) {
+  const nct=documentMeta.nctId;
+  if(!inspectedNct || inspectedNct!==nct
+      || $("science-id").value.trim()!==nct
+      || !/^NCT\d{8}$/.test(nct)
+      || !/^[a-f0-9]{32}$/.test(documentMeta.documentId)
+      || !/^[a-f0-9]{64}$/.test(documentMeta.sha256)){
+    throw new Error("Inspect this exact archived trial before downloading source bytes.");
+  }
+  const key=$("key").value;
+  if(!key)throw new Error("Enter your internal review API key.");
+  const url="/api/scientific-assessment/source-documents/"+nct+"/"+documentMeta.documentId;
+  const response=await fetch(url,{method:"GET",credentials:"omit",cache:"no-store",
+    headers:{"x-pdufa-internal-key":key}});
+  if(!response.ok)throw new Error("Archived source unavailable or integrity check failed (HTTP "+response.status+").");
+  if(response.headers.get("x-source-document-sha256")!==documentMeta.sha256)
+    throw new Error("Source document digest metadata mismatch.");
+  const array=await response.arrayBuffer();
+  if(array.byteLength!==documentMeta.byteLength)
+    throw new Error("Source document size mismatch.");
+  if(!window.crypto || !window.crypto.subtle)
+    throw new Error("Secure browser crypto is required to verify this document.");
+  const hashed=await window.crypto.subtle.digest("SHA-256",array);
+  const computed=Array.from(new Uint8Array(hashed))
+    .map(byte=>byte.toString(16).padStart(2,"0")).join("");
+  if(computed!==documentMeta.sha256)
+    throw new Error("Source document byte checksum verification failed.");
+  const href=URL.createObjectURL(new Blob([array],{type:"application/pdf"}));
+  try{
+    const a=document.createElement("a");a.href=href;a.download=documentMeta.filename;
+    document.body.appendChild(a);a.click();a.remove();
+  }finally{
+    setTimeout(()=>URL.revokeObjectURL(href),20000);
+  }
+  $("science-status").textContent="Archived source PDF downloaded with matching SHA-256. Document authenticity and clinical contents remain unverified.";
+  $("science-status").className="status";
+}
 function paintEvidenceLedger(data, status) {
   const root=$("evidence-ledger");root.replaceChildren();
   const section=document.createElement("section");section.className="evidence-ledger";
@@ -385,6 +422,51 @@ function paintEvidenceLedger(data, status) {
       list.appendChild(empty);
     }
     notes.appendChild(list);section.appendChild(notes);
+  }
+  const captured=data.capturedSourceDocuments;
+  if(captured && captured.nctId===inspectedNct){
+    const docSection=document.createElement("details");
+    docSection.className="captured-source-documents";
+    const heading=document.createElement("summary");
+    heading.textContent="Preserved source PDFs ("+(captured.sourceDocumentCount||0)
+      +") — byte integrity checked, NOT scientifically verified";
+    docSection.appendChild(heading);
+    const caveat=document.createElement("p");
+    caveat.textContent="Captured PDFs are curated file submissions, not independently authenticated publisher files. SHA-256 checks file consistency only; approval and clinical conclusions remain unscored.";
+    docSection.appendChild(caveat);
+    const list=document.createElement("ol");
+    for(const item of captured.documents||[]){
+      const li=document.createElement("li");
+      const name=document.createElement("strong");
+      name.textContent=item.gateId+" · "+item.sourceType+" · "+item.byteLength+" bytes";
+      li.appendChild(name);
+      const link=document.createElement("div");
+      safeLink(link,item.sourceUrl,"Original source locator");
+      li.appendChild(link);
+      for(const line of ["Captured: "+item.capturedAt,
+                         "SHA-256 bytes: "+item.sha256,
+                         "Manifest SHA-256: "+item.manifestSha256,
+                         "Publisher authorship verified: NO · Clinically adjudicated: NO"]){
+        const p=document.createElement("small");p.textContent=line;li.appendChild(p);
+      }
+      const button=document.createElement("button");
+      button.type="button";button.textContent="Download checked PDF";
+      button.addEventListener("click",async()=>{
+        button.disabled=true;
+        try{await downloadCapturedSourcePdf(item);}
+        catch(err){
+          $("science-status").textContent=err.message;
+          $("science-status").className="status error";
+        }finally{button.disabled=false;}
+      });
+      li.appendChild(button);list.appendChild(li);
+    }
+    if(!list.children.length){
+      const li=document.createElement("li");
+      li.textContent="No PDF bytes have been archived yet. Source hyperlinks alone do not qualify as a captured document.";
+      list.appendChild(li);
+    }
+    docSection.appendChild(list);section.appendChild(docSection);
   }
   const preflight=data.adjudicationPreflight;
   if(preflight && preflight.mode==="read_only_blocker_diagnostic"){
