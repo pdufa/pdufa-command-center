@@ -1,0 +1,56 @@
+name: Scientific review Chromium browser acceptance
+
+on:
+  push:
+    branches:
+      - feature/scientific-assessment-v1
+    paths:
+      - "new-platform/backend/app/scientific_batch_ui.py"
+      - "new-platform/backend/app/scientific_assessment.py"
+      - "new-platform/backend/tests/test_scientific_ui_browser.py"
+      - "new-platform/backend/tests/test_scientific_operator_browser.py"
+      - "new-platform/backend/app/scientific_operator_ui.py"
+      - "new-platform/backend/app/scientific_reviewer_ui.py"
+      - "new-platform/backend/tests/test_scientific_reviewer_browser.py"
+      - ".github/workflows/scientific-browser-tests.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "new-platform/backend/app/scientific_batch_ui.py"
+      - "new-platform/backend/app/scientific_assessment.py"
+      - "new-platform/backend/tests/test_scientific_ui_browser.py"
+      - "new-platform/backend/tests/test_scientific_operator_browser.py"
+      - "new-platform/backend/app/scientific_operator_ui.py"
+      - "new-platform/backend/app/scientific_reviewer_ui.py"
+      - "new-platform/backend/tests/test_scientific_reviewer_browser.py"
+      - ".github/workflows/scientific-browser-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: new-platform/backend
+    env:
+      DATABASE_URL: "sqlite:///./scientific_browser_ci.sqlite3"
+      PDUFA_REQUIRE_POSTGRES: "0"
+      PDUFA_SCIENTIFIC_BATCH_WRITE_ENABLED: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install isolated backend and browser test dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install "playwright>=1.50,<2"
+      - name: Install headless Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Validate browser controls, progress and evidence display
+        run: python -m pytest -q tests/test_scientific_ui_browser.py tests/test_scientific_operator_browser.py tests/test_scientific_reviewer_browser.py
