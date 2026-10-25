@@ -210,12 +210,13 @@ def test_generic_trial_requires_prior_source_ledger_candidate(review,monkeypatch
     client,_=review
     monkeypatch.setenv("PDUFA_SCIENTIFIC_LEDGER_WRITE_ENABLED","1")
     url="/api/scientific-assessment/reviewer-statements/"+OTHER
+    own_registry="https://clinicaltrials.gov/study/"+OTHER
     assert client.post(url,json={
-        **_payload(OTHER),
+        **_payload(OTHER), "sourceUrl":own_registry,
         "questionId":"external_protocol_sap",
     },headers=WRITE_HEADERS).status_code==422
     candidate=client.post("/api/scientific-assessment/evidence-ledger/"+OTHER,json={
-        "gateId":"protocol_sap","sourceUrl":PROTOCOL_SAP,
+        "gateId":"protocol_sap","sourceUrl":own_registry,
         "sourceType":"protocol_sap",
         "claimText":"Document locator found for review, not independently validated.",
         "relationship":"context",
@@ -230,6 +231,32 @@ def test_generic_trial_requires_prior_source_ledger_candidate(review,monkeypatch
     assert result.status_code==201,result.text
     assert result.json()["independentlyVerified"] is False
     assert read_reviewer_statements(OTHER)["questionsIndependentlyResolved"]==0
+    assert read_reviewer_statements(NCT)["totalStatements"]==0
+
+
+def test_wrong_registry_nct_url_cannot_be_submitted_for_another_trial(review,monkeypatch):
+    client,_=review
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_LEDGER_WRITE_ENABLED","1")
+    other_url="https://clinicaltrials.gov/study/"+OTHER
+    assert client.post("/api/scientific-assessment/evidence-ledger/"+NCT,json={
+        "gateId":"protocol_sap","sourceUrl":other_url,
+        "sourceType":"protocol_sap",
+        "claimText":"Cross-trial archive link should not qualify for this study.",
+        "relationship":"context",
+        "caution":"A cited trial ID differs from this original study identifier.",
+        "recordedBy":"Offline reviewer",
+    },headers=WRITE_HEADERS).status_code==422
+    assert client.post("/api/scientific-assessment/reviewer-statements/"+NCT,
+        json={**_payload(NCT),"sourceUrl":other_url},
+        headers=WRITE_HEADERS).status_code==422
+    assert client.post("/api/scientific-assessment/evidence-ledger/"+NCT,json={
+        "gateId":"protocol_sap","sourceUrl":"https://clinicaltrials.gov/search",
+        "sourceType":"protocol_sap",
+        "claimText":"Unscoped search page should not count as an exact trial source.",
+        "relationship":"context",
+        "caution":"A broad search is not exact trial evidence or a primary protocol.",
+        "recordedBy":"Offline reviewer",
+    },headers=WRITE_HEADERS).status_code==422
     assert read_reviewer_statements(NCT)["totalStatements"]==0
 
 
