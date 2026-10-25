@@ -69,3 +69,28 @@ def test_auth_status_exposes_mode_not_email(monkeypatch):
     assert r.json()["singleOperatorConfigured"] is True
     assert r.json()["independentVerificationRequiresDistinctReviewers"] is True
     assert "owner@example.org" not in r.text
+
+
+def test_single_operator_page_discloses_no_account_email(monkeypatch):
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "single_operator")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_GOOGLE_CLIENT_ID", "web-client.apps.googleusercontent.com")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "owner@example.org")
+    with TestClient(main.app) as client:
+        response = client.get("/scientific/operator")
+    assert response.status_code == 200
+    assert "Sign in with your Google account" in response.text
+    assert "https://accounts.google.com/gsi/client" in response.text
+    assert "owner@example.org" not in response.text
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "no-referrer"
+    assert "no-store" in response.headers["cache-control"]
+    assert "nonce-" in response.headers["content-security-policy"]
+
+
+def test_operator_scientific_research_is_denied_without_identity(monkeypatch):
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "single_operator")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "owner@example.org")
+    with TestClient(main.app) as client:
+        response = client.get("/api/scientific-assessment/operator/research",
+                              params={"exact_id": "TRIAL|NCT02142738"})
+    assert response.status_code == 401
