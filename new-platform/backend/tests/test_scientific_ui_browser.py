@@ -417,20 +417,6 @@ def test_chromium_scientific_batch_and_evidence_display():
             assert statements.locator(".reviewer-statements li").count()==2
             statements.get_by_text("not independently confirmed",exact=False).first.wait_for()
             statements.get_by_text("Claim: A different version may contain an eligibility change.").wait_for()
-            captured_pdf=page.locator("#evidence-ledger .captured-source-documents")
-            assert captured_pdf.count()==1
-            assert "Preserved source PDFs (1)" in captured_pdf.locator("summary").inner_text()
-            captured_pdf.locator("summary").click()
-            captured_pdf.get_by_text("Publisher authorship verified: NO",exact=False).wait_for()
-            with page.expect_download() as pdf_download_event:
-                captured_pdf.get_by_role("button",name="Download checked PDF").click()
-            pdf_download=pdf_download_event.value
-            assert pdf_download.suggested_filename==NCT+"_"+DOCUMENT_ID+".pdf"
-            with open(pdf_download.path(),"rb") as saved_pdf:
-                assert saved_pdf.read()==DOCUMENT_BYTES
-            assert TestServer.document_requests==1
-            page.get_by_text("Archived source PDF downloaded with matching SHA-256",exact=False).wait_for()
-
             assert page.get_by_role("button",name="Approve evidence").count()==0
             blocker_report=page.locator("#evidence-ledger .adjudication-preflight")
             assert blocker_report.count()==1
@@ -446,6 +432,21 @@ def test_chromium_scientific_batch_and_evidence_display():
                 "0 independently resolved.",exact=False
             ).wait_for()
             assert blocker_report.locator("li").count()>=8
+
+            captured_pdf=page.locator("#evidence-ledger .captured-source-documents")
+            assert captured_pdf.count()==1
+            assert "Preserved source PDFs (1)" in captured_pdf.locator("summary").inner_text()
+            captured_pdf.locator("summary").click()
+            captured_pdf.get_by_text("Publisher authorship verified: NO",exact=False).wait_for()
+            with page.expect_download() as pdf_download_event:
+                captured_pdf.get_by_role("button",name="Download checked PDF").click()
+            pdf_download=pdf_download_event.value
+            assert pdf_download.suggested_filename==NCT+"_"+DOCUMENT_ID+".pdf"
+            with open(pdf_download.path(),"rb") as saved_pdf:
+                assert saved_pdf.read()==DOCUMENT_BYTES
+            assert TestServer.document_requests==1
+            page.get_by_text("Archived source PDF downloaded with matching SHA-256",exact=False).wait_for()
+
 
             assert page.get_by_role("button", name="Mark verified").count() == 0
 
