@@ -14,6 +14,7 @@ from .scientific_readiness_grades import EXTERNAL_GATES
 REGISTRY = "https://clinicaltrials.gov/study/NCT02142738"
 PROTOCOL_SAP = "https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf"
 GERMAN_REGULATOR_CSR = "https://portal.dimdi.de/data/ctr/O-2145_01-2-0-CE336C-20220110151635.pdf"
+EMA_2016_ASSESSMENT = "https://www.ema.europa.eu/en/documents/variation-report/keytruda-h-c-3820-ii-0011-epar-assessment-report-variation_en.pdf"
 FDA_2016_APPROVAL = (
     "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/"
     "2016/125514Orig1s008,125514Orig1s012ltr.pdf"
@@ -41,7 +42,7 @@ _PILOT_CHECKS = (
             "Inspect dated amendment history, version signatures, and the "
             "prospective SAP; compare primary and interim endpoint definitions."
         ),
-        "sourceUrls": [REGISTRY, PROTOCOL_SAP, GERMAN_REGULATOR_CSR, ORIGINAL_TRIAL],
+        "sourceUrls": [REGISTRY, PROTOCOL_SAP, GERMAN_REGULATOR_CSR, EMA_2016_ASSESSMENT, ORIGINAL_TRIAL],
     },
     {
         "id": "baseline_population_indication",
@@ -57,7 +58,7 @@ _PILOT_CHECKS = (
             "Compare the trial enrollment and analysis populations with "
             "FDA first-line indication wording without merging other NSCLC uses."
         ),
-        "sourceUrls": [REGISTRY, ORIGINAL_TRIAL, FDA_2016_APPROVAL],
+        "sourceUrls": [REGISTRY, ORIGINAL_TRIAL, FDA_2016_APPROVAL, EMA_2016_ASSESSMENT],
     },
     {
         "id": "pfs_initial_vs_followup",
@@ -76,7 +77,7 @@ _PILOT_CHECKS = (
             "Build an analysis-level table by endpoint, cutoff, population, "
             "statistical method, estimate, CI, p-value, and multiplicity boundary."
         ),
-        "sourceUrls": [ORIGINAL_TRIAL, FOLLOWUP_5YEAR, PROTOCOL_SAP, GERMAN_REGULATOR_CSR],
+        "sourceUrls": [ORIGINAL_TRIAL, FOLLOWUP_5YEAR, PROTOCOL_SAP, GERMAN_REGULATOR_CSR, EMA_2016_ASSESSMENT],
     },
     {
         "id": "crossover_adjustment",
@@ -95,7 +96,7 @@ _PILOT_CHECKS = (
             "Record crossover rules and proportions, treatment switching "
             "assumptions and prespecified versus exploratory analyses."
         ),
-        "sourceUrls": [ORIGINAL_TRIAL, FOLLOWUP_5YEAR, PROTOCOL_SAP],
+        "sourceUrls": [ORIGINAL_TRIAL, FOLLOWUP_5YEAR, PROTOCOL_SAP, EMA_2016_ASSESSMENT],
     },
     {
         "id": "safety_endpoint_taxonomy",
@@ -114,7 +115,7 @@ _PILOT_CHECKS = (
             "Separate all-cause AEs, treatment-related AEs, immune-mediated "
             "AEs, serious AEs, exposure and grade-specific denominators."
         ),
-        "sourceUrls": [REGISTRY, ORIGINAL_TRIAL, NCI_SAFETY],
+        "sourceUrls": [REGISTRY, ORIGINAL_TRIAL, NCI_SAFETY, EMA_2016_ASSESSMENT],
     },
     {
         "id": "exploratory_qol_multiplicity",
