@@ -155,15 +155,20 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
   const snapshots = data.analysis_snapshots;
   if (!Array.isArray(snapshots) || snapshots.length !== 3) return false;
   const ids = new Set<string>();
-  const expected = new Set([
-    "keynote024_initial_2016",
-    "keynote024_pros_2017",
-    "keynote024_five_year_2021",
-  ]);
+  // Each analysis is tied to its known original PMID, not merely any URL
+  // under PubMed. Do not permit swapping a correct trial ID with an
+  // unrelated citation while retaining an apparently credible source.
+  const expectedPmids: Record<string, string> = {
+    keynote024_initial_2016: "27718847",
+    keynote024_pros_2017: "29129441",
+    keynote024_five_year_2021: "33872070",
+  };
+  const expected = new Set(Object.keys(expectedPmids));
   for (const snapshot of snapshots) {
     if (!object(snapshot) || snapshot.nct_id !== PILOT_NCT
         || !str(snapshot.analysis_id) || !expected.has(snapshot.analysis_id)
         || ids.has(snapshot.analysis_id)
+        || snapshot.source_id !== expectedPmids[snapshot.analysis_id]
         || !str(snapshot.report_type) || !/^20[0-9]{2}-[0-9]{2}-[0-9]{2}$/.test(String(snapshot.publication_date))
         || !str(snapshot.source_id) || !/^[1-9][0-9]{0,11}$/.test(snapshot.source_id)
         || snapshot.source_url !== "https://pubmed.ncbi.nlm.nih.gov/" + snapshot.source_id + "/"
