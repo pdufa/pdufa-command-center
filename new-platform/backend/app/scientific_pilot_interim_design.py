@@ -13,7 +13,7 @@ from typing import Any, Mapping
 NCT_ID = "NCT02142738"
 ORIGINAL_NEJM = "https://www.nejm.org/doi/abs/10.1056/NEJMoa1606774"
 FDA_STAFF = "https://pmc.ncbi.nlm.nih.gov/articles/PMC5679831/"
-SIGNED_PROTOCOL = "https://www.nejm.org/doi/full/10.1056/NEJMoa1606774"
+SIGNED_PROTOCOL = "https://www.nejm.org/doi/full/10.1056/nejmoa1606774"
 
 def published_keynote024_interim_design(
     published: Mapping[str, Any],
