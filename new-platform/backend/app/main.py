@@ -193,6 +193,7 @@ class ScientificSourceDocument(Base):
     byte_length: Mapped[int] = mapped_column(Integer, nullable=False)
     payload: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
     capture_status: Mapped[str] = mapped_column(String(40), nullable=False)
+    manifest_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
 
 
 class ScientificSmokeClaim(Base):
