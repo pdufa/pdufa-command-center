@@ -8,6 +8,10 @@ on:
       - 'scripts/check_system_status_production.py'
       - 'tests/test_system_status_production_smoke.py'
       - 'new-platform/frontend/app/installation-audit/page.tsx'
+      - 'new-platform/frontend/app/installation-audit/ScientificOutcomeLive.tsx'
+      - 'new-platform/frontend/app/api/assessments/route.ts'
+      - 'new-platform/frontend/app/api/hop/readiness/route.ts'
+      - 'new-platform/frontend/lib/science-outcome-gates.ts'
   push:
     branches: [main]
     paths:
@@ -15,6 +19,10 @@ on:
       - 'scripts/check_system_status_production.py'
       - 'tests/test_system_status_production_smoke.py'
       - 'new-platform/frontend/app/installation-audit/page.tsx'
+      - 'new-platform/frontend/app/installation-audit/ScientificOutcomeLive.tsx'
+      - 'new-platform/frontend/app/api/assessments/route.ts'
+      - 'new-platform/frontend/app/api/hop/readiness/route.ts'
+      - 'new-platform/frontend/lib/science-outcome-gates.ts'
   workflow_dispatch:
 
 permissions:
@@ -26,7 +34,7 @@ concurrency:
 
 jobs:
   read-only-public-page-check:
-    name: Unauthenticated production route and 15 sections
+    name: Production page, 15 sections, science/outcome privacy guards
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -37,5 +45,5 @@ jobs:
         run: |
           python3 -m py_compile scripts/check_system_status_production.py
           python3 -m unittest discover -s tests -p 'test_system_status_production_smoke.py' -v
-      - name: Independently verify production HTML via read-only HTTPS GET
+      - name: Verify production page and anonymous evidence access protections
         run: python3 scripts/check_system_status_production.py
