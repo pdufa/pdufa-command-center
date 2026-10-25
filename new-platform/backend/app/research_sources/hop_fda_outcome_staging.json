@@ -13,12 +13,33 @@
       "indication": "Chronic hepatitis C genotype 1 infection in combination antiviral regimen",
       "therapeutic_area": "Infectious diseases / hepatitis C",
       "modality": "Small-molecule NS3/4A protease inhibitor",
-      "phase": null,
+      "phase": 3,
       "evidence_as_of": null,
-      "review_status": "FDA_INDICATION_MODALITY_VERIFIED_TRIAL_PHASE_AND_ASOF_PENDING",
+      "review_status": "FDA_PIVOTAL_PHASE_3_CONFIRMED_ASOF_EVIDENCE_PENDING",
       "model_eligible": false,
       "source_review_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2013/205123Orig1s000ODMemo.pdf",
-      "source_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2013/205123s000lbl.pdf"
+      "source_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2013/205123s000lbl.pdf",
+      "pivotal_trials": [
+        {
+          "name": "QUEST-1",
+          "nct_id": "NCT01289782",
+          "phase": 3,
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2013/205123Orig1s000CrossR.pdf"
+        },
+        {
+          "name": "QUEST-2",
+          "nct_id": "NCT01290679",
+          "phase": 3,
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2013/205123Orig1s000CrossR.pdf"
+        },
+        {
+          "name": "PROMISE",
+          "phase": 3,
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2013/205123Orig1s000CrossR.pdf"
+        }
+      ],
+      "pdufa_goal_date": "2013-11-28",
+      "nd_submission_date": "2013-03-28"
     }
   ]
 }
