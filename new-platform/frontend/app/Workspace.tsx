@@ -1768,7 +1768,25 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" className="secondary" disabled={refreshing} onClick={()=>setFetchVersion(v=>v+1)}>{refreshing ? (cachedAsOf ? "Verifying latest data…" : "Loading published candidates…") : "Load published candidates"}</button>
       <span className="workspace-stage">{cachedAsOf ? "CACHED SNAPSHOT · " + cachedAsOf + " · NOT VERIFIED CURRENT" : snapshot ? "Published " + snapshot.asOf : refreshing ? "Loading published candidates…" : "Candidate totals ready · Full lists on demand"} · No live orders</span>
     </div>
-    {top==="PREDICTION" && <section className="panel" aria-label="PREDICTION — HOP"><h2>PREDICTION</h2><p>Historical Outcome Prediction (HOP) · GEM JR, GEM and WT</p><p role="status">Historical comparisons and FDA approval predictions are under development. No validated predictions are available yet.</p><p>This independent research module will use historical FDA outcomes and current scientific evidence. Existing screening restrictions and FS/FA presets are unchanged.</p></section>}
+    {top==="PREDICTION" && <section className="panel" aria-label="PREDICTION — HOP">
+      <h2>PREDICTION</h2>
+      <p>Historical Outcome Prediction (HOP) · Published GEM JR, GEM and W/T lists</p>
+      <p role="status"><strong>Research only:</strong> Historical matching and validated approval probabilities are not available yet. Existing PoA values are not HOP predictions.</p>
+      {!snapshot ? <p>Load published candidates to see the source-linked trial inventory. No estimates will be generated.</p> : <>
+        <p className="subtle">Published snapshot: {snapshot.asOf} · Membership and W/T labels reflect their respective saved sources.</p>
+        {([
+          ["GEM JR", snapshot.members.GEM_JR.rows],
+          ["GEM", snapshot.members.GEM.rows],
+          ["WT", [...snapshot.members.GEM_JR.rows, ...snapshot.members.GEM.rows].filter(row => tags.watch.includes(row.programId || row.id) || tags.trade.includes(row.programId || row.id))]
+        ] as [string, Candidate[]][]).map(([group, rows]) => <details key={group} className="priority-panel" open={group==="GEM JR"}>
+          <summary>{group} · {rows.length} published candidates {group==="WT"?"(saved W/T labels)":""}</summary>
+          <div className="table-scroll"><table><thead><tr><th>Ticker</th><th>Program ID</th><th>Drug</th><th>Indication</th><th>PDUFA</th><th>Historical comparators</th><th>HOP prediction</th></tr></thead>
+          <tbody>{rows.slice(0,100).map((row,index)=><tr key={row.programId || row.id || index}><td>{row.ticker}</td><td>{row.programId || row.id}</td><td>{row.drug || "Not available"}</td><td>{row.indication || "Not available"}</td><td>{row.pdufaDate || "Not verified"}</td><td>Not assessed</td><td>Not validated</td></tr>)}</tbody></table></div>
+          {rows.length>100 && <p>Showing first 100 of {rows.length} records; historical matching is not yet active.</p>}
+        </details>)}
+      </>}
+      <p>Source data is read-only. Pipeline, GEM JR, GEM, WT and FS/FA presets remain unchanged.</p>
+    </section>}
     {top==="RESTRICTIONS" && <div aria-label="Restriction sub-tabs" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"12px 0"}}>
       <button type="button" aria-current={restrictionTab==="RESTRICTIONS"?"page":undefined} className={restrictionTab==="RESTRICTIONS"?"nav-selected":""} onClick={()=>{setRestrictionTab("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
       <button type="button" aria-current={restrictionTab==="PRESET"?"page":undefined} className={restrictionTab==="PRESET"?"nav-selected":""} onClick={()=>{setRestrictionTab("PRESET");setMobileNavOpen(false);}}>PRESET</button>
