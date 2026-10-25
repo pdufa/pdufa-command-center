@@ -42,3 +42,10 @@ def test_non_fda_source_and_missing_reviewer_blocked():
 def test_missing_or_invalid_manifest_fails_closed():
     assert audit_cohort_manifest(None)["model_eligible"] is False
     assert audit_cohort_manifest({})["status"] == "BLOCKED"
+
+def test_non_string_coverage_date_fails_closed():
+    data = manifest()
+    data["start_date"] = 20200101
+    result = audit_cohort_manifest(data)
+    assert "invalid_coverage_dates" in result["blockers"]
+    assert result["model_eligible"] is False

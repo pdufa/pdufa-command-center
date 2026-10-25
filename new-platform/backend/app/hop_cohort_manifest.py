@@ -5,7 +5,6 @@ This audit produces review blockers only; it cannot authorize model fitting.
 """
 from __future__ import annotations
 
-from collections import Counter
 from collections.abc import Mapping
 from datetime import date
 from urllib.parse import urlparse
@@ -32,6 +31,8 @@ def audit_cohort_manifest(manifest: Mapping) -> dict:
             "fda.gov", "www.fda.gov", "accessdata.fda.gov"):
         blockers.append("source_not_official_fda")
     try:
+        if any(type(manifest[key]) is not str for key in ("start_date", "end_date", "source_retrieved_on")):
+            raise ValueError("coverage dates must be strings")
         start = date.fromisoformat(manifest["start_date"])
         end = date.fromisoformat(manifest["end_date"])
         retrieved = date.fromisoformat(manifest["source_retrieved_on"])
