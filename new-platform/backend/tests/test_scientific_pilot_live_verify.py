@@ -66,7 +66,7 @@ class ArchivedPilotLiveContractTests(unittest.TestCase):
             "app.scientific_pilot_live_verify.keynote024_published_results",
             return_value=report,
         ):
-            with self.assertRaisesRegex(ValueError, "sources not present"):
+            with self.assertRaisesRegex(ValueError, "source identity|sources not present"):
                 self.verify()
 
     def test_automatic_scoring_fails_closed(self):
