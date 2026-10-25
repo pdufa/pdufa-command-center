@@ -15,8 +15,9 @@ def hop_readiness_status(path: Path = STAGING_PATH) -> dict:
         if not isinstance(records, list):
             raise ValueError("records must be a list")
         staged = len(records)
-        quarantined = sum(1 for row in records if isinstance(row, dict)
-                          and row.get("model_eligible") is False)
+        # Every staging record is quarantined regardless of a caller-supplied
+        # eligibility flag; staging cannot promote observations into training.
+        quarantined = staged
         # Staging is *never* a model-eligible source, even if a flag changes.
         return {
             "status": "RESEARCH_ONLY",
