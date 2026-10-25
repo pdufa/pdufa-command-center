@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "REVIEW_CYCLE_TRIAGE_ONLY_NO_INDEPENDENT_OUTCOME_LABELS",
+  "source_export_date_crl": "2026-10-21",
+  "source_export_date_drugsfda": "2026-10-23",
+  "collected_on": "2026-10-25",
+  "collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40227146324",
+  "collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40227146324/artifacts/12611174704",
+  "collection_artifact_retention_days": 30,
+  "published_letter_records": 458,
+  "grouped_letter_records": 441,
+  "excluded_letter_records": {
+    "unresolved_or_ambiguous_identity": 17
+  },
+  "single_letter_application_groups": 239,
+  "repeated_letter_application_groups": 83,
+  "letter_records_in_repeated_groups": 202,
+  "potential_same_day_type_duplicate_groups": 2,
+  "independently_verified_review_cycles": 0,
+  "complete_application_denominator_verified": false,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "limitations": [
+    "The 83 repeat groups are applications with multiple published letters, not independently verified separate FDA review cycles.",
+    "The two same-date same-type groups are potential source duplicates, not adjudicated duplicate actions.",
+    "Only 441 letters have unambiguous parent application identities; the 17 others are excluded from this grouping without assigning outcomes.",
+    "Publication selection and historical evidence availability prevent an unbiased approval/rejection probability from these inputs."
+  ]
+}
