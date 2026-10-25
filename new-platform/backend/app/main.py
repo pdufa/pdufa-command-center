@@ -324,6 +324,24 @@ async def lifespan(app: FastAPI):
                     "SCIENTIFIC_BATCH_STORAGE_STATUS status=FAIL error_type=%s",
                     type(batch_diagnostic_error).__name__,
                 )
+            # Read-only evidence ledger verification. Candidate entries must
+            # never be counted as adjudicated clinical or FDA evidence.
+            try:
+                from sqlalchemy import func
+                with Session(ENGINE) as ledger_session:
+                    evidence_count = ledger_session.scalar(
+                        select(func.count()).select_from(ScientificEvidenceLedgerEntry)
+                    )
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_EVIDENCE_LEDGER_STORAGE status=PASS "
+                    "candidate_revision_count=%d verified_gate_count=0",
+                    evidence_count,
+                )
+            except Exception as ledger_check_error:
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_EVIDENCE_LEDGER_STORAGE status=FAIL error_type=%s",
+                    type(ledger_check_error).__name__,
+                )
         except Exception as exc:
             # Neon's free-plan quota can return HTTP 402 while Postgres tables
             # and identities remain intact. Keep the health endpoint available
