@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       status: 401, headers: PRIVATE,
     });
   }
-  const base = process.env.PDUFA_API_BASE_URL?.replace(/\/$/, "");
+  const base = process.env.PDUFA_SCIENTIFIC_API_BASE_URL?.replace(/\/$/, "");
   const key = process.env.PDUFA_INTERNAL_API_KEY;
   if (!base?.startsWith("https://") || !key) {
     return NextResponse.json({ error: "Scientific review service not configured" }, {
