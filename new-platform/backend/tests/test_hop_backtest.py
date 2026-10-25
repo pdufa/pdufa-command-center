@@ -5,7 +5,7 @@ from app.hop_outcome_cohort import OutcomeObservation
 
 def row(app, year, outcome="APPROVED", evidence_year=None):
     return OutcomeObservation(app, 1, date(year, 6, 1), outcome,
-                              "COMPLETE_APPLICATION_COHORT", "cohort", date(evidence_year or year, 1, 1))
+                              "COMPLETE_APPLICATION_COHORT", "cohort", date(evidence_year or year, 1, 1), True)
 
 def test_empty_history_abstains():
     folds = walk_forward_backtest([], [date(2020,1,1), date(2021,1,1)], lambda train, case: 0.5)
