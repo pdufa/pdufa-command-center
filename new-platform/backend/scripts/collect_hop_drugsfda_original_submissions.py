@@ -26,6 +26,8 @@ MAX_ZIP_BYTES = 100 * 1024 * 1024
 MAX_TABLE_BYTES = 150 * 1024 * 1024
 EXPECTED_FILENAMES = {"applications.txt", "submissions.txt"}
 PUBLIC_COUNTS = (
+    "source_applications_tsv_encoding",
+    "source_submissions_tsv_encoding",
     "application_rows_in_extract",
     "application_type_counts",
     "submission_rows_in_extract",
