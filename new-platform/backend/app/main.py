@@ -173,6 +173,28 @@ class ScientificReviewerFinding(Base):
     content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
 
 
+class ScientificSourceDocument(Base):
+    """Captured original PDF bytes; archival integrity is NOT scientific review."""
+    __tablename__ = "scientific_source_documents"
+    __table_args__ = (
+        UniqueConstraint("nct_id", "sha256",
+                         name="uq_scientific_source_document_content"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    gate_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    source_url: Mapped[str] = mapped_column(String(800), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(40), nullable=False)
+    filename: Mapped[str] = mapped_column(String(140), nullable=False)
+    captured_by: Mapped[str] = mapped_column(String(80), nullable=False)
+    captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    byte_length: Mapped[int] = mapped_column(Integer, nullable=False)
+    payload: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    capture_status: Mapped[str] = mapped_column(String(40), nullable=False)
+
+
 class ScientificSmokeClaim(Base):
     """One durable execution claim per trial for temporary isolated live smoke."""
     __tablename__ = "scientific_smoke_claims"
