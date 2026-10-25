@@ -23,7 +23,7 @@ function sample() {
       journalLocator: "Methods/Statistical Analysis; Discussion",
       fdaStaffSourceUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC5679831/",
       fdaStaffLocator: "KEYNOTE-024 summary efficacy table, footnote b",
-      originalSupplementSourceUrl: "https://www.nejm.org/doi/full/10.1056/NEJMoa1606774",
+      originalSupplementSourceUrl: "https://www.nejm.org/doi/full/10.1056/nejmoa1606774",
       originalSupplementFilename: "nejmoa1606774_protocol.pdf",
       originalSupplementRead: false, contemporaneousSapAuthenticated: false,
     },
