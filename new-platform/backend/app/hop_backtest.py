@@ -7,13 +7,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from typing import Callable, Sequence
-from .hop_outcome_cohort import OutcomeObservation, audit_outcome_cohort
+from .hop_outcome_cohort import OutcomeObservation, DENOMINATOR_SOURCES, OUTCOMES
 
 @dataclass(frozen=True)
 class BacktestFold:
     cutoff: date
     train_count: int
     test_count: int
+    eligible_test_count: int
+    abstained_test_count: int
     excluded_test_count: int
     brier_score: float | None
 
@@ -39,11 +41,15 @@ def walk_forward_backtest(
         train = [r for r in rows if r.decision_date < left]
         test = [r for r in rows if left <= r.decision_date < right]
         train = [r for r in train if r.public_features_as_of is not None
-                 and r.public_features_as_of < r.decision_date]
+                 and r.public_features_as_of < r.decision_date
+                 and r.ascertainment_source in DENOMINATOR_SOURCES
+                 and r.outcome in OUTCOMES and r.cohort_id]
         train_ids = {r.application_id for r in train}
         usable = [r for r in test if r.application_id not in train_ids
                   and r.public_features_as_of is not None
-                  and r.public_features_as_of < r.decision_date]
+                  and r.public_features_as_of < r.decision_date
+                  and r.ascertainment_source in DENOMINATOR_SOURCES
+                  and r.outcome in OUTCOMES and r.cohort_id]
         losses = []
         if len(train) >= min_train:
             for row in usable:
@@ -55,6 +61,8 @@ def walk_forward_backtest(
                     losses.append((float(value)-target)**2)
         result.append(BacktestFold(
             cutoff=left, train_count=len(train), test_count=len(losses),
+            eligible_test_count=len(usable),
+            abstained_test_count=len(usable)-len(losses),
             excluded_test_count=len(test)-len(usable),
             brier_score=sum(losses)/len(losses) if losses else None,
         ))
