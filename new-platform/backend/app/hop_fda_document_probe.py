@@ -26,7 +26,7 @@ def official_document_candidate(filename: object) -> str | None:
     """Produce a probe candidate only; do not present it as a working source."""
     if (not isinstance(filename, str) or not 5 <= len(filename) <= 160
             or ".." in filename or not re.fullmatch(
-                r"[A-Za-z0-9_.-]+(?: [A-Za-z0-9_.-]+)*[.]pdf", filename,
+                r"[A-Za-z0-9][A-Za-z0-9_.-]*(?: [A-Za-z0-9][A-Za-z0-9_.-]*)*[.]pdf", filename,
                 flags=re.IGNORECASE)):
         return None
     # Only encode an explicitly published, validated filename; do not infer
