@@ -395,3 +395,113 @@ def test_pdf_reconciliation_requires_matching_original_fda_archive(tmp_path: Pat
     result = hop_readiness_status(all_action_pdf_audit_path=p)
     assert result["fda_shared_pdf_source_reconciliation"] is None
     assert result["model_validated"] is False
+
+
+def test_measured_page_candidates_are_provisional_not_verified_fda_actions():
+    result = hop_readiness_status()
+    pages = result["fda_provisional_pdf_page_candidates"]
+    assert pages["shared_pdf_documents_text_indexed"] == 61
+    assert pages["published_letter_records_page_searched"] == 154
+    assert pages["strong_same_page_id_and_date_candidates"] == 74
+    assert pages["strong_cases_with_only_one_candidate_page"] == 53
+    assert pages["strong_cases_with_multiple_candidate_pages"] == 21
+    assert pages["id_only_page_candidates"] == 75
+    assert pages["no_application_token_found"] == 3
+    assert pages["too_many_matching_pages_to_narrow"] == 2
+    assert pages["independently_verified_page_ranges"] == 0
+    assert pages["independently_verified_regulatory_outcomes"] == 0
+    assert pages["model_eligible_records"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_provisional_page_source_counts_cannot_be_promoted(tmp_path: Path):
+    from app.hop_status import PAGE_CANDIDATE_AUDIT_PATH
+    raw = json.loads(PAGE_CANDIDATE_AUDIT_PATH.read_text())
+    p = tmp_path / "page_audit.json"
+    p.write_text(json.dumps(raw))
+    assert hop_readiness_status(page_candidate_audit_path=p)["fda_provisional_pdf_page_candidates"]
+
+    raw["uniquely_independently_verified_letter_page_ranges"] = 53
+    p.write_text(json.dumps(raw))
+    assert hop_readiness_status(page_candidate_audit_path=p)["fda_provisional_pdf_page_candidates"] is None
+
+    raw["uniquely_independently_verified_letter_page_ranges"] = 0
+    raw["letter_date_id_one_candidate_page_records"] = 54
+    p.write_text(json.dumps(raw))
+    assert hop_readiness_status(page_candidate_audit_path=p)["fda_provisional_pdf_page_candidates"] is None
+
+    raw["letter_date_id_one_candidate_page_records"] = 53
+    raw["source_letter_records_examined"] = 155
+    p.write_text(json.dumps(raw))
+    result = hop_readiness_status(page_candidate_audit_path=p)
+    assert result["fda_provisional_pdf_page_candidates"] is None
+    assert result["model_validated"] is False
+
+
+def test_page_candidates_require_matching_shared_pdf_inventory(tmp_path: Path):
+    from app.hop_status import SHARED_PDF_AUDIT_PATH
+    raw = json.loads(SHARED_PDF_AUDIT_PATH.read_text())
+    raw["letter_records_in_shared_pdf_groups"] += 1
+    raw["additional_letter_links_beyond_unique_pdfs"] += 1
+    raw["official_pdf_confirmed_letter_references"] += 1
+    raw["published_letter_source_records"] += 1
+    p = tmp_path / "shared.json"
+    p.write_text(json.dumps(raw))
+    result = hop_readiness_status(shared_pdf_audit_path=p)
+    assert result["fda_provisional_pdf_page_candidates"] is None
+    assert result["prediction_available"] is False
+
+
+def test_fda_manual_page_review_worksheet_is_ready_but_unadjudicated():
+    result = hop_readiness_status()
+    worksheet = result["fda_page_review_worksheet"]
+    assert worksheet["shared_pdf_documents"] == 61
+    assert worksheet["published_letter_review_rows"] == 154
+    assert worksheet["review_priority_counts"] == {
+        "1": 4, "3": 53, "4": 21, "5": 71, "6": 5
+    }
+    assert worksheet["letter_candidate_status_counts"] == {
+        "DATE_AND_ID_PAGE_CANDIDATES": 74,
+        "ID_ONLY_PAGE_CANDIDATES": 75,
+        "NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES": 3,
+        "TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW": 2,
+    }
+    assert worksheet["independently_verified_page_ranges"] == 0
+    assert worksheet["independently_verified_action_dates"] == 0
+    assert worksheet["independently_verified_review_cycle_outcomes"] == 0
+    assert worksheet["model_eligible_records"] == 0
+    assert worksheet["complete_denominator_verified"] is False
+    assert result["prediction_probability"] is None
+
+
+def test_fda_review_worksheet_refuses_self_certified_outcomes(tmp_path: Path):
+    from app.hop_status import PAGE_REVIEW_WORKSHEET_AUDIT_PATH
+    audit = json.loads(PAGE_REVIEW_WORKSHEET_AUDIT_PATH.read_text())
+    output = tmp_path / "queue.json"
+    output.write_text(json.dumps(audit))
+    assert hop_readiness_status(page_review_worksheet_path=output)["fda_page_review_worksheet"]
+    audit["independently_verified_review_cycle_outcomes"] = 154
+    output.write_text(json.dumps(audit))
+    assert hop_readiness_status(page_review_worksheet_path=output)["fda_page_review_worksheet"] is None
+    audit["independently_verified_review_cycle_outcomes"] = 0
+    audit["review_priority_counts"]["3"] = 54
+    output.write_text(json.dumps(audit))
+    assert hop_readiness_status(page_review_worksheet_path=output)["fda_page_review_worksheet"] is None
+    audit["review_priority_counts"]["3"] = 53
+    audit["all_reviewer_fields_initially_blank"] = False
+    output.write_text(json.dumps(audit))
+    result = hop_readiness_status(page_review_worksheet_path=output)
+    assert result["fda_page_review_worksheet"] is None
+    assert result["prediction_available"] is False
+
+
+def test_fda_worksheet_requires_corresponding_pdf_evidence_inventory(tmp_path: Path):
+    from app.hop_status import PAGE_CANDIDATE_AUDIT_PATH
+    source = json.loads(PAGE_CANDIDATE_AUDIT_PATH.read_text())
+    source["source_letter_records_examined"] += 1
+    source["letter_candidate_status_counts"]["ID_ONLY_PAGE_CANDIDATES"] += 1
+    path = tmp_path / "tampered_pages.json"
+    path.write_text(json.dumps(source))
+    result = hop_readiness_status(page_candidate_audit_path=path)
+    assert result["fda_page_review_worksheet"] is None
+    assert result["prediction_probability"] is None

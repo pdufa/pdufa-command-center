@@ -18,6 +18,8 @@ OFFICIAL_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_
 FILING_BENCHMARK_PATH = Path(__file__).parent / "research_sources" / "hop_fda_pdufa_filing_benchmarks.json"
 ALL_ACTION_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_full_action_pdf_audit_index.json"
 SHARED_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_shared_pdf_reconciliation_index.json"
+PAGE_CANDIDATE_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_shared_pdf_page_candidate_index.json"
+PAGE_REVIEW_WORKSHEET_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_page_review_worksheet_audit_index.json"
 
 
 def _published_letter_source_audit(path: Path) -> dict | None:
@@ -391,6 +393,127 @@ def _quarantined_shared_fda_pdf_audit(path: Path) -> dict | None:
     except (OSError, KeyError, ValueError, TypeError):
         return None
 
+
+def _quarantined_fda_page_candidate_audit(path: Path) -> dict | None:
+    """Automated page TEXT matches are provisional, never reviewed FDA outcomes."""
+    allowed_pdf_statuses = {"PDF_TEXT_EXTRACTED"}
+    allowed_letter_statuses = {
+        "DATE_AND_ID_PAGE_CANDIDATES", "ID_ONLY_PAGE_CANDIDATES",
+        "NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES",
+        "TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW",
+    }
+    try:
+        src = json.loads(path.read_text(encoding="utf-8"))
+        groups = src["shared_pdf_groups_examined"]
+        letters = src["source_letter_records_examined"]
+        pdf_statuses = src["pdf_text_extraction_status_counts"]
+        status = src["letter_candidate_status_counts"]
+        one = src["letter_date_id_one_candidate_page_records"]
+        many = src["letter_date_id_multiple_candidate_pages_records"]
+        weak = src["id_only_multiple_candidate_pages_records"]
+        if (src.get("status") != "FDA_SHARED_PDF_PAGE_CANDIDATES_REQUIRE_HUMAN_ADJUDICATION"
+                or type(groups) is not int or groups < 1
+                or type(letters) is not int or letters < 2
+                or not isinstance(pdf_statuses, dict)
+                or set(pdf_statuses) != allowed_pdf_statuses
+                or any(type(n) is not int or n < 0 for n in pdf_statuses.values())
+                or sum(pdf_statuses.values()) != groups
+                or not isinstance(status, dict) or set(status) != allowed_letter_statuses
+                or any(type(n) is not int or n < 0 for n in status.values())
+                or sum(status.values()) != letters
+                or any(type(x) is not int or x < 0 for x in (one, many, weak))
+                or one + many != status["DATE_AND_ID_PAGE_CANDIDATES"]
+                or weak > status["ID_ONLY_PAGE_CANDIDATES"]
+                or any(type(src.get(field)) is not int or src[field] != 0
+                       for field in (
+                           "uniquely_independently_verified_letter_page_ranges",
+                           "effective_fda_action_dates_independently_verified",
+                           "independently_verified_review_cycle_outcomes",
+                           "model_eligible_records",
+                       ))
+                or src.get("complete_application_denominator_verified") is not False
+                or src.get("prediction_probability") is not None
+                or not isinstance(src.get("source_archive_sha256"), str)
+                or not re.fullmatch(r"[0-9a-f]{64}", src["source_archive_sha256"])):
+            raise ValueError("FDA PDF page matches are not verified regulatory outcomes")
+        return {
+            "status": "PROVISIONAL_PDF_PAGE_MATCHES_NEED_INDEPENDENT_REVIEW",
+            "shared_pdf_documents_text_indexed": groups,
+            "published_letter_records_page_searched": letters,
+            "strong_same_page_id_and_date_candidates": status["DATE_AND_ID_PAGE_CANDIDATES"],
+            "strong_cases_with_only_one_candidate_page": one,
+            "strong_cases_with_multiple_candidate_pages": many,
+            "id_only_page_candidates": status["ID_ONLY_PAGE_CANDIDATES"],
+            "no_application_token_found": status["NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES"],
+            "too_many_matching_pages_to_narrow": status["TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW"],
+            "source_collection_run_url": src["source_collection_run_url"],
+            "source_collection_artifact_url": src["source_collection_artifact_url"],
+            "independently_verified_page_ranges": 0,
+            "independently_verified_regulatory_outcomes": 0,
+            "model_eligible_records": 0,
+            "complete_denominator_verified": False,
+        }
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+
+
+def _quarantined_page_review_worksheet(path: Path) -> dict | None:
+    """Source-linked PDF review rows are not human-adjudicated regulatory outcomes."""
+    reasons = {
+        "DATE_AND_ID_PAGE_CANDIDATES", "ID_ONLY_PAGE_CANDIDATES",
+        "NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES",
+        "TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW",
+    }
+    priorities = {"1", "3", "4", "5", "6"}
+    try:
+        src = json.loads(path.read_text(encoding="utf-8"))
+        groups = src["shared_pdf_groups"]
+        total = src["published_letter_rows"]
+        statuses = src["candidate_status_counts"]
+        queue_priorities = src["review_priority_counts"]
+        if (src.get("status") != "FDA_PDF_PAGE_WORKSHEET_UNADJUDICATED"
+                or type(groups) is not int or groups < 1
+                or type(total) is not int or total < 1
+                or not isinstance(statuses, dict) or set(statuses) != reasons
+                or not isinstance(queue_priorities, dict) or set(queue_priorities) != priorities
+                or any(type(n) is not int or n < 0 for n in statuses.values())
+                or any(type(n) is not int or n < 0 for n in queue_priorities.values())
+                or sum(statuses.values()) != total or sum(queue_priorities.values()) != total
+                or queue_priorities["1"] > total
+                or queue_priorities["3"] > statuses["DATE_AND_ID_PAGE_CANDIDATES"]
+                or queue_priorities["4"] > statuses["DATE_AND_ID_PAGE_CANDIDATES"]
+                or queue_priorities["3"] + queue_priorities["4"] > statuses["DATE_AND_ID_PAGE_CANDIDATES"]
+                or queue_priorities["5"] > statuses["ID_ONLY_PAGE_CANDIDATES"]
+                or queue_priorities["6"] < statuses["NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES"]
+                or src.get("source_record_reconciled") is not True
+                or src.get("all_reviewer_fields_initially_blank") is not True
+                or any(type(src.get(field)) is not int or src[field] != 0
+                       for field in ("independently_verified_page_ranges",
+                                     "independently_verified_action_dates",
+                                     "independently_verified_review_cycle_outcomes",
+                                     "model_eligible_records"))
+                or src.get("complete_application_denominator_verified") is not False
+                or src.get("prediction_probability") is not None
+                or not isinstance(src.get("source_archive_sha256"), str)
+                or not re.fullmatch(r"[0-9a-f]{64}", src["source_archive_sha256"])):
+            raise ValueError("FDA page worksheet audit cannot establish regulatory outcomes")
+        return {
+            "status": "MANUAL_FDA_PAGE_REVIEW_WORKSHEET_READY_UNADJUDICATED",
+            "shared_pdf_documents": groups,
+            "published_letter_review_rows": total,
+            "review_priority_counts": queue_priorities,
+            "letter_candidate_status_counts": statuses,
+            "source_collection_run_url": src["source_collection_run_url"],
+            "source_collection_artifact_url": src["source_collection_artifact_url"],
+            "independently_verified_page_ranges": 0,
+            "independently_verified_action_dates": 0,
+            "independently_verified_review_cycle_outcomes": 0,
+            "model_eligible_records": 0,
+            "complete_denominator_verified": False,
+        }
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+
 def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SOURCE_AUDIT_PATH,
                          drugs_audit_path: Path = DRUGS_SOURCE_AUDIT_PATH,
                          crosswalk_audit_path: Path = CROSSWALK_AUDIT_PATH,
@@ -399,7 +522,9 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
                          official_pdf_audit_path: Path = OFFICIAL_PDF_AUDIT_PATH,
                          filing_benchmark_path: Path = FILING_BENCHMARK_PATH,
                          all_action_pdf_audit_path: Path = ALL_ACTION_PDF_AUDIT_PATH,
-                         shared_pdf_audit_path: Path = SHARED_PDF_AUDIT_PATH) -> dict:
+                         shared_pdf_audit_path: Path = SHARED_PDF_AUDIT_PATH,
+                         page_candidate_audit_path: Path = PAGE_CANDIDATE_AUDIT_PATH,
+                         page_review_worksheet_path: Path = PAGE_REVIEW_WORKSHEET_AUDIT_PATH) -> dict:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         records = raw["records"]
@@ -447,6 +572,22 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
                 or shared_pdfs["published_letter_records"] != all_published_pdfs["published_letter_records"]
                 or shared_pdfs["confirmed_pdf_references"] != all_published_pdfs["official_pdf_bytes_confirmed"]):
             shared_pdfs = None
+        page_candidates = _quarantined_fda_page_candidate_audit(page_candidate_audit_path)
+        if page_candidates and (not shared_pdfs
+                or page_candidates["shared_pdf_documents_text_indexed"] != shared_pdfs[
+                    "shared_pdf_groups_needing_page_mapping"]
+                or page_candidates["published_letter_records_page_searched"] != shared_pdfs[
+                    "published_letter_records_in_shared_pdf_groups"]):
+            page_candidates = None
+        page_worksheet = _quarantined_page_review_worksheet(page_review_worksheet_path)
+        if page_worksheet and (not page_candidates
+                or page_worksheet["shared_pdf_documents"] != page_candidates["shared_pdf_documents_text_indexed"]
+                or page_worksheet["published_letter_review_rows"] != page_candidates["published_letter_records_page_searched"]
+                or page_worksheet["letter_candidate_status_counts"]["DATE_AND_ID_PAGE_CANDIDATES"] !=
+                   page_candidates["strong_same_page_id_and_date_candidates"]
+                or page_worksheet["letter_candidate_status_counts"]["ID_ONLY_PAGE_CANDIDATES"] !=
+                   page_candidates["id_only_page_candidates"]):
+            page_worksheet = None
         return {
             "status": "RESEARCH_ONLY",
             "historical_staged": staged,
@@ -459,6 +600,8 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_annual_filing_reference": _fda_annual_filing_reference(filing_benchmark_path),
             "fda_all_published_action_documents": all_published_pdfs,
             "fda_shared_pdf_source_reconciliation": shared_pdfs,
+            "fda_provisional_pdf_page_candidates": page_candidates,
+            "fda_page_review_worksheet": page_worksheet,
             "historical_quarantined": quarantined,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
@@ -480,6 +623,8 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_annual_filing_reference": None,
             "fda_all_published_action_documents": None,
             "fda_shared_pdf_source_reconciliation": None,
+            "fda_provisional_pdf_page_candidates": None,
+            "fda_page_review_worksheet": None,
             "historical_quarantined": None,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
