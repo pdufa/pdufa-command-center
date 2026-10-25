@@ -27,10 +27,15 @@ from .scientific_evidence_ledger import (
     pilot_candidates, require_registry_trial_identity, validate_public_https,
 )
 from .scientific_investigation_20 import NCT_PATTERN
-from .scientific_reconciliation_worklist import reconciliation_worklist
+from .scientific_reconciliation_worklist import (
+    EMA_2016_ASSESSMENT, reconciliation_worklist,
+)
 from .scientific_stored_record import verified_record_from_archive
 
 MAX_PDF_BYTES = 4 * 1024 * 1024
+# Strict exception for ONE pinned historical regulator-hosted PDF. Manual
+# uploads and every other source still use the original 4 MiB ceiling.
+MAX_EMA_PDF_BYTES = 16 * 1024 * 1024
 MAX_DOCUMENTS_PER_TRIAL = 8
 SHA_PATTERN = re.compile(r"[a-f0-9]{64}\Z")
 DOCUMENT_ID_PATTERN = re.compile(r"[a-f0-9]{32}\Z")
@@ -116,6 +121,17 @@ def _capture_meta(item: main.ScientificSourceDocument) -> dict:
     }
 
 
+def max_source_pdf_bytes(nct_id: str, gate_id: str, source_url: str,
+                         source_type: str) -> int:
+    """Narrow size exception exclusively for pinned historical EMA PDF."""
+    if (nct_id == "NCT02142738"
+            and gate_id == "protocol_sap"
+            and source_type == "official_agency_document"
+            and source_url == EMA_2016_ASSESSMENT):
+        return MAX_EMA_PDF_BYTES
+    return MAX_PDF_BYTES
+
+
 def capture_document(nct_id: str, item: dict) -> dict:
     """Persist exact submitted PDF bytes (no URL request) with content hash."""
     if not isinstance(nct_id, str) or not NCT_PATTERN.fullmatch(nct_id):
@@ -125,17 +141,19 @@ def capture_document(nct_id: str, item: dict) -> dict:
         raise ValueError("Unknown independent evidence gate")
     source_url = validate_public_https(item["sourceUrl"])
     require_registry_trial_identity(source_url, nct_id)
+    source_byte_limit = max_source_pdf_bytes(
+        nct_id, gate_id, source_url, item["sourceType"])
     declared_digest = item["sha256"]
     if not isinstance(declared_digest, str) or not SHA_PATTERN.fullmatch(declared_digest):
         raise ValueError("Lowercase SHA-256 digest required")
     encoded = item["contentBase64"]
-    if not isinstance(encoded, str) or not 32 <= len(encoded) <= 4*((MAX_PDF_BYTES+2)//3):
+    if not isinstance(encoded, str) or not 32 <= len(encoded) <= 4*((source_byte_limit+2)//3):
         raise ValueError("Invalid PDF payload size")
     try:
         raw = base64.b64decode(encoded, validate=True)
     except (ValueError, binascii.Error):
         raise ValueError("Invalid strict base64 encoding") from None
-    if not 32 <= len(raw) <= MAX_PDF_BYTES:
+    if not 32 <= len(raw) <= source_byte_limit:
         raise ValueError("PDF must be within the isolated capture size limit")
     if not raw.startswith(b"%PDF-") or b"%%EOF" not in raw[-1024:]:
         raise ValueError("Unrecognized PDF signature or EOF marker")
