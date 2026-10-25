@@ -225,7 +225,7 @@ def test_generic_trial_requires_prior_source_ledger_candidate(review,monkeypatch
     },headers=WRITE_HEADERS)
     assert candidate.status_code==201,candidate.text
     result=client.post(url,json={
-        **_payload(OTHER),
+        **_payload(OTHER), "sourceUrl":own_registry,
         "questionId":"external_protocol_sap",
     },headers=WRITE_HEADERS)
     assert result.status_code==201,result.text
