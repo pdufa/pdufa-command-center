@@ -1026,6 +1026,44 @@ def get_scientific_assessment(exact_id: str):
     return result
 
 
+@app.get(
+    "/api/scientific-assessment/review-packet/{nct_id}",
+    dependencies=[Depends(require_internal_key), Depends(require_storage)],
+)
+def get_scientific_review_packet(nct_id: str):
+    """Download a bounded, audited review worksheet; no scientific auto-grading."""
+    import json as _json
+    from .scientific_review_packet import build_review_packet
+    try:
+        packet = build_review_packet(nct_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Exact archived trial not found") from None
+    except ValueError:
+        raise HTTPException(
+            status_code=409,
+            detail="Trial archive or source ledger failed integrity verification",
+        ) from None
+    serialized = _json.dumps(
+        packet, ensure_ascii=False, allow_nan=False, sort_keys=True, indent=2,
+    ).encode("utf-8")
+    if len(serialized) > 2_000_000:
+        raise HTTPException(status_code=413, detail="Review packet exceeds safe export limit")
+    # Credentials remain request headers only, never serialized or placed in URLs.
+    return Response(
+        content=serialized,
+        media_type="application/json",
+        headers={
+            "Content-Disposition": (
+                'attachment; filename="' + nct_id + '_scientific_review_packet.json"'
+            ),
+            "Cache-Control": "no-store, private",
+            "Pragma": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+            "X-Packet-SHA256": packet["packetIntegrity"]["digest"],
+        },
+    )
+
+
 class ScientificEvidenceCandidateSubmission(BaseModel):
     """A submitted citation is always unverified; never an FDA/science score."""
     model_config = ConfigDict(extra="forbid")
