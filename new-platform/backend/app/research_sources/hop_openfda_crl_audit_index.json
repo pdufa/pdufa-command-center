@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "record_type": "PUBLISHED_FDA_CRL_SOURCE_AUDIT",
+  "status": "QUARANTINED_NOT_A_COMPLETE_APPLICATION_COHORT",
+  "source_export_date": "2026-10-21",
+  "retrieved_on": "2026-10-25",
+  "source_manifest_url": "https://api.fda.gov/download.json",
+  "source_archive_url": "https://download.open.fda.gov/transparency/crl/transparency-crl-0001-of-0001.json.zip",
+  "collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40224038609",
+  "collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40224038609/artifacts/12610736354",
+  "collection_artifact_retention_days": 30,
+  "published_letter_records": 458,
+  "letter_type_counts": {
+    "COMPLETE RESPONSE": 445,
+    "TENTATIVE APPROVAL": 4,
+    "PROVISIONAL DETERMINATION": 1,
+    "CORRECTED PROVISIONAL DETERMINATION": 1,
+    "REFUSAL TO FILE": 1,
+    "RESCIND COMPLETE RESPONSE": 1,
+    "UNCLASSIFIED": 5
+  },
+  "quarantined_letter_records": 458,
+  "verified_complete_application_denominator": false,
+  "verified_application_review_cycles": 0,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "evidence_as_of": "UNVERIFIED",
+  "limitations": [
+    "These are published letters, not a complete census of FDA NDA/BLA application review cycles.",
+    "A published CRL is not an independent, final rejection of an application.",
+    "Duplicate applications and multiple review cycles require adjudication.",
+    "Model training and probability output remain prohibited."
+  ]
+}
