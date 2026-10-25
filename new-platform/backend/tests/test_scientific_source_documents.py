@@ -270,7 +270,7 @@ def test_archival_status_and_pinned_source_labels_fit_postgres_varchars():
 def test_only_exact_pinned_ema_pdf_gets_larger_archival_byte_limit(isolated):
     _,engine=isolated
     assert MAX_PDF_BYTES == 4*1024*1024
-    assert MAX_EMA_PDF_BYTES == 16*1024*1024
+    assert MAX_EMA_PDF_BYTES == 5*1024*1024
     for variation in (
         (OTHER,"protocol_sap",EMA_2016_ASSESSMENT,"official_agency_document"),
         (NCT,"official_regulatory",EMA_2016_ASSESSMENT,"official_agency_document"),
