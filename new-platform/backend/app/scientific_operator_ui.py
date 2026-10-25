@@ -97,7 +97,7 @@ _PAGE = r'''<!doctype html>
       <div id="captured-pdfs"></div>
     </div>
   </section>
-  <p class="footer">Scientific review requires original dated sources and independent corroboration. One operator cannot generate two independent confirmations. <a href="/health">Service health</a></p>
+  <p class="footer">Scientific review requires original dated sources and independent corroboration. One operator cannot generate two independent confirmations. <a href="/scientific/reviewer">Independent reviewer workspace</a> · <a href="/health">Service health</a></p>
 </main>
 <div id="config" data-google-client-id="__CLIENT_ID__" hidden></div>
 <script nonce="__NONCE__">
