@@ -162,3 +162,49 @@ def test_all_reviewer_routes_deny_anonymous_calls(env):
         "/api/scientific-assessment/operator/reviewer-setup",
     ]:
         assert client.get(path).status_code==401,path
+
+
+
+def test_approved_reviewer_original_pdf_download_checksum_and_tamper_fail_closed(env):
+    from app.scientific_source_documents import CAPTURE_STATUS, _metadata_hash
+    from app.scientific_reconciliation_worklist import PROTOCOL_SAP
+    client,engine=env
+    add_reviewer(engine)
+    raw=b"%PDF-1.7\n1 0 obj<</Type/Catalog>>endobj\nOriginal test evidence\n%%EOF\n"
+    digest=hashlib.sha256(raw).hexdigest()
+    with Session(engine) as session:
+        row=main.ScientificSourceDocument(
+            id="d"*32,nct_id=NCT,gate_id="protocol_sap",source_url=PROTOCOL_SAP,
+            source_type="protocol_sap",filename=NCT+"_protocol.pdf",
+            captured_by="test controlled fixture",
+            captured_at=datetime(2026,10,25,tzinfo=timezone.utc),
+            sha256=digest,byte_length=len(raw),payload=raw,
+            capture_status=CAPTURE_STATUS,manifest_sha256="0"*64)
+        row.manifest_sha256=_metadata_hash(row)
+        session.add(row)
+        session.commit()
+    path="/api/scientific-assessment/reviewer/source-documents/"+NCT+"/"+"d"*32
+    assert client.get(path).status_code==401
+    r=client.get(path,headers=HEADERS)
+    assert r.status_code==200,r.text[:120]
+    assert r.content==raw
+    assert r.headers["content-type"].startswith("application/pdf")
+    assert r.headers["x-source-document-sha256"]==digest
+    assert r.headers["x-source-scientific-status"]=="not-independently-verified"
+    assert "no-store" in r.headers["cache-control"]
+    assert "sandbox" in r.headers["content-security-policy"]
+    assert client.get(path.replace(NCT,"NCT00000001"),headers=HEADERS).status_code==404
+    with Session(engine) as session:
+        row=session.get(main.ScientificSourceDocument,"d"*32)
+        row.payload=raw+b"modified without updating SHA"
+        session.commit()
+    assert client.get(path,headers=HEADERS).status_code==409
+
+
+def test_reviewer_setup_preflight_requires_actual_verified_email(env,monkeypatch):
+    from app.scientific_reviewer_accounts import reviewer_access_preflight
+    client,engine=env
+    add_reviewer(engine)
+    assert reviewer_access_preflight("reviewer-sub",None)["roleAuthorized"] is False
+    assert reviewer_access_preflight("reviewer-sub","reviewer@example.org")["roleAuthorized"] is True
+    assert reviewer_access_preflight("reviewer-sub","mismatch@example.org")["roleAuthorized"] is False
