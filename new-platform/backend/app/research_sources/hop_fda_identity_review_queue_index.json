@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "IDENTITY_REVIEW_QUEUE_NOT_OUTCOME_COHORT",
+  "source_export_date": "2026-10-21",
+  "registry_export_date": "2026-10-23",
+  "source_collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40227766457",
+  "collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40227766457/artifacts/12611921051",
+  "collection_artifact_retention_days": 30,
+  "published_letter_records": 458,
+  "already_identity_linked_records": 334,
+  "review_queue_records": 124,
+  "review_reason_counts": {
+    "APPLICATION_ID_UNRESOLVED": 15,
+    "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS": 2,
+    "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 107
+  },
+  "repeated_letter_application_groups": 83,
+  "potential_same_day_type_duplicate_groups": 2,
+  "independently_verified_review_cycles": 0,
+  "complete_application_denominator_verified": false,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "limitations": [
+    "Queue prioritizes unresolved, ambiguous, and registry-nonmatch published FDA letters.",
+    "Existing registry links still require full independent regulatory outcome and predecision evidence adjudication.",
+    "Registry nonmatch is not an FDA rejection or proof that the application will never be approved.",
+    "FDA selectively releases CRLs; the corpus cannot establish a complete review-cycle denominator.",
+    "Records are quarantined and cannot be used for HOP model training."
+  ]
+}
