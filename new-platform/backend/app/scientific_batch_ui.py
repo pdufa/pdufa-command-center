@@ -41,6 +41,7 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 <input type="password" id="key" autocomplete="off" placeholder="Enter review-service key">
 <div class="row" style="margin-top:12px"><button class="secondary" id="refresh">Refresh history</button><button class="secondary" id="clear">Clear key</button></div>
 <div class="status" id="notice" role="status" aria-live="polite"></div>
+<div class="status" id="recovery" role="status" aria-live="polite"></div>
 </section>
 <div class="layout">
 <section>
@@ -132,6 +133,11 @@ async function refreshHistory() {
   if (refreshInProgress) return;
   refreshInProgress = true;
   try {
+    const diagnostics = await api("/api/scientific-assessment/batches-recovery-status");
+    $("recovery").textContent = diagnostics.potentially_interrupted
+      ? "Attention: an unfinished batch has not updated for over 60 minutes. Do not restart or retry it until the prior worker is confirmed stopped. Contact the review-service operator."
+      : "";
+    $("recovery").className = "status" + (diagnostics.potentially_interrupted ? " error" : "");
     const data = await api("/api/scientific-assessment/batches");
     const container=$("history");container.replaceChildren();
     if (!data.jobs.length){container.textContent="No batches submitted yet.";return;}
@@ -152,6 +158,7 @@ $("refresh").addEventListener("click",refreshHistory);
 $("clear").addEventListener("click",()=>{
   $("key").value="";stopPolling(); selectedId=null;
   $("history").textContent="Authenticate to load history.";
+  $("recovery").textContent="";
   $("events").replaceChildren();notice("Key cleared from the page.");});
 $("submit").addEventListener("click",async()=>{
   if(posting)return;
