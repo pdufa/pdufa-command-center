@@ -77,7 +77,10 @@ def adjudication_preflight(
     if any(not isinstance(x.get("threadId"), str) or not x["threadId"]
            or type(x.get("revision")) is not int or x["revision"] < 1
            or x.get("findingType") not in ("supports", "contradicts", "uncertain", "not_assessable")
-           or not isinstance(x.get("sourceUrl"), str) for x in statements):
+           or not isinstance(x.get("sourceUrl"), str)
+           or not isinstance(x.get("questionId"), str)
+           or not isinstance(x.get("reviewerLabel", ""), str)
+           for x in statements):
         raise ValueError("Malformed adjudication reviewer statement")
 
     # A repeated revision in one thread is ambiguous even if both entries agree.
