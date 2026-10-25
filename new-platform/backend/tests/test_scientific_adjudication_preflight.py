@@ -215,3 +215,10 @@ def test_malformed_question_fails_closed():
     worklist["checks"][0]["priority"] = None
     with pytest.raises(ValueError, match="Malformed adjudication question"):
         adjudication_preflight(NCT, worklist, history())
+
+
+def test_duplicate_thread_revision_fails_closed():
+    first = observation("thread-a", 1, "supports")
+    duplicate = observation("thread-a", 1, "contradicts")
+    with pytest.raises(ValueError, match="Duplicate adjudication reviewer revision"):
+        adjudication_preflight(NCT, reconciliation_worklist(NCT), history(first, duplicate))
