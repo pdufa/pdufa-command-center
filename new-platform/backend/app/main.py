@@ -402,6 +402,30 @@ async def lifespan(app: FastAPI):
                         reported["analysisCountTotal"],
                         reported["reportedPValuesShown"],
                     )
+                    from .scientific_readiness_grades import review_readiness
+                    readiness = review_readiness(
+                        depth_record.nct_id, snapshot,
+                        archive_retrieved_at=depth_record.fetched_at.isoformat()
+                        if depth_record.fetched_at else None,
+                    )
+                    analysis = readiness["analysisReadiness"]
+                    reluctance = readiness["scientificReluctance"]
+                    grade_ok = (
+                        len(readiness["requirements"]) == 16
+                        and analysis["readyForFullScientificConclusion"] is False
+                        and analysis["verdict"] == "NOT_READY"
+                        and reluctance["grade"] == "F"
+                        and readiness["scientificScore"] is None
+                        and readiness["fdaApprovalProbability"] is None
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_EVIDENCE_GRADES_READBACK status=%s "
+                        "input_grade=%s input_coverage=%s reluctance_grade=%s "
+                        "full_science_ready=False scores_assigned=False",
+                        "PASS" if grade_ok else "FAIL",
+                        analysis["grade"], analysis["coveragePercent"],
+                        reluctance["grade"],
+                    )
         except Exception as depth_error:
             logging.getLogger(__name__).error(
                 "SCIENTIFIC_INVESTIGATION20_READBACK status=FAIL error_type=%s",
