@@ -112,7 +112,8 @@ function auditedRows(
   for (const [programId, candidates] of sorted) {
     const identities = new Set(candidates.map(row => row.id));
     const invalid = identities.size !== 1 || candidates.some(row =>
-      row.nctId && !NCT.test(row.nctId));
+      (row.nctId && !NCT.test(row.nctId))
+      || (TRIAL.test(row.id) && row.nctId && exactNct(row) === null));
     if (invalid) { conflicts++; continue; }
     const nct = exactNct(candidates[0]);
     if (nct) {
