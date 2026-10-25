@@ -93,12 +93,17 @@ def audit_original_submissions(
     subs, sub_encoding = _read_tsv(subs_path, SUBMISSION_COLUMNS)
     application_types: dict[str, str] = {}
     types = Counter()
+    application_quality = Counter()
     for app in apps:
         number, category = app["ApplNo"].strip(), app["ApplType"].strip().upper()
-        if (not re.fullmatch(r"[0-9]{6}", number)
-                or not re.fullmatch(r"[A-Z]{2,8}", category)):
-            raise ValueError("Malformed Drugs@FDA application identity")
+        if not re.fullmatch(r"[0-9]{6}", number) or number == "000000":
+            application_quality["MALFORMED_OR_PLACEHOLDER_APPLICATION_ID"] += 1
+            continue
+        if not re.fullmatch(r"[A-Z]{2,8}", category):
+            application_quality["MALFORMED_APPLICATION_TYPE"] += 1
+            continue
         if number in application_types:
+            # Do not resolve contradictory application type assignments.
             raise ValueError("Duplicate Drugs@FDA application identity")
         application_types[number] = category
         types[category] += 1
@@ -173,6 +178,8 @@ def audit_original_submissions(
         "source_submissions_tsv_encoding": sub_encoding,
         "application_rows_in_extract": len(apps),
         "application_type_counts": dict(sorted(types.items())),
+        "quarantined_application_row_reason_counts": dict(sorted(application_quality.items())),
+        "validated_application_identity_rows": len(application_types),
         "submission_rows_in_extract": len(subs),
         "original_nda_bla_submission_rows": len(entries),
         "distinct_nda_bla_applications_in_original_submission_inventory":
