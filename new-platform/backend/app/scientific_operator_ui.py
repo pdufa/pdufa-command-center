@@ -137,6 +137,8 @@ _PAGE = r'''<!doctype html>
       signout.classList.remove("hide");
       research.classList.remove("hide");
       document.getElementById("load").focus();
+      // The default archived historical pilot is read-only; no scan or grade write.
+      loadButton.click();
     } catch (err) { clear(); status(String(err.message || err)); }
   }
   signout.addEventListener("click", function () {
