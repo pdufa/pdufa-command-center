@@ -193,3 +193,57 @@ matching and mismatching records remain unverified, with training eligibility
 zero and probability null. The original source hash, independent human review,
 qualified signoff and complete approval/nonapproval denominator remain separate
 requirements.
+
+## Historical FDA review-cycle claim register (new)
+
+After the private `unverified_fda_review_queue.csv` has been prepared, an
+independent adjudicator needs a separate worklist to check actual review-cycle
+identities, not merely whether two published letters use matching application
+numbers. The offline register provides that **worksheet**, but neither
+identifies a real adjudicator nor validates their claimed conclusions.
+
+From the repository root:
+
+```bash
+PYTHONPATH=new-platform/backend python \
+  new-platform/backend/scripts/screen_hop_fda_cycle_claims.py \
+  /path/to/unverified_fda_review_queue.csv \
+  --output-dir /path/to/private/local/cycle_claims
+```
+
+The output `blank_unverified_fda_cycle_claims.csv` preserves each source SHA,
+the official PDF link, priority, warning flags and unresolved discrepancy
+fields. All adjudicator fields start blank, including application ID, specific
+review-cycle number, original letter page range, original FDA action date,
+action classification, indication, corroborating FDA URL, adjudicator token and
+written resolution notes. `model_eligible` is always `false`.
+
+After real review, the private claim CSV may be **screened for structural
+problems**, still without promoting any outcome:
+
+```bash
+PYTHONPATH=new-platform/backend python \
+  new-platform/backend/scripts/screen_hop_fda_cycle_claims.py \
+  /path/to/unverified_fda_review_queue.csv \
+  --submitted-register /path/to/private/filled_cycle_claims.csv \
+  --as-of 2026-10-25 \
+  --output-dir /path/to/private/local/cycle_claims_screen
+```
+
+The `fda_cycle_claim_screening_audit.json` reports incomplete candidate
+adjudications, complete-but-unverified assertions, non-decision documents,
+repeated application+cycle claims in multiple letter references, and
+contradictory action/date claims for those same cycles. It never prints the
+claimed adjudicator token or written review notes. It accepts no production
+model eligibility override, and does not infer outcomes from the source
+letter title, historical publication date, or agreement between reviewers.
+
+**Important:** One review cycle may legitimately generate multiple letter
+references. Duplicate cycle detection flags a reconciliation task, not an
+automatic assertion that either reference is false. The source-selected CRL
+archive is still not a complete denominator containing every approval and
+nonapproval. This command never accesses source PDFs, authenticates human
+signatures, certifies independent corroboration, or licenses a retrospective
+FDA approval model. It intentionally exits nonzero even if every candidate
+claim is populated and syntactically valid. An audited independent human
+adjudication process and a complete application-cycle cohort remain missing.
