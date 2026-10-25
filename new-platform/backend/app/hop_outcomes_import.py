@@ -16,7 +16,8 @@ from urllib.parse import urlparse
 REQUIRED_COLUMNS = (
     "case_id", "application_id", "review_cycle", "drug_name", "sponsor",
     "indication", "therapeutic_area", "modality", "phase", "decision_date",
-    "outcome", "public_features_as_of", "evidence_as_of", "source_url",
+    "outcome", "public_features_as_of", "feature_source_url",
+    "feature_source_first_public_on", "evidence_as_of", "source_url",
     "source_title",
 )
 ALLOWED_OUTCOMES = {"APPROVED", "COMPLETE_RESPONSE", "WITHDRAWN", "OTHER_NONAPPROVAL"}
@@ -42,6 +43,8 @@ class HistoricalOutcomeRecord:
     decision_date: date
     outcome: str
     public_features_as_of: date
+    feature_source_url: str
+    feature_source_first_public_on: date
     evidence_as_of: date
     source_url: str
     source_title: str
@@ -69,6 +72,27 @@ def _fda_url(value: str) -> bool:
         return False
 
 
+def _historical_feature_url(value: str) -> bool:
+    """Syntax only, not proof of archived availability or source content."""
+    try:
+        parsed = urlparse(value)
+        host = parsed.hostname
+        return (
+            parsed.scheme == "https"
+            and isinstance(host, str)
+            and "." in host
+            and host != "localhost"
+            and not host.endswith((".localhost", ".local", ".internal"))
+            and parsed.username is None
+            and parsed.password is None
+            and parsed.port is None
+            and bool(parsed.path and parsed.path != "/")
+            and not parsed.fragment
+        )
+    except (ValueError, TypeError):
+        return False
+
+
 def validate_record(row: dict[str, str], *, as_of: date) -> tuple[HistoricalOutcomeRecord | None, list[str]]:
     errors: list[str] = []
     if not isinstance(row, dict):
@@ -83,6 +107,7 @@ def validate_record(row: dict[str, str], *, as_of: date) -> tuple[HistoricalOutc
         decision_date = _date(row["decision_date"].strip())
         evidence_as_of = _date(row["evidence_as_of"].strip())
         features_as_of = _date(row["public_features_as_of"].strip())
+        feature_source_first_public_on = _date(row["feature_source_first_public_on"].strip())
         if not re.fullmatch(r"[1-4]", row["phase"].strip()):
             raise ValueError("invalid phase")
         phase = int(row["phase"].strip())
@@ -101,6 +126,14 @@ def validate_record(row: dict[str, str], *, as_of: date) -> tuple[HistoricalOutc
         errors.append("outcome_evidence_after_import_as_of")
     if features_as_of > as_of:
         errors.append("features_after_import_as_of")
+    if feature_source_first_public_on > as_of:
+        errors.append("feature_source_after_import_as_of")
+    if feature_source_first_public_on > features_as_of:
+        errors.append("feature_source_postdates_snapshot")
+    if feature_source_first_public_on >= decision_date:
+        errors.append("feature_source_not_predecision")
+    if not _historical_feature_url(row["feature_source_url"].strip()):
+        errors.append("feature_source_not_https_reference")
     if evidence_as_of < decision_date:
         errors.append("outcome_evidence_predates_decision")
     if features_as_of >= decision_date:
@@ -125,6 +158,8 @@ def validate_record(row: dict[str, str], *, as_of: date) -> tuple[HistoricalOutc
         decision_date=decision_date,
         outcome=outcome,
         public_features_as_of=features_as_of,
+        feature_source_url=row["feature_source_url"].strip(),
+        feature_source_first_public_on=feature_source_first_public_on,
         evidence_as_of=evidence_as_of,
         source_url=row["source_url"].strip(),
         source_title=row["source_title"].strip(),

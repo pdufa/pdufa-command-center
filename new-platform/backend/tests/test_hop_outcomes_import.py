@@ -21,6 +21,8 @@ def valid_row():
         "decision_date": "2020-01-01",
         "outcome": "APPROVED",
         "public_features_as_of": "2019-12-30",
+        "feature_source_url": "https://pubmed.ncbi.nlm.nih.gov/27718847/",
+        "feature_source_first_public_on": "2019-12-29",
         "evidence_as_of": "2020-01-02",
         "source_url": "https://www.fda.gov/example",
         "source_title": "Fictitious source title",
@@ -33,6 +35,7 @@ def test_accepts_schema_complete_example_but_never_adjudicates():
     assert record.outcome == "APPROVED"
     assert record.application_id == "NDA000001"
     assert record.public_features_as_of < record.decision_date
+    assert record.feature_source_first_public_on <= record.public_features_as_of
     assert record.evidence_as_of >= record.decision_date
 
 
@@ -52,6 +55,53 @@ def test_rejects_postdecision_features_even_if_outcome_source_valid():
     row = valid_row()
     row["public_features_as_of"] = "2020-01-01"
     assert "features_not_predecision" in validate_record(row, as_of=AS_OF)[1]
+
+
+def test_rejects_feature_source_published_after_snapshot_even_if_trial_date_is_early():
+    row = valid_row()
+    row["feature_source_first_public_on"] = "2020-01-02"
+    errors = validate_record(row, as_of=AS_OF)[1]
+    assert "feature_source_postdates_snapshot" in errors
+    assert "feature_source_not_predecision" in errors
+
+
+def test_rejects_feature_source_published_on_fda_decision_day():
+    row = valid_row()
+    row["feature_source_first_public_on"] = row["decision_date"]
+    errors = validate_record(row, as_of=AS_OF)[1]
+    assert "feature_source_not_predecision" in errors
+
+
+def test_rejects_malformed_or_spoofed_feature_provenance_url():
+    for url in (
+        "http://pubmed.ncbi.nlm.nih.gov/27718847/",
+        "https://pubmed.ncbi.nlm.nih.gov@evil.example/trial",
+        "https://localhost/paper", "https://review.local/page",
+        "https://pubmed.ncbi.nlm.nih.gov:8443/27718847/",
+        "https://pubmed.ncbi.nlm.nih.gov/27718847/#modified",
+    ):
+        row = valid_row()
+        row["feature_source_url"] = url
+        assert "feature_source_not_https_reference" in validate_record(row, as_of=AS_OF)[1]
+
+
+def test_missing_feature_source_publication_date_fails_closed():
+    row = valid_row()
+    row["feature_source_first_public_on"] = ""
+    assert "missing:feature_source_first_public_on" in validate_record(row, as_of=AS_OF)[1]
+
+
+def test_earlier_electronic_publication_date_is_distinct_from_print_issue_date():
+    # Synthetic decision illustrates as-of validation; PMID is real reference format only.
+    row = valid_row()
+    row["decision_date"] = "2016-10-24"
+    row["public_features_as_of"] = "2016-10-23"
+    row["feature_source_first_public_on"] = "2016-10-08"
+    row["evidence_as_of"] = "2016-10-24"
+    record, errors = validate_record(row, as_of=AS_OF)
+    assert errors == []
+    assert record.feature_source_first_public_on < record.decision_date
+    # The later print issue date (2016-11-10) cannot replace first-public date.
 
 
 def test_rejects_non_fda_and_spoofed_domains():
@@ -125,4 +175,4 @@ def test_csv_unexpected_extra_fields_rejected(tmp_path):
 
 
 def test_required_columns_include_distinct_temporal_fields():
-    assert {"application_id", "review_cycle", "source_url", "public_features_as_of", "evidence_as_of"}.issubset(REQUIRED_COLUMNS)
+    assert {"application_id", "review_cycle", "source_url", "public_features_as_of", "feature_source_url", "feature_source_first_public_on", "evidence_as_of"}.issubset(REQUIRED_COLUMNS)
