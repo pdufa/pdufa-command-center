@@ -157,3 +157,26 @@ def test_explicit_cutoff_is_required(tmp_path):
     ap, su = inputs(tmp_path)
     with pytest.raises(ValueError):
         audit_original_submissions(ap, su, as_of=None)
+
+
+
+def test_real_world_windows_1252_fda_notes_are_not_silently_discarded(tmp_path):
+    ap, su = inputs(tmp_path)
+    # Some official FDA Submissions snapshots contain Windows-1252 smart
+    # punctuation in free-text cells, which is not valid UTF-8.
+    text = (SUB_HEADER
+            + "123456\tORIG\t1\tAP\t2020-01-01\tClinician’s note\n")
+    su.write_bytes(text.encode("cp1252"))
+    result = audit_original_submissions(ap, su, as_of=AS_OF)
+    assert result["source_submissions_tsv_encoding"] == "cp1252"
+    assert result["source_applications_tsv_encoding"] == "utf-8-sig"
+    assert result["original_nda_bla_submission_rows"] == 1
+    assert result["model_eligible_records"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_invalid_legacy_codepage_bytes_fail_instead_of_replacement(tmp_path):
+    ap, su = inputs(tmp_path)
+    su.write_bytes(SUB_HEADER.encode("ascii") + b"123456\tORIG\t1\tAP\t2020-01-01\t\x81\n")
+    with pytest.raises(UnicodeDecodeError):
+        audit_original_submissions(ap, su, as_of=AS_OF)
