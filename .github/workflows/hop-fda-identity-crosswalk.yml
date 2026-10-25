@@ -8,6 +8,7 @@ on:
       - '.github/workflows/hop-fda-identity-crosswalk.yml'
       - 'new-platform/backend/scripts/collect_hop_fda_crosswalk.py'
       - 'new-platform/backend/app/hop_fda_application_crosswalk.py'
+      - 'new-platform/backend/app/hop_fda_review_cycle_triage.py'
 
 permissions:
   contents: read
@@ -26,7 +27,7 @@ jobs:
         run: python -m pip install pytest
       - name: Test conservative identity linkage rules
         working-directory: new-platform/backend
-        run: PYTHONPATH=. python -m pytest -q tests/test_hop_fda_application_crosswalk.py
+        run: PYTHONPATH=. python -m pytest -q tests/test_hop_fda_application_crosswalk.py tests/test_hop_fda_review_cycle_triage.py
       - name: Build crosswalk from official FDA source exports
         working-directory: new-platform/backend
         run: PYTHONPATH=. python scripts/collect_hop_fda_crosswalk.py --output-dir "${{ runner.temp }}/hop-crosswalk"
