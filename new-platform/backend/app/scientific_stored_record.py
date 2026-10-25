@@ -16,7 +16,7 @@ from .scientific_registry_evidence import extract_trial_evidence
 # Registry API responses are capped at 10 MB before canonical JSON encoding.
 # Allow canonicalization overhead but reject unexpectedly large archives.
 MAX_ARCHIVED_JSON_BYTES = 20_000_000
-SHA256_PATTERN = re.compile(r"[0-9a-f]{64}\\Z")
+SHA256_PATTERN = re.compile(r"[0-9a-f]{64}\Z")
 
 
 def evidence_from_archive(nct_id: str, payload_gzip: bytes, expected_sha256: str) -> dict:
