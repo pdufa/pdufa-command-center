@@ -122,3 +122,40 @@ test("moving to another exact NCT clears previous connection assertion", async (
     global.fetch = original;
   }
 });
+
+
+test("malformed or unscoped trial IDs never enable or invoke scientific controls", async () => {
+  const original = global.fetch;
+  const calls = [];
+  global.fetch = async (...args) => {
+    calls.push(args);
+    throw new Error("Unexpected request for invalid scientific identity");
+  };
+  try {
+    for (const invalid of [
+      "NCT02142738",
+      "TRIAL\\BROKEN",
+      "TRIAL|NCT0214273",
+      "TRIAL|NCT02142738?unexpected=1",
+    ]) {
+      let view;
+      try {
+        await act(async () => {
+          view = create(React.createElement(Component, { exactId: invalid }));
+        });
+        const buttons = view.root.findAllByType("button");
+        assert.equal(buttons.length, 2);
+        assert.ok(buttons.every(button => button.props.disabled === true),
+          "Both scientific controls must be disabled for " + invalid);
+        await act(async () => {
+          for (const button of buttons) await button.props.onClick();
+        });
+        assert.equal(calls.length, 0);
+      } finally {
+        if (view) await act(async () => view.unmount());
+      }
+    }
+  } finally {
+    global.fetch = original;
+  }
+});
