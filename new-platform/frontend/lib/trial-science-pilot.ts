@@ -5,6 +5,7 @@
  */
 import { validSourceEvidenceAudit, type SourceEvidenceAudit } from "./trial-science-evidence-audit";
 import { validSafetyChronology, type SafetyChronology } from "./trial-science-safety-chronology";
+import { validPublishedInterimDesign, type PublishedInterimDesign } from "./trial-science-interim-design";
 
 export const PILOT_NCT = "NCT02142738";
 
@@ -126,6 +127,7 @@ export type TrialSciencePilot = {
   scientificReadiness?: ScientificReadiness;
   sourceEvidenceAudit?: SourceEvidenceAudit;
   publishedSafetyReconciliation?: SafetyChronology;
+  publishedInterimDesign?: PublishedInterimDesign;
   publishedResults: {
     nct_id: string;
     randomized_population: number;
@@ -272,6 +274,10 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
   if (input.scientificReadiness !== undefined && !validScientificReadiness(input.scientificReadiness)) return false;
   if (input.sourceEvidenceAudit !== undefined && !validSourceEvidenceAudit(input.sourceEvidenceAudit)) return false;
   if (input.publishedSafetyReconciliation !== undefined && !validSafetyChronology(input.publishedSafetyReconciliation)) return false;
+  if (input.publishedInterimDesign !== undefined && !validPublishedInterimDesign(input.publishedInterimDesign)) return false;
+  if (input.publishedInterimDesign !== undefined && input.scientificReadiness !== undefined &&
+      (input.scientificReadiness.inputReadiness.grade !== "FAIL" ||
+       input.scientificReadiness.reluctance.grade !== "HIGH")) return false;
   if (input.publishedSafetyReconciliation !== undefined && input.sourceEvidenceAudit !== undefined &&
       input.publishedSafetyReconciliation.registryReconciliation.archivedGroupsObserved !==
       input.sourceEvidenceAudit.registrySafety.groupCount) return false;

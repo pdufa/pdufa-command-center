@@ -930,7 +930,15 @@ def get_keynote024_scientific_pilot(response: Response):
         raise HTTPException(
             status_code=503, detail="Historical pilot safety reconciliation failed validation",
         ) from None
+    from .scientific_pilot_interim_design import published_keynote024_interim_design
+    try:
+        interim_design = published_keynote024_interim_design(published, scientific_readiness)
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Pilot statistical source comparison failed validation",
+        ) from None
     return {
+        "publishedInterimDesign": interim_design,
         "publishedSafetyReconciliation": published_safety,
         "sourceEvidenceAudit": evidence_audit,
         "scientificReadiness": scientific_readiness,
