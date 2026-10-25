@@ -459,6 +459,10 @@ def test_browser_fetches_official_pdf_without_local_upload_or_science_signoff():
             assert "P024-03" in page.locator("#official-source-note").inner_text()
             assert page.locator("#source-pdf-link").get_attribute("href") == (
                 "https://portal.dimdi.de/data/ctr/O-2145_01-2-0-CE336C-20220110151635.pdf")
+            page.locator("#source-pdf-kind").select_option("ema")
+            assert "2.5%/2.0%" in page.locator("#official-source-note").inner_text()
+            assert page.locator("#source-pdf-link").get_attribute("href") == (
+                "https://www.ema.europa.eu/en/documents/variation-report/keytruda-h-c-3820-ii-0011-epar-assessment-report-variation_en.pdf")
             page.locator("#source-pdf-kind").select_option("protocol")
             assert "2017" in page.locator("#official-source-note").inner_text()
             page.locator("#fetch-official-pdf").click()
