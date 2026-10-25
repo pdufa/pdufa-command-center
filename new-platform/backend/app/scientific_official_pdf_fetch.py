@@ -189,10 +189,16 @@ def bootstrap_pinned_pilot_sources() -> None:
                 receipt["byteLength"],
             )
         except Exception as exc:
-            # Original source could be unavailable, oversized, or already
-            # concurrently captured. Never write a false source or score.
+            # Only expose fixed, hard-coded fetch-failure categories, never
+            # arbitrary exception messages, credentials, request URLs, or
+            # upstream response bodies. This distinguishes transient blocks
+            # from source-size/format failures without weakening validation.
+            reason = (
+                str(exc) if isinstance(exc, OfficialSourceUnavailable)
+                else "Local archive validation, conflict, or storage failure"
+            )
             logger.warning(
                 "SCIENTIFIC_PINNED_SOURCE_CAPTURE source=%s status=UNAVAILABLE "
-                "error_type=%s scientific_verification=False",
-                source, type(exc).__name__,
+                "error_type=%s reason=%s scientific_verification=False",
+                source, type(exc).__name__, reason,
             )
