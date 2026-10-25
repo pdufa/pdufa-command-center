@@ -109,8 +109,8 @@ def _letter_date_patterns(value: object) -> list[re.Pattern]:
     month_name = _MONTHS[month]
     short_month = month_name[:3]
     return [
-        re.compile(rf"(?<![0-9])0?{month}[/\\.-]0?{day}[/\\.-]{year}(?![0-9])", re.I),
-        re.compile(rf"\\b(?:{month_name}|{short_month})\\.?\\s+0?{day},?\\s+{year}\\b", re.I),
+        re.compile(rf"(?<![0-9])0?{month}[/\.-]0?{day}[/\.-]{year}(?![0-9])", re.I),
+        re.compile(rf"\b(?:{month_name}|{short_month})\.?\s+0?{day},?\s+{year}\b", re.I),
     ]
 
 
@@ -131,7 +131,7 @@ def _application_patterns(values: object) -> list[re.Pattern]:
             continue
         seen.add(key)
         patterns.append(re.compile(
-            rf"(?<![A-Z0-9]){kind}\\s*[#:\\-]?\\s*0*{digits}(?![0-9])", re.I
+            rf"(?<![A-Z0-9]){kind}\s*[#:\-]?\s*0*{digits}(?![0-9])", re.I
         ))
     return patterns
 
