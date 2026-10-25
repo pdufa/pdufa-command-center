@@ -30,7 +30,7 @@ on:
       - 'new-platform/backend/tests/test_scientific_investigation_contract.py'
       - '.github/workflows/scientific-assessment-verification.yml'
   pull_request:
-    branches: [main]
+    branches: [main, integration/scientific-assessment-validation-20261025]
     paths:
       - 'scientific_assessment.py'
       - 'scientific_assessment_ui.py'
