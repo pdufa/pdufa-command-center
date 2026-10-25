@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Workspace from "./Workspace";
 import SiteHealthStatus from "./SiteHealthStatus";
+import TrialSciencePilot from "./TrialSciencePilot";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Selections = Record<string, boolean>;
@@ -209,6 +210,8 @@ export default function Home() {
       </header>
       <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a></p>
       <Workspace onInspect={inspectProgram} />
+      <TrialSciencePilot />
+      <p className="subtle">Historical trial science research: <a href="/trial/NCT02142738">KEYNOTE-024 (NCT02142738)</a>. Evidence remains independently reviewable.</p>
       {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
       <div className="panel controls">
         <label htmlFor="stage">Stage</label>
