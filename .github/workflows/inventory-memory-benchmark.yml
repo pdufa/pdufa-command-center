@@ -1,0 +1,26 @@
+name: Inventory Memory Benchmark
+on:
+  push:
+    branches:
+      - fix/opt-in-startup-inventory-verification-20261025
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install backend dependencies
+        run: pip install -r requirements.txt
+      - name: Run read-only inventory benchmark
+        env:
+          PDUFA_RUN_INVENTORY_MEMORY_BENCHMARK: '1'
+        run: python -m app.inventory_memory_benchmark
