@@ -129,3 +129,11 @@ def test_unknown_link_status_rejected():
         create_fda_identity_review_queue(
             *sources([row], [link(row, "FDA_APPROVED")]))
 
+
+
+def test_matched_letter_provenance_still_reconciled_before_skipping_queue():
+    row = record("e", ["NDA 213378"])
+    linked = link(row, STATUS_MATCH, ["NDA213378"])
+    linked["letter_type_as_published"] = "TENTATIVE APPROVAL"
+    with pytest.raises(ValueError, match="published letter fields do not reconcile"):
+        create_fda_identity_review_queue(*sources([row], [linked]))
