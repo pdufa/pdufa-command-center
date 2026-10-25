@@ -36,6 +36,10 @@ def walk_forward_backtest(
         raise ValueError("cutoffs must be unique and chronological")
     if len(cutoffs) < 2:
         raise ValueError("at least two cutoffs required")
+    # Reject duplicate application/review-cycle labels before any evaluation.
+    keys = [(r.application_id, r.review_cycle) for r in rows]
+    if len(keys) != len(set(keys)):
+        raise ValueError("duplicate application review cycle in backtest input")
     result = []
     for left, right in zip(cutoffs, cutoffs[1:]):
         train = [r for r in rows if r.decision_date < left]
@@ -43,13 +47,15 @@ def walk_forward_backtest(
         train = [r for r in train if r.public_features_as_of is not None
                  and r.public_features_as_of < r.decision_date
                  and r.ascertainment_source in DENOMINATOR_SOURCES
-                 and r.outcome in OUTCOMES and r.cohort_id]
+                 and r.outcome in OUTCOMES and r.cohort_id
+                 and r.cohort_complete_verified is True]
         train_ids = {r.application_id for r in train}
         usable = [r for r in test if r.application_id not in train_ids
                   and r.public_features_as_of is not None
                   and r.public_features_as_of < r.decision_date
                   and r.ascertainment_source in DENOMINATOR_SOURCES
-                  and r.outcome in OUTCOMES and r.cohort_id]
+                  and r.outcome in OUTCOMES and r.cohort_id
+                  and r.cohort_complete_verified is True]
         losses = []
         if len(train) >= min_train:
             for row in usable:

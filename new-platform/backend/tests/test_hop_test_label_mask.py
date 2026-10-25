@@ -4,8 +4,8 @@ from app.hop_outcome_cohort import OutcomeObservation
 
 def test_scoring_callback_cannot_see_heldout_outcome():
     rows=[
-        OutcomeObservation("A",1,date(2019,6,1),"APPROVED","COMPLETE_APPLICATION_COHORT","c",date(2019,1,1)),
-        OutcomeObservation("B",1,date(2020,6,1),"COMPLETE_RESPONSE","COMPLETE_APPLICATION_COHORT","c",date(2020,1,1)),
+        OutcomeObservation("A",1,date(2019,6,1),"APPROVED","COMPLETE_APPLICATION_COHORT","c",date(2019,1,1),True),
+        OutcomeObservation("B",1,date(2020,6,1),"COMPLETE_RESPONSE","COMPLETE_APPLICATION_COHORT","c",date(2020,1,1),True),
     ]
     seen=[]
     def scorer(train, case):

@@ -19,6 +19,7 @@ class OutcomeObservation:
     ascertainment_source: str
     cohort_id: str
     public_features_as_of: date | None
+    cohort_complete_verified: bool = False
 
 OUTCOMES = {"APPROVED", "COMPLETE_RESPONSE"}
 DENOMINATOR_SOURCES = {"COMPLETE_APPLICATION_COHORT"}
@@ -40,7 +41,8 @@ def audit_outcome_cohort(rows: Iterable[OutcomeObservation], as_of: date) -> dic
         if row.public_features_as_of is None or row.public_features_as_of >= row.decision_date:
             counts["missing_predecision_features"] += 1
             continue
-        if row.ascertainment_source not in DENOMINATOR_SOURCES or not row.cohort_id:
+        if (row.ascertainment_source not in DENOMINATOR_SOURCES or not row.cohort_id
+                or row.cohort_complete_verified is not True):
             counts["selection_biased_or_unknown_denominator"] += 1
             continue
         cohort_ids.add(row.cohort_id)

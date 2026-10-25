@@ -5,7 +5,7 @@ from app.hop_outcome_cohort import OutcomeObservation
 CUTS = [date(2020,1,1), date(2021,1,1)]
 
 def case(app, year, source="COMPLETE_APPLICATION_COHORT", outcome="APPROVED"):
-    return OutcomeObservation(app,1,date(year,6,1),outcome,source,"complete-2019-2020",date(year,1,1))
+    return OutcomeObservation(app,1,date(year,6,1),outcome,source,"complete-2019-2020",date(year,1,1),True)
 
 def test_crl_only_records_never_train_or_test():
     rows=[case("a",2019,source="FDA_CRL_PUBLICATION",outcome="COMPLETE_RESPONSE"),

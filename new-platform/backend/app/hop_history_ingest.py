@@ -34,6 +34,8 @@ def parse_history(text: str) -> list[HistoricalCase]:
             raise ValueError(f"Historical case {index}: official FDA source required")
         decision = date.fromisoformat(item["decision_date"])
         evidence = date.fromisoformat(item["evidence_as_of"])
+        if evidence >= decision:
+            raise ValueError(f"Historical case {index}: evidence must predate FDA decision")
         if decision > date.today() or evidence > date.today():
             raise ValueError(f"Historical case {index}: future evidence/decision")
         if item["case_id"] in seen:

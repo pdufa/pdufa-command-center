@@ -5,7 +5,7 @@ from app.hop_outcome_cohort import OutcomeObservation
 
 def row(app, year, outcome="APPROVED", evidence_year=None):
     return OutcomeObservation(app, 1, date(year, 6, 1), outcome,
-                              "COMPLETE_APPLICATION_COHORT", "cohort", date(evidence_year or year, 1, 1))
+                              "COMPLETE_APPLICATION_COHORT", "cohort", date(evidence_year or year, 1, 1), True)
 
 def test_empty_history_abstains():
     folds = walk_forward_backtest([], [date(2020,1,1), date(2021,1,1)], lambda train, case: 0.5)
@@ -24,6 +24,9 @@ def test_walk_forward_only_earlier_training():
 
 def test_repeated_application_is_excluded():
     records = [row("same",2019),row("same",2020)]
+    records[1] = OutcomeObservation("same", 2, records[1].decision_date, records[1].outcome,
+                                    records[1].ascertainment_source, records[1].cohort_id,
+                                    records[1].public_features_as_of, True)
     folds = walk_forward_backtest(records,[date(2020,1,1),date(2021,1,1)],lambda train, case: 0.9,min_train=1)
     assert folds[0].excluded_test_count == 1
     assert folds[0].brier_score is None
