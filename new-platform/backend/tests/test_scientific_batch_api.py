@@ -1,5 +1,7 @@
 """Offline API and persistence tests for isolated scientific batch control."""
 import json
+import gzip
+import hashlib
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 from urllib.error import HTTPError
@@ -7,6 +9,7 @@ from urllib.error import HTTPError
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 from app import main, scientific_batch_jobs, scientific_batch_import
@@ -153,3 +156,43 @@ def test_recovery_status_requires_auth_and_is_read_only(isolated):
     assert unchanged["processed"]==0
     assert isolated.post("/api/scientific-assessment/batches",
                          json={"nct_ids":[B]},headers=AUTH).status_code==409
+
+
+def test_authenticated_scientific_archive_is_descriptive_and_scores_withheld(isolated):
+    """Real API readback must not upgrade checksum-valid registry data into efficacy."""
+    registry = {
+        "protocolSection": {
+            "identificationModule": {"nctId": A},
+            "designModule": {"designInfo": {"allocation": "RANDOMIZED"},
+                             "enrollmentInfo": {"count": 1062}},
+            "outcomesModule": {"primaryOutcomes": [{"measure": "Overall survival"}]},
+            "statusModule": {"overallStatus": "COMPLETED"},
+        }
+    }
+    raw = json.dumps(registry, sort_keys=True, separators=(",", ":")).encode()
+    with Session(main.ENGINE) as session:
+        session.add(main.FullTrialRecord(
+            nct_id=A, payload_gzip=gzip.compress(raw),
+            sha256=hashlib.sha256(raw).hexdigest(),
+            summary={"nctId": A}, statistics=[],
+            fetched_at=datetime.now(timezone.utc),
+        ))
+        session.commit()
+    assert isolated.get("/api/scientific-assessment",
+                        params={"exact_id": "TRIAL|" + A}).status_code == 401
+    response = isolated.get("/api/scientific-assessment",
+                            params={"exact_id": "TRIAL|" + A}, headers=AUTH)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["exactId"] == "TRIAL|" + A
+    assert data["registryEvidenceStatus"] == "source_record_loaded"
+    assert data["registryEvidence"]["verificationStatus"] == "source_record_only"
+    assert data["registryEvidence"]["metadata"]["enrollment"] == 1062
+    assert data["assessment"]["overall_score"] is None
+    assert data["assessment"]["status"] == "insufficient_evidence"
+    assert len(data["assessment"]["domains"]) == 6
+    assert all(x["score"] is None for x in data["assessment"]["domains"].values())
+    missing = isolated.get("/api/scientific-assessment",
+                           params={"exact_id": "TRIAL|" + B}, headers=AUTH).json()
+    assert missing["registryEvidenceStatus"] == "record_not_found"
+    assert missing["assessment"]["overall_score"] is None
