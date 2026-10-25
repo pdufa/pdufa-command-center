@@ -17,15 +17,17 @@ from pathlib import Path
 
 from .hop_fda_dual_review_packets import SOURCE_FIELDS
 from .hop_fda_reviewer_reconciliation import COMPLETE_FIELDS, reconcile_review_claims
+from .hop_fda_source_consistency import source_consistency_flags
 
 INDEX_STATUS = "FDA_PDF_PAGE_WORKSHEET_UNADJUDICATED"
 TRIAGE_FIELDS = (
     "review_queue_priority", "triage_status", "source_record_sha256",
     "fda_pdf_sha256", "fda_pdf_url", "provisional_page_link",
     "claimed_first_review_complete", "claimed_second_review_complete",
-    "disputed_fields", "review_reason",
+    "disputed_fields", "source_metadata_warning_flags", "review_reason",
 )
 REVIEW_STATES = (
+    "SOURCE_METADATA_DISCREPANCY",
     "REVIEWER_FINDINGS_CONFLICT",
     "REVIEW_SUBMISSIONS_INCOMPLETE",
     "MATCHING_TEXT_STILL_UNVERIFIED",
@@ -165,6 +167,7 @@ def build_review_triage(
 
     output: list[dict[str, str]] = []
     outcomes: Counter[str] = Counter()
+    source_warning_rows = 0
     for row in original:
         identity = row["source_record_sha256"]
         if identity not in first_by_id or identity not in second_by_id:
@@ -175,8 +178,21 @@ def build_review_triage(
         dispute = disputed_by_id.get(identity, [])
         if dispute and not (has_a and has_b):
             raise ValueError("Dispute cannot arise from incomplete reviewer claims")
+        # Two reviewer statements may agree while both contradicting the
+        # publication-derived ID, date or document-type metadata.
+        # These warnings can also be legitimate exceptions; independent
+        # human adjudication must resolve them, not this code.
+        warnings = []
+        if has_a:
+            warnings.extend(source_consistency_flags(row, a))
+        if has_b:
+            warnings.extend(source_consistency_flags(row, b))
+        warning_flags = sorted(set(warnings))
+        if warning_flags:
+            source_warning_rows += 1
         state = (
-            "REVIEWER_FINDINGS_CONFLICT" if dispute
+            "SOURCE_METADATA_DISCREPANCY" if warning_flags
+            else "REVIEWER_FINDINGS_CONFLICT" if dispute
             else "MATCHING_TEXT_STILL_UNVERIFIED" if has_a and has_b
             else "REVIEW_SUBMISSIONS_INCOMPLETE"
         )
@@ -194,6 +210,7 @@ def build_review_triage(
             "claimed_first_review_complete": str(has_a).lower(),
             "claimed_second_review_complete": str(has_b).lower(),
             "disputed_fields": "; ".join(dispute),
+            "source_metadata_warning_flags": "; ".join(warning_flags),
             "review_reason": row["review_reason"],
             "_source_priority": int(row["review_priority"]),
         })
@@ -201,18 +218,30 @@ def build_review_triage(
                                r["_source_priority"], r["source_record_sha256"]))
     for row in output:
         del row["_source_priority"]
+    # Queue tiers partition all references, whereas metadata conflicts may
+    # overlap reviewer disagreements and incomplete submissions. Preserve
+    # and separately audit the overlap rather than faking a consensus count.
+    review_conflicts = sum(bool(disputed_by_id.get(r["source_record_sha256"]))
+                           for r in original)
+    missing_submissions = sum(not (bool(first_by_id[r["source_record_sha256"]]["reviewer_id"]
+                         and all(first_by_id[r["source_record_sha256"]][k].strip()
+                                 for k in COMPLETE_FIELDS))
+                         and bool(second_by_id[r["source_record_sha256"]]["reviewer_id"]
+                         and all(second_by_id[r["source_record_sha256"]][k].strip()
+                                 for k in COMPLETE_FIELDS))) for r in original)
     if (len(output) != sum(outcomes.values())
-            or outcomes["REVIEWER_FINDINGS_CONFLICT"] != comparison.get(
-                "disagreeing_unverified_claims")
-            or outcomes["REVIEW_SUBMISSIONS_INCOMPLETE"] != comparison.get(
-                "incomplete_or_missing_reviewer_claims")
-            or outcomes["MATCHING_TEXT_STILL_UNVERIFIED"] != comparison.get(
-                "matching_unverified_claims")):
+            or review_conflicts != comparison.get("disagreeing_unverified_claims")
+            or missing_submissions != comparison.get("incomplete_or_missing_reviewer_claims")
+            or len(original) - review_conflicts - missing_submissions
+                != comparison.get("matching_unverified_claims")
+            or source_warning_rows != outcomes["SOURCE_METADATA_DISCREPANCY"]):
         raise ValueError("Review queue conflicts with source comparison")
     return output, {
         **inventory,
         "status": "UNVERIFIED_REVIEW_QUEUE_ONLY",
         "queue_status_counts": {k: outcomes[k] for k in REVIEW_STATES},
+        "source_metadata_warning_references": source_warning_rows,
+        "independent_source_metadata_verified": False,
         "reviewer_identity_authenticated": False,
         "independently_verified_review_cycles": 0,
         "model_eligible_records": 0,
@@ -228,7 +257,7 @@ def review_triage_csv(rows: list[dict[str, str]]) -> str:
     writer.writeheader()
     for row in rows:
         if (row.get("triage_status") not in REVIEW_STATES
-                or row.get("review_queue_priority") not in {"1", "2", "3"}):
+                or row.get("review_queue_priority") not in {"1", "2", "3", "4"}):
             raise ValueError("Only unverified FDA source-review queue items permitted")
         writer.writerow(row)
     return output.getvalue()
