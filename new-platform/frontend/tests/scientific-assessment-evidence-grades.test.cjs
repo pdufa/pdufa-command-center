@@ -92,14 +92,14 @@ async function mountAndLoad(data) {
 test("two evidence grades, 20 levels, eight layers and 40 tasks appear without outcome scores", async () => {
   const tree = await mountAndLoad(payload());
   const displayed = allText(tree.root);
-  assert.match(displayed, /Analysis readiness: C/);
-  assert.match(displayed, /Reluctance grade: F/);
+  assert.match(displayed, /Analysis readiness:\s*C/);
+  assert.match(displayed, /Reluctance grade:\s*F/);
   assert.match(displayed, /Maximum reluctance/);
-  assert.match(displayed, /Level 1: Review level 1/);
-  assert.match(displayed, /Level 20: Review level 20/);
+  assert.match(displayed, /Level\s+1\s*:\s*Review level 1/);
+  assert.match(displayed, /Level\s+20\s*:\s*Review level 20/);
   assert.match(displayed, /40 assessments/);
-  assert.match(displayed, /0\/40 independently verified/);
-  assert.match(displayed, /0\/320 planned in-depth review tasks/);
+  assert.match(displayed, /0\s*\/\s*40 independently verified/);
+  assert.match(displayed, /0\s*\/\s*320\s+planned in-depth review tasks/);
   assert.match(displayed, /FDA approval probability/);
   assert.match(displayed, /NOT ASSIGNED/);
   assert.doesNotMatch(displayed, /Scientific score: [0-9]/);
@@ -144,9 +144,9 @@ test("switching NCT clears previous trial grades and archived review levels", as
   global.fetch = async () => ({ ok: true, status: 200, json: async () => payload() });
   try {
     await act(async () => { await tree.root.findByType("button").props.onClick(); });
-    assert.match(allText(tree.root), /Analysis readiness: C/);
+    assert.match(allText(tree.root), /Analysis readiness:\s*C/);
     await act(async () => tree.update(React.createElement(Component, { exactId: "TRIAL|NCT04280705" })));
-    assert.doesNotMatch(allText(tree.root), /Analysis readiness: C/);
+    assert.doesNotMatch(allText(tree.root), /Analysis readiness:\s*C/);
   } finally {
     global.fetch = original;
     await act(async () => tree.unmount());
