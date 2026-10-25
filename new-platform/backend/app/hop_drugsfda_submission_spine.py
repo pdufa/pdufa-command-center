@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import io
 import re
 from collections import Counter
 from datetime import date, datetime
@@ -28,8 +29,24 @@ NUMBER_PATTERN = re.compile(r"[0-9]{1,4}\Z")
 FDA_DATA_SOURCE = "https://www.fda.gov/drugs/drug-approvals-and-databases/drugsfda-data-files"
 
 
-def _read_tsv(path: Path, required: tuple[str, ...]) -> list[dict[str, str]]:
-    with path.open("r", encoding="utf-8-sig", newline="") as stream:
+def _read_tsv(
+    path: Path, required: tuple[str, ...],
+) -> tuple[list[dict[str, str]], str]:
+    """Decode official tabular text: UTF-8 first, explicit CP-1252 fallback.
+
+    FDA download snapshots contain legacy Windows smart punctuation in free
+    text. Never use errors="ignore"/replacement or silently drop bytes.
+    """
+    raw = path.read_bytes()
+    if b"\x00" in raw:
+        raise ValueError("FDA source table contains NUL bytes")
+    try:
+        body = raw.decode("utf-8-sig")
+        encoding = "utf-8-sig"
+    except UnicodeDecodeError:
+        body = raw.decode("cp1252", errors="strict")
+        encoding = "cp1252"
+    with io.StringIO(body, newline="") as stream:
         reader = csv.DictReader(stream, delimiter="\t")
         fields = reader.fieldnames or []
         if (len(fields) != len(set(fields))
@@ -40,7 +57,7 @@ def _read_tsv(path: Path, required: tuple[str, ...]) -> list[dict[str, str]]:
     for row in rows:
         if None in row or any(not isinstance(value, str) for value in row.values()):
             raise ValueError("Malformed Drugs@FDA tab-delimited row")
-    return rows
+    return rows, encoding
 
 
 def _digest(path: Path) -> str:
@@ -72,8 +89,8 @@ def audit_original_submissions(
         raise ValueError("Explicit cutoff date is required")
     apps_path = Path(applications_tsv)
     subs_path = Path(submissions_tsv)
-    apps = _read_tsv(apps_path, APPLICATION_COLUMNS)
-    subs = _read_tsv(subs_path, SUBMISSION_COLUMNS)
+    apps, app_encoding = _read_tsv(apps_path, APPLICATION_COLUMNS)
+    subs, sub_encoding = _read_tsv(subs_path, SUBMISSION_COLUMNS)
     application_types: dict[str, str] = {}
     types = Counter()
     for app in apps:
@@ -152,6 +169,8 @@ def audit_original_submissions(
         "research_cutoff": as_of.isoformat(),
         "source_application_tsv_sha256": _digest(apps_path),
         "source_submission_tsv_sha256": _digest(subs_path),
+        "source_applications_tsv_encoding": app_encoding,
+        "source_submissions_tsv_encoding": sub_encoding,
         "application_rows_in_extract": len(apps),
         "application_type_counts": dict(sorted(types.items())),
         "submission_rows_in_extract": len(subs),
