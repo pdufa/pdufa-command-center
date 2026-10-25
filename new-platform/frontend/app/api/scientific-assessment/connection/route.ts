@@ -47,6 +47,14 @@ export async function GET(req: NextRequest) {
         status: 503, headers: PRIVATE,
       });
     }
+    if (upstream.headers?.get("x-pdufa-scientific-api-contract") !== "science-integrated-v1") {
+      // An older live Render service can answer the same endpoint yet lack the
+      // reviewed 20-level and source-adjudication contracts. Treat it as
+      // NOT installed; never report a misleading "connected" success.
+      return NextResponse.json({ connection: "scientific_backend_contract_mismatch" }, {
+        status: 503, headers: PRIVATE,
+      });
+    }
     const body: unknown = await upstream.json();
     if (!body || typeof body !== "object" || Array.isArray(body)) {
       return NextResponse.json({ connection: "scientific_backend_invalid_response" }, {
