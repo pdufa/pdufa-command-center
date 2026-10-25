@@ -1243,6 +1243,35 @@ def scientific_operator_research(
     return result
 
 
+@app.get("/api/scientific-assessment/operator/source-comparison/{nct_id}")
+def scientific_operator_pilot_source_comparison(
+    nct_id: str,
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Source-cited historical pilot comparison; never an independent finding.
+
+    Read-only; archived PDF integrity and science-ledger integrity must hold.
+    This endpoint cannot change reviewer status, readiness, or FDA forecasts.
+    """
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Scientific archive unavailable")
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=404, detail="Pilot source comparison not available")
+    from .scientific_pilot_source_comparison import preliminary_pilot_evidence_comparison
+
+    try:
+        report = preliminary_pilot_evidence_comparison(nct_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Pilot archive missing") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Archived source integrity or review policy failed") from None
+    response.headers["Cache-Control"] = "private, no-store"
+    return report
+
+
 @app.get("/api/scientific-assessment/operator/worksheet/{nct_id}")
 def scientific_operator_review_worksheet(
     nct_id: str,
