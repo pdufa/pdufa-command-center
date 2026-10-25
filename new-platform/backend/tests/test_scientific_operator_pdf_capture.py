@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 from app import main, scientific_google_identity
-from app.scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL
+from app.scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL, GERMAN_REGULATOR_CSR
 from app.scientific_source_documents import read_document_manifest
 
 NCT = "NCT02142738"
@@ -274,3 +274,59 @@ def test_official_pdf_fetch_external_failure_returns_safe_error(isolated, monkey
     assert "Private source diagnostics" not in r.text
     with Session(engine) as session:
         assert session.query(main.ScientificSourceDocument).count() == 0
+
+
+
+def test_manual_original_german_csr_requires_exact_source_mapping(isolated, monkeypatch):
+    client, engine = isolated
+    enabled(monkeypatch)
+    route="/api/scientific-assessment/operator/source-documents/"+NCT
+    csr=submission(
+        raw=sample_pdf(b"Historical German regulator CSR amendment table"),
+        gateId="protocol_sap",
+        sourceType="clinical_study_report",
+        sourceUrl=GERMAN_REGULATOR_CSR,
+    )
+    assert client.post(route, json=csr).status_code == 401
+    false_sap={**csr,"sourceType":"protocol_sap"}
+    assert client.post(route,headers=HEADERS,json=false_sap).status_code == 422
+    false_agency={**csr,"gateId":"official_regulatory"}
+    assert client.post(route,headers=HEADERS,json=false_agency).status_code == 422
+    forged={**csr,"sourceUrl":"https://portal.dimdi.de/data/ctr/not-the-official-keynote024.pdf"}
+    assert client.post(route,headers=HEADERS,json=forged).status_code == 422
+    okay=client.post(route,headers=HEADERS,json=csr)
+    assert okay.status_code == 201, okay.text
+    assert okay.json()["sourceType"] == "clinical_study_report"
+    assert okay.json()["gateId"] == "protocol_sap"
+    assert okay.json()["sourceUrl"] == GERMAN_REGULATOR_CSR
+    assert okay.json()["documentContentScientificallyVerified"] is False
+    assert okay.json()["canCountTowardReadiness"] is False
+    assert okay.json()["sourceAuthorshipVerified"] is False
+    assert read_document_manifest(NCT)["sourceDocumentCount"] == 1
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewSubmission).count() == 0
+        assert session.query(main.ScientificReviewerFinding).count() == 0
+
+
+def test_operator_can_trigger_only_specific_third_pinned_csr_fetch(isolated, monkeypatch):
+    client, engine=isolated
+    enabled(monkeypatch)
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED","1")
+    from app import scientific_official_pdf_fetch
+    called=[]
+    def mock_capture(nct, kind):
+        called.append((nct,kind))
+        return {"scientificallyVerified":False,
+                "byteIntegrityChecked":True,
+                "documentContentScientificallyVerified":False,
+                "independentReviewRequired":True}
+    monkeypatch.setattr(scientific_official_pdf_fetch,"archive_official_pdf",mock_capture)
+    url="/api/scientific-assessment/operator/source-documents/"+NCT+"/fetch/csr"
+    assert client.post(url).status_code==401
+    response=client.post(url,headers=HEADERS)
+    assert response.status_code==200,response.text
+    assert called==[(NCT,"csr")]
+    assert response.json()["scientificallyVerified"] is False
+    assert response.json()["independentReviewRequired"] is True
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewSubmission).count()==0
