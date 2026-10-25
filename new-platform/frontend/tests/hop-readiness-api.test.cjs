@@ -128,7 +128,9 @@ test("Authenticated HOP proxy reads only approved backend endpoint and hides cre
     global.fetch = async () => new Response(JSON.stringify({ ...sourceFixture(), prediction_available: true }));
     const denied = await route.GET(request);
     assert.equal(denied.status, 503);
-    assert.ok(!JSON.stringify(await denied.json()).includes("internal-hop-test-only-secret"));
+    const invalidBody = await denied.json();
+    assert.equal(invalidBody.reason, "SOURCE_INVALID_RESPONSE");
+    assert.ok(!JSON.stringify(invalidBody).includes("internal-hop-test-only-secret"));
     // An explicitly configured source remains isolated; an auth error never
     // retries against the storage backend or exposes the upstream error body.
     process.env.PDUFA_HOP_API_BASE_URL = "https://hop.example";
@@ -141,7 +143,17 @@ test("Authenticated HOP proxy reads only approved backend endpoint and hides cre
     const upstreamDenied = await route.GET(request);
     assert.equal(upstreamDenied.status, 503);
     assert.equal(calls, 1);
-    assert.doesNotMatch(JSON.stringify(await upstreamDenied.json()), /private-upstream-message|internal-hop-test-only-secret/);
+    const authBody = await upstreamDenied.json();
+    assert.equal(authBody.reason, "SOURCE_AUTHENTICATION_FAILED");
+    assert.doesNotMatch(JSON.stringify(authBody), /private-upstream-message|internal-hop-test-only-secret/);
+    for (const [status, reason] of [[404, "SOURCE_ROUTE_MISSING"], [500, "SOURCE_HTTP_ERROR"]]) {
+      global.fetch = async () => new Response("private-upstream-message", { status });
+      assert.equal((await (await route.GET(request)).json()).reason, reason);
+    }
+    global.fetch = async () => { throw new Error("private-network-error"); };
+    const networkBody = await (await route.GET(request)).json();
+    assert.equal(networkBody.reason, "SOURCE_UNREACHABLE");
+    assert.doesNotMatch(JSON.stringify(networkBody), /private-network-error/);
     // Invalid explicit configuration must fail before any credential-bearing request.
     process.env.PDUFA_HOP_API_BASE_URL = "https://hop.example/path";
     global.fetch = async () => assert.fail("Invalid HOP source must not fall back");
