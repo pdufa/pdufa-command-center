@@ -1,5 +1,7 @@
 """Independent reviewer identity, access and source-boundary acceptance tests."""
 import hashlib
+import gzip
+import json
 from datetime import datetime, timezone
 
 import pytest
@@ -19,6 +21,15 @@ NCT="NCT02142738"
 def env(monkeypatch):
     engine=create_engine("sqlite://",poolclass=StaticPool,connect_args={"check_same_thread":False})
     main.Base.metadata.create_all(engine)
+    raw=json.dumps({"protocolSection":{"identificationModule":{"nctId":NCT}},
+                    "hasResults":False},sort_keys=True).encode("utf-8")
+    with Session(engine) as session:
+        session.add(main.FullTrialRecord(
+            nct_id=NCT,payload_gzip=gzip.compress(raw),
+            sha256=hashlib.sha256(raw).hexdigest(),
+            summary={"nctId":NCT},statistics=[],
+            fetched_at=datetime(2026,10,25,tzinfo=timezone.utc)))
+        session.commit()
     monkeypatch.setattr(main,"ENGINE",engine)
     monkeypatch.setattr(main,"DATABASE_URL","postgresql+psycopg://fake/reviewer")
     monkeypatch.setattr(main,"_DB_STATE",{"available":True,"reason":"READY"})
