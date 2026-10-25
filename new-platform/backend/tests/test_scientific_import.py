@@ -40,3 +40,40 @@ def test_archive_checksum_and_evidence_roundtrip():
     assert evidence["nctId"] == "NCT00000001"
     with pytest.raises(ValueError, match="checksum mismatch"):
         evidence_from_archive("NCT00000001", gzip.compress(canonical), "0" * 64)
+
+
+def test_registry_http_404_propagates_without_database_write():
+    from urllib.error import HTTPError
+    error = HTTPError("https://clinicaltrials.gov/api/v2/studies/NCT00000001", 404, "Not Found", {}, None)
+    with patch("app.scientific_import.urlopen", side_effect=error):
+        with pytest.raises(HTTPError) as caught:
+            fetch_trial("NCT00000001")
+    assert caught.value.code == 404
+
+
+def test_registry_response_size_limit():
+    class OversizedResponse:
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+        def read(self, limit):
+            assert limit == 10_000_001
+            return b"x" * limit
+    with patch("app.scientific_import.urlopen", return_value=OversizedResponse()):
+        with pytest.raises(ValueError, match="size limit"):
+            fetch_trial("NCT04280705")
+
+
+def test_invalid_json_is_not_archived():
+    class InvalidResponse:
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+        def read(self, limit): return b"not-json"
+    with patch("app.scientific_import.urlopen", return_value=InvalidResponse()):
+        with pytest.raises(json.JSONDecodeError):
+            fetch_trial("NCT04280705")
+
+
+def test_archive_rejects_invalid_gzip():
+    from app.scientific_stored_record import evidence_from_archive
+    with pytest.raises(OSError):
+        evidence_from_archive("NCT04280705", b"not-gzip", "0" * 64)
