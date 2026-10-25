@@ -616,6 +616,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 auditRevision.current++;
                 setReviewInventoryFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+                setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
               }} /></label>
           </div>
           <div>
@@ -624,6 +625,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 auditRevision.current++;
                 setReviewerAFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+                setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
               }} /></label>
           </div>
           <div>
@@ -632,6 +634,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 auditRevision.current++;
                 setReviewerBFile(event.target.files?.[0] ?? null);
                 setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+                setLocalSourceByteMatch(null); setLocalSourceByteError(""); setHashingLocalPdf(false);
               }} /></label>
           </div>
           <button type="button"
