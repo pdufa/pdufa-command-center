@@ -1087,6 +1087,12 @@ def scientific_single_operator_me(
         "identityVerified": True,
         "maySubmitScientificReview": False,
         "maySignOff": False,
+        "mayArchiveSourcePdf": (
+            os.getenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED") == "1"
+            and os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"
+            and DATABASE_URL.startswith("postgresql+psycopg://")
+            and _DB_STATE["available"]
+        ),
         "independentlyVerified": False,
         "mayPromoteScientificScore": False,
         "reviewerProvisioningRequired": True,
@@ -1242,6 +1248,87 @@ def scientific_operator_review_worksheet(
         raise HTTPException(status_code=409, detail="Archived review worksheet integrity failed") from None
     response.headers["Cache-Control"] = "private, no-store"
     return packet
+
+
+class ScientificOperatorPdfSubmission(BaseModel):
+    """Byte-preserving source capture request; no review claim or credential."""
+    model_config = ConfigDict(extra="forbid")
+
+    gate_id: Literal["protocol_sap", "official_regulatory"] = Field(alias="gateId")
+    source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
+    source_type: Literal["protocol_sap", "official_agency_document"] = Field(alias="sourceType")
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    content_base64: str = Field(min_length=32, max_length=5592408, alias="contentBase64")
+
+
+def require_scientific_operator_pdf_archive() -> None:
+    """Explicit opt-in for byte archiving, only on the isolated Postgres service."""
+    if os.getenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED") != "1":
+        raise HTTPException(status_code=403, detail="Operator PDF archive disabled")
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated Postgres archive unavailable")
+
+
+@app.post("/api/scientific-assessment/operator/source-documents/{nct_id}", status_code=201)
+def scientific_operator_archive_pdf(
+    nct_id: str,
+    body: ScientificOperatorPdfSubmission,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Save bytes of a known pilot PDF after Google identity verification only.
+
+    This is not a reviewer submission; no content verification, outcome score,
+    FDA prediction, gate promotion, or other program mutation is possible here.
+    """
+    scientific_single_operator_me(authorization)
+    require_scientific_operator_pdf_archive()
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=403, detail="Only the archived pilot can accept operator PDFs")
+    from .scientific_source_documents import capture_document
+
+    try:
+        payload = body.model_dump(by_alias=True)
+        payload["capturedBy"] = "Verified Google operator"
+        return capture_document(nct_id, payload)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Duplicate PDF snapshot") from None
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+
+
+@app.get("/api/scientific-assessment/operator/source-documents/{nct_id}/{document_id}")
+def scientific_operator_download_pdf(
+    nct_id: str,
+    document_id: str,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Return only integrity-checked archival bytes to the Google operator."""
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated Postgres archive unavailable")
+    from .scientific_source_documents import get_captured_document
+
+    try:
+        meta, payload = get_captured_document(nct_id, document_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Exact trial PDF not found") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Stored PDF failed byte integrity verification") from None
+    return Response(
+        content=payload,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="' + meta["filename"] + '"',
+            "Cache-Control": "private, no-store",
+            "Pragma": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Security-Policy": "sandbox",
+            "X-Source-Document-SHA256": meta["sha256"],
+            "X-Source-Scientific-Status": "not-independently-verified",
+        },
+    )
 
 
 @app.get("/api/scientific-assessment/storage-status", dependencies=[Depends(require_internal_key)])
