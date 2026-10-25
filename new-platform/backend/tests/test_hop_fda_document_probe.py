@@ -167,3 +167,27 @@ def test_exact_published_fda_pdf_name_with_one_space_is_safely_encoded():
     assert result["records"][0]["official_fda_pdf_url_if_confirmed"] == expected
     assert result["records"][0]["model_eligible"] is False
     assert audit["model_eligible_records"] == 0
+
+
+def test_full_action_worklist_pdfs_checked_without_elevating_regulatory_labels():
+    row = case()
+    row.update({
+        "effective_fda_action_date_independently_verified": False,
+        "fda_review_cycle_outcome": None,
+        "review_cycle_number_verified": False,
+        "independent_review_complete": False,
+    })
+    source = {
+        "status": "PUBLISHED_FDA_ACTION_REVIEW_ONLY_NO_VALIDATED_OUTCOMES",
+        "records": [row],
+    }
+    checked, audit = probe_all_fda_review_documents(
+        source, fetcher=lambda url: ("OFFICIAL_PDF_BYTES_CONFIRMED", "b" * 64))
+    assert audit["official_pdf_bytes_confirmed"] == 1
+    assert checked["records"][0]["effective_fda_action_date_verified"] is False
+    assert checked["records"][0]["model_eligible"] is False
+    assert audit["prediction_probability"] is None
+    row["fda_review_cycle_outcome"] = "APPROVED"
+    with pytest.raises(ValueError, match="cannot self-certify outcomes"):
+        probe_all_fda_review_documents(source,
+            fetcher=lambda url: ("OFFICIAL_PDF_BYTES_CONFIRMED", "b" * 64))
