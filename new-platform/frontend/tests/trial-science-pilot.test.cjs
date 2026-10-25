@@ -168,7 +168,7 @@ test("historical panel loads only on explicit click, preserving cited outcomes a
     assert.match(output,/KEYNOTE-024/);
     assert.match(output,/26\.6% vs 53\.3%/);
     assert.match(output,/Progression-free survival/);
-    assert.match(output,/five_year_2021|long_term_followup|Long term followup/);
+    assert.match(output,/long term followup/i);
     assert.match(output,/Independent appraisal pending/);
     assert.match(output,/No independently validated eight-domain score/);
   } finally{
