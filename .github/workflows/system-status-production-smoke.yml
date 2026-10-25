@@ -1,0 +1,41 @@
+name: PDUFA Production SYSTEM STATUS Smoke
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/system-status-production-smoke.yml'
+      - 'scripts/check_system_status_production.py'
+      - 'tests/test_system_status_production_smoke.py'
+      - 'new-platform/frontend/app/installation-audit/page.tsx'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/system-status-production-smoke.yml'
+      - 'scripts/check_system_status_production.py'
+      - 'tests/test_system_status_production_smoke.py'
+      - 'new-platform/frontend/app/installation-audit/page.tsx'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: system-status-production-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  read-only-public-page-check:
+    name: Unauthenticated production route and 15 sections
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Compile and test the smoke validator offline
+        run: |
+          python3 -m py_compile scripts/check_system_status_production.py
+          python3 -m unittest discover -s tests -p 'test_system_status_production_smoke.py' -v
+      - name: Independently verify production HTML via read-only HTTPS GET
+        run: python3 scripts/check_system_status_production.py

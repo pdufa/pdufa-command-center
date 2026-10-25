@@ -32,6 +32,11 @@ test("installation checks retain independent code, deployment, runtime and evide
 
 test("dated, incomplete source audit is not misrepresented as qualified Pipeline or full scientific readiness", () => {
   assert.match(tracker, /993\/1121 verified/);
+  assert.match(tracker, /995\/1121 verified/);
+  assert.match(tracker, /21 unresolved, 2 conflicted, 93 unavailable and 10 not applicable/);
+  assert.match(tracker, /995 \+ 21 \+ 2 \+ 93 \+ 10 = 1,121/);
+  assert.match(tracker, /required SEC and FINANCIAL verification is still missing/);
+  assert.match(tracker, /sourceAudit/);
   assert.match(tracker, /two checks have no separately stated classification/);
   assert.match(tracker, /not Pipeline qualified/);
   assert.match(tracker, /FDA-labelled historical outcomes/);
