@@ -395,3 +395,58 @@ def test_pdf_reconciliation_requires_matching_original_fda_archive(tmp_path: Pat
     result = hop_readiness_status(all_action_pdf_audit_path=p)
     assert result["fda_shared_pdf_source_reconciliation"] is None
     assert result["model_validated"] is False
+
+
+def test_measured_page_candidates_are_provisional_not_verified_fda_actions():
+    result = hop_readiness_status()
+    pages = result["fda_provisional_pdf_page_candidates"]
+    assert pages["shared_pdf_documents_text_indexed"] == 61
+    assert pages["published_letter_records_page_searched"] == 154
+    assert pages["strong_same_page_id_and_date_candidates"] == 74
+    assert pages["strong_cases_with_only_one_candidate_page"] == 53
+    assert pages["strong_cases_with_multiple_candidate_pages"] == 21
+    assert pages["id_only_page_candidates"] == 75
+    assert pages["no_application_token_found"] == 3
+    assert pages["too_many_matching_pages_to_narrow"] == 2
+    assert pages["independently_verified_page_ranges"] == 0
+    assert pages["independently_verified_regulatory_outcomes"] == 0
+    assert pages["model_eligible_records"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_provisional_page_source_counts_cannot_be_promoted(tmp_path: Path):
+    from app.hop_status import PAGE_CANDIDATE_AUDIT_PATH
+    raw = json.loads(PAGE_CANDIDATE_AUDIT_PATH.read_text())
+    p = tmp_path / "page_audit.json"
+    p.write_text(json.dumps(raw))
+    assert hop_readiness_status(page_candidate_audit_path=p)["fda_provisional_pdf_page_candidates"]
+
+    raw["uniquely_independently_verified_letter_page_ranges"] = 53
+    p.write_text(json.dumps(raw))
+    assert hop_readiness_status(page_candidate_audit_path=p)["fda_provisional_pdf_page_candidates"] is None
+
+    raw["uniquely_independently_verified_letter_page_ranges"] = 0
+    raw["letter_date_id_one_candidate_page_records"] = 54
+    p.write_text(json.dumps(raw))
+    assert hop_readiness_status(page_candidate_audit_path=p)["fda_provisional_pdf_page_candidates"] is None
+
+    raw["letter_date_id_one_candidate_page_records"] = 53
+    raw["source_letter_records_examined"] = 155
+    p.write_text(json.dumps(raw))
+    result = hop_readiness_status(page_candidate_audit_path=p)
+    assert result["fda_provisional_pdf_page_candidates"] is None
+    assert result["model_validated"] is False
+
+
+def test_page_candidates_require_matching_shared_pdf_inventory(tmp_path: Path):
+    from app.hop_status import SHARED_PDF_AUDIT_PATH
+    raw = json.loads(SHARED_PDF_AUDIT_PATH.read_text())
+    raw["letter_records_in_shared_pdf_groups"] += 1
+    raw["additional_letter_links_beyond_unique_pdfs"] += 1
+    raw["official_pdf_confirmed_letter_references"] += 1
+    raw["published_letter_source_records"] += 1
+    p = tmp_path / "shared.json"
+    p.write_text(json.dumps(raw))
+    result = hop_readiness_status(shared_pdf_audit_path=p)
+    assert result["fda_provisional_pdf_page_candidates"] is None
+    assert result["prediction_available"] is False
