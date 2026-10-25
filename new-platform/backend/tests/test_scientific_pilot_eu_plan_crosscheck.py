@@ -100,7 +100,7 @@ class EuropeanRegistryCrosscheckTests(unittest.TestCase):
             lambda a, b, c: a["reportedDesign"]["osGroupSequential"].__setitem__(
                 "plannedApproximateDeaths", [109, 170]),
             lambda a, b, c: a["observedInterim"].__setitem__(
-                "reportedOsInterimDeaths", 500),
+                "reportedDeaths", 500),
             lambda a, b, c: a["sourceDateContext"].__setitem__(
                 "originalSupplementRead", True),
             lambda a, b, c: b["analysis_snapshots"][0].__setitem__(
