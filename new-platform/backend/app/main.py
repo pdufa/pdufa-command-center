@@ -819,7 +819,20 @@ def get_keynote024_scientific_pilot(response: Response):
         raise HTTPException(
             status_code=503, detail="Archived pilot safety and chronology audit failed verification",
         ) from None
+    from .scientific_pilot_safety_chronology import keynote024_safety_chronology
+    try:
+        published_safety = keynote024_safety_chronology(published, evidence_audit)
+        if (scientific_readiness["inputReadiness"]["grade"] != "FAIL"
+                or scientific_readiness["reluctance"]["grade"] != "HIGH"
+                or published_safety["inputReadinessGradeChanged"] is not False
+                or published_safety["reluctanceGradeChanged"] is not False):
+            raise ValueError("Unsupported scientific safety grade promotion")
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Historical pilot safety reconciliation failed validation",
+        ) from None
     return {
+        "publishedSafetyReconciliation": published_safety,
         "sourceEvidenceAudit": evidence_audit,
         "scientificReadiness": scientific_readiness,
         "pilot": pilot,
