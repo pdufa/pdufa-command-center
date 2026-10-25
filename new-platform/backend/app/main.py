@@ -511,6 +511,53 @@ def scientific_assessment_storage_status():
         return {"storageReady": False, "trialTablePresent": None, "storedTrialCount": None}
 
 
+@app.get("/api/scientific-assessment/pilot/keynote024", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def get_keynote024_scientific_pilot(response: Response):
+    """Source-attributed historical Phase 3 pilot; never a scoring decision.
+
+    Requires a checksum-verified archived registry record for exact NCT ID.
+    No network, imports, candidate score changes, FS/FA changes or DB writes.
+    """
+    from .scientific_pilot_keynote024_results import keynote024_published_results
+    from .scientific_pilot_keynote024 import keynote024_pilot_manifest
+    from .scientific_dossier_archive import dossier_from_archive
+
+    nct_id = "NCT02142738"
+    exact_id = "TRIAL|" + nct_id
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        archived = session.get(FullTrialRecord, nct_id)
+        if archived is None:
+            raise HTTPException(status_code=404, detail="Phase 3 pilot record not archived")
+        try:
+            dossier = dossier_from_archive(
+                exact_id, nct_id,
+                archived.payload_gzip, archived.sha256, archived.fetched_at,
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=503, detail="Archived Phase 3 pilot failed verification",
+            ) from None
+    pilot = keynote024_pilot_manifest()
+    published = keynote024_published_results()
+    if (pilot["nct_id"] != nct_id or published["nct_id"] != nct_id
+            or dossier["nct_id"] != nct_id
+            or published["overall_score"] is not None
+            or published["fda_approval_probability"] is not None):
+        raise HTTPException(status_code=503, detail="Pilot evidence identity validation failed")
+    return {
+        "pilot": pilot,
+        "dossier": dossier,
+        "publishedResults": published,
+        "assessmentStatus": "source_reported_requires_independent_appraisal",
+        "scoringModified": False,
+        "qualificationPresetsModified": False,
+        "researchOnly": True,
+    }
+
+
 @app.get("/api/scientific-assessment/dossier/references", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
