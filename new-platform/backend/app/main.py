@@ -511,6 +511,61 @@ def scientific_assessment_storage_status():
         return {"storageReady": False, "trialTablePresent": None, "storedTrialCount": None}
 
 
+@app.get("/api/scientific-assessment/dossier/references", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def get_scientific_dossier_references(
+    exact_id: str, response: Response, application_number: str = "",
+):
+    """Explicit, bounded, source-only PubMed and FDA lookup for one stored NCT.
+
+    Off by default. This endpoint is never called by a scan or bulk job, does
+    not write to a database, and does not score or adjudicate source findings.
+    """
+    if os.getenv("PDUFA_SCIENTIFIC_EXTERNAL_LOOKUP_ENABLED", "").lower() not in (
+        "1", "true", "yes",
+    ):
+        raise HTTPException(status_code=404, detail="External source research disabled")
+    match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id or "")
+    if match is None:
+        raise HTTPException(status_code=422, detail="Exact TRIAL|NCT######## identity required")
+    from .scientific_external_sources import (
+        APPLICATION_PATTERN, SourceLookupError, attach_research_references,
+        lookup_fda_application, lookup_pubmed_nct,
+    )
+    if application_number and not APPLICATION_PATTERN.fullmatch(application_number):
+        raise HTTPException(status_code=422, detail="Exact NDA/BLA application number required")
+    nct_id = match.group(1)
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        record = session.get(FullTrialRecord, nct_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="Scientific archive record not found")
+        from .scientific_dossier_archive import dossier_from_archive
+        try:
+            dossier = dossier_from_archive(
+                exact_id, nct_id, record.payload_gzip, record.sha256, record.fetched_at,
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=503, detail="Archived scientific source failed verification",
+            ) from None
+    # Only after validating the archive and caller-provided identifiers may
+    # live lookups run. A lookup failure is not negative scientific evidence.
+    try:
+        pubmed = lookup_pubmed_nct(nct_id)
+        fda = lookup_fda_application(application_number) if application_number else None
+        result = attach_research_references(dossier, pubmed, fda)
+    except SourceLookupError:
+        raise HTTPException(status_code=503, detail="Scientific reference lookup unavailable") from None
+    result["reference_lookups"] = {
+        "pubmed": pubmed["status"],
+        "fda": fda["status"] if fda is not None else "not_requested",
+        "fda_application_linked_to_trial": False,
+    }
+    return result
+
+
 @app.get("/api/scientific-assessment/dossier", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
