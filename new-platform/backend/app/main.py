@@ -674,7 +674,7 @@ def get_keynote024_scientific_pilot(response: Response):
     """
     from .scientific_pilot_keynote024_results import keynote024_published_results
     from .scientific_pilot_keynote024 import keynote024_pilot_manifest
-    from .scientific_dossier_archive import dossier_from_archive
+    from .scientific_dossier_archive import dossier_from_archive, verified_archived_registry_record
 
     nct_id = "NCT02142738"
     exact_id = "TRIAL|" + nct_id
@@ -687,6 +687,9 @@ def get_keynote024_scientific_pilot(response: Response):
             dossier = dossier_from_archive(
                 exact_id, nct_id,
                 archived.payload_gzip, archived.sha256, archived.fetched_at,
+            )
+            registry_record = verified_archived_registry_record(
+                nct_id, archived.payload_gzip, archived.sha256,
             )
         except ValueError:
             raise HTTPException(
@@ -706,7 +709,17 @@ def get_keynote024_scientific_pilot(response: Response):
         raise HTTPException(
             status_code=503, detail="Scientific pilot readiness inputs failed validation",
         ) from None
+    from .scientific_pilot_evidence_audit import keynote024_preinterim_evidence_audit
+    try:
+        evidence_audit = keynote024_preinterim_evidence_audit(
+            registry_record, published,
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Archived pilot safety and chronology audit failed verification",
+        ) from None
     return {
+        "sourceEvidenceAudit": evidence_audit,
         "scientificReadiness": scientific_readiness,
         "pilot": pilot,
         "dossier": dossier,
