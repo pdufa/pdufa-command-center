@@ -58,6 +58,8 @@ def test_no_evidence_all_eight_questions_are_blocked():
     assert result["clinicalResult"] is None
     assert result["fdaApprovalProbability"] is None
     assert len(result["globalBlockers"]) == 4
+    assert len(result["reviewQueue"]) == 8
+    assert all(item["mayAutoResolve"] is False for item in result["reviewQueue"])
     assert all(q["adjudicationStatus"] == "blocked_unverified"
                and q["readyToResolve"] is False
                and q["criteriaIndependentlySatisfied"] == 0
@@ -91,6 +93,8 @@ def test_conflicting_latest_threads_are_flagged_not_resolved():
     assert "conflicting_current_reviewer_statements" in result["questions"][0]["blockerIds"]
     assert result["questions"][0]["readyToResolve"] is False
     assert result["questionsIndependentlyResolved"] == 0
+    assert result["reviewQueue"][0]["questionId"] == "protocol_amendment_chronology"
+    assert result["reviewQueue"][0]["nextAction"] == "Reconcile conflicting source-anchored claims"
 
 
 def test_latest_revision_replaces_prior_claim_for_current_dispute_detection():
