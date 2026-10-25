@@ -13,7 +13,7 @@ def test_pairing_requires_distinct_subjects_and_valid_audit(monkeypatch, tmp_pat
     monkeypatch.setattr(main, "ENGINE", engine)
     from app.scientific_source_documents import CAPTURE_STATUS, _metadata_hash
     from app.scientific_reconciliation_worklist import REGISTRY
-    pdf = b"%PDF-1.4\\narchived-test-source"
+    pdf = b"%PDF-1.4\\narchived-test-source\\n%%EOF"
     digest = hashlib.sha256(pdf).hexdigest()
     with Session(engine) as session:
         source = main.ScientificSourceDocument(
@@ -33,7 +33,7 @@ def test_pairing_requires_distinct_subjects_and_valid_audit(monkeypatch, tmp_pat
                 created_at=datetime.now(timezone.utc)))
         session.commit()
     args = dict(nct_id="NCT02142738", question_id="safety_endpoint_taxonomy",
-                source_sha256=hashlib.sha256(b"%PDF-1.4\\narchived-test-source").hexdigest(), decision="requires_review",
+                source_sha256=hashlib.sha256(b"%PDF-1.4\\narchived-test-source\\n%%EOF").hexdigest(), decision="requires_review",
                 attestation={"sourceLocator": "page 12", "reviewNote": "Uncertain",
                              "uncertaintyDisclosed": True})
     record_reviewer_submission(google_subject="a", **args)
