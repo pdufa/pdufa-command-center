@@ -351,6 +351,47 @@ async def lifespan(app: FastAPI):
                 "SCIENTIFIC_ARCHIVE_READBACK status=FAIL error_type=%s",
                 type(verify_exc).__name__,
             )
+    # Read-only depth-20 coverage smoke: checksum-verified archive, never a score.
+    if _DB_STATE["available"] and REQUIRE_POSTGRES:
+        try:
+            from .scientific_stored_record import verified_record_from_archive
+            from .scientific_investigation_20 import investigation_20
+            with Session(ENGINE) as depth_session:
+                depth_record = depth_session.scalars(
+                    select(FullTrialRecord).order_by(FullTrialRecord.nct_id).limit(1)
+                ).first()
+                if depth_record is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_INVESTIGATION20_READBACK status=EMPTY"
+                    )
+                else:
+                    snapshot = verified_record_from_archive(
+                        depth_record.nct_id,
+                        depth_record.payload_gzip,
+                        depth_record.sha256,
+                    )
+                    dossier = investigation_20(
+                        depth_record.nct_id,
+                        snapshot,
+                        retrieved_at=depth_record.fetched_at.isoformat(),
+                    )
+                    ok = (
+                        dossier["levelCount"] == 20
+                        and dossier["scientificallyVerifiedLevels"] == 0
+                        and dossier["overallScore"] is None
+                        and dossier["fdaApprovalProbability"] is None
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_INVESTIGATION20_READBACK status=%s "
+                        "level_count=%s source_covered_levels=%s scored=False",
+                        "PASS" if ok else "FAIL",
+                        dossier["levelCount"], dossier["levelsWithSourceFields"],
+                    )
+        except Exception as depth_error:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_INVESTIGATION20_READBACK status=FAIL error_type=%s",
+                type(depth_error).__name__,
+            )
     # Isolated review startup: read one known archived Phase 3 pilot, validate
     # evidence/source identity and eight unscored domains, log only booleans
     # and counts. Never changes any stored trial or candidate rankings.
