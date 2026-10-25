@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 
 from . import main
 from .scientific_investigation_20 import NCT_PATTERN, investigation_20
+from .scientific_stage_crosswalk import stage_crosswalk
 from .scientific_quantitative_results import reported_quantitative_results
 from .scientific_readiness_grades import review_readiness
 from .scientific_registry_evidence import extract_trial_evidence
@@ -118,6 +119,7 @@ def build_review_packet(nct_id: str, *, generated_at: datetime | None = None) ->
     # tampered rows rather than returning a dossier that omits a conflict.
     ledger = read_ledger(nct_id)
     coverage = investigation_20(nct_id, raw, retrieved_at=retrieved)
+    assessment_stage_crosswalk = stage_crosswalk(coverage)
     numbers = reported_quantitative_results(nct_id, raw)
     grades = review_readiness(nct_id, raw, archive_retrieved_at=retrieved)
     worklist = ledger["sourceReconciliation"]
@@ -164,6 +166,7 @@ def build_review_packet(nct_id: str, *, generated_at: datetime | None = None) ->
         },
         "registryEvidence": extract_trial_evidence(nct_id, raw),
         "investigation20": coverage,
+        "assessmentStageCrosswalk": assessment_stage_crosswalk,
         "quantitativeResults": numbers,
         "evidenceInputGrades": grades,
         "independentSourceLedger": ledger,
