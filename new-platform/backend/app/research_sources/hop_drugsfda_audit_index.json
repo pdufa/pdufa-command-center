@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "QUARANTINED_APPROVED_REGISTRY_NOT_COMPLETE_DECISION_COHORT",
+  "source_export_date": "2026-10-23",
+  "retrieved_on": "2026-10-25",
+  "source_manifest_url": "https://api.fda.gov/download.json",
+  "collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40224730350",
+  "collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40224730350/artifacts/12611090768",
+  "collection_artifact_retention_days": 30,
+  "source_application_records": 29416,
+  "quarantined_application_records": 29416,
+  "application_number_prefixes": {
+    "ANDA": 23023,
+    "BLA": 485,
+    "NDA": 5908
+  },
+  "complete_application_denominator_verified": false,
+  "independently_verified_review_cycle_outcomes": 0,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "limitations": [
+    "Approval-centric registry excludes applications not ultimately approved",
+    "ANDA generics and supplements are not interchangeable with NDA/BLA original review-cycle outcomes",
+    "FDA submission action codes preserved without adjudicating a complete review-cycle cohort"
+  ]
+}

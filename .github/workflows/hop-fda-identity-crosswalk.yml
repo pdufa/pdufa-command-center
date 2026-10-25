@@ -1,0 +1,39 @@
+name: HOP FDA application identity crosswalk (research only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hop-fda-identity-crosswalk.yml'
+      - 'new-platform/backend/scripts/collect_hop_fda_crosswalk.py'
+      - 'new-platform/backend/app/hop_fda_application_crosswalk.py'
+
+permissions:
+  contents: read
+
+jobs:
+  identity-crosswalk:
+    name: Link CRL and approved-product application IDs without adjudicating outcomes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependency
+        run: python -m pip install pytest
+      - name: Test conservative identity linkage rules
+        working-directory: new-platform/backend
+        run: PYTHONPATH=. python -m pytest -q tests/test_hop_fda_application_crosswalk.py
+      - name: Build crosswalk from official FDA source exports
+        working-directory: new-platform/backend
+        run: PYTHONPATH=. python scripts/collect_hop_fda_crosswalk.py --output-dir "${{ runner.temp }}/hop-crosswalk"
+      - name: Publish non-model-eligible identity audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hop-fda-crl-drugsfda-identity-crosswalk
+          path: ${{ runner.temp }}/hop-crosswalk/
+          if-no-files-found: error
+          retention-days: 30
