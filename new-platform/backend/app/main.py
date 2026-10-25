@@ -1008,14 +1008,58 @@ app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 def scientific_reviewer_auth_status():
     """Configuration diagnostics without disclosing tokens, IDs or credentials."""
     configured = bool(os.getenv("PDUFA_SCIENTIFIC_GOOGLE_CLIENT_ID", "").strip())
+    single_operator = os.getenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "").strip() == "single_operator"
+    operator_email = os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip()
     return {
         "googleClientConfigured": configured,
         "googleIdentityVerificationEnabled": configured,
+        "accessMode": "single_operator" if single_operator else "reviewer_allowlist",
+        "singleOperatorConfigured": bool(configured and single_operator and operator_email),
+        "independentVerificationRequiresDistinctReviewers": True,
         "reviewerSelfRegistrationAllowed": False,
         "credentialAutoVerificationAllowed": False,
         "scientificScoreAutoPromotionAllowed": False,
-        "nextAction": "admin_provision_and_real_google_signin" if configured
-                      else "configure_google_oauth_client_id_in_isolated_service",
+        "nextAction": (
+            "single_operator_google_signin_then_admin_reviewer_provisioning"
+            if configured and single_operator and operator_email
+            else "admin_provision_and_real_google_signin" if configured
+            else "configure_google_oauth_client_id_in_isolated_service"
+        ),
+    }
+
+
+@app.get("/api/scientific-assessment/operator/me")
+def scientific_single_operator_me(
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Identify the one configured operator. This is NOT a reviewer or signoff role.
+
+    No self-provisioning, review submission authorization, source verification,
+    score promotion, or independence assertion can be derived from this endpoint.
+    """
+    from .scientific_google_identity import verified_google_identity
+
+    single_operator = os.getenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "").strip() == "single_operator"
+    allowed_email = os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip()
+    if not single_operator or not allowed_email:
+        raise HTTPException(status_code=503, detail="Single-operator login not configured")
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Google identity token required")
+    try:
+        identity = verified_google_identity(authorization[7:])
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google identity token")
+    if identity["verifiedEmail"].casefold() != allowed_email.casefold():
+        raise HTTPException(status_code=403, detail="Not the configured scientific operator")
+    return {
+        "provider": "google",
+        "role": "operator",
+        "identityVerified": True,
+        "maySubmitScientificReview": False,
+        "maySignOff": False,
+        "independentlyVerified": False,
+        "mayPromoteScientificScore": False,
+        "reviewerProvisioningRequired": True,
     }
 
 
