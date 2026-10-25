@@ -15,10 +15,12 @@ import os
 import re
 import threading
 import time
+from datetime import datetime, timezone
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from . import main
@@ -85,14 +87,45 @@ def _preflight(nct_id: str) -> tuple[bool, str]:
     return True, "ready"
 
 
+def _claim_once(nct_id: str) -> bool:
+    """Atomic PostgreSQL primary-key claim; only one concurrent smoke may submit."""
+    with Session(main.ENGINE) as session:
+        session.add(main.ScientificSmokeClaim(
+            nct_id=nct_id, status="claimed", claimed_at=datetime.now(timezone.utc),
+            finished_at=None,
+        ))
+        try:
+            session.commit()
+            return True
+        except IntegrityError:
+            session.rollback()
+            return False
+
+
+def _finish_claim(nct_id: str, passed: bool) -> None:
+    with Session(main.ENGINE) as session:
+        claim = session.get(main.ScientificSmokeClaim, nct_id)
+        if claim is None:
+            raise RuntimeError("Scientific smoke claim lost")
+        claim.status = "passed" if passed else "failed"
+        claim.finished_at = datetime.now(timezone.utc)
+        session.commit()
+
+
 def run_smoke(nct_id: str, *, delay_before_start: float = 5.0,
               poll_interval: float = 1.0, max_polls: int = 100) -> bool:
     """Check 401/200/202 and durable completion through deployed HTTP routes."""
+    claimed = False
+    passed = False
     try:
         ready, reason = _preflight(nct_id)
         if not ready:
             _LOG.warning("SCIENTIFIC_E2E_SMOKE status=SKIPPED reason=%s", reason)
             return False
+        if not _claim_once(nct_id):
+            _LOG.warning("SCIENTIFIC_E2E_SMOKE status=SKIPPED reason=atomic_claim_already_exists")
+            return False
+        claimed = True
         time.sleep(delay_before_start)
         key = os.environ["PDUFA_INTERNAL_API_KEY"]
         status, _ = _request("GET", "/api/scientific-assessment/batches", None)
@@ -126,6 +159,7 @@ def run_smoke(nct_id: str, *, delay_before_start: float = 5.0,
                              "archived_record_unchanged=%s processed=%s",
                              "PASS" if valid else "FAIL",
                              valid, job.get("processed"))
+                passed = valid
                 return valid
         _LOG.error("SCIENTIFIC_E2E_SMOKE status=FAIL stage=timeout job_left_untouched=True")
         return False
@@ -133,6 +167,13 @@ def run_smoke(nct_id: str, *, delay_before_start: float = 5.0,
         _LOG.error("SCIENTIFIC_E2E_SMOKE status=FAIL stage=unexpected error_type=%s",
                    type(exc).__name__)
         return False
+    finally:
+        if claimed:
+            try:
+                _finish_claim(nct_id, passed)
+            except Exception as exc:
+                _LOG.error("SCIENTIFIC_E2E_SMOKE status=FAIL stage=claim_finalization error_type=%s",
+                           type(exc).__name__)
 
 
 def launch_once_if_requested() -> None:
