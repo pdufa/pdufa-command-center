@@ -3,7 +3,8 @@ import hashlib
 import pytest
 
 from app.hop_fda_document_probe import (
-    official_document_candidate, probe_fda_review_documents, fetch_official_pdf
+    official_document_candidate, probe_fda_review_documents,
+    probe_all_fda_review_documents, fetch_official_pdf
 )
 
 URL = "https://download.open.fda.gov/crl/CRL_BLA125845_20250707.pdf"
@@ -110,3 +111,46 @@ def test_no_network_call_for_bad_filename():
 def test_fetch_rejects_unofficial_host_before_http():
     with pytest.raises(ValueError, match="exact official FDA"):
         fetch_official_pdf("https://download.open.fda.gov.attacker.test/crl/letter.pdf")
+
+
+def test_complete_probe_checks_each_case_once_without_promoting_model():
+    rows = [case(char=char) for char in "abcdef"]
+    called = []
+    def checked(url):
+        called.append(url)
+        return "OFFICIAL_PDF_BYTES_CONFIRMED", "0" * 64
+    out, audit = probe_all_fda_review_documents(
+        queue(*rows), batch_size=2, fetcher=checked)
+    assert len(called) == len(rows)
+    assert len(out["records"]) == len(rows)
+    assert audit["all_cases_checked_for_document_availability"] is True
+    assert audit["document_fetch_status_counts"] == {
+        "OFFICIAL_PDF_BYTES_CONFIRMED": len(rows)
+    }
+    assert all(r["document_fetch_status"] != "NOT_CHECKED" for r in out["records"])
+    assert all(r["effective_fda_action_date_verified"] is False for r in out["records"])
+    assert all(r["model_eligible"] is False for r in out["records"])
+    assert audit["model_eligible_records"] == 0
+    assert audit["prediction_probability"] is None
+
+
+def test_complete_probe_reports_invalid_and_unavailable_without_fake_links():
+    rows = [case(char="a"), case("../unavailable.pdf", "b"), case(char="c")]
+    responses = iter([("FETCH_NOT_CONFIRMED", None),
+                      ("OFFICIAL_PDF_BYTES_CONFIRMED", "a" * 64)])
+    out, audit = probe_all_fda_review_documents(
+        queue(*rows), batch_size=1, fetcher=lambda url: next(responses))
+    assert audit["document_fetch_status_counts"] == {
+        "FETCH_NOT_CONFIRMED": 1,
+        "NO_SAFE_FILENAME_TO_CHECK": 1,
+        "OFFICIAL_PDF_BYTES_CONFIRMED": 1,
+    }
+    assert out["records"][0]["official_fda_pdf_url_if_confirmed"] is None
+    assert out["records"][1]["official_fda_pdf_url_if_confirmed"] is None
+    assert out["records"][2]["official_fda_pdf_url_if_confirmed"] == URL
+
+
+@pytest.mark.parametrize("batch_size", [0, 26, True, -1])
+def test_complete_probe_rejects_unbounded_batches(batch_size):
+    with pytest.raises(ValueError, match="invalid FDA PDF batch size"):
+        probe_all_fda_review_documents(queue(case()), batch_size=batch_size)
