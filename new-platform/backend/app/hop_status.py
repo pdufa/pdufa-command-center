@@ -4,6 +4,7 @@ No database writes, model fitting, scanner scheduling, or probability output.
 """
 from __future__ import annotations
 import json
+import re
 from pathlib import Path
 
 STAGING_PATH = Path(__file__).parent / "research_sources" / "hop_fda_outcome_staging.json"
@@ -12,6 +13,7 @@ DRUGS_SOURCE_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_drug
 CROSSWALK_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_crosswalk_audit_index.json"
 REPEAT_LETTER_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_repeat_letter_triage_index.json"
 IDENTITY_REVIEW_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_identity_review_queue_index.json"
+OFFICIAL_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_pdf_document_verification_index.json"
 
 
 def _published_letter_source_audit(path: Path) -> dict | None:
@@ -213,11 +215,57 @@ def _quarantined_identity_review_queue(path: Path) -> dict | None:
     except (OSError, KeyError, ValueError, TypeError):
         return None
 
+
+def _quarantined_official_pdf_document_audit(path: Path) -> dict | None:
+    """HTTP-confirmed FDA PDF bytes are NOT verified regulatory action dates."""
+    try:
+        src = json.loads(path.read_text(encoding="utf-8"))
+        total = src["total_identity_review_cases"]
+        confirmed = src["official_pdf_bytes_confirmed"]
+        unreleased = src["no_safe_filename_to_check"]
+        checks = (
+            total, confirmed, unreleased,
+            src["document_identity_adjudicated"],
+            src["effective_action_dates_independently_verified"],
+            src["review_cycle_outcomes_independently_verified"],
+            src["model_eligible_records"],
+        )
+        if (src.get("status") != "OFFICIAL_PDF_BYTES_CONFIRMED_NOT_ACTION_DATES_VERIFIED"
+                or any(type(n) is not int or n < 0 for n in checks)
+                or total < 1 or confirmed + unreleased != total
+                or src["document_identity_adjudicated"] != 0
+                or src["effective_action_dates_independently_verified"] != 0
+                or src["review_cycle_outcomes_independently_verified"] != 0
+                or src["model_eligible_records"] != 0
+                or src.get("complete_application_denominator_verified") is not False
+                or src.get("prediction_probability") is not None
+                or not re.fullmatch(r"[0-9a-f]{64}",
+                                    src["no_safe_filename_source_record_sha256"])
+                or src["no_safe_filename_as_published"] != "Under Review for Release"):
+            raise ValueError("FDA PDF availability audit cannot validate model outcomes")
+        return {
+            "status": "SOURCE_PDFS_CHECKED_NOT_REGULATORY_OUTCOMES_VERIFIED",
+            "source_export_date": src["fda_letter_export_date"],
+            "identity_review_cases_checked": total,
+            "official_pdf_bytes_confirmed": confirmed,
+            "source_records_without_pdf_filename": unreleased,
+            "source_record_unreleased": src["no_safe_filename_source_record_sha256"],
+            "collection_run_url": src["collection_workflow_run"],
+            "source_artifact_url": src["source_artifact_url"],
+            "document_identity_adjudicated": 0,
+            "effective_action_dates_independently_verified": 0,
+            "review_cycle_outcomes_independently_verified": 0,
+            "model_eligible_records": 0,
+        }
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+
 def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SOURCE_AUDIT_PATH,
                          drugs_audit_path: Path = DRUGS_SOURCE_AUDIT_PATH,
                          crosswalk_audit_path: Path = CROSSWALK_AUDIT_PATH,
                          repeat_letter_audit_path: Path = REPEAT_LETTER_AUDIT_PATH,
-                         identity_review_audit_path: Path = IDENTITY_REVIEW_AUDIT_PATH) -> dict:
+                         identity_review_audit_path: Path = IDENTITY_REVIEW_AUDIT_PATH,
+                         official_pdf_audit_path: Path = OFFICIAL_PDF_AUDIT_PATH) -> dict:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         records = raw["records"]
@@ -251,6 +299,11 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
                        for reason, count in identity_links["identity_link_status_counts"].items()
                        if reason != "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT")):
             identity_review = None
+        source_pdfs = _quarantined_official_pdf_document_audit(official_pdf_audit_path)
+        if source_pdfs and (not identity_review
+                or source_pdfs["identity_review_cases_checked"] != identity_review[
+                    "identity_review_queue_records"]):
+            source_pdfs = None
         return {
             "status": "RESEARCH_ONLY",
             "historical_staged": staged,
@@ -259,6 +312,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_identity_crosswalk": identity_links,
             "fda_repeat_letter_triage": repeat_letters,
             "fda_identity_review_queue": identity_review,
+            "fda_official_pdf_checks": source_pdfs,
             "historical_quarantined": quarantined,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
@@ -276,6 +330,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_identity_crosswalk": None,
             "fda_repeat_letter_triage": None,
             "fda_identity_review_queue": None,
+            "fda_official_pdf_checks": None,
             "historical_quarantined": None,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
