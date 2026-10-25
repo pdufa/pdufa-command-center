@@ -96,3 +96,36 @@ jobs:
               assert status == 401, (path, status)
           print("PASS: Google sign-in page served; anonymous operator/science calls denied")
           PY
+
+      - name: Probe live independent reviewer sign-in and deny anonymous PDF access
+        shell: bash
+        run: |
+          python - <<'PY'
+          import urllib.error
+          import urllib.request
+          root = "https://pdufa-scientific-assessment-review.onrender.com"
+          with urllib.request.urlopen(root + "/scientific/reviewer", timeout=90) as response:
+              html = response.read(85000).decode("utf-8")
+              assert response.status == 200
+              assert "Independent reviewer workspace" in html
+              assert "accounts.google.com/gsi/client" in html
+              assert "reviewer/onboarding-status" in html
+              assert "administrator provisioning" in html or "administrator" in html
+              assert response.headers.get("X-Frame-Options") == "DENY"
+              assert "no-store" in response.headers.get("Cache-Control", "")
+              assert "nonce-" in response.headers.get("Content-Security-Policy", "")
+          for path in (
+              "/api/scientific-assessment/reviewer/me",
+              "/api/scientific-assessment/reviewer/onboarding-status",
+              "/api/scientific-assessment/reviewer/packet/NCT02142738",
+              "/api/scientific-assessment/reviewer/source-documents/NCT02142738/" + "a"*32,
+              "/api/scientific-assessment/operator/reviewer-setup",
+          ):
+              try:
+                  with urllib.request.urlopen(root + path, timeout=90) as response:
+                      status = response.status
+              except urllib.error.HTTPError as exc:
+                  status = exc.code
+              assert status == 401, (path, status)
+          print("PASS: distinct reviewer page served and all five private endpoints denied anonymously")
+          PY
