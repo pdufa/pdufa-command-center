@@ -232,6 +232,9 @@ OBSERVATIONS = {
             "amendment history lists global P024-06 on July 29, 2016, "
             "after the initial analysis, removing the requirement for "
             "documented progression before crossover on DMC advice. "
+            "The EU register separately lists the substantial global "
+            "amendment on August 2, 2016; these are not necessarily "
+            "the same event as sponsor finalization or site effectiveness. "
             "The later follow-up reports 99 chemotherapy-assigned patients "
             "receiving subsequent anti-PD-1/PD-L1 therapy (66.0% effective "
             "crossover). This includes subsequent off-study treatment, "
@@ -242,6 +245,8 @@ OBSERVATIONS = {
             "number": "P024-06",
             "scope": "global",
             "dateFinalized": "2016-07-29",
+            "euRegisterAmendmentDate": "2016-08-02",
+            "dateTypesDifferent": True,
             "afterInitialAnalysisCutoff": True,
             "summary": "Removed documented-progression requirement for crossover",
             "patientLevelCrossoverTimingIndependentlyVerified": False,
