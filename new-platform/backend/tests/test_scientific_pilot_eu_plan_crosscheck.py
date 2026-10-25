@@ -106,10 +106,10 @@ class EuropeanRegistryCrosscheckTests(unittest.TestCase):
             lambda a, b, c: b["analysis_snapshots"][0].__setitem__(
                 "data_cutoff_date", "2018-01-01"),
         ]
-        for change in changes:
+        for index, change in enumerate(changes):
             a, b, c = copy.deepcopy(original)
             change(a, b, c)
-            with self.subTest(change=str(change)), self.assertRaises(ValueError):
+            with self.subTest(index=index), self.assertRaises(ValueError):
                 keynote024_eu_protocol_crosscheck(a, b, c)
 
     def test_outputs_are_independent_from_caller_mutation(self):
