@@ -32,3 +32,22 @@ jobs:
           python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024.py' -v
           python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_results.py' -v
           python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_http.py' -v
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install locked frontend dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Typecheck scientific pilot and existing dashboard
+        run: npm run typecheck
+      - name: Test historical pilot source identity, UI and protected proxy
+        run: node --test tests/trial-science-pilot.test.cjs
