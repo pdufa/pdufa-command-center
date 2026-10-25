@@ -141,6 +141,7 @@ def test_role_counts_are_not_inflated_by_pending_candidate(environment):
     assert result["activeCredentialVerifiedIdentities"] == 0
     assert result["dualReviewIdentityCountMet"] is False
     assert result["totalProvisioningRecords"] == 0
+    assert result["pendingCandidateNominations"] == 1
     assert result["maySignOff"] is False
     with Session(engine) as session:
         assert session.scalar(select(main.ScientificReviewSubmission)) is None
