@@ -25,7 +25,7 @@ from . import main
 
 _LOG = logging.getLogger(__name__)
 _ISOLATED_SERVICE_ID = "srv-dbehn9fb9u1s739ok5vg"
-_NCT_PATTERN = re.compile(r"NCT[0-9]{8}\\Z")
+_NCT_PATTERN = re.compile(r"NCT[0-9]{8}\Z")
 _TERMINAL = {"completed", "completed_with_errors", "interrupted"}
 _BASE_URL = "http://127.0.0.1:8000"
 
