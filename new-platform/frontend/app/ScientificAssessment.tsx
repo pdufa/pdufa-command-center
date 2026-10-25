@@ -53,6 +53,14 @@ type Investigation20 = {
   fdaApprovalProbability: null;
   levels: InvestigationLevel[];
 };
+type DepthTask = {
+  assessmentId: string;
+  depthLevel: number;
+  depthId: string;
+  status: "pending_independent_review";
+  independentlyVerified: false;
+  scientificScore: null;
+};
 type Investigation40 = {
   nctId: string;
   layers: { id: string; assessments: string[] }[];
@@ -63,7 +71,14 @@ type Investigation40 = {
     scientific_score: null;
     approval_probability: null;
   };
-  depthReview: { requiredTasks: number; completedTasks: 0 };
+  depthReview: {
+    requiredTasks: 320;
+    completedTasks: 0;
+    depthLevels: { level: number; id: string; objective: string }[];
+    tasks: DepthTask[];
+    readyForScientificConclusion: false;
+    approvalProbability: null;
+  };
 };
 type Assessment = {
   exactId: string;
@@ -124,14 +139,41 @@ function valid40(value: unknown, nctId: string): value is Investigation40 {
       || value.layers.length !== 8) return false;
   const v = value.verification;
   const d = value.depthReview;
-  return v.required_assessments === 40 && v.verified_assessments === 0
-    && v.ready_for_analysis === false && v.scientific_score === null
-    && v.approval_probability === null
-    && d.requiredTasks === 320 && d.completedTasks === 0
-    && value.layers.every((layer: unknown) => object(layer)
-      && typeof layer.id === "string"
+  if (v.required_assessments !== 40 || v.verified_assessments !== 0
+      || v.ready_for_analysis !== false || v.scientific_score !== null
+      || v.approval_probability !== null || d.requiredTasks !== 320
+      || d.completedTasks !== 0 || d.readyForScientificConclusion !== false
+      || d.approvalProbability !== null) return false;
+  if (!value.layers.every((layer: unknown) => object(layer)
+      && typeof layer.id === "string" && /^[a-z][a-z0-9_]*$/.test(layer.id)
       && Array.isArray(layer.assessments) && layer.assessments.length === 5
-      && layer.assessments.every((a: unknown) => typeof a === "string"));
+      && layer.assessments.every((a: unknown) =>
+        typeof a === "string" && /^[a-z][a-z0-9_]*$/.test(a)))) return false;
+  const layers = value.layers as Investigation40["layers"];
+  const expected = new Set(layers.flatMap(layer =>
+    layer.assessments.map(assessment => layer.id + "." + assessment)));
+  if (expected.size !== 40 || !Array.isArray(d.depthLevels)
+      || d.depthLevels.length !== 8 || !Array.isArray(d.tasks)
+      || d.tasks.length !== 320) return false;
+  const depthLevels = d.depthLevels;
+  if (!depthLevels.every((item: unknown, index: number) =>
+      object(item) && item.level === index + 1
+      && typeof item.id === "string" && /^[a-z][a-z0-9_]*$/.test(item.id)
+      && typeof item.objective === "string" && item.objective.length > 0
+      && item.objective.length <= 300)) return false;
+  const seen = new Set<string>();
+  for (const item of d.tasks) {
+    if (!object(item) || typeof item.assessmentId !== "string"
+        || !expected.has(item.assessmentId)
+        || !count(item.depthLevel) || item.depthLevel < 1 || item.depthLevel > 8
+        || item.depthId !== (depthLevels[item.depthLevel - 1] as {id: string}).id
+        || item.status !== "pending_independent_review"
+        || item.independentlyVerified !== false || item.scientificScore !== null) return false;
+    const key = item.assessmentId + ":" + item.depthLevel;
+    if (seen.has(key)) return false;
+    seen.add(key);
+  }
+  return seen.size === 320;
 }
 
 function verifiedPayload(value: unknown, exactId: string): Assessment {
@@ -314,10 +356,21 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           <details key={layer.id}>
             <summary>{pretty(layer.id)} · {layer.assessments.length} assessments</summary>
             <ol>{layer.assessments.map(item =>
-              <li key={item}>{pretty(item)} · independent review pending</li>)}</ol>
+              <li key={item}>
+                <details>
+                  <summary>{pretty(item)} · 0/8 in-depth reviews independently complete</summary>
+                  <ol>{result.investigation40!.depthReview.tasks
+                    .filter(task => task.assessmentId === layer.id + "." + item)
+                    .map(task => <li key={task.depthLevel}>
+                      <strong>Depth {task.depthLevel}: {pretty(task.depthId)}</strong>
+                      {" · "}{result.investigation40!.depthReview.depthLevels[task.depthLevel - 1].objective}
+                      {" · "}{pretty(task.status)} · score not assigned
+                    </li>)}</ol>
+                </details>
+              </li>)}</ol>
           </details>
         )}
-        <p>{result.investigation40.depthReview.completedTasks}/{result.investigation40.depthReview.requiredTasks} planned in-depth review tasks completed.</p>
+        <p>{result.investigation40.depthReview.completedTasks}/{result.investigation40.depthReview.requiredTasks} planned in-depth review tasks completed. Open a layer and then an assessment to inspect each of the 320 pending tasks.</p>
         <small>All values are inventory or coverage states. They cannot establish efficacy or an approval probability.</small>
       </details> : <p>Eight-layer scientific investigation: no verified source inventory loaded.</p>}
 

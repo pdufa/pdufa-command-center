@@ -64,7 +64,26 @@ function payload(id = ID) {
         required_assessments: 40, verified_assessments: 0, ready_for_analysis: false,
         scientific_score: null, approval_probability: null,
       },
-      depthReview: { requiredTasks: 320, completedTasks: 0 },
+      depthReview: {
+        requiredTasks: 320, completedTasks: 0,
+        readyForScientificConclusion: false, approvalProbability: null,
+        depthLevels: [
+          "identity", "registry", "source", "methods", "quantitative",
+          "triangulation", "regulatory", "adjudication",
+        ].map((id, i) => ({ level: i + 1, id, objective: "Review " + id + " evidence independently" })),
+        tasks: LAYERS.flatMap(layer => Array.from({ length: 5 }, (_, i) =>
+          Array.from({ length: 8 }, (_, j) => ({
+            assessmentId: layer + ".assessment_" + (i + 1),
+            depthLevel: j + 1,
+            depthId: [
+              "identity", "registry", "source", "methods", "quantitative",
+              "triangulation", "regulatory", "adjudication",
+            ][j],
+            status: "pending_independent_review",
+            independentlyVerified: false, scientificScore: null,
+          }))
+        ).flat()),
+      },
     },
   };
 }
@@ -89,7 +108,7 @@ async function mountAndLoad(data) {
   }
 }
 
-test("two evidence grades, 20 levels, eight layers and 40 tasks appear without outcome scores", async () => {
+test("two evidence grades, 20 stages, 40 assessments and all 320 pending depth tasks are visible", async () => {
   const tree = await mountAndLoad(payload());
   const displayed = allText(tree.root);
   assert.match(displayed, /Analysis readiness:\s*C/);
@@ -103,8 +122,33 @@ test("two evidence grades, 20 levels, eight layers and 40 tasks appear without o
   assert.match(displayed, /FDA approval probability/);
   assert.match(displayed, /NOT ASSIGNED/);
   assert.doesNotMatch(displayed, /Scientific score: [0-9]/);
-  assert.equal(tree.root.findAllByType("li").length, 60);
+  assert.equal(tree.root.findAllByType("li").length, 380);
+  assert.match(displayed, /Depth\s+1\s*:\s*identity/);
+  assert.match(displayed, /Depth\s+8\s*:\s*adjudication/);
+  assert.match(displayed, /Open a layer and then an assessment to inspect each of the 320 pending tasks/);
   await act(async () => tree.unmount());
+});
+
+
+test("forged independent depth completion or score fails closed", async () => {
+  for (const mutate of [
+    p => { p.investigation40.depthReview.completedTasks = 1; },
+    p => { p.investigation40.depthReview.tasks[0].scientificScore = 98; },
+    p => { p.investigation40.depthReview.tasks[0].independentlyVerified = true; },
+    p => { p.investigation40.depthReview.tasks[0].status = "complete"; },
+    p => { p.investigation40.depthReview.tasks[0] = { ...p.investigation40.depthReview.tasks[1] }; },
+    p => { p.investigation40.depthReview.depthLevels[0].level = 7; },
+    p => { p.investigation40.depthReview.tasks = p.investigation40.depthReview.tasks.slice(1); },
+  ]) {
+    const corrupted = payload();
+    mutate(corrupted);
+    const tree = await mountAndLoad(corrupted);
+    const rendered = allText(tree.root);
+    assert.match(rendered, /Scientific source coverage failed validation/);
+    assert.doesNotMatch(rendered, /Analysis readiness:\\s*C/);
+    assert.doesNotMatch(rendered, /Depth 8:\\s*adjudication/);
+    await act(async () => tree.unmount());
+  }
 });
 
 test("unverified numeric scientific scores are blocked without displaying grades", async () => {
