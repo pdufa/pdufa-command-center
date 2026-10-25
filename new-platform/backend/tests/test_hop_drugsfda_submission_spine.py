@@ -116,7 +116,7 @@ def test_dates_are_metadata_not_independently_verified_outcomes(tmp_path):
 
 
 @pytest.mark.parametrize("change", [
-    "bad_application_id", "duplicate_application", "missing_application_col",
+    "duplicate_application", "missing_application_col",
     "bad_submission_id", "bad_submission_number", "extra_tab",
     "missing_submission_column",
 ])
@@ -180,3 +180,33 @@ def test_invalid_legacy_codepage_bytes_fail_instead_of_replacement(tmp_path):
     su.write_bytes(SUB_HEADER.encode("ascii") + b"123456\tORIG\t1\tAP\t2020-01-01\t\x81\n")
     with pytest.raises(UnicodeDecodeError):
         audit_original_submissions(ap, su, as_of=AS_OF)
+
+
+
+def test_malformed_and_zero_placeholder_application_rows_quarantined(tmp_path):
+    data = audit(
+        tmp_path,
+        apps=[
+            "123456\tNDA\tFictitious",
+            "NDA000001\tNDA\tMalformed",
+            "000000\tBLA\tZero placeholder",
+            "654321\t!\tMalformed type",
+        ],
+        subs=[
+            "123456\tORIG\t1\tAP\t2020-01-01\tFAKE",
+            "000000\tORIG\t1\tAP\t2020-01-02\tFAKE",
+            "654321\tORIG\t1\tAP\t2020-01-03\tFAKE",
+        ],
+    )
+    assert data["application_rows_in_extract"] == 4
+    assert data["validated_application_identity_rows"] == 1
+    assert data["quarantined_application_row_reason_counts"] == {
+        "MALFORMED_APPLICATION_TYPE": 1,
+        "MALFORMED_OR_PLACEHOLDER_APPLICATION_ID": 2,
+    }
+    assert data["original_nda_bla_submission_rows"] == 1
+    assert data["excluded_submission_row_reason_counts"] == {
+        "NO_MATCHING_APPLICATION_ROW": 2,
+    }
+    assert data["complete_original_nda_bla_application_denominator_verified"] is False
+    assert data["model_eligible_records"] == 0
