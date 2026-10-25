@@ -16,6 +16,9 @@ on:
       - 'new-platform/backend/app/scientific_review_packet.py'
       - 'new-platform/backend/tests/test_scientific_review_packet.py'
       - 'new-platform/backend/app/main.py'
+      - 'new-platform/backend/app/scientific_reviewer_ui.py'
+      - 'new-platform/backend/app/scientific_reviewer_accounts.py'
+      - 'new-platform/backend/tests/test_scientific_reviewer_portal.py'
       - 'new-platform/backend/app/scientific_operator_ui.py'
       - 'new-platform/backend/app/scientific_pilot_source_comparison.py'
       - 'new-platform/backend/tests/test_scientific_pilot_source_comparison.py'
@@ -39,6 +42,9 @@ on:
       - 'new-platform/backend/app/scientific_review_packet.py'
       - 'new-platform/backend/tests/test_scientific_review_packet.py'
       - 'new-platform/backend/app/main.py'
+      - 'new-platform/backend/app/scientific_reviewer_ui.py'
+      - 'new-platform/backend/app/scientific_reviewer_accounts.py'
+      - 'new-platform/backend/tests/test_scientific_reviewer_portal.py'
       - 'new-platform/backend/app/scientific_operator_ui.py'
       - 'new-platform/backend/app/scientific_pilot_source_comparison.py'
       - 'new-platform/backend/tests/test_scientific_pilot_source_comparison.py'
@@ -75,7 +81,7 @@ jobs:
         run: python -m pip install -r new-platform/backend/requirements.txt pytest
       - name: Check eight layers, forty assessments, and deployed API payload contract
         working-directory: new-platform/backend
-        run: python -m pytest -q tests/test_scientific_investigation_contract.py tests/test_scientific_review_packet.py tests/test_scientific_adjudication_preflight.py tests/test_scientific_google_identity.py tests/test_scientific_dual_review.py tests/test_scientific_reviewer_accounts.py tests/test_scientific_reviewer_endpoint.py tests/test_scientific_review_submission.py tests/test_scientific_review_audit.py tests/test_scientific_review_pairing.py tests/test_scientific_auth_status.py tests/test_scientific_single_operator.py tests/test_scientific_operator_page.py tests/test_scientific_operator_pdf_capture.py tests/test_scientific_source_documents.py tests/test_scientific_official_pdf_fetch.py
+        run: python -m pytest -q tests/test_scientific_investigation_contract.py tests/test_scientific_review_packet.py tests/test_scientific_adjudication_preflight.py tests/test_scientific_google_identity.py tests/test_scientific_dual_review.py tests/test_scientific_reviewer_accounts.py tests/test_scientific_reviewer_endpoint.py tests/test_scientific_reviewer_portal.py tests/test_scientific_review_submission.py tests/test_scientific_review_audit.py tests/test_scientific_review_pairing.py tests/test_scientific_auth_status.py tests/test_scientific_single_operator.py tests/test_scientific_operator_page.py tests/test_scientific_operator_pdf_capture.py tests/test_scientific_source_documents.py tests/test_scientific_official_pdf_fetch.py
 
 # Archived-source validation regression suite.
 
