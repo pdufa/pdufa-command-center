@@ -81,7 +81,7 @@ const object = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 
 const count = (value: unknown): value is number =>
-  Number.isInteger(value) && typeof value === "number" && value >= 0;
+  typeof value === "number" && Number.isInteger(value) && value >= 0;
 
 function validGradePair(value: unknown, nctId: string): value is GradePair {
   if (!object(value) || !object(value.analysisReadiness)
