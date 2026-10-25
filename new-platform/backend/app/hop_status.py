@@ -10,6 +10,7 @@ STAGING_PATH = Path(__file__).parent / "research_sources" / "hop_fda_outcome_sta
 SOURCE_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_openfda_crl_audit_index.json"
 DRUGS_SOURCE_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_drugsfda_audit_index.json"
 CROSSWALK_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_crosswalk_audit_index.json"
+REPEAT_LETTER_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_repeat_letter_triage_index.json"
 
 
 def _published_letter_source_audit(path: Path) -> dict | None:
@@ -116,9 +117,58 @@ def _quarantined_identity_crosswalk(path: Path) -> dict | None:
     except (OSError, ValueError, TypeError, KeyError):
         return None
 
+
+def _quarantined_repeat_letter_triage(path: Path) -> dict | None:
+    """Source-level repeat groups are NOT independently verified review cycles."""
+    try:
+        source = json.loads(path.read_text(encoding="utf-8"))
+        total = source["published_letter_records"]
+        grouped = source["grouped_letter_records"]
+        excluded = source["excluded_letter_records"]
+        single = source["single_letter_application_groups"]
+        repeated_groups = source["repeated_letter_application_groups"]
+        repeated_letters = source["letter_records_in_repeated_groups"]
+        collisions = source["potential_same_day_type_duplicate_groups"]
+        counts = (total, grouped, single, repeated_groups, repeated_letters, collisions)
+        if (source.get("status") != "REVIEW_CYCLE_TRIAGE_ONLY_NO_INDEPENDENT_OUTCOME_LABELS"
+                or any(type(x) is not int or x < 0 for x in counts)
+                or total < 1 or not isinstance(excluded, dict)
+                or set(excluded) != {"unresolved_or_ambiguous_identity"}
+                or type(excluded["unresolved_or_ambiguous_identity"]) is not int
+                or excluded["unresolved_or_ambiguous_identity"] < 0
+                or grouped + excluded["unresolved_or_ambiguous_identity"] != total
+                or single + repeated_letters != grouped
+                or repeated_groups > repeated_letters
+                or collisions > repeated_groups
+                or source.get("complete_application_denominator_verified") is not False
+                or type(source.get("independently_verified_review_cycles")) is not int
+                or source["independently_verified_review_cycles"] != 0
+                or type(source.get("model_eligible_records")) is not int
+                or source["model_eligible_records"] != 0
+                or source.get("prediction_probability") is not None):
+            raise ValueError("source triage counts cannot establish verified review cycles")
+        return {
+            "status": "REPEATED_LETTER_RESEARCH_ONLY",
+            "published_letter_records": total,
+            "grouped_letter_records": grouped,
+            "excluded_letter_records": excluded,
+            "single_letter_application_groups": single,
+            "repeated_letter_application_groups": repeated_groups,
+            "letter_records_in_repeated_groups": repeated_letters,
+            "potential_same_day_type_duplicate_groups": collisions,
+            "collection_run_url": source["collection_run_url"],
+            "collection_artifact_url": source["collection_artifact_url"],
+            "independently_verified_review_cycles": 0,
+            "model_eligible_records": 0,
+        }
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+
+
 def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SOURCE_AUDIT_PATH,
                          drugs_audit_path: Path = DRUGS_SOURCE_AUDIT_PATH,
-                         crosswalk_audit_path: Path = CROSSWALK_AUDIT_PATH) -> dict:
+                         crosswalk_audit_path: Path = CROSSWALK_AUDIT_PATH,
+                         repeat_letter_audit_path: Path = REPEAT_LETTER_AUDIT_PATH) -> dict:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         records = raw["records"]
@@ -136,12 +186,20 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
                 or identity_links["published_letter_records"] != letter_source["published_letter_records"]
                 or identity_links["approved_registry_source_application_records"] != drug_source["application_records"]):
             identity_links = None
+        repeat_letters = _quarantined_repeat_letter_triage(repeat_letter_audit_path)
+        if repeat_letters and (not identity_links
+                or repeat_letters["published_letter_records"] != identity_links["published_letter_records"]
+                or repeat_letters["excluded_letter_records"]["unresolved_or_ambiguous_identity"] != (
+                    identity_links["identity_link_status_counts"]["APPLICATION_ID_UNRESOLVED"]
+                    + identity_links["identity_link_status_counts"]["MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS"])):
+            repeat_letters = None
         return {
             "status": "RESEARCH_ONLY",
             "historical_staged": staged,
             "published_crl_source": letter_source,
             "approved_registry_source": drug_source,
             "fda_identity_crosswalk": identity_links,
+            "fda_repeat_letter_triage": repeat_letters,
             "historical_quarantined": quarantined,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
@@ -157,6 +215,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "published_crl_source": None,
             "approved_registry_source": None,
             "fda_identity_crosswalk": None,
+            "fda_repeat_letter_triage": None,
             "historical_quarantined": None,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
