@@ -84,6 +84,22 @@ GitHub, logs, a browser URL, or a test fixture.
    although a durable single-ID-job replay guard prevents repeat submission
    once such a job was recorded.
 
+### Concurrent deployment replay guard
+
+A deployment overlap revealed that two startup test workers could each pass
+the earlier read-only check. The updated test now atomically inserts an exact
+NCT claim into `scientific_smoke_claims` **before** making any HTTP request.
+The PostgreSQL primary key guarantees only one worker can claim an NCT, even
+if multiple review instances have passed a stale preflight at the same time.
+The claim records pass/fail and remains in the database; it never resets
+automatically. Startup logs include `smoke_claim_count` to verify the table.
+
+Two smoke jobs completed successfully before this atomic fix was added. Both
+returned `already_exists`, and the clinical trial archive stayed at two.
+The smoke setting was then cleared and the review deployment completed.
+Any future smoke attempt for a different existing NCT must be explicitly
+authorized again; no production or bulk trial imports are enabled.
+
 The smoke test will **skip** instead of importing if the exact trial is not
 already archived, the service identity differs, the DB/key/switch is absent,
 an unfinished batch holds the exclusive slot, or a prior identical single-ID
