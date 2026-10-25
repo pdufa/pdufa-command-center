@@ -23,8 +23,15 @@ export async function GET(req: NextRequest) {
       base + "/api/scientific-assessment?exact_id=" + encodeURIComponent(exactId),
       { headers: { "x-pdufa-internal-key": key }, cache: "no-store", signal: AbortSignal.timeout(45000) }
     );
-    const data = await response.json();
     if (!response.ok) return NextResponse.json({ error: "Scientific assessment unavailable" }, { status: response.status });
+    if (response.headers?.get("x-pdufa-scientific-api-contract") !== "science-integrated-v1") {
+      // Prevent the normal assessment UI from bypassing the connection
+      // diagnostic and treating an older isolated Render release as current.
+      return NextResponse.json({ error: "Integrated scientific backend release not deployed" }, {
+        status: 503, headers: { "Cache-Control": "private, no-store" },
+      });
+    }
+    const data: unknown = await response.json();
     return NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
   } catch {
     return NextResponse.json({ error: "Scientific assessment could not be loaded" }, { status: 503 });
