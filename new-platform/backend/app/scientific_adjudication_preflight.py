@@ -55,6 +55,8 @@ def adjudication_preflight(
     """
     if not isinstance(nct_id, str) or not NCT_PATTERN.fullmatch(nct_id):
         raise ValueError("Exact NCT identifier required")
+    if not isinstance(worklist, Mapping) or not isinstance(findings, Mapping):
+        raise ValueError("Adjudication evidence payloads unavailable")
     if worklist.get("nctId") != nct_id or findings.get("nctId") != nct_id:
         raise ValueError("Adjudication evidence refers to another trial")
     questions = worklist.get("checks")
