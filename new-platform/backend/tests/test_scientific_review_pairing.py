@@ -43,6 +43,7 @@ def test_pairing_requires_distinct_subjects_and_valid_audit(monkeypatch, tmp_pat
     second = review_pairing_status(args["nct_id"], args["question_id"], args["source_sha256"])
     assert second["twoIndependentStatementsRecorded"] is True
     assert second["decisionsAgree"] is True
+    assert second["clinicalIndependenceVerified"] is False
     assert second["scientificAdjudicationComplete"] is False
     assert second["mayPromoteScientificScore"] is False
     with Session(engine) as session:
@@ -52,3 +53,12 @@ def test_pairing_requires_distinct_subjects_and_valid_audit(monkeypatch, tmp_pat
     tampered = review_pairing_status(args["nct_id"], args["question_id"], args["source_sha256"])
     assert tampered["auditIntegrityPassed"] is False
     assert tampered["twoIndependentStatementsRecorded"] is False
+
+
+def test_empty_pairing_never_passes_audit(monkeypatch, tmp_path):
+    engine = create_engine("sqlite:///" + str(tmp_path / "empty_pair.db"))
+    main.Base.metadata.create_all(engine)
+    monkeypatch.setattr(main, "ENGINE", engine)
+    result = review_pairing_status("NCT02142738", "safety_endpoint_taxonomy", "a" * 64)
+    assert result["auditIntegrityPassed"] is False
+    assert result["twoDistinctIdentityStatementsRecorded"] is False
