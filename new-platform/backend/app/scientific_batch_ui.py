@@ -34,6 +34,14 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 .science-domain small{display:block}
 #science-details{min-height:26px;margin-top:10px;overflow-wrap:anywhere}
 #science-source a{color:#14634a;overflow-wrap:anywhere}
+.investigation-summary{padding:12px 15px;border:1px solid #d9e4df;background:#f4f8f5;border-radius:8px;margin:14px 0}
+.investigation-levels{display:grid;gap:8px;margin:12px 0}
+.investigation-levels details{border:1px solid #d9e4df;border-radius:8px;padding:12px;background:#fafcfb}
+.investigation-levels summary{cursor:pointer;font-weight:650;line-height:1.5}
+.investigation-levels summary .level-state{font-weight:400;color:#517565;display:inline-block;margin-left:8px}
+.investigation-levels ul{padding-left:20px;margin:10px 0}
+.investigation-levels li{margin:5px 0;overflow-wrap:anywhere}
+.field-path{font-size:.76rem;color:#587166;overflow-wrap:anywhere}
 @media(max-width:760px){.science-domains{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:400px){.science-domains{grid-template-columns:1fr}}
 @media(max-width:760px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
@@ -86,6 +94,7 @@ progress{width:100%;height:15px;accent-color:#17654d}#history{display:grid;gap:8
 <div id="science-details"></div>
 <div id="science-source"></div>
 <div class="science-domains" id="science-domains" aria-label="Six scientific evidence domains"></div>
+<div id="investigation-20" aria-live="polite"></div>
 </section>
 <section><div class="row" style="justify-content:space-between"><h2>Recent batches</h2><small>Last 20 jobs, newest first</small></div><div id="history" class="muted">Authenticate to load history.</div></section>
 </main>
@@ -184,6 +193,59 @@ function clearScience() {
   $("science-details").textContent="";
   $("science-source").replaceChildren();
   $("science-domains").replaceChildren();
+  $("investigation-20").replaceChildren();
+}
+function paintInvestigation20(data) {
+  const root=$("investigation-20");
+  root.replaceChildren();
+  if(!data || data.status!=="source_coverage_only" || !Array.isArray(data.levels)
+       || data.levels.length!==20) return;
+  const heading=document.createElement("h3");
+  heading.textContent="20-stage scientific investigation · source-coverage map";
+  root.appendChild(heading);
+  const summary=document.createElement("div");summary.className="investigation-summary";
+  summary.textContent=(data.levelsWithSourceFields||0)+"/20 stages have some registry fields. "
+      +(data.levelsRequiringExternalReview||0)+" stages require independent external review. "
+      +"Scientifically verified: 0/20. FDA approval probability: Not calculated."
+      +(data.retrievedAt ? " Archive retrieved: "+data.retrievedAt : "");
+  root.appendChild(summary);
+  const caution=document.createElement("p");
+  caution.textContent="A recorded field does not mean the scientific question is answered. Expand a stage to inspect archived JSON field paths and unresolved evidence needs.";
+  root.appendChild(caution);
+  const list=document.createElement("div");list.className="investigation-levels";
+  for(const level of data.levels){
+    const details=document.createElement("details");
+    const summaryNode=document.createElement("summary");
+    const statusText=level.status==="external_review_required"
+      ? "External review required"
+      : level.status==="registry_fields_present" ? "Registry fields present" : "No registry evidence";
+    summaryNode.textContent=String(level.level).padStart(2,"0")+" · "+level.title;
+    const label=document.createElement("span");label.className="level-state";
+    label.textContent=statusText+" · "+level.sourceEvidenceCount+"/"+level.sourceFieldCount+" fields";
+    summaryNode.appendChild(label);
+    details.appendChild(summaryNode);
+    const caveat=document.createElement("p");caveat.textContent=level.caution;
+    details.appendChild(caveat);
+    if(Array.isArray(level.observations) && level.observations.length){
+      const items=document.createElement("ul");
+      for(const observed of level.observations){
+        const li=document.createElement("li");
+        const present=observed.present ? "Present in archive" : "Not available";
+        li.textContent=observed.label+" — "+present
+          +(observed.count!==undefined ? " · "+observed.count+" entries" : "")
+          +(observed.value!==undefined ? " · "+String(observed.value) : "");
+        const path=document.createElement("div");path.className="field-path";
+        path.textContent=observed.fieldPath;li.appendChild(path);items.appendChild(li);
+      }
+      details.appendChild(items);
+    } else {
+      const empty=document.createElement("p");
+      empty.textContent="No directly sufficient ClinicalTrials.gov field. Independent evidence and expert adjudication required.";
+      details.appendChild(empty);
+    }
+    list.appendChild(details);
+  }
+  root.appendChild(list);
 }
 async function inspectScience() {
   const id = $("science-id").value.trim();
@@ -200,6 +262,7 @@ async function inspectScience() {
     const result=await api("/api/scientific-assessment?exact_id="+encodeURIComponent("TRIAL|"+id));
     const assessment=result.assessment||{};
     const evidence=result.registryEvidence;
+    paintInvestigation20(result.investigation20);
     const archived=result.registryEvidenceStatus==="source_record_loaded" && evidence
         && evidence.nctId===id && evidence.verificationStatus==="source_record_only";
     const overall=assessment.overall_score;
