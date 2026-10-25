@@ -337,6 +337,26 @@ async def lifespan(app: FastAPI):
                     "candidate_revision_count=%d verified_gate_count=0",
                     evidence_count,
                 )
+                from .scientific_evidence_ledger import pilot_candidates
+                from .scientific_reconciliation_worklist import reconciliation_worklist
+                worklist = reconciliation_worklist("NCT02142738")
+                candidates = pilot_candidates("NCT02142738")
+                safe = (
+                    worklist["totalChecks"] == 8
+                    and worklist["unresolvedChecks"] == 8
+                    and worklist["verifiedChecks"] == 0
+                    and all(item["independentlyVerified"] is False
+                            for item in candidates)
+                    and len(candidates) == 7
+                )
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_SOURCE_RECONCILIATION status=%s "
+                    "questions=%d unresolved=%d candidate_sources=%d "
+                    "verified=0 read_only=True",
+                    "PASS" if safe else "FAIL",
+                    worklist["totalChecks"],
+                    worklist["unresolvedChecks"], len(candidates),
+                )
             except Exception as ledger_check_error:
                 logging.getLogger(__name__).warning(
                     "SCIENTIFIC_EVIDENCE_LEDGER_STORAGE status=FAIL error_type=%s",
