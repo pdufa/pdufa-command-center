@@ -76,13 +76,25 @@ def _verify_worklist(worklist: list[dict]) -> dict[str, dict]:
                    str(REVIEW_STATES.index(row["triage_status"]) + 1)):
             raise ValueError("Invalid quarantined FDA source worklist")
         sid, pdf_sha = row["source_record_sha256"], row["fda_pdf_sha256"]
+        pdf_url = row["fda_pdf_url"]
+        if not isinstance(pdf_url, str):
+            raise ValueError("Invalid FDA source PDF URL")
+        try:
+            parsed = urlparse(pdf_url)
+            official_pdf = (
+                parsed.scheme == "https"
+                and parsed.hostname == "download.open.fda.gov"
+                and parsed.path.startswith("/crl/")
+                and parsed.path.endswith(".pdf")
+                and parsed.username is None and parsed.password is None
+                and parsed.port is None and not parsed.query
+                and not parsed.fragment
+            )
+        except ValueError:
+            official_pdf = False
         if (not isinstance(sid, str) or not SHA256.fullmatch(sid)
                 or sid in by_source or not isinstance(pdf_sha, str)
-                or not SHA256.fullmatch(pdf_sha)
-                or not isinstance(row["fda_pdf_url"], str)
-                or not row["fda_pdf_url"].startswith(
-                    "https://download.open.fda.gov/crl/"
-                ) or not row["fda_pdf_url"].endswith(".pdf")):
+                or not SHA256.fullmatch(pdf_sha) or not official_pdf):
             raise ValueError("Invalid, repeated or modified FDA source reference")
         anchor = row["provisional_page_link"]
         if (anchor and (not isinstance(anchor, str)
