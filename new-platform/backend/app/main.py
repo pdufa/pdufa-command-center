@@ -1062,7 +1062,6 @@ app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
     dependencies=[
         Depends(require_isolated_scientific_read_key),
         Depends(require_storage),
-        Depends(require_isolated_scientific_review_service),
     ],
 )
 def scientific_pilot_captured_source_manifest(nct_id: str, response: Response):
@@ -1072,6 +1071,9 @@ def scientific_pilot_captured_source_manifest(nct_id: str, response: Response):
     captured from pinned URLs, remain UNVERIFIED as scientific source evidence.
     The preview read key remains limited to this single NCT pilot.
     """
+    # Guard is declared later in this module; evaluate it at request time
+    # before ANY manifest lookup, never at FastAPI decorator import time.
+    require_isolated_scientific_review_service()
     if nct_id != "NCT02142738":
         raise HTTPException(status_code=422, detail="Only exact pilot trial supported")
     from .scientific_source_documents import read_document_manifest
