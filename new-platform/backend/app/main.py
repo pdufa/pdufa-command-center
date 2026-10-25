@@ -11,6 +11,7 @@ from datetime import date, datetime, timezone
 from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field, ConfigDict
 from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, UniqueConstraint, create_engine, select, update
 from sqlalchemy.exc import IntegrityError
@@ -1028,6 +1029,35 @@ def scientific_reviewer_auth_status():
     }
 
 
+@app.get("/scientific/operator", response_class=HTMLResponse)
+def scientific_single_operator_page():
+    """Single-operator Google sign-in UI on the isolated review server."""
+    from .scientific_operator_ui import operator_html
+
+    if os.getenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "").strip() != "single_operator":
+        raise HTTPException(status_code=503, detail="Single-operator login not configured")
+    client_id = os.getenv("PDUFA_SCIENTIFIC_GOOGLE_CLIENT_ID", "").strip()
+    if not client_id or not os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip():
+        raise HTTPException(status_code=503, detail="Google operator login not configured")
+
+    nonce = secrets.token_urlsafe(24)
+    response = HTMLResponse(content=operator_html(client_id, nonce))
+    response.headers["Cache-Control"] = "no-store, private"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; base-uri 'none'; form-action 'none'; "
+        "frame-ancestors 'none'; object-src 'none'; "
+        f"script-src 'nonce-{nonce}' https://accounts.google.com https://ssl.gstatic.com; "
+        f"style-src 'nonce-{nonce}' https://accounts.google.com; "
+        "connect-src 'self' https://accounts.google.com; "
+        "frame-src https://accounts.google.com; "
+        "img-src https://accounts.google.com https://ssl.gstatic.com data:"
+    )
+    return response
+
+
 @app.get("/api/scientific-assessment/operator/me")
 def scientific_single_operator_me(
     authorization: Annotated[str | None, Header()] = None,
@@ -1161,6 +1191,31 @@ def scientific_reviewer_me(
 ):
     """Authenticated identity preflight; never grants evidence signoff."""
     return reviewer
+
+
+@app.get("/api/scientific-assessment/operator/research")
+def scientific_operator_research(
+    exact_id: str,
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Read-only archived science data for the one verified Google operator.
+
+    Intentionally delegates to the existing scientific inventory code. No
+    review assertion, audit mutation, independent verification, or score write.
+    """
+    scientific_single_operator_me(authorization)
+    if not re.fullmatch(r"TRIAL\|NCT[0-9]{8}", exact_id or ""):
+        raise HTTPException(status_code=422, detail="Exact archived NCT identity required")
+    response.headers["Cache-Control"] = "private, no-store"
+    result = get_scientific_assessment(exact_id)
+    status = result.get("registryEvidenceStatus")
+    if status == "record_not_found":
+        raise HTTPException(status_code=404, detail="Trial not present in scientific archive")
+    if status != "source_record_loaded":
+        raise HTTPException(status_code=503, detail="Archived scientific evidence unavailable")
+    # Keep returned grades and evidence flags as-is, especially unverified status.
+    return result
 
 
 @app.get("/api/scientific-assessment/storage-status", dependencies=[Depends(require_internal_key)])
