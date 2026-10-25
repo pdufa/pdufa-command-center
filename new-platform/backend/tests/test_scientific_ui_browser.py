@@ -23,6 +23,7 @@ from app.scientific_assessment import assess
 from app.scientific_investigation_20 import investigation_20
 from app.scientific_quantitative_results import reported_quantitative_results
 from app.scientific_readiness_grades import review_readiness
+from app.scientific_reconciliation_worklist import reconciliation_worklist
 from app.scientific_batch_ui import render_batch_panel
 
 NCT = "NCT04280705"
@@ -128,6 +129,7 @@ class TestServer(BaseHTTPRequestHandler):
                 "evidenceLedgerStatus": "candidate_inventory_loaded" if record_found else "not_available",
                 "evidenceLedger": ({
                     "candidateCount": 1, "entryCount": 1, "verifiedGateCount": 0,
+                    "sourceReconciliation": reconciliation_worklist(NCT),
                     "externalGateStatuses": [
                         {"gateId": "published_results", "label": "Published results independently reviewed",
                          "independentlyVerified": False}
@@ -283,7 +285,13 @@ def test_chromium_scientific_batch_and_evidence_display():
                 "https://pubmed.ncbi.nlm.nih.gov/27718847/"
             )
             candidate.get_by_text("citation_identified_not_adjudicated", exact=False).wait_for()
-            trail=page.locator("#evidence-ledger details").nth(2)
+            reconciler=page.locator("#evidence-ledger details").nth(2)
+            reconciler.locator("summary").click()
+            assert reconciler.locator(".reconciliation-questions li").count()==8
+            reconciler.get_by_text("Do not confuse 2015 and 2016 FDA NSCLC actions").wait_for()
+            reconciler.get_by_text("Potential discrepancy:",exact=False).first.wait_for()
+            assert reconciler.get_by_role("link",name="View source").count()>=8
+            trail=page.locator("#evidence-ledger details").nth(3)
             trail.locator("summary").click()
             trail.get_by_text("Version 2 · contradicts", exact=False).wait_for()
             trail.get_by_text("Unresolved discrepancy between trial follow-up analyses.").wait_for()
