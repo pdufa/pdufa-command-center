@@ -97,6 +97,23 @@ def test_complete_authenticated_http_sequence_without_leaking_key(review, caplog
     assert seen[2][3] == {"nct_ids":[NCT]}
     assert "SCIENTIFIC_E2E_SMOKE status=PASS" in caplog.text
     assert KEY not in caplog.text
+    with Session(main.ENGINE) as session:
+        claim = session.get(main.ScientificSmokeClaim, NCT)
+        assert claim.status == "passed"
+        assert claim.finished_at is not None
+
+
+def test_atomic_claim_prevents_second_submission_even_if_preflight_was_stale(review, caplog):
+    assert smoke._preflight(NCT) == (True, "ready")
+    assert smoke._claim_once(NCT) is True
+    # Simulate another live replica that passed preflight before the first claim.
+    with patch.object(smoke, "_request") as request:
+        assert smoke.run_smoke(NCT, delay_before_start=0, poll_interval=0) is False
+        request.assert_not_called()
+    assert "atomic_claim_already_exists" in caplog.text
+    with Session(main.ENGINE) as session:
+        claim = session.get(main.ScientificSmokeClaim, NCT)
+        assert claim.status == "claimed"
 
 
 def test_unexpected_unauthed_success_blocks_submission(review):
@@ -108,6 +125,10 @@ def test_unexpected_unauthed_success_blocks_submission(review):
          patch.object(smoke,"time"):
         assert smoke.run_smoke(NCT,delay_before_start=0) is False
     assert seen==["GET"]
+    with Session(main.ENGINE) as session:
+        claim = session.get(main.ScientificSmokeClaim, NCT)
+        assert claim.status == "failed"
+        assert claim.finished_at is not None
 
 
 def test_no_automatic_smoke_without_explicit_flag(review, monkeypatch):
