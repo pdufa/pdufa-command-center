@@ -51,6 +51,12 @@ RESEARCH_ACTIONS = (
           "https://download.open.fda.gov/crl/CRL_BLA125745_20260109.pdf"),
     event("125734", "CYCLE-UNVERIFIED-2023", "2023-06-28", "approval",
           "https://www.fda.gov/media/169921/download"),
+    # Primary FDA CRL letters visually verified on 2026-10-26.
+    # No assumption about application review-cycle boundaries or resubmission order.
+    event("125842", "CYCLE-UNVERIFIED-2025", "2025-07-09", "complete_response",
+          "https://download.open.fda.gov/crl/CRL_BLA125842_20250709.pdf"),
+    event("125840", "CYCLE-UNVERIFIED-2026", "2026-02-07", "complete_response",
+          "https://download.open.fda.gov/crl/CRL_BLA125840_20260207.pdf"),
     event("125845", "ORIGINAL", "2025-07-07", "complete_response",
           "https://download.open.fda.gov/crl/CRL_BLA125845_20250707.pdf"),
     event("125845", "RESUBMISSION-1", "2026-09-17", "approval",
