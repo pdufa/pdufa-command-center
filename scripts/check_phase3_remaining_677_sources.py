@@ -163,6 +163,11 @@ def fetch_group(group: list[dict[str, str]]) -> list[dict[str, object]]:
 def safe_fetch_group(group: list[dict[str, str]]) -> list[dict[str, object]]:
     try:
         return fetch_group(group)
+    except urllib.error.HTTPError as error:
+        # Report only bounded HTTP status, never untrusted response-body text.
+        code = error.code if error.code in (400, 401, 403, 404, 413, 414, 422, 429, 500, 502, 503, 504) else 0
+        return [{"nct_id": row["nct_id"], "error": f"BULK_HTTP_{code}"}
+                for row in group]
     except (ValueError, urllib.error.URLError, TimeoutError, OSError, UnicodeError):
         # Do not treat an unverified page as partially qualified. Preserve
         # one unresolved row for EACH missing original NCT.
@@ -186,7 +191,10 @@ def summarize_677(
     for row, result in zip(remaining, results):
         if "error" in result:
             if result["error"] not in (
-                "NOT_RETURNED_BY_ORIGINAL_REGISTRY", "BATCH_SOURCE_UNVERIFIED"
+                "NOT_RETURNED_BY_ORIGINAL_REGISTRY", "BATCH_SOURCE_UNVERIFIED",
+                "BULK_HTTP_0", "BULK_HTTP_400", "BULK_HTTP_401", "BULK_HTTP_403",
+                "BULK_HTTP_404", "BULK_HTTP_413", "BULK_HTTP_414", "BULK_HTTP_422",
+                "BULK_HTTP_429", "BULK_HTTP_500", "BULK_HTTP_502", "BULK_HTTP_503", "BULK_HTTP_504",
             ):
                 raise ValueError("Unknown source failure disposition")
             failures.append({"nct_id": row["nct_id"], "reason": result["error"]})
@@ -282,6 +290,11 @@ def run_remaining(output: Path) -> int:
     print("API data version stable:", report["registry_version_stable"])
     print("Status differences:", len(report["status_differences_from_census"]))
     print("Phase 3 not currently reported:", len(report["phase3_not_currently_reported"]))
+    if report["source_failures"]:
+        from collections import Counter
+        print("Source error category counts:", dict(
+            sorted(Counter(item["reason"] for item in report["source_failures"]).items())
+        ))
     print("Source report stored; qualified Pipeline and FDA approval odds UNVERIFIED.")
     return 0 if report["all_remaining_source_ids_retrieved"] else 1
 
