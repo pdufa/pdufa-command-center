@@ -20,6 +20,7 @@ from app.hop_fda_original_letter_bridge import (
 )
 from app.hop_openfda_snapshot import build_crl_snapshot
 from app.hop_fda_unmatched_letter_triage import build_letter_identity_gap_triage
+from app.hop_fda_gap_research_packets import build_source_search_packets
 
 MANIFEST_URL = "https://api.fda.gov/download.json"
 SOURCE_DIR = Path(__file__).resolve().parents[1] / "app" / "research_sources"
@@ -53,6 +54,7 @@ def fetch_pinned_official_bytes(
 def collect_real_crosswalk(
     applications: Path, submissions: Path, *, as_of: date,
     private_gap_worklist: Path | None = None,
+    private_grouped_packets: Path | None = None,
 ) -> dict:
     pinned_crl = json.loads(PINNED_CRLS.read_text(encoding="utf-8"))
     pinned_drug = json.loads(PINNED_DRUGSFDA.read_text(encoding="utf-8"))
@@ -103,6 +105,17 @@ def collect_real_crosswalk(
         )
     result["letter_identity_gap_triage_audit"] = gap_audit
     result["private_letter_level_queue_not_exported"] = True
+    packets, packet_aggregate = build_source_search_packets(
+        review_queue, as_of=as_of, pinned_audit=gap_audit,
+    )
+    if private_grouped_packets is not None:
+        private_grouped_packets.parent.mkdir(parents=True, exist_ok=True)
+        private_grouped_packets.write_text(
+            json.dumps(packets, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    result["application_source_research_packet_audit"] = packet_aggregate
+    result["private_grouped_packet_rows_not_exported"] = True
     if (result["published_letter_references"] != pinned_drug.get(
             "published_letter_references", result["published_letter_references"])
             or result["published_letter_references"] != 458):
@@ -127,10 +140,13 @@ def main() -> int:
     parser.add_argument("--output-json", type=Path, required=True)
     parser.add_argument("--private-gap-worklist", type=Path,
                         help="Optional private-only unpublished letter review queue")
+    parser.add_argument("--private-grouped-packets", type=Path,
+                        help="Optional private-only grouped FDA application research packets")
     args = parser.parse_args()
     result = collect_real_crosswalk(
         args.applications, args.submissions, as_of=args.as_of,
         private_gap_worklist=args.private_gap_worklist,
+        private_grouped_packets=args.private_grouped_packets,
     )
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.write_text(
