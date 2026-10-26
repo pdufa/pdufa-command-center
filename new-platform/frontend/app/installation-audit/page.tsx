@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ScientificOutcomeLive from "./ScientificOutcomeLive";
 import { isAccepted, summarizeInstallationAudit } from "../../lib/installation-audit-summary";
+import { FDA_REVIEW_WORKLIST_SNAPSHOT, auditFDAReviewWorklist } from "../../lib/fda-review-worklist-snapshot";
 
 type Gate = "Code present" | "Preview READY" | "Partial" | "Not verified" | "Not audited" | "Not applicable" | "Verified";
 type Check = {
@@ -57,6 +58,7 @@ function GateCell({ value }: { value: Gate }) {
 
 export default function InstallationAudit() {
   const {groups, total} = summarizeInstallationAudit(checks);
+  const fdaWorklist = auditFDAReviewWorklist(FDA_REVIEW_WORKLIST_SNAPSHOT);
   return <main style={{maxWidth:1420,margin:"0 auto",padding:"28px 18px",fontFamily:"system-ui,sans-serif",color:"#17212b"}}>
     <p><Link href="/">← Dashboard</Link></p>
     <h1>System installation & evidence tracker</h1>
@@ -93,6 +95,31 @@ export default function InstallationAudit() {
       </details>)}
     </section>
     <ScientificOutcomeLive />
+    <section aria-labelledby="fda-research-worklist" style={{margin:"26px 0",padding:"18px",border:"1px solid #cbd5e1",borderRadius:9,background:"#f8fafc"}}>
+      <h2 id="fda-research-worklist">OUTCOME source-review preparation — historical research only</h2>
+      <p><strong>Research snapshot: October 25, 2026.</strong> The following values are from a separate quarantined FDA research workflow, not the live OUTCOME API, verified FDA decisions or current production model data.</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,margin:"14px 0"}}>
+        <div style={{padding:12,background:"white",border:"1px solid #e2e8f0",borderRadius:7}}>
+          <strong style={{display:"block",fontSize:24}}>{fdaWorklist.pendingLetterReferences}</strong>
+          <span>Published-letter references needing identity review</span>
+        </div>
+        <div style={{padding:12,background:"white",border:"1px solid #e2e8f0",borderRadius:7}}>
+          <strong style={{display:"block",fontSize:24}}>{fdaWorklist.searchPackets}</strong>
+          <span>Prepared research packets (not FDA decisions)</span>
+        </div>
+        <div style={{padding:12,background:"white",border:"1px solid #e2e8f0",borderRadius:7}}>
+          <strong style={{display:"block",fontSize:24}}>{fdaWorklist.independentlyVerifiedReviewCycles}</strong>
+          <span>Independently verified review-cycle decisions</span>
+        </div>
+      </div>
+      <p><strong>Reconciled source identities:</strong> {FDA_REVIEW_WORKLIST_SNAPSHOT.publishedLetterReferences} published letter references =
+        {" "}{FDA_REVIEW_WORKLIST_SNAPSHOT.matchedOriginalApplicationReferences} linked references +
+        {" "}{FDA_REVIEW_WORKLIST_SNAPSHOT.missingFromApprovalCentricRosterReferences} references missing from the approval-centric roster +
+        {" "}{FDA_REVIEW_WORKLIST_SNAPSHOT.ambiguousApplicationReferences} ambiguous identities.
+        The missing references represent {FDA_REVIEW_WORKLIST_SNAPSHOT.distinctMissingApplicationCandidates} provisional application groups. An application absent from this roster is <strong>not</strong> proven rejected or never approved.</p>
+      <p><strong>Next acceptance gates:</strong> inspect original FDA action evidence with independently authenticated reviewers, reconcile exact application/review-cycle identities, reconstruct the complete approval and nonapproval population, then validate predecision time cutoffs and out-of-time calibration. No independent review is claimed complete; model-eligible decision cycles remain {fdaWorklist.modelEligibleReviewCycles}, and FDA approval probabilities remain unavailable.</p>
+      <p><a href={FDA_REVIEW_WORKLIST_SNAPSHOT.researchWorkflowUrl} target="_blank" rel="noopener noreferrer">Pinned original-source research run</a> · <a href={FDA_REVIEW_WORKLIST_SNAPSHOT.reviewIssueUrl} target="_blank" rel="noopener noreferrer">Independent evidence review work queue</a>. This is a dated, read-only worklist summary; opening it does not authorize FDA outcome labels, grades, scans, or trades.</p>
+    </section>
     <section aria-labelledby="scientific-gates">
       <h2 id="scientific-gates">Independent scientific acceptance gates</h2>
       <p><strong>SCIENCE:</strong> exact trial identity, 40 assessments, authoritative sources, uncertainty, conflicting evidence and independent reviewer signoffs must be verified before a readiness grade can be certified.</p>
