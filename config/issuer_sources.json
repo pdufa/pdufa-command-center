@@ -50,7 +50,9 @@
       "cash_and_cash_equivalents_usd": 279900000,
       "us_treasury_investments_usd": 500100000,
       "source": "Belite Bio August 13 2026 Form 6-K (accession 0001104659-26-095218), exhibit 99.1",
-      "verification_scope": "DOCUMENTED_REFERENCE_ONLY; not a validated operating-cash-flow runway or automatic GEM entry authorization"
+      "verification_scope": "DOCUMENTED_REFERENCE_ONLY; not a validated operating-cash-flow runway or automatic GEM entry authorization",
+      "sec_exhibit_url": "https://www.sec.gov/Archives/edgar/data/1889109/000110465926095218/tm2623018d1_ex99-1.htm",
+      "runway_status": "NOT_VERIFIED_WITHOUT_SAME_PERIOD_OPERATING_CASH_FLOW"
     },
     "events": {
       "BLTE|TINLAREBANT_STGD1_20270212": {
