@@ -20,6 +20,9 @@ class CycleEvidence:
     feature_source_published_at: date | None
     complete_cohort_source: str | None
     independently_reviewed: bool = False
+    independent_reviewer_id: str | None = None
+    independent_review_date: date | None = None
+    independent_review_evidence: str | None = None
 
 
 def audit_cycle_evidence(rows: list[CycleEvidence]) -> dict:
@@ -41,6 +44,10 @@ def audit_cycle_evidence(rows: list[CycleEvidence]) -> dict:
                 missing.append(field)
         if not row.independently_reviewed:
             missing.append("independent_review")
+        if not row.independent_reviewer_id or not row.independent_review_date or not row.independent_review_evidence:
+            missing.append("independent_review_attestation")
+        if row.independent_review_date and row.decision_date and row.independent_review_date < row.decision_date:
+            missing.append("review_precedes_decision")
         if row.fda_receipt_date and row.decision_date and row.fda_receipt_date > row.decision_date:
             missing.append("receipt_precedes_decision")
         if row.feature_snapshot_date and row.decision_date and row.feature_snapshot_date >= row.decision_date:
