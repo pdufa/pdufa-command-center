@@ -88,3 +88,14 @@ Next steps require independently obtaining omitted never-approved NDA/BLA
 applications, establishing a precise original submission/decision-cycle
 study protocol, reconciling original FDA letters and action dates, and
 independent predecision data and time-forward validation.
+
+### Preserved historical identifier exceptions
+
+Two source application records are printed as `NDA21939` and `NDA19019`
+rather than six-digit identifiers. Neither has an original-submission entry
+in this artifact. Both remain included in the 29,416 application-reference
+count, with a `NONSTANDARD_APPLICATION_NUMBER_LENGTH` warning. They are
+**not** padded, removed, mapped to other applications, or converted into
+review-cycle outcome labels. One additional original submission has a
+missing raw status code. Independent official identity and action-date
+resolution is still necessary.
