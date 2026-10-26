@@ -1,0 +1,30 @@
+name: MAIN dated market cap snapshot audit (130 issuers)
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_phase3_marketcap_snapshot_freshness.py'
+      - 'tests/test_phase3_marketcap_snapshot_freshness.py'
+      - '.github/workflows/main-marketcap-snapshot-freshness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dated-snapshot-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate research-only market cap scope
+        run: python3 -m unittest discover -s tests -p 'test_phase3_marketcap_snapshot_freshness.py' -v
+      - name: Classify original 130 issuer snapshots by dated range and freshness
+        run: python3 scripts/audit_phase3_marketcap_snapshot_freshness.py "$RUNNER_TEMP/phase3_130_dated_market_cap_snapshot.json"
+      - name: Preserve historical market cap source report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-130-dated-market-cap-snapshot-research
+          path: ${{ runner.temp }}/phase3_130_dated_market_cap_snapshot.json
+          if-no-files-found: error
+          retention-days: 7
