@@ -153,20 +153,6 @@ def build_source_search_packets(
                 "ambiguous_or_unparseable_letter_references")
             or repeated != pinned_audit.get(
                 "candidate_applications_with_repeated_published_letters")
-            or max((p["published_letter_references"] for p in packets),
-                   default=0) != pinned_audit.get(
-                   "maximum_published_letter_references_for_one_missing_application", 0)
-               if not ambiguous else False):
-        # A separate, unconditional check below avoids reliance on the
-        # overall maximum when synthetic queues contain only ambiguous rows.
-        pass
-    if (refs != len(source_queue)
-            or kinds["APPLICATION_IDENTITY_RESEARCH"] != pinned_audit.get(
-                "distinct_candidate_applications_needing_source_research")
-            or kinds["AMBIGUOUS_APPLICATION_ID_RESEARCH"] != pinned_audit.get(
-                "ambiguous_or_unparseable_letter_references")
-            or repeated != pinned_audit.get(
-                "candidate_applications_with_repeated_published_letters")
             or max((p["published_letter_references"] for p in packets
                     if p["packet_kind"] == "APPLICATION_IDENTITY_RESEARCH"),
                    default=0) != pinned_audit.get(
