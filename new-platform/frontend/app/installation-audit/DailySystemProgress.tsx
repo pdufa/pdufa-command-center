@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import {calculateProgress} from "../../lib/daily-system-progress";
 import {MAIN_DAILY_EVIDENCE} from "../../lib/main-daily-evidence";
 
@@ -17,6 +18,7 @@ export default function DailySystemProgress() {
   return <section aria-labelledby="daily-system-progress" style={{border:"2px solid #334155",borderRadius:12,padding:18,background:"#f8fafc",margin:"20px 0"}}>
     <h2 id="daily-system-progress" style={{marginTop:0}}>Daily progress · SCIENCE / OUTCOME / MAIN</h2>
     <p>Each percentage counts verified units in its stated inventory. MAIN uses 31 Core Platform gates across 8 sections; it measures documented gate verification, not engineering effort. Daily change requires matching inventories on adjacent Pacific dates. Missing verification is <strong>not 0%</strong>.</p>
+    <p style={{border:"1px solid #94a3b8",padding:12,borderRadius:8,background:"#fff"}}><strong>MAIN verified gate baseline:</strong> {MAIN_DAILY_EVIDENCE.valid ? (MAIN_DAILY_EVIDENCE.verified / MAIN_DAILY_EVIDENCE.total * 100).toFixed(1)+"%" : "Not verified"} · {MAIN_DAILY_EVIDENCE.verified}/{MAIN_DAILY_EVIDENCE.total} gates verified · {MAIN_DAILY_EVIDENCE.total-MAIN_DAILY_EVIDENCE.verified}/{MAIN_DAILY_EVIDENCE.total} gates remain open · {MAIN_DAILY_EVIDENCE.acceptedSections}/{MAIN_DAILY_EVIDENCE.sections} sections fully accepted · 2026-10-26. Daily change awaits a comparable prior-day snapshot. This dated research-only evidence does not automatically refresh; it is not total MAIN completion.</p>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",gap:12}}>
       {systems.map(s=>{const progress = calculateProgress(s.name,previous,current,history); return <article key={s.name} aria-label={s.name+" daily completion"} style={{background:"#fff",border:"1px solid #cbd5e1",borderRadius:9,padding:14}}>
         <h3 style={{margin:"0 0 8px"}}>{s.name}</h3>
