@@ -1,0 +1,40 @@
+name: MAIN read-only OUTCOME source diagnostic safety
+
+on:
+  pull_request:
+    paths:
+      - 'new-platform/frontend/lib/hop-source-diagnostic.ts'
+      - 'new-platform/frontend/app/installation-audit/ScientificOutcomeLive.tsx'
+      - 'new-platform/frontend/tests/hop-source-diagnostic.test.cjs'
+      - '.github/workflows/main-outcome-diagnostic-safety.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/lib/hop-source-diagnostic.ts'
+      - 'new-platform/frontend/app/installation-audit/ScientificOutcomeLive.tsx'
+      - 'new-platform/frontend/tests/hop-source-diagnostic.test.cjs'
+      - '.github/workflows/main-outcome-diagnostic-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-reason-isolation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install existing dependencies
+        working-directory: new-platform/frontend
+        run: npm ci --no-audit --no-fund
+      - name: Verify safe HOP reason messages and preserved OUTCOME model gates
+        working-directory: new-platform/frontend
+        run: node --test tests/hop-source-diagnostic.test.cjs tests/science-outcome-gates.test.cjs
+      - name: Typecheck MAIN installation diagnostics
+        working-directory: new-platform/frontend
+        run: npm run typecheck
