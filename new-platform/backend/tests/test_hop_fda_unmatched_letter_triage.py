@@ -101,8 +101,7 @@ def test_classifies_qualified_app_roster_gap_vs_not_in_fda_roster(tmp_path):
     assert {x["application_candidate"] for x in queue if x["review_priority"] == "2"} == {
         "NDA000003"
     }
-    assert all(x["review_cycle"] if "review_cycle" in x else
-               x["original_application_review_cycle"] is None for x in queue)
+    assert all(x["original_application_review_cycle"] is None for x in queue)
     assert all(x["evidence_independently_adjudicated"] is False
                and x["model_eligible"] is False and x["fda_action_outcome"] is None
                for x in queue)
