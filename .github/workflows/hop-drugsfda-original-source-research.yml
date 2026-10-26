@@ -23,6 +23,9 @@ on:
       - 'new-platform/backend/app/hop_fda_prior_pdf_lead_join.py'
       - 'new-platform/backend/scripts/enrich_hop_fda_private_pdf_leads.py'
       - 'new-platform/backend/tests/test_hop_fda_prior_pdf_lead_join.py'
+      - 'new-platform/backend/app/hop_fda_identity_gap_dual_review.py'
+      - 'new-platform/backend/scripts/prepare_hop_fda_identity_gap_dual_review.py'
+      - 'new-platform/backend/tests/test_hop_fda_identity_gap_dual_review.py'
   workflow_dispatch:
 
 permissions:
@@ -54,7 +57,8 @@ jobs:
             tests/test_hop_drugsfda_original_source_diff.py \
             tests/test_hop_fda_unmatched_letter_triage.py \
             tests/test_hop_fda_gap_research_packets.py \
-            tests/test_hop_fda_prior_pdf_lead_join.py
+            tests/test_hop_fda_prior_pdf_lead_join.py \
+            tests/test_hop_fda_identity_gap_dual_review.py
       - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
         working-directory: new-platform/backend
         run: |
@@ -103,6 +107,14 @@ jobs:
             --prior-pdf-probes-audit-json "${{ runner.temp }}/hop-fda-original-source-research/private_prior_pdf_probe/fda_all_published_action_pdf_checks_audit.json" \
             --private-enriched-packets-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
             --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_application_pdf_lead_coverage.json"
+      - name: Prepare two private blank reviewer handoffs for FDA original application identity gaps
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/prepare_hop_fda_identity_gap_dual_review.py \
+            --private-enriched-packets "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
+            --private-first-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_first_fda_identity_gap_review.json" \
+            --private-second-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_second_fda_identity_gap_review.json" \
+            --public-audit-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_identity_gap_dual_review_handoff_counts.json"
       - name: Retain only aggregate FDA source coverage counts and fingerprints
         uses: actions/upload-artifact@v4
         with:
