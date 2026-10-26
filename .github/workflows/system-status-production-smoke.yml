@@ -7,6 +7,10 @@ on:
       - '.github/workflows/system-status-production-smoke.yml'
       - 'scripts/check_system_status_production.py'
       - 'tests/test_system_status_production_smoke.py'
+      - 'tests/test_phase3_production_smoke.py'
+      - 'new-platform/frontend/app/installation-audit/phase3-census/**'
+      - 'new-platform/frontend/public/phase3-census-2026-10-26.csv'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
       - 'new-platform/frontend/app/installation-audit/page.tsx'
       - 'new-platform/frontend/app/installation-audit/ScientificOutcomeLive.tsx'
       - 'new-platform/frontend/app/api/assessments/route.ts'
@@ -19,6 +23,10 @@ on:
       - '.github/workflows/system-status-production-smoke.yml'
       - 'scripts/check_system_status_production.py'
       - 'tests/test_system_status_production_smoke.py'
+      - 'tests/test_phase3_production_smoke.py'
+      - 'new-platform/frontend/app/installation-audit/phase3-census/**'
+      - 'new-platform/frontend/public/phase3-census-2026-10-26.csv'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
       - 'new-platform/frontend/app/installation-audit/page.tsx'
       - 'new-platform/frontend/app/installation-audit/ScientificOutcomeLive.tsx'
       - 'new-platform/frontend/app/api/assessments/route.ts'
@@ -46,6 +54,6 @@ jobs:
       - name: Compile and test the smoke validator offline
         run: |
           python3 -m py_compile scripts/check_system_status_production.py
-          python3 -m unittest discover -s tests -p 'test_system_status_production_smoke.py' -v
+          python3 -m unittest discover -s tests -p 'test_*production_smoke.py' -v
       - name: Verify production page and anonymous evidence access protections
         run: python3 scripts/check_system_status_production.py
