@@ -11,7 +11,7 @@ function Stat({label,value,note}:{label:string;value:string;note:string}){
 
 /** Archived original-source research cohort. Never the live Pipeline/GEM list. */
 export default function MainPhase3ResearchPanel() {
-  let report;
+  let report: ReturnType<typeof parsePinnedResearchSnapshot>;
   try {report=parsePinnedResearchSnapshot(pinned);}
   catch {return <section className={styles.shell} aria-label="MAIN historical research scorecard">
     <p role="alert">MAIN historical research snapshot did not pass identity validation. Counts withheld.</p>
