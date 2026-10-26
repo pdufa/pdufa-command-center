@@ -11,7 +11,7 @@ const LABEL:Record<NightlyHealthState,string>={
   FULL_SCAN_FAILED:"The last full scheduled scan did not complete successfully",
   FULL_SCAN_RUNNING:"Scheduled research scan is in progress or queued",
   REPORT_ARTIFACT_MISSING:"The integrity check passed, but the research artifact is missing",
-  REPORT_INTEGRITY_UNVERIFIED:"Job completed, but the 14-file integrity check was not confirmed",
+  REPORT_INTEGRITY_UNVERIFIED:"Job completed, but the required research integrity check was not confirmed",
   NO_FULL_SCHEDULED_RUN_YET:"No full scheduled research scan observed yet",
   SCHEDULED_SCAN_OVERDUE:"No full scheduled scan observed by 10:30 PM Pacific — verification overdue",
   SOURCE_UNAVAILABLE:"Scheduled scan status cannot be verified from GitHub",
@@ -87,8 +87,8 @@ export default function MainPhase3NightlyHealth(){
       </p>}
       <p className={styles.small}>Checked: {formatted(health.checkedAtUtc)}.
         {health.integrityStepConfirmed?
-          " The 14-file research integrity step passed in GitHub.":
-          " The 14-file research integrity step has not been confirmed."}
+          " The research artifact integrity-validation step passed in GitHub.":
+          " The research artifact integrity-validation step has not been confirmed."}
         {health.artifactConfirmed?
           " The required research artifact is present and unexpired; this is not trial qualification.":
           " No fully validated source-backed scan is asserted by this status."}
