@@ -35,7 +35,7 @@ class SourceSupportedCycle:
         if self.received_date > self.action_date:
             raise ValueError("Final action must not precede submission")
         if self.action_type not in SUPPORTED_ACTIONS:
-            raise ValueError("Only signed FDA final actions can close these timelines")
+            raise ValueError("Only FDA final regulatory actions can close these timelines")
         if any(not url.startswith("https://") for url in (
             self.receipt_source_url,
             self.final_action_source_url,
@@ -363,6 +363,47 @@ REVIEW_TIMELINES = (
     + GREEN_CROSS_SOURCE_SUPPORTED_TIMELINES
     + CELLTRANS_SOURCE_SUPPORTED_TIMELINES
     + CAPRICOR_SOURCE_SUPPORTED_TIMELINES
+)
+
+
+FDA_MESOBLAST_RETROSPECTIVE_CLINICAL_REVIEW = "https://www.fda.gov/media/184952/download"
+
+# The FDA's 2024 clinical review contains a dated retrospective account of
+# the 2020 original submission and CRL, NOT the original signed 2020 letter.
+MESOBLAST_2020_CRL_EVIDENCE_STATUS = {
+    "source_url": FDA_MESOBLAST_RETROSPECTIVE_CLINICAL_REVIEW,
+    "document_role": "fda_regulatory_history_summary",
+    "original_signed_action_letter_verified": False,
+    "original_received_date": "2020-01-31",
+    "final_fda_action_date": "2020-09-30",
+    "source_created_after_action": True,
+    "resolution_status": "signed_original_2020_action_letter_outstanding",
+}
+
+MESOBLAST_2020_SOURCE_SUPPORTED_TIMELINES = (
+    SourceSupportedCycle(
+        application_key="BLA:125706",
+        submission_key="BLA:125706:ORIGINAL",
+        received_date=date(2020, 1, 31),
+        action_date=date(2020, 9, 30),
+        action_type="complete_response",
+        receipt_source_url=FDA_MESOBLAST_RETROSPECTIVE_CLINICAL_REVIEW,
+        final_action_source_url=FDA_MESOBLAST_RETROSPECTIVE_CLINICAL_REVIEW,
+        regulatory_history_source_url=FDA_MESOBLAST_SBRA,
+        pdufa_goal_date=None,
+    ),
+)
+
+# Keep the original cycle next to its two later cycles for intuitive grouping,
+# and retain nonoverlap checks for all three Mesoblast FDA actions.
+_mesoblast_first = next(
+    i for i, cycle in enumerate(REVIEW_TIMELINES)
+    if cycle.application_key == "BLA:125706"
+)
+REVIEW_TIMELINES = (
+    REVIEW_TIMELINES[:_mesoblast_first]
+    + MESOBLAST_2020_SOURCE_SUPPORTED_TIMELINES
+    + REVIEW_TIMELINES[_mesoblast_first:]
 )
 
 
