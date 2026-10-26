@@ -201,12 +201,8 @@ def test_actual_pinned_source_diff_proves_only_one_membership_exception():
     assert report["status"] == (
         "ORIGINAL_SUBMISSION_SOURCE_MEMBERSHIP_RECONCILED_NOT_FDA_DECISIONS"
     )
-    assert report["tabular_original_submission_keys"] == (
-        table["original_nda_bla_submission_rows"] == 6033
-    )
-    assert report["openfda_archived_original_submission_keys"] == (
-        archived["original_nda_bla_submission_entries"] == 6032
-    )
+    assert report["tabular_original_submission_keys"] == table["original_nda_bla_submission_rows"] == 6033
+    assert report["openfda_archived_original_submission_keys"] == archived["original_nda_bla_submission_entries"] == 6032
     assert report["source_versions"]["tabular_applications_tsv_sha256"] == (
         table["applications_tsv_sha256"]
     )
