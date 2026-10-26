@@ -71,3 +71,39 @@ independently verified original FDA decisions exist:
 
 **Independent review-cycle outcomes: 0. Model-eligible records: 0.
 Approval rates, probability estimates and prediction accuracy: unavailable.**
+
+
+## Actual official-source audit result
+
+The pinned official-source workflow
+[40254738326](https://github.com/pdufa/pdufa-command-center/actions/runs/40254738326)
+succeeded. Its
+[aggregate research artifact 12622062153](https://github.com/pdufa/pdufa-command-center/actions/runs/40254738326/artifacts/12622062153)
+reconciled **all 458 published FDA letter references**, with **334**
+linked to original NDA/BLA applications in the tabular source, **107**
+resolvable published letter references whose complete application
+identifiers are **absent from the approval-centric tabular application
+roster**, and **17** references with ambiguous or unparseable identity.
+
+**None** of the 107 is an application present in the tabular source but
+simply missing an `ORIG` submission row; that subcategory has count
+**zero** in this exact snapshot. The 107 references belong to **84
+distinct candidate application IDs**, of which **20** have repeated
+published letter references (maximum **three** references for a
+candidate application). The 17 ambiguous letters cannot be assigned a
+reliable distinct-application count until a human validates their
+identifiers. The complete private review queue contains 124 *letter
+references*; this is not 124 FDA regulatory decisions.
+
+Snapshot: `app/research_sources/hop_fda_unmatched_letter_gap_audit_20261025.json`,
+with SHA fingerprints of both pinned tabular source files and
+the official published-letter export date. Regression tests check its
+counts and consistency with the earlier published-letter bridge.
+
+**Interpretation:** Unlike an original NDA/BLA decision cohort, a
+published FDA letter collection is selected by release and disclosure;
+an NDA/BLA missing from the tabular `Applications` roster might reflect
+source scope, data-history limitations, later/never approval, or an
+application identity discrepancy. No attempt was made to select the
+explanation by assuming any of these outcomes. Independent FDA record
+adjudication remains necessary for each specific review cycle.
