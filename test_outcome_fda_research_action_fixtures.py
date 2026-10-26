@@ -5,8 +5,8 @@ from outcome_fda_research_action_fixtures import RESEARCH_ACTIONS, research_summ
 class ResearchFixturesTests(unittest.TestCase):
     def test_distinct_applications_and_actions(self):
         result = research_summary()
-        self.assertEqual(result["applications_with_sampled_actions"], 8)
-        self.assertEqual(result["sampled_action_endpoints"], 17)
+        self.assertEqual(result["applications_with_sampled_actions"], 10)
+        self.assertEqual(result["sampled_action_endpoints"], 19)
 
     def test_never_model_eligible(self):
         result = research_summary()
@@ -42,6 +42,19 @@ class ResearchFixturesTests(unittest.TestCase):
 
     def test_no_stemcyte_conflicting_approval_date_silently_included(self):
         self.assertNotIn("BLA:125764", {e.application_key for e in RESEARCH_ACTIONS})
+
+    def test_capricor_and_regenxbio_only_confirm_crl(self):
+        expectations = {
+            "BLA:125842": "2025-07-09",
+            "BLA:125840": "2026-02-07",
+        }
+        for key, date in expectations.items():
+            actions = [e for e in RESEARCH_ACTIONS if e.application_key == key]
+            self.assertEqual(len(actions), 1)
+            self.assertEqual(actions[0].event_type, "complete_response")
+            self.assertEqual(actions[0].event_date.isoformat(), date)
+            self.assertIn("CYCLE-UNVERIFIED", actions[0].submission_key)
+            self.assertIsNone(actions[0].source_publication_date)
 
 if __name__ == "__main__":
     unittest.main()
