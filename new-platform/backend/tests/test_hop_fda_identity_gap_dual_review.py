@@ -244,3 +244,40 @@ def test_matching_reviewer_text_with_wrong_fda_application_is_not_agreement():
     assert result["review_category_counts"]["MATCHING_TEXT_UNVERIFIED"] == 0
     assert result["model_eligible_records"] == 0
     assert result["prediction_probability"] is None
+
+
+
+def test_real_pinned_source_review_handoff_counts_and_no_reviewed_decisions():
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    handoff = json.loads(
+        (root / "hop_fda_identity_gap_dual_review_handoff_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    upstream = json.loads(
+        (root / "hop_fda_prior_pdf_lead_coverage_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    assert handoff["status"] == "BLANK_DUAL_FDA_IDENTITY_GAP_REVIEW_PACKETS_PREPARED"
+    assert handoff["private_research_group_count"] == upstream[
+        "total_private_original_application_research_packets"] == 101
+    assert handoff["published_letter_references"] == upstream[
+        "published_letter_references_in_packets"] == 124
+    assert handoff["first_reviewer_blank_rows"] == 124
+    assert handoff["second_reviewer_blank_rows"] == 124
+    assert handoff["references_without_source_pdf"] == upstream[
+        "unavailable_published_pdf_letter_references"] == 1
+    assert handoff["source_classification_rows"] == {
+        "AMBIGUOUS_APPLICATION_ID_RESEARCH": 17,
+        "APPLICATION_IDENTITY_RESEARCH": 107,
+    }
+    assert handoff["reviewer_identity_authenticated"] is False
+    assert handoff["independent_reviews_completed"] == 0
+    assert handoff["review_cycle_outcomes_verified"] == 0
+    assert handoff["complete_original_nda_bla_denominator_verified"] is False
+    assert handoff["model_eligible_records"] == 0
+    assert handoff["prediction_probability"] is None
+    assert handoff["approval_rate"] is None
+    assert handoff["reviewer_detail_records_not_exported"] is True
