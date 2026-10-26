@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-26T03:42:24+00:00",
+  "generated_at_utc": "2026-10-26T13:46:59+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
@@ -69,7 +69,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-26T03:41:59.490877+00:00",
+      "Last checked UTC": "2026-10-26T13:46:41.479412+00:00",
       "Details": "34/34 recent session quotes; not a stability certification",
       "Blocked records": 0
     }
@@ -92,6 +92,18 @@
       "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-668",
       "checked_at": "2026-10-11T05:07:02.166845+00:00",
       "review_note": "Nasdaq confirms the Zymeworks merger closed September 23 and suspension took effect September 24. Keep historical trials; no current traded market cap is asserted."
+    },
+    {
+      "ticker": "QNCX",
+      "company": "Quince Therapeutics, Inc.",
+      "cik10": "0001662774",
+      "status": "SYMBOL CHANGED \u2014 OLD TICKER RETIRED",
+      "effective_date": "2026-10-12",
+      "source_date": "2026-10-09",
+      "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-724",
+      "checked_at": "2026-10-26T13:27:11.549+00:00",
+      "replacement_ticker": "IRLA",
+      "review_note": "Nasdaq confirms QNCX changed to IRLA effective October 12, 2026, after the issuer's name change. Preserve QNCX history; do not count predecessor QNCX as currently listed or auto-link/sponsor-qualify successor IRLA. Reconcile any successor program and current market cap separately."
     }
   ],
   "entry_ready_count": 0,
