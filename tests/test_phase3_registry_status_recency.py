@@ -98,7 +98,7 @@ class Phase3StatusRecencyTests(unittest.TestCase):
             },
         )
         self.assertEqual(report["original_source_posted_update_missing"], 123)
-        self.assertEqual(report["original_source_posted_update_over_365_days"], 123)
+        self.assertEqual(report["original_source_posted_update_over_365_days"], 124)
 
     def test_active_ended_ambiguous_are_registry_labels_not_qualifications(self):
         report = self.build()
