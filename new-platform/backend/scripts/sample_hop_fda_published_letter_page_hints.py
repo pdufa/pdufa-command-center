@@ -20,6 +20,9 @@ from app.hop_fda_pdf_page_candidate_sampling import (
     MAX_PDF_BYTES, aggregate_sample, inspect_candidate_pages,
     select_pinned_pdf_sample,
 )
+from app.hop_fda_visual_page_review import (
+    render_private_nontext_pages, render_counts_only,
+)
 
 
 class _RejectRedirect(HTTPRedirectHandler):
@@ -56,7 +59,23 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=8)
     parser.add_argument("--offset", type=int, default=0,
                         help="Zero-based offset in sorted pinned PDF hashes")
+    parser.add_argument("--private-visual-image-dir", type=Path,
+                        help="Private PNG images for pages with no extractable text")
+    parser.add_argument("--private-visual-manifest-json", type=Path,
+                        help="Private-only page mapping and rendered PNG fingerprints")
     args = parser.parse_args()
+    if bool(args.private_visual_image_dir) != bool(args.private_visual_manifest_json):
+        raise ValueError("Both private visual output paths must be supplied together")
+    if args.private_visual_image_dir:
+        image_dir = args.private_visual_image_dir.resolve()
+        private_manifest = args.private_visual_manifest_json.resolve()
+        public_dir = args.public_aggregate_json.resolve().parent
+        if (image_dir == public_dir or public_dir in image_dir.parents
+                or image_dir in public_dir.parents or private_manifest == args.public_aggregate_json.resolve()
+                or public_dir in private_manifest.parents
+                or private_manifest == args.private_enriched_packets_json.resolve()
+                or private_manifest == args.private_pdf_page_hints_json.resolve()):
+            raise ValueError("Private FDA page bitmaps cannot overlap public artifact paths")
     destinations = [
         args.private_enriched_packets_json.resolve(),
         args.private_pdf_page_hints_json.resolve(),
@@ -72,6 +91,7 @@ def main() -> int:
     )
     observed = []
     unavailable = 0
+    rendered_page_records = []
     for item in selected:
         try:
             pdf = retrieve_exact_fda_crl_pdf(item["official_fda_pdf_url"])
@@ -85,17 +105,36 @@ def main() -> int:
             raise ValueError("FDA original full-PDF SHA256 does not match pinned source")
         try:
             reader = PdfReader(BytesIO(pdf), strict=False)
-            observed.append(inspect_candidate_pages(
+            page_observation = inspect_candidate_pages(
                 item, pdf, page_count=len(reader.pages),
                 extract_text=lambda idx: reader.pages[idx].extract_text() or "",
-            ))
+            )
+            observed.append(page_observation)
         except (ValueError, TypeError, IndexError, OSError) as exc:
             # Page parsing failures are not verified pages and must be visible
             # as incompletes rather than model-released decisions.
             if isinstance(exc, ValueError) and "SHA256" in str(exc):
                 raise
             unavailable += 1
+            continue
+        # Rendering errors must FAIL the audit, not be interpreted as a blank
+        # PDF or counted as regulatory negatives.
+        if args.private_visual_image_dir:
+            rendered_page_records.extend(render_private_nontext_pages(
+                pdf, page_observation,
+                private_image_dir=args.private_visual_image_dir,
+            ))
     summary = aggregate_sample(plan, observed, fetch_failures=unavailable)
+    if args.private_visual_image_dir:
+        summary["private_visual_render_count_audit"] = render_counts_only(
+            observed, rendered_page_records,
+            requested_documents=plan["selected_unique_pdf_documents"],
+        )
+        args.private_visual_manifest_json.parent.mkdir(parents=True, exist_ok=True)
+        args.private_visual_manifest_json.write_text(
+            json.dumps(rendered_page_records, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
     args.private_pdf_page_hints_json.parent.mkdir(parents=True, exist_ok=True)
     args.public_aggregate_json.parent.mkdir(parents=True, exist_ok=True)
     args.private_pdf_page_hints_json.write_text(
