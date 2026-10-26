@@ -127,3 +127,55 @@ def test_empty_text_page_list_produces_zero_rendered_images(tmp_path):
     assert render_counts_only([observed], pngs, requested_documents=1)[
         "private_page_png_images_rendered"
     ] == 0
+
+
+
+def test_actual_19_source_fda_no_text_pages_rendered_without_review():
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    result = json.loads(
+        (root / "hop_fda_nontext_page_visual_render_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    previous = json.loads(
+        (root / "hop_fda_page_candidate_sample_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    second = json.loads(
+        (root / "hop_fda_page_candidate_second_batch_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    assert result["status"] == (
+        "FDA_NONEXTRACTABLE_PDF_PAGES_RENDERED_PRIVATELY_NOT_REVIEWED"
+    )
+    assert result["source_pdf_count"] == 16
+    assert result["source_prior_sha256_verified_pdfs"] == 16
+    assert result["source_pages_examined_for_text"] == (
+        previous["pages_examined_for_candidate_app_tokens"] +
+        second["pages_examined_for_candidate_app_tokens"]
+    ) == 100
+    assert len(result["visual_render_batches"]) == 2
+    assert result["visual_render_batches"][0]["offset"] == 0
+    assert result["visual_render_batches"][1]["offset"] == 8
+    assert result["visual_render_batches"][0]["private_png_pages_rendered"] == (
+        previous["pages_without_extractable_text"] == 9
+    )
+    assert result["visual_render_batches"][1]["private_png_pages_rendered"] == (
+        second["pages_without_extractable_text"] == 10
+    )
+    assert result["total_no_extractable_text_pages"] == 19
+    assert result["total_private_png_rendered"] == 19
+    assert result["render_failures"] == 0
+    assert result["manual_visual_review_completed_pages"] == 0
+    assert result["source_page_verified_original_fda_action_count"] == 0
+    assert result["independently_adjudicated_original_fda_review_cycles"] == 0
+    assert result["complete_nda_bla_historical_decision_denominator_verified"] is False
+    assert result["model_eligible_records"] == 0
+    assert result["approval_rate"] is None
+    assert result["prediction_probability"] is None
+    assert result["predictive_accuracy"] is None
+    assert result["private_page_image_hash_and_page_mapping_not_exported"] is True
+    assert result["private_pngs_are_ephemeral_runner_files"] is True
+    assert result["durable_authenticated_human_review_storage_ready"] is False
