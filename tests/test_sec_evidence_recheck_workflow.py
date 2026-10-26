@@ -8,11 +8,11 @@ WORKFLOW = (Path(__file__).resolve().parents[1]
 
 
 def job_section(source: str, name: str) -> str:
-    match = re.search(r"(?m)^  " + re.escape(name) + r":\\s*$", source)
+    match = re.search(r"(?m)^  " + re.escape(name) + r":\s*$", source)
     if match is None:
         raise AssertionError("Missing workflow job: " + name)
     rest = source[match.end():]
-    next_job = re.search(r"(?m)^  [a-z][a-z0-9-]*:\\s*$", rest)
+    next_job = re.search(r"(?m)^  [a-z][a-z0-9-]*:\s*$", rest)
     return source[match.start(): match.end() + next_job.start() if next_job else len(source)]
 
 
