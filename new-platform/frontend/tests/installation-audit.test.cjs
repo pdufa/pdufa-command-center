@@ -30,7 +30,7 @@ test("installation checks retain independent code, deployment, runtime and evide
   }
   const core = rows.find(row => row.includes('component: "Core Platform"'));
   assert.match(core, /runtime: "Partial"/);
-  assert.equal(rows.filter(row => /runtime: "Partial"/.test(row)).length, 1);
+  assert.equal(rows.filter(row => /runtime: "Partial"/.test(row)).length, 3);
 });
 
 test("dated, incomplete source audit is not misrepresented as qualified Pipeline or full scientific readiness", () => {
@@ -82,4 +82,18 @@ test("technical installation does not require a human reviewer or encryption-key
   assert.match(tracker, /FDA approval probabilities remain unavailable/);
   const rows = [...tracker.matchAll(/component: "([^"]+)"/g)].map(m => m[1]);
   assert.equal(rows.length, 15);
+});
+
+test("nightly and results runtime use observed evidence without clearing source gates", () => {
+  const lines = tracker.split("\n").filter(x => x.trim().startsWith("{ component: "));
+  const nightly = lines.find(x => x.includes('component: "Nightly Scanning"'));
+  const results = lines.find(x => x.includes('component: "Results & Reporting"'));
+  assert.match(nightly, /runtime: "Partial", evidence: "Partial"/);
+  assert.match(nightly, /20:15 PDT/);
+  assert.match(nightly, /40263199452/);
+  assert.match(nightly, /schedule punctuality and all regulatory\/financial source coverage are not certified/);
+  assert.match(results, /runtime: "Partial", evidence: "Partial"/);
+  assert.match(results, /qualified Pipeline and FDA designation counts remain unknown/);
+  assert.doesNotMatch(nightly, /runtime: "Verified"/);
+  assert.doesNotMatch(results, /runtime: "Verified"/);
 });
