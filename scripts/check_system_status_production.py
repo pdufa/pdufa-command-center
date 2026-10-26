@@ -55,7 +55,8 @@ def verify_html(response_body: str) -> None:
 
 def verify_unauthenticated_protected_api(path: str) -> None:
     """Unauthenticated requests must fail closed; do not fetch protected evidence."""
-    if path not in ("/api/assessments", "/api/hop/readiness"):
+    if path not in ("/api/assessments", "/api/hop/readiness",
+                   "/api/phase3-registry?exact_nct=NCT02142738"):
         raise ValueError("Unexpected protected API path")
     url = urllib.parse.urljoin(URL, path)
     request = urllib.request.Request(
@@ -160,7 +161,8 @@ def main() -> int:
             if len(data) > 2_000_000:
                 raise ValueError("Page exceeds inspection limit")
             verify_html(data.decode("utf-8", errors="replace"))
-        for protected_path in ("/api/assessments", "/api/hop/readiness"):
+        for protected_path in ("/api/assessments", "/api/hop/readiness",
+                               "/api/phase3-registry?exact_nct=NCT02142738"):
             verify_unauthenticated_protected_api(protected_path)
         verify_phase3_census_production()
     except (urllib.error.URLError, ValueError, OSError) as exc:
