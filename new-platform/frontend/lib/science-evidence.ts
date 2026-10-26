@@ -40,7 +40,7 @@ export type ScienceReadiness = {
   totalAssessments: number;
   approvalProbability: null;
 };
-const validDate = (v: string) => /^\\d{4}-\\d{2}-\\d{2}$/.test(v) && Number.isFinite(Date.parse(v));
+const validDate = (v: string) => /^\d{4}-\d{2}-\d{2}$/.test(v) && Number.isFinite(Date.parse(v));
 const bounded = (v: number | null) => v === null || (Number.isFinite(v) && v >= 0 && v <= 100);
 /** Conservative gate: coverage never becomes a predicted FDA probability. */
 export function assessScienceReadiness(dossier: ScienceDossier): ScienceReadiness {
