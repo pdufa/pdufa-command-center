@@ -110,7 +110,10 @@ def candidate_filings(payload, cik, as_of):
         raise ValueError("Missing issuer CIK in SEC submissions") from exc
     if actual != int(cik):
         raise ValueError("SEC issuer CIK differs from saved research pointer")
-    recent = payload.get("filings", {}).get("recent")
+    filings = payload.get("filings")
+    if not isinstance(filings, dict):
+        raise ValueError("SEC filing metadata missing")
+    recent = filings.get("recent")
     if not isinstance(recent, dict):
         raise ValueError("SEC recent filing section missing")
     keys = ("form", "filingDate", "accessionNumber", "primaryDocument")
@@ -171,7 +174,7 @@ def build_report(casebook, fetcher=fetch_sec_submissions, as_of=None, sleep=time
             result["candidate_filings"] = filing_leads
             result["retrieval_status"] = ("FILING_METADATA_LEADS" if filing_leads
                                           else "NO_RECENT_FILING_METADATA_LEADS")
-        except (ValueError, TypeError, KeyError) as exc:
+        except (ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
             result["retrieval_status"] = "SEC_SOURCE_INVALID"
             result["source_error_type"] = type(exc).__name__
         except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError) as exc:
@@ -190,7 +193,9 @@ def build_report(casebook, fetcher=fetch_sec_submissions, as_of=None, sleep=time
     counts = Counter(x["retrieval_status"] for x in rows)
     return {
         "report_type": "MAIN_PHASE3_SEC_RIGHTS_FILING_LEADS_RESEARCH_ONLY",
-        "as_of": as_of.isoformat(), "total_issuers": EXPECTED_ISSUERS,
+        "as_of": as_of.isoformat(),
+        "source_checked_at_utc": datetime.now(timezone.utc).isoformat(),
+        "total_issuers": EXPECTED_ISSUERS,
         "issuer_metadata_fetched": sum(x["source_sha256"] is not None for x in rows),
         "issuer_metadata_unavailable_or_invalid": sum(x["source_sha256"] is None for x in rows),
         "issuer_status_counts": dict(counts), "total_trials": EXPECTED_TRIALS,
