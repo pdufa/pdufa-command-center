@@ -1327,6 +1327,51 @@ def science_source_authenticity_review(programId: str, nctId: str):
         }
 
 
+@app.get("/api/science/evidence-gate", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_evidence_gate(programId: str, nctId: str, cutoffDate: str):
+    """Combine stored archive integrity and chronology; fail closed on scientific scoring."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    cutoff = strict_iso_day(cutoffDate)
+    if cutoff is None:
+        raise HTTPException(status_code=422, detail="Invalid evidence cutoff")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT absent from program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived NCT record unavailable")
+        import hashlib
+        actual_digest = hashlib.sha256(row.payload_gzip).hexdigest()
+        digest_ok = secrets.compare_digest(actual_digest, (row.sha256 or "").lower())
+        archive_by_cutoff = row.fetched_at.date() <= cutoff
+        summary = row.summary if isinstance(row.summary, dict) else {}
+        registry_day = registry_publication_day(summary.get("lastUpdatePostDate"))
+        registry_by_cutoff = registry_day is not None and registry_day <= cutoff
+        preliminary_pass = digest_ok and archive_by_cutoff and registry_by_cutoff
+        return {
+            "schemaVersion": "science-evidence-gate-v1",
+            "programId": programId, "nctId": nctId,
+            "cutoffDate": cutoffDate,
+            "archiveDigestMatchesStored": digest_ok,
+            "archiveAvailableByCutoff": archive_by_cutoff,
+            "registryUpdateByCutoff": registry_by_cutoff,
+            "preliminaryArchiveChecksPass": preliminary_pass,
+            "independentSourceAuthenticated": False,
+            "sourcePublicationVerified": False,
+            "clinicalLinkageVerified": False,
+            "eligibleForScientificScoring": False,
+            "eligibleForHistoricalPrediction": False,
+            "approvalProbability": None,
+            "reason": "Archive integrity and registry dates cannot independently verify source-level publication or trial linkage.",
+        }
+
+
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
