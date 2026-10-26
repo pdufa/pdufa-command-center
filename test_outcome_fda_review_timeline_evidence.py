@@ -32,7 +32,7 @@ class ReviewTimelineEvidenceTests(unittest.TestCase):
         summary = review_timeline_summary()
         self.assertEqual(summary["selected_research_action_endpoints"], 20)
         self.assertEqual(summary["selected_research_application_identifiers"], 10)
-        self.assertEqual(summary["source_supported_review_timelines"], 11)
+        self.assertEqual(summary["source_supported_review_timelines"], 16)
         self.assertEqual(summary["applications_with_source_supported_timelines"], 5)
         self.assertEqual(summary["selected_actions_without_structured_timeline"], 4)
         self.assertEqual(summary["selected_applications_without_structured_timeline"], 2)
