@@ -8,6 +8,7 @@ No network, production database, prediction, or external reviewer access.
 from __future__ import annotations
 
 import re
+from copy import deepcopy
 from collections import Counter
 from datetime import date
 from urllib.parse import urlparse
@@ -170,7 +171,7 @@ def prepare_gap_source_review_handoffs(
         }
         for role, destination in (("FIRST", first), ("SECOND", second)):
             destination.append({
-                **immutable,
+                **deepcopy(immutable),
                 "packet_role": role,
                 "packet_status": STATUS,
                 "reviewer_identity": "",
