@@ -7,7 +7,7 @@ require.extensions[".ts"]=(mod,file)=>mod._compile(
     module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true
   }}).outputText,file
 );
-const {readNightlyHealth,parseNightlyHealth,unavailableNightlyHealth,WORKFLOW_HISTORY_URL,overdueNominalPacificDate}=
+const {readNightlyHealth,parseNightlyHealth,unavailableNightlyHealth,WORKFLOW_HISTORY_URL,overdueNominalPacificDate,INTEGRITY_STEP}=
   require("../lib/main-phase3-nightly-health.ts");
 
 const when=new Date("2026-10-27T04:10:00.000Z");
@@ -17,7 +17,7 @@ const run=(id,at="2026-10-27T03:00:00Z",event="schedule")=>({
 });
 const gate=(conclusion="success")=>({name:"pacific-nightly-gate",status:"completed",conclusion});
 const integrityStep=(conclusion="success")=>({
-  name:"Reconcile 14 complete source reports and create SHA256 artifact manifest",
+  name:INTEGRITY_STEP,
   status:"completed",conclusion
 });
 const job=(conclusion="success",status="completed")=>({
@@ -213,7 +213,34 @@ test("Failed DST gate cannot masquerade as intentional skip",async()=>{
   assert.equal(r.intentionallySkippedAlternates,0);
 });
 
-test("A successful research job without the exact 14-file integrity step cannot be confirmed",async()=>{
+test("GitHub workflow integrity job name matches exact dashboard validation contract",()=>{
+  const workflow=fs.readFileSync(require("node:path").join(__dirname,
+    "../../../.github/workflows/main-phase3-evidence-qualification.yml"),"utf8");
+  assert.equal(INTEGRITY_STEP,
+    "Verify MAIN Phase 3 research integrity manifest [nightly-integrity-v1]");
+  assert.ok(workflow.includes("      - name: "+INTEGRITY_STEP+"\n"),
+    "Renaming the GitHub source integrity step must fail frontend CI");
+  assert.doesNotMatch(INTEGRITY_STEP,/\b(?:14|16|18)\s*(?:file|report)/i,
+    "Step names cannot drift when the validated artifact grows");
+});
+
+test("Legacy or changed report-count step labels cannot be misreported as success",async()=>{
+  for(const oldName of [
+    "Reconcile 14 complete source reports and create SHA256 artifact manifest",
+    "Reconcile 16 complete source reports and create SHA256 artifact manifest",
+    "Verify MAIN Phase 3 research integrity manifest [nightly-integrity-v2]"
+  ]){
+    const falseJob=job();
+    falseJob.steps=[{...integrityStep(),name:oldName}];
+    const {get}=provider([run(2001)],{jobs:{2001:[gate(),falseJob]}});
+    const found=await readNightlyHealth(get,when);
+    assert.equal(found.state,"REPORT_INTEGRITY_UNVERIFIED");
+    assert.equal(found.artifactConfirmed,false);
+    assert.equal(found.integrityStepConfirmed,false);
+  }
+});
+
+test("A successful research job without the exact stable integrity step cannot be confirmed",async()=>{
   for(const steps of [
     undefined,
     [],
