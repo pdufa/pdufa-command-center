@@ -56,7 +56,7 @@ function upstreamManifest() {
     })),
   };
 }
-const { compareLocalPdfWithCapturedArchive } = loadTs(
+const { compareLocalPdfWithCapturedArchive, summarizeCapturedScientificGates } = loadTs(
   path.join(__dirname, "../lib/scientific-captured-archive-check.ts"),
 );
 
@@ -256,4 +256,90 @@ test("backend deployment-check UI distinguishes missing route from empty archive
   assert.match(ui, /No file uploads or scientific approval/);
   assert.match(ui, /capturedBackendRevision\.current\+\+/);
   assert.doesNotMatch(ui, /saveBackendReady|uploadHealthCheck|promoteScientificGrade/);
+});
+
+
+test("exact-NCT archive coverage distinguishes captured PDFs across four independent evidence gates", () => {
+  const docs = [
+    { ...DOCUMENT, gateId: "official_regulatory" },
+    { ...DOCUMENT, gateId: "official_regulatory", documentId: "c".repeat(32), sha256: "c".repeat(64) },
+    { ...DOCUMENT, gateId: "protocol_sap", documentId: "d".repeat(32), sha256: "d".repeat(64) },
+  ];
+  const source = manifest(docs);
+  const unchanged = JSON.stringify(source);
+  const result = summarizeCapturedScientificGates(NCT, source);
+  assert.equal(result.nctId, NCT);
+  assert.equal(result.sourceDocumentCount, 3);
+  assert.equal(result.gatesWithCapturedPdf, 2);
+  assert.equal(result.gates.length, 4);
+  assert.deepEqual(result.gates.map(g => g.gateId), [
+    "protocol_sap", "published_results", "independent_replication", "official_regulatory",
+  ]);
+  assert.deepEqual(result.gates.map(g => g.capturedPdfCount), [1, 0, 0, 2]);
+  assert.deepEqual(result.gates.map(g => g.status), [
+    "CAPTURED_UNVERIFIED", "NO_CAPTURED_PDF", "NO_CAPTURED_PDF", "CAPTURED_UNVERIFIED",
+  ]);
+  assert.ok(result.gates.every(g => g.independentlyVerified === false && g.nextAction.length > 30));
+  assert.equal(result.externallyVerifiedGateCount, 0);
+  assert.equal(result.readyForScientificConclusion, false);
+  assert.equal(result.scientificScore, null);
+  assert.equal(result.fdaApprovalProbability, null);
+  assert.equal(JSON.stringify(source), unchanged);
+});
+
+test("a live empty PDF archive keeps every independent scientific gate absent and unverified", () => {
+  const result = summarizeCapturedScientificGates(NCT, manifest([]));
+  assert.equal(result.sourceDocumentCount, 0);
+  assert.equal(result.gatesWithCapturedPdf, 0);
+  assert.deepEqual(result.gates.map(g => g.capturedPdfCount), [0, 0, 0, 0]);
+  assert.ok(result.gates.every(g => g.status === "NO_CAPTURED_PDF" && !g.independentlyVerified));
+  assert.equal(result.externallyVerifiedGateCount, 0);
+  assert.equal(result.fdaApprovalProbability, null);
+});
+
+test("four captured evidence gate categories remain scientifically unverified without reviewers", () => {
+  const ids = ["protocol_sap", "published_results", "independent_replication", "official_regulatory"];
+  const docs = ids.map((gateId, i) => ({
+    ...DOCUMENT, documentId: String(i+1).repeat(32), sha256: String(i+1).repeat(64), gateId,
+  }));
+  const result = summarizeCapturedScientificGates(NCT, manifest(docs));
+  assert.equal(result.gatesWithCapturedPdf, 4);
+  assert.equal(result.externallyVerifiedGateCount, 0);
+  assert.equal(result.readyForScientificConclusion, false);
+  assert.equal(result.scientificScore, null);
+});
+
+test("unrecognized captured gate, forged score, incomplete NCT or mutated digest must fail closed", () => {
+  const altered = [
+    m => { m.documents[0].gateId = "unsupported_evidence_gate"; },
+    m => { m.documents[0].gateId = "approved"; },
+    m => { m.documents[0].captureStatus = "independently_verified"; },
+    m => { m.documents[0].scientificVerificationComplete = true; },
+    m => { m.documents[0].sha256 = "wrong"; },
+    m => { m.documents[0].documentId = "wrong"; },
+    m => { m.independentSourceVerificationCompleted = true; },
+    m => { m.scientificScore = 87; },
+    m => { m.fdaApprovalProbability = 0.9; },
+    m => { m.sourceDocumentCount = 2; },
+  ];
+  for (const mutate of altered) {
+    const m = manifest([{ ...DOCUMENT }]);
+    mutate(m);
+    assert.throws(() => summarizeCapturedScientificGates(NCT, m),
+      /Captured source verification blocked/, String(mutate));
+  }
+  assert.throws(() => summarizeCapturedScientificGates("NCT00000001", manifest()),
+    /Captured source verification blocked/);
+});
+
+test("trial UI only shows four-gate coverage after successful authorized manifest validation", () => {
+  const ui = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
+  assert.match(ui, /summarizeCapturedScientificGates\("NCT02142738", body\)/);
+  assert.match(ui, /revision === capturedBackendRevision\.current/);
+  assert.match(ui, /Four independent scientific evidence gates captured source coverage/);
+  assert.match(ui, /capturedScientificGates\.gates\.map/);
+  assert.match(ui, /Independently verified categories:/);
+  assert.match(ui, /Scientific score: NOT ASSIGNED/);
+  assert.match(ui, /Source authorship authenticated: NO/);
+  assert.doesNotMatch(ui, /promoteCapturedGate|approveScientificGrade|uploadSourcePdf/);
 });
