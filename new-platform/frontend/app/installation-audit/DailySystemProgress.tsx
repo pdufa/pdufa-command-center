@@ -16,10 +16,12 @@ export default function DailySystemProgress() {
         <h3 style={{margin:"0 0 8px"}}>{s.name}</h3>
         <p style={{fontSize:28,fontWeight:750,margin:"4px 0"}}>Not verified</p>
         <p><strong>Today:</strong> — &nbsp; <strong>Change:</strong> —</p>
+        <p><strong>Remaining to 100%:</strong> Not verified</p>
+        <p><strong>Estimated time to 100%:</strong> Not available — requires a verified completion baseline and sustained measured daily progress.</p>
         <p style={{fontSize:13}}>{s.description}</p>
         <details><summary>Why no percentage?</summary><p>{s.reason}</p></details>
       </article>)}
     </div>
-    <p style={{fontSize:13,marginBottom:0}}>Prediction accuracy is separate and remains <strong>not validated</strong>. The previous 40% reasoning-maturity estimate is subjective and must not be displayed as verified completion. <Link href="/prediction-pilot">View the sourced GEM research pilot</Link>.</p>
+    <p style={{fontSize:13,marginBottom:0}}>ETA is not a deadline or promise; it will only be calculated from comparable, dated measurements with positive observed progress. Prediction accuracy is separate and remains <strong>not validated</strong>. The previous 40% reasoning-maturity estimate is subjective and must not be displayed as verified completion. <Link href="/prediction-pilot">View the sourced GEM research pilot</Link>.</p>
   </section>;
 }
