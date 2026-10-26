@@ -114,3 +114,7 @@ jobs:
               assert status == 401, (path, status)
           print("PASS: Google sign-in page served; anonymous operator/science calls denied")
           PY
+
+      - name: Report frozen captured-source route deployment parity without credentials
+        working-directory: new-platform/backend
+        run: python -m app.scientific_captured_route_deployment_probe
