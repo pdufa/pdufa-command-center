@@ -19,7 +19,7 @@ PUBLISHED_LEAD_STATUS = "PRIOR_FDA_PDF_BYTES_PROBED_ACTION_UNVERIFIED"
 
 def join_prior_pdf_probes_to_research_packets(
     private_packets: list[dict], pdf_probe: dict, pdf_probe_audit: dict,
-    *, pinned_pdf_index: dict,
+    *, pinned_pdf_index: dict, pinned_pdf_group_index: dict,
 ) -> tuple[list[dict], dict]:
     """Source-hash join; historical PDF bytes were checked in a prior run.
 
@@ -31,6 +31,11 @@ def join_prior_pdf_probes_to_research_packets(
             or not isinstance(pdf_probe_audit, dict)
             or pdf_probe_audit.get("status") != PROBE_STATUS
             or not isinstance(pinned_pdf_index, dict)
+            or not isinstance(pinned_pdf_group_index, dict)
+            or pinned_pdf_group_index.get("status") != "FDA_PDF_SHARED_DOCUMENT_RECONCILIATION_NOT_OUTCOME_ADJUDICATION"
+            or pinned_pdf_group_index.get("model_eligible_records") != 0
+            or pinned_pdf_group_index.get("complete_application_denominator_verified") is not False
+            or pinned_pdf_group_index.get("independently_verified_review_cycle_outcomes") != 0
             or pinned_pdf_index.get("status") !=
                 "ALL_PUBLISHED_FDA_ACTION_PDFS_QUARANTINED_NOT_VALIDATED_OUTCOMES"
             or pdf_probe_audit.get("model_eligible_records") != 0
@@ -91,9 +96,9 @@ def join_prior_pdf_probes_to_research_packets(
                pinned_pdf_index.get("full_official_pdf_bytes_confirmed")
             or overall["NO_SAFE_FILENAME_TO_CHECK"] !=
                pinned_pdf_index.get("source_records_without_safe_pdf_filename")
-            or len(pdf_to_url) != 364):
-        # The distinct PDF number is frozen separately in the
-        # independently reconciled shared-document audit baseline.
+            or len(pdf_to_url) != pinned_pdf_group_index.get("unique_confirmed_pdf_documents")
+            or pinned_pdf_group_index.get("official_pdf_confirmed_letter_references") != overall["OFFICIAL_PDF_BYTES_CONFIRMED"]
+            or pinned_pdf_group_index.get("original_fda_archive_sha256") != pinned_pdf_index.get("original_fda_archive_sha256")):
         raise ValueError("FDA document availability/unique PDF counts not verified")
 
     if not isinstance(private_packets, list) or not private_packets:
