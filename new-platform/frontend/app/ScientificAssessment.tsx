@@ -302,12 +302,18 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [capturedArchiveCheck, setCapturedArchiveCheck] = useState<CapturedArchiveComparison | null>(null);
   const [capturedArchiveError, setCapturedArchiveError] = useState("");
   const [checkingCapturedArchive, setCheckingCapturedArchive] = useState(false);
+  const [capturedBackendStatus, setCapturedBackendStatus] = useState("");
+  const [capturedBackendChecking, setCapturedBackendChecking] = useState(false);
+  const capturedBackendRevision = useRef(0);
   const auditRevision = useRef(0);
   const pending = useRef<AbortController | null>(null);
   const pendingConnection = useRef<AbortController | null>(null);
 
   useEffect(() => {
     auditRevision.current++;
+    capturedBackendRevision.current++;
+    setCapturedBackendStatus("");
+    setCapturedBackendChecking(false);
     setReviewInventoryFile(null);
     setReviewerAFile(null);
     setReviewerBFile(null);
@@ -342,6 +348,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     const controller = new AbortController();
     pending.current = controller;
     auditRevision.current++;
+    capturedBackendRevision.current++;
+    setCapturedBackendStatus("");
+    setCapturedBackendChecking(false);
     setLocalAudit(null);
     setLocalAuditError("");
     setComparingFiles(false);
@@ -596,6 +605,53 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
+  /** Probe current pilot source manifest contract: no uploads or scientific promotion. */
+  async function checkCapturedBackendAvailability() {
+    if (exactId !== "TRIAL|NCT02142738") return;
+    const revision = ++capturedBackendRevision.current;
+    setCapturedBackendStatus("");
+    setCapturedBackendChecking(true);
+    try {
+      const response = await fetch(
+        "/api/scientific-assessment/captured-source-manifest?nct_id=NCT02142738",
+        { cache: "no-store" },
+      );
+      const body: unknown = await response.json();
+      let message: string;
+      if (response.ok) {
+        const validated = compareLocalPdfWithCapturedArchive(
+          "NCT02142738", "0".repeat(64), 32, body,
+        );
+        message = validated.capturedSnapshotCount === 0
+          ? "Captured-source backend is responding, but the pilot has 0 archived PDF snapshots. Scientific source verification remains blocked."
+          : "Captured-source backend is responding with "
+            + validated.capturedSnapshotCount
+            + " checksum-checked archived PDF snapshot(s). Byte integrity ONLY; neither source authorship nor clinical review is authenticated.";
+      } else {
+        const data = body && typeof body === "object" && !Array.isArray(body)
+          ? body as Record<string, unknown> : {};
+        message = response.status === 401
+          ? "Dashboard session is not authorized. Sign in to check the isolated scientific backend."
+          : data.reason === "CAPTURED_ROUTE_NOT_DEPLOYED"
+            ? "Captured-source manifest route is NOT DEPLOYED on the isolated Render backend. The frontend is newer than the backend; no archive lookup is available."
+          : data.reason === "ISOLATED_READ_KEY_REJECTED"
+            ? "The isolated Render backend rejected the preview read-only key; credentials/configuration require review."
+          : data.reason === "SCIENTIFIC_SERVICE_NOT_CONFIGURED"
+            ? "Isolated Render scientific API or its dedicated read key is not configured for this preview."
+          : data.reason === "ISOLATED_SCIENTIFIC_SERVICE_UNAVAILABLE"
+            ? "The isolated Render backend is currently unavailable."
+          : "Captured-source backend manifest is unavailable or failed its read-only safety contract.";
+      }
+      if (revision === capturedBackendRevision.current) setCapturedBackendStatus(message);
+    } catch {
+      if (revision === capturedBackendRevision.current) setCapturedBackendStatus(
+        "Captured-source backend could not be verified. No scientific evidence has been accepted."
+      );
+    } finally {
+      if (revision === capturedBackendRevision.current) setCapturedBackendChecking(false);
+    }
+  }
+
   /** On-demand read-only pinned archive metadata: NEVER admits or certifies a source. */
   async function compareLocalPdfWithArchivedSnapshot() {
     if (!localSourceByteMatch || !localSourcePdf || !result?.investigation40
@@ -634,6 +690,14 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       onClick={() => void checkConnection()}>
       {checkingConnection ? "Checking isolated scientific API…" : "Verify scientific service connection"}
     </button>
+    {exactId === "TRIAL|NCT02142738" && <div aria-label="Captured-source backend deployment status">
+      <button type="button" disabled={capturedBackendChecking}
+        onClick={() => void checkCapturedBackendAvailability()}>
+        {capturedBackendChecking ? "Checking captured-source backend…" : "Check captured-source backend deployment"}
+      </button>
+      <small> On-demand read-only check; distinguishes an undeployed route from an empty PDF archive. No file uploads or scientific approval.</small>
+      {capturedBackendStatus && <p role="status">{capturedBackendStatus}</p>}
+    </div>}
     {connectionMessage && <p role="status">{connectionMessage}</p>}
     {error && <p role="alert">{error}</p>}
     {result && <div>

@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const base = process.env.PDUFA_SCIENTIFIC_API_BASE_URL?.replace(/\/$/, "");
   const key = process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY;
   if (!base || !/^https:\/\/[^/]+$/.test(base) || !key) {
-    return NextResponse.json({ error: "Isolated scientific service not configured" }, {
+    return NextResponse.json({ error: "Isolated scientific service not configured", reason: "SCIENTIFIC_SERVICE_NOT_CONFIGURED" }, {
       status: 503, headers: PRIVATE,
     });
   }
@@ -28,10 +28,21 @@ export async function GET(req: NextRequest) {
       base + "/api/scientific-assessment/captured-source-manifest/" + NCT,
       { headers: { "x-pdufa-internal-key": key }, cache: "no-store", signal: AbortSignal.timeout(20000) },
     );
-    if (!result.ok || result.headers?.get("x-pdufa-scientific-api-contract") !== "science-captured-hashes-v1") {
-      return NextResponse.json({ error: "Isolated captured-source contract unavailable" }, {
+    if (!result.ok) {
+      // Distinguish stale backend code (404) from disabled access (401/403) and downtime.
+      // No credentials, network addresses, upstream body or PDF data in response.
+      const reason = result.status === 404 ? "CAPTURED_ROUTE_NOT_DEPLOYED"
+        : result.status === 401 || result.status === 403 ? "ISOLATED_READ_KEY_REJECTED"
+          : "ISOLATED_SCIENTIFIC_SERVICE_UNAVAILABLE";
+      return NextResponse.json({ error: "Isolated captured-source contract unavailable", reason }, {
         status: 503, headers: PRIVATE,
       });
+    }
+    if (result.headers?.get("x-pdufa-scientific-api-contract") !== "science-captured-hashes-v1") {
+      return NextResponse.json({
+        error: "Isolated captured-source contract unavailable",
+        reason: "CAPTURED_ROUTE_NOT_DEPLOYED",
+      }, { status: 503, headers: PRIVATE });
     }
     const raw: unknown = await result.json();
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw Error("Invalid manifest");
@@ -79,7 +90,7 @@ export async function GET(req: NextRequest) {
       documents,
     }, { headers: PRIVATE });
   } catch {
-    return NextResponse.json({ error: "Captured source manifest unavailable or invalid" }, {
+    return NextResponse.json({ error: "Captured source manifest unavailable or invalid", reason: "ARCHIVE_RESPONSE_UNVERIFIED_OR_UNAVAILABLE" }, {
       status: 503, headers: PRIVATE,
     });
   }

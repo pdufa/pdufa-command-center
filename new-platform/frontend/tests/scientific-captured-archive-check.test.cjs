@@ -108,7 +108,7 @@ test("malformed source manifests and forged independent review block comparisons
 });
 
 const routeFile = path.join(__dirname, "../app/api/scientific-assessment/captured-source-manifest/route.ts");
-function route({ authenticated = true, response = upstreamManifest(), upstreamOk = true, contract = true } = {}) {
+function route({ authenticated = true, response = upstreamManifest(), upstreamOk = true, upstreamStatus = 503, contract = true } = {}) {
   const calls = [];
   const routeExports = loadTs(routeFile, {
     "next/server": { NextResponse: { json: (body, options = {}) => ({
@@ -123,6 +123,7 @@ function route({ authenticated = true, response = upstreamManifest(), upstreamOk
         calls.push({ url, init });
         return {
           ok: upstreamOk,
+          status: upstreamOk ? 200 : upstreamStatus,
           headers: { get: () => contract ? "science-captured-hashes-v1" : "old-service" },
           json: async () => response,
         };
@@ -212,4 +213,47 @@ test("trial UI only checks remote archive after local digest and retains scienti
   assert.match(ui, /Source authorship authenticated: NO/);
   assert.match(ui, /No local PDF bytes leave the browser/);
   assert.doesNotMatch(ui, /uploadCapturedPdf|approveArchivedSource|promoteSourceEvidence/);
+});
+
+
+test("read-only proxy distinguishes undelivered Render code, invalid credentials and service downtime", async () =>
+  withKeys(async () => {
+    for (const [upstreamStatus, reason] of [
+      [404, "CAPTURED_ROUTE_NOT_DEPLOYED"],
+      [401, "ISOLATED_READ_KEY_REJECTED"],
+      [403, "ISOLATED_READ_KEY_REJECTED"],
+      [502, "ISOLATED_SCIENTIFIC_SERVICE_UNAVAILABLE"],
+      [503, "ISOLATED_SCIENTIFIC_SERVICE_UNAVAILABLE"],
+    ]) {
+      const r = await route({ upstreamOk: false, upstreamStatus }).request();
+      assert.equal(r.status, 503);
+      assert.equal(r.body.reason, reason);
+      assert.equal(r.headers["Cache-Control"], "private, no-store");
+      assert.doesNotMatch(JSON.stringify(r.body), /x-pdufa-internal-key|SAFE_TEST_PREVIEW_KEY|documentId|sha256/i);
+    }
+    const stale = await route({ contract: false }).request();
+    assert.equal(stale.body.reason, "CAPTURED_ROUTE_NOT_DEPLOYED");
+  }));
+
+test("live empty captured archive is 200 with a zero count, not undeployed backend", async () =>
+  withKeys(async () => {
+    const empty = upstreamManifest();
+    empty.documents = [];
+    empty.sourceDocumentCount = 0;
+    const r = await route({ response: empty }).request();
+    assert.equal(r.status, 200);
+    assert.equal(r.body.sourceDocumentCount, 0);
+    assert.deepEqual(r.body.documents, []);
+  }));
+
+test("backend deployment-check UI distinguishes missing route from empty archive without upload", () => {
+  const ui = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
+  assert.match(ui, /Check captured-source backend deployment/);
+  assert.match(ui, /checkCapturedBackendAvailability\(\)/);
+  assert.match(ui, /CAPTURED_ROUTE_NOT_DEPLOYED/);
+  assert.match(ui, /pilot has 0 archived PDF snapshots/);
+  assert.match(ui, /byte integrity ONLY|Byte integrity ONLY/);
+  assert.match(ui, /No file uploads or scientific approval/);
+  assert.match(ui, /capturedBackendRevision\.current\+\+/);
+  assert.doesNotMatch(ui, /saveBackendReady|uploadHealthCheck|promoteScientificGrade/);
 });
