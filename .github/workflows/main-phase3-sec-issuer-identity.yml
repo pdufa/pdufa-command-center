@@ -11,6 +11,9 @@ on:
       - 'data/phase3_all_years_300m_10b_trials.csv'
   workflow_dispatch:
 
+# Revalidate SEC directory only when this evidence gate changes or on demand.
+# This is not a scheduled 8 PM scan and does not qualify Pipeline records.
+
 permissions:
   contents: read
 
