@@ -132,3 +132,28 @@ def test_local_key_file_permission_and_public_repo_path_guard(tmp_path):
     from scripts.manage_hop_fda_visual_recipient_keys import REPO
     with pytest.raises(ValueError):
         create_local_keys(REPO / "unsafe-key-dir-in-repo")
+
+
+
+def test_ephemeral_recipient_envelope_adapter_without_stored_key_or_delivery(tmp_path):
+    from scripts.verify_hop_fda_visual_recipient_envelope import (
+        verify_ephemeral_recipient_envelope,
+    )
+    report = verify_ephemeral_recipient_envelope(*sources(tmp_path))
+    assert report["status"] == (
+        "FDA_19_REAL_SOURCE_IMAGES_EPHEMERAL_RECIPIENT_ENVELOPE_VERIFIED"
+    )
+    assert report["actual_pdf_derived_pngs_roundtrip_verified"] == 19
+    assert report["original_source_manifests_roundtrip_verified"] == 2
+    assert report["recipient_x25519_ecdh_kdf_aesgcm_verified"] is True
+    assert report["wrong_recipient_private_key_rejected"] is True
+    assert report["modified_encrypted_archive_rejected"] is True
+    assert report["private_recipient_key_exported"] is False
+    assert report["encrypted_archive_exported"] is False
+    assert report["durable_private_drive_upload_completed"] is False
+    assert report["permanent_reviewer_public_key_registered"] is False
+    assert report["independent_reviewer_authenticated"] is False
+    assert report["human_visual_reviews_completed"] == 0
+    assert report["independently_verified_original_fda_review_cycles"] == 0
+    assert report["model_eligible_records"] == 0
+    assert report["prediction_probability"] is None
