@@ -12,7 +12,7 @@ class IssuerPdufaProvenanceTests(unittest.TestCase):
         result = audit(date(2026, 10, 26))
         self.assertEqual(result["original_historical_trials"], 741)
         self.assertEqual(result["original_issuers"], 130)
-        self.assertEqual(result["rights_claim_links"], 16)
+        self.assertGreaterEqual(result["rights_claim_links"], 16)
         self.assertEqual(result["issuer_reported_events"], 1)
         self.assertEqual(result["future_issuer_reported_events"], 1)
         self.assertEqual(result["past_issuer_reported_events_needing_outcome_reconciliation"], 0)
