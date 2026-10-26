@@ -1,0 +1,40 @@
+name: Scientific 800 evidence dependency safety
+on:
+  pull_request:
+    paths:
+      - 'new-platform/frontend/app/ScientificAssessment.tsx'
+      - 'new-platform/frontend/lib/scientific-800-evidence-map.ts'
+      - 'new-platform/frontend/tests/scientific-800-evidence-map.test.cjs'
+      - '.github/workflows/scientific-800-evidence-map-safety.yml'
+  push:
+    branches:
+      - integration/scientific-assessment-validation-20261025
+    paths:
+      - 'new-platform/frontend/app/ScientificAssessment.tsx'
+      - 'new-platform/frontend/lib/scientific-800-evidence-map.ts'
+      - 'new-platform/frontend/tests/scientific-800-evidence-map.test.cjs'
+      - '.github/workflows/scientific-800-evidence-map-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install existing dependencies
+        working-directory: new-platform/frontend
+        run: npm ci --no-audit --no-fund
+      - name: Test source gates, 800-point plan, and established trial-science readiness
+        working-directory: new-platform/frontend
+        run: node --test tests/scientific-800-evidence-map.test.cjs tests/scientific-800-review-csv.test.cjs tests/scientific-depth-review-csv.test.cjs tests/scientific-assessment-evidence-grades.test.cjs
+      - name: Typecheck exact-NCT science page
+        working-directory: new-platform/frontend
+        run: npm run typecheck
