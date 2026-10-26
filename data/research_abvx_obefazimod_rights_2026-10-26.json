@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "scope": "PRIMARY_ISSUER_DISCLOSURE_RESEARCH_CASE_NOT_LEGAL_ADJUDICATION",
+  "asOf": "2026-10-26",
+  "issuer": {
+    "ticker": "ABVX",
+    "cik": "0001956827",
+    "name": "Abivax SA"
+  },
+  "program": {
+    "drug": "obefazimod",
+    "aliases": [
+      "ABX464"
+    ],
+    "indication": "moderately to severely active ulcerative colitis",
+    "clinicalProgram": "ABTECT",
+    "trialNctIds": [
+      "NCT05507203",
+      "NCT05507216",
+      "NCT05535946"
+    ]
+  },
+  "primarySources": [
+    {
+      "sourceType": "SEC_FORM_20_F",
+      "filedOn": "2026-03-23",
+      "url": "https://www.sec.gov/Archives/edgar/data/1956827/000195682726000012/abvx-20251231.htm",
+      "claimType": "ISSUER_SELF_REPORTED_WORLDWIDE_DEVELOPMENT_AND_COMMERCIALIZATION_RIGHTS",
+      "details": "Issuer states it currently holds worldwide rights to obefazimod and intends to retain worldwide development and commercialization rights. The filing acknowledges possible future strategic partnerships. This is a company disclosure, not independent legal contract adjudication."
+    },
+    {
+      "sourceType": "SEC_FORM_6_K",
+      "filedOn": "2026-09-21",
+      "url": "https://www.sec.gov/Archives/edgar/data/1956827/000195682726000027/abvx-20260630.htm",
+      "claimType": "CURRENT_PROGRAM_AND_IP_ASSET_ACTIVITY",
+      "details": "Issuer reports continuing UC obefazimod development; notes intangible assets with collaboration/license agreement involving CNRS, Montpellier 2 University and Curie, and acquired patents; does not in this excerpt establish full territorial exclusivity."
+    },
+    {
+      "sourceType": "OFFICIAL_ISSUER_PHASE_3_RELEASE",
+      "publishedOn": "2026-06-01",
+      "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial",
+      "claimType": "PROGRAM_TO_NCT_ID_MAPPING",
+      "details": "Issuer directly identifies NCT05507203, NCT05507216, NCT05535946 as three pivotal UC trials for obefazimod."
+    },
+    {
+      "sourceType": "OFFICIAL_ISSUER_HALF_YEAR_UPDATE",
+      "publishedOn": "2026-09-21",
+      "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-presents-business-updates-and-first-half-2026-financial/",
+      "claimType": "PLANNED_NDA_NOT_VERIFIED_SUBMITTED",
+      "details": "Issuer listed late-2026 obefazimod UC NDA submission as planned, not confirmed FDA filing acceptance or a specific PDUFA date."
+    }
+  ],
+  "evidenceFindings": {
+    "issuer_public_worldwide_rights_claim_documented": true,
+    "program_to_three_trial_nct_ids_source_linked": true,
+    "trial_linked_rights_claim_count": 3,
+    "rights_contract_terms_independently_validated": false,
+    "current_unencumbered_legal_rights_independently_verified": false,
+    "exclusivity_scope_and_territory_independently_verified": false,
+    "fda_nda_acceptance_confirmed": false,
+    "official_pdufa_target_date_confirmed": false,
+    "qualified_pipeline": null
+  },
+  "limitations": "Primary issuer SEC disclosures support that Abivax represented holding worldwide obefazimod rights in March 2026 and continued associated development in September 2026. They do not independently adjudicate contracts, patent co-ownership, subsequent rights transfers, specific FDA filing acceptance, or official PDUFA dates. No trading or Pipeline promotion."
+}
