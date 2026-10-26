@@ -290,7 +290,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         originals = rights.collect_cases()
         ai = next(i for i, p in enumerate(originals)
                   if p["issuerTicker"] == "AXSM" and p["asset"] == "AXS-12")
-        for modification in ("BAD_SUPPORTING_ID", "UNRELATED_PDUFA_ANCHOR"):
+        for modification in ("BAD_SUPPORTING_ID", "FALSE_FDA_ACCEPTANCE"):
             cases = [dict(p) for p in originals]
             target = dict(cases[ai])
             if modification == "BAD_SUPPORTING_ID":
@@ -298,8 +298,10 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
                     "NCT05059223", "NCT09999999"]
                 expected = "supporting trial identities"
             else:
-                target["issuerReportedNdaEvidenceSupportingNctIds"] = ["NCT05113745"]
-                expected = "PDUFA event anchor"
+                linked = [dict(x) for x in target["trialLinks"]]
+                linked[0]["issuerReportedFdaAcceptance"] = False
+                target["trialLinks"] = linked
+                expected = "PDUFA needs dated primary-source"
             cases[ai] = target
             with patch.object(rights, "collect_cases", return_value=cases):
                 with self.assertRaisesRegex(ValueError, expected):
