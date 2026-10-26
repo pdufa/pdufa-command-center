@@ -137,3 +137,27 @@ def test_matched_letter_provenance_still_reconciled_before_skipping_queue():
     linked["letter_type_as_published"] = "TENTATIVE APPROVAL"
     with pytest.raises(ValueError, match="published letter fields do not reconcile"):
         create_fda_identity_review_queue(*sources([row], [linked]))
+
+
+def test_unresolved_legacy_bl_is_not_silently_converted_to_bla():
+    row = record('a', ['BL 125845'])
+    queue, audit = create_fda_identity_review_queue(
+        *sources([row], [link(row, STATUS_UNRESOLVED)]))
+    item = queue['records'][0]
+    assert item['application_ids_as_published'] == ['BL 125845']
+    assert item['canonical_application_candidates'] == []
+    assert item['identity_verified'] is False
+    assert item['review_cycle_verified'] is False
+    assert item['model_eligible'] is False
+    assert audit['model_eligible_records'] == 0
+
+
+def test_ambiguous_two_application_letter_remains_one_quarantined_ticket():
+    row = record('b', ['NDA 214410/Original 2', 'NDA 210854/S-05'])
+    queue, audit = create_fda_identity_review_queue(*sources(
+        [row], [link(row, STATUS_AMBIGUOUS, ['NDA214410', 'NDA210854'])]))
+    assert len(queue['records']) == 1
+    assert queue['records'][0]['identity_link_status'] == STATUS_AMBIGUOUS
+    assert queue['records'][0]['identity_verified'] is False
+    assert queue['records'][0]['review_cycle_verified'] is False
+    assert audit['independently_verified_review_cycles'] == 0
