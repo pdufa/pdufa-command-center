@@ -38,6 +38,8 @@ def build_ledger(source_report):
         if nct in indexed or not nct:
             raise ValueError("Duplicate or missing source identity")
         indexed[nct] = record
+    if set(indexed) - {r["nct_id"] for r in rows}:
+        raise ValueError("Source report includes NCT IDs outside the dated census")
     ledger = []
     for row in rows:
         nct = row["nct_id"]
@@ -45,18 +47,16 @@ def build_ledger(source_report):
         matched = bool(
             record and record.get("census_ticker") == row["ticker"]
             and record.get("census_company") == row["company"]
-            and record.get("source_sha256")
+            and isinstance(record.get("source_sha256"), str)
+            and len(record["source_sha256"]) == 64
+            and record.get("phase3_in_current_registry") is True
+            and record.get("status_matches_dated_census") is True
             and record.get("source") == "https://clinicaltrials.gov/api/v2/studies/" + nct
         )
         gates = {gate: UNKNOWN for gate in GATES}
         if matched:
             gates["registry_identity"] = "PASS"
-        if record and record.get("phase3_in_current_registry") is False:
-            gates["active_phase3_development"] = "FAIL"
-        if record and record.get("status_matches_dated_census") is False:
-            # Dated census changes require a new development assessment.
-            gates["active_phase3_development"] = "REVIEW"
-        ledger.append({
+        # Registry phase or status changes require independent development review.\n        # Historical PHASE3 classification is not proof of an active program.\n        ledger.append({
             "nct_id": nct, "ticker": row["ticker"], "company": row["company"],
             "source_url": row["source_url"],
             "source_fetched_at_utc": record.get("fetched_at_utc") if record else None,
