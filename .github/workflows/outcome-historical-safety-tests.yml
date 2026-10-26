@@ -13,6 +13,8 @@ on:
       - 'new-platform/backend/tests/test_hop_fda_application_crosswalk.py'
       - 'new-platform/backend/app/hop_fda_identity_review_queue.py'
       - 'new-platform/backend/app/hop_fda_application_crosswalk.py'
+      - 'new-platform/backend/app/hop_fda_review_cycle_triage.py'
+      - 'new-platform/backend/tests/test_hop_fda_review_cycle_triage.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   push:
     branches: [main]
@@ -27,6 +29,8 @@ on:
       - 'new-platform/backend/tests/test_hop_fda_application_crosswalk.py'
       - 'new-platform/backend/app/hop_fda_identity_review_queue.py'
       - 'new-platform/backend/app/hop_fda_application_crosswalk.py'
+      - 'new-platform/backend/app/hop_fda_review_cycle_triage.py'
+      - 'new-platform/backend/tests/test_hop_fda_review_cycle_triage.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   workflow_dispatch:
 
@@ -54,7 +58,8 @@ jobs:
             tests/test_hop_outcome_cohort.py \
             tests/test_hop_outcomes_import.py \
             tests/test_hop_fda_application_crosswalk.py \
-            tests/test_hop_fda_identity_review_queue.py
+            tests/test_hop_fda_identity_review_queue.py \
+            tests/test_hop_fda_review_cycle_triage.py
       - name: Confirm published audit has no model clearance
         working-directory: new-platform/backend
         run: |
