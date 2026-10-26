@@ -1,0 +1,19 @@
+name: MAIN SVA halted-market research evidence
+on:
+  pull_request:
+    paths:
+      - 'data/research/sva-trading-halt-review-2026-10-26.json'
+      - 'tests/test_sva_halt_research_evidence.py'
+      - '.github/workflows/main-sva-halt-evidence.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify SVA trading-halt status is not misrepresented as live cap or Pipeline
+        run: python3 -m unittest discover -s tests -p 'test_sva_halt_research_evidence.py' -v

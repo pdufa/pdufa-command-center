@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "scope": "RESEARCH_ONLY_NOT_PIPELINE",
+  "ticker": "SVA",
+  "issuer": "Sinovac Biotech Ltd.",
+  "secCik": "0001084201",
+  "reviewDate": "2026-10-26",
+  "finding": "TRADING_HALT_REVIEW_REQUIRED",
+  "haltEffectiveDate": "2019-02-22",
+  "lastReportedPreHaltSaleUsd": 6.47,
+  "haltSources": [
+    {
+      "source": "Nasdaq original trading halt notice",
+      "url": "https://ir.nasdaq.com/node/100131/pdf",
+      "claim": "Nasdaq halted Sinovac SVA shares effective February 22, 2019, last sale $6.47"
+    },
+    {
+      "source": "SEC Sinovac Form 20-F",
+      "url": "https://www.sec.gov/Archives/edgar/data/1084201/000095017023015997/sva-20221231.htm",
+      "claim": "Company states common share trading halted since February 22, 2019"
+    },
+    {
+      "source": "Cboe market status halts",
+      "url": "https://www.cboe.com/us/equities/market_statistics/halts/",
+      "claim": "SVA shown in current trade suspension list as accessed during 2026-10-26 research"
+    }
+  ],
+  "marketCapStatus": "UNRESOLVED_ACTIVE_MARKET_PRICE",
+  "marketCapFromHaltedPriceIsCurrent": false,
+  "liveTradingVerified": false,
+  "liveMarketCapVerified": false,
+  "qualifiedPipeline": null,
+  "notes": "Do not use stale/halted $6.47 share price as fresh executable market price. Third-party indicative market-cap estimates disagree; requires explicit independent live trading status and current market-cap evidence. Does not assert permanent delisting or that halt cannot lift."
+}
