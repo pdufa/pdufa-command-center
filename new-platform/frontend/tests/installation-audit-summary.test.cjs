@@ -39,8 +39,8 @@ test("published snapshot counts partial, implementation and unknown proof separa
   assert.equal(total.gates,59);
   assert.equal(total.excluded,1);
   assert.equal(total.implementationSignals,10);
-  assert.equal(total.partial,7);
-  assert.equal(total.unverified,42);
+  assert.equal(total.partial,9);
+  assert.equal(total.unverified,40);
   assert.equal(total.independentlyVerified,0);
   assert.equal(total.accepted,0);
   assert.equal(total.gates, total.implementationSignals+total.partial+total.unverified+total.independentlyVerified);
