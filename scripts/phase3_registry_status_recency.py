@@ -275,7 +275,62 @@ def write_csv(report, output):
             writer.writerow({key: safe_cell(row.get(key)) for key in HEADERS})
 
 
+def render_summary(report):
+    """Keep original registry source recency below primary qualification metrics."""
+    if (report.get("report_type") != "MAIN_PHASE3_REGISTRY_STATUS_SOURCE_RECENCY_RESEARCH_ONLY"
+        or report.get("historical_trial_count") != EXPECTED
+        or report.get("qualified_pipeline_total") is not None
+        or report.get("independently_verified_commercial_rights") != 0
+        or not isinstance(report.get("current_registry_status_counts"), dict)
+        or sum(report["current_registry_status_counts"].values()) != EXPECTED
+        or not isinstance(report.get("source_posted_update_age_counts"), dict)
+        or sum(report["source_posted_update_age_counts"].values()) != EXPECTED):
+        raise ValueError("Only the full, unqualified source recency report can be displayed")
+    lines = [
+        "<details><summary>Registry status and last-posted update age (741 historical trials)</summary>",
+        "",
+        "**Registry source signals only—not Pipeline membership or active development proof.**",
+        "",
+        f"- Changed current overall status since dated census: "
+        f"{report['registry_status_changed_since_saved_census']}/{EXPECTED}",
+        f"- No longer registered as Phase 3 in current registry: "
+        f"{report['not_currently_registered_as_phase3']}/{EXPECTED}",
+        f"- Posted update older than 365 days: "
+        f"{report['original_source_posted_update_over_365_days']}/{EXPECTED}",
+        f"- Posted date not reported: "
+        f"{report['original_source_posted_update_missing']}/{EXPECTED}",
+        "",
+        "| Current registered overall status | Historical NCT records |",
+        "|:--|--:|",
+    ]
+    lines.extend(
+        f"| {name} | {value}/{EXPECTED} |"
+        for name, value in sorted(report["current_registry_status_counts"].items())
+    )
+    lines += [
+        "",
+        "| Last posted registry update age | Historical NCT records |",
+        "|:--|--:|",
+    ]
+    lines.extend(
+        f"| {bucket} | {report['source_posted_update_age_counts'].get(bucket,0)}/{EXPECTED} |"
+        for bucket in BUCKETS
+    )
+    lines += [
+        "",
+        "An older posting is a review lead, not evidence that development is inactive.",
+        "The registration-freshness Pipeline gate remains unverified.",
+        "",
+        "</details>",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def main():
+    if len(sys.argv) == 3 and sys.argv[1] == "--summary":
+        report = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
+        print(render_summary(report), end="")
+        return
     if len(sys.argv) != 5:
         sys.exit("Usage: phase3_registry_status_recency.py <registry> <ledger> <report.json> <worklist.csv>")
     registry, ledger = [
