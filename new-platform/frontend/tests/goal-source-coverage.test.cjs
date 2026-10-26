@@ -30,6 +30,7 @@ test("GOAL shows same-run source findings distinctly from clinical program count
   assert.equal(audit.due,1121);
   assert.equal(audit.verified,995);
   assert.equal(audit.unresolved,23);
+  assert.equal(audit.conflicted,0);
   assert.equal(audit.unavailable,93);
   assert.equal(audit.notApplicable,10);
   assert.equal(audit.coveragePercent,88.8);
@@ -62,6 +63,52 @@ test("GOAL refuses another run, mismatched URLs, malformed counts and untrusted 
   assert.equal(goalSourceCoverage(report(),{...scan,status:"RUN_FAILED"}),null);
   assert.equal(goalSourceCoverage(report(),null),null);
   assert.equal(goalSourceCoverage(null,scan),null);
+});
+
+test("GOAL reconciles real same-run SEC conflicts without losing all source coverage",async()=>{
+  const latestUrl="https://github.com/pdufa/pdufa-command-center/actions/runs/40263199452";
+  const latestScan={...scan,runId:40263199452,runUrl:latestUrl,date:"2026-10-25",today:false};
+  const latest={
+    ...report(),latest_run_id:"40263199452",latest_run_url:latestUrl,
+    findings_unresolved:21,findings_conflicted:2,
+    missing_required_source_families:["SEC","FINANCIAL"],
+  };
+  const audit=goalSourceCoverage(latest,latestScan);
+  assert.ok(audit);
+  assert.equal(audit.due,1121);
+  assert.equal(audit.verified,995);
+  assert.equal(audit.unresolved,21);
+  assert.equal(audit.conflicted,2);
+  assert.equal(audit.coveragePercent,88.8);
+  assert.equal(audit.fullCoverage,false);
+  assert.deepEqual(audit.missingRequired,["SEC","FINANCIAL"]);
+  let view;
+  try{
+    await act(async()=>{view=create(React.createElement(Panel,{source:latest,scan:latestScan,loading:false}));});
+    const rendered=JSON.stringify(view.toJSON());
+    assert.match(rendered,/Published coverage partial/);
+    assert.match(rendered,/Conflicted/);
+    assert.match(rendered,/Conflicting evidence blocks verification/);
+    assert.match(rendered,/Required source families still missing: SEC, FINANCIAL/);
+    assert.match(rendered,/Full source coverage NOT verified/);
+    assert.match(rendered,/1,121/);
+    assert.match(rendered,/88.8/);
+  }finally{if(view)await act(async()=>view.unmount());}
+});
+
+test("conflicted source counters must reconcile exactly and can never establish full coverage",()=>{
+  const valid={...report(),findings_unresolved:21,findings_conflicted:2};
+  assert.equal(goalSourceCoverage(valid,scan)?.conflicted,2);
+  for(const conflict of [-1,2.5,true,"2",null,3]){
+    const invalid={...valid,findings_conflicted:conflict};
+    assert.equal(goalSourceCoverage(invalid,scan),null,"Invalid/conflicting category value: "+String(conflict));
+  }
+  const missing={...valid};delete missing.findings_conflicted;
+  assert.equal(goalSourceCoverage(missing,scan),null,
+    "A missing conflict field cannot silently discard two unclassified findings");
+  const falseComplete={...valid,full_coverage_verified:true,missing_required_source_families:[]};
+  assert.equal(goalSourceCoverage(falseComplete,scan),null,
+    "Conflicted sources never become complete through an upstream flag");
 });
 
 test("A complete source ledger cannot authorize a trade",()=>{

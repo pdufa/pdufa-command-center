@@ -22,6 +22,7 @@ export type GoalSourceCoverage = {
   verified: number;
   due: number;
   unresolved: number;
+  conflicted: number;
   unavailable: number;
   notApplicable: number;
   missingRequired: string[];
@@ -42,8 +43,14 @@ export function goalSourceCoverage(source: unknown, scan: GoalScanView | null): 
   ];
   if (values.some(value=>value===null)) return null;
   const [due,verified,unresolved,unavailable,notApplicable] = values as number[];
-  if (due === 0 || due > 10000000 ||
-      verified + unresolved + unavailable + notApplicable !== due) return null;
+  // Old ledgers omitted findings_conflicted when it was zero. Such ledgers are
+  // accepted only when every due source is already accounted for. Never infer
+  // zero conflicts from a non-reconciling report.
+  const conflicted = source.findings_conflicted === undefined
+    ? (verified + unresolved + unavailable + notApplicable === due ? 0 : null)
+    : count(source.findings_conflicted);
+  if (conflicted === null || due === 0 || due > 10000000 ||
+      verified + unresolved + conflicted + unavailable + notApplicable !== due) return null;
   if (!Array.isArray(source.missing_required_source_families) ||
       source.missing_required_source_families.length > 12 ||
       source.missing_required_source_families.some(name=>
@@ -51,10 +58,10 @@ export function goalSourceCoverage(source: unknown, scan: GoalScanView | null): 
   const missingRequired=source.missing_required_source_families as string[];
   if (new Set(missingRequired).size !== missingRequired.length) return null;
   if (source.full_coverage_verified === true &&
-      (unresolved !== 0 || unavailable !== 0 || missingRequired.length !== 0)) return null;
+      (unresolved !== 0 || conflicted !== 0 || unavailable !== 0 || missingRequired.length !== 0)) return null;
   return {
     runId,runUrl:scan.runUrl,date:scan.date,today:scan.today,
-    due,verified,unresolved,unavailable,notApplicable,
+    due,verified,unresolved,conflicted,unavailable,notApplicable,
     missingRequired,fullCoverage:source.full_coverage_verified,
     coveragePercent:Math.round((verified/due)*1000)/10,
   };
