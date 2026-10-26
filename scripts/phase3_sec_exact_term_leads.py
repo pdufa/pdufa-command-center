@@ -28,14 +28,18 @@ EXCLUDE = {
 
 def prepare_program_terms(program, casebook):
     """Enforce complete exact NCT, issuer and immutable source associations."""
-    entries = program.get("items") if isinstance(program, dict) else None
-    originals = casebook.get("items") if isinstance(casebook, dict) else None
+    if not isinstance(program, dict) or not isinstance(casebook, dict):
+        raise ValueError("Program and casebook must be research objects")
+    entries = program.get("items")
+    originals = casebook.get("items")
     if (program.get("report_type") != "MAIN_PHASE3_ORIGINAL_DRUG_INDICATION_TERMS_RESEARCH_ONLY"
         or program.get("total_trials") != TOTAL_TRIALS
+        or program.get("total_saved_issuer_pointers") != 130
         or program.get("independently_verified_program_identities") != 0
         or program.get("independently_verified_commercial_rights") != 0
         or program.get("qualified_pipeline_total") is not None
         or casebook.get("total_trials") != TOTAL_TRIALS
+        or casebook.get("saved_issuer_pointers") != 130
         or casebook.get("qualified_pipeline_total") is not None
         or not isinstance(entries, list) or len(entries) != TOTAL_TRIALS
         or not isinstance(originals, list) or len(originals) != TOTAL_TRIALS):
