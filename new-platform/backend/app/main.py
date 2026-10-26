@@ -1015,6 +1015,22 @@ def validate_program_checklist(session: Session, program_id: str, stage: str) ->
     return program_id, stage
 
 
+@app.get("/api/science/dossier", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_science_dossier(programId: str, list: str):
+    """Read-only publication boundary. Never fabricate 40 scores from registry metadata."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or list not in {"GEM_JR", "GEM", "WT"}:
+        raise HTTPException(status_code=422, detail="Invalid scientific dossier identity")
+    with Session(ENGINE) as session:
+        serial = int(programId[6:])
+        if session.get(ProgramIdentity, serial) is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+    # There is no reviewed, versioned SCIENCE dossier source installed yet.
+    # Explicit 404 prevents the frontend from treating incomplete metadata as evidence.
+    raise HTTPException(status_code=404, detail="Verified SCIENCE dossier not published")
+
+
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
