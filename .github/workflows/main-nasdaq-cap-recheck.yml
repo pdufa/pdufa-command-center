@@ -1,0 +1,30 @@
+name: MAIN Nasdaq original 130 issuer market cap retrieval
+on:
+  pull_request:
+    paths:
+      - 'scripts/recheck_phase3_nasdaq_market_caps.py'
+      - 'tests/test_phase3_nasdaq_cap_recheck.py'
+      - '.github/workflows/main-nasdaq-cap-recheck.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-source-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify strict Nasdaq quote parser
+        run: python3 -m unittest discover -s tests -p 'test_phase3_nasdaq_cap_recheck.py' -v
+      - name: Independently recheck original Nasdaq 130 issuer caps without Pipeline promotion
+        run: python3 scripts/recheck_phase3_nasdaq_market_caps.py "$RUNNER_TEMP/phase3_130_nasdaq_current_research.json"
+      - name: Preserve issuer-level source success, failure and timestamps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-130-nasdaq-recheck-research-only
+          path: ${{ runner.temp }}/phase3_130_nasdaq_current_research.json
+          if-no-files-found: warn
+          retention-days: 7
