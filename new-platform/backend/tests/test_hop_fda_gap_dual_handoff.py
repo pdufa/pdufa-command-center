@@ -86,10 +86,16 @@ def synthetic():
     return packets, pinned
 
 
-def prepare(packets=None, pinned=None):
+def prepare(packets=None, pinned=None, original=None):
     default_packets, default_pinned = synthetic()
+    baseline = [
+        {k: deepcopy(v) for k, v in item.items()
+         if k != "previously_probed_published_pdf_leads"}
+        for item in default_packets
+    ]
     return prepare_gap_source_review_handoffs(
         default_packets if packets is None else packets,
+        baseline if original is None else original,
         pinned_audit=default_pinned if pinned is None else pinned,
         as_of=date(2026, 10, 25),
     )
@@ -190,3 +196,22 @@ def test_research_audit_is_only_aggregate_and_never_certifies_review():
     assert len(first[0]["previously_probed_pdf_leads"]) == 2
     assert len(second[1]["previously_probed_pdf_leads"]) == 1
     assert audit["private_per_application_records_not_exported"] is True
+
+
+def test_replaced_source_record_even_with_same_counts_is_rejected_by_private_baseline():
+    packets, pinned = synthetic()
+    packet = packets[0]
+    changed = f"{99:064x}"
+    packet["published_letter_source_hashes"][0] = changed
+    packet["previously_probed_published_pdf_leads"][0]["published_letter_source_sha256"] = changed
+    with pytest.raises(ValueError, match="private baseline"):
+        prepare(packets, pinned)
+
+
+def test_replacing_private_source_baseline_is_rejected():
+    packets, pinned = synthetic()
+    original = [{k: deepcopy(v) for k, v in p.items()
+                 if k != "previously_probed_published_pdf_leads"} for p in packets]
+    original[0]["packet_id"] = "NDA999999"
+    with pytest.raises(ValueError, match="private baseline"):
+        prepare(packets, pinned, original)
