@@ -12,6 +12,9 @@ on:
       - 'tests/test_phase3_gate_coverage.py'
       - 'scripts/phase3_sponsor_rights_triage.py'
       - 'tests/test_phase3_sponsor_rights_triage.py'
+      - 'scripts/phase3_rights_casebook.py'
+      - 'tests/test_phase3_rights_casebook.py'
+      - 'scripts/build_phase3_rights_evidence_gaps.py'
       - 'tests/test_phase3_evidence_boundaries.py'
       - '.github/workflows/main-phase3-evidence-qualification.yml'
       - 'data/phase3_all_years_300m_10b_trials.csv'
@@ -27,11 +30,12 @@ jobs:
           persist-credentials: false
       - name: Validate scripts and tests
         run: |
-          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py
+          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py
           python3 -m unittest discover -s tests -p test_phase3_qualification_ledger.py -v
           python3 -m unittest discover -s tests -p 'test_phase3_evidence_intake*.py' -v
           python3 -m unittest discover -s tests -p test_phase3_gate_coverage.py -v
           python3 -m unittest discover -s tests -p test_phase3_sponsor_rights_triage.py -v
+          python3 -m unittest discover -s tests -p test_phase3_rights_casebook.py -v
           python3 -m unittest discover -s tests -p test_phase3_evidence_boundaries.py -v
       - name: Retrieve original 741-study evidence
         run: python3 scripts/check_phase3_full_original_sources.py "$RUNNER_TEMP/main_phase3_registry.json"
@@ -39,6 +43,10 @@ jobs:
         run: python3 scripts/phase3_qualification_ledger.py "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_qualification_ledger.json"
       - name: Build sponsor and rights review queue
         run: python3 scripts/phase3_sponsor_rights_triage.py "$RUNNER_TEMP/main_phase3_qualification_ledger.json" "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_sponsor_rights_queue.json"
+      - name: Build saved rights and SEC issuer research pointers
+        run: python3 scripts/build_phase3_rights_evidence_gaps.py "$RUNNER_TEMP/main_phase3_rights_gaps.json"
+      - name: Reconcile original sponsor sources and 130 SEC issuer pointers
+        run: python3 scripts/phase3_rights_casebook.py "$RUNNER_TEMP/main_phase3_qualification_ledger.json" "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_sponsor_rights_queue.json" "$RUNNER_TEMP/main_phase3_rights_gaps.json" "$RUNNER_TEMP/main_phase3_rights_casebook.json"
       - name: Preserve research-only evidence and ledger
         if: always()
         uses: actions/upload-artifact@v4
@@ -48,5 +56,7 @@ jobs:
             ${{ runner.temp }}/main_phase3_registry.json
             ${{ runner.temp }}/main_phase3_qualification_ledger.json
             ${{ runner.temp }}/main_phase3_sponsor_rights_queue.json
+            ${{ runner.temp }}/main_phase3_rights_gaps.json
+            ${{ runner.temp }}/main_phase3_rights_casebook.json
           if-no-files-found: warn
           retention-days: 7
