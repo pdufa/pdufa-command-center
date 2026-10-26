@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "scope": "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY",
+  "asOf": "2026-10-26",
+  "programs": [
+    {
+      "issuerTicker": "ACAD",
+      "issuerCik": "0001070494",
+      "asset": "trofinetide",
+      "assetAliases": [
+        "DAYBUE",
+        "DAYBU",
+        "NNZ-2566",
+        "ACP-2566"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_EXCLUSIVE_NEUREN_LICENSE_EXPANDED_OUTSIDE_NORTH_AMERICA",
+      "rightsClaimSummary": "Acadia's filed June 2026 quarter 10-Q says 2018 Neuren exclusive North American trofinetide rights and July 2023 expansion to rights outside North America; royalty and milestone obligations remain. The firm markets DAYBUE in the U.S.; EU authorized DAYBU August 2026. Product approval does not establish a fresh upcoming FDA PDUFA.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "NEUREN_ORIGINAL_LICENSE_AND_2023_EXPANDED_LICENSE_ROYALTIES",
+        "LICENSE_MILESTONES_AND_CONTRACT_TERMS_NOT_INDEPENDENTLY_ADJUDICATED",
+        "EXISTING_2023_US_RETT_APPROVAL_NOT_NEW_PENDING_PDUFA",
+        "AUGUST_2026_EU_AUTHORIZATION_IS_NOT_US_FDA_PDUFA",
+        "LILAC2_AND_DAFFODIL_TERMINATED_DO_NOT_ASSUME_ACTIVE_CATALYST"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312526333243/acad-20260630.htm",
+          "assertion": "Acadia Form 10-Q for period ended 2026-06-30: August 2018 Neuren exclusive North America trofinetide license for Rett syndrome; July 2023 rights extension to territories outside North America; continuing royalties and milestones. Company-filed assertion only."
+        },
+        {
+          "type": "ISSUER_2026_EU_AUTHORIZATION",
+          "url": "https://ir.acadia.com/news/news-details/2026/European-Commission-Approves-DAYBU-trofinetide-as-the-First-and-Only-Treatment-for-Neurobehavioral-Symptoms-of-Rett-Syndrome-in-the-European-Union/default.aspx",
+          "assertion": "August 24, 2026 Acadia announced EU trofinetide authorization for neurobehavioral Rett symptoms. A completed EU approval, not an upcoming US PDUFA target."
+        },
+        {
+          "type": "ISSUER_2026_US_PRODUCT_STATEMENT",
+          "url": "https://ir.acadia.com/news/news-details/2026/Acadia-Pharmaceuticals-Announces-DAYBUE-STIX-trofinetide-is-Now-Broadly-Available-in-the-United-States-for-the-Treatment-of-Rett-Syndrome/default.aspx",
+          "assertion": "April 7 2026 company states original liquid trofinetide U.S. approved in 2023 and STIX powder formulation FDA approved December 2025; both are historical approvals."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT04181723",
+          "assertion": "Exact ClinicalTrials.gov NCT identity and trofinetide intervention for LAVENDER, including historical study outcome/status."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT04279314",
+          "assertion": "Exact ClinicalTrials.gov NCT identity and trofinetide intervention for LILAC, including historical study outcome/status."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT04776746",
+          "assertion": "Exact ClinicalTrials.gov NCT identity and trofinetide intervention for LILAC-2, including historical study outcome/status."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT04988867",
+          "assertion": "Exact ClinicalTrials.gov NCT identity and trofinetide intervention for DAFFODIL, including historical study outcome/status."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT04181723",
+          "study": "LAVENDER",
+          "indication": "Rett syndrome in female patients; pivotal trofinetide placebo-controlled efficacy trial",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04181723",
+          "regulatoryContext": "U_S_EXISTING_2023_DAYBUE_APPROVAL_NOT_FUTURE_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04279314",
+          "study": "LILAC",
+          "indication": "Rett syndrome; open-label extension and long-term safety",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04279314",
+          "regulatoryContext": "OPEN_LABEL_FOLLOW_UP_NO_STANDALONE_UPCOMING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04776746",
+          "study": "LILAC-2",
+          "indication": "Rett syndrome; additional long-term open-label extension",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04776746",
+          "regulatoryContext": "TERMINATED_EXTENSION_NO_STANDALONE_UPCOMING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04988867",
+          "study": "DAFFODIL",
+          "indication": "Rett syndrome in girls 2–5 years; open-label safety",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04988867",
+          "regulatoryContext": "TERMINATED_FOLLOWING_2023_MARKETING_APPROVAL_NO_UPCOMING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    },
+    {
+      "issuerTicker": "BCRX",
+      "issuerCik": "0000882796",
+      "asset": "berotralstat",
+      "assetAliases": [
+        "ORLADEYO",
+        "BCX7353"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_US_BEROTRALSTAT_BUSINESS_WITH_NEOPHARMED_EU_RIGHTS_TRANSFER",
+      "rightsClaimSummary": "BioCryst's 2026 Q2 filing reports continued U.S. ORLADEYO business and 2025 disposal of BioCryst Ireland European ORLADEYO business to Neopharmed, with amended intellectual-property licensing, supply and royalties. Historic APeX trials support an already approved product; October 2026 U.S. adult pellet approval is completed, not a pending PDUFA.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "ORLADEYO_EU_BUSINESS_SOLD_TO_NEOPHARMED_OCTOBER_2025",
+        "EFFECTIVE_EU_RIGHTS_AND_ROYALTY_OBLIGATIONS_REQUIRE_CONTRACT_REVIEW",
+        "SINGLE_SOURCE_MANUFACTURING_AND_US_SPECIALTY_PHARMACY_RISK",
+        "ORLADEYO_2026_10_21_US_ADULT_PELLET_APPROVAL_IS_COMPLETED_EVENT",
+        "APEX_P_PEDIATRIC_AGE_2_11_CANNOT_INHERIT_ADULT_PELLET_ACTION",
+        "ASTRIA_NAVENIBART_ACQUISITION_IS_SEPARATE_ASSET"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/882796/000162828026053300/bcrx-20260630.htm",
+          "assertion": "2026 Q2 BioCryst Form 10-Q: U.S. ORLADEYO sales, 2025 sale of European BioCryst Ireland business to Neopharmed, amended licensing/royalty rights and single-source manufacturer disclosure."
+        },
+        {
+          "type": "ISSUER_2026_ORLADEYO_APPROVAL_RELEASE",
+          "url": "https://ir.biocryst.com/news-releases/news-release-details/biocryst-announces-us-fda-approval-orladeyor-150-mg-oral-pellets",
+          "assertion": "October 21, 2026 issuer announced FDA adult/adolescent 12+ 150 mg oral-pellet sNDA approval. This was a completed event and must not be reported as upcoming PDUFA."
+        },
+        {
+          "type": "OFFICIAL_ISSUER_TRIALS_INDEX",
+          "url": "https://www.biocrystmedical.com/clinical-trials/",
+          "assertion": "BioCryst official trial index identifies APeX-P NCT05453968 and APeX-A NCT04933721 as berotralstat studies. The ALPHA-ORBIT navenibart program is a distinct asset."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT03485911",
+          "assertion": "Exact ClinicalTrials.gov NCT and BCX7353/berotralstat intervention for APeX-2. Study does not itself establish a new FDA action target."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT03472040",
+          "assertion": "Exact ClinicalTrials.gov NCT and BCX7353/berotralstat intervention for APeX-S. Study does not itself establish a new FDA action target."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT03873116",
+          "assertion": "Exact ClinicalTrials.gov NCT and BCX7353/berotralstat intervention for APeX-J. Study does not itself establish a new FDA action target."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT04933721",
+          "assertion": "Exact ClinicalTrials.gov NCT and BCX7353/berotralstat intervention for APeX-A. Study does not itself establish a new FDA action target."
+        },
+        {
+          "type": "OFFICIAL_US_TRIAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT05453968",
+          "assertion": "Exact ClinicalTrials.gov NCT and BCX7353/berotralstat intervention for APeX-P. Study does not itself establish a new FDA action target."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT03485911",
+          "study": "APeX-2",
+          "indication": "Hereditary angioedema prophylaxis in adolescents and adults; pivotal oral berotralstat",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03485911",
+          "regulatoryContext": "EXISTING_APPROVAL_SUPPORTING_STUDY_NOT_NEW_PENDING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT03472040",
+          "study": "APeX-S",
+          "indication": "Hereditary angioedema prophylaxis; long-term berotralstat safety",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03472040",
+          "regulatoryContext": "LONG_TERM_SAFETY_NOT_NEW_PENDING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT03873116",
+          "study": "APeX-J",
+          "indication": "Hereditary angioedema prophylaxis; berotralstat trial in Japan",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03873116",
+          "regulatoryContext": "JAPAN_STUDY_NOT_US_NEW_PENDING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04933721",
+          "study": "APeX-A",
+          "indication": "Hereditary angioedema; open-label access extension after earlier berotralstat trial participation",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04933721",
+          "regulatoryContext": "EXTENSION_NO_STANDALONE_UPCOMING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT05453968",
+          "study": "APeX-P",
+          "indication": "Hereditary angioedema prophylaxis; pediatric patients ages 2–11",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05453968",
+          "regulatoryContext": "PEDIATRIC_RESEARCH_NO_UNVERIFIED_UPCOMING_US_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    }
+  ],
+  "limitations": "This dataset records source-linked company disclosure claims for current asset rights, coupled to exact historical NCT trial identifiers. The filings are company statements rather than independent contract adjudication. Previously completed U.S./EU product approvals must not become new PDUFA targets. Existing trial sponsorship or a different formulation/indication alone does not establish FDA acceptance, unencumbered rights, or eligible Pipeline membership."
+}
