@@ -27,7 +27,7 @@ test("known 503 reason codes have bounded actionable messages", () => {
     const message = safeHopDiagnostic(503, { reason });
     assert.ok(message.length > 70);
     assert.match(message, /NOT VERIFIED/);
-    assert.doesNotMatch(message, /FDA prediction is enabled/);
+    assert.match(message, /no FDA prediction is enabled/);
   }
 });
 
