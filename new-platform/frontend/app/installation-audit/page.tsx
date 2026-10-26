@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ScientificOutcomeLive from "./ScientificOutcomeLive";
+import DailySystemProgress from "./DailySystemProgress";
 import InstallationProgressChart from "./InstallationProgressChart";
 import { PHASE3_CENSUS_SNAPSHOT, auditPhase3CensusSnapshot } from "../../lib/phase3-census-snapshot";
 import { isAccepted, summarizeInstallationAudit } from "../../lib/installation-audit-summary";
@@ -149,6 +150,7 @@ export default function InstallationAudit() {
         </div>
       </details>)}
     </section>
+    <DailySystemProgress />
     <ScientificOutcomeLive />
     <section aria-labelledby="fda-research-worklist" style={{margin:"26px 0",padding:"18px",border:"1px solid #cbd5e1",borderRadius:9,background:"#f8fafc"}}>
       <h2 id="fda-research-worklist">OUTCOME historical FDA source readiness — research only</h2>
