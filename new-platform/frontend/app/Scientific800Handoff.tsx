@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { buildScientific800ReviewerHandoffCsv } from "../lib/scientific-800-reviewer-handoff";
+import { compareScientific800ReviewerCsvs, type Scientific800LocalPairAudit } from "../lib/scientific-800-local-pair-audit";
 import type { ScientificDepthMatrix } from "../lib/scientific-depth-review-csv";
 import type { ScientificInputAudit } from "../lib/scientific-evidence-requirements-csv";
 
@@ -23,19 +24,38 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const current = useRef<AbortController | null>(null);
+  const [reviewerAFile, setReviewerAFile] = useState<File | null>(null);
+  const [reviewerBFile, setReviewerBFile] = useState<File | null>(null);
+  const [localAudit, setLocalAudit] = useState<Scientific800LocalPairAudit | null>(null);
+  const [localAuditError, setLocalAuditError] = useState("");
+  const [comparingFiles, setComparingFiles] = useState(false);
+  const auditRevision = useRef(0);
   const exactNct = /^TRIAL\|NCT[0-9]{8}$/.test(exactId);
 
   useEffect(() => {
     current.current?.abort();
+    auditRevision.current++;
     setValidated(null);
+    setReviewerAFile(null);
+    setReviewerBFile(null);
+    setLocalAudit(null);
+    setLocalAuditError("");
+    setComparingFiles(false);
     setLoading(false);
     setError("");
-    return () => current.current?.abort();
+    return () => {
+      current.current?.abort();
+      auditRevision.current++;
+    };
   }, [exactId]);
 
   async function inspectSourceInputs() {
     if (!exactNct) return;
     current.current?.abort();
+    auditRevision.current++;
+    setLocalAudit(null);
+    setLocalAuditError("");
+    setComparingFiles(false);
     const controller = new AbortController();
     current.current = controller;
     setValidated(null);
@@ -100,6 +120,35 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
     }
   }
 
+  /** Only reads user-selected files in this browser. No upload or saved review. */
+  async function compareLocal800Worksheets() {
+    if (!validated || !reviewerAFile || !reviewerBFile || comparingFiles) return;
+    const token = ++auditRevision.current;
+    setLocalAudit(null);
+    setLocalAuditError("");
+    setComparingFiles(true);
+    try {
+      const files = [reviewerAFile, reviewerBFile];
+      if (files.some(file => file.size > 3 * 1024 * 1024 || file.size === 0)) {
+        throw new Error("Worksheet file too large or empty.");
+      }
+      const [csvA, csvB] = await Promise.all(files.map(file => file.text()));
+      if (token !== auditRevision.current) return;
+      const comparison = compareScientific800ReviewerCsvs(
+        validated.matrix, validated.audit, csvA, csvB,
+      );
+      if (token === auditRevision.current) setLocalAudit(comparison);
+    } catch {
+      if (token === auditRevision.current) {
+        setLocalAuditError(
+          "Comparison rejected: files are incomplete, cross-trial, malformed or contain altered verification claims.",
+        );
+      }
+    } finally {
+      if (token === auditRevision.current) setComparingFiles(false);
+    }
+  }
+
   return <section aria-label="Independent 800-point reviewer handoff" className="panel">
     <details>
       <summary><strong>Independent 800-point reviewer handoff</strong> · two blank source-linked worksheets</summary>
@@ -120,6 +169,55 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
         <button type="button" onClick={() => downloadBlank("B")}>
           Download 800-point reviewer B worksheet (CSV)
         </button>
+        <details aria-label="Local 800-point dual-review comparison">
+          <summary><strong>Compare 800-point A/B worksheets locally</strong></summary>
+          <p>Choose the returned Reviewer A and Reviewer B CSVs for this exact NCT.
+            Files stay in your browser. Comparison flags differing untrusted claims,
+            missing original document references and possible reviewer-name reuse.
+            It cannot prove actual reviewer independence or source authenticity.</p>
+          <label>Reviewer A worksheet CSV
+            <input type="file" accept=".csv,text/csv"
+              aria-label="Choose 800-point reviewer A CSV"
+              onChange={event => {
+                auditRevision.current++;
+                setReviewerAFile(event.target.files?.[0] ?? null);
+                setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+              }} />
+          </label>
+          <label>Reviewer B worksheet CSV
+            <input type="file" accept=".csv,text/csv"
+              aria-label="Choose 800-point reviewer B CSV"
+              onChange={event => {
+                auditRevision.current++;
+                setReviewerBFile(event.target.files?.[0] ?? null);
+                setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+              }} />
+          </label>
+          <button type="button" disabled={!reviewerAFile || !reviewerBFile || comparingFiles}
+            onClick={() => void compareLocal800Worksheets()}>
+            {comparingFiles ? "Comparing 800 tasks…" : "Compare reviewer A/B consistency"}
+          </button>
+          {localAuditError && <p role="alert">{localAuditError}</p>}
+          {localAudit && <div aria-label="800-point local comparison findings">
+            <p><strong>800 of 800 task identities checked.</strong>
+              {" "}Reviewers are NOT authenticated. Sources and signatures are NOT verified.</p>
+            <p>Candidate decisions: A {localAudit.candidateDecisions.A};
+              B {localAudit.candidateDecisions.B}.
+              Missing original source provenance: A {localAudit.missingOriginalSourceProvenance.A};
+              B {localAudit.missingOriginalSourceProvenance.B}.</p>
+            <p>One-sided decisions: {localAudit.oneSidedDecisions}.
+              Conflicting candidate decisions: {localAudit.conflictingCandidateDecisions}.
+              Conflicting document references: {localAudit.conflictingDocumentReferences}.
+              Matching claimed reviewer names: {localAudit.matchingClaimedReviewerNames}.</p>
+            {localAudit.conflictTaskKeys.length > 0 && <details>
+              <summary>Inspect up to 25 conflicting task keys</summary>
+              <ol>{localAudit.conflictTaskKeys.map(key => <li key={key}>{key}</li>)}</ol>
+            </details>}
+            <small>Scientific adjudication: 0/800. Scientific score and FDA approval
+              probability remain unassigned. This consistency audit does not approve
+              any reviewer, verify source bytes, or submit scientific findings.</small>
+          </div>}
+        </details>
       </div>}
       <small>No source uploads, database writes, scores, FDA approval probabilities,
         trading, scans or reviewer signoffs occur. The existing 320-task A/B

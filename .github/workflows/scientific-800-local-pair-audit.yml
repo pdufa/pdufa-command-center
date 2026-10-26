@@ -1,0 +1,40 @@
+name: Scientific 800 A/B local consistency audit safety
+on:
+  pull_request:
+    paths:
+      - 'new-platform/frontend/app/Scientific800Handoff.tsx'
+      - 'new-platform/frontend/lib/scientific-800-local-pair-audit.ts'
+      - 'new-platform/frontend/tests/scientific-800-local-pair-audit.test.cjs'
+      - '.github/workflows/scientific-800-local-pair-audit.yml'
+  push:
+    branches:
+      - integration/scientific-assessment-validation-20261025
+    paths:
+      - 'new-platform/frontend/app/Scientific800Handoff.tsx'
+      - 'new-platform/frontend/lib/scientific-800-local-pair-audit.ts'
+      - 'new-platform/frontend/tests/scientific-800-local-pair-audit.test.cjs'
+      - '.github/workflows/scientific-800-local-pair-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review-claims-stay-unverified:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install existing frontend packages
+        working-directory: new-platform/frontend
+        run: npm ci --no-audit --no-fund
+      - name: Test 800-reviewer worksheet comparison and source fail-closed gates
+        working-directory: new-platform/frontend
+        run: node --test tests/scientific-800-local-pair-audit.test.cjs tests/scientific-800-reviewer-handoff.test.cjs tests/scientific-800-evidence-map.test.cjs tests/scientific-assessment-evidence-grades.test.cjs
+      - name: Typecheck isolated science preview
+        working-directory: new-platform/frontend
+        run: npm run typecheck
