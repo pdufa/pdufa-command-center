@@ -6,6 +6,7 @@ No trained model, approval probabilities or deployment are created here.
 from __future__ import annotations
 from dataclasses import dataclass, replace
 from datetime import date
+from math import isfinite
 from typing import Callable, Sequence
 from .hop_outcome_cohort import OutcomeObservation, DENOMINATOR_SOURCES, OUTCOMES
 
@@ -76,7 +77,8 @@ def walk_forward_backtest(
             for row in usable:
                 value = score_fn(tuple(train), replace(row, outcome="WITHHELD"))
                 if value is not None:
-                    if not isinstance(value, (int, float)) or not 0 <= value <= 1:
+                    if (isinstance(value, bool) or not isinstance(value, (int, float))
+                            or not isfinite(value) or not 0 <= value <= 1):
                         raise ValueError("score must be a probability in [0,1] or None")
                     target = 1.0 if row.outcome == "APPROVED" else 0.0
                     losses.append((float(value)-target)**2)
