@@ -18,7 +18,7 @@ EXPECTED_FILES = frozenset({
     "drugsfda_approved_registry_audit.json",
     "drugsfda_approved_registry_quarantined.json",
 })
-APPLICATION_ID = re.compile(r"(?:NDA|BLA|ANDA)[0-9]{6}\Z")
+APPLICATION_ID = re.compile(r"(?:NDA|BLA|ANDA)[0-9]{5,6}\Z")
 HEX_DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 MAX_DECOMPRESSED_FILE = 100_000_000
 
@@ -78,6 +78,11 @@ def audit_registry_artifact(artifact_zip: str | Path, *, as_of: date,
             raise ValueError("Duplicate application identity in registry")
         applications_seen.add(app)
         typ = app[:4] if app.startswith("ANDA") else app[:3]
+        # Two legacy source identities have five digits and no original
+        # submission entries. Preserve the source row, but make the nonstandard
+        # identifier an explicit quality warning instead of silently padding it.
+        if not re.fullmatch(r"(?:NDA|BLA|ANDA)[0-9]{6}", app):
+            data_warnings["NONSTANDARD_APPLICATION_NUMBER_LENGTH"] += 1
         if (row.get("source_record_index") != idx
                 or not isinstance(row.get("record_sha256"), str)
                 or not HEX_DIGEST.fullmatch(row["record_sha256"])
