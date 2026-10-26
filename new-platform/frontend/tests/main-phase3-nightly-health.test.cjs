@@ -274,12 +274,14 @@ test("Scan job still queued or running is not a completed scan",async()=>{
   assert.equal(r.artifactConfirmed,false);
 });
 
-test("Successful full scan older than 36 hours is explicitly stale",async()=>{
+test("A 36-hour-old successful scan cannot conceal subsequent missed nights",async()=>{
   const {get}=provider([run(2001)]);
   const r=await readNightlyHealth(get,new Date("2026-10-29T09:30:00Z"));
-  assert.equal(r.state,"FULL_SCAN_STALE");
-  assert.equal(r.artifactConfirmed,true);
-  assert.equal(r.integrityStepConfirmed,true);
+  assert.equal(r.state,"SCHEDULED_SCAN_OVERDUE");
+  assert.equal(r.overduePacificDate,"2026-10-28");
+  assert.equal(r.artifactConfirmed,false);
+  assert.equal(r.integrityStepConfirmed,false);
+  assert.equal(r.runId,null);
 });
 
 test("Unrelated PR workflow runs do not establish a scheduled success",async()=>{
