@@ -159,12 +159,10 @@ def test_actual_19_source_fda_no_text_pages_rendered_without_review():
     assert len(result["visual_render_batches"]) == 2
     assert result["visual_render_batches"][0]["offset"] == 0
     assert result["visual_render_batches"][1]["offset"] == 8
-    assert result["visual_render_batches"][0]["private_png_pages_rendered"] == (
-        previous["pages_without_extractable_text"] == 9
-    )
-    assert result["visual_render_batches"][1]["private_png_pages_rendered"] == (
-        second["pages_without_extractable_text"] == 10
-    )
+    assert result["visual_render_batches"][0]["private_png_pages_rendered"] == 9
+    assert previous["pages_without_extractable_text"] == 9
+    assert result["visual_render_batches"][1]["private_png_pages_rendered"] == 10
+    assert second["pages_without_extractable_text"] == 10
     assert result["total_no_extractable_text_pages"] == 19
     assert result["total_private_png_rendered"] == 19
     assert result["render_failures"] == 0
