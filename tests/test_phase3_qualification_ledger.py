@@ -34,7 +34,11 @@ class QualificationLedgerTests(unittest.TestCase):
         self.assertEqual(result["source_verified"], 0)
         self.assertEqual(result["gate_counts"]["registry_identity"]["REVIEW"], 741)
 
-    def test_unrelated_nct_rejected(self):\n        with self.assertRaises(ValueError):\n            q.build_ledger({"census_total": 741, "original_source_records": [{"nct_id": "NCT99999999"}]})\n\n    def test_wrong_denominator_rejected(self):
+    def test_unrelated_nct_rejected(self):
+        with self.assertRaises(ValueError):
+            q.build_ledger({"census_total": 741, "original_source_records": [{"nct_id": "NCT99999999"}]})
+
+    def test_wrong_denominator_rejected(self):
         with self.assertRaises(ValueError):
             q.build_ledger({"census_total": 740, "original_source_records": []})
 
