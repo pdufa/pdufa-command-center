@@ -24,8 +24,11 @@ RESEARCH_ACTIONS = (
           "https://download.open.fda.gov/crl/CRL_BLA125807_20240416.pdf"),
     event("125807", "RESUBMISSION-1", "2025-04-28", "approval",
           "https://www.fda.gov/media/186513/download"),
+    # Original 2020 signed CRL NOT independently available; 2024 FDA clinical
+    # review establishes its action date in a retrospective regulatory chronology.
     event("125706", "ORIGINAL", "2020-09-30", "complete_response",
-          "https://download.open.fda.gov/crl/CRL_BLA125706_20200930.pdf"),
+          "https://www.fda.gov/media/184952/download",
+          source_document_role="fda_regulatory_history_summary"),
     event("125706", "RESUBMISSION-1", "2023-08-01", "complete_response",
           "https://download.open.fda.gov/crl/CRL_BLA125706_20230801.pdf"),
     event("125706", "RESUBMISSION-2", "2024-12-18", "approval",
