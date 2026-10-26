@@ -10,6 +10,10 @@ on:
       - 'scripts/source_verification.py'
       - 'tests/test_source_verification.py'
       - 'tests/test_provisional_financing_sec_recheck.py'
+      - 'tests/test_targeted_verification_repair.py'
+      - 'tests/test_sec_evidence_recheck_workflow.py'
+      - 'tests/test_targeted_verification_repair.py'
+      - 'tests/test_sec_evidence_recheck_workflow.py'
       - 'sec_search_discovery.py'
       - 'sec_financing_closure_ui.py'
       - 'nightly_scan_dashboard.py'
@@ -47,6 +51,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_provisional_financing_sec_recheck.py' -v
       - name: Check Yahoo and Bing discovery link safety
         run: python -m unittest discover -s tests -p 'test_sec_search_discovery.py' -v
+      - name: Verify targeted-claim SEC and FDA recheck safeguards
+        run: python -m unittest discover -s tests -p 'test_targeted_verification_repair.py' -v
+      - name: Verify independent recheck workflow scheduling and scope
+        run: python -m unittest discover -s tests -p 'test_sec_evidence_recheck_workflow.py' -v
 
   live-recheck:
     needs: offline-tests
@@ -106,7 +114,12 @@ jobs:
 
   unresolved-claim-recheck:
     needs: [offline-tests, live-recheck]
-    if: github.event_name != 'pull_request'
+    # Preserve serial API usage, but do not lose the canonical unresolved-claim
+    # comparison when the unrelated provisional lead job fails or is skipped.
+    # Failed/offline safeguards still block all live rechecks.
+    if: >-
+      always() && github.event_name != 'pull_request' &&
+      needs['offline-tests'].result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -126,7 +139,7 @@ jobs:
             echo "::error::SEC_USER_AGENT must include a real contact email"
             exit 1
           fi
-      - name: Fresh recheck of all 36 unresolved exact-event source claims
+      - name: Fresh recheck of canonical required unresolved source claims
         shell: bash
         run: |
           set -euo pipefail
@@ -135,6 +148,27 @@ jobs:
             --source-run-id "$SOURCE_RUN_ID" \
             --output reports/missing_sources/targeted_required_recheck.json \
             --csv-output reports/missing_sources/targeted_required_recheck.csv
+      - name: Show exact-run research recheck outcome
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path("reports/missing_sources/targeted_required_recheck.json")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as out:
+              out.write("## Canonical unresolved source recheck\\n\\n")
+              if not path.is_file():
+                  out.write("No complete report. **Claims remain unverified; no source promotion.**\\n")
+              else:
+                  data = json.loads(path.read_text(encoding="utf-8"))
+                  out.write("Source run: " + str(data["source_report_run_id"]) + "\\n\\n")
+                  out.write("Required claims rechecked: " + str(data["findings_due"]) + "\\n\\n")
+                  out.write("Freshly supported claims (research-only): " + str(data["findings_verified"]) + "\\n\\n")
+                  out.write("Still unresolved: " + str(data["required_findings_unresolved"]) + "\\n\\n")
+                  out.write("No original ledger, model or trade gate was changed.\\n")
+          PY
       - name: Archive evidence-backed unresolved source comparison
         if: always()
         uses: actions/upload-artifact@v4
