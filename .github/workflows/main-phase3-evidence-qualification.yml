@@ -135,7 +135,8 @@ jobs:
           python3 scripts/phase3_qualification_scorecard.py "$RUNNER_TEMP/main_phase3_qualification_ledger.json" "$RUNNER_TEMP/main_phase3_program_identity.json" "$RUNNER_TEMP/main_phase3_sec_rights_leads.json" "$RUNNER_TEMP/main_phase3_sec_primary_documents_pilot.json" "$RUNNER_TEMP/main_phase3_rights_review_worklist.json" "$RUNNER_TEMP/main_phase3_rights_review_submissions_coverage.json" "$RUNNER_TEMP/main_phase3_qualification_scorecard.json" "$RUNNER_TEMP/main_phase3_qualification_summary.md"
           cat "$RUNNER_TEMP/main_phase3_qualification_summary.md" >> "$GITHUB_STEP_SUMMARY"
           python3 scripts/phase3_registry_status_recency.py --summary "$RUNNER_TEMP/main_phase3_registry_status_recency.json" >> "$GITHUB_STEP_SUMMARY"
-      - name: Reconcile 16 complete source reports and create SHA256 artifact manifest
+      # Stable name is a status/API contract; file count must not enter it.
+      - name: Verify MAIN Phase 3 research integrity manifest [nightly-integrity-v1]
         env:
           PACIFIC_RESEARCH_DATE: ${{ needs.pacific-nightly-gate.outputs.pacific_date }}
         run: |
