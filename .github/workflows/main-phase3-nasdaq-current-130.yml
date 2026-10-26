@@ -1,0 +1,30 @@
+name: MAIN 130 Nasdaq public cap source check
+on:
+  pull_request:
+    paths:
+      - 'scripts/check_phase3_nasdaq_current_130.py'
+      - 'tests/test_phase3_nasdaq_current_130.py'
+      - '.github/workflows/main-phase3-nasdaq-current-130.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-source-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test source parsing and no-qualification safeguards
+        run: python3 -m unittest discover -s tests -p 'test_phase3_nasdaq_current_130.py' -v
+      - name: Check all 130 public Nasdaq market-cap source values
+        run: python3 scripts/check_phase3_nasdaq_current_130.py "$RUNNER_TEMP/nasdaq_130_public_cap_research.json"
+      - name: Archive bounded issuer research and errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nasdaq-130-public-market-cap-source-research
+          path: ${{ runner.temp }}/nasdaq_130_public_cap_research.json
+          if-no-files-found: error
+          retention-days: 7
