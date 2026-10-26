@@ -5,17 +5,23 @@ from outcome_fda_review_timeline_evidence import (
     FDA_ABEONA_APPROVAL, FDA_ABEONA_CRL,
     FDA_MESOBLAST_SBRA, FDA_MESOBLAST_2023_CRL, FDA_MESOBLAST_APPROVAL,
     MESOBLAST_SBRA_IDENTIFIER_CONFLICT, MESOBLAST_SOURCE_SUPPORTED_TIMELINES,
+    ROCKET_SOURCE_SUPPORTED_TIMELINES, FDA_ROCKET_CRL, FDA_ROCKET_APPROVAL,
+    ULTRAGENYX_SOURCE_SUPPORTED_TIMELINES, ULTRAGENYX_PDUFA_GOAL_SOURCE_CONFLICT,
+    FDA_ULTRAGENYX_CRL, FDA_ULTRAGENYX_APPROVAL,
+    REPLIMUNE_SOURCE_SUPPORTED_TIMELINES,
+    REPLIMUNE_FINAL_ACTION_VS_REVIEW_RECOMMENDATION,
+    FDA_REPLIMUNE_FIRST_CRL, FDA_REPLIMUNE_SECOND_CRL, FDA_REPLIMUNE_APPROVAL,
     REVIEW_TIMELINES, SourceSupportedCycle, review_timeline_summary,
     validate_review_timelines,
 )
 from outcome_fda_research_action_fixtures import RESEARCH_ACTIONS
 
 class ReviewTimelineEvidenceTests(unittest.TestCase):
-    def test_four_timelines_are_two_applications(self):
+    def test_eleven_timelines_are_five_applications(self):
         summary = review_timeline_summary()
-        self.assertEqual(summary["applications_with_source_supported_timelines"], 2)
-        self.assertEqual(summary["source_supported_review_timelines"], 4)
-        self.assertEqual({c.application_key for c in REVIEW_TIMELINES}, {"BLA:125807", "BLA:125706"})
+        self.assertEqual(summary["applications_with_source_supported_timelines"], 5)
+        self.assertEqual(summary["source_supported_review_timelines"], 11)
+        self.assertEqual({c.application_key for c in REVIEW_TIMELINES}, {"BLA:125807", "BLA:125706", "BLA:125806", "BLA:125845", "BLA:125827"})
 
     def test_action_endpoints_match_source_fixtures(self):
         validate_review_timelines()
@@ -25,7 +31,14 @@ class ReviewTimelineEvidenceTests(unittest.TestCase):
             [("2023-09-25", "2024-04-16", "complete_response"),
              ("2024-10-28", "2025-04-28", "approval"),
              ("2023-01-31", "2023-08-01", "complete_response"),
-             ("2024-07-08", "2024-12-18", "approval")],
+             ("2024-07-08", "2024-12-18", "approval"),
+             ("2023-08-01", "2024-06-14", "complete_response"),
+             ("2025-09-26", "2026-03-26", "accelerated_approval"),
+             ("2024-12-18", "2025-07-07", "complete_response"),
+             ("2026-03-20", "2026-09-17", "approval"),
+             ("2024-11-21", "2025-07-21", "complete_response"),
+             ("2025-10-09", "2026-04-10", "complete_response"),
+             ("2026-06-02", "2026-08-06", "accelerated_approval")],
         )
 
     def test_second_cycle_uses_fda_pdufa_goal_not_action(self):
@@ -99,6 +112,75 @@ class ReviewTimelineEvidenceTests(unittest.TestCase):
         self.assertTrue(all(c.received_date != date(2020, 1, 31)
                             for c in MESOBLAST_SOURCE_SUPPORTED_TIMELINES))
         self.assertEqual(review_timeline_summary()["independently_certified_review_cycles"], 0)
+
+    def test_rocket_original_and_resubmission_are_one_application(self):
+        cycles = ROCKET_SOURCE_SUPPORTED_TIMELINES
+        self.assertEqual(len(cycles), 2)
+        self.assertEqual({c.application_key for c in cycles}, {"BLA:125806"})
+        self.assertEqual(
+            [(c.received_date.isoformat(), c.action_date.isoformat(), c.action_type) for c in cycles],
+            [("2023-08-01", "2024-06-14", "complete_response"),
+             ("2025-09-26", "2026-03-26", "accelerated_approval")],
+        )
+        self.assertEqual(cycles[0].final_action_source_url, FDA_ROCKET_CRL)
+        self.assertEqual(cycles[1].final_action_source_url, FDA_ROCKET_APPROVAL)
+        self.assertEqual(cycles[1].pdufa_goal_date, date(2026, 3, 28))
+
+    def test_ultragenyx_two_actions_are_one_application(self):
+        cycles = ULTRAGENYX_SOURCE_SUPPORTED_TIMELINES
+        self.assertEqual(len(cycles), 2)
+        self.assertEqual({c.application_key for c in cycles}, {"BLA:125845"})
+        self.assertEqual(
+            [(c.received_date.isoformat(), c.action_date.isoformat(), c.action_type) for c in cycles],
+            [("2024-12-18", "2025-07-07", "complete_response"),
+             ("2026-03-20", "2026-09-17", "approval")],
+        )
+        self.assertEqual(cycles[0].final_action_source_url, FDA_ULTRAGENYX_CRL)
+        self.assertEqual(cycles[1].final_action_source_url, FDA_ULTRAGENYX_APPROVAL)
+
+    def test_ultragenyx_pdufa_source_disagreement_kept_open(self):
+        conflict = ULTRAGENYX_PDUFA_GOAL_SOURCE_CONFLICT
+        self.assertEqual(conflict["sbra"]["goal_date"], "2026-09-19")
+        self.assertEqual(conflict["clinical_review"]["goal_date"], "2026-09-18")
+        self.assertNotEqual(conflict["sbra"]["source_url"],
+                            conflict["clinical_review"]["source_url"])
+        self.assertEqual(conflict["resolution_status"], "unresolved_preserve_both")
+        self.assertEqual(ULTRAGENYX_SOURCE_SUPPORTED_TIMELINES[1].pdufa_goal_date,
+                         date(2026, 9, 19))
+
+    def test_replimune_three_actions_are_one_application(self):
+        cycles = REPLIMUNE_SOURCE_SUPPORTED_TIMELINES
+        self.assertEqual(len(cycles), 3)
+        self.assertEqual({c.application_key for c in cycles}, {"BLA:125827"})
+        self.assertEqual(
+            [(c.received_date.isoformat(), c.action_date.isoformat(), c.action_type) for c in cycles],
+            [("2024-11-21", "2025-07-21", "complete_response"),
+             ("2025-10-09", "2026-04-10", "complete_response"),
+             ("2026-06-02", "2026-08-06", "accelerated_approval")],
+        )
+        self.assertEqual(cycles[0].final_action_source_url, FDA_REPLIMUNE_FIRST_CRL)
+        self.assertEqual(cycles[1].final_action_source_url, FDA_REPLIMUNE_SECOND_CRL)
+        self.assertEqual(cycles[2].final_action_source_url, FDA_REPLIMUNE_APPROVAL)
+
+    def test_replimune_reviewer_recommendation_not_final_action(self):
+        anomaly = REPLIMUNE_FINAL_ACTION_VS_REVIEW_RECOMMENDATION
+        self.assertEqual(anomaly["reviewer_recommendation"], "complete_response")
+        self.assertEqual(anomaly["final_agency_action"], "accelerated_approval")
+        self.assertEqual(anomaly["review_pdufa_goal_date"], "2026-08-02")
+        self.assertEqual(anomaly["final_action_date"], "2026-08-06")
+        self.assertEqual(anomaly["pdufa_clock_explanation"], "unverified")
+        self.assertEqual(REPLIMUNE_SOURCE_SUPPORTED_TIMELINES[2].pdufa_goal_date, date(2026, 8, 2))
+
+    def test_all_seven_new_timelines_remain_research_only(self):
+        new_cycles = (ROCKET_SOURCE_SUPPORTED_TIMELINES
+                      + ULTRAGENYX_SOURCE_SUPPORTED_TIMELINES
+                      + REPLIMUNE_SOURCE_SUPPORTED_TIMELINES)
+        self.assertEqual(len(new_cycles), 7)
+        self.assertTrue(all(not c.independently_certified
+                            and not c.model_eligible
+                            and not c.source_publication_asof_verified
+                            for c in new_cycles))
+        self.assertEqual(review_timeline_summary()["model_eligible_records"], 0)
 
 if __name__ == "__main__":
     unittest.main()
