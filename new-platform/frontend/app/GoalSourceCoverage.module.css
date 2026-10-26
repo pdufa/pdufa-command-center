@@ -5,7 +5,7 @@
 .details[open] .summary{border-bottom:1px solid #cadbce}
 .content{padding:13px 15px;min-width:0}
 .intro,.foot{font-size:12px;color:#536b59;line-height:1.5;margin:0 0 12px}
-.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .metrics>div{padding:12px;background:#fff;border:1px solid #bdcfc1;border-radius:8px;min-width:0;display:flex;flex-direction:column;gap:6px}
 .metrics span{font-size:11px;font-weight:850;color:#2b4834}
 .metrics strong{font-size:22px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
