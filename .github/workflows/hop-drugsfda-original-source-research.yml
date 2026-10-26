@@ -26,6 +26,9 @@ on:
       - 'new-platform/backend/app/hop_fda_identity_gap_dual_review.py'
       - 'new-platform/backend/scripts/prepare_hop_fda_identity_gap_dual_review.py'
       - 'new-platform/backend/tests/test_hop_fda_identity_gap_dual_review.py'
+      - 'new-platform/backend/app/hop_fda_single_primary_review.py'
+      - 'new-platform/backend/scripts/prepare_hop_fda_single_primary_review.py'
+      - 'new-platform/backend/tests/test_hop_fda_single_primary_review.py'
       - 'new-platform/backend/app/hop_fda_private_review_batches.py'
       - 'new-platform/backend/scripts/prepare_hop_fda_review_batches.py'
       - 'new-platform/backend/tests/test_hop_fda_private_review_batches.py'
@@ -80,6 +83,7 @@ jobs:
             tests/test_hop_fda_gap_research_packets.py \
             tests/test_hop_fda_prior_pdf_lead_join.py \
             tests/test_hop_fda_identity_gap_dual_review.py \
+            tests/test_hop_fda_single_primary_review.py \
             tests/test_hop_fda_private_review_batches.py \
             tests/test_hop_fda_private_encrypted_transfer.py \
             tests/test_hop_fda_nda206627_primary_source.py \
@@ -142,6 +146,15 @@ jobs:
             --private-first-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_first_fda_identity_gap_review.json" \
             --private-second-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_second_fda_identity_gap_review.json" \
             --public-audit-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_identity_gap_dual_review_handoff_counts.json"
+      - name: Prepare seven FIRST-only primary FDA review batches with optional escalation
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/prepare_hop_fda_single_primary_review.py \
+            --prepare-primary-batches \
+            --private-blank-first-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_first_fda_identity_gap_review.json" \
+            --private-output-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/single_primary_reviewer_batches" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_single_primary_review_preparation_counts.json" \
+            --as-of 2026-10-25
       - name: Inspect actual original FDA approval PDF pages for the missing NDA206627 application
         working-directory: new-platform/backend
         run: |
