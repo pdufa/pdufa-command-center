@@ -55,3 +55,9 @@ approval probability until those conditions are established.
 0; approval probability and retrospective predictive accuracy = unavailable.**
 The implementation remains a draft, with no changes to production,
 GEM JR/GEM FS/FA presets, scanner operation or trading.
+
+## Measured October 25 source sampling
+
+Research workflow [40259725191](https://github.com/pdufa/pdufa-command-center/actions/runs/40259725191) re-fetched and rehashed **8 of 8** selected official source PDF documents. Across the eight PDFs, **46 pages** were checked for candidate application ID text; **9 pages** had no extractable text. There were **8 provisional candidate application-number matches** and **0 pages with multiple candidate IDs**. The original private page-number hints were not uploaded. The pinned aggregate is in `app/research_sources/hop_fda_page_candidate_sample_20261025.json` and is included in synthetic and actual-baseline regression tests.
+
+These observations do not establish the precise regulatory review-cycle or FDA action decision. Verified original action page ranges: **0**; independently adjudicated review cycles: **0**; model-eligible historical records: **0**.
