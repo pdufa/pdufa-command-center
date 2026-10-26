@@ -24,6 +24,7 @@ ACAD_IOVA_CASE = ROOT / "data/research_issuer_rights_claims_acad_iova_2026-10-26
 BCRX_CASE = ROOT / "data/research_issuer_rights_claims_bcrx_2026-10-26.json"
 AXSM_CASE = ROOT / "data/research_issuer_rights_claims_axsm_2026-10-26.json"
 CORT_ADMA_CASE = ROOT / "data/research_issuer_rights_claims_cort_adma_2026-10-26.json"
+AGIO_CASE = ROOT / "data/research_issuer_rights_claims_agio_2026-10-26.json"
 EVIDENCE_AS_OF = "2026-10-26"
 
 def load_originals():
@@ -122,9 +123,20 @@ def collect_cases():
         or {(p["issuerTicker"], p["issuerCik"], p["asset"]) for p in cort_adma["programs"]}
             != {("CORT", "0001088856", "relacorilant"), ("ADMA", "0001368514", "RI-002")}):
         raise ValueError("CORT/ADMA rights cases, issuer identities, or historical FDA source missing")
+    agio = json.loads(AGIO_CASE.read_text(encoding="utf-8"))
+    if (agio.get("scope") != "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY"
+        or agio.get("schemaVersion") != 1
+        or agio.get("asOf") != EVIDENCE_AS_OF
+        or agio.get("issuerTicker") != "AGIO"
+        or agio.get("issuerCik") != "0001439222"
+        or len(agio.get("programs", [])) != 1
+        or agio["programs"][0].get("issuerTicker") != "AGIO"
+        or agio["programs"][0].get("issuerCik") != "0001439222"
+        or agio["programs"][0].get("asset") != "mitapivat"):
+        raise ValueError("AGIO mitapivat issuer rights-claim source or exact CIK mismatch")
     return ([old_program] + newer["programs"] + cytk["programs"]
             + acad_iova["programs"] + bcrx["programs"] + axsm["programs"]
-            + cort_adma["programs"])
+            + cort_adma["programs"] + agio["programs"])
 
 
 def build():
@@ -145,6 +157,19 @@ def build():
             raise ValueError("Issuer disclosures cannot independently adjudicate rights")
         if p.get("contractScopeIndependentlyVerified") is not False:
             raise ValueError("Contract scope must remain unverified")
+        if ticker == "AGIO":
+            expected_agio_ids = {
+                "NCT03548220", "NCT03559699", "NCT03853798",
+                "NCT04770753", "NCT04770779", "NCT05031780",
+                "NCT05144256", "NCT05175105", "NCT07656415",
+            }
+            if (asset != "mitapivat"
+                    or {t["nctId"] for t in p["trialLinks"]} != expected_agio_ids):
+                raise ValueError("AGIO exact nine original mitapivat NCT research identities mismatch")
+            for agio_link in p["trialLinks"]:
+                if (agio_link.get("issuerReportedCurrentPdufaDate") is not None
+                        and agio_link["nctId"] != "NCT05031780"):
+                    raise ValueError("AGIO sickle cell PDUFA event must attach only to RISE UP NCT")
         supporting_nda_ids = p.get("issuerReportedNdaEvidenceSupportingNctIds")
         if supporting_nda_ids is not None:
             linked_ids = {entry["nctId"] for entry in p["trialLinks"]}
@@ -332,7 +357,7 @@ if __name__ == "__main__":
     print("Historical trials with issuer rights-claim evidence linked:", result["issuer_rights_claim_evidence_linked_trials"], "/741")
     print("Historical trials not yet rights-claim reviewed:", result["claim_evidence_missing_or_unreviewed_trials"], "/741")
     print("Issuers with source-linked disclosures:", result["issuers_with_rights_claim_dossiers"], "/130")
-    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/12 researched")
+    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/13 researched")
     print("Official FDA-confirmed completed historical action events:",
           result["official_fda_confirmed_completed_historical_action_count"], "/741")
     print("Historical NCTs explicitly named by FDA to support the approved past action:",

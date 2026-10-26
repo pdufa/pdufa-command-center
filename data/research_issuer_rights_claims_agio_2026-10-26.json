@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "scope": "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY",
+  "asOf": "2026-10-26",
+  "issuerTicker": "AGIO",
+  "issuerCik": "0001439222",
+  "programs": [
+    {
+      "issuerTicker": "AGIO",
+      "issuerCik": "0001439222",
+      "asset": "mitapivat",
+      "assetAliases": [
+        "PYRUKYND",
+        "AQVESME",
+        "AG-348"
+      ],
+      "rightsClaimType": "ISSUER_ASSERTS_OWNERSHIP_WITH_SPECIFIED_GCC_EU_UK_COMMERCIAL_OUTLICENSES",
+      "rightsClaimSummary": "Agios SEC 10-Q represents full ownership of PYRUKYND and AQVESME but details NewBridge GCC and Avanzanite EEA/Switzerland/UK regional commercialization rights. Statements are from issuer; independent licensing-contract adjudication and remaining territorial/indication scope are not established.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "REGIONAL_COMMERCIAL_LICENSE_GCC_NEWBRIDGE_JUL2024",
+        "REGIONAL_COMMERCIAL_LICENSE_EEA_CH_UK_AVANZANITE_JUN2025",
+        "ISSUER_OWNERSHIP_ASSERTION_NOT_INDEPENDENT_UNENCUMBERED_RIGHTS",
+        "SCD_SNDA_ACCELERATED_APPROVAL_REQUIRES_CONFIRMATORY_REIGNITE",
+        "RISE_UP_SCD_SNDA_DISTINCT_FROM_PKD_OR_THALASSEMIA_APPROVALS",
+        "NOV1_2026_PDUFA_ISSUER_REPORTED_NOT_AGENCY_GOAL_LETTER_VERIFIED"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "filedOn": "2026-07-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1439222/000143922226000118/agio-20260630.htm",
+          "assertion": "Agios June 2026 Form 10-Q states it has full ownership rights to the branded mitapivat products PYRUKYND and AQVESME and discloses July 2024 GCC commercialization grant to NewBridge and June 2025 EEA/Switzerland/UK commercialization grant to Avanzanite; current contracts and territorial exclusivity not independently adjudicated. States May 2026 SCD sNDA FDA accepted priority review with issuer-reported November 1, 2026 PDUFA and separate REIGNITE confirmatory Phase 3."
+        },
+        {
+          "type": "ISSUER_2026_FDA_ACCEPTANCE_RELEASE",
+          "publishedOn": "2026-07-07",
+          "url": "https://investor.agios.com/news-releases/news-release-details/us-fda-grants-priority-review-agios-snda-mitapivat-sickle-cell",
+          "assertion": "Agios press release says FDA accepted mitapivat supplemental NDA for sickle cell disease with Priority Review, PDUFA goal Nov 1 2026, under accelerated approval pathway; not an independent FDA primary letter or approval outcome."
+        },
+        {
+          "type": "ISSUER_2026_SNDA_SUBMISSION_RELEASE",
+          "publishedOn": "2026-05-12",
+          "url": "https://investor.agios.com/news-releases/news-release-details/agios-submits-snda-fda-us-accelerated-approval-mitapivat-sickle",
+          "assertion": "Agios announces initial submission of mitapivat sickle-cell sNDA with confirmatory study plan under accelerated-approval pathway; not a decision."
+        },
+        {
+          "type": "ISSUER_CURRENT_DRUG_PIPELINE",
+          "url": "https://www.agios.com/pipeline/",
+          "assertion": "Agios separates existing approved adult PK deficiency and thalassemia programs from sickle cell disease application (RISE UP, issuer-reported Nov 1 2026) and ongoing pediatric PK deficiency studies."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT03548220",
+          "assertion": "Original NCT NCT03548220 (ACTIVATE) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT03559699",
+          "assertion": "Original NCT NCT03559699 (ACTIVATE-T) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT03853798",
+          "assertion": "Original NCT NCT03853798 (PKD EXTENSION AG348-C-011) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT04770753",
+          "assertion": "Original NCT NCT04770753 (ENERGIZE) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT04770779",
+          "assertion": "Original NCT NCT04770779 (ENERGIZE-T) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT05031780",
+          "assertion": "Original NCT NCT05031780 (RISE UP) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT05144256",
+          "assertion": "Original NCT NCT05144256 (ACTIVATE-Kids) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT05175105",
+          "assertion": "Original NCT NCT05175105 (ACTIVATE-KidsT) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EXACT_TRIAL",
+          "url": "https://clinicaltrials.gov/study/NCT07656415",
+          "assertion": "Original NCT NCT07656415 (REIGNITE) is an Agios-sponsored Phase 3 historical census record. Indicates study and condition; not rights, FDA filing or upcoming action evidence."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT03548220",
+          "study": "ACTIVATE",
+          "indication": "Adult pyruvate kinase deficiency, not regularly transfused",
+          "expectedRegistryStatus": "COMPLETED",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03548220",
+          "regulatoryContext": "APPROVED_PKD_ORIGINAL_INDICATION_HISTORICAL_NOT_SCD_SNDA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT03559699",
+          "study": "ACTIVATE-T",
+          "indication": "Adult pyruvate kinase deficiency, regularly transfused",
+          "expectedRegistryStatus": "COMPLETED",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03559699",
+          "regulatoryContext": "ADULT_PKD_TRIAL_NO_NEW_SCD_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT03853798",
+          "study": "PKD EXTENSION AG348-C-011",
+          "indication": "Adult pyruvate kinase deficiency, long-term mitapivat exposure",
+          "expectedRegistryStatus": "COMPLETED",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03853798",
+          "regulatoryContext": "OPEN_LABEL_EXTENSION_NOT_STANDALONE_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04770753",
+          "study": "ENERGIZE",
+          "indication": "Non-transfusion-dependent alpha- or beta-thalassemia, adults",
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04770753",
+          "regulatoryContext": "EXISTING_ADULT_THALASSEMIA_APPROVAL_SEPARATE_INDICATION",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04770779",
+          "study": "ENERGIZE-T",
+          "indication": "Transfusion-dependent alpha- or beta-thalassemia, adults",
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04770779",
+          "regulatoryContext": "EXISTING_ADULT_THALASSEMIA_APPROVAL_SEPARATE_INDICATION",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT05031780",
+          "study": "RISE UP",
+          "indication": "Sickle cell disease, mitapivat Phase 2/3",
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05031780",
+          "regulatoryContext": "ISSUER_REPORTED_ACCEPTED_SCD_SNDA_PRIORITY_REVIEW_ACCELERATED_PDUFA_2026_11_01",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "issuerReportedCurrentPdufaDate": "2026-11-01",
+          "issuerReportedFdaAcceptance": true,
+          "issuerReportedCurrentPdufaSourceUrl": "https://investor.agios.com/news-releases/news-release-details/us-fda-grants-priority-review-agios-snda-mitapivat-sickle-cell",
+          "issuerReportedPdufaAsOf": "2026-10-26"
+        },
+        {
+          "nctId": "NCT05144256",
+          "study": "ACTIVATE-Kids",
+          "indication": "Pediatric pyruvate kinase deficiency, not regularly transfused",
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05144256",
+          "regulatoryContext": "PEDIATRIC_PKD_CLINICAL_TRIAL_NO_SCD_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT05175105",
+          "study": "ACTIVATE-KidsT",
+          "indication": "Pediatric pyruvate kinase deficiency, regularly transfused",
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05175105",
+          "regulatoryContext": "PEDIATRIC_PKD_CLINICAL_TRIAL_NO_SCD_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT07656415",
+          "study": "REIGNITE",
+          "indication": "Sickle cell disease, confirmatory transfusion-burden Phase 3 in ages 12 or older",
+          "expectedRegistryStatus": "RECRUITING",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT07656415",
+          "regulatoryContext": "SCD_ACCELERATED_APPROVAL_CONFIRMATORY_STUDY_NOT_SEPARATE_SNDA_OR_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    }
+  ]
+}
