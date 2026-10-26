@@ -11,6 +11,7 @@ export type NightlyHealthState =
   | "REPORT_ARTIFACT_MISSING"
   | "REPORT_INTEGRITY_UNVERIFIED"
   | "NO_FULL_SCHEDULED_RUN_YET"
+  | "SCHEDULED_SCAN_OVERDUE"
   | "SOURCE_UNAVAILABLE";
 
 export type NightlyHealth = {
@@ -22,6 +23,7 @@ export type NightlyHealth = {
   runStartedAtUtc: string | null;
   jobCompletedAtUtc: string | null;
   latestScheduleObservedAtUtc: string | null;
+  overduePacificDate: string | null;
   intentionallySkippedAlternates: number;
   artifactConfirmed: boolean;
   integrityStepConfirmed: boolean;
@@ -36,6 +38,44 @@ const REQUIRED_ARTIFACT = "main-phase3-evidence-qualification-research-only";
 const INTEGRITY_STEP = "Reconcile 14 complete source reports and create SHA256 artifact manifest";
 const MAX_JOB_QUERIES = 12;
 const STALE_MILLIS = 36 * 60 * 60 * 1000;
+// PR #471 installed the first nominal Pacific nightly schedule on Oct 26.
+const FIRST_NOMINAL_PACIFIC_SCAN = "2026-10-26";
+const DEADLINE_PACIFIC_MINUTES = 22 * 60 + 30; // 10:30 PM grace includes both UTC cron triggers.
+
+type PacificClock = {day:string; minutes:number};
+function pacificClock(instant:Date):PacificClock {
+  const fields=new Intl.DateTimeFormat("en-US",{
+    timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit",
+    hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+  }).formatToParts(instant);
+  const get=(key:string)=>fields.find(x=>x.type===key)?.value;
+  const year=get("year"),month=get("month"),day=get("day"),
+    hour=Number(get("hour")),minute=Number(get("minute"));
+  if(!year||!month||!day||!Number.isInteger(hour)||!Number.isInteger(minute)||
+    hour<0||hour>23||minute<0||minute>59)throw new Error("Invalid Pacific clock");
+  return {day:year+"-"+month+"-"+day,minutes:hour*60+minute};
+}
+function previousPacificDay(day:string):string {
+  const previous=new Date(Date.parse(day+"T12:00:00Z")-86400000);
+  if(!Number.isFinite(previous.getTime()))throw new Error("Invalid Pacific day");
+  return previous.toISOString().slice(0,10);
+}
+/** Nightly schedule overdue only after 10:30 PM Pacific, with a grace period.
+ * Until 10:30 PM the previous night's completed run is still the expected
+ * observation; after that the next nightly research run is expected.
+ */
+export function overdueNominalPacificDate(now:Date):string|null {
+  if(!Number.isFinite(now.getTime()))throw new Error("Invalid Pacific clock instant");
+  const local=pacificClock(now);
+  const due=local.minutes>=DEADLINE_PACIFIC_MINUTES?
+    local.day:previousPacificDay(local.day);
+  return due>=FIRST_NOMINAL_PACIFIC_SCAN?due:null;
+}
+/** Group early-next-morning delayed GitHub starts with the previous night. */
+function runPacificNight(started:string):string {
+  const local=pacificClock(new Date(started));
+  return local.minutes<6*60?previousPacificDay(local.day):local.day;
+}
 
 type Row = Record<string, unknown>;
 const obj = (v:unknown):v is Row=>v!==null && typeof v==="object" && !Array.isArray(v);
@@ -50,7 +90,7 @@ function emptyHealth(now:Date):NightlyHealth {
     schemaVersion:1, state:"NO_FULL_SCHEDULED_RUN_YET",
     checkedAtUtc:now.toISOString(),
     runId:null,runUrl:null,runStartedAtUtc:null,jobCompletedAtUtc:null,
-    latestScheduleObservedAtUtc:null,intentionallySkippedAlternates:0,
+    latestScheduleObservedAtUtc:null,overduePacificDate:null,intentionallySkippedAlternates:0,
     artifactConfirmed:false,integrityStepConfirmed:false,
     scope:"SCHEDULED_MAIN_RESEARCH_LEDGER_ONLY_NO_MEMBERSHIP_CHANGES",
   };
@@ -73,6 +113,10 @@ export async function readNightlyHealth(
   ).sort((a,b)=>Date.parse(b.created_at as string)-Date.parse(a.created_at as string));
 
   const output=emptyHealth(now);
+  const expectedNight=overdueNominalPacificDate(now);
+  const late=():NightlyHealth=>({
+    ...output,state:"SCHEDULED_SCAN_OVERDUE",overduePacificDate:expectedNight
+  });
   if(scheduleRuns[0])output.latestScheduleObservedAtUtc=scheduleRuns[0].created_at as string;
   for(const run of scheduleRuns.slice(0,MAX_JOB_QUERIES)){
     const id=run.id as number;
@@ -101,6 +145,9 @@ export async function readNightlyHealth(
       output.intentionallySkippedAlternates++;
       continue;
     }
+    // Never show yesterday's confirmed job as satisfying a missing new night.
+    // Delayed jobs started before 6 AM Pacific belong to the preceding night.
+    if(expectedNight&&runPacificNight(started)<expectedNight)return late();
     if(gate.conclusion!=="success"||ledger.status!=="completed"||ledger.conclusion===null){
       return update("FULL_SCAN_RUNNING",null);
     }
@@ -131,7 +178,7 @@ export async function readNightlyHealth(
     return update(now.getTime()-Date.parse(done)>STALE_MILLIS ?
       "FULL_SCAN_STALE":"FULL_SCAN_CONFIRMED",done,true,true);
   }
-  return output;
+  return expectedNight?late():output;
 }
 
 export function parseNightlyHealth(value:unknown):NightlyHealth {
@@ -139,24 +186,28 @@ export function parseNightlyHealth(value:unknown):NightlyHealth {
     "FULL_SCAN_CONFIRMED","FULL_SCAN_STALE","FULL_SCAN_FAILED",
     "FULL_SCAN_RUNNING","REPORT_ARTIFACT_MISSING",
     "REPORT_INTEGRITY_UNVERIFIED",
-    "NO_FULL_SCHEDULED_RUN_YET","SOURCE_UNAVAILABLE"
+    "NO_FULL_SCHEDULED_RUN_YET","SCHEDULED_SCAN_OVERDUE","SOURCE_UNAVAILABLE"
   ];
   if(!obj(value)||value.schemaVersion!==1||!states.includes(value.state as NightlyHealthState)||
     !utc(value.checkedAtUtc)||!Number.isSafeInteger(value.intentionallySkippedAlternates)||
     (value.intentionallySkippedAlternates as number)<0||
     value.scope!=="SCHEDULED_MAIN_RESEARCH_LEDGER_ONLY_NO_MEMBERSHIP_CHANGES"||
     typeof value.artifactConfirmed!=="boolean"||
-    typeof value.integrityStepConfirmed!=="boolean")throw new Error("Invalid nightly research status");
+    typeof value.integrityStepConfirmed!=="boolean"||
+    (value.overduePacificDate!==null &&
+      (typeof value.overduePacificDate!=="string" ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(value.overduePacificDate))))
+    throw new Error("Invalid nightly research status");
   if(value.runId===null){
     if(value.runUrl!==null||value.runStartedAtUtc!==null||value.jobCompletedAtUtc!==null||
       value.artifactConfirmed||value.integrityStepConfirmed||
-      !["NO_FULL_SCHEDULED_RUN_YET","SOURCE_UNAVAILABLE"].includes(value.state as string))
+      !["NO_FULL_SCHEDULED_RUN_YET","SCHEDULED_SCAN_OVERDUE","SOURCE_UNAVAILABLE"].includes(value.state as string))
       throw new Error("Unsubstantiated successful scheduled run");
   }else{
     if(!positiveId(value.runId)||value.runUrl!==runUrl(value.runId)||
        !utc(value.runStartedAtUtc)||
        (value.jobCompletedAtUtc!==null&&!utc(value.jobCompletedAtUtc))||
-       ["NO_FULL_SCHEDULED_RUN_YET","SOURCE_UNAVAILABLE"].includes(value.state as string))
+       ["NO_FULL_SCHEDULED_RUN_YET","SCHEDULED_SCAN_OVERDUE","SOURCE_UNAVAILABLE"].includes(value.state as string))
       throw new Error("Malformed scheduled run identity");
     if(value.artifactConfirmed !==
       ["FULL_SCAN_CONFIRMED","FULL_SCAN_STALE"].includes(value.state as string))
@@ -165,6 +216,8 @@ export function parseNightlyHealth(value:unknown):NightlyHealth {
       ["FULL_SCAN_CONFIRMED","FULL_SCAN_STALE","REPORT_ARTIFACT_MISSING"].includes(value.state as string))
       throw new Error("Pre-upload integrity validation status is unsupported");
   }
+  if((value.state==="SCHEDULED_SCAN_OVERDUE")!==Boolean(value.overduePacificDate))
+    throw new Error("Overdue alert date must match unverified scheduled status");
   if(value.latestScheduleObservedAtUtc!==null&&!utc(value.latestScheduleObservedAtUtc))
     throw new Error("Invalid last scheduled trigger");
   return value as NightlyHealth;
