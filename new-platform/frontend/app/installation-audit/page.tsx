@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ScientificOutcomeLive from "./ScientificOutcomeLive";
+import { PHASE3_CENSUS_SNAPSHOT, auditPhase3CensusSnapshot } from "../../lib/phase3-census-snapshot";
 import { isAccepted, summarizeInstallationAudit } from "../../lib/installation-audit-summary";
 import { FDA_REVIEW_WORKLIST_SNAPSHOT, auditFDAReviewWorklist } from "../../lib/fda-review-worklist-snapshot";
 
@@ -59,6 +60,7 @@ function GateCell({ value }: { value: Gate }) {
 export default function InstallationAudit() {
   const {groups, total} = summarizeInstallationAudit(checks);
   const fdaWorklist = auditFDAReviewWorklist(FDA_REVIEW_WORKLIST_SNAPSHOT);
+  const phase3Census = auditPhase3CensusSnapshot(PHASE3_CENSUS_SNAPSHOT);
   return <main style={{maxWidth:1420,margin:"0 auto",padding:"28px 18px",fontFamily:"system-ui,sans-serif",color:"#17212b"}}>
     <p><Link href="/">← Dashboard</Link></p>
     <h1>System installation & evidence tracker</h1>
@@ -67,6 +69,42 @@ export default function InstallationAudit() {
     <p><strong>Main technical installation:</strong> No mandatory human reviewer enrollment, reviewer keys or reviewer handoff is required to install or operate Pipeline, GEM JR, GEM, WT, scanning, reporting and backups. Scientific evidence and prediction validation remain a separate research requirement; this policy change does not certify a trial or authorize trades.</p>
     <p><strong>Latest saved RESULTS:</strong> October 25, 2026 · PARTIAL · <a href="https://github.com/pdufa/pdufa-command-center/actions/runs/40263199452" target="_blank" rel="noopener noreferrer">run 40263199452</a> · 11,598 tracked clinical records (not Pipeline qualified) · 0 tracked records changed · GEM JR 11 · GEM 6. Qualified Pipeline and FDA special-designation totals remain unknown. The scan-note summary reports 995/1121 verified, 21 unresolved, 93 unavailable and 10 not applicable; <strong>two conflicted checks are omitted from that short note</strong> but separately recorded in the same-run source audit.</p>
     <p><strong>Same-run source reconciliation (October 25, 2026 night):</strong> 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable and 10 not applicable: <strong>995 + 21 + 2 + 93 + 10 = 1,121</strong>. <a href={sourceAudit}>Saved source report</a> · <strong>PARTIAL</strong> because required SEC and FINANCIAL verification is still missing. The source report explicitly accounts for the two conflicts that the shorter nightly scan note does not list. Clinical inventory totals do not establish Pipeline eligibility, complete regulatory source coverage or validated scientific predictions.</p>
+    <section aria-label="Phase 3 market-cap research census, not qualified Pipeline" style={{margin:"22px 0",border:"1px solid #cbd5e1",borderRadius:10,padding:"16px 18px",background:"#f8fafc"}}>
+      <h2>Phase 3 company / market-cap census — research snapshot only</h2>
+      <p><strong>Source dated October 26, 2026 at 12:21 UTC (5:21 AM Pacific).</strong>
+        {" "}This exact-lead-sponsor registry census applies the $300M–$10B market-cap range
+        to Phase 3 industry-sponsored trials across all years. It is a conservative
+        lower bound, <strong>NOT the qualified Pipeline candidate total</strong>.</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:12,margin:"15px 0"}}>
+        <div style={{padding:12,border:"1px solid #e2e8f0",borderRadius:7,background:"#fff"}}>
+          <strong style={{fontSize:24,display:"block"}}>{phase3Census.industryPhase3Examined.toLocaleString("en-US")}</strong>
+          <span>Phase 3 industry trial records examined</span>
+        </div>
+        <div style={{padding:12,border:"1px solid #e2e8f0",borderRadius:7,background:"#fff"}}>
+          <strong style={{fontSize:24,display:"block"}}>{phase3Census.matchedPhase3Trials.toLocaleString("en-US")}</strong>
+          <span>Exact-lead-sponsor Phase 3 trials matched to $300M–$10B companies</span>
+        </div>
+        <div style={{padding:12,border:"1px solid #e2e8f0",borderRadius:7,background:"#fff"}}>
+          <strong style={{fontSize:24,display:"block"}}>{phase3Census.matchedCompanies.toLocaleString("en-US")}</strong>
+          <span>Companies with matching trials</span>
+        </div>
+        <div style={{padding:12,border:"1px solid #e2e8f0",borderRadius:7,background:"#fff"}}>
+          <strong style={{fontSize:24,display:"block"}}>{phase3Census.unavailableMarketCapTickers.toLocaleString("en-US")}</strong>
+          <span>Company tickers with market-cap data unavailable</span>
+        </div>
+      </div>
+      <p><strong>Qualified Pipeline count: NOT ESTABLISHED.</strong>
+        {" "}The census does not verify current active development, exact trial-to-drug
+        indication, a pending U.S. FDA pathway/PDUFA, collaborator or licensing
+        relationships, or the complete mandatory Pipeline restrictions.
+        {phase3Census.unavailableMarketCapTrialRecords.toLocaleString("en-US")} trial
+        records also have unavailable market-cap data. Missing entries are
+        not counted as ineligible.</p>
+      <p><a href={phase3Census.source} target="_blank" rel="noopener noreferrer">
+        Open dated research source and methodology</a>. Full FDA designation totals
+        and qualified Pipeline eligibility remain unknown; no candidates,
+        restrictions or trading actions are changed by this display.</p>
+    </section>
     <section aria-label="Installation acceptance balance" style={{margin:"20px 0"}}>
       <h2>Acceptance balance — measured from the dated checklist</h2>
       <p><strong>{total.accepted} / {total.sections} sections fully accepted · {total.sections - total.accepted} remain open.</strong> Full acceptance requires runtime verification and applicable evidence verification, not only installed code or a READY build.</p>
