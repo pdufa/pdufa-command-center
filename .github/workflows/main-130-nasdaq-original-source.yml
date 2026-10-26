@@ -1,0 +1,32 @@
+name: MAIN 130 Nasdaq original-source market cap research
+on:
+  pull_request:
+    paths:
+      - 'scripts/refresh_phase3_130_nasdaq_research.py'
+      - 'tests/test_phase3_130_nasdaq_source_research.py'
+      - '.github/workflows/main-130-nasdaq-original-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-source-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test bounded source retrieval and no Pipeline promotion
+        run: |
+          python3 -m py_compile scripts/refresh_phase3_130_nasdaq_research.py
+          python3 -m unittest discover -s tests -p 'test_phase3_130_nasdaq_source_research.py' -v
+      - name: Query original Nasdaq summary source for 130 census issuers
+        run: python3 scripts/refresh_phase3_130_nasdaq_research.py "$RUNNER_TEMP/phase3_130_nasdaq_original_source_research.json"
+      - name: Preserve issuer-level source response hashes and errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-130-nasdaq-original-source-research-only
+          path: ${{ runner.temp }}/phase3_130_nasdaq_original_source_research.json
+          if-no-files-found: warn
+          retention-days: 7
