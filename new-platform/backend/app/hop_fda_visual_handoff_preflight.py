@@ -9,8 +9,8 @@ import json
 import re
 from pathlib import Path
 
-SHA = re.compile(r"[0-9a-f]{64}\\Z")
-PNG = re.compile(r"([0-9a-f]{64})_page_([0-9]{3})[.]png\\Z")
+SHA = re.compile(r"[0-9a-f]{64}\Z")
+PNG = re.compile(r"([0-9a-f]{64})_page_([0-9]{3})[.]png\Z")
 
 
 def audit_private_visual_handoff(image_dir: Path, manifests: tuple[Path, Path]) -> dict:
@@ -41,7 +41,7 @@ def audit_private_visual_handoff(image_dir: Path, manifests: tuple[Path, Path]) 
         if not p.is_file() or p.is_symlink() or p.stat().st_size > 8_000_000:
             raise ValueError("FDA source image path not safe")
         body = p.read_bytes()
-        if not body.startswith(b"\\x89PNG\\r\\n\\x1a\\n") or hashlib.sha256(body).hexdigest() != expected[p.name]:
+        if not body.startswith(b"\x89PNG\r\n\x1a\n") or hashlib.sha256(body).hexdigest() != expected[p.name]:
             raise ValueError("Rendered FDA PNG source changed")
     return {
         "status": "PRIVATE_FDA_VISUAL_HANDOFF_SOURCE_READY_NO_PUBLIC_EXPORT",
