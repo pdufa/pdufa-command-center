@@ -253,14 +253,13 @@ def test_actual_prior_fda_document_provenance_links_locked_without_outcomes():
         "NO_PUBLISHED_PDF_LEAD": 1,
         "PARTIAL_PUBLISHED_PDF_LEADS": 0,
     }
-    assert report["entire_fda_prior_confirmed_pdf_letter_count"] == (
-        pdfs["full_official_pdf_bytes_confirmed"] ==
-        docs["official_pdf_confirmed_letter_references"] == 457
-    )
+    assert (report["entire_fda_prior_confirmed_pdf_letter_count"] ==
+            pdfs["full_official_pdf_bytes_confirmed"] ==
+            docs["official_pdf_confirmed_letter_references"] == 457)
     assert report["entire_fda_published_letter_source_reference_count"] == 458
-    assert report["source_pdf_probe_original_archive_sha256"] == (
-        pdfs["original_fda_archive_sha256"] == docs["original_fda_archive_sha256"]
-    )
+    assert (report["source_pdf_probe_original_archive_sha256"] ==
+            pdfs["original_fda_archive_sha256"] ==
+            docs["original_fda_archive_sha256"])
     assert report["prior_pdf_bytes_probed_not_revalidated_in_current_run"] is True
     assert report["private_pdf_source_link_records_not_exported"] is True
     assert report["original_fda_review_cycles_independently_adjudicated"] == 0
