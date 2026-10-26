@@ -1,0 +1,66 @@
+name: OUTCOME historical safety tests
+
+on:
+  pull_request:
+    paths:
+      - 'new-platform/backend/app/hop_backtest.py'
+      - 'new-platform/backend/app/hop_outcome_cohort.py'
+      - 'new-platform/backend/app/hop_outcomes_import.py'
+      - 'new-platform/backend/tests/test_hop_backtest*.py'
+      - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
+      - 'new-platform/backend/tests/test_hop_outcomes_import.py'
+      - '.github/workflows/outcome-historical-safety-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/backend/app/hop_backtest.py'
+      - 'new-platform/backend/app/hop_outcome_cohort.py'
+      - 'new-platform/backend/app/hop_outcomes_import.py'
+      - 'new-platform/backend/tests/test_hop_backtest*.py'
+      - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
+      - 'new-platform/backend/tests/test_hop_outcomes_import.py'
+      - '.github/workflows/outcome-historical-safety-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historical-outcome-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pytest
+        run: python -m pip install pytest
+      - name: Run historical outcome and backtest safety tests
+        working-directory: new-platform/backend
+        run: |
+          python -m pytest -q \
+            tests/test_hop_backtest.py \
+            tests/test_hop_backtest_cohort_safety.py \
+            tests/test_hop_backtest_duplicates.py \
+            tests/test_hop_outcome_cohort.py \
+            tests/test_hop_outcomes_import.py
+      - name: Confirm published audit has no model clearance
+        working-directory: new-platform/backend
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base = Path('app/research_sources')
+          files = (
+              'hop_fda_full_action_pdf_audit_index.json',
+              'hop_fda_shared_pdf_reconciliation_index.json',
+              'hop_fda_pdf_document_verification_index.json',
+          )
+          for filename in files:
+              audit = json.loads((base / filename).read_text())
+              assert audit['model_eligible_records'] == 0, filename
+              assert audit['prediction_probability'] is None, filename
+              assert audit['complete_application_denominator_verified'] is False, filename
+          print('Outcome audit records remain research-only')
+          PY
