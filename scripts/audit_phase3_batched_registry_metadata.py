@@ -39,42 +39,62 @@ def parse_batch(requested_ids, response):
         if ident not in valid or ident in found:
             raise ValueError("Registry returned unexpected or duplicate NCT")
         found[ident] = extract(ident, payload)
-    if response.get("nextPageToken"):
-        raise ValueError("Registry batch was paginated unexpectedly")
     return found
 
 
 def fetch_batch(nct_ids, sleep_fn=time.sleep):
-    query = urllib.parse.urlencode({
-        "filter.ids": ",".join(nct_ids),
-        "pageSize": len(nct_ids),
-        "fields": ",".join(FIELDS),
-        "format": "json",
-    })
-    url = API + "?" + query
-    for attempt in range(4):
-        try:
-            request = urllib.request.Request(url, headers={
-                "Accept": "application/json",
-                "User-Agent": "PDUFACommandCenterResearch/1.0 (read-only)",
-            })
-            with urllib.request.urlopen(request, timeout=18) as response:
-                if response.status != 200:
-                    raise ValueError("Registry returned non-200 HTTP status")
-                body = response.read(MAX_BYTES + 1)
-            if len(body) > MAX_BYTES:
-                raise ValueError("Projected registry batch exceeds size limit")
-            return parse_batch(nct_ids, json.loads(body))
-        except urllib.error.HTTPError as exc:
-            if exc.code != 429 or attempt == 3:
-                raise
-            raw_retry = exc.headers.get("Retry-After", "")
+    """Fetch all requested IDs, honoring opaque API pagination tokens safely."""
+    found = {}
+    page_token = None
+    seen_tokens = set()
+    for page_index in range(5):
+        params = {
+            "filter.ids": ",".join(nct_ids),
+            "pageSize": max(100, len(nct_ids)),
+            "fields": ",".join(FIELDS),
+            "format": "json",
+        }
+        if page_token:
+            params["pageToken"] = page_token
+        url = API + "?" + urllib.parse.urlencode(params)
+        response_json = None
+        for attempt in range(4):
             try:
-                retry = max(1.0, min(float(raw_retry), 20.0))
-            except ValueError:
-                retry = min(3.0 * (2 ** attempt), 20.0)
-            sleep_fn(retry)
-    raise RuntimeError("Unreachable retry state")
+                request = urllib.request.Request(url, headers={
+                    "Accept": "application/json",
+                    "User-Agent": "PDUFACommandCenterResearch/1.0 (read-only)",
+                })
+                with urllib.request.urlopen(request, timeout=18) as response:
+                    if response.status != 200:
+                        raise ValueError("Registry returned non-200 HTTP status")
+                    body = response.read(MAX_BYTES + 1)
+                if len(body) > MAX_BYTES:
+                    raise ValueError("Projected registry batch exceeds size limit")
+                response_json = json.loads(body)
+                break
+            except urllib.error.HTTPError as exc:
+                if exc.code != 429 or attempt == 3:
+                    raise
+                raw_retry = exc.headers.get("Retry-After", "")
+                try:
+                    retry = max(1.0, min(float(raw_retry), 20.0))
+                except ValueError:
+                    retry = min(3.0 * (2 ** attempt), 20.0)
+                sleep_fn(retry)
+        if response_json is None:
+            raise ValueError("Registry page could not be retrieved")
+        latest_page = parse_batch(nct_ids, response_json)
+        if any(nct in found for nct in latest_page):
+            raise ValueError("Registry pagination returned duplicate NCT")
+        found.update(latest_page)
+        page_token = response_json.get("nextPageToken")
+        if not page_token:
+            return found
+        if not isinstance(page_token, str) or page_token in seen_tokens:
+            raise ValueError("Registry pagination token invalid or repeated")
+        seen_tokens.add(page_token)
+        sleep_fn(1.2)
+    raise ValueError("Registry pagination exceeds five pages; all batch IDs unresolved")
 
 
 def audit(batch_fetch=None, pause_fn=time.sleep, batch_size=DEFAULT_BATCH_SIZE):
