@@ -136,8 +136,8 @@ class ListingExclusionTests(unittest.TestCase):
                     writer.writeheader()
                     writer.writerows(rows)
             (root / "phase_pipeline_listing_exclusions.json").write_text(json.dumps(notice))
-            with patch("scripts.phase_pipeline.datetime") as clock, \\
-                    patch("requests.Session") as session, \\
+            with patch("scripts.phase_pipeline.datetime") as clock, \
+                    patch("requests.Session") as session, \
                     patch("scripts.phase_pipeline.fetch_market_caps", return_value=[]) as fetch:
                 clock.now.return_value = datetime(2026, 10, 26, 14, tzinfo=timezone.utc)
                 session.return_value.get.return_value.json.return_value = {"studies": []}
