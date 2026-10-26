@@ -17,15 +17,20 @@ from check_phase3_original_registry_pilot import SOURCE_CSV, dated_census_sample
 EXPECTED = 741
 
 def fetch_with_diagnostics(row):
-    for attempt in range(3):
+    for attempt in range(6):
         try:
             return fetch_public_original(row)
         except urllib.error.HTTPError as exc:
-            if exc.code in (429, 500, 502, 503, 504) and attempt < 2:
-                time.sleep((attempt + 1) * 2)
+            if exc.code in (408, 429, 500, 502, 503, 504) and attempt < 5:
+                time.sleep(min(2 ** attempt, 16))
                 continue
             return {"nct_id": row["nct_id"], "error": "HTTPError", "http_status": exc.code}
-        except (urllib.error.URLError, ValueError, TimeoutError, OSError) as exc:
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            if attempt < 5:
+                time.sleep(min(2 ** attempt, 16))
+                continue
+            return {"nct_id": row["nct_id"], "error": type(exc).__name__}
+        except ValueError as exc:
             return {"nct_id": row["nct_id"], "error": type(exc).__name__}
     raise AssertionError("Unreachable retry state")
 
