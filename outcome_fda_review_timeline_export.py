@@ -17,6 +17,7 @@ from outcome_fda_review_timeline_evidence import (
     MESOBLAST_SBRA_IDENTIFIER_CONFLICT,
     REPLIMUNE_FINAL_ACTION_VS_REVIEW_RECOMMENDATION,
     LANTIDRA_2021_CRL_EVIDENCE_STATUS,
+    MESOBLAST_2020_CRL_EVIDENCE_STATUS,
 )
 
 SCHEMA_VERSION = "outcome-fda-research-review-timelines-v1"
@@ -24,6 +25,10 @@ SCHEMA_VERSION = "outcome-fda-research-review-timelines-v1"
 # Conflicts are retained as explicit source-specific values rather than
 # normalized to a fabricated universal PDUFA date or action classification.
 DATA_QUALITY_FINDINGS = {
+    "BLA:125706:ORIGINAL": {
+        "code": "SIGNED_ORIGINAL_2020_CRL_NOT_DIRECTLY_VERIFIED",
+        "detail": MESOBLAST_2020_CRL_EVIDENCE_STATUS,
+    },
     "BLA:125743:RESUBMISSION-1": {
         "code": "FDA_SOURCE_PDUFA_GOAL_CONFLICT",
         "detail": ALYGLO_PDUFA_GOAL_SOURCE_CONFLICT,
