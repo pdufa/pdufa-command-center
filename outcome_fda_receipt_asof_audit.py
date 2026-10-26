@@ -27,7 +27,13 @@ def build_receipt_asof_audit(asof: str) -> dict:
         rows.append({
             "application_key": action["application_key"],
             "submission_key": action["submission_key"],
+            # This date is a RETROSPECTIVE research label and must not be
+            # consumed as an as-of feature. FDA action-letter publication
+            # timestamps have not been independently certified.
             "final_fda_action_date": action["final_fda_action_date"],
+            "final_fda_action_date_role": "retrospective_research_label_only",
+            "final_fda_action_date_asof": None,
+            "final_fda_action_publication_asof_verified": False,
             "asof_date": asof,
             "sponsor_submission_confirmation_public": confirmation_available,
             "sponsor_submission_month_asof": (
@@ -61,6 +67,8 @@ def build_receipt_asof_audit(asof: str) -> dict:
         "sponsor_acceptance_disclosure_public_count": sum(
             r["sponsor_acceptance_disclosure_public"] for r in rows),
         "fda_exact_receipts_independently_verified": 0,
+        "fda_final_action_publication_asof_verified": False,
+        "retrospective_action_labels_excluded_from_features": True,
         "historical_feature_asof_certified": False,
         "complete_application_denominator_verified": False,
         "model_eligible_records": 0,
