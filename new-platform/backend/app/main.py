@@ -1170,6 +1170,50 @@ def science_assessment_coverage(programId: str, nctId: str):
         }
 
 
+@app.get("/api/science/linkage-review", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_linkage_review(programId: str, nctId: str):
+    """Explain why a registry candidate link cannot yet be certified."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        source_ids = sorted(set(re.findall(r"NCT[0-9]{8}", identity.source_key)))
+        if nctId not in source_ids:
+            raise HTTPException(status_code=409, detail="NCT absent from immutable program source key")
+        trial = session.get(FullTrialRecord, nctId)
+        if trial is None:
+            raise HTTPException(status_code=404, detail="Exact archived NCT record unavailable")
+        summary = trial.summary if isinstance(trial.summary, dict) else {}
+        declared_nct = summary.get("nctId")
+        checks = {
+            "exactNctInProgramSourceKey": True,
+            "archivedNctMatchesRequested": trial.nct_id == nctId,
+            "summaryNctMatchesRequested": declared_nct == nctId,
+            "uniqueNctInProgramSourceKey": len(source_ids) == 1,
+            "archiveFingerprintPresent": bool(re.fullmatch(r"[0-9a-fA-F]{64}", trial.sha256 or "")),
+            "programDrugPresent": bool(identity.drug.strip()),
+        }
+        return {
+            "schemaVersion": "science-linkage-review-v1",
+            "programId": programId, "nctId": nctId,
+            "checks": checks,
+            "allPreliminaryChecksPass": all(checks.values()),
+            "linkageVerified": False,
+            "reviewRequired": True,
+            "missingVerification": [
+                "Independent confirmation of sponsor, intervention, indication and PDUFA review cycle",
+                "Source publication chronology and historical evidence cutoff",
+                "Human or separately audited linkage attestation",
+            ],
+            "sourceSha256": trial.sha256,
+            "approvalProbability": None,
+        }
+
+
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
