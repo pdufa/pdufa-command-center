@@ -26,7 +26,7 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_phase3_issuer_rights_claim_overlay.py' -v
       - name: Build 741-trial rights evidence research overlay
         run: python3 scripts/build_phase3_issuer_rights_claim_overlay.py "$RUNNER_TEMP/phase3_741_primary_issuer_rights_claim_overlay.json"
-      - name: Archive issuer claims, FDA-confirmed past approval, and 711 source gaps
+      - name: Archive issuer claims, FDA-confirmed past approval, and 709 source gaps
         if: always()
         uses: actions/upload-artifact@v4
         with:
