@@ -295,8 +295,12 @@ def reconcile_identity_gap_review_claims(
     disputes = []
     for sid in sorted(first):
         left, right = a[sid], b[sid]
+        expected_application = left["application_id_candidate"]
         if (left["prior_pdf_source_status"] == SOURCE_STATUS[1]
-                or left["application_id_candidate"] is None):
+                or expected_application is None
+                or any(row["observed_application_id"]
+                       and row["observed_application_id"] != expected_application
+                       for row in (left, right))):
             # Missing application identity or original PDF prevents a
             # source-complete dual review, regardless of matching typed claims.
             summary[CATEGORIES[0]] += 1
