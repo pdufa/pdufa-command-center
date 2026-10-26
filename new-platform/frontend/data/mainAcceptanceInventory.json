@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "scope": "MAIN/core-platform-gates/v1",
+  "scope": "MAIN/core-platform-gates/v2",
   "label": "MAIN / Core Platform acceptance gates",
   "source": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
   "excluded": [
@@ -166,5 +166,7 @@
       "component": "Final Acceptance",
       "stage": "evidence"
     }
-  ]
+  ],
+  "policySource": "https://github.com/pdufa/pdufa-command-center/blob/44c2b45a4d5d7b853e1544a31d87cba43fcbbcf4/docs/main-technical-installation-scope-20261025.md",
+  "scopeChangeReason": "Technical MAIN acceptance is independent of SCIENCE and OUTCOME research completion; no gate is added, removed or promoted."
 }

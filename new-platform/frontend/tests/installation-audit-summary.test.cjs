@@ -9,7 +9,7 @@ require.extensions[".ts"] = (module, file) => module._compile(
     compilerOptions: {module:ts.ModuleKind.CommonJS, target:ts.ScriptTarget.ES2022},
   }).outputText, file
 );
-const {summarizeInstallationAudit, isAccepted, AUDIT_GROUPS} =
+const {summarizeInstallationAudit, isAccepted, AUDIT_GROUPS, mainTechnicalAcceptance} =
   require("../lib/installation-audit-summary.ts");
 
 const source = fs.readFileSync(require("node:path").join(__dirname, "../app/installation-audit/page.tsx"), "utf8");
@@ -62,4 +62,29 @@ test("missing, extra or duplicate acceptance work is rejected rather than silent
   assert.throws(()=>summarizeInstallationAudit(items.slice(1)),/Missing/);
   assert.throws(()=>summarizeInstallationAudit([...items,items[0]]),/Duplicate/);
   assert.throws(()=>summarizeInstallationAudit([...items,{...items[0],component:"Unclassified"}]),/Unclassified/);
+});
+
+test("technical MAIN can pass while all SCIENCE and OUTCOME research sections remain unverified",()=>{
+  const research = new Set(AUDIT_GROUPS[1].components);
+  const technicalReady = items.map(item => research.has(item.component) || item.component === "Final Acceptance" ? item : {
+    ...item,code:"Verified",deployment:"Verified",runtime:"Verified",evidence:item.evidence === "Not applicable" ? "Not applicable" : "Verified",
+  });
+  const result = mainTechnicalAcceptance(technicalReady);
+  assert.deepEqual(result,{ready:true,accepted:10,total:10,open:[]});
+  assert.equal(technicalReady.filter(x=>research.has(x.component)).every(x=>!isAccepted(x)),true);
+  const previewOnly=technicalReady.map(item=>item.component === "Pipeline" ? {...item,deployment:"Preview READY"} : item);
+  assert.deepEqual(mainTechnicalAcceptance(previewOnly).open,["Pipeline"]);
+});
+
+test("successful research cannot hide an unverified technical component or a missing backup",()=>{
+  const research = new Set(AUDIT_GROUPS[1].components);
+  const researchReady = items.map(item=>research.has(item.component) ? {...item,code:"Verified",deployment:"Verified",runtime:"Verified",evidence:"Verified"} : item);
+  assert.equal(mainTechnicalAcceptance(researchReady).ready,false);
+  assert.equal(mainTechnicalAcceptance(researchReady).accepted,0);
+  for (const component of ["Pipeline","GEM JR / GEM / WT","Backup & Recovery","Nightly Scanning"]) {
+    const inputs=items.map(item=>({...item,code:"Verified",deployment:"Verified",runtime:item.component===component ? "Not verified" : "Verified",evidence:"Verified"}));
+    assert.deepEqual(mainTechnicalAcceptance(inputs).open,[component]);
+  }
+  assert.throws(()=>mainTechnicalAcceptance(items.slice(1)),/Missing/);
+  assert.throws(()=>mainTechnicalAcceptance([...items,items[0]]),/Duplicate/);
 });

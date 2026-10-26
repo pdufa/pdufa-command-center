@@ -84,6 +84,17 @@ test("technical installation does not require a human reviewer or encryption-key
   assert.equal(rows.length, 15);
 });
 
+test("MAIN final acceptance consistently follows the independent technical scope",()=>{
+  const final=tracker.split("\n").find(line=>line.includes('component: "Final Acceptance"'));
+  assert.match(final,/Technical MAIN production verification/);
+  assert.match(final,/SCIENCE and OUTCOME readiness are tracked separately/);
+  assert.match(final,/main-technical-installation-scope-20261025\.md/);
+  assert.doesNotMatch(final,/complete science evidence|validated outcomes/);
+  assert.match(final,/runtime: "Not verified", evidence: "Not verified"/);
+  assert.match(tracker,/mainTechnicalAcceptance\(checks\)/);
+  assert.match(tracker,/SCIENCE and OUTCOME research completion is not required for technical acceptance/);
+});
+
 test("nightly and results runtime use observed evidence without clearing source gates", () => {
   const lines = tracker.split("\n").filter(x => x.trim().startsWith("{ component: "));
   const nightly = lines.find(x => x.includes('component: "Nightly Scanning"'));

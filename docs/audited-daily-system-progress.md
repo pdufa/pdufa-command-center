@@ -79,3 +79,11 @@ no regressions; two distant endpoints are insufficient. No initial ETA is shown.
 This dated baseline does not automatically refresh, create a recurring job, or
 change the existing 8 PM Pacific scans. Additional accepted gate types require
 their own complete evidence contracts; a deployment proof cannot certify them.
+
+## Technical acceptance correction — scope v2
+
+MAIN final acceptance follows the October 25 technical-installation policy, independently of completing SCIENCE investigations or validating OUTCOME probabilities. Ten prerequisite components combine Core Platform (excluding its final acceptance row) and Production Automation. Their readiness is evaluated from actual code/deployment/runtime/evidence states. Missing technical proof still blocks acceptance; successful research cannot compensate for it.
+
+The daily Core Platform inventory retains all 31 gate identities and the original N/A exclusion. Its scope is now `MAIN/core-platform-gates/v2`, with the immutable technical-policy source attached. The earlier v1 snapshot is preserved in Git history at commit `8cc349ec5ed0b1958e98751d69938c26cc86d6c2`. The correction changes no gate status or completion count: 1/31 verified, 30 open, 0/8 accepted sections. It starts a new baseline, and comparisons against v1 or the former mixed-policy October 25 graph are withheld.
+
+The separately displayed 10-component technical prerequisite count is not the 31-gate daily denominator. It neither certifies FDA source completeness nor creates calibrated probabilities. Original source-health gaps, full runtime verification, and backup/restore requirements remain open until their own evidence is established.
