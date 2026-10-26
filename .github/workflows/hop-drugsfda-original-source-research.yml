@@ -139,7 +139,17 @@ jobs:
             --private-enriched-packets-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
             --private-pdf-page-hints-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_fda_pdf_page_navigation_hints.json" \
             --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_page_candidate_sample_aggregate.json" \
-            --limit 8
+            --limit 8 \
+            --offset 0
+      - name: Sample next eight distinct hash-sorted FDA PDFs for page hints (batch 2)
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/sample_hop_fda_published_letter_page_hints.py \
+            --private-enriched-packets-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
+            --private-pdf-page-hints-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_fda_pdf_page_navigation_hints_batch2.json" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_page_candidate_sample_aggregate_batch2.json" \
+            --limit 8 \
+            --offset 8
       - name: Prepare bounded private A/B FDA reviewer batches without decision labels
         working-directory: new-platform/backend
         run: |
