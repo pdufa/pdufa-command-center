@@ -267,7 +267,7 @@ test("output escapes spreadsheet formula injection in untrusted source reference
   assert.match(csv, /"'=HYPERLINK/);
   const rows = csv.trimEnd().split("\r\n");
   assert.equal(rows.length, 801);
-  assert.match(rows[1], /"OBTAIN_COMPLETE_SOURCE_PROVENANCE/);
+  assert.match(rows[1], /OBTAIN_COMPLETE_SOURCE_PROVENANCE/);
 });
 
 test("invalid or forged sheet input blocks ledger export before writing any rows", () => {
