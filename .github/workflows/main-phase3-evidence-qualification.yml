@@ -16,6 +16,8 @@ on:
       - 'tests/test_phase3_rights_casebook.py'
       - 'scripts/phase3_sec_rights_discovery.py'
       - 'tests/test_phase3_sec_rights_discovery.py'
+      - 'scripts/phase3_sec_rights_documents_pilot.py'
+      - 'tests/test_phase3_sec_rights_documents_pilot.py'
       - 'scripts/build_phase3_rights_evidence_gaps.py'
       - 'tests/test_phase3_evidence_boundaries.py'
       - '.github/workflows/main-phase3-evidence-qualification.yml'
@@ -32,13 +34,14 @@ jobs:
           persist-credentials: false
       - name: Validate scripts and tests
         run: |
-          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py
+          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py scripts/phase3_sec_rights_documents_pilot.py
           python3 -m unittest discover -s tests -p test_phase3_qualification_ledger.py -v
           python3 -m unittest discover -s tests -p 'test_phase3_evidence_intake*.py' -v
           python3 -m unittest discover -s tests -p test_phase3_gate_coverage.py -v
           python3 -m unittest discover -s tests -p test_phase3_sponsor_rights_triage.py -v
           python3 -m unittest discover -s tests -p test_phase3_rights_casebook.py -v
           python3 -m unittest discover -s tests -p test_phase3_sec_rights_discovery.py -v
+          python3 -m unittest discover -s tests -p test_phase3_sec_rights_documents_pilot.py -v
           python3 -m unittest discover -s tests -p test_phase3_evidence_boundaries.py -v
       - name: Retrieve original 741-study evidence
         run: python3 scripts/check_phase3_full_original_sources.py "$RUNNER_TEMP/main_phase3_registry.json"
@@ -52,6 +55,10 @@ jobs:
         run: python3 scripts/phase3_rights_casebook.py "$RUNNER_TEMP/main_phase3_qualification_ledger.json" "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_sponsor_rights_queue.json" "$RUNNER_TEMP/main_phase3_rights_gaps.json" "$RUNNER_TEMP/main_phase3_rights_casebook.json"
       - name: Discover primary SEC filing metadata for 130 research issuers
         run: python3 scripts/phase3_sec_rights_discovery.py "$RUNNER_TEMP/main_phase3_rights_casebook.json" "$RUNNER_TEMP/main_phase3_sec_rights_leads.json"
+      - name: Fetch SEC primary documents from source-linked filing leads (pilot)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: python3 scripts/phase3_sec_rights_documents_pilot.py "$RUNNER_TEMP/main_phase3_rights_casebook.json" "$RUNNER_TEMP/main_phase3_sec_rights_leads.json" "$RUNNER_TEMP/main_phase3_sec_primary_documents_pilot.json" --max-issuers 10
       - name: Preserve research-only evidence and ledger
         if: always()
         uses: actions/upload-artifact@v4
@@ -64,5 +71,6 @@ jobs:
             ${{ runner.temp }}/main_phase3_rights_gaps.json
             ${{ runner.temp }}/main_phase3_rights_casebook.json
             ${{ runner.temp }}/main_phase3_sec_rights_leads.json
+            ${{ runner.temp }}/main_phase3_sec_primary_documents_pilot.json
           if-no-files-found: warn
           retention-days: 7
