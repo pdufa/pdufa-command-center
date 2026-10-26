@@ -103,8 +103,16 @@ class Remaining677ResearchTests(unittest.TestCase):
         originals = [registry_payload(row) for row in group]
         with self.assertRaises(ValueError):
             reconcile_bulk_group({"studies": originals + [originals[0]]}, group, DATE)
-        with self.assertRaises(ValueError):
-            reconcile_bulk_group({"studies": originals, "nextPageToken": "extra"}, group, DATE)
+        # The API may emit a nextPageToken on an exactly-full page.
+        # Exact requested-ID completeness is the authoritative check.
+        complete = reconcile_bulk_group(
+            {"studies": originals, "nextPageToken": "extra"}, group, DATE
+        )
+        self.assertEqual(len(complete), len(group))
+        with self.assertRaisesRegex(ValueError, "pagination"):
+            reconcile_bulk_group(
+                {"studies": originals[:-1], "nextPageToken": "more"}, group, DATE
+            )
         wrong = copy.deepcopy(originals)
         wrong[0]["protocolSection"]["identificationModule"]["nctId"] = "NCT00000000"
         with self.assertRaises(ValueError):
