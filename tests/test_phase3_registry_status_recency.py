@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from check_phase3_original_registry_pilot import SOURCE_CSV
 from phase3_qualification_ledger import build_ledger
 from phase3_registry_status_recency import (
-    BUCKETS, PRIORITIES, build_report, safe_cell, write_csv,
+    BUCKETS, PRIORITIES, build_report, safe_cell, write_csv, render_summary,
 )
 
 AS_OF = datetime(2026, 10, 26, 20, tzinfo=timezone.utc)
@@ -211,6 +211,20 @@ class Phase3StatusRecencyTests(unittest.TestCase):
         self.registry["original_source_records"][0]["registry_study_title"] = ""
         with self.assertRaises(ValueError):
             self.build()
+
+    def test_collapsible_source_status_summary_separates_qualification(self):
+        summary = render_summary(self.build())
+        self.assertIn("<details><summary>Registry status and last-posted",summary)
+        self.assertIn("741 historical trials",summary)
+        self.assertIn("registration-freshness Pipeline gate remains unverified",summary)
+        self.assertIn("POSTED_OVER_365_DAYS",summary)
+        self.assertIn("</details>",summary)
+
+    def test_summary_rejects_fabricated_qualification(self):
+        report = self.build()
+        report["qualified_pipeline_total"] = 4
+        with self.assertRaises(ValueError):
+            render_summary(report)
 
     def test_csv_complete_sortable_and_zero_promotions(self):
         report = self.build()
