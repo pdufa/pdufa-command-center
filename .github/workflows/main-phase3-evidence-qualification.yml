@@ -39,6 +39,8 @@ on:
       - 'scripts/phase3_nightly_pacific_gate.py'
       - 'tests/test_phase3_nightly_pacific_gate.py'
       - 'tests/test_phase3_qualification_scorecard.py'
+      - 'scripts/phase3_nightly_artifact_integrity.py'
+      - 'tests/test_phase3_nightly_artifact_integrity.py'
       - 'data/phase3_rights_review_submissions.json'
       - 'scripts/build_phase3_rights_evidence_gaps.py'
       - 'tests/test_phase3_evidence_boundaries.py'
@@ -81,7 +83,7 @@ jobs:
           persist-credentials: false
       - name: Validate scripts and tests
         run: |
-          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py scripts/phase3_sec_rights_documents_pilot.py scripts/phase3_sec_exact_term_leads.py scripts/phase3_rights_review_worklist.py scripts/phase3_rights_review_submissions.py scripts/phase3_qualification_scorecard.py scripts/phase3_trial_program_identity.py scripts/phase3_sec_trial_rights_join.py scripts/check_phase3_original_registry_pilot.py
+          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py scripts/phase3_sec_rights_documents_pilot.py scripts/phase3_sec_exact_term_leads.py scripts/phase3_rights_review_worklist.py scripts/phase3_rights_review_submissions.py scripts/phase3_qualification_scorecard.py scripts/phase3_nightly_artifact_integrity.py scripts/phase3_trial_program_identity.py scripts/phase3_sec_trial_rights_join.py scripts/check_phase3_original_registry_pilot.py
           python3 -m unittest discover -s tests -p test_phase3_original_registry_pilot.py -v
           python3 -m unittest discover -s tests -p test_phase3_trial_program_identity.py -v
           python3 -m unittest discover -s tests -p test_phase3_sec_trial_rights_join.py -v
@@ -96,6 +98,7 @@ jobs:
           python3 -m unittest discover -s tests -p test_phase3_rights_review_worklist.py -v
           python3 -m unittest discover -s tests -p test_phase3_rights_review_submissions.py -v
           python3 -m unittest discover -s tests -p test_phase3_qualification_scorecard.py -v
+          python3 -m unittest discover -s tests -p test_phase3_nightly_artifact_integrity.py -v
           python3 -m unittest discover -s tests -p test_phase3_evidence_boundaries.py -v
       - name: Retrieve original 741-study evidence
         run: python3 scripts/check_phase3_full_original_sources.py "$RUNNER_TEMP/main_phase3_registry.json"
@@ -125,6 +128,17 @@ jobs:
         run: |
           python3 scripts/phase3_qualification_scorecard.py "$RUNNER_TEMP/main_phase3_qualification_ledger.json" "$RUNNER_TEMP/main_phase3_program_identity.json" "$RUNNER_TEMP/main_phase3_sec_rights_leads.json" "$RUNNER_TEMP/main_phase3_sec_primary_documents_pilot.json" "$RUNNER_TEMP/main_phase3_rights_review_worklist.json" "$RUNNER_TEMP/main_phase3_rights_review_submissions_coverage.json" "$RUNNER_TEMP/main_phase3_qualification_scorecard.json" "$RUNNER_TEMP/main_phase3_qualification_summary.md"
           cat "$RUNNER_TEMP/main_phase3_qualification_summary.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Reconcile 14 complete source reports and create SHA256 artifact manifest
+        env:
+          PACIFIC_RESEARCH_DATE: ${{ needs.pacific-nightly-gate.outputs.pacific_date }}
+        run: |
+          python3 scripts/phase3_nightly_artifact_integrity.py "$RUNNER_TEMP" \
+            --output "$RUNNER_TEMP/main_phase3_run_integrity_manifest.json" \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --pacific-date "$PACIFIC_RESEARCH_DATE" \
+            --github-run-id "$GITHUB_RUN_ID" \
+            --github-sha "$GITHUB_SHA"
+          echo "Source artifact integrity manifest created and verified for this exact run." >> "$GITHUB_STEP_SUMMARY"
       - name: Preserve research-only evidence and ledger
         if: always()
         uses: actions/upload-artifact@v4
@@ -145,5 +159,6 @@ jobs:
             ${{ runner.temp }}/main_phase3_rights_review_submissions_coverage.json
             ${{ runner.temp }}/main_phase3_qualification_scorecard.json
             ${{ runner.temp }}/main_phase3_qualification_summary.md
+            ${{ runner.temp }}/main_phase3_run_integrity_manifest.json
           if-no-files-found: warn
           retention-days: 30
