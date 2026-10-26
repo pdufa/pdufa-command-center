@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "scope": "RESEARCH_TRADING_STATUS_EVIDENCE_ONLY",
+  "asOf": "2026-10-26",
+  "issuer": "SVA",
+  "company": "SINOVAC BIOTECH LTD",
+  "cik": "0001084201",
+  "status": "TRADING_HALTED_MARKET_CAP_UNRESOLVED",
+  "nasdaqMarketCapFetch": "NON_NUMERIC",
+  "savedHistoricalCapUsd": 643779512,
+  "sourceEvidence": [
+    {
+      "source": "Cboe current trade suspension table",
+      "url": "https://www.cboe.com/us/equities/market_statistics/halts/",
+      "observation": "SVA listed in Current Trade Suspension with Nasdaq halt time 2023-06-13 03:58:00; separate Nasdaq T12 historical halt noted in other sources; confirm official exchange reason before upgrading status."
+    },
+    {
+      "source": "Sinovac 2025 Form 20-F",
+      "url": "https://www.sec.gov/Archives/edgar/data/1084201/000119312526258534/sva-20251231_htm.xml",
+      "observation": "Issuer filing states shares have been halted on Nasdaq since February 22, 2019."
+    },
+    {
+      "source": "Sinovac June 2026 Nasdaq listing compliance announcement",
+      "url": "https://marketchameleon.com/PressReleases/i/2321863/SVA/sinovac-regained-compliance-with-the-nasdaq-global",
+      "observation": "Regained listing-rule compliance does not establish trading resumption."
+    }
+  ],
+  "marketCapGate": "UNRESOLVED",
+  "tradabilityGate": "HALTED_REQUIRES_EXPLICIT_CLEARANCE",
+  "qualifiedPipeline": null,
+  "doNotPromote": true,
+  "limitations": "Research-only evidence annotation. Current halt may change; recheck official exchange data before making eligibility decision. No live market-cap quote or FDA/rights verification."
+}
