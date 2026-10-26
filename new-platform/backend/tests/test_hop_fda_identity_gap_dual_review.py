@@ -102,9 +102,9 @@ def test_two_matching_claims_stay_unverified_and_missing_source_stays_blocked():
     a, b, _ = blank_identity_gap_dual_reviews(sources())
     left, right = deepcopy(a), deepcopy(b)
     for row in left:
-        populate(row, "reviewerAlpha")
+        populate(row, "reviewerAlpha", app=row["application_id_candidate"] or "NDA000001")
     for row in right:
-        populate(row, "reviewerBeta")
+        populate(row, "reviewerBeta", app=row["application_id_candidate"] or "NDA000001")
     result = reconcile_identity_gap_review_claims(a, b, left, right, as_of=CUTOFF)
     assert result["review_category_counts"] == {
         "SOURCE_DATA_INCONSISTENCY": 1,
@@ -124,9 +124,9 @@ def test_identity_claim_disagreement_flags_fields_not_reviewer_notes():
     a, b, _ = blank_identity_gap_dual_reviews(sources())
     left, right = deepcopy(a), deepcopy(b)
     for row in left:
-        populate(row, "reviewerAlpha")
+        populate(row, "reviewerAlpha", app=row["application_id_candidate"] or "NDA000001")
     for row in right:
-        populate(row, "reviewerBeta")
+        populate(row, "reviewerBeta", app=row["application_id_candidate"] or "NDA000001")
     right[0]["observed_document_class"] = "APPROVAL"
     result = reconcile_identity_gap_review_claims(a, b, left, right, as_of=CUTOFF)
     assert result["review_category_counts"]["TWO_CLAIMS_DIFFER"] == 1
@@ -192,9 +192,9 @@ def test_tampered_claims_and_false_signoffs_rejected(tamper):
     a, b, _ = blank_identity_gap_dual_reviews(sources())
     lhs, rhs = deepcopy(a), deepcopy(b)
     for row in lhs:
-        populate(row, "reviewerAlpha")
+        populate(row, "reviewerAlpha", app=row["application_id_candidate"] or "NDA000001")
     for row in rhs:
-        populate(row, "reviewerBeta")
+        populate(row, "reviewerBeta", app=row["application_id_candidate"] or "NDA000001")
     if tamper == "change_source_url":
         lhs[0]["historical_fda_pdf_url"] = "https://www.evil.test/fake.pdf"
     elif tamper == "change_source_sha":
@@ -229,3 +229,18 @@ def test_blank_role_packets_compare_as_incomplete_except_missing_source():
     assert result["review_category_counts"]["CLAIMS_INCOMPLETE"] == 3
     assert result["review_category_counts"]["SOURCE_DATA_INCONSISTENCY"] == 1
     assert result["model_eligible_records"] == 0
+
+
+
+def test_matching_reviewer_text_with_wrong_fda_application_is_not_agreement():
+    a, b, _ = blank_identity_gap_dual_reviews(sources())
+    lhs, rhs = deepcopy(a), deepcopy(b)
+    for row in lhs:
+        populate(row, "reviewerAlpha", app="NDA999999")
+    for row in rhs:
+        populate(row, "reviewerBeta", app="NDA999999")
+    result = reconcile_identity_gap_review_claims(a, b, lhs, rhs, as_of=CUTOFF)
+    assert result["review_category_counts"]["SOURCE_DATA_INCONSISTENCY"] == 4
+    assert result["review_category_counts"]["MATCHING_TEXT_UNVERIFIED"] == 0
+    assert result["model_eligible_records"] == 0
+    assert result["prediction_probability"] is None
