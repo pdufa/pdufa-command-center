@@ -161,7 +161,7 @@ def phase3_gate(row, today=None, max_source_age=180):
 def universe_gate(row, today=None):
     today = today or date.today()
     if row.get("market_cap_status") == "NOT_LISTED":
-        return "FAIL", "Exchange listing suspended after a closed merger; historical trial retained."
+        return "FAIL", "The saved ticker is no longer a current exchange listing after an effective corporate action; historical trial retained."
     checked = complete_date(clean(row.get("market_cap_checked_at"))[:10])
     source = "https://api.nasdaq.com/api/quote/" + clean(row.get("ticker")).upper() + "/summary?assetclass=stocks"
     try:

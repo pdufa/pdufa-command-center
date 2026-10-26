@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 
 def validated_listing_exclusions(ledger, registry, now):
-    """Require an exact issuer/CIK, closed merger, and an effective Nasdaq notice.
+    """Require an exact issuer/CIK and a dated, effective Nasdaq corporate action.
 
     Historical trials remain in the ledger. An exclusion only removes a retired
     listing from current quote coverage and can never make a trade eligible.
@@ -26,11 +26,24 @@ def validated_listing_exclusions(ledger, registry, now):
             published = date.fromisoformat(row["source_date"])
             effective = date.fromisoformat(row["effective_date"])
             checked = datetime.fromisoformat(row["checked_at"].replace("Z", "+00:00"))
+            # A completed merger suspends the entire former security; a symbol
+            # change retires only the predecessor ticker. Neither can be used
+            # to qualify the successor or rewrite historical program identity.
+            status = row["status"]
+            if status == "SUSPENDED — MERGER CLOSED":
+                action_valid = not row.get("replacement_ticker")
+            elif status == "SYMBOL CHANGED — OLD TICKER RETIRED":
+                successor = row.get("replacement_ticker", "")
+                action_valid = (isinstance(successor, str) and
+                                bool(re.fullmatch(r"[A-Z0-9.-]{1,15}", successor))
+                                and successor != ticker)
+            else:
+                action_valid = False
             if not (len(issuer) == 1 and re.fullmatch(r"[A-Z0-9.-]{1,15}", ticker)
                     and row["company"].strip().casefold() == issuer[0].get("company", "").strip().casefold()
                     and re.fullmatch(r"\d{10}", row["cik10"])
                     and row["cik10"] == issuer[0].get("cik10")
-                    and row["status"] == "SUSPENDED — MERGER CLOSED"
+                    and action_valid
                     and source.scheme == "https" and source.netloc == "www.nasdaqtrader.com"
                     and source.path == "/TraderNews.aspx"
                     and re.fullmatch(r"id=ECA\d{4}-\d+", source.query)
