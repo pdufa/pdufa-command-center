@@ -52,3 +52,17 @@ test("tracker stays read-only and never triggers scans, trades or scoring", () =
   assert.doesNotMatch(tracker, /\bonClick=|\bonSubmit=|\bfetch\(|\buseEffect\(/);
   assert.match(tracker, /this page does not trigger scans, rescoring, notifications, orders or trades/);
 });
+
+test("OUTCOME connection success is documented without claiming validated FDA predictions", () => {
+  assert.match(tracker, /OUTCOME source connection verified on October 25, 2026 at 6:37 PM Pacific/);
+  assert.match(tracker, /authenticated production evidence request returned HTTP 200/);
+  assert.match(tracker, /0 independently verified review-cycle outcomes/);
+  assert.match(tracker, /incomplete approval\/nonapproval decision denominator/);
+  assert.match(tracker, /no established time-forward calibration/);
+  assert.match(tracker, /FDA approval probabilities remain unavailable/);
+  assert.doesNotMatch(tracker, /blocked by an authenticated source-connection failure/);
+  // Read-only HOP connectivity is not itself prediction validation.
+  const row = tracker.split(String.fromCharCode(10)).find(x => x.includes('component: "Prediction Validation"'));
+  assert.match(row, /runtime: "Not verified"/);
+  assert.match(row, /evidence: "Partial"/);
+});

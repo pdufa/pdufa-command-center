@@ -25,6 +25,7 @@ class ProductionSmokeValidatorTests(unittest.TestCase):
     def test_all_fifteen_sections_and_protected_science_outcome_controls_are_required(self):
         self.assertEqual(len(REQUIRED_TEXT), 23)
         self.assertEqual(len(set(REQUIRED_TEXT)), 23)
+        self.assertIn("These gate counts do not measure percentage of engineering hours remaining.", REQUIRED_TEXT)
         verify_html("<html>" + " ".join(REQUIRED_TEXT).replace("&", "&amp;") + "</html>")
 
     def test_unauthenticated_challenge_or_partial_page_fails(self):
