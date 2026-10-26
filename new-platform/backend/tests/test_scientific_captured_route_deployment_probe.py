@@ -71,6 +71,18 @@ class CapturedRouteDeploymentProbeTests(unittest.TestCase):
             self.assertIsNone(probe.anonymous_http_status())
         self.assertEqual(probe.classify(None)["classification"], "RENDER_BACKEND_UNAVAILABLE")
 
+    def test_live_authentication_job_checks_out_probe_module_before_execution(self):
+        workflow = (Path(__file__).resolve().parents[3]
+                    / ".github/workflows/scientific-integration-checks.yml").read_text()
+        self.assertEqual(workflow.count("  live-authentication:\n"), 1)
+        live = workflow.split("  live-authentication:\n", 1)[1]
+        checkout = live.find("      - uses: actions/checkout@v4")
+        probe_step = live.find("run: python -m app.scientific_captured_route_deployment_probe")
+        self.assertGreaterEqual(checkout, 0, "Without checkout the working directory is missing")
+        self.assertGreater(probe_step, checkout, "Module must run only after checkout")
+        self.assertIn("working-directory: new-platform/backend", live)
+        self.assertNotIn("secrets.", live)
+    
     def test_cli_writes_credential_free_summary_and_fails_only_for_anonymous_2xx(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "summary.md"
