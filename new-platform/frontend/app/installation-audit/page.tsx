@@ -1,7 +1,8 @@
 import Link from "next/link";
 import ScientificOutcomeLive from "./ScientificOutcomeLive";
+import { isAccepted, summarizeInstallationAudit } from "../../lib/installation-audit-summary";
 
-type Gate = "Code present" | "Preview READY" | "Partial" | "Not verified" | "Not audited" | "Not applicable";
+type Gate = "Code present" | "Preview READY" | "Partial" | "Not verified" | "Not audited" | "Not applicable" | "Verified";
 type Check = {
   component: string;
   requirement: string;
@@ -23,7 +24,7 @@ const sourceRecovery = "https://github.com/pdufa/pdufa-command-center/actions/ru
 const preview = "https://vercel.com/pdufa/pdufa-new-dashboard/2ZuphnZFivGJGsskHHXAv9QBMWDo";
 
 const checks: Check[] = [
-  { component: "Core Platform", requirement: "Dashboard navigation, frontend/backend checks and release controls", code: "Code present", deployment: "Preview READY", runtime: "Not verified", evidence: "Not applicable", blocker: "Production runtime audit remains a separate requirement", lastVerified: "2026-10-25 · code/CI", source: ci, sourceLabel: "CI checks" },
+  { component: "Core Platform", requirement: "Dashboard navigation, frontend/backend checks and release controls", code: "Code present", deployment: "Preview READY", runtime: "Partial", evidence: "Not applicable", blocker: "Production page and authenticated health/database checks passed; complete application runtime acceptance remains unverified", lastVerified: "2026-10-25 23:37 UTC · authenticated checks", source: audit, sourceLabel: "Acceptance record" },
   { component: "Pipeline", requirement: "Public companies; $300M–$10B market cap; mandatory filters", code: "Not audited", deployment: "Not verified", runtime: "Not verified", evidence: "Not verified", blocker: "Full qualified Pipeline total unknown; 11,598 clinical records are not qualified candidates", lastVerified: "2026-10-24 · partial inventory", source: report, sourceLabel: "Saved RESULTS" },
   { component: "GEM JR / GEM / WT", requirement: "Independent lists, WT operation and original GEM FS/FA presets", code: "Code present", deployment: "Not verified", runtime: "Not verified", evidence: "Partial", blocker: "11 GEM JR and 6 GEM are saved membership counts, not certified trial scores; WT runtime not confirmed", lastVerified: "2026-10-24 · memberships", source: report, sourceLabel: "Saved RESULTS" },
   { component: "Scientific Assessment", requirement: "All 40 assessments per exact trial, source citations and uncertainty", code: "Not audited", deployment: "Not verified", runtime: "Not verified", evidence: "Not verified", blocker: "Three existing seven-category scoring models are not the 40 scientific investigations. No completed analyst-review entries are committed; per-trial certification remains missing.", lastVerified: "2026-10-25 · committed source review", source: "https://github.com/pdufa/pdufa-command-center/blob/main/data/candidate_assessment_reviews.json", sourceLabel: "Analyst reviews" },
@@ -47,6 +48,7 @@ const tone: Record<Gate, string> = {
   "Not verified": "#9f1239",
   "Not audited": "#64748b",
   "Not applicable": "#64748b",
+  "Verified": "#166534",
 };
 
 function GateCell({ value }: { value: Gate }) {
@@ -54,26 +56,42 @@ function GateCell({ value }: { value: Gate }) {
 }
 
 export default function InstallationAudit() {
+  const {groups, total} = summarizeInstallationAudit(checks);
   return <main style={{maxWidth:1420,margin:"0 auto",padding:"28px 18px",fontFamily:"system-ui,sans-serif",color:"#17212b"}}>
     <p><Link href="/">← Dashboard</Link></p>
     <h1>System installation & evidence tracker</h1>
     <p><strong>15-section audit · snapshot as of October 25, 2026.</strong> This is a dated read-only checklist with separate, on-demand protected SCIENCE/OUTCOME evidence checks below. A green build establishes neither scientific accuracy nor complete runtime operation.</p>
-    <p><strong>Release:</strong> GitHub change #332 merged; Vercel production READY and user access reported on October 25, 2026. Deployment of the dashboard does not mean its scientific or prediction checks are complete. No numerical installation percentage is asserted.</p>
+    <p><strong>Release:</strong> GitHub change #332 merged; Vercel production READY and user access reported on October 25, 2026. Deployment of the dashboard does not mean its scientific or prediction checks are complete. Implementation-stage counts are reported separately from verified acceptance; they are not an estimate of development-hours completion.</p>
     <p><strong>Latest saved RESULTS:</strong> October 24, 2026 · PARTIAL · 11,598 tracked clinical records (not Pipeline qualified) · GEM JR 11 · GEM 6. Source audit: 993/1121 verified; 23 unresolved, 93 unavailable, 10 N/A. Those listed categories add to 1,119; <strong>two checks have no separately stated classification in the saved report</strong>.</p>
     <p><strong>Newer source audit (October 25, 2026 · 16:40 UTC):</strong> 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable and 10 not applicable: <strong>995 + 21 + 2 + 93 + 10 = 1,121</strong>. <a href={sourceAudit}>Source report</a> · <strong>PARTIAL</strong> because required SEC and FINANCIAL verification is still missing. This audit is separate from the October 24 nightly clinical RESULTS; later counts do not retrospectively validate that earlier run or its two unclassified checks.</p>
-    <div style={{overflowX:"auto",border:"1px solid #d8e0e6",borderRadius:8}}>
-      <table style={{width:"100%",minWidth:1300,borderCollapse:"collapse",fontSize:13}}>
-        <thead><tr>{["Component","Acceptance requirement","Code","Deployment","Runtime","Evidence","Blocker / remaining work","Last checked","Source"].map(x=><th key={x} scope="col" style={{textAlign:"left",padding:10,borderBottom:"2px solid #94a3b8",background:"#f1f5f9",whiteSpace:"nowrap"}}>{x}</th>)}</tr></thead>
-        <tbody>{checks.map((item,i)=><tr key={item.component} style={{background:i%2?"#f8fafc":"white"}}>
-          <th scope="row" style={{textAlign:"left",padding:10,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:145}}>{item.component}</th>
-          <td style={{padding:10,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:205}}>{item.requirement}</td>
-          {[item.code,item.deployment,item.runtime,item.evidence].map((gate,k)=><td key={k} style={{padding:10,borderBottom:"1px solid #e2e8f0",verticalAlign:"top"}}><GateCell value={gate}/></td>)}
-          <td style={{padding:10,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:260}}>{item.blocker}</td>
-          <td style={{padding:10,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:135}}>{item.lastVerified}</td>
-          <td style={{padding:10,borderBottom:"1px solid #e2e8f0",verticalAlign:"top"}}><a href={item.source} target="_blank" rel="noopener noreferrer">{item.sourceLabel}</a></td>
-        </tr>)}</tbody>
-      </table>
-    </div>
+    <section aria-label="Installation acceptance balance" style={{margin:"20px 0"}}>
+      <h2>Acceptance balance — measured from the dated checklist</h2>
+      <p><strong>{total.accepted} / {total.sections} sections fully accepted · {total.sections - total.accepted} remain open.</strong> Full acceptance requires runtime verification and applicable evidence verification, not only installed code or a READY build.</p>
+      <p><strong>Individual status gates:</strong> {total.independentlyVerified} independently verified · {total.implementationSignals} code/deployment signals · {total.partial} partial · {total.unverified} not verified/audited · {total.excluded} not applicable. Denominator: {total.gates} applicable gates. These gate counts do not measure percentage of engineering hours remaining.</p>
+      <p><strong>Important:</strong> OUTCOME probability generation remains blocked by an authenticated source-connection failure; missing SCIENCE-40 and historical calibration evidence cannot be counted as complete. <a href={audit} target="_blank" rel="noopener noreferrer">See current acceptance record</a>.</p>
+      {groups.map(group => <details key={group.name} open={group.name === "Core Platform"} style={{border:"1px solid #cbd5e1",borderRadius:8,margin:"12px 0",background:"#fff"}}>
+        <summary style={{padding:"14px 16px",cursor:"pointer",fontWeight:700}}>
+          {group.name} — {group.totals.accepted}/{group.totals.sections} accepted; {group.totals.sections - group.totals.accepted} open
+          <span style={{fontSize:12,fontWeight:400,display:"block",marginTop:4}}>
+            {group.totals.implementationSignals} code/deployment signals · {group.totals.partial} partial · {group.totals.unverified} unverified · {group.totals.gates} applicable gates
+          </span>
+        </summary>
+        <div style={{overflowX:"auto",padding:"0 12px 12px"}}>
+          <table style={{width:"100%",minWidth:1170,borderCollapse:"collapse",fontSize:13}}>
+            <thead><tr>{["Component","Acceptance","Requirement","Code","Deployment","Runtime","Evidence","Blocker / remaining work","Last checked","Source"].map(x=><th key={x} scope="col" style={{textAlign:"left",padding:9,borderBottom:"2px solid #94a3b8",background:"#f1f5f9",whiteSpace:"nowrap"}}>{x}</th>)}</tr></thead>
+            <tbody>{checks.filter(item => group.items.some(member => member.component === item.component)).map((item,i)=><tr key={item.component} style={{background:i%2?"#f8fafc":"white"}}>
+              <th scope="row" style={{textAlign:"left",padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:135}}>{item.component}</th>
+              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",fontWeight:700,color:isAccepted(item)?"#166534":"#92400e"}}>{isAccepted(item)?"ACCEPTED":"OPEN"}</td>
+              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:205}}>{item.requirement}</td>
+              {[item.code,item.deployment,item.runtime,item.evidence].map((gate,k)=><td key={k} style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top"}}><GateCell value={gate}/></td>)}
+              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:270}}>{item.blocker}</td>
+              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:135}}>{item.lastVerified}</td>
+              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top"}}><a href={item.source} target="_blank" rel="noopener noreferrer">{item.sourceLabel}</a></td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+      </details>)}
+    </section>
     <ScientificOutcomeLive />
     <section aria-labelledby="scientific-gates">
       <h2 id="scientific-gates">Independent scientific acceptance gates</h2>
