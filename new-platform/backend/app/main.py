@@ -1069,6 +1069,48 @@ def science_source_inventory(programId: str):
     }
 
 
+@app.get("/api/science/source-extract", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_source_extract(programId: str, nctId: str):
+    """Extract archived registry fields with provenance; never convert them into scored evidence."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid exact program or NCT identifier")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        # Program source_key is a candidate link, not clinical identity verification.
+        linked_ids = set(re.findall(r"NCT[0-9]{8}", identity.source_key))
+        if nctId not in linked_ids:
+            raise HTTPException(status_code=409, detail="Exact NCT is not present in program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived exact NCT record not found")
+        summary = row.summary if isinstance(row.summary, dict) else {}
+        statistics = row.statistics if isinstance(row.statistics, list) else []
+        # Whitelist output to avoid leaking arbitrary archived registry payloads.
+        fields = {name: summary[name] for name in (
+            "nctId", "briefTitle", "overallStatus", "phase", "phases",
+            "studyType", "enrollment", "startDate", "primaryCompletionDate",
+            "completionDate", "lastUpdatePostDate", "primaryOutcomeMeasures",
+        ) if name in summary}
+        return {
+            "schemaVersion": "science-source-extract-v1",
+            "programId": programId, "nctId": nctId,
+            "source": "archived-clinicaltrials-gov",
+            "archiveSha256": row.sha256,
+            "archiveFetchedAt": row.fetched_at.isoformat(),
+            "fields": fields,
+            "reportedStatisticsCount": len(statistics),
+            "linkageVerified": False,
+            "publicationDatesVerified": False,
+            "scientificEvidenceVerified": False,
+            "assessmentScoresAvailable": False,
+            "approvalProbability": None,
+        }
+
+
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
