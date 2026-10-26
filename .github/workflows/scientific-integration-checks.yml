@@ -64,6 +64,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # Earlier shell-only probes did not need repo files. The captured-route
+      # module is in the checked-out repo; without checkout, its working
+      # directory does not exist and the security probe never runs.
+      - uses: actions/checkout@v4
       - name: Probe scientific API without credentials
         shell: bash
         run: |
