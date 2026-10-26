@@ -73,7 +73,10 @@ class TrialTermSecTextTests(unittest.TestCase):
         self.assertEqual(result["documents_with_exact_registered_trial_term_mentions"], 2)
         self.assertEqual(result["trials_with_exact_registered_term_text_leads"], 6)
         self.assertEqual(result["trial_term_scan_scope"],
-                         "ISSUER_PRIMARY_FILINGS_REGISTERED_TERMS_LEXICAL_ONLY")
+                         "BOUNDED_ISSUER_PRIMARY_FILINGS_REGISTERED_TERMS_LEXICAL_ONLY")
+        self.assertEqual(result["trials_with_issuer_primary_text_scanned"], 12)
+        self.assertEqual(result["trials_without_issuer_primary_text_scanned"], 729)
+        self.assertEqual(result["scanned_trials_without_exact_registered_term_text_leads"], 6)
         self.assertEqual(result["independently_verified_current_rights"], 0)
         self.assertIsNone(result["qualified_pipeline_total"])
         for doc in result["issuers"][0]["documents"]:
@@ -118,6 +121,9 @@ class TrialTermSecTextTests(unittest.TestCase):
                             agent="", program=self.program)
         self.assertEqual(pilot["documents_attempted"], 0)
         self.assertEqual(pilot["trials_with_exact_registered_term_text_leads"], 0)
+        self.assertEqual(pilot["trials_with_issuer_primary_text_scanned"], 0)
+        self.assertEqual(pilot["trials_without_issuer_primary_text_scanned"], 741)
+        self.assertEqual(pilot["trial_term_scan_scope"], "NO_PRIMARY_DOCUMENT_TEXT_AVAILABLE")
         self.assertEqual(pilot["documents_not_attempted_missing_agent"], 2)
 
     def test_mismatched_program_issuer_fails_closed_before_fetch(self):
