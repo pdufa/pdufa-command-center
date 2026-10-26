@@ -20,6 +20,9 @@ on:
       - 'new-platform/backend/app/hop_fda_gap_research_packets.py'
       - 'new-platform/backend/scripts/screen_hop_fda_grouped_evidence_leads.py'
       - 'new-platform/backend/tests/test_hop_fda_gap_research_packets.py'
+      - 'new-platform/backend/app/hop_fda_prior_pdf_lead_join.py'
+      - 'new-platform/backend/scripts/enrich_hop_fda_private_pdf_leads.py'
+      - 'new-platform/backend/tests/test_hop_fda_prior_pdf_lead_join.py'
   workflow_dispatch:
 
 permissions:
@@ -50,7 +53,8 @@ jobs:
             tests/test_hop_fda_original_letter_bridge.py \
             tests/test_hop_drugsfda_original_source_diff.py \
             tests/test_hop_fda_unmatched_letter_triage.py \
-            tests/test_hop_fda_gap_research_packets.py
+            tests/test_hop_fda_gap_research_packets.py \
+            tests/test_hop_fda_prior_pdf_lead_join.py
       - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
         working-directory: new-platform/backend
         run: |
@@ -83,6 +87,22 @@ jobs:
             --saved-openfda-registry-json "${{ runner.temp }}/hop-fda-original-source-research/private_pinned_openfda/drugsfda_approved_registry_quarantined.json" \
             --as-of 2026-10-25 \
             --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_submission_membership_discrepancies.json"
+      - name: Reuse pinned historical official FDA PDF byte-check artifact read-only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40232393298 --repo "${{ github.repository }}" \
+            --name hop-fda-published-actions-evidence-review \
+            --dir "${{ runner.temp }}/hop-fda-original-source-research/private_prior_pdf_probe"
+      - name: Join private source-review packets to real hash-confirmed FDA PDF leads
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/enrich_hop_fda_private_pdf_leads.py \
+            --private-grouped-packets "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_application_research_packets.json" \
+            --prior-pdf-probes-json "${{ runner.temp }}/hop-fda-original-source-research/private_prior_pdf_probe/fda_all_published_action_pdf_checks.json" \
+            --prior-pdf-probes-audit-json "${{ runner.temp }}/hop-fda-original-source-research/private_prior_pdf_probe/fda_all_published_action_pdf_checks_audit.json" \
+            --private-enriched-packets-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_application_pdf_lead_coverage.json"
       - name: Retain only aggregate FDA source coverage counts and fingerprints
         uses: actions/upload-artifact@v4
         with:
