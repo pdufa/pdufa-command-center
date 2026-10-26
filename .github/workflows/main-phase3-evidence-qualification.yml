@@ -1,0 +1,37 @@
+name: MAIN Phase 3 evidence-to-qualification ledger
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/check_phase3_full_original_sources.py'
+      - 'scripts/phase3_qualification_ledger.py'
+      - '.github/workflows/main-phase3-evidence-qualification.yml'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+permissions:
+  contents: read
+jobs:
+  research-ledger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate scripts and tests
+        run: |
+          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py
+          python3 -m unittest discover -s tests -p test_phase3_qualification_ledger.py -v
+      - name: Retrieve original 741-study evidence
+        run: python3 scripts/check_phase3_full_original_sources.py "$RUNNER_TEMP/main_phase3_registry.json"
+      - name: Produce fail-closed per-NCT qualification ledger
+        run: python3 scripts/phase3_qualification_ledger.py "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_qualification_ledger.json"
+      - name: Preserve research-only evidence and ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-phase3-evidence-qualification-research-only
+          path: |
+            ${{ runner.temp }}/main_phase3_registry.json
+            ${{ runner.temp }}/main_phase3_qualification_ledger.json
+          if-no-files-found: warn
+          retention-days: 7
