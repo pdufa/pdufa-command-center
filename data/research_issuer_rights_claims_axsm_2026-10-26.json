@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "scope": "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY",
+  "asOf": "2026-10-26",
+  "issuerTicker": "AXSM",
+  "issuerCik": "0001579428",
+  "programs": [
+    {
+      "issuerTicker": "AXSM",
+      "issuerCik": "0001579428",
+      "asset": "AXS-05",
+      "assetAliases": [
+        "AUVELITY",
+        "dextromethorphan-bupropion"
+      ],
+      "rightsClaimType": "ISSUER_SEC_10_Q_EXCLUSIVE_ANTECIP_IP_LICENSE_WITH_RELATED_PARTY_ROYALTIES",
+      "rightsClaimSummary": "Axsome 2026 Form 10-Q discloses patent rights for AUVELITY/AXS-05 licensed from Antecip, an entity owned by its CEO/Chair, including ongoing royalties and related-party potential conflicts. Its 2025 Form 10-K details proprietary AXS-05 formulation and patents. Neither disclosure independently adjudicates perpetual unencumbered legal rights.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "ANTECIP_CEO_RELATED_PARTY_LICENSE_ROYALTIES_AND_CONFLICT_RISK",
+        "EXISTING_US_MDD_APPROVAL_2022_DISTINCT_FROM_AD_AGITATION_2026_LABEL_EXPANSION",
+        "FDA_OFFICIALLY_APPROVED_AD_AGITATION_LABEL_2026_04_30_NOT_FUTURE_PDUFA",
+        "NO_CURRENT_PENDING_PDUFA_FOR_THE_FOUR_HISTORICAL_TRIALS"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://axsometherapeuticsinc.gcs-web.com/static-files/48e99e2d-14a2-4170-a80e-d3f70b8b592c",
+          "assertion": "Axsome Aug. 10, 2026 Form 10-Q describes 2012 exclusive Antecip licensed patents used by AXS-05/AUVELITY, royalty obligations, CEO-owned related party conflict."
+        },
+        {
+          "type": "ISSUER_SEC_10_K",
+          "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526064267/axsm-20251231.htm",
+          "assertion": "Axsome full-year 2025 SEC Form 10-K describes proprietary AXS-05 formulation and intellectual property portfolio, originally approved for MDD in 2022 and researched for Alzheimer agitation."
+        },
+        {
+          "type": "ISSUER_SEC_8_K_EXHIBIT",
+          "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312525337644/axsm-ex99_2.htm",
+          "assertion": "Axsome Dec. 31, 2025 SEC-filed release reported FDA accepted AD agitation supplemental NDA, priority review, PDUFA target April 30, 2026; THIS DATE IS HISTORICAL AND COMPLETED."
+        },
+        {
+          "type": "OFFICIAL_FDA_FINAL_LABEL_APPROVAL",
+          "url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-non-antipsychotic-drug-treat-agitation-associated-dementia",
+          "assertion": "FDA April 30, 2026 press announcement confirms AUVELITY expanded approval for adult dementia due to Alzheimer's disease agitation; names supporting trials NCT03226522 and NCT04947553. This is a completed FDA decision, not upcoming review."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_ADVANCE",
+          "url": "https://clinicaltrials.gov/study/NCT03226522",
+          "assertion": "ADVANCE trial original AXS-05 Alzheimer agitation Phase 2/3. FDA explicitly names the study as a randomized supporting trial in Apr 30 press release."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_ACCORD",
+          "url": "https://clinicaltrials.gov/study/NCT04797715",
+          "assertion": "ACCORD withdrawal trial of AXS-05 for Alzheimer agitation. Not one of two trial NCTs explicitly named in FDA Apr 30 news release."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_ACCORD_2",
+          "url": "https://clinicaltrials.gov/study/NCT04947553",
+          "assertion": "ACCORD-2 longer trial AXS-05 for Alzheimer agitation; FDA explicitly names it as randomized supporting trial in April 30 news release."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_AXS05_EXTENSION",
+          "url": "https://clinicaltrials.gov/study/NCT06736509",
+          "assertion": "AXS-05-AD-305 open-label extension stopped after study program objectives; separate safety follow-up, not separately FDA-approved clinical indication."
+        }
+      ],
+      "officialFdaHistoricalAction": {
+        "actionDate": "2026-04-30",
+        "actionType": "APPROVED_SUPPLEMENTAL_INDICATION",
+        "agency": "US_FDA",
+        "drug": "AUVELITY (AXS-05)",
+        "indication": "Agitation associated with dementia due to Alzheimer's disease in adults",
+        "agencyPrimarySourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-non-antipsychotic-drug-treat-agitation-associated-dementia",
+        "agencyPressExplicitSupportingNctIds": [
+          "NCT03226522",
+          "NCT04947553"
+        ],
+        "isCurrentFuturePdufa": false,
+        "historicalIssuerReportedPdufaDate": "2026-04-30",
+        "historicalIssuerAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312525337644/axsm-ex99_2.htm",
+        "independentlyVerifiedCompletedFdaAction": true,
+        "currentPendingFDAAction": false
+      },
+      "trialLinks": [
+        {
+          "nctId": "NCT03226522",
+          "study": "ADVANCE",
+          "indication": "Agitation associated with Alzheimer's dementia, adults",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03226522",
+          "regulatoryContext": "OFFICIAL_FDA_CONFIRMED_COMPLETED_2026_04_30_AUVELITY_AD_AGITATION_EXPANSION_SUPPORTING_TRIAL",
+          "historicalIssuerReportedPdufaDate": "2026-04-30",
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04797715",
+          "study": "ACCORD",
+          "indication": "Agitation associated with Alzheimer's dementia randomized withdrawal",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04797715",
+          "regulatoryContext": "AXS05_AD_AGITATION_PHASE3_PROGRAM_NOT_FDA_PRESS_EXPLICITLY_NAMED_TRIAL",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04947553",
+          "study": "ACCORD-2",
+          "indication": "Agitation associated with Alzheimer's dementia randomized withdrawal",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04947553",
+          "regulatoryContext": "OFFICIAL_FDA_CONFIRMED_COMPLETED_2026_04_30_AUVELITY_AD_AGITATION_EXPANSION_SUPPORTING_TRIAL",
+          "historicalIssuerReportedPdufaDate": "2026-04-30",
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT06736509",
+          "study": "AXS-05-AD-305 extension",
+          "indication": "Alzheimer dementia agitation long-term safety follow-up",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT06736509",
+          "regulatoryContext": "TERMINATED_AFTER_PROGRAM_OBJECTIVES_COMPLETED_NOT_UPCOMING_STANDALONE_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    }
+  ],
+  "limitations": "This evidence combines primary SEC filing descriptions of related-party Antecip IP licenses, original registered NCT identities and official FDA April 30, 2026 label-expansion approval for AUVELITY. FDA expressly names two supporting trial identifiers. The FDA decision and issuer-reported April 30 PDUFA target are PAST/COMPLETE, not a 2026-10-26 upcoming decision. Neither FDA approval nor IP issuer disclosure independently adjudicates all modern contracts or PDUFA target for future applications. Research only; no auto Pipeline promotion."
+}
