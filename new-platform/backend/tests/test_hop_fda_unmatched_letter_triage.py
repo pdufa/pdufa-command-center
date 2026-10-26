@@ -172,3 +172,56 @@ def test_empty_published_letters_do_not_establish_approval_cohort(tmp_path):
     letters["records"] = []
     with pytest.raises(ValueError):
         run(path, spine, letters)
+
+
+
+def test_real_pinned_unmatched_letter_review_population_is_consistent():
+    """Real FDA count snapshot, no original-action labels or FDA probabilities."""
+    import json
+    source_dir = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    audit = json.loads(
+        (source_dir / "hop_fda_unmatched_letter_gap_audit_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    bridge = json.loads(
+        (source_dir / "hop_fda_original_letter_bridge_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    original = json.loads(
+        (source_dir / "hop_drugsfda_original_submissions_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    assert audit["published_letter_references"] == bridge["published_letter_references"] == 458
+    assert audit["source_applications_tsv_sha256"] == original["applications_tsv_sha256"]
+    assert audit["source_submissions_tsv_sha256"] == original["submissions_tsv_sha256"]
+    assert audit["matched_original_application_letter_references"] == (
+        bridge["published_letter_reference_link_states"][
+            "NDA_BLA_APPLICATION_IN_ORIGINAL_SUBMISSION_SPINE"
+        ] == 334
+    )
+    assert audit["nda_bla_no_original_spine_letter_references"] == (
+        bridge["published_letter_reference_link_states"][
+            "NDA_BLA_APPLICATION_NOT_IN_ORIGINAL_SUBMISSION_SPINE"
+        ] == 107
+    )
+    assert audit["ambiguous_or_unparseable_letter_references"] == (
+        bridge["published_letter_reference_link_states"][
+            "AMBIGUOUS_OR_UNPARSEABLE_LETTER_APPLICATION"
+        ] == 17
+    )
+    assert audit["review_queue_references"] == 124
+    assert audit["review_queue_reasons"] == {
+        "AMBIGUOUS_OR_UNPARSEABLE_LETTER_APPLICATION": 17,
+        "APPLICATION_IN_TABLE_BUT_NO_ORIGINAL_SUBMISSION": 0,
+        "APPLICATION_NOT_IN_TABULAR_APPROVAL_CENTRIC_SOURCE": 107,
+    }
+    assert audit["distinct_candidate_applications_needing_source_research"] == 84
+    assert audit["candidate_applications_with_repeated_published_letters"] == 20
+    assert audit["maximum_published_letter_references_for_one_missing_application"] == 3
+    assert audit["private_letter_level_queue_not_exported"] is True
+    assert audit["fda_original_actions_independently_verified"] == 0
+    assert audit["complete_original_nda_bla_decision_denominator_verified"] is False
+    assert audit["model_eligible_records"] == 0
+    assert audit["approval_rate"] is None
+    assert audit["prediction_probability"] is None
+    assert audit["predictive_accuracy"] is None
