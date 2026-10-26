@@ -252,6 +252,13 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None, progra
         hit["nct_id"] for doc in all_documents
         for hit in doc["trial_registered_term_lexical_mentions"]
     }
+    issuers_with_fetched_text = {
+        row["ticker"] for row in rows
+        if any(d["retrieval_status"] == "PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY"
+               for d in row["documents"])
+    }
+    study_text_coverage = sum(len(issuers[ticker]["nct_ids"])
+                              for ticker in issuers_with_fetched_text)
     return {
         "report_type": "MAIN_PHASE3_SEC_PRIMARY_RIGHTS_DOCUMENT_PILOT_RESEARCH_ONLY",
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -270,11 +277,15 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None, progra
             bool(d["rights_language_review_locators"]) for d in all_documents),
         "documents_with_exact_registered_trial_term_mentions": sum(
             bool(d["trial_registered_term_lexical_mentions"]) for d in all_documents),
+        "trials_with_issuer_primary_text_scanned": study_text_coverage,
+        "trials_without_issuer_primary_text_scanned": EXPECTED_TRIALS - study_text_coverage,
         "trials_with_exact_registered_term_text_leads": len(distinct_trial_mentions),
-        "trials_without_exact_registered_term_text_leads": EXPECTED_TRIALS - len(distinct_trial_mentions),
+        "scanned_trials_without_exact_registered_term_text_leads":
+            study_text_coverage - len(distinct_trial_mentions),
         "trial_term_scan_scope": (
-            "ISSUER_PRIMARY_FILINGS_REGISTERED_TERMS_LEXICAL_ONLY"
-            if program is not None else "NOT_PERFORMED_NO_PROGRAM_INPUT"
+            "NOT_PERFORMED_NO_PROGRAM_INPUT" if program is None
+            else "NO_PRIMARY_DOCUMENT_TEXT_AVAILABLE" if study_text_coverage == 0
+            else "BOUNDED_ISSUER_PRIMARY_FILINGS_REGISTERED_TERMS_LEXICAL_ONLY"
         ),
         "documents_with_rights_language_locators": sum(
             d["rights_language_locator_count"] is not None
@@ -287,7 +298,10 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None, progra
             "Official filing metadata and downloaded SEC documents are review leads only. "
             "No specific drug/indication, effective license terms, U.S. territory, "
             "current development rights or FDA PDUFA independently established. "
-            "SEC access failures do not prove absence of rights. No Pipeline/GEM promotion."
+            "SEC access failures do not prove absence of rights. Term search is bounded "
+            "to first 12 original terms per type and at most 120 matches per document; "
+            "absence of lexical hits does not prove absence of drug or rights. "
+            "No Pipeline/GEM promotion."
         ),
     }
 
