@@ -1,0 +1,32 @@
+name: Scientific 800-task review plan safety
+on:
+  pull_request:
+    paths:
+      - 'new-platform/backend/app/scientific_investigation_800.py'
+      - 'new-platform/backend/app/scientific_investigation_contract.py'
+      - 'new-platform/backend/tests/test_scientific_investigation_800.py'
+      - '.github/workflows/scientific-800-plan-safety.yml'
+  push:
+    branches:
+      - integration/scientific-assessment-validation-20261025
+    paths:
+      - 'new-platform/backend/app/scientific_investigation_800.py'
+      - 'new-platform/backend/app/scientific_investigation_contract.py'
+      - 'new-platform/backend/tests/test_scientific_investigation_800.py'
+      - '.github/workflows/scientific-800-plan-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-matrix-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check all 800 pending tasks and zero-prediction contract
+        working-directory: new-platform/backend
+        run: python -m unittest discover -s tests -p 'test_scientific_investigation_800.py' -v
