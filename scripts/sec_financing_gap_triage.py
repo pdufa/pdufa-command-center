@@ -270,7 +270,7 @@ def triage(queue, companies, config):
                 accession = cash_reference.get("accession", "")
                 filing_url = cash_reference.get("sec_exhibit_url", "")
                 if (isinstance(accession, str)
-                        and re.fullmatch(r"\\d{10}-\\d{2}-\\d{6}", accession)
+                        and re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession)
                         and valid_date(cash_reference.get("as_of", ""))
                         and isinstance(filing_url, str)
                         and sec_document_url(filing_url, cik)
