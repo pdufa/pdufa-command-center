@@ -193,3 +193,73 @@ def test_route_refuses_forged_backend_safety_flags(monkeypatch):
             with pytest.raises(HTTPException) as e:
                 main.scientific_pilot_reviewer_progress(NCT, Response())
             assert e.value.status_code == 409
+
+
+
+def test_eight_real_reconciliation_actions_retain_source_and_pairing_gaps(monkeypatch):
+    setup(monkeypatch)
+    result = progress.pilot_review_progress(NCT)
+    questions = result["questions"]
+    assert len(questions) == 8
+    assert result["openUnadjudicatedQuestionCount"] == 8
+    assert [q["questionId"] for q in questions] == [
+        q["id"] for q in reconciliation_worklist(NCT)["checks"]
+    ]
+    lookup = {q["questionId"]: q for q in questions}
+    assert lookup["protocol_amendment_chronology"]["technicalWorkStatus"] == (
+        "TECHNICAL_PAIR_ONLY_UNADJUDICATED"
+    )
+    assert lookup["pfs_initial_vs_followup"]["technicalWorkStatus"] == (
+        "RECORDED_DECISION_CONFLICT"
+    )
+    assert lookup["baseline_population_indication"]["technicalWorkStatus"] == (
+        "TWO_REVIEWER_TECHNICAL_PAIR_REQUIRED"
+    )
+    assert lookup["independent_corroboration"]["technicalWorkStatus"] == (
+        "CAPTURE_ORIGINAL_SOURCE_REQUIRED"
+    )
+    assert lookup["2015_vs_2016_fda_actions"]["technicalWorkStatus"] == (
+        "TWO_REVIEWER_TECHNICAL_PAIR_REQUIRED"
+    )
+    assert sum(q["eligibleSourcePairs"] for q in questions) == result["eligibleQuestionSourcePairs"]
+    assert sum(q["technicallyPairedSources"] for q in questions) == result["pairingTechnicalPreflightPassedCount"]
+    assert sum(q["disputedSourcePairs"] for q in questions) == result["disputedTechnicalPairCount"]
+    for question in questions:
+        assert question["qualifiedIndependentReviewCompleted"] is False
+        assert question["scientificQuestionResolved"] is False
+        assert question["technicallyPairedSources"] + question["unpairedSources"] == question["eligibleSourcePairs"]
+        assert question["capturedSourceCount"] == question["eligibleSourcePairs"]
+        assert question["nextScientificCheck"]
+        assert question["priority"] in ("critical", "high", "medium")
+        assert not {"sourceUrl", "googleSubject", "reviewerEmail", "sourceSha256"} & set(question)
+    assert result["scientificScore"] is None
+    assert result["fdaApprovalProbability"] is None
+
+
+def test_live_question_work_queue_blocks_tampered_audit_and_disputed_pair(monkeypatch):
+    def mixed(nct, question, sha):
+        report = pair(nct, question, sha)
+        if question == "pfs_initial_vs_followup":
+            report["auditIntegrityPassed"] = False
+        return report
+    setup(monkeypatch, pairing=mixed)
+    result = progress.pilot_review_progress(NCT)
+    question = next(q for q in result["questions"] if q["questionId"] == "pfs_initial_vs_followup")
+    assert question["technicalWorkStatus"] == "AUDIT_HISTORY_REQUIRES_REPAIR"
+    assert question["invalidAuditHistoryPairs"] == 1
+    assert result["historicalAuditCorruptionPairs"] == 1
+    assert question["scientificQuestionResolved"] is False
+
+
+def test_empty_captured_pdf_archive_preserves_all_eight_open_questions(monkeypatch):
+    archive = manifest()
+    archive["sourceDocumentCount"] = 0
+    archive["documents"] = []
+    setup(monkeypatch, archive=archive,
+          pairing=lambda *_: pytest.fail("No review pairing should be read"))
+    result = progress.pilot_review_progress(NCT)
+    assert result["sourceDocumentCount"] == 0
+    assert result["openUnadjudicatedQuestionCount"] == 8
+    assert all(q["technicalWorkStatus"] == "CAPTURE_ORIGINAL_SOURCE_REQUIRED"
+               and q["eligibleSourcePairs"] == 0 for q in result["questions"])
+    assert result["independentClinicalReviewCount"] == 0

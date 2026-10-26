@@ -67,12 +67,40 @@ def pilot_review_progress(nct_id: str) -> dict:
         seen_questions.add(question["id"])
         counts[question["gateId"]]["reconciliationQuestionCount"] += 1
 
+    # Restrict the operator work queue to the eight frozen historical
+    # reconciliation questions; do not include source URLs, reviewer IDs, or
+    # any assertion that a technical preflight resolves a scientific issue.
+    per_question = {}
+    for question in questions:
+        if (not isinstance(question.get("title"), str)
+                or not isinstance(question.get("nextAction"), str)
+                or question.get("priority") not in ("critical", "high", "medium")
+                or not question["title"] or not question["nextAction"]):
+            raise ValueError("Incomplete reconciliation question contract")
+        per_question[question["id"]] = {
+            "questionId": question["id"],
+            "gateId": question["gateId"],
+            "title": question["title"],
+            "priority": question["priority"],
+            "nextScientificCheck": question["nextAction"],
+            "capturedSourceCount": counts[question["gateId"]]["capturedSourceCount"],
+            "eligibleSourcePairs": 0,
+            "technicallyPairedSources": 0,
+            "unpairedSources": 0,
+            "disputedSourcePairs": 0,
+            "invalidAuditHistoryPairs": 0,
+            "qualifiedIndependentReviewCompleted": False,
+            "scientificQuestionResolved": False,
+        }
+
     queried = 0
     for doc in docs:
         for question in questions:
             if question["gateId"] != doc["gateId"]:
                 continue
             gate = counts[doc["gateId"]]
+            row = per_question[question["id"]]
+            row["eligibleSourcePairs"] += 1
             gate["eligibleQuestionSourcePairs"] += 1
             queried += 1
             if queried > MAX_PAIRS:
@@ -97,11 +125,35 @@ def pilot_review_progress(nct_id: str) -> dict:
                 gate["twoAuthorizedReviewersRecorded"] += 1
             if check["pairingTechnicalPreflightPassed"]:
                 gate["pairingTechnicalPreflightPassed"] += 1
+                row["technicallyPairedSources"] += 1
+            else:
+                row["unpairedSources"] += 1
             if (check["twoIndependentStatementsRecorded"]
                     and not check["decisionsAgree"]):
                 gate["disputedTechnicalPairCount"] += 1
+                row["disputedSourcePairs"] += 1
             if check["recordedStatements"] and not check["auditIntegrityPassed"]:
                 gate["historicalAuditCorruptionPairs"] += 1
+                row["invalidAuditHistoryPairs"] += 1
+
+    # Work queue states mean operator action is required. Even the technical
+    # pairing status is not clinical signoff or independent-source validation.
+    for item in per_question.values():
+        if item["eligibleSourcePairs"] != item["capturedSourceCount"]:
+            raise ValueError("Question-source pairing completeness mismatch")
+        if item["invalidAuditHistoryPairs"]:
+            status = "AUDIT_HISTORY_REQUIRES_REPAIR"
+        elif item["disputedSourcePairs"]:
+            status = "RECORDED_DECISION_CONFLICT"
+        elif not item["capturedSourceCount"]:
+            status = "CAPTURE_ORIGINAL_SOURCE_REQUIRED"
+        elif not item["technicallyPairedSources"]:
+            status = "TWO_REVIEWER_TECHNICAL_PAIR_REQUIRED"
+        elif item["unpairedSources"]:
+            status = "PARTIAL_TECHNICAL_PAIR_COVERAGE"
+        else:
+            status = "TECHNICAL_PAIR_ONLY_UNADJUDICATED"
+        item["technicalWorkStatus"] = status
 
     total = sum(x["eligibleQuestionSourcePairs"] for x in counts.values())
     paired = sum(x["pairingTechnicalPreflightPassed"] for x in counts.values())
@@ -117,6 +169,8 @@ def pilot_review_progress(nct_id: str) -> dict:
         "disputedTechnicalPairCount": disputed,
         "historicalAuditCorruptionPairs": corrupted,
         "gates": [{"gateId": gate_id, **counts[gate_id]} for gate_id in GATES],
+        "questions": [per_question[q["id"]] for q in questions],
+        "openUnadjudicatedQuestionCount": len(questions),
         "capturedBytesRehashed": True,
         "independentClinicalReviewCount": 0,
         "verifiedClinicalSourceCount": 0,
