@@ -13,6 +13,7 @@ const LABEL:Record<NightlyHealthState,string>={
   REPORT_ARTIFACT_MISSING:"The integrity check passed, but the research artifact is missing",
   REPORT_INTEGRITY_UNVERIFIED:"Job completed, but the 14-file integrity check was not confirmed",
   NO_FULL_SCHEDULED_RUN_YET:"No full scheduled research scan observed yet",
+  SCHEDULED_SCAN_OVERDUE:"No full scheduled scan observed by 10:30 PM Pacific — verification overdue",
   SOURCE_UNAVAILABLE:"Scheduled scan status cannot be verified from GitHub",
 };
 
@@ -65,6 +66,12 @@ export default function MainPhase3NightlyHealth(){
         health?LABEL[health.state]:"Status has not been checked"}</strong>
     </p>
     {health&&<>
+      {health.state==="SCHEDULED_SCAN_OVERDUE"&&health.overduePacificDate&&
+        <p className={styles.small}>
+          Missing nominal 8 PM research run for Pacific date <strong>{health.overduePacificDate}</strong>.
+          GitHub may delay or skip scheduled jobs; this is a missing run observation,
+          not evidence that trial research or commercial rights failed.
+        </p>}
       <p className={styles.small}>
         Last scheduled trigger observed: {formatted(health.latestScheduleObservedAtUtc)}.
         {health.intentionallySkippedAlternates>0&&
