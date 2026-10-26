@@ -1221,6 +1221,8 @@ def science_chronology_review(programId: str, nctId: str, cutoffDate: str):
     """Audit available archive chronology without mistaking fetch time for publication time."""
     if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
         raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", cutoffDate):
+        raise HTTPException(status_code=422, detail="Evidence cutoff must be YYYY-MM-DD")
     try:
         cutoff = datetime.strptime(cutoffDate, "%Y-%m-%d").date()
     except ValueError:
