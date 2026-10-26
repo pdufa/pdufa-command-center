@@ -31,6 +31,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: original-phase3-registry-source-pilot
-          path: $RUNNER_TEMP/phase3_original_registry_pilot.json
+          path: ${{ runner.temp }}/phase3_original_registry_pilot.json
           if-no-files-found: error
           retention-days: 7
