@@ -57,6 +57,8 @@ test("missing, forged, reordered or promoted research source figures are rejecte
 });
 
 test("MAIN site card prominently separates research history from live membership",async()=>{
+  const originalFetch=global.fetch;
+  global.fetch=async()=>({ok:false,status:503});
   let renderer;
   try{
     await act(async()=>{renderer=create(React.createElement(MainPhase3ResearchPanel));});
@@ -87,7 +89,10 @@ test("MAIN site card prominently separates research history from live membership
     const status=renderer.root.findAllByProps({role:"status"});
     assert.ok(status.some(entry=>JSON.stringify(entry.props.children).includes(
       "Scheduled scan status cannot be verified from GitHub")));
-  }finally{if(renderer)await act(async()=>renderer.unmount());}
+  }finally{
+    if(renderer)await act(async()=>renderer.unmount());
+    global.fetch=originalFetch;
+  }
 });
 
 test("research panel appears only within PDUFA Pipeline and does not change stage memberships",()=>{
