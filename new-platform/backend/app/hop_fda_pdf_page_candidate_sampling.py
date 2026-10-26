@@ -179,6 +179,7 @@ def inspect_candidate_pages(
     checked = min(page_count, max_pages)
     hits = {app: [] for app in apps}
     pages_without_text = 0
+    no_text_page_indices = []
     pages_with_multiple_app_numbers = 0
     for idx in range(checked):
         text = extract_text(idx)
@@ -187,6 +188,7 @@ def inspect_candidate_pages(
         cleaned = re.sub(r"\s+", " ", text)
         if not cleaned.strip():
             pages_without_text += 1
+            no_text_page_indices.append(idx)
         matched_apps = 0
         for app in apps:
             number = app[-6:]
@@ -205,6 +207,7 @@ def inspect_candidate_pages(
         "pages_inspected": checked,
         "remaining_pages_not_inspected": page_count - checked,
         "pages_with_no_extractable_text": pages_without_text,
+        "private_no_text_page_indices_zero_based": no_text_page_indices,
         "pages_containing_multiple_candidate_app_numbers": pages_with_multiple_app_numbers,
         "provisional_candidate_app_page_indices_zero_based": hits,
         "published_letter_references_sharing_file":
