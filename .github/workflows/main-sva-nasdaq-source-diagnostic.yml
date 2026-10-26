@@ -1,0 +1,29 @@
+name: MAIN SVA original Nasdaq source diagnostic
+on:
+  pull_request:
+    paths:
+      - 'scripts/diagnose_sva_nasdaq_source.py'
+      - '.github/workflows/main-sva-nasdaq-source-diagnostic.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sva-original-source-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate diagnostic script syntax
+        run: python3 -m py_compile scripts/diagnose_sva_nasdaq_source.py
+      - name: Recheck original Nasdaq SVA endpoint and record exact source disposition
+        run: python3 scripts/diagnose_sva_nasdaq_source.py "$RUNNER_TEMP/sva_nasdaq_original_source_diagnostic.json"
+      - name: Preserve bounded SVA diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sva-nasdaq-original-source-diagnostic
+          path: ${{ runner.temp }}/sva_nasdaq_original_source_diagnostic.json
+          if-no-files-found: warn
+          retention-days: 7
