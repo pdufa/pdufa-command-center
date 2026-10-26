@@ -51,10 +51,12 @@ SPONSOR_SUBMISSION_EVIDENCE = {
             "https://www.nasdaq.com/press-release/atara-biotherapeutics-submits-tabelecleucel-tab-celr-biologics-license-application",
         "sponsor_reported_exact_submission_date": None,
         "sponsor_exact_day_source_url": None,
+        "sponsor_exact_day_source_published_on": None,
         "sponsor_reported_fda_acceptance_date": None,
         "fda_acceptance_announced_on": "2024-07-17",
         "fda_acceptance_announcement_source_url":
             "https://www.sec.gov/Archives/edgar/data/1604464/000119312524180371/d868530d8k.htm",
+        "fda_acceptance_disclosure_published_on": "2024-07-17",
         "fda_acceptance_effective_date_independently_verified": False,
     },
     ("BLA:125745", "2026-01-09"): {
@@ -67,10 +69,12 @@ SPONSOR_SUBMISSION_EVIDENCE = {
         "sponsor_reported_exact_submission_date": "2025-07-11",
         "sponsor_exact_day_source_url":
             "https://www.pierrefabrepharmaceuticals.com/sites/default/files/press/20251103_PR_Final_BLA_Transfer_Announcement_0.pdf",
+        "sponsor_exact_day_source_published_on": "2025-11-03",
         "sponsor_reported_fda_acceptance_date": "2025-07-23",
         "fda_acceptance_announced_on": None,
         "fda_acceptance_announcement_source_url":
             "https://www.pierrefabrepharmaceuticals.com/sites/default/files/press/20251103_PR_Final_BLA_Transfer_Announcement_0.pdf",
+        "fda_acceptance_disclosure_published_on": "2025-11-03",
         "fda_acceptance_effective_date_independently_verified": False,
     },
     ("BLA:125840", "2026-02-07"): {
@@ -80,10 +84,12 @@ SPONSOR_SUBMISSION_EVIDENCE = {
             "https://www.sec.gov/Archives/edgar/data/1590877/000095017025038711/rgnx-ex99_1.htm",
         "sponsor_reported_exact_submission_date": None,
         "sponsor_exact_day_source_url": None,
+        "sponsor_exact_day_source_published_on": None,
         "sponsor_reported_fda_acceptance_date": None,
         "fda_acceptance_announced_on": "2025-05-13",
         "fda_acceptance_announcement_source_url":
             "https://ir.regenxbio.com/news-releases/news-release-details/regenxbio-announces-fda-acceptance-and-priority-review-bla-rgx",
+        "fda_acceptance_disclosure_published_on": "2025-05-13",
         "fda_acceptance_effective_date_independently_verified": False,
     },
 }
@@ -114,7 +120,11 @@ def _validated_sponsor_evidence(evidence: dict) -> dict:
             "sponsor_exact_day_source_url"
         ].startswith("https://"):
             raise ValueError("Sponsor exact day needs a specific source")
-    elif evidence["sponsor_exact_day_source_url"] is not None:
+        published_on = evidence["sponsor_exact_day_source_published_on"]
+        if published_on is None or date.fromisoformat(published_on) < actual:
+            raise ValueError("Exact filing day must have genuine later/public source date")
+    elif (evidence["sponsor_exact_day_source_url"] is not None
+          or evidence["sponsor_exact_day_source_published_on"] is not None):
         raise ValueError("Do not imply an exact sponsor date with absent exact day")
     reported_accepted = evidence["sponsor_reported_fda_acceptance_date"]
     if reported_accepted is not None:
@@ -127,6 +137,13 @@ def _validated_sponsor_evidence(evidence: dict) -> dict:
             raise ValueError("FDA acceptance announcement precedes submission confirmation")
     if not evidence["fda_acceptance_announcement_source_url"].startswith("https://"):
         raise ValueError("Acceptance disclosure requires a source URL")
+    source_publication = date.fromisoformat(
+        evidence["fda_acceptance_disclosure_published_on"]
+    )
+    if reported_accepted is not None and source_publication < accepted:
+        raise ValueError("Retrospective sponsor FDA-acceptance claim predates its event")
+    if announced is not None and source_publication < date.fromisoformat(announced):
+        raise ValueError("FDA acceptance disclosure source predates its announcement")
     if evidence["fda_acceptance_effective_date_independently_verified"]:
         raise ValueError("Sponsor press statements are not independent FDA confirmation")
     return {
@@ -136,6 +153,18 @@ def _validated_sponsor_evidence(evidence: dict) -> dict:
         "exact_fda_received_date": None,
         "exact_fda_received_date_independently_verified": False,
     }
+
+
+
+def sponsor_exact_day_publicly_disclosed_by(evidence: dict, asof: str) -> bool:
+    """A published sponsor day is research provenance, never an FDA receipt day.
+
+    This is strictly a statement of public availability by a chosen date;
+    it does not authorize using the day for historical-model training.
+    """
+    checked = _validated_sponsor_evidence(evidence)
+    publication = checked["sponsor_exact_day_source_published_on"]
+    return publication is not None and date.fromisoformat(publication) <= date.fromisoformat(asof)
 
 
 def build_receipt_boundary_gap_report() -> dict:
