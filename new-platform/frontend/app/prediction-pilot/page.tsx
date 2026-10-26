@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {PREDICTION_METRICS,SECONDARY_PREDICTION_GROUPS,proposedMetricValue} from "../../lib/prediction-priority-metrics";
 import {
   PEAK_PILOT,PEAK_SOURCES,PEAK_PILOT_METRICS,
@@ -36,9 +35,9 @@ function FactCard({label,value,detail}:{label:string;value:string;detail:string}
 export default function PeakPredictionPilot() {
   return <main className="shell" style={{maxWidth:1200,margin:"0 auto",padding:"20px clamp(12px,3vw,32px)"}}>
     <nav aria-label="Prediction pilot navigation" style={{display:"flex",flexWrap:"wrap",gap:16,margin:"5px 0 18px"}}>
-      <Link href="/">Dashboard</Link>
-      <Link href="/installation-audit">Installation audit</Link>
-      <Link href="/trial/NCT05208047">Complete clinical trial sheet</Link>
+      <a href="/">Dashboard</a>
+      <a href="/installation-audit">Installation audit</a>
+      <a href="/trial/NCT05208047">Complete clinical trial sheet</a>
     </nav>
     <header style={{marginBottom:18}}>
       <div className="topline">PDUFA COMMAND CENTER · GEM REAL-TRIAL RESEARCH PILOT</div>
