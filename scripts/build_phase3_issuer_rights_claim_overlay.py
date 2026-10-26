@@ -25,6 +25,7 @@ BCRX_CASE = ROOT / "data/research_issuer_rights_claims_bcrx_2026-10-26.json"
 AXSM_CASE = ROOT / "data/research_issuer_rights_claims_axsm_2026-10-26.json"
 CORT_ADMA_CASE = ROOT / "data/research_issuer_rights_claims_cort_adma_2026-10-26.json"
 AGIO_CASE = ROOT / "data/research_issuer_rights_claims_agio_2026-10-26.json"
+PRAX_CASE = ROOT / "data/research_issuer_rights_claims_prax_2026-10-26.json"
 EVIDENCE_AS_OF = "2026-10-26"
 
 def load_originals():
@@ -134,9 +135,18 @@ def collect_cases():
         or agio["programs"][0].get("issuerCik") != "0001439222"
         or agio["programs"][0].get("asset") != "mitapivat"):
         raise ValueError("AGIO mitapivat issuer rights-claim source or exact CIK mismatch")
+    prax = json.loads(PRAX_CASE.read_text(encoding="utf-8"))
+    if (prax.get("scope") != "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY"
+        or prax.get("schemaVersion") != 1 or prax.get("asOf") != EVIDENCE_AS_OF
+        or prax.get("issuerTicker") != "PRAX" or prax.get("issuerCik") != "0001689548"
+        or len(prax.get("programs", [])) != 2
+        or {(p["issuerTicker"], p["issuerCik"], p["asset"]) for p in prax["programs"]}
+            != {("PRAX", "0001689548", "relutrigine"),
+                ("PRAX", "0001689548", "ulixacaltamide")}):
+        raise ValueError("PRAX relutrigine and ulixacaltamide exact source or CIK mismatch")
     return ([old_program] + newer["programs"] + cytk["programs"]
             + acad_iova["programs"] + bcrx["programs"] + axsm["programs"]
-            + cort_adma["programs"] + agio["programs"])
+            + cort_adma["programs"] + agio["programs"] + prax["programs"])
 
 
 def build():
@@ -170,6 +180,31 @@ def build():
                 if (agio_link.get("issuerReportedCurrentPdufaDate") is not None
                         and agio_link["nctId"] != "NCT05031780"):
                     raise ValueError("AGIO sickle cell PDUFA event must attach only to RISE UP NCT")
+        if ticker == "PRAX":
+            expected = ({
+                "NCT05818553", "NCT07010471"
+            } if asset == "relutrigine" else {
+                "NCT06087276"
+            } if asset == "ulixacaltamide" else None)
+            if expected is None or {t["nctId"] for t in p["trialLinks"]} != expected:
+                raise ValueError("PRAX exact original asset-specific trial identities mismatch")
+            required_anchor = (
+                "NCT05818553" if asset == "relutrigine" else "NCT06087276"
+            )
+            required_goal = (
+                "2026-12-27" if asset == "relutrigine" else "2027-01-29"
+            )
+            date_links = [
+                t for t in p["trialLinks"]
+                if t.get("issuerReportedCurrentPdufaDate") is not None
+            ]
+            if (len(date_links) != 1 or date_links[0]["nctId"] != required_anchor
+                    or date_links[0]["issuerReportedCurrentPdufaDate"] != required_goal):
+                raise ValueError("PRAX independent indication-specific PDUFA anchor mismatch")
+            if (asset == "relutrigine"
+                    and date_links[0].get("historicalIssuerReportedPdufaDate")
+                        != "2026-09-27"):
+                raise ValueError("PRAX original September relutrigine goal must be superseded")
         supporting_nda_ids = p.get("issuerReportedNdaEvidenceSupportingNctIds")
         if supporting_nda_ids is not None:
             linked_ids = {entry["nctId"] for entry in p["trialLinks"]}
@@ -357,7 +392,7 @@ if __name__ == "__main__":
     print("Historical trials with issuer rights-claim evidence linked:", result["issuer_rights_claim_evidence_linked_trials"], "/741")
     print("Historical trials not yet rights-claim reviewed:", result["claim_evidence_missing_or_unreviewed_trials"], "/741")
     print("Issuers with source-linked disclosures:", result["issuers_with_rights_claim_dossiers"], "/130")
-    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/13 researched")
+    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/15 researched")
     print("Official FDA-confirmed completed historical action events:",
           result["official_fda_confirmed_completed_historical_action_count"], "/741")
     print("Historical NCTs explicitly named by FDA to support the approved past action:",
