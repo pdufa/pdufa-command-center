@@ -71,7 +71,9 @@ export function createNumericForecastDisplay(detail: AssessmentDetail, stage: As
         || !bounded(category.observedPoints, category.maximum)
         || category.observedPoints > category.coverage + almost
         || !Array.isArray(category.metrics)
-        || (category.score !== null && !bounded(category.score, category.maximum))) {
+        || (category.score !== null && (!bounded(category.score, category.maximum)
+          || category.coverage < category.maximum - almost
+          || category.status !== "COMPLETE"))) {
       throw new Error("Research metric rating and its evidence denominator do not reconcile");
     }
     seen.add(category.id);
