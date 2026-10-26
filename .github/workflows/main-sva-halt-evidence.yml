@@ -1,0 +1,19 @@
+name: MAIN SVA trading halt exception evidence
+on:
+  pull_request:
+    paths:
+      - 'data/research_sva_trading_halt_2026-10-26.json'
+      - 'tests/test_sva_halt_evidence_gate.py'
+      - '.github/workflows/main-sva-halt-evidence.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sva-evidence-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate explicit halted/unresolved research disposition
+        run: python3 -m unittest discover -s tests -p 'test_sva_halt_evidence_gate.py' -v
