@@ -36,5 +36,8 @@
   "readiness": "REVIEW_REQUIRED",
   "source_membership_does_not_establish_fda_outcome": true,
   "unapproved_applications_absent_from_export_possible": true,
-  "note": "One NDA original-submission key appears in pinned official FDA tabular source but not the separately pinned openFDA registry artifact; original FDA decision status and review cycle remain independently unverified."
+  "note": "One NDA original-submission key appears in pinned official FDA tabular source but not the separately pinned openFDA registry artifact; original FDA decision status and review cycle remain independently unverified.",
+  "examples_truncated": false,
+  "status_mismatch_key_examples": [],
+  "date_mismatch_key_examples": []
 }
