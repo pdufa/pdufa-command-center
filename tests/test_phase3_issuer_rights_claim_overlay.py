@@ -111,12 +111,13 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         original = rights.collect_cases()
         self.assertEqual(len(original), 7)
         bad = [dict(p) for p in original]
-        cy = dict(bad[-1])
+        cy_index = next(i for i, p in enumerate(bad) if p["issuerTicker"] == "CYTK")
+        cy = dict(bad[cy_index])
         links = [dict(x) for x in cy["trialLinks"]]
         maple = next(x for x in links if x["nctId"] == "NCT05767346")
         maple["issuerReportedCurrentPdufaDate"] = "2026-09-01"
         cy["trialLinks"] = links
-        bad[-1] = cy
+        bad[cy_index] = cy
         with patch.object(rights, "collect_cases", return_value=bad):
             with self.assertRaisesRegex(ValueError, "PDUFA"):
                 rights.build()
