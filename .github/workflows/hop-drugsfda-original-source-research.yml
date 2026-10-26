@@ -50,6 +50,9 @@ on:
       - 'new-platform/backend/scripts/manage_hop_fda_encrypted_visual_handoff.py'
       - 'new-platform/backend/scripts/verify_hop_fda_visual_archive_roundtrip.py'
       - 'new-platform/backend/tests/test_hop_fda_visual_archive_crypto.py'
+      - 'new-platform/backend/app/hop_fda_visual_recipient_envelope.py'
+      - 'new-platform/backend/scripts/manage_hop_fda_visual_recipient_keys.py'
+      - 'new-platform/backend/tests/test_hop_fda_visual_recipient_envelope.py'
   workflow_dispatch:
 
 permissions:
@@ -73,7 +76,7 @@ jobs:
       - name: Validate synthetic-only source parser and ZIP safety tests
         working-directory: new-platform/backend
         run: |
-          python -m pip install pytest pypdf pymupdf cryptography cryptography
+          python -m pip install pytest pypdf pymupdf cryptography
           PYTHONPATH=. python -m pytest -q \
             tests/test_hop_drugsfda_submission_spine.py \
             tests/test_hop_drugsfda_original_collector.py \
@@ -89,7 +92,8 @@ jobs:
             tests/test_hop_fda_nda206627_primary_source.py \
             tests/test_hop_fda_pdf_page_candidate_sampling.py \
             tests/test_hop_fda_visual_page_review.py \
-            tests/test_hop_fda_visual_archive_crypto.py
+            tests/test_hop_fda_visual_archive_crypto.py \
+            tests/test_hop_fda_visual_recipient_envelope.py
       - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
         working-directory: new-platform/backend
         run: |
