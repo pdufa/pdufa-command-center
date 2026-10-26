@@ -100,6 +100,7 @@ export function parsePhase3CensusCsv(text: string): Phase3CensusRows {
         || !/^[A-Z]{1,7}(?:[.-][A-Z]{1,3})?$/.test(ticker)
         || !company || company !== company.trim()
         || /[\u0000-\u001f\u007f<>]/u.test(company)
+        || /^\s*[=+@-]/u.test(company)
         || !PHASE3_CENSUS_STATUS_VALUES.some(x => x === status)
         || sourceUrl !== "https://clinicaltrials.gov/study/" + nctId) fail();
     rowIds.add(nctId);
