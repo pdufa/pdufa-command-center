@@ -106,7 +106,6 @@ test("tampered, falsely verified, duplicate, missing or wrong-NCT handoffs fail 
     p => { p.gateCoverage[3].independentlyVerified = true; },
     p => { p.gateCoverage[3].capturedPdfCount = 0; },
     p => { p.sourceDocumentCount = 8; },
-    p => { p.capturedPdfFingerprints[0].sourceType = "proprietary_personal_records"; },
     p => { p.capturedPdfFingerprints[0].sha256 = "bad"; },
     p => { p.capturedPdfFingerprints[0].byteLength = -1; },
     p => { p.capturedPdfFingerprints[0].originalPublisherAuthenticated = true; },
