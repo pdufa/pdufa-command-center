@@ -15,7 +15,7 @@ ISSUERS = 130
 NAME_STATES = {"PRESENT", "EMPTY", "SECTION_MISSING", "SECTION_INVALID",
                "FIELD_MISSING", "FIELD_INVALID", "OVER_LIMIT_REVIEW", "ITEM_INVALID"}
 SOURCE = "https://clinicaltrials.gov/api/v2/studies/"
-CONTROLS = re.compile(r"^(placebo|saline|vehicle|sham|observation|no intervention|standard of care|best supportive care|usual care)(?:\\b|$)", re.I)
+CONTROLS = re.compile(r"^(placebo|saline|vehicle|sham|observation|no intervention|standard of care|best supportive care|usual care)(?:\b|$)", re.I)
 NCT = re.compile(r"^NCT[0-9]{8}$")
 SHA = re.compile(r"^[0-9a-fA-F]{64}$")
 
@@ -167,7 +167,7 @@ def main():
                           json.loads(Path(sys.argv[2]).read_text(encoding="utf-8")))
     output = Path(sys.argv[3])
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"Original drug/indication leads: {report['total_trials']}/741 source identities, "
           f"drug or biologic mentions {report['trials_with_provisional_drug_or_biologic_mentions']}/741; "
           "verified program rights 0/741")
