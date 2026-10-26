@@ -7,7 +7,7 @@ require.extensions[".ts"]=(mod,file)=>mod._compile(
     module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true
   }}).outputText,file
 );
-const {readNightlyHealth,parseNightlyHealth,unavailableNightlyHealth,WORKFLOW_HISTORY_URL}=
+const {readNightlyHealth,parseNightlyHealth,unavailableNightlyHealth,WORKFLOW_HISTORY_URL,overdueNominalPacificDate}=
   require("../lib/main-phase3-nightly-health.ts");
 
 const when=new Date("2026-10-27T04:10:00.000Z");
@@ -43,6 +43,112 @@ function provider(runs,{jobs={},artifacts={}}={}){
   };
   return {get,urls};
 }
+
+test("Pacific 10:30 PM grace boundary is exact, no run yet is not failure",async()=>{
+  const {get}=provider([]);
+  const before=await readNightlyHealth(get,new Date("2026-10-27T05:29:00Z"));
+  assert.equal(before.state,"NO_FULL_SCHEDULED_RUN_YET");
+  const after=await readNightlyHealth(get,new Date("2026-10-27T05:30:00Z"));
+  assert.equal(after.state,"SCHEDULED_SCAN_OVERDUE");
+  assert.equal(after.overduePacificDate,"2026-10-26");
+  assert.equal(after.runId,null);
+  assert.equal(after.artifactConfirmed,false);
+  assert.deepEqual(parseNightlyHealth(after),after);
+});
+
+test("Before first nominal schedule day, no historic run is incorrectly overdue",async()=>{
+  assert.equal(overdueNominalPacificDate(new Date("2026-10-26T05:31:00Z")),null);
+  const {get}=provider([]);
+  assert.equal((await readNightlyHealth(get,new Date("2026-10-26T05:31:00Z"))).state,
+               "NO_FULL_SCHEDULED_RUN_YET");
+});
+
+test("Overdue research night persists until the next window, including next morning",async()=>{
+  const {get}=provider([]);
+  for(const time of ["2026-10-27T05:30:00Z","2026-10-27T16:00:00Z",
+                     "2026-10-28T04:00:00Z"]){
+    const r=await readNightlyHealth(get,new Date(time));
+    assert.equal(r.state,"SCHEDULED_SCAN_OVERDUE");
+    assert.equal(r.overduePacificDate,"2026-10-26");
+  }
+  const next=await readNightlyHealth(get,new Date("2026-10-28T05:31:00Z"));
+  assert.equal(next.overduePacificDate,"2026-10-27");
+});
+
+test("Pacific overdue windows remain correct after fall and spring DST changes",()=>{
+  assert.equal(overdueNominalPacificDate(new Date("2026-11-01T05:29:00Z")),"2026-10-30");
+  assert.equal(overdueNominalPacificDate(new Date("2026-11-01T05:31:00Z")),"2026-10-31");
+  assert.equal(overdueNominalPacificDate(new Date("2026-11-02T06:31:00Z")),"2026-11-01");
+  assert.equal(overdueNominalPacificDate(new Date("2027-03-15T05:31:00Z")),"2027-03-14");
+});
+
+test("Yesterday's successful full scan cannot satisfy a missed newer night",async()=>{
+  const {get,urls}=provider([run(2001)]);
+  const now=new Date("2026-10-28T05:31:00Z");
+  const r=await readNightlyHealth(get,now);
+  assert.equal(r.state,"SCHEDULED_SCAN_OVERDUE");
+  assert.equal(r.overduePacificDate,"2026-10-27");
+  assert.equal(r.runId,null);
+  assert.equal(r.latestScheduleObservedAtUtc,"2026-10-27T03:00:00Z");
+  assert.equal(urls.length,2,"Do not check yesterday's artifact as though it covers tonight");
+});
+
+test("A newer deliberately skipped DST alternate is not the expected full scan",async()=>{
+  const {get}=provider([run(2005,"2026-10-27T04:00:00Z")],{
+    jobs:{2005:[gate(),job("skipped")]}
+  });
+  const r=await readNightlyHealth(get,new Date("2026-10-27T05:31:00Z"));
+  assert.equal(r.state,"SCHEDULED_SCAN_OVERDUE");
+  assert.equal(r.overduePacificDate,"2026-10-26");
+  assert.equal(r.intentionallySkippedAlternates,1);
+});
+
+test("A real full research failure on expected date stays failed, not overdue",async()=>{
+  const {get}=provider([run(2001)],{
+    jobs:{2001:[gate(),job("failure")]}
+  });
+  const r=await readNightlyHealth(get,new Date("2026-10-27T05:31:00Z"));
+  assert.equal(r.state,"FULL_SCAN_FAILED");
+  assert.equal(r.overduePacificDate,null);
+  assert.equal(r.runId,2001);
+});
+
+test("A real in-progress full research scan is not marked missing",async()=>{
+  const {get}=provider([run(2001)],{
+    jobs:{2001:[gate(),job(null,"in_progress")]}
+  });
+  const r=await readNightlyHealth(get,new Date("2026-10-27T05:31:00Z"));
+  assert.equal(r.state,"FULL_SCAN_RUNNING");
+  assert.equal(r.overduePacificDate,null);
+});
+
+test("Extremely delayed GitHub cron started next afternoon belongs to previous night",async()=>{
+  const latest=run(2008,"2026-10-27T17:00:00Z");
+  const {get}=provider([latest],{
+    jobs:{2008:[gate(),job(null,"in_progress")]}
+  });
+  const observed=await readNightlyHealth(get,new Date("2026-10-27T18:00:00Z"));
+  assert.equal(observed.state,"FULL_SCAN_RUNNING"); // late Oct 26 research finally started
+  const tomorrow=await readNightlyHealth(get,new Date("2026-10-28T05:31:00Z"));
+  assert.equal(tomorrow.state,"SCHEDULED_SCAN_OVERDUE");
+  assert.equal(tomorrow.overduePacificDate,"2026-10-27");
+});
+
+test("Overdue result cannot be forged with a mismatched date or a completed job",async()=>{
+  const {get}=provider([]);
+  const original=await readNightlyHealth(get,new Date("2026-10-27T05:31:00Z"));
+  for(const change of [
+    x=>{x.overduePacificDate=null;},
+    x=>{x.overduePacificDate="bad-date";},
+    x=>{x.state="FULL_SCAN_CONFIRMED";},
+    x=>{x.artifactConfirmed=true;},
+    x=>{x.runId=2001;},
+  ]){
+    const r=structuredClone(original);
+    change(r);
+    assert.throws(()=>parseNightlyHealth(r));
+  }
+});
 
 test("Before first scheduled run: no completed nightly scan is invented",async()=>{
   const {get,urls}=provider([]);
@@ -168,12 +274,14 @@ test("Scan job still queued or running is not a completed scan",async()=>{
   assert.equal(r.artifactConfirmed,false);
 });
 
-test("Successful full scan older than 36 hours is explicitly stale",async()=>{
+test("A 36-hour-old successful scan cannot conceal subsequent missed nights",async()=>{
   const {get}=provider([run(2001)]);
   const r=await readNightlyHealth(get,new Date("2026-10-29T09:30:00Z"));
-  assert.equal(r.state,"FULL_SCAN_STALE");
-  assert.equal(r.artifactConfirmed,true);
-  assert.equal(r.integrityStepConfirmed,true);
+  assert.equal(r.state,"SCHEDULED_SCAN_OVERDUE");
+  assert.equal(r.overduePacificDate,"2026-10-28");
+  assert.equal(r.artifactConfirmed,false);
+  assert.equal(r.integrityStepConfirmed,false);
+  assert.equal(r.runId,null);
 });
 
 test("Unrelated PR workflow runs do not establish a scheduled success",async()=>{
