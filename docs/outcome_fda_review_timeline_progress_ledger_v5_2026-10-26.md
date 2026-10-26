@@ -35,21 +35,22 @@
 
 1. A release dated **May 20** or **March 13** attesting that a BLA **has been** submitted does not imply the BLA was submitted on the press release's date. Keep submission day null.
 2. The exact **July 11** sponsor submission day is supported by a company source published **November 3**, which must not be backdated as if publicly known July 11. The separate July 14 Atara announcement only establishes it had been submitted by then, not the day.
-3. The **July 23** FDA *acceptance* day is sponsor reported; neither this nor a PDUFA target establishes the redacted FDA *submission receipt* day. The two event types must remain distinct.
-4. FDA agency source provenance still controls final agency actions; no sponsor milestone creates a distinct additional final FDA action.
-5. Model eligibility remains blocked because application-cohort denominator, independent complete review-cycle adjudication, archived source availability and feature-as-of audit are not certified. Historical source availability may follow historical event dates.
+3. The code records the **2025-11-03 public disclosure date** for Pierre Fabre's precise July 11 sponsor filing claim. A historical as-of check before November 3 correctly returns **false** for knowledge of that exact day. This is a guard against backdating later-published historical evidence.
+4. The **July 23** FDA *acceptance* day is sponsor reported; neither this nor a PDUFA target establishes the redacted FDA *submission receipt* day. The two event types must remain distinct.
+5. FDA agency source provenance still controls final agency actions; no sponsor milestone creates a distinct additional final FDA action.
+6. Model eligibility remains blocked because application-cohort denominator, independent complete review-cycle adjudication, archived source availability and feature-as-of audit are not certified. Historical source availability may follow historical event dates.
 
 ## Implemented safeguards
 
 - `outcome_fda_receipt_boundary_gap_report.py` now attaches source URLs, sponsor-reported submission months, earliest possible **calendar day within that reported month**, the day by which submission was publicly confirmed, exact sponsor date only where supported, sponsor-reported FDA acceptance, and explicit `exact_fda_received_date=null`/`exact_fda_received_date_independently_verified=false`.
-- The validator rejects a precise sponsor filing day inconsistent with month or announcement, accepts no unproven FDA receipt certification, and rejects contradictory reported acceptance ordering.
+- The validator rejects a precise sponsor filing day inconsistent with month or announcement, accepts no unproven FDA receipt certification, and rejects contradictory reported acceptance ordering. A separate as-of function verifies that any precise sponsor filing date is unavailable before the *source's public release date*; it does not authorize model features.
 - `test_outcome_fda_receipt_boundary_gap_report.py` contains tests for three missing FDA receipt cases, July 11 sponsor evidence, March-vs-May filing/acceptance distinction, and fail-closed safeguards.
 
 ## Verified automated execution
 
-GitHub Actions run **40380064397** at commit **4732af38298ce16fc84018480c96bd483f73fba3**, overall **success**:
+GitHub Actions run **40380569423** at commit **8cb2984f7cc07a954a1f59fd572f67e422dc99ad**, overall **success**:
 - Existing historical/backtest safety: **74 passed**.
-- FDA action, event export, review chronology, receipt-boundary and source-provenance: **68 passed; 6 subtests passed**.
+- FDA action, event export, review chronology, receipt-boundary and source-provenance: **71 passed; 9 subtests passed**.
 - Immutable original FDA published-audit eligibility assertions: **passed**.
 
 **No change to predictor:** `model_eligible_records=0`, `prediction_probability=null`, `complete_application_denominator_verified=false`.
