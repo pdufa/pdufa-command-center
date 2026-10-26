@@ -16,7 +16,8 @@ class QualificationLedgerTests(unittest.TestCase):
         report = {"census_total": 741, "original_source_records": [
             {"nct_id": r["nct_id"], "census_ticker": r["ticker"],
              "census_company": r["company"], "source_sha256": "a" * 64,
-             "source": "https://clinicaltrials.gov/api/v2/studies/" + r["nct_id"],\n             "phase3_in_current_registry": True, "status_matches_dated_census": True
+             "source": "https://clinicaltrials.gov/api/v2/studies/" + r["nct_id"],
+             "phase3_in_current_registry": True, "status_matches_dated_census": True}
             for r in census
         ]}
         result = q.build_ledger(report)
