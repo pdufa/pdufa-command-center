@@ -58,6 +58,44 @@ def dated_census_sample(csv_text: str) -> list[dict[str, str]]:
     return [picked[status] for status in STATUSES]
 
 
+PROGRAM_ITEMS_LIMIT = 100
+PROGRAM_NAME_LIMIT = 400
+
+
+def original_program_field(module, section, key, typed=False):
+    """Bound original registered intervention/condition names without inference.
+
+    A malformed or over-limit field is explicitly flagged for manual review
+    rather than silently being converted into evidence of no program.
+    """
+    sub = module.get(section)
+    if sub is None:
+        return [], "SECTION_MISSING", 0
+    if not isinstance(sub, dict):
+        return [], "SECTION_INVALID", 0
+    raw = sub.get(key)
+    if raw is None:
+        return [], "FIELD_MISSING", 0
+    if not isinstance(raw, list):
+        return [], "FIELD_INVALID", 0
+    if len(raw) > PROGRAM_ITEMS_LIMIT:
+        return [], "OVER_LIMIT_REVIEW", len(raw)
+    items = []
+    for item in raw:
+        if typed:
+            if not isinstance(item, dict):
+                return [], "ITEM_INVALID", len(raw)
+            name, kind = item.get("name"), item.get("type")
+            if not isinstance(kind, str) or not kind or len(kind) > 80:
+                return [], "ITEM_INVALID", len(raw)
+        else:
+            name, kind = item, None
+        if not isinstance(name, str) or not name.strip() or len(name) > PROGRAM_NAME_LIMIT:
+            return [], "ITEM_INVALID", len(raw)
+        items.append({"name": name.strip(), "type": kind} if typed else name.strip())
+    return items, "PRESENT" if items else "EMPTY", len(raw)
+
+
 def extract_original_study(raw: bytes, expected: dict[str, str], fetched_at: str) -> dict[str, object]:
     """Identity/shape audit; source content is NOT an independent medical review."""
     if not 0 < len(raw) <= MAX_BYTES:
@@ -99,7 +137,18 @@ def extract_original_study(raw: bytes, expected: dict[str, str], fetched_at: str
     if update_date is not None and (not isinstance(update_date, str)
         or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", update_date)):
         raise ValueError("Original registry update invalid")
+    conditions, conditions_state, conditions_total = original_program_field(
+        module, "conditionsModule", "conditions")
+    interventions, interventions_state, interventions_total = original_program_field(
+        module, "armsInterventionsModule", "interventions", typed=True)
     return {
+        "registry_study_title": study_title,
+        "registry_condition_names": conditions,
+        "registry_conditions_field_status": conditions_state,
+        "registry_conditions_source_count": conditions_total,
+        "registry_interventions": interventions,
+        "registry_interventions_field_status": interventions_state,
+        "registry_interventions_source_count": interventions_total,
         "nct_id": nct,
         "census_status": expected["status"],
         "current_registry_status": registry_status,
