@@ -8,6 +8,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+from .science_chronology import strict_iso_day, registry_publication_day
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
@@ -1221,12 +1222,9 @@ def science_chronology_review(programId: str, nctId: str, cutoffDate: str):
     """Audit available archive chronology without mistaking fetch time for publication time."""
     if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
         raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
-    if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", cutoffDate):
-        raise HTTPException(status_code=422, detail="Evidence cutoff must be YYYY-MM-DD")
-    try:
-        cutoff = datetime.strptime(cutoffDate, "%Y-%m-%d").date()
-    except ValueError:
-        raise HTTPException(status_code=422, detail="Invalid ISO evidence cutoff date")
+    cutoff = strict_iso_day(cutoffDate)
+    if cutoff is None:
+        raise HTTPException(status_code=422, detail="Evidence cutoff must be valid YYYY-MM-DD")
     with Session(ENGINE) as session:
         identity = session.get(ProgramIdentity, int(programId[6:]))
         if identity is None:
@@ -1239,12 +1237,7 @@ def science_chronology_review(programId: str, nctId: str, cutoffDate: str):
         summary = row.summary if isinstance(row.summary, dict) else {}
         # Registry last-update dates are not proof of when each result became public.
         published = summary.get("lastUpdatePostDate")
-        publication_day = None
-        if isinstance(published, str):
-            try:
-                publication_day = datetime.strptime(published, "%Y-%m-%d").date()
-            except ValueError:
-                pass
+        publication_day = registry_publication_day(published)
         archive_day = row.fetched_at.date()
         return {
             "schemaVersion": "science-chronology-review-v1",
