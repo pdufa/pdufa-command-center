@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'scripts/**'
+      - 'listing_exclusions.py'
+      - 'tests/test_listing_exclusions.py'
+      - 'tests/test_phase_pipeline.py'
       - 'data/**'
       - 'gem_reference_frontend/**'
       - '.github/workflows/streamlit-validation.yml'
@@ -12,6 +15,9 @@ on:
     branches: [main]
     paths:
       - 'scripts/**'
+      - 'listing_exclusions.py'
+      - 'tests/test_listing_exclusions.py'
+      - 'tests/test_phase_pipeline.py'
       - 'data/**'
       - 'gem_reference_frontend/**'
       - '.github/workflows/streamlit-validation.yml'
@@ -48,6 +54,12 @@ jobs:
           python -m compileall -q new-platform/backend/app
       - name: Validate GEM source CSV integrity
         run: python scripts/validate_gem_source_ledgers.py
+      - name: Install offline Pipeline validation dependency
+        run: python -m pip install requests
+      - name: Verify dated issuer listing exclusions cannot qualify retired tickers
+        run: |
+          python -m unittest discover -s tests -p 'test_listing_exclusions.py' -v
+          python -m unittest discover -s tests -p 'test_phase_pipeline.py' -v
       - name: Check maintained research browser scripts
         run: |
           node --check gem_reference_frontend/dashboard.js
