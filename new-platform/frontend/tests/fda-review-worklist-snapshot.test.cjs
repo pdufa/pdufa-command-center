@@ -51,7 +51,7 @@ test("source search preparation cannot certify FDA review-cycle decisions or pro
 });
 
 test("SYSTEM STATUS shows dated research queue separately from live OUTCOME and is read-only", () => {
-  assert.match(ui, /OUTCOME source-review preparation — historical research only/);
+  assert.match(ui, /OUTCOME historical FDA source readiness — research only/);
   assert.match(ui, /quarantined FDA research workflow, not the live OUTCOME API/);
   assert.match(ui, /proven rejected or never approved/);
   assert.ok(ui.includes("<strong>not</strong>"));
