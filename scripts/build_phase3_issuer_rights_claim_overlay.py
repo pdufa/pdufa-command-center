@@ -23,6 +23,7 @@ CYTK_CASE = ROOT / "data/research_issuer_rights_claims_cytk_2026-10-26.json"
 ACAD_IOVA_CASE = ROOT / "data/research_issuer_rights_claims_acad_iova_2026-10-26.json"
 BCRX_CASE = ROOT / "data/research_issuer_rights_claims_bcrx_2026-10-26.json"
 AXSM_CASE = ROOT / "data/research_issuer_rights_claims_axsm_2026-10-26.json"
+CORT_ADMA_CASE = ROOT / "data/research_issuer_rights_claims_cort_adma_2026-10-26.json"
 EVIDENCE_AS_OF = "2026-10-26"
 
 def load_originals():
@@ -113,8 +114,17 @@ def collect_cases():
         or len(axsm.get("programs", [])) != 2
         or {p["asset"] for p in axsm["programs"]} != {"AXS-05", "AXS-12"}):
         raise ValueError("AXSM agency-confirmed historical FDA action evidence dossier missing")
+    cort_adma = json.loads(CORT_ADMA_CASE.read_text(encoding="utf-8"))
+    if (cort_adma.get("scope") != "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY"
+        or cort_adma.get("schemaVersion") != 1
+        or cort_adma.get("asOf") != EVIDENCE_AS_OF
+        or len(cort_adma.get("programs", [])) != 2
+        or {(p["issuerTicker"], p["issuerCik"], p["asset"]) for p in cort_adma["programs"]}
+            != {("CORT", "0001088856", "relacorilant"), ("ADMA", "0001368514", "RI-002")}):
+        raise ValueError("CORT/ADMA rights cases, issuer identities, or historical FDA source missing")
     return ([old_program] + newer["programs"] + cytk["programs"]
-            + acad_iova["programs"] + bcrx["programs"] + axsm["programs"])
+            + acad_iova["programs"] + bcrx["programs"] + axsm["programs"]
+            + cort_adma["programs"])
 
 
 def build():
@@ -161,11 +171,16 @@ def build():
                 or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", action_date)
                 or date.fromisoformat(action_date) > date.fromisoformat(EVIDENCE_AS_OF)
                 or agency_action.get("agency") != "US_FDA"
-                or agency_action.get("actionType") != "APPROVED_SUPPLEMENTAL_INDICATION"
+                or agency_action.get("actionType") not in ("APPROVED_SUPPLEMENTAL_INDICATION", "APPROVED_ORIGINAL_NDA")
                 or agency_action.get("independentlyVerifiedCompletedFdaAction") is not True
                 or agency_action.get("isCurrentFuturePdufa") is not False
                 or agency_action.get("currentPendingFDAAction") is not False
-                or agency_action.get("historicalIssuerReportedPdufaDate") != action_date
+                or (agency_action.get("historicalIssuerReportedPdufaDate") is not None
+                    and (not isinstance(agency_action["historicalIssuerReportedPdufaDate"], str)
+                        or not re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}",
+                            agency_action["historicalIssuerReportedPdufaDate"])
+                        or date.fromisoformat(agency_action["historicalIssuerReportedPdufaDate"])
+                            > date.fromisoformat(EVIDENCE_AS_OF)))
                 or source_url not in {source["url"] for source in sources if source["type"] == "OFFICIAL_FDA_FINAL_LABEL_APPROVAL"}
                 or not isinstance(mentioned, list) or len(mentioned) == 0
                 or len(mentioned) != len(set(mentioned))
@@ -317,7 +332,7 @@ if __name__ == "__main__":
     print("Historical trials with issuer rights-claim evidence linked:", result["issuer_rights_claim_evidence_linked_trials"], "/741")
     print("Historical trials not yet rights-claim reviewed:", result["claim_evidence_missing_or_unreviewed_trials"], "/741")
     print("Issuers with source-linked disclosures:", result["issuers_with_rights_claim_dossiers"], "/130")
-    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/10 researched")
+    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/12 researched")
     print("Official FDA-confirmed completed historical action events:",
           result["official_fda_confirmed_completed_historical_action_count"], "/741")
     print("Historical NCTs explicitly named by FDA to support the approved past action:",
