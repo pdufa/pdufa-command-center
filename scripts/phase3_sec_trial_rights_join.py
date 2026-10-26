@@ -113,7 +113,8 @@ def build_join(program, casebook, leads, pilot):
                 allowed = (entry.get("provisional_drug_or_biologic_names") if
                            kind == "REGISTERED_DRUG_OR_BIOLOGIC" else
                            entry.get("registry_conditions"))
-                if not isinstance(allowed, list) or name not in allowed:
+                normalized_allowed = { " ".join(v.strip().split()) for v in allowed } if isinstance(allowed, list) and all(isinstance(v, str) for v in allowed) else set()
+                if name not in normalized_allowed:
                     raise ValueError("SEC text lead does not match original NCT registered term")
                 seen_terms.add((nct, kind, name))
                 trial_lexical_sources.setdefault(nct, []).append({
