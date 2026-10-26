@@ -60,6 +60,11 @@ def select_pinned_pdf_sample(enriched_packets: list[dict], *, limit: int = 8) ->
             or not isinstance(sources, list)
             or not isinstance(leads, list)
             or len(sources) != len(leads)
+            or len(sources) != len(set(sources))
+            or set(sources) != {
+                lead.get("published_letter_source_sha256")
+                for lead in leads if isinstance(lead, dict)
+            }
             or packet.get("published_letter_references") != len(leads)
             or packet.get("model_eligible") is not False
             or packet.get("adjudicator_authenticated") is not False
