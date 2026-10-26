@@ -52,3 +52,37 @@ There is **no key configured or verified**, **no encrypted FDA image artifact up
 Even a correctly decrypted PNG is only source evidence. Independent, qualified human review must verify the original FDA application identity, original vs supplemental action, date and actual regulatory review cycle. The published FDA CRL corpus is still incomplete as the national NDA/BLA decision denominator.
 
 **Current scientific gate: 0 human visual reviews, 0 independently adjudicated FDA review-cycle outcomes, 0 model-eligible historical outcomes, approval rate/probability/accuracy unavailable.** No production scanner, trading or GEM JR/GEM FS/FA association changes.
+
+
+## Actual 19-PNG encryption/decryption rehearsal (October 25)
+
+The isolated, publicly auditable **source-backed research workflow**
+[40264726902](https://github.com/pdufa/pdufa-command-center/actions/runs/40264726902)
+successfully tested the complete cryptographic handoff against **all 19
+actual FDA-source PNG bitmaps** and their **two** private provenance
+manifests. The runner generated a fresh random 256-bit key *in memory*,
+encrypted the entire private image/manifest archive with authenticated
+AES-256-GCM, decrypted it in memory, independently compared the
+restored bytes of **every** image and both manifests with the original
+source files, and verified that a separate wrong key was rejected.
+
+No ciphertext, decryption key, ZIP, PNG, or PDF source-to-page mapping
+was uploaded as an artifact or committed to the public repository.
+The ephemeral encryption key and ciphertext were discarded when the
+research process exited. The only uploaded result was an **aggregate
+numeric source check**:
+[artifact 12625976504](https://github.com/pdufa/pdufa-command-center/actions/runs/40264726902/artifacts/12625976504).
+A pinned count-only index exists in
+`app/research_sources/hop_fda_ephemeral_visual_archive_roundtrip_20261025.json`,
+protected by regression tests.
+
+**What this demonstrates:** for the 19 PDF-derived images, the cryptographic
+implementation and whole-file integrity check work together, and a wrong
+key cannot reveal a plaintext archive. **What it does not demonstrate:**
+that a durable encrypted archive was created, an owner-supplied key or
+secure destination is configured, a reviewer received/decrypted an
+artifact, or any regulatory page was read or FDA review-cycle decision
+verified. An actual reviewer delivery still requires independently
+authorized encrypted storage, retained key custody, and authenticated
+reviewer access. The branch remains a draft; no production integration
+or live scientific prediction is authorized.
