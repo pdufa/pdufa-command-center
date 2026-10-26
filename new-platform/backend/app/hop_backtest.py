@@ -75,7 +75,15 @@ def walk_forward_backtest(
         losses = []
         if len(train) >= min_train:
             for row in usable:
-                value = score_fn(tuple(train), replace(row, outcome="WITHHELD"))
+                # The test snapshot may predate the fold boundary. Only labels
+                # decided before that snapshot can train its prediction.
+                asof_train = tuple(
+                    candidate for candidate in train
+                    if candidate.decision_date < row.public_features_as_of
+                )
+                if len(asof_train) < min_train:
+                    continue
+                value = score_fn(asof_train, replace(row, outcome="WITHHELD"))
                 if value is not None:
                     if (isinstance(value, bool) or not isinstance(value, (int, float))
                             or not isfinite(value) or not 0 <= value <= 1):

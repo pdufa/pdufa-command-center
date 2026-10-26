@@ -42,3 +42,33 @@ def test_nonfinite_and_boolean_scores_rejected(invalid_score):
     with pytest.raises(ValueError, match='probability'):
         walk_forward_backtest(records, [date(2020, 1, 1), date(2021, 1, 1)],
                               lambda train, case: invalid_score, min_train=1)
+
+
+def test_training_labels_must_precede_heldout_feature_snapshot():
+    records = [
+        row("known", 2018),
+        row("future_label", 2019),
+        row("heldout", 2020, evidence_year=2019),
+    ]
+    seen = []
+    def score(train, case):
+        seen.append([r.application_id for r in train])
+        return 0.5
+    folds = walk_forward_backtest(
+        records, [date(2020, 1, 1), date(2021, 1, 1)],
+        score, min_train=1,
+    )
+    assert seen == [["known"]]
+    assert folds[0].test_count == 1
+
+
+def test_insufficient_asof_history_abstains_without_scoring():
+    records = [row("future_label", 2019), row("heldout", 2020, evidence_year=2019)]
+    folds = walk_forward_backtest(
+        records, [date(2020, 1, 1), date(2021, 1, 1)],
+        lambda train, case: pytest.fail("must abstain"), min_train=1,
+    )
+    assert folds[0].eligible_test_count == 1
+    assert folds[0].abstained_test_count == 1
+    assert folds[0].test_count == 0
+    assert folds[0].brier_score is None
