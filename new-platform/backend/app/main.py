@@ -1292,6 +1292,41 @@ def science_evidence_date_review(programId: str, nctId: str, cutoffDate: str,
         }
 
 
+@app.get("/api/science/source-authenticity-review", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_source_authenticity_review(programId: str, nctId: str):
+    """Validate archival byte integrity, not clinical truth or independent publication."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT absent from program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived NCT record unavailable")
+        import hashlib
+        computed = hashlib.sha256(row.payload_gzip).hexdigest()
+        stored = row.sha256 or ""
+        digest_match = secrets.compare_digest(computed, stored.lower())
+        return {
+            "schemaVersion": "science-source-authenticity-v1",
+            "programId": programId, "nctId": nctId,
+            "archiveDigestMatchesStored": digest_match,
+            "archiveSha256": computed,
+            "archiveFetchedAt": row.fetched_at.isoformat(),
+            "independentlyAuthenticated": False,
+            "publicationChronologyVerified": False,
+            "scientificEvidenceVerified": False,
+            "assessmentScorePermitted": False,
+            "approvalProbability": None,
+            "reason": "Matching archived bytes to a stored digest detects changes, not original-source authenticity.",
+        }
+
+
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
