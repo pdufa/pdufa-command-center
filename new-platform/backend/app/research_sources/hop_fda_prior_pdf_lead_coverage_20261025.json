@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "UNVERIFIED_ORIGINAL_FDA_EVIDENCE_PACKET_PDF_LEADS_JOINED",
+  "research_cutoff": "2026-10-25",
+  "source_research_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40256743054",
+  "source_research_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40256743054/artifacts/12622846842",
+  "source_pdf_probe_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40232393298",
+  "source_pdf_probe_original_archive_sha256": "744de010761c9ba445c3756ff7e47d5715c3e9d5aef48f5b1fd663646b5d6732",
+  "total_private_original_application_research_packets": 101,
+  "published_letter_references_in_packets": 124,
+  "previously_probed_official_pdf_letter_references": 123,
+  "unavailable_published_pdf_letter_references": 1,
+  "distinct_prior_confirmed_pdf_sha256_in_packet_worklist": 122,
+  "shared_full_pdf_digests_across_multiple_letter_references": 1,
+  "packet_availability_counts": {
+    "ALL_PUBLISHED_PDF_LEADS_AVAILABLE_FROM_PRIOR_AUDIT": 100,
+    "PARTIAL_PUBLISHED_PDF_LEADS": 0,
+    "NO_PUBLISHED_PDF_LEAD": 1
+  },
+  "entire_fda_prior_confirmed_pdf_letter_count": 457,
+  "entire_fda_published_letter_source_reference_count": 458,
+  "prior_pdf_bytes_probed_not_revalidated_in_current_run": true,
+  "individual_original_letter_page_ranges_verified": 0,
+  "original_fda_review_cycles_independently_adjudicated": 0,
+  "complete_national_nda_bla_decision_denominator_verified": false,
+  "model_eligible_records": 0,
+  "approval_rate": null,
+  "prediction_probability": null,
+  "predictive_accuracy": null,
+  "readiness": "REVIEW_REQUIRED",
+  "private_pdf_source_link_records_not_exported": true,
+  "note": "Actual 2026-10-25 source-linked research PDF leads. Source PDF bytes were previously checked in a saved October FDA artifact; none was independently re-reviewed for clinical identity, action date, or original decision cycle in this operation."
+}
