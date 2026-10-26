@@ -29,7 +29,7 @@
         },
         {
           "type": "ISSUER_SEC_10_K",
-          "publishedOn": "2026-03-23",
+          "publishedOn": "2026-03-24",
           "url": "https://www.sec.gov/Archives/edgar/data/949858/000119312526120690/achv-20251231.htm",
           "assertion": "Sopharma and University of Bristol contractual rights and identified supply obligations."
         },
@@ -104,7 +104,7 @@
       "sourceDocuments": [
         {
           "type": "ISSUER_SEC_10_Q",
-          "publishedOn": "2026-08-06",
+          "publishedOn": "2026-08-05",
           "url": "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000045/mirm-20260630.htm",
           "assertion": "Shire/Takeda worldwide exclusive license with royalty obligations, sublicense and Japan arrangement; contract summary, not independent legal adjudication."
         },
@@ -146,7 +146,7 @@
       "sourceDocuments": [
         {
           "type": "ISSUER_SEC_10_Q",
-          "publishedOn": "2026-08-06",
+          "publishedOn": "2026-08-05",
           "url": "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000045/mirm-20260630.htm",
           "assertion": "Bluejay acquisition closed Jan 23, 2026 and Novartis license assignment grants worldwide development and commercialization rights to brelovitug, subject to milestones/royalties."
         },
