@@ -39,6 +39,21 @@ class ReceiptAsOfAuditTests(unittest.TestCase):
         self.assertFalse(r["historical_feature_asof_certified"])
         self.assertTrue(all(not x["model_eligible"] for x in r["records"]))
 
+    def test_future_fda_action_labels_are_not_asof_features(self):
+        # A historical research sample may list a future CRL to identify the
+        # record, but it must never certify that label as an as-of feature.
+        for cutoff in ("2024-05-19", "2025-07-23", "2026-10-26"):
+            audit = build_receipt_asof_audit(cutoff)
+            self.assertTrue(audit["retrospective_action_labels_excluded_from_features"])
+            self.assertFalse(audit["fda_final_action_publication_asof_verified"])
+            for row in audit["records"]:
+                self.assertEqual(row["final_fda_action_date_role"],
+                                 "retrospective_research_label_only")
+                self.assertIsNone(row["final_fda_action_date_asof"])
+                self.assertFalse(row["final_fda_action_publication_asof_verified"])
+                self.assertFalse(row["historical_feature_asof_certified"])
+                self.assertFalse(row["model_eligible"])
+
     def test_reject_invalid_cutoff(self):
         with self.assertRaises(ValueError):
             build_receipt_asof_audit("2025-99-99")
