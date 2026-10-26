@@ -35,7 +35,8 @@ export const WORKFLOW_HISTORY_URL =
 const API = "https://api.github.com/repos/pdufa/pdufa-command-center";
 const RUNS_ENDPOINT = API + "/actions/workflows/main-phase3-evidence-qualification.yml/runs?event=schedule&branch=main&per_page=25";
 const REQUIRED_ARTIFACT = "main-phase3-evidence-qualification-research-only";
-const INTEGRITY_STEP = "Reconcile 14 complete source reports and create SHA256 artifact manifest";
+// Stable GitHub Actions job-step API contract; never encode changing file count.
+export const INTEGRITY_STEP = "Verify MAIN Phase 3 research integrity manifest [nightly-integrity-v1]";
 const MAX_JOB_QUERIES = 12;
 const STALE_MILLIS = 36 * 60 * 60 * 1000;
 // PR #471 installed the first nominal Pacific nightly schedule on Oct 26.
