@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import type { NumericForecastDisplay } from "../lib/numeric-forecast-metrics";
 import { stageLabel } from "../lib/candidate-assessments";
 import { createNumericForecastDisplay, HISTORICAL_SIMILARITY_DIMENSIONS } from "../lib/numeric-forecast-metrics";
+import PredictionPriorityMetrics from "./PredictionPriorityMetrics";
 
 const fmt = (n:number) => Number(n.toFixed(1)).toLocaleString("en-US");
 const fraction = (n:number | null, denominator:number) => (n === null ? "—" : fmt(n)) + " / " + fmt(denominator);
@@ -33,6 +34,8 @@ export default function NumericForecastMetrics({detail,stage}: {detail:Assessmen
     {label:"Readiness numerical grade",value:fraction(current.readinessGradeOutOf100,100),note:"Awaiting defensible source-backed grading criteria"},
     {label:"Reluctance numerical grade",value:fraction(current.reluctanceGradeOutOf100,100),note:"Unresolved-risk grade not yet independently derived"},
   ];
+  const primaryCards = cards.slice(0,4);
+  const secondaryCards = cards.slice(4);
   return <section className="panel" aria-label="Numerical trial forecast metrics" style={{margin:"14px 0",border:"1px solid #94a3b8",borderRadius:12}}>
     <div className="sectionhead">
       <div>
@@ -43,14 +46,20 @@ export default function NumericForecastMetrics({detail,stage}: {detail:Assessmen
     <p style={{margin:"10px 0",fontSize:13}}>
       <strong>Historical-comparable forecast: NOT YET SCORED.</strong> These are existing numerical research measurements, not a modeled chance of FDA approval. Unknown values appear as <strong>—</strong>; observed zero is displayed as <strong>0</strong>.
     </p>
+    <p role="status" style={{marginTop:10,padding:11,border:"1px solid #cbd5e1",borderRadius:8,background:"#f8fafc"}}>
+      <strong>FDA approval probability: — / 100% (not validated).</strong> Historical FDA review-cycle adjudication and predictive calibration remain incomplete. No trading or FS/FA changes are authorized.
+    </p>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:10,margin:"14px 0"}}>
-      {cards.map(c=><div key={c.label} style={numericCard}>
+      {primaryCards.map(c=><div key={c.label} style={numericCard}>
         <div style={muted}>{c.label}</div>
         <strong style={{fontSize:22,fontVariantNumeric:"tabular-nums",display:"block",margin:"7px 0"}}>{c.value}</strong>
         <small style={muted}>{c.note}</small>
       </div>)}
     </div>
-    <h4>Underlying metric ratings — 0 to 100 scale</h4>
+    <PredictionPriorityMetrics/>
+    <details style={{marginTop:15,border:"1px solid #cbd5e1",borderRadius:9,padding:"9px 12px"}}>
+      <summary style={{cursor:"pointer",fontWeight:700}}>Existing research scores — 7 metrics · {current.completeCategories} / {current.categoryTotal} fully rated</summary>
+      <h4>Underlying metric ratings — 0 to 100 scale</h4>
     <div className="table-scroll">
       <table style={{width:"100%",fontVariantNumeric:"tabular-nums"}}>
         <thead><tr>
@@ -75,7 +84,18 @@ export default function NumericForecastMetrics({detail,stage}: {detail:Assessmen
       Numerical rating = recorded complete category points ÷ category maximum × 100. If its evidence is incomplete, the rating is withheld even when observed partial points are nonzero.
       The original evidence, rules, source dates and per-measurement scores remain in the expandable assessment tables below.
     </p>
-    <details style={{marginTop:15}}>
+    </details>
+    <details style={{marginTop:15,border:"1px solid #cbd5e1",borderRadius:9,padding:"9px 12px"}}>
+      <summary style={{cursor:"pointer",fontWeight:700}}>Additional research and readiness metrics — 4 items</summary>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,200px),1fr))",gap:10,margin:"14px 0"}}>
+        {secondaryCards.map(c=><div key={c.label} style={numericCard}>
+          <div style={muted}>{c.label}</div>
+          <strong style={{fontSize:22,fontVariantNumeric:"tabular-nums",display:"block",margin:"7px 0"}}>{c.value}</strong>
+          <small style={muted}>{c.note}</small>
+        </div>)}
+      </div>
+    </details>
+    <details style={{marginTop:15,border:"1px solid #cbd5e1",borderRadius:9,padding:"9px 12px"}}>
       <summary style={{cursor:"pointer",fontWeight:700}}>Historical comparable scoring — {HISTORICAL_SIMILARITY_DIMENSIONS.length} dimensions, awaiting verified trial matches</summary>
       <p style={muted}>The eventual historical comparison must match on exact disease, mechanism, population, design, endpoints, clinical results, safety and FDA precedent. No historical trial similarity rating is assigned without reviewed comparator evidence and a documented scoring method.</p>
       <div className="table-scroll"><table>
@@ -83,9 +103,6 @@ export default function NumericForecastMetrics({detail,stage}: {detail:Assessmen
         <tbody>{HISTORICAL_SIMILARITY_DIMENSIONS.map((label,i)=><tr key={label}><td>{i+1}/8 · {label}</td><td><strong>— / 100</strong></td><td>— / —</td></tr>)}</tbody>
       </table></div>
     </details>
-    <p role="status" style={{marginTop:14,padding:11,border:"1px solid #cbd5e1",borderRadius:8,background:"#f8fafc"}}>
-      <strong>FDA approval probability: — / 100% (not validated).</strong> The historical FDA denominator, review-cycle adjudication and predictive calibration are not complete.
-      These ratings do not authorize trading, change GEM JR/GEM FS/FA presets or trigger scoring jobs.
-    </p>
+
   </section>;
 }
