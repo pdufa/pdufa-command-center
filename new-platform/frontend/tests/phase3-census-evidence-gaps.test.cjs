@@ -62,7 +62,7 @@ test("complete evidence-gap CSV has 741 unique source rows with zero fabricated 
   const csv=buildPhase3EvidenceGapCsv(input);
   const lines=csv.trimEnd().split("\r\n");
   assert.equal(lines.length,742);
-  assert.equal(lines[0].slice(1,-1).split('","').length,16);
+  assert.equal(lines[0].slice(1,-1).split('","').length,17);
   assert.match(lines[0],/"full_pipeline_qualification"/);
   assert.match(lines[0],/"fda_probability"/);
   assert.equal((csv.match(/"NOT_ESTABLISHED"/g)||[]).length,741);
