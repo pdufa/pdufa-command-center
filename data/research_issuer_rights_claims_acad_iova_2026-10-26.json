@@ -18,7 +18,8 @@
         "NEUREN_WORLDWIDE_EXCLUSIVE_LICENSE_WITH_MILESTONE_AND_ROYALTY_OBLIGATIONS",
         "DAYBUE_RETT_US_APPROVAL_GRANTED_2023_03_10_NOT_FUTURE_PDUFA",
         "TWO_TERMINATED_STUDIES_HISTORICAL_NO_PENDING_FDA_ACTION",
-        "FDA_APPLICATION_FOR_ANOTHER_INDICATION_NOT_ESTABLISHED"
+        "FDA_APPLICATION_FOR_ANOTHER_INDICATION_NOT_ESTABLISHED",
+        "EU_2026_DAYBU_AUTHORIZATION_NOT_PENDING_US_FDA_PDUFA"
       ],
       "sourceDocuments": [
         {
@@ -45,6 +46,21 @@
           "type": "OFFICIAL_US_REGISTRY_DAFFODIL",
           "url": "https://clinicaltrials.gov/study/NCT04988867",
           "assertion": "Acadia-sponsored trofinetide Rett syndrome DAFFODIL study in girls 2-5; sponsor terminated after FDA marketing approval and redirected patients to commercial trofinetide."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_LAVENDER",
+          "url": "https://clinicaltrials.gov/study/NCT04181723",
+          "assertion": "ClinicalTrials.gov NCT04181723 records Acadia-sponsored pivotal LAVENDER randomized trofinetide Phase 3 trial in Rett syndrome; historical study associated with existing FDA-approved DAYBUE, not a new 2026 PDUFA."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_LILAC",
+          "url": "https://clinicaltrials.gov/study/NCT04279314",
+          "assertion": "ClinicalTrials.gov NCT04279314 records Acadia-sponsored long-term open-label LILAC trofinetide extension in Rett syndrome; completed historical safety work."
+        },
+        {
+          "type": "ISSUER_2026_EU_AUTHORIZATION",
+          "url": "https://ir.acadia.com/news/news-details/2026/European-Commission-Approves-DAYBU-trofinetide-as-the-First-and-Only-Treatment-for-Neurobehavioral-Symptoms-of-Rett-Syndrome-in-the-European-Union/default.aspx",
+          "assertion": "Acadia announced European Commission authorization for trofinetide (DAYBU) in August 2026; this is a completed EU action and not a pending U.S. FDA PDUFA date."
         }
       ],
       "trialLinks": [
@@ -67,6 +83,26 @@
           "historicalIssuerReportedPdufaDate": null,
           "currentPdufaTargetVerified": null,
           "expectedRegistryStatus": "TERMINATED"
+        },
+        {
+          "nctId": "NCT04181723",
+          "study": "LAVENDER",
+          "indication": "Rett syndrome in girls and women; trofinetide efficacy trial supporting existing commercial DAYBUE",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04181723",
+          "regulatoryContext": "PIVOTAL_LAVENDER_RETT_US_APPROVED_2023_03_10_HISTORICAL_NOT_NEW_PENDING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "COMPLETED"
+        },
+        {
+          "nctId": "NCT04279314",
+          "study": "LILAC",
+          "indication": "Rett syndrome; open-label trofinetide safety extension",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04279314",
+          "regulatoryContext": "TROFINETIDE_OPEN_LABEL_EXTENSION_US_RETT_APPROVED_2023_NO_NEW_PENDING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "COMPLETED"
         }
       ]
     },
