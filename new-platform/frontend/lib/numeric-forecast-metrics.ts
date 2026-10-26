@@ -58,7 +58,7 @@ export function createNumericForecastDisplay(detail: AssessmentDetail, stage: As
   const model = detail?.models?.[stage];
   if (!model || !Array.isArray(model.categories) || model.categories.length !== 7
       || typeof detail.modelVersion !== "string" || !detail.modelVersion
-      || typeof detail.asOf !== "string" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(detail.asOf)
+      || typeof detail.asOf !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(detail.asOf)
       || !bounded(model.coverage, 100) || !bounded(model.observedPoints, 100)
       || (model.score !== null && !bounded(model.score, 100))) {
     throw new Error("A reliable seven-category research scoring display is unavailable");
