@@ -6,6 +6,7 @@ from typing import Optional
 
 ACTION_TYPES = frozenset({"approval", "accelerated_approval", "complete_response", "other"})
 NON_ACTION_TYPES = frozenset({"pdufa_goal", "meeting", "amendment", "incomplete_response", "review_recommendation"})
+SOURCE_DOCUMENT_ROLES = frozenset({"signed_fda_final_action_letter", "fda_regulatory_history_summary"})
 
 @dataclass(frozen=True)
 class FDAEvent:
@@ -17,6 +18,7 @@ class FDAEvent:
     final_agency_action: bool = False
     source_document_sha256: Optional[str] = None
     source_publication_date: Optional[date] = None
+    source_document_role: str = "signed_fda_final_action_letter"
 
     def __post_init__(self):
         if not self.application_key or not self.submission_key or not self.source_url.startswith("https://"):
@@ -25,6 +27,8 @@ class FDAEvent:
             raise ValueError("Unsupported event type")
         if self.final_agency_action and self.event_type not in ACTION_TYPES:
             raise ValueError("Non-actions cannot be final agency actions")
+        if self.source_document_role not in SOURCE_DOCUMENT_ROLES:
+            raise ValueError("Unsupported FDA evidence document role")
         if self.source_document_sha256 is not None and (
             len(self.source_document_sha256) != 64
             or any(ch not in "0123456789abcdef" for ch in self.source_document_sha256)
