@@ -8,7 +8,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from .science_chronology import strict_iso_day, registry_publication_day
+from .science_chronology import strict_iso_day, registry_publication_day, source_eligible_at_cutoff
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
@@ -1252,6 +1252,43 @@ def science_chronology_review(programId: str, nctId: str, cutoffDate: str):
             "eligibleForHistoricalPrediction": False,
             "approvalProbability": None,
             "reason": "An archive fetch and registry update date cannot certify when individual results became public.",
+        }
+
+
+@app.get("/api/science/evidence-date-review", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_evidence_date_review(programId: str, nctId: str, cutoffDate: str,
+                                 publishedAt: str, verifiedAt: str):
+    """Review declared source dates without claiming independent authenticity."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    if strict_iso_day(cutoffDate) is None:
+        raise HTTPException(status_code=422, detail="Invalid evidence cutoff")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT absent from program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived NCT record unavailable")
+        date_pass = source_eligible_at_cutoff(publishedAt, verifiedAt, cutoffDate)
+        # Dates are caller-declared; they cannot certify the source independently.
+        return {
+            "schemaVersion": "science-evidence-date-review-v1",
+            "programId": programId, "nctId": nctId,
+            "cutoffDate": cutoffDate,
+            "declaredPublishedAt": publishedAt,
+            "declaredVerifiedAt": verifiedAt,
+            "declaredDatesPassCutoff": date_pass,
+            "sourceAuthenticated": False,
+            "sourceChronologyVerified": False,
+            "assessmentScorePermitted": False,
+            "approvalProbability": None,
+            "sourceSha256": row.sha256,
+            "reason": "Declared dates alone cannot establish an authenticated, historically available source.",
         }
 
 
