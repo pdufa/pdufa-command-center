@@ -32,7 +32,7 @@ REQUIRED_TEXT = (
     "Backup & Recovery",
     "Prediction Validation",
     "Final Acceptance",
-    "No numerical installation percentage is asserted",
+    "These gate counts do not measure percentage of engineering hours remaining.",
     "SCIENCE and OUTCOME — protected evidence checks",
     "Verify current SCIENCE + OUTCOME evidence",
     "SCIENCE · 40 investigations",
