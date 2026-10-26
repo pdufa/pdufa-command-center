@@ -56,6 +56,102 @@ class ListingExclusionTests(unittest.TestCase):
         self.assertEqual(resolved_pipeline_status({**state, "market_cap_source_unavailable": 2}, other_missing,
                                                  {"TBPH": RECORD}), (state["status"], 0))
 
+
+    def test_published_qncx_to_irla_notice_retains_historical_programs_only(self):
+        ledger = json.loads((Path(__file__).resolve().parents[1]
+                             / "data/phase_pipeline_listing_exclusions.json").read_text())
+        now = datetime(2026, 10, 26, 14, tzinfo=timezone.utc)
+        registry = [*REGISTRY, {
+            "ticker": "QNCX", "company": "Quince Therapeutics, Inc.",
+            "cik10": "0001662774",
+        }]
+        result = validated_listing_exclusions(ledger, registry, now)
+        self.assertEqual(set(result), {"TBPH", "QNCX"})
+        changed = result["QNCX"]
+        self.assertEqual(changed["replacement_ticker"], "IRLA")
+        self.assertEqual(changed["status"], "SYMBOL CHANGED — OLD TICKER RETIRED")
+        self.assertEqual(changed["effective_date"], "2026-10-12")
+        self.assertEqual(changed["source_url"],
+                         "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-724")
+        self.assertNotIn("IRLA", result,
+                         "Successor IRLA is not automatically a verified candidate")
+        self.assertEqual(universe_gate({"ticker": "QNCX",
+                         "market_cap_status": "NOT_LISTED"}, now.date())[0], "FAIL")
+
+    def test_predecessor_retirement_requires_valid_exact_match_and_elapsed_action(self):
+        action = {
+            "ticker": "QNCX", "company": "Quince Therapeutics, Inc.",
+            "cik10": "0001662774",
+            "status": "SYMBOL CHANGED — OLD TICKER RETIRED",
+            "effective_date": "2026-10-12", "source_date": "2026-10-09",
+            "source_url": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-724",
+            "replacement_ticker": "IRLA",
+            "checked_at": "2026-10-26T13:27:11.549+00:00",
+        }
+        registry = [{k: action[k] for k in ("ticker", "company", "cik10")}]
+        now = datetime(2026, 10, 26, 14, tzinfo=timezone.utc)
+        self.assertEqual(
+            validated_listing_exclusions({"records": [action]}, registry, now),
+            {"QNCX": action})
+        bads = [
+            {"replacement_ticker": "QNCX"},
+            {"replacement_ticker": "IRLA|QNCX"},
+            {"replacement_ticker": ""},
+            {"replacement_ticker": None},
+            {"ticker": "IRLA"},
+            {"company": "Unrelated issuer"},
+            {"cik10": "0001234567"},
+            {"effective_date": "2026-10-27"},
+            {"source_date": "2026-10-13"},
+            {"source_url": "http://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-724"},
+            {"source_url": "https://www.nasdaqtrader.com.evil.test/TraderNews.aspx?id=ECA2026-724"},
+            {"status": "SYMBOL CHANGE ANNOUNCED"},
+        ]
+        for changed in bads:
+            with self.subTest(changed=changed):
+                self.assertEqual(validated_listing_exclusions(
+                    {"records": [{**action, **changed}]}, registry, now), {})
+        self.assertEqual(validated_listing_exclusions({"records": [action, action]},
+                         registry, now), {})
+        self.assertEqual(validated_listing_exclusions({"records": [action]},
+                         registry, datetime(2026, 10, 11, 14, tzinfo=timezone.utc)), {})
+
+    def test_qncx_historical_trial_survives_without_current_listing_or_successor(self):
+        notice = json.loads((Path(__file__).resolve().parents[1]
+                             / "data/phase_pipeline_listing_exclusions.json").read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            reg = [{"ticker": "QNCX", "company": "Quince Therapeutics, Inc.",
+                    "cik10": "0001662774"}]
+            for name, fields, rows in (
+                ("company_registry.csv", list(reg[0]), reg),
+                ("phase_pipeline.csv", COLUMNS, [{
+                    "ticker": "QNCX", "company": "Quince Therapeutics, Inc.",
+                    "nct_id": "NCT87654321", "program_key": "QNCX|legacy trial|disease",
+                    "phases": "PHASE2",
+                }]),
+            ):
+                with (root / name).open("w", newline="") as handle:
+                    writer = csv.DictWriter(handle, fieldnames=fields)
+                    writer.writeheader()
+                    writer.writerows(rows)
+            (root / "phase_pipeline_listing_exclusions.json").write_text(json.dumps(notice))
+            with patch("scripts.phase_pipeline.datetime") as clock, \\
+                    patch("requests.Session") as session, \\
+                    patch("scripts.phase_pipeline.fetch_market_caps", return_value=[]) as fetch:
+                clock.now.return_value = datetime(2026, 10, 26, 14, tzinfo=timezone.utc)
+                session.return_value.get.return_value.json.return_value = {"studies": []}
+                state = scan(root)
+            fetch.assert_called_once_with(set())
+            self.assertEqual(state["market_cap_listing_excluded_tickers"], 1)
+            row = read_rows(root / "phase_pipeline.csv")[0]
+            self.assertEqual(row["ticker"], "QNCX")
+            self.assertEqual(row["nct_id"], "NCT87654321")
+            self.assertEqual(row["market_cap_status"], "NOT_LISTED")
+            self.assertEqual(row["market_cap"], "")
+            self.assertEqual(row["universe_gate"], "FAIL")
+            self.assertNotIn("IRLA", str(row))
+
     def test_collector_skips_retired_quote_and_retains_historical_trial(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
