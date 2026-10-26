@@ -39,5 +39,19 @@
   "note": "One NDA original-submission key appears in pinned official FDA tabular source but not the separately pinned openFDA registry artifact; original FDA decision status and review cycle remain independently unverified.",
   "examples_truncated": false,
   "status_mismatch_key_examples": [],
-  "date_mismatch_key_examples": []
+  "date_mismatch_key_examples": [],
+  "tabular_only_original_submission_fda_document_lead": {
+    "application_id": "NDA206627",
+    "original_submission_number": 1,
+    "fda_primary_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2014/206627Orig1s000Approv.pdf",
+    "source_document_title": "FDA original approval package for Hysingla ER",
+    "fda_document_application_id": "206627Orig1s000",
+    "published_fda_approval_date": "2014-11-20",
+    "source_document_page_index_zero_based": 0,
+    "original_action_letter_page_index_zero_based": 3,
+    "source_document_is_official": true,
+    "verified_review_cycle_labels": 0,
+    "independent_human_adjudication_complete": false,
+    "evidence_use": "PUBLIC_FDA_SOURCE_LEAD_NOT_TRAINING_LABEL"
+  }
 }
