@@ -57,6 +57,8 @@ test("missing, forged, reordered or promoted research source figures are rejecte
 });
 
 test("MAIN site card prominently separates research history from live membership",async()=>{
+  const originalFetch=global.fetch;
+  global.fetch=async()=>({ok:false,status:503});
   let renderer;
   try{
     await act(async()=>{renderer=create(React.createElement(MainPhase3ResearchPanel));});
@@ -79,10 +81,17 @@ test("MAIN site card prominently separates research history from live membership
     const rows=renderer.root.findAllByType("tr");
     assert.equal(rows.length,10); // 1 header + all 9 mandatory gates
     const links=renderer.root.findAllByType("a");
-    assert.equal(links.length,1);
+    assert.ok(links.length>=2);
     assert.equal(links[0].props.href,pinned.sourceRunUrl);
     assert.equal(links[0].props.target,"_blank");
-  }finally{if(renderer)await act(async()=>renderer.unmount());}
+    assert.ok(links.some(link=>String(link.props.href).includes(
+      "/actions/workflows/main-phase3-evidence-qualification.yml")));
+    const status=renderer.root.findAllByProps({role:"status"});
+    assert.ok(status.length>=1); // async network state is tested in the dedicated health suite
+  }finally{
+    if(renderer)await act(async()=>renderer.unmount());
+    global.fetch=originalFetch;
+  }
 });
 
 test("research panel appears only within PDUFA Pipeline and does not change stage memberships",()=>{

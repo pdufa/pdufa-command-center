@@ -1,4 +1,5 @@
 import pinned from "../data/main-phase3-qualification-snapshot-20261026.json";
+import MainPhase3NightlyHealth from "./MainPhase3NightlyHealth";
 import {parsePinnedResearchSnapshot} from "../lib/main-phase3-research-snapshot";
 import styles from "./MainPhase3ResearchPanel.module.css";
 
@@ -46,6 +47,7 @@ export default function MainPhase3ResearchPanel() {
       current commercial rights: <strong>{report.independentlyVerifiedCurrentRightsTrials}/741</strong>.
       No trial is promoted because a source URL, SEC index or reviewer assertion exists.
     </p>
+    <MainPhase3NightlyHealth />
     <details className={styles.details}>
       <summary>All nine mandatory checks · PASS / FAIL / REVIEW</summary>
       <div className={styles.tableScroll}>
