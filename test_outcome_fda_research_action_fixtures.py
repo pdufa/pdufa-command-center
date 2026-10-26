@@ -6,7 +6,7 @@ class ResearchFixturesTests(unittest.TestCase):
     def test_distinct_applications_and_actions(self):
         result = research_summary()
         self.assertEqual(result["applications_with_sampled_actions"], 5)
-        self.assertEqual(result["sampled_action_endpoints"], 9)
+        self.assertEqual(result["sampled_action_endpoints"], 12)
 
     def test_never_model_eligible(self):
         result = research_summary()
