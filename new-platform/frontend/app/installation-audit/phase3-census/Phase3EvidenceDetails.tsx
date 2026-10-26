@@ -5,6 +5,7 @@ import {
   type PipelineEvidenceGap,
 } from "../../../lib/phase3-census-evidence-gaps";
 import type { Phase3CensusTrial } from "../../../lib/phase3-census-rows";
+import Phase3LiveRegistry from "./Phase3LiveRegistry";
 
 /**
  * On-demand view of *unverified* research gaps for one exact NCT.
@@ -41,6 +42,8 @@ export default function Phase3EvidenceDetails({ trial }: { trial: Phase3CensusTr
       inferred from this historical CSV.</p>
     <p><a href={assessed.registrySource} target="_blank" rel="noopener noreferrer">
       Inspect original ClinicalTrials.gov study record</a></p>
+    <Phase3LiveRegistry nctId={assessed.nctId}
+      datedStatus={assessed.registryStatus} censusLeadCompany={assessed.company}/>
     <small>0 validated FDA probability estimates; no Pipeline membership updates.
       A matching census record is NOT an FDA regulatory event.</small>
   </section>;
