@@ -7,6 +7,10 @@ import {
   parsePhase3CensusCsv, PHASE3_CENSUS_EXPECTED_ROWS,
   type Phase3CensusTrial, type Phase3CensusRows,
 } from "./phase3-census-rows";
+import {
+  parsePhase3CensusSourceDirectory, sourcesForPhase3Trial, companyResearchLinks,
+  FDA_RESEARCH_LINKS, type CensusResearchLink, type Phase3CompanySources,
+} from "./phase3-census-sources";
 
 export const PIPELINE_REVIEW_GATES = [
   { id: "phase3_registry_snapshot", label: "Phase 3 trial identity in dated registry census", state: "CENSUS_ONLY" },
@@ -19,6 +23,34 @@ export const PIPELINE_REVIEW_GATES = [
 ] as const;
 
 type GateId = typeof PIPELINE_REVIEW_GATES[number]["id"];
+export const PIPELINE_GATE_AUTOMATION: Record<GateId, { mode: "STRUCTURED_RECHECK" | "DOCUMENT_RECONCILIATION" | "RULE_BY_RULE"; note: string }> = {
+  phase3_registry_snapshot: { mode:"STRUCTURED_RECHECK", note:"Can recheck exact NCT, phase, sponsor, registry status and update date from structured registry data. This is not a program-activity check." },
+  listed_market_cap_snapshot: { mode:"STRUCTURED_RECHECK", note:"Can recheck exact ticker/CIK, current listing, dated market cap and corporate actions. The saved quote is not a current listing check." },
+  drug_indication: { mode:"DOCUMENT_RECONCILIATION", note:"Registry interventions and conditions are research leads. Reconcile the exact investigational drug, formulation, indication and study arms with original company documents." },
+  program_active: { mode:"DOCUMENT_RECONCILIATION", note:"Find a dated company statement for this exact program and check for discontinuation. Recruiting/completed registry status cannot settle this gate." },
+  sponsor_rights: { mode:"DOCUMENT_RECONCILIATION", note:"Reconcile current development rights and partner/licensee identities against dated agreements, filings and company statements. A lead sponsor alone cannot settle this gate." },
+  fda_us_pathway: { mode:"DOCUMENT_RECONCILIATION", note:"Match original FDA/company records to the exact drug, indication, application and review cycle. General FDA links and a missing search result do not prove a pending PDUFA or absence of one." },
+  mandatory_restrictions: { mode:"RULE_BY_RULE", note:"Evaluate each existing mandatory restriction independently with its required source and freshness checks. Missing input remains unresolved; preserve the existing list and preset associations." },
+};
+
+export function researchLinksForPhase3Gate(id: GateId, trial: Phase3CensusTrial, company: Phase3CompanySources): CensusResearchLink[] {
+  const registry = [
+    {label:"Original ClinicalTrials.gov study record",url:trial.sourceUrl},
+    {label:"Exact-NCT registry API record",url:`https://clinicaltrials.gov/api/v2/studies/${trial.nctId}`},
+  ];
+  switch(id) {
+    case "phase3_registry_snapshot": return registry;
+    case "listed_market_cap_snapshot": return [
+      {label:"Market-cap source (saved quote; opening requests current data)",url:company.marketCapSourceUrl},
+      ...companyResearchLinks(company),
+    ];
+    case "drug_indication": return [...registry,...companyResearchLinks(company)];
+    case "program_active":
+    case "sponsor_rights": return companyResearchLinks(company);
+    case "fda_us_pathway": return [...FDA_RESEARCH_LINKS,...companyResearchLinks(company)];
+    case "mandatory_restrictions": return [];
+  }
+}
 type GateState = "CENSUS_ONLY" | "NOT_VERIFIED";
 export type PipelineReviewGroup = "REGISTRY_OPEN_RECORD" | "REGISTRY_CLOSED_RECORD" | "REGISTRY_UNKNOWN";
 export type PipelineEvidenceGap = {
@@ -118,9 +150,10 @@ function cell(value: string | number) {
   return '"' + safe.replaceAll('"','""') + '"';
 }
 
-export function buildPhase3EvidenceGapCsv(sourceCsv: string): string {
+export function buildPhase3EvidenceGapCsv(sourceCsv: string, sourceValue: unknown): string {
   const original=parsePhase3CensusCsv(sourceCsv);
   const summary=summarizePhase3EvidenceGaps(original);
+  const directory=parsePhase3CensusSourceDirectory(sourceValue,original);
   if (summary.qualifiedPipelineTotal!==null || summary.evidenceVerifiedComplete) fail();
   const headers=[
     "nct_id","ticker","company","clinicaltrials_status","registry_status_group",
@@ -128,15 +161,26 @@ export function buildPhase3EvidenceGapCsv(sourceCsv: string): string {
     ...PIPELINE_REVIEW_GATES.map(gate=>gate.id),
     "missing_independent_evidence_gates","full_pipeline_qualification",
     "fda_probability","review_next_action",
+    "saved_company_registry_name","saved_company_cik","company_sec_filings_research_url",
+    "company_sec_submissions_research_url","saved_market_cap_usd","saved_market_cap_checked_at",
+    "market_cap_research_url","configured_issuer_website_research_urls","clinicaltrials_api_research_url",
+    "fda_cder_general_research_url","fda_cber_general_research_url","source_link_scope",
+    ...PIPELINE_REVIEW_GATES.map(gate=>gate.id+"_check_mode"),
   ];
   const lines=[headers.map(cell).join(",")];
   for (const trial of original.rows) {
     const row=assessmentForPhase3CensusRow(trial);
+    const company=sourcesForPhase3Trial(trial,directory);
     const values=[
       row.nctId,row.ticker,row.company,row.registryStatus,row.registryGroup,row.registrySource,
       ...PIPELINE_REVIEW_GATES.map(gate=>row.gates[gate.id]),
       row.missingEvidenceGateCount,"NOT_ESTABLISHED","NOT_AVAILABLE",
       "REVIEW_ORIGINAL_SOURCES_BEFORE_PIPELINE_QUALIFICATION",
+      company.company,company.cik,company.secFilingsUrl,company.secSubmissionsUrl,
+      company.marketCapUsd,company.marketCapCheckedAt,company.marketCapSourceUrl,
+      company.configuredIssuerHomepages.join(" | "),`https://clinicaltrials.gov/api/v2/studies/${trial.nctId}`,
+      FDA_RESEARCH_LINKS[0].url,FDA_RESEARCH_LINKS[1].url,directory.scope,
+      ...PIPELINE_REVIEW_GATES.map(gate=>PIPELINE_GATE_AUTOMATION[gate.id].mode),
     ];
     lines.push(values.map(cell).join(","));
   }

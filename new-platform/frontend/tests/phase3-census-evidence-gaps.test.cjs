@@ -16,6 +16,8 @@ const {
 } = require("../lib/phase3-census-evidence-gaps.ts");
 const input = fs.readFileSync(
   path.join(__dirname,"../../../data/phase3_all_years_300m_10b_trials.csv"),"utf8");
+const directoryValue = JSON.parse(fs.readFileSync(
+  path.join(__dirname,"../public/phase3-census-sources-2026-10-26.json"),"utf8"));
 const view = fs.readFileSync(
   path.join(__dirname,"../app/installation-audit/phase3-census/Phase3CensusExplorer.tsx"),"utf8");
 const details = fs.readFileSync(
@@ -59,10 +61,10 @@ test("CLOSED registry trial does not infer a disqualified drug and OPEN is not q
 });
 
 test("complete evidence-gap CSV has 741 unique source rows with zero fabricated FDA decisions",()=>{
-  const csv=buildPhase3EvidenceGapCsv(input);
+  const csv=buildPhase3EvidenceGapCsv(input,directoryValue);
   const lines=csv.trimEnd().split("\r\n");
   assert.equal(lines.length,742);
-  assert.equal(lines[0].slice(1,-1).split('","').length,17);
+  assert.equal(lines[0].slice(1,-1).split('","').length,36);
   assert.match(lines[0],/"full_pipeline_qualification"/);
   assert.match(lines[0],/"fda_probability"/);
   assert.equal((csv.match(/"NOT_ESTABLISHED"/g)||[]).length,741);
@@ -84,16 +86,16 @@ test("forged candidates, altered totals and incomplete source fail closed",()=>{
   assert.throws(()=>summarizePhase3EvidenceGaps({...inv,qualifiedPipelineTotal:741}));
   assert.throws(()=>summarizePhase3EvidenceGaps({...inv,rows:[...inv.rows,inv.rows[0]]}));
   assert.throws(()=>summarizePhase3EvidenceGaps({...inv,rows:inv.rows.slice(1)}));
-  assert.throws(()=>buildPhase3EvidenceGapCsv(input.slice(0,-140)));
-  assert.throws(()=>buildPhase3EvidenceGapCsv(input.replace("COMPLETED","FDA_APPROVED")));
+  assert.throws(()=>buildPhase3EvidenceGapCsv(input.slice(0,-140),directoryValue));
+  assert.throws(()=>buildPhase3EvidenceGapCsv(input.replace("COMPLETED","FDA_APPROVED"),directoryValue));
 });
 
 test("read-only original NCT UI shows exactly seven gaps and downloadable 741-row source checklist",()=>{
   assert.match(view,/Download 741-row Pipeline evidence-gap checklist \(CSV\)/);
-  assert.match(view,/buildPhase3EvidenceGapCsv\(rawSource\)/);
+  assert.match(view,/buildPhase3EvidenceGapCsv\(rawSource,sourceDirectory\)/);
   assert.match(view,/summarizePhase3EvidenceGaps\(data\)/);
   assert.match(view,/View seven evidence gates/);
-  assert.match(view,/Phase3EvidenceDetails trial=\{selected\}/);
+  assert.match(view,/Phase3EvidenceDetails trial=\{row\}/);
   assert.match(details,/PIPELINE: NOT QUALIFIED \/ NOT DETERMINED/);
   assert.match(details,/PIPELINE_REVIEW_GATES\.map/);
   assert.match(details,/Five independent evidence gates remain unverified/);

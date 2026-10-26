@@ -1,0 +1,2873 @@
+{
+  "schemaVersion": 1,
+  "scope": "RESEARCH_POINTERS_ONLY",
+  "censusAsOf": "2026-10-26T12:21:15.972309+00:00",
+  "trialCount": 741,
+  "companyCount": 130,
+  "inputs": [
+    {
+      "path": "data/phase3_all_years_300m_10b_trials.csv",
+      "sha256": "a426ac6c01726a2c3a9916698e50f3cc87b0e6230260068231c88f1b4a30a143"
+    },
+    {
+      "path": "data/company_registry.csv",
+      "sha256": "91c2613d43aad5a8054cb4e0f7ef0179b53f8d8ad2e7aa2229c38692288c2498"
+    },
+    {
+      "path": "data/phase_pipeline_market_caps.csv",
+      "sha256": "b958410f13310d3dd35c2304280364256126331cb5d99cdafc476e6933a47dd4"
+    },
+    {
+      "path": "config/issuer_sources.json",
+      "sha256": "bae8f8604d17435e437813d08d9fa061ee549cb678f0fd44013b13706e9d6f3e"
+    }
+  ],
+  "companies": [
+    {
+      "ticker": "ABVX",
+      "company": "Abivax S.A.",
+      "cik": "0001956827",
+      "leadSponsorNames": [
+        "Abivax S.A."
+      ],
+      "nctIds": [
+        "NCT02249988",
+        "NCT03905109",
+        "NCT04393038",
+        "NCT05507203",
+        "NCT05507216",
+        "NCT05535946"
+      ],
+      "marketCapUsd": 7679206674.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:21.813474+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ABVX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001956827&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001956827.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ACAD",
+      "company": "ACADIA PHARMACEUTICALS INC",
+      "cik": "0001070494",
+      "leadSponsorNames": [
+        "ACADIA Pharmaceuticals Inc."
+      ],
+      "nctIds": [
+        "NCT00477672",
+        "NCT00550238",
+        "NCT00658567",
+        "NCT01174004",
+        "NCT02970292",
+        "NCT03121586",
+        "NCT03325556",
+        "NCT03575052",
+        "NCT03623321",
+        "NCT03968159",
+        "NCT04000009",
+        "NCT04181723",
+        "NCT04279314",
+        "NCT04531982",
+        "NCT04776746",
+        "NCT04988867",
+        "NCT05523895",
+        "NCT05555615",
+        "NCT06159673",
+        "NCT06173531",
+        "NCT06194799",
+        "NCT06420297",
+        "NCT07095465"
+      ],
+      "marketCapUsd": 3399587870.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:21.831472+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ACAD/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001070494&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001070494.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ACHV",
+      "company": "ACHIEVE LIFE SCIENCES, INC.",
+      "cik": "0000949858",
+      "leadSponsorNames": [
+        "Achieve Life Sciences"
+      ],
+      "nctIds": [
+        "NCT00251095",
+        "NCT01083615",
+        "NCT01188187",
+        "NCT01578655",
+        "NCT01630733",
+        "NCT04576949",
+        "NCT05206370",
+        "NCT06435221",
+        "NCT07392125"
+      ],
+      "marketCapUsd": 667837160.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:21.858125+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ACHV/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000949858&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000949858.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ACRS",
+      "company": "Aclaris Therapeutics, Inc.",
+      "cik": "0001557746",
+      "leadSponsorNames": [
+        "Aclaris Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT02667236",
+        "NCT02667275",
+        "NCT02667288",
+        "NCT03687372",
+        "NCT03691831",
+        "NCT03812510"
+      ],
+      "marketCapUsd": 551995849.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:21.955820+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ACRS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001557746&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001557746.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ADMA",
+      "company": "ADMA BIOLOGICS, INC.",
+      "cik": "0001368514",
+      "leadSponsorNames": [
+        "ADMA Biologics, Inc."
+      ],
+      "nctIds": [
+        "NCT00538915",
+        "NCT01814800"
+      ],
+      "marketCapUsd": 2392156382.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.123486+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ADMA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001368514&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001368514.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AGIO",
+      "company": "AGIOS PHARMACEUTICALS, INC.",
+      "cik": "0001439222",
+      "leadSponsorNames": [
+        "Agios Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT03548220",
+        "NCT03559699",
+        "NCT03853798",
+        "NCT04770753",
+        "NCT04770779",
+        "NCT05031780",
+        "NCT05144256",
+        "NCT05175105",
+        "NCT07506863",
+        "NCT07517133",
+        "NCT07656415",
+        "NCT07859423"
+      ],
+      "marketCapUsd": 2208969634.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.237404+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AGIO/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001439222&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001439222.json",
+      "configuredIssuerHomepages": [
+        "https://investor.agios.com/"
+      ]
+    },
+    {
+      "ticker": "ALKS",
+      "company": "Alkermes plc.",
+      "cik": "0001520262",
+      "leadSponsorNames": [
+        "Alkermes, Inc."
+      ],
+      "nctIds": [
+        "NCT00156923",
+        "NCT00156936",
+        "NCT00501631",
+        "NCT00678418",
+        "NCT00834080",
+        "NCT01218958",
+        "NCT01218971",
+        "NCT01218997",
+        "NCT01436032",
+        "NCT01469039",
+        "NCT01626456",
+        "NCT01895452",
+        "NCT02085135",
+        "NCT02141399",
+        "NCT02158533",
+        "NCT02158546",
+        "NCT02218008",
+        "NCT02537574",
+        "NCT02634346",
+        "NCT02669758",
+        "NCT02694328",
+        "NCT02696434",
+        "NCT02873208",
+        "NCT03187769",
+        "NCT03188185",
+        "NCT03201757",
+        "NCT03345979",
+        "NCT03610048",
+        "NCT04987229",
+        "NCT05303064",
+        "NCT06767683",
+        "NCT07455383",
+        "NCT07502443",
+        "NCT07540897"
+      ],
+      "marketCapUsd": 7319511557.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.401229+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ALKS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001520262&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001520262.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ALMS",
+      "company": "ALUMIS INC.",
+      "cik": "0001847367",
+      "leadSponsorNames": [
+        "Alumis Inc"
+      ],
+      "nctIds": [
+        "NCT06586112",
+        "NCT06588738",
+        "NCT06846541"
+      ],
+      "marketCapUsd": 877570920.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.538693+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ALMS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001847367&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001847367.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ALT",
+      "company": "Altimmune, Inc.",
+      "cik": "0001326190",
+      "leadSponsorNames": [
+        "Altimmune, Inc."
+      ],
+      "nctIds": [
+        "NCT07795164"
+      ],
+      "marketCapUsd": 412377526.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.593915+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ALT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001326190&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001326190.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AMLX",
+      "company": "Amylyx Pharmaceuticals, Inc.",
+      "cik": "0001658551",
+      "leadSponsorNames": [
+        "Amylyx Pharmaceuticals Inc."
+      ],
+      "nctIds": [
+        "NCT04516096",
+        "NCT05021536",
+        "NCT05619783",
+        "NCT06122662",
+        "NCT06747468"
+      ],
+      "marketCapUsd": 3412465298.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.707320+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AMLX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001658551&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001658551.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AMPH",
+      "company": "Amphastar Pharmaceuticals, Inc.",
+      "cik": "0001297184",
+      "leadSponsorNames": [
+        "Amphastar Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT00634517",
+        "NCT00634829",
+        "NCT00635505",
+        "NCT01357642",
+        "NCT01460511",
+        "NCT01476904",
+        "NCT01737905",
+        "NCT05539872",
+        "NCT07560150"
+      ],
+      "marketCapUsd": 1069403912.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.762401+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AMPH/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001297184&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001297184.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AMRX",
+      "company": "Amneal Pharmaceuticals, Inc.",
+      "cik": "0001723128",
+      "leadSponsorNames": [
+        "Amneal Pharmaceuticals, LLC"
+      ],
+      "nctIds": [
+        "NCT01064024",
+        "NCT01650051",
+        "NCT01779947",
+        "NCT02072954",
+        "NCT02103322",
+        "NCT02110368",
+        "NCT02121002",
+        "NCT02125253",
+        "NCT05401357"
+      ],
+      "marketCapUsd": 7098272826.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.786611+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AMRX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001723128&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001723128.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ANNX",
+      "company": "Annexon, Inc.",
+      "cik": "0001528115",
+      "leadSponsorNames": [
+        "Annexon, Inc."
+      ],
+      "nctIds": [
+        "NCT04701164",
+        "NCT06510816",
+        "NCT07020819",
+        "NCT07807969"
+      ],
+      "marketCapUsd": 710921753.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:22.874572+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ANNX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001528115&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001528115.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "APMD",
+      "company": "Apnimed, Inc.",
+      "cik": "0001745648",
+      "leadSponsorNames": [
+        "Apnimed"
+      ],
+      "nctIds": [
+        "NCT05811247",
+        "NCT05813275",
+        "NCT06566820"
+      ],
+      "marketCapUsd": 790568493.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.066391+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/APMD/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001745648&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001745648.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AQST",
+      "company": "Aquestive Therapeutics, Inc.",
+      "cik": "0001398733",
+      "leadSponsorNames": [
+        "Aquestive Therapeutics"
+      ],
+      "nctIds": [
+        "NCT03428360"
+      ],
+      "marketCapUsd": 502046592.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.165596+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AQST/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001398733&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001398733.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ARDX",
+      "company": "ARDELYX, INC.",
+      "cik": "0001437402",
+      "leadSponsorNames": [
+        "Ardelyx"
+      ],
+      "nctIds": [
+        "NCT01923428",
+        "NCT02621892",
+        "NCT02675998",
+        "NCT02686138",
+        "NCT02727751",
+        "NCT03427125",
+        "NCT03824587",
+        "NCT05643534",
+        "NCT05905926",
+        "NCT07382167"
+      ],
+      "marketCapUsd": 767497722.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.216922+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ARDX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001437402&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001437402.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ARQT",
+      "company": "Arcutis Biotherapeutics, Inc.",
+      "cik": "0001787306",
+      "leadSponsorNames": [
+        "Arcutis Biotherapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT04211363",
+        "NCT04211389",
+        "NCT04286607",
+        "NCT04773587",
+        "NCT04773600",
+        "NCT04804605",
+        "NCT04845620",
+        "NCT04973228",
+        "NCT05028582"
+      ],
+      "marketCapUsd": 3921589183.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.268782+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ARQT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001787306&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001787306.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ARWR",
+      "company": "ARROWHEAD PHARMACEUTICALS, INC.",
+      "cik": "0000879407",
+      "leadSponsorNames": [
+        "Arrowhead Pharmaceuticals"
+      ],
+      "nctIds": [
+        "NCT05089084",
+        "NCT06347003",
+        "NCT06347016",
+        "NCT06347133",
+        "NCT06822790",
+        "NCT06880770",
+        "NCT07037771",
+        "NCT07473843"
+      ],
+      "marketCapUsd": 8195584175.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.450378+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ARWR/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000879407&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000879407.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AUPH",
+      "company": "Aurinia Pharmaceuticals Inc.",
+      "cik": "0001600620",
+      "leadSponsorNames": [
+        "Aurinia Pharmaceuticals Inc."
+      ],
+      "nctIds": [
+        "NCT00244842",
+        "NCT00258713",
+        "NCT00408187",
+        "NCT01586845",
+        "NCT03021499",
+        "NCT03597464",
+        "NCT04147650",
+        "NCT05288855",
+        "NCT05962788"
+      ],
+      "marketCapUsd": 2243242692.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.710530+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AUPH/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001600620&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001600620.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AURA",
+      "company": "Aura Biosciences, Inc.",
+      "cik": "0001501796",
+      "leadSponsorNames": [
+        "Aura Biosciences"
+      ],
+      "nctIds": [
+        "NCT06007690"
+      ],
+      "marketCapUsd": 653340297.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.737194+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AURA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001501796&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001501796.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AVBP",
+      "company": "ArriVent BioPharma, Inc.",
+      "cik": "0001868279",
+      "leadSponsorNames": [
+        "ArriVent BioPharma, Inc."
+      ],
+      "nctIds": [
+        "NCT05607550",
+        "NCT07185997"
+      ],
+      "marketCapUsd": 1035462309.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.770052+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AVBP/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001868279&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001868279.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AVIR",
+      "company": "Atea Pharmaceuticals, Inc.",
+      "cik": "0001593899",
+      "leadSponsorNames": [
+        "Atea Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT05629962",
+        "NCT06868264",
+        "NCT07037277"
+      ],
+      "marketCapUsd": 324026984.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.808728+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AVIR/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001593899&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001593899.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "AXSM",
+      "company": "Axsome Therapeutics, Inc.",
+      "cik": "0001579428",
+      "leadSponsorNames": [
+        "Axsome Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT02504008",
+        "NCT02741791",
+        "NCT02746068",
+        "NCT03226522",
+        "NCT03896009",
+        "NCT04019704",
+        "NCT04039022",
+        "NCT04068051",
+        "NCT04163185",
+        "NCT04797715",
+        "NCT04947553",
+        "NCT05059223",
+        "NCT05113745",
+        "NCT05550207",
+        "NCT05557409",
+        "NCT05972044",
+        "NCT06360419",
+        "NCT06413433",
+        "NCT06568367",
+        "NCT06736509",
+        "NCT06878976",
+        "NCT07398417",
+        "NCT07484217",
+        "NCT07637162",
+        "NCT07717879",
+        "NCT07717892",
+        "NCT07766655",
+        "NCT07773883"
+      ],
+      "marketCapUsd": 7597313843.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.876819+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AXSM/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001579428&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001579428.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "BCAX",
+      "company": "Bicara Therapeutics Inc.",
+      "cik": "0002023658",
+      "leadSponsorNames": [
+        "Bicara Therapeutics"
+      ],
+      "nctIds": [
+        "NCT06788990"
+      ],
+      "marketCapUsd": 1129571983.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:23.995652+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/BCAX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002023658&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0002023658.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "BCRX",
+      "company": "BIOCRYST PHARMACEUTICALS INC",
+      "cik": "0000882796",
+      "leadSponsorNames": [
+        "BioCryst Pharmaceuticals"
+      ],
+      "nctIds": [
+        "NCT00486980",
+        "NCT00610935",
+        "NCT00957996",
+        "NCT00958776",
+        "NCT01224795",
+        "NCT02303626",
+        "NCT02369159",
+        "NCT02635724",
+        "NCT02670720",
+        "NCT03472040",
+        "NCT03485911",
+        "NCT03873116",
+        "NCT04933721",
+        "NCT05453968"
+      ],
+      "marketCapUsd": 1954843553.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:24.117646+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/BCRX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000882796&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000882796.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "BLTE",
+      "company": "BELITE BIO, INC",
+      "cik": "0001889109",
+      "leadSponsorNames": [
+        "Belite Bio, Inc"
+      ],
+      "nctIds": [
+        "NCT05244304",
+        "NCT05949593",
+        "NCT06388083"
+      ],
+      "marketCapUsd": 5933294976.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:24.462864+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/BLTE/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001889109&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001889109.json",
+      "configuredIssuerHomepages": [
+        "https://investors.belitebio.com/"
+      ]
+    },
+    {
+      "ticker": "BRVE",
+      "company": "Braveheart Bio, Inc.",
+      "cik": "0002131524",
+      "leadSponsorNames": [
+        "Braveheart Bio, Inc."
+      ],
+      "nctIds": [
+        "NCT07755904"
+      ],
+      "marketCapUsd": 1930435495.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:24.739506+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/BRVE/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002131524&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0002131524.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "CADL",
+      "company": "Candel Therapeutics, Inc.",
+      "cik": "0001841387",
+      "leadSponsorNames": [
+        "Candel Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT01436968",
+        "NCT07660094"
+      ],
+      "marketCapUsd": 614444077.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:24.787746+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CADL/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001841387&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001841387.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "CGON",
+      "company": "CG Oncology, Inc.",
+      "cik": "0001991792",
+      "leadSponsorNames": [
+        "CG Oncology, Inc."
+      ],
+      "nctIds": [
+        "NCT01438112",
+        "NCT04452591",
+        "NCT06111235"
+      ],
+      "marketCapUsd": 5469997541.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:25.100712+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CGON/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001991792&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001991792.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "CLDX",
+      "company": "Celldex Therapeutics, Inc.",
+      "cik": "0000744218",
+      "leadSponsorNames": [
+        "Celldex Therapeutics"
+      ],
+      "nctIds": [
+        "NCT01480479",
+        "NCT06445023",
+        "NCT06455202",
+        "NCT07256392",
+        "NCT07266402"
+      ],
+      "marketCapUsd": 2296988811.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:25.196974+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CLDX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000744218&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000744218.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "CMPS",
+      "company": "COMPASS Pathways plc",
+      "cik": "0001816590",
+      "leadSponsorNames": [
+        "COMPASS Pathways"
+      ],
+      "nctIds": [
+        "NCT05624268",
+        "NCT05711940",
+        "NCT07570654"
+      ],
+      "marketCapUsd": 1548170870.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:25.370529+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CMPS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001816590&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001816590.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "COGT",
+      "company": "Cogent Biosciences, Inc.",
+      "cik": "0001622229",
+      "leadSponsorNames": [
+        "Cogent Biosciences, Inc."
+      ],
+      "nctIds": [
+        "NCT05208047"
+      ],
+      "marketCapUsd": 5415714688.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:25.521464+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/COGT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001622229&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001622229.json",
+      "configuredIssuerHomepages": [
+        "https://investors.cogentbio.com/"
+      ]
+    },
+    {
+      "ticker": "COLL",
+      "company": "COLLEGIUM PHARMACEUTICAL, INC",
+      "cik": "0001267565",
+      "leadSponsorNames": [
+        "Collegium Pharmaceutical, Inc."
+      ],
+      "nctIds": [
+        "NCT01685684"
+      ],
+      "marketCapUsd": 747476874.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:25.528336+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/COLL/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001267565&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001267565.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "CORT",
+      "company": "CORCEPT THERAPEUTICS INC",
+      "cik": "0001088856",
+      "leadSponsorNames": [
+        "Corcept Therapeutics"
+      ],
+      "nctIds": [
+        "NCT00128479",
+        "NCT00128505",
+        "NCT00130676",
+        "NCT00146523",
+        "NCT00208156",
+        "NCT00569582",
+        "NCT00637494",
+        "NCT00936741",
+        "NCT01371565",
+        "NCT01925092",
+        "NCT03697109",
+        "NCT04308590",
+        "NCT04329949",
+        "NCT05257408"
+      ],
+      "marketCapUsd": 9281328366.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:25.542126+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CORT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001088856&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001088856.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "CRVS",
+      "company": "Corvus Pharmaceuticals, Inc.",
+      "cik": "0001626971",
+      "leadSponsorNames": [
+        "Corvus Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT04734873",
+        "NCT06561048"
+      ],
+      "marketCapUsd": 885793540.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:25.754587+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CRVS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001626971&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001626971.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "CYTK",
+      "company": "CYTOKINETICS INC",
+      "cik": "0001061983",
+      "leadSponsorNames": [
+        "Cytokinetics"
+      ],
+      "nctIds": [
+        "NCT02496767",
+        "NCT02929329",
+        "NCT02936635",
+        "NCT03759392",
+        "NCT04464525",
+        "NCT04848506",
+        "NCT04944784",
+        "NCT05186818",
+        "NCT05442775",
+        "NCT05767346",
+        "NCT06081894",
+        "NCT06412666",
+        "NCT06736574"
+      ],
+      "marketCapUsd": 8512403884.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:25.940436+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CYTK/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001061983&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001061983.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "DMAC",
+      "company": "DiaMedica Therapeutics Inc.",
+      "cik": "0001401040",
+      "leadSponsorNames": [
+        "DiaMedica Therapeutics Inc"
+      ],
+      "nctIds": [
+        "NCT05065216"
+      ],
+      "marketCapUsd": 470232078.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.002479+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/DMAC/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001401040&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001401040.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "DNLI",
+      "company": "Denali Therapeutics Inc.",
+      "cik": "0001714899",
+      "leadSponsorNames": [
+        "Denali Therapeutics Inc."
+      ],
+      "nctIds": [
+        "NCT05371613",
+        "NCT06075537"
+      ],
+      "marketCapUsd": 2942790689.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.057931+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/DNLI/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001714899&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001714899.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "DYN",
+      "company": "Dyne Therapeutics, Inc.",
+      "cik": "0001818794",
+      "leadSponsorNames": [
+        "Dyne Therapeutics"
+      ],
+      "nctIds": [
+        "NCT07486934",
+        "NCT07608432"
+      ],
+      "marketCapUsd": 2916979252.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.182408+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/DYN/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001818794&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001818794.json",
+      "configuredIssuerHomepages": [
+        "https://investors.dyne-tx.com/",
+        "https://www.dyne-tx.com/"
+      ]
+    },
+    {
+      "ticker": "EBS",
+      "company": "Emergent BioSolutions Inc.",
+      "cik": "0001367644",
+      "leadSponsorNames": [
+        "Emergent BioSolutions"
+      ],
+      "nctIds": [
+        "NCT00877656",
+        "NCT01158157",
+        "NCT01311674",
+        "NCT01491607",
+        "NCT03877926"
+      ],
+      "marketCapUsd": 319432883.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.196485+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/EBS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001367644&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001367644.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "EIKN",
+      "company": "Eikon Therapeutics, Inc.",
+      "cik": "0001861123",
+      "leadSponsorNames": [
+        "Eikon Therapeutics"
+      ],
+      "nctIds": [
+        "NCT06697301",
+        "NCT07365319"
+      ],
+      "marketCapUsd": 393238118.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.255048+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/EIKN/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001861123&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001861123.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "EOLS",
+      "company": "Evolus, Inc.",
+      "cik": "0001570562",
+      "leadSponsorNames": [
+        "Evolus, Inc."
+      ],
+      "nctIds": [
+        "NCT02334423",
+        "NCT02334436"
+      ],
+      "marketCapUsd": 463013584.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.475131+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/EOLS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001570562&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001570562.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ERAS",
+      "company": "Erasca, Inc.",
+      "cik": "0001761918",
+      "leadSponsorNames": [
+        "Erasca, Inc."
+      ],
+      "nctIds": [
+        "NCT06346067"
+      ],
+      "marketCapUsd": 5033075684.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.625324+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ERAS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001761918&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001761918.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ETRA",
+      "company": "Electra Therapeutics, Inc.",
+      "cik": "0002088082",
+      "leadSponsorNames": [
+        "Electra Therapeutics Inc."
+      ],
+      "nctIds": [
+        "NCT05416307"
+      ],
+      "marketCapUsd": 546700178.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.662912+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ETRA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002088082&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0002088082.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "FDMT",
+      "company": "4D Molecular Therapeutics, Inc.",
+      "cik": "0001650648",
+      "leadSponsorNames": [
+        "4D Molecular Therapeutics"
+      ],
+      "nctIds": [
+        "NCT06864988",
+        "NCT07064759",
+        "NCT07867080"
+      ],
+      "marketCapUsd": 596637479.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.787652+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/FDMT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001650648&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001650648.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "GALT",
+      "company": "GALECTIN THERAPEUTICS INC",
+      "cik": "0001133416",
+      "leadSponsorNames": [
+        "Galectin Therapeutics Inc."
+      ],
+      "nctIds": [
+        "NCT04365868"
+      ],
+      "marketCapUsd": 322421613.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.888514+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/GALT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001133416&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001133416.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "GENB",
+      "company": "Generate Biomedicines, Inc.",
+      "cik": "0002100782",
+      "leadSponsorNames": [
+        "Generate Biomedicines"
+      ],
+      "nctIds": [
+        "NCT07276724",
+        "NCT07359846"
+      ],
+      "marketCapUsd": 1592853731.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.915832+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/GENB/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002100782&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0002100782.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "GERN",
+      "company": "GERON CORP",
+      "cik": "0000886744",
+      "leadSponsorNames": [
+        "Geron Corporation"
+      ],
+      "nctIds": [
+        "NCT02598661",
+        "NCT04576156"
+      ],
+      "marketCapUsd": 719570218.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:26.979257+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/GERN/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000886744&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000886744.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "HROW",
+      "company": "HARROW, INC.",
+      "cik": "0001360214",
+      "leadSponsorNames": [
+        "Harrow Inc"
+      ],
+      "nctIds": [
+        "NCT07832552"
+      ],
+      "marketCapUsd": 1066154454.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:27.234741+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/HROW/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001360214&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001360214.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "IBRX",
+      "company": "ImmunityBio, Inc.",
+      "cik": "0001326110",
+      "leadSponsorNames": [
+        "ImmunityBio, Inc."
+      ],
+      "nctIds": [
+        "NCT02049905",
+        "NCT03022825",
+        "NCT03520686",
+        "NCT06022224",
+        "NCT06745908",
+        "NCT07492875",
+        "NCT07524257",
+        "NCT07551544"
+      ],
+      "marketCapUsd": 8711854164.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:27.375246+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IBRX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001326110&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001326110.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "IDYA",
+      "company": "IDEAYA Biosciences, Inc.",
+      "cik": "0001676725",
+      "leadSponsorNames": [
+        "IDEAYA Biosciences"
+      ],
+      "nctIds": [
+        "NCT05987332",
+        "NCT07015190",
+        "NCT07804186"
+      ],
+      "marketCapUsd": 3349149990.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:27.393373+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IDYA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001676725&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001676725.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "IMNM",
+      "company": "Immunome Inc.",
+      "cik": "0001472012",
+      "leadSponsorNames": [
+        "Immunome, Inc."
+      ],
+      "nctIds": [
+        "NCT04871282"
+      ],
+      "marketCapUsd": 2122876057.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:27.531534+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IMNM/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001472012&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001472012.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "INBX",
+      "company": "Inhibrx Biosciences, Inc.",
+      "cik": "0002007919",
+      "leadSponsorNames": [
+        "Inhibrx Biosciences, Inc"
+      ],
+      "nctIds": [
+        "NCT06295731"
+      ],
+      "marketCapUsd": 1374335091.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:27.671693+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/INBX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002007919&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0002007919.json",
+      "configuredIssuerHomepages": [
+        "https://inhibrx.investorroom.com/"
+      ]
+    },
+    {
+      "ticker": "IONS",
+      "company": "IONIS PHARMACEUTICALS INC",
+      "cik": "0000874015",
+      "leadSponsorNames": [
+        "Ionis Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT00017407",
+        "NCT00048113",
+        "NCT00048295",
+        "NCT01737398",
+        "NCT02175004",
+        "NCT02211209",
+        "NCT02300233",
+        "NCT04136171",
+        "NCT04136184",
+        "NCT04568434",
+        "NCT04768972",
+        "NCT04849741",
+        "NCT05071300",
+        "NCT05079919",
+        "NCT05130450",
+        "NCT05139810",
+        "NCT05185843",
+        "NCT05392114",
+        "NCT05552326",
+        "NCT05610280",
+        "NCT05667493",
+        "NCT05681351",
+        "NCT06914609",
+        "NCT07298447",
+        "NCT07727538",
+        "NCT07782827"
+      ],
+      "marketCapUsd": 7134292943.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:27.935419+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IONS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000874015&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000874015.json",
+      "configuredIssuerHomepages": [
+        "https://ir.ionis.com/"
+      ]
+    },
+    {
+      "ticker": "IOVA",
+      "company": "IOVANCE BIOTHERAPEUTICS, INC.",
+      "cik": "0001425205",
+      "leadSponsorNames": [
+        "Iovance Biotherapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT05727904"
+      ],
+      "marketCapUsd": 6382367477.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:27.993323+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IOVA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001425205&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001425205.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "IRON",
+      "company": "Disc Medicine, Inc.",
+      "cik": "0001816736",
+      "leadSponsorNames": [
+        "Disc Medicine, Inc"
+      ],
+      "nctIds": [
+        "NCT05883748",
+        "NCT06910358"
+      ],
+      "marketCapUsd": 2860650806.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.045516+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IRON/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001816736&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001816736.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "IRWD",
+      "company": "IRONWOOD PHARMACEUTICALS INC",
+      "cik": "0001446847",
+      "leadSponsorNames": [
+        "Ironwood Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT00730015",
+        "NCT00730171",
+        "NCT00938717",
+        "NCT02291679",
+        "NCT03561090",
+        "NCT03561883",
+        "NCT03573908"
+      ],
+      "marketCapUsd": 571730217.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.141366+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IRWD/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001446847&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001446847.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "KARD",
+      "company": "Kardigan, Inc.",
+      "cik": "0002123613",
+      "leadSponsorNames": [
+        "Kardigan, Inc."
+      ],
+      "nctIds": [
+        "NCT07001800",
+        "NCT07210723",
+        "NCT07771465"
+      ],
+      "marketCapUsd": 1196847347.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.319822+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KARD/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002123613&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0002123613.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "KMDA",
+      "company": "KAMADA LTD",
+      "cik": "0001567529",
+      "leadSponsorNames": [
+        "Kamada, Ltd."
+      ],
+      "nctIds": [
+        "NCT00460096",
+        "NCT01217671",
+        "NCT02040090",
+        "NCT02912845",
+        "NCT04204252"
+      ],
+      "marketCapUsd": 448409070.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.359540+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KMDA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001567529&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001567529.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "KNSA",
+      "company": "Kiniksa Pharmaceuticals International, plc",
+      "cik": "0001730430",
+      "leadSponsorNames": [
+        "Kiniksa Pharmaceuticals International, plc"
+      ],
+      "nctIds": [
+        "NCT04447469",
+        "NCT07010159"
+      ],
+      "marketCapUsd": 5986782517.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.415360+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KNSA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001730430&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001730430.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "KOD",
+      "company": "Kodiak Sciences Inc.",
+      "cik": "0001468748",
+      "leadSponsorNames": [
+        "Kodiak Sciences Inc"
+      ],
+      "nctIds": [
+        "NCT04049266",
+        "NCT04592419",
+        "NCT04603937",
+        "NCT04611152",
+        "NCT04964089",
+        "NCT05066230",
+        "NCT06270836",
+        "NCT06556368",
+        "NCT06990399",
+        "NCT06996080",
+        "NCT07734844"
+      ],
+      "marketCapUsd": 5507497917.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.434215+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KOD/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001468748&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001468748.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "KRYS",
+      "company": "Krystal Biotech, Inc.",
+      "cik": "0001711279",
+      "leadSponsorNames": [
+        "Krystal Biotech, Inc."
+      ],
+      "nctIds": [
+        "NCT04491604",
+        "NCT04917874",
+        "NCT07016750"
+      ],
+      "marketCapUsd": 9220037414.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.582746+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KRYS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001711279&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001711279.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "KURA",
+      "company": "Kura Oncology, Inc.",
+      "cik": "0001422143",
+      "leadSponsorNames": [
+        "Kura Oncology, Inc."
+      ],
+      "nctIds": [
+        "NCT07007312"
+      ],
+      "marketCapUsd": 854911549.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.608479+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KURA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001422143&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001422143.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "KYTX",
+      "company": "Kyverna Therapeutics, Inc.",
+      "cik": "0001994702",
+      "leadSponsorNames": [
+        "Kyverna Therapeutics"
+      ],
+      "nctIds": [
+        "NCT06193889"
+      ],
+      "marketCapUsd": 333336163.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.671269+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KYTX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001994702&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001994702.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "LBRX",
+      "company": "LB PHARMACEUTICALS INC",
+      "cik": "0001691082",
+      "leadSponsorNames": [
+        "LB Pharmaceuticals Inc."
+      ],
+      "nctIds": [
+        "NCT07363577",
+        "NCT07369154"
+      ],
+      "marketCapUsd": 1249397848.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.756186+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/LBRX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001691082&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001691082.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "LGND",
+      "company": "LIGAND PHARMACEUTICALS INC",
+      "cik": "0000886163",
+      "leadSponsorNames": [
+        "Ligand Pharmaceuticals"
+      ],
+      "nctIds": [
+        "NCT00141323",
+        "NCT00163137"
+      ],
+      "marketCapUsd": 6051055400.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.825118+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/LGND/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000886163&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000886163.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "LKFT",
+      "company": "Lakefront Biotherapeutics NV",
+      "cik": "0001421876",
+      "leadSponsorNames": [
+        "Lakefront Biotherapeutics NV"
+      ],
+      "nctIds": [
+        "NCT02914561",
+        "NCT02914600",
+        "NCT03711162",
+        "NCT03733444",
+        "NCT05479058",
+        "NCT06652633"
+      ],
+      "marketCapUsd": 2085642297.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:28.874828+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/LKFT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001421876&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001421876.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "LXRX",
+      "company": "LEXICON PHARMACEUTICALS, INC.",
+      "cik": "0001062822",
+      "leadSponsorNames": [
+        "Lexicon Pharmaceuticals"
+      ],
+      "nctIds": [
+        "NCT01677910",
+        "NCT02026063",
+        "NCT02063659",
+        "NCT02384941",
+        "NCT02421510",
+        "NCT02531035",
+        "NCT02926937",
+        "NCT02926950",
+        "NCT03066830",
+        "NCT03242018",
+        "NCT03242252",
+        "NCT03285594",
+        "NCT03315143",
+        "NCT03332771",
+        "NCT03351478",
+        "NCT03386344",
+        "NCT03521934",
+        "NCT06481891"
+      ],
+      "marketCapUsd": 631837426.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.080718+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/LXRX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001062822&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001062822.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "MANE",
+      "company": "Veradermics, Inc",
+      "cik": "0001827635",
+      "leadSponsorNames": [
+        "Veradermics, Inc."
+      ],
+      "nctIds": [
+        "NCT06724614",
+        "NCT06972264",
+        "NCT07146022"
+      ],
+      "marketCapUsd": 5798247274.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.161130+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MANE/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001827635&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001827635.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "MBX",
+      "company": "MBX Biosciences, Inc.",
+      "cik": "0001776111",
+      "leadSponsorNames": [
+        "MBX Biosciences"
+      ],
+      "nctIds": [
+        "NCT07699471"
+      ],
+      "marketCapUsd": 2335764656.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.262246+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MBX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001776111&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001776111.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "MESO",
+      "company": "MESOBLAST LTD",
+      "cik": "0001345099",
+      "leadSponsorNames": [
+        "Mesoblast, Inc.",
+        "Mesoblast, Ltd."
+      ],
+      "nctIds": [
+        "NCT00366145",
+        "NCT00482092",
+        "NCT00543374",
+        "NCT00562497",
+        "NCT01233960",
+        "NCT01854567",
+        "NCT02032004",
+        "NCT02336230",
+        "NCT02412735",
+        "NCT02652130",
+        "NCT06325566",
+        "NCT07568535"
+      ],
+      "marketCapUsd": 1597441479.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.352607+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MESO/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001345099&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001345099.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "MIRM",
+      "company": "Mirum Pharmaceuticals, Inc.",
+      "cik": "0001759425",
+      "leadSponsorNames": [
+        "Mirum Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT00007020",
+        "NCT01115582",
+        "NCT01438411",
+        "NCT03353454",
+        "NCT03905330",
+        "NCT04185363",
+        "NCT04270682",
+        "NCT06553768",
+        "NCT06907290",
+        "NCT07200908",
+        "NCT07298330",
+        "NCT07454837"
+      ],
+      "marketCapUsd": 5219899799.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.380047+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MIRM/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001759425&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001759425.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "MLTX",
+      "company": "MoonLake Immunotherapeutics",
+      "cik": "0001821586",
+      "leadSponsorNames": [
+        "MoonLake Immunotherapeutics AG"
+      ],
+      "nctIds": [
+        "NCT06411379",
+        "NCT06411899",
+        "NCT06641076",
+        "NCT06641089",
+        "NCT06768671",
+        "NCT07007637",
+        "NCT07223138"
+      ],
+      "marketCapUsd": 1008514217.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.417647+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MLTX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001821586&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001821586.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "MLYS",
+      "company": "Mineralys Therapeutics, Inc.",
+      "cik": "0001933414",
+      "leadSponsorNames": [
+        "Mineralys Therapeutics Inc."
+      ],
+      "nctIds": [
+        "NCT05968430",
+        "NCT06153693"
+      ],
+      "marketCapUsd": 1816761487.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.463389+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MLYS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001933414&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001933414.json",
+      "configuredIssuerHomepages": [
+        "https://ir.mineralystx.com/"
+      ]
+    },
+    {
+      "ticker": "MNKD",
+      "company": "MANNKIND CORP",
+      "cik": "0000899460",
+      "leadSponsorNames": [
+        "Mannkind Corporation"
+      ],
+      "nctIds": [
+        "NCT00308308",
+        "NCT00308737",
+        "NCT00309244",
+        "NCT00332488",
+        "NCT00332826",
+        "NCT00539890",
+        "NCT00642616",
+        "NCT00700622",
+        "NCT01196104",
+        "NCT01445951",
+        "NCT01451398",
+        "NCT04974528",
+        "NCT06418711"
+      ],
+      "marketCapUsd": 1025726904.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.498054+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MNKD/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000899460&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000899460.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "MNPR",
+      "company": "Monopar Therapeutics",
+      "cik": "0001645469",
+      "leadSponsorNames": [
+        "Monopar Therapeutics"
+      ],
+      "nctIds": [
+        "NCT04648020"
+      ],
+      "marketCapUsd": 474214952.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.537287+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MNPR/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001645469&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001645469.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "NGNE",
+      "company": "Neurogene Inc.",
+      "cik": "0001404644",
+      "leadSponsorNames": [
+        "Neurogene Inc."
+      ],
+      "nctIds": [
+        "NCT05898620"
+      ],
+      "marketCapUsd": 471268046.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.715805+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NGNE/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001404644&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001404644.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "NKTR",
+      "company": "NEKTAR THERAPEUTICS",
+      "cik": "0000906709",
+      "leadSponsorNames": [
+        "Nektar Therapeutics"
+      ],
+      "nctIds": [
+        "NCT01492101",
+        "NCT02362672",
+        "NCT02367820",
+        "NCT02915744",
+        "NCT03729245",
+        "NCT04410445",
+        "NCT04969861",
+        "NCT05664217",
+        "NCT07690371",
+        "NCT07711418"
+      ],
+      "marketCapUsd": 1270802237.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.760740+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NKTR/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000906709&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000906709.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "NRIX",
+      "company": "Nurix Therapeutics, Inc.",
+      "cik": "0001549595",
+      "leadSponsorNames": [
+        "Nurix Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT07516093"
+      ],
+      "marketCapUsd": 2768390287.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.817132+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NRIX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001549595&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001549595.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "NTLA",
+      "company": "Intellia Therapeutics, Inc.",
+      "cik": "0001652130",
+      "leadSponsorNames": [
+        "Intellia Therapeutics"
+      ],
+      "nctIds": [
+        "NCT06128629",
+        "NCT06634420",
+        "NCT06672237"
+      ],
+      "marketCapUsd": 1570820229.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.930504+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NTLA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001652130&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001652130.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "NUVB",
+      "company": "Nuvation Bio Inc.",
+      "cik": "0001811063",
+      "leadSponsorNames": [
+        "Nuvation Bio Inc."
+      ],
+      "nctIds": [
+        "NCT05303519",
+        "NCT06564324",
+        "NCT07154706",
+        "NCT07712757"
+      ],
+      "marketCapUsd": 1604633175.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.946118+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NUVB/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001811063&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001811063.json",
+      "configuredIssuerHomepages": [
+        "https://investors.nuvationbio.com/"
+      ]
+    },
+    {
+      "ticker": "NVAX",
+      "company": "NOVAVAX INC",
+      "cik": "0001000694",
+      "leadSponsorNames": [
+        "Novavax"
+      ],
+      "nctIds": [
+        "NCT02608502",
+        "NCT02624947",
+        "NCT04120194",
+        "NCT04583995",
+        "NCT04611802",
+        "NCT05372588",
+        "NCT05463068",
+        "NCT05468736",
+        "NCT05875701",
+        "NCT05925127",
+        "NCT05973006",
+        "NCT05975060",
+        "NCT06291857",
+        "NCT06409663",
+        "NCT06482359",
+        "NCT06485752"
+      ],
+      "marketCapUsd": 1599973542.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:29.993758+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NVAX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001000694&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001000694.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "OCUL",
+      "company": "OCULAR THERAPEUTIX, INC",
+      "cik": "0001393434",
+      "leadSponsorNames": [
+        "Ocular Therapeutix, Inc."
+      ],
+      "nctIds": [
+        "NCT01498224",
+        "NCT02034019",
+        "NCT02089113",
+        "NCT02445326",
+        "NCT02736175",
+        "NCT02914509",
+        "NCT02988882",
+        "NCT04050865",
+        "NCT04061044",
+        "NCT04539548",
+        "NCT06223958",
+        "NCT06495918",
+        "NCT07235085",
+        "NCT07516132"
+      ],
+      "marketCapUsd": 1427503142.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:30.153637+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OCUL/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001393434&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001393434.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "OLMA",
+      "company": "Olema Pharmaceuticals, Inc.",
+      "cik": "0001750284",
+      "leadSponsorNames": [
+        "Olema Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT06016738",
+        "NCT07085767"
+      ],
+      "marketCapUsd": 560859661.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:30.317751+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OLMA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001750284&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001750284.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "OMER",
+      "company": "OMEROS CORP",
+      "cik": "0001285819",
+      "leadSponsorNames": [
+        "Omeros Corporation"
+      ],
+      "nctIds": [
+        "NCT00226759",
+        "NCT00226772",
+        "NCT00245271",
+        "NCT00624845",
+        "NCT01406561",
+        "NCT01454063",
+        "NCT01579565",
+        "NCT02093689",
+        "NCT02132312",
+        "NCT03205995",
+        "NCT03608033"
+      ],
+      "marketCapUsd": 1199474396.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:30.392470+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OMER/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001285819&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001285819.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "OPK",
+      "company": "OPKO HEALTH, INC.",
+      "cik": "0000944809",
+      "leadSponsorNames": [
+        "OPKO Health, Inc."
+      ],
+      "nctIds": [
+        "NCT00499590",
+        "NCT00557791",
+        "NCT01219855",
+        "NCT01909479",
+        "NCT02282813",
+        "NCT02968004",
+        "NCT03874013",
+        "NCT05543928"
+      ],
+      "marketCapUsd": 1216515007.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:30.468993+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OPK/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000944809&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000944809.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ORIC",
+      "company": "Oric Pharmaceuticals, Inc.",
+      "cik": "0001796280",
+      "leadSponsorNames": [
+        "ORIC Pharmaceuticals"
+      ],
+      "nctIds": [
+        "NCT07723248"
+      ],
+      "marketCapUsd": 1365105480.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:30.494947+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ORIC/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001796280&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001796280.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "OVID",
+      "company": "Ovid Therapeutics Inc.",
+      "cik": "0001636651",
+      "leadSponsorNames": [
+        "Ovid Therapeutics Inc."
+      ],
+      "nctIds": [
+        "NCT04106557"
+      ],
+      "marketCapUsd": 421843371.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:30.632480+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OVID/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001636651&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001636651.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "PBYI",
+      "company": "PUMA BIOTECHNOLOGY, INC.",
+      "cik": "0001401667",
+      "leadSponsorNames": [
+        "Puma Biotechnology, Inc."
+      ],
+      "nctIds": [
+        "NCT00878709",
+        "NCT01808573"
+      ],
+      "marketCapUsd": 568853127.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:30.835149+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PBYI/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001401667&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001401667.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "PCVX",
+      "company": "Vaxcyte, Inc.",
+      "cik": "0001649094",
+      "leadSponsorNames": [
+        "Vaxcyte, Inc."
+      ],
+      "nctIds": [
+        "NCT07284654",
+        "NCT07365826",
+        "NCT07425392"
+      ],
+      "marketCapUsd": 9511056731.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:30.948370+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PCVX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001649094&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001649094.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "PHAT",
+      "company": "Phathom Pharmaceuticals, Inc.",
+      "cik": "0001783183",
+      "leadSponsorNames": [
+        "Phathom Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT04124926",
+        "NCT04167670",
+        "NCT05195528",
+        "NCT07752407"
+      ],
+      "marketCapUsd": 464371361.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.069974+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PHAT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001783183&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001783183.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "PRAX",
+      "company": "Praxis Precision Medicines, Inc.",
+      "cik": "0001689548",
+      "leadSponsorNames": [
+        "Praxis Precision Medicines"
+      ],
+      "nctIds": [
+        "NCT04832425",
+        "NCT05818553",
+        "NCT06087276",
+        "NCT06999902",
+        "NCT07010471",
+        "NCT07019922",
+        "NCT07287163",
+        "NCT07505004"
+      ],
+      "marketCapUsd": 7062640164.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.181270+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PRAX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001689548&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001689548.json",
+      "configuredIssuerHomepages": [
+        "https://investors.praxismedicines.com/",
+        "https://ir.praxismedicines.com/"
+      ]
+    },
+    {
+      "ticker": "PROK",
+      "company": "PROKIDNEY CORP.",
+      "cik": "0001850270",
+      "leadSponsorNames": [
+        "Prokidney"
+      ],
+      "nctIds": [
+        "NCT05099770",
+        "NCT05286853"
+      ],
+      "marketCapUsd": 426274944.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.237290+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PROK/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001850270&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001850270.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "PTCT",
+      "company": "PTC THERAPEUTICS, INC.",
+      "cik": "0001070081",
+      "leadSponsorNames": [
+        "PTC Therapeutics"
+      ],
+      "nctIds": [
+        "NCT00803205",
+        "NCT01140451",
+        "NCT01247207",
+        "NCT01557400",
+        "NCT01826487",
+        "NCT02090959",
+        "NCT02107859",
+        "NCT02139306",
+        "NCT02456103",
+        "NCT03179631",
+        "NCT03642145",
+        "NCT03783923",
+        "NCT04378075",
+        "NCT04439071",
+        "NCT04577352",
+        "NCT05099640",
+        "NCT05166161",
+        "NCT05218655",
+        "NCT05269355",
+        "NCT05515536",
+        "NCT06302348",
+        "NCT07681713"
+      ],
+      "marketCapUsd": 5056889993.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.357344+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PTCT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001070081&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001070081.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "PTGX",
+      "company": "Protagonist Therapeutics, Inc",
+      "cik": "0001377121",
+      "leadSponsorNames": [
+        "Protagonist Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT05210790",
+        "NCT06033586"
+      ],
+      "marketCapUsd": 8957567893.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.364062+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PTGX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001377121&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001377121.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "PVLA",
+      "company": "PALVELLA THERAPEUTICS, INC.",
+      "cik": "0001583648",
+      "leadSponsorNames": [
+        "Palvella Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT03920228",
+        "NCT04520750",
+        "NCT05180708",
+        "NCT05643872",
+        "NCT06239480"
+      ],
+      "marketCapUsd": 1802491716.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.409706+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PVLA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001583648&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001583648.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RAPP",
+      "company": "Rapport Therapeutics, Inc.",
+      "cik": "0002012593",
+      "leadSponsorNames": [
+        "Rapport Therapeutics Inc."
+      ],
+      "nctIds": [
+        "NCT07563881",
+        "NCT07594119"
+      ],
+      "marketCapUsd": 1244076956.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.674657+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RAPP/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002012593&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0002012593.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RARE",
+      "company": "Ultragenyx Pharmaceutical Inc.",
+      "cik": "0001515673",
+      "leadSponsorNames": [
+        "Ultragenyx Pharmaceutical Inc"
+      ],
+      "nctIds": [
+        "NCT02230566",
+        "NCT02377921",
+        "NCT02432144",
+        "NCT02716246",
+        "NCT02736188",
+        "NCT02960217",
+        "NCT04360265",
+        "NCT05125809",
+        "NCT05139316",
+        "NCT05345171",
+        "NCT05768854",
+        "NCT05933200",
+        "NCT06415344",
+        "NCT06617429",
+        "NCT06636071"
+      ],
+      "marketCapUsd": 1542915862.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.753049+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RARE/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001515673&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001515673.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RCUS",
+      "company": "Arcus Biosciences, Inc.",
+      "cik": "0001724521",
+      "leadSponsorNames": [
+        "Arcus Biosciences, Inc."
+      ],
+      "nctIds": [
+        "NCT05568095",
+        "NCT06608927",
+        "NCT07011719"
+      ],
+      "marketCapUsd": 2360760791.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.786537+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RCUS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001724521&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001724521.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RGNX",
+      "company": "REGENXBIO Inc.",
+      "cik": "0001590877",
+      "leadSponsorNames": [
+        "REGENXBIO Inc."
+      ],
+      "nctIds": [
+        "NCT03566043",
+        "NCT05693142",
+        "NCT07236606"
+      ],
+      "marketCapUsd": 440968123.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.905552+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RGNX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001590877&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001590877.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RIGL",
+      "company": "RIGEL PHARMACEUTICALS INC",
+      "cik": "0001034842",
+      "leadSponsorNames": [
+        "Rigel Pharmaceuticals"
+      ],
+      "nctIds": [
+        "NCT02076399",
+        "NCT02076412",
+        "NCT02077192",
+        "NCT03764618",
+        "NCT04138927",
+        "NCT04629703"
+      ],
+      "marketCapUsd": 899061854.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.908411+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RIGL/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001034842&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001034842.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RLAY",
+      "company": "Relay Therapeutics, Inc.",
+      "cik": "0001812364",
+      "leadSponsorNames": [
+        "Relay Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT06982521"
+      ],
+      "marketCapUsd": 3983994852.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:31.942159+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RLAY/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001812364&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001812364.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RLMD",
+      "company": "RELMADA THERAPEUTICS, INC.",
+      "cik": "0001553643",
+      "leadSponsorNames": [
+        "Relmada Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT04688164",
+        "NCT04855760",
+        "NCT05081167",
+        "NCT07313891",
+        "NCT07342517",
+        "NCT07464145"
+      ],
+      "marketCapUsd": 348810396.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.031472+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RLMD/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001553643&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001553643.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RXRX",
+      "company": "RECURSION PHARMACEUTICALS, INC.",
+      "cik": "0001601830",
+      "leadSponsorNames": [
+        "Recursion Pharmaceuticals Inc."
+      ],
+      "nctIds": [
+        "NCT05130866"
+      ],
+      "marketCapUsd": 2208464029.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.175749+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RXRX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001601830&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001601830.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "RYTM",
+      "company": "RHYTHM PHARMACEUTICALS, INC.",
+      "cik": "0001649904",
+      "leadSponsorNames": [
+        "Rhythm Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT02896192",
+        "NCT03287960",
+        "NCT03651765",
+        "NCT03746522",
+        "NCT04966741",
+        "NCT05093634",
+        "NCT05194124",
+        "NCT05774756",
+        "NCT06596135",
+        "NCT06760546"
+      ],
+      "marketCapUsd": 6146425360.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.178466+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RYTM/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001649904&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001649904.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "SGMT",
+      "company": "Sagimet Biosciences Inc.",
+      "cik": "0001400118",
+      "leadSponsorNames": [
+        "Sagimet Biosciences Inc."
+      ],
+      "nctIds": [
+        "NCT06594523",
+        "NCT06692283",
+        "NCT07863193"
+      ],
+      "marketCapUsd": 675705604.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.321554+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SGMT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001400118&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001400118.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "SLDB",
+      "company": "Solid Biosciences Inc.",
+      "cik": "0001707502",
+      "leadSponsorNames": [
+        "Solid Biosciences Inc."
+      ],
+      "nctIds": [
+        "NCT07160634"
+      ],
+      "marketCapUsd": 634773409.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.403953+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SLDB/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001707502&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001707502.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "SLS",
+      "company": "SELLAS Life Sciences Group, Inc.",
+      "cik": "0001390478",
+      "leadSponsorNames": [
+        "Sellas Life Sciences Group"
+      ],
+      "nctIds": [
+        "NCT04229979"
+      ],
+      "marketCapUsd": 2330453482.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.511478+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SLS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001390478&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001390478.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "SNDX",
+      "company": "Syndax Pharmaceuticals Inc",
+      "cik": "0001395937",
+      "leadSponsorNames": [
+        "Syndax Pharmaceuticals"
+      ],
+      "nctIds": [
+        "NCT07211958"
+      ],
+      "marketCapUsd": 1196580952.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.582585+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SNDX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001395937&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001395937.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "SRPT",
+      "company": "Sarepta Therapeutics, Inc.",
+      "cik": "0000873303",
+      "leadSponsorNames": [
+        "Sarepta Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT02255552",
+        "NCT02500381",
+        "NCT03532542",
+        "NCT03992430",
+        "NCT05096221",
+        "NCT05881408",
+        "NCT05967351",
+        "NCT06246513",
+        "NCT06952686"
+      ],
+      "marketCapUsd": 1872767082.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.749440+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SRPT/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000873303&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000873303.json",
+      "configuredIssuerHomepages": [
+        "https://investorrelations.sarepta.com/"
+      ]
+    },
+    {
+      "ticker": "STOK",
+      "company": "Stoke Therapeutics, Inc.",
+      "cik": "0001623526",
+      "leadSponsorNames": [
+        "Stoke Therapeutics, Inc"
+      ],
+      "nctIds": [
+        "NCT06872125"
+      ],
+      "marketCapUsd": 1615737100.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.768128+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/STOK/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001623526&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001623526.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "SUPN",
+      "company": "SUPERNUS PHARMACEUTICALS, INC.",
+      "cik": "0001356576",
+      "leadSponsorNames": [
+        "Supernus Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT00772603",
+        "NCT00908349",
+        "NCT02477618",
+        "NCT02618408",
+        "NCT02618434",
+        "NCT02691182",
+        "NCT02736656",
+        "NCT02942004",
+        "NCT02942017",
+        "NCT03247517",
+        "NCT03247530",
+        "NCT03247543",
+        "NCT03247556",
+        "NCT03597503",
+        "NCT03665038",
+        "NCT04016779",
+        "NCT04016792",
+        "NCT04143217",
+        "NCT05655520"
+      ],
+      "marketCapUsd": 2365769429.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.883910+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SUPN/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001356576&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001356576.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "SVA",
+      "company": "SINOVAC BIOTECH LTD",
+      "cik": "0001084201",
+      "leadSponsorNames": [
+        "Sinovac Biotech Co., Ltd"
+      ],
+      "nctIds": [
+        "NCT01507857",
+        "NCT01636245",
+        "NCT02451969",
+        "NCT03526978",
+        "NCT03822754",
+        "NCT03822767",
+        "NCT03853993",
+        "NCT03859141",
+        "NCT03909074",
+        "NCT04386707",
+        "NCT05245552",
+        "NCT05386810",
+        "NCT05431725",
+        "NCT05850364",
+        "NCT06049927",
+        "NCT06734832",
+        "NCT07055295",
+        "NCT07055893",
+        "NCT07211152",
+        "NCT07357545",
+        "NCT07416110",
+        "NCT07505810",
+        "NCT07505823",
+        "NCT07505836",
+        "NCT07505888",
+        "NCT07611513",
+        "NCT07793227"
+      ],
+      "marketCapUsd": 643779512.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.898704+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SVA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001084201&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001084201.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "SVRA",
+      "company": "Savara Inc",
+      "cik": "0001160308",
+      "leadSponsorNames": [
+        "Savara Inc."
+      ],
+      "nctIds": [
+        "NCT03181932",
+        "NCT03482752",
+        "NCT04544293",
+        "NCT06431776"
+      ],
+      "marketCapUsd": 867041263.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:32.902585+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SVRA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001160308&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001160308.json",
+      "configuredIssuerHomepages": [
+        "https://investors.savarapharma.com/"
+      ]
+    },
+    {
+      "ticker": "TARS",
+      "company": "Tarsus Pharmaceuticals, Inc.",
+      "cik": "0001819790",
+      "leadSponsorNames": [
+        "Tarsus Pharmaceuticals, Inc."
+      ],
+      "nctIds": [
+        "NCT04475432",
+        "NCT04784091"
+      ],
+      "marketCapUsd": 3362492767.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:33.059668+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TARS/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001819790&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001819790.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "TGTX",
+      "company": "TG THERAPEUTICS, INC.",
+      "cik": "0001001316",
+      "leadSponsorNames": [
+        "TG Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT02301156",
+        "NCT02612311",
+        "NCT02793583",
+        "NCT03277248",
+        "NCT03277261",
+        "NCT03801525",
+        "NCT04130997",
+        "NCT05877963",
+        "NCT07211633",
+        "NCT07220252"
+      ],
+      "marketCapUsd": 8291750601.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:33.286030+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TGTX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001001316&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001001316.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "TRVI",
+      "company": "Trevi Therapeutics, Inc.",
+      "cik": "0001563880",
+      "leadSponsorNames": [
+        "Trevi Therapeutics"
+      ],
+      "nctIds": [
+        "NCT02143648",
+        "NCT02143973",
+        "NCT02174419",
+        "NCT02174432",
+        "NCT03497975",
+        "NCT07671911",
+        "NCT07868419"
+      ],
+      "marketCapUsd": 1796620355.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:33.669408+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TRVI/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001563880&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001563880.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "TSHA",
+      "company": "Taysha Gene Therapies, Inc.",
+      "cik": "0001806310",
+      "leadSponsorNames": [
+        "Taysha Gene Therapies, Inc."
+      ],
+      "nctIds": [
+        "NCT05606614",
+        "NCT07480564"
+      ],
+      "marketCapUsd": 1290300838.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:33.675359+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TSHA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001806310&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001806310.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "TTRX",
+      "company": "Turn Therapeutics Inc.",
+      "cik": "0002023016",
+      "leadSponsorNames": [
+        "Turn Therapeutics"
+      ],
+      "nctIds": [
+        "NCT07355075"
+      ],
+      "marketCapUsd": 313876197.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:33.679246+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TTRX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002023016&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0002023016.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "TVTX",
+      "company": "Travere Therapeutics, Inc.",
+      "cik": "0001438533",
+      "leadSponsorNames": [
+        "Travere Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT03041116",
+        "NCT03493685",
+        "NCT03762850",
+        "NCT06247085",
+        "NCT06431893"
+      ],
+      "marketCapUsd": 4720594987.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:33.765570+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TVTX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001438533&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001438533.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "URGN",
+      "company": "UroGen Pharma Ltd.",
+      "cik": "0001668243",
+      "leadSponsorNames": [
+        "UroGen Pharma Ltd."
+      ],
+      "nctIds": [
+        "NCT02793128",
+        "NCT04006691",
+        "NCT04688931",
+        "NCT05136898",
+        "NCT05243550",
+        "NCT06331299",
+        "NCT06774131"
+      ],
+      "marketCapUsd": 1685890652.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:33.949692+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/URGN/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001668243&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001668243.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "VCEL",
+      "company": "Vericel Corp",
+      "cik": "0000887359",
+      "leadSponsorNames": [
+        "Vericel Corporation"
+      ],
+      "nctIds": [
+        "NCT00505219",
+        "NCT00719576",
+        "NCT01483898",
+        "NCT03588975",
+        "NCT06915233"
+      ],
+      "marketCapUsd": 2177817293.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:33.988079+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VCEL/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000887359&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0000887359.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "VERA",
+      "company": "Vera Therapeutics, Inc.",
+      "cik": "0001831828",
+      "leadSponsorNames": [
+        "Vera Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT04716231",
+        "NCT05609812"
+      ],
+      "marketCapUsd": 2017052747.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:34.067703+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VERA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001831828&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001831828.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "VIR",
+      "company": "Vir Biotechnology, Inc.",
+      "cik": "0001706431",
+      "leadSponsorNames": [
+        "Vir Biotechnology, Inc."
+      ],
+      "nctIds": [
+        "NCT04545060",
+        "NCT04913675",
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "marketCapUsd": 1807273863.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:34.167449+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VIR/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001706431&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001706431.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "VKTX",
+      "company": "Viking Therapeutics, Inc.",
+      "cik": "0001607678",
+      "leadSponsorNames": [
+        "Viking Therapeutics, Inc."
+      ],
+      "nctIds": [
+        "NCT07104383",
+        "NCT07104500",
+        "NCT07868835",
+        "NCT07868939"
+      ],
+      "marketCapUsd": 3066803084.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:34.238165+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VKTX/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001607678&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001607678.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "VOR",
+      "company": "Vor Biopharma Inc.",
+      "cik": "0001817229",
+      "leadSponsorNames": [
+        "Vor Biopharma"
+      ],
+      "nctIds": [
+        "NCT05306574",
+        "NCT06456567",
+        "NCT06456580",
+        "NCT07404865"
+      ],
+      "marketCapUsd": 1080303488.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:34.279725+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VOR/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001817229&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001817229.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "VSTM",
+      "company": "Verastem, Inc.",
+      "cik": "0001526119",
+      "leadSponsorNames": [
+        "Verastem, Inc."
+      ],
+      "nctIds": [
+        "NCT06072781"
+      ],
+      "marketCapUsd": 1219047915.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:34.404164+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VSTM/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001526119&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001526119.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "XENE",
+      "company": "Xenon Pharmaceuticals Inc.",
+      "cik": "0001582313",
+      "leadSponsorNames": [
+        "Xenon Pharmaceuticals Inc."
+      ],
+      "nctIds": [
+        "NCT04639310",
+        "NCT04912856",
+        "NCT05614063",
+        "NCT05667142",
+        "NCT05716100",
+        "NCT05718817",
+        "NCT06775379",
+        "NCT06922110",
+        "NCT07076407",
+        "NCT07172516",
+        "NCT07217860"
+      ],
+      "marketCapUsd": 3422340867.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:34.635398+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/XENE/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001582313&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001582313.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "XFOR",
+      "company": "X4 Pharmaceuticals, Inc",
+      "cik": "0001501697",
+      "leadSponsorNames": [
+        "X4 Pharmaceuticals"
+      ],
+      "nctIds": [
+        "NCT03995108",
+        "NCT06056297"
+      ],
+      "marketCapUsd": 321235447.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:34.638394+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/XFOR/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001501697&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001501697.json",
+      "configuredIssuerHomepages": []
+    },
+    {
+      "ticker": "ZVRA",
+      "company": "ZEVRA THERAPEUTICS, INC.",
+      "cik": "0001434647",
+      "leadSponsorNames": [
+        "Zevra Therapeutics"
+      ],
+      "nctIds": [
+        "NCT03292952",
+        "NCT03460652"
+      ],
+      "marketCapUsd": 582554892.0,
+      "marketCapCheckedAt": "2026-10-26T03:21:34.814668+00:00",
+      "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ZVRA/summary?assetclass=stocks",
+      "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001434647&owner=exclude",
+      "secSubmissionsUrl": "https://data.sec.gov/submissions/CIK0001434647.json",
+      "configuredIssuerHomepages": []
+    }
+  ]
+}

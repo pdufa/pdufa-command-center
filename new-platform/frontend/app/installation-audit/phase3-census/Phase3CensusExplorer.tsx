@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Phase3EvidenceDetails from "./Phase3EvidenceDetails";
 import { buildPhase3EvidenceGapCsv, summarizePhase3EvidenceGaps, type PipelineCensusGapSummary } from "../../../lib/phase3-census-evidence-gaps";
 import {
@@ -8,6 +8,7 @@ import {
   PHASE3_CENSUS_STATUS_VALUES,
   type Phase3CensusRegistryStatus, type Phase3CensusRows,
 } from "../../../lib/phase3-census-rows";
+import { PHASE3_CENSUS_SOURCES_PATH, parsePhase3CensusSourceDirectory, type Phase3CensusSourceDirectory } from "../../../lib/phase3-census-sources";
 
 const PAGE_SIZE = 35;
 const labelStatus = (value: string) => value.replaceAll("_", " ").toLowerCase()
@@ -23,32 +24,38 @@ export default function Phase3CensusExplorer() {
   const [rawSource, setRawSource] = useState("");
   const [gapSummary, setGapSummary] = useState<PipelineCensusGapSummary | null>(null);
   const [selectedNct, setSelectedNct] = useState<string | null>(null);
+  const [sourceDirectory, setSourceDirectory] = useState<Phase3CensusSourceDirectory | null>(null);
 
   useEffect(() => {
     let active = true;
     void (async () => {
       try {
-        const response = await fetch(PHASE3_CENSUS_CSV_PATH, { cache: "no-store" });
-        if (!response.ok) throw new Error("CSV source unavailable.");
-        const source = await response.text();
+        const [response,directoryResponse] = await Promise.all([
+          fetch(PHASE3_CENSUS_CSV_PATH, { cache:"no-store" }),
+          fetch(PHASE3_CENSUS_SOURCES_PATH, { cache:"no-store" }),
+        ]);
+        if (!response.ok || !directoryResponse.ok) throw new Error("Saved research sources unavailable.");
+        const [source,directoryValue] = await Promise.all([response.text(),directoryResponse.json()]);
         const data = parsePhase3CensusCsv(source);
         const gaps = summarizePhase3EvidenceGaps(data);
+        const directory = parsePhase3CensusSourceDirectory(directoryValue,data);
         if (active) {
           setInventory(data);
           setGapSummary(gaps);
           setRawSource(source);
+          setSourceDirectory(directory);
         }
       } catch {
-        if (active) setError("Trial inventory not displayed: complete dated CSV could not be checked. No counts have been inferred.");
+        if (active) setError("Trial inventory not displayed: complete dated CSV and saved company source mappings could not be checked. No counts have been inferred.");
       }
     })();
     return () => { active = false; };
   }, []);
 
   function downloadUnverifiedEvidenceGaps() {
-    if (!inventory || !rawSource || !gapSummary) return;
+    if (!inventory || !rawSource || !gapSummary || !sourceDirectory) return;
     try {
-      const csv = buildPhase3EvidenceGapCsv(rawSource);
+      const csv = buildPhase3EvidenceGapCsv(rawSource,sourceDirectory);
       const url = URL.createObjectURL(new Blob([csv], { type:"text/csv;charset=utf-8" }));
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -62,6 +69,7 @@ export default function Phase3CensusExplorer() {
       setRawSource("");
       setGapSummary(null);
       setInventory(null);
+      setSourceDirectory(null);
     }
   }
 
@@ -77,7 +85,6 @@ export default function Phase3CensusExplorer() {
   const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
   const currentPage = Math.min(page, pages - 1);
   const visible = matches.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
-  const selected = selectedNct ? inventory?.rows.find(row=>row.nctId===selectedNct) : null;
 
   return <section aria-label="741 Phase 3 research trial records" style={{marginTop:22}}>
     <p><strong>Qualified Pipeline: NOT ESTABLISHED.</strong> Results below are
@@ -101,6 +108,11 @@ export default function Phase3CensusExplorer() {
           Phase 3 identity and listed-company market-cap range are census-level matches,
           not fresh trial-by-trial qualification checks.
           Qualified Pipeline total: <strong>UNKNOWN</strong>.</p>
+        <p><strong>Source-linked checklist:</strong> 741 exact NCT/ticker pairs linked to
+          130 saved company filing and market-cap records, with original registry links
+          and clearly labelled general FDA research entry points. The checklist identifies
+          two structured rechecks, four document-reconciliation tasks and one rule-by-rule
+          check per trial. These are checking methods; no fresh source recheck or FDA match is claimed.</p>
         <button type="button" onClick={downloadUnverifiedEvidenceGaps}>
           Download 741-row Pipeline evidence-gap checklist (CSV)
         </button>
@@ -136,7 +148,7 @@ export default function Phase3CensusExplorer() {
             {["Clinical trial","Ticker","Exact matched company","Registry status","Original source","Evidence gaps"].map(h =>
               <th key={h} scope="col" style={{padding:11,borderBottom:"2px solid #cbd5e1",textAlign:"left"}}>{h}</th>)}
           </tr></thead>
-          <tbody>{visible.map((row,i) => <tr key={row.nctId} style={{background:i%2?"#f8fafc":"#fff"}}>
+          <tbody>{visible.map((row,i) => <Fragment key={row.nctId}><tr style={{background:i%2?"#f8fafc":"#fff"}}>
             <th scope="row" style={{textAlign:"left",padding:10,borderBottom:"1px solid #e2e8f0"}}>{row.nctId}</th>
             <td style={{padding:10,borderBottom:"1px solid #e2e8f0"}}>{row.ticker}</td>
             <td style={{padding:10,borderBottom:"1px solid #e2e8f0"}}>{row.company}</td>
@@ -145,19 +157,22 @@ export default function Phase3CensusExplorer() {
               <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov record</a>
             </td>
             <td style={{padding:10,borderBottom:"1px solid #e2e8f0"}}>
-              <button type="button" aria-pressed={selectedNct===row.nctId}
+              <button type="button" aria-expanded={selectedNct===row.nctId} aria-controls={"evidence-"+row.nctId}
                 onClick={() => setSelectedNct(selectedNct===row.nctId?null:row.nctId)}>
                 {selectedNct===row.nctId?"Close checklist":"View seven evidence gates"}
               </button>
             </td>
-          </tr>)}</tbody>
+          </tr>
+          {selectedNct===row.nctId && sourceDirectory && <tr id={"evidence-"+row.nctId}>
+            <td colSpan={6} style={{padding:12}}>
+              <button type="button" onClick={() => setSelectedNct(null)}>Close evidence checklist</button>
+              <Phase3EvidenceDetails trial={row} directory={sourceDirectory}/>
+            </td>
+          </tr>}
+          </Fragment>)}</tbody>
         </table>
         {!visible.length && <p style={{padding:12}}>No trial records match these filters.</p>}
       </div>
-      {selected && <div style={{marginTop:16}}>
-        <button type="button" onClick={() => setSelectedNct(null)}>Close evidence checklist</button>
-        <Phase3EvidenceDetails trial={selected}/>
-      </div>}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,marginTop:14}}>
         <button type="button" onClick={() => setPage(Math.max(0,currentPage-1))}
           disabled={currentPage === 0}>Previous records</button>

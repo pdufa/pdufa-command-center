@@ -3,6 +3,14 @@ on:
   pull_request:
     paths:
       - 'new-platform/frontend/lib/phase3-census-evidence-gaps.ts'
+      - 'new-platform/frontend/lib/phase3-census-sources.ts'
+      - 'new-platform/frontend/public/phase3-census-sources-2026-10-26.json'
+      - 'new-platform/frontend/tests/phase3-census-sources.test.cjs'
+      - 'scripts/build_phase3_census_sources.py'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+      - 'data/company_registry.csv'
+      - 'data/phase_pipeline_market_caps.csv'
+      - 'config/issuer_sources.json'
       - 'new-platform/frontend/app/installation-audit/phase3-census/**'
       - 'new-platform/frontend/tests/phase3-census-evidence-gaps.test.cjs'
       - '.github/workflows/main-phase3-evidence-gaps-safety.yml'
@@ -10,6 +18,14 @@ on:
     branches: [main]
     paths:
       - 'new-platform/frontend/lib/phase3-census-evidence-gaps.ts'
+      - 'new-platform/frontend/lib/phase3-census-sources.ts'
+      - 'new-platform/frontend/public/phase3-census-sources-2026-10-26.json'
+      - 'new-platform/frontend/tests/phase3-census-sources.test.cjs'
+      - 'scripts/build_phase3_census_sources.py'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+      - 'data/company_registry.csv'
+      - 'data/phase_pipeline_market_caps.csv'
+      - 'config/issuer_sources.json'
       - 'new-platform/frontend/app/installation-audit/phase3-census/**'
       - 'new-platform/frontend/tests/phase3-census-evidence-gaps.test.cjs'
       - '.github/workflows/main-phase3-evidence-gaps-safety.yml'
@@ -31,7 +47,7 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Require 741 exact NCT source-backed and fail-closed evidence-gaps plus MAIN tests
         working-directory: new-platform/frontend
-        run: node --test tests/phase3-census-evidence-gaps.test.cjs tests/phase3-census-rows.test.cjs tests/phase3-census-snapshot.test.cjs tests/installation-audit.test.cjs tests/hop-source-diagnostic.test.cjs
+        run: node --test tests/phase3-census-sources.test.cjs tests/phase3-census-evidence-gaps.test.cjs tests/phase3-census-rows.test.cjs tests/phase3-census-snapshot.test.cjs tests/installation-audit.test.cjs tests/hop-source-diagnostic.test.cjs
       - name: Typecheck safe MAIN trial explorer
         working-directory: new-platform/frontend
         run: npm run typecheck
