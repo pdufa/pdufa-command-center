@@ -117,7 +117,7 @@ def fetch_sec_submissions(cik, sleep_fn=time.sleep):
     if not re.fullmatch(r"\d{10}", cik):
         raise ValueError("Invalid issuer CIK")
     url = SEC_BASE + "CIK" + cik + ".json"
-    ua = os.environ.get("SEC_EDGAR_USER_AGENT", DEFAULT_USER_AGENT)
+    ua = os.environ.get("SEC_EDGAR_USER_AGENT") or DEFAULT_USER_AGENT
     if not ua.strip():
         raise ValueError("SEC User-Agent required")
     for attempt in range(3):
