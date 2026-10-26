@@ -1,0 +1,40 @@
+name: MAIN remaining 677 Phase 3 registry source research
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/check_phase3_remaining_677_sources.py'
+      - 'tests/test_phase3_remaining_677_sources.py'
+      - 'scripts/check_phase3_64_original_sources.py'
+      - 'scripts/check_phase3_original_registry_pilot.py'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+      - '.github/workflows/main-phase3-remaining-677.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remaining-677-research-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Offline evidence / source / never-qualify 741-trial integrity tests
+        run: |
+          python3 -m py_compile scripts/check_phase3_remaining_677_sources.py
+          python3 -m unittest discover -s tests -p 'test_phase3_remaining_677_sources.py' -v
+          python3 -m unittest discover -s tests -p 'test_phase3_64_original_sources.py' -v
+          python3 -m unittest discover -s tests -p 'test_phase3_original_registry_pilot.py' -v
+      - name: Read 677 remaining original NCT records in 28 bounded public GETs
+        run: python3 scripts/check_phase3_remaining_677_sources.py "$RUNNER_TEMP/phase3_remaining_677_original_research.json"
+      - name: Preserve source-ID reconciliations and unresolved studies for manual audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-original-remaining-677-source-research
+          path: ${{ runner.temp }}/phase3_remaining_677_original_research.json
+          if-no-files-found: error
+          retention-days: 7
