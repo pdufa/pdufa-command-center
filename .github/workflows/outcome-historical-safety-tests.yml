@@ -15,6 +15,8 @@ on:
       - 'new-platform/backend/app/hop_fda_application_crosswalk.py'
       - 'new-platform/backend/app/hop_fda_review_cycle_triage.py'
       - 'new-platform/backend/tests/test_hop_fda_review_cycle_triage.py'
+      - 'new-platform/backend/tests/test_hop_fda_pdf_date_review_examples.py'
+      - 'new-platform/backend/app/research_sources/hop_fda_pdf_date_review_examples.json'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   push:
     branches: [main]
@@ -31,6 +33,8 @@ on:
       - 'new-platform/backend/app/hop_fda_application_crosswalk.py'
       - 'new-platform/backend/app/hop_fda_review_cycle_triage.py'
       - 'new-platform/backend/tests/test_hop_fda_review_cycle_triage.py'
+      - 'new-platform/backend/tests/test_hop_fda_pdf_date_review_examples.py'
+      - 'new-platform/backend/app/research_sources/hop_fda_pdf_date_review_examples.json'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   workflow_dispatch:
 
@@ -59,7 +63,8 @@ jobs:
             tests/test_hop_outcomes_import.py \
             tests/test_hop_fda_application_crosswalk.py \
             tests/test_hop_fda_identity_review_queue.py \
-            tests/test_hop_fda_review_cycle_triage.py
+            tests/test_hop_fda_review_cycle_triage.py \
+            tests/test_hop_fda_pdf_date_review_examples.py
       - name: Confirm published audit has no model clearance
         working-directory: new-platform/backend
         run: |
