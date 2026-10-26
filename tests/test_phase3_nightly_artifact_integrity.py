@@ -1,5 +1,6 @@
 """Nightly source artifact integrity tests: actual files, scope and hash checks."""
 import csv
+import hashlib
 import json
 import re
 import sys
@@ -16,10 +17,33 @@ from phase3_nightly_artifact_integrity import (
 
 def sample_runner_folder(root):
     ncts=[f"NCT{i:08d}" for i in range(1,742)]
-    rows=[{"nct_id":nct} for nct in ncts]
+    rows=[{"nct_id":nct, "source_sha256":hashlib.sha256(nct.encode()).hexdigest(),
+           "census_ticker":"TEST", "current_registry_status":"RECRUITING",
+           "status_matches_dated_census":True, "phase3_in_current_registry":True} for nct in ncts]
+    status_rows=[{"nct_id":r["nct_id"], "registry_source_sha256":r["source_sha256"],
+                 "census_ticker":r["census_ticker"],
+                 "current_registry_status":r["current_registry_status"],
+                 "status_matches_census":r["status_matches_dated_census"],
+                 "phase3_in_current_registry":r["phase3_in_current_registry"],
+                 "commercial_rights_verified":False, "qualified_pipeline":None}
+                 for r in rows]
     def obj(name,**extra):
         return {"report_type":name,**extra}
     reports={
+        "main_phase3_registry_status_recency.json":obj(
+            "MAIN_PHASE3_REGISTRY_STATUS_SOURCE_RECENCY_RESEARCH_ONLY",
+            historical_trial_count=741,source_identity_verified=741,
+            source_posted_update_age_counts={"POSTED_LAST_90_DAYS":741,
+                "POSTED_OVER_365_DAYS":0,"POSTED_DATE_MISSING":0},
+            research_priority_counts={"P4_STANDARD_REGISTRY_REVIEW":741},
+            registry_status_group_counts={"REGISTRY_ACTIVE_STATUS_ONLY":741},
+            registry_status_changed_since_saved_census=0,
+            not_currently_registered_as_phase3=0,
+            original_source_posted_update_over_365_days=0,
+            original_source_posted_update_missing=0,
+            registration_freshness_gate_verified_count=0,
+            independently_verified_commercial_rights=0,
+            items=status_rows,qualified_pipeline_total=None),
         "main_phase3_registry.json": obj(
             "MAIN_ORIGINAL_PHASE3_FULL_CENSUS_RESEARCH_ONLY",
             census_total=741,source_identity_verified=741,source_errors=[],
@@ -76,6 +100,17 @@ def sample_runner_folder(root):
     }
     for name,data in reports.items():
         (root/name).write_text(json.dumps(data),encoding="utf-8")
+    with (root/"main_phase3_registry_status_review.csv").open("w",encoding="utf-8",newline="") as handle:
+        writer=csv.DictWriter(handle,fieldnames=[
+            "nct_id","review_position","registry_source_sha256",
+            "commercial_rights_verified","qualified_pipeline"])
+        writer.writeheader()
+        for i,row in enumerate(status_rows,1):
+            writer.writerow({
+                "nct_id":row["nct_id"],"review_position":i,
+                "registry_source_sha256":row["registry_source_sha256"],
+                "commercial_rights_verified":"False","qualified_pipeline":""
+            })
     with (root/"main_phase3_rights_review_worklist.csv").open("w",encoding="utf-8",newline="") as handle:
         writer=csv.DictWriter(handle,fieldnames=[
             "nct_id","review_position","commercial_rights_verified","qualified_pipeline"])
@@ -110,9 +145,10 @@ class NightlyResearchArtifactIntegrityTests(unittest.TestCase):
         transform(contents)
         p.write_text(json.dumps(contents),encoding="utf-8")
 
-    def test_complete_14_file_research_manifest_has_source_hashes_and_counts(self):
+    def test_complete_16_file_research_manifest_has_source_hashes_and_counts(self):
         x=self.manifest()
-        self.assertEqual(x["verified_file_count"],14)
+        self.assertEqual(x["verified_file_count"],16)
+        self.assertEqual(x["reconciled_scope"]["registry_status_review_rows"],741)
         self.assertEqual(x["github_event"],"schedule")
         self.assertEqual(x["github_run_id"],40399999999)
         self.assertEqual(x["pacific_research_date"],"2026-10-26")
@@ -122,6 +158,30 @@ class NightlyResearchArtifactIntegrityTests(unittest.TestCase):
         self.assertIsNone(x["reconciled_scope"]["qualified_pipeline_total"])
         self.assertTrue(all(re.fullmatch(r"[a-f0-9]{64}",f["sha256"]) for f in x["files"]))
         self.assertTrue(verify_manifest(self.root,x))
+
+    def test_registry_status_report_nct_scope_is_exact(self):
+        self.rewrite("main_phase3_registry_status_recency.json",lambda x:
+                     x["items"].__setitem__(0,{"nct_id":"NCT12345678"}))
+        with self.assertRaises(ValueError):
+            self.manifest()
+
+    def test_status_report_source_hash_conflict_fails(self):
+        self.rewrite("main_phase3_registry_status_recency.json",lambda x:
+                     x["items"][0].__setitem__("registry_source_sha256","e"*64))
+        with self.assertRaises(ValueError):
+            self.manifest()
+
+    def test_status_csv_forged_pipeline_claim_fails(self):
+        p=self.root/"main_phase3_registry_status_review.csv"
+        p.write_text(p.read_text().replace("False,", "True,",1),encoding="utf-8")
+        with self.assertRaises(ValueError):
+            self.manifest()
+
+    def test_status_breakdown_bad_denominator_fails(self):
+        self.rewrite("main_phase3_registry_status_recency.json",lambda x:
+                     x["source_posted_update_age_counts"].__setitem__("POSTED_LAST_90_DAYS",740))
+        with self.assertRaises(ValueError):
+            self.manifest()
 
     def test_missing_required_primary_source_fails_before_upload(self):
         (self.root/"main_phase3_registry.json").unlink()
@@ -236,7 +296,7 @@ class NightlyResearchArtifactIntegrityTests(unittest.TestCase):
 
     def test_manifest_forged_file_count_fails_verification(self):
         x=self.manifest()
-        x["verified_file_count"]=13
+        x["verified_file_count"]=15
         with self.assertRaises(ValueError):
             verify_manifest(self.root,x)
 

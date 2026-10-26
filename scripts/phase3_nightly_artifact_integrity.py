@@ -30,6 +30,8 @@ SHA256 = re.compile(r"^[a-f0-9]{64}$")
 GITHUB_SHA = re.compile(r"^[a-f0-9]{40}$")
 EXPECTED_FILES = (
     "main_phase3_registry.json",
+    "main_phase3_registry_status_recency.json",
+    "main_phase3_registry_status_review.csv",
     "main_phase3_qualification_ledger.json",
     "main_phase3_sponsor_rights_queue.json",
     "main_phase3_rights_gaps.json",
@@ -85,6 +87,7 @@ def trial_ids(data, key, label):
 
 def check_report_numbers(reports, csv_path, markdown_path):
     registry = reports["main_phase3_registry.json"]
+    status = reports["main_phase3_registry_status_recency.json"]
     ledger = reports["main_phase3_qualification_ledger.json"]
     casebook = reports["main_phase3_rights_casebook.json"]
     program = reports["main_phase3_program_identity.json"]
@@ -99,6 +102,12 @@ def check_report_numbers(reports, csv_path, markdown_path):
         or registry.get("census_total") != EXPECTED_TRIALS
         or registry.get("source_identity_verified") != EXPECTED_TRIALS
         or registry.get("source_errors") != []
+        or status.get("report_type") != "MAIN_PHASE3_REGISTRY_STATUS_SOURCE_RECENCY_RESEARCH_ONLY"
+        or status.get("historical_trial_count") != EXPECTED_TRIALS
+        or status.get("source_identity_verified") != EXPECTED_TRIALS
+        or status.get("qualified_pipeline_total") is not None
+        or status.get("independently_verified_commercial_rights") != 0
+        or status.get("registration_freshness_gate_verified_count") != 0
         or ledger.get("report_type") != "MAIN_PHASE3_QUALIFICATION_EVIDENCE_LEDGER_RESEARCH_ONLY"
         or ledger.get("total") != EXPECTED_TRIALS
         or casebook.get("report_type") != "MAIN_PHASE3_RIGHTS_CASEBOOK_RESEARCH_ONLY"
@@ -127,6 +136,7 @@ def check_report_numbers(reports, csv_path, markdown_path):
 
     sources = (
         (registry, "original_source_records", "registry"),
+        (status, "items", "registry status and source recency"),
         (ledger, "records", "qualification ledger"),
         (casebook, "items", "rights casebook"),
         (program, "items", "drug program"),
@@ -139,6 +149,33 @@ def check_report_numbers(reports, csv_path, markdown_path):
     for report, key, label in sources[1:]:
         if trial_ids(report, key, label) != canonical:
             raise ValueError(f"NCT set differs from verified original registry in {label}")
+
+    registry_index = {r["nct_id"]: r for r in registry["original_source_records"]}
+    status_index = {r["nct_id"]: r for r in status["items"]}
+    for nct in canonical:
+        original, current = registry_index[nct], status_index[nct]
+        if (current.get("registry_source_sha256") != original.get("source_sha256")
+            or current.get("census_ticker") != original.get("census_ticker")
+            or current.get("current_registry_status") != original.get("current_registry_status")
+            or current.get("status_matches_census") != original.get("status_matches_dated_census")
+            or current.get("phase3_in_current_registry") != original.get("phase3_in_current_registry")
+            or current.get("commercial_rights_verified") is not False
+            or current.get("qualified_pipeline") is not None):
+            raise ValueError("Registry status report does not reconcile with original exact NCT source")
+    buckets = status.get("source_posted_update_age_counts")
+    priorities = status.get("research_priority_counts")
+    groups = status.get("registry_status_group_counts")
+    if (not all(isinstance(x, dict) and all(type(v) is int and v >= 0 for v in x.values())
+                and sum(x.values()) == EXPECTED_TRIALS for x in (buckets, priorities, groups))
+        or status.get("registry_status_changed_since_saved_census") != sum(
+            not r["status_matches_census"] for r in status_index.values())
+        or status.get("not_currently_registered_as_phase3") != sum(
+            not r["phase3_in_current_registry"] for r in status_index.values())
+        or status.get("original_source_posted_update_over_365_days") !=
+            buckets.get("POSTED_OVER_365_DAYS")
+        or status.get("original_source_posted_update_missing") !=
+            buckets.get("POSTED_DATE_MISSING")):
+        raise ValueError("Original registry source status/freshness counts do not reconcile")
 
     if (not isinstance(sec.get("issuers"), list) or len(sec["issuers"]) != EXPECTED_ISSUERS
         or not isinstance(pilot.get("issuers"), list)
@@ -169,12 +206,35 @@ def check_report_numbers(reports, csv_path, markdown_path):
         or score["rights_slots_with_submissions"] + score["rights_slots_without_submissions"] != RIGHTS_SLOTS):
         raise ValueError("4,446 rights review slot totals do not reconcile")
 
-    for report in (registry, ledger, casebook, program, sec, pilot, joined,
+    for report in (registry, status, ledger, casebook, program, sec, pilot, joined,
                    worklist, reviewed):
         if report.get("qualified_pipeline_total") is not None:
             raise ValueError("Historical research source cannot claim a qualified Pipeline count")
     if score.get("qualified_trial_count") is not None or score.get("qualifying_pipeline_count") is not None:
         raise ValueError("Qualifying Pipeline count must remain unknown in this research report")
+
+    status_csv = csv_path.parent / "main_phase3_registry_status_review.csv"
+    with status_csv.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if reader.fieldnames is None or len(reader.fieldnames) != len(set(reader.fieldnames)):
+            raise ValueError("Malformed registry status CSV header")
+        needed = {"nct_id", "review_position", "registry_source_sha256",
+                  "qualified_pipeline", "commercial_rights_verified"}
+        if not needed.issubset(reader.fieldnames):
+            raise ValueError("Registry status CSV lacks required audit columns")
+        lines = list(reader)
+    if len(lines) != EXPECTED_TRIALS:
+        raise ValueError("Registry status CSV must contain 741 exact source records")
+    csv_nct = set()
+    for i, row in enumerate(lines, start=1):
+        nct = row.get("nct_id")
+        if (nct not in canonical or nct in csv_nct
+            or row.get("review_position") != str(i)
+            or row.get("registry_source_sha256") != status_index[nct].get("registry_source_sha256")
+            or row.get("commercial_rights_verified") != "False"
+            or row.get("qualified_pipeline") != ""):
+            raise ValueError("Original registry status CSV contains inconsistent or promoted trials")
+        csv_nct.add(nct)
 
     with csv_path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
@@ -205,6 +265,9 @@ def check_report_numbers(reports, csv_path, markdown_path):
     return {
         "historical_trial_count": EXPECTED_TRIALS,
         "issuer_research_pointer_count": EXPECTED_ISSUERS,
+        "registry_status_review_rows": EXPECTED_TRIALS,
+        "registry_status_changed_vs_dated_census": status["registry_status_changed_since_saved_census"],
+        "registry_posted_updates_older_than_365_days": status["original_source_posted_update_over_365_days"],
         "verified_registry_identity_checks": EXPECTED_TRIALS,
         "mandatory_gate_checks": GATE_SLOTS,
         "unresolved_mandatory_gate_checks": GATE_SLOTS - EXPECTED_TRIALS,
