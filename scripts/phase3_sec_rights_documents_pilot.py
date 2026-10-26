@@ -36,6 +36,41 @@ CANDIDATE_TERMS = re.compile(
     r"development rights|intellectual property|exclusive rights|territorial rights)\b"
 )
 DENIAL = re.compile(r"(?i)request rate threshold exceeded|access denied|your request has been denied")
+# Document-text locators are lexical review leads, never ownership or rights findings.
+REVIEW_TOPICS = (
+    ("LICENSE_OR_EXCLUSIVITY", re.compile(
+        r"(?i)\\b(?:licens(?:e|es|ed|ing|or|ee)|in-licens(?:e|ing)|exclusive rights)\\b")),
+    ("COLLABORATION", re.compile(r"(?i)\\b(?:collaboration|co-development|co-commercialization)\\b")),
+    ("US_TERRITORY", re.compile(r"(?i)\\b(?:United States|U\\.S\\.|North America|worldwide rights)\\b")),
+    ("RIGHTS_TRANSFER_OR_TERMINATION", re.compile(
+        r"(?i)\\b(?:termination of (?:the )?agreement|terminated (?:the )?license|"
+        r"assigned (?:the )?rights|transferred (?:the )?rights)\\b")),
+)
+MAX_REVIEW_LOCATORS = 6
+MAX_REVIEW_EXCERPT_CHARS = 150
+
+
+def rights_review_locators(plain):
+    """Bounded, source-offset lexical hints. A match is NEVER a legal conclusion."""
+    if not isinstance(plain, str) or len(plain) > 8_000_000:
+        raise ValueError("Invalid normalized SEC text for review")
+    hits = []
+    for topic, pattern in REVIEW_TOPICS:
+        matches = 0
+        for match in pattern.finditer(plain):
+            begin = max(0, match.start() - 65)
+            end = min(len(plain), match.end() + 65)
+            hits.append({
+                "topic": topic, "matched_term": match.group()[:65],
+                "normalized_text_offset": match.start(),
+                "context_excerpt": plain[begin:end][:MAX_REVIEW_EXCERPT_CHARS],
+                "status": "LEXICAL_REVIEW_LEAD_NOT_LEGAL_RIGHTS_PROOF",
+            })
+            matches += 1
+            if matches == 2:
+                break
+    hits.sort(key=lambda item: (item["normalized_text_offset"], item["topic"]))
+    return hits[:MAX_REVIEW_LOCATORS]
 
 
 def validate_leads(casebook, leads):
@@ -182,6 +217,7 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
                     "sec_primary_document_url": filing["primary_document_url"],
                     "retrieval_status": "SOURCE_UNAVAILABLE",
                     "source_sha256": None, "rights_language_locator_count": None,
+                    "rights_language_review_locators": [],
                     "verified_trial_development_rights": False,
                 }
                 if not configured:
@@ -192,10 +228,18 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
                         text = read_text(raw)
                         item["source_sha256"] = hashlib.sha256(raw).hexdigest()
                         item["rights_language_locator_count"] = min(len(CANDIDATE_TERMS.findall(text)), 10000)
+                        item["rights_language_review_locators"] = rights_review_locators(text)
                         item["retrieval_status"] = "PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY"
                     except Exception as exc:
                         item["source_error_type"] = type(exc).__name__
                 record["documents"].append(item)
+            states = {d["retrieval_status"] for d in record["documents"]}
+            if states == {"IDENTIFYING_AGENT_REQUIRED"}:
+                record["review_status"] = "NOT_REQUESTED_IDENTIFYING_AGENT_REQUIRED"
+            elif "PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY" in states:
+                record["review_status"] = "SOURCE_TEXT_AVAILABLE_REVIEW_REQUIRED"
+            else:
+                record["review_status"] = "DOCUMENT_REQUESTS_FAILED_OR_BLOCKED"
         rows.append(record)
     all_documents = [doc for r in rows for doc in r["documents"]]
     outcomes = Counter(doc["retrieval_status"] for doc in all_documents)
@@ -207,9 +251,14 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
         "pilot_issuer_limit": max_issuers, "issuers_selected": len(selected),
         "issuers_not_selected": EXPECTED_ISSUERS - len(selected),
         "document_status_counts": dict(outcomes),
+        "documents_selected_for_retrieval": len(all_documents),
+        "documents_not_attempted_missing_agent": outcomes["IDENTIFYING_AGENT_REQUIRED"],
+        "documents_attempted": (outcomes["PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY"]
+                                + outcomes["SOURCE_UNAVAILABLE"]),
         "documents_retrieved": outcomes["PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY"],
-        "documents_access_failed_or_blocked": (len(all_documents)
-                                               - outcomes["PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY"]),
+        "documents_access_failed_or_blocked": outcomes["SOURCE_UNAVAILABLE"],
+        "documents_with_bounded_review_locators": sum(
+            bool(d["rights_language_review_locators"]) for d in all_documents),
         "documents_with_rights_language_locators": sum(
             d["rights_language_locator_count"] is not None
             and d["rights_language_locator_count"] > 0 for d in all_documents),
@@ -240,7 +289,10 @@ def main():
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"SEC primary-document pilot: {result['issuers_selected']}/{result['total_issuers']} "
           f"issuers selected; {result['documents_retrieved']} SEC documents fetched; "
-          f"{result['documents_access_failed_or_blocked']} blocked/unavailable; "
+          f"{result['documents_attempted']}/{result['documents_selected_for_retrieval']} attempts; "
+          f"{result['documents_retrieved']} fetched; "
+          f"{result['documents_not_attempted_missing_agent']} not attempted (missing identifying agent); "
+          f"{result['documents_access_failed_or_blocked']} failed/blocked; "
           f"rights independently verified 0/{result['total_trials']}")
     if result["document_status_counts"].get("IDENTIFYING_AGENT_REQUIRED"):
         print("SEC_USER_AGENT identifying contact not configured: no SEC document requests were made.")
