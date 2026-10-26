@@ -39,6 +39,18 @@ RESEARCH_ACTIONS = (
           "https://download.open.fda.gov/crl/CRL_BLA125806_20240614.pdf"),
     event("125806", "RESUBMISSION-1", "2026-03-26", "accelerated_approval",
           "https://www.fda.gov/media/191723/download"),
+    # Independently rechecked original FDA PDF letters (2026-10-26).
+    # CYCLE-UNVERIFIED avoids asserting an unsupported resubmission ordinal.
+    event("125743", "CYCLE-UNVERIFIED-2022", "2022-02-25", "complete_response",
+          "https://download.open.fda.gov/crl/CRL_BLA125743_20220225.pdf"),
+    event("125743", "CYCLE-UNVERIFIED-2023", "2023-12-15", "approval",
+          "https://www.fda.gov/media/174897/download"),
+    event("125745", "CYCLE-UNVERIFIED-2025", "2025-01-15", "complete_response",
+          "https://download.open.fda.gov/crl/CRL_BLA125745_20250115.pdf"),
+    event("125745", "CYCLE-UNVERIFIED-2026", "2026-01-09", "complete_response",
+          "https://download.open.fda.gov/crl/CRL_BLA125745_20260109.pdf"),
+    event("125734", "CYCLE-UNVERIFIED-2023", "2023-06-28", "approval",
+          "https://www.fda.gov/media/169921/download"),
     event("125845", "ORIGINAL", "2025-07-07", "complete_response",
           "https://download.open.fda.gov/crl/CRL_BLA125845_20250707.pdf"),
     event("125845", "RESUBMISSION-1", "2026-09-17", "approval",
