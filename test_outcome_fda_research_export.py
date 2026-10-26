@@ -12,10 +12,10 @@ class ResearchExportTests(unittest.TestCase):
         self.assertEqual(self.data["dataset_role"], "research_only_nontraining")
 
     def test_counts_and_nonduplicate_records(self):
-        self.assertEqual(self.data["applications_with_sampled_actions"], 8)
-        self.assertEqual(self.data["sampled_action_endpoints"], 17)
-        self.assertEqual(len(self.data["records"]), 17)
-        self.assertEqual(len({r["application_key"] for r in self.data["records"]}), 8)
+        self.assertEqual(self.data["applications_with_sampled_actions"], 10)
+        self.assertEqual(self.data["sampled_action_endpoints"], 19)
+        self.assertEqual(len(self.data["records"]), 19)
+        self.assertEqual(len({r["application_key"] for r in self.data["records"]}), 10)
 
     def test_fail_closed_fields(self):
         self.assertFalse(self.data["complete_application_denominator_verified"])
