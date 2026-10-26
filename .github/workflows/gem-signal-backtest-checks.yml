@@ -1,0 +1,81 @@
+name: GEM Historical Signal Backtest Checks
+
+on:
+  push:
+    paths:
+      - gem_historical_signal_backtest.py
+      - tests/test_gem_historical_signal_backtest.py
+      - scripts/run_all_system_trials_backtest.py
+      - tests/test_run_all_system_trials_backtest.py
+      - scripts/fetch_gem_2025_alpaca_review.py
+      - tests/test_gem_2025_alpaca_review.py
+      - .github/workflows/gem-signal-backtest-checks.yml
+  pull_request:
+    paths:
+      - gem_historical_signal_backtest.py
+      - tests/test_gem_historical_signal_backtest.py
+      - scripts/run_all_system_trials_backtest.py
+      - tests/test_run_all_system_trials_backtest.py
+      - scripts/fetch_gem_2025_alpaca_review.py
+      - tests/test_gem_2025_alpaca_review.py
+      - .github/workflows/gem-signal-backtest-checks.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-research-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run synthetic fixture tests
+        run: python -m unittest discover -s tests -p 'test_gem_historical_signal_backtest.py' -v
+      - name: Validate Alpaca history staging without credentials
+        run: python -m unittest discover -s tests -p 'test_gem_2025_alpaca_review.py' -v
+      - name: Test all-system trial audit and source coverage guards
+        run: python -m unittest discover -s tests -p 'test_run_all_system_trials_backtest.py' -v
+      - name: Audit every saved trial and replay verified historical events
+        run: |
+          python scripts/run_all_system_trials_backtest.py --as-of 2026-10-18 --output-dir output/gem_all_system_trials
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          audit=json.loads(Path("output/gem_all_system_trials/coverage_and_blockers.json").read_text())
+          assert audit["market_cap_filter_active"] is False
+          assert audit["audited_saved_rows"] >= 0
+          assert "unavailable_scanned_trial_rows" in audit
+          print("SYSTEM COVERAGE:", json.dumps(audit,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gem-all-system-trials-audit
+          path: output/gem_all_system_trials/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Produce evidence-gated 2026 audit (market cap off, no synthetic trades)
+        run: |
+          python gem_historical_signal_backtest.py --year 2026 --as-of 2026-10-17 --output-dir output/gem_backtest_2026
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("output/gem_backtest_2026/readiness.json")
+          audit=json.loads(p.read_text())
+          assert "completed_trades" in audit
+          assert "candidate_event_rows" in audit
+          assert audit["year"] == 2026
+          assert audit["market_cap_filter_active"] is False
+          print("2026 readiness:", json.dumps(audit, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gem-2026-research-audit
+          path: output/gem_backtest_2026/
+          if-no-files-found: warn
+          retention-days: 30

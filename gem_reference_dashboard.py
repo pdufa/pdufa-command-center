@@ -1339,6 +1339,10 @@ def render_reference_stage(stage, root="data"):
     )).hexdigest()[:12]
     raw = _dashboard(payload=payload, default=None,
                      key="reference_dashboard_" + stage.replace(" ", "_") + "_" + revision)
+    # Source-isolated, operator-triggered Alpaca technical observations.
+    # Never promotes an unverified trial to GEM trade eligibility.
+    from alpaca_gem_provider import render_provider_panel
+    render_provider_panel(stage, root)
     event = resolve_dashboard_action(raw, payload)
     last_key = "_gem_reference_event_" + stage
     if event is None or raw["nonce"] == st.session_state.get(last_key):
