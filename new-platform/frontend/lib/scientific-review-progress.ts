@@ -84,13 +84,13 @@ export function validateScientificPairProgress(raw: unknown): ScientificPairProg
         || g.historicalAuditCorruptionPairs > g.eligibleQuestionSourcePairs) blocked();
     gates.push({
       gateId: ORDER[i],
-      capturedSourceCount: g.capturedSourceCount,
-      reconciliationQuestionCount: g.reconciliationQuestionCount,
-      eligibleQuestionSourcePairs: g.eligibleQuestionSourcePairs,
-      pairingTechnicalPreflightPassed: g.pairingTechnicalPreflightPassed,
-      twoAuthorizedReviewersRecorded: g.twoAuthorizedReviewersRecorded,
-      disputedTechnicalPairCount: g.disputedTechnicalPairCount,
-      historicalAuditCorruptionPairs: g.historicalAuditCorruptionPairs,
+      capturedSourceCount: g.capturedSourceCount as number,
+      reconciliationQuestionCount: g.reconciliationQuestionCount as number,
+      eligibleQuestionSourcePairs: g.eligibleQuestionSourcePairs as number,
+      pairingTechnicalPreflightPassed: g.pairingTechnicalPreflightPassed as number,
+      twoAuthorizedReviewersRecorded: g.twoAuthorizedReviewersRecorded as number,
+      disputedTechnicalPairCount: g.disputedTechnicalPairCount as number,
+      historicalAuditCorruptionPairs: g.historicalAuditCorruptionPairs as number,
     });
   }
   const sum = (key: keyof typeof gates[number]) =>
@@ -105,11 +105,11 @@ export function validateScientificPairProgress(raw: unknown): ScientificPairProg
       || raw.disputedTechnicalPairCount > raw.eligibleQuestionSourcePairs
       || raw.historicalAuditCorruptionPairs > raw.eligibleQuestionSourcePairs) blocked();
   return {
-    nctId: NCT, sourceDocumentCount: raw.sourceDocumentCount,
-    questionCount: 8, eligibleQuestionSourcePairs: raw.eligibleQuestionSourcePairs,
-    pairingTechnicalPreflightPassedCount: raw.pairingTechnicalPreflightPassedCount,
-    disputedTechnicalPairCount: raw.disputedTechnicalPairCount,
-    historicalAuditCorruptionPairs: raw.historicalAuditCorruptionPairs,
+    nctId: NCT, sourceDocumentCount: raw.sourceDocumentCount as number,
+    questionCount: 8, eligibleQuestionSourcePairs: raw.eligibleQuestionSourcePairs as number,
+    pairingTechnicalPreflightPassedCount: raw.pairingTechnicalPreflightPassedCount as number,
+    disputedTechnicalPairCount: raw.disputedTechnicalPairCount as number,
+    historicalAuditCorruptionPairs: raw.historicalAuditCorruptionPairs as number,
     gates,
     independentClinicalReviewCount: 0, verifiedClinicalSourceCount: 0,
     qualifiedIndependenceAdjudicated: false, formalSecondPersonSignoffCount: 0,
