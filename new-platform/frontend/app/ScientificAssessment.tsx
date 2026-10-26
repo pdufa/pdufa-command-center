@@ -864,7 +864,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
-  const valid = /^TRIAL\\|NCT[0-9]{8}$/.test(exactId);
+  const valid = /^TRIAL\|NCT[0-9]{8}$/.test(exactId);
   // Fail closed: a malformed source checklist never becomes evidence completion.
   const evidence800 = result?.investigation40 && result?.readinessGrades
     ? (() => {
