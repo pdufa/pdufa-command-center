@@ -1,0 +1,39 @@
+name: MAIN 130 original SEC issuer identity research
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_phase3_sec_issuer_identity.py'
+      - 'tests/test_phase3_sec_issuer_identity.py'
+      - '.github/workflows/main-phase3-sec-issuer-identity.yml'
+      - 'new-platform/frontend/public/phase3-census-sources-2026-10-26.json'
+      - 'data/company_registry.csv'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-ticker-cik-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate all 130 issuer source pointers without FDA or market-cap promotion
+        run: |
+          python3 -m py_compile scripts/audit_phase3_sec_issuer_identity.py
+          python3 -m unittest discover -s tests -p 'test_phase3_sec_issuer_identity.py' -v
+          python3 scripts/build_phase3_census_sources.py --check
+      - name: Compare all 130 saved issuer tickers and CIKs to the public SEC original directory
+        run: python3 scripts/audit_phase3_sec_issuer_identity.py "$RUNNER_TEMP/phase3_130_sec_issuer_identity_research.json"
+      - name: Save official source hash and issuer-level discrepancies for independent review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-130-sec-issuer-identity-research-only
+          path: ${{ runner.temp }}/phase3_130_sec_issuer_identity_research.json
+          if-no-files-found: warn
+          retention-days: 7
