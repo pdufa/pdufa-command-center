@@ -1214,6 +1214,52 @@ def science_linkage_review(programId: str, nctId: str):
         }
 
 
+@app.get("/api/science/chronology-review", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_chronology_review(programId: str, nctId: str, cutoffDate: str):
+    """Audit available archive chronology without mistaking fetch time for publication time."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    try:
+        cutoff = datetime.strptime(cutoffDate, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Invalid ISO evidence cutoff date")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT absent from program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived NCT record unavailable")
+        summary = row.summary if isinstance(row.summary, dict) else {}
+        # Registry last-update dates are not proof of when each result became public.
+        published = summary.get("lastUpdatePostDate")
+        publication_day = None
+        if isinstance(published, str):
+            try:
+                publication_day = datetime.strptime(published, "%Y-%m-%d").date()
+            except ValueError:
+                pass
+        archive_day = row.fetched_at.date()
+        return {
+            "schemaVersion": "science-chronology-review-v1",
+            "programId": programId, "nctId": nctId,
+            "cutoffDate": cutoff.isoformat(),
+            "archiveFetchedAt": row.fetched_at.isoformat(),
+            "archiveAvailableByCutoff": archive_day <= cutoff,
+            "registryLastUpdatePostDate": publication_day.isoformat() if publication_day else None,
+            "registryUpdateByCutoff": publication_day <= cutoff if publication_day else None,
+            "sourceChronologyVerified": False,
+            "historicalSnapshotCertified": False,
+            "eligibleForHistoricalPrediction": False,
+            "approvalProbability": None,
+            "reason": "An archive fetch and registry update date cannot certify when individual results became public.",
+        }
+
+
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
