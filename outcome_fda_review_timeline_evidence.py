@@ -93,6 +93,49 @@ REVIEW_TIMELINES = (
 )
 
 
+FDA_MESOBLAST_SBRA = "https://www.fda.gov/media/185192/download"
+FDA_MESOBLAST_2023_CRL = "https://download.open.fda.gov/crl/CRL_BLA125706_20230801.pdf"
+FDA_MESOBLAST_APPROVAL = "https://www.fda.gov/media/184605/download"
+
+# Printed contradiction verified on the original FDA PDF, pages 1 and 7.
+# Do not construe the cover-page '127506/0' as an additional application.
+MESOBLAST_SBRA_IDENTIFIER_CONFLICT = {
+    "cover_page_1": "127506/0",
+    "regulatory_history_page_7": "125706/0",
+    "signed_fda_approval_letter": "125706/0",
+    "resolution": "canonical_125706_with_source_conflict_preserved",
+}
+
+MESOBLAST_SOURCE_SUPPORTED_TIMELINES = (
+    SourceSupportedCycle(
+        application_key="BLA:125706",
+        submission_key="BLA:125706:RESUBMISSION-1",
+        received_date=date(2023, 1, 31),
+        action_date=date(2023, 8, 1),
+        action_type="complete_response",
+        receipt_source_url=FDA_MESOBLAST_2023_CRL,
+        final_action_source_url=FDA_MESOBLAST_2023_CRL,
+        regulatory_history_source_url=FDA_MESOBLAST_SBRA,
+        pdufa_goal_date=None,
+    ),
+    SourceSupportedCycle(
+        application_key="BLA:125706",
+        submission_key="BLA:125706:RESUBMISSION-2",
+        received_date=date(2024, 7, 8),
+        action_date=date(2024, 12, 18),
+        action_type="approval",
+        receipt_source_url=FDA_MESOBLAST_SBRA,
+        final_action_source_url=FDA_MESOBLAST_APPROVAL,
+        regulatory_history_source_url=FDA_MESOBLAST_SBRA,
+        pdufa_goal_date=date(2025, 1, 7),
+    ),
+)
+
+# Source-supported timelines only: the 2020 original Mesoblast CRL's primary
+# letter could not be fetched in this pass and its cycle is deliberately excluded.
+REVIEW_TIMELINES = REVIEW_TIMELINES + MESOBLAST_SOURCE_SUPPORTED_TIMELINES
+
+
 def validate_review_timelines(
     cycles: tuple[SourceSupportedCycle, ...] = REVIEW_TIMELINES,
     action_fixtures: tuple[FDAEvent, ...] = RESEARCH_ACTIONS,
