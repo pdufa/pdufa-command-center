@@ -23,6 +23,17 @@ class ReviewTimelineEvidenceTests(unittest.TestCase):
         self.assertEqual(summary["source_supported_review_timelines"], 11)
         self.assertEqual({c.application_key for c in REVIEW_TIMELINES}, {"BLA:125807", "BLA:125706", "BLA:125806", "BLA:125845", "BLA:125827"})
 
+    def test_dynamic_selected_sample_denominators(self):
+        summary = review_timeline_summary()
+        self.assertEqual(summary["selected_research_action_endpoints"], 19)
+        self.assertEqual(summary["selected_research_application_identifiers"], 10)
+        self.assertEqual(summary["source_supported_review_timelines"], 11)
+        self.assertEqual(summary["applications_with_source_supported_timelines"], 5)
+        self.assertEqual(summary["selected_actions_without_structured_timeline"], 8)
+        self.assertEqual(summary["selected_applications_without_structured_timeline"], 5)
+        self.assertFalse(summary["complete_application_denominator_verified"])
+        self.assertEqual(summary["model_eligible_records"], 0)
+
     def test_action_endpoints_match_source_fixtures(self):
         validate_review_timelines()
         self.assertEqual(
