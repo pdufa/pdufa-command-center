@@ -25,9 +25,12 @@ test("installation checks retain independent code, deployment, runtime and evide
     for (const key of ["requirement", "code", "deployment", "runtime", "evidence", "blocker", "lastVerified", "source", "sourceLabel"]) {
       assert.match(row, new RegExp("\\b" + key + ": "));
     }
-    assert.match(row, /runtime: "Not verified"/);
+    assert.match(row, /runtime: "(Not verified|Partial|Verified)"/);
     assert.doesNotMatch(row, /evidence: "Evidence verified"/);
   }
+  const core = rows.find(row => row.includes('component: "Core Platform"'));
+  assert.match(core, /runtime: "Partial"/);
+  assert.equal(rows.filter(row => /runtime: "Partial"/.test(row)).length, 1);
 });
 
 test("dated, incomplete source audit is not misrepresented as qualified Pipeline or full scientific readiness", () => {
@@ -41,7 +44,8 @@ test("dated, incomplete source audit is not misrepresented as qualified Pipeline
   assert.match(tracker, /not Pipeline qualified/);
   assert.match(tracker, /FDA-labelled historical outcomes/);
   assert.match(tracker, /40 assessments/);
-  assert.match(tracker, /No numerical installation percentage is asserted/);
+  assert.match(tracker, /Implementation-stage counts are reported separately from verified acceptance/);
+  assert.match(tracker, /Full acceptance requires runtime verification and applicable evidence verification/);
 });
 
 test("tracker stays read-only and never triggers scans, trades or scoring", () => {
