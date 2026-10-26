@@ -15,3 +15,14 @@ def strict_iso_day(value):
 def registry_publication_day(value):
     """Unknown or malformed registry publication dates remain unknown."""
     return strict_iso_day(value)
+
+def source_eligible_at_cutoff(published_at, verified_at, cutoff):
+    """Only independently dated source evidence can clear this preliminary gate.
+
+    This is a chronology check, not certification of source authenticity.
+    """
+    publication = strict_iso_day(published_at)
+    verification = strict_iso_day(verified_at)
+    limit = strict_iso_day(cutoff)
+    return bool(publication and verification and limit and
+                publication <= limit and verification <= limit)

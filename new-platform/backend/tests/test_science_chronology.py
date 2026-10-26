@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.science_chronology import strict_iso_day, registry_publication_day
+from app.science_chronology import strict_iso_day, registry_publication_day, source_eligible_at_cutoff
 
 
 class ChronologyTests(unittest.TestCase):
@@ -27,3 +27,18 @@ class ChronologyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class SourceCutoffTests(unittest.TestCase):
+    def test_pre_cutoff_source(self):
+        self.assertTrue(source_eligible_at_cutoff("2026-09-01", "2026-09-30", "2026-10-01"))
+
+    def test_post_cutoff_publication_rejected(self):
+        self.assertFalse(source_eligible_at_cutoff("2026-10-02", "2026-09-30", "2026-10-01"))
+
+    def test_post_cutoff_verification_rejected(self):
+        self.assertFalse(source_eligible_at_cutoff("2026-09-01", "2026-10-02", "2026-10-01"))
+
+    def test_missing_or_invalid_dates_rejected(self):
+        self.assertFalse(source_eligible_at_cutoff(None, "2026-09-30", "2026-10-01"))
+        self.assertFalse(source_eligible_at_cutoff("2026-09-01", None, "2026-10-01"))
+        self.assertFalse(source_eligible_at_cutoff("2026-09-01", "2026-09-30", "2026-02-30"))
