@@ -4,6 +4,7 @@ on:
     paths:
       - 'data/research_issuer_rights_claims_achv_mirm_2026-10-26.json'
       - 'data/research_issuer_rights_claims_cytk_2026-10-26.json'
+      - 'data/research_issuer_rights_claims_acad_iova_2026-10-26.json'
       - 'data/research_abvx_obefazimod_rights_2026-10-26.json'
       - 'scripts/build_phase3_issuer_rights_claim_overlay.py'
       - 'tests/test_phase3_issuer_rights_claim_overlay.py'
@@ -23,7 +24,7 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_phase3_issuer_rights_claim_overlay.py' -v
       - name: Build 741-trial rights evidence research overlay
         run: python3 scripts/build_phase3_issuer_rights_claim_overlay.py "$RUNNER_TEMP/phase3_741_primary_issuer_rights_claim_overlay.json"
-      - name: Archive evidence cases, risk flags, and 725 remaining source gaps
+      - name: Archive evidence cases, risk flags, and 722 remaining source gaps
         if: always()
         uses: actions/upload-artifact@v4
         with:
