@@ -80,6 +80,7 @@ def walk_forward_backtest(
                 asof_train = tuple(
                     candidate for candidate in train
                     if candidate.decision_date < row.public_features_as_of
+                    and candidate.public_features_as_of < row.public_features_as_of
                 )
                 if len(asof_train) < min_train:
                     continue
