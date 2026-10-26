@@ -261,6 +261,21 @@ def triage(queue, companies, config):
             )
         documents = []
         links = list(src.get("financing_research_documents", []))
+        if category == "FINANCIAL" and item["claim"] == "CASH_AND_RUNWAY":
+            # The companyfacts API sometimes omits foreign-issuer interim cash
+            # rows. Surface a separate issuer-matched SEC press exhibit as a
+            # discovery lead ONLY, never as verified operating-cash-flow runway.
+            cash_reference = config.get(ticker, {}).get("cash_fact_reference")
+            if isinstance(cash_reference, dict):
+                accession = cash_reference.get("accession", "")
+                filing_url = cash_reference.get("sec_exhibit_url", "")
+                if (isinstance(accession, str)
+                        and re.fullmatch(r"\\d{10}-\\d{2}-\\d{6}", accession)
+                        and valid_date(cash_reference.get("as_of", ""))
+                        and isinstance(filing_url, str)
+                        and sec_document_url(filing_url, cik)
+                        and "/" + accession.replace("-", "") + "/" in filing_url):
+                    links.append(filing_url)
         if mapped.get("sec_url"):
             links.append(mapped["sec_url"])
         if item.get("source_url"):
