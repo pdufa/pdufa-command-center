@@ -120,7 +120,83 @@
           "currentPdufaTargetVerified": null
         }
       ]
+    },
+    {
+      "issuerTicker": "AXSM",
+      "issuerCik": "0001579428",
+      "asset": "AXS-12",
+      "assetAliases": [
+        "reboxetine"
+      ],
+      "rightsClaimType": "ISSUER_SEC_FILED_EXCLUSIVE_US_PFIZER_CLINICAL_DATA_AND_IP_LICENSE",
+      "rightsClaimSummary": "Axsome August 2026 Form 10-Q describes January 2020 exclusive US license from Pfizer to reboxetine clinical/nonclinical data and intellectual property for AXS-12, with Pfizer regulatory/sales milestones, tiered royalties, and a right of first negotiation for strategic transactions. This is issuer disclosure, not independent contract adjudication or a claim of unrestricted worldwide commercialization rights.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "PFIZER_EXCLUSIVE_US_DATA_IP_LICENSE_NOT_UNENCUMBERED_GLOBAL_RIGHTS",
+        "PFIZER_MILESTONES_UP_TO_323M_AND_TIERED_ROYALTIES",
+        "PFIZER_FIRST_NEGOTIATION_RIGHT_FOR_STRATEGIC_TRANSACTIONS",
+        "AXS12_NDA_2027_05_01_PDUFA_ISSUER_REPORTED_NOT_AGENCY_LETTER_VERIFIED",
+        "NARCOLEPSY_CATAPLEXY_INDICATION_ONLY_NOT_ALL_SLEEP_DISORDERS"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526342360/axsm-20260630.htm",
+          "assertion": "Axsome Q2 2026 Form 10-Q reports Pfizer January 2020 exclusive U.S. reboxetine clinical/nonclinical data and IP license; future milestones/royalties and first negotiation rights; AXS-12 NDA filing acceptance and reported May 1, 2027 PDUFA. This filing is issuer disclosure, not independent license contract evaluation."
+        },
+        {
+          "type": "ISSUER_SEC_8_K_EXHIBIT",
+          "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526304039/axsm-ex99_1.htm",
+          "assertion": "July 15, 2026 Axsome SEC-filed press release reports FDA accepted AXS-12 NDA for cataplexy in narcolepsy, assigned May 1, 2027 PDUFA, and no advisory committee currently planned, all attributed to issuer rather than FDA-issued action letter."
+        },
+        {
+          "type": "ISSUER_SEC_10_K",
+          "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526064267/axsm-20251231.htm",
+          "assertion": "2025 Form 10-K reports positive SYMPHONY and ENCORE AXS-12 trial results and Pfizer exclusive U.S. reboxetine data/IP license."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_SYMPHONY",
+          "url": "https://clinicaltrials.gov/study/NCT05059223",
+          "assertion": "Original NCT05059223 Phase 3 SYMPHONY study compares AXS-12 with placebo for cataplexy in narcolepsy."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_ENCORE",
+          "url": "https://clinicaltrials.gov/study/NCT05113745",
+          "assertion": "Original NCT05113745 Phase 3 ENCORE long-term randomized withdrawal and safety study of AXS-12 for narcolepsy."
+        }
+      ],
+      "issuerReportedNdaEvidenceSupportingNctIds": [
+        "NCT05059223",
+        "NCT05113745"
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT05059223",
+          "study": "SYMPHONY (AXS-12-301)",
+          "indication": "Cataplexy in narcolepsy",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05059223",
+          "regulatoryContext": "ISSUER_REPORTED_ACCEPTED_AXS12_CATAPLEXY_NARCOLEPSY_NDA_PDUFA_2027_05_01",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "COMPLETED",
+          "issuerReportedCurrentPdufaDate": "2027-05-01",
+          "issuerReportedFdaAcceptance": true,
+          "issuerReportedCurrentPdufaSourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526304039/axsm-ex99_1.htm",
+          "issuerReportedPdufaAsOf": "2026-10-26"
+        },
+        {
+          "nctId": "NCT05113745",
+          "study": "ENCORE (AXS-12-302)",
+          "indication": "Long-term efficacy and safety of AXS-12 for cataplexy and excessive daytime sleepiness in narcolepsy",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05113745",
+          "regulatoryContext": "AXS12_NARCOLEPSY_NDA_SUPPORTIVE_LONG_TERM_SAFETY_STUDY_NOT_SEPARATE_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "COMPLETED"
+        }
+      ]
     }
   ],
-  "limitations": "This evidence combines primary SEC filing descriptions of related-party Antecip IP licenses, original registered NCT identities and official FDA April 30, 2026 label-expansion approval for AUVELITY. FDA expressly names two supporting trial identifiers. The FDA decision and issuer-reported April 30 PDUFA target are PAST/COMPLETE, not a 2026-10-26 upcoming decision. Neither FDA approval nor IP issuer disclosure independently adjudicates all modern contracts or PDUFA target for future applications. Research only; no auto Pipeline promotion."
+  "limitations": "This evidence combines primary SEC filing descriptions of related-party Antecip IP licenses, original registered NCT identities and official FDA April 30, 2026 label-expansion approval for AUVELITY. FDA expressly names two supporting trial identifiers. The FDA decision and issuer-reported April 30 PDUFA target are PAST/COMPLETE, not a 2026-10-26 upcoming decision. Neither FDA approval nor IP issuer disclosure independently adjudicates all modern contracts or PDUFA target for future applications. Research only; no auto Pipeline promotion. Separate AXS-12 narcolepsy accepted NDA/PDUFA date May 1, 2027 is issuer-reported in July 2026 SEC-filed announcement and Q2 2026 Form 10-Q; not direct FDA goal-date letter verification. Pfizer license carries royalties, milestones and negotiation rights. AXS-12 SYMPHONY and ENCORE share one NDA event rather than two separate PDUFA dates."
 }

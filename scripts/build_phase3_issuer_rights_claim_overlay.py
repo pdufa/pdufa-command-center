@@ -110,7 +110,8 @@ def collect_cases():
         or axsm.get("schemaVersion") != 1 or axsm.get("issuerTicker") != "AXSM"
         or axsm.get("issuerCik") != "0001579428"
         or axsm.get("asOf") != EVIDENCE_AS_OF
-        or len(axsm.get("programs", [])) != 1):
+        or len(axsm.get("programs", [])) != 2
+        or {p["asset"] for p in axsm["programs"]} != {"AXS-05", "AXS-12"}):
         raise ValueError("AXSM agency-confirmed historical FDA action evidence dossier missing")
     return ([old_program] + newer["programs"] + cytk["programs"]
             + acad_iova["programs"] + bcrx["programs"] + axsm["programs"])
@@ -134,6 +135,14 @@ def build():
             raise ValueError("Issuer disclosures cannot independently adjudicate rights")
         if p.get("contractScopeIndependentlyVerified") is not False:
             raise ValueError("Contract scope must remain unverified")
+        supporting_nda_ids = p.get("issuerReportedNdaEvidenceSupportingNctIds")
+        if supporting_nda_ids is not None:
+            linked_ids = {entry["nctId"] for entry in p["trialLinks"]}
+            if (not isinstance(supporting_nda_ids, list)
+                    or len(supporting_nda_ids) < 2
+                    or len(supporting_nda_ids) != len(set(supporting_nda_ids))
+                    or not set(supporting_nda_ids).issubset(linked_ids)):
+                raise ValueError("Issuer NDA program supporting trial identities invalid")
         sources = p["sourceDocuments"]
         if (len(sources) < 2
                 or not any(s["type"].startswith(("ISSUER_SEC_", "SEC_FORM_")) for s in sources)
@@ -185,6 +194,8 @@ def build():
                         link["expectedRegistryStatus"] != originals_by_id[nct]["status"])):
                 raise ValueError("NCT/asset/indication or PDUFA evidence check failed")
             sponsor_pdufa = link.get("issuerReportedCurrentPdufaDate")
+            if sponsor_pdufa is not None and supporting_nda_ids is not None and nct not in supporting_nda_ids:
+                raise ValueError("PDUFA event anchor must be an evidenced supporting NCT")
             if sponsor_pdufa is not None:
                 if (not re.fullmatch(r"\d{4}-\d{2}-\d{2}", sponsor_pdufa)
                     or date.fromisoformat(sponsor_pdufa) <= date.fromisoformat(EVIDENCE_AS_OF)
@@ -211,6 +222,7 @@ def build():
                 "issuer_reported_upcoming_pdufa_target": sponsor_pdufa,
                 "issuer_reported_fda_acceptance": link.get("issuerReportedFdaAcceptance") is True,
                 "issuer_reported_pdufa_source_url": link.get("issuerReportedCurrentPdufaSourceUrl"),
+                "issuer_reported_application_supporting_nct_ids": sorted(supporting_nda_ids) if supporting_nda_ids else None,
                 "official_historical_fda_action": ({
                     "action_date": agency_action["actionDate"],
                     "action_type": agency_action["actionType"],
@@ -241,6 +253,8 @@ def build():
                 linked["issuer_reported_fda_acceptance"] if linked else False),
             "issuer_reported_pdufa_source_url": (
                 linked["issuer_reported_pdufa_source_url"] if linked else None),
+            "issuer_reported_application_supporting_nct_ids": (
+                linked["issuer_reported_application_supporting_nct_ids"] if linked else None),
             "official_fda_confirmed_completed_historical_action": bool(
                 linked and linked["official_historical_fda_action"]),
             "historical_fda_action_date": (
@@ -265,7 +279,9 @@ def build():
          "issuer_reported_target_date": row["issuer_reported_upcoming_pdufa_target"],
          "issuer_reported_accepted_application": row["issuer_reported_fda_acceptance"],
          "issuer_primary_source_url": row["issuer_reported_pdufa_source_url"],
-         "agency_independent_verification": False}
+         "agency_independent_verification": False,
+         "supporting_trial_nct_ids": (row["issuer_reported_application_supporting_nct_ids"]
+                                       or [row["nct_id"]])}
         for row in rows if row["issuer_reported_upcoming_pdufa_target"] is not None
     ]
     return {
@@ -301,7 +317,7 @@ if __name__ == "__main__":
     print("Historical trials with issuer rights-claim evidence linked:", result["issuer_rights_claim_evidence_linked_trials"], "/741")
     print("Historical trials not yet rights-claim reviewed:", result["claim_evidence_missing_or_unreviewed_trials"], "/741")
     print("Issuers with source-linked disclosures:", result["issuers_with_rights_claim_dossiers"], "/130")
-    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/9 researched")
+    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/10 researched")
     print("Official FDA-confirmed completed historical action events:",
           result["official_fda_confirmed_completed_historical_action_count"], "/741")
     print("Historical NCTs explicitly named by FDA to support the approved past action:",
