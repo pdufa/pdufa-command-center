@@ -85,6 +85,8 @@ def build_join(program, casebook, leads, pilot):
                     raise ValueError("SEC document missing source bytes digest")
                 verified_documents.append({"url": url, "sha256": digest,
                                            "scope": "ISSUER_DOCUMENT_ONLY_NOT_TRIAL_RIGHTS"})
+            elif digest is not None:
+                raise ValueError("Failed SEC document cannot claim a source hash")
             mentions = doc.get("trial_registered_term_lexical_mentions", [])
             if not isinstance(mentions, list) or len(mentions) > 120:
                 raise ValueError("Malformed/oversized exact trial term source leads")
@@ -121,8 +123,6 @@ def build_join(program, casebook, leads, pilot):
                     "context_excerpt": mention["context_excerpt"],
                     "review_status": "LEXICAL_ONLY_NOT_VERIFIED_LEGAL_RIGHTS",
                 })
-            elif digest is not None:
-                raise ValueError("Failed SEC document cannot claim a source hash")
         document_issuers[ticker] = verified_documents
     if set(document_issuers) != set(issuers):
         raise ValueError("Pilot SEC issuer scope incomplete")
