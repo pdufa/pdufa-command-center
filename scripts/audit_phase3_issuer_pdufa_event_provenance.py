@@ -36,7 +36,8 @@ def audit(as_of=None):
         raise ValueError("Historical registry denominator changed")
     dossier = json.loads(CYTK.read_text(encoding="utf-8"))
     program = dossier["programs"][0]
-    issuer_events = base["issuer_reported_future_pdufa_events"]
+    all_issuer_events = base["issuer_reported_future_pdufa_events"]
+    issuer_events = [x for x in all_issuer_events if x["ticker"] == "CYTK" and x["asset"] == "aficamten"]
     results = []
     seen = set()
     for event in issuer_events:
@@ -68,13 +69,14 @@ def audit(as_of=None):
             "qualified_pipeline": None,
         })
     return {
-        "scope": "RESEARCH_ONLY_ISSUER_REPORTED_FDA_EVENT_PROVENANCE",
+        "scope": "CYTK_AFICAMTEN_ONLY_ISSUER_REPORTED_FDA_EVENT_PROVENANCE",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "evaluated_as_of": as_of.isoformat(),
         "original_historical_trials": 741,
         "original_issuers": 130,
         "rights_claim_links": base["issuer_rights_claim_evidence_linked_trials"],
         "issuer_reported_events": len(results),
+        "scope_excluded_other_issuer_events": len(all_issuer_events) - len(issuer_events),
         "future_issuer_reported_events": sum(x["research_status"].startswith("FUTURE_") for x in results),
         "past_issuer_reported_events_needing_outcome_reconciliation": sum(
             x["research_status"].startswith("PAST_") for x in results),
