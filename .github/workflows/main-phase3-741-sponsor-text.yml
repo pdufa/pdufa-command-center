@@ -1,0 +1,39 @@
+name: MAIN 741 original registry sponsor text research
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/check_phase3_registered_sponsors_741.py'
+      - 'tests/test_phase3_registered_sponsors_741.py'
+      - 'scripts/check_phase3_remaining_677_sources.py'
+      - 'scripts/check_phase3_64_original_sources.py'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+      - '.github/workflows/main-phase3-741-sponsor-text.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  current-registry-sponsor-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test complete original NCT population, exact matching and zero FDA promotion
+        run: |
+          python3 -m py_compile scripts/check_phase3_registered_sponsors_741.py
+          python3 -m unittest discover -s tests -p 'test_phase3_registered_sponsors_741.py' -v
+          python3 -m unittest discover -s tests -p 'test_phase3_remaining_677_sources.py' -v
+      - name: Audit current registered sponsor text on 741 original NCTs
+        run: python3 scripts/check_phase3_registered_sponsors_741.py "$RUNNER_TEMP/phase3_741_registered_sponsors_research.json"
+      - name: Preserve original registry observations and discrepancy list
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-741-original-registered-sponsors-research
+          path: ${{ runner.temp }}/phase3_741_registered_sponsors_research.json
+          if-no-files-found: error
+          retention-days: 7
