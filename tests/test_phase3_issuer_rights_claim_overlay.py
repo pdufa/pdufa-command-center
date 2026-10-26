@@ -83,7 +83,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         wrong = [dict(x) for x in original]
         wrong[1] = dict(wrong[1], issuerCik="0000000000")
         with patch.object(rights, "collect_cases", return_value=wrong):
-            with self.assertRaisesRegex(ValueError, "issuer"):
+            with self.assertRaisesRegex(ValueError, "Issuer asset CIK"):
                 rights.build()
         duplicate = [dict(x) for x in original]
         duplicate[1] = dict(duplicate[1], trialLinks=original[1]["trialLinks"] + [
