@@ -21,6 +21,7 @@ ABVX_CASE = ROOT / "data/research_abvx_obefazimod_rights_2026-10-26.json"
 OTHER_CASES = ROOT / "data/research_issuer_rights_claims_achv_mirm_2026-10-26.json"
 CYTK_CASE = ROOT / "data/research_issuer_rights_claims_cytk_2026-10-26.json"
 ACAD_IOVA_CASE = ROOT / "data/research_issuer_rights_claims_acad_iova_2026-10-26.json"
+BCRX_CASE = ROOT / "data/research_issuer_rights_claims_bcrx_2026-10-26.json"
 EVIDENCE_AS_OF = "2026-10-26"
 
 def load_originals():
@@ -94,7 +95,16 @@ def collect_cases():
         or len(acad_iova.get("programs", [])) != 2
         or {p["issuerTicker"] for p in acad_iova["programs"]} != {"ACAD", "IOVA"}):
         raise ValueError("ACAD/IOVA original issuer rights and regulatory research cases missing")
-    return [old_program] + newer["programs"] + cytk["programs"] + acad_iova["programs"]
+    bcrx = json.loads(BCRX_CASE.read_text(encoding="utf-8"))
+    if (bcrx.get("scope") != "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY"
+        or bcrx.get("schemaVersion") != 1
+        or bcrx.get("asOf") != EVIDENCE_AS_OF
+        or bcrx.get("issuerTicker") != "BCRX" or bcrx.get("issuerCik") != "0000882796"
+        or len(bcrx.get("programs", [])) != 1
+        or bcrx["programs"][0].get("issuerTicker") != "BCRX"
+        or bcrx["programs"][0].get("issuerCik") != "0000882796"):
+        raise ValueError("BCRX berotralstat primary-source rights case missing")
+    return [old_program] + newer["programs"] + cytk["programs"] + acad_iova["programs"] + bcrx["programs"]
 
 
 def build():
@@ -227,7 +237,7 @@ if __name__ == "__main__":
     print("Historical trials with issuer rights-claim evidence linked:", result["issuer_rights_claim_evidence_linked_trials"], "/741")
     print("Historical trials not yet rights-claim reviewed:", result["claim_evidence_missing_or_unreviewed_trials"], "/741")
     print("Issuers with source-linked disclosures:", result["issuers_with_rights_claim_dossiers"], "/130")
-    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/7 researched")
+    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/8 researched")
     print("Future PDUFA dates reported by issuer but not independently by FDA:",
           result["issuer_reported_future_pdufa_event_count"], "/741")
     print("Independently adjudicated legal rights: 0/741; independently verified current FDA/PDUFA targets: 0/741")
