@@ -876,7 +876,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
             {" "}FDA approval probability: NOT ASSIGNED.</strong></p>
           <small>The current isolated archive rehashes its stored bytes, but a matching digest does not independently authenticate the original publisher. The saved handoff is unsigned and cannot establish its capture date.</small>
         </section>}
-        {handoffDriftError && <p role="alert">{handoffDriftError}</p>
+        {handoffDriftError && <p role="alert">{handoffDriftError}</p>}
         {handoffDrift && <section role="status" aria-label="Unverified source inventory comparison result">
           <p><strong>{handoffDrift.comparisonResult.replaceAll("_", " ")}</strong> — captured PDFs: {handoffDrift.priorDocumentCount} in selected earlier file, {handoffDrift.laterDocumentCount} in selected later file.</p>
           <p>Added IDs: {handoffDrift.addedDocumentIds.length}; removed IDs: {handoffDrift.removedDocumentIds.length}; changed metadata for existing IDs: {handoffDrift.changedDocumentIds.length}; unchanged entries: {handoffDrift.unchangedDocumentCount}.</p>
