@@ -81,6 +81,49 @@ class SecGapTriageTests(unittest.TestCase):
         self.assertNotIn("wrong-company",
                          by_ticker["CAPR"]["known_sec_source_urls"])
 
+
+    def test_blte_sec_cash_exhibit_is_an_exact_issuer_lead_not_a_runway_verification(self):
+        exhibit = ("https://www.sec.gov/Archives/edgar/data/1889109/"
+                   "000110465926095218/tm2623018d1_ex99-1.htm")
+        reference = {
+            "accession": "0001104659-26-095218",
+            "as_of": "2026-06-30",
+            "sec_exhibit_url": exhibit,
+            "cash_and_cash_equivalents_usd": 279900000,
+        }
+        row = self.queue[-1]
+        config = {"BLTE": {"cash_fact_reference": reference}}
+        resolved = triage([row], self.registry, config)[0]
+        self.assertEqual(resolved["known_sec_source_urls"], exhibit)
+        self.assertEqual(resolved["research_class"],
+                         "CASH_AND_RUNWAY_PRIMARY_RECONCILIATION")
+        self.assertEqual(resolved["source_claim_verified"], "NO")
+        self.assertEqual(resolved["second_post_phase3_financing_verified"], "NO")
+        self.assertEqual(resolved["trade_entry_authorized"], "NO")
+        self.assertIn("dated operating cash-flow period", resolved["next_evidence_required"])
+        # Bare stored cash/marketable securities cannot be passed off as a
+        # verifiable cash-burn runway or as a second financing.
+        self.assertNotIn("279900000", str(resolved))
+        for changed in (
+            {"sec_exhibit_url": exhibit.replace("1889109", "1599298")},
+            {"sec_exhibit_url": exhibit.replace("000110465926095218", "000110465926000001")},
+            {"sec_exhibit_url": exhibit.replace("www.sec.gov", "sec.gov.bad.example")},
+            {"sec_exhibit_url": exhibit + "?fake=1"},
+            {"accession": "0001104659-26-000001"},
+            {"accession": "invalid"},
+            {"as_of": "unverified"},
+        ):
+            with self.subTest(changed=changed):
+                modified = dict(reference)
+                modified.update(changed)
+                result = triage([row], self.registry,
+                                {"BLTE": {"cash_fact_reference": modified}})[0]
+                self.assertEqual(result["known_sec_source_urls"], "")
+                self.assertEqual(result["source_claim_verified"], "NO")
+        # A cash exhibit must not be attached to an unrelated SEC closure claim.
+        sec = record("BLTE|D", "BLTE", "SEC", "FINANCING_CLOSURE")
+        self.assertEqual(triage([sec], self.registry, config)[0]["known_sec_source_urls"], "")
+
     def test_sec_registry_inventory_conflicts_have_exact_ticker_identity(self):
         # The canonical SEC filings-inventory queue uses REGISTRY:TICKER,
         # unlike the financing queue's TICKER|PROGRAM event identities.
