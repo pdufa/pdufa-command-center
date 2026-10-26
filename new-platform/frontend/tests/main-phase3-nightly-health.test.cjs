@@ -16,9 +16,14 @@ const run=(id,at="2026-10-27T03:00:00Z",event="schedule")=>({
   id,event,head_branch:"main",path:SOURCE_PATH,created_at:at,status:"completed",conclusion:"success"
 });
 const gate=(conclusion="success")=>({name:"pacific-nightly-gate",status:"completed",conclusion});
+const integrityStep=(conclusion="success")=>({
+  name:"Reconcile 14 complete source reports and create SHA256 artifact manifest",
+  status:"completed",conclusion
+});
 const job=(conclusion="success",status="completed")=>({
   name:"research-ledger",status,conclusion,
-  completed_at:"2026-10-27T03:20:00Z"
+  completed_at:"2026-10-27T03:20:00Z",
+  steps:[integrityStep()]
 });
 const artifact=(id,expired=false)=>({
   name:"main-phase3-evidence-qualification-research-only",
@@ -45,6 +50,7 @@ test("Before first scheduled run: no completed nightly scan is invented",async()
   assert.equal(r.state,"NO_FULL_SCHEDULED_RUN_YET");
   assert.equal(r.runId,null);
   assert.equal(r.artifactConfirmed,false);
+  assert.equal(r.integrityStepConfirmed,false);
   assert.equal(urls.length,1);
   assert.deepEqual(parseNightlyHealth(r),r);
 });
@@ -56,6 +62,7 @@ test("A recent completed full scheduled research job and exact artifact is confi
   assert.equal(r.runId,2001);
   assert.equal(r.runUrl,"https://github.com/pdufa/pdufa-command-center/actions/runs/2001");
   assert.equal(r.artifactConfirmed,true);
+  assert.equal(r.integrityStepConfirmed,true);
   assert.equal(urls.length,3);
   assert.deepEqual(parseNightlyHealth(r),r);
 });
@@ -100,12 +107,57 @@ test("Failed DST gate cannot masquerade as intentional skip",async()=>{
   assert.equal(r.intentionallySkippedAlternates,0);
 });
 
+test("A successful research job without the exact 14-file integrity step cannot be confirmed",async()=>{
+  for(const steps of [
+    undefined,
+    [],
+    [{name:"Ordinary source test",status:"completed",conclusion:"success"}],
+    [integrityStep("failure")],
+    [integrityStep("skipped")],
+    [integrityStep(),integrityStep()],
+    [{...integrityStep(),status:"in_progress"}]
+  ]) {
+    const x=job();
+    if(steps===undefined)delete x.steps;
+    else x.steps=steps;
+    const {get,urls}=provider([run(2001)],{jobs:{2001:[gate(),x]}});
+    const status=await readNightlyHealth(get,when);
+    assert.equal(status.state,"REPORT_INTEGRITY_UNVERIFIED");
+    assert.equal(status.runId,2001);
+    assert.equal(status.artifactConfirmed,false);
+    assert.equal(status.integrityStepConfirmed,false);
+    assert.equal(urls.length,2,"No artifact lookup should turn an unverified report green");
+    assert.deepEqual(parseNightlyHealth(status),status);
+  }
+});
+
+test("Missing source integrity cannot be forged into a passed check in client payload",async()=>{
+  const x=job();
+  x.steps=[];
+  const {get}=provider([run(2001)],{jobs:{2001:[gate(),x]}});
+  const status=await readNightlyHealth(get,when);
+  const malicious={...status,integrityStepConfirmed:true};
+  assert.throws(()=>parseNightlyHealth(malicious));
+});
+
+test("A confirmed scan must preserve both independent artifact and integrity proofs",async()=>{
+  const {get}=provider([run(2001)]);
+  const good=await readNightlyHealth(get,when);
+  const swapped={...good,state:"REPORT_ARTIFACT_MISSING",artifactConfirmed:false};
+  assert.deepEqual(parseNightlyHealth(swapped),swapped);
+  assert.throws(()=>parseNightlyHealth({
+    ...good,state:"REPORT_INTEGRITY_UNVERIFIED",integrityStepConfirmed:true,
+    artifactConfirmed:false
+  }));
+});
+
 test("Missing or expired source artifact prevents green success",async()=>{
   for(const artifacts of [[],[artifact(2001,true)],[artifact(9999)]]) {
     const {get}=provider([run(2001)],{artifacts:{2001:artifacts}});
     const r=await readNightlyHealth(get,when);
     assert.equal(r.state,"REPORT_ARTIFACT_MISSING");
     assert.equal(r.artifactConfirmed,false);
+    assert.equal(r.integrityStepConfirmed,true);
   }
 });
 
@@ -121,6 +173,7 @@ test("Successful full scan older than 36 hours is explicitly stale",async()=>{
   const r=await readNightlyHealth(get,new Date("2026-10-29T09:30:00Z"));
   assert.equal(r.state,"FULL_SCAN_STALE");
   assert.equal(r.artifactConfirmed,true);
+  assert.equal(r.integrityStepConfirmed,true);
 });
 
 test("Unrelated PR workflow runs do not establish a scheduled success",async()=>{
@@ -145,6 +198,7 @@ test("Forged source URL, positive run, scope and artifact claims are rejected",a
     x=>{x.runId=0;},
     x=>{x.scope="LIVE_TRADING_SCAN";},
     x=>{x.artifactConfirmed=false;},
+    x=>{x.integrityStepConfirmed=false;},
     x=>{x.state="PRODUCTION_TRADING_APPROVED";},
     x=>{x.checkedAtUtc="not-a-real-date";},
   ]){
@@ -159,6 +213,7 @@ test("Unavailable source status never reports scan success",()=>{
   assert.equal(r.state,"SOURCE_UNAVAILABLE");
   assert.equal(r.runId,null);
   assert.equal(r.artifactConfirmed,false);
+  assert.equal(r.integrityStepConfirmed,false);
   assert.deepEqual(parseNightlyHealth(r),r);
   assert.match(WORKFLOW_HISTORY_URL,/github\.com\/pdufa\/pdufa-command-center\/actions/);
 });
