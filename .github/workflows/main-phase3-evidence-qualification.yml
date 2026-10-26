@@ -10,6 +10,8 @@ on:
       - 'tests/test_phase3_evidence_intake_security.py'
       - 'scripts/phase3_gate_coverage.py'
       - 'tests/test_phase3_gate_coverage.py'
+      - 'scripts/phase3_sponsor_rights_triage.py'
+      - 'tests/test_phase3_sponsor_rights_triage.py'
       - 'tests/test_phase3_evidence_boundaries.py'
       - '.github/workflows/main-phase3-evidence-qualification.yml'
       - 'data/phase3_all_years_300m_10b_trials.csv'
@@ -29,11 +31,14 @@ jobs:
           python3 -m unittest discover -s tests -p test_phase3_qualification_ledger.py -v
           python3 -m unittest discover -s tests -p 'test_phase3_evidence_intake*.py' -v
           python3 -m unittest discover -s tests -p test_phase3_gate_coverage.py -v
+          python3 -m unittest discover -s tests -p test_phase3_sponsor_rights_triage.py -v
           python3 -m unittest discover -s tests -p test_phase3_evidence_boundaries.py -v
       - name: Retrieve original 741-study evidence
         run: python3 scripts/check_phase3_full_original_sources.py "$RUNNER_TEMP/main_phase3_registry.json"
       - name: Produce fail-closed per-NCT qualification ledger
         run: python3 scripts/phase3_qualification_ledger.py "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_qualification_ledger.json"
+      - name: Build sponsor and rights review queue
+        run: python3 scripts/phase3_sponsor_rights_triage.py "$RUNNER_TEMP/main_phase3_qualification_ledger.json" "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_sponsor_rights_queue.json"
       - name: Preserve research-only evidence and ledger
         if: always()
         uses: actions/upload-artifact@v4
@@ -42,5 +47,6 @@ jobs:
           path: |
             ${{ runner.temp }}/main_phase3_registry.json
             ${{ runner.temp }}/main_phase3_qualification_ledger.json
+            ${{ runner.temp }}/main_phase3_sponsor_rights_queue.json
           if-no-files-found: warn
           retention-days: 7
