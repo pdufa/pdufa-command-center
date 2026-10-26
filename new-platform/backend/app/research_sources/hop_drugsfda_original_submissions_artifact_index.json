@@ -30,7 +30,8 @@
     "TA": 127
   },
   "source_data_warning_counts": {
-    "MISSING_ORIGINAL_SUBMISSION_RAW_STATUS": 1
+    "MISSING_ORIGINAL_SUBMISSION_RAW_STATUS": 1,
+    "NONSTANDARD_APPLICATION_NUMBER_LENGTH": 2
   },
   "independently_adjudicated_review_cycles": 0,
   "complete_original_nda_bla_denominator_verified": false,
@@ -45,6 +46,7 @@
     "Raw AP/TA/CR status codes are not independently adjudicated FDA outcome labels.",
     "Submission number does not define a review cycle; date does not prove original FDA action day.",
     "The downloaded GitHub Actions JSON was independently inspected locally; FDA source ZIP was not re-downloaded or rehashed in this step.",
-    "Unreleased CRLs and never-approved original applications may be absent; no full approval/nonapproval denominator is established."
+    "Unreleased CRLs and never-approved original applications may be absent; no full approval/nonapproval denominator is established.",
+    "Two historical NDA application identifiers (without original submissions) use nonstandard five-digit numbering; they remain in source counts and are explicitly flagged without adding FDA decisions."
   ]
 }
