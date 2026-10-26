@@ -73,7 +73,7 @@ test("the pilot route keeps the primary 12 visible and hides the 48 secondary sl
     assert.match(json,/7.3 mo/);
     assert.match(json,/10.8% \/ 1.4%/);
     assert.match(json,/NOT VALIDATED/);
-    assert.match(json,/7\/12/);
+    assert.ok(json.includes('"7","/12"'));
     const details=root.root.findAllByType("details");
     assert.equal(details.length,6);
     details.forEach(d=>assert.equal(d.props.open,undefined));
