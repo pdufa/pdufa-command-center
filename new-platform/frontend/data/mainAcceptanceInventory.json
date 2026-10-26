@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "scope": "MAIN/core-platform-gates/v1",
+  "label": "MAIN / Core Platform acceptance gates",
+  "source": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+  "excluded": [
+    {
+      "component": "Core Platform",
+      "stage": "evidence",
+      "reason": "Not applicable in the original inventory"
+    }
+  ],
+  "gates": [
+    {
+      "id": "core-platform.code",
+      "component": "Core Platform",
+      "stage": "code"
+    },
+    {
+      "id": "core-platform.deployment",
+      "component": "Core Platform",
+      "stage": "deployment"
+    },
+    {
+      "id": "core-platform.runtime",
+      "component": "Core Platform",
+      "stage": "runtime"
+    },
+    {
+      "id": "pipeline.code",
+      "component": "Pipeline",
+      "stage": "code"
+    },
+    {
+      "id": "pipeline.deployment",
+      "component": "Pipeline",
+      "stage": "deployment"
+    },
+    {
+      "id": "pipeline.runtime",
+      "component": "Pipeline",
+      "stage": "runtime"
+    },
+    {
+      "id": "pipeline.evidence",
+      "component": "Pipeline",
+      "stage": "evidence"
+    },
+    {
+      "id": "gem-jr-gem-wt.code",
+      "component": "GEM JR / GEM / WT",
+      "stage": "code"
+    },
+    {
+      "id": "gem-jr-gem-wt.deployment",
+      "component": "GEM JR / GEM / WT",
+      "stage": "deployment"
+    },
+    {
+      "id": "gem-jr-gem-wt.runtime",
+      "component": "GEM JR / GEM / WT",
+      "stage": "runtime"
+    },
+    {
+      "id": "gem-jr-gem-wt.evidence",
+      "component": "GEM JR / GEM / WT",
+      "stage": "evidence"
+    },
+    {
+      "id": "evidence-verification.code",
+      "component": "Evidence Verification",
+      "stage": "code"
+    },
+    {
+      "id": "evidence-verification.deployment",
+      "component": "Evidence Verification",
+      "stage": "deployment"
+    },
+    {
+      "id": "evidence-verification.runtime",
+      "component": "Evidence Verification",
+      "stage": "runtime"
+    },
+    {
+      "id": "evidence-verification.evidence",
+      "component": "Evidence Verification",
+      "stage": "evidence"
+    },
+    {
+      "id": "regulatory-intelligence.code",
+      "component": "Regulatory Intelligence",
+      "stage": "code"
+    },
+    {
+      "id": "regulatory-intelligence.deployment",
+      "component": "Regulatory Intelligence",
+      "stage": "deployment"
+    },
+    {
+      "id": "regulatory-intelligence.runtime",
+      "component": "Regulatory Intelligence",
+      "stage": "runtime"
+    },
+    {
+      "id": "regulatory-intelligence.evidence",
+      "component": "Regulatory Intelligence",
+      "stage": "evidence"
+    },
+    {
+      "id": "investment-analysis.code",
+      "component": "Investment Analysis",
+      "stage": "code"
+    },
+    {
+      "id": "investment-analysis.deployment",
+      "component": "Investment Analysis",
+      "stage": "deployment"
+    },
+    {
+      "id": "investment-analysis.runtime",
+      "component": "Investment Analysis",
+      "stage": "runtime"
+    },
+    {
+      "id": "investment-analysis.evidence",
+      "component": "Investment Analysis",
+      "stage": "evidence"
+    },
+    {
+      "id": "results-reporting.code",
+      "component": "Results & Reporting",
+      "stage": "code"
+    },
+    {
+      "id": "results-reporting.deployment",
+      "component": "Results & Reporting",
+      "stage": "deployment"
+    },
+    {
+      "id": "results-reporting.runtime",
+      "component": "Results & Reporting",
+      "stage": "runtime"
+    },
+    {
+      "id": "results-reporting.evidence",
+      "component": "Results & Reporting",
+      "stage": "evidence"
+    },
+    {
+      "id": "final-acceptance.code",
+      "component": "Final Acceptance",
+      "stage": "code"
+    },
+    {
+      "id": "final-acceptance.deployment",
+      "component": "Final Acceptance",
+      "stage": "deployment"
+    },
+    {
+      "id": "final-acceptance.runtime",
+      "component": "Final Acceptance",
+      "stage": "runtime"
+    },
+    {
+      "id": "final-acceptance.evidence",
+      "component": "Final Acceptance",
+      "stage": "evidence"
+    }
+  ]
+}

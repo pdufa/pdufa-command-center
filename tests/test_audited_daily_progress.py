@@ -32,5 +32,14 @@ class DailyProgressTests(unittest.TestCase):
         self.assertEqual(report["systems"]["SCIENCE"]["percent"], 58.33)
         self.assertIsNone(report["systems"]["SCIENCE"]["change_pp"])
 
+    def test_sparse_dates_do_not_become_a_daily_change(self):
+        report = compare(snap("2026-10-19", main=row(1, 31)), snap("2026-10-26", main=row(2, 31)))
+        self.assertEqual(report["systems"]["MAIN"]["status"], "BASELINE_ONLY")
+        self.assertIsNone(report["systems"]["MAIN"]["change_pp"])
+
+    def test_noncanonical_dates_are_rejected(self):
+        with self.assertRaises(ValueError):
+            compare(snap("20261025"), snap("2026-10-26", main=row(1, 31)))
+
 if __name__ == "__main__":
     unittest.main()

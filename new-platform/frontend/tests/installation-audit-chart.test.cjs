@@ -40,8 +40,8 @@ test("current 15 requirements reconcile to every one of 59 applicable gates",()=
   assert.equal(total.gates,59);
   assert.equal(total.excluded,1);
   assert.equal(total.accepted,0);
-  assert.equal(total.independentlyVerified,0);
-  assert.equal(total.implementationSignals,10);
+  assert.equal(total.independentlyVerified,1);
+  assert.equal(total.implementationSignals,9);
   assert.equal(total.partial,9);
   assert.equal(total.unverified,40);
   assert.deepEqual(groups.map(g=>({
@@ -53,7 +53,7 @@ test("current 15 requirements reconcile to every one of 59 applicable gates",()=
     unknown:g.totals.unverified,
     accepted:g.totals.accepted,
   })),[
-    {name:"Core Platform",sections:8,gates:31,code:7,partial:5,unknown:19,accepted:0},
+    {name:"Core Platform",sections:8,gates:31,code:6,partial:5,unknown:19,accepted:0},
     {name:"Scientific Assessment & Prediction",sections:4,gates:16,code:1,partial:2,unknown:13,accepted:0},
     {name:"Production Automation",sections:3,gates:12,code:2,partial:2,unknown:8,accepted:0},
   ]);
@@ -74,7 +74,7 @@ test("historical comparison is pinned to real 2026-10-25 baseline and shows only
   assert.equal(AUDIT_BASELINE.groups.reduce((n,g)=>n+g.unverified,0),42);
   const {groups,total}=summarizeInstallationAudit(items);
   assert.deepEqual(compareAuditToBaseline(groups,total),{
-    fullyAccepted:0,individuallyVerified:0,implementationSignals:0,partial:2,unverified:-2,
+    fullyAccepted:0,individuallyVerified:1,implementationSignals:-1,partial:2,unverified:-2,
   });
 });
 
@@ -91,7 +91,7 @@ test("scope drift or unreconciled counts suppress historical comparison",()=>{
 test("a successful code signal or preview build never becomes a completed requirement",()=>{
   const current=items[0];
   assert.equal(current.code,"Code present");
-  assert.equal(current.deployment,"Preview READY");
+  assert.equal(current.deployment,"Verified");
   assert.equal(current.runtime,"Partial");
   assert.equal(isAccepted(current),false);
   assert.match(chart,/not.*completed scientific or runtime requirement/);

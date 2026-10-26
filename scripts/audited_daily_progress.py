@@ -14,7 +14,8 @@ SYSTEMS = ("SCIENCE", "OUTCOME", "MAIN")
 
 
 def validate(snapshot):
-    date.fromisoformat(snapshot["as_of"])
+    if date.fromisoformat(snapshot["as_of"]).isoformat() != snapshot["as_of"]:
+        raise ValueError("Snapshot dates must use YYYY-MM-DD")
     systems = snapshot["systems"]
     if set(systems) != set(SYSTEMS):
         raise ValueError("Snapshots require SCIENCE, OUTCOME, and MAIN")
@@ -47,7 +48,8 @@ def compare(previous, current):
             result["systems"][name] = {"status": "NOT_VERIFIED", "percent": None, "change_pp": None}
             continue
         percent = round(100 * b["completed"] / b["total"], 2)
-        same_scope = a is not None and a["scope"] == b["scope"] and a["total"] == b["total"]
+        adjacent_days = (date.fromisoformat(current["as_of"]) - date.fromisoformat(previous["as_of"])).days == 1
+        same_scope = adjacent_days and a is not None and a["scope"] == b["scope"] and a["total"] == b["total"]
         result["systems"][name] = {
             "status": "MEASURED" if same_scope else "BASELINE_ONLY",
             "percent": percent,

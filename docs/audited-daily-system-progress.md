@@ -15,7 +15,7 @@ Example **schema only, not measured progress**:
 
 Report the measured percentage only for a defensible, complete denominator.
 Daily percentage-point change is shown only when yesterday and today have
-the **same scope and denominator**. Otherwise report BASELINE_ONLY and no
+the **same scope and denominator on adjacent calendar dates**. Otherwise report BASELINE_ONLY and no
 change. Do not silently treat missing observations as zero or rebase to
 a different denominator. A change in audited scope requires a new baseline.
 
@@ -37,7 +37,45 @@ Prediction accuracy is **never** derived from completion. Report it only
 from independently held-out labeled decisions with the model version,
 sample size, uncertainty, and metric (e.g. Brier score) shown.
 
-The script is an auditable comparison utility. It is **not** a nightly
-scheduler, an automatic source collector, a deployed dashboard widget, or
-a certification that the three systems are complete. Those require separately
-approved integration and independently sourced snapshots.
+The script is an auditable comparison utility. It does not schedule or collect
+source observations. The dashboard integration is described below.
+
+## First MAIN dashboard baseline — October 26, 2026
+
+The dashboard now validates a versioned **MAIN / Core Platform** inventory:
+8 sections, 31 applicable code/deployment/runtime/evidence gates, and the original
+one excluded N/A gate. This is the Core Platform checklist population, not the
+39-task spreadsheet, the full 59-gate installation checklist, or a measure of
+engineering effort. SCIENCE and OUTCOME retain null completion measurements.
+
+`mainAcceptanceInventory.json` pins every gate identity to the original merged
+checklist commit. `mainDailyEvidenceSnapshots.json` records every gate's status,
+source, Pacific date and observation time. `mainProductionDeploymentEvidence.json`
+records sanitized authenticated Vercel deployment metadata (and may contain a
+list when additional dated deployment observations are collected).
+
+The first baseline has **1/31 verified gates (3.23%)**, **6/31 code/deployment
+signals**, **5/31 partial**, and **19/31 unverified**. The sole accepted gate is
+the Core Platform production frontend deployment: project
+`prj_7VRIuXH3FzUseTmXkzLDYQbEAd5l`, deployment
+`dpl_C5AzDtzWZhL1ym9cF1DJhB9RW4uT`, production alias
+`pdufa-new-dashboard.vercel.app`, commit
+`dbf786766a3f5c39f65c44c452a01422a431df1f`, state READY.
+This provider record proves deployment, not full runtime acceptance or FDA data
+validity. **0/8 whole sections are fully accepted; 30/31 gates remain open.**
+
+The validator refuses missing/duplicated/reassigned gates, changed exclusions,
+preview/wrong-project deployment proof, mismatched commit or alias, proof reused
+for another gate, future observations, and duplicate or incorrectly ordered
+Pacific dates. Invalid input withholds the entire daily measurement. Saved
+observations are reviewed records; validation of their consistency does not
+cryptographically authenticate an external provider.
+
+The first observation establishes a baseline only. It does not invent yesterday's
+value. Daily percentage-point change requires adjacent dates with the same
+inventory; gaps or scope changes establish a new baseline. ETA requires eight
+actual comparable daily measurements spanning seven days, positive progress and
+no regressions; two distant endpoints are insufficient. No initial ETA is shown.
+This dated baseline does not automatically refresh, create a recurring job, or
+change the existing 8 PM Pacific scans. Additional accepted gate types require
+their own complete evidence contracts; a deployment proof cannot certify them.
