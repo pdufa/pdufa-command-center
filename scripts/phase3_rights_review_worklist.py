@@ -9,6 +9,8 @@ does not change Pipeline/GEM eligibility or FS/FA presets.
 from __future__ import annotations
 
 from collections import Counter
+import argparse
+import csv
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -236,14 +238,87 @@ def build_worklist(registry, ledger, casebook, leads, trial_join):
     }
 
 
+
+CSV_COLUMNS = (
+    "review_position", "research_priority", "nct_id", "ticker", "census_company",
+    "registry_status", "registry_phase3_current", "source_review_stage",
+    "provisional_registered_drugs", "registered_conditions",
+    "sec_issuer_cik", "sec_issuer_submissions_url", "sec_filing_candidate_urls",
+    "sec_fetched_document_urls", "trial_exact_term_source_urls",
+    "original_registry_source_url", "original_registry_source_sha256",
+    *REQUIRED_REVIEW, "commercial_rights_verified", "qualified_pipeline",
+)
+
+
+def safe_csv_value(value):
+    """Guard spreadsheet imports against formula evaluation from source labels."""
+    if value is None:
+        return ""
+    value = str(value)
+    if value.lstrip().startswith(("=", "+", "-", "@")) or value.startswith(("\t", "\r")):
+        return "'" + value
+    return value
+
+
+def write_review_csv(report, output):
+    """Write a sortable 741-row manual worklist with six explicit proof columns."""
+    rows = report.get("items")
+    if report.get("total_trials") != TOTAL or not isinstance(rows, list) or len(rows) != TOTAL:
+        raise ValueError("Only a complete research worklist can be exported")
+    if report.get("qualified_pipeline_total") is not None or report.get("independently_verified_current_rights") != 0:
+        raise ValueError("CSV export never carries promoted or claimed rights")
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=CSV_COLUMNS, lineterminator="\n")
+        writer.writeheader()
+        for item in rows:
+            record = {
+                "review_position": item["research_review_queue_position"],
+                "research_priority": item["research_priority"],
+                "nct_id": item["nct_id"], "ticker": item["ticker"],
+                "census_company": item["census_company"],
+                "registry_status": item["registry_status"],
+                "registry_phase3_current": item["registry_phase3_current"],
+                "source_review_stage": item["source_review_stage"],
+                "provisional_registered_drugs": "; ".join(item["registered_provisional_drugs"]),
+                "registered_conditions": "; ".join(item["registered_conditions"]),
+                "sec_issuer_cik": item["issuer_sec_cik"],
+                "sec_issuer_submissions_url": item["sec_issuer_submissions_url"],
+                "sec_filing_candidate_urls": "; ".join(
+                    x["url"] for x in item["sec_issuer_filing_candidates"]),
+                "sec_fetched_document_urls": "; ".join(
+                    x["url"] for x in item["sec_source_documents_fetched"]),
+                "trial_exact_term_source_urls": "; ".join(
+                    x["source_url"] for x in item["exact_lexical_term_source_leads"]),
+                "original_registry_source_url": item["registry_source_url"],
+                "original_registry_source_sha256": item["registry_source_sha256"],
+                "commercial_rights_verified": item["commercial_rights_verified"],
+                "qualified_pipeline": item["qualified_pipeline"],
+            }
+            record.update(item["rights_review_checklist"])
+            if any(record[k] != "NOT_VERIFIED" for k in REQUIRED_REVIEW):
+                raise ValueError("Cannot export pre-verified checklist")
+            writer.writerow({k: safe_csv_value(record[k]) for k in CSV_COLUMNS})
+
 def main():
-    if len(sys.argv) != 7:
-        sys.exit("Usage: phase3_rights_review_worklist.py <registry> <ledger> <casebook> <sec-leads> <trial-join> <output>")
-    inputs = [json.loads(Path(p).read_text(encoding="utf-8")) for p in sys.argv[1:6]]
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("registry", type=Path)
+    parser.add_argument("ledger", type=Path)
+    parser.add_argument("casebook", type=Path)
+    parser.add_argument("sec_leads", type=Path)
+    parser.add_argument("trial_join", type=Path)
+    parser.add_argument("output", type=Path)
+    parser.add_argument("--csv", type=Path, help="Optional spreadsheet-ready 741-row review queue")
+    args = parser.parse_args()
+    inputs = [json.loads(p.read_text(encoding="utf-8")) for p in (
+        args.registry, args.ledger, args.casebook, args.sec_leads, args.trial_join)]
     report = build_worklist(*inputs)
-    output = Path(sys.argv[6])
+    output = args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if args.csv:
+        write_review_csv(report, args.csv)
     print(
         f"Commercial-rights review worklist: {report['total_trials']}/741 trial identities; "
         f"{report['total_issuer_research_pointers']}/130 SEC issuer pointers; "
