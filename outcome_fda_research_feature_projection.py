@@ -18,6 +18,13 @@ def build_research_feature_projection(asof: str) -> dict:
     audit = build_receipt_asof_audit(asof)
     rows = []
     for record in audit["records"]:
+        # The research projection is a retrospective inspection view. Do not
+        # emit even a stable identifier for a sample whose final-action date
+        # lies after the requested historical cutoff: that would reveal which
+        # applications eventually had a CRL in a selected-outcome sample.
+        from datetime import date
+        if date.fromisoformat(record["final_fda_action_date"]) > date.fromisoformat(asof):
+            continue
         fields = {key: record[key] for key in ALLOWED_RESEARCH_FIELDS}
         if not record["sponsor_submission_confirmation_public"]:
             assert fields["sponsor_submission_month_asof"] is None
@@ -40,6 +47,9 @@ def build_research_feature_projection(asof: str) -> dict:
         "dataset_role": "research_only_nontraining",
         "asof_date": asof,
         "selected_open_fda_receipt_denominator": len(rows),
+        "retrospective_action_sample_denominator": len(audit["records"]),
+        "retrospective_future_action_rows_excluded": len(audit["records"]) - len(rows),
+        "selection_bias_uncertified": True,
         "allowed_observation_fields": sorted(ALLOWED_RESEARCH_FIELDS),
         "retrospective_fda_action_labels_excluded": True,
         "unverified_fda_receipt_dates_excluded": True,
