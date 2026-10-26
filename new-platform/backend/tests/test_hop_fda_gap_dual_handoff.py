@@ -114,7 +114,7 @@ def test_first_and_second_private_packets_have_same_evidence_but_blank_independe
         assert a["model_eligible"] is False
         assert a["prediction_probability"] is None
     first[0]["previously_probed_pdf_leads"][0]["official_fda_pdf_url"] = "edited"
-    assert second[0]["previously_probed_pdf_leads"][0]["official_fda_pdf_url"] == "edited"  # immutable common evidence only, never reviewer claims
+    assert second[0]["previously_probed_pdf_leads"][0]["official_fda_pdf_url"] != "edited"
     assert audit["published_letter_source_references"] == 3
     assert audit["first_blank_review_packets"] == 2
     assert audit["second_blank_review_packets"] == 2
