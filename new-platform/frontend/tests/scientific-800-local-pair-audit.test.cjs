@@ -84,8 +84,7 @@ const { buildScientific800ReviewerHandoffCsv } =
   require("../lib/scientific-800-reviewer-handoff.ts");
 
 
-const { buildScientific800ReviewerHandoffCsv } =
-  require("../lib/scientific-800-reviewer-handoff.ts");
+
 const { compareScientific800ReviewerCsvs } =
   require("../lib/scientific-800-local-pair-audit.ts");
 
@@ -192,6 +191,6 @@ test("UI uses browser-local untrusted CSVs; no backend verification or grading",
   assert.match(ui, /compareScientific800ReviewerCsvs\(/);
   assert.match(ui, /Reviewers are NOT authenticated/);
   assert.match(ui, /file\.text\(\)/);
-  assert.match(ui, /scientificScore/); // no numeric score ever assigned by the audit
+  assert.match(ui, /sourceBytesVerified/); // no source verification asserted
   assert.doesNotMatch(ui, /runScan\(|placeTrade\(|saveGrade\(/);
 });
