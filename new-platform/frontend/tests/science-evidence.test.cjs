@@ -72,3 +72,9 @@ test("assessment missing evidence arrays fails closed", () => {
   delete d.assessments[0].evidence;
   assert.equal(assessScienceReadiness(d).status, "RELUCTANT");
 });
+
+test("null evidence item fails closed without throwing", () => {
+  const d = dossier();
+  d.assessments[0].evidence = [null];
+  assert.equal(assessScienceReadiness(d).status, "RELUCTANT");
+});

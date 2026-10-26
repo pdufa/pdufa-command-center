@@ -66,7 +66,7 @@ export function assessScienceReadiness(dossier: ScienceDossier): ScienceReadines
       bounded(a.score) && bounded(a.confidence);
     if (!structural) missing.push("Invalid assessment: " + a.id);
     const sourcesValid = a.evidence.length > 0 && a.evidence.every(e =>
-      e.verified === true && !!e.sourceUrl && validDate(e.publishedAt) &&
+      e != null && e.verified === true && typeof e.sourceUrl === "string" && e.sourceUrl.startsWith("https://") && validDate(e.publishedAt) &&
       !!e.verifiedAt && validDate(e.verifiedAt) &&
       validDate(dossier.cutoffDate) && e.publishedAt <= dossier.cutoffDate &&
       e.verifiedAt <= dossier.cutoffDate);
