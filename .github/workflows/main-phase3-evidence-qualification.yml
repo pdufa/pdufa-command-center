@@ -32,7 +32,7 @@ jobs:
           persist-credentials: false
       - name: Validate scripts and tests
         run: |
-          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py
+          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py scripts/phase3_sec_rights_discovery.py
           python3 -m unittest discover -s tests -p test_phase3_qualification_ledger.py -v
           python3 -m unittest discover -s tests -p 'test_phase3_evidence_intake*.py' -v
           python3 -m unittest discover -s tests -p test_phase3_gate_coverage.py -v
