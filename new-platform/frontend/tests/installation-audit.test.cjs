@@ -62,7 +62,7 @@ test("OUTCOME connection success is documented without claiming validated FDA pr
   assert.match(tracker, /FDA approval probabilities remain unavailable/);
   assert.doesNotMatch(tracker, /blocked by an authenticated source-connection failure/);
   // Read-only HOP connectivity is not itself prediction validation.
-  const row = tracker.split("\\n").find(x => x.includes('component: "Prediction Validation"'));
+  const row = tracker.split(String.fromCharCode(10)).find(x => x.includes('component: "Prediction Validation"'));
   assert.match(row, /runtime: "Not verified"/);
   assert.match(row, /evidence: "Partial"/);
 });
