@@ -312,6 +312,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [handoffDrift, setHandoffDrift] = useState<HandoffDrift | null>(null);
   const [handoffDriftError, setHandoffDriftError] = useState("");
   const [comparingHandoffs, setComparingHandoffs] = useState(false);
+  const [liveHandoffDrift, setLiveHandoffDrift] = useState<HandoffDrift | null>(null);
+  const [liveHandoffError, setLiveHandoffError] = useState("");
+  const [checkingLiveHandoff, setCheckingLiveHandoff] = useState(false);
   const handoffDriftRevision = useRef(0);
   const capturedBackendRevision = useRef(0);
   const auditRevision = useRef(0);
@@ -331,6 +334,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setHandoffDrift(null);
     setHandoffDriftError("");
     setComparingHandoffs(false);
+    setLiveHandoffDrift(null);
+    setLiveHandoffError("");
+    setCheckingLiveHandoff(false);
     setReviewInventoryFile(null);
     setReviewerAFile(null);
     setReviewerBFile(null);
@@ -376,6 +382,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setHandoffDrift(null);
     setHandoffDriftError("");
     setComparingHandoffs(false);
+    setLiveHandoffDrift(null);
+    setLiveHandoffError("");
+    setCheckingLiveHandoff(false);
     setLocalAudit(null);
     setLocalAuditError("");
     setComparingFiles(false);
@@ -725,6 +734,42 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
+  /**
+   * Compare the operator's UNSIGNED saved handoff to a NEW, authenticated
+   * read-only response from the isolated server. The server has rehashed
+   * captured bytes; neither side verifies original publisher authenticity.
+   */
+  async function compareSavedHandoffToLiveArchive() {
+    if (exactId !== "TRIAL|NCT02142738" || !earlierHandoffFile) return;
+    const revision = ++handoffDriftRevision.current;
+    setLiveHandoffDrift(null);
+    setLiveHandoffError("");
+    setCheckingLiveHandoff(true);
+    try {
+      if (earlierHandoffFile.size < 1 || earlierHandoffFile.size > 256 * 1024) {
+        throw new Error("Invalid local handoff size");
+      }
+      const saved = await earlierHandoffFile.text();
+      // No fallbacks to ordinary dashboard APIs; the session-protected proxy
+      // enforces exact NCT, dedicated preview key, schema and no-store.
+      const response = await fetch(
+        "/api/scientific-assessment/captured-source-manifest?nct_id=NCT02142738",
+        { cache: "no-store" },
+      );
+      if (!response.ok) throw new Error("Live authenticated archive unavailable");
+      const liveManifest: unknown = await response.json();
+      const liveHandoff = buildScientificSourceReviewHandoff("NCT02142738", liveManifest);
+      const comparison = compareFourGateSourceHandoffs(saved, liveHandoff);
+      if (revision === handoffDriftRevision.current) setLiveHandoffDrift(comparison);
+    } catch {
+      if (revision === handoffDriftRevision.current) setLiveHandoffError(
+        "Live archive comparison BLOCKED: sign in, restore the isolated read-only service, or select a valid exact-trial source handoff. A blocked check is NOT evidence of no change."
+      );
+    } finally {
+      if (revision === handoffDriftRevision.current) setCheckingLiveHandoff(false);
+    }
+  }
+
   /** On-demand read-only pinned archive metadata: NEVER admits or certifies a source. */
   async function compareLocalPdfWithArchivedSnapshot() {
     if (!localSourceByteMatch || !localSourcePdf || !result?.investigation40
@@ -786,6 +831,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 handoffDriftRevision.current++;
                 setEarlierHandoffFile(event.target.files?.[0] ?? null);
                 setHandoffDrift(null); setHandoffDriftError(""); setComparingHandoffs(false);
+                setLiveHandoffDrift(null); setLiveHandoffError(""); setCheckingLiveHandoff(false);
               }} />
           </label>
         </div>
@@ -796,6 +842,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
                 handoffDriftRevision.current++;
                 setLaterHandoffFile(event.target.files?.[0] ?? null);
                 setHandoffDrift(null); setHandoffDriftError(""); setComparingHandoffs(false);
+                setLiveHandoffDrift(null); setLiveHandoffError(""); setCheckingLiveHandoff(false);
               }} />
           </label>
         </div>
@@ -803,7 +850,30 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           onClick={() => void compareSourceHandoffFiles()}>
           {comparingHandoffs ? "Comparing local inventories…" : "Compare earlier and later source handoffs"}
         </button>
-        {handoffDriftError && <p role="alert">{handoffDriftError}</p>}
+        <p>
+          <button type="button" disabled={!earlierHandoffFile || checkingLiveHandoff || comparingHandoffs}
+            onClick={() => void compareSavedHandoffToLiveArchive()}>
+            {checkingLiveHandoff ? "Checking protected live PDF archive…" : "Compare saved handoff to LIVE captured archive"}
+          </button>
+          <small> Makes a fresh authenticated, read-only request to the isolated scientific backend. The saved JSON stays in this browser. No PDF contents are uploaded, and an unsigned file cannot prove authorship or chronological history.</small>
+        </p>
+        {liveHandoffError && <p role="alert">{liveHandoffError}</p>}
+        {liveHandoffDrift && <section role="status" aria-label="Authenticated live captured archive comparison">
+          <p><strong>Saved unsigned handoff versus currently rehashed isolated archive:</strong>{" "}
+            {liveHandoffDrift.comparisonResult.replaceAll("_", " ")}.</p>
+          <p>Saved captured PDFs: {liveHandoffDrift.priorDocumentCount}; live captured PDFs:
+            {" "}{liveHandoffDrift.laterDocumentCount}. Added: {liveHandoffDrift.addedDocumentIds.length};
+            {" "}removed: {liveHandoffDrift.removedDocumentIds.length};
+            {" "}changed: {liveHandoffDrift.changedDocumentIds.length}.</p>
+          <ul>{liveHandoffDrift.gates.map(gate => <li key={gate.gateId}>
+            <strong>{gate.gateId.replaceAll("_", " ")}</strong>: saved {gate.priorCapturedPdfCount},
+            {" "}live {gate.laterCapturedPdfCount} captured PDFs
+          </li>)}</ul>
+          <p><strong>Original source authenticated: NO. Independent reviewer adjudication: INCOMPLETE.
+            {" "}FDA approval probability: NOT ASSIGNED.</strong></p>
+          <small>The current isolated archive rehashes its stored bytes, but a matching digest does not independently authenticate the original publisher. The saved handoff is unsigned and cannot establish its capture date.</small>
+        </section>}
+        {handoffDriftError && <p role="alert">{handoffDriftError}</p>
         {handoffDrift && <section role="status" aria-label="Unverified source inventory comparison result">
           <p><strong>{handoffDrift.comparisonResult.replaceAll("_", " ")}</strong> — captured PDFs: {handoffDrift.priorDocumentCount} in selected earlier file, {handoffDrift.laterDocumentCount} in selected later file.</p>
           <p>Added IDs: {handoffDrift.addedDocumentIds.length}; removed IDs: {handoffDrift.removedDocumentIds.length}; changed metadata for existing IDs: {handoffDrift.changedDocumentIds.length}; unchanged entries: {handoffDrift.unchangedDocumentCount}.</p>
