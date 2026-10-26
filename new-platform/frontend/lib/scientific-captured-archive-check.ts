@@ -192,3 +192,75 @@ export function summarizeCapturedScientificGates(
     gates,
   };
 }
+
+
+/**
+ * Downloadable inventory for a future qualified, independent source reviewer.
+ * It is not digitally signed and is NEVER a scientific result or approval
+ * record. Include only the exact-NCT, server-rehashed archive metadata;
+ * do not export curator identifiers, URLs, raw PDFs or reviewer claims.
+ */
+export function buildScientificSourceReviewHandoff(
+  nctId: string, manifest: unknown,
+): string {
+  const coverage = summarizeCapturedScientificGates(nctId, manifest);
+  if (coverage.nctId !== "NCT02142738"
+      || coverage.externallyVerifiedGateCount !== 0
+      || coverage.readyForScientificConclusion !== false
+      || coverage.scientificScore !== null
+      || coverage.fdaApprovalProbability !== null
+      || !manifest || typeof manifest !== "object" || Array.isArray(manifest)) denied();
+  const raw = manifest as Record<string, unknown>;
+  const documents = (raw.documents as unknown[]).map(item => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) denied();
+    const record = item as Record<string, unknown>;
+    // summarizeCapturedScientificGates already validated every fixed field.
+    const documentId = record.documentId as string;
+    const sourceType = record.sourceType as string;
+    const gateId = record.gateId as typeof coverage.gates[number]["gateId"];
+    const sha256 = record.sha256 as string;
+    const byteLength = record.byteLength as number;
+    if (!coverage.gates.some(g => g.gateId === gateId)
+        || !/^[a-f0-9]{32}$/.test(documentId)
+        || !/^[a-f0-9]{64}$/.test(sha256)
+        || !Number.isSafeInteger(byteLength) || byteLength < 32) denied();
+    return {
+      documentId,
+      gateId,
+      sourceType,
+      sha256,
+      byteLength,
+      capturedByteIntegrity: "REHASHED_AT_AUTHENTICATED_ARCHIVE_READ",
+      originalPublisherAuthenticated: false,
+      sourceContentClinicallyAdjudicated: false,
+    };
+  });
+  documents.sort((a, b) => a.gateId.localeCompare(b.gateId)
+    || a.documentId.localeCompare(b.documentId));
+  return JSON.stringify({
+    schemaVersion: "isolated-science-source-review-handoff-v1",
+    nctId: "NCT02142738",
+    classification: "UNSIGNED_UNVERIFIED_SOURCE_INVENTORY",
+    sourceDocumentCount: coverage.sourceDocumentCount,
+    capturedEvidenceCategories: coverage.gatesWithCapturedPdf,
+    independentlyVerifiedCategories: 0,
+    gateCoverage: coverage.gates.map(g => ({
+      gateId: g.gateId,
+      label: g.label,
+      capturedPdfCount: g.capturedPdfCount,
+      status: g.status,
+      independentlyVerified: false,
+      requiredNextAction: g.nextAction,
+    })),
+    capturedPdfFingerprints: documents,
+    originalSourceAuthenticated: false,
+    independentReviewerCredentialsVerified: false,
+    independentSignedAdjudicationComplete: false,
+    scientificallyReady: false,
+    scientificScore: null,
+    fdaApprovalProbability: null,
+    promotionAllowed: false,
+    documentBytesIncluded: false,
+    warning: "UNSIGNED DIAGNOSTIC ONLY: a stored SHA-256/byte-length record is not an original publisher signature or clinical review. Independently retrieve dated originals, verify publisher provenance, reconcile full document contents, obtain qualified independent reviewer attestations and resolve contradictions before any scientific conclusion or FDA probability.",
+  }, null, 2) + "\n";
+}
