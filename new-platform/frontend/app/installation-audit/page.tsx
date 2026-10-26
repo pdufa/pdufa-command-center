@@ -64,6 +64,7 @@ export default function InstallationAudit() {
     <h1>System installation & evidence tracker</h1>
     <p><strong>15-section audit · snapshot as of October 25, 2026.</strong> This is a dated read-only checklist with separate, on-demand protected SCIENCE/OUTCOME evidence checks below. A green build establishes neither scientific accuracy nor complete runtime operation.</p>
     <p><strong>Release:</strong> GitHub change #332 merged; Vercel production READY and user access reported on October 25, 2026. Deployment of the dashboard does not mean its scientific or prediction checks are complete. Implementation-stage counts are reported separately from verified acceptance; they are not an estimate of development-hours completion.</p>
+    <p><strong>Main technical installation:</strong> No mandatory human reviewer enrollment, reviewer keys or reviewer handoff is required to install or operate Pipeline, GEM JR, GEM, WT, scanning, reporting and backups. Scientific evidence and prediction validation remain a separate research requirement; this policy change does not certify a trial or authorize trades.</p>
     <p><strong>Latest saved RESULTS:</strong> October 25, 2026 · PARTIAL · <a href="https://github.com/pdufa/pdufa-command-center/actions/runs/40263199452" target="_blank" rel="noopener noreferrer">run 40263199452</a> · 11,598 tracked clinical records (not Pipeline qualified) · 0 tracked records changed · GEM JR 11 · GEM 6. Qualified Pipeline and FDA special-designation totals remain unknown. The scan-note summary reports 995/1121 verified, 21 unresolved, 93 unavailable and 10 not applicable; <strong>two conflicted checks are omitted from that short note</strong> but separately recorded in the same-run source audit.</p>
     <p><strong>Same-run source reconciliation (October 25, 2026 night):</strong> 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable and 10 not applicable: <strong>995 + 21 + 2 + 93 + 10 = 1,121</strong>. <a href={sourceAudit}>Saved source report</a> · <strong>PARTIAL</strong> because required SEC and FINANCIAL verification is still missing. The source report explicitly accounts for the two conflicts that the shorter nightly scan note does not list. Clinical inventory totals do not establish Pipeline eligibility, complete regulatory source coverage or validated scientific predictions.</p>
     <section aria-label="Installation acceptance balance" style={{margin:"20px 0"}}>
@@ -96,12 +97,12 @@ export default function InstallationAudit() {
     </section>
     <ScientificOutcomeLive />
     <section aria-labelledby="fda-research-worklist" style={{margin:"26px 0",padding:"18px",border:"1px solid #cbd5e1",borderRadius:9,background:"#f8fafc"}}>
-      <h2 id="fda-research-worklist">OUTCOME source-review preparation — historical research only</h2>
+      <h2 id="fda-research-worklist">OUTCOME historical FDA source readiness — research only</h2>
       <p><strong>Research snapshot: October 25, 2026.</strong> The following values are from a separate quarantined FDA research workflow, not the live OUTCOME API, verified FDA decisions or current production model data.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,margin:"14px 0"}}>
         <div style={{padding:12,background:"white",border:"1px solid #e2e8f0",borderRadius:7}}>
           <strong style={{display:"block",fontSize:24}}>{fdaWorklist.pendingLetterReferences}</strong>
-          <span>Published-letter references needing identity review</span>
+          <span>Published-letter references awaiting source identity resolution</span>
         </div>
         <div style={{padding:12,background:"white",border:"1px solid #e2e8f0",borderRadius:7}}>
           <strong style={{display:"block",fontSize:24}}>{fdaWorklist.searchPackets}</strong>
@@ -117,12 +118,12 @@ export default function InstallationAudit() {
         {" "}{FDA_REVIEW_WORKLIST_SNAPSHOT.missingFromApprovalCentricRosterReferences} references missing from the approval-centric roster +
         {" "}{FDA_REVIEW_WORKLIST_SNAPSHOT.ambiguousApplicationReferences} ambiguous identities.
         The missing references represent {FDA_REVIEW_WORKLIST_SNAPSHOT.distinctMissingApplicationCandidates} provisional application groups. An application absent from this roster is <strong>not</strong> proven rejected or never approved.</p>
-      <p><strong>Next acceptance gates:</strong> inspect original FDA action evidence with independently authenticated reviewers, reconcile exact application/review-cycle identities, reconstruct the complete approval and nonapproval population, then validate predecision time cutoffs and out-of-time calibration. No independent review is claimed complete; model-eligible decision cycles remain {fdaWorklist.modelEligibleReviewCycles}, and FDA approval probabilities remain unavailable.</p>
+      <p><strong>Remaining scientific-data gates:</strong> verify original FDA action documents and provenance, reconcile exact application/review-cycle identities, reconstruct the complete approval and nonapproval population, then validate predecision time cutoffs and out-of-time calibration. These data-validation tasks do not require reviewer enrollment as an installation prerequisite. Model-eligible decision cycles remain {fdaWorklist.modelEligibleReviewCycles}, and FDA approval probabilities remain unavailable.</p>
       <p><a href={FDA_REVIEW_WORKLIST_SNAPSHOT.researchWorkflowUrl} target="_blank" rel="noopener noreferrer">Pinned original-source research run</a> · <a href={FDA_REVIEW_WORKLIST_SNAPSHOT.reviewIssueUrl} target="_blank" rel="noopener noreferrer">Independent evidence review work queue</a>. This is a dated, read-only worklist summary; opening it does not authorize FDA outcome labels, grades, scans, or trades.</p>
     </section>
     <section aria-labelledby="scientific-gates">
-      <h2 id="scientific-gates">Independent scientific acceptance gates</h2>
-      <p><strong>SCIENCE:</strong> exact trial identity, 40 assessments, authoritative sources, uncertainty, conflicting evidence and independent reviewer signoffs must be verified before a readiness grade can be certified.</p>
+      <h2 id="scientific-gates">Scientific evidence and prediction validation</h2>
+      <p><strong>SCIENCE:</strong> exact trial identity, 40 assessments, authoritative sources, uncertainty, conflicting evidence and reproducible source-level validation must be established before a readiness grade can be certified. Mandatory reviewer enrollment is not part of main technical installation.</p>
       <p><strong>OUTCOME:</strong> FDA-labelled historical outcomes, prespecified holdouts, leakage checks, calibration and transparent error analysis must be verified before outcome probabilities can be certified.</p>
     </section>
     <p><strong>Sources:</strong> <a href={audit}>acceptance issue #331</a> · <a href={report}>saved nightly report</a> · <a href={sourceAudit}>newer source verification</a> · <a href={ci}>frontend/backend CI</a> · <a href={preview}>tracker preview deployment</a>.</p>

@@ -42,7 +42,7 @@ export default function ScientificOutcomeLive() {
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,320px),1fr))",gap:14,marginTop:14}}>
       <section aria-label="SCIENCE evidence status" style={{border:"1px solid #cbd5e1",padding:14,borderRadius:8}}>
         <h3>SCIENCE · 40 investigations</h3>
-        <p><strong>Certification: NOT VERIFIED.</strong> The existing three seven-category research scores do not establish completion of the separately required 40 scientific investigations or independent clinical review.</p>
+        <p><strong>Certification: NOT VERIFIED.</strong> The existing three seven-category research scores do not establish completion of the separately required 40 scientific investigations or source-level clinical evidence validation.</p>
         {science.error && <p role="alert"><strong>Live evidence unavailable:</strong> {science.error}. No completion count is inferred.</p>}
         {science.data && <>
           <p><strong>Exact candidate IDs:</strong> {display(science.data.total)} · <strong>Registry-linked:</strong> {display(science.data.registryLinked)} · <strong>Unlinked:</strong> {display(science.data.registryMissing)}.</p>
@@ -57,7 +57,7 @@ export default function ScientificOutcomeLive() {
       </section>
       <section aria-label="OUTCOME evidence status" style={{border:"1px solid #cbd5e1",padding:14,borderRadius:8}}>
         <h3>OUTCOME · historical FDA validation</h3>
-        <p><strong>Certification: NOT VALIDATED.</strong> FDA research archives are not a complete historical decision cohort. Approval probabilities must remain withheld until independent review-cycle labels, chronological holdouts, leakage checks and calibration pass.</p>
+        <p><strong>Certification: NOT VALIDATED.</strong> FDA research archives are not a complete historical decision cohort. Approval probabilities must remain withheld until complete, source-supported FDA action-cycle labels, chronological holdouts, leakage checks and calibration pass.</p>
         {outcome.error && <p role="alert"><strong>Live evidence unavailable:</strong> {outcome.error}. Historical verification counts are withheld.</p>}
         {outcome.data && <>
           <p><strong>Published FDA letters:</strong> {display(outcome.data.publishedLetters)} · <strong>Approved-product registry records:</strong> {display(outcome.data.approvedApplications)}.</p>
