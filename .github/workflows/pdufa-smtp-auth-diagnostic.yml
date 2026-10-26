@@ -1,0 +1,155 @@
+name: PDUFA SMTP Authentication Diagnostic — NO SEND
+
+# Isolated authentication diagnostic. No scheduled scans and no email sends.
+# The repair-branch push path permits retesting after rotating the secret without
+# merging unverified changes; the manual trigger is for future explicit checks.
+on:
+  workflow_dispatch:
+  push:
+    branches: [repair/smtp-auth-diagnostic-20261015]
+    paths: ['.github/workflows/pdufa-smtp-auth-diagnostic.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  verify-smtp-auth:
+    name: Check Gmail authentication without sending email
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate the secret structure without revealing secret bytes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from scripts.scan_email import EmailSettings, EmailSetupError
+          import re
+          try:
+              settings = EmailSettings.from_env()
+          except EmailSetupError:
+              print("CREDENTIAL_SETTINGS_VALID=false")
+              raise SystemExit(2)
+          shape = bool(re.fullmatch(r"[A-Za-z]{16}", settings.app_password))
+          print("CREDENTIAL_SETTINGS_VALID=true")
+          print(f"GMAIL_APP_PASSWORD_16_LETTERS={str(shape).lower()}")
+          # Never print password values, substrings, hashes, or lengths.
+          if not shape:
+              print("Check that the GitHub secret contains the 16-character Google app password, not the normal account password or label.")
+              raise SystemExit(3)
+          PY
+      - name: Test Gmail app-password acceptance via IMAP login only (no mailbox access)
+        continue-on-error: true
+        shell: bash
+        run: |
+          python - <<'PY'
+          import imaplib
+          import socket
+          import ssl
+          from scripts.scan_email import EmailSettings, EmailSetupError
+          try:
+              settings = EmailSettings.from_env()
+          except EmailSetupError:
+              print("IMAP_CONFIG_INVALID")
+              raise SystemExit(2)
+          client = None
+          stage = "connect"
+          try:
+              client = imaplib.IMAP4_SSL("imap.gmail.com", 993, ssl_context=ssl.create_default_context(), timeout=15)
+              stage = "login"
+              status, _ = client.login(settings.sender, settings.app_password)
+              if status != "OK":
+                  print("IMAP_AUTH_NOT_ACKNOWLEDGED")
+                  raise SystemExit(3)
+              print("IMAP_AUTH_ACCEPTED; no mailbox selected, no email sent")
+          except imaplib.IMAP4.error as exc:
+              # Classify only known Gmail response categories. Never print
+              # server error strings or any username/password material.
+              reply = str(exc).casefold()
+              if "application-specific password" in reply or "app password" in reply:
+                  reason = "APP_PASSWORD_REQUIRED"
+              elif "imap access is disabled" in reply or "imap disabled" in reply:
+                  reason = "IMAP_DISABLED"
+              elif "invalid credentials" in reply or "authenticationfailed" in reply:
+                  reason = "INVALID_CREDENTIALS_OR_POLICY"
+              elif "web browser" in reply:
+                  reason = "WEB_LOGIN_REQUIRED"
+              else:
+                  reason = "OTHER_AUTH_OR_POLICY_REJECTION"
+              print(f"IMAP_AUTH_OR_POLICY_REJECTED; stage={stage}; reason={reason}")
+              raise SystemExit(4)
+          except (socket.timeout, TimeoutError, OSError, ssl.SSLError) as exc:
+              print(f"IMAP_CONNECTION_ERROR; stage={stage}; kind={type(exc).__name__}")
+              raise SystemExit(5)
+          finally:
+              if client is not None:
+                  try:
+                      client.logout()
+                  except (imaplib.IMAP4.error, OSError):
+                      pass
+          PY
+      - name: Attempt one authenticated SMTP connection only
+        shell: bash
+        run: |
+          python - <<'PY'
+          import socket
+          import smtplib
+          import ssl
+          from scripts.scan_email import EmailSettings, EmailSetupError
+
+          try:
+              settings = EmailSettings.from_env()
+          except EmailSetupError:
+              print("CONFIGURATION_INVALID; no email sent")
+              raise SystemExit(2)
+          try:
+              phase = "connect_465"
+              with smtplib.SMTP_SSL(
+                  "smtp.gmail.com", 465, timeout=15,
+                  context=ssl.create_default_context(),
+              ) as server:
+                  phase = "login_465"
+                  server.login(settings.sender, settings.app_password)
+              print("SMTP_AUTH_ACCEPTED; no email sent")
+          except smtplib.SMTPAuthenticationError as exc:
+              print(f"SMTP_AUTH_REJECTED; status={exc.smtp_code}; no email sent")
+              raise SystemExit(3)
+          except smtplib.SMTPResponseException as exc:
+              print(f"SMTP_PROVIDER_REJECTED; status={exc.smtp_code}; no email sent")
+              raise SystemExit(4)
+          except (socket.timeout, TimeoutError, socket.gaierror, ConnectionError) as exc:
+              print(f"SMTP_NETWORK_ERROR; kind={type(exc).__name__}; no email sent")
+              raise SystemExit(5)
+          except (ssl.SSLError, OSError, smtplib.SMTPException) as exc:
+              print(f"SMTP_CONNECTION_ERROR; phase={phase}; kind={type(exc).__name__}; no email sent")
+              print("Testing alternate authenticated STARTTLS route; no email will be sent")
+              try:
+                  phase = "connect_587"
+                  with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
+                      phase = "ehlo_587"
+                      server.ehlo()
+                      phase = "starttls_587"
+                      server.starttls(context=ssl.create_default_context())
+                      phase = "posttls_ehlo_587"
+                      server.ehlo()
+                      phase = "login_587"
+                      server.login(settings.sender, settings.app_password)
+                  print("SMTP_STARTTLS_AUTH_ACCEPTED; no email sent")
+              except smtplib.SMTPAuthenticationError as e:
+                  print(f"SMTP_STARTTLS_AUTH_REJECTED; status={e.smtp_code}; no email sent")
+                  raise SystemExit(7)
+              except (OSError, smtplib.SMTPException, ssl.SSLError) as e:
+                  print(f"SMTP_STARTTLS_CONNECTION_ERROR; phase={phase}; kind={type(e).__name__}; no email sent")
+                  raise SystemExit(8)
+          PY
+
+# 2026-10-16 05:32 PDT: credential rotation verification requested; no email or scan.
+
+# Credential-replacement verification round 2: no email sent, no scans dispatched.
