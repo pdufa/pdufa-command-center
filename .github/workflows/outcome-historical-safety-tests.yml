@@ -44,7 +44,9 @@ jobs:
             tests/test_hop_backtest_cohort_safety.py \
             tests/test_hop_backtest_duplicates.py \
             tests/test_hop_outcome_cohort.py \
-            tests/test_hop_outcomes_import.py
+            tests/test_hop_outcomes_import.py \
+            tests/test_hop_fda_application_crosswalk.py \
+            tests/test_hop_fda_identity_review_queue.py
       - name: Confirm published audit has no model clearance
         working-directory: new-platform/backend
         run: |
