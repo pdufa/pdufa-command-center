@@ -80,6 +80,15 @@ def build_source_search_packets(
                 or item.get("evidence_independently_adjudicated") is not False
                 or item.get("model_eligible") is not False):
             raise ValueError("Tampered source identities or FDA decision claims")
+        if (not isinstance(item.get("published_letter_type"), str)
+                or item["published_letter_type"] not in {
+                    "COMPLETE RESPONSE", "TENTATIVE APPROVAL",
+                    "PROVISIONAL DETERMINATION",
+                    "CORRECTED PROVISIONAL DETERMINATION",
+                    "REFUSAL TO FILE", "RESCIND COMPLETE RESPONSE",
+                    "UNCLASSIFIED",
+                }):
+            raise ValueError("Unknown published FDA letter class")
         seen.add(digest)
         if reason == "AMBIGUOUS_OR_UNPARSEABLE_LETTER_APPLICATION":
             if app is not None:
@@ -218,6 +227,10 @@ def screen_private_evidence_leads(
         doc_type = p["manual_evidence_document_type"]
         digest = p["manual_evidence_sha256"]
         notes = p["manual_research_notes"]
+        if (not isinstance(url, str)
+                or not isinstance(doc_type, str)
+                or not isinstance(digest, str)):
+            raise ValueError("Malformed evidence lead fields")
         if (not isinstance(notes, str) or len(notes) > 1500
                 or notes.lstrip().startswith(("=", "+", "-", "@"))
                 or "\x00" in notes):
