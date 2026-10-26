@@ -1,0 +1,32 @@
+name: MAIN 741 rights claim overlay from primary issuer disclosures
+on:
+  pull_request:
+    paths:
+      - 'data/research_issuer_rights_claims_achv_mirm_2026-10-26.json'
+      - 'data/research_abvx_obefazimod_rights_2026-10-26.json'
+      - 'scripts/build_phase3_issuer_rights_claim_overlay.py'
+      - 'tests/test_phase3_issuer_rights_claim_overlay.py'
+      - '.github/workflows/main-issuer-rights-claim-overlay.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  conservative-rights-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Prove exact original NCT links and no false rights or PDUFA promotion
+        run: python3 -m unittest discover -s tests -p 'test_phase3_issuer_rights_claim_overlay.py' -v
+      - name: Build 741-trial rights evidence research overlay
+        run: python3 scripts/build_phase3_issuer_rights_claim_overlay.py "$RUNNER_TEMP/phase3_741_primary_issuer_rights_claim_overlay.json"
+      - name: Archive evidence cases, risk flags, and 730 remaining source gaps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-741-rights-claim-evidence-overlay
+          path: ${{ runner.temp }}/phase3_741_primary_issuer_rights_claim_overlay.json
+          if-no-files-found: error
+          retention-days: 7
