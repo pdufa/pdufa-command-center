@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "scope": "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY",
+  "asOf": "2026-10-26",
+  "programs": [
+    {
+      "issuerTicker": "ACAD",
+      "issuerCik": "0001070494",
+      "asset": "trofinetide",
+      "assetAliases": [
+        "DAYBUE"
+      ],
+      "rightsClaimType": "ISSUER_SEC_DISCLOSED_WORLDWIDE_EXCLUSIVE_NEUREN_LICENSE_WITH_MILESTONE_AND_ROYALTY_OBLIGATIONS",
+      "rightsClaimSummary": "Acadia's July 13 2023 SEC Form 8-K states Neuren granted it a worldwide exclusive trofinetide development and commercial license for all indications. Its 2026 Form 10-Q reports continuing DAYBUE commercialization. The license's detailed continuing obligations or independent legal enforceability have not been adjudicated.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "NEUREN_WORLDWIDE_EXCLUSIVE_LICENSE_WITH_MILESTONE_AND_ROYALTY_OBLIGATIONS",
+        "DAYBUE_RETT_US_APPROVAL_GRANTED_2023_03_10_NOT_FUTURE_PDUFA",
+        "TWO_TERMINATED_STUDIES_HISTORICAL_NO_PENDING_FDA_ACTION",
+        "FDA_APPLICATION_FOR_ANOTHER_INDICATION_NOT_ESTABLISHED"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_8_K",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312523188839/d533087d8k.htm",
+          "assertion": "July 13 2023 8-K describes amended and restated global exclusive Neuren licensing of trofinetide, for all indications, and attendant commercial arrangements."
+        },
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1070494/000119312526333243/acad-20260630.htm",
+          "assertion": "2026 Q2 10-Q documents ongoing commercial DAYBUE trofinetide for FDA-approved Rett syndrome, originally approved March 10 2023; no 2026 pending FDA PDUFA for these historic studies."
+        },
+        {
+          "type": "ISSUER_PARTNER_RIGHTS_DESCRIPTION",
+          "url": "https://www.neurenpharma.com/products",
+          "assertion": "Licensor Neuren states Acadia holds a worldwide exclusive trofinetide license; also notes the March 2023 prior FDA approval."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_LILAC2",
+          "url": "https://clinicaltrials.gov/study/NCT04776746",
+          "assertion": "Acadia-sponsored trofinetide Rett syndrome open-label extension LILAC-2; sponsor terminated after commercial approval to switch patients to commercial product."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_DAFFODIL",
+          "url": "https://clinicaltrials.gov/study/NCT04988867",
+          "assertion": "Acadia-sponsored trofinetide Rett syndrome DAFFODIL study in girls 2-5; sponsor terminated after FDA marketing approval and redirected patients to commercial trofinetide."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT04776746",
+          "study": "LILAC-2",
+          "indication": "Rett syndrome; long-term open-label trofinetide treatment",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04776746",
+          "regulatoryContext": "RETT_APPROVED_2023_HISTORICAL_TERMINATED_EXTENSION_NO_CURRENT_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "TERMINATED"
+        },
+        {
+          "nctId": "NCT04988867",
+          "study": "DAFFODIL",
+          "indication": "Rett syndrome in girls aged 2-5 years; trofinetide long-term safety",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04988867",
+          "regulatoryContext": "RETT_APPROVED_2023_HISTORICAL_TERMINATED_STUDY_NO_CURRENT_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "TERMINATED"
+        }
+      ]
+    },
+    {
+      "issuerTicker": "IOVA",
+      "issuerCik": "0001425205",
+      "asset": "lifileucel",
+      "assetAliases": [
+        "AMTAGVI",
+        "LN-144"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_NIH_NCI_MIXED_EXCLUSIVE_AND_NONEXCLUSIVE_TIL_PATENT_LICENSES",
+      "rightsClaimSummary": "Iovance 2026 Q2 SEC report discloses NIH TIL patent licensing with exclusive, co-exclusive and non-exclusive elements and NCI collaboration. Its TILVANCE-301 registrational study investigates lifileucel with pembrolizumab in untreated advanced melanoma. Prior AMTAGVI approval is for previously treated melanoma and does not approve this frontline combination.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "NIH_TIL_LICENSE_MIXED_EXCLUSIVE_COEXCLUSIVE_NONEXCLUSIVE_SCOPES",
+        "NIH_ROYALTIES_CLINICAL_REGULATORY_MILESTONES_AND_TERMINATION_CONDITIONS",
+        "NCI_CRADA_REQUIRES_RESEARCH_SUPPORT_THROUGH_AUGUST_2029",
+        "FRONTLINE_MELANOMA_COMBINATION_REQUIRES_SEPARATE_FDA_EVIDENCE",
+        "EXISTING_AMTAGVI_APPROVAL_OTHER_TREATMENT_SETTING_NO_CURRENT_PDUFA"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1425205/000110465926091716/iova-20260630x10q.htm",
+          "assertion": "June 2026 Iovance 10-Q describes NIH/NCI TIL IP licenses, milestone and royalty liabilities, termination terms, and the ongoing TILVANCE-301 frontline advanced melanoma lifileucel+ pembrolizumab confirmatory Phase 3 study."
+        },
+        {
+          "type": "ISSUER_TRIAL_PROGRAM_PAGE",
+          "url": "https://www.iovance.com/clinical-trials/",
+          "assertion": "Iovance lists TILVANCE-301 as Phase 3 lifileucel+pembrolizumab frontline melanoma trial, with separate lung and sarcoma programs."
+        },
+        {
+          "type": "ISSUER_TRIAL_ID_PAGE",
+          "url": "https://www.tilcelltherapy.com/clinical-trials/tilvance-301-advanced-melanoma/",
+          "assertion": "Company's TILVANCE-301 detail page directly identifies NCT05727904 and compares lifileucel+pembrolizumab against pembrolizumab alone."
+        },
+        {
+          "type": "NCI_CLINICAL_TRIAL_PRIMARY_RESEARCH",
+          "url": "https://www.cancer.gov/research/participate/clinical-trials-search/v?id=NCI-2023-08958",
+          "assertion": "NCI identifies NCT05727904, IOV-MEL-301 and TILVANCE-301 together; current investigational combination is not an established new FDA action date."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_TILVANCE301",
+          "url": "https://clinicaltrials.gov/study/NCT05727904",
+          "assertion": "NCT05727904 is a Phase 3 melanoma lifileucel plus pembrolizumab comparison trial sponsored by Iovance."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT05727904",
+          "study": "TILVANCE-301 (IOV-MEL-301)",
+          "indication": "Untreated unresectable or metastatic melanoma, lifileucel plus pembrolizumab versus pembrolizumab alone",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05727904",
+          "regulatoryContext": "FRONTLINE_MELANOMA_PHASE3_CONFIRMATORY_NO_ACCEPTED_NEW_BLA_OR_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "RECRUITING"
+        }
+      ]
+    }
+  ]
+}

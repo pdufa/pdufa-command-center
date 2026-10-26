@@ -21,17 +21,19 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         self.assertEqual(len(r["trials"]), 741)
         self.assertEqual(len(self.by_id), 741)
         self.assertEqual(len({x["ticker"] for x in r["trials"]}), 130)
-        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 16)
-        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 725)
-        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 4)
-        self.assertEqual(r["asset_program_dossiers"], 5)
+        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 19)
+        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 722)
+        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 6)
+        self.assertEqual(r["asset_program_dossiers"], 7)
 
-    def test_exact_16_nct_claim_links_and_no_other_unearned_claims(self):
+    def test_exact_19_nct_claim_links_and_no_other_unearned_claims(self):
         expected = {
             "ABVX": {"NCT05507203", "NCT05507216", "NCT05535946"},
             "ACHV": {"NCT04576949", "NCT05206370", "NCT06435221", "NCT07392125"},
             "MIRM": {"NCT06553768", "NCT06907290", "NCT07200908", "NCT07454837"},
             "CYTK": {"NCT04848506", "NCT05186818", "NCT05767346", "NCT06081894", "NCT06412666"},
+            "ACAD": {"NCT04776746", "NCT04988867"},
+            "IOVA": {"NCT05727904"},
         }
         for ticker, ids in expected.items():
             actual = {x["nct_id"] for x in self.report["trials"]
@@ -41,7 +43,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             for nct in ids:
                 self.assertTrue(self.by_id[nct]["source_document_links_cataloged"])
         self.assertEqual(sum(not x["source_document_links_cataloged"]
-                             for x in self.report["trials"]), 725)
+                             for x in self.report["trials"]), 722)
 
     def test_no_trial_has_unearned_legal_or_fda_promotion(self):
         r = self.report
@@ -107,16 +109,53 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
 
     def test_cytk_fake_or_stale_pdufa_claim_is_rejected(self):
         original = rights.collect_cases()
-        self.assertEqual(len(original), 5)
+        self.assertEqual(len(original), 7)
         bad = [dict(p) for p in original]
-        cy = dict(bad[-1])
+        cy_index = next(i for i, p in enumerate(bad) if p["issuerTicker"] == "CYTK")
+        cy = dict(bad[cy_index])
         links = [dict(x) for x in cy["trialLinks"]]
         maple = next(x for x in links if x["nctId"] == "NCT05767346")
         maple["issuerReportedCurrentPdufaDate"] = "2026-09-01"
         cy["trialLinks"] = links
-        bad[-1] = cy
+        bad[cy_index] = cy
         with patch.object(rights, "collect_cases", return_value=bad):
             with self.assertRaisesRegex(ValueError, "PDUFA"):
+                rights.build()
+
+    def test_acad_terminated_rett_studies_are_not_future_pdufa_candidates(self):
+        for nct in ("NCT04776746", "NCT04988867"):
+            x = self.by_id[nct]
+            self.assertEqual(x["ticker"], "ACAD")
+            self.assertEqual(x["linked_asset"], "trofinetide")
+            self.assertEqual(x["saved_registry_status"], "TERMINATED")
+            self.assertIn("TERMINATED", x["regulatory_context"])
+            self.assertIn("NEUREN_WORLDWIDE_EXCLUSIVE_LICENSE_WITH_MILESTONE_AND_ROYALTY_OBLIGATIONS", x["material_risk_flags"])
+            self.assertIsNone(x["issuer_reported_upcoming_pdufa_target"])
+            self.assertIsNone(x["current_pdufa_target_date"])
+            self.assertIsNone(x["qualified_pipeline"])
+
+    def test_iova_tilvance_active_trial_has_mixed_nih_rights_and_no_pdufa(self):
+        x = self.by_id["NCT05727904"]
+        self.assertEqual(x["ticker"], "IOVA")
+        self.assertEqual(x["linked_asset"], "lifileucel")
+        self.assertEqual(x["saved_registry_status"], "RECRUITING")
+        self.assertIn("FRONTLINE_MELANOMA", x["regulatory_context"])
+        self.assertIn("NIH_TIL_LICENSE_MIXED_EXCLUSIVE_COEXCLUSIVE_NONEXCLUSIVE_SCOPES", x["material_risk_flags"])
+        self.assertIn("FRONTLINE_MELANOMA_COMBINATION_REQUIRES_SEPARATE_FDA_EVIDENCE", x["material_risk_flags"])
+        self.assertIsNone(x["issuer_reported_upcoming_pdufa_target"])
+        self.assertIsNone(x["current_pdufa_target_date"])
+        self.assertIsNone(x["qualified_pipeline"])
+
+    def test_acad_iova_saved_registry_status_cannot_be_falsified(self):
+        original = rights.collect_cases()
+        changed = [dict(p) for p in original]
+        affected = dict(changed[-2])
+        trial_links = [dict(x) for x in affected["trialLinks"]]
+        trial_links[0]["expectedRegistryStatus"] = "RECRUITING"
+        affected["trialLinks"] = trial_links
+        changed[-2] = affected
+        with patch.object(rights, "collect_cases", return_value=changed):
+            with self.assertRaisesRegex(ValueError, "PDUFA evidence check failed"):
                 rights.build()
 
     def test_wrong_source_identity_and_duplicate_nct_are_blocked(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build a conservative 741-record *research* overlay for issuer rights claims.
 
-Three issuer disclosure cases across four programs are source pointers, not
+Issuer disclosure cases across several programs are source pointers, not
 independent contract/legal determinations. No individual trial, drug, company or
 ticker may be silently promoted to PDUFA eligibility. The registry census is
 the immutable denominator and unknown remains an explicit state.
@@ -20,6 +20,7 @@ ISSUERS = ROOT / "new-platform/frontend/public/phase3-census-sources-2026-10-26.
 ABVX_CASE = ROOT / "data/research_abvx_obefazimod_rights_2026-10-26.json"
 OTHER_CASES = ROOT / "data/research_issuer_rights_claims_achv_mirm_2026-10-26.json"
 CYTK_CASE = ROOT / "data/research_issuer_rights_claims_cytk_2026-10-26.json"
+ACAD_IOVA_CASE = ROOT / "data/research_issuer_rights_claims_acad_iova_2026-10-26.json"
 EVIDENCE_AS_OF = "2026-10-26"
 
 def load_originals():
@@ -86,12 +87,20 @@ def collect_cases():
         or cytk.get("asOf") != EVIDENCE_AS_OF
         or len(cytk.get("programs", [])) != 1):
         raise ValueError("CYTK aficamten original rights and sNDA research case missing")
-    return [old_program] + newer["programs"] + cytk["programs"]
+    acad_iova = json.loads(ACAD_IOVA_CASE.read_text(encoding="utf-8"))
+    if (acad_iova.get("scope") != "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY"
+        or acad_iova.get("schemaVersion") != 1
+        or acad_iova.get("asOf") != EVIDENCE_AS_OF
+        or len(acad_iova.get("programs", [])) != 2
+        or {p["issuerTicker"] for p in acad_iova["programs"]} != {"ACAD", "IOVA"}):
+        raise ValueError("ACAD/IOVA original issuer rights and regulatory research cases missing")
+    return [old_program] + newer["programs"] + cytk["programs"] + acad_iova["programs"]
 
 
 def build():
     trials, issuers = load_originals()
     claims = {}
+    originals_by_id = {t["nct_id"]: t for t in trials}
     programs = collect_cases()
     ticker_claims = set()
     for p in programs:
@@ -118,7 +127,9 @@ def build():
                     or nct not in issuers[ticker]["nctIds"]
                     or link["trialSourceUrl"] != "https://clinicaltrials.gov/study/" + nct
                     or not link.get("indication") or not link.get("study")
-                    or link.get("currentPdufaTargetVerified") is not None):
+                    or link.get("currentPdufaTargetVerified") is not None
+                    or (link.get("expectedRegistryStatus") is not None and
+                        link["expectedRegistryStatus"] != originals_by_id[nct]["status"])):
                 raise ValueError("NCT/asset/indication or PDUFA evidence check failed")
             sponsor_pdufa = link.get("issuerReportedCurrentPdufaDate")
             if sponsor_pdufa is not None:
@@ -153,6 +164,7 @@ def build():
         linked = claims.get(t["nct_id"])
         entry = {
             "nct_id": t["nct_id"], "ticker": t["ticker"],
+            "saved_registry_status": t["status"],
             "registry_lead_sponsor": t["company"], "registry_url": t["source_url"],
             "research_claim_status": ("ISSUER_DISCLOSED_ASSET_RIGHTS_CLAIM_LINKED"
                                       if linked else "NO_TRIAL_SPECIFIC_RIGHTS_CLAIM_REVIEWED"),
@@ -215,7 +227,7 @@ if __name__ == "__main__":
     print("Historical trials with issuer rights-claim evidence linked:", result["issuer_rights_claim_evidence_linked_trials"], "/741")
     print("Historical trials not yet rights-claim reviewed:", result["claim_evidence_missing_or_unreviewed_trials"], "/741")
     print("Issuers with source-linked disclosures:", result["issuers_with_rights_claim_dossiers"], "/130")
-    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/5 researched")
+    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/7 researched")
     print("Future PDUFA dates reported by issuer but not independently by FDA:",
           result["issuer_reported_future_pdufa_event_count"], "/741")
     print("Independently adjudicated legal rights: 0/741; independently verified current FDA/PDUFA targets: 0/741")
