@@ -63,6 +63,7 @@ class IsolatedScientificReadOnlyCredentialTests(unittest.TestCase):
             "/api/scientific-assessment/pilot/keynote024",
             "/api/scientific-assessment/dossier",
             "/api/scientific-assessment/captured-source-manifest/{nct_id}",
+            "/api/scientific-assessment/pilot/reviewer-progress/{nct_id}",
         }
         permitted_seen = set()
         for route in main.app.routes:
