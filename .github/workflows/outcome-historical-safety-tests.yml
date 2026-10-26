@@ -107,6 +107,26 @@ jobs:
             tests/test_hop_fda_pdf_date_review_examples.py
       - name: Test FDA action-event normalization and fail-closed gate
         run: python -m pytest -q test_outcome_fda_action_events.py test_outcome_fda_research_action_fixtures.py test_outcome_fda_research_export.py test_outcome_fda_review_timeline_evidence.py test_outcome_fda_review_timeline_export.py test_outcome_fda_receipt_boundary_gap_report.py test_outcome_fda_receipt_asof_audit.py test_outcome_fda_research_feature_projection.py test_outcome_fda_dual_readiness_grades.py test_outcome_fda_readiness_panel.py
+      - name: Validate machine-readable OUTCOME readiness payload
+        run: |
+          python outcome_fda_readiness_panel.py > /tmp/outcome_readiness_panel.json
+          python outcome_fda_dual_readiness_grades.py > /tmp/outcome_readiness_grades.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          panel = json.loads(Path('/tmp/outcome_readiness_panel.json').read_text())
+          grades = json.loads(Path('/tmp/outcome_readiness_grades.json').read_text())
+          assert panel['display_role'] == 'research_status_only'
+          assert panel['primary']['prediction_ready'] is False
+          assert panel['primary']['prediction_probability'] is None
+          assert panel['primary']['documented_timeline_numerator'] == 17
+          assert panel['primary']['selected_action_denominator'] == 20
+          assert panel['secondary']['initially_collapsed'] is True
+          assert panel['secondary']['blocking_condition_count'] == 5
+          assert grades['blocking_gate_manifest']['all_prediction_gates_passed'] is False
+          assert grades['prediction_grade']['model_eligible_records'] == 0
+          print('Readiness JSON contract validated; no model authorization')
+          PY
       - name: Confirm published audit has no model clearance
         working-directory: new-platform/backend
         run: |
