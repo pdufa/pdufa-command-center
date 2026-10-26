@@ -156,3 +156,95 @@ def test_per_batch_summary_never_claims_reviewer_identity_or_fda_decision():
     assert all(x["reviewer_pairs_completed"] == 0 for x in summary["per_batch_aggregate_counts"])
     assert all(x["verified_original_review_cycles"] == 0 for x in summary["per_batch_aggregate_counts"])
     assert sum(x["reference_count"] for x in summary["per_batch_aggregate_counts"]) == 124
+
+def _write_synthetic_private_batches(tmp_path):
+    import json
+    from app.hop_fda_private_review_custody import MANIFEST_NAME
+    folder = tmp_path / "private-fda-batches"
+    folder.mkdir(mode=0o700)
+    folder.chmod(0o700)
+    first, second = realistic_synthetic_queue()
+    batches, audit = prepare_private_review_batches(
+        first, second, expected_references=124, expected_groups=101,
+    )
+    for batch in batches:
+        for role, key in (
+            ("FIRST", "first_blank_reviewer_sources"),
+            ("SECOND", "second_blank_reviewer_sources"),
+        ):
+            path = folder / (batch["batch_id"] + "_" + role + "_unreviewed.json")
+            path.write_text(json.dumps(batch[key], indent=2, sort_keys=True) + "\n",
+                            encoding="utf-8")
+            path.chmod(0o600)
+    assert not (folder / MANIFEST_NAME).exists()
+    return folder
+
+
+def test_private_blank_reviewer_custody_detects_changed_bytes_or_missing_a_b(tmp_path):
+    from app.hop_fda_private_review_custody import (
+        MANIFEST_NAME, save_private_blank_batch_manifest,
+        verify_private_blank_batch_manifest,
+    )
+    folder = _write_synthetic_private_batches(tmp_path)
+    inventory = save_private_blank_batch_manifest(folder)
+    assert inventory["batch_count"] == 7
+    assert inventory["file_count"] == 14
+    assert inventory["published_letter_references"] == 124
+    assert inventory["research_groups"] == 101
+    assert inventory["reviewer_records_per_role"] == 124
+    assert inventory["model_eligible_records"] == 0
+    assert inventory["prediction_probability"] is None
+    assert all("download.open.fda.gov" not in str(x) for x in inventory["files"])
+    result = verify_private_blank_batch_manifest(folder)
+    assert result["private_role_files_integrity_checked"] == 14
+    assert result["original_fda_review_cycles_verified"] == 0
+    with pytest.raises(FileExistsError):
+        save_private_blank_batch_manifest(folder)
+
+    # A previously valid JSON file with modified *bytes* fails the inventory.
+    path = folder / "APPLICATION_ID-01_FIRST_unreviewed.json"
+    old = path.read_bytes()
+    path.write_bytes(old + b"\n")
+    with pytest.raises(ValueError, match="differs from saved"):
+        verify_private_blank_batch_manifest(folder)
+    path.write_bytes(old)
+    assert verify_private_blank_batch_manifest(folder)["source_batch_count"] == 7
+
+    # A blank FDA role is not allowed to disappear or be swapped.
+    path.unlink()
+    with pytest.raises(ValueError, match="pair"):
+        verify_private_blank_batch_manifest(folder)
+    assert (folder / MANIFEST_NAME).exists()
+
+
+def test_private_custody_checks_protect_baseline_and_paths(tmp_path):
+    from app.hop_fda_private_review_custody import (
+        MANIFEST_NAME, save_private_blank_batch_manifest,
+        verify_private_blank_batch_manifest,
+    )
+    folder = _write_synthetic_private_batches(tmp_path)
+    target = folder / "AMBIGUOUS_ID-01_SECOND_unreviewed.json"
+    target.chmod(0o644)
+    with pytest.raises(ValueError, match="permissions"):
+        save_private_blank_batch_manifest(folder)
+    target.chmod(0o600)
+    save_private_blank_batch_manifest(folder)
+    baseline = folder / MANIFEST_NAME
+    baseline.write_text("{}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="differs from saved"):
+        verify_private_blank_batch_manifest(folder)
+
+
+def test_private_custody_rejects_reviewed_claims_and_extra_files(tmp_path):
+    import json
+    from app.hop_fda_private_review_custody import save_private_blank_batch_manifest
+    folder = _write_synthetic_private_batches(tmp_path)
+    source = folder / "APPLICATION_ID-01_FIRST_unreviewed.json"
+    rows = json.loads(source.read_text(encoding="utf-8"))
+    rows[0]["reviewer_token"] = "claimedReviewerId"
+    source.write_text(json.dumps(rows), encoding="utf-8")
+    with pytest.raises(ValueError, match="not blank"):
+        save_private_blank_batch_manifest(folder)
+    source.unlink()
+    with pytest.raises(ValueError):
+        save_private_blank_batch_manifest(folder)
