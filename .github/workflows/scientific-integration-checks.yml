@@ -114,3 +114,8 @@ jobs:
               assert status == 401, (path, status)
           print("PASS: Google sign-in page served; anonymous operator/science calls denied")
           PY
+
+      - name: Classify isolated captured-source route anonymously, without credentials or scientific attestation
+        shell: bash
+        working-directory: new-platform/backend
+        run: python -m app.scientific_captured_route_probe
