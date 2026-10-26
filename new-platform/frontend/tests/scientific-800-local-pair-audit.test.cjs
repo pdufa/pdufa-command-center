@@ -191,6 +191,6 @@ test("UI uses browser-local untrusted CSVs; no backend verification or grading",
   assert.match(ui, /compareScientific800ReviewerCsvs\(/);
   assert.match(ui, /Reviewers are NOT authenticated/);
   assert.match(ui, /file\.text\(\)/);
-  assert.match(ui, /sourceBytesVerified/); // no source verification asserted
+  assert.match(ui, /Sources and signatures are NOT verified/); // no authenticity claim asserted
   assert.doesNotMatch(ui, /runScan\(|placeTrade\(|saveGrade\(/);
 });
