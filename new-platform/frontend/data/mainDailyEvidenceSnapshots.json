@@ -2,9 +2,9 @@
   {
     "schemaVersion": 1,
     "asOf": "2026-10-26",
-    "recordedAt": "2026-10-26T22:25:16.789Z",
+    "recordedAt": "2026-10-26T23:07:12.999Z",
     "timezone": "America/Los_Angeles",
-    "scope": "MAIN/core-platform-gates/v1",
+    "scope": "MAIN/core-platform-gates/v2",
     "inventorySource": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
     "observations": [
       {
@@ -173,28 +173,29 @@
       {
         "id": "final-acceptance.code",
         "status": "Code present",
-        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
-        "note": "Requires production verification, complete science evidence and validated outcomes"
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/44c2b45a4d5d7b853e1544a31d87cba43fcbbcf4/docs/main-technical-installation-scope-20261025.md",
+        "note": "Technical production acceptance remains open. SCIENCE and OUTCOME readiness are separate research requirements; no accepted gate is inferred by correcting this dependency."
       },
       {
         "id": "final-acceptance.deployment",
         "status": "Preview READY",
-        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
-        "note": "Requires production verification, complete science evidence and validated outcomes"
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/44c2b45a4d5d7b853e1544a31d87cba43fcbbcf4/docs/main-technical-installation-scope-20261025.md",
+        "note": "Technical production acceptance remains open. SCIENCE and OUTCOME readiness are separate research requirements; no accepted gate is inferred by correcting this dependency."
       },
       {
         "id": "final-acceptance.runtime",
         "status": "Not verified",
-        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
-        "note": "Requires production verification, complete science evidence and validated outcomes"
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/44c2b45a4d5d7b853e1544a31d87cba43fcbbcf4/docs/main-technical-installation-scope-20261025.md",
+        "note": "Technical production acceptance remains open. SCIENCE and OUTCOME readiness are separate research requirements; no accepted gate is inferred by correcting this dependency."
       },
       {
         "id": "final-acceptance.evidence",
         "status": "Not verified",
-        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
-        "note": "Requires production verification, complete science evidence and validated outcomes"
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/44c2b45a4d5d7b853e1544a31d87cba43fcbbcf4/docs/main-technical-installation-scope-20261025.md",
+        "note": "Technical production acceptance remains open. SCIENCE and OUTCOME readiness are separate research requirements; no accepted gate is inferred by correcting this dependency."
       }
     ],
-    "productionCommit": "dbf786766a3f5c39f65c44c452a01422a431df1f"
+    "productionCommit": "dbf786766a3f5c39f65c44c452a01422a431df1f",
+    "policySource": "https://github.com/pdufa/pdufa-command-center/blob/44c2b45a4d5d7b853e1544a31d87cba43fcbbcf4/docs/main-technical-installation-scope-20261025.md"
   }
 ]

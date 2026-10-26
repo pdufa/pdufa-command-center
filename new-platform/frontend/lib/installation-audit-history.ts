@@ -5,6 +5,7 @@ import type { AuditGroup, AuditTotals } from "./installation-audit-summary";
  * Values were read from installation-audit/page.tsx at the exact merged ref.
  */
 export const AUDIT_BASELINE = {
+  criteriaVersion: "installation-acceptance-v1",
   commit: "062ea740922d767148bc99565c4af43bd6eb43fa",
   committedAt: "2026-10-26T00:05:00Z",
   url: "https://github.com/pdufa/pdufa-command-center/blob/062ea740922d767148bc99565c4af43bd6eb43fa/new-platform/frontend/app/installation-audit/page.tsx",
@@ -18,6 +19,10 @@ export const AUDIT_BASELINE = {
     implementationSignals: 10, partial: 7, unverified: 42, excluded: 1,
   },
 } as const;
+
+// MAIN final acceptance now follows the documented technical-only policy.
+// Matching dimensions alone cannot make the former mixed policy comparable.
+export const CURRENT_AUDIT_CRITERIA_VERSION: string = "installation-acceptance-v2";
 
 export type AuditChange = {
   fullyAccepted: number;
@@ -37,7 +42,7 @@ const valid = (t: AuditTotals) =>
  * report that the underlying requirement set changed instead of guessing.
  */
 export function compareAuditToBaseline(groups: readonly AuditGroup[], total: AuditTotals): AuditChange | null {
-  if (!valid(total) ||
+  if (CURRENT_AUDIT_CRITERIA_VERSION !== AUDIT_BASELINE.criteriaVersion || !valid(total) ||
       total.sections !== AUDIT_BASELINE.total.sections ||
       total.gates !== AUDIT_BASELINE.total.gates ||
       total.excluded !== AUDIT_BASELINE.total.excluded ||

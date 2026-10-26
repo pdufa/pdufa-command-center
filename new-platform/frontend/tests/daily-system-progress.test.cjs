@@ -11,7 +11,7 @@ const inventory = require("../data/mainAcceptanceInventory.json");
 const observations = require("../data/mainDailyEvidenceSnapshots.json");
 const proof = require("../data/mainProductionDeploymentEvidence.json");
 const copy = x => structuredClone(x);
-const count = (completed,total=31,scope="MAIN/core-platform-gates/v1") => ({completed,total,scope,evidenceUri:"https://example.org/evidence"});
+const count = (completed,total=31,scope="MAIN/core-platform-gates/v2") => ({completed,total,scope,evidenceUri:"https://example.org/evidence"});
 const snapshot = (day,main) => ({asOf:day,systems:{SCIENCE:null,OUTCOME:null,MAIN:main}});
 
 test("the first MAIN baseline reconciles all 31 gates without claiming a completed section",()=>{
@@ -28,6 +28,24 @@ test("the first MAIN baseline reconciles all 31 gates without claiming a complet
   assert.equal(progress.etaDays,null);
   assert.equal(calculateProgress("SCIENCE",null,current).percent,null);
   assert.equal(calculateProgress("OUTCOME",null,current).percent,null);
+});
+
+test("correcting the acceptance policy starts v2 without inventing progress or comparing it to v1",()=>{
+  assert.equal(inventory.scope,"MAIN/core-platform-gates/v2");
+  assert.equal(observations[0].policySource,inventory.policySource);
+  const legacy={...inventory,scope:"MAIN/core-platform-gates/v1"};
+  assert.equal(auditMainDailyEvidence(legacy,observations,proof).valid,false);
+  const previous=snapshot("2026-10-25",count(1,31,"MAIN/core-platform-gates/v1"));
+  const current=MAIN_DAILY_EVIDENCE.history.at(-1);
+  const result=calculateProgress("MAIN",previous,current);
+  assert.equal(result.status,"BASELINE_ONLY");assert.equal(result.changePp,null);
+  assert.equal(result.etaDays,null);assert.equal(result.percent,100/31);
+  const wrongInventory=copy(inventory);
+  wrongInventory.policySource=wrongInventory.policySource.replace("44c2b45a4d5d7b853e1544a31d87cba43fcbbcf4","main");
+  assert.equal(auditMainDailyEvidence(wrongInventory,observations,proof).valid,false);
+  const wrongSnapshot=copy(observations);
+  wrongSnapshot[0].policySource="https://example.org/other-policy";
+  assert.equal(auditMainDailyEvidence(inventory,wrongSnapshot,proof).valid,false);
 });
 
 test("fixed MAIN identities and original exclusion cannot be removed, duplicated or reassigned",()=>{

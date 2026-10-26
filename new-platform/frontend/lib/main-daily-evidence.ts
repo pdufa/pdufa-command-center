@@ -4,7 +4,9 @@ import deployment from "../data/mainProductionDeploymentEvidence.json";
 import { AUDIT_GROUPS } from "./installation-audit-summary";
 import type { DatedSnapshot } from "./daily-system-progress";
 
-const scope = "MAIN/core-platform-gates/v1";
+export const MAIN_DAILY_SCOPE = "MAIN/core-platform-gates/v2";
+const scope = MAIN_DAILY_SCOPE;
+const policySource = "https://github.com/pdufa/pdufa-command-center/blob/44c2b45a4d5d7b853e1544a31d87cba43fcbbcf4/docs/main-technical-installation-scope-20261025.md";
 const stages = ["code", "deployment", "runtime", "evidence"] as const;
 const states = new Set(["Verified", "Code present", "Preview READY", "Partial", "Not verified", "Not audited"]);
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -37,7 +39,7 @@ export function auditMainDailyEvidence(inventoryInput: unknown, snapshotsInput: 
   const empty: MainEvidenceAudit = {valid:false,reason:"MAIN evidence not verified",history:[],verified:0,signals:0,partial:0,unverified:0,total:0,acceptedSections:0,sections:0,observations:[]};
   try {
     const inv = record(inventoryInput);
-    if (inv.schemaVersion !== 1 || inv.scope !== scope || !Array.isArray(inv.gates) || inv.gates.length !== 31 || gateIds.length !== 31) throw new Error("Frozen 31-gate scope changed");
+    if (inv.schemaVersion !== 1 || inv.scope !== scope || inv.policySource !== policySource || !Array.isArray(inv.gates) || inv.gates.length !== 31 || gateIds.length !== 31) throw new Error("Frozen 31-gate scope changed");
     const source = inv.source;
     if (typeof source !== "string" || !/^https:\/\/github\.com\/pdufa\/pdufa-command-center\/blob\/[0-9a-f]{40}\/new-platform\/frontend\/app\/installation-audit\/page\.tsx$/.test(source)) throw new Error("Inventory needs an immutable source");
     for (const [i, expected] of gateIds.entries()) {
@@ -64,7 +66,7 @@ export function auditMainDailyEvidence(inventoryInput: unknown, snapshotsInput: 
       const row = record(input);
       const recordedMs = timestamp(row.recordedAt);
       if (recordedMs > Date.now()) throw new Error("Future-dated observation");
-      if (row.schemaVersion !== 1 || row.scope !== scope || row.inventorySource !== source || row.timezone !== "America/Los_Angeles" || row.asOf !== pacificDay(recordedMs) || typeof row.asOf !== "string" || row.asOf <= previousDay) throw new Error("Snapshot date, order or inventory mismatch");
+      if (row.schemaVersion !== 1 || row.scope !== scope || row.policySource !== policySource || row.inventorySource !== source || row.timezone !== "America/Los_Angeles" || row.asOf !== pacificDay(recordedMs) || typeof row.asOf !== "string" || row.asOf <= previousDay) throw new Error("Snapshot date, order or inventory mismatch");
       if (!Array.isArray(row.observations) || row.observations.length !== gateIds.length) throw new Error("Complete per-gate observations required");
       let verified = 0, signals = 0, partial = 0, unverified = 0;
       const observations: MainEvidenceAudit["observations"] = [];
@@ -78,7 +80,8 @@ export function auditMainDailyEvidence(inventoryInput: unknown, snapshotsInput: 
           if (expected.id !== "core-platform.deployment" || observation.proofId !== proof.id || observation.evidenceUri !== proof.evidenceUri || row.productionCommit !== proof.commit || proofMs > recordedMs || pacificDay(proofMs) !== row.asOf) throw new Error("Verified gate lacks exact dated proof");
           verified++;
         } else {
-          if (observation.evidenceUri !== source || observation.proofId !== undefined) throw new Error("Unverified status source mismatch");
+          const expectedSource = expected.component === "Final Acceptance" ? policySource : source;
+          if (observation.evidenceUri !== expectedSource || observation.proofId !== undefined) throw new Error("Unverified status source mismatch");
           if (observation.status === "Code present" || observation.status === "Preview READY") signals++;
           else if (observation.status === "Partial") partial++;
           else unverified++;

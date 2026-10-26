@@ -28,6 +28,7 @@ export default function DailySystemProgress() {
         {s.name === "MAIN" && MAIN_DAILY_EVIDENCE.valid ? <>
           <p><strong>{MAIN_DAILY_EVIDENCE.verified}/{MAIN_DAILY_EVIDENCE.total} gates verified</strong> · {MAIN_DAILY_EVIDENCE.total-MAIN_DAILY_EVIDENCE.verified}/{MAIN_DAILY_EVIDENCE.total} remain open.</p>
           <p style={{fontSize:13}}>Saved baseline: <time dateTime={current!.asOf}>{current!.asOf}</time> · Pacific. {MAIN_DAILY_EVIDENCE.acceptedSections}/{MAIN_DAILY_EVIDENCE.sections} sections fully accepted. {progress.changePp === null ? "Daily change awaits a comparable prior-day snapshot." : "Daily change compares verified gates."}</p>
+          <p style={{fontSize:13}}>Technical scope corrected: SCIENCE and OUTCOME readiness are tracked separately. This establishes a new baseline with the same 31 gate identities; no completion increase is inferred from the scope correction.</p>
           <details><summary>Evidence and remaining MAIN checks</summary>
             <p>{MAIN_DAILY_EVIDENCE.signals} code/deployment signals · {MAIN_DAILY_EVIDENCE.partial} partial · {MAIN_DAILY_EVIDENCE.unverified} unverified. Only the exact production deployment gate is verified by this baseline.</p>
             <p>This dated snapshot does not automatically refresh. A new observation requires its own dated proof; the existing nightly scan schedule is unchanged.</p>

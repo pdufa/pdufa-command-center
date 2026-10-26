@@ -61,7 +61,7 @@ test("current 15 requirements reconcile to every one of 59 applicable gates",()=
   for(const item of items) assert.equal(isAccepted(item),false);
 });
 
-test("historical comparison is pinned to real 2026-10-25 baseline and shows only evidenced changes",()=>{
+test("historical snapshot stays pinned and its old mixed-scope criteria cannot produce a current delta",()=>{
   assert.equal(AUDIT_BASELINE.commit,"062ea740922d767148bc99565c4af43bd6eb43fa");
   assert.equal(AUDIT_BASELINE.total.gates,59);
   assert.equal(AUDIT_BASELINE.total.sections,15);
@@ -73,9 +73,7 @@ test("historical comparison is pinned to real 2026-10-25 baseline and shows only
   assert.equal(AUDIT_BASELINE.groups.reduce((n,g)=>n+g.partial,0),7);
   assert.equal(AUDIT_BASELINE.groups.reduce((n,g)=>n+g.unverified,0),42);
   const {groups,total}=summarizeInstallationAudit(items);
-  assert.deepEqual(compareAuditToBaseline(groups,total),{
-    fullyAccepted:0,individuallyVerified:1,implementationSignals:-1,partial:2,unverified:-2,
-  });
+  assert.equal(compareAuditToBaseline(groups,total),null);
 });
 
 test("scope drift or unreconciled counts suppress historical comparison",()=>{

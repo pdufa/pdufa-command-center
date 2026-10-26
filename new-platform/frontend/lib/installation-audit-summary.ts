@@ -63,6 +63,16 @@ export function isAccepted(item: AuditItem): boolean {
   return codeReady && deployed && runtimeProven && evidenceProven;
 }
 
+/** MAIN technical acceptance is independent of the four research sections.
+ * Exclude Final Acceptance itself to avoid a circular prerequisite.
+ */
+export function mainTechnicalAcceptance(items: readonly AuditItem[]) {
+  const {groups} = summarizeInstallationAudit(items);
+  const required = [...groups[0].items.filter(item => item.component !== "Final Acceptance"), ...groups[2].items];
+  const open = required.filter(item => !isAccepted(item) || item.deployment !== "Verified");
+  return {ready:open.length === 0,accepted:required.length-open.length,total:required.length,open:open.map(item=>item.component)};
+}
+
 function summarize(items: readonly AuditItem[]): AuditTotals {
   const totals = newTotals();
   for (const item of items) {
