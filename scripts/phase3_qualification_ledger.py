@@ -56,7 +56,9 @@ def build_ledger(source_report):
         gates = {gate: UNKNOWN for gate in GATES}
         if matched:
             gates["registry_identity"] = "PASS"
-        # Registry phase or status changes require independent development review.\n        # Historical PHASE3 classification is not proof of an active program.\n        ledger.append({
+        # Registry phase or status changes require independent development review.
+        # Historical PHASE3 classification is not proof of an active program.
+        ledger.append({
             "nct_id": nct, "ticker": row["ticker"], "company": row["company"],
             "source_url": row["source_url"],
             "source_fetched_at_utc": record.get("fetched_at_utc") if record else None,
