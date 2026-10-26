@@ -110,6 +110,10 @@ export default function InstallationAudit() {
         records also have unavailable market-cap data. Missing entries are
         not counted as ineligible.</p>
       <p><Link href="/installation-audit/phase3-census">Explore all 741 trial records by company, ticker and registry status</Link>.
+        {" "}Each seven-gate checklist now includes exact saved company filing links,
+        market-cap source dates, general FDA research entry points and checking methods.
+        All 741 NCT/ticker mappings reconcile to 130 saved company records; this source-link
+        consistency check is separate from current external-source or Pipeline qualification.
         {" "}<a href={phase3Census.source} target="_blank" rel="noopener noreferrer">
         Open dated research source and methodology</a>. Full FDA designation totals
         and qualified Pipeline eligibility remain unknown; no candidates,
