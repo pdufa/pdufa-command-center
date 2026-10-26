@@ -1031,6 +1031,44 @@ def read_science_dossier(programId: str, list: str):
     raise HTTPException(status_code=404, detail="Verified SCIENCE dossier not published")
 
 
+@app.get("/api/science/source-inventory", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_source_inventory(programId: str):
+    """Inventory archived source records; never promote a source inventory to SCIENCE scoring."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program ID")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        # The registry's source key is not guaranteed to be a validated NCT link.
+        # Do not infer an NCT from ticker or drug; only report exact NCT identifiers.
+        nct_matches = sorted(set(re.findall(r"NCT[0-9]{8}", identity.source_key)))
+        records = []
+        for nct_id in nct_matches:
+            row = session.get(FullTrialRecord, nct_id)
+            if row:
+                records.append({
+                    "nctId": nct_id,
+                    "sha256": row.sha256,
+                    "fetchedAt": row.fetched_at.isoformat(),
+                    "hasArchivedPayload": True,
+                    "scientificEvidenceVerified": False,
+                })
+    return {
+        "programId": programId,
+        "schemaVersion": "science-source-inventory-v1",
+        "sourceRecords": records,
+        "exactNctIdsFromProgramSourceKey": nct_matches,
+        "linkageVerified": False,
+        "scientificDossierPublished": False,
+        "assessmentScoresAvailable": False,
+        "approvalProbability": None,
+        "note": "Archival source inventory only; no historical cutoff or clinical evidence verification performed.",
+    }
+
+
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
