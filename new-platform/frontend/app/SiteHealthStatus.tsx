@@ -81,7 +81,7 @@ export default function SiteHealthStatus() {
   const pending = loading && !report;
   const checks = stale ? report.checks.map(check => ({ ...check,
     state: check.state === "failed" ? "failed" as const : "unknown" as const,
-    summary: "Last verified · refresh required · " + check.summary })) : report?.checks || (pending ? UNVERIFIED_CHECKS.map(check => ({
+    summary: check.id === "email" ? "Count unavailable" : "Last verified · refresh required · " + check.summary })) : report?.checks || (pending ? UNVERIFIED_CHECKS.map(check => ({
       ...check, summary: "Checking…", detail: "Waiting for the live health checks to return.",
     })) : UNVERIFIED_CHECKS);
   const state = overallHealth(checks);
