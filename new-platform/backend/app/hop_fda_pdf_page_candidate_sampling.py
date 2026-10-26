@@ -39,9 +39,12 @@ def _official_url(value: str) -> bool:
         return False
 
 
-def select_pinned_pdf_sample(enriched_packets: list[dict], *, limit: int = 8) -> tuple[list[dict], dict]:
-    if type(limit) is not int or not 1 <= limit <= MAX_DOCUMENTS:
-        raise ValueError("Invalid number of PDF documents to inspect")
+def select_pinned_pdf_sample(
+    enriched_packets: list[dict], *, limit: int = 8, offset: int = 0
+) -> tuple[list[dict], dict]:
+    if (type(limit) is not int or not 1 <= limit <= MAX_DOCUMENTS
+            or type(offset) is not int or offset < 0):
+        raise ValueError("Invalid PDF sample limit or offset")
     if not isinstance(enriched_packets, list) or not enriched_packets:
         raise ValueError("Private FDA source packets missing")
     known = {}
@@ -113,8 +116,10 @@ def select_pinned_pdf_sample(enriched_packets: list[dict], *, limit: int = 8) ->
 
     # Source-index ordering is immaterial; exact PDF digest makes selection
     # reproducible and lets audits compare the same sample on later runs.
+    if offset >= len(known):
+        raise ValueError("Requested FDA PDF sample offset is outside pinned corpus")
     selected = []
-    for sha, source in sorted(known.items())[:limit]:
+    for sha, source in sorted(known.items())[offset:offset + limit]:
         selected.append({
             "historical_pdf_sha256": sha,
             "official_fda_pdf_url": source["url"],
@@ -126,6 +131,11 @@ def select_pinned_pdf_sample(enriched_packets: list[dict], *, limit: int = 8) ->
         "entire_private_evidence_packet_count": len(enriched_packets),
         "all_unique_previous_pdf_digests": len(known),
         "selected_unique_pdf_documents": len(selected),
+        "requested_sample_offset": offset,
+        "selected_sample_end_exclusive": offset + len(selected),
+        "selected_full_pdf_hashes_sha256": hashlib.sha256(
+            "\n".join(item["historical_pdf_sha256"] for item in selected).encode("ascii")
+        ).hexdigest(),
         "selected_published_letter_references": sum(
             item["published_letter_references_sharing_file"] for item in selected),
         "sample_selected_by": "SORTED_PRIOR_CONFIRMED_FULL_PDF_SHA256",
@@ -230,6 +240,9 @@ def aggregate_sample(sample_plan: dict, checked: list[dict], *, fetch_failures: 
     return {
         "status": "FDA_PRIOR_PUBLISHED_PDF_PAGE_SAMPLE_OBSERVED_NOT_ADJUDICATED",
         "sampled_unique_pdf_documents_requested": sample_plan["selected_unique_pdf_documents"],
+        "requested_sample_offset": sample_plan["requested_sample_offset"],
+        "selected_sample_end_exclusive": sample_plan["selected_sample_end_exclusive"],
+        "selected_full_pdf_hashes_sha256": sample_plan["selected_full_pdf_hashes_sha256"],
         "sampled_pdf_bytes_sha256_reconfirmed": len(checked),
         "sampled_pdf_documents_not_retrieved_or_parsed": fetch_failures,
         "source_sample_unique_pdf_population": sample_plan["all_unique_previous_pdf_digests"],
