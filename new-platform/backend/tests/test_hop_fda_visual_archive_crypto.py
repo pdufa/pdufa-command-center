@@ -160,3 +160,34 @@ def test_ephemeral_source_roundtrip_fails_closed_on_modified_manifest(tmp_path):
     first.write_text(json.dumps(rows), encoding="utf-8")
     with pytest.raises(ValueError):
         verify_ephemeral_roundtrip(image_dir, first, second)
+
+
+
+def test_pinned_real_fda_source_aead_roundtrip_still_never_adjudicated():
+    """Separate real source CI audit, not simulated clinical outcome labels."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    result = json.loads(
+        (root / "hop_fda_ephemeral_visual_archive_roundtrip_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    visual = json.loads(
+        (root / "hop_fda_nontext_page_visual_render_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    assert result["status"] == "FDA_PRIVATE_VISUAL_ARCHIVE_EPHEMERAL_ROUNDTRIP_VERIFIED"
+    assert result["source_png_images_verified"] == visual["total_private_png_rendered"] == 19
+    assert result["private_original_manifests_verified"] == 2
+    assert result["encrypted_archive_roundtrip_in_memory"] is True
+    assert result["authenticated_decryption_recovered_original_bytes"] is True
+    assert result["wrong_key_rejected"] is True
+    assert result["ephemeral_encryption_key_saved"] is False
+    assert result["encrypted_archive_exported"] is False
+    assert result["plain_source_data_exported"] is False
+    assert result["durable_reviewer_storage_configured"] is False
+    assert result["human_visual_reviews_completed"] == 0
+    assert result["independently_verified_fda_review_cycles"] == 0
+    assert result["model_eligible_records"] == 0
+    assert result["approval_rate"] is None
+    assert result["prediction_probability"] is None
+    assert result["predictive_accuracy"] is None
