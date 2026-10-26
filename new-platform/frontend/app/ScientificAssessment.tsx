@@ -6,6 +6,7 @@ import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-eviden
 import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, compareTwoLocalSourcePdfSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch, type DualLocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
 import { compareLocalPdfWithCapturedArchive, summarizeCapturedScientificGates, buildScientificSourceReviewHandoff, type CapturedArchiveComparison, type CapturedScientificGateCoverage } from "../lib/scientific-captured-archive-check";
 import { compareFourGateSourceHandoffs, type HandoffDrift } from "../lib/scientific-handoff-drift-check";
+import { validateScientificPairProgress, type ScientificPairProgress } from "../lib/scientific-review-progress";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -305,6 +306,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [checkingCapturedArchive, setCheckingCapturedArchive] = useState(false);
   const [capturedBackendStatus, setCapturedBackendStatus] = useState("");
   const [capturedBackendChecking, setCapturedBackendChecking] = useState(false);
+  const [scientificReviewerPairProgress, setScientificReviewerPairProgress] = useState<ScientificPairProgress | null>(null);
+  const [scientificReviewerPairError, setScientificReviewerPairError] = useState("");
+  const [checkingScientificReviewerPair, setCheckingScientificReviewerPair] = useState(false);
+  const scientificReviewerPairRevision = useRef(0);
   const [capturedScientificGates, setCapturedScientificGates] = useState<CapturedScientificGateCoverage | null>(null);
   const [capturedHandoffJson, setCapturedHandoffJson] = useState<string | null>(null);
   const [earlierHandoffFile, setEarlierHandoffFile] = useState<File | null>(null);
@@ -326,6 +331,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     capturedBackendRevision.current++;
     setCapturedBackendStatus("");
     setCapturedBackendChecking(false);
+    scientificReviewerPairRevision.current++;
+    setScientificReviewerPairProgress(null);
+    setScientificReviewerPairError("");
+    setCheckingScientificReviewerPair(false);
     setCapturedScientificGates(null);
     setCapturedHandoffJson(null);
     handoffDriftRevision.current++;
@@ -374,6 +383,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     capturedBackendRevision.current++;
     setCapturedBackendStatus("");
     setCapturedBackendChecking(false);
+    scientificReviewerPairRevision.current++;
+    setScientificReviewerPairProgress(null);
+    setScientificReviewerPairError("");
+    setCheckingScientificReviewerPair(false);
     setCapturedScientificGates(null);
     setCapturedHandoffJson(null);
     handoffDriftRevision.current++;
@@ -773,6 +786,34 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
+  /** Aggregate actual audited reviewer statements; no identities or signoff. */
+  async function checkScientificReviewerPairProgress() {
+    if (exactId !== "TRIAL|NCT02142738") return;
+    const revision = ++scientificReviewerPairRevision.current;
+    setScientificReviewerPairProgress(null);
+    setScientificReviewerPairError("");
+    setCheckingScientificReviewerPair(true);
+    try {
+      const response = await fetch(
+        "/api/scientific-assessment/reviewer-progress?nct_id=NCT02142738",
+        { cache: "no-store" },
+      );
+      if (!response.ok) throw new Error("Protected technical-review contract unavailable");
+      const report = validateScientificPairProgress(await response.json());
+      if (revision === scientificReviewerPairRevision.current) {
+        setScientificReviewerPairProgress(report);
+      }
+    } catch {
+      if (revision === scientificReviewerPairRevision.current) {
+        setScientificReviewerPairError(
+          "Reviewer preflight unavailable or rejected: no reviewer audit counts can be confirmed. This does not imply zero submissions or completed independent review."
+        );
+      }
+    } finally {
+      if (revision === scientificReviewerPairRevision.current) setCheckingScientificReviewerPair(false);
+    }
+  }
+
   /** On-demand read-only pinned archive metadata: NEVER admits or certifies a source. */
   async function compareLocalPdfWithArchivedSnapshot() {
     if (!localSourceByteMatch || !localSourcePdf || !result?.investigation40
@@ -818,6 +859,32 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       </button>
       <small> On-demand read-only check; distinguishes an undeployed route from an empty PDF archive. No file uploads or scientific approval.</small>
       {capturedBackendStatus && <p role="status">{capturedBackendStatus}</p>}
+      <details aria-label="Review-pair technical audit progress">
+        <summary><strong>Independent review technical progress (read-only)</strong></summary>
+        <p>The isolated science service checks actual recorded reviewer statement audit trails against up to eight captured PDFs and the eight historical reconciliation questions. Two recorded, currently authorized reviewers are NOT independent clinical qualifications, source-content authentication or adjudication.</p>
+        <button type="button" disabled={checkingScientificReviewerPair}
+          onClick={() => void checkScientificReviewerPairProgress()}>
+          {checkingScientificReviewerPair ? "Checking reviewer statement audit…" : "Check technical A/B reviewer progress"}
+        </button>
+        {scientificReviewerPairError && <p role="alert">{scientificReviewerPairError}</p>}
+        {scientificReviewerPairProgress && <div role="status" aria-label="Unverified independent reviewer technical status">
+          <p>Archived PDFs: {scientificReviewerPairProgress.sourceDocumentCount};
+            {" "}historical questions: {scientificReviewerPairProgress.questionCount};
+            {" "}matching question-and-source pairs: {scientificReviewerPairProgress.eligibleQuestionSourcePairs}.</p>
+          <p>Pairs passing TECHNICAL audit: <strong>{scientificReviewerPairProgress.pairingTechnicalPreflightPassedCount}</strong>;
+            {" "}disputed pairs: {scientificReviewerPairProgress.disputedTechnicalPairCount};
+            {" "}corrupted audit-history pairs: {scientificReviewerPairProgress.historicalAuditCorruptionPairs}.</p>
+          <ul>{scientificReviewerPairProgress.gates.map(gate => <li key={gate.gateId}>
+            <strong>{gate.gateId.replaceAll("_", " ")}</strong>: {gate.capturedSourceCount} captured PDFs;
+            {" "}{gate.reconciliationQuestionCount} questions;
+            {" "}{gate.twoAuthorizedReviewersRecorded} pairs with two currently authorized reviewers;
+            {" "}{gate.pairingTechnicalPreflightPassed} technically consistent pairs
+          </li>)}</ul>
+          <p><strong>Independent clinical reviews: 0. Qualified clinical adjudication: NOT COMPLETE.
+            {" "}Scientific score: NOT ASSIGNED. FDA approval probability: NOT ASSIGNED.</strong></p>
+          <small>Audit-integrity checks establish only tamper-evident recorded reviewer statements and current account access. They never establish clinical independence, original publication authenticity, qualified second-person signoff or efficacy.</small>
+        </div>}
+      </details>
       {capturedScientificGates && capturedHandoffJson && <p>
         <button type="button" onClick={() => downloadCapturedSourceHandoff()}>
           Download unverified four-gate source review handoff (JSON)
