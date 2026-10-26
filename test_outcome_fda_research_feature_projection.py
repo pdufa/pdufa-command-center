@@ -54,6 +54,18 @@ class ResearchFeatureProjectionTests(unittest.TestCase):
                          "2025-07-11")
         self.assertFalse(row["model_eligible"])
 
+    def test_training_export_remains_explicitly_blocked(self):
+        for cutoff in ("2024-05-19", "2025-11-03", "2026-10-26"):
+            p = build_research_feature_projection(cutoff)
+            self.assertFalse(p["training_export_permitted"])
+            self.assertEqual(set(p["training_blockers"]), {
+                "unverified_fda_receipt_boundaries",
+                "incomplete_application_denominator",
+                "uncertified_historical_feature_availability",
+                "retrospective_outcome_label_provenance_unverified",
+            })
+            self.assertEqual(p["model_eligible_records"], 0)
+
     def test_no_future_observations_before_first_submission(self):
         p = build_research_feature_projection("2024-05-19")
         for row in p["records"]:
