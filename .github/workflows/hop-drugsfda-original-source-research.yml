@@ -29,6 +29,8 @@ on:
       - 'new-platform/backend/app/hop_fda_private_review_batches.py'
       - 'new-platform/backend/scripts/prepare_hop_fda_review_batches.py'
       - 'new-platform/backend/tests/test_hop_fda_private_review_batches.py'
+      - 'new-platform/backend/app/hop_fda_private_review_custody.py'
+      - 'new-platform/backend/scripts/audit_hop_fda_private_review_custody.py'
       - 'new-platform/backend/app/hop_fda_nda206627_primary_source.py'
       - 'new-platform/backend/scripts/probe_hop_nda206627_primary_fda_approval.py'
       - 'new-platform/backend/tests/test_hop_fda_nda206627_primary_source.py'
@@ -158,6 +160,15 @@ jobs:
             --private-second-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_second_fda_identity_gap_review.json" \
             --private-output-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/private_reviewer_batches" \
             --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_identity_gap_bounded_batch_counts.json"
+      - name: Create and verify strictly private FDA reviewer checksum baseline
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/audit_hop_fda_private_review_custody.py \
+            --private-batch-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/private_reviewer_batches" \
+            --create-baseline
+          PYTHONPATH=. python scripts/audit_hop_fda_private_review_custody.py \
+            --private-batch-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/private_reviewer_batches" \
+            --verify-baseline
       - name: Retain only aggregate FDA source coverage counts and fingerprints
         uses: actions/upload-artifact@v4
         with:
