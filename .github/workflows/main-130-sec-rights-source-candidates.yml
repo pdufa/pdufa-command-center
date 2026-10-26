@@ -4,6 +4,8 @@ on:
     paths:
       - 'scripts/audit_phase3_sec_rights_filing_candidates.py'
       - 'tests/test_phase3_sec_rights_filing_candidates.py'
+      - 'tests/test_abvx_rights_disclosure_case.py'
+      - 'data/research_abvx_obefazimod_rights_2026-10-26.json'
       - '.github/workflows/main-130-sec-rights-source-candidates.yml'
   workflow_dispatch:
 permissions:
@@ -18,6 +20,8 @@ jobs:
           persist-credentials: false
       - name: Test SEC CIK identity and no right/PDUFA promotion
         run: python3 -m unittest discover -s tests -p 'test_phase3_sec_rights_filing_candidates.py' -v
+      - name: Verify ABVX primary-source rights-claim case without legal promotion
+        run: python3 -m unittest discover -s tests -p 'test_abvx_rights_disclosure_case.py' -v
       - name: Retrieve official SEC submissions and build 741 trial candidate index
         env:
           SEC_EDGAR_USER_AGENT: ${{ vars.SEC_EDGAR_USER_AGENT }}
