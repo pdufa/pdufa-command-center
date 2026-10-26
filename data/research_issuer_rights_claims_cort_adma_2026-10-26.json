@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "scope": "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY",
+  "asOf": "2026-10-26",
+  "programs": [
+    {
+      "issuerTicker": "CORT",
+      "issuerCik": "0001088856",
+      "asset": "relacorilant",
+      "assetAliases": [
+        "CORT125134",
+        "LIFYORLI"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_PROPRIETARY_RELACORILANT_AND_DEVELOPMENT_CONTROL_NOT_CONTRACT_ADJUDICATION",
+      "rightsClaimSummary": "Corcept calls relacorilant its proprietary selective cortisol modulator, discloses commercial approved oncology program and a distinct Cushing NDA. Rights and patent licenses/third-party collaboration terms remain subject to SEC-listed patent uncertainty, not independently adjudicated.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "CUSHING_NDA_DEC2025_CRL_AND_JUN2026_RESUBMISSION",
+        "FDA_DEC_17_2026_CUSHING_GOAL_ISSUER_REPORTED_NOT_AGENCY_LETTER_VERIFIED",
+        "OVARIAN_ROSELLA_MAR2026_APPROVAL_IS_DIFFERENT_INDICATION_AND_COMPLETED",
+        "RELICORILANT_PATENT_AND_EXTERNAL_RESEARCH_RIGHTS_NOT_INDEPENDENTLY_ADJUDICATED"
+      ],
+      "issuerReportedNdaEvidenceSupportingNctIds": [
+        "NCT03697109",
+        "NCT04308590"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828026050613/cort-20260630.htm",
+          "assertion": "Corcept June 30 2026 SEC 10-Q reports relacorilant proprietary program, prior December 30 2025 Cushing CRL, June 17 2026 NDA resubmission, FDA-assigned December 17 2026 PDUFA goal and GRACE/GRADIENT supporting data. Patent scope and enforceability disclosed as risks."
+        },
+        {
+          "type": "ISSUER_SEC_8_K_EXHIBIT",
+          "url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828026050607/cort072926ex991pressrelease.htm",
+          "assertion": "Corcept SEC-filed July 29 2026 corporate update calls December 17 2026 the PDUFA date for Cushing syndrome resubmission, distinct from FDA-approved March 2026 Lifyorli in ovarian indication."
+        },
+        {
+          "type": "OFFICIAL_FDA_FINAL_LABEL_APPROVAL",
+          "url": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+          "assertion": "FDA states relacorilant plus nab-paclitaxel approved March 25 2026 for certain platinum-resistant ovarian/fallopian/peritoneal cancer and explicitly identifies pivotal ROSELLA NCT05257408. This is historical, completed original NDA action."
+        },
+        {
+          "type": "CLINICALTRIALS_GOV_GRACE",
+          "url": "https://clinicaltrials.gov/study/NCT03697109",
+          "assertion": "GRACE NCT03697109 Phase 3 Cushing syndrome relacorilant randomized withdrawal pivotal trial."
+        },
+        {
+          "type": "CLINICALTRIALS_GOV_GRADIENT",
+          "url": "https://clinicaltrials.gov/study/NCT04308590",
+          "assertion": "GRADIENT NCT04308590 Phase 3 in cortisol-secreting adrenal adenomas supportive Cushing clinical evidence."
+        },
+        {
+          "type": "CLINICALTRIALS_GOV_ROSELLA",
+          "url": "https://clinicaltrials.gov/study/NCT05257408",
+          "assertion": "ROSELLA NCT05257408 Phase 3 relacorilant with nab-paclitaxel ovarian cancer, distinct approved indication."
+        }
+      ],
+      "officialFdaHistoricalAction": {
+        "actionDate": "2026-03-25",
+        "actionType": "APPROVED_ORIGINAL_NDA",
+        "agency": "US_FDA",
+        "drug": "LIFYORLI (relacorilant) plus nab-paclitaxel",
+        "indication": "Platinum-resistant epithelial ovarian, fallopian tube, or primary peritoneal cancer after one to three prior systemic regimens including bevacizumab",
+        "agencyPrimarySourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+        "agencyPressExplicitSupportingNctIds": [
+          "NCT05257408"
+        ],
+        "isCurrentFuturePdufa": false,
+        "historicalIssuerReportedPdufaDate": "2026-07-11",
+        "independentlyVerifiedCompletedFdaAction": true,
+        "currentPendingFDAAction": false
+      },
+      "trialLinks": [
+        {
+          "nctId": "NCT03697109",
+          "study": "GRACE (CORT125134-455)",
+          "indication": "Endogenous Cushing syndrome, uncontrolled hypercortisolism",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+          "regulatoryContext": "ISSUER_REPORTED_ACCEPTED_CUSHING_NDA_RESUBMISSION_WITH_UPCOMING_PDUFA_2026_12_17_AFTER_2025_CRL",
+          "expectedRegistryStatus": "COMPLETED",
+          "historicalIssuerReportedPdufaDate": "2025-12-30",
+          "currentPdufaTargetVerified": null,
+          "issuerReportedCurrentPdufaDate": "2026-12-17",
+          "issuerReportedFdaAcceptance": true,
+          "issuerReportedCurrentPdufaSourceUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828026050613/cort-20260630.htm",
+          "issuerReportedPdufaAsOf": "2026-10-26"
+        },
+        {
+          "nctId": "NCT04308590",
+          "study": "GRADIENT (CORT125134-463)",
+          "indication": "Cushing syndrome from cortisol-secreting adrenal adenomas",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04308590",
+          "regulatoryContext": "CUSHING_2026_NDA_CONFIRMATORY_STUDY_NOT_ITS_OWN_PDUFA",
+          "expectedRegistryStatus": "COMPLETED",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT05257408",
+          "study": "ROSELLA (CORT125134-556)",
+          "indication": "Platinum-resistant ovarian fallopian or peritoneal cancer after bevacizumab",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05257408",
+          "regulatoryContext": "FDA_APPROVED_ORIGINAL_NDA_2026_03_25_HISTORICAL_ONCOLOGY_NOT_PENDING_CUSHING_PDUFA",
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING",
+          "historicalIssuerReportedPdufaDate": "2026-07-11",
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    },
+    {
+      "issuerTicker": "ADMA",
+      "issuerCik": "0001368514",
+      "asset": "RI-002",
+      "assetAliases": [
+        "ASCENIV",
+        "Immune Globulin Intravenous Human-slra"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_PROPRIETARY_ASCENIV_PRODUCT_WITH_REGIONAL_OUTLICENSE",
+      "rightsClaimSummary": "ADMA SEC Q2 2026 filing identifies ASCENIV (formerly RI-002) as company-manufactured marketed product and Biotest AG out-license for Europe, Northern Africa and Middle East. FDA's original BLA 125590 is approved in 2019. This old Phase 3 trial is not a future PDUFA catalyst.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "FDA_ASCENIV_2019_APPROVAL_IS_COMPLETED_NOT_PENDING_PDUFA",
+        "ASCENIV_BIOTEST_OUTLICENSE_EUROPE_NORTH_AFRICA_MIDDLE_EAST",
+        "HISTORICAL_ADMA_003_TRIAL_DOES_NOT_PROVE_LATER_2026_PEDIATRIC_LABEL_EXTENSION",
+        "CONTRACT_SCOPE_NOT_INDEPENDENTLY_ADJUDICATED"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1368514/000114036126031445/ef20075111_10q.htm",
+          "assertion": "ADMA August 5 2026 SEC Q2 filing identifies FDA-approved marketed ASCENIV, formerly RI-002, original April 2019 approval, 2012 Biotest regional rights out-license, and other marketed IVIG products. Historical trial only."
+        },
+        {
+          "type": "OFFICIAL_FDA_APPROVED_BIOLOGIC_PRODUCT",
+          "url": "https://www.fda.gov/vaccines-blood-biologics/approved-blood-products/asceniv",
+          "assertion": "FDA ASCENIV biological product entry lists licensed product manufacturer ADMA, BLA STN 125590 and April 1 2019 original approval letter; additional 2026 pediatric supplements are separate."
+        },
+        {
+          "type": "OFFICIAL_FDA_ORIGINAL_BLA_STATISTICAL_REVIEW",
+          "url": "https://www.fda.gov/media/132756/download?attachment=",
+          "assertion": "FDA ASCENIV original BLA review identifies ADMA-003 as the sole pivotal Phase 3 trial of RI-002 in 59 PIDD patients, whose study identifier corresponds to NCT01814800 in ClinicalTrials.gov."
+        },
+        {
+          "type": "CLINICALTRIALS_GOV_ADMA_003",
+          "url": "https://clinicaltrials.gov/study/NCT01814800",
+          "assertion": "ClinicalTrials.gov NCT01814800 original ADMA-003 Phase 3 RI-002 primary immune deficiency trial; completed 2015 and not a new 2026 study."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT01814800",
+          "study": "ADMA-003",
+          "indication": "Primary humoral immunodeficiency (PIDD), original Phase 3 RI-002/ASCENIV",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT01814800",
+          "regulatoryContext": "ASCENIV_2019_ORIGINAL_FDA_BLA_APPROVED_HISTORICAL_NOT_2026_UPCOMING_PDUFA",
+          "expectedRegistryStatus": "COMPLETED",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    }
+  ]
+}
