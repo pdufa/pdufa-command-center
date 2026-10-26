@@ -72,12 +72,17 @@ class ResearchFixturesTests(unittest.TestCase):
         self.assertTrue(all(e.source_document_role == "signed_fda_final_action_letter"
                             for e in gc))
 
-    def test_only_lantidra_2021_uses_sbra_instead_of_signed_letter(self):
+    def test_2020_mesoblast_and_2021_lantidra_use_fda_reviews_not_signed_letters(self):
         indirect = [e for e in RESEARCH_ACTIONS
                     if e.source_document_role == "fda_regulatory_history_summary"]
-        self.assertEqual(len(indirect), 1)
-        self.assertEqual(indirect[0].application_key, "BLA:125734")
-        self.assertEqual(indirect[0].event_date.isoformat(), "2021-08-18")
+        self.assertEqual(len(indirect), 2)
+        self.assertEqual(
+            {(e.application_key, e.event_date.isoformat()) for e in indirect},
+            {("BLA:125706", "2020-09-30"), ("BLA:125734", "2021-08-18")},
+        )
+        source = next(e for e in indirect if e.application_key == "BLA:125706")
+        self.assertEqual(source.source_url, "https://www.fda.gov/media/184952/download")
+        self.assertIsNone(source.source_publication_date)
 
 if __name__ == "__main__":
     unittest.main()
