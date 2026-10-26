@@ -58,7 +58,9 @@ test("connection test is explicit and verifies only upstream identity, not clini
   try {
     await act(async () => { view = create(React.createElement(Component, { exactId: ID })); });
     assert.equal(calls.length, 0, "connection probe must not run automatically");
-    assert.equal(view.root.findAllByType("button").length, 2);
+    assert.equal(view.root.findAllByType("button").length, 3,
+      "Historical pilot has scientific analysis, connection, and read-only archive deployment checks");
+    assert.equal(calls.length, 0, "Archive backend probe must also be operator initiated");
     await act(async () => { await view.root.findAllByType("button")[1].props.onClick(); });
     assert.equal(calls.length, 1);
     assert.equal(calls[0].url, "/api/scientific-assessment/connection?exact_id=" + encodeURIComponent(ID));
