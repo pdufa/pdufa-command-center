@@ -32,6 +32,7 @@ items = [
     ("🔎 Scans", base),
     ("🔄 Recheck", base),
     ("🏛️ FDA Engine", base),
+    ("📊 OUTCOME Evidence", "/OUTCOME_Evidence"),
     ("📝 Plan", base),
 ]
 html = '<div class="mobile-grid">' + ''.join(
