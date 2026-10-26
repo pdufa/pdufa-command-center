@@ -6,6 +6,11 @@ on:
     paths:
       - 'new-platform/frontend/**'
       - '.github/workflows/pdufa-nextjs-main-checks.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/**'
+      - '.github/workflows/pdufa-nextjs-main-checks.yml'
   workflow_dispatch:
 
 permissions:
