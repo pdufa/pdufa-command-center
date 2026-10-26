@@ -5,6 +5,7 @@ import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
 import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, compareTwoLocalSourcePdfSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch, type DualLocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
 import { compareLocalPdfWithCapturedArchive, summarizeCapturedScientificGates, buildScientificSourceReviewHandoff, type CapturedArchiveComparison, type CapturedScientificGateCoverage } from "../lib/scientific-captured-archive-check";
+import { compareFourGateSourceHandoffs, type HandoffDrift } from "../lib/scientific-handoff-drift-check";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -306,6 +307,12 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [capturedBackendChecking, setCapturedBackendChecking] = useState(false);
   const [capturedScientificGates, setCapturedScientificGates] = useState<CapturedScientificGateCoverage | null>(null);
   const [capturedHandoffJson, setCapturedHandoffJson] = useState<string | null>(null);
+  const [earlierHandoffFile, setEarlierHandoffFile] = useState<File | null>(null);
+  const [laterHandoffFile, setLaterHandoffFile] = useState<File | null>(null);
+  const [handoffDrift, setHandoffDrift] = useState<HandoffDrift | null>(null);
+  const [handoffDriftError, setHandoffDriftError] = useState("");
+  const [comparingHandoffs, setComparingHandoffs] = useState(false);
+  const handoffDriftRevision = useRef(0);
   const capturedBackendRevision = useRef(0);
   const auditRevision = useRef(0);
   const pending = useRef<AbortController | null>(null);
@@ -318,6 +325,12 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setCapturedBackendChecking(false);
     setCapturedScientificGates(null);
     setCapturedHandoffJson(null);
+    handoffDriftRevision.current++;
+    setEarlierHandoffFile(null);
+    setLaterHandoffFile(null);
+    setHandoffDrift(null);
+    setHandoffDriftError("");
+    setComparingHandoffs(false);
     setReviewInventoryFile(null);
     setReviewerAFile(null);
     setReviewerBFile(null);
@@ -357,6 +370,12 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setCapturedBackendChecking(false);
     setCapturedScientificGates(null);
     setCapturedHandoffJson(null);
+    handoffDriftRevision.current++;
+    setEarlierHandoffFile(null);
+    setLaterHandoffFile(null);
+    setHandoffDrift(null);
+    setHandoffDriftError("");
+    setComparingHandoffs(false);
     setLocalAudit(null);
     setLocalAuditError("");
     setComparingFiles(false);
@@ -681,6 +700,31 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     window.setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
+  /** Local-only drift check across two UNSIGNED exports; file selection defines order. */
+  async function compareSourceHandoffFiles() {
+    if (exactId !== "TRIAL|NCT02142738" || !earlierHandoffFile || !laterHandoffFile) return;
+    const revision = ++handoffDriftRevision.current;
+    setHandoffDrift(null);
+    setHandoffDriftError("");
+    setComparingHandoffs(true);
+    try {
+      if ([earlierHandoffFile, laterHandoffFile].some(file => file.size > 256 * 1024)) {
+        throw new Error("Handoff exceeds the 256 KiB local comparison limit.");
+      }
+      const [earlier, later] = await Promise.all([
+        earlierHandoffFile.text(), laterHandoffFile.text(),
+      ]);
+      const report = compareFourGateSourceHandoffs(earlier, later);
+      if (revision === handoffDriftRevision.current) setHandoffDrift(report);
+    } catch {
+      if (revision === handoffDriftRevision.current) setHandoffDriftError(
+        "The local handoff comparison was blocked: wrong trial, changed schema, tampered evidence status or invalid document inventory. Neither file has been authenticated."
+      );
+    } finally {
+      if (revision === handoffDriftRevision.current) setComparingHandoffs(false);
+    }
+  }
+
   /** On-demand read-only pinned archive metadata: NEVER admits or certifies a source. */
   async function compareLocalPdfWithArchivedSnapshot() {
     if (!localSourceByteMatch || !localSourcePdf || !result?.investigation40
@@ -732,6 +776,50 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
         </button>
         <small> Source hashes, counts and next verification steps only. No raw PDF bytes, source URLs, reviewer names, signatures or scientific outcome claims.</small>
       </p>}
+      <details aria-label="Compare earlier and later unsigned four-gate source inventory files">
+        <summary><strong>Compare two saved source handoff inventories (browser only)</strong></summary>
+        <p>Select two previously downloaded four-gate source handoff JSON files. Files remain local; the comparison detects reported changes in captured document IDs, hashes, sizes and gate assignments. Because packets are unsigned, their authenticity and actual chronological order cannot be established from the files.</p>
+        <div>
+          <label>Earlier handoff JSON
+            <input type="file" accept=".json,application/json" aria-label="Choose earlier four-gate source handoff"
+              onChange={event => {
+                handoffDriftRevision.current++;
+                setEarlierHandoffFile(event.target.files?.[0] ?? null);
+                setHandoffDrift(null); setHandoffDriftError(""); setComparingHandoffs(false);
+              }} />
+          </label>
+        </div>
+        <div>
+          <label>Later handoff JSON
+            <input type="file" accept=".json,application/json" aria-label="Choose later four-gate source handoff"
+              onChange={event => {
+                handoffDriftRevision.current++;
+                setLaterHandoffFile(event.target.files?.[0] ?? null);
+                setHandoffDrift(null); setHandoffDriftError(""); setComparingHandoffs(false);
+              }} />
+          </label>
+        </div>
+        <button type="button" disabled={!earlierHandoffFile || !laterHandoffFile || comparingHandoffs}
+          onClick={() => void compareSourceHandoffFiles()}>
+          {comparingHandoffs ? "Comparing local inventories…" : "Compare earlier and later source handoffs"}
+        </button>
+        {handoffDriftError && <p role="alert">{handoffDriftError}</p>}
+        {handoffDrift && <section role="status" aria-label="Unverified source inventory comparison result">
+          <p><strong>{handoffDrift.comparisonResult.replaceAll("_", " ")}</strong> — captured PDFs: {handoffDrift.priorDocumentCount} in selected earlier file, {handoffDrift.laterDocumentCount} in selected later file.</p>
+          <p>Added IDs: {handoffDrift.addedDocumentIds.length}; removed IDs: {handoffDrift.removedDocumentIds.length}; changed metadata for existing IDs: {handoffDrift.changedDocumentIds.length}; unchanged entries: {handoffDrift.unchangedDocumentCount}.</p>
+          <ul>{handoffDrift.gates.map(g => <li key={g.gateId}>
+            <strong>{g.gateId.replaceAll("_", " ")}</strong>: {g.priorCapturedPdfCount} earlier / {g.laterCapturedPdfCount} later captured PDFs
+          </li>)}</ul>
+          {(["addedDocumentIds", "removedDocumentIds", "changedDocumentIds"] as const).map(key =>
+            handoffDrift[key].length > 0 && <details key={key}>
+              <summary>{key.replaceAll(/([A-Z])/g, " $1")} ({handoffDrift[key].length})</summary>
+              <ul>{handoffDrift[key].map(id => <li key={id}><code>{id}</code></li>)}</ul>
+            </details>
+          )}
+          <p><strong>Neither snapshot authenticated; independent scientific adjudication: NOT COMPLETE; FDA probability: NOT ASSIGNED.</strong></p>
+          <small>A no-change result means only that two supplied unsigned files report the same inventory, not that the live archive is immutable or independently verified. Changed entries require separate origin and chronology checks.</small>
+        </section>}
+      </details>
       {capturedScientificGates && <section aria-label="Four independent scientific evidence gates captured source coverage">
         <p><strong>Captured PDF evidence categories: {capturedScientificGates.gatesWithCapturedPdf}/4.</strong>
           {" "}Independently verified categories: <strong>0/4</strong>.
