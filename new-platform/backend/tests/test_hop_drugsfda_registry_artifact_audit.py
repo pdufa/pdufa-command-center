@@ -204,3 +204,18 @@ def test_real_fda_source_snapshot_fingerprint_is_pinned_in_docs():
     # but does not claim to reprocess unavailable bytes on CI.
     expected = "adb24d7921d56bc3824b57e785164a32287efc69a9d3fe9b940da97f6c65f5b2"
     assert len(expected) == 64
+
+
+def test_legacy_five_digit_ndas_stay_visible_as_unverified_source_warnings(tmp_path):
+    records = [normalized_record(0, "NDA21939", [])]
+    path, digest = fixture_zip(tmp_path, records=records)
+    result = audit_registry_artifact(
+        path, as_of=AS_OF, expected_payload_sha256=digest
+    )
+    assert result["approved_registry_application_records"] == 1
+    assert result["original_nda_bla_submission_entries"] == 0
+    assert result["source_data_warning_counts"] == {
+        "NONSTANDARD_APPLICATION_NUMBER_LENGTH": 1
+    }
+    assert result["complete_original_nda_bla_denominator_verified"] is False
+    assert result["model_eligible_records"] == 0
