@@ -106,11 +106,20 @@ def reconcile_bulk_group(
     payload: object, group: list[dict[str, str]], checked_at: str,
 ) -> list[dict[str, object]]:
     """Detect missing, duplicate, out-of-request, cross-NCT and forged data."""
-    if not isinstance(payload, dict) or payload.get("nextPageToken"):
+    if not isinstance(payload, dict):
         raise ValueError("Incomplete original registry batch pagination")
     studies = payload.get("studies")
     if not isinstance(studies, list) or len(studies) > len(group):
         raise ValueError("Original registry batch study-count overflow")
+    token = payload.get("nextPageToken")
+    if token is not None and (not isinstance(token, str) or len(token) > 1000):
+        raise ValueError("Incomplete original registry batch pagination")
+    # API v2 can expose a nextPageToken on a page with exactly pageSize rows.
+    # If the complete requested exact-ID set is present, validate each ID and
+    # ignore unrelated page cursors. If any requested ID is absent while a
+    # cursor is offered, DO NOT mistake page 1 for complete research coverage.
+    if token and len(studies) != len(group):
+        raise ValueError("Incomplete original registry batch pagination")
     requested = {r["nct_id"]: r for r in group}
     if len(requested) != len(group):
         raise ValueError("Original registry batch requested duplicates")
