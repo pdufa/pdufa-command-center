@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
 import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, compareTwoLocalSourcePdfSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch, type DualLocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
-import { compareLocalPdfWithCapturedArchive, type CapturedArchiveComparison } from "../lib/scientific-captured-archive-check";
+import { compareLocalPdfWithCapturedArchive, summarizeCapturedScientificGates, type CapturedArchiveComparison, type CapturedScientificGateCoverage } from "../lib/scientific-captured-archive-check";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -304,6 +304,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [checkingCapturedArchive, setCheckingCapturedArchive] = useState(false);
   const [capturedBackendStatus, setCapturedBackendStatus] = useState("");
   const [capturedBackendChecking, setCapturedBackendChecking] = useState(false);
+  const [capturedScientificGates, setCapturedScientificGates] = useState<CapturedScientificGateCoverage | null>(null);
   const capturedBackendRevision = useRef(0);
   const auditRevision = useRef(0);
   const pending = useRef<AbortController | null>(null);
@@ -314,6 +315,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     capturedBackendRevision.current++;
     setCapturedBackendStatus("");
     setCapturedBackendChecking(false);
+    setCapturedScientificGates(null);
     setReviewInventoryFile(null);
     setReviewerAFile(null);
     setReviewerBFile(null);
@@ -351,6 +353,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     capturedBackendRevision.current++;
     setCapturedBackendStatus("");
     setCapturedBackendChecking(false);
+    setCapturedScientificGates(null);
     setLocalAudit(null);
     setLocalAuditError("");
     setComparingFiles(false);
@@ -610,6 +613,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     if (exactId !== "TRIAL|NCT02142738") return;
     const revision = ++capturedBackendRevision.current;
     setCapturedBackendStatus("");
+    setCapturedScientificGates(null);
     setCapturedBackendChecking(true);
     try {
       const response = await fetch(
@@ -619,14 +623,15 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       const body: unknown = await response.json();
       let message: string;
       if (response.ok) {
-        const validated = compareLocalPdfWithCapturedArchive(
-          "NCT02142738", "0".repeat(64), 32, body,
-        );
-        message = validated.capturedSnapshotCount === 0
+        const gateCoverage = summarizeCapturedScientificGates("NCT02142738", body);
+        if (revision === capturedBackendRevision.current) setCapturedScientificGates(gateCoverage);
+        message = gateCoverage.sourceDocumentCount === 0
           ? "Captured-source backend is responding, but the pilot has 0 archived PDF snapshots. Scientific source verification remains blocked."
           : "Captured-source backend is responding with "
-            + validated.capturedSnapshotCount
-            + " checksum-checked archived PDF snapshot(s). Byte integrity ONLY; neither source authorship nor clinical review is authenticated.";
+            + gateCoverage.sourceDocumentCount
+            + " checksum-checked archived PDF snapshot(s) across "
+            + gateCoverage.gatesWithCapturedPdf
+            + " of 4 evidence categories. Byte integrity ONLY; source authenticity and scientific review are NOT verified.";
       } else {
         const data = body && typeof body === "object" && !Array.isArray(body)
           ? body as Record<string, unknown> : {};
@@ -697,6 +702,23 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       </button>
       <small> On-demand read-only check; distinguishes an undeployed route from an empty PDF archive. No file uploads or scientific approval.</small>
       {capturedBackendStatus && <p role="status">{capturedBackendStatus}</p>}
+      {capturedScientificGates && <section aria-label="Four independent scientific evidence gates captured source coverage">
+        <p><strong>Captured PDF evidence categories: {capturedScientificGates.gatesWithCapturedPdf}/4.</strong>
+          {" "}Independently verified categories: <strong>0/4</strong>.
+        </p>
+        <ul>
+          {capturedScientificGates.gates.map(gate => <li key={gate.gateId}>
+            <strong>{gate.label}</strong> — {gate.capturedPdfCount} captured PDF(s);
+            {" "}{gate.status === "CAPTURED_UNVERIFIED" ? "captured, NOT independently verified" : "no captured PDF"}.
+            <details>
+              <summary>Required next source check</summary>
+              <p>{gate.nextAction}</p>
+            </details>
+          </li>)}
+        </ul>
+        <p><strong>Scientific adjudication: NOT COMPLETE. Scientific score: NOT ASSIGNED. FDA probability: NOT ASSIGNED.</strong></p>
+        <small>Captured document counts reflect authenticated, rehashed archive metadata only. They do not establish source authorship, verified clinical findings, independent reviewer decisions or a PDUFA outcome.</small>
+      </section>}
     </div>}
     {connectionMessage && <p role="status">{connectionMessage}</p>}
     {error && <p role="alert">{error}</p>}
