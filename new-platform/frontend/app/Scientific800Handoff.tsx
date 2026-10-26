@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { buildScientific800ReviewerHandoffCsv } from "../lib/scientific-800-reviewer-handoff";
-import { compareScientific800ReviewerCsvs, type Scientific800LocalPairAudit } from "../lib/scientific-800-local-pair-audit";
+import { compareScientific800ReviewerCsvs, buildScientific800DiscrepancyLedgerCsv, type Scientific800LocalPairAudit } from "../lib/scientific-800-local-pair-audit";
 import type { ScientificDepthMatrix } from "../lib/scientific-depth-review-csv";
 import type { ScientificInputAudit } from "../lib/scientific-evidence-requirements-csv";
 
@@ -27,6 +27,7 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
   const [reviewerAFile, setReviewerAFile] = useState<File | null>(null);
   const [reviewerBFile, setReviewerBFile] = useState<File | null>(null);
   const [localAudit, setLocalAudit] = useState<Scientific800LocalPairAudit | null>(null);
+  const [localDiscrepancyCsv, setLocalDiscrepancyCsv] = useState("");
   const [localAuditError, setLocalAuditError] = useState("");
   const [comparingFiles, setComparingFiles] = useState(false);
   const auditRevision = useRef(0);
@@ -39,6 +40,7 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
     setReviewerAFile(null);
     setReviewerBFile(null);
     setLocalAudit(null);
+    setLocalDiscrepancyCsv("");
     setLocalAuditError("");
     setComparingFiles(false);
     setLoading(false);
@@ -54,6 +56,7 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
     current.current?.abort();
     auditRevision.current++;
     setLocalAudit(null);
+    setLocalDiscrepancyCsv("");
     setLocalAuditError("");
     setComparingFiles(false);
     const controller = new AbortController();
@@ -124,6 +127,7 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
   async function compareLocal800Worksheets() {
     if (!validated || !reviewerAFile || !reviewerBFile || comparingFiles) return;
     const token = ++auditRevision.current;
+    setLocalDiscrepancyCsv("");
     setLocalAudit(null);
     setLocalAuditError("");
     setComparingFiles(true);
@@ -137,7 +141,13 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
       const comparison = compareScientific800ReviewerCsvs(
         validated.matrix, validated.audit, csvA, csvB,
       );
-      if (token === auditRevision.current) setLocalAudit(comparison);
+      const discrepancyCsv = buildScientific800DiscrepancyLedgerCsv(
+        validated.matrix, validated.audit, csvA, csvB,
+      );
+      if (token === auditRevision.current) {
+        setLocalAudit(comparison);
+        setLocalDiscrepancyCsv(discrepancyCsv);
+      }
     } catch {
       if (token === auditRevision.current) {
         setLocalAuditError(
@@ -147,6 +157,22 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
     } finally {
       if (token === auditRevision.current) setComparingFiles(false);
     }
+  }
+
+  /** Download the validated local snapshot only; no server upload or signing. */
+  function downloadDiscrepancyLedger() {
+    if (!localAudit || !localDiscrepancyCsv || !validated
+        || localAudit.nctId !== validated.matrix.nctId) return;
+    const url = URL.createObjectURL(new Blob(
+      [localDiscrepancyCsv], { type: "text/csv;charset=utf-8" },
+    ));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = localAudit.nctId + "_scientific_800_AB_discrepancy_ledger_UNVERIFIED.csv";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
   return <section aria-label="Independent 800-point reviewer handoff" className="panel">
@@ -181,7 +207,7 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
               onChange={event => {
                 auditRevision.current++;
                 setReviewerAFile(event.target.files?.[0] ?? null);
-                setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+                setLocalAudit(null); setLocalDiscrepancyCsv(""); setLocalAuditError(""); setComparingFiles(false);
               }} />
           </label>
           <label>Reviewer B worksheet CSV
@@ -190,7 +216,7 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
               onChange={event => {
                 auditRevision.current++;
                 setReviewerBFile(event.target.files?.[0] ?? null);
-                setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+                setLocalAudit(null); setLocalDiscrepancyCsv(""); setLocalAuditError(""); setComparingFiles(false);
               }} />
           </label>
           <button type="button" disabled={!reviewerAFile || !reviewerBFile || comparingFiles}
@@ -213,6 +239,14 @@ export default function Scientific800Handoff({ exactId }: { exactId: string }) {
               <summary>Inspect up to 25 conflicting task keys</summary>
               <ol>{localAudit.conflictTaskKeys.map(key => <li key={key}>{key}</li>)}</ol>
             </details>}
+            <button type="button" disabled={!localDiscrepancyCsv}
+              onClick={downloadDiscrepancyLedger}>
+              Download full 800-task discrepancy ledger (CSV)
+            </button>
+            <p><small>Includes all 800 task keys, candidate finding conflicts,
+              incomplete original-source references, claimed-source differences,
+              potential reviewer-name reuse and the next independent review action.
+              URLs and SHA-256 strings are untrusted claims, not verified sources.</small></p>
             <small>Scientific adjudication: 0/800. Scientific score and FDA approval
               probability remain unassigned. This consistency audit does not approve
               any reviewer, verify source bytes, or submit scientific findings.</small>
