@@ -1,12 +1,12 @@
 {
-  "generated_at_utc": "2026-10-25T16:41:45+00:00",
+  "generated_at_utc": "2026-10-26T03:42:24+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-25T03:21:27.994304+00:00",
+      "Last checked UTC": "2026-10-26T03:21:35.440174+00:00",
       "Details": "7381 exact ticker+NCT records; scope is not exhaustive",
       "Blocked records": 0
     },
@@ -15,7 +15,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-25T03:22:35.982797+00:00",
+      "Last checked UTC": "2026-10-26T03:26:00.226195+00:00",
       "Details": "2493 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
       "Blocked records": 0
     },
@@ -51,7 +51,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-25T03:21:27.471346+00:00",
+      "Last checked UTC": "2026-10-26T03:21:34.814668+00:00",
       "Details": "417 provider-labeled quotes; price/volume not included",
       "Blocked records": 0
     },
@@ -69,7 +69,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-25T16:41:23.988648+00:00",
+      "Last checked UTC": "2026-10-26T03:41:59.490877+00:00",
       "Details": "34/34 recent session quotes; not a stability certification",
       "Blocked records": 0
     }
