@@ -14,13 +14,13 @@ sys.path.insert(0, str(ROOT / "tests"))
 from phase3_rights_review_submissions import (
     build_review_coverage, REVIEW_CHECKS, REQUIRED_REVIEW, source_url,
 )
-from test_phase3_rights_review_worklist import Phase3RightsWorklistTests
+import test_phase3_rights_review_worklist as rights_fixture_module
 
 
 class RightsReviewSubmissionsTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        fixture = Phase3RightsWorklistTests()
+        fixture = rights_fixture_module.Phase3RightsWorklistTests()
         fixture.setUp()
         cls.original_worklist = fixture.report()
 
@@ -110,6 +110,20 @@ class RightsReviewSubmissionsTests(unittest.TestCase):
         self.assertEqual(r["distinct_review_slots_with_submissions"], 1)
         self.assertEqual(r["checklist_slot_state_counts"]["REVIEWER_REPORTS_CONFLICT"], 1)
         self.assertEqual(r["independently_verified_commercial_rights"], 0)
+
+    def test_fetched_doc_must_belong_to_exact_issuer_filing_index(self):
+        document = self.first["sec_source_documents_fetched"][0]
+        document["url"] = "https://www.sec.gov/Archives/edgar/data/999999/1234/forged.htm"
+        submission = dict(self.attested, source_url=document["url"])
+        with self.assertRaises(ValueError):
+            self.build([submission])
+
+    def test_fetched_doc_must_match_original_filing_candidate(self):
+        document = self.first["sec_source_documents_fetched"][0]
+        document["url"] = "https://www.sec.gov/Archives/edgar/data/1/9999999999999999/forged.htm"
+        submission = dict(self.attested, source_url=document["url"])
+        with self.assertRaises(ValueError):
+            self.build([submission])
 
     def test_reviewed_external_source_without_fetched_original_is_rejected(self):
         with self.assertRaises(ValueError):
