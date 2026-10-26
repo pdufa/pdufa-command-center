@@ -1,10 +1,13 @@
 import csv
+import io
+import json
+from unittest.mock import patch
 import sys
 from pathlib import Path
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from audit_phase3_batched_registry_metadata import audit, parse_batch, TRIALS
+from audit_phase3_batched_registry_metadata import audit, parse_batch, fetch_batch, TRIALS
 
 
 class BatchedRegistryMetadataTests(unittest.TestCase):
@@ -50,6 +53,36 @@ class BatchedRegistryMetadataTests(unittest.TestCase):
         self.assertEqual(result["registry_metadata_retrieved"], 0)
         self.assertEqual(result["registry_metadata_unresolved"], 741)
         self.assertTrue(all(x["error"] for x in result["trials"]))
+
+    def test_api_pagination_returns_only_exact_requested_ids(self):
+        class FakeResponse:
+            status = 200
+            def __init__(self, content):
+                self._handle = io.BytesIO(json.dumps(content).encode())
+            def read(self, count):
+                return self._handle.read(count)
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+
+        first = {"studies": [{"protocolSection": {
+            "identificationModule": {"nctId": "NCT12345678"},
+            "sponsorCollaboratorsModule": {"leadSponsor": {"name": "Sponsor A"}}}}],
+            "nextPageToken": "opaque-one"}
+        second = {"studies": [{"protocolSection": {
+            "identificationModule": {"nctId": "NCT12345679"},
+            "sponsorCollaboratorsModule": {"leadSponsor": {"name": "Sponsor B"}}}}]}
+        responses = iter([FakeResponse(first), FakeResponse(second)])
+        seen_urls = []
+        def fake_urlopen(request, timeout):
+            seen_urls.append(request.full_url)
+            return next(responses)
+        with patch("audit_phase3_batched_registry_metadata.urllib.request.urlopen", fake_urlopen):
+            result = fetch_batch(["NCT12345678", "NCT12345679"], lambda _: None)
+        self.assertEqual(set(result), {"NCT12345678", "NCT12345679"})
+        self.assertEqual(len(seen_urls), 2)
+        self.assertIn("pageToken=opaque-one", seen_urls[1])
 
     def test_reject_unexpected_identity(self):
         response = {"studies": [{"protocolSection": {
