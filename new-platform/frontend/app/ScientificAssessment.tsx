@@ -715,6 +715,9 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     const revision = ++handoffDriftRevision.current;
     setHandoffDrift(null);
     setHandoffDriftError("");
+    setLiveHandoffDrift(null);
+    setLiveHandoffError("");
+    setCheckingLiveHandoff(false);
     setComparingHandoffs(true);
     try {
       if ([earlierHandoffFile, laterHandoffFile].some(file => file.size > 256 * 1024)) {
@@ -846,7 +849,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
               }} />
           </label>
         </div>
-        <button type="button" disabled={!earlierHandoffFile || !laterHandoffFile || comparingHandoffs}
+        <button type="button" disabled={!earlierHandoffFile || !laterHandoffFile || comparingHandoffs || checkingLiveHandoff}
           onClick={() => void compareSourceHandoffFiles()}>
           {comparingHandoffs ? "Comparing local inventories…" : "Compare earlier and later source handoffs"}
         </button>
