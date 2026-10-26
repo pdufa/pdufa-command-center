@@ -75,7 +75,8 @@
           "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03485911",
           "regulatoryContext": "EXISTING_APPROVAL_SUPPORTING_STUDY_NOT_NEW_PENDING_PDUFA",
           "historicalIssuerReportedPdufaDate": null,
-          "currentPdufaTargetVerified": null
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "COMPLETED"
         },
         {
           "nctId": "NCT03472040",
@@ -84,7 +85,8 @@
           "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03472040",
           "regulatoryContext": "LONG_TERM_SAFETY_NOT_NEW_PENDING_PDUFA",
           "historicalIssuerReportedPdufaDate": null,
-          "currentPdufaTargetVerified": null
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "COMPLETED"
         },
         {
           "nctId": "NCT03873116",
@@ -93,7 +95,8 @@
           "trialSourceUrl": "https://clinicaltrials.gov/study/NCT03873116",
           "regulatoryContext": "JAPAN_STUDY_NOT_US_NEW_PENDING_PDUFA",
           "historicalIssuerReportedPdufaDate": null,
-          "currentPdufaTargetVerified": null
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "COMPLETED"
         },
         {
           "nctId": "NCT04933721",
@@ -102,7 +105,8 @@
           "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04933721",
           "regulatoryContext": "EXTENSION_NO_STANDALONE_UPCOMING_PDUFA",
           "historicalIssuerReportedPdufaDate": null,
-          "currentPdufaTargetVerified": null
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "ENROLLING_BY_INVITATION"
         },
         {
           "nctId": "NCT05453968",
@@ -111,7 +115,8 @@
           "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05453968",
           "regulatoryContext": "PEDIATRIC_RESEARCH_NO_UNVERIFIED_UPCOMING_US_PDUFA",
           "historicalIssuerReportedPdufaDate": null,
-          "currentPdufaTargetVerified": null
+          "currentPdufaTargetVerified": null,
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING"
         }
       ]
     }
