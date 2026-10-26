@@ -2,7 +2,8 @@ import json
 import unittest
 from outcome_fda_receipt_boundary_gap_report import (
     SCHEMA_VERSION, MISSING_RECEIPT_EVIDENCE, SPONSOR_SUBMISSION_EVIDENCE,
-    _validated_sponsor_evidence, build_receipt_boundary_gap_report,
+    _validated_sponsor_evidence, sponsor_exact_day_publicly_disclosed_by,
+    build_receipt_boundary_gap_report,
 )
 
 
@@ -113,6 +114,40 @@ class FDAReceiptBoundaryGapReportTests(unittest.TestCase):
         for change in invalid:
             with self.subTest(change=change), self.assertRaises(ValueError):
                 _validated_sponsor_evidence({**base, **change})
+
+    def test_july_11_day_only_publicly_documented_in_november(self):
+        evidence = SPONSOR_SUBMISSION_EVIDENCE[("BLA:125745", "2026-01-09")]
+        self.assertEqual(evidence["sponsor_exact_day_source_published_on"], "2025-11-03")
+        self.assertFalse(sponsor_exact_day_publicly_disclosed_by(evidence, "2025-07-11"))
+        self.assertFalse(sponsor_exact_day_publicly_disclosed_by(evidence, "2025-07-14"))
+        self.assertFalse(sponsor_exact_day_publicly_disclosed_by(evidence, "2025-11-02"))
+        self.assertTrue(sponsor_exact_day_publicly_disclosed_by(evidence, "2025-11-03"))
+        self.assertTrue(sponsor_exact_day_publicly_disclosed_by(evidence, "2026-01-09"))
+        # Later public documentation cannot turn a sponsor day into an FDA receipt.
+        entry = next(r for r in self.report["unlinked_actions"]
+                     if r["final_fda_action_date"] == "2026-01-09")
+        self.assertIsNone(entry["exact_submission_received_date"])
+        self.assertFalse(entry["receipt_date_verified"])
+
+    def test_exact_sponsor_source_and_acceptance_publication_guardrails(self):
+        base = SPONSOR_SUBMISSION_EVIDENCE[("BLA:125745", "2026-01-09")]
+        invalid = [
+            {"sponsor_exact_day_source_published_on": None},
+            {"sponsor_exact_day_source_published_on": "2025-07-10"},
+            {"fda_acceptance_disclosure_published_on": "2025-07-22"},
+        ]
+        for change in invalid:
+            with self.subTest(change=change), self.assertRaises((ValueError, TypeError)):
+                _validated_sponsor_evidence({**base, **change})
+
+    def test_month_only_filings_have_no_backfilled_precise_publication(self):
+        for key in [("BLA:125745", "2025-01-15"),
+                    ("BLA:125840", "2026-02-07")]:
+            evidence = SPONSOR_SUBMISSION_EVIDENCE[key]
+            self.assertIsNone(evidence["sponsor_exact_day_source_published_on"])
+            self.assertFalse(sponsor_exact_day_publicly_disclosed_by(
+                evidence, "2026-10-26"
+            ))
 
 if __name__ == "__main__":
     unittest.main()
