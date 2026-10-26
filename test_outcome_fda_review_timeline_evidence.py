@@ -5,6 +5,8 @@ from outcome_fda_review_timeline_evidence import (
     FDA_ABEONA_APPROVAL, FDA_ABEONA_CRL,
     FDA_MESOBLAST_SBRA, FDA_MESOBLAST_2023_CRL, FDA_MESOBLAST_APPROVAL,
     MESOBLAST_SBRA_IDENTIFIER_CONFLICT, MESOBLAST_SOURCE_SUPPORTED_TIMELINES,
+    MESOBLAST_2020_SOURCE_SUPPORTED_TIMELINES, MESOBLAST_2020_CRL_EVIDENCE_STATUS,
+    FDA_MESOBLAST_RETROSPECTIVE_CLINICAL_REVIEW,
     ROCKET_SOURCE_SUPPORTED_TIMELINES, FDA_ROCKET_CRL, FDA_ROCKET_APPROVAL,
     ULTRAGENYX_SOURCE_SUPPORTED_TIMELINES, ULTRAGENYX_PDUFA_GOAL_SOURCE_CONFLICT,
     FDA_ULTRAGENYX_CRL, FDA_ULTRAGENYX_APPROVAL,
@@ -22,19 +24,19 @@ from outcome_fda_review_timeline_evidence import (
 from outcome_fda_research_action_fixtures import RESEARCH_ACTIONS
 
 class ReviewTimelineEvidenceTests(unittest.TestCase):
-    def test_sixteen_timelines_are_eight_applications(self):
+    def test_seventeen_timelines_are_eight_applications(self):
         summary = review_timeline_summary()
         self.assertEqual(summary["applications_with_source_supported_timelines"], 8)
-        self.assertEqual(summary["source_supported_review_timelines"], 16)
+        self.assertEqual(summary["source_supported_review_timelines"], 17)
         self.assertEqual({c.application_key for c in REVIEW_TIMELINES}, {"BLA:125807", "BLA:125706", "BLA:125806", "BLA:125845", "BLA:125827", "BLA:125743", "BLA:125734", "BLA:125842"})
 
     def test_dynamic_selected_sample_denominators(self):
         summary = review_timeline_summary()
         self.assertEqual(summary["selected_research_action_endpoints"], 20)
         self.assertEqual(summary["selected_research_application_identifiers"], 10)
-        self.assertEqual(summary["source_supported_review_timelines"], 16)
+        self.assertEqual(summary["source_supported_review_timelines"], 17)
         self.assertEqual(summary["applications_with_source_supported_timelines"], 8)
-        self.assertEqual(summary["selected_actions_without_structured_timeline"], 4)
+        self.assertEqual(summary["selected_actions_without_structured_timeline"], 3)
         self.assertEqual(summary["selected_applications_without_structured_timeline"], 2)
         self.assertFalse(summary["complete_application_denominator_verified"])
         self.assertEqual(summary["model_eligible_records"], 0)
@@ -46,6 +48,7 @@ class ReviewTimelineEvidenceTests(unittest.TestCase):
              for c in REVIEW_TIMELINES],
             [("2023-09-25", "2024-04-16", "complete_response"),
              ("2024-10-28", "2025-04-28", "approval"),
+             ("2020-01-31", "2020-09-30", "complete_response"),
              ("2023-01-31", "2023-08-01", "complete_response"),
              ("2024-07-08", "2024-12-18", "approval"),
              ("2023-08-01", "2024-06-14", "complete_response"),
@@ -105,6 +108,26 @@ class ReviewTimelineEvidenceTests(unittest.TestCase):
     def test_mismatched_fda_source_rejected(self):
         with self.assertRaisesRegex(ValueError, "source mismatch"):
             validate_review_timelines((replace(REVIEW_TIMELINES[0], final_action_source_url=FDA_ABEONA_APPROVAL),))
+
+    def test_mesoblast_2020_retrospective_fda_review_timeline_and_gap(self):
+        cycles = MESOBLAST_2020_SOURCE_SUPPORTED_TIMELINES
+        self.assertEqual(len(cycles), 1)
+        first = cycles[0]
+        self.assertEqual(first.application_key, "BLA:125706")
+        self.assertEqual(first.submission_key, "BLA:125706:ORIGINAL")
+        self.assertEqual(first.received_date, date(2020, 1, 31))
+        self.assertEqual(first.action_date, date(2020, 9, 30))
+        self.assertEqual(first.action_type, "complete_response")
+        self.assertEqual(first.final_action_source_url,
+                         FDA_MESOBLAST_RETROSPECTIVE_CLINICAL_REVIEW)
+        self.assertEqual(first.regulatory_history_source_url, FDA_MESOBLAST_SBRA)
+        self.assertIsNone(first.pdufa_goal_date)
+        gap = MESOBLAST_2020_CRL_EVIDENCE_STATUS
+        self.assertEqual(gap["document_role"], "fda_regulatory_history_summary")
+        self.assertTrue(gap["source_created_after_action"])
+        self.assertFalse(gap["original_signed_action_letter_verified"])
+        self.assertFalse(first.independently_certified)
+        self.assertFalse(first.model_eligible)
 
     def test_mesoblast_2023_and_2024_source_boundaries(self):
         cycles = MESOBLAST_SOURCE_SUPPORTED_TIMELINES
@@ -254,10 +277,10 @@ class ReviewTimelineEvidenceTests(unittest.TestCase):
         linked = {(c.application_key, c.submission_key, c.action_date, c.action_type)
                   for c in REVIEW_TIMELINES}
         unlinked = action_keys - linked
-        self.assertEqual(len(unlinked), 4)
+        self.assertEqual(len(unlinked), 3)
         self.assertEqual(
             {key[0] for key in unlinked},
-            {"BLA:125706", "BLA:125745", "BLA:125840"})
+            {"BLA:125745", "BLA:125840"})
         self.assertEqual(sum(key[0] == "BLA:125745" for key in unlinked), 2)
 
 if __name__ == "__main__":
