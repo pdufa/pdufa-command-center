@@ -225,7 +225,7 @@ def test_actual_pinned_source_diff_proves_only_one_membership_exception():
     assert report["shared_keys_with_raw_status_mismatch"] == 0
     assert report["shared_keys_with_raw_status_date_mismatch"] == 0
     assert report["net_tabular_minus_openfda_original_keys"] == 1
-    assert report["examples_truncated"] is False if "examples_truncated" in report else True
+    assert report["examples_truncated"] is False
     assert report["original_fda_action_dates_independently_verified"] == 0
     assert report["review_cycles_independently_verified"] == 0
     assert report["complete_fda_decision_denominator_verified"] is False
