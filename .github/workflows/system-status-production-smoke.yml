@@ -15,6 +15,7 @@ on:
       - 'new-platform/frontend/app/installation-audit/ScientificOutcomeLive.tsx'
       - 'new-platform/frontend/app/api/assessments/route.ts'
       - 'new-platform/frontend/app/api/hop/readiness/route.ts'
+      - 'new-platform/frontend/app/api/phase3-registry/route.ts'
       - 'new-platform/frontend/lib/science-outcome-gates.ts'
       - 'new-platform/frontend/lib/hop-backend.ts'
   push:
@@ -31,6 +32,7 @@ on:
       - 'new-platform/frontend/app/installation-audit/ScientificOutcomeLive.tsx'
       - 'new-platform/frontend/app/api/assessments/route.ts'
       - 'new-platform/frontend/app/api/hop/readiness/route.ts'
+      - 'new-platform/frontend/app/api/phase3-registry/route.ts'
       - 'new-platform/frontend/lib/science-outcome-gates.ts'
       - 'new-platform/frontend/lib/hop-backend.ts'
   workflow_dispatch:
