@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Phase3EvidenceDetails from "./Phase3EvidenceDetails";
+import { buildPhase3EvidenceGapCsv, summarizePhase3EvidenceGaps, type PipelineCensusGapSummary } from "../../../lib/phase3-census-evidence-gaps";
 import {
   parsePhase3CensusCsv, PHASE3_CENSUS_CSV_PATH,
   PHASE3_CENSUS_STATUS_VALUES,
@@ -18,6 +20,9 @@ export default function Phase3CensusExplorer() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"ALL" | Phase3CensusRegistryStatus>("ALL");
   const [page, setPage] = useState(0);
+  const [rawSource, setRawSource] = useState("");
+  const [gapSummary, setGapSummary] = useState<PipelineCensusGapSummary | null>(null);
+  const [selectedNct, setSelectedNct] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -25,14 +30,40 @@ export default function Phase3CensusExplorer() {
       try {
         const response = await fetch(PHASE3_CENSUS_CSV_PATH, { cache: "no-store" });
         if (!response.ok) throw new Error("CSV source unavailable.");
-        const data = parsePhase3CensusCsv(await response.text());
-        if (active) setInventory(data);
+        const source = await response.text();
+        const data = parsePhase3CensusCsv(source);
+        const gaps = summarizePhase3EvidenceGaps(data);
+        if (active) {
+          setInventory(data);
+          setGapSummary(gaps);
+          setRawSource(source);
+        }
       } catch {
         if (active) setError("Trial inventory not displayed: complete dated CSV could not be checked. No counts have been inferred.");
       }
     })();
     return () => { active = false; };
   }, []);
+
+  function downloadUnverifiedEvidenceGaps() {
+    if (!inventory || !rawSource || !gapSummary) return;
+    try {
+      const csv = buildPhase3EvidenceGapCsv(rawSource);
+      const url = URL.createObjectURL(new Blob([csv], { type:"text/csv;charset=utf-8" }));
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "phase3_741_pipeline_evidence_gaps_NOT_QUALIFIED_2026-10-26.csv";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+    } catch {
+      setError("Evidence-gap export refused: source inventory is incomplete or inconsistent.");
+      setRawSource("");
+      setGapSummary(null);
+      setInventory(null);
+    }
+  }
 
   const matches = useMemo(() => {
     if (!inventory) return [];
@@ -46,6 +77,7 @@ export default function Phase3CensusExplorer() {
   const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
   const currentPage = Math.min(page, pages - 1);
   const visible = matches.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+  const selected = selectedNct ? inventory?.rows.find(row=>row.nctId===selectedNct) : null;
 
   return <section aria-label="741 Phase 3 research trial records" style={{marginTop:22}}>
     <p><strong>Qualified Pipeline: NOT ESTABLISHED.</strong> Results below are
@@ -60,6 +92,19 @@ export default function Phase3CensusExplorer() {
     {inventory && <>
       <p><strong>{inventory.rows.length.toLocaleString("en-US")} records verified against
         the dated CSV structure · {inventory.uniqueCompanies} unique tickers.</strong></p>
+      {gapSummary && <section aria-label="Pipeline evidence readiness across 741 research records"
+        style={{padding:12,margin:"14px 0",border:"1px solid #cbd5e1",borderRadius:8,background:"#f8fafc"}}>
+        <strong>Registry status groups: {gapSummary.registryOpenRecords} open ·
+          {" "}{gapSummary.registryClosedRecords} completed/terminated/withdrawn ·
+          {" "}{gapSummary.registryUnknownRecords} unknown.</strong>
+        <p>All 741 records retain five missing independent source-evidence gates.
+          Phase 3 identity and listed-company market-cap range are census-level matches,
+          not fresh trial-by-trial qualification checks.
+          Qualified Pipeline total: <strong>UNKNOWN</strong>.</p>
+        <button type="button" onClick={downloadUnverifiedEvidenceGaps}>
+          Download 741-row Pipeline evidence-gap checklist (CSV)
+        </button>
+      </section>}
       <div style={{display:"flex",flexWrap:"wrap",gap:12,margin:"18px 0"}}>
         <label style={{display:"grid",gap:5,flex:"1 1 200px"}}>
           Search NCT, ticker or company
@@ -88,7 +133,7 @@ export default function Phase3CensusExplorer() {
       <div style={{overflowX:"auto",border:"1px solid #cbd5e1",borderRadius:8}}>
         <table style={{width:"100%",borderCollapse:"collapse",minWidth:620,fontSize:14}}>
           <thead><tr style={{background:"#f1f5f9"}}>
-            {["Clinical trial","Ticker","Exact matched company","Registry status","Original source"].map(h =>
+            {["Clinical trial","Ticker","Exact matched company","Registry status","Original source","Evidence gaps"].map(h =>
               <th key={h} scope="col" style={{padding:11,borderBottom:"2px solid #cbd5e1",textAlign:"left"}}>{h}</th>)}
           </tr></thead>
           <tbody>{visible.map((row,i) => <tr key={row.nctId} style={{background:i%2?"#f8fafc":"#fff"}}>
@@ -99,10 +144,20 @@ export default function Phase3CensusExplorer() {
             <td style={{padding:10,borderBottom:"1px solid #e2e8f0"}}>
               <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov record</a>
             </td>
+            <td style={{padding:10,borderBottom:"1px solid #e2e8f0"}}>
+              <button type="button" aria-pressed={selectedNct===row.nctId}
+                onClick={() => setSelectedNct(selectedNct===row.nctId?null:row.nctId)}>
+                {selectedNct===row.nctId?"Close checklist":"View seven evidence gates"}
+              </button>
+            </td>
           </tr>)}</tbody>
         </table>
         {!visible.length && <p style={{padding:12}}>No trial records match these filters.</p>}
       </div>
+      {selected && <div style={{marginTop:16}}>
+        <button type="button" onClick={() => setSelectedNct(null)}>Close evidence checklist</button>
+        <Phase3EvidenceDetails trial={selected}/>
+      </div>}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,marginTop:14}}>
         <button type="button" onClick={() => setPage(Math.max(0,currentPage-1))}
           disabled={currentPage === 0}>Previous records</button>
