@@ -150,7 +150,7 @@ export default function InstallationAudit() {
         </div>
       </details>)}
     </section>
-    <DailySystemProgress mainAudit={{accepted:total.accepted,sections:total.sections,asOf:"2026-10-25"}} />
+    <DailySystemProgress />
     <ScientificOutcomeLive />
     <section aria-labelledby="fda-research-worklist" style={{margin:"26px 0",padding:"18px",border:"1px solid #cbd5e1",borderRadius:9,background:"#f8fafc"}}>
       <h2 id="fda-research-worklist">OUTCOME historical FDA source readiness — research only</h2>
