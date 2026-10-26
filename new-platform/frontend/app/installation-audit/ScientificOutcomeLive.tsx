@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { safeHopDiagnostic } from "../../lib/hop-source-diagnostic";
 import { auditOutcomeStatus, auditScienceIndex, type OutcomeStatus, type ScienceStatus } from "../../lib/science-outcome-gates";
 
 const display = (v: number | null) => v === null ? "Not verified" : v.toLocaleString("en-US");
@@ -18,14 +19,23 @@ export default function ScientificOutcomeLive() {
     setScience({data:null,error:""});
     setOutcome({data:null,error:""});
     setChecked("");
-    const read = async (url: string) => {
+    const read = async (url: string, isHop = false) => {
       const response = await fetch(url, { cache:"no-store", signal: AbortSignal.timeout(50000) });
-      if (!response.ok) throw new Error(response.status === 401 ? "Sign in to the dashboard to view protected evidence" : "Evidence endpoint unavailable (HTTP " + response.status + ")");
+      if (!response.ok) {
+        // The HOP proxy emits only an allowlisted, non-sensitive reason code.
+        // Never render arbitrary upstream error/JSON text from the service.
+        const payload: unknown = isHop ? await response.json().catch(() => null) : null;
+        throw new Error(isHop
+          ? safeHopDiagnostic(response.status, payload)
+          : response.status === 401
+          ? "Sign in to the dashboard to view protected evidence"
+          : "Evidence endpoint unavailable (HTTP " + response.status + ")");
+      }
       return response.json() as Promise<unknown>;
     };
     const [s, o] = await Promise.allSettled([
       read("/api/assessments").then(auditScienceIndex),
-      read("/api/hop/readiness").then(auditOutcomeStatus),
+      read("/api/hop/readiness", true).then(auditOutcomeStatus),
     ]);
     setScience(s.status === "fulfilled" ? {data:s.value,error:""} : {data:null,error:s.reason instanceof Error ? s.reason.message : "Unable to verify scientific evidence"});
     setOutcome(o.status === "fulfilled" ? {data:o.value,error:""} : {data:null,error:o.reason instanceof Error ? o.reason.message : "Unable to verify historical outcome evidence"});
