@@ -71,10 +71,12 @@ export function overdueNominalPacificDate(now:Date):string|null {
     local.day:previousPacificDay(local.day);
   return due>=FIRST_NOMINAL_PACIFIC_SCAN?due:null;
 }
-/** Group early-next-morning delayed GitHub starts with the previous night. */
+/** GitHub cron might start many hours late the next day. Until the
+ * 7 PM Pacific schedule window, a scheduled run belongs to the prior night.
+ */
 function runPacificNight(started:string):string {
   const local=pacificClock(new Date(started));
-  return local.minutes<6*60?previousPacificDay(local.day):local.day;
+  return local.minutes<19*60?previousPacificDay(local.day):local.day;
 }
 
 type Row = Record<string, unknown>;
@@ -146,7 +148,7 @@ export async function readNightlyHealth(
       continue;
     }
     // Never show yesterday's confirmed job as satisfying a missing new night.
-    // Delayed jobs started before 6 AM Pacific belong to the preceding night.
+    // Delayed starts before the next 7 PM Pacific window belong to the prior night.
     if(expectedNight&&runPacificNight(started)<expectedNight)return late();
     if(gate.conclusion!=="success"||ledger.status!=="completed"||ledger.conclusion===null){
       return update("FULL_SCAN_RUNNING",null);
