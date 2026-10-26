@@ -31,7 +31,7 @@ this new workflow.
 | Shared-key raw status-date differences | **0** |
 
 The **single unmatched tabular original key** is
-`NDA206627, ORIG 1`. The difference is not 1 FDA denial, one additional
+`NDA206627, ORIG 1`. The **entire NDA206627 application record** is absent from the saved OpenFDA registry artifact; it is not merely a present application whose original-submission row was omitted. The reconciliation distinguishes both types of source omission and reports one whole-application absence versus zero missing-original-only entries. The difference is not 1 FDA denial, one additional
 verified regulatory cycle, one additional PDUFA target, or evidence of a
 missing drug that was never approved. No source-date or status difference
 appeared in the 6,032 overlapping original submission entries.
