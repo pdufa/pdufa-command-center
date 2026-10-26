@@ -168,11 +168,23 @@ def safe_fetch_group(group: list[dict[str, str]]) -> list[dict[str, object]]:
         code = error.code if error.code in (400, 401, 403, 404, 413, 414, 422, 429, 500, 502, 503, 504) else 0
         return [{"nct_id": row["nct_id"], "error": f"BULK_HTTP_{code}"}
                 for row in group]
-    except (ValueError, urllib.error.URLError, TimeoutError, OSError, UnicodeError):
-        # Do not treat an unverified page as partially qualified. Preserve
-        # one unresolved row for EACH missing original NCT.
-        return [{"nct_id": row["nct_id"], "error": "BATCH_SOURCE_UNVERIFIED"}
-                for row in group]
+    except ValueError as error:
+        # Only our own hardcoded parser diagnostics may be used as reason
+        # categories. Never log/reveal arbitrary upstream HTML or JSON bodies.
+        reason = str(error)
+        code = (
+            "BATCH_PAGINATION_ERROR" if "pagination" in reason
+            else "BATCH_IDENTITY_ERROR" if "NCT" in reason or "identity" in reason
+            else "BATCH_CONTENT_TYPE_ERROR" if "content type" in reason
+            else "BATCH_SIZE_ERROR" if "size" in reason or "exceeded" in reason
+            else "BATCH_MALFORMED_CONTENT" if "JSON" in reason or "protocol" in reason
+            else "BATCH_OTHER_INVALID_RESPONSE"
+        )
+        return [{"nct_id": row["nct_id"], "error": code} for row in group]
+    except urllib.error.URLError:
+        return [{"nct_id": row["nct_id"], "error": "BATCH_NETWORK_ERROR"} for row in group]
+    except (TimeoutError, OSError, UnicodeError):
+        return [{"nct_id": row["nct_id"], "error": "BATCH_SOURCE_UNVERIFIED"} for row in group]
 
 
 def summarize_677(
@@ -192,6 +204,10 @@ def summarize_677(
         if "error" in result:
             if result["error"] not in (
                 "NOT_RETURNED_BY_ORIGINAL_REGISTRY", "BATCH_SOURCE_UNVERIFIED",
+                "BATCH_PAGINATION_ERROR", "BATCH_IDENTITY_ERROR",
+                "BATCH_CONTENT_TYPE_ERROR", "BATCH_SIZE_ERROR",
+                "BATCH_MALFORMED_CONTENT", "BATCH_OTHER_INVALID_RESPONSE",
+                "BATCH_NETWORK_ERROR",
                 "BULK_HTTP_0", "BULK_HTTP_400", "BULK_HTTP_401", "BULK_HTTP_403",
                 "BULK_HTTP_404", "BULK_HTTP_413", "BULK_HTTP_414", "BULK_HTTP_422",
                 "BULK_HTTP_429", "BULK_HTTP_500", "BULK_HTTP_502", "BULK_HTTP_503", "BULK_HTTP_504",
