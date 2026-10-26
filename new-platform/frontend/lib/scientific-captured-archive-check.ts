@@ -94,3 +94,101 @@ export function compareLocalPdfWithCapturedArchive(
     promotionAllowed: false,
   };
 }
+
+
+/**
+ * The four EXTERNAL scientific-evidence gates (not a completed science grade).
+ * A captured PDF merely proves integrity of locally archived bytes and cannot
+ * satisfy any independent clinical, statistical, safety, or FDA review gate.
+ */
+export type CapturedScientificGateCoverage = {
+  nctId: "NCT02142738";
+  sourceDocumentCount: number;
+  gatesWithCapturedPdf: number;
+  externallyVerifiedGateCount: 0;
+  readyForScientificConclusion: false;
+  scientificScore: null;
+  fdaApprovalProbability: null;
+  gates: {
+    gateId: "protocol_sap" | "published_results" | "independent_replication" | "official_regulatory";
+    label: string;
+    capturedPdfCount: number;
+    status: "CAPTURED_UNVERIFIED" | "NO_CAPTURED_PDF";
+    independentlyVerified: false;
+    nextAction: string;
+  }[];
+};
+
+const GATE_CATALOG = [
+  {
+    gateId: "protocol_sap",
+    label: "Original protocol and statistical analysis plan",
+    nextAction: "Authenticate the dated original protocol/SAP, its amendments, endpoint definitions and multiplicity plan independently.",
+  },
+  {
+    gateId: "published_results",
+    label: "Complete results publication or clinical study report",
+    nextAction: "Authenticate full source results and independently reconcile populations, endpoint estimates, uncertainty, safety and follow-up.",
+  },
+  {
+    gateId: "independent_replication",
+    label: "Biological rationale and independent corroboration",
+    nextAction: "Independently assess mechanism, contradictory findings and external replication.",
+  },
+  {
+    gateId: "official_regulatory",
+    label: "Original FDA or other official regulatory documents",
+    nextAction: "Authenticate the regulatory application, indication, decision records, CMC context and relevant dates.",
+  },
+] as const;
+
+/**
+ * Only use after the authenticated proxy's exact-NCT manifest passes its
+ * all-bytes-rehashed contract. Validate AGAIN here to reject forged client
+ * input; never transform capture counts into reviewer attestations.
+ */
+export function summarizeCapturedScientificGates(
+  nctId: string, manifest: unknown,
+): CapturedScientificGateCoverage {
+  const diagnostic = compareLocalPdfWithCapturedArchive(nctId, "0".repeat(64), 32, manifest);
+  if (diagnostic.promotionAllowed !== false || diagnostic.clinicalReviewCompleted !== false
+      || !manifest || typeof manifest !== "object" || Array.isArray(manifest)) denied();
+
+  const raw = manifest as Record<string, unknown>;
+  const list = raw.documents as unknown[];
+  const counts = new Map<string, number>();
+  for (const row of list) {
+    if (!row || typeof row !== "object" || Array.isArray(row)) denied();
+    const gateId = (row as Record<string, unknown>).gateId;
+    if (typeof gateId !== "string" || !GATE_CATALOG.some(gate => gate.gateId === gateId)) {
+      denied();
+    }
+    // The branch above rejects any non-string or non-catalog gate identifier.
+    const validatedGateId = gateId as string;
+    counts.set(validatedGateId, (counts.get(validatedGateId) ?? 0) + 1);
+  }
+  const gates = GATE_CATALOG.map(gate => {
+    const count = counts.get(gate.gateId) ?? 0;
+    return {
+      gateId: gate.gateId,
+      label: gate.label,
+      capturedPdfCount: count,
+      status: count > 0 ? "CAPTURED_UNVERIFIED" as const : "NO_CAPTURED_PDF" as const,
+      independentlyVerified: false as const,
+      nextAction: gate.nextAction,
+    };
+  });
+  if (gates.reduce((sum, gate) => sum + gate.capturedPdfCount, 0)
+      !== diagnostic.capturedSnapshotCount) denied();
+
+  return {
+    nctId: "NCT02142738",
+    sourceDocumentCount: diagnostic.capturedSnapshotCount,
+    gatesWithCapturedPdf: gates.filter(gate => gate.capturedPdfCount > 0).length,
+    externallyVerifiedGateCount: 0,
+    readyForScientificConclusion: false,
+    scientificScore: null,
+    fdaApprovalProbability: null,
+    gates,
+  };
+}
