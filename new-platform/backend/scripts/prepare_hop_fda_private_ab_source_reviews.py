@@ -22,6 +22,7 @@ def main() -> int:
         description="Create separate UNREVIEWED FDA original-source A/B packets locally"
     )
     parser.add_argument("--private-enriched-packets", type=Path, required=True)
+    parser.add_argument("--private-original-grouped-packets", type=Path, required=True)
     parser.add_argument("--private-output-dir", type=Path, required=True)
     parser.add_argument("--as-of", type=date.fromisoformat, required=True)
     args = parser.parse_args()
@@ -30,14 +31,16 @@ def main() -> int:
     # per-letter source identifiers and source URLs.
     dest = args.private_output_dir.resolve()
     source = args.private_enriched_packets.resolve()
+    baseline_source = args.private_original_grouped_packets.resolve()
     if dest == REPO or dest.is_relative_to(REPO):
         raise ValueError("FDA reviewer files must remain outside the repository")
-    if dest == source or dest in source.parents:
+    if dest == source or dest in source.parents or dest == baseline_source or dest in baseline_source.parents:
         raise ValueError("FDA private source file must not be overwritten")
     pinned = json.loads(PINNED.read_text(encoding="utf-8"))
     enriched = json.loads(source.read_text(encoding="utf-8"))
+    original_grouped = json.loads(baseline_source.read_text(encoding="utf-8"))
     first, second, aggregate = prepare_gap_source_review_handoffs(
-        enriched, pinned_audit=pinned, as_of=args.as_of,
+        enriched, original_grouped, pinned_audit=pinned, as_of=args.as_of,
     )
     paths = [
         dest / "first_blank_original_fda_source_review.json",
