@@ -74,6 +74,7 @@ def _read_archived_originals(data: dict) -> tuple[dict, dict]:
             originals[key] = (raw_status or "", normalized_date)
             by_application[app] += 1
     return originals, {
+        "_archived_application_ids": seen_apps,
         "archived_application_record_count": len(data["records"]),
         "archived_original_application_count": len(by_application),
         "archived_original_submission_count": len(originals),
@@ -157,6 +158,10 @@ def reconcile_original_submission_sources(
     different_date = sorted(k for k in overlap if tab[k][1] != archived[k][1])
     app_diff_tab = {app for app, _ in missing_from_arch}
     app_diff_arch = {app for app, _ in missing_from_tab}
+    absent_archived_app_keys = sorted(
+        key for key in missing_from_arch
+        if key[0] not in arch_counts["_archived_application_ids"]
+    )
     if len(tab) != tabular_index["original_nda_bla_submission_rows"]:
         raise ValueError("Tabular source inventory had unstable key count")
 
@@ -181,6 +186,10 @@ def reconcile_original_submission_sources(
         "openfda_keys_absent_from_tabular": len(missing_from_tab),
         "distinct_applications_with_tabular_only_keys": len(app_diff_tab),
         "distinct_applications_with_openfda_only_keys": len(app_diff_arch),
+        "tabular_only_keys_with_entire_application_absent_from_openfda":
+            len(absent_archived_app_keys),
+        "tabular_only_keys_in_openfda_application_but_missing_original":
+            len(missing_from_arch) - len(absent_archived_app_keys),
         "shared_keys_with_raw_status_mismatch": len(different_status),
         "shared_keys_with_raw_status_date_mismatch": len(different_date),
         "tabular_only_key_examples": examples(missing_from_arch),
