@@ -21,12 +21,12 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         self.assertEqual(len(r["trials"]), 741)
         self.assertEqual(len(self.by_id), 741)
         self.assertEqual(len({x["ticker"] for x in r["trials"]}), 130)
-        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 45)
-        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 696)
-        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 11)
-        self.assertEqual(r["asset_program_dossiers"], 13)
+        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 48)
+        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 693)
+        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 12)
+        self.assertEqual(r["asset_program_dossiers"], 15)
 
-    def test_exact_45_nct_claim_links_and_no_other_unearned_claims(self):
+    def test_exact_48_nct_claim_links_and_no_other_unearned_claims(self):
         expected = {
             "ABVX": {"NCT05507203", "NCT05507216", "NCT05535946"},
             "ACHV": {"NCT04576949", "NCT05206370", "NCT06435221", "NCT07392125"},
@@ -42,6 +42,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             "AGIO": {"NCT03548220", "NCT03559699", "NCT03853798",
                      "NCT04770753", "NCT04770779", "NCT05031780",
                      "NCT05144256", "NCT05175105", "NCT07656415"},
+            "PRAX": {"NCT05818553", "NCT07010471", "NCT06087276"},
         }
         for ticker, ids in expected.items():
             actual = {x["nct_id"] for x in self.report["trials"]
@@ -51,7 +52,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             for nct in ids:
                 self.assertTrue(self.by_id[nct]["source_document_links_cataloged"])
         self.assertEqual(sum(not x["source_document_links_cataloged"]
-                             for x in self.report["trials"]), 696)
+                             for x in self.report["trials"]), 693)
 
     def test_no_trial_has_unearned_legal_or_fda_promotion(self):
         r = self.report
@@ -91,8 +92,8 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
 
     def test_cytk_maple_upcoming_snda_is_indication_specific_issuer_reported_only(self):
         r = self.report
-        self.assertEqual(r["issuer_reported_future_pdufa_event_count"], 4)
-        self.assertEqual(len(r["issuer_reported_future_pdufa_events"]), 4)
+        self.assertEqual(r["issuer_reported_future_pdufa_event_count"], 6)
+        self.assertEqual(len(r["issuer_reported_future_pdufa_events"]), 6)
         e = next(x for x in r["issuer_reported_future_pdufa_events"] if x["ticker"] == "CYTK")
         self.assertEqual(e["nct_id"], "NCT05767346")
         self.assertEqual(e["ticker"], "CYTK")
@@ -117,7 +118,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
 
     def test_cytk_fake_or_stale_pdufa_claim_is_rejected(self):
         original = rights.collect_cases()
-        self.assertEqual(len(original), 13)
+        self.assertEqual(len(original), 15)
         bad = [dict(p) for p in original]
         cy_index = next(i for i, p in enumerate(bad) if p["issuerTicker"] == "CYTK")
         cy = dict(bad[cy_index])
@@ -253,8 +254,8 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             self.assertFalse(trial["official_fda_confirmed_completed_historical_action"])
             self.assertIsNone(trial["historical_fda_action_date"])
             self.assertIsNone(trial["current_pdufa_target_date"])
-        self.assertEqual(report["issuer_reported_future_pdufa_event_count"], 4)
-        self.assertEqual({x["ticker"] for x in report["issuer_reported_future_pdufa_events"]}, {"AXSM", "CYTK", "CORT", "AGIO"})
+        self.assertEqual(report["issuer_reported_future_pdufa_event_count"], 6)
+        self.assertEqual({x["ticker"] for x in report["issuer_reported_future_pdufa_events"]}, {"AXSM", "CYTK", "CORT", "AGIO", "PRAX"})
         self.assertEqual(report["independently_verified_current_fda_pdufa_count"], 0)
         self.assertIsNone(report["qualified_pipeline_count"])
 
@@ -442,7 +443,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             self.assertIsNone(t["qualified_pipeline"])
         self.assertIn("CONFIRMATORY", self.by_id["NCT07656415"]["regulatory_context"])
         self.assertEqual(self.by_id["NCT07656415"]["saved_registry_status"], "RECRUITING")
-        self.assertEqual(r["issuer_reported_future_pdufa_event_count"], 4)
+        self.assertEqual(r["issuer_reported_future_pdufa_event_count"], 6)
         self.assertEqual(r["independently_verified_current_fda_pdufa_count"], 0)
         self.assertEqual(r["independently_adjudicated_current_legal_rights_count"], 0)
         self.assertIsNone(r["qualified_pipeline_count"])
@@ -469,6 +470,80 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         invalid[idx] = altered
         with patch.object(rights, "collect_cases", return_value=invalid):
             with self.assertRaisesRegex(ValueError, "PDUFA evidence check failed"):
+                rights.build()
+
+    def test_prax_relutrigine_extended_and_ulixacaltamide_separate_future_dates(self):
+        r = self.report
+        events = [e for e in r["issuer_reported_future_pdufa_events"]
+                  if e["ticker"] == "PRAX"]
+        self.assertEqual(len(events), 2)
+        by_asset = {e["asset"]: e for e in events}
+        self.assertEqual(set(by_asset), {"relutrigine", "ulixacaltamide"})
+        rel = by_asset["relutrigine"]
+        self.assertEqual(rel["nct_id"], "NCT05818553")
+        self.assertEqual(rel["issuer_reported_target_date"], "2026-12-27")
+        self.assertIn("SCN2A", rel["indication"])
+        self.assertIn("SCN8A", rel["indication"])
+        self.assertTrue(rel["issuer_reported_accepted_application"])
+        self.assertIn("sec.gov", rel["issuer_primary_source_url"])
+        self.assertFalse(rel["agency_independent_verification"])
+        embold = self.by_id["NCT05818553"]
+        self.assertEqual(embold["historical_issuer_reported_pdufa_target"], "2026-09-27")
+        self.assertEqual(embold["issuer_reported_upcoming_pdufa_target"], "2026-12-27")
+        self.assertIn("FDA_MAJOR_AMENDMENT_EXTENDED_REVIEW_NOT_AUTOMATIC_CRL_OR_APPROVAL",
+                      embold["material_risk_flags"])
+        emerald = self.by_id["NCT07010471"]
+        self.assertEqual(emerald["linked_asset"], "relutrigine")
+        self.assertIsNone(emerald["issuer_reported_upcoming_pdufa_target"])
+        self.assertFalse(emerald["issuer_reported_fda_acceptance"])
+        self.assertIn("POTENTIAL_FUTURE_2027_SNDA", emerald["regulatory_context"])
+        et = by_asset["ulixacaltamide"]
+        self.assertEqual(et["nct_id"], "NCT06087276")
+        self.assertEqual(et["issuer_reported_target_date"], "2027-01-29")
+        self.assertIn("Essential tremor", et["indication"])
+        self.assertTrue(et["issuer_reported_accepted_application"])
+        self.assertFalse(et["agency_independent_verification"])
+        decentralized = self.by_id["NCT06087276"]
+        self.assertEqual(decentralized["saved_registry_status"], "RECRUITING")
+        self.assertIn("TENACIA_EXCLUSIVE_ULIXACALTAMIDE_IP_LICENSE_CHINA_HONGKONG_MACAU_TAIWAN",
+                      decentralized["material_risk_flags"])
+        self.assertIn("ESSENTIAL3_DECENTRALIZED_IS_ONE_OF_TWO_TRIALS_NOT_COMPLETE_NDA_EFFICACY_EVIDENCE",
+                      decentralized["material_risk_flags"])
+        for nct in ("NCT05818553", "NCT07010471", "NCT06087276"):
+            item = self.by_id[nct]
+            self.assertFalse(item["independently_verified_current_legal_rights"])
+            self.assertFalse(item["independent_fda_pdufa_target_verified"])
+            self.assertIsNone(item["current_pdufa_target_date"])
+            self.assertIsNone(item["qualified_pipeline"])
+        self.assertEqual(r["issuer_reported_future_pdufa_event_count"], 6)
+        self.assertEqual(r["independently_verified_current_fda_pdufa_count"], 0)
+        self.assertEqual(r["independently_adjudicated_current_legal_rights_count"], 0)
+        self.assertIsNone(r["qualified_pipeline_count"])
+
+    def test_prax_missing_supersession_or_misattributed_future_target_is_rejected(self):
+        original = rights.collect_cases()
+        self.assertEqual(len(original), 15)
+        i = next(i for i,p in enumerate(original)
+                 if p["issuerTicker"] == "PRAX" and p["asset"] == "relutrigine")
+        invalid = [dict(p) for p in original]
+        rel = dict(invalid[i])
+        links = [dict(x) for x in rel["trialLinks"]]
+        embold = next(x for x in links if x["nctId"] == "NCT05818553")
+        embold["historicalIssuerReportedPdufaDate"] = "2026-08-01"
+        rel["trialLinks"] = links
+        invalid[i] = rel
+        with patch.object(rights, "collect_cases", return_value=invalid):
+            with self.assertRaisesRegex(ValueError, "September relutrigine goal"):
+                rights.build()
+        invalid = [dict(p) for p in original]
+        rel = dict(invalid[i])
+        links = [dict(x) for x in rel["trialLinks"]]
+        emerald = next(x for x in links if x["nctId"] == "NCT07010471")
+        emerald["issuerReportedCurrentPdufaDate"] = "2026-12-27"
+        rel["trialLinks"] = links
+        invalid[i] = rel
+        with patch.object(rights, "collect_cases", return_value=invalid):
+            with self.assertRaisesRegex(ValueError, "indication-specific PDUFA anchor"):
                 rights.build()
 
     def test_wrong_source_identity_and_duplicate_nct_are_blocked(self):
