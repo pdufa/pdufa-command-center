@@ -29,6 +29,9 @@ on:
       - 'new-platform/backend/app/hop_fda_nda206627_primary_source.py'
       - 'new-platform/backend/scripts/probe_hop_nda206627_primary_fda_approval.py'
       - 'new-platform/backend/tests/test_hop_fda_nda206627_primary_source.py'
+      - 'new-platform/backend/app/hop_fda_pdf_page_candidate_sampling.py'
+      - 'new-platform/backend/scripts/sample_hop_fda_published_letter_page_hints.py'
+      - 'new-platform/backend/tests/test_hop_fda_pdf_page_candidate_sampling.py'
   workflow_dispatch:
 
 permissions:
@@ -62,7 +65,8 @@ jobs:
             tests/test_hop_fda_gap_research_packets.py \
             tests/test_hop_fda_prior_pdf_lead_join.py \
             tests/test_hop_fda_identity_gap_dual_review.py \
-            tests/test_hop_fda_nda206627_primary_source.py
+            tests/test_hop_fda_nda206627_primary_source.py \
+            tests/test_hop_fda_pdf_page_candidate_sampling.py
       - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
         working-directory: new-platform/backend
         run: |
@@ -124,6 +128,14 @@ jobs:
         run: |
           PYTHONPATH=. python scripts/probe_hop_nda206627_primary_fda_approval.py \
             --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_nda206627_original_public_pdf_observation.json"
+      - name: Re-fetch eight distinct official published FDA PDFs and inspect bounded page hints
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/sample_hop_fda_published_letter_page_hints.py \
+            --private-enriched-packets-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
+            --private-pdf-page-hints-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_fda_pdf_page_navigation_hints.json" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_page_candidate_sample_aggregate.json" \
+            --limit 8
       - name: Retain only aggregate FDA source coverage counts and fingerprints
         uses: actions/upload-artifact@v4
         with:
