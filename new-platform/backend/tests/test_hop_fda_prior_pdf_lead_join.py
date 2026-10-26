@@ -222,3 +222,51 @@ def test_all_docs_missing_is_source_failure_not_fda_nonapproval():
     assert all(all(l["official_fda_pdf_url"] is None
                    for l in p["previously_probed_published_pdf_leads"])
                for p in private)
+
+
+
+def test_actual_prior_fda_document_provenance_links_locked_without_outcomes():
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    report = json.loads((root / "hop_fda_prior_pdf_lead_coverage_20261025.json")
+                        .read_text(encoding="utf-8"))
+    grouped = json.loads((root / "hop_fda_grouped_evidence_search_packets_20261025.json")
+                         .read_text(encoding="utf-8"))
+    pdfs = json.loads((root / "hop_fda_full_action_pdf_audit_index.json")
+                      .read_text(encoding="utf-8"))
+    docs = json.loads((root / "hop_fda_shared_pdf_reconciliation_index.json")
+                      .read_text(encoding="utf-8"))
+
+    assert report["status"] == "UNVERIFIED_ORIGINAL_FDA_EVIDENCE_PACKET_PDF_LEADS_JOINED"
+    assert report["total_private_original_application_research_packets"] == grouped[
+        "total_evidence_search_packets"] == 101
+    assert report["published_letter_references_in_packets"] == grouped[
+        "source_letter_references"] == 124
+    assert report["previously_probed_official_pdf_letter_references"] == 123
+    assert report["unavailable_published_pdf_letter_references"] == 1
+    assert report["distinct_prior_confirmed_pdf_sha256_in_packet_worklist"] == 122
+    assert report["shared_full_pdf_digests_across_multiple_letter_references"] == 1
+    assert report["packet_availability_counts"] == {
+        "ALL_PUBLISHED_PDF_LEADS_AVAILABLE_FROM_PRIOR_AUDIT": 100,
+        "NO_PUBLISHED_PDF_LEAD": 1,
+        "PARTIAL_PUBLISHED_PDF_LEADS": 0,
+    }
+    assert report["entire_fda_prior_confirmed_pdf_letter_count"] == (
+        pdfs["full_official_pdf_bytes_confirmed"] ==
+        docs["official_pdf_confirmed_letter_references"] == 457
+    )
+    assert report["entire_fda_published_letter_source_reference_count"] == 458
+    assert report["source_pdf_probe_original_archive_sha256"] == (
+        pdfs["original_fda_archive_sha256"] == docs["original_fda_archive_sha256"]
+    )
+    assert report["prior_pdf_bytes_probed_not_revalidated_in_current_run"] is True
+    assert report["private_pdf_source_link_records_not_exported"] is True
+    assert report["original_fda_review_cycles_independently_adjudicated"] == 0
+    assert report["individual_original_letter_page_ranges_verified"] == 0
+    assert report["complete_national_nda_bla_decision_denominator_verified"] is False
+    assert report["model_eligible_records"] == 0
+    assert report["approval_rate"] is None
+    assert report["prediction_probability"] is None
+    assert report["predictive_accuracy"] is None
