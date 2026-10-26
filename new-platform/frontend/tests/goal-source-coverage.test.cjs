@@ -109,3 +109,49 @@ test("GOAL cannot reuse old source coverage when authentication GET fails or ref
   assert.match(css,/@media\(max-width:650px\)/);
   assert.doesNotMatch(component,/fetch\(|localStorage|sessionStorage|method: ?["']POST|dispatchWorkflow|Twilio|placeOrder/i);
 });
+
+
+test("GOAL reconciles five categories including independently recorded SEC ticker conflicts",()=>{
+  const historical=report();
+  historical.findings_unresolved=21;
+  historical.findings_conflicted=2;
+  const audit=goalSourceCoverage(historical,scan);
+  assert.ok(audit);
+  assert.equal(audit.verified,995);
+  assert.equal(audit.unresolved,21);
+  assert.equal(audit.conflicted,2);
+  assert.equal(audit.unavailable,93);
+  assert.equal(audit.notApplicable,10);
+  assert.equal(audit.due,1121);
+  assert.equal(audit.fullCoverage,false);
+  const missing=structuredClone(historical);
+  delete missing.findings_conflicted;
+  assert.equal(goalSourceCoverage(missing,scan),null,
+    "do not silently drop two conflicts from 1121 declared findings");
+  const forged=structuredClone(historical);
+  forged.findings_conflicted=0;
+  assert.equal(goalSourceCoverage(forged,scan),null);
+  const negative=structuredClone(historical);
+  negative.findings_conflicted=-1;
+  assert.equal(goalSourceCoverage(negative,scan),null);
+  const complete=structuredClone(historical);
+  complete.full_coverage_verified=true;
+  assert.equal(goalSourceCoverage(complete,scan),null);
+});
+
+test("GOAL presents conflicted source checks separately without treating them as approvals",async()=>{
+  const current=report();
+  current.findings_unresolved=21;
+  current.findings_conflicted=2;
+  let view;
+  try {
+    await act(async()=>{view=create(React.createElement(Panel,{source:current,scan,loading:false}));});
+    const rendered=JSON.stringify(view.toJSON());
+    assert.match(rendered,/Published coverage partial/);
+    assert.match(rendered,/Conflicted/);
+    assert.match(rendered,/21/);
+    assert.match(rendered,/Cannot treat as verified/);
+    assert.match(rendered,/Full source coverage NOT verified/);
+    assert.doesNotMatch(rendered,/Source coverage not verified · inspect/);
+  }finally{if(view)await act(async()=>view.unmount());}
+});

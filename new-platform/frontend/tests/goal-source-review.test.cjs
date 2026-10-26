@@ -115,3 +115,55 @@ test("Incomplete recorded examples are labelled as a sample, while absent detail
     assert.equal(view.root.findAllByType("article").length,0);
   }finally{if(view)await act(async()=>view.unmount());}
 });
+
+
+test("Actual October 25 main nightly SEC/FINANCIAL ledger exposes all 23 source gaps, including both ticker conflicts",()=>{
+  const path=require("node:path");
+  const source=JSON.parse(fs.readFileSync(
+    path.join(__dirname,"../../../data/pdufa_source_report.json"),"utf8"));
+  const daily=JSON.parse(fs.readFileSync(
+    path.join(__dirname,"../../../data/daily_scan_results.json"),"utf8"));
+  const saved=daily.days.find(day=>String(day.run_id)===String(source.latest_run_id));
+  assert.ok(saved,"published source must match a dated nightly RESULTS run");
+  const sameRun={
+    date:saved.date_pacific,today:false,status:saved.status,
+    runId:saved.run_id,runUrl:saved.run_url
+  };
+  assert.equal(saved.date_pacific,"2026-10-25");
+  assert.equal(source.findings_due,1121);
+  assert.equal(source.findings_unresolved,21);
+  assert.equal(source.findings_conflicted,2);
+  assert.equal(source.required_findings_unresolved,23);
+  const matched=goalSourceReview(source,sameRun);
+  assert.ok(matched,"all actual required source issues must display");
+  assert.equal(matched.runId,saved.run_id);
+  assert.equal(matched.total,23);
+  assert.equal(matched.items.length,23);
+  assert.equal(new Set(matched.items.map(item=>item.id)).size,23);
+  assert.deepEqual(matched.items.filter(item=>item.status==="CONFLICT")
+    .map(item=>item.eventKey).sort(),["REGISTRY:QNCX","REGISTRY:TBPH"]);
+  assert.equal(matched.items.filter(item=>item.category==="SEC").length,22);
+  assert.equal(matched.items.filter(item=>item.category==="FINANCIAL").length,1);
+  assert.equal(matched.items.filter(item=>item.status==="REVIEW_REQUIRED").length,21);
+  assert.equal(matched.items.every(item=>item.reason.length>0),true);
+  assert.equal(goalSourceReview(source,{...sameRun,runId:sameRun.runId-1}),null);
+});
+
+test("SEC registry claims are accepted ONLY for their exact conflicted inventory identity",()=>{
+  const registry=issue({ticker:"QNCX",event_key:"REGISTRY:QNCX",
+    category:"SEC",claim:"FILINGS_INVENTORY",verification_status:"CONFLICT"});
+  const matched=goalSourceReview(report([registry]),scan);
+  assert.ok(matched);
+  assert.equal(matched.items[0].eventKey,"REGISTRY:QNCX");
+  for(const forged of [
+    {...registry,category:"FINANCIAL"},
+    {...registry,claim:"FINANCING_CLOSURE"},
+    {...registry,verification_status:"REVIEW_REQUIRED"},
+    {...registry,event_key:"REGISTRY:TBPH"},
+    {...registry,event_key:"REGISTRY:QNCX:other"},
+    {...registry,event_key:"REGISTRY:QNCX|PROGRAM"},
+  ]){
+    assert.equal(goalSourceReview(report([forged]),scan),null,
+      "reject modified SEC source identity without hiding genuine conflicts");
+  }
+});

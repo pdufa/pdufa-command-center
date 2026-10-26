@@ -29,6 +29,8 @@ export default function GoalSourceCoverage({source,scan,loading}:Props){
               <small>{audit.coveragePercent.toFixed(1)}% of due findings</small></div>
             <div><span>Unresolved</span><strong>{num(audit.unresolved)}</strong>
               <small>Need evidence review</small></div>
+            <div><span>Conflicted</span><strong>{num(audit.conflicted)}</strong>
+              <small>Conflicting source identity; do not treat as verified</small></div>
             <div><span>Unavailable</span><strong>{num(audit.unavailable)}</strong>
               <small>Cannot treat as verified</small></div>
             <div><span>Not applicable</span><strong>{num(audit.notApplicable)}</strong>
