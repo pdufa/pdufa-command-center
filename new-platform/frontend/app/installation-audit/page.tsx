@@ -100,7 +100,8 @@ export default function InstallationAudit() {
         {phase3Census.unavailableMarketCapTrialRecords.toLocaleString("en-US")} trial
         records also have unavailable market-cap data. Missing entries are
         not counted as ineligible.</p>
-      <p><a href={phase3Census.source} target="_blank" rel="noopener noreferrer">
+      <p><Link href="/installation-audit/phase3-census">Explore all 741 trial records by company, ticker and registry status</Link>.
+        {" "}<a href={phase3Census.source} target="_blank" rel="noopener noreferrer">
         Open dated research source and methodology</a>. Full FDA designation totals
         and qualified Pipeline eligibility remain unknown; no candidates,
         restrictions or trading actions are changed by this display.</p>
