@@ -197,3 +197,39 @@ def test_real_pinned_84_applications_plus_17_unknown_identity_tickets():
     assert data["maximum_published_letter_references_for_one_missing_application"] == 3
     assert data["fda_original_actions_independently_verified"] == 0
     assert data["model_eligible_records"] == 0
+
+
+
+def test_actual_fda_research_packet_audit_reconciles_pinned_124_letters():
+    import json
+    from pathlib import Path
+    directory = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    report = json.loads(
+        (directory / "hop_fda_grouped_evidence_search_packets_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    letters = json.loads(
+        (directory / "hop_fda_unmatched_letter_gap_audit_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    assert report["status"] == "ORIGINAL_FDA_APPLICATION_EVIDENCE_SEARCH_PACKETS_UNVERIFIED"
+    assert report["source_letter_references"] == letters["review_queue_references"] == 124
+    assert report["unverified_application_research_packets"] == 84
+    assert letters["distinct_candidate_applications_needing_source_research"] == 84
+    assert report["ambiguous_letter_identity_packets"] == 17
+    assert letters["ambiguous_or_unparseable_letter_references"] == 17
+    assert report["total_evidence_search_packets"] == 101
+    assert report["applications_with_repeated_letter_references"] == 20
+    assert report["letter_references_grouped_under_application_research"] == 107
+    assert report["pinned_fda_applications_tsv_sha256"] == (
+        letters["source_applications_tsv_sha256"]
+    )
+    assert report["pinned_fda_submissions_tsv_sha256"] == (
+        letters["source_submissions_tsv_sha256"]
+    )
+    assert report["private_grouped_packets_not_exported"] is True
+    assert report["independently_adjudicated_original_review_cycles"] == 0
+    assert report["model_eligible_records"] == 0
+    assert report["approval_rate"] is None
+    assert report["prediction_probability"] is None
+    assert report["predictive_accuracy"] is None
