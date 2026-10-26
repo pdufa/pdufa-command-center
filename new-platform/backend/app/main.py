@@ -1111,6 +1111,65 @@ def science_source_extract(programId: str, nctId: str):
         }
 
 
+@app.get("/api/science/assessment-coverage", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_assessment_coverage(programId: str, nctId: str):
+    """Conservative 8 x 5 assessment coverage map, not a scientific rating."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid exact program or NCT identifier")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT not present in program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived trial record not found")
+        summary = row.summary if isinstance(row.summary, dict) else {}
+        fields = (
+            ("primaryOutcomeMeasures", "resultsSummary", "effectSize", "clinicalResults", "outcomeMeasures"),
+            ("pValue", "confidenceInterval", "statisticalMethods", "statisticalAnalysis", "sampleSize"),
+            ("studyType", "allocation", "masking", "interventionModel", "primaryPurpose"),
+            ("adverseEvents", "seriousAdverseEvents", "safetyResults", "mortality", "withdrawals"),
+            ("replicationStudies", "subgroupAnalysis", "sensitivityAnalysis", "consistency", "externalReplication"),
+            ("regulatoryDesignation", "fdaMeetings", "submissionStatus", "reviewCycle", "labeling"),
+            ("manufacturing", "qualityControl", "batchConsistency", "inspection", "cGMP"),
+            ("eligibilityCriteria", "population", "comparator", "standardOfCare", "generalizability"),
+        )
+        labels = (
+            "Clinical efficacy", "Statistical integrity", "Trial design", "Safety",
+            "Reproducibility", "Regulatory pathway", "Manufacturing and quality",
+            "External validity and comparators",
+        )
+        assessments = []
+        for layer, names in enumerate(fields, 1):
+            for index, name in enumerate(names, 1):
+                value = summary.get(name)
+                present = value is not None and value != "" and value != [] and value != {}
+                assessments.append({
+                    "id": f"S{(layer - 1) * 5 + index:02d}",
+                    "layer": layer, "layerLabel": labels[layer - 1],
+                    "candidateField": name, "sourceFieldPresent": present,
+                    "evidenceVerified": False, "score": None, "confidence": None,
+                    "readiness": "NOT_READY",
+                })
+        return {
+            "schemaVersion": "science-coverage-v1",
+            "programId": programId, "nctId": nctId,
+            "sourceSha256": row.sha256,
+            "sourceFetchedAt": row.fetched_at.isoformat(),
+            "assessments": assessments,
+            "total": 40, "verified": 0,
+            "trialLinkageVerified": False,
+            "sourceDatesVerified": False,
+            "readyForAnalysis": False,
+            "approvalProbability": None,
+            "note": "Field-presence inventory only; field presence is not scientific evidence or validation.",
+        }
+
+
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
