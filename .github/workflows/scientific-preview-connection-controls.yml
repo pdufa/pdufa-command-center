@@ -18,10 +18,12 @@ on:
       - "new-platform/frontend/lib/scientific-depth-review-csv.ts"
       - "new-platform/frontend/lib/scientific-reviewer-local-audit.ts"
       - "new-platform/frontend/lib/scientific-captured-archive-check.ts"
+      - "new-platform/frontend/lib/scientific-handoff-drift-check.ts"
       - "new-platform/frontend/lib/scientific-evidence-requirements-csv.ts"
       - "new-platform/frontend/tests/scientific-depth-review-csv.test.cjs"
       - "new-platform/frontend/tests/scientific-reviewer-local-audit.test.cjs"
       - "new-platform/frontend/tests/scientific-captured-archive-check.test.cjs"
+      - "new-platform/frontend/tests/scientific-handoff-drift-check.test.cjs"
       - "new-platform/frontend/tests/scientific-evidence-requirements-csv.test.cjs"
       - "new-platform/frontend/tests/scientific-connection-route-handler.test.cjs"
       - ".github/workflows/scientific-preview-connection-controls.yml"
@@ -41,10 +43,12 @@ on:
       - "new-platform/frontend/lib/scientific-depth-review-csv.ts"
       - "new-platform/frontend/lib/scientific-reviewer-local-audit.ts"
       - "new-platform/frontend/lib/scientific-captured-archive-check.ts"
+      - "new-platform/frontend/lib/scientific-handoff-drift-check.ts"
       - "new-platform/frontend/lib/scientific-evidence-requirements-csv.ts"
       - "new-platform/frontend/tests/scientific-depth-review-csv.test.cjs"
       - "new-platform/frontend/tests/scientific-reviewer-local-audit.test.cjs"
       - "new-platform/frontend/tests/scientific-captured-archive-check.test.cjs"
+      - "new-platform/frontend/tests/scientific-handoff-drift-check.test.cjs"
       - "new-platform/frontend/tests/scientific-evidence-requirements-csv.test.cjs"
       - "new-platform/frontend/tests/scientific-connection-route-handler.test.cjs"
       - ".github/workflows/scientific-preview-connection-controls.yml"
@@ -68,6 +72,6 @@ jobs:
           cache-dependency-path: new-platform/frontend/package-lock.json
       - run: npm ci
       - name: Validate scientific connection and identity protection
-        run: node --test tests/scientific-captured-archive-check.test.cjs tests/scientific-assessment-evidence-grades.test.cjs tests/scientific-reviewer-local-audit.test.cjs tests/scientific-depth-review-csv.test.cjs tests/scientific-evidence-requirements-csv.test.cjs tests/scientific-connection-check.test.cjs tests/scientific-connection-route-handler.test.cjs tests/scientific-read-key-isolation.test.cjs
+        run: node --test tests/scientific-handoff-drift-check.test.cjs tests/scientific-captured-archive-check.test.cjs tests/scientific-assessment-evidence-grades.test.cjs tests/scientific-reviewer-local-audit.test.cjs tests/scientific-depth-review-csv.test.cjs tests/scientific-evidence-requirements-csv.test.cjs tests/scientific-connection-check.test.cjs tests/scientific-connection-route-handler.test.cjs tests/scientific-read-key-isolation.test.cjs
       - name: Typecheck frontend
         run: npx tsc --noEmit
