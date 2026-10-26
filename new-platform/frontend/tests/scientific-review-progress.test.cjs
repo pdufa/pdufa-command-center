@@ -34,11 +34,39 @@ function fixture() {
     disputedTechnicalPairCount: 0,
     historicalAuditCorruptionPairs: 0,
   }));
+  const questionSpec = [
+    ["protocol_amendment_chronology","protocol_sap"],
+    ["baseline_population_indication","published_results"],
+    ["pfs_initial_vs_followup","published_results"],
+    ["crossover_adjustment","published_results"],
+    ["safety_endpoint_taxonomy","published_results"],
+    ["exploratory_qol_multiplicity","published_results"],
+    ["2015_vs_2016_fda_actions","official_regulatory"],
+    ["independent_corroboration","independent_replication"],
+  ];
+  const questions = questionSpec.map(([questionId,gateId])=>{
+    const hasSource=gateId==="protocol_sap";
+    return {
+      questionId,gateId,
+      title:"Review original evidence for "+questionId,
+      priority:"high",
+      nextScientificCheck:"Independently authenticate dated original source documents and reconcile recorded clinical findings",
+      capturedSourceCount:hasSource?1:0,
+      eligibleSourcePairs:hasSource?1:0,
+      technicallyPairedSources:hasSource?1:0,
+      unpairedSources:0,
+      disputedSourcePairs:0,
+      invalidAuditHistoryPairs:0,
+      technicalWorkStatus:hasSource?"TECHNICAL_PAIR_ONLY_UNADJUDICATED":"CAPTURE_ORIGINAL_SOURCE_REQUIRED",
+      qualifiedIndependentReviewCompleted:false,
+      scientificQuestionResolved:false,
+    };
+  });
   return {
     nctId: NCT, mode: "isolated_read_only_technical_reviewer_preflight",
     sourceDocumentCount: 1, questionCount: 8, eligibleQuestionSourcePairs: 1,
     pairingTechnicalPreflightPassedCount: 1, disputedTechnicalPairCount: 0,
-    historicalAuditCorruptionPairs: 0, gates,
+    historicalAuditCorruptionPairs: 0, gates, questions, openUnadjudicatedQuestionCount:8,
     capturedBytesRehashed: true, independentClinicalReviewCount: 0,
     verifiedClinicalSourceCount: 0, qualifiedIndependenceAdjudicated: false,
     formalSecondPersonSignoffCount: 0, scientificAdjudicationComplete: false,
@@ -55,6 +83,10 @@ test("aggregate accepted only for technically consistent, non-adjudicated pilot 
   assert.equal(result.pairingTechnicalPreflightPassedCount,1);
   assert.equal(result.sourceDocumentCount,1);
   assert.equal(result.gates.length,4);
+  assert.equal(result.questions.length,8);
+  assert.equal(result.openUnadjudicatedQuestionCount,8);
+  assert.equal(result.questions[0].technicalWorkStatus,"TECHNICAL_PAIR_ONLY_UNADJUDICATED");
+  assert.equal(result.questions[0].scientificQuestionResolved,false);
   assert.equal(result.independentClinicalReviewCount,0);
   assert.equal(result.verifiedClinicalSourceCount,0);
   assert.equal(result.scientificScore,null);
@@ -62,6 +94,7 @@ test("aggregate accepted only for technically consistent, non-adjudicated pilot 
   assert.equal(result.scientificAdjudicationComplete,false);
   assert.equal(result.mayPromoteScientificScore,false);
   assert.doesNotMatch(JSON.stringify(result), /should never be copied|private|google_subject|reviewerEmail/);
+  assert.doesNotMatch(JSON.stringify(result), /untrusted identity|sourceUrl|sourceSha256/);
 });
 test("zero sources or reviewed statements is an incomplete technical preflight", () => {
   const input=fixture();
@@ -71,6 +104,10 @@ test("zero sources or reviewed statements is an incomplete technical preflight",
   input.gates[0].eligibleQuestionSourcePairs=0;
   input.gates[0].pairingTechnicalPreflightPassed=0;
   input.gates[0].twoAuthorizedReviewersRecorded=0;
+  input.questions[0].capturedSourceCount=0;
+  input.questions[0].eligibleSourcePairs=0;
+  input.questions[0].technicallyPairedSources=0;
+  input.questions[0].technicalWorkStatus="CAPTURE_ORIGINAL_SOURCE_REQUIRED";
   const report=validateScientificPairProgress(input);
   assert.equal(report.scientificAdjudicationComplete,false);
   assert.equal(report.independentClinicalReviewCount,0);
@@ -96,6 +133,20 @@ test("tampered gate, identity, signing claim, count, or pairing totals fail clos
     x=>{x.gates[0].twoAuthorizedReviewersRecorded=0;},
     x=>{x.gates=[...x.gates,...x.gates];},
     x=>{x.gates[0].disputedTechnicalPairCount=9;},
+    x=>{x.openUnadjudicatedQuestionCount=7;},
+    x=>{x.questions[0].scientificQuestionResolved=true;},
+    x=>{x.questions[0].qualifiedIndependentReviewCompleted=true;},
+    x=>{x.questions[0].technicalWorkStatus="CLINICALLY_APPROVED";},
+    x=>{x.questions[0].technicallyPairedSources=0;},
+    x=>{x.questions[0].gateId="official_regulatory";},
+    x=>{x.questions[0].questionId="different_question";},
+    x=>{x.questions[0].priority="verified";},
+    x=>{x.questions[0].title="";},
+    x=>{x.questions[0].nextScientificCheck="";},
+    x=>{x.questions[0].googleSubject="untrusted identity"; x.questions[0].capturedSourceCount=2;},
+    x=>{x.questions[0].disputedSourcePairs=2;},
+    x=>{x.questions.pop();},
+
   ];
   for(const mutation of mutations){
     const x=fixture();mutation(x);
@@ -169,6 +220,10 @@ test("proxy refuses missing contract, backend denial, and forged clinical conclu
 test("the trial UI uses only the protected route and never claims scientific adjudication",()=>{
   const ui=fs.readFileSync(path.join(__dirname,"../app/ScientificAssessment.tsx"),"utf8");
   assert.match(ui,/Check technical A\/B reviewer progress/);
+  assert.match(ui,/Eight scientific reconciliation questions requiring review/);
+  assert.match(ui,/scientificReviewerPairProgress.questions.map/);
+  assert.match(ui,/Next independent source\/reviewer check/);
+  assert.match(ui,/Scientific question resolved: NO/);
   assert.match(ui,/reviewer-progress\?nct_id=NCT02142738/);
   assert.match(ui,/validateScientificPairProgress\(await response.json\(\)\)/);
   assert.match(ui,/Independent clinical reviews: 0/);
