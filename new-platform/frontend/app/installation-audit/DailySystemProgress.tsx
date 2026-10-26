@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {MAIN_DAILY_EVIDENCE} from "../../lib/main-daily-evidence";
+
 import {calculateProgress} from "../../lib/daily-system-progress";
 import {MAIN_DAILY_EVIDENCE} from "../../lib/main-daily-evidence";
 
