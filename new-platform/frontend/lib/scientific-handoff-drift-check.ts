@@ -45,14 +45,16 @@ function validate(raw: string): ValidHandoff {
   let value: unknown;
   try { value = JSON.parse(raw); }
   catch { return fail(); }
-  if (!isRecord(value) || value.nctId !== NCT
+  if (!isRecord(value)) fail();
+  const fingerprintRows = value.capturedPdfFingerprints;
+  if (value.nctId !== NCT
       || value.schemaVersion !== "isolated-science-source-review-handoff-v1"
       || value.classification !== "UNSIGNED_UNVERIFIED_SOURCE_INVENTORY"
-      || !Array.isArray(value.capturedPdfFingerprints)
-      || value.capturedPdfFingerprints.length > 8) fail();
+      || !Array.isArray(fingerprintRows)
+      || fingerprintRows.length > 8) fail();
 
   const docs: RawDocument[] = [];
-  for (const item of value.capturedPdfFingerprints) {
+  for (const item of fingerprintRows as unknown[]) {
     if (!isRecord(item)) fail();
     const { documentId, gateId, sourceType, sha256, byteLength } = item;
     if (typeof documentId !== "string" || !/^[a-f0-9]{32}$/.test(documentId)
@@ -86,7 +88,7 @@ function validate(raw: string): ValidHandoff {
     if (JSON.stringify(value) !== JSON.stringify(expected)) fail();
   } catch { fail(); }
 
-  return value as ValidHandoff;
+  return value as unknown as ValidHandoff;
 }
 
 export type HandoffDrift = {
