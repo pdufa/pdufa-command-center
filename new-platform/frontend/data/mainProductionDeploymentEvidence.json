@@ -1,0 +1,21 @@
+{
+  "id": "dpl_C5AzDtzWZhL1ym9cF1DJhB9RW4uT",
+  "type": "vercel-production-deployment",
+  "observedAt": "2026-10-26T22:25:16.789Z",
+  "projectId": "prj_7VRIuXH3FzUseTmXkzLDYQbEAd5l",
+  "projectName": "pdufa-new-dashboard",
+  "repository": "pdufa/pdufa-command-center",
+  "commit": "dbf786766a3f5c39f65c44c452a01422a431df1f",
+  "branch": "main",
+  "target": "production",
+  "state": "READY",
+  "url": "https://pdufa-new-dashboard-goeofn761-pdufa.vercel.app",
+  "aliases": [
+    "pdufa-new-dashboard.vercel.app",
+    "pdufa-new-dashboard-pdufa.vercel.app",
+    "pdufa-new-dashboard-git-main-pdufa.vercel.app"
+  ],
+  "readyAt": "2026-10-26T21:52:21.084Z",
+  "evidenceUri": "https://vercel.com/pdufa/pdufa-new-dashboard/C5AzDtzWZhL1ym9cF1DJhB9RW4uT",
+  "collectionMethod": "Authenticated Vercel get_deployment; deployment metadata only, not application runtime or scientific certification."
+}

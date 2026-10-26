@@ -38,10 +38,10 @@ test("published snapshot counts partial, implementation and unknown proof separa
   const {total,groups} = summarizeInstallationAudit(items);
   assert.equal(total.gates,59);
   assert.equal(total.excluded,1);
-  assert.equal(total.implementationSignals,10);
+  assert.equal(total.implementationSignals,9);
   assert.equal(total.partial,9);
   assert.equal(total.unverified,40);
-  assert.equal(total.independentlyVerified,0);
+  assert.equal(total.independentlyVerified,1);
   assert.equal(total.accepted,0);
   assert.equal(total.gates, total.implementationSignals+total.partial+total.unverified+total.independentlyVerified);
   assert.equal(groups.reduce((n,g)=>n+g.totals.gates,0),59);

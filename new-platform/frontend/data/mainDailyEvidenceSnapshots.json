@@ -1,0 +1,200 @@
+[
+  {
+    "schemaVersion": 1,
+    "asOf": "2026-10-26",
+    "recordedAt": "2026-10-26T22:25:16.789Z",
+    "timezone": "America/Los_Angeles",
+    "scope": "MAIN/core-platform-gates/v1",
+    "inventorySource": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+    "observations": [
+      {
+        "id": "core-platform.code",
+        "status": "Code present",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Production page and authenticated health/database checks passed; complete application runtime acceptance remains unverified"
+      },
+      {
+        "id": "core-platform.deployment",
+        "status": "Verified",
+        "evidenceUri": "https://vercel.com/pdufa/pdufa-new-dashboard/C5AzDtzWZhL1ym9cF1DJhB9RW4uT",
+        "note": "The exact frontend commit is READY on the production alias. This verifies deployment only; complete runtime acceptance remains open.",
+        "proofId": "dpl_C5AzDtzWZhL1ym9cF1DJhB9RW4uT"
+      },
+      {
+        "id": "core-platform.runtime",
+        "status": "Partial",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Production page and authenticated health/database checks passed; complete application runtime acceptance remains unverified"
+      },
+      {
+        "id": "pipeline.code",
+        "status": "Not audited",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Full qualified Pipeline total unknown; 11,598 clinical records are not qualified candidates. QNCX symbol change and TBPH merger/suspension require current-public-issuer reconciliation before qualification"
+      },
+      {
+        "id": "pipeline.deployment",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Full qualified Pipeline total unknown; 11,598 clinical records are not qualified candidates. QNCX symbol change and TBPH merger/suspension require current-public-issuer reconciliation before qualification"
+      },
+      {
+        "id": "pipeline.runtime",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Full qualified Pipeline total unknown; 11,598 clinical records are not qualified candidates. QNCX symbol change and TBPH merger/suspension require current-public-issuer reconciliation before qualification"
+      },
+      {
+        "id": "pipeline.evidence",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Full qualified Pipeline total unknown; 11,598 clinical records are not qualified candidates. QNCX symbol change and TBPH merger/suspension require current-public-issuer reconciliation before qualification"
+      },
+      {
+        "id": "gem-jr-gem-wt.code",
+        "status": "Code present",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "11 GEM JR and 6 GEM are saved membership counts, not certified trial scores; WT runtime not confirmed"
+      },
+      {
+        "id": "gem-jr-gem-wt.deployment",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "11 GEM JR and 6 GEM are saved membership counts, not certified trial scores; WT runtime not confirmed"
+      },
+      {
+        "id": "gem-jr-gem-wt.runtime",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "11 GEM JR and 6 GEM are saved membership counts, not certified trial scores; WT runtime not confirmed"
+      },
+      {
+        "id": "gem-jr-gem-wt.evidence",
+        "status": "Partial",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "11 GEM JR and 6 GEM are saved membership counts, not certified trial scores; WT runtime not confirmed"
+      },
+      {
+        "id": "evidence-verification.code",
+        "status": "Code present",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "2026-10-25 source audit: 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable, 10 N/A; SEC and FINANCIAL source families remain missing"
+      },
+      {
+        "id": "evidence-verification.deployment",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "2026-10-25 source audit: 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable, 10 N/A; SEC and FINANCIAL source families remain missing"
+      },
+      {
+        "id": "evidence-verification.runtime",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "2026-10-25 source audit: 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable, 10 N/A; SEC and FINANCIAL source families remain missing"
+      },
+      {
+        "id": "evidence-verification.evidence",
+        "status": "Partial",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "2026-10-25 source audit: 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable, 10 N/A; SEC and FINANCIAL source families remain missing"
+      },
+      {
+        "id": "regulatory-intelligence.code",
+        "status": "Not audited",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "FDA designation grant evidence and dates not fully verified"
+      },
+      {
+        "id": "regulatory-intelligence.deployment",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "FDA designation grant evidence and dates not fully verified"
+      },
+      {
+        "id": "regulatory-intelligence.runtime",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "FDA designation grant evidence and dates not fully verified"
+      },
+      {
+        "id": "regulatory-intelligence.evidence",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "FDA designation grant evidence and dates not fully verified"
+      },
+      {
+        "id": "investment-analysis.code",
+        "status": "Not audited",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "No audited runtime or complete evidence coverage; no trading change authorized"
+      },
+      {
+        "id": "investment-analysis.deployment",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "No audited runtime or complete evidence coverage; no trading change authorized"
+      },
+      {
+        "id": "investment-analysis.runtime",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "No audited runtime or complete evidence coverage; no trading change authorized"
+      },
+      {
+        "id": "investment-analysis.evidence",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "No audited runtime or complete evidence coverage; no trading change authorized"
+      },
+      {
+        "id": "results-reporting.code",
+        "status": "Code present",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "October 25 date-indexed PARTIAL RESULTS published with 11,598 tracked records, GEM JR 11 and GEM 6; qualified Pipeline and FDA designation counts remain unknown"
+      },
+      {
+        "id": "results-reporting.deployment",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "October 25 date-indexed PARTIAL RESULTS published with 11,598 tracked records, GEM JR 11 and GEM 6; qualified Pipeline and FDA designation counts remain unknown"
+      },
+      {
+        "id": "results-reporting.runtime",
+        "status": "Partial",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "October 25 date-indexed PARTIAL RESULTS published with 11,598 tracked records, GEM JR 11 and GEM 6; qualified Pipeline and FDA designation counts remain unknown"
+      },
+      {
+        "id": "results-reporting.evidence",
+        "status": "Partial",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "October 25 date-indexed PARTIAL RESULTS published with 11,598 tracked records, GEM JR 11 and GEM 6; qualified Pipeline and FDA designation counts remain unknown"
+      },
+      {
+        "id": "final-acceptance.code",
+        "status": "Code present",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Requires production verification, complete science evidence and validated outcomes"
+      },
+      {
+        "id": "final-acceptance.deployment",
+        "status": "Preview READY",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Requires production verification, complete science evidence and validated outcomes"
+      },
+      {
+        "id": "final-acceptance.runtime",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Requires production verification, complete science evidence and validated outcomes"
+      },
+      {
+        "id": "final-acceptance.evidence",
+        "status": "Not verified",
+        "evidenceUri": "https://github.com/pdufa/pdufa-command-center/blob/dbf786766a3f5c39f65c44c452a01422a431df1f/new-platform/frontend/app/installation-audit/page.tsx",
+        "note": "Requires production verification, complete science evidence and validated outcomes"
+      }
+    ],
+    "productionCommit": "dbf786766a3f5c39f65c44c452a01422a431df1f"
+  }
+]
