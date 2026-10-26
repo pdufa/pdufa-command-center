@@ -294,11 +294,26 @@ def validate_review_timelines(
 
 
 def review_timeline_summary() -> dict:
+    """Ground coverage denominators in selected research fixtures, not a cohort."""
     validate_review_timelines()
+    sampled_actions = unique_final_actions(list(RESEARCH_ACTIONS))
+    sampled_applications = {e.application_key for e in sampled_actions.values()}
+    linked_keys = {
+        (c.application_key, c.submission_key, c.action_date, c.action_type)
+        for c in REVIEW_TIMELINES
+    }
+    linked_applications = {c.application_key for c in REVIEW_TIMELINES}
+    missing_keys = set(sampled_actions) - linked_keys
     return {
         "research_only": True,
-        "applications_with_source_supported_timelines": len({x.application_key for x in REVIEW_TIMELINES}),
-        "source_supported_review_timelines": len(REVIEW_TIMELINES),
+        "selected_research_action_endpoints": len(sampled_actions),
+        "selected_research_application_identifiers": len(sampled_applications),
+        "applications_with_source_supported_timelines": len(linked_applications),
+        "source_supported_review_timelines": len(linked_keys),
+        "selected_actions_without_structured_timeline": len(missing_keys),
+        "selected_applications_without_structured_timeline": len(
+            sampled_applications - linked_applications
+        ),
         "independently_certified_review_cycles": 0,
         "complete_application_denominator_verified": False,
         "source_publication_asof_verified": False,
