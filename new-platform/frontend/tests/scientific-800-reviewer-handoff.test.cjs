@@ -129,15 +129,22 @@ test("fake reviewer slot, cross-trial mismatch and forged clinical/source comple
   }
 });
 
-test("trial page offers 800-task handoffs for two blank reviewer slots and retains 320-task process", () => {
-  const ui = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
-  assert.match(ui, /Independent 800-point reviewer handoff/);
-  assert.match(ui, /Download 800-point reviewer A worksheet \(CSV\)/);
-  assert.match(ui, /Download 800-point reviewer B worksheet \(CSV\)/);
-  assert.match(ui, /buildScientific800ReviewerHandoffCsv\(result.investigation40, result.readinessGrades, reviewerSlot\)/);
-  assert.match(ui, /scientific_800_reviewer_/);
-  assert.match(ui, /Download reviewer A worksheet \(CSV\)/);
-  assert.match(ui, /Download reviewer B worksheet \(CSV\)/);
-  assert.match(ui, /Compare returned A\/B worksheets locally/);
-  assert.doesNotMatch(ui, /runScan\(|placeTrade\(|saveGrade\(/);
+test("the exact-NCT trial page links source-aware 800 A/B handoff without replacing 320", () => {
+  const component = fs.readFileSync(path.join(__dirname, "../app/Scientific800Handoff.tsx"), "utf8");
+  const page = fs.readFileSync(path.join(__dirname, "../app/trial/[nctId]/page.tsx"), "utf8");
+  const legacy = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
+  assert.match(page, /<Scientific800Handoff exactId=\{"TRIAL\|" \+ nct\} \/>/);
+  assert.match(component, /Independent 800-point reviewer handoff/);
+  assert.match(component, /Download 800-point reviewer A worksheet \(CSV\)/);
+  assert.match(component, /Download 800-point reviewer B worksheet \(CSV\)/);
+  assert.match(component, /buildScientific800ReviewerHandoffCsv\(validated.matrix, validated.audit, slot\)/);
+  assert.match(component, /scientific_800_reviewer_/);
+  assert.match(component, /responseJson\.exactId !== exactId/);
+  assert.match(component, /responseJson\.assessment\.overall_score !== null/);
+  assert.match(component, /cache: "no-store"/);
+  assert.match(component, /current\.current\?\.abort\(\)/);
+  assert.match(legacy, /Download reviewer A worksheet \(CSV\)/);
+  assert.match(legacy, /Download reviewer B worksheet \(CSV\)/);
+  assert.match(legacy, /Compare returned A\/B worksheets locally/);
+  assert.doesNotMatch(component, /runScan\(|placeTrade\(|saveGrade\(/);
 });
