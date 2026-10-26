@@ -36,3 +36,21 @@ The public dashboard's **PDUFA → PIPELINE** historical panel is currently a **
 The pilot needs the actual organization contact secret `SEC_USER_AGENT`. Until a real contact is configured, it will intentionally report 0 attempted SEC primary-document requests (with a denominator for selected leads). Do not fabricate a User-Agent or interpret this as adverse legal-rights evidence.
 
 **Scope guarantee:** None of these runs adds historical census trials to live Pipeline or GEM JR/GEM, changes the Pipeline **$300M–$10B** market-cap restriction, reassigns independent FS/FA preset memberships, creates trades, or claims PDUFA/FDA outcome predictions.
+
+## Nightly scan health on the dashboard
+
+In **PDUFA → PIPELINE**, the separate **Nightly research scan · GitHub status** panel queries an authenticated, read-only server endpoint, which checks public GitHub scheduled runs. It does **not** recalculate or update the pinned historical 741-study scorecard.
+
+The health panel checks the actual `research-ledger` job for scheduled MAIN workflow runs, and requires the exact named research-only artifact to exist and be unexpired before saying a full scan completed. It distinguishes:
+
+- **No full scheduled research scan observed:** before the first nominal 8 PM scan, or only deliberate seasonal DST-alternate skips.
+- **Scheduled research scan in progress:** the actual source job has not finished.
+- **Completed, report confirmed:** the full source job succeeded and its artifact exists.
+- **Last result stale:** the most recent full job succeeded, but is more than 36 hours old.
+- **Failed full source scan:** the source job or DST gate failed/cancelled.
+- **Report artifact missing:** workflow/job success does not establish a downloadable research report.
+- **GitHub status unavailable:** retrieval or validation failed; never displayed as a successful scan.
+
+The **Refresh status** button checks again. The source API uses a short cache to avoid exhausting GitHub's public rate limit; the check timestamp is displayed. Job runs that intentionally skip due to the paired UTC daylight-saving schedule are not counted as successful full scans. Link directly to the selected full GitHub run for inspection.
+
+**The daily scan status is not the live PIPELINE/GEM collector** and does not independently prove registry coverage, SEC primary-document access, company commercial rights, clinical outcome prediction, or any current candidate membership. Pinned evidence numbers remain fixed until independently republished and reviewed.
