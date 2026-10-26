@@ -122,7 +122,7 @@ def build():
                 raise ValueError("NCT/asset/indication or PDUFA evidence check failed")
             sponsor_pdufa = link.get("issuerReportedCurrentPdufaDate")
             if sponsor_pdufa is not None:
-                if (not re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", sponsor_pdufa)
+                if (not re.fullmatch(r"\d{4}-\d{2}-\d{2}", sponsor_pdufa)
                     or date.fromisoformat(sponsor_pdufa) <= date.fromisoformat(EVIDENCE_AS_OF)
                     or link.get("issuerReportedFdaAcceptance") is not True
                     or link.get("issuerReportedCurrentPdufaSourceUrl") not in
