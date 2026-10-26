@@ -145,6 +145,9 @@ def audit(fetcher=None, sleep_fn=time.sleep):
         fetcher = fetch_sec_submissions
     trials, companies = load_originals()
     issuers = []
+    denied_streak = 0  # Stop repeated requests if SEC rejects runner with HTTP 403.
+    blocked_after_403 = False
+    actual_requests = 0
     for idx, issuer in enumerate(sorted(companies, key=lambda x: x["ticker"])):
         state = {"ticker": issuer["ticker"], "cik": issuer["cik"],
                  "sec_submissions_url": issuer["secSubmissionsUrl"],
@@ -158,7 +161,14 @@ def audit(fetcher=None, sleep_fn=time.sleep):
                  "candidate_filings": [], "latest_annual_report": None,
                  "error": None, "current_drug_development_rights_verified": False}
         try:
+            if blocked_after_403:
+                state["sec_source_status"] = "SEC_ACCESS_BLOCKED_403"
+                state["error"] = "Skipped to honor SEC access restriction after three HTTP 403 responses"
+                issuers.append(state)
+                continue
+            actual_requests += 1
             result = extract_filing_candidates(issuer["cik"], fetcher(issuer["cik"]))
+            denied_streak = 0
             state["official_metadata_retrieved_at_utc"] = datetime.now(timezone.utc).isoformat()
             state["sec_source_status"] = (
                 "SOURCE_DOCUMENT_CANDIDATES" if result["candidate_filings"]
@@ -170,9 +180,18 @@ def audit(fetcher=None, sleep_fn=time.sleep):
             state["malformed_candidate_entries"] = result["invalid_form_entries"]
             state["candidate_filings"] = result["candidate_filings"]
             state["latest_annual_report"] = result["latest_annual_report"]
+        except urllib.error.HTTPError as exc:
+            state["error"] = type(exc).__name__ + ": " + str(exc)[:220]
+            if exc.code == 403:
+                denied_streak += 1
+                if denied_streak >= 3:
+                    blocked_after_403 = True
+            else:
+                denied_streak = 0
         except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError,
                 urllib.error.URLError) as exc:
             state["error"] = type(exc).__name__ + ": " + str(exc)[:220]
+            denied_streak = 0
         issuers.append(state)
         if idx < len(companies) - 1:
             sleep_fn(0.32)  # <= ~3.1 SEC requests/second, well below fair-access cap
@@ -203,6 +222,8 @@ def audit(fetcher=None, sleep_fn=time.sleep):
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "historical_trial_count": 741, "historical_issuer_count": 130,
         "sec_metadata_retrieved": fetched,
+        "sec_actual_requests_attempted": actual_requests,
+        "sec_access_denied_circuit_breaker": blocked_after_403,
         "sec_metadata_unresolved": 130-fetched,
         "issuers_with_candidate_primary_filings": found,
         "trials_with_issuer_filing_candidate_pointers": covered,
@@ -226,6 +247,8 @@ if __name__ == "__main__":
     path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print("SEC official submissions metadata retrieved:", report["sec_metadata_retrieved"], "/130")
     print("SEC official submissions unresolved:", report["sec_metadata_unresolved"], "/130")
+    print("SEC outgoing requests:", report["sec_actual_requests_attempted"], "/130")
+    print("SEC access denied circuit breaker triggered:", report["sec_access_denied_circuit_breaker"])
     print("Issuers with candidate primary filing references:", report["issuers_with_candidate_primary_filings"], "/130")
     print("Trials with issuer filing pointers:", report["trials_with_issuer_filing_candidate_pointers"], "/741")
     print("Independently verified current rights: 0/741; FDA/PDUFA: 0/741; Pipeline: UNKNOWN.")
