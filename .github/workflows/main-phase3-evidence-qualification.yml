@@ -29,6 +29,9 @@ on:
       - 'tests/test_phase3_sec_exact_term_leads.py'
       - 'scripts/phase3_rights_review_worklist.py'
       - 'tests/test_phase3_rights_review_worklist.py'
+      - 'scripts/phase3_rights_review_submissions.py'
+      - 'tests/test_phase3_rights_review_submissions.py'
+      - 'data/phase3_rights_review_submissions.json'
       - 'scripts/build_phase3_rights_evidence_gaps.py'
       - 'tests/test_phase3_evidence_boundaries.py'
       - '.github/workflows/main-phase3-evidence-qualification.yml'
@@ -45,7 +48,7 @@ jobs:
           persist-credentials: false
       - name: Validate scripts and tests
         run: |
-          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py scripts/phase3_sec_rights_documents_pilot.py scripts/phase3_sec_exact_term_leads.py scripts/phase3_rights_review_worklist.py scripts/phase3_trial_program_identity.py scripts/phase3_sec_trial_rights_join.py scripts/check_phase3_original_registry_pilot.py
+          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py scripts/phase3_sec_rights_documents_pilot.py scripts/phase3_sec_exact_term_leads.py scripts/phase3_rights_review_worklist.py scripts/phase3_rights_review_submissions.py scripts/phase3_trial_program_identity.py scripts/phase3_sec_trial_rights_join.py scripts/check_phase3_original_registry_pilot.py
           python3 -m unittest discover -s tests -p test_phase3_original_registry_pilot.py -v
           python3 -m unittest discover -s tests -p test_phase3_trial_program_identity.py -v
           python3 -m unittest discover -s tests -p test_phase3_sec_trial_rights_join.py -v
@@ -58,6 +61,7 @@ jobs:
           python3 -m unittest discover -s tests -p 'test_phase3_sec_rights_documents_pilot*.py' -v
           python3 -m unittest discover -s tests -p test_phase3_sec_exact_term_leads.py -v
           python3 -m unittest discover -s tests -p test_phase3_rights_review_worklist.py -v
+          python3 -m unittest discover -s tests -p test_phase3_rights_review_submissions.py -v
           python3 -m unittest discover -s tests -p test_phase3_evidence_boundaries.py -v
       - name: Retrieve original 741-study evidence
         run: python3 scripts/check_phase3_full_original_sources.py "$RUNNER_TEMP/main_phase3_registry.json"
@@ -81,6 +85,8 @@ jobs:
         run: python3 scripts/phase3_sec_trial_rights_join.py "$RUNNER_TEMP/main_phase3_program_identity.json" "$RUNNER_TEMP/main_phase3_rights_casebook.json" "$RUNNER_TEMP/main_phase3_sec_rights_leads.json" "$RUNNER_TEMP/main_phase3_sec_primary_documents_pilot.json" "$RUNNER_TEMP/main_phase3_sec_trial_rights_join.json"
       - name: Build original-source linked commercial-rights trial review worklist
         run: python3 scripts/phase3_rights_review_worklist.py "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_qualification_ledger.json" "$RUNNER_TEMP/main_phase3_rights_casebook.json" "$RUNNER_TEMP/main_phase3_sec_rights_leads.json" "$RUNNER_TEMP/main_phase3_sec_trial_rights_join.json" "$RUNNER_TEMP/main_phase3_rights_review_worklist.json" --csv "$RUNNER_TEMP/main_phase3_rights_review_worklist.csv"
+      - name: Validate reviewer-source submissions against all six rights checks per trial
+        run: python3 scripts/phase3_rights_review_submissions.py "$RUNNER_TEMP/main_phase3_rights_review_worklist.json" data/phase3_rights_review_submissions.json "$RUNNER_TEMP/main_phase3_rights_review_submissions_coverage.json"
       - name: Preserve research-only evidence and ledger
         if: always()
         uses: actions/upload-artifact@v4
@@ -98,5 +104,6 @@ jobs:
             ${{ runner.temp }}/main_phase3_sec_trial_rights_join.json
             ${{ runner.temp }}/main_phase3_rights_review_worklist.json
             ${{ runner.temp }}/main_phase3_rights_review_worklist.csv
+            ${{ runner.temp }}/main_phase3_rights_review_submissions_coverage.json
           if-no-files-found: warn
           retention-days: 7
