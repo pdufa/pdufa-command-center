@@ -179,3 +179,82 @@ export function compareScientific800ReviewerCsvs(
     fdaApprovalProbability: null,
   };
 }
+
+
+function discrepancyCsvCell(value: string | number): string {
+  let safe = String(value).replace(/[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]+/gu, " ");
+  if (/^\s*[=+\-@]/u.test(safe)) safe = "'" + safe;
+  return '"' + safe.replaceAll('"', '""') + '"';
+}
+
+/**
+ * Complete 800-row review action LEDGER. Each flag is based on untrusted
+ * candidate worksheet claims; this function does not verify source bytes,
+ * reviewer identity or signatures and cannot publish an adjudication.
+ *
+ * Always calls the existing strict comparison first, so a forged score,
+ * altered task identity, cross-NCT worksheet or changed lock field refuses
+ * the entire export instead of producing a misleading partial ledger.
+ */
+export function buildScientific800DiscrepancyLedgerCsv(
+  matrix: ScientificDepthMatrix,
+  audit: ScientificInputAudit,
+  reviewerACsv: string,
+  reviewerBCsv: string,
+): string {
+  const summary = compareScientific800ReviewerCsvs(
+    matrix, audit, reviewerACsv, reviewerBCsv,
+  );
+  if (summary.comparedTaskRows !== 800 || summary.adjudicatedTasks !== 0
+      || summary.reviewerIdentityAuthenticated !== false
+      || summary.sourceBytesVerified !== false
+      || summary.fdaApprovalProbability !== null
+      || summary.scientificScore !== null) reject();
+
+  const A = parseCsv(reviewerACsv), B = parseCsv(reviewerBCsv);
+  const fields = [
+    "nct_id", "task_key", "assessment_id", "depth_level", "method_id",
+    "linked_requirement_ids", "reviewer_a_candidate_decision",
+    "reviewer_b_candidate_decision", "reviewer_a_source_url_UNVERIFIED",
+    "reviewer_b_source_url_UNVERIFIED", "reviewer_a_sha256_UNVERIFIED",
+    "reviewer_b_sha256_UNVERIFIED", "reviewer_a_missing_claimed_provenance",
+    "reviewer_b_missing_claimed_provenance", "one_sided_candidate_decision",
+    "conflicting_candidate_decisions", "conflicting_document_references",
+    "matching_claimed_reviewer_name", "independent_review_next_actions",
+    "scientific_adjudication_status",
+  ];
+  const lines = [fields.map(discrepancyCsvCell).join(",")];
+  for (let index = 1; index <= 800; index++) {
+    const a = A[index], b = B[index];
+    const aDecision = DECISIONS.has(a[26]), bDecision = DECISIONS.has(b[26]);
+    const aMissing = aDecision && (!hasSource(a) || !a[18].trim() || !a[25].trim());
+    const bMissing = bDecision && (!hasSource(b) || !b[18].trim() || !b[25].trim());
+    const oneSided = aDecision !== bDecision;
+    const decisionConflict = aDecision && bDecision && a[26] !== b[26];
+    const sourceConflict = aDecision && bDecision && hasSource(a) && hasSource(b)
+      && (a[20] !== b[20] || a[21].toLowerCase() !== b[21].toLowerCase());
+    const matchingName = aDecision && bDecision && a[18].trim() && b[18].trim()
+      && a[18].trim().toLocaleLowerCase() === b[18].trim().toLocaleLowerCase();
+    const actions: string[] = [];
+    if (!aDecision || !bDecision) actions.push("COLLECT_MISSING_INDEPENDENT_REVIEW");
+    if (aMissing || bMissing) actions.push("OBTAIN_COMPLETE_SOURCE_PROVENANCE");
+    if (decisionConflict) actions.push("RECONCILE_CONFLICTING_FINDINGS");
+    if (sourceConflict) actions.push("RECONCILE_CLAIMED_SOURCE_DOCUMENTS");
+    if (matchingName) actions.push("CHECK_REVIEWER_INDEPENDENCE");
+    // Every candidate claim still requires authenticated review and true
+    // original-source acquisition even when the local strings look complete.
+    actions.push("AUTHENTICATE_REVIEWERS_AND_VERIFY_ORIGINAL_SOURCES");
+    const taskKey = a[1] + ":depth_" + a[2];
+    const columns = [
+      matrix.nctId, taskKey, a[1], a[2], a[3], a[15],
+      a[26], b[26], a[20], b[20], a[21], b[21],
+      aMissing ? "YES" : "NO", bMissing ? "YES" : "NO",
+      oneSided ? "YES" : "NO", decisionConflict ? "YES" : "NO",
+      sourceConflict ? "YES" : "NO", matchingName ? "YES" : "NO",
+      actions.join(";"), "NOT_ADJUDICATED",
+    ];
+    lines.push(columns.map(discrepancyCsvCell).join(","));
+  }
+  if (lines.length !== 801) reject();
+  return lines.join("\r\n") + "\r\n";
+}
