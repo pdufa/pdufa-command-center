@@ -43,10 +43,20 @@ export function goalSourceReview(source: unknown, scan: GoalScanView | null): Go
   const items: GoalSourceIssue[] = [];
   const seen = new Set<string>();
   for (const row of rows) {
+    // SEC ticker/CIK conflicts are published with REGISTRY:TICKER identities,
+    // not the usual TICKER|PROGRAM identity. Admit only that exact recorded
+    // claim type; never silently drop a conflicted issuer source.
+    const registryConflict = object(row)
+      && row.category === "SEC"
+      && row.claim === "FILINGS_INVENTORY"
+      && row.verification_status === "CONFLICT"
+      && typeof row.ticker === "string"
+      && row.event_key === "REGISTRY:" + row.ticker;
     if (!object(row) || row.verification_required !== "YES" ||
         !text(row.ticker, 13) || !/^[A-Z][A-Z0-9.-]{0,12}$/.test(row.ticker) ||
-        !text(row.event_key, 300) || !row.event_key.startsWith(row.ticker + "|") ||
-        row.event_key.length === row.ticker.length + 1 ||
+        !text(row.event_key, 300) || !(registryConflict ||
+          (row.event_key.startsWith(row.ticker + "|") &&
+           row.event_key.length > row.ticker.length + 1)) ||
         !text(row.category, 24) || !categories.has(row.category) ||
         !text(row.claim, 80) || !/^[A-Z][A-Z0-9_]+$/.test(row.claim) ||
         !text(row.verification_status, 24) || !statuses.has(row.verification_status) ||
