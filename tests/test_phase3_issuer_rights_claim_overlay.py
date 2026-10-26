@@ -21,19 +21,20 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         self.assertEqual(len(r["trials"]), 741)
         self.assertEqual(len(self.by_id), 741)
         self.assertEqual(len({x["ticker"] for x in r["trials"]}), 130)
-        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 19)
-        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 722)
-        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 6)
-        self.assertEqual(r["asset_program_dossiers"], 7)
+        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 26)
+        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 715)
+        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 7)
+        self.assertEqual(r["asset_program_dossiers"], 8)
 
-    def test_exact_19_nct_claim_links_and_no_other_unearned_claims(self):
+    def test_exact_26_nct_claim_links_and_no_other_unearned_claims(self):
         expected = {
             "ABVX": {"NCT05507203", "NCT05507216", "NCT05535946"},
             "ACHV": {"NCT04576949", "NCT05206370", "NCT06435221", "NCT07392125"},
             "MIRM": {"NCT06553768", "NCT06907290", "NCT07200908", "NCT07454837"},
             "CYTK": {"NCT04848506", "NCT05186818", "NCT05767346", "NCT06081894", "NCT06412666"},
-            "ACAD": {"NCT04776746", "NCT04988867"},
+            "ACAD": {"NCT04181723", "NCT04279314", "NCT04776746", "NCT04988867"},
             "IOVA": {"NCT05727904"},
+            "BCRX": {"NCT03472040", "NCT03485911", "NCT03873116", "NCT04933721", "NCT05453968"},
         }
         for ticker, ids in expected.items():
             actual = {x["nct_id"] for x in self.report["trials"]
@@ -43,7 +44,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             for nct in ids:
                 self.assertTrue(self.by_id[nct]["source_document_links_cataloged"])
         self.assertEqual(sum(not x["source_document_links_cataloged"]
-                             for x in self.report["trials"]), 722)
+                             for x in self.report["trials"]), 715)
 
     def test_no_trial_has_unearned_legal_or_fda_promotion(self):
         r = self.report
@@ -109,7 +110,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
 
     def test_cytk_fake_or_stale_pdufa_claim_is_rejected(self):
         original = rights.collect_cases()
-        self.assertEqual(len(original), 7)
+        self.assertEqual(len(original), 8)
         bad = [dict(p) for p in original]
         cy_index = next(i for i, p in enumerate(bad) if p["issuerTicker"] == "CYTK")
         cy = dict(bad[cy_index])
@@ -149,13 +150,72 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
     def test_acad_iova_saved_registry_status_cannot_be_falsified(self):
         original = rights.collect_cases()
         changed = [dict(p) for p in original]
-        affected = dict(changed[-2])
+        acad_index = next(i for i, p in enumerate(changed) if p["issuerTicker"] == "ACAD")
+        affected = dict(changed[acad_index])
         trial_links = [dict(x) for x in affected["trialLinks"]]
         trial_links[0]["expectedRegistryStatus"] = "RECRUITING"
         affected["trialLinks"] = trial_links
-        changed[-2] = affected
+        changed[acad_index] = affected
         with patch.object(rights, "collect_cases", return_value=changed):
             with self.assertRaisesRegex(ValueError, "PDUFA evidence check failed"):
+                rights.build()
+
+    def test_acad_lavender_and_lilac_are_existing_approval_studies(self):
+        for nct, status in (("NCT04181723", "COMPLETED"),
+                            ("NCT04279314", "COMPLETED")):
+            row = self.by_id[nct]
+            self.assertEqual(row["ticker"], "ACAD")
+            self.assertEqual(row["linked_asset"], "trofinetide")
+            self.assertEqual(row["saved_registry_status"], status)
+            self.assertIn("RETT", row["regulatory_context"])
+            self.assertIn("NEUREN_WORLDWIDE_EXCLUSIVE_LICENSE_WITH_MILESTONE_AND_ROYALTY_OBLIGATIONS",
+                          row["material_risk_flags"])
+            self.assertIn("EU_2026_DAYBU_AUTHORIZATION_NOT_PENDING_US_FDA_PDUFA",
+                          row["material_risk_flags"])
+            self.assertIsNone(row["issuer_reported_upcoming_pdufa_target"])
+            self.assertIsNone(row["current_pdufa_target_date"])
+            self.assertIsNone(row["qualified_pipeline"])
+
+    def test_bcrx_apex_studies_and_europe_sale_do_not_create_new_us_pdufa(self):
+        expected = {
+            "NCT03485911": "COMPLETED",
+            "NCT03472040": "COMPLETED",
+            "NCT03873116": "COMPLETED",
+            "NCT04933721": "ENROLLING_BY_INVITATION",
+            "NCT05453968": "ACTIVE_NOT_RECRUITING",
+        }
+        for nct, status in expected.items():
+            row = self.by_id[nct]
+            self.assertEqual(row["ticker"], "BCRX")
+            self.assertEqual(row["linked_asset"], "berotralstat")
+            self.assertEqual(row["saved_registry_status"], status)
+            self.assertIn("ORLADEYO_EU_BUSINESS_SOLD_TO_NEOPHARMED_OCTOBER_2025",
+                          row["material_risk_flags"])
+            self.assertIn("ORLADEYO_2026_10_21_US_ADULT_PELLET_APPROVAL_IS_COMPLETED_EVENT",
+                          row["material_risk_flags"])
+            self.assertIsNone(row["historical_issuer_reported_pdufa_target"])
+            self.assertIsNone(row["issuer_reported_upcoming_pdufa_target"])
+            self.assertFalse(row["issuer_reported_fda_acceptance"])
+            self.assertIsNone(row["current_pdufa_target_date"])
+            self.assertIsNone(row["qualified_pipeline"])
+        self.assertIn("PEDIATRIC", self.by_id["NCT05453968"]["regulatory_context"])
+        self.assertIn("JAPAN", self.by_id["NCT03873116"]["regulatory_context"])
+
+    def test_bcrx_fake_registry_status_and_duplicate_asset_blocked(self):
+        originals = rights.collect_cases()
+        b_index = next(i for i, p in enumerate(originals) if p["issuerTicker"] == "BCRX")
+        changed = [dict(p) for p in originals]
+        bcrx = dict(changed[b_index])
+        links = [dict(x) for x in bcrx["trialLinks"]]
+        links[0]["expectedRegistryStatus"] = "RECRUITING"
+        bcrx["trialLinks"] = links
+        changed[b_index] = bcrx
+        with patch.object(rights, "collect_cases", return_value=changed):
+            with self.assertRaisesRegex(ValueError, "PDUFA evidence check failed"):
+                rights.build()
+        same_asset = list(originals) + [dict(originals[b_index])]
+        with patch.object(rights, "collect_cases", return_value=same_asset):
+            with self.assertRaisesRegex(ValueError, "duplicate program"):
                 rights.build()
 
     def test_wrong_source_identity_and_duplicate_nct_are_blocked(self):
