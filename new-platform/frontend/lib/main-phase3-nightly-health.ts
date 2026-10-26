@@ -80,21 +80,25 @@ export async function readNightlyHealth(
     const ledger=jobs.find(x=>x.name==="research-ledger");
     const gate=jobs.find(x=>x.name==="pacific-nightly-gate");
     if(!gate)throw new Error("Scheduled gate job is not identified");
-    if(ledger?.conclusion==="skipped"){
-      output.intentionallySkippedAlternates++;
-      continue;
-    }
     const started=run.created_at as string;
     const update=(state:NightlyHealthState,date:string|null,confirmed=false):NightlyHealth=>({
       ...output,state,runId:id,runUrl:runUrl(id),
       runStartedAtUtc:started,jobCompletedAtUtc:date,
       artifactConfirmed:confirmed,
     });
+    if(gate.conclusion==="failure"||gate.conclusion==="cancelled"||
+      gate.conclusion==="timed_out")return update("FULL_SCAN_FAILED",null);
     if(!ledger){
       if(run.status!=="completed")return update("FULL_SCAN_RUNNING",null);
       throw new Error("Completed scheduled workflow is missing its research-ledger job");
     }
-    if(ledger.status!=="completed"||ledger.conclusion===null){
+    if(ledger.conclusion==="skipped"){
+      if(gate.conclusion!=="success")
+        throw new Error("Unconfirmed DST-alternate skip; full scan cannot be inferred");
+      output.intentionallySkippedAlternates++;
+      continue;
+    }
+    if(gate.conclusion!=="success"||ledger.status!=="completed"||ledger.conclusion===null){
       return update("FULL_SCAN_RUNNING",null);
     }
     const done=utc(ledger.completed_at)?ledger.completed_at as string:null;
