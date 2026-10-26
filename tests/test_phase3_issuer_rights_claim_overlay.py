@@ -114,7 +114,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
 
     def test_cytk_fake_or_stale_pdufa_claim_is_rejected(self):
         original = rights.collect_cases()
-        self.assertEqual(len(original), 10)
+        self.assertEqual(len(original), 12)
         bad = [dict(p) for p in original]
         cy_index = next(i for i, p in enumerate(bad) if p["issuerTicker"] == "CYTK")
         cy = dict(bad[cy_index])
