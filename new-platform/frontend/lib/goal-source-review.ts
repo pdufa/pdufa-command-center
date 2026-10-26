@@ -9,6 +9,16 @@ const statuses = new Set(["REVIEW_REQUIRED", "UNAVAILABLE", "CONFLICT", "TECHNIC
 const text = (x: unknown, max: number): x is string =>
   typeof x === "string" && x.trim().length > 0 && x.length <= max && !/[\u0000-\u001f\u007f]/.test(x);
 
+/** Registry filing-inventory identity is company-level, never a fake clinical program. */
+function exactIssueIdentity(row: Obj): boolean {
+  if (typeof row.ticker !== "string" || typeof row.event_key !== "string") return false;
+  if (row.category === "SEC" && row.claim === "FILINGS_INVENTORY") {
+    return row.event_key === "REGISTRY:" + row.ticker;
+  }
+  return row.event_key.startsWith(row.ticker + "|") &&
+    row.event_key.length > row.ticker.length + 1;
+}
+
 function recordedSource(value: unknown): string | null {
   if (typeof value !== "string" || value.length > 2000 || /\s/.test(value)) return null;
   try {
@@ -45,8 +55,7 @@ export function goalSourceReview(source: unknown, scan: GoalScanView | null): Go
   for (const row of rows) {
     if (!object(row) || row.verification_required !== "YES" ||
         !text(row.ticker, 13) || !/^[A-Z][A-Z0-9.-]{0,12}$/.test(row.ticker) ||
-        !text(row.event_key, 300) || !row.event_key.startsWith(row.ticker + "|") ||
-        row.event_key.length === row.ticker.length + 1 ||
+        !text(row.event_key, 300) || !exactIssueIdentity(row) ||
         !text(row.category, 24) || !categories.has(row.category) ||
         !text(row.claim, 80) || !/^[A-Z][A-Z0-9_]+$/.test(row.claim) ||
         !text(row.verification_status, 24) || !statuses.has(row.verification_status) ||
