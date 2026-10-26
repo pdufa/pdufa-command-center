@@ -880,6 +880,23 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
             {" "}{gate.twoAuthorizedReviewersRecorded} pairs with two currently authorized reviewers;
             {" "}{gate.pairingTechnicalPreflightPassed} technically consistent pairs
           </li>)}</ul>
+          <details aria-label="Eight unadjudicated scientific reconciliation questions">
+            <summary><strong>Eight scientific reconciliation questions requiring review ({scientificReviewerPairProgress.openUnadjudicatedQuestionCount})</strong></summary>
+            <p>These are source-specific investigation tasks, not eight verified clinical assessments. The status indicates the next technical/evidence step only. Questions with technically consistent A/B reviewer statements still require qualified independent clinical adjudication.</p>
+            <ol>{scientificReviewerPairProgress.questions.map(question => <li key={question.questionId}>
+              <details>
+                <summary><strong>{question.title}</strong> — {question.priority} priority; {question.technicalWorkStatus.replaceAll("_", " ").toLowerCase()}</summary>
+                <p>Evidence category: {question.gateId.replaceAll("_", " ")}.
+                  {" "}Captured PDFs: {question.capturedSourceCount};
+                  {" "}technically paired sources: {question.technicallyPairedSources};
+                  {" "}unpaired: {question.unpairedSources};
+                  {" "}decision conflicts: {question.disputedSourcePairs};
+                  {" "}invalid audit-history pairs: {question.invalidAuditHistoryPairs}.</p>
+                <p><strong>Next independent source/reviewer check:</strong> {question.nextScientificCheck}</p>
+                <p><strong>Scientific question resolved: NO. Qualified independent review: NOT COMPLETE.</strong></p>
+              </details>
+            </li>)}</ol>
+          </details>
           <p><strong>Independent clinical reviews: 0. Qualified clinical adjudication: NOT COMPLETE.
             {" "}Scientific score: NOT ASSIGNED. FDA approval probability: NOT ASSIGNED.</strong></p>
           <small>Audit-integrity checks establish only tamper-evident recorded reviewer statements and current account access. They never establish clinical independence, original publication authenticity, qualified second-person signoff or efficacy.</small>
