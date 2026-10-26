@@ -281,3 +281,69 @@ def test_real_pinned_source_review_handoff_counts_and_no_reviewed_decisions():
     assert handoff["prediction_probability"] is None
     assert handoff["approval_rate"] is None
     assert handoff["reviewer_detail_records_not_exported"] is True
+
+
+def _call_private_packet_cli(monkeypatch, source, first, second, audit):
+    import sys
+    from scripts.prepare_hop_fda_identity_gap_dual_review import main
+    monkeypatch.setattr(sys, "argv", [
+        "prepare_hop_fda_identity_gap_dual_review.py",
+        "--private-enriched-packets", str(source),
+        "--private-first-review-json", str(first),
+        "--private-second-review-json", str(second),
+        "--public-audit-json", str(audit),
+    ])
+    return main()
+
+
+def test_private_reviewer_cli_excludes_public_audit_and_prevents_overwrite(tmp_path, monkeypatch):
+    import json
+    import stat
+    payload = tmp_path / "source.json"
+    payload.write_text(json.dumps(sources()), encoding="utf-8")
+    first = tmp_path / "private" / "first.json"
+    second = tmp_path / "private" / "second.json"
+    audit = tmp_path / "public" / "counts.json"
+    assert _call_private_packet_cli(monkeypatch, payload, first, second, audit) == 0
+    assert first.exists() and second.exists() and audit.exists()
+    assert stat.S_IMODE(first.stat().st_mode) == 0o600
+    assert stat.S_IMODE(second.stat().st_mode) == 0o600
+    assert stat.S_IMODE(first.parent.stat().st_mode) == 0o700
+    report = json.loads(audit.read_text(encoding="utf-8"))
+    assert report["first_reviewer_blank_rows"] == 4
+    assert report["second_reviewer_blank_rows"] == 4
+    assert report["model_eligible_records"] == 0
+    assert "source_lock_sha256" not in report
+    assert "reviewer_token" not in report
+    before = first.read_bytes()
+    with pytest.raises(ValueError, match="new output names"):
+        _call_private_packet_cli(monkeypatch, payload, first, second, audit)
+    assert first.read_bytes() == before
+
+
+@pytest.mark.parametrize("layout", ["same_directory", "inside_public_dir", "public_in_private_dir", "wrong_role_directory"])
+def test_private_cli_rejects_paths_that_can_leak_reviewer_packets(
+    tmp_path, monkeypatch, layout,
+):
+    import json
+    payload = tmp_path / "source.json"
+    payload.write_text(json.dumps(sources()), encoding="utf-8")
+    private = tmp_path / "private"
+    public = tmp_path / "public"
+    first = private / "first.json"
+    second = private / "second.json"
+    audit = public / "counts.json"
+    if layout == "same_directory":
+        audit = private / "counts.json"
+    elif layout == "inside_public_dir":
+        first = public / "first.json"
+        second = public / "second.json"
+    elif layout == "public_in_private_dir":
+        audit = private / "public" / "counts.json"
+    elif layout == "wrong_role_directory":
+        second = tmp_path / "other-private" / "second.json"
+    with pytest.raises(ValueError, match="separate safe directory"):
+        _call_private_packet_cli(monkeypatch, payload, first, second, audit)
+    assert not first.exists()
+    assert not second.exists()
+    assert not audit.exists()
