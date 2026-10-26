@@ -21,6 +21,8 @@ import sys
 import urllib.error
 import urllib.request
 
+from phase3_registry_context import extract_registry_context
+
 SOURCE_CSV = Path(__file__).resolve().parents[1] / "data/phase3_all_years_300m_10b_trials.csv"
 STATUSES = (
     "RECRUITING", "ACTIVE_NOT_RECRUITING", "ENROLLING_BY_INVITATION",
@@ -99,7 +101,9 @@ def extract_original_study(raw: bytes, expected: dict[str, str], fetched_at: str
     if update_date is not None and (not isinstance(update_date, str)
         or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", update_date)):
         raise ValueError("Original registry update invalid")
+    registered_context = extract_registry_context(module)
     return {
+        **registered_context,
         "nct_id": nct,
         "census_status": expected["status"],
         "current_registry_status": registry_status,
