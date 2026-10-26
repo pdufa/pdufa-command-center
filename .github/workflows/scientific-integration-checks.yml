@@ -64,6 +64,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # Existing curl-only steps needed no checkout; the on-disk Python
+      # parity module DOES. Checkout is read-only and uses no credentials.
+      - uses: actions/checkout@v4
       - name: Probe scientific API without credentials
         shell: bash
         run: |
