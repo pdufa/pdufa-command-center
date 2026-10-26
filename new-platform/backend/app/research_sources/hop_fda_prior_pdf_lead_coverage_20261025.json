@@ -29,5 +29,18 @@
   "predictive_accuracy": null,
   "readiness": "REVIEW_REQUIRED",
   "private_pdf_source_link_records_not_exported": true,
-  "note": "Actual 2026-10-25 source-linked research PDF leads. Source PDF bytes were previously checked in a saved October FDA artifact; none was independently re-reviewed for clinical identity, action date, or original decision cycle in this operation."
+  "note": "Actual 2026-10-25 source-linked research PDF leads. Source PDF bytes were previously checked in a saved October FDA artifact; none was independently re-reviewed for clinical identity, action date, or original decision cycle in this operation.",
+  "unavailable_published_pdf_source_review_lead": {
+    "source_record_sha256": "75d0e6c5d88b49f7be336cf3649b3eb08a2ba1f930c2c0f9cfc1ac8ae88f6515",
+    "company_name_as_published": "Chiesi Farmaceutici S.p.A",
+    "letter_date_as_published": "02/27/2026",
+    "letter_type_as_published": "UNCLASSIFIED",
+    "file_name_as_published": "Under Review for Release",
+    "application_ids_as_published": [],
+    "application_id_resolved": false,
+    "official_pdf_url": null,
+    "original_action_identity_adjudicated": false,
+    "model_eligible": false,
+    "source": "Previously pinned 458-row FDA published letter worklist; original FDA PDF unavailable at source collection"
+  }
 }
