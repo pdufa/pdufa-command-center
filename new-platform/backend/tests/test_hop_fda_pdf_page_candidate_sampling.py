@@ -295,3 +295,59 @@ def test_disjoint_hash_sorted_source_page_batches_are_reproducible():
 def test_invalid_pdf_hash_sample_boundaries_fail_closed(offset, limit):
     with pytest.raises(ValueError):
         select_pinned_pdf_sample(fixture(), limit=limit, offset=offset)
+
+
+
+def test_actual_second_fda_source_pdf_batch_cumulative_provenance():
+    """Real published audit data only; no source outcome adjudication."""
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    first = json.loads((root / "hop_fda_page_candidate_sample_20261025.json")
+                       .read_text(encoding="utf-8"))
+    second = json.loads((root / "hop_fda_page_candidate_second_batch_20261025.json")
+                        .read_text(encoding="utf-8"))
+    assert second["status"] == "FDA_PRIOR_PUBLISHED_PDF_PAGE_SAMPLE_OBSERVED_NOT_ADJUDICATED"
+    assert second["requested_sample_offset"] == 8
+    assert second["selected_sample_end_exclusive"] == 16
+    assert second["sampled_unique_pdf_documents_requested"] == 8
+    assert second["sampled_pdf_bytes_sha256_reconfirmed"] == 8
+    assert second["sampled_pdf_documents_not_retrieved_or_parsed"] == 0
+    assert second["source_sample_unique_pdf_population"] == first[
+        "source_sample_unique_pdf_population"
+    ] == 122
+    assert second["selected_full_pdf_hashes_sha256"] == (
+        "fd012a8ed7ceb7a85a5f4bfe9c7a8cc4a886563ab733bcc06d932da66658bf59"
+    )
+    assert second["first_batch_sha256_of_sorted_pdf_hashes"] == (
+        "32b1cc9ab8dea34e120e79505299bd4f65c6a13765183133e8d6fe99caa528f9"
+    )
+    assert second["selected_full_pdf_hashes_sha256"] != second[
+        "first_batch_sha256_of_sorted_pdf_hashes"
+    ]
+    assert second["first_and_second_batches_nonoverlapping_by_sorted_offsets"] is True
+    assert second["pages_examined_for_candidate_app_tokens"] == 54
+    assert second["pages_without_extractable_text"] == 10
+    assert second["pages_with_multiple_provisional_app_candidates"] == 0
+    assert second["candidate_application_numbers_with_page_hits"] == 8
+    assert second["aggregate_distinct_pdfs_rehashed_two_batches"] == (
+        first["sampled_pdf_bytes_sha256_reconfirmed"] +
+        second["sampled_pdf_bytes_sha256_reconfirmed"]
+    ) == 16
+    assert second["aggregate_pages_examined_two_batches"] == (
+        first["pages_examined_for_candidate_app_tokens"] +
+        second["pages_examined_for_candidate_app_tokens"]
+    ) == 100
+    assert second["aggregate_pages_without_extractable_text_two_batches"] == (
+        first["pages_without_extractable_text"] +
+        second["pages_without_extractable_text"]
+    ) == 19
+    assert second["original_action_page_ranges_independently_verified"] == 0
+    assert second["review_cycles_independently_verified"] == 0
+    assert second["complete_nda_bla_original_decision_denominator_verified"] is False
+    assert second["model_eligible_records"] == 0
+    assert second["approval_rate"] is None
+    assert second["prediction_probability"] is None
+    assert second["predictive_accuracy"] is None
+    assert second["private_pdf_page_hints_not_exported"] is True
