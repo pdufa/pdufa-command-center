@@ -57,6 +57,16 @@ def validate_evidence(ledger, submissions):
             and isinstance(item.get("reviewed_at_utc"), str) and item["reviewed_at_utc"].strip()
         ):
             raise ValueError("Accepted evidence requires reviewer and review timestamp")
+        if item["reviewer_status"] == "ACCEPTED":
+            try:
+                reviewed = datetime.fromisoformat(item["reviewed_at_utc"].replace("Z", "+00:00"))
+            except (ValueError, AttributeError) as exc:
+                raise ValueError("Invalid reviewer timestamp") from exc
+            if reviewed.tzinfo is None or reviewed > datetime.now(timezone.utc):
+                raise ValueError("Review timestamp must be timezone-aware and not future")
+            if reviewed < observed:
+                raise ValueError("Review cannot predate observation")
+
         results.append({"nct_id": nct, "gate": gate, "source_url": url,
                         "reviewer_status": item["reviewer_status"],
                         "intake_status": "EVIDENCE_RECORDED_NOT_QUALIFIED"})
