@@ -35,3 +35,10 @@ def test_invalid_score_rejected():
     records = [row("old",2019),row("new",2020)]
     with pytest.raises(ValueError):
         walk_forward_backtest(records,[date(2020,1,1),date(2021,1,1)],lambda train, case: 1.5,min_train=1)
+
+@pytest.mark.parametrize('invalid_score', [float('nan'), float('inf'), -float('inf'), True, False])
+def test_nonfinite_and_boolean_scores_rejected(invalid_score):
+    records = [row('old', 2019), row('new', 2020)]
+    with pytest.raises(ValueError, match='probability'):
+        walk_forward_backtest(records, [date(2020, 1, 1), date(2021, 1, 1)],
+                              lambda train, case: invalid_score, min_train=1)
