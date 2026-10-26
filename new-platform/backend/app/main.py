@@ -1058,6 +1058,68 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 
 
+@app.get(
+    "/api/scientific-assessment/captured-source-manifest/{nct_id}",
+    dependencies=[
+        Depends(require_isolated_scientific_read_key),
+        Depends(require_storage),
+    ],
+)
+def scientific_pilot_captured_source_manifest(nct_id: str, response: Response):
+    """Authenticated, read-only digest inventory; no PDF bytes or reviewer data.
+
+    The pilot manifest is checksum checked at read time. Captured bytes, even
+    captured from pinned URLs, remain UNVERIFIED as scientific source evidence.
+    The preview read key remains limited to this single NCT pilot.
+    """
+    # Guard is declared later in this module; evaluate it at request time
+    # before ANY manifest lookup, never at FastAPI decorator import time.
+    require_isolated_scientific_review_service()
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=422, detail="Only exact pilot trial supported")
+    from .scientific_source_documents import read_document_manifest
+    try:
+        manifest = read_document_manifest(nct_id)
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Captured archive integrity failed") from None
+    if (
+        manifest["nctId"] != nct_id
+        or manifest["sourceDocumentCount"] > 8
+        or manifest["allCapturedBytesRehashed"] is not True
+        or manifest["independentSourceVerificationCompleted"] is not False
+        or manifest["scientificGradePromotionAllowed"] is not False
+    ):
+        raise HTTPException(status_code=409, detail="Archived source safety contract mismatch")
+    response.headers["X-PDUFA-Scientific-API-Contract"] = "science-captured-hashes-v1"
+    response.headers["Cache-Control"] = "private, no-store"
+    return {
+        "nctId": nct_id,
+        "sourceDocumentCount": manifest["sourceDocumentCount"],
+        "allCapturedBytesRehashed": True,
+        "independentSourceVerificationCompleted": False,
+        "reviewerIdentityVerified": False,
+        "scientificGradePromotionAllowed": False,
+        "scientificScore": None,
+        "fdaApprovalProbability": None,
+        "documents": [
+            {
+                "documentId": item["documentId"],
+                "nctId": nct_id,
+                "gateId": item["gateId"],
+                "sourceType": item["sourceType"],
+                "sha256": item["sha256"],
+                "byteLength": item["byteLength"],
+                "captureStatus": item["captureStatus"],
+                "byteIntegrityChecked": True,
+                "sourceAuthorshipVerified": False,
+                "documentContentScientificallyVerified": False,
+                "canCountTowardReadiness": False,
+            }
+            for item in manifest["documents"]
+        ],
+    }
+
+
 @app.get("/api/scientific-assessment/reviewer/auth-status", dependencies=[Depends(require_internal_key)])
 def scientific_reviewer_auth_status():
     """Configuration diagnostics without disclosing tokens, IDs or credentials."""
