@@ -1,0 +1,39 @@
+name: MAIN authenticated original Phase 3 registry research
+on:
+  pull_request:
+    paths:
+      - 'new-platform/frontend/app/api/phase3-registry/**'
+      - 'new-platform/frontend/lib/phase3-live-registry.ts'
+      - 'new-platform/frontend/app/installation-audit/phase3-census/**'
+      - 'new-platform/frontend/tests/phase3-live-registry.test.cjs'
+      - '.github/workflows/main-phase3-live-registry.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/app/api/phase3-registry/**'
+      - 'new-platform/frontend/lib/phase3-live-registry.ts'
+      - 'new-platform/frontend/app/installation-audit/phase3-census/**'
+      - 'new-platform/frontend/tests/phase3-live-registry.test.cjs'
+      - '.github/workflows/main-phase3-live-registry.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-registry-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install frontend packages
+        working-directory: new-platform/frontend
+        run: npm ci --no-audit --no-fund
+      - name: Validate source identity and preserve census, seven-gate and HOP restrictions
+        working-directory: new-platform/frontend
+        run: node --test tests/phase3-live-registry.test.cjs tests/phase3-census-evidence-gaps.test.cjs tests/phase3-census-rows.test.cjs tests/hop-source-diagnostic.test.cjs
+      - name: Typecheck complete frontend
+        working-directory: new-platform/frontend
+        run: npm run typecheck
