@@ -60,8 +60,13 @@ def _unb64(value: object, size: int | None = None) -> bytes:
 
 
 def _role_for(filename: str) -> str:
-    if filename == MANIFEST_NAME:
+    if filename in (MANIFEST_NAME, "private_single_primary_custody_manifest.json"):
         return "CUSTODY"
+    if re.fullmatch(
+        r"(?:AMBIGUOUS_ID|APPLICATION_ID)-[0-9]{2}_PRIMARY_unreviewed[.]json",
+        filename,
+    ):
+        return "PRIMARY"
     match = FILENAME.fullmatch(filename)
     if not match:
         raise ValueError("Invalid private FDA reviewer file")
