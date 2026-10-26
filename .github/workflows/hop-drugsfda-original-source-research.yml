@@ -26,6 +26,9 @@ on:
       - 'new-platform/backend/app/hop_fda_identity_gap_dual_review.py'
       - 'new-platform/backend/scripts/prepare_hop_fda_identity_gap_dual_review.py'
       - 'new-platform/backend/tests/test_hop_fda_identity_gap_dual_review.py'
+      - 'new-platform/backend/app/hop_fda_private_review_batches.py'
+      - 'new-platform/backend/scripts/prepare_hop_fda_review_batches.py'
+      - 'new-platform/backend/tests/test_hop_fda_private_review_batches.py'
       - 'new-platform/backend/app/hop_fda_nda206627_primary_source.py'
       - 'new-platform/backend/scripts/probe_hop_nda206627_primary_fda_approval.py'
       - 'new-platform/backend/tests/test_hop_fda_nda206627_primary_source.py'
@@ -65,6 +68,7 @@ jobs:
             tests/test_hop_fda_gap_research_packets.py \
             tests/test_hop_fda_prior_pdf_lead_join.py \
             tests/test_hop_fda_identity_gap_dual_review.py \
+            tests/test_hop_fda_private_review_batches.py \
             tests/test_hop_fda_nda206627_primary_source.py \
             tests/test_hop_fda_pdf_page_candidate_sampling.py
       - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
@@ -136,6 +140,14 @@ jobs:
             --private-pdf-page-hints-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_fda_pdf_page_navigation_hints.json" \
             --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_page_candidate_sample_aggregate.json" \
             --limit 8
+      - name: Prepare bounded private A/B FDA reviewer batches without decision labels
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/prepare_hop_fda_review_batches.py \
+            --private-first-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_first_fda_identity_gap_review.json" \
+            --private-second-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_second_fda_identity_gap_review.json" \
+            --private-output-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/private_reviewer_batches" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_identity_gap_bounded_batch_counts.json"
       - name: Retain only aggregate FDA source coverage counts and fingerprints
         uses: actions/upload-artifact@v4
         with:
