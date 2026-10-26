@@ -41,19 +41,23 @@ RESEARCH_ACTIONS = (
           "https://www.fda.gov/media/191723/download"),
     # Independently rechecked original FDA PDF letters (2026-10-26).
     # CYCLE-UNVERIFIED avoids asserting an unsupported resubmission ordinal.
-    event("125743", "CYCLE-UNVERIFIED-2022", "2022-02-25", "complete_response",
+    event("125743", "ORIGINAL", "2022-02-25", "complete_response",
           "https://download.open.fda.gov/crl/CRL_BLA125743_20220225.pdf"),
-    event("125743", "CYCLE-UNVERIFIED-2023", "2023-12-15", "approval",
+    event("125743", "RESUBMISSION-1", "2023-12-15", "approval",
           "https://www.fda.gov/media/174897/download"),
     event("125745", "CYCLE-UNVERIFIED-2025", "2025-01-15", "complete_response",
           "https://download.open.fda.gov/crl/CRL_BLA125745_20250115.pdf"),
     event("125745", "CYCLE-UNVERIFIED-2026", "2026-01-09", "complete_response",
           "https://download.open.fda.gov/crl/CRL_BLA125745_20260109.pdf"),
-    event("125734", "CYCLE-UNVERIFIED-2023", "2023-06-28", "approval",
+    # FDA SBRA official chronology documents this earlier CRL; original signed
+    # action letter unavailable in this pass, so direct-letter provenance OPEN.
+    event("125734", "ORIGINAL", "2021-08-18", "complete_response",
+          "https://www.fda.gov/media/170457/download"),
+    event("125734", "RESUBMISSION-1", "2023-06-28", "approval",
           "https://www.fda.gov/media/169921/download"),
     # Primary FDA CRL letters visually verified on 2026-10-26.
     # No assumption about application review-cycle boundaries or resubmission order.
-    event("125842", "CYCLE-UNVERIFIED-2025", "2025-07-09", "complete_response",
+    event("125842", "ORIGINAL", "2025-07-09", "complete_response",
           "https://download.open.fda.gov/crl/CRL_BLA125842_20250709.pdf"),
     event("125840", "CYCLE-UNVERIFIED-2026", "2026-02-07", "complete_response",
           "https://download.open.fda.gov/crl/CRL_BLA125840_20260207.pdf"),
