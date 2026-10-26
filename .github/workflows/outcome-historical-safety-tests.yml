@@ -9,6 +9,10 @@ on:
       - 'new-platform/backend/tests/test_hop_backtest*.py'
       - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
       - 'new-platform/backend/tests/test_hop_outcomes_import.py'
+      - 'new-platform/backend/tests/test_hop_fda_identity_review_queue.py'
+      - 'new-platform/backend/tests/test_hop_fda_application_crosswalk.py'
+      - 'new-platform/backend/app/hop_fda_identity_review_queue.py'
+      - 'new-platform/backend/app/hop_fda_application_crosswalk.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   push:
     branches: [main]
@@ -19,6 +23,10 @@ on:
       - 'new-platform/backend/tests/test_hop_backtest*.py'
       - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
       - 'new-platform/backend/tests/test_hop_outcomes_import.py'
+      - 'new-platform/backend/tests/test_hop_fda_identity_review_queue.py'
+      - 'new-platform/backend/tests/test_hop_fda_application_crosswalk.py'
+      - 'new-platform/backend/app/hop_fda_identity_review_queue.py'
+      - 'new-platform/backend/app/hop_fda_application_crosswalk.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   workflow_dispatch:
 
