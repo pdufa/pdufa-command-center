@@ -230,6 +230,20 @@ NCT05711940,CMPS,COMPASS Pathways,ACTIVE_NOT_RECRUITING,https://clinicaltrials.g
 NCT07570654,CMPS,COMPASS Pathways,RECRUITING,https://clinicaltrials.gov/study/NCT07570654
 NCT05208047,COGT,"Cogent Biosciences, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT05208047
 NCT01685684,COLL,"Collegium Pharmaceutical, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01685684
+NCT00128479,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT00128479
+NCT00128505,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT00128505
+NCT00130676,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT00130676
+NCT00146523,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT00146523
+NCT00208156,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT00208156
+NCT00569582,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT00569582
+NCT00637494,CORT,Corcept Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT00637494
+NCT00936741,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT00936741
+NCT01371565,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT01371565
+NCT01925092,CORT,Corcept Therapeutics,WITHDRAWN,https://clinicaltrials.gov/study/NCT01925092
+NCT03697109,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT03697109
+NCT04308590,CORT,Corcept Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT04308590
+NCT04329949,CORT,Corcept Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT04329949
+NCT05257408,CORT,Corcept Therapeutics,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05257408
 NCT04734873,CRVS,"Corvus Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT04734873
 NCT06561048,CRVS,"Corvus Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06561048
 NCT02496767,CYTK,Cytokinetics,COMPLETED,https://clinicaltrials.gov/study/NCT02496767
@@ -310,14 +324,6 @@ NCT07298447,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials
 NCT07727538,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07727538
 NCT07782827,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07782827
 NCT05727904,IOVA,"Iovance Biotherapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT05727904
-NCT04620213,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT04620213
-NCT04638660,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT04638660
-NCT05134974,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05134974
-NCT05223478,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05223478
-NCT05646719,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05646719
-NCT06349759,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06349759
-NCT06542497,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06542497
-NCT07140783,IRD,"Opus Genetics, Inc",RECRUITING,https://clinicaltrials.gov/study/NCT07140783
 NCT05883748,IRON,"Disc Medicine, Inc",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT05883748
 NCT06910358,IRON,"Disc Medicine, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06910358
 NCT00730015,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00730015
@@ -506,6 +512,9 @@ NCT07723248,ORIC,ORIC Pharmaceuticals,RECRUITING,https://clinicaltrials.gov/stud
 NCT04106557,OVID,Ovid Therapeutics Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT04106557
 NCT00878709,PBYI,"Puma Biotechnology, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00878709
 NCT01808573,PBYI,"Puma Biotechnology, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01808573
+NCT07284654,PCVX,"Vaxcyte, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT07284654
+NCT07365826,PCVX,"Vaxcyte, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07365826
+NCT07425392,PCVX,"Vaxcyte, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07425392
 NCT04124926,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04124926
 NCT04167670,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04167670
 NCT05195528,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05195528
@@ -611,7 +620,7 @@ NCT05881408,SRPT,"Sarepta Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clin
 NCT05967351,SRPT,"Sarepta Therapeutics, Inc.",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT05967351
 NCT06246513,SRPT,"Sarepta Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06246513
 NCT06952686,SRPT,"Sarepta Therapeutics, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT06952686
-NCT06872125,STOK,"Stoke Therapeutics, Inc",RECRUITING,https://clinicaltrials.gov/study/NCT06872125
+NCT06872125,STOK,"Stoke Therapeutics, Inc",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06872125
 NCT00772603,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00772603
 NCT00908349,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00908349
 NCT02477618,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02477618
@@ -649,7 +658,7 @@ NCT06049927,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/
 NCT06734832,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT06734832
 NCT07055295,SVA,"Sinovac Biotech Co., Ltd",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07055295
 NCT07055893,SVA,"Sinovac Biotech Co., Ltd",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07055893
-NCT07211152,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT07211152
+NCT07211152,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT07211152
 NCT07357545,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT07357545
 NCT07416110,SVA,"Sinovac Biotech Co., Ltd",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07416110
 NCT07505810,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT07505810
@@ -694,7 +703,7 @@ NCT04006691,URGN,UroGen Pharma Ltd.,WITHDRAWN,https://clinicaltrials.gov/study/N
 NCT04688931,URGN,UroGen Pharma Ltd.,TERMINATED,https://clinicaltrials.gov/study/NCT04688931
 NCT05136898,URGN,UroGen Pharma Ltd.,COMPLETED,https://clinicaltrials.gov/study/NCT05136898
 NCT05243550,URGN,UroGen Pharma Ltd.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05243550
-NCT06331299,URGN,UroGen Pharma Ltd.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06331299
+NCT06331299,URGN,UroGen Pharma Ltd.,COMPLETED,https://clinicaltrials.gov/study/NCT06331299
 NCT06774131,URGN,UroGen Pharma Ltd.,RECRUITING,https://clinicaltrials.gov/study/NCT06774131
 NCT00505219,VCEL,Vericel Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00505219
 NCT00719576,VCEL,Vericel Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00719576
@@ -727,5 +736,7 @@ NCT06922110,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinic
 NCT07076407,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07076407
 NCT07172516,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07172516
 NCT07217860,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07217860
+NCT03995108,XFOR,X4 Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03995108
+NCT06056297,XFOR,X4 Pharmaceuticals,RECRUITING,https://clinicaltrials.gov/study/NCT06056297
 NCT03292952,ZVRA,Zevra Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT03292952
 NCT03460652,ZVRA,Zevra Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT03460652
