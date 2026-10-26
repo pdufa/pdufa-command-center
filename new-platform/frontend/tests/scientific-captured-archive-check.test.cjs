@@ -56,7 +56,7 @@ function upstreamManifest() {
     })),
   };
 }
-const { compareLocalPdfWithCapturedArchive, summarizeCapturedScientificGates } = loadTs(
+const { compareLocalPdfWithCapturedArchive, summarizeCapturedScientificGates, buildScientificSourceReviewHandoff } = loadTs(
   path.join(__dirname, "../lib/scientific-captured-archive-check.ts"),
 );
 
@@ -342,4 +342,96 @@ test("trial UI only shows four-gate coverage after successful authorized manifes
   assert.match(ui, /Scientific score: NOT ASSIGNED/);
   assert.match(ui, /Source authorship authenticated: NO/);
   assert.doesNotMatch(ui, /promoteCapturedGate|approveScientificGrade|uploadSourcePdf/);
+});
+
+
+test("four-gate source handoff is repeatable, SHA-linked, unsigned and private-field-free", () => {
+  const items = [
+    { ...DOCUMENT, gateId: "official_regulatory", documentId: "a".repeat(32), sha256: "a".repeat(64) },
+    { ...DOCUMENT, gateId: "protocol_sap", documentId: "c".repeat(32), sha256: "c".repeat(64) },
+  ];
+  const input = manifest(items);
+  input.verifiedEmail = "SHOULD-NOT-BE-COPIED";
+  input.privateSourceURL = "https://sensitive.example/some-source";
+  input.documents[0].reviewer_name = "PRIVATE";
+  input.documents[0].sourceUrl = "https://secret.example/original.pdf";
+  const before = JSON.stringify(input);
+  const raw = buildScientificSourceReviewHandoff(NCT, input);
+  const packet = JSON.parse(raw);
+  assert.equal(raw, buildScientificSourceReviewHandoff(NCT, input));
+  assert.equal(JSON.stringify(input), before);
+  assert.equal(packet.schemaVersion, "isolated-science-source-review-handoff-v1");
+  assert.equal(packet.classification, "UNSIGNED_UNVERIFIED_SOURCE_INVENTORY");
+  assert.equal(packet.nctId, NCT);
+  assert.equal(packet.sourceDocumentCount, 2);
+  assert.equal(packet.capturedEvidenceCategories, 2);
+  assert.equal(packet.independentlyVerifiedCategories, 0);
+  assert.deepEqual(packet.gateCoverage.map(g => g.capturedPdfCount), [1, 0, 0, 1]);
+  assert.deepEqual(packet.capturedPdfFingerprints.map(d => d.gateId), [
+    "official_regulatory", "protocol_sap",
+  ]);
+  assert.ok(packet.capturedPdfFingerprints.every(d => !d.originalPublisherAuthenticated
+      && !d.sourceContentClinicallyAdjudicated));
+  assert.ok(packet.gateCoverage.every(g => !g.independentlyVerified
+      && g.requiredNextAction.length > 30));
+  assert.equal(packet.originalSourceAuthenticated, false);
+  assert.equal(packet.independentSignedAdjudicationComplete, false);
+  assert.equal(packet.scientificallyReady, false);
+  assert.equal(packet.promotionAllowed, false);
+  assert.equal(packet.scientificScore, null);
+  assert.equal(packet.fdaApprovalProbability, null);
+  assert.equal(packet.documentBytesIncluded, false);
+  for (const banned of ["PRIVATE", "SHOULD-NOT-BE-COPIED", "sensitive.example",
+    "secret.example", "reviewer_name", "sourceUrl", "privateSourceURL", "reviewerEmail",
+    "contentBase64", "payload"]) {
+    assert.ok(!raw.includes(banned), banned + " leaked into the source handoff");
+  }
+});
+
+test("empty captured archive produces usable four-gate worklist without invented source evidence", () => {
+  const packet = JSON.parse(buildScientificSourceReviewHandoff(NCT, manifest([])));
+  assert.equal(packet.sourceDocumentCount, 0);
+  assert.equal(packet.capturedEvidenceCategories, 0);
+  assert.deepEqual(packet.gateCoverage.map(g => g.status), [
+    "NO_CAPTURED_PDF", "NO_CAPTURED_PDF", "NO_CAPTURED_PDF", "NO_CAPTURED_PDF",
+  ]);
+  assert.deepEqual(packet.capturedPdfFingerprints, []);
+  assert.equal(packet.scientificScore, null);
+});
+
+test("tampered cross-trial, source fields or forged scientific completion cannot produce handoff", () => {
+  const mutations = [
+    m => { m.nctId = "NCT00000001"; },
+    m => { m.sourceDocumentCount = 8; },
+    m => { m.allCapturedBytesRehashed = false; },
+    m => { m.independentSourceVerificationCompleted = true; },
+    m => { m.fdaApprovalProbability = 0.99; },
+    m => { m.scientificScore = 97; },
+    m => { m.documents[0].captureStatus = "independently_verified"; },
+    m => { m.documents[0].scientificVerificationComplete = true; },
+    m => { m.documents[0].documentId = "bad"; },
+    m => { m.documents[0].sha256 = "corrupted"; },
+    m => { m.documents[0].gateId = "arbitrary"; },
+    m => { m.documents[0].byteLength = -1; },
+    m => { m.documents.push({ ...m.documents[0] }); m.sourceDocumentCount = 2; },
+  ];
+  for (const mutation of mutations) {
+    const m = manifest([{ ...DOCUMENT }]);
+    mutation(m);
+    assert.throws(() => buildScientificSourceReviewHandoff(NCT, m),
+      /Captured source verification blocked/, String(mutation));
+  }
+  assert.throws(() => buildScientificSourceReviewHandoff("NCT00000001", manifest()));
+});
+
+test("four-gate handoff download appears only with authenticated manifest results, not on error", () => {
+  const ui = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
+  assert.match(ui, /buildScientificSourceReviewHandoff\("NCT02142738", body\)/);
+  assert.match(ui, /setCapturedHandoffJson\(handoffJson\)/);
+  assert.match(ui, /capturedScientificGates && capturedHandoffJson && <p>/);
+  assert.match(ui, /Download unverified four-gate source review handoff \(JSON\)/);
+  assert.match(ui, /_unverified_four_gate_source_handoff\.json/);
+  assert.match(ui, /setCapturedHandoffJson\(null\)/);
+  assert.match(ui, /No raw PDF bytes, source URLs, reviewer names, signatures or scientific outcome claims/);
+  assert.doesNotMatch(ui, /uploadSourceHandoff|approveCapturedGate|promoteReviewerGrade/);
 });
