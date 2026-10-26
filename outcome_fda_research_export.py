@@ -28,6 +28,7 @@ def build_research_export() -> dict:
             "action_type": e.event_type,
             "final_agency_action": e.final_agency_action,
             "primary_fda_source_url": e.source_url,
+            "source_document_role": e.source_document_role,
             "source_document_sha256": e.source_document_sha256,
             "source_publication_date": published.isoformat() if published else None,
             "feature_asof_verified": False,  # No validated source-as-of provenance yet
@@ -40,7 +41,7 @@ def build_research_export() -> dict:
     return {
         "schema_version": SCHEMA_VERSION,
         "dataset_role": "research_only_nontraining",
-        "source_scope": "selected_original_fda_action_letters_not_a_complete_cohort",
+        "source_scope": "selected_fda_action_letters_and_regulatory_summaries_not_a_complete_cohort",
         "complete_application_denominator_verified": False,
         "independently_certified_review_cycles": 0,
         "model_eligible_records": 0,
