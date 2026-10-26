@@ -264,6 +264,108 @@ REVIEW_TIMELINES = (
 )
 
 
+FDA_ALYGLO_SBRA = "https://www.fda.gov/media/175227/download"
+FDA_ALYGLO_2022_CRL = "https://download.open.fda.gov/crl/CRL_BLA125743_20220225.pdf"
+FDA_ALYGLO_2023_APPROVAL = "https://www.fda.gov/media/174897/download"
+FDA_ALYGLO_CLINICAL_REVIEW = "https://www.fda.gov/media/175311/download"
+
+# SBRA and FDA clinical review disagree by one day; preserve both.
+ALYGLO_PDUFA_GOAL_SOURCE_CONFLICT = {
+    "sbra": {"source_url": FDA_ALYGLO_SBRA, "goal_date": "2024-01-13"},
+    "clinical_review": {"source_url": FDA_ALYGLO_CLINICAL_REVIEW, "goal_date": "2024-01-12"},
+    "resolution_status": "unresolved_preserve_both",
+}
+
+GREEN_CROSS_SOURCE_SUPPORTED_TIMELINES = (
+    SourceSupportedCycle(
+        application_key="BLA:125743",
+        submission_key="BLA:125743:ORIGINAL",
+        received_date=date(2021, 2, 25),
+        action_date=date(2022, 2, 25),
+        action_type="complete_response",
+        receipt_source_url=FDA_ALYGLO_2022_CRL,
+        final_action_source_url=FDA_ALYGLO_2022_CRL,
+        regulatory_history_source_url=FDA_ALYGLO_SBRA,
+        pdufa_goal_date=None,
+    ),
+    SourceSupportedCycle(
+        application_key="BLA:125743",
+        submission_key="BLA:125743:RESUBMISSION-1",
+        received_date=date(2023, 7, 14),
+        action_date=date(2023, 12, 15),
+        action_type="approval",
+        receipt_source_url=FDA_ALYGLO_2023_APPROVAL,
+        final_action_source_url=FDA_ALYGLO_2023_APPROVAL,
+        regulatory_history_source_url=FDA_ALYGLO_SBRA,
+        pdufa_goal_date=date(2024, 1, 13),
+    ),
+)
+
+FDA_LANTIDRA_SBRA = "https://www.fda.gov/media/170457/download"
+FDA_LANTIDRA_2023_APPROVAL = "https://www.fda.gov/media/169921/download"
+
+# Original 2021 CRL not independently retrieved; FDA SBRA table attests action.
+# This IS primary FDA source evidence but NOT a direct signed-CRL verification.
+LANTIDRA_2021_CRL_EVIDENCE_STATUS = {
+    "source_url": FDA_LANTIDRA_SBRA,
+    "document_role": "fda_regulatory_history_summary",
+    "original_signed_action_letter_verified": False,
+    "action_date": "2021-08-18",
+    "resolution_status": "original_action_letter_outstanding",
+}
+
+CELLTRANS_SOURCE_SUPPORTED_TIMELINES = (
+    SourceSupportedCycle(
+        application_key="BLA:125734",
+        submission_key="BLA:125734:ORIGINAL",
+        received_date=date(2020, 5, 19),
+        action_date=date(2021, 8, 18),
+        action_type="complete_response",
+        receipt_source_url=FDA_LANTIDRA_SBRA,
+        final_action_source_url=FDA_LANTIDRA_SBRA,
+        regulatory_history_source_url=FDA_LANTIDRA_SBRA,
+        pdufa_goal_date=None,
+    ),
+    SourceSupportedCycle(
+        application_key="BLA:125734",
+        submission_key="BLA:125734:RESUBMISSION-1",
+        received_date=date(2022, 12, 30),
+        action_date=date(2023, 6, 28),
+        action_type="approval",
+        receipt_source_url=FDA_LANTIDRA_SBRA,
+        final_action_source_url=FDA_LANTIDRA_2023_APPROVAL,
+        regulatory_history_source_url=FDA_LANTIDRA_SBRA,
+        pdufa_goal_date=date(2023, 6, 28),
+    ),
+)
+
+FDA_CAPRICOR_REGULATORY_HISTORY = "https://www.fda.gov/media/193912/download"
+FDA_CAPRICOR_2025_CRL = "https://download.open.fda.gov/crl/CRL_BLA125842_20250709.pdf"
+
+CAPRICOR_SOURCE_SUPPORTED_TIMELINES = (
+    SourceSupportedCycle(
+        application_key="BLA:125842",
+        submission_key="BLA:125842:ORIGINAL",
+        received_date=date(2024, 12, 31),
+        action_date=date(2025, 7, 9),
+        action_type="complete_response",
+        receipt_source_url=FDA_CAPRICOR_REGULATORY_HISTORY,
+        final_action_source_url=FDA_CAPRICOR_2025_CRL,
+        regulatory_history_source_url=FDA_CAPRICOR_REGULATORY_HISTORY,
+        pdufa_goal_date=None,
+    ),
+)
+
+# Source-backed research chronology, NOT a complete independently certified
+# regulatory action/clock inventory, prediction baseline, or training cohort.
+REVIEW_TIMELINES = (
+    REVIEW_TIMELINES
+    + GREEN_CROSS_SOURCE_SUPPORTED_TIMELINES
+    + CELLTRANS_SOURCE_SUPPORTED_TIMELINES
+    + CAPRICOR_SOURCE_SUPPORTED_TIMELINES
+)
+
+
 def validate_review_timelines(
     cycles: tuple[SourceSupportedCycle, ...] = REVIEW_TIMELINES,
     action_fixtures: tuple[FDAEvent, ...] = RESEARCH_ACTIONS,
