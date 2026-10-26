@@ -52,18 +52,19 @@ test("Quick view shows the third page, stays bounded and searches records outsid
  };
  let root;
  const tick=()=>new Promise(resolve=>setImmediate(resolve));
- const cellText=()=>root.root.findAllByType("td").map(cell=>cell.children.join(""));
+ const quickViewCells=()=>root.root.findByProps({"aria-label":"Pipeline quick view"}).findAllByType("td");
+ const cellText=()=>quickViewCells().map(cell=>cell.children.join(""));
  const button=text=>root.root.findAllByType("button").find(x=>x.children.join("")===text);
  try{
   await act(async()=>{root=create(React.createElement(Workspace,{onInspect(){}}));await tick();});
   assert.ok(cellText().includes("T0"));
-  assert.equal(root.root.findAllByType("td").length,100);
+  assert.equal(quickViewCells().length,100);
   assert.ok(requests.indexOf("/api/workspace")>requests.indexOf("/api/workspace/page?offset=0&limit=50"));
   await act(async()=>{button("NEXT 50 CANDIDATES").props.onClick();await tick();});
   assert.ok(cellText().includes("T50"));assert.ok(!cellText().includes("T0"));
   await act(async()=>{button("NEXT 50 CANDIDATES").props.onClick();await tick();});
   assert.ok(cellText().includes("T100"));assert.ok(cellText().includes("T149"));
-  assert.equal(root.root.findAllByType("td").length,100);
+  assert.equal(quickViewCells().length,100);
   assert.equal(button("NEXT 50 CANDIDATES").props.disabled,true);
   await act(async()=>{button("PREVIOUS 50").props.onClick();await tick();});
   assert.ok(cellText().includes("T50"));
