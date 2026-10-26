@@ -363,6 +363,55 @@ class DatedArchiveTests(unittest.TestCase):
                 self.assertIsNone(daily.same_run_trial_inventory(report, run_id + 1))
 
 
+    def test_same_run_source_conflicts_are_reconciled_and_fail_closed(self):
+        from scripts import pdufa_daily_results as daily
+        from unittest.mock import patch
+        data = {
+            'latest_run_id': '40263199452',
+            'findings_due': 1121,
+            'findings_verified': 995,
+            'findings_unresolved': 21,
+            'findings_conflicted': 2,
+            'findings_unavailable': 93,
+            'findings_not_applicable': 10,
+            'full_coverage_verified': False,
+            'missing_required_source_families': ['SEC', 'FINANCIAL'],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            source_path = Path(directory) / 'source.json'
+            def note(source=data, run=40263199452):
+                source_path.write_text(json.dumps(source), encoding='utf-8')
+                with patch.object(daily, 'SOURCES', source_path):
+                    return daily.same_run_source_note(run)
+
+            valid = note()
+            self.assertIn('995 of 1121 verified', valid)
+            self.assertIn('21 unresolved, 2 conflicted, 93 unavailable', valid)
+            self.assertIn('10 not applicable', valid)
+            self.assertIn('Full coverage verified: no', valid)
+            self.assertIsNone(note(run=40263199453))
+
+            # The old note silently hid two conflicts. Now a missing field
+            # cannot masquerade as a reconciled complete source audit.
+            missing_conflicts = {k: v for k, v in data.items()
+                                 if k != 'findings_conflicted'}
+            self.assertIn('counts withheld', note(missing_conflicts))
+            self.assertIn('do not reconcile', note({**data, 'findings_due': 1122}))
+            self.assertIn('counts withheld', note({**data, 'findings_conflicted': -1}))
+            self.assertIn('counts withheld', note({**data, 'findings_conflicted': True}))
+            self.assertIn('counts withheld', note({**data, 'findings_conflicted': '2'}))
+            self.assertIn('Full coverage verified: no', note({
+                **data, 'full_coverage_verified': True}))
+
+            # Legacy reports without the new category are still accepted
+            # when the four reported categories account for every source.
+            legacy = {**data, 'findings_unresolved': 23}
+            del legacy['findings_conflicted']
+            self.assertIn('0 conflicted', note(legacy))
+            self.assertNotIn('counts withheld', note(legacy))
+
+
+
 
 if __name__ == '__main__':
     unittest.main()

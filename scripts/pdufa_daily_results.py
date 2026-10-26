@@ -78,26 +78,49 @@ def same_run_trial_inventory(report: dict, run_id: int) -> dict | None:
 
 
 def same_run_source_note(run_id: int) -> str | None:
+    """Show only source-category counts that reconcile to this exact run."""
     try:
         sources = json.loads(SOURCES.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
-    if str(sources.get("latest_run_id")) != str(run_id):
+    if not isinstance(sources, dict) or str(sources.get("latest_run_id")) != str(run_id):
         return None
-    names = ("findings_verified", "findings_due", "findings_unresolved",
-             "findings_unavailable", "findings_not_applicable")
-    if not all(isinstance(sources.get(name), int) and
-               not isinstance(sources.get(name), bool) and sources[name] >= 0
-               for name in names):
-        return None
+
+    categories = ("findings_verified", "findings_unresolved",
+                  "findings_unavailable", "findings_not_applicable")
+    expected = sources.get("findings_due")
+    if (type(expected) is not int or expected < 0
+            or any(type(sources.get(key)) is not int or sources[key] < 0
+                   for key in categories)):
+        return ("Same-run source audit: status-category counts incomplete or invalid; "
+                "counts withheld. Full coverage verified: no.")
+
+    # Older complete audit indexes omitted an explicit conflict field when zero.
+    # Never infer zero if omitting the field leaves any source checks unaccounted for.
+    conflicts = sources.get("findings_conflicted", 0)
+    if type(conflicts) is not int or conflicts < 0:
+        return ("Same-run source audit: conflicted-source count invalid; "
+                "counts withheld. Full coverage verified: no.")
+    accounted = sum(sources[key] for key in categories) + conflicts
+    if accounted != expected:
+        return ("Same-run source audit: source-category counts do not reconcile "
+                f"({accounted} recorded of {expected} due); counts withheld. "
+                "Full coverage verified: no.")
+
+    coverage = (
+        sources.get("full_coverage_verified") is True
+        and sources["findings_verified"] == expected
+        and not (sources["findings_unresolved"] or conflicts
+                 or sources["findings_unavailable"])
+        and not sources.get("missing_required_source_families")
+    )
     return (
         f"Same-run source audit: {sources['findings_verified']} of "
-        f"{sources['findings_due']} verified; {sources['findings_unresolved']} "
-        f"unresolved, {sources['findings_unavailable']} unavailable, "
+        f"{expected} verified; {sources['findings_unresolved']} unresolved, "
+        f"{conflicts} conflicted, {sources['findings_unavailable']} unavailable, "
         f"{sources['findings_not_applicable']} not applicable. "
-        f"Full coverage verified: {'yes' if sources.get('full_coverage_verified') is True else 'no'}."
+        f"Full coverage verified: {'yes' if coverage else 'no'}."
     )
-
 
 def stage_total(ledger: dict, stage: str, day: str) -> dict:
     title = stage.replace("_", " ")
