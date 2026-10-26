@@ -44,6 +44,53 @@ test("Review keeps exact same-ticker programs and different claims distinct with
   assert.equal(filterSourceIssues(review.items,"SEC","matched SEC document").length,2);
 });
 
+test("Real SEC company-level filing conflicts do not hide the entire source issue list",async()=>{
+  const qncx=issue({ticker:"QNCX",event_key:"REGISTRY:QNCX",
+    claim:"FILINGS_INVENTORY",verification_status:"CONFLICT",
+    reason:"SEC response does not identify the requested ticker",
+    source_url:"https://data.sec.gov/submissions/CIK0001662774.json"});
+  const tbph=issue({ticker:"TBPH",event_key:"REGISTRY:TBPH",
+    claim:"FILINGS_INVENTORY",verification_status:"CONFLICT",
+    reason:"SEC response does not identify the requested ticker",
+    source_url:"https://data.sec.gov/submissions/CIK0001583107.json"});
+  const dataset=report([qncx,tbph,issue()]);
+  const matching=goalSourceReview(dataset,scan);
+  assert.ok(matching,"Two exact registry conflicts must not cause review=null");
+  assert.equal(matching.total,23);
+  assert.equal(matching.items.length,3);
+  assert.deepEqual(matching.items.map(x=>x.eventKey),["REGISTRY:QNCX","REGISTRY:TBPH","SRPT|CASIMERSEN_DMD45_20270228"]);
+  assert.equal(matching.items.filter(x=>x.status==="CONFLICT").length,2);
+  assert.equal(filterSourceIssues(matching.items,"SEC","TBPH").length,1);
+  let view;
+  try{
+    await act(async()=>{view=create(React.createElement(Panel,{review:matching}));});
+    const rendered=JSON.stringify(view.toJSON());
+    assert.match(rendered,/REGISTRY:QNCX/);
+    assert.match(rendered,/REGISTRY:TBPH/);
+    assert.match(rendered,/CONFLICT/);
+    assert.match(rendered,/bounded sample/);
+    assert.equal(view.root.findAllByType("article").length,3);
+  }finally{if(view)await act(async()=>view.unmount());}
+});
+
+test("Only exactly matched SEC inventory rows may use REGISTRY:TICKER identity",()=>{
+  const valid=issue({ticker:"QNCX",event_key:"REGISTRY:QNCX",claim:"FILINGS_INVENTORY",
+    verification_status:"CONFLICT"});
+  assert.equal(goalSourceReview(report([valid]),scan)?.items.length,1);
+  for(const changed of [
+    {event_key:"REGISTRY:TBPH"},
+    {event_key:"REGISTRY:"},
+    {event_key:"REGISTRY:QNCX|FAKE"},
+    {event_key:"REGISTRY:qncx"},
+    {category:"FINANCIAL"},
+    {claim:"FINANCING_CLOSURE"},
+    {category:"FDA"},
+  ]){
+    assert.equal(goalSourceReview(report([{...valid,...changed}]),scan),null,
+      "Invalid company identity bypass: "+JSON.stringify(changed));
+  }
+});
+
 test("Review withholds another run and malformed or contradictory finding lists",()=>{
   for(const change of [
     {latest_run_id:String(runId-1)}, {latest_run_url:runUrl+"/jobs"},
