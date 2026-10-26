@@ -46,3 +46,17 @@ The historical prior PDF-probe GitHub artifact has limited retention, so it shou
 Qualified independent reviewers need to check original document pages, effective FDA action dates, actual application and original-versus-supplement identity, and review-cycle chronology for each source. Separately construct a **complete NDA/BLA approval and nonapproval population** (not the selectively published CRL archive), reconcile all original actions with the predecision evidence cutoff, and validate a temporal held-out model. No approval rates, scientific probability estimates or retrospective accuracy may be calculated from these packets as-is.
 
 **Verified original FDA review-cycle outcome labels: 0. Model-eligible records: 0. Prediction probability: unavailable.** Research draft only; existing GEM JR/GEM FS/FA presets, production scanners and trading functionality unchanged.
+
+
+### The one unavailable published letter
+
+The archived FDA published-letter source identifies the unavailable
+`source_record_sha256=75d0e6c5d88b49f7be336cf3649b3eb08a2ba1f930c2c0f9cfc1ac8ae88f6515`
+as an **unclassified February 27, 2026** record naming
+**Chiesi Farmaceutici S.p.A.**. Its `application_numbers` array is empty
+and its published `file_name` field says **"Under Review for Release"**.
+No official PDF URL or approval/nonapproval decision can be derived from
+those facts. This is an **ambiguous-identity FDA evidence review task**,
+not an FDA nonapproval, and no arbitrary application number should be
+assigned. The pinned read-only audit preserves the source SHA and these
+limited public publication metadata fields for later investigation.
