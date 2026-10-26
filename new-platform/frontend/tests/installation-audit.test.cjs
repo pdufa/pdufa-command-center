@@ -97,3 +97,16 @@ test("nightly and results runtime use observed evidence without clearing source 
   assert.doesNotMatch(nightly, /runtime: "Verified"/);
   assert.doesNotMatch(results, /runtime: "Verified"/);
 });
+
+test("outdated public ticker identities are visibly held with dated Nasdaq corporate-action sources", () => {
+  assert.match(tracker,/Company-identity exceptions — source research, October 26/);
+  assert.match(tracker,/2 recorded SEC FILINGS_INVENTORY conflicts remain OPEN/);
+  assert.match(tracker,/QNCX to IRLA effective October 12, 2026/);
+  assert.match(tracker,/ECA2026-724/);
+  assert.match(tracker,/TBPH trading was suspended effective September 24, 2026/);
+  assert.match(tracker,/ECA2026-668/);
+  assert.match(tracker,/before qualification/);
+  assert.match(tracker,/current ticker validity and public-company eligibility remain unverified/);
+  assert.match(tracker,/FS\/FA presets are unchanged/);
+  assert.doesNotMatch(tracker,/No new listing, trade approval or source verification is inferred\.\s*\{false\}/);
+});
