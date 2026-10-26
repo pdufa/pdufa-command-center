@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Candidate } from "./Workspace";
+import NumericForecastMetrics from "./NumericForecastMetrics";
 import { ASSESSMENT_LABELS, ASSESSMENT_STAGES, ASSESSMENT_WEIGHTS, categoryId, downloadJson, scoreFor, stageLabel, validateAssessmentIndex, type AssessmentDetail, type AssessmentIndex, type AssessmentIndexRecord, type AssessmentStage } from "../lib/candidate-assessments";
 
 const n = (value: number) => Number(value.toFixed(2)).toLocaleString("en-US");
@@ -149,6 +150,7 @@ export default function CandidateAssessments({ row, initialStage = "PIPELINE" }:
       <div className="assessment-models" role="group" aria-label="Scoring models">{ASSESSMENT_STAGES.map(key => { const score = data.models[key]; return <button type="button" key={key} className={stage === key ? "active" : "secondary"} aria-pressed={stage === key} onClick={() => setStage(key)}>
         <span>{stageLabel(key)}</span><strong>{score.coverage === 0 ? "Unscored" : score.score == null ? n(score.observedPoints) + " observed points" : n(score.score) + " / 100"}</strong><small>{n(score.coverage)}% evidence · {score.status}</small>
       </button>; })}</div>
+      <NumericForecastMetrics detail={data} stage={stage} />
       <details className="assessment-ledger"><summary>Remaining assessments · {ASSESSMENT_STAGES.reduce((sum, key) => sum + data.models[key].categories.filter(c => c.status !== "COMPLETE").length, 0)} incomplete</summary><ul>{ASSESSMENT_STAGES.flatMap(key => data.models[key].categories.filter(c => c.status !== "COMPLETE").map(c => <li key={key + c.id}>{stageLabel(key)} · {c.id} {c.label}: {c.status}</li>))}</ul></details>
       <p className="subtle">{data.qualification.note} Missing = unscored; zero = evaluated and earned no points. The displayed weights and research rules are not statistically calibrated.</p>
       {data.riskFlags.length > 0 && <div className="assessment-risk" role="alert"><strong>Evidence flags</strong><ul>{data.riskFlags.map(flag => <li key={flag}>{flag}</li>)}</ul></div>}
