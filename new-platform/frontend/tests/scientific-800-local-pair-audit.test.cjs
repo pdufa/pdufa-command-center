@@ -194,3 +194,111 @@ test("UI uses browser-local untrusted CSVs; no backend verification or grading",
   assert.match(ui, /Sources and signatures are NOT verified/); // no authenticity claim asserted
   assert.doesNotMatch(ui, /runScan\(|placeTrade\(|saveGrade\(/);
 });
+
+
+const { buildScientific800DiscrepancyLedgerCsv } =
+  require("../lib/scientific-800-local-pair-audit.ts");
+
+test("complete discrepancy ledger exports exact-NCT 800 rows without pretending science was adjudicated", () => {
+  const x = pair();
+  const orig = JSON.stringify({ matrix: x.matrix, audit: x.audit });
+  const csv = buildScientific800DiscrepancyLedgerCsv(x.matrix, x.audit, x.a, x.b);
+  const rows = csv.trimEnd().split("\r\n");
+  assert.equal(rows.length, 801);
+  assert.equal(rows[0].slice(1, -1).split('","').length, 20);
+  assert.match(rows[0], /"independent_review_next_actions","scientific_adjudication_status"$/);
+  assert.match(rows[1], /"NCT02142738","trial_design.assessment_1:depth_1"/);
+  assert.match(rows[800], /"timeline_and_uncertainty.assessment_5:depth_20"/);
+  assert.equal((csv.match(/"NOT_ADJUDICATED"/g) || []).length, 800);
+  assert.equal((csv.match(/"COLLECT_MISSING_INDEPENDENT_REVIEW;AUTHENTICATE_REVIEWERS_AND_VERIFY_ORIGINAL_SOURCES"/g) || []).length, 800);
+  assert.doesNotMatch(csv, /"SCIENTIFICALLY_VERIFIED"|"APPROVED"|"SIGNED"/);
+  assert.equal(JSON.stringify({ matrix: x.matrix, audit: x.audit }), orig);
+});
+
+test("complete per-task flags preserve reviewer-source conflicts without claiming verification", () => {
+  const x = pair();
+  const shaA = "c".repeat(64), shaB = "d".repeat(64);
+  let a = edit(x.a, 1, 26, "supports");
+  a = edit(a, 1, 18, "Example Reviewer");
+  a = edit(a, 1, 20, "https://clinicaltrials.gov/study/NCT02142738");
+  a = edit(a, 1, 21, shaA);
+  a = edit(a, 1, 22, "2025-01-02");
+  a = edit(a, 1, 23, "Table 2");
+  a = edit(a, 1, 25, "Candidate observation");
+  let b = edit(x.b, 1, 26, "contradicts");
+  b = edit(b, 1, 18, "example reviewer");
+  b = edit(b, 1, 20, "https://clinicaltrials.gov/study/NCT02142738");
+  b = edit(b, 1, 21, shaB);
+  b = edit(b, 1, 22, "2025-01-02");
+  b = edit(b, 1, 23, "Table 2");
+  b = edit(b, 1, 25, "Candidate disagreement");
+  a = edit(a, 2, 26, "uncertain");
+  const csv = buildScientific800DiscrepancyLedgerCsv(x.matrix, x.audit, a, b);
+  const lines = csv.trimEnd().split("\r\n");
+  const row = lines[1].slice(1, -1).split('","');
+  assert.equal(row[0], "NCT02142738");
+  assert.equal(row[1], "trial_design.assessment_1:depth_1");
+  assert.equal(row[6], "supports");
+  assert.equal(row[7], "contradicts");
+  assert.equal(row[10], shaA);
+  assert.equal(row[11], shaB);
+  assert.equal(row[12], "NO");
+  assert.equal(row[13], "NO");
+  assert.equal(row[14], "NO");
+  assert.equal(row[15], "YES");
+  assert.equal(row[16], "YES");
+  assert.equal(row[17], "YES");
+  assert.match(row[18], /RECONCILE_CONFLICTING_FINDINGS/);
+  assert.match(row[18], /RECONCILE_CLAIMED_SOURCE_DOCUMENTS/);
+  assert.match(row[18], /CHECK_REVIEWER_INDEPENDENCE/);
+  assert.equal(row[19], "NOT_ADJUDICATED");
+  const oneSidedRow = lines[2].slice(1, -1).split('","');
+  assert.equal(oneSidedRow[14], "YES");
+  assert.equal(oneSidedRow[12], "YES");
+  assert.match(oneSidedRow[18], /OBTAIN_COMPLETE_SOURCE_PROVENANCE/);
+  assert.equal(lines.length, 801);
+});
+
+test("output escapes spreadsheet formula injection in untrusted source references", () => {
+  const x = pair();
+  let a = edit(x.a, 1, 26, "supports");
+  a = edit(a, 1, 20, "=HYPERLINK(https://evil.invalid)");
+  const csv = buildScientific800DiscrepancyLedgerCsv(x.matrix, x.audit, a, x.b);
+  assert.match(csv, /"'=HYPERLINK/);
+  const rows = csv.trimEnd().split("\r\n");
+  assert.equal(rows.length, 801);
+  assert.match(rows[1], /"OBTAIN_COMPLETE_SOURCE_PROVENANCE/);
+});
+
+test("invalid or forged sheet input blocks ledger export before writing any rows", () => {
+  const x = pair();
+  for (const [which, col, value] of [
+    ["a", 0, "NCT04280705"], ["b", 4, "invented_depth"],
+    ["a", 12, "0.99"], ["b", 28, "SUBMITTED"],
+    ["a", 11, "VERIFIED"], ["b", 19, "VERIFIED"],
+    ["a", 26, "APPROVED"], ["b", 15, "invalid_source_gate"],
+  ]) {
+    const altered = edit(x[which], 1, col, value);
+    assert.throws(() => buildScientific800DiscrepancyLedgerCsv(
+      x.matrix, x.audit, which === "a" ? altered : x.a,
+      which === "b" ? altered : x.b),
+      /800-task reviewer comparison blocked/);
+  }
+  assert.throws(() => buildScientific800DiscrepancyLedgerCsv(
+    x.matrix, x.audit, x.b, x.a));
+  const x2 = pair();
+  x2.audit.nctId = "NCT04280705";
+  assert.throws(() => buildScientific800DiscrepancyLedgerCsv(
+    x2.matrix, x2.audit, x2.a, x2.b));
+});
+
+test("UI offers full 800-task CSV only after local comparison and clears stale results", () => {
+  const ui = fs.readFileSync(path.join(__dirname, "../app/Scientific800Handoff.tsx"), "utf8");
+  assert.match(ui, /Download full 800-task discrepancy ledger \(CSV\)/);
+  assert.match(ui, /buildScientific800DiscrepancyLedgerCsv\(/);
+  assert.match(ui, /_scientific_800_AB_discrepancy_ledger_UNVERIFIED\.csv/);
+  assert.match(ui, /setLocalDiscrepancyCsv\(""\)/);
+  assert.match(ui, /localAudit\.nctId !== validated\.matrix\.nctId/);
+  assert.match(ui, /URLs and SHA-256 strings are untrusted claims/);
+  assert.doesNotMatch(ui, /saveGrade\(|placeTrade\(|runScan\(/);
+});
