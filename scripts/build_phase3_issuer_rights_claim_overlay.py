@@ -177,7 +177,7 @@ def build():
                 or agency_action.get("currentPendingFDAAction") is not False
                 or (agency_action.get("historicalIssuerReportedPdufaDate") is not None
                     and (not isinstance(agency_action["historicalIssuerReportedPdufaDate"], str)
-                        or not re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}",
+                        or not re.fullmatch(r"\d{4}-\d{2}-\d{2}",
                             agency_action["historicalIssuerReportedPdufaDate"])
                         or date.fromisoformat(agency_action["historicalIssuerReportedPdufaDate"])
                             > date.fromisoformat(EVIDENCE_AS_OF)))
