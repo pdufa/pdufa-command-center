@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "scope": "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY",
+  "asOf": "2026-10-26",
+  "issuerTicker": "CYTK",
+  "issuerCik": "0001061983",
+  "programs": [
+    {
+      "issuerTicker": "CYTK",
+      "issuerCik": "0001061983",
+      "asset": "aficamten",
+      "assetAliases": [
+        "MYQORZO",
+        "CK-3773274"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_DEVELOPMENT_COMMERCIALIZATION_WITH_CHINA_TAIWAN_AND_JAPAN_OUTLICENSES",
+      "rightsClaimSummary": "Cytokinetics June 2026 Form 10-Q describes its aficamten drug commercialization, with exclusive China/Taiwan rights licensed to Sanofi affiliate and exclusive Japan rights licensed to Bayer (some trial research rights reserved). The issuer's disclosures do not alone establish unencumbered worldwide legal rights or current performance of contracts.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "CHINA_TAIWAN_EXCLUSIVE_LICENSE_TO_SANOFI",
+        "JAPAN_EXCLUSIVE_LICENSE_TO_BAYER_WITH_RESERVED_CLINICAL_STUDY_RIGHTS",
+        "EXISTING_US_OHCM_APPROVAL_DOES_NOT_APPROVE_NONOBSTRUCTIVE_OR_PEDIATRIC_INDICATION",
+        "MAPLE_S_NDA_LABEL_UPDATE_IS_DISTINCT_FROM_ACACIA_PLANNED_NHCM_S_NDA",
+        "FDA_PDUFA_DATE_IS_ISSUER_REPORTED_NOT_INDEPENDENTLY_FDA_VERIFIED"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm",
+          "assertion": "Cytokinetics June 30, 2026 SEC Form 10-Q states Sanofi (via Genzyme) holds exclusive China/Taiwan rights and Bayer holds exclusive Japan rights subject to reserved Cytokinetics clinical-study rights; Q2 revenues and milestones described."
+        },
+        {
+          "type": "ISSUER_2026_Q1_RELEASE",
+          "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-First-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+          "assertion": "May 5, 2026 issuer announcement states FDA accepted MAPLE-HCM sNDA for filing with November 14, 2026 PDUFA date; MAPLE-HCM evaluates aficamten compared with metoprolol in adults with symptomatic obstructive HCM."
+        },
+        {
+          "type": "ISSUER_2026_Q2_RELEASE",
+          "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+          "assertion": "August 6, 2026 issuer release describes ACACIA-HCM nHCM data with sNDA planned Q4 2026, CEDAR-HCM pediatrics, and existing US/EU approval for adult obstructive HCM."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_SEQUOIA_HCM",
+          "url": "https://clinicaltrials.gov/study/NCT05186818",
+          "assertion": "NCT05186818 identifies SEQUOIA-HCM aficamten in adults with obstructive HCM; original indication evidence, not MAPLE label action."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_MAPLE_HCM",
+          "url": "https://clinicaltrials.gov/study/NCT05767346",
+          "assertion": "NCT05767346 identifies MAPLE-HCM aficamten vs metoprolol in adults with symptomatic obstructive HCM; distinct from nHCM."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_ACACIA_HCM",
+          "url": "https://clinicaltrials.gov/study/NCT06081894",
+          "assertion": "NCT06081894 identifies ACACIA-HCM aficamten in adults with non-obstructive HCM; separate planned sNDA."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_CEDAR_HCM",
+          "url": "https://clinicaltrials.gov/study/NCT06412666",
+          "assertion": "NCT06412666 identifies pediatric symptomatic obstructive HCM aficamten study; no reported FDA application target."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_FOREST_HCM",
+          "url": "https://clinicaltrials.gov/study/NCT04848506",
+          "assertion": "NCT04848506 identifies FOREST-HCM open-label aficamten extension; no standalone PDUFA target."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT05186818",
+          "study": "SEQUOIA-HCM",
+          "indication": "Symptomatic obstructive hypertrophic cardiomyopathy (oHCM), adults",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05186818",
+          "regulatoryContext": "EXISTING_US_ADULT_OHCM_APPROVAL_SEQUOIA_SUPPORTIVE_NOT_NEW_UPCOMING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT05767346",
+          "study": "MAPLE-HCM",
+          "indication": "Symptomatic obstructive hypertrophic cardiomyopathy (oHCM), aficamten monotherapy versus metoprolol",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+          "regulatoryContext": "ISSUER_REPORTED_ACCEPTED_MAPLE_OHCM_LABEL_UPDATE_SNDA_UPCOMING_PDUFA_2026_11_14",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "issuerReportedCurrentPdufaDate": "2026-11-14",
+          "issuerReportedFdaAcceptance": true,
+          "issuerReportedCurrentPdufaSourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-First-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+          "issuerReportedPdufaAsOf": "2026-10-26"
+        },
+        {
+          "nctId": "NCT06081894",
+          "study": "ACACIA-HCM",
+          "indication": "Symptomatic non-obstructive hypertrophic cardiomyopathy (nHCM), adults",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT06081894",
+          "regulatoryContext": "PLANNED_2026_Q4_NHCM_SNDA_UNCONFIRMED_ACCEPTANCE_OR_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT06412666",
+          "study": "CEDAR-HCM",
+          "indication": "Symptomatic pediatric obstructive hypertrophic cardiomyopathy (oHCM)",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT06412666",
+          "regulatoryContext": "PEDIATRIC_AFFICAMTEN_RESEARCH_NO_ACCEPTED_FDA_APPLICATION_OR_PDUFA_DATE",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT04848506",
+          "study": "FOREST-HCM",
+          "indication": "Long-term aficamten safety/tolerability in adults with hypertrophic cardiomyopathy",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04848506",
+          "regulatoryContext": "OPEN_LABEL_EXTENSION_SAFETY_NO_STANDALONE_PDUFA_DATE",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    }
+  ],
+  "limitations": "Issuer SEC 10-Q and corporate releases plus exact official NCT identities are research evidence. A Nov. 14, 2026 MAPLE-HCM sNDA PDUFA target is publicly issuer-reported for obstructive HCM label updates, not proof of unmodified FDA agency calendar or a decision. ACACIA non-obstructive HCM application was planned, not accepted as of sources reviewed. No independent full contract adjudication, territorial legal clearance, FDA PDUFA letter review or Pipeline qualification."
+}
