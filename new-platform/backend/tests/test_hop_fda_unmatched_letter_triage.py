@@ -194,21 +194,18 @@ def test_real_pinned_unmatched_letter_review_population_is_consistent():
     assert audit["published_letter_references"] == bridge["published_letter_references"] == 458
     assert audit["source_applications_tsv_sha256"] == original["applications_tsv_sha256"]
     assert audit["source_submissions_tsv_sha256"] == original["submissions_tsv_sha256"]
-    assert audit["matched_original_application_letter_references"] == (
-        bridge["published_letter_reference_link_states"][
-            "NDA_BLA_APPLICATION_IN_ORIGINAL_SUBMISSION_SPINE"
-        ] == 334
-    )
-    assert audit["nda_bla_no_original_spine_letter_references"] == (
-        bridge["published_letter_reference_link_states"][
-            "NDA_BLA_APPLICATION_NOT_IN_ORIGINAL_SUBMISSION_SPINE"
-        ] == 107
-    )
-    assert audit["ambiguous_or_unparseable_letter_references"] == (
-        bridge["published_letter_reference_link_states"][
-            "AMBIGUOUS_OR_UNPARSEABLE_LETTER_APPLICATION"
-        ] == 17
-    )
+    assert audit["matched_original_application_letter_references"] == 334
+    assert bridge["published_letter_reference_link_states"][
+        "NDA_BLA_APPLICATION_IN_ORIGINAL_SUBMISSION_SPINE"
+    ] == 334
+    assert audit["nda_bla_no_original_spine_letter_references"] == 107
+    assert bridge["published_letter_reference_link_states"][
+        "NDA_BLA_APPLICATION_NOT_IN_ORIGINAL_SUBMISSION_SPINE"
+    ] == 107
+    assert audit["ambiguous_or_unparseable_letter_references"] == 17
+    assert bridge["published_letter_reference_link_states"][
+        "AMBIGUOUS_OR_UNPARSEABLE_LETTER_APPLICATION"
+    ] == 17
     assert audit["review_queue_references"] == 124
     assert audit["review_queue_reasons"] == {
         "AMBIGUOUS_OR_UNPARSEABLE_LETTER_APPLICATION": 17,
