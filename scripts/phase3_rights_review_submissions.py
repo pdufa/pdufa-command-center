@@ -67,6 +67,7 @@ def source_url(value):
     host = url.hostname
     if (url.scheme != "https" or not host
         or not CANDIDATE_HOST.fullmatch(host)
+        or not host.rsplit(".", 1)[-1].isalpha()
         or host.lower().endswith((".local", ".internal", ".localhost"))
         or url.username is not None or url.password is not None
         or url.port is not None or url.fragment):
@@ -208,7 +209,6 @@ def build_review_coverage(worklist, submissions):
     for row in records:
         nct = row["nct_id"]
         checks = {}
-        any_submission = True
         all_submission = True
         all_reviewed = True
         for check in REQUIRED_REVIEW:
