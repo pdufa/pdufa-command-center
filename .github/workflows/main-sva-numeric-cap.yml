@@ -1,0 +1,29 @@
+name: MAIN SVA numeric Nasdaq market cap validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/validate_sva_nasdaq_market_cap.py'
+      - '.github/workflows/main-sva-numeric-cap.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sva-numeric-cap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run original-source parser unit tests
+        run: python3 -m unittest discover -s tests -p 'test_phase3_nasdaq_cap_recheck.py' -v
+      - name: Independently validate numeric SVA market cap
+        run: python3 scripts/validate_sva_nasdaq_market_cap.py "$RUNNER_TEMP/sva_numeric_nasdaq_cap_research.json"
+      - name: Archive SVA source hash and numeric status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sva-numeric-nasdaq-cap-research
+          path: ${{ runner.temp }}/sva_numeric_nasdaq_cap_research.json
+          if-no-files-found: warn
+          retention-days: 7
