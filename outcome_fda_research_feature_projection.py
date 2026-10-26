@@ -52,6 +52,15 @@ def build_research_feature_projection(asof: str) -> dict:
         "selection_bias_uncertified": True,
         "allowed_observation_fields": sorted(ALLOWED_RESEARCH_FIELDS),
         "retrospective_fda_action_labels_excluded": True,
+        # A sponsor observation is not an independently certified FDA feature.
+        # This report cannot be consumed as training input.
+        "training_export_permitted": False,
+        "training_blockers": [
+            "unverified_fda_receipt_boundaries",
+            "incomplete_application_denominator",
+            "uncertified_historical_feature_availability",
+            "retrospective_outcome_label_provenance_unverified",
+        ],
         "unverified_fda_receipt_dates_excluded": True,
         "historical_feature_asof_certified": False,
         "complete_application_denominator_verified": False,
