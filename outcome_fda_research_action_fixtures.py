@@ -6,7 +6,7 @@ committed primary-source reports; they do not establish complete cycle coverage.
 from datetime import date
 from outcome_fda_action_events import FDAEvent, ModelGate, unique_final_actions
 
-def event(application, submission, day, kind, url):
+def event(application, submission, day, kind, url, *, source_document_role="signed_fda_final_action_letter"):
     return FDAEvent(
         application_key=f"BLA:{application}",
         submission_key=f"BLA:{application}:{submission}",
@@ -16,6 +16,7 @@ def event(application, submission, day, kind, url):
         final_agency_action=True,
         # Publication date intentionally UNKNOWN; must not be guessed from action date.
         source_publication_date=None,
+        source_document_role=source_document_role,
     )
 
 RESEARCH_ACTIONS = (
@@ -52,7 +53,8 @@ RESEARCH_ACTIONS = (
     # FDA SBRA official chronology documents this earlier CRL; original signed
     # action letter unavailable in this pass, so direct-letter provenance OPEN.
     event("125734", "ORIGINAL", "2021-08-18", "complete_response",
-          "https://www.fda.gov/media/170457/download"),
+          "https://www.fda.gov/media/170457/download",
+          source_document_role="fda_regulatory_history_summary"),
     event("125734", "RESUBMISSION-1", "2023-06-28", "approval",
           "https://www.fda.gov/media/169921/download"),
     # Primary FDA CRL letters visually verified on 2026-10-26.
