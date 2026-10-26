@@ -22,6 +22,7 @@ OTHER_CASES = ROOT / "data/research_issuer_rights_claims_achv_mirm_2026-10-26.js
 CYTK_CASE = ROOT / "data/research_issuer_rights_claims_cytk_2026-10-26.json"
 ACAD_IOVA_CASE = ROOT / "data/research_issuer_rights_claims_acad_iova_2026-10-26.json"
 BCRX_CASE = ROOT / "data/research_issuer_rights_claims_bcrx_2026-10-26.json"
+AXSM_CASE = ROOT / "data/research_issuer_rights_claims_axsm_2026-10-26.json"
 EVIDENCE_AS_OF = "2026-10-26"
 
 def load_originals():
@@ -104,12 +105,21 @@ def collect_cases():
         or bcrx["programs"][0].get("issuerTicker") != "BCRX"
         or bcrx["programs"][0].get("issuerCik") != "0000882796"):
         raise ValueError("BCRX berotralstat primary-source rights case missing")
-    return [old_program] + newer["programs"] + cytk["programs"] + acad_iova["programs"] + bcrx["programs"]
+    axsm = json.loads(AXSM_CASE.read_text(encoding="utf-8"))
+    if (axsm.get("scope") != "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY"
+        or axsm.get("schemaVersion") != 1 or axsm.get("issuerTicker") != "AXSM"
+        or axsm.get("issuerCik") != "0001579428"
+        or axsm.get("asOf") != EVIDENCE_AS_OF
+        or len(axsm.get("programs", [])) != 1):
+        raise ValueError("AXSM agency-confirmed historical FDA action evidence dossier missing")
+    return ([old_program] + newer["programs"] + cytk["programs"]
+            + acad_iova["programs"] + bcrx["programs"] + axsm["programs"])
 
 
 def build():
     trials, issuers = load_originals()
     claims = {}
+    confirmed_historical_actions = []
     originals_by_id = {t["nct_id"]: t for t in trials}
     programs = collect_cases()
     ticker_claims = set()
@@ -129,6 +139,39 @@ def build():
                 or not any(s["type"].startswith(("ISSUER_SEC_", "SEC_FORM_")) for s in sources)
                 or not all(s["url"].startswith("https://") and s.get("assertion") for s in sources)):
             raise ValueError("Issuer primary filing sources insufficient")
+        agency_action = p.get("officialFdaHistoricalAction")
+        supporting_ids = set()
+        if agency_action is not None:
+            if not isinstance(agency_action, dict):
+                raise ValueError("Official FDA action must be a structured object")
+            action_date = agency_action.get("actionDate")
+            source_url = agency_action.get("agencyPrimarySourceUrl")
+            mentioned = agency_action.get("agencyPressExplicitSupportingNctIds")
+            link_ids = {link["nctId"] for link in p["trialLinks"]}
+            if (not isinstance(action_date, str)
+                or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", action_date)
+                or date.fromisoformat(action_date) > date.fromisoformat(EVIDENCE_AS_OF)
+                or agency_action.get("agency") != "US_FDA"
+                or agency_action.get("actionType") != "APPROVED_SUPPLEMENTAL_INDICATION"
+                or agency_action.get("independentlyVerifiedCompletedFdaAction") is not True
+                or agency_action.get("isCurrentFuturePdufa") is not False
+                or agency_action.get("currentPendingFDAAction") is not False
+                or agency_action.get("historicalIssuerReportedPdufaDate") != action_date
+                or source_url not in {source["url"] for source in sources if source["type"] == "OFFICIAL_FDA_FINAL_LABEL_APPROVAL"}
+                or not isinstance(mentioned, list) or len(mentioned) == 0
+                or len(mentioned) != len(set(mentioned))
+                or not set(mentioned).issubset(link_ids)
+                or not agency_action.get("indication")):
+                raise ValueError("Official completed FDA historical action lacks bounded agency evidence")
+            supporting_ids = set(mentioned)
+            confirmed_historical_actions.append({
+                "issuer_ticker": ticker, "asset": asset, "action_date": action_date,
+                "action_type": agency_action["actionType"],
+                "indication": agency_action["indication"],
+                "fda_primary_source_url": source_url,
+                "fda_press_explicit_supporting_nct_ids": sorted(supporting_ids),
+                "is_current_pending_fda_action": False,
+            })
         for link in p["trialLinks"]:
             nct = link["nctId"]
             if nct in claims:
@@ -168,6 +211,12 @@ def build():
                 "issuer_reported_upcoming_pdufa_target": sponsor_pdufa,
                 "issuer_reported_fda_acceptance": link.get("issuerReportedFdaAcceptance") is True,
                 "issuer_reported_pdufa_source_url": link.get("issuerReportedCurrentPdufaSourceUrl"),
+                "official_historical_fda_action": ({
+                    "action_date": agency_action["actionDate"],
+                    "action_type": agency_action["actionType"],
+                    "source_url": agency_action["agencyPrimarySourceUrl"],
+                    "current_pending": False,
+                } if nct in supporting_ids else None),
             }
     rows = []
     for t in sorted(trials, key=lambda x: x["nct_id"]):
@@ -192,6 +241,17 @@ def build():
                 linked["issuer_reported_fda_acceptance"] if linked else False),
             "issuer_reported_pdufa_source_url": (
                 linked["issuer_reported_pdufa_source_url"] if linked else None),
+            "official_fda_confirmed_completed_historical_action": bool(
+                linked and linked["official_historical_fda_action"]),
+            "historical_fda_action_date": (
+                linked["official_historical_fda_action"]["action_date"]
+                if linked and linked["official_historical_fda_action"] else None),
+            "historical_fda_action_type": (
+                linked["official_historical_fda_action"]["action_type"]
+                if linked and linked["official_historical_fda_action"] else None),
+            "historical_fda_action_primary_source_url": (
+                linked["official_historical_fda_action"]["source_url"]
+                if linked and linked["official_historical_fda_action"] else None),
             "independently_verified_current_legal_rights": False,
             "independent_fda_pdufa_target_verified": False,
             "current_pdufa_target_date": None,
@@ -219,10 +279,14 @@ def build():
         "asset_program_dossiers": len(programs),
         "issuer_reported_future_pdufa_event_count": len(upcoming),
         "issuer_reported_future_pdufa_events": upcoming,
+        "official_fda_confirmed_completed_historical_action_count": len(confirmed_historical_actions),
+        "official_fda_confirmed_completed_historical_actions": confirmed_historical_actions,
+        "official_fda_confirmed_completed_historical_action_supporting_trial_count": sum(
+            1 for row in rows if row["official_fda_confirmed_completed_historical_action"]),
         "independently_adjudicated_current_legal_rights_count": 0,
         "independently_verified_current_fda_pdufa_count": 0,
         "qualified_pipeline_count": None,
-        "limitations": "These are primary issuer-disclosed rights CLAIMS linked to original registry NCTs, not independent legal adjudication or evidence of unencumbered global rights. Some have material disputes/territorial restrictions. An historical issuer-reported PDUFA target may have already passed; it is not a current pending FDA action. A future issuer-reported PDUFA date is research evidence for a specific application and indication, not independent FDA confirmation. Unreviewed means unknown, not negative. Existing drug approval for a different indication is not a new-label approval.",
+        "limitations": "These are primary issuer-disclosed rights CLAIMS linked to original registry NCTs, not independent legal adjudication or evidence of unencumbered global rights. Some have material disputes/territorial restrictions. An historical issuer-reported PDUFA target may have already passed; it is not a current pending FDA action. A future issuer-reported PDUFA date is research evidence for a specific application and indication, not independent FDA confirmation. Unreviewed means unknown, not negative. Existing drug approval for a different indication is not a new-label approval. Official FDA-confirmed past approvals are tracked separately from current upcoming PDUFA targets.",
         "trials": rows,
     }
 
@@ -237,7 +301,11 @@ if __name__ == "__main__":
     print("Historical trials with issuer rights-claim evidence linked:", result["issuer_rights_claim_evidence_linked_trials"], "/741")
     print("Historical trials not yet rights-claim reviewed:", result["claim_evidence_missing_or_unreviewed_trials"], "/741")
     print("Issuers with source-linked disclosures:", result["issuers_with_rights_claim_dossiers"], "/130")
-    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/8 researched")
+    print("Drug development programs supported by issuer disclosures:", result["asset_program_dossiers"], "/9 researched")
+    print("Official FDA-confirmed completed historical action events:",
+          result["official_fda_confirmed_completed_historical_action_count"], "/741")
+    print("Historical NCTs explicitly named by FDA to support the approved past action:",
+          result["official_fda_confirmed_completed_historical_action_supporting_trial_count"], "/741")
     print("Future PDUFA dates reported by issuer but not independently by FDA:",
           result["issuer_reported_future_pdufa_event_count"], "/741")
     print("Independently adjudicated legal rights: 0/741; independently verified current FDA/PDUFA targets: 0/741")

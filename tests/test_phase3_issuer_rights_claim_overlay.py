@@ -21,12 +21,12 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         self.assertEqual(len(r["trials"]), 741)
         self.assertEqual(len(self.by_id), 741)
         self.assertEqual(len({x["ticker"] for x in r["trials"]}), 130)
-        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 26)
-        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 715)
-        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 7)
-        self.assertEqual(r["asset_program_dossiers"], 8)
+        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 30)
+        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 711)
+        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 8)
+        self.assertEqual(r["asset_program_dossiers"], 9)
 
-    def test_exact_26_nct_claim_links_and_no_other_unearned_claims(self):
+    def test_exact_30_nct_claim_links_and_no_other_unearned_claims(self):
         expected = {
             "ABVX": {"NCT05507203", "NCT05507216", "NCT05535946"},
             "ACHV": {"NCT04576949", "NCT05206370", "NCT06435221", "NCT07392125"},
@@ -35,6 +35,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             "ACAD": {"NCT04181723", "NCT04279314", "NCT04776746", "NCT04988867"},
             "IOVA": {"NCT05727904"},
             "BCRX": {"NCT03472040", "NCT03485911", "NCT03873116", "NCT04933721", "NCT05453968"},
+            "AXSM": {"NCT03226522", "NCT04797715", "NCT04947553", "NCT06736509"},
         }
         for ticker, ids in expected.items():
             actual = {x["nct_id"] for x in self.report["trials"]
@@ -44,7 +45,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             for nct in ids:
                 self.assertTrue(self.by_id[nct]["source_document_links_cataloged"])
         self.assertEqual(sum(not x["source_document_links_cataloged"]
-                             for x in self.report["trials"]), 715)
+                             for x in self.report["trials"]), 711)
 
     def test_no_trial_has_unearned_legal_or_fda_promotion(self):
         r = self.report
@@ -110,7 +111,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
 
     def test_cytk_fake_or_stale_pdufa_claim_is_rejected(self):
         original = rights.collect_cases()
-        self.assertEqual(len(original), 8)
+        self.assertEqual(len(original), 9)
         bad = [dict(p) for p in original]
         cy_index = next(i for i, p in enumerate(bad) if p["issuerTicker"] == "CYTK")
         cy = dict(bad[cy_index])
@@ -217,6 +218,55 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         with patch.object(rights, "collect_cases", return_value=same_asset):
             with self.assertRaisesRegex(ValueError, "duplicate program"):
                 rights.build()
+
+    def test_axsm_completed_official_fda_event_not_2026_upcoming_pdufa(self):
+        report = self.report
+        self.assertEqual(report["official_fda_confirmed_completed_historical_action_count"], 1)
+        self.assertEqual(report["official_fda_confirmed_completed_historical_action_supporting_trial_count"], 2)
+        events = report["official_fda_confirmed_completed_historical_actions"]
+        self.assertEqual(len(events), 1)
+        event = events[0]
+        self.assertEqual(event["issuer_ticker"], "AXSM")
+        self.assertEqual(event["asset"], "AXS-05")
+        self.assertEqual(event["action_date"], "2026-04-30")
+        self.assertEqual(event["action_type"], "APPROVED_SUPPLEMENTAL_INDICATION")
+        self.assertFalse(event["is_current_pending_fda_action"])
+        self.assertIn("fda.gov", event["fda_primary_source_url"])
+        self.assertEqual(set(event["fda_press_explicit_supporting_nct_ids"]),
+                         {"NCT03226522", "NCT04947553"})
+        for nct in event["fda_press_explicit_supporting_nct_ids"]:
+            trial = self.by_id[nct]
+            self.assertEqual(trial["linked_asset"], "AXS-05")
+            self.assertTrue(trial["official_fda_confirmed_completed_historical_action"])
+            self.assertEqual(trial["historical_fda_action_date"], "2026-04-30")
+            self.assertIsNone(trial["issuer_reported_upcoming_pdufa_target"])
+            self.assertIsNone(trial["current_pdufa_target_date"])
+        for nct in ("NCT04797715", "NCT06736509"):
+            trial = self.by_id[nct]
+            self.assertEqual(trial["linked_asset"], "AXS-05")
+            self.assertFalse(trial["official_fda_confirmed_completed_historical_action"])
+            self.assertIsNone(trial["historical_fda_action_date"])
+            self.assertIsNone(trial["current_pdufa_target_date"])
+        self.assertEqual(report["issuer_reported_future_pdufa_event_count"], 1)
+        self.assertEqual(report["issuer_reported_future_pdufa_events"][0]["ticker"], "CYTK")
+        self.assertEqual(report["independently_verified_current_fda_pdufa_count"], 0)
+        self.assertIsNone(report["qualified_pipeline_count"])
+
+    def test_fake_or_future_official_fda_approval_is_rejected(self):
+        programs = rights.collect_cases()
+        original = next(i for i, p in enumerate(programs) if p["issuerTicker"] == "AXSM")
+        for update in ({"actionDate": "2026-12-01"},
+                       {"agencyPrimarySourceUrl": "https://example.com/no-fda-source"},
+                       {"currentPendingFDAAction": True},
+                       {"agencyPressExplicitSupportingNctIds": ["NCT09999999"]}):
+            altered = [dict(p) for p in programs]
+            changed = dict(altered[original])
+            changed["officialFdaHistoricalAction"] = dict(
+                changed["officialFdaHistoricalAction"], **update)
+            altered[original] = changed
+            with patch.object(rights, "collect_cases", return_value=altered):
+                with self.assertRaisesRegex(ValueError, "Official completed FDA historical action"):
+                    rights.build()
 
     def test_wrong_source_identity_and_duplicate_nct_are_blocked(self):
         original = rights.collect_cases()
