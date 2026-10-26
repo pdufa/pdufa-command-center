@@ -1,0 +1,38 @@
+name: FDA private A/B source review safety (research branch only)
+
+on:
+  pull_request:
+    branches:
+      - review/hop-outcome-quarantine-audit-20261025
+    paths:
+      - '.github/workflows/hop-private-ab-source-safety.yml'
+      - 'new-platform/backend/app/hop_fda_gap_dual_handoff.py'
+      - 'new-platform/backend/scripts/prepare_hop_fda_private_ab_source_reviews.py'
+      - 'new-platform/backend/tests/test_hop_fda_gap_dual_handoff.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-private-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install synthetic-only test requirements
+        run: python -m pip install pytest
+      - name: Compile and run isolated FDA blank A/B handoff regressions
+        working-directory: new-platform/backend
+        run: |
+          python -m py_compile app/hop_fda_gap_dual_handoff.py scripts/prepare_hop_fda_private_ab_source_reviews.py
+          PYTHONPATH=. python -m pytest -q tests/test_hop_fda_gap_dual_handoff.py tests/test_hop_fda_gap_research_packets.py tests/test_hop_fda_prior_pdf_lead_join.py
+      - name: Verify private artifacts are not uploaded
+        run: |
+          if grep -n 'upload-artifact\|send-mail\|create-release' .github/workflows/hop-private-ab-source-safety.yml; then
+            echo 'Private FDA source safety workflow must not export review packets'
+            exit 1
+          fi
