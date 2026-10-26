@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ScientificOutcomeLive from "./ScientificOutcomeLive";
+import InstallationProgressChart from "./InstallationProgressChart";
 import { PHASE3_CENSUS_SNAPSHOT, auditPhase3CensusSnapshot } from "../../lib/phase3-census-snapshot";
 import { isAccepted, summarizeInstallationAudit } from "../../lib/installation-audit-summary";
 import { FDA_REVIEW_WORKLIST_SNAPSHOT, auditFDAReviewWorklist } from "../../lib/fda-review-worklist-snapshot";
@@ -120,6 +121,7 @@ export default function InstallationAudit() {
         restrictions or trading actions are changed by this display.</p>
     </section>
     <section aria-label="Installation acceptance balance" style={{margin:"20px 0"}}>
+      <InstallationProgressChart groups={groups} total={total} />
       <h2>Acceptance balance — measured from the dated checklist</h2>
       <p><strong>{total.accepted} / {total.sections} sections fully accepted · {total.sections - total.accepted} remain open.</strong> Full acceptance requires runtime verification and applicable evidence verification, not only installed code or a READY build.</p>
       <p><strong>Individual status gates:</strong> {total.independentlyVerified} independently verified · {total.implementationSignals} code/deployment signals · {total.partial} partial · {total.unverified} not verified/audited · {total.excluded} not applicable. Denominator: {total.gates} applicable gates. These gate counts do not measure percentage of engineering hours remaining.</p>
