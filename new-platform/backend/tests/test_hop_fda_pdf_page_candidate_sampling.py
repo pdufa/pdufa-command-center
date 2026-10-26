@@ -253,3 +253,45 @@ def test_real_eight_fda_pdfs_rehashed_and_pages_only_navigation_hints():
     assert result["prediction_probability"] is None
     assert result["predictive_accuracy"] is None
     assert result["private_pdf_page_hints_not_exported"] is True
+
+
+
+def test_disjoint_hash_sorted_source_page_batches_are_reproducible():
+    source = fixture()
+    first, plan_a = select_pinned_pdf_sample(source, limit=1, offset=0)
+    second, plan_b = select_pinned_pdf_sample(source, limit=1, offset=1)
+    second_again, _ = select_pinned_pdf_sample(
+        list(reversed(source)), limit=1, offset=1,
+    )
+    assert second == second_again
+    assert len(first) == len(second) == 1
+    assert {x["historical_pdf_sha256"] for x in first}.isdisjoint(
+        x["historical_pdf_sha256"] for x in second
+    )
+    assert plan_a["requested_sample_offset"] == 0
+    assert plan_b["requested_sample_offset"] == 1
+    assert plan_b["selected_sample_end_exclusive"] == 2
+    assert plan_a["selected_full_pdf_hashes_sha256"] != plan_b[
+        "selected_full_pdf_hashes_sha256"
+    ]
+    body = B if second[0]["historical_pdf_sha256"] == SHA_B else A
+    observed = inspect_candidate_pages(
+        second[0], body, page_count=1, extract_text=lambda idx: "test",
+    )
+    summary = aggregate_sample(plan_b, [observed], fetch_failures=0)
+    assert summary["requested_sample_offset"] == 1
+    assert summary["selected_sample_end_exclusive"] == 2
+    assert summary["selected_full_pdf_hashes_sha256"] == plan_b[
+        "selected_full_pdf_hashes_sha256"
+    ]
+    assert summary["model_eligible_records"] == 0
+    assert summary["review_cycles_independently_verified"] == 0
+
+
+@pytest.mark.parametrize("offset,limit", [
+    (-1, 1), (2, 1), (100, 1), (True, 1),
+    (0, 0), (0, 13), (0, True),
+])
+def test_invalid_pdf_hash_sample_boundaries_fail_closed(offset, limit):
+    with pytest.raises(ValueError):
+        select_pinned_pdf_sample(fixture(), limit=limit, offset=offset)
