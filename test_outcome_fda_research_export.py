@@ -37,19 +37,23 @@ class ResearchExportTests(unittest.TestCase):
     def test_roundtrip_json(self):
         self.assertEqual(json.loads(json.dumps(self.data)), self.data)
 
-    def test_fda_summary_action_not_mislabeled_as_signed_letter(self):
+    def test_fda_summary_actions_not_mislabeled_as_signed_letters(self):
         indirect = [row for row in self.data["records"]
                     if row["source_document_role"] == "fda_regulatory_history_summary"]
-        self.assertEqual(len(indirect), 1)
-        self.assertEqual(indirect[0]["application_key"], "BLA:125734")
-        self.assertEqual(indirect[0]["action_date"], "2021-08-18")
-        self.assertFalse(indirect[0]["model_eligible"])
-        self.assertFalse(indirect[0]["feature_asof_verified"])
+        self.assertEqual(len(indirect), 2)
+        self.assertEqual(
+            {(row["application_key"], row["action_date"]) for row in indirect},
+            {("BLA:125706", "2020-09-30"), ("BLA:125734", "2021-08-18")},
+        )
+        self.assertTrue(all(
+            not row["model_eligible"] and not row["feature_asof_verified"]
+            for row in indirect
+        ))
 
     def test_other_event_sources_marked_signed_letters(self):
         direct = [row for row in self.data["records"]
                   if row["source_document_role"] == "signed_fda_final_action_letter"]
-        self.assertEqual(len(direct), 19)
+        self.assertEqual(len(direct), 18)
         self.assertEqual(self.data["source_scope"],
                          "selected_fda_action_letters_and_regulatory_summaries_not_a_complete_cohort")
 
