@@ -45,7 +45,7 @@ function validate(raw: string): ValidHandoff {
   let value: unknown;
   try { value = JSON.parse(raw); }
   catch { return fail(); }
-  if (!isRecord(value)) fail();
+  if (!isRecord(value)) throw new Error(BLOCKED);
   const fingerprintRows = value.capturedPdfFingerprints;
   if (value.nctId !== NCT
       || value.schemaVersion !== "isolated-science-source-review-handoff-v1"
@@ -55,7 +55,7 @@ function validate(raw: string): ValidHandoff {
 
   const docs: RawDocument[] = [];
   for (const item of fingerprintRows as unknown[]) {
-    if (!isRecord(item)) fail();
+    if (!isRecord(item)) throw new Error(BLOCKED);
     const { documentId, gateId, sourceType, sha256, byteLength } = item;
     if (typeof documentId !== "string" || !/^[a-f0-9]{32}$/.test(documentId)
         || typeof gateId !== "string" || !/^[a-z_]{3,32}$/.test(gateId)
