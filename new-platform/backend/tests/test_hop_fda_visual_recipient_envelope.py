@@ -106,7 +106,9 @@ def test_offline_owner_only_keypair_generation_and_cli_key_read(tmp_path):
     assert len(_read_hex_key(location / PRIV, private=True)) == 32
     with pytest.raises(FileExistsError):
         create_local_keys(location)
-    image_files = sources(tmp_path / "image_data")
+    image_root = tmp_path / "image_data"
+    image_root.mkdir()
+    image_files = sources(image_root)
     archive, _ = seal_for_recipient(
         *image_files,
         recipient_public_raw=_read_hex_key(location / PUB, private=False),
