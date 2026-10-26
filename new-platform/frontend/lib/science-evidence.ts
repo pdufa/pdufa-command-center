@@ -52,7 +52,13 @@ export function assessScienceReadiness(dossier: ScienceDossier): ScienceReadines
   if (dossier.assessments.length !== SCIENCE_ASSESSMENT_COUNT) missing.push("40 assessments required");
   const ids = new Set<string>();
   let verifiedAssessments = 0;
+  const layerCounts = Array.from({ length: SCIENCE_LAYERS.length }, () => 0);
   for (const a of dossier.assessments) {
+    if (!a || !Array.isArray(a.evidence) || !Array.isArray(a.missingEvidence)) {
+      missing.push("Malformed assessment record");
+      continue;
+    }
+    if (Number.isInteger(a.layer) && a.layer >= 1 && a.layer <= 8) layerCounts[a.layer - 1]++;
     if (ids.has(a.id)) missing.push("Duplicate assessment: " + a.id);
     ids.add(a.id);
     const structural = !!a.id && Number.isInteger(a.layer) && a.layer >= 1 && a.layer <= SCIENCE_LAYERS.length &&
@@ -68,6 +74,9 @@ export function assessScienceReadiness(dossier: ScienceDossier): ScienceReadines
       missing.push("Unverified or incomplete evidence: " + a.id);
     else if (structural) verifiedAssessments++;
   }
+  layerCounts.forEach((count, index) => {
+    if (count !== SCIENCE_ASSESSMENTS_PER_LAYER) missing.push("Incorrect assessment count in layer " + (index + 1));
+  });
   return {
     status: missing.length === 0 ? "READY_FOR_ANALYSIS" : "RELUCTANT",
     evidenceComplete: missing.length === 0,
