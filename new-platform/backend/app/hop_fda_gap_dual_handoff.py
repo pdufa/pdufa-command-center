@@ -61,7 +61,8 @@ def _known_prior_pdf_url(url: object) -> bool:
 
 
 def prepare_gap_source_review_handoffs(
-    private_enriched: list[dict], *, pinned_audit: dict, as_of: date,
+    private_enriched: list[dict], private_grouped: list[dict],
+    *, pinned_audit: dict, as_of: date,
 ) -> tuple[list[dict], list[dict], dict]:
     """Return separate blank reviewer files and aggregate-only research audit.
 
@@ -80,8 +81,22 @@ def prepare_gap_source_review_handoffs(
             or pinned_audit.get("private_grouped_packets_not_exported") is not True
             or not isinstance(private_enriched, list)
             or not private_enriched
+            or not isinstance(private_grouped, list)
+            or len(private_grouped) != len(private_enriched)
             or len(private_enriched) != pinned_audit.get("total_evidence_search_packets")):
         raise ValueError("Require pinned, fully quarantined FDA source search inputs")
+    # Confirm the enriched input still matches a separately preserved
+    # private, original grouped source packet list, not just public counts.
+    # A changed source digest with the same counts must be rejected.
+    baseline = {}
+    for original in private_grouped:
+        if (not isinstance(original, dict)
+                or set(original) != EXPECTED_PACKET_FIELDS -
+                    {"previously_probed_published_pdf_leads"}
+                or not isinstance(original.get("packet_id"), str)
+                or original["packet_id"] in baseline):
+            raise ValueError("Missing or duplicate original grouped FDA source packet")
+        baseline[original["packet_id"]] = original
     first, second = [], []
     seen_packets, seen_letters = set(), set()
     types = Counter()
@@ -90,6 +105,10 @@ def prepare_gap_source_review_handoffs(
         if not isinstance(packet, dict) or set(packet) != EXPECTED_PACKET_FIELDS:
             raise ValueError("Unknown or missing private FDA source packet field")
         pid = packet.get("packet_id")
+        if (pid not in baseline or
+                {k: v for k, v in packet.items()
+                 if k != "previously_probed_published_pdf_leads"} != baseline[pid]):
+            raise ValueError("Enriched FDA source digest or identity differs from private baseline")
         kind = packet.get("packet_kind")
         app = packet.get("application_id_candidate")
         hashes = packet.get("published_letter_source_hashes")
