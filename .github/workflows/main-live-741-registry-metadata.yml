@@ -1,0 +1,30 @@
+name: MAIN live 741 ClinicalTrials registry metadata research
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_phase3_live_registry_metadata.py'
+      - 'tests/test_phase3_live_registry_metadata.py'
+      - '.github/workflows/main-live-741-registry-metadata.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-registry-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate 741 NCT scope and rights/PDUFA nonpromotion
+        run: python3 -m unittest discover -s tests -p 'test_phase3_live_registry_metadata.py' -v
+      - name: Retrieve original ClinicalTrials.gov live NCT metadata
+        run: python3 scripts/audit_phase3_live_registry_metadata.py "$RUNNER_TEMP/phase3_741_live_registry_metadata.json"
+      - name: Archive 741 original NCT source results and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-741-live-registry-metadata-research
+          path: ${{ runner.temp }}/phase3_741_live_registry_metadata.json
+          if-no-files-found: warn
+          retention-days: 7
