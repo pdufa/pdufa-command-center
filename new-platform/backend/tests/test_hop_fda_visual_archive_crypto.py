@@ -119,3 +119,44 @@ def test_external_key_is_missing_or_malformed_unless_configured(monkeypatch):
         external_key()
     monkeypatch.setenv("PDUFA_FDA_REVIEW_ARCHIVE_KEY", "ab" * 32)
     assert external_key() == bytes.fromhex("ab" * 32)
+
+
+
+def test_ephemeral_real_source_roundtrip_adapter_never_exports_key_or_ciphertext(tmp_path):
+    from scripts.verify_hop_fda_visual_archive_roundtrip import (
+        verify_ephemeral_roundtrip,
+    )
+    image_dir, first, second = sources(tmp_path)
+    result = verify_ephemeral_roundtrip(image_dir, first, second)
+    assert result == {
+        "status": "FDA_PRIVATE_VISUAL_ARCHIVE_EPHEMERAL_ROUNDTRIP_VERIFIED",
+        "source_png_images_verified": 19,
+        "private_original_manifests_verified": 2,
+        "encrypted_archive_roundtrip_in_memory": True,
+        "authenticated_decryption_recovered_original_bytes": True,
+        "wrong_key_rejected": True,
+        "ephemeral_encryption_key_saved": False,
+        "encrypted_archive_exported": False,
+        "plain_source_data_exported": False,
+        "durable_reviewer_storage_configured": False,
+        "human_visual_reviews_completed": 0,
+        "independently_verified_fda_review_cycles": 0,
+        "model_eligible_records": 0,
+        "approval_rate": None,
+        "prediction_probability": None,
+        "predictive_accuracy": None,
+        "readiness": "REVIEW_REQUIRED",
+    }
+    assert not list(tmp_path.glob("*.aesgcm"))
+
+
+def test_ephemeral_source_roundtrip_fails_closed_on_modified_manifest(tmp_path):
+    from scripts.verify_hop_fda_visual_archive_roundtrip import (
+        verify_ephemeral_roundtrip,
+    )
+    image_dir, first, second = sources(tmp_path)
+    rows = json.loads(first.read_text(encoding="utf-8"))
+    rows[0]["human_visual_review_completed"] = True
+    first.write_text(json.dumps(rows), encoding="utf-8")
+    with pytest.raises(ValueError):
+        verify_ephemeral_roundtrip(image_dir, first, second)
