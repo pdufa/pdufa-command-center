@@ -1,0 +1,30 @@
+name: MAIN batched 741 ClinicalTrials registry metadata research
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_phase3_batched_registry_metadata.py'
+      - 'tests/test_phase3_batched_registry_metadata.py'
+      - '.github/workflows/main-batched-741-registry-metadata.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  batched-registry-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test no-promotion logic and incomplete/failed batch safeguards
+        run: python3 -m unittest discover -s tests -p 'test_phase3_batched_registry_metadata.py' -v
+      - name: Query all 741 exact original NCTs in bounded batches
+        run: python3 scripts/audit_phase3_batched_registry_metadata.py "$RUNNER_TEMP/phase3_741_batched_live_registry_metadata.json"
+      - name: Archive per-trial live source responses and explicit errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-741-batched-registry-metadata-research
+          path: ${{ runner.temp }}/phase3_741_batched_live_registry_metadata.json
+          if-no-files-found: warn
+          retention-days: 7
