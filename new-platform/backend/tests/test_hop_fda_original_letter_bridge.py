@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import date
+import json
+from pathlib import Path
 
 import pytest
 
@@ -173,3 +175,38 @@ def test_mixed_supplement_and_original_same_application_just_identity_match():
         "ORIGINAL_QUALIFIER_MATCHES_SUBMISSION_NUMBER_TEXT_ONLY"
     ] == 1
     assert out["independently_verified_fda_review_cycles"] == 0
+
+
+
+def test_actual_october_25_identity_link_baseline_has_no_model_clearance():
+    path = (Path(__file__).resolve().parents[1] / "app" / "research_sources"
+            / "hop_fda_original_letter_bridge_20261025.json")
+    report = json.loads(path.read_text(encoding="utf-8"))
+    assert report["status"] == "NDA_BLA_ORIGINAL_SUBMISSION_LETTER_IDENTITY_CROSSWALK_ONLY"
+    assert report["published_letter_references"] == 458
+    assert report["original_nda_bla_submission_history_rows"] == 6033
+    assert report["distinct_nda_bla_applications_in_approval_centric_spine"] == 5973
+    assert report["published_letter_reference_link_states"] == {
+        "NDA_BLA_APPLICATION_IN_ORIGINAL_SUBMISSION_SPINE": 334,
+        "NDA_BLA_APPLICATION_NOT_IN_ORIGINAL_SUBMISSION_SPINE": 107,
+        "ANDA_OUT_OF_STUDY_SCOPE": 0,
+        "AMBIGUOUS_OR_UNPARSEABLE_LETTER_APPLICATION": 17,
+    }
+    assert sum(report["published_letter_reference_link_states"].values()) == 458
+    assert report["distinct_original_spine_applications_referenced_by_published_letters"] == 238
+    assert report["matched_original_spine_applications_with_repeated_letter_references"] == 63
+    assert report["matched_letter_references_with_multiple_original_submission_numbers"] == 11
+    assert report["textual_original_qualifier_comparison_counts"] == {
+        "ORIGINAL_QUALIFIER_MATCHES_SUBMISSION_NUMBER_TEXT_ONLY": 7,
+        "ORIGINAL_QUALIFIER_NOT_IN_SPINE_REQUIRES_REVIEW": 3,
+    }
+    assert report["run_url"].endswith("/40247135687")
+    assert len(report["source_crl_archive_sha256"]) == 64
+    assert report["application_link_does_not_establish_same_review_cycle"] is True
+    assert report["unmatched_record_does_not_prove_never_approved"] is True
+    assert report["independently_verified_fda_review_cycles"] == 0
+    assert report["complete_nda_bla_decision_denominator_verified"] is False
+    assert report["model_eligible_records"] == 0
+    assert report["approval_rate"] is None
+    assert report["prediction_probability"] is None
+    assert report["prediction_accuracy"] is None
