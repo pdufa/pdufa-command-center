@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'scripts/check_phase3_full_original_sources.py'
+      - 'scripts/check_phase3_original_registry_pilot.py'
+      - 'scripts/phase3_registry_context.py'
+      - 'scripts/phase3_trial_rights_context.py'
+      - 'tests/test_phase3_trial_rights_context.py'
       - 'scripts/phase3_qualification_ledger.py'
       - 'scripts/phase3_evidence_intake.py'
       - 'tests/test_phase3_evidence_intake.py'
@@ -34,7 +38,7 @@ jobs:
           persist-credentials: false
       - name: Validate scripts and tests
         run: |
-          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py scripts/phase3_sec_rights_documents_pilot.py
+          python3 -m py_compile scripts/check_phase3_full_original_sources.py scripts/phase3_qualification_ledger.py scripts/phase3_evidence_intake.py scripts/phase3_rights_casebook.py scripts/build_phase3_rights_evidence_gaps.py scripts/phase3_sec_rights_documents_pilot.py scripts/phase3_trial_rights_context.py scripts/phase3_registry_context.py
           python3 -m unittest discover -s tests -p test_phase3_qualification_ledger.py -v
           python3 -m unittest discover -s tests -p 'test_phase3_evidence_intake*.py' -v
           python3 -m unittest discover -s tests -p test_phase3_gate_coverage.py -v
@@ -42,6 +46,8 @@ jobs:
           python3 -m unittest discover -s tests -p test_phase3_rights_casebook.py -v
           python3 -m unittest discover -s tests -p test_phase3_sec_rights_discovery.py -v
           python3 -m unittest discover -s tests -p test_phase3_sec_rights_documents_pilot.py -v
+          python3 -m unittest discover -s tests -p test_phase3_trial_rights_context.py -v
+          python3 -m unittest discover -s tests -p test_phase3_original_registry_pilot.py -v
           python3 -m unittest discover -s tests -p test_phase3_evidence_boundaries.py -v
       - name: Retrieve original 741-study evidence
         run: python3 scripts/check_phase3_full_original_sources.py "$RUNNER_TEMP/main_phase3_registry.json"
@@ -59,6 +65,8 @@ jobs:
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
         run: python3 scripts/phase3_sec_rights_documents_pilot.py "$RUNNER_TEMP/main_phase3_rights_casebook.json" "$RUNNER_TEMP/main_phase3_sec_rights_leads.json" "$RUNNER_TEMP/main_phase3_sec_primary_documents_pilot.json" --max-issuers 10
+      - name: Reconcile exact registered interventions and conditions against per-trial rights research
+        run: python3 scripts/phase3_trial_rights_context.py "$RUNNER_TEMP/main_phase3_registry.json" "$RUNNER_TEMP/main_phase3_rights_casebook.json" "$RUNNER_TEMP/main_phase3_sec_rights_leads.json" "$RUNNER_TEMP/main_phase3_sec_primary_documents_pilot.json" "$RUNNER_TEMP/main_phase3_trial_rights_context.json"
       - name: Preserve research-only evidence and ledger
         if: always()
         uses: actions/upload-artifact@v4
@@ -72,5 +80,6 @@ jobs:
             ${{ runner.temp }}/main_phase3_rights_casebook.json
             ${{ runner.temp }}/main_phase3_sec_rights_leads.json
             ${{ runner.temp }}/main_phase3_sec_primary_documents_pilot.json
+            ${{ runner.temp }}/main_phase3_trial_rights_context.json
           if-no-files-found: warn
           retention-days: 7
