@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientific800ReviewCsv } from "../lib/scientific-800-review-csv";
+import { buildScientific800EvidenceMap } from "../lib/scientific-800-evidence-map";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
 import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, compareTwoLocalSourcePdfSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch, type DualLocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
 import { compareLocalPdfWithCapturedArchive, summarizeCapturedScientificGates, buildScientificSourceReviewHandoff, type CapturedArchiveComparison, type CapturedScientificGateCoverage } from "../lib/scientific-captured-archive-check";
@@ -863,7 +864,17 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
-  const valid = /^TRIAL\|NCT[0-9]{8}$/.test(exactId);
+  const valid = /^TRIAL\\|NCT[0-9]{8}$/.test(exactId);
+  // Fail closed: a malformed source checklist never becomes evidence completion.
+  const evidence800 = result?.investigation40 && result?.readinessGrades
+    ? (() => {
+        try {
+          return buildScientific800EvidenceMap(result.investigation40!, result.readinessGrades!);
+        } catch {
+          return null;
+        }
+      })()
+    : null;
   return <section aria-label="Scientific Assessment">
     <button type="button" disabled={!valid || loading} onClick={() => void load()}>
       {loading ? "Checking scientific evidence…" : "Scientific Assessment · 20 levels / 40 assessments"}
@@ -1083,6 +1094,39 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           </button>
           <small> Separate 40-assessment × 20-method planning matrix. All 800 rows remain pending and unverified, with no scientific grades or FDA probability. The existing 320-task reviewer A/B handoff stays separate.</small>
         </div>
+        {evidence800 && <details aria-label="800-point scientific evidence dependencies">
+          <summary><strong>800-point evidence dependency map</strong>
+            {" · "}0/800 independently reviewed
+            {" · "}16 source-input requirements
+          </summary>
+          <p>Each subject layer has five assessments and twenty methodology depths:
+            100 pending tasks per layer. Input presence does not mean clinical
+            verification. Two qualified independent reviews, dated primary
+            evidence and signed reconciliation are still required.</p>
+          {evidence800.layers.map(layer => <details key={layer.layerId}>
+            <summary><strong>{pretty(layer.layerId)}</strong>
+              {" · "}100 pending
+              {" · "}{layer.sourceInputsPresent}/{layer.sourceInputsRequired} linked inputs present
+            </summary>
+            <p>All five assessments below each require 20 depth-method reviews.
+              No findings, grades or probabilities are assigned.</p>
+            {layer.assessmentIds.map(assessment => <div key={assessment}>
+              {pretty(assessment)} — 0/20 independently reviewed
+            </div>)}
+            <details>
+              <summary>Evidence sources to collect and independently review</summary>
+              {layer.dependencies.map(input => <div key={input.id}>
+                <strong>{input.label}</strong>
+                {" — "}{input.available
+                  ? "Archived input present; NOT independently verified"
+                  : "Original evidence/reviewer verification outstanding"}
+                <div><small>Next: {input.nextAction}</small></div>
+              </div>)}
+            </details>
+          </details>)}
+          <small>Source coverage and review completion are separate measurements.
+            This map makes no scientific success claim and never submits reviewer results.</small>
+        </details>}
         <details>
           <summary><strong>Independent reviewer handoff — two blank worksheets</strong></summary>
           <p>Generate distinct, unsubmitted worksheets for two independent reviewer slots.
