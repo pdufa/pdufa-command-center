@@ -1,6 +1,6 @@
 """Bounded actual FDA source PDF page-token sampling, research-only.
 
-Selects the first eight *unique full-PDF hashes* from the pinned private
+Selects a bounded hash-sorted page *batch* from the pinned private
 identity-gap packet collection, re-fetches official PDFs, verifies exact
 historical SHA-256 bytes and extracts at most 40 pages per source. Detailed
 page-location hints stay PRIVATE. Only aggregate counts are uploaded.
@@ -54,6 +54,8 @@ def main() -> int:
     parser.add_argument("--private-pdf-page-hints-json", type=Path, required=True)
     parser.add_argument("--public-aggregate-json", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=8)
+    parser.add_argument("--offset", type=int, default=0,
+                        help="Zero-based offset in sorted pinned PDF hashes")
     args = parser.parse_args()
     destinations = [
         args.private_enriched_packets_json.resolve(),
@@ -65,7 +67,9 @@ def main() -> int:
     from pypdf import PdfReader
 
     source = json.loads(args.private_enriched_packets_json.read_text(encoding="utf-8"))
-    selected, plan = select_pinned_pdf_sample(source, limit=args.limit)
+    selected, plan = select_pinned_pdf_sample(
+        source, limit=args.limit, offset=args.offset
+    )
     observed = []
     unavailable = 0
     for item in selected:
