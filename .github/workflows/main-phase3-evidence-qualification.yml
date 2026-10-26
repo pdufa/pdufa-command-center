@@ -1,6 +1,10 @@
 name: MAIN Phase 3 evidence-to-qualification ledger
 on:
   workflow_dispatch:
+  # GitHub cron is UTC. DST gate runs only the 8 PM Pacific nominal slot.
+  schedule:
+    - cron: '0 3 * * *'  # 8 PM PDT (7 PM PST is intentionally skipped)
+    - cron: '0 4 * * *'  # 8 PM PST (9 PM PDT is intentionally skipped)
   pull_request:
     paths:
       - 'scripts/check_phase3_full_original_sources.py'
@@ -32,6 +36,8 @@ on:
       - 'scripts/phase3_rights_review_submissions.py'
       - 'tests/test_phase3_rights_review_submissions.py'
       - 'scripts/phase3_qualification_scorecard.py'
+      - 'scripts/phase3_nightly_pacific_gate.py'
+      - 'tests/test_phase3_nightly_pacific_gate.py'
       - 'tests/test_phase3_qualification_scorecard.py'
       - 'data/phase3_rights_review_submissions.json'
       - 'scripts/build_phase3_rights_evidence_gaps.py'
@@ -41,7 +47,32 @@ on:
 permissions:
   contents: read
 jobs:
+  pacific-nightly-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      proceed: ${{ steps.pacific-time.outputs.proceed }}
+      pacific_date: ${{ steps.pacific-time.outputs.pacific_date }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test Pacific DST scheduling guard
+        run: python3 -m unittest discover -s tests -p test_phase3_nightly_pacific_gate.py -v
+      - name: Select nominal 8 PM Pacific source refresh
+        id: pacific-time
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          python3 scripts/phase3_nightly_pacific_gate.py \
+            --event-name "$EVENT_NAME" \
+            --event-schedule "$EVENT_SCHEDULE" \
+            --github-output "$GITHUB_OUTPUT" \
+            --github-summary "$GITHUB_STEP_SUMMARY"
   research-ledger:
+    needs: pacific-nightly-gate
+    if: needs.pacific-nightly-gate.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -115,4 +146,4 @@ jobs:
             ${{ runner.temp }}/main_phase3_qualification_scorecard.json
             ${{ runner.temp }}/main_phase3_qualification_summary.md
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 30
