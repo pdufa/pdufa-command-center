@@ -1,5 +1,6 @@
 """SEC submissions indexes must not silently become verified drug rights."""
 import sys
+import urllib.error
 from pathlib import Path
 import unittest
 
@@ -63,6 +64,23 @@ class SecRightsSourceDiscoveryTests(unittest.TestCase):
         affected = [r for r in report["trials"] if r["issuer_cik"] == first]
         self.assertTrue(affected)
         self.assertTrue(all(not r["issuer_primary_document_candidates"] for r in affected))
+        self.assertIsNone(report["qualified_pipeline_count"])
+
+    def test_three_http403_errors_stop_all_remaining_sec_automated_requests(self):
+        requested = []
+        def blocked(cik):
+            requested.append(cik)
+            raise urllib.error.HTTPError(
+                "https://data.sec.gov/submissions/CIK" + cik + ".json",
+                403, "Forbidden", {}, None)
+        report = audit(blocked, lambda _: None)
+        self.assertEqual(len(requested), 3)
+        self.assertEqual(report["sec_actual_requests_attempted"], 3)
+        self.assertTrue(report["sec_access_denied_circuit_breaker"])
+        self.assertEqual(report["sec_metadata_unresolved"], 130)
+        self.assertEqual(sum(r["sec_source_status"] == "SEC_ACCESS_BLOCKED_403"
+                             for r in report["issuers"]), 127)
+        self.assertEqual(report["trials_with_issuer_filing_candidate_pointers"], 0)
         self.assertIsNone(report["qualified_pipeline_count"])
 
     def test_reject_mismatched_cik(self):
