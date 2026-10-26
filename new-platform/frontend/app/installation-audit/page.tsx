@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ScientificOutcomeLive from "./ScientificOutcomeLive";
+import IndependentInstallationLane from "./IndependentInstallationLane";
 import { isAccepted, summarizeInstallationAudit } from "../../lib/installation-audit-summary";
 import { FDA_REVIEW_WORKLIST_SNAPSHOT, auditFDAReviewWorklist } from "../../lib/fda-review-worklist-snapshot";
 
@@ -64,6 +65,7 @@ export default function InstallationAudit() {
     <h1>System installation & evidence tracker</h1>
     <p><strong>15-section audit · snapshot as of October 25, 2026.</strong> This is a dated read-only checklist with separate, on-demand protected SCIENCE/OUTCOME evidence checks below. A green build establishes neither scientific accuracy nor complete runtime operation.</p>
     <p><strong>Release:</strong> GitHub change #332 merged; Vercel production READY and user access reported on October 25, 2026. Deployment of the dashboard does not mean its scientific or prediction checks are complete. Implementation-stage counts are reported separately from verified acceptance; they are not an estimate of development-hours completion.</p>
+    <IndependentInstallationLane />
     <p><strong>Latest saved RESULTS:</strong> October 24, 2026 · PARTIAL · 11,598 tracked clinical records (not Pipeline qualified) · GEM JR 11 · GEM 6. Source audit: 993/1121 verified; 23 unresolved, 93 unavailable, 10 N/A. Those listed categories add to 1,119; <strong>two checks have no separately stated classification in the saved report</strong>.</p>
     <p><strong>Newer source audit (October 25, 2026 · 16:40 UTC):</strong> 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable and 10 not applicable: <strong>995 + 21 + 2 + 93 + 10 = 1,121</strong>. <a href={sourceAudit}>Source report</a> · <strong>PARTIAL</strong> because required SEC and FINANCIAL verification is still missing. This audit is separate from the October 24 nightly clinical RESULTS; later counts do not retrospectively validate that earlier run or its two unclassified checks.</p>
     <section aria-label="Installation acceptance balance" style={{margin:"20px 0"}}>
