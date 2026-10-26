@@ -1,7 +1,7 @@
 {
-  "as_of_pacific": "2026-10-24",
+  "as_of_pacific": "2026-10-25",
   "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
-  "generated_at_utc": "2026-10-25T03:23:21.612899+00:00",
+  "generated_at_utc": "2026-10-26T03:26:52.728508+00:00",
   "limitations": "Selected managers only; exact normalized SEC issuer name and common class CUSIP, not fuzzy ticker matching. Latest and prior distinct report quarters required. Quarterly holdings delayed up to 45 days after quarter end; missing matches are NOT zero ownership.",
   "manager_count": 4,
   "managers_complete": 4,
