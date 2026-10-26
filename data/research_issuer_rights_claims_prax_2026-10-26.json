@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "scope": "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY",
+  "asOf": "2026-10-26",
+  "issuerTicker": "PRAX",
+  "issuerCik": "0001689548",
+  "programs": [
+    {
+      "issuerTicker": "PRAX",
+      "issuerCik": "0001689548",
+      "asset": "relutrigine",
+      "assetAliases": [
+        "PRAX-562"
+      ],
+      "rightsClaimType": "ISSUER_DOCUMENTED_ONGOING_DRUG_DEVELOPMENT_RIGHTS_CLAIM_WITH_UNVERIFIED_UNENCUMBERED_LEGAL_SCOPE",
+      "rightsClaimSummary": "Praxis June 2026 Form 10-Q describes in-house Cerebrum relutrigine development and accepted NDA. Asset-specific exclusive license or full unencumbered legal ownership terms have not been independently adjudicated. Do not reassign RogCon SCN2A gene-program license mentioned elsewhere in the same filing to this drug without drug-specific contract evidence.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "RELUTRIGINE_CURRENT_CONTRACT_SCOPE_AND_OWNERSHIP_NOT_INDEPENDENTLY_ADJUDICATED",
+        "ROGCON_SCN2A_PROGRAM_LICENSE_DO_NOT_AUTO_ATTRIBUTE_TO_RELUTRIGINE",
+        "RELUTRIGINE_NDA_MARCH_ACCEPTANCE_GOAL_SEPT27_SUPERSEDED_JUNE_29_TO_DEC27",
+        "FDA_MAJOR_AMENDMENT_EXTENDED_REVIEW_NOT_AUTOMATIC_CRL_OR_APPROVAL",
+        "EMERALD_BROAD_DEE_TRIAL_NOT_PART_OF_CURRENT_SCN2A_SCN8A_NDA_ACTION",
+        "DEC27_2026_PDUFA_ISSUER_REPORTED_NO_INDEPENDENT_FDA_GOAL_LETTER"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "filedOn": "2026-08-06",
+          "url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000083/prax-20260630.htm",
+          "assertion": "Praxis Q2 2026 10-Q identifies relutrigine EMBOLD registrational cohort for SCN2A/SCN8A DEE, accepted priority-review NDA, extension from Sep 27 to Dec 27 after sensitivity-analysis major amendment, EMERALD broader DEE potential later sNDA; filing separately discusses other SCN2A program licenses, not independently established relutrigine terms."
+        },
+        {
+          "type": "ISSUER_SEC_8_K_UPDATED_PDUFA",
+          "filedOn": "2026-06-29",
+          "url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm",
+          "assertion": "Praxis June 29 Form 8-K reports FDA revised relutrigine SCN2A/SCN8A NDA goal date from Sep 27 to Dec 27, 2026 after company-submitted major amendment, no new study requested. This supersedes older Sep 27 issuer-reported date."
+        },
+        {
+          "type": "ISSUER_2026_Q2_REGULATORY_RELEASE",
+          "publishedOn": "2026-08-06",
+          "url": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20",
+          "assertion": "Praxis August 6 release confirms December 27, 2026 relutrigine PDUFA goal, EMBOLD support, and EMERALD data intended for potential future broader-etiology sNDA."
+        },
+        {
+          "type": "ISSUER_2026_INITIAL_NDA_ACCEPTANCE",
+          "publishedOn": "2026-03-30",
+          "url": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-fda-acceptance-and-priority",
+          "assertion": "Praxis March 30 release documents relutrigine NDA accepted for priority review; original Sep 27 2026 action date is now superseded by June 29 SEC 8-K."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EMBOLD",
+          "url": "https://clinicaltrials.gov/study/NCT05818553",
+          "assertion": "NCT05818553 Phase 2/3 EMBOLD tests PRAX-562 relutrigine in SCN2A and SCN8A developmental and epileptic encephalopathies; primary trial linked to current accepted original NDA."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_EMERALD",
+          "url": "https://clinicaltrials.gov/study/NCT07010471",
+          "assertion": "NCT07010471 Phase 3 EMERALD tests relutrigine in broader DEEs; may support a different future supplemental application, not the Dec 27 accepted original NDA."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT05818553",
+          "study": "EMBOLD",
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING",
+          "indication": "SCN2A and SCN8A developmental and epileptic encephalopathies (DEEs)",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05818553",
+          "regulatoryContext": "ISSUER_REPORTED_ACCEPTED_RELUTRIGINE_SCN2A_SCN8A_NDA_DEC27_2026_AFTER_JUNE_EXTENSION",
+          "historicalIssuerReportedPdufaDate": "2026-09-27",
+          "currentPdufaTargetVerified": null,
+          "issuerReportedCurrentPdufaDate": "2026-12-27",
+          "issuerReportedFdaAcceptance": true,
+          "issuerReportedCurrentPdufaSourceUrl": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm",
+          "issuerReportedPdufaAsOf": "2026-10-26"
+        },
+        {
+          "nctId": "NCT07010471",
+          "study": "EMERALD",
+          "expectedRegistryStatus": "ACTIVE_NOT_RECRUITING",
+          "indication": "Broader developmental and epileptic encephalopathies independent of SCN2A/SCN8A genotype",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT07010471",
+          "regulatoryContext": "EMERALD_BROAD_DEE_POTENTIAL_FUTURE_2027_SNDA_ONLY_NO_2026_PENDING_PDUFA",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    },
+    {
+      "issuerTicker": "PRAX",
+      "issuerCik": "0001689548",
+      "asset": "ulixacaltamide",
+      "assetAliases": [
+        "PRAX-944"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_US_ESSENTIAL_TREMOR_PROGRAM_WITH_TENACIA_GREATER_CHINA_EXCLUSIVE_LICENSE",
+      "rightsClaimSummary": "Praxis June 2026 10-Q states Tenacia holds exclusive ulixacaltamide development and commercialization IP license for China, Hong Kong, Macau, and Taiwan; company is developing US essential tremor NDA. Exact remaining geography and legal enforceability not independently adjudicated.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "TENACIA_EXCLUSIVE_ULIXACALTAMIDE_IP_LICENSE_CHINA_HONGKONG_MACAU_TAIWAN",
+        "US_ESSENTIAL_TREMOR_NDA_COMPANY_REPORTED_FDA_ACCEPTED_NOT_AGENCY_GOAL_LETTER_VERIFIED",
+        "JAN29_2027_PDUFA_IS_DIFFERENT_APPLICATION_FROM_RELUTRIGINE_DEC27_2026",
+        "ESSENTIAL3_DECENTRALIZED_IS_ONE_OF_TWO_TRIALS_NOT_COMPLETE_NDA_EFFICACY_EVIDENCE",
+        "NO_FULL_WORLDWIDE_UNENCUMBERED_CONTRACT_CLEARANCE"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "filedOn": "2026-08-06",
+          "url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000083/prax-20260630.htm",
+          "assertion": "Praxis Q2 Form 10-Q identifies US ulixacaltamide NDA based on two Essential3 trials, accepted for review with Jan 29 2027 PDUFA goal. It also discloses Tenacia January 2024 exclusive license for ulixacaltamide China/Hong Kong/Macau/Taiwan."
+        },
+        {
+          "type": "ISSUER_2026_Q2_REGULATORY_RELEASE",
+          "publishedOn": "2026-08-06",
+          "url": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20",
+          "assertion": "Praxis August 6 company statement reports Jan 29, 2027 ulixacaltamide essential tremor PDUFA, no current advisory committee planned; no approval prediction."
+        },
+        {
+          "type": "ISSUER_2026_Q1_NDA_ACCEPTANCE_RELEASE",
+          "publishedOn": "2026-05-07",
+          "url": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-19/",
+          "assertion": "Praxis Q1 release states FDA accepted ulixacaltamide essential tremor NDA with January 29, 2027 goal."
+        },
+        {
+          "type": "OFFICIAL_US_REGISTRY_ESSENTIAL3_DECENTRALIZED",
+          "url": "https://clinicaltrials.gov/study/NCT06087276",
+          "assertion": "NCT06087276 is the Phase 3 decentralized Essential3 trial of ulixacaltamide in essential tremor; it is not the totality of the two-trial application package."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT06087276",
+          "study": "Essential3 (Decentralized)",
+          "expectedRegistryStatus": "RECRUITING",
+          "indication": "Essential tremor in adults",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT06087276",
+          "regulatoryContext": "ISSUER_REPORTED_ACCEPTED_ULIXACALTAMIDE_ESSENTIAL_TREMOR_NDA_JAN29_2027_PARTIAL_ESSENTIAL3_RESEARCH_LINK",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null,
+          "issuerReportedCurrentPdufaDate": "2027-01-29",
+          "issuerReportedFdaAcceptance": true,
+          "issuerReportedCurrentPdufaSourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20",
+          "issuerReportedPdufaAsOf": "2026-10-26"
+        }
+      ]
+    }
+  ],
+  "limitations": "Only three exact saved 741-census Praxis NCTs are used: EMBOLD and EMERALD relutrigine, and one Essential3 decentralized ulixacaltamide study. Original relutrigine Sept 27 target has been superseded by issuer-filed June 29 extension to Dec 27 2026; separate ulixacaltamide Jan 29 2027 goal. Both are company SEC-reported FDA review goals, not independent FDA goal letters or approvals. Contracts, especially relutrigine rights and Tenacia regional constraints, remain not independently adjudicated. No qualification or trade authorization."
+}
