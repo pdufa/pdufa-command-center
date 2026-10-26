@@ -3,7 +3,7 @@
 A 401 is only evidence that *some* route-level authorization rejects an
 anonymous request. It does not prove backend version, authorized source read
 success, document authorship, reviewer identity, or scientific validity.
-A 404 is a release blocker, but not evidence that zero PDFs were archived.
+A 404 fails the release gate: it is not evidence that zero PDFs were archived.
 No request body, token, read key, login, redirect, or database write is used.
 """
 from __future__ import annotations
@@ -55,6 +55,8 @@ def classify(status: int | None) -> dict:
         classification = "RENDER_BACKEND_UNAVAILABLE"
     elif 200 <= status <= 299:
         classification = "SECURITY_FAILURE_ANONYMOUS_READ_ACCEPTED"
+    elif 300 <= status <= 399:
+        classification = "SECURITY_FAILURE_ANONYMOUS_REDIRECT"
     else:
         classification = "UNEXPECTED_ROUTE_RESPONSE"
     return {
@@ -96,10 +98,23 @@ def main() -> int:
                 "an authorized archive read, document contents, independent "
                 "reviewers or an FDA prediction.\n"
             )
-    # Never certify readiness on any code other than 401. 404/unavailable are
-    # visible unresolved release blockers, NOT CI test failures. 2xx is a
-    # critical security regression and must fail the workflow immediately.
-    return 1 if report["classification"] == "SECURITY_FAILURE_ANONYMOUS_READ_ACCEPTED" else 0
+    # This protected manifest route is now part of the deployed isolated science
+    # backend. A definite 404 can no longer be silently marked green in a
+    # required release check. Public 2xx and redirects must fail closed too.
+    # Transient network errors remain visibly UNVERIFIED; do not claim success.
+    blocked = {
+        "CAPTURED_ROUTE_NOT_DEPLOYED",
+        "SECURITY_FAILURE_ANONYMOUS_READ_ACCEPTED",
+        "SECURITY_FAILURE_ANONYMOUS_REDIRECT",
+    }
+    if report["classification"] in blocked:
+        print(
+            "::error::Required isolated science manifest route is absent or "
+            "responding unsafely to an anonymous request; do not release.",
+            flush=True,
+        )
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

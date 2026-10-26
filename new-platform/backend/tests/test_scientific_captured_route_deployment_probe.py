@@ -35,12 +35,19 @@ class CapturedRouteDeploymentProbeTests(unittest.TestCase):
             with self.subTest(code=code):
                 self.assertEqual(probe.classify(code)["classification"],
                                  "SECURITY_FAILURE_ANONYMOUS_READ_ACCEPTED")
-        for code in (403, 407, 302, 500, 502, 503, None):
+        for code in (403, 407, 500, 502, 503, None):
             with self.subTest(code=code):
                 data = probe.classify(code)
                 self.assertNotEqual(data["classification"], "ANONYMOUS_AUTH_GUARD_PRESENT")
                 self.assertNotEqual(data["classification"], "SECURITY_FAILURE_ANONYMOUS_READ_ACCEPTED")
                 self.assertFalse(data["capturedManifestReadWithCredential"])
+        for code in (301, 302, 307, 308):
+            with self.subTest(code=code):
+                value = probe.classify(code)
+                self.assertEqual(value["classification"],
+                                 "SECURITY_FAILURE_ANONYMOUS_REDIRECT")
+                self.assertFalse(value["anonymousAccessSafelyDenied"])
+                self.assertFalse(value["promotionAllowed"])
         for code in (-1, 0, 600, "401", True):
             with self.subTest(code=code), self.assertRaises(ValueError):
                 probe.classify(code)
@@ -84,10 +91,13 @@ class CapturedRouteDeploymentProbeTests(unittest.TestCase):
         self.assertGreater(probe_step, checkout)
         self.assertIn("working-directory: new-platform/backend", body[checkout:probe_step])
 
-    def test_cli_writes_credential_free_summary_and_fails_only_for_anonymous_2xx(self):
+    def test_cli_writes_credential_free_summary_and_fails_on_404_2xx_and_redirect(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "summary.md"
-            for http_code, expected_exit in ((401, 0), (404, 0), (503, 0), (200, 1)):
+            for http_code, expected_exit in (
+                (401, 0), (404, 1), (503, 0), (200, 1),
+                (301, 1), (302, 1), (307, 1),
+            ):
                 with self.subTest(http_code=http_code), patch.object(
                     probe, "anonymous_http_status", return_value=http_code
                 ), patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(path)}):
