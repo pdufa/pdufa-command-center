@@ -91,6 +91,8 @@ def test_real_source_keys_diff_without_inventing_fda_decisions():
     assert r["tabular_keys_absent_from_openfda"] == 1
     assert r["openfda_keys_absent_from_tabular"] == 1
     assert r["net_tabular_minus_openfda_original_keys"] == 0
+    assert r["tabular_only_keys_with_entire_application_absent_from_openfda"] == 1
+    assert r["tabular_only_keys_in_openfda_application_but_missing_original"] == 0
     assert r["tabular_only_key_examples"] == [
         {"application_id": "BLA000002", "original_submission_number": 1}
     ]
@@ -216,6 +218,8 @@ def test_actual_pinned_source_diff_proves_only_one_membership_exception():
         {"application_id": "NDA206627", "original_submission_number": 1}
     ]
     assert report["tabular_keys_absent_from_openfda"] == 1
+    assert report["tabular_only_keys_with_entire_application_absent_from_openfda"] == 1
+    assert report["tabular_only_keys_in_openfda_application_but_missing_original"] == 0
     assert report["openfda_keys_absent_from_tabular"] == 0
     assert report["shared_original_submission_keys"] == 6032
     assert report["shared_keys_with_raw_status_mismatch"] == 0
@@ -241,3 +245,23 @@ def test_actual_pinned_source_diff_proves_only_one_membership_exception():
     assert lead["verified_review_cycle_labels"] == 0
     assert lead["evidence_use"] == "PUBLIC_FDA_SOURCE_LEAD_NOT_TRAINING_LABEL"
 
+
+
+
+def test_archived_application_present_but_original_submission_missing():
+    """Missing an original entry is distinct from missing entire application."""
+    tab, archive, tab_index, archive_index = fixture()
+    archive["records"].append({
+        "application_number_as_published": "BLA000002",
+        "model_eligible": False,
+        "point_in_time_features_verified": False,
+        "complete_application_denominator_verified": False,
+        "review_cycles_independently_adjudicated": False,
+        "submissions_as_published": [],
+    })
+    archive_index["approved_registry_application_records"] = 3
+    result = reconcile(tab, archive, tab_index, archive_index)
+    assert result["tabular_keys_absent_from_openfda"] == 1
+    assert result["tabular_only_keys_with_entire_application_absent_from_openfda"] == 0
+    assert result["tabular_only_keys_in_openfda_application_but_missing_original"] == 1
+    assert result["model_eligible_records"] == 0
