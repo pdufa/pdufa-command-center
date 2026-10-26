@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "reportType": "MAIN_PHASE3_QUALIFICATION_PROGRESS_SCORECARD_RESEARCH_ONLY",
+  "captureMode": "PINNED_VERIFIED_GITHUB_ACTIONS_RUN_NOT_LIVE",
+  "sourceRunId": 40387212933,
+  "sourceRunUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/40387212933",
+  "sourceBranchHead": "e236618ff2b289ed357b72a6994ad2cecfb09e20",
+  "sourcePacificDate": "2026-10-26",
+  "historicalTrialCount": 741,
+  "issuerResearchPointerCount": 130,
+  "gateChecksDenominator": 6669,
+  "gateChecksPass": 741,
+  "gateChecksFail": 0,
+  "gateChecksReview": 5928,
+  "trialsWithProvisionalRegisteredDrug": 729,
+  "secIssuerIndexesFetched": 130,
+  "secPrimaryDocumentsSelected": 20,
+  "secPrimaryDocumentsAttempted": 0,
+  "secPrimaryDocumentsNotAttemptedMissingContact": 20,
+  "secPrimaryDocumentsFetched": 0,
+  "trialIssuerTextAvailable": 0,
+  "rightsReviewChecklistSlots": 4446,
+  "rightsSlotsWithSubmissions": 0,
+  "rightsSlotsWithReviewerReports": 0,
+  "trialsWithAnySubmissions": 0,
+  "independentlyVerifiedCurrentRightsTrials": 0,
+  "qualifiedPipelineCount": null,
+  "mandatoryGates": [
+    {
+      "gate": "registry_identity",
+      "pass": 741,
+      "fail": 0,
+      "review": 0
+    },
+    {
+      "gate": "ticker_drug_indication_identity",
+      "pass": 0,
+      "fail": 0,
+      "review": 741
+    },
+    {
+      "gate": "current_commercial_rights",
+      "pass": 0,
+      "fail": 0,
+      "review": 741
+    },
+    {
+      "gate": "active_phase3_development",
+      "pass": 0,
+      "fail": 0,
+      "review": 741
+    },
+    {
+      "gate": "public_listing",
+      "pass": 0,
+      "fail": 0,
+      "review": 741
+    },
+    {
+      "gate": "market_cap_300m_10b",
+      "pass": 0,
+      "fail": 0,
+      "review": 741
+    },
+    {
+      "gate": "us_fda_pathway",
+      "pass": 0,
+      "fail": 0,
+      "review": 741
+    },
+    {
+      "gate": "verified_pdufa",
+      "pass": 0,
+      "fail": 0,
+      "review": 741
+    },
+    {
+      "gate": "original_source_freshness",
+      "pass": 0,
+      "fail": 0,
+      "review": 741
+    }
+  ],
+  "limitations": "Historical registry research cohort; not a list of qualified PDUFA or Pipeline candidates. SEC index retrieval is not filing-text or rights verification. Qualification is unknown, not zero."
+}
