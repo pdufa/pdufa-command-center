@@ -136,6 +136,134 @@ MESOBLAST_SOURCE_SUPPORTED_TIMELINES = (
 REVIEW_TIMELINES = REVIEW_TIMELINES + MESOBLAST_SOURCE_SUPPORTED_TIMELINES
 
 
+FDA_ROCKET_SBRA = "https://www.fda.gov/media/191993/download"
+FDA_ROCKET_CRL = "https://download.open.fda.gov/crl/CRL_BLA125806_20240614.pdf"
+FDA_ROCKET_APPROVAL = "https://www.fda.gov/media/191723/download"
+
+ROCKET_SOURCE_SUPPORTED_TIMELINES = (
+    SourceSupportedCycle(
+        application_key="BLA:125806",
+        submission_key="BLA:125806:ORIGINAL",
+        received_date=date(2023, 8, 1),
+        action_date=date(2024, 6, 14),
+        action_type="complete_response",
+        receipt_source_url=FDA_ROCKET_SBRA,
+        final_action_source_url=FDA_ROCKET_CRL,
+        regulatory_history_source_url=FDA_ROCKET_SBRA,
+        pdufa_goal_date=None,
+    ),
+    SourceSupportedCycle(
+        application_key="BLA:125806",
+        submission_key="BLA:125806:RESUBMISSION-1",
+        received_date=date(2025, 9, 26),
+        action_date=date(2026, 3, 26),
+        action_type="accelerated_approval",
+        receipt_source_url=FDA_ROCKET_SBRA,
+        final_action_source_url=FDA_ROCKET_APPROVAL,
+        regulatory_history_source_url=FDA_ROCKET_SBRA,
+        pdufa_goal_date=date(2026, 3, 28),
+    ),
+)
+
+FDA_ULTRAGENYX_SBRA = "https://www.fda.gov/media/195198/download"
+FDA_ULTRAGENYX_CRL = "https://download.open.fda.gov/crl/CRL_BLA125845_20250707.pdf"
+FDA_ULTRAGENYX_APPROVAL = "https://www.fda.gov/media/194921/download"
+FDA_ULTRAGENYX_CLINICAL_REVIEW = "https://www.fda.gov/media/195731/download"
+
+# FDA SBRA and clinical review print conflicting resubmission PDUFA dates.
+# pdufa_goal_date below uses SBRA only with both sources preserved here.
+ULTRAGENYX_PDUFA_GOAL_SOURCE_CONFLICT = {
+    "sbra": {"source_url": FDA_ULTRAGENYX_SBRA, "goal_date": "2026-09-19"},
+    "clinical_review": {"source_url": FDA_ULTRAGENYX_CLINICAL_REVIEW, "goal_date": "2026-09-18"},
+    "resolution_status": "unresolved_preserve_both",
+}
+
+ULTRAGENYX_SOURCE_SUPPORTED_TIMELINES = (
+    SourceSupportedCycle(
+        application_key="BLA:125845",
+        submission_key="BLA:125845:ORIGINAL",
+        received_date=date(2024, 12, 18),
+        action_date=date(2025, 7, 7),
+        action_type="complete_response",
+        receipt_source_url=FDA_ULTRAGENYX_SBRA,
+        final_action_source_url=FDA_ULTRAGENYX_CRL,
+        regulatory_history_source_url=FDA_ULTRAGENYX_SBRA,
+        pdufa_goal_date=None,
+    ),
+    SourceSupportedCycle(
+        application_key="BLA:125845",
+        submission_key="BLA:125845:RESUBMISSION-1",
+        received_date=date(2026, 3, 20),
+        action_date=date(2026, 9, 17),
+        action_type="approval",
+        receipt_source_url=FDA_ULTRAGENYX_SBRA,
+        final_action_source_url=FDA_ULTRAGENYX_APPROVAL,
+        regulatory_history_source_url=FDA_ULTRAGENYX_SBRA,
+        pdufa_goal_date=date(2026, 9, 19),
+    ),
+)
+
+FDA_REPLIMUNE_FIRST_CRL = "https://download.open.fda.gov/crl/CRL_BLA125827_20250721.pdf"
+FDA_REPLIMUNE_SECOND_CRL = "https://download.open.fda.gov/crl/CRL_BLA125827_20260410.pdf"
+FDA_REPLIMUNE_APPROVAL = "https://www.fda.gov/media/194128/download"
+FDA_REPLIMUNE_CLINICAL_REVIEW = "https://www.fda.gov/media/194468/download"
+
+# Clinical review recommendation is NOT a signed final FDA action letter.
+REPLIMUNE_FINAL_ACTION_VS_REVIEW_RECOMMENDATION = {
+    "clinical_review_source_url": FDA_REPLIMUNE_CLINICAL_REVIEW,
+    "reviewer_recommendation": "complete_response",
+    "signed_action_source_url": FDA_REPLIMUNE_APPROVAL,
+    "final_agency_action": "accelerated_approval",
+    "review_pdufa_goal_date": "2026-08-02",
+    "final_action_date": "2026-08-06",
+    "pdufa_clock_explanation": "unverified",
+}
+
+REPLIMUNE_SOURCE_SUPPORTED_TIMELINES = (
+    SourceSupportedCycle(
+        application_key="BLA:125827",
+        submission_key="BLA:125827:ORIGINAL",
+        received_date=date(2024, 11, 21),
+        action_date=date(2025, 7, 21),
+        action_type="complete_response",
+        receipt_source_url=FDA_REPLIMUNE_APPROVAL,
+        final_action_source_url=FDA_REPLIMUNE_FIRST_CRL,
+        regulatory_history_source_url=FDA_REPLIMUNE_APPROVAL,
+        pdufa_goal_date=None,
+    ),
+    SourceSupportedCycle(
+        application_key="BLA:125827",
+        submission_key="BLA:125827:RESUBMISSION-1",
+        received_date=date(2025, 10, 9),
+        action_date=date(2026, 4, 10),
+        action_type="complete_response",
+        receipt_source_url=FDA_REPLIMUNE_SECOND_CRL,
+        final_action_source_url=FDA_REPLIMUNE_SECOND_CRL,
+        regulatory_history_source_url=FDA_REPLIMUNE_SECOND_CRL,
+        pdufa_goal_date=None,
+    ),
+    SourceSupportedCycle(
+        application_key="BLA:125827",
+        submission_key="BLA:125827:RESUBMISSION-2",
+        received_date=date(2026, 6, 2),
+        action_date=date(2026, 8, 6),
+        action_type="accelerated_approval",
+        receipt_source_url=FDA_REPLIMUNE_APPROVAL,
+        final_action_source_url=FDA_REPLIMUNE_APPROVAL,
+        regulatory_history_source_url=FDA_REPLIMUNE_CLINICAL_REVIEW,
+        pdufa_goal_date=date(2026, 8, 2),
+    ),
+)
+
+# Sampled, source-supported timelines only; not certified complete cycles.
+REVIEW_TIMELINES = (
+    REVIEW_TIMELINES
+    + ROCKET_SOURCE_SUPPORTED_TIMELINES
+    + ULTRAGENYX_SOURCE_SUPPORTED_TIMELINES
+    + REPLIMUNE_SOURCE_SUPPORTED_TIMELINES
+)
+
+
 def validate_review_timelines(
     cycles: tuple[SourceSupportedCycle, ...] = REVIEW_TIMELINES,
     action_fixtures: tuple[FDAEvent, ...] = RESEARCH_ACTIONS,
