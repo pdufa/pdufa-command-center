@@ -1,0 +1,31 @@
+name: MAIN full 741 original Phase 3 registry research
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/check_phase3_full_original_sources.py'
+      - '.github/workflows/main-phase3-full-original-sources.yml'
+      - 'scripts/check_phase3_original_registry_pilot.py'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+permissions:
+  contents: read
+jobs:
+  original-full-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate read-only registry verification script
+        run: python3 -m py_compile scripts/check_phase3_full_original_sources.py
+      - name: Retrieve all 741 exact-NCT original registry records
+        run: python3 scripts/check_phase3_full_original_sources.py "$RUNNER_TEMP/main_phase3_full_registry_research.json"
+      - name: Preserve research evidence even when source fetches fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-phase3-741-registry-research-only
+          path: ${{ runner.temp }}/main_phase3_full_registry_research.json
+          if-no-files-found: warn
+          retention-days: 7
