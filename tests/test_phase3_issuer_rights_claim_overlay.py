@@ -21,16 +21,17 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
         self.assertEqual(len(r["trials"]), 741)
         self.assertEqual(len(self.by_id), 741)
         self.assertEqual(len({x["ticker"] for x in r["trials"]}), 130)
-        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 11)
-        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 730)
-        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 3)
-        self.assertEqual(r["asset_program_dossiers"], 4)
+        self.assertEqual(r["issuer_rights_claim_evidence_linked_trials"], 16)
+        self.assertEqual(r["claim_evidence_missing_or_unreviewed_trials"], 725)
+        self.assertEqual(r["issuers_with_rights_claim_dossiers"], 4)
+        self.assertEqual(r["asset_program_dossiers"], 5)
 
-    def test_exact_11_nct_claim_links_and_no_other_unearned_claims(self):
+    def test_exact_16_nct_claim_links_and_no_other_unearned_claims(self):
         expected = {
             "ABVX": {"NCT05507203", "NCT05507216", "NCT05535946"},
             "ACHV": {"NCT04576949", "NCT05206370", "NCT06435221", "NCT07392125"},
             "MIRM": {"NCT06553768", "NCT06907290", "NCT07200908", "NCT07454837"},
+            "CYTK": {"NCT04848506", "NCT05186818", "NCT05767346", "NCT06081894", "NCT06412666"},
         }
         for ticker, ids in expected.items():
             actual = {x["nct_id"] for x in self.report["trials"]
@@ -40,7 +41,7 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             for nct in ids:
                 self.assertTrue(self.by_id[nct]["source_document_links_cataloged"])
         self.assertEqual(sum(not x["source_document_links_cataloged"]
-                             for x in self.report["trials"]), 730)
+                             for x in self.report["trials"]), 725)
 
     def test_no_trial_has_unearned_legal_or_fda_promotion(self):
         r = self.report
@@ -77,6 +78,46 @@ class RightsEvidenceOverlayTests(unittest.TestCase):
             self.assertEqual(x["linked_asset"], "brelovitug")
             self.assertIn("NOVARTIS_LICENSE_ROYALTIES_AND_MILESTONES", x["material_risk_flags"])
             self.assertIsNone(x["current_pdufa_target_date"])
+
+    def test_cytk_maple_upcoming_snda_is_indication_specific_issuer_reported_only(self):
+        r = self.report
+        self.assertEqual(r["issuer_reported_future_pdufa_event_count"], 1)
+        self.assertEqual(len(r["issuer_reported_future_pdufa_events"]), 1)
+        e = r["issuer_reported_future_pdufa_events"][0]
+        self.assertEqual(e["nct_id"], "NCT05767346")
+        self.assertEqual(e["ticker"], "CYTK")
+        self.assertEqual(e["asset"], "aficamten")
+        self.assertIn("obstructive", e["indication"])
+        self.assertNotIn("non-obstructive", e["indication"])
+        self.assertEqual(e["issuer_reported_target_date"], "2026-11-14")
+        self.assertTrue(e["issuer_reported_accepted_application"])
+        self.assertIn("ir.cytokinetics.com", e["issuer_primary_source_url"])
+        self.assertFalse(e["agency_independent_verification"])
+        maple = self.by_id["NCT05767346"]
+        self.assertTrue(maple["issuer_reported_fda_acceptance"])
+        self.assertIsNone(maple["current_pdufa_target_date"])
+        for nct in ("NCT05186818", "NCT06081894", "NCT06412666", "NCT04848506"):
+            item = self.by_id[nct]
+            self.assertEqual(item["linked_asset"], "aficamten")
+            self.assertIsNone(item["issuer_reported_upcoming_pdufa_target"])
+            self.assertFalse(item["issuer_reported_fda_acceptance"])
+            self.assertIsNone(item["current_pdufa_target_date"])
+        self.assertIn("CHINA_TAIWAN_EXCLUSIVE_LICENSE_TO_SANOFI", maple["material_risk_flags"])
+        self.assertIn("JAPAN_EXCLUSIVE_LICENSE_TO_BAYER_WITH_RESERVED_CLINICAL_STUDY_RIGHTS", maple["material_risk_flags"])
+
+    def test_cytk_fake_or_stale_pdufa_claim_is_rejected(self):
+        original = rights.collect_cases()
+        self.assertEqual(len(original), 5)
+        bad = [dict(p) for p in original]
+        cy = dict(bad[-1])
+        links = [dict(x) for x in cy["trialLinks"]]
+        maple = next(x for x in links if x["nctId"] == "NCT05767346")
+        maple["issuerReportedCurrentPdufaDate"] = "2026-09-01"
+        cy["trialLinks"] = links
+        bad[-1] = cy
+        with patch.object(rights, "collect_cases", return_value=bad):
+            with self.assertRaisesRegex(ValueError, "PDUFA"):
+                rights.build()
 
     def test_wrong_source_identity_and_duplicate_nct_are_blocked(self):
         original = rights.collect_cases()
