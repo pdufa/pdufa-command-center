@@ -223,3 +223,34 @@ def test_aggregate_count_only_and_model_blocks():
     assert report["predictive_accuracy"] is None
     with pytest.raises(ValueError):
         aggregate_sample(plan, [item], fetch_failures=0)
+
+
+
+def test_real_eight_fda_pdfs_rehashed_and_pages_only_navigation_hints():
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    result = json.loads((root / "hop_fda_page_candidate_sample_20261025.json")
+                        .read_text(encoding="utf-8"))
+    upstream = json.loads((root / "hop_fda_prior_pdf_lead_coverage_20261025.json")
+                          .read_text(encoding="utf-8"))
+    assert result["status"] == "FDA_PRIOR_PUBLISHED_PDF_PAGE_SAMPLE_OBSERVED_NOT_ADJUDICATED"
+    assert result["sampled_unique_pdf_documents_requested"] == 8
+    assert result["sampled_pdf_bytes_sha256_reconfirmed"] == 8
+    assert result["sampled_pdf_documents_not_retrieved_or_parsed"] == 0
+    assert result["source_sample_unique_pdf_population"] == (
+        upstream["distinct_prior_confirmed_pdf_sha256_in_packet_worklist"] == 122
+    )
+    assert result["pages_examined_for_candidate_app_tokens"] == 46
+    assert result["pages_without_extractable_text"] == 9
+    assert result["pages_with_multiple_provisional_app_candidates"] == 0
+    assert result["candidate_application_numbers_with_page_hits"] == 8
+    assert result["original_action_page_ranges_independently_verified"] == 0
+    assert result["review_cycles_independently_verified"] == 0
+    assert result["complete_nda_bla_original_decision_denominator_verified"] is False
+    assert result["model_eligible_records"] == 0
+    assert result["approval_rate"] is None
+    assert result["prediction_probability"] is None
+    assert result["predictive_accuracy"] is None
+    assert result["private_pdf_page_hints_not_exported"] is True
