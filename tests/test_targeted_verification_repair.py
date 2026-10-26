@@ -113,7 +113,10 @@ class TargetedSecRegistryRecheckTests(unittest.TestCase):
                     "expected": "", "observed": "",
                 }
             with patch("scripts.targeted_verification_repair.Verifier.registry", unresolved):
-                report = run(args)
+                self.assertEqual(run(args), 0)
+            # The command reports success via exit code and writes evidence to
+            # a file; it never returns an in-memory adjudicated source record.
+            report = json.loads(args.output.read_text(encoding="utf-8"))
             self.assertEqual(report["findings_due"], 1)
             self.assertEqual(report["required_findings_unresolved"], 1)
             self.assertEqual(report["findings_verified"], 0)
