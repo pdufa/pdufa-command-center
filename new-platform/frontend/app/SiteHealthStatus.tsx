@@ -57,7 +57,7 @@ export default function SiteHealthStatus() {
         }
         if (alive) { const time = Date.now(); setReport(data); setError(""); setClock(time); setReceivedAt(time); }
       } catch (cause) {
-        if (alive) { setReport(null); setError(requestController.signal.aborted
+        if (alive) { setError(requestController.signal.aborted
           ? "Health check timed out. Tap Refresh status to try again."
           : cause instanceof Error ? cause.message : "Health check unavailable. Tap Refresh status to try again."); }
       } finally {
@@ -77,11 +77,11 @@ export default function SiteHealthStatus() {
 
   // Use elapsed client time, so a device clock differing from the server cannot
   // turn a freshly received report into ten unverified checks.
-  const stale = report && receivedAt > 0 && (clock || Date.now()) - receivedAt > 120000;
+  const stale = !!report && (!!error || (receivedAt > 0 && (clock || Date.now()) - receivedAt > 120000));
   const pending = loading && !report;
   const checks = stale ? report.checks.map(check => ({ ...check,
     state: check.state === "failed" ? "failed" as const : "unknown" as const,
-    summary: "Refresh required · " + check.summary })) : report?.checks || (pending ? UNVERIFIED_CHECKS.map(check => ({
+    summary: "Last verified · refresh required · " + check.summary })) : report?.checks || (pending ? UNVERIFIED_CHECKS.map(check => ({
       ...check, summary: "Checking…", detail: "Waiting for the live health checks to return.",
     })) : UNVERIFIED_CHECKS);
   const state = overallHealth(checks);
