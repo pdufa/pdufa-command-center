@@ -1,0 +1,23 @@
+name: MAIN Phase 3 qualification ledger validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/phase3_qualification_ledger.py'
+      - 'tests/test_phase3_qualification_ledger.py'
+      - '.github/workflows/main-phase3-qualification-ledger.yml'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ledger-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate qualification ledger Python syntax
+        run: python3 -m py_compile scripts/phase3_qualification_ledger.py tests/test_phase3_qualification_ledger.py
+      - name: Run fail-closed qualification ledger tests
+        run: python3 -m unittest discover -s tests -p test_phase3_qualification_ledger.py -v
