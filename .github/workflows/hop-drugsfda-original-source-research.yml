@@ -29,6 +29,9 @@ on:
       - 'new-platform/backend/app/hop_fda_single_primary_review.py'
       - 'new-platform/backend/scripts/prepare_hop_fda_single_primary_review.py'
       - 'new-platform/backend/tests/test_hop_fda_single_primary_review.py'
+      - 'new-platform/backend/app/hop_fda_single_primary_encrypted_archive.py'
+      - 'new-platform/backend/scripts/transfer_hop_fda_single_primary_encrypted_archive.py'
+      - 'new-platform/backend/tests/test_hop_fda_single_primary_encrypted_archive.py'
       - 'new-platform/backend/app/hop_fda_private_review_batches.py'
       - 'new-platform/backend/scripts/prepare_hop_fda_review_batches.py'
       - 'new-platform/backend/tests/test_hop_fda_private_review_batches.py'
@@ -87,6 +90,7 @@ jobs:
             tests/test_hop_fda_prior_pdf_lead_join.py \
             tests/test_hop_fda_identity_gap_dual_review.py \
             tests/test_hop_fda_single_primary_review.py \
+            tests/test_hop_fda_single_primary_encrypted_archive.py \
             tests/test_hop_fda_private_review_batches.py \
             tests/test_hop_fda_private_encrypted_transfer.py \
             tests/test_hop_fda_nda206627_primary_source.py \
