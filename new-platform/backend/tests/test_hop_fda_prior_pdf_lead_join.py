@@ -265,6 +265,19 @@ def test_actual_prior_fda_document_provenance_links_locked_without_outcomes():
     ]
     assert report["prior_pdf_bytes_probed_not_revalidated_in_current_run"] is True
     assert report["private_pdf_source_link_records_not_exported"] is True
+    unavailable = report["unavailable_published_pdf_source_review_lead"]
+    assert unavailable["source_record_sha256"] == pdfs[
+        "source_record_without_released_pdf"
+    ]
+    assert unavailable["company_name_as_published"] == "Chiesi Farmaceutici S.p.A"
+    assert unavailable["letter_date_as_published"] == "02/27/2026"
+    assert unavailable["letter_type_as_published"] == "UNCLASSIFIED"
+    assert unavailable["file_name_as_published"] == "Under Review for Release"
+    assert unavailable["application_ids_as_published"] == []
+    assert unavailable["application_id_resolved"] is False
+    assert unavailable["official_pdf_url"] is None
+    assert unavailable["original_action_identity_adjudicated"] is False
+    assert unavailable["model_eligible"] is False
     assert report["original_fda_review_cycles_independently_adjudicated"] == 0
     assert report["individual_original_letter_page_ranges_verified"] == 0
     assert report["complete_national_nda_bla_decision_denominator_verified"] is False
