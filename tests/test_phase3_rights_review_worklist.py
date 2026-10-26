@@ -1,5 +1,7 @@
 """Fail-closed worklist tests using complete synthetic 741-NCT/130-issuer inputs."""
+import csv
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -8,7 +10,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
 
 from phase3_qualification_ledger import GATES
-from phase3_rights_review_worklist import build_worklist, registry_priority, REQUIRED_REVIEW
+from phase3_rights_review_worklist import build_worklist, registry_priority, REQUIRED_REVIEW, write_review_csv, safe_csv_value
 from phase3_sec_trial_rights_join import build_join
 from test_phase3_sec_trial_rights_join import TrialSecRightsJoinTests
 
@@ -178,6 +180,33 @@ class Phase3RightsWorklistTests(unittest.TestCase):
         self.registry["original_source_records"][0]["phase3_in_current_registry"] = "yes"
         with self.assertRaises(ValueError):
             self.report()
+
+    def test_spreadsheet_ready_csv_has_741_rows_and_six_unverified_proofs(self):
+        report = self.report()
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp) / "rights.csv"
+            write_review_csv(report, output)
+            with output.open(encoding="utf-8", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+        self.assertEqual(len(rows), 741)
+        self.assertEqual([x["review_position"] for x in rows], [str(i) for i in range(1, 742)])
+        self.assertTrue(all(x["commercial_rights_verified"] == "False" for x in rows))
+        self.assertTrue(all(x["qualified_pipeline"] == "" for x in rows))
+        self.assertTrue(all(all(x[check] == "NOT_VERIFIED" for check in REQUIRED_REVIEW)
+                            for x in rows))
+
+    def test_csv_guards_against_formula_in_registered_source_name(self):
+        self.assertEqual(safe_csv_value("=HYPERLINK(1)"), "'=HYPERLINK(1)")
+        self.assertEqual(safe_csv_value("   +SUM(1,2)"), "'   +SUM(1,2)")
+        self.assertEqual(safe_csv_value("@evil"), "'@evil")
+        self.assertEqual(safe_csv_value("Ordinary Trial"), "Ordinary Trial")
+
+    def test_csv_never_exports_forged_rights_verified(self):
+        report = self.report()
+        report["independently_verified_current_rights"] = 1
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaises(ValueError):
+                write_review_csv(report, Path(temp) / "unsafe.csv")
 
 
 if __name__ == "__main__":
