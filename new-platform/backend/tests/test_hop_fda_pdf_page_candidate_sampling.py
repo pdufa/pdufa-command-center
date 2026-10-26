@@ -239,9 +239,8 @@ def test_real_eight_fda_pdfs_rehashed_and_pages_only_navigation_hints():
     assert result["sampled_unique_pdf_documents_requested"] == 8
     assert result["sampled_pdf_bytes_sha256_reconfirmed"] == 8
     assert result["sampled_pdf_documents_not_retrieved_or_parsed"] == 0
-    assert result["source_sample_unique_pdf_population"] == (
-        upstream["distinct_prior_confirmed_pdf_sha256_in_packet_worklist"] == 122
-    )
+    assert result["source_sample_unique_pdf_population"] == 122
+    assert upstream["distinct_prior_confirmed_pdf_sha256_in_packet_worklist"] == 122
     assert result["pages_examined_for_candidate_app_tokens"] == 46
     assert result["pages_without_extractable_text"] == 9
     assert result["pages_with_multiple_provisional_app_candidates"] == 0
