@@ -66,10 +66,6 @@ export function normalizeRegistryResearchRecord(
     || !safeString(status.overallStatus,80)) {
     throw new Error("Registry identity/status mismatch: research source withheld");
   }
-  const rawUpdated=status.studyFirstPostDate; // not used to imply live currency
-  const lastUpdate = status.studyFirstPostDate; // see actual lastUpdatePostDate below
-  void rawUpdated;
-  void lastUpdate;
   const updated=status.lastUpdatePostDate;
   if(updated!==undefined && updated!==null
     && (typeof updated!=="string" || !/^\d{4}-\d{2}-\d{2}$/.test(updated)
@@ -107,7 +103,7 @@ export function normalizeRegistryResearchRecord(
     recordUrl:REGISTRY_SOURCE_ORIGIN+"/study/"+expectedNctId,
     apiRecordUrl:REGISTRY_SOURCE_ORIGIN+"/api/v2/studies/"+expectedNctId,
     queriedAt,
-    sourceUpdated:updated as string|null|undefined ?? null,
+    sourceUpdated:(updated as string|null|undefined) ?? null,
     title:safeString(identity.briefTitle,1000)!,
     registryOverallStatus:safeString(status.overallStatus,80)!,
     registryLeadSponsor:lead,
