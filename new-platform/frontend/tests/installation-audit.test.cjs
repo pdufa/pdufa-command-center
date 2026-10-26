@@ -34,13 +34,18 @@ test("installation checks retain independent code, deployment, runtime and evide
 });
 
 test("dated, incomplete source audit is not misrepresented as qualified Pipeline or full scientific readiness", () => {
-  assert.match(tracker, /993\/1121 verified/);
+  assert.match(tracker, /Latest saved RESULTS:<\/strong> October 25, 2026/);
+  assert.match(tracker, /run 40263199452/);
+  assert.match(tracker, /0 tracked records changed/);
+  assert.match(tracker, /Qualified Pipeline and FDA special-designation totals remain unknown/);
   assert.match(tracker, /995\/1121 verified/);
   assert.match(tracker, /21 unresolved, 2 conflicted, 93 unavailable and 10 not applicable/);
   assert.match(tracker, /995 \+ 21 \+ 2 \+ 93 \+ 10 = 1,121/);
   assert.match(tracker, /required SEC and FINANCIAL verification is still missing/);
   assert.match(tracker, /sourceAudit/);
-  assert.match(tracker, /two checks have no separately stated classification/);
+  assert.match(tracker, /two conflicted checks are omitted from that short note/);
+  assert.match(tracker, /Same-run source reconciliation/);
+  assert.doesNotMatch(tracker, /Latest saved RESULTS:<\/strong> October 24, 2026/);
   assert.match(tracker, /not Pipeline qualified/);
   assert.match(tracker, /FDA-labelled historical outcomes/);
   assert.match(tracker, /40 assessments/);
