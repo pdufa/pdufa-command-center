@@ -39,12 +39,12 @@ DENIAL = re.compile(r"(?i)request rate threshold exceeded|access denied|your req
 # Document-text locators are lexical review leads, never ownership or rights findings.
 REVIEW_TOPICS = (
     ("LICENSE_OR_EXCLUSIVITY", re.compile(
-        r"(?i)\\b(?:licens(?:e|es|ed|ing|or|ee)|in-licens(?:e|ing)|exclusive rights)\\b")),
-    ("COLLABORATION", re.compile(r"(?i)\\b(?:collaboration|co-development|co-commercialization)\\b")),
-    ("US_TERRITORY", re.compile(r"(?i)\\b(?:United States|U\\.S\\.|North America|worldwide rights)\\b")),
+        r"(?i)\b(?:licens(?:e|es|ed|ing|or|ee)|in-licens(?:e|ing)|exclusive rights)\b")),
+    ("COLLABORATION", re.compile(r"(?i)\b(?:collaboration|co-development|co-commercialization)\b")),
+    ("US_TERRITORY", re.compile(r"(?i)\b(?:United States|U\.S\.|North America|worldwide rights)\b")),
     ("RIGHTS_TRANSFER_OR_TERMINATION", re.compile(
-        r"(?i)\\b(?:termination of (?:the )?agreement|terminated (?:the )?license|"
-        r"assigned (?:the )?rights|transferred (?:the )?rights)\\b")),
+        r"(?i)\b(?:termination of (?:the )?agreement|terminated (?:the )?license|"
+        r"assigned (?:the )?rights|transferred (?:the )?rights)\b")),
 )
 MAX_REVIEW_LOCATORS = 6
 MAX_REVIEW_EXCERPT_CHARS = 150
