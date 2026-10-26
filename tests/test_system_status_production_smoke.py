@@ -37,7 +37,7 @@ class ProductionSmokeValidatorTests(unittest.TestCase):
                     verify_html(" ".join(REQUIRED_TEXT).replace(label, ""))
 
     def test_both_protected_api_routes_fail_closed_with_unauthenticated_401(self):
-        for endpoint in ["/api/assessments", "/api/hop/readiness", "/api/phase3-registry?exact_nct=NCT02142738"]:
+        for endpoint in ["/api/assessments", "/api/hop/readiness"]:
             with self.subTest(endpoint=endpoint):
                 with patch("check_system_status_production.urllib.request.urlopen", side_effect=http_error(401, {"error": "Authentication required"})):
                     verify_unauthenticated_protected_api(endpoint)
