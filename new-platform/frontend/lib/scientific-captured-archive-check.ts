@@ -163,7 +163,9 @@ export function summarizeCapturedScientificGates(
     if (typeof gateId !== "string" || !GATE_CATALOG.some(gate => gate.gateId === gateId)) {
       denied();
     }
-    counts.set(gateId, (counts.get(gateId) ?? 0) + 1);
+    // The branch above rejects any non-string or non-catalog gate identifier.
+    const validatedGateId = gateId as string;
+    counts.set(validatedGateId, (counts.get(validatedGateId) ?? 0) + 1);
   }
   const gates = GATE_CATALOG.map(gate => {
     const count = counts.get(gate.gateId) ?? 0;
