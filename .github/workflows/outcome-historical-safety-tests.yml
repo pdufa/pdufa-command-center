@@ -39,6 +39,8 @@ on:
       - 'test_outcome_fda_readiness_panel.py'
       - 'outcome_fda_readiness_streamlit.py'
       - 'test_outcome_fda_readiness_streamlit.py'
+      - 'pages/05_OUTCOME_Evidence.py'
+      - 'pages/00_iPhone_Home.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   push:
     branches: [main]
@@ -79,6 +81,8 @@ on:
       - 'test_outcome_fda_readiness_panel.py'
       - 'outcome_fda_readiness_streamlit.py'
       - 'test_outcome_fda_readiness_streamlit.py'
+      - 'pages/05_OUTCOME_Evidence.py'
+      - 'pages/00_iPhone_Home.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   workflow_dispatch:
 
