@@ -139,7 +139,8 @@ def audit_registry_artifact(artifact_zip: str | Path, *, as_of: date,
                 else:
                     if action_date > as_of:
                         data_warnings["RAW_DATE_AFTER_RESEARCH_CUTOFF"] += 1
-    if (dict(apps) != prior.get("application_number_prefixes")
+    all_application_types = {name: apps[name] for name in ("ANDA", "BLA", "NDA")}
+    if (all_application_types != prior.get("application_number_prefixes")
             or sum(apps.values()) != len(data["records"])):
         raise ValueError("Approved registry totals contradict original collection")
     return {
@@ -151,7 +152,7 @@ def audit_registry_artifact(artifact_zip: str | Path, *, as_of: date,
         "fda_source_archive_sha256_as_reported_not_rehashed":
             next(iter(archive_digests.values())),
         "approved_registry_application_records": len(data["records"]),
-        "application_type_counts": dict(sorted(apps.items())),
+        "application_type_counts": dict(sorted(all_application_types.items())),
         "published_registry_submission_entries": number_of_submissions,
         "original_nda_bla_submission_entries": sum(orig.values()),
         "original_nda_bla_submission_entries_by_type": dict(sorted(orig.items())),
