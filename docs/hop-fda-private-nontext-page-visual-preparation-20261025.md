@@ -53,3 +53,30 @@ pages as verified decisions.
 model-eligible outcome records = 0; approval rates, probabilities and
 predictive accuracy unavailable. Production, scanner jobs, GEM JR/GEM
 FS/FA preset associations and trading remain unchanged.
+
+
+## Actual source-rendering results
+
+The real read-only
+[workflow 40262315333](https://github.com/pdufa/pdufa-command-center/actions/runs/40262315333)
+passed and emitted
+[aggregate artifact 12625061538](https://github.com/pdufa/pdufa-command-center/actions/runs/40262315333/artifacts/12625061538).
+Of the two nonoverlapping eight-PDF samples, all **16 exact-source-hash
+checks passed**. All **19/19** pages without extractable text (nine in
+batch 1 and ten in batch 2) were successfully rendered into **private PNG
+bitmaps**, with **zero rendering failures**. The full sample examined
+100 PDF pages. The PNG/image SHA-256 and page mapping manifest stayed in
+private CI runner files and was not included in the aggregate artifact.
+
+The source aggregate is pinned as
+`app/research_sources/hop_fda_nontext_page_visual_render_20261025.json`.
+Synthetic PDF tests validate pixel boundaries, real PNG output, source
+file hash and page-index locks; a pinned-count regression checks both
+actual FDA eight-document samples.
+
+**Limits:** Bitmap creation is not visual reading. Because the private
+runner files are ephemeral and deliberately excluded from artifacts, an
+authenticated reviewer cannot yet retrieve these PNGs from this run.
+Durable controlled review access and independent human page reading remain
+unbuilt/unperformed. We do not claim that blank/unextractable pages contain
+FDA actions or that any FDA approval/nonapproval outcome has been adjudicated.
