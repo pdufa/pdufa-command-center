@@ -52,3 +52,23 @@ test("null score and invalid depth fail closed", () => {
   d.assessments[0].score = 75; d.assessments[0].depthLevel = 21;
   assert.equal(assessScienceReadiness(d).status, "RELUCTANT");
 });
+
+test("forty assessments concentrated in seven layers are not ready", () => {
+  const d = dossier();
+  d.assessments[39].layer = 1;
+  const result = assessScienceReadiness(d);
+  assert.equal(result.status, "RELUCTANT");
+  assert.ok(result.missing.some(x => x.includes("Incorrect assessment count in layer")));
+});
+test("malformed assessment record fails closed", () => {
+  const d = dossier();
+  d.assessments[3] = null;
+  const result = assessScienceReadiness(d);
+  assert.equal(result.status, "RELUCTANT");
+  assert.ok(result.missing.includes("Malformed assessment record"));
+});
+test("assessment missing evidence arrays fails closed", () => {
+  const d = dossier();
+  delete d.assessments[0].evidence;
+  assert.equal(assessScienceReadiness(d).status, "RELUCTANT");
+});
