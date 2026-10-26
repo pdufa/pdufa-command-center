@@ -71,3 +71,15 @@ test("OUTCOME connection success is documented without claiming validated FDA pr
   assert.match(row, /runtime: "Not verified"/);
   assert.match(row, /evidence: "Partial"/);
 });
+
+test("technical installation does not require a human reviewer or encryption-key handoff", () => {
+  assert.match(tracker, /No mandatory human reviewer enrollment, reviewer keys or reviewer handoff is required/);
+  assert.match(tracker, /Scientific evidence and prediction validation remain a separate research requirement/);
+  assert.match(tracker, /reproducible source-level validation/);
+  assert.match(tracker, /These data-validation tasks do not require reviewer enrollment as an installation prerequisite/);
+  assert.doesNotMatch(tracker, /independent reviewer signoffs must be verified/);
+  assert.doesNotMatch(tracker, /with independently authenticated reviewers/);
+  assert.match(tracker, /FDA approval probabilities remain unavailable/);
+  const rows = [...tracker.matchAll(/component: "([^"]+)"/g)].map(m => m[1]);
+  assert.equal(rows.length, 15);
+});
