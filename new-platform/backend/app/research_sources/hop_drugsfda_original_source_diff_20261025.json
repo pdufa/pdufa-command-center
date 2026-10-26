@@ -36,7 +36,7 @@
   "readiness": "REVIEW_REQUIRED",
   "source_membership_does_not_establish_fda_outcome": true,
   "unapproved_applications_absent_from_export_possible": true,
-  "note": "One NDA original-submission key appears in pinned official FDA tabular source but not the separately pinned openFDA registry artifact; original FDA decision status and review cycle remain independently unverified.",
+  "note": "One NDA Original 1 submission exists in the pinned official FDA tabular extract; its entire application identity NDA206627 is absent from the separately pinned OpenFDA archive. A public 2014 original approval package exists, but independently reviewer-adjudicated review-cycle decisions remain zero.",
   "examples_truncated": false,
   "status_mismatch_key_examples": [],
   "date_mismatch_key_examples": [],
@@ -53,5 +53,8 @@
     "verified_review_cycle_labels": 0,
     "independent_human_adjudication_complete": false,
     "evidence_use": "PUBLIC_FDA_SOURCE_LEAD_NOT_TRAINING_LABEL"
-  }
+  },
+  "tabular_only_keys_with_entire_application_absent_from_openfda": 1,
+  "tabular_only_keys_in_openfda_application_but_missing_original": 0,
+  "openfda_application_identity_NDA206627_present": false
 }
