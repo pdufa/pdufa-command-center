@@ -54,7 +54,7 @@ test("SYSTEM STATUS shows dated research queue separately from live OUTCOME and 
   assert.match(ui, /OUTCOME source-review preparation — historical research only/);
   assert.match(ui, /quarantined FDA research workflow, not the live OUTCOME API/);
   assert.match(ui, /proven rejected or never approved/);
-  assert.match(ui, /<strong>not<\\/strong>/);
+  assert.ok(ui.includes("<strong>not</strong>"));
   assert.match(ui, /fdaWorklist\.pendingLetterReferences/);
   assert.match(ui, /fdaWorklist\.searchPackets/);
   assert.match(ui, /fdaWorklist\.independentlyVerifiedReviewCycles/);
