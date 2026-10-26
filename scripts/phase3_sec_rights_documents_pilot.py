@@ -23,6 +23,7 @@ if __package__ in (None, ""):
 
 from scripts.phase3_sec_rights_discovery import validate_casebook, FORMS_CURRENT, FORMS_PERIODIC, ACCESSION, DOCUMENT, SHA
 from scripts.source_verification import Verifier
+from scripts.phase3_sec_exact_term_leads import prepare_program_terms, exact_text_mentions
 
 EXPECTED_ISSUERS = 130
 EXPECTED_TRIALS = 741
@@ -181,10 +182,11 @@ def read_text(raw):
     return re.sub(r"\s+", " ", plain)
 
 
-def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
+def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None, program=None):
     if type(max_issuers) is not int or not 1 <= max_issuers <= EXPECTED_ISSUERS:
         raise ValueError("Pilot max issuers must be 1..130")
     issuers, indexed = validate_leads(casebook, leads)
+    terms_by_ticker = prepare_program_terms(program, casebook) if program is not None else {}
     if fetch is None:
         fetch = Verifier([]).fetch
         agent = os.environ.get("SEC_USER_AGENT", "") if agent is None else agent
@@ -218,6 +220,7 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
                     "retrieval_status": "SOURCE_UNAVAILABLE",
                     "source_sha256": None, "rights_language_locator_count": None,
                     "rights_language_review_locators": [],
+                    "trial_registered_term_lexical_mentions": [],
                     "verified_trial_development_rights": False,
                 }
                 if not configured:
@@ -229,6 +232,8 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
                         item["source_sha256"] = hashlib.sha256(raw).hexdigest()
                         item["rights_language_locator_count"] = min(len(CANDIDATE_TERMS.findall(text)), 10000)
                         item["rights_language_review_locators"] = rights_review_locators(text)
+                        item["trial_registered_term_lexical_mentions"] = exact_text_mentions(
+                            text, terms_by_ticker.get(ticker, []))
                         item["retrieval_status"] = "PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY"
                     except Exception as exc:
                         item["source_error_type"] = type(exc).__name__
@@ -243,6 +248,17 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
         rows.append(record)
     all_documents = [doc for r in rows for doc in r["documents"]]
     outcomes = Counter(doc["retrieval_status"] for doc in all_documents)
+    distinct_trial_mentions = {
+        hit["nct_id"] for doc in all_documents
+        for hit in doc["trial_registered_term_lexical_mentions"]
+    }
+    issuers_with_fetched_text = {
+        row["ticker"] for row in rows
+        if any(d["retrieval_status"] == "PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY"
+               for d in row["documents"])
+    }
+    study_text_coverage = sum(len(issuers[ticker]["nct_ids"])
+                              for ticker in issuers_with_fetched_text)
     return {
         "report_type": "MAIN_PHASE3_SEC_PRIMARY_RIGHTS_DOCUMENT_PILOT_RESEARCH_ONLY",
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -259,6 +275,18 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
         "documents_access_failed_or_blocked": outcomes["SOURCE_UNAVAILABLE"],
         "documents_with_bounded_review_locators": sum(
             bool(d["rights_language_review_locators"]) for d in all_documents),
+        "documents_with_exact_registered_trial_term_mentions": sum(
+            bool(d["trial_registered_term_lexical_mentions"]) for d in all_documents),
+        "trials_with_issuer_primary_text_scanned": study_text_coverage,
+        "trials_without_issuer_primary_text_scanned": EXPECTED_TRIALS - study_text_coverage,
+        "trials_with_exact_registered_term_text_leads": len(distinct_trial_mentions),
+        "scanned_trials_without_exact_registered_term_text_leads":
+            study_text_coverage - len(distinct_trial_mentions),
+        "trial_term_scan_scope": (
+            "NOT_PERFORMED_NO_PROGRAM_INPUT" if program is None
+            else "NO_PRIMARY_DOCUMENT_TEXT_AVAILABLE" if study_text_coverage == 0
+            else "BOUNDED_ISSUER_PRIMARY_FILINGS_REGISTERED_TERMS_LEXICAL_ONLY"
+        ),
         "documents_with_rights_language_locators": sum(
             d["rights_language_locator_count"] is not None
             and d["rights_language_locator_count"] > 0 for d in all_documents),
@@ -270,7 +298,10 @@ def build_report(casebook, leads, fetch=None, max_issuers=10, agent=None):
             "Official filing metadata and downloaded SEC documents are review leads only. "
             "No specific drug/indication, effective license terms, U.S. territory, "
             "current development rights or FDA PDUFA independently established. "
-            "SEC access failures do not prove absence of rights. No Pipeline/GEM promotion."
+            "SEC access failures do not prove absence of rights. Term search is bounded "
+            "to first 12 original terms per type and at most 120 matches per document; "
+            "absence of lexical hits does not prove absence of drug or rights. "
+            "No Pipeline/GEM promotion."
         ),
     }
 
@@ -281,10 +312,12 @@ def main():
     parser.add_argument("sec_filing_leads", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--max-issuers", type=int, default=10)
+    parser.add_argument("--program", type=Path, help="Complete 741-NCT registered program research report")
     args = parser.parse_args()
     casebook = json.loads(args.casebook.read_text(encoding="utf-8"))
     leads = json.loads(args.sec_filing_leads.read_text(encoding="utf-8"))
-    result = build_report(casebook, leads, max_issuers=args.max_issuers)
+    program = json.loads(args.program.read_text(encoding="utf-8")) if args.program else None
+    result = build_report(casebook, leads, max_issuers=args.max_issuers, program=program)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"SEC primary-document pilot: {result['issuers_selected']}/{result['total_issuers']} "

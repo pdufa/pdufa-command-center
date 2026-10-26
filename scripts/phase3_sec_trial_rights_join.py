@@ -55,6 +55,7 @@ def build_join(program, casebook, leads, pilot):
         or not isinstance(pilot_rows, list) or len(pilot_rows) != ISSUERS):
         raise ValueError("Incomplete or qualifying SEC primary-document pilot")
     document_issuers = {}
+    trial_lexical_sources = {}
     for issuer in pilot_rows:
         if not isinstance(issuer, dict):
             raise ValueError("Invalid pilot issuer")
@@ -86,6 +87,43 @@ def build_join(program, casebook, leads, pilot):
                                            "scope": "ISSUER_DOCUMENT_ONLY_NOT_TRIAL_RIGHTS"})
             elif digest is not None:
                 raise ValueError("Failed SEC document cannot claim a source hash")
+            mentions = doc.get("trial_registered_term_lexical_mentions", [])
+            if not isinstance(mentions, list) or len(mentions) > 120:
+                raise ValueError("Malformed/oversized exact trial term source leads")
+            if state != "PRIMARY_DOCUMENT_FETCHED_RESEARCH_ONLY" and mentions:
+                raise ValueError("Unavailable document cannot provide text matches")
+            seen_terms = set()
+            for mention in mentions:
+                if not isinstance(mention, dict):
+                    raise ValueError("Malformed trial-specific source locator")
+                nct, kind, name = (mention.get("nct_id"), mention.get("term_kind"),
+                                   mention.get("registered_term"))
+                if (nct not in issuers[ticker]["nct_ids"] or nct not in program_by_nct
+                    or kind not in ("REGISTERED_DRUG_OR_BIOLOGIC", "REGISTERED_CONDITION")
+                    or not isinstance(name, str) or not 4 <= len(name) <= 400
+                    or (nct, kind, name) in seen_terms
+                    or mention.get("status") !=
+                        "EXACT_LEXICAL_MENTION_RESEARCH_ONLY_NO_RIGHTS_VERIFIED"
+                    or type(mention.get("normalized_text_offset")) is not int
+                    or not 0 <= mention["normalized_text_offset"] <= 8_000_000
+                    or not isinstance(mention.get("context_excerpt"), str)
+                    or len(mention["context_excerpt"]) > 160):
+                    raise ValueError("Forged, duplicate or cross-issuer exact text locator")
+                entry = program_by_nct[nct]
+                allowed = (entry.get("provisional_drug_or_biologic_names") if
+                           kind == "REGISTERED_DRUG_OR_BIOLOGIC" else
+                           entry.get("registry_conditions"))
+                normalized_allowed = { " ".join(v.strip().split()) for v in allowed } if isinstance(allowed, list) and all(isinstance(v, str) for v in allowed) else set()
+                if name not in normalized_allowed:
+                    raise ValueError("SEC text lead does not match original NCT registered term")
+                seen_terms.add((nct, kind, name))
+                trial_lexical_sources.setdefault(nct, []).append({
+                    "term_kind": kind, "registered_term": name,
+                    "source_url": url, "source_sha256": digest,
+                    "normalized_text_offset": mention["normalized_text_offset"],
+                    "context_excerpt": mention["context_excerpt"],
+                    "review_status": "LEXICAL_ONLY_NOT_VERIFIED_LEGAL_RIGHTS",
+                })
         document_issuers[ticker] = verified_documents
     if set(document_issuers) != set(issuers):
         raise ValueError("Pilot SEC issuer scope incomplete")
@@ -122,6 +160,7 @@ def build_join(program, casebook, leads, pilot):
             "issuer_sec_retrieval_status": lead["retrieval_status"],
             "issuer_sec_primary_documents_retrieved": len(document_issuers[ticker]),
             "issuer_primary_document_sources": document_issuers[ticker],
+            "exact_registry_term_sec_text_leads": trial_lexical_sources.get(nct, []),
             "trial_drug_sec_document_match": "NOT_REVIEWED",
             "trial_indication_sec_document_match": "NOT_REVIEWED",
             "current_us_territorial_rights": "NOT_VERIFIED",
@@ -138,6 +177,7 @@ def build_join(program, casebook, leads, pilot):
         "trials_with_registered_conditions": sum(bool(x["registered_conditions"]) for x in rows),
         "trials_with_issuer_filing_leads": sum(x["issuer_sec_filing_leads"] > 0 for x in rows),
         "trials_with_issuer_primary_document_sources": sum(x["issuer_sec_primary_documents_retrieved"] > 0 for x in rows),
+        "trials_with_exact_registered_term_sec_lexical_leads": sum(bool(x["exact_registry_term_sec_text_leads"]) for x in rows),
         "trials_requiring_rights_verification": TOTAL,
         "verified_current_commercial_rights": 0,
         "qualified_pipeline_total": None,
