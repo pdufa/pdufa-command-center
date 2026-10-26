@@ -1,0 +1,36 @@
+name: MAIN original Phase 3 registry source pilot
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/check_phase3_original_registry_pilot.py'
+      - 'tests/test_phase3_original_registry_pilot.py'
+      - '.github/workflows/main-phase3-original-registry-pilot.yml'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-source-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify source pilot never fabricates trial or FDA eligibility
+        run: |
+          python3 -m py_compile scripts/check_phase3_original_registry_pilot.py
+          python3 -m unittest discover -s tests -p 'test_phase3_original_registry_pilot.py' -v
+      - name: Independently retrieve public original ClinicalTrials.gov records by exact NCT
+        run: python3 scripts/check_phase3_original_registry_pilot.py "$RUNNER_TEMP/phase3_original_registry_pilot.json"
+      - name: Preserve bounded public source observations for manual audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-phase3-registry-source-pilot
+          path: ${{ runner.temp }}/phase3_original_registry_pilot.json
+          if-no-files-found: error
+          retention-days: 7
