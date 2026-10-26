@@ -1120,6 +1120,41 @@ def scientific_pilot_captured_source_manifest(nct_id: str, response: Response):
     }
 
 
+@app.get(
+    "/api/scientific-assessment/pilot/reviewer-progress/{nct_id}",
+    dependencies=[
+        Depends(require_isolated_scientific_read_key),
+        Depends(require_storage),
+    ],
+)
+def scientific_pilot_reviewer_progress(nct_id: str, response: Response):
+    """Exact-NCT aggregate technical reviewer preflight, with NO identities.
+
+    Read-only source byte rehash and audited pairing checks. Never confers
+    reviewer qualifications, independent clinical review, or FDA grades.
+    """
+    require_isolated_scientific_review_service()
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=422, detail="Exact historical pilot required")
+    from .scientific_review_progress import pilot_review_progress
+    try:
+        summary = pilot_review_progress(nct_id)
+    except (ValueError, LookupError, TypeError, KeyError):
+        raise HTTPException(
+            status_code=409, detail="Isolated reviewer preflight source integrity failed",
+        ) from None
+    if (summary["nctId"] != nct_id
+            or summary["independentClinicalReviewCount"] != 0
+            or summary["scientificAdjudicationComplete"] is not False
+            or summary["mayPromoteScientificScore"] is not False
+            or summary["scientificScore"] is not None
+            or summary["fdaApprovalProbability"] is not None):
+        raise HTTPException(status_code=409, detail="Scientific review safety contract mismatch")
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["X-PDUFA-Scientific-API-Contract"] = "science-review-pair-progress-v1"
+    return summary
+
+
 @app.get("/api/scientific-assessment/reviewer/auth-status", dependencies=[Depends(require_internal_key)])
 def scientific_reviewer_auth_status():
     """Configuration diagnostics without disclosing tokens, IDs or credentials."""
