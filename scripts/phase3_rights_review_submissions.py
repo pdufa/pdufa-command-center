@@ -77,8 +77,21 @@ def source_url(value):
 
 def source_fetched(row):
     documents = row.get("sec_source_documents_fetched")
-    if not isinstance(documents, list) or len(documents) > 2:
-        raise ValueError("Malformed source-backed fetched SEC documents")
+    candidates = row.get("sec_issuer_filing_candidates")
+    cik = row.get("issuer_sec_cik")
+    if (not isinstance(documents, list) or len(documents) > 2
+        or not isinstance(candidates, list) or not isinstance(cik, str)
+        or not re.fullmatch(r"[0-9]{10}", cik)):
+        raise ValueError("Malformed source-backed SEC document and filing references")
+    prefix = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/"
+    allowed_urls = set()
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            raise ValueError("Malformed original SEC filing candidate")
+        url = source_url(candidate.get("url"))
+        if not url.startswith(prefix):
+            raise ValueError("SEC filing candidate is not on the exact issuer accession path")
+        allowed_urls.add(url)
     verified = {}
     for doc in documents:
         if (not isinstance(doc, dict)
@@ -86,8 +99,8 @@ def source_fetched(row):
             or not isinstance(doc.get("sha256"), str) or not SHA.fullmatch(doc["sha256"])):
             raise ValueError("Unverified SEC document provenance in worklist")
         link = source_url(doc.get("url"))
-        if link in verified:
-            raise ValueError("Duplicate primary document source")
+        if link not in allowed_urls or link in verified:
+            raise ValueError("Primary SEC bytes are not tied to this issuer's filing index")
         verified[link] = doc["sha256"]
     return verified
 
