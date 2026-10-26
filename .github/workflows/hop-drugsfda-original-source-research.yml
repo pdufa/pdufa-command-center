@@ -17,6 +17,9 @@ on:
       - 'new-platform/backend/tests/test_hop_drugsfda_original_source_diff.py'
       - 'new-platform/backend/app/hop_fda_unmatched_letter_triage.py'
       - 'new-platform/backend/tests/test_hop_fda_unmatched_letter_triage.py'
+      - 'new-platform/backend/app/hop_fda_gap_research_packets.py'
+      - 'new-platform/backend/scripts/screen_hop_fda_grouped_evidence_leads.py'
+      - 'new-platform/backend/tests/test_hop_fda_gap_research_packets.py'
   workflow_dispatch:
 
 permissions:
@@ -46,7 +49,8 @@ jobs:
             tests/test_hop_drugsfda_original_collector.py \
             tests/test_hop_fda_original_letter_bridge.py \
             tests/test_hop_drugsfda_original_source_diff.py \
-            tests/test_hop_fda_unmatched_letter_triage.py
+            tests/test_hop_fda_unmatched_letter_triage.py \
+            tests/test_hop_fda_gap_research_packets.py
       - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
         working-directory: new-platform/backend
         run: |
@@ -61,7 +65,8 @@ jobs:
             --submissions "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Submissions.txt" \
             --as-of 2026-10-25 \
             --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_crl_identity_bridge.json" \
-            --private-gap-worklist "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_published_letter_review_worklist.json"
+            --private-gap-worklist "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_published_letter_review_worklist.json" \
+            --private-grouped-packets "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_application_research_packets.json"
       - name: Download previously pinned original openFDA registry artifact (read-only)
         env:
           GH_TOKEN: ${{ github.token }}
