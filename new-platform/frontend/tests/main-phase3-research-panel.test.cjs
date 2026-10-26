@@ -79,9 +79,14 @@ test("MAIN site card prominently separates research history from live membership
     const rows=renderer.root.findAllByType("tr");
     assert.equal(rows.length,10); // 1 header + all 9 mandatory gates
     const links=renderer.root.findAllByType("a");
-    assert.equal(links.length,1);
+    assert.ok(links.length>=2);
     assert.equal(links[0].props.href,pinned.sourceRunUrl);
     assert.equal(links[0].props.target,"_blank");
+    assert.ok(links.some(link=>String(link.props.href).includes(
+      "/actions/workflows/main-phase3-evidence-qualification.yml")));
+    const status=renderer.root.findAllByProps({role:"status"});
+    assert.ok(status.some(entry=>JSON.stringify(entry.props.children).includes(
+      "Scheduled scan status cannot be verified from GitHub")));
   }finally{if(renderer)await act(async()=>renderer.unmount());}
 });
 
