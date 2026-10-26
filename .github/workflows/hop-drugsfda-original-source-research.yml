@@ -45,6 +45,7 @@ on:
       - 'new-platform/backend/app/hop_fda_visual_handoff_preflight.py'
       - 'new-platform/backend/app/hop_fda_visual_archive_crypto.py'
       - 'new-platform/backend/scripts/manage_hop_fda_encrypted_visual_handoff.py'
+      - 'new-platform/backend/scripts/verify_hop_fda_visual_archive_roundtrip.py'
       - 'new-platform/backend/tests/test_hop_fda_visual_archive_crypto.py'
   workflow_dispatch:
 
@@ -168,6 +169,14 @@ jobs:
             --offset 8 \
             --private-visual-image-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_images" \
             --private-visual-manifest-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch2.json"
+      - name: Ephemeral real 19-image FDA archive encrypt/decrypt integrity check (NO UPLOAD)
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/verify_hop_fda_visual_archive_roundtrip.py \
+            --private-image-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_images" \
+            --private-batch1-manifest "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch1.json" \
+            --private-batch2-manifest "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch2.json" \
+            --public-counts-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_real_visual_archive_ephemeral_aead_verification.json"
       - name: Prepare bounded private A/B FDA reviewer batches without decision labels
         working-directory: new-platform/backend
         run: |
