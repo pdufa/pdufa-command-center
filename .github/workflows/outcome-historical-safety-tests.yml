@@ -37,6 +37,8 @@ on:
       - 'test_outcome_fda_dual_readiness_grades.py'
       - 'outcome_fda_readiness_panel.py'
       - 'test_outcome_fda_readiness_panel.py'
+      - 'outcome_fda_readiness_streamlit.py'
+      - 'test_outcome_fda_readiness_streamlit.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   push:
     branches: [main]
@@ -75,6 +77,8 @@ on:
       - 'test_outcome_fda_dual_readiness_grades.py'
       - 'outcome_fda_readiness_panel.py'
       - 'test_outcome_fda_readiness_panel.py'
+      - 'outcome_fda_readiness_streamlit.py'
+      - 'test_outcome_fda_readiness_streamlit.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   workflow_dispatch:
 
@@ -106,7 +110,7 @@ jobs:
             tests/test_hop_fda_review_cycle_triage.py \
             tests/test_hop_fda_pdf_date_review_examples.py
       - name: Test FDA action-event normalization and fail-closed gate
-        run: python -m pytest -q test_outcome_fda_action_events.py test_outcome_fda_research_action_fixtures.py test_outcome_fda_research_export.py test_outcome_fda_review_timeline_evidence.py test_outcome_fda_review_timeline_export.py test_outcome_fda_receipt_boundary_gap_report.py test_outcome_fda_receipt_asof_audit.py test_outcome_fda_research_feature_projection.py test_outcome_fda_dual_readiness_grades.py test_outcome_fda_readiness_panel.py
+        run: python -m pytest -q test_outcome_fda_action_events.py test_outcome_fda_research_action_fixtures.py test_outcome_fda_research_export.py test_outcome_fda_review_timeline_evidence.py test_outcome_fda_review_timeline_export.py test_outcome_fda_receipt_boundary_gap_report.py test_outcome_fda_receipt_asof_audit.py test_outcome_fda_research_feature_projection.py test_outcome_fda_dual_readiness_grades.py test_outcome_fda_readiness_panel.py test_outcome_fda_readiness_streamlit.py
       - name: Validate machine-readable OUTCOME readiness payload
         run: |
           python outcome_fda_readiness_panel.py > /tmp/outcome_readiness_panel.json
