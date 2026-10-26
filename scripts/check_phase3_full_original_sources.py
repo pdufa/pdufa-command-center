@@ -9,10 +9,25 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import urllib.error
+import time
 import sys
-from check_phase3_original_registry_pilot import SOURCE_CSV, dated_census_sample, _fetch_catching
+from check_phase3_original_registry_pilot import SOURCE_CSV, dated_census_sample, fetch_public_original
 
 EXPECTED = 741
+
+def fetch_with_diagnostics(row):
+    for attempt in range(3):
+        try:
+            return fetch_public_original(row)
+        except urllib.error.HTTPError as exc:
+            if exc.code in (429, 500, 502, 503, 504) and attempt < 2:
+                time.sleep((attempt + 1) * 2)
+                continue
+            return {"nct_id": row["nct_id"], "error": "HTTPError", "http_status": exc.code}
+        except (urllib.error.URLError, ValueError, TimeoutError, OSError) as exc:
+            return {"nct_id": row["nct_id"], "error": type(exc).__name__}
+    raise AssertionError("Unreachable retry state")
 
 def run(output: Path) -> int:
     source = SOURCE_CSV.read_text(encoding="utf-8-sig")
@@ -21,7 +36,7 @@ def run(output: Path) -> int:
     if len(rows) != EXPECTED or len({r["nct_id"] for r in rows}) != EXPECTED:
         raise ValueError("Original census changed or contains duplicate NCT IDs")
     with ThreadPoolExecutor(max_workers=4) as pool:
-        results = list(pool.map(_fetch_catching, rows))
+        results = list(pool.map(fetch_with_diagnostics, rows))
     verified = []
     errors = []
     mismatches = []
@@ -31,7 +46,7 @@ def run(output: Path) -> int:
         if result.get("nct_id") != nct:
             raise ValueError("Source association mismatch")
         if "error" in result:
-            errors.append({"nct_id": nct, "error_type": result["error"]})
+            errors.append({"nct_id": nct, "error_type": result["error"], "http_status": result.get("http_status")})
             continue
         if (result.get("qualified_pipeline") is not None
             or result.get("fda_approval_probability") is not None
