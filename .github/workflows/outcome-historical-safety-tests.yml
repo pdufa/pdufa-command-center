@@ -23,6 +23,8 @@ on:
       - 'test_outcome_fda_research_action_fixtures.py'
       - 'outcome_fda_research_export.py'
       - 'test_outcome_fda_research_export.py'
+      - 'outcome_fda_review_timeline_evidence.py'
+      - 'test_outcome_fda_review_timeline_evidence.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   push:
     branches: [main]
@@ -47,6 +49,8 @@ on:
       - 'test_outcome_fda_research_action_fixtures.py'
       - 'outcome_fda_research_export.py'
       - 'test_outcome_fda_research_export.py'
+      - 'outcome_fda_review_timeline_evidence.py'
+      - 'test_outcome_fda_review_timeline_evidence.py'
       - '.github/workflows/outcome-historical-safety-tests.yml'
   workflow_dispatch:
 
@@ -78,7 +82,7 @@ jobs:
             tests/test_hop_fda_review_cycle_triage.py \
             tests/test_hop_fda_pdf_date_review_examples.py
       - name: Test FDA action-event normalization and fail-closed gate
-        run: python -m pytest -q test_outcome_fda_action_events.py test_outcome_fda_research_action_fixtures.py test_outcome_fda_research_export.py
+        run: python -m pytest -q test_outcome_fda_action_events.py test_outcome_fda_research_action_fixtures.py test_outcome_fda_research_export.py test_outcome_fda_review_timeline_evidence.py
       - name: Confirm published audit has no model clearance
         working-directory: new-platform/backend
         run: |
