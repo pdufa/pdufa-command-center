@@ -115,3 +115,44 @@ def test_unsupported_primary_source_request_is_rejected(mutation):
         pages[0] = None
     with pytest.raises(ValueError):
         audit(pages, pdf=pdf, url=url, page_count=page_count)
+
+
+
+def test_real_pinned_primary_source_hash_and_five_observations_stay_quarantined():
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    result = json.loads(
+        (root / "hop_fda_nda206627_original_primary_observation_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    diff = json.loads(
+        (root / "hop_drugsfda_original_source_diff_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    assert result["status"] == STATUS
+    assert result["source_url"] == URL
+    assert result["retrieved_pdf_sha256"] == (
+        "655cdf0c02d95b43edf62465b5a1b5b6b9583fb4b5e31b1dcaa99dfe39ac589b"
+    )
+    assert result["retrieved_pdf_bytes"] == 53383
+    assert result["pdf_page_count"] == 16
+    assert result["examined_page_indices_zero_based"] == [0, 3]
+    assert result["all_target_source_text_checks_passed"] is True
+    assert len(result["source_text_consistency_flags"]) == 5
+    assert all(result["source_text_consistency_flags"].values())
+    assert result["application_reference_as_observed"] == "NDA206627"
+    assert result["original_submission_reference_as_observed"] == "206627Orig1s000"
+    assert result["published_approval_date"] == "2014-11-20"
+    assert diff["tabular_only_key_examples"] == [
+        {"application_id": "NDA206627", "original_submission_number": 1}
+    ]
+    assert diff["tabular_only_keys_with_entire_application_absent_from_openfda"] == 1
+    assert result["verified_original_review_cycle"] is None
+    assert result["independent_regulatory_adjudication_completed"] is False
+    assert result["complete_original_nda_bla_denominator_verified"] is False
+    assert result["model_eligible_records"] == 0
+    assert result["approval_rate"] is None
+    assert result["prediction_probability"] is None
+    assert result["predictive_accuracy"] is None
