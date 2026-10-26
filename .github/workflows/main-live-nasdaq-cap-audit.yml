@@ -1,0 +1,30 @@
+name: MAIN independent 130 Nasdaq cap source audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_phase3_live_nasdaq_market_caps.py'
+      - 'tests/test_phase3_live_nasdaq_market_caps.py'
+      - '.github/workflows/main-live-nasdaq-cap-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-nasdaq-source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate 130-issuer original-source failure semantics
+        run: python3 -m unittest discover -s tests -p 'test_phase3_live_nasdaq_market_caps.py' -v
+      - name: Read-only independent market-cap retrieval from original Nasdaq summary
+        run: python3 scripts/audit_phase3_live_nasdaq_market_caps.py "$RUNNER_TEMP/phase3_130_live_nasdaq_caps.json"
+      - name: Archive each source result or failure without qualifying Pipeline
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-130-live-nasdaq-cap-research
+          path: ${{ runner.temp }}/phase3_130_live_nasdaq_caps.json
+          if-no-files-found: warn
+          retention-days: 7
