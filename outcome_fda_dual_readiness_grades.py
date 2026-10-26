@@ -19,6 +19,19 @@ def build_outcome_readiness_grades() -> dict:
     eligible = gap["model_eligible_records"]
     if certified < 0 or eligible < 0 or certified > structured or eligible > certified:
         raise ValueError("Model certification counts exceed supported evidence")
+    if gap["complete_application_denominator_verified"] is not False:
+        raise ValueError("Cannot claim an independently verified denominator from this selected sample")
+    if gap["prediction_probability"] is not None:
+        raise ValueError("Research-only source must not provide a prediction probability")
+    if gap["fda_exact_receipt_days_independently_verified"] != 0:
+        raise ValueError("Open receipt gaps cannot be certified from sponsor-only provenance")
+    blockers = {
+        "unresolved_fda_receipt_boundaries": missing,
+        "complete_unbiased_application_denominator_unverified": True,
+        "uncertified_structured_review_cycles": structured - certified,
+        "no_historical_source_publication_certification": True,
+        "no_held_out_chronological_calibration": True,
+    }
     documented_pct = round(100 * structured / total, 1)
     return {
         "schema_version": "outcome-dual-readiness-grades-v1",
@@ -41,6 +54,12 @@ def build_outcome_readiness_grades() -> dict:
             "historical_asof_source_certification_complete": False,
             "prediction_accuracy_estimate": None,
             "prediction_probability": None,
+        },
+        "blocking_gate_manifest": {
+            "all_prediction_gates_passed": False,
+            "blocking_conditions": blockers,
+            "blocking_condition_count": sum(bool(value) for value in blockers.values()),
+            "research_sample_not_a_model_training_cohort": True,
         },
         "required_next_evidence": [
             "Independently verify FDA receipt boundary for all open actions",
