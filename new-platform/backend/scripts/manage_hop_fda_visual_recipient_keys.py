@@ -98,7 +98,8 @@ def create_local_keys(new_folder: Path) -> dict:
             "private_key_ever_uploaded": False,
             "public_key_safe_to_share": True,
             "key_stored_in_github": False,
-            "key_stored_in_google_drive": False,
+            "private_key_written_only_to_chosen_local_directory": True,
+            "reviewer_responsible_for_local_backup_and_sync_controls": True,
             "reviewer_identity_authenticated": False,
             "original_fda_review_cycles_verified": 0,
         }
