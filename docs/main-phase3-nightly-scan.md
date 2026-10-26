@@ -43,7 +43,8 @@ In **PDUFA → PIPELINE**, the separate **Nightly research scan · GitHub status
 
 The health panel checks the actual `research-ledger` job for scheduled MAIN workflow runs, and requires the exact named research-only artifact to exist and be unexpired before saying a full scan completed. It distinguishes:
 
-- **No full scheduled research scan observed:** before the first nominal 8 PM scan, or only deliberate seasonal DST-alternate skips.
+- **No full scheduled research scan observed:** before the nominal night's 10:30 PM Pacific grace deadline, or only deliberate seasonal DST-alternate skips before the deadline.
+- **Expected scheduled scan overdue:** after **10:30 PM Pacific**, if no full source-run attempt is observed for the expected Pacific research date. This persists into the following day until the next nightly deadline; a yesterday-successful run or a deliberately skipped DST alternate does not satisfy tonight's requirement. It means GitHub has not shown a qualifying full run by the grace deadline, **not** that the source data, clinical study, or commercial-rights claim failed.
 - **Scheduled research scan in progress:** the actual source job has not finished.
 - **Completed, report confirmed:** the full source job succeeded and its artifact exists.
 - **Last result stale:** the most recent full job succeeded, but is more than 36 hours old.
@@ -52,6 +53,8 @@ The health panel checks the actual `research-ledger` job for scheduled MAIN work
 - **GitHub status unavailable:** retrieval or validation failed; never displayed as a successful scan.
 
 The **Refresh status** button checks again. The source API uses a short cache to avoid exhausting GitHub's public rate limit; the check timestamp is displayed. Job runs that intentionally skip due to the paired UTC daylight-saving schedule are not counted as successful full scans. Link directly to the selected full GitHub run for inspection.
+
+The overdue indicator deliberately uses the original schedule activation date (**October 26, 2026**) to avoid claiming that the nightly workflow missed days before installation. It uses `America/Los_Angeles` calendar days across both spring and fall daylight-saving transitions; scheduled jobs that start many hours late on the next day are attributed to the prior night's expected window until the following 7 PM local schedule window. The grace period does not guarantee GitHub will ever start a delayed job. A current full scan marked failed or in progress overrides an overdue warning. A GitHub API error reports **status unavailable**, never a definite missed scan.
 
 **The daily scan status is not the live PIPELINE/GEM collector** and does not independently prove registry coverage, SEC primary-document access, company commercial rights, clinical outcome prediction, or any current candidate membership. Pinned evidence numbers remain fixed until independently republished and reviewed.
 
