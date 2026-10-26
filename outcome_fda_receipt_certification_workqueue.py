@@ -9,8 +9,8 @@ def build_receipt_certification_workqueue() -> dict:
     tasks = []
     for row in report["unlinked_actions"]:
         tasks.append({
-            "application_id": row.get("application_key") or row.get("application_id"),
-            "action_date": row.get("action_date"),
+            "application_id": row["application_key"],
+            "action_date": row["final_fda_action_date"],
             "status": "NEEDS_FDA_RECEIPT_EVIDENCE",
             "fda_receipt_verified": False,
             "model_eligible": False,
