@@ -1,0 +1,38 @@
+name: MAIN 64 original Phase 3 sources breadth research
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/check_phase3_64_original_sources.py'
+      - 'tests/test_phase3_64_original_sources.py'
+      - '.github/workflows/main-phase3-64-original-sources.yml'
+      - 'scripts/check_phase3_original_registry_pilot.py'
+      - 'data/phase3_all_years_300m_10b_trials.csv'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  breadth-64-exact-nct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test entire source census, diverse sample and failed-source reporting
+        run: |
+          python3 -m py_compile scripts/check_phase3_64_original_sources.py
+          python3 -m unittest discover -s tests -p 'test_phase3_64_original_sources.py' -v
+          python3 -m unittest discover -s tests -p 'test_phase3_original_registry_pilot.py' -v
+      - name: Retrieve 64 original registry records without changing any candidates
+        run: python3 scripts/check_phase3_64_original_sources.py "$RUNNER_TEMP/phase3_original_64_source_research.json"
+      - name: Preserve bounded 64-trial observation and source hash report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-original-registry-64-research-only
+          path: ${{ runner.temp }}/phase3_original_64_source_research.json
+          if-no-files-found: error
+          retention-days: 7
