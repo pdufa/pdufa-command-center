@@ -32,7 +32,7 @@ def parse_cap(value):
     if not isinstance(value, str):
         return None
     text = value.strip().replace(",", "").replace("$", "")
-    m = re.fullmatch(r"([0-9]+(?:\\.[0-9]+)?)\\s*([KMBT]?)", text, re.I)
+    m = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)\s*([KMBT]?)", text, re.I)
     if not m:
         return None
     result = float(m.group(1)) * {"":1, "K":1e3, "M":1e6, "B":1e9, "T":1e12}[m.group(2).upper()]
@@ -113,7 +113,7 @@ def main(output):
     tickers = sorted({r["ticker"] for r in trials})
     report = collect(tickers, live_fetch, lambda: datetime.now(timezone.utc))
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, sort_keys=True)+"\\n",encoding="utf-8")
+    output.write_text(json.dumps(report, indent=2, sort_keys=True)+"\n",encoding="utf-8")
     print(f"Nasdaq original source attempts: {report['source_attempts']}/130; parsed: {report['source_market_caps_parsed']}/130; unparsed/unavailable: {report['source_errors_or_unparsed']}/130.")
     print("Retrieved source ranges:",report["source_range_counts"])
     print("Quote-as-of independently verified: 0/130; qualified Pipeline: UNKNOWN.")
