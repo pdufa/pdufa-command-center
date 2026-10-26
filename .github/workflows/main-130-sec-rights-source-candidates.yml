@@ -1,0 +1,36 @@
+name: MAIN 130 issuer SEC primary rights source candidates
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_phase3_sec_rights_filing_candidates.py'
+      - 'tests/test_phase3_sec_rights_filing_candidates.py'
+      - 'tests/test_abvx_rights_disclosure_case.py'
+      - 'data/research_abvx_obefazimod_rights_2026-10-26.json'
+      - '.github/workflows/main-130-sec-rights-source-candidates.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sec-rights-source-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test SEC CIK identity and no right/PDUFA promotion
+        run: python3 -m unittest discover -s tests -p 'test_phase3_sec_rights_filing_candidates.py' -v
+      - name: Verify ABVX primary-source rights-claim case without legal promotion
+        run: python3 -m unittest discover -s tests -p 'test_abvx_rights_disclosure_case.py' -v
+      - name: Retrieve official SEC submissions and build 741 trial candidate index
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ vars.SEC_EDGAR_USER_AGENT }}
+        run: python3 scripts/audit_phase3_sec_rights_filing_candidates.py "$RUNNER_TEMP/phase3_130_sec_issuer_rights_source_candidates.json"
+      - name: Archive SEC official filing candidate pointers and explicit errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-130-issuer-sec-rights-source-candidates
+          path: ${{ runner.temp }}/phase3_130_sec_issuer_rights_source_candidates.json
+          if-no-files-found: warn
+          retention-days: 7
