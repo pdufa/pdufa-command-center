@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
+import { buildScientific800ReviewCsv } from "../lib/scientific-800-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
 import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, compareTwoLocalSourcePdfSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch, type DualLocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
 import { compareLocalPdfWithCapturedArchive, summarizeCapturedScientificGates, buildScientificSourceReviewHandoff, type CapturedArchiveComparison, type CapturedScientificGateCoverage } from "../lib/scientific-captured-archive-check";
@@ -515,6 +516,25 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       window.setTimeout(() => URL.revokeObjectURL(url), 2000);
     } catch {
       setError("Scientific review matrix export blocked: inventory incomplete or unverified.");
+    }
+  }
+
+  /** Separate 800-point plan, not a scientific score or reviewer attestation. */
+  function download800InvestigationCsv() {
+    if (!result?.investigation40) return;
+    try {
+      const csv = buildScientific800ReviewCsv(result.investigation40);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = result.investigation40.nctId + "_scientific_800_investigation_plan.csv";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch {
+      setError("Full 800-point scientific plan export blocked: source inventory incomplete.");
     }
   }
 
@@ -1057,6 +1077,12 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           Download 320-task review matrix (CSV)
         </button>
         <small> Read-only pending-task export for independent review. No reviewer attestation or scientific decision is created by downloading.</small>
+        <div>
+          <button type="button" onClick={download800InvestigationCsv}>
+            Download 800-point investigation plan (CSV)
+          </button>
+          <small> Separate 40-assessment × 20-method planning matrix. All 800 rows remain pending and unverified, with no scientific grades or FDA probability. The existing 320-task reviewer A/B handoff stays separate.</small>
+        </div>
         <details>
           <summary><strong>Independent reviewer handoff — two blank worksheets</strong></summary>
           <p>Generate distinct, unsubmitted worksheets for two independent reviewer slots.
