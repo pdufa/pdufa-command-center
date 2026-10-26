@@ -15,9 +15,9 @@ class NasdaqSourceResearchTests(unittest.TestCase):
         self.assertEqual(extract_summary({"data":{"summaryData":{}}})[1], "MISSING_MARKETCAP_FIELD")
         self.assertEqual(extract_summary({"data":{"summaryData":{"MarketCap":{"value":"$2.5B"}}}})[0],2_500_000_000)
     def test_exact_130_with_source_errors_never_promotes(self):
-        tickers = [f"A{n:03d}" for n in range(130)]
+        tickers = [f"A{chr(65+n//26)}{chr(65+n%26)}" for n in range(130)]
         def fetch(url):
-            if "A000" in url:
+            if "AAA" in url:
                 return b'{"data":{"summaryData":{"MarketCap":{"value":"$2B"}}}}',200,"application/json",url
             raise OSError("network denied")
         report=collect(tickers,fetch,lambda:datetime(2026,10,26,tzinfo=timezone.utc))
