@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "scope": "ISSUER_PRIMARY_DISCLOSURE_PROGRAM_TO_TRIAL_RIGHTS_CLAIMS_ONLY",
+  "asOf": "2026-10-26",
+  "programs": [
+    {
+      "issuerTicker": "ACHV",
+      "issuerCik": "0000949858",
+      "asset": "cytisinicline",
+      "assetAliases": [
+        "cytisine"
+      ],
+      "rightsClaimType": "LICENSE_RIGHTS_DISCLOSED_WITH_LIVE_COUNTERPARTY_DISPUTE",
+      "rightsClaimSummary": "Achieve reports Sopharma and University of Bristol license and supply rights; August 2026 Form 10-Q discloses Sopharma arbitration filed July 2026 over contractual manufacturing requirements. Do not assert unencumbered or dispute-free rights.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "SOPHARMA_ARBITRATION_CONTRACT_DISPUTE",
+        "SOPHARMA_EXCLUSIVITY_AND_SUPPLY_CONSTRAINTS",
+        "FDA_2026_CRL_MANUFACTURING",
+        "NDA_RESUBMISSION_NOT_YET_CONFIRMED"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "publishedOn": "2026-08-11",
+          "url": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm",
+          "assertion": "License descriptions, Sopharma July 2026 arbitration over manufacturing, June 2026 FDA CRL and historical 2026-06-20 PDUFA date; issuer statements, not independent contract or FDA record verification."
+        },
+        {
+          "type": "ISSUER_SEC_10_K",
+          "publishedOn": "2026-03-24",
+          "url": "https://www.sec.gov/Archives/edgar/data/949858/000119312526120690/achv-20251231.htm",
+          "assertion": "Sopharma and University of Bristol contractual rights and identified supply obligations."
+        },
+        {
+          "type": "ISSUER_2026_CLINICAL_UPDATE",
+          "publishedOn": "2026-10-21",
+          "url": "https://ir.achievelifesciences.com/news-events/press-releases/detail/274/achieve-life-sciences-presents-52-week-cytisinicline-results-for-smoking-and-vaping-cessation-at-chest-2026",
+          "assertion": "Identifies ORCA-2, ORCA-3, and ORCA-OL as cytisinicline studies."
+        },
+        {
+          "type": "STUDY_AUTHOR_PRIMARY_PUBLICATION",
+          "publishedOn": "2026-01-01",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/40962497/",
+          "assertion": "Publication identifies ORCA-2 NCT04576949 and ORCA-3 NCT05206370. Exact publication date not used as a current regulatory event."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT04576949",
+          "study": "ORCA-2",
+          "indication": "Smoking cessation",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+          "regulatoryContext": "ISSUER_REPORTED_SMOKING_NDA_CRL_RECEIVED_JUNE_2026",
+          "historicalIssuerReportedPdufaDate": "2026-06-20",
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT05206370",
+          "study": "ORCA-3",
+          "indication": "Smoking cessation",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+          "regulatoryContext": "ISSUER_REPORTED_SMOKING_NDA_CRL_RECEIVED_JUNE_2026",
+          "historicalIssuerReportedPdufaDate": "2026-06-20",
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT06435221",
+          "study": "ORCA-OL",
+          "indication": "Smoking and vaping cessation long-term safety exposure",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT06435221",
+          "regulatoryContext": "SUPPORTIVE_SAFETY_STUDY_NO_STANDALONE_PDUFA_TARGET",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT07392125",
+          "study": "ORCA-V2",
+          "indication": "Vaping cessation",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT07392125",
+          "regulatoryContext": "VAPING_PHASE3_NO_ACCEPTED_NDA_OR_PDUFA_VERIFIED",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    },
+    {
+      "issuerTicker": "MIRM",
+      "issuerCik": "0001759425",
+      "asset": "maralixibat",
+      "assetAliases": [
+        "LIVMARLI"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_EXCLUSIVE_ROYALTY_BEARING_SHIRE_TAKEDA_LICENSE",
+      "rightsClaimSummary": "June 2026 Form 10-Q discloses exclusive royalty-bearing worldwide Shire/Takeda rights for Livmarli and partner licensing/sub-licensing, including Japan-specific partnership. EXPAND is new indication research and existing LIVMARLI approvals do not establish EXPAND FDA clearance.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "TAKEDA_JAPAN_TERRITORY_PARTNERSHIP_AND_INDICATION_LICENSE",
+        "EXISTING_APPROVAL_DOES_NOT_COVER_EXPAND_INDICATION",
+        "SNDA_SUBMISSION_PLANNED_2027_NOT_CONFIRMED"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "publishedOn": "2026-08-05",
+          "url": "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000045/mirm-20260630.htm",
+          "assertion": "Shire/Takeda worldwide exclusive license with royalty obligations, sublicense and Japan arrangement; contract summary, not independent legal adjudication."
+        },
+        {
+          "type": "ISSUER_SEC_8_K",
+          "publishedOn": "2026-10-12",
+          "url": "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000051/mirm-20261012.htm",
+          "assertion": "Phase 3 EXPAND maralixibat results, planned first-half 2027 U.S. sNDA, not FDA accepted application or established PDUFA."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT06553768",
+          "study": "EXPAND",
+          "indication": "Cholestatic pruritus in ultra-rare cholestatic liver diseases including biliary atresia",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT06553768",
+          "regulatoryContext": "SNDA_EXPAND_PLANNED_H1_2027_NOT_SUBMITTED_CONFIRMED",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    },
+    {
+      "issuerTicker": "MIRM",
+      "issuerCik": "0001759425",
+      "asset": "brelovitug",
+      "assetAliases": [
+        "BJT-778"
+      ],
+      "rightsClaimType": "ISSUER_DISCLOSED_BLUEJAY_ACQUISITION_WITH_ASSIGNED_NOVARTIS_LICENSE",
+      "rightsClaimSummary": "Mirum June 2026 Form 10-Q documents January 23, 2026 acquisition of Bluejay and assignment of Novartis worldwide brelovitug license, with continuing royalties and milestones; no independent legal clearance or FDA action date established.",
+      "rightsIndependentlyAdjudicated": false,
+      "contractScopeIndependentlyVerified": false,
+      "risks": [
+        "NOVARTIS_LICENSE_ROYALTIES_AND_MILESTONES",
+        "FORMER_BLUEJAY_PROGRAM_NOT_ORIGINALLY_MIRUM_OWNED",
+        "NO_FDA_NDA_OR_PDUFA_TARGET_CONFIRMED"
+      ],
+      "sourceDocuments": [
+        {
+          "type": "ISSUER_SEC_10_Q",
+          "publishedOn": "2026-08-05",
+          "url": "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000045/mirm-20260630.htm",
+          "assertion": "Bluejay acquisition closed Jan 23, 2026 and Novartis license assignment grants worldwide development and commercialization rights to brelovitug, subject to milestones/royalties."
+        },
+        {
+          "type": "ISSUER_PHASE3_RESULTS",
+          "publishedOn": "2026-09-28",
+          "url": "https://ir.mirumpharma.com/news/news-details/2026/Mirum-Pharmaceuticals-Announces-Primary-Endpoint-Met-in-Phase-3-AZURE-1-Study-of-Brelovitug-in-Chronic-Hepatitis-Delta-Virus/default.aspx",
+          "assertion": "Mirum reports brelovitug Phase 3 AZURE-1 primary endpoint; research results are not NDA acceptance or PDUFA."
+        }
+      ],
+      "trialLinks": [
+        {
+          "nctId": "NCT06907290",
+          "study": "AZURE-1",
+          "indication": "Chronic hepatitis delta infection",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT06907290",
+          "regulatoryContext": "PHASE_2B_3_NO_FDA_NDA_OR_PDUFA_VERIFIED",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT07200908",
+          "study": "AZURE-2",
+          "indication": "Chronic hepatitis delta infection",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT07200908",
+          "regulatoryContext": "PHASE3_NO_FDA_NDA_OR_PDUFA_VERIFIED",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        },
+        {
+          "nctId": "NCT07454837",
+          "study": "AZURE-3",
+          "indication": "Chronic hepatitis delta infection",
+          "trialSourceUrl": "https://clinicaltrials.gov/study/NCT07454837",
+          "regulatoryContext": "PHASE_2B_3_NO_FDA_NDA_OR_PDUFA_VERIFIED",
+          "historicalIssuerReportedPdufaDate": null,
+          "currentPdufaTargetVerified": null
+        }
+      ]
+    }
+  ]
+}
