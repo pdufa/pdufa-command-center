@@ -34,3 +34,30 @@ Next controlled stage (not provided by this utility): independently authenticate
 reviewer identity, original-source acquisition and byte verification,
 human adjudication of conflicts with signed decisions, calibration of any
 approval model and separate production release approval.
+
+## Complete task-by-task discrepancy ledger
+
+After locally comparing a Reviewer A and Reviewer B worksheet pair, the trial
+page can download a second CSV with **all 800 task identities**, not just the
+first 25 conflicting keys shown onscreen. It is created only after the
+existing strict 800-row integrity and exact-NCT gates succeed.
+
+Every ledger record includes the scientific layer's assessment/method key,
+linked requirement identifiers, candidate decisions for A and B, both
+**UNVERIFIED** original-document URL and SHA-256 strings, and explicit flags
+for one-sided claims, conflicting decisions, competing document references,
+incomplete source provenance and possible duplicate reviewer names.
+
+The `independent_review_next_actions` column routes the unresolved item to
+source acquisition, independent reviewer collection, identity checks or
+conflict reconciliation. **Every row remains NOT_ADJUDICATED, including rows
+where both reviewers appear to agree.** A match between two claimed URLs or
+checksum strings is not proof that either person obtained or reviewed those
+documents. The report has no scientific score, FDA approval probability,
+automated trade or backend action.
+
+Input CSV content is hostile/untrusted. The export rechecks the strict 800
+pair comparison and escapes spreadsheet-formula prefixes and invisible
+formatting characters in user-entered source reference strings. The browser
+clears the downloadable snapshot when the trial, source inventory or either
+selected worksheet changes, preventing stale cross-trial exports.
