@@ -12,10 +12,14 @@ on:
       - 'new-platform/backend/app/hop_fda_original_letter_bridge.py'
       - 'new-platform/backend/scripts/collect_hop_fda_original_letter_bridge.py'
       - 'new-platform/backend/tests/test_hop_fda_original_letter_bridge.py'
+      - 'new-platform/backend/app/hop_drugsfda_original_source_diff.py'
+      - 'new-platform/backend/scripts/reconcile_hop_drugsfda_original_sources.py'
+      - 'new-platform/backend/tests/test_hop_drugsfda_original_source_diff.py'
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: hop-fda-original-sources-${{ github.workflow }}-${{ github.ref }}
@@ -38,7 +42,8 @@ jobs:
           PYTHONPATH=. python -m pytest -q \
             tests/test_hop_drugsfda_submission_spine.py \
             tests/test_hop_drugsfda_original_collector.py \
-            tests/test_hop_fda_original_letter_bridge.py
+            tests/test_hop_fda_original_letter_bridge.py \
+            tests/test_hop_drugsfda_original_source_diff.py
       - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
         working-directory: new-platform/backend
         run: |
@@ -53,6 +58,22 @@ jobs:
             --submissions "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Submissions.txt" \
             --as-of 2026-10-25 \
             --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_crl_identity_bridge.json"
+      - name: Download previously pinned original openFDA registry artifact (read-only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40224730350 --repo "${{ github.repository }}" \
+            --name hop-drugsfda-approved-registry-quarantined \
+            --dir "${{ runner.temp }}/hop-fda-original-source-research/private_pinned_openfda"
+      - name: Reconcile original NDA/BLA submission IDs between both pinned FDA sources
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/reconcile_hop_drugsfda_original_sources.py \
+            --applications "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Applications.txt" \
+            --submissions "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Submissions.txt" \
+            --saved-openfda-registry-json "${{ runner.temp }}/hop-fda-original-source-research/private_pinned_openfda/drugsfda_approved_registry_quarantined.json" \
+            --as-of 2026-10-25 \
+            --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_submission_membership_discrepancies.json"
       - name: Retain only aggregate FDA source coverage counts and fingerprints
         uses: actions/upload-artifact@v4
         with:
