@@ -16,10 +16,10 @@ class FDAReviewTimelineExportTests(unittest.TestCase):
         self.assertEqual(e["dataset_role"], "research_only_nontraining")
         self.assertEqual(e["sampled_fda_actions"], 20)
         self.assertEqual(e["sampled_application_identifiers"], 10)
-        self.assertEqual(e["source_supported_timelines"], 16)
-        self.assertEqual(e["sampled_actions_without_structured_timeline"], 4)
+        self.assertEqual(e["source_supported_timelines"], 17)
+        self.assertEqual(e["sampled_actions_without_structured_timeline"], 3)
         self.assertEqual(e["sampled_applications_without_structured_timeline"], 2)
-        self.assertEqual(len(e["timelines"]), 16)
+        self.assertEqual(len(e["timelines"]), 17)
         self.assertEqual(len({r["application_key"] for r in e["timelines"]}), 8)
 
     def test_model_gates_fail_closed(self):
@@ -43,6 +43,21 @@ class FDAReviewTimelineExportTests(unittest.TestCase):
                          "SIGNED_ORIGINAL_CRL_NOT_DIRECTLY_VERIFIED")
         self.assertFalse(original["data_quality_finding"]["detail"]
                          ["original_signed_action_letter_verified"])
+
+    def test_mesoblast_2020_review_is_retrospective_not_signed_crl(self):
+        original = next(r for r in self.export["timelines"]
+                        if r["submission_key"] == "BLA:125706:ORIGINAL")
+        self.assertEqual(original["submission_received_date"], "2020-01-31")
+        self.assertEqual(original["final_fda_action_date"], "2020-09-30")
+        self.assertEqual(original["action_evidence_role"], "fda_regulatory_history_summary")
+        self.assertEqual(original["final_action_evidence_url"],
+                         "https://www.fda.gov/media/184952/download")
+        self.assertEqual(original["data_quality_finding"]["code"],
+                         "SIGNED_ORIGINAL_2020_CRL_NOT_DIRECTLY_VERIFIED")
+        self.assertFalse(original["data_quality_finding"]["detail"]
+                         ["original_signed_action_letter_verified"])
+        self.assertFalse(original["source_publication_asof_verified"])
+        self.assertFalse(original["model_eligible"])
 
     def test_open_fda_conflicts_retained(self):
         for key in (
