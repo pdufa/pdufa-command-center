@@ -11,6 +11,9 @@ def valid(**changes):
         feature_source_published_at=date(2020, 5, 1),
         complete_cohort_source="verified cohort registry",
         independently_reviewed=True,
+        independent_reviewer_id='reviewer-001',
+        independent_review_date=date(2020, 9, 2),
+        independent_review_evidence='review audit record 001',
     )
     data.update(changes)
     return CycleEvidence(**data)
@@ -42,3 +45,18 @@ def test_complete_documentation_is_not_prediction_accuracy():
     result = audit_cycle_evidence([valid()])
     assert result["status"] == "CERTIFIED"
     assert result["prediction_accuracy_estimate"] is None
+
+
+def test_boolean_review_without_attestation_does_not_certify():
+    result = audit_cycle_evidence([valid(
+        independent_reviewer_id=None,
+        independent_review_date=None,
+        independent_review_evidence=None,
+    )])
+    assert result["status"] == "NOT_CERTIFIED"
+    assert "independent_review_attestation" in result["records"][0]["missing_or_invalid"]
+
+
+def test_review_cannot_predate_fda_decision():
+    result = audit_cycle_evidence([valid(independent_review_date=date(2020, 8, 1))])
+    assert "review_precedes_decision" in result["records"][0]["missing_or_invalid"]
