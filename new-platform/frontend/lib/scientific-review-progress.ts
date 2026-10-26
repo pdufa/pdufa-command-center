@@ -43,7 +43,8 @@ const bounded = (v: unknown, max: number): v is number =>
   Number.isSafeInteger(v) && typeof v === "number" && v >= 0 && v <= max;
 
 export function validateScientificPairProgress(raw: unknown): ScientificPairProgress {
-  if (!object(raw) || raw.nctId !== NCT
+  if (!object(raw)) throw new Error("Technical reviewer progress contract unverified");
+  if (raw.nctId !== NCT
       || raw.mode !== "isolated_read_only_technical_reviewer_preflight"
       || raw.capturedBytesRehashed !== true
       || raw.independentClinicalReviewCount !== 0
@@ -66,7 +67,8 @@ export function validateScientificPairProgress(raw: unknown): ScientificPairProg
   const gates: ScientificPairProgress["gates"] = [];
   for (let i = 0; i < ORDER.length; i++) {
     const g = rows[i];
-    if (!object(g) || g.gateId !== ORDER[i]
+    if (!object(g)) throw new Error("Technical reviewer progress contract unverified");
+    if (g.gateId !== ORDER[i]
         || !bounded(g.capturedSourceCount, 8)
         || !bounded(g.reconciliationQuestionCount, 8)
         || !bounded(g.eligibleQuestionSourcePairs, 64)
