@@ -233,3 +233,15 @@ def test_actual_pinned_source_diff_proves_only_one_membership_exception():
     assert report["prediction_probability"] is None
     assert report["predictive_accuracy"] is None
     assert report["readiness"] == "REVIEW_REQUIRED"
+    lead = report["tabular_only_original_submission_fda_document_lead"]
+    assert lead["application_id"] == "NDA206627"
+    assert lead["original_submission_number"] == 1
+    assert lead["fda_primary_source_url"] == (
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2014/"
+        "206627Orig1s000Approv.pdf"
+    )
+    assert lead["published_fda_approval_date"] == "2014-11-20"
+    assert lead["independent_human_adjudication_complete"] is False
+    assert lead["verified_review_cycle_labels"] == 0
+    assert lead["evidence_use"] == "PUBLIC_FDA_SOURCE_LEAD_NOT_TRAINING_LABEL"
+
