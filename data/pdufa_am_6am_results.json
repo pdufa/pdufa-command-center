@@ -1,7 +1,7 @@
 {
   "clinical": {
     "overnight_report_published": true,
-    "published_at_utc": "2026-10-25T03:26:06.585659+00:00",
+    "published_at_utc": "2026-10-26T03:29:37.483418+00:00",
     "runs": {
       "2": {
         "changed_trials": 0,
@@ -19,7 +19,7 @@
         "new_records": 0
       }
     },
-    "source_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40157554535",
+    "source_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40263199452",
     "status": "PARTIAL"
   },
   "gem": {
@@ -28,29 +28,29 @@
     "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
     "new_records": 0,
     "overnight_report_published": true,
-    "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40157554535",
+    "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40263199452",
     "status": "PARTIAL",
     "stored_results": 2493,
     "strict_entry_gate_shortlist_count": 0,
     "verified_phase3_tracking": 0
   },
-  "generated_at_pacific": "2026-10-25T10:02:54.397691-07:00",
-  "generated_at_utc": "2026-10-25T17:02:54.397691+00:00",
+  "generated_at_pacific": "2026-10-26T12:06:23.462039-07:00",
+  "generated_at_utc": "2026-10-26T19:06:23.462039+00:00",
   "notice": "Read-only snapshot. SEC-verified individual closings do not prove two independent post-Phase-3 financings. A pending/stale component must not be represented as newly verified.",
-  "overnight_scan_window_started_pacific": "2026-10-24T20:00:00-07:00",
+  "overnight_scan_window_started_pacific": "2026-10-25T20:00:00-07:00",
   "publication_delayed_after_6am": true,
   "readiness": "SOURCE_VERIFICATION_PENDING_OR_STALE",
   "report_type": "PDUFA_6AM_PACIFIC_MORNING_RESULTS",
   "scheduled_display_time_pacific": "06:00",
   "schema_version": 1,
-  "snapshot_date_pacific": "2026-10-25",
+  "snapshot_date_pacific": "2026-10-26",
   "sources": {
     "new_claims": null,
     "newly_resolved_claims": null,
     "overnight_report_published": false,
     "public_ir_sec_leads_checked": null,
     "public_ir_sec_recheck_status": "PENDING_OR_STALE",
-    "published_at_utc": "2026-10-25T16:40:54.679640+00:00",
+    "published_at_utc": "2026-10-26T13:46:14.080738+00:00",
     "required_findings_cleared": null,
     "required_findings_due": null,
     "required_findings_unresolved": null,
