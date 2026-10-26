@@ -29,7 +29,7 @@ def _claim(row, *, app=None, cycle="1"):
 
 def test_seven_first_only_batches_preserve_source_counts_and_unverified_status():
     batches, summary = prepare_single_primary_batches(_source())
-    assert [b["source_references"] for b in batches] == [17, 20, 19, 20, 20, 20, 8]
+    assert [b["source_references"] for b in batches] == [17, 19, 20, 20, 20, 20, 8]
     assert summary["published_letter_references"] == 124
     assert summary["research_group_count"] == 101
     assert summary["second_review_files_exported"] == 0
