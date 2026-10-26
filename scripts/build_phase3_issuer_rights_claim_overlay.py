@@ -97,7 +97,7 @@ def build():
             raise ValueError("Contract scope must remain unverified")
         sources = p["sourceDocuments"]
         if (len(sources) < 2
-                or not any(s["type"].startswith("ISSUER_SEC_") for s in sources)
+                or not any(s["type"].startswith(("ISSUER_SEC_", "SEC_FORM_")) for s in sources)
                 or not all(s["url"].startswith("https://") and s.get("assertion") for s in sources)):
             raise ValueError("Issuer primary filing sources insufficient")
         for link in p["trialLinks"]:
