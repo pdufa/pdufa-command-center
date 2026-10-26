@@ -177,3 +177,59 @@ def test_bounded_sample_does_not_alter_full_membership_totals():
             tab, arc, tabular_index=ti, archive_index=ai,
             as_of=AS_OF, max_examples=0,
         )
+
+
+
+def test_actual_pinned_source_diff_proves_only_one_membership_exception():
+    """Frozen run result is a source-identity finding, NOT an FDA outcome."""
+    import json
+    from pathlib import Path
+
+    source_dir = Path(__file__).resolve().parents[1] / "app" / "research_sources"
+    report = json.loads(
+        (source_dir / "hop_drugsfda_original_source_diff_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    table = json.loads(
+        (source_dir / "hop_drugsfda_original_submissions_20261025.json")
+        .read_text(encoding="utf-8")
+    )
+    archived = json.loads(
+        (source_dir / "hop_drugsfda_original_submissions_artifact_index.json")
+        .read_text(encoding="utf-8")
+    )
+    assert report["status"] == (
+        "ORIGINAL_SUBMISSION_SOURCE_MEMBERSHIP_RECONCILED_NOT_FDA_DECISIONS"
+    )
+    assert report["tabular_original_submission_keys"] == (
+        table["original_nda_bla_submission_rows"] == 6033
+    )
+    assert report["openfda_archived_original_submission_keys"] == (
+        archived["original_nda_bla_submission_entries"] == 6032
+    )
+    assert report["source_versions"]["tabular_applications_tsv_sha256"] == (
+        table["applications_tsv_sha256"]
+    )
+    assert report["source_versions"]["tabular_submissions_tsv_sha256"] == (
+        table["submissions_tsv_sha256"]
+    )
+    assert report["source_versions"]["openfda_approved_registry_artifact_json_sha256"] == (
+        archived["github_artifact_json_sha256"]
+    )
+    assert report["tabular_only_key_examples"] == [
+        {"application_id": "NDA206627", "original_submission_number": 1}
+    ]
+    assert report["tabular_keys_absent_from_openfda"] == 1
+    assert report["openfda_keys_absent_from_tabular"] == 0
+    assert report["shared_original_submission_keys"] == 6032
+    assert report["shared_keys_with_raw_status_mismatch"] == 0
+    assert report["shared_keys_with_raw_status_date_mismatch"] == 0
+    assert report["net_tabular_minus_openfda_original_keys"] == 1
+    assert report["examples_truncated"] is False if "examples_truncated" in report else True
+    assert report["original_fda_action_dates_independently_verified"] == 0
+    assert report["review_cycles_independently_verified"] == 0
+    assert report["complete_fda_decision_denominator_verified"] is False
+    assert report["model_eligible_records"] == 0
+    assert report["prediction_probability"] is None
+    assert report["predictive_accuracy"] is None
+    assert report["readiness"] == "REVIEW_REQUIRED"
