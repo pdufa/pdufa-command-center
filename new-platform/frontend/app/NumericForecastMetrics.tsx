@@ -1,18 +1,20 @@
 "use client";
 
 import type { AssessmentDetail, AssessmentStage } from "../lib/candidate-assessments";
+import type { CSSProperties } from "react";
+import type { NumericForecastDisplay } from "../lib/numeric-forecast-metrics";
 import { stageLabel } from "../lib/candidate-assessments";
 import { createNumericForecastDisplay, HISTORICAL_SIMILARITY_DIMENSIONS } from "../lib/numeric-forecast-metrics";
 
 const fmt = (n:number) => Number(n.toFixed(1)).toLocaleString("en-US");
 const fraction = (n:number | null, denominator:number) => (n === null ? "—" : fmt(n)) + " / " + fmt(denominator);
-const numericCard: React.CSSProperties = {
+const numericCard: CSSProperties = {
   minWidth:0, padding:"12px 14px", border:"1px solid #cbd5e1", borderRadius:10, background:"#fff",
 };
-const muted: React.CSSProperties = {fontSize:12,color:"#475569",lineHeight:1.5};
+const muted: CSSProperties = {fontSize:12,color:"#475569",lineHeight:1.5};
 
 export default function NumericForecastMetrics({detail,stage}: {detail:AssessmentDetail;stage:AssessmentStage}) {
-  let current;
+  let current: NumericForecastDisplay;
   try {
     current = createNumericForecastDisplay(detail,stage);
   } catch {
