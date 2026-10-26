@@ -1,0 +1,30 @@
+name: MAIN 741 trial development rights evidence gap census
+on:
+  pull_request:
+    paths:
+      - 'scripts/build_phase3_rights_evidence_gaps.py'
+      - 'tests/test_phase3_rights_evidence_gaps.py'
+      - '.github/workflows/main-phase3-rights-evidence-gaps.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  rights-research-census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate all 741 evidence gaps without inferring legal rights
+        run: python3 -m unittest discover -s tests -p 'test_phase3_rights_evidence_gaps.py' -v
+      - name: Build per-trial rights source checklist
+        run: python3 scripts/build_phase3_rights_evidence_gaps.py "$RUNNER_TEMP/phase3_741_current_rights_evidence_gaps.json"
+      - name: Archive per-trial evidence gaps for independent source research
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-741-current-rights-evidence-gaps
+          path: ${{ runner.temp }}/phase3_741_current_rights_evidence_gaps.json
+          if-no-files-found: error
+          retention-days: 7
