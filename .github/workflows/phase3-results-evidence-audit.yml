@@ -1,0 +1,29 @@
+name: Read-only Phase 3 Results Evidence Audit
+on:
+  push:
+    branches:
+      - feature/decision-workstream-20261026
+    paths:
+      - .github/workflows/phase3-results-evidence-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify missing-results completed Phase 3 trials against ClinicalTrials.gov
+        run: python scripts/verify_phase3_missing_results.py --input data/all_phase_trials.csv --output "$RUNNER_TEMP/phase3-results-evidence.csv"
+      - name: Save results for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-results-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/phase3-results-evidence.csv
+          retention-days: 14
+          if-no-files-found: warn
