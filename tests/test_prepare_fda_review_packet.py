@@ -22,6 +22,14 @@ class ReviewPacketTests(unittest.TestCase):
             prepare({"candidate_review_cycles": [row, row]},
                     {"records": [row, row]})
 
+    def test_same_cycle_with_two_urls_is_rejected(self):
+        row = {"application_id": "NDA221276", "submission_id": "ORIG-1",
+               "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf"}
+        other = dict(row, official_source_url="https://www.fda.gov/b.pdf")
+        with self.assertRaises(ValueError):
+            prepare({"candidate_review_cycles": [row, other]},
+                    {"records": [row, other]})
+
     def test_blocked_source_is_prioritized(self):
         row = {"application_id": "NDA221276", "submission_id": "ORIG-1",
                "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf"}
