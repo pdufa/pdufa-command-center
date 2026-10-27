@@ -36,8 +36,8 @@
       "drug": "nogapendekin alfa inbakicept-pmln expanded indication",
       "date": "2026-10-14",
       "claimed_outcome": "APPROVAL",
-      "trial": null,
-      "source_url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-treatment-certain-people-bcg-unresponsive-bladder-cancer",
+      "trial": "NCT03022825",
+      "source_url": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-expanded-indication-nogapendekin-alfa-inbakicept-pmln-bcg-unresponsive-non-muscle",
       "application_id": null,
       "submission_id": null,
       "review_cycle": null,
@@ -45,7 +45,8 @@
       "source_sha256": null,
       "independently_verified": false,
       "model_eligible": false,
-      "review_status": "IDENTITY_AND_ACTION_LETTER_REQUIRED"
+      "review_status": "INDICATION_EXPANSION_EXTRAPOLATED_EVIDENCE_ACTION_LETTER_REQUIRED",
+      "evidence_note": "FDA explicitly states expanded indication extrapolated from previously demonstrated efficacy in QUILT-3.032 Cohort A; do not label as new Phase 3 success."
     }
   ]
 }
