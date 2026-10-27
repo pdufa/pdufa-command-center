@@ -22,3 +22,10 @@ The peer-reviewed abstract (PMID 18990064; DOI 10.1086/593185) reports **study 3
 **Critical unresolved identity:** Although the publication explicitly lists NCT00563394 and NCT00563433, the abstract does not specify which identifier maps to study 303 and which to study 304. Do not label either NCT as success/failure until independently confirmed through registry secondary IDs, protocol, or full-text table. Keep pooled efficacy metrics separate from per-study results.
 
 **Research classification:** Two direct publication-linked NCTs; study-level outcome contrast verified; NCT-to-study-number linkage pending. No FDA approval inference. No trading or production changes.
+
+## Resolved NCT-to-study-number linkage (2026-10-27)
+- NCT00563394 = MSI-78 study **303**: original publication reports equivalence NOT demonstrated. Cross-reference: https://www.mdpi.com/1422-0067/27/18/8035
+- NCT00563433 = MSI-78 study **304**: original publication reports equivalence demonstrated. Independent trial listing explicitly identifies secondary study ID MSI-78-304: https://www.centerwatch.com/clinical-trials/listings/NCT00563433/msi-78-topical-cream-vs-oral-ofloxacin-in-the-treatment-of-infected-diabetic-ulcers
+- Primary publication for both outcomes: https://pubmed.ncbi.nlm.nih.gov/18990064/
+- Classification scope: study-level equivalence demonstrated / not demonstrated; NOT FDA approval, superiority, or general drug success. Pooled improvement percentages must not be assigned to individual NCT records without study-specific denominators.
+- Source confidence: registry identifier to study number supported by named trial listing and secondary peer-reviewed review; original article supports study-number outcomes. Direct ClinicalTrials.gov secondary IDs would further strengthen mapping.
