@@ -13,6 +13,8 @@ class ReviewPacketTests(unittest.TestCase):
         self.assertEqual(report["verified"], 0)
         self.assertEqual(report["total_to_review"], 1)
         self.assertEqual(report["priority_counts"]["INDEPENDENT_ADJUDICATION_REQUIRED"], 1)
+        self.assertEqual(report["cleared_for_independent_review"], 1)
+        self.assertEqual(report["remaining_to_verify"], 1)
         self.assertFalse(report["records"][0]["model_eligible"])
 
     def test_duplicate_identity_rejected(self):
@@ -36,6 +38,7 @@ class ReviewPacketTests(unittest.TestCase):
         report = prepare({"candidate_review_cycles": [row]},
                          {"records": [dict(row, status="NO_MATCHING_SOURCE_REPORT")]})
         self.assertEqual(report["records"][0]["review_priority"], "SOURCE_EVIDENCE_BLOCKED")
+        self.assertEqual(report["blocked_before_independent_review"], 1)
 
     def test_mismatched_cycle_rejected(self):
         row = {"application_id": "NDA221276", "submission_id": "ORIG-1",
