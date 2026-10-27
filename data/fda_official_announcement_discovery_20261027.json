@@ -1,0 +1,51 @@
+{
+  "description": "Official FDA announcements for historical outcome discovery; NOT independently adjudicated decision records",
+  "discovered_as_of": "2026-10-27",
+  "records": [
+    {
+      "drug": "talazoparib plus enzalutamide",
+      "date": "2026-10-26",
+      "claimed_outcome": "APPROVAL",
+      "trial": "NCT04821622",
+      "source_url": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-talazoparib-enzalutamide-metastatic-androgen-pathway-modulation-naive-or-sensitive",
+      "application_id": null,
+      "submission_id": null,
+      "review_cycle": null,
+      "original_action_letter_url": null,
+      "source_sha256": null,
+      "independently_verified": false,
+      "model_eligible": false,
+      "review_status": "IDENTITY_AND_ACTION_LETTER_REQUIRED"
+    },
+    {
+      "drug": "tucatinib plus trastuzumab and pertuzumab",
+      "date": "2026-10-07",
+      "claimed_outcome": "APPROVAL",
+      "trial": "NCT05132582",
+      "source_url": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-tucatinib-trastuzumab-and-pertuzumab-maintenance-treatment-her2-positive-breast-cancer",
+      "application_id": null,
+      "submission_id": null,
+      "review_cycle": null,
+      "original_action_letter_url": null,
+      "source_sha256": null,
+      "independently_verified": false,
+      "model_eligible": false,
+      "review_status": "IDENTITY_AND_ACTION_LETTER_REQUIRED"
+    },
+    {
+      "drug": "nogapendekin alfa inbakicept-pmln expanded indication",
+      "date": "2026-10-14",
+      "claimed_outcome": "APPROVAL",
+      "trial": null,
+      "source_url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-treatment-certain-people-bcg-unresponsive-bladder-cancer",
+      "application_id": null,
+      "submission_id": null,
+      "review_cycle": null,
+      "original_action_letter_url": null,
+      "source_sha256": null,
+      "independently_verified": false,
+      "model_eligible": false,
+      "review_status": "IDENTITY_AND_ACTION_LETTER_REQUIRED"
+    }
+  ]
+}
