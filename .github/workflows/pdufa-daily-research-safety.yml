@@ -74,7 +74,7 @@ jobs:
         working-directory: research
         run: |
           python scripts/build_fda_historical_candidate_ledger.py \
-            data/fda_candidate_bepirovirsen_20261020.json > historical_fda_candidate_ledger.json
+            --candidate-dir data > historical_fda_candidate_ledger.json
           python -m json.tool historical_fda_candidate_ledger.json > /dev/null
       - name: Publish candidate ledger for review
         uses: actions/upload-artifact@v4
