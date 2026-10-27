@@ -1,6 +1,6 @@
 const test=require("node:test");const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");const Module=require("node:module");const ts=require("typescript");
 const root=path.resolve(__dirname,"../lib"),cache={};
-function load(name){if(cache[name])return cache[name].exports;const file=path.join(root,name+".ts");const js=ts.transpileModule(fs.readFileSync(file,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;const m=new Module(file,module);cache[name]=m;m.filename=file;m.paths=module.paths;m.require=id.startsWith("./")?load(id.slice(2)):require(id);m._compile(js,file);return m.exports;}
+function load(name){if(cache[name])return cache[name].exports;const file=path.join(root,name+".ts");const js=ts.transpileModule(fs.readFileSync(file,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;const m=new Module(file,module);cache[name]=m;m.filename=file;m.paths=module.paths;m.require=(id)=>id.startsWith("./")?load(id.slice(2)):require(id);m._compile(js,file);return m.exports;}
 const {assessJoinedDecisionResearch}=load("decision-joined-research-gate");
 const asOf="2026-10-26T11:00:00Z",now=new Date("2026-10-26T12:00:00Z");
 const record={programId:"PDUFA-999999",trialId:"NCT12345678",asOf,status:"COMPLETE",sourceStatus:"VERIFIED",reviewedLevels:20,requiredLevels:20,criticalFindingsResolved:true,calibrationStatus:"VALIDATED"};
