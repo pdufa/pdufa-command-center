@@ -34,11 +34,20 @@ const assess=(manifest=evidence(),options={})=>assessDecisionWorkstream(options.
 test("all missing evidence leaves every workstream stage NOT_READY",()=>{
  const result=assess(null);assert.equal(result.status,"NOT_READY");assert.ok(result.stages.every(row=>row.status==="NOT_READY"));
  assert.equal(result.historicalMatches,0);assert.equal(result.historicalSource,null);assert.equal(result.probability,null);assert.equal(result.modelValidated,false);assert.equal(result.tradeAuthorized,false);
+ assert.equal(result.prediction.predictedOutcome,"INSUFFICIENT_EVIDENCE");
+ assert.equal(result.prediction.readyForReliablePrediction,false);
+ assert.equal(result.prediction.approvalProbability,null);assert.equal(result.prediction.nonapprovalProbability,null);assert.equal(result.prediction.confidence,null);
+ assert.ok(result.prediction.reasons.some(reason=>/independent model validation/i.test(reason)));
+ assert.ok(result.issues.every(issue=>result.prediction.reasons.includes(issue)));
 });
 test("a complete synthetic manifest reaches research review only, with no probability or trading permission",()=>{
  const result=assess();assert.equal(result.status,"RESEARCH_REVIEW_REQUIRED");assert.deepEqual(result.issues,[]);assert.equal(result.historicalMatches,3);
  assert.equal(result.modelValidated,false);assert.equal(result.probability,null);assert.equal(result.tradeAuthorized,false);
  assert.equal(stage(result,"Calibration").status,"RESEARCH_ONLY");
+ assert.equal(result.prediction.predictedOutcome,"INSUFFICIENT_EVIDENCE");
+ assert.equal(result.prediction.readyForReliablePrediction,false);
+ assert.equal(result.prediction.approvalProbability,null);assert.equal(result.prediction.nonapprovalProbability,null);
+ assert.equal(result.prediction.confidence,null);assert.equal(result.prediction.reasons.length,1);
 });
 test("composition never changes input restrictions, scores, stage or FS/FA metadata",()=>{
  const manifest=evidence(),live=mainSource();live.preservedAssociations={WT:"existing-only",FS:"fixed-source",FA:"fixed-association"};

@@ -3,17 +3,22 @@ import type {ResearchReadiness} from "./decision-research-readiness";
 import {validatePrimaryTrialSourceIdentity} from "./decision-trial-source-identity";
 
 export type InvestigationSource={url:string;publishedAt:string;observedAt:string;independentlyReviewed:boolean;primaryTrial?:{trialId:string;protocolId:string}};
-export type InvestigationAssessment={id:string;status:"COMPLETE"|"PARTIAL"|"MISSING"|"CONFLICT";reviewer:string;criticalEvaluation:string;uncertainty:string;unresolvedCriticalFindings:number;sources:InvestigationSource[]};
+export type ApprovalDirection="SUPPORTS_APPROVAL"|"OPPOSES_APPROVAL"|"MATERIALLY_UNCHANGED"|"UNDETERMINED";
+export type InvestigationAssessment={id:string;status:"COMPLETE"|"PARTIAL"|"MISSING"|"CONFLICT";reviewer:string;criticalEvaluation:string;uncertainty:string;unresolvedCriticalFindings:number;sources:InvestigationSource[];approvalDirection?:ApprovalDirection;directionRationale?:string};
+export type InvestigationArgument={rationale:string;assessmentIds:string[];sources:InvestigationSource[]};
+export type InvestigationChallenge={reviewer:string;reviewedAt:string;independentReviewDeclared:boolean;supporting:InvestigationArgument;opposing:InvestigationArgument;unresolvedCriticalFindings:number};
 export type ScienceInvestigation={
  identity:DecisionIdentity;asOf:string;drug:string;indication:string;companyCik:string;fdaApplication:string|null;
  layers:{id:string;label:string}[];
  levels:{id:string;label:string;layerId:string;assessments:InvestigationAssessment[]}[];
+ adversarialReview?:InvestigationChallenge;
 };
 export type ScienceInvestigationAudit={
  status:"NOT_READY"|"READY_FOR_RESEARCH_REVIEW";completedLevels:number;requiredLevels:20;
  completedAssessments:number;requiredAssessments:40;coveredLayers:number;requiredLayers:8;
  evidenceCompletenessPct:number|null;readyForAnalysis:"NOT_READY"|"READY_FOR_RESEARCH_REVIEW";
  reluctantAssessment:"WITHHELD"|"CAUTIOUS_RESEARCH_ONLY";issues:string[];warnings:string[];
+ adversarialReviewStatus:"MISSING"|"INCOMPLETE"|"RECORDED_FOR_REVIEW";
  readiness:ResearchReadiness|null;
 };
 const object=(x:unknown):x is Record<string,unknown>=>!!x&&typeof x==="object"&&!Array.isArray(x);
@@ -27,11 +32,30 @@ const timestamp=(s:string)=>{
  if(month<1||month>12||day<1||day>new Date(Date.UTC(year,month,0)).getUTCDate()||hour>23||minute>59||second>59)return NaN;
  return Date.parse(s);
 };
+const directions:ApprovalDirection[]=["SUPPORTS_APPROVAL","OPPOSES_APPROVAL","MATERIALLY_UNCHANGED","UNDETERMINED"];
+function validateSources(value:unknown,trialId:string):asserts value is InvestigationSource[]{
+ if(!Array.isArray(value)||value.length>20)throw new Error("Scientific source record is invalid");
+ for(const s of value){
+  if(!object(s)||!keys(s,["url","publishedAt","observedAt","independentlyReviewed","primaryTrial"])||!text(s.url,4096)||!https(s.url)||!text(s.publishedAt,100)
+   ||!text(s.observedAt,100)||typeof s.independentlyReviewed!=="boolean")throw new Error("Scientific source record is invalid");
+  if(s.primaryTrial!==undefined){
+   if(!object(s.primaryTrial)||!keys(s.primaryTrial,["trialId","protocolId"])||!text(s.primaryTrial.trialId,32)||!text(s.primaryTrial.protocolId,100))
+    throw new Error("Primary trial source metadata is invalid");
+   validatePrimaryTrialSourceIdentity({trialId,protocolId:s.primaryTrial.protocolId},{trialId:s.primaryTrial.trialId,protocolId:s.primaryTrial.protocolId});
+  }
+ }
+}
+function sourcesAvailable(sources:InvestigationSource[],until:number):boolean{
+ return sources.length>0&&sources.every(s=>{
+  const published=timestamp(s.publishedAt),observed=timestamp(s.observedAt);
+  return s.independentlyReviewed===true&&Number.isFinite(published)&&Number.isFinite(observed)&&published<=observed&&observed<until;
+ });
+}
 
 /** Shape validation is not independent scientific verification. Partial inventories may
  * be transported; the audit below requires every declared level/assessment/layer. */
 export function parseScienceInvestigation(value:unknown):ScienceInvestigation {
- if(!object(value)||!keys(value,["identity","asOf","drug","indication","companyCik","fdaApplication","layers","levels"])||!object(value.identity)||!text(value.asOf,100)||!text(value.drug,512)
+ if(!object(value)||!keys(value,["identity","asOf","drug","indication","companyCik","fdaApplication","layers","levels","adversarialReview"])||!object(value.identity)||!text(value.asOf,100)||!text(value.drug,512)
   ||!text(value.indication,2000)||!text(value.companyCik,10)
   ||!(value.fdaApplication===null||text(value.fdaApplication,16))
   ||!Array.isArray(value.layers)||value.layers.length>8||!Array.isArray(value.levels)||value.levels.length>20)
@@ -45,19 +69,26 @@ export function parseScienceInvestigation(value:unknown):ScienceInvestigation {
   if(!object(level)||!keys(level,["id","label","layerId","assessments"])||!text(level.id,100)||!text(level.label,512)||!text(level.layerId,100)
    ||!Array.isArray(level.assessments)||level.assessments.length>2)throw new Error("Scientific level is invalid");
   for(const a of level.assessments){
-   if(!object(a)||!keys(a,["id","status","reviewer","criticalEvaluation","uncertainty","unresolvedCriticalFindings","sources"])||!text(a.id,100)||!["COMPLETE","PARTIAL","MISSING","CONFLICT"].includes(a.status as string)
+   if(!object(a)||!keys(a,["id","status","reviewer","criticalEvaluation","uncertainty","unresolvedCriticalFindings","sources","approvalDirection","directionRationale"])||!text(a.id,100)||!["COMPLETE","PARTIAL","MISSING","CONFLICT"].includes(a.status as string)
     ||!text(a.reviewer,512)||!text(a.criticalEvaluation)||!text(a.uncertainty)
+    ||(a.approvalDirection!==undefined&&!directions.includes(a.approvalDirection as ApprovalDirection))
+    ||(a.directionRationale!==undefined&&!text(a.directionRationale))
     ||!Number.isSafeInteger(a.unresolvedCriticalFindings)||Number(a.unresolvedCriticalFindings)<0
     ||!Array.isArray(a.sources)||a.sources.length>20)throw new Error("Scientific assessment is invalid");
-   for(const s of a.sources)if(!object(s)||!keys(s,["url","publishedAt","observedAt","independentlyReviewed","primaryTrial"])||!text(s.url,4096)||!https(s.url)||!text(s.publishedAt,100)
-    ||!text(s.observedAt,100)||typeof s.independentlyReviewed!=="boolean")throw new Error("Scientific source record is invalid");
-   for(const s of a.sources){
-    if(object(s)&&s.primaryTrial!==undefined){
-     if(!object(s.primaryTrial)||!keys(s.primaryTrial,["trialId","protocolId"])||!text(s.primaryTrial.trialId,32)||!text(s.primaryTrial.protocolId,100))
-      throw new Error("Primary trial source metadata is invalid");
-     validatePrimaryTrialSourceIdentity({trialId:identity.trialId as string,protocolId:s.primaryTrial.protocolId as string},{trialId:s.primaryTrial.trialId,protocolId:s.primaryTrial.protocolId});
-    }
-   }
+   validateSources(a.sources,identity.trialId as string);
+  }
+ }
+ if(value.adversarialReview!==undefined){
+  const review=value.adversarialReview;
+  if(!object(review)||!keys(review,["reviewer","reviewedAt","independentReviewDeclared","supporting","opposing","unresolvedCriticalFindings"])
+   ||!text(review.reviewer,512)||!text(review.reviewedAt,100)||typeof review.independentReviewDeclared!=="boolean"
+   ||!Number.isSafeInteger(review.unresolvedCriticalFindings)||Number(review.unresolvedCriticalFindings)<0)
+   throw new Error("Scientific adversarial review is invalid");
+  for(const argument of [review.supporting,review.opposing]){
+   if(!object(argument)||!keys(argument,["rationale","assessmentIds","sources"])||!text(argument.rationale)
+    ||!Array.isArray(argument.assessmentIds)||argument.assessmentIds.length>40||argument.assessmentIds.some(id=>!text(id,100)))
+    throw new Error("Scientific adversarial argument is invalid");
+   validateSources(argument.sources,identity.trialId as string);
   }
  }
  return value as unknown as ScienceInvestigation;
@@ -66,9 +97,9 @@ export function parseScienceInvestigation(value:unknown):ScienceInvestigation {
 /** Counts describe review records, not predictive accuracy, trial success or grades
  * assigned by a scientific model. Citation/reviewer assertions require source review. */
 export function auditScienceInvestigation(input:ScienceInvestigation|null,expected:DecisionIdentity,cutoff:string):ScienceInvestigationAudit {
- const issues:string[]=[],warnings=["Scientific review records and source citations require independent verification; these counts do not establish prediction accuracy."];
+ const issues:string[]=[],warnings=["Scientific review records and source citations require independent verification; these counts do not establish prediction accuracy.","Approval directions are qualitative reviewer inferences, not validated predictive factors or numerical probabilities. Reviewer identities and an independence declaration do not authenticate independent review."];
  const base:ScienceInvestigationAudit={status:"NOT_READY",completedLevels:0,requiredLevels:20,completedAssessments:0,requiredAssessments:40,
-  coveredLayers:0,requiredLayers:8,evidenceCompletenessPct:null,readyForAnalysis:"NOT_READY",reluctantAssessment:"WITHHELD",issues,warnings,readiness:null};
+  coveredLayers:0,requiredLayers:8,evidenceCompletenessPct:null,readyForAnalysis:"NOT_READY",reluctantAssessment:"WITHHELD",adversarialReviewStatus:"MISSING",issues,warnings,readiness:null};
  if(!input){issues.push("SCIENCE: source-cited 20-level / 40-assessment / 8-layer dossier missing");return base;}
  let dossier:ScienceInvestigation;
  try{dossier=parseScienceInvestigation(input);}catch{issues.push("SCIENCE: scientific dossier structure invalid");return base;}
@@ -95,23 +126,37 @@ export function auditScienceInvestigation(input:ScienceInvestigation|null,expect
   for(const a of level.assessments){
    const unique=!!a.id.trim()&&!assessments.has(a.id);assessments.add(a.id);
    if(!unique)issues.push("SCIENCE: assessment identity missing or duplicated");
-   const sourcesOk=a.sources.length>0&&a.sources.every(s=>{
-    const published=timestamp(s.publishedAt),observed=timestamp(s.observedAt);
-    return s.independentlyReviewed===true&&Number.isFinite(published)&&Number.isFinite(observed)
-     &&published<=observed&&observed<until;
-   });
+   const sourcesOk=sourcesAvailable(a.sources,until);
+   const directionOk=a.approvalDirection!==undefined&&a.approvalDirection!=="UNDETERMINED"&&!!a.directionRationale?.trim();
+   if(!directionOk)issues.push("SCIENCE: approval direction or source-grounded rationale missing or undetermined for "+a.id);
    const complete=unique&&a.status==="COMPLETE"&&a.reviewer.trim()&&a.criticalEvaluation.trim()&&a.uncertainty.trim()
-    &&a.unresolvedCriticalFindings===0&&sourcesOk;
+    &&a.unresolvedCriticalFindings===0&&sourcesOk&&directionOk;
    if(complete)completed++;else{levelComplete=false;issues.push("SCIENCE: incomplete or conflicting assessment "+a.id);}
   }
   if(levelComplete)completeLevels++;
  }
  if(dossier.levels.length!==20||levels.size!==20||assessments.size!==40)issues.push("SCIENCE: complete 20-level / 40-assessment inventory required");
  if(covered.size!==8)issues.push("SCIENCE: all eight scientific layers must be represented");
+ let adversarialReviewStatus:ScienceInvestigationAudit["adversarialReviewStatus"]="MISSING";
+ const review=dossier.adversarialReview;
+ if(!review)issues.push("SCIENCE: source-cited adversarial review missing");
+ else{
+  const reviewed=timestamp(review.reviewedAt),reviewer=review.reviewer.trim().toLocaleLowerCase("en-US");
+  const differentReviewer=!!reviewer&&dossier.levels.every(level=>level.assessments.every(a=>a.reviewer.trim().toLocaleLowerCase("en-US")!==reviewer));
+  const currentEvidenceReviewed=dossier.levels.every(level=>level.assessments.every(a=>a.sources.every(source=>timestamp(source.observedAt)<=reviewed)));
+  const argumentsOk=[review.supporting,review.opposing].every(argument=>argument.rationale.trim()
+   &&argument.assessmentIds.length>0&&new Set(argument.assessmentIds).size===argument.assessmentIds.length
+   &&argument.assessmentIds.every(id=>assessments.has(id))&&sourcesAvailable(argument.sources,until)
+   &&argument.sources.every(source=>timestamp(source.observedAt)<=reviewed));
+  const complete=review.independentReviewDeclared===true&&differentReviewer&&currentEvidenceReviewed&&Number.isFinite(reviewed)&&reviewed<until
+   &&review.unresolvedCriticalFindings===0&&argumentsOk;
+  adversarialReviewStatus=complete?"RECORDED_FOR_REVIEW":"INCOMPLETE";
+  if(!complete)issues.push("SCIENCE: adversarial review requires a distinct declared reviewer, pre-cutoff review, source-bound supporting and opposing arguments, and resolved critical findings");
+ }
  const ready=issues.length===0;
  const readiness:ResearchReadiness={programId:expected.programId,trialId:expected.trialId,asOf:dossier.asOf,
   status:ready?"COMPLETE":"PARTIAL",sourceStatus:ready?"VERIFIED":"UNVERIFIED",reviewedLevels:completeLevels,requiredLevels:20,criticalFindingsResolved:ready};
  return {...base,status:ready?"READY_FOR_RESEARCH_REVIEW":"NOT_READY",completedLevels:completeLevels,completedAssessments:completed,
   coveredLayers:covered.size,evidenceCompletenessPct:levels.size===20&&assessments.size===40&&layers.size===8?100*completed/40:null,
-  readyForAnalysis:ready?"READY_FOR_RESEARCH_REVIEW":"NOT_READY",reluctantAssessment:ready?"CAUTIOUS_RESEARCH_ONLY":"WITHHELD",issues:[...new Set(issues)],readiness};
+  readyForAnalysis:ready?"READY_FOR_RESEARCH_REVIEW":"NOT_READY",reluctantAssessment:ready?"CAUTIOUS_RESEARCH_ONLY":"WITHHELD",adversarialReviewStatus,issues:[...new Set(issues)],readiness};
 }

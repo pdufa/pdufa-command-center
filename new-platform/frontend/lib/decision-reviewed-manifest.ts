@@ -76,19 +76,24 @@ const holdoutRow = object({...predictionFields, applicationNumber:text, modelVer
 const plan = object({modelVersion:text, planSource:sourceUrl, frozenAt:text, holdoutStart:text, holdoutEnd:text,
   evaluatedAt:text, trainingProgramIds:list(text), holdoutProgramIds:list(text)});
 const longText: Check = v => { if (typeof v !== "string" || v.length > 20000 || /\u0000/.test(v)) invalid(); };
+const investigationSource=object({url:sourceUrl, publishedAt:text, observedAt:text, independentlyReviewed:bool, primaryTrial:object({trialId:text, protocolId:text})}, ["primaryTrial"]);
+const investigationArgument=object({rationale:longText,assessmentIds:list(text,40),sources:list(investigationSource,20)});
 const dossierShape = object({identity:identitySchema, asOf:text, drug:text, indication:text, companyCik:text,
   fdaApplication:nullable(text), layers:list(object({id:text, label:text}), 8),
   levels:list(object({id:text, label:text, layerId:text, assessments:list(object({id:text,
     status:choices("COMPLETE", "PARTIAL", "MISSING", "CONFLICT"), reviewer:text,
     criticalEvaluation:longText, uncertainty:longText, unresolvedCriticalFindings:count,
-    sources:list(object({url:sourceUrl, publishedAt:text, observedAt:text, independentlyReviewed:bool, primaryTrial:object({trialId:text, protocolId:text})}, ["primaryTrial"]), 20)}), 2)}), 20)});
+    approvalDirection:choices("SUPPORTS_APPROVAL","OPPOSES_APPROVAL","MATERIALLY_UNCHANGED","UNDETERMINED"),directionRationale:longText,
+    sources:list(investigationSource,20)},["approvalDirection","directionRationale"]), 2)}), 20),
+  adversarialReview:object({reviewer:text,reviewedAt:text,independentReviewDeclared:bool,supporting:investigationArgument,opposing:investigationArgument,unresolvedCriticalFindings:count})},["adversarialReview"]);
 const scienceDossier: Check = nullable(v => {
   dossierShape(v);
   const d = parseScienceInvestigation(v);
-  const primaryProtocolIds = new Set(d.levels.flatMap(level => level.assessments.flatMap(assessment => assessment.sources.map(source => (source as typeof source & {primaryTrial?:{protocolId:string}}).primaryTrial?.protocolId).filter((id): id is string => typeof id === "string"))));
+  const dossierSources=[...d.levels.flatMap(level=>level.assessments.flatMap(assessment=>assessment.sources)),...(d.adversarialReview?[...d.adversarialReview.supporting.sources,...d.adversarialReview.opposing.sources]:[])];
+  const primaryProtocolIds = new Set(dossierSources.map(source=>source.primaryTrial?.protocolId).filter((id):id is string=>typeof id==="string"));
   if (primaryProtocolIds.size > 1) invalid();
-  for (const level of d.levels) for (const assessment of level.assessments) for (const source of assessment.sources) {
-    const primary = (source as typeof source & {primaryTrial?:{trialId:string;protocolId:string}}).primaryTrial;
+  for (const source of dossierSources) {
+    const primary = source.primaryTrial;
     if (primary) validatePrimaryTrialSourceIdentity({trialId:d.identity.trialId, protocolId:primary.protocolId}, primary);
   }
 });

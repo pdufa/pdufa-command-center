@@ -42,6 +42,10 @@ test('authenticated manifest connects source-cited science while missing outcome
   assert.match(text(root),/40\/40 assessments and 20\/20 levels reviewed/);
   assert.match(text(root),/8\/8 layers represented/);assert.match(text(root),/1\/5 evidence prerequisite groups/);
   assert.match(text(root),/Critical evaluation:/);assert.match(text(root),/Uncertainty:/);
+  assert.match(text(root),/Approval direction: SUPPORTS APPROVAL/);assert.match(text(root),/qualitative reviewer inference/);
+  assert.match(text(root),/Strongest supporting and opposing arguments/);assert.match(text(root),/Independence is not authenticated/);
+  assert.match(text(root),/Predicted outcome: INSUFFICIENT EVIDENCE/);assert.match(text(root),/an abstention, not a third FDA/);
+  assert.match(text(root),/Nonapproval probability: unavailable/);assert.match(text(root),/Prediction confidence: unavailable/);
   assert.equal(root.root.findAllByType('a').filter(a=>a.props.href==='https://example.org/original-source').length,40);
   assert.match(text(root),/NOT_READY/);assert.match(text(root),/Approval probability: unavailable/);
   assert.match(text(root),/Estimated completion time: unavailable/);

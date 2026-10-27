@@ -76,14 +76,26 @@ export default function DecisionWorkstream({exactKey,programId,trialId,ticker,st
     {dossier&&science.readiness&&<details aria-label="Scientific trial dossier and original sources"><summary>Scientific trial dossier · {science.completedAssessments}/40 reviewed assessments</summary>
       <p>{dossier.drug} · {dossier.indication} · Company CIK {dossier.companyCik} · FDA application {dossier.fdaApplication||"not reconciled"} · As of {dossier.asOf}</p>
       <p>{science.warnings.join(" ")}</p>
+      <p><strong>Adversarial challenge:</strong> {science.adversarialReviewStatus.replaceAll("_"," ")}. A recorded reviewer declaration still requires independent verification.</p>
       {dossier.levels.map((level,i)=><details key={level.id+":"+i}><summary>{level.label} · {dossier.layers.find(layer=>layer.id===level.layerId)?.label||"Subject layer missing"}</summary>
         {level.assessments.map((assessment,j)=><article key={assessment.id+":"+j}><h4>{assessment.id} · {assessment.status}</h4>
           <p><strong>Critical evaluation:</strong> {assessment.criticalEvaluation||"Missing"}</p><p><strong>Uncertainty:</strong> {assessment.uncertainty||"Missing"}</p>
+          <p><strong>Approval direction:</strong> {assessment.approvalDirection?.replaceAll("_"," ")||"UNDETERMINED"}. {assessment.directionRationale||"Source-grounded direction rationale missing."} This is a qualitative reviewer inference.</p>
           <p>Reviewer: {assessment.reviewer||"not recorded"} · Unresolved critical findings: {assessment.unresolvedCriticalFindings}</p>
-          <ul>{assessment.sources.map((source,k)=><li key={source.url+":"+k}><a href={source.url} target="_blank" rel="noopener noreferrer">Original source</a> · Published {source.publishedAt} · Observed {source.observedAt} · {source.independentlyReviewed?"Independent review recorded":"Independent review pending"}</li>)}</ul>
+          <ul>{assessment.sources.map((source,k)=><li key={source.url+":"+k}><a href={source.url} target="_blank" rel="noopener noreferrer">Original source</a> · Published {source.publishedAt} · Observed {source.observedAt} · {source.independentlyReviewed?"Independent review declared":"Independent review pending"}</li>)}</ul>
         </article>)}
       </details>)}
+      {dossier.adversarialReview&&<details aria-label="Supporting and opposing scientific arguments"><summary>Strongest supporting and opposing arguments · {science.adversarialReviewStatus.replaceAll("_"," ")}</summary>
+        <p>Declared reviewer: {dossier.adversarialReview.reviewer||"Missing"} · Reviewed {dossier.adversarialReview.reviewedAt} · Unresolved critical findings: {dossier.adversarialReview.unresolvedCriticalFindings}. Independence is not authenticated by this record.</p>
+        {(["supporting","opposing"] as const).map(side=><article key={side}><h4>{side==="supporting"?"Supporting approval":"Opposing approval"}</h4>
+          <p>{dossier.adversarialReview?.[side].rationale||"Missing argument"}</p>
+          <p>Referenced assessments: {dossier.adversarialReview?.[side].assessmentIds.join(", ")||"Missing"}</p>
+          <ul>{dossier.adversarialReview?.[side].sources.map((source,k)=><li key={source.url+":"+k}><a href={source.url} target="_blank" rel="noopener noreferrer">Challenge source</a> · Published {source.publishedAt} · Observed {source.observedAt} · {source.independentlyReviewed?"Independent review declared":"Independent review pending"}</li>)}</ul>
+        </article>)}
+      </details>}
     </details>}
+    <p><strong>Predicted outcome: {result.prediction.predictedOutcome.replaceAll("_"," ")}</strong>. This is an abstention, not a third FDA regulatory outcome. Reliable prediction readiness: {result.prediction.readyForReliablePrediction?"Ready":"Not ready"}.</p>
+    <p>Nonapproval probability: unavailable. Prediction confidence: unavailable. Scientific review-record completeness is separate from prediction probability and confidence.</p>
     <p><strong>Approval probability: unavailable. Model validation: incomplete. Trading authorization: disabled.</strong> Historical frequencies and synthetic regression fixtures are not validated prediction accuracy.</p>
   </details>;
 }

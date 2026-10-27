@@ -3,6 +3,7 @@ for(const ext of ['.ts'])require.extensions[ext]=(m,file)=>m._compile(ts.transpi
 const {parseReviewedDecisionManifest,validateDecisionIdentity,MAX_REVIEWED_MANIFEST_BYTES}=require('../lib/decision-reviewed-manifest.ts');
 const {loadReviewedDecisionEvidence}=require('../lib/decision-reviewed-store.ts');
 const {assessDecisionWorkstream}=require('../lib/decision-workstream.ts');
+const {investigation}=require('./fixtures/decision-investigation.cjs');
 const identity={exactKey:'TRIAL|NCT12345678',programId:'PDUFA-123456',trialId:'NCT12345678',ticker:'TEST',stage:'GEM_JR'};
 const asOf='2026-10-26T12:00:00Z';
 // Invented schema/transport fixtures only; these are not reviewed scientific or FDA records.
@@ -48,6 +49,25 @@ test('source-cited scientific dossier stays partial and is bound to the exact re
  m.evidence.scienceDossier.identity.stage='GEM';assert.throws(()=>parseReviewedDecisionManifest(m,identity));
  m.evidence.scienceDossier.identity.stage=identity.stage;m.evidence.scienceDossier.ordersEnabled=true;
  assert.throws(()=>parseReviewedDecisionManifest(m,identity));
+});
+test('qualitative direction and source-bound adversarial review survive strict transport without granting prediction readiness',()=>{
+ const m=manifest();m.evidence.scienceDossier=investigation(identity,asOf);
+ const out=parseReviewedDecisionManifest(m,identity);assert.deepEqual(out.scienceDossier,m.evidence.scienceDossier);
+ const r=assessDecisionWorkstream(identity,null,null,null,out,new Date(asOf));assert.equal(r.status,'NOT_READY');assert.equal(r.probability,null);
+ for(const mutate of [d=>d.levels[0].assessments[0].approvalDirection=.8,d=>d.adversarialReview.independentReviewDeclared='true',d=>d.adversarialReview.independentlyVerified=true,d=>d.adversarialReview.opposing.sources[0].url='https://user:secret@example.org/source']){
+  const invalid=structuredClone(m);mutate(invalid.evidence.scienceDossier);assert.throws(()=>parseReviewedDecisionManifest(invalid,identity));
+ }
+});
+test('adversarial citations cannot introduce another trial or conflicting primary protocol into the dossier',()=>{
+ const m=manifest();m.evidence.scienceDossier=investigation(identity,asOf);
+ const d=m.evidence.scienceDossier;
+ d.levels[0].assessments[0].sources[0].primaryTrial={trialId:identity.trialId,protocolId:'SYNTHETIC-A'};
+ d.adversarialReview.opposing.sources[0].primaryTrial={trialId:identity.trialId,protocolId:'SYNTHETIC-B'};
+ assert.throws(()=>parseReviewedDecisionManifest(m,identity));
+ d.adversarialReview.opposing.sources[0].primaryTrial={trialId:'NCT87654321',protocolId:'SYNTHETIC-A'};
+ assert.throws(()=>parseReviewedDecisionManifest(m,identity));
+ d.adversarialReview.opposing.sources[0].primaryTrial={trialId:identity.trialId,protocolId:'SYNTHETIC-A'};
+ assert.doesNotThrow(()=>parseReviewedDecisionManifest(m,identity));
 });
 test('application and company mapping assertions are optional transport metadata, not independently verified identities',()=>{
  for(const links of [{outcomeApplicationNumber:null,mainCompanyCik:null},{outcomeApplicationNumber:'NDA123456',mainCompanyCik:'0000000001'},

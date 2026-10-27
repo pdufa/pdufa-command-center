@@ -37,6 +37,14 @@ export type DecisionWorkstream = {
   probability:null;
   tradeAuthorized:false;
   scienceInvestigation:ScienceInvestigationAudit;
+  prediction:{
+    predictedOutcome:"INSUFFICIENT_EVIDENCE";
+    approvalProbability:null;
+    nonapprovalProbability:null;
+    confidence:null;
+    readyForReliablePrediction:false;
+    reasons:string[];
+  };
 };
 
 /** Compose every evidence gate without changing membership, restrictions, scores or FS/FA.
@@ -114,5 +122,10 @@ export function assessDecisionWorkstream(identity:DecisionIdentity, detail:Asses
     ],
     historicalSource:source,historicalMatches:identityIssues.length?0:joined?.historicalMatches ?? 0,
     sourceIssues,issues:[...new Set(issues)],modelValidated:false,probability:null,tradeAuthorized:false,scienceInvestigation:investigation,
+    // Research prerequisite completion and fixture metrics cannot activate a
+    // predictive model. Abstention is distinct from the historical FDA label.
+    prediction:{predictedOutcome:"INSUFFICIENT_EVIDENCE",approvalProbability:null,
+      nonapprovalProbability:null,confidence:null,readyForReliablePrediction:false,
+      reasons:[...new Set(["Independent model validation for reliable FDA predictions is unavailable",...issues])]},
   };
 }

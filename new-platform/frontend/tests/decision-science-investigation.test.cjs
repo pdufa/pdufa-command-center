@@ -7,6 +7,7 @@ const audit=(d=investigation(identity,asOf))=>auditScienceInvestigation(d,identi
 test('synthetic complete inventory yields cautious research review with 40 assessments, 20 levels and 8 layers',()=>{
  const r=audit();assert.equal(r.status,'READY_FOR_RESEARCH_REVIEW');assert.equal(r.completedAssessments,40);assert.equal(r.completedLevels,20);assert.equal(r.coveredLayers,8);
  assert.equal(r.evidenceCompletenessPct,100);assert.equal(r.reluctantAssessment,'CAUTIOUS_RESEARCH_ONLY');assert.equal(r.readiness.reviewedLevels,20);assert.match(r.warnings.join(' '),/independent verification/);
+ assert.equal(r.adversarialReviewStatus,'RECORDED_FOR_REVIEW');assert.match(r.warnings.join(' '),/not validated predictive factors/);
 });
 test('missing science has unknown completion instead of an invented zero-percent result',()=>{const r=audit(null);assert.equal(r.status,'NOT_READY');assert.equal(r.evidenceCompletenessPct,null);assert.equal(r.readiness,null);});
 test('summary completeness cannot replace the source-cited investigation inventory',()=>{assert.equal(audit({reviewedLevels:20,sourceStatus:'VERIFIED'}).status,'NOT_READY');});
@@ -31,4 +32,56 @@ test('impossible calendar dates and ambiguous local timestamps cannot enter sour
 });
 test('parser rejects excessive inventories,non-HTTPS or credential sources and unexpected trading fields',()=>{
  for(const mutate of [d=>d.layers.push({id:'9',label:'extra'}),d=>d.levels.push(d.levels[0]),d=>d.levels[0].assessments.push(d.levels[0].assessments[0]),d=>d.levels[0].assessments[0].sources[0].url='https://user:secret@example.org/source',d=>d.levels[0].assessments[0].sources[0].url='http://example.org/source',d=>d.tradeAuthorized=true]){const d=investigation(identity,asOf);mutate(d);assert.throws(()=>parseScienceInvestigation(d));}
+});
+test('legacy dossiers still parse but missing approval directions cannot earn assessment completion',()=>{
+ const d=investigation(identity,asOf);for(const level of d.levels)for(const a of level.assessments){delete a.approvalDirection;delete a.directionRationale;}
+ assert.doesNotThrow(()=>parseScienceInvestigation(d));const r=audit(d);
+ assert.equal(r.status,'NOT_READY');assert.equal(r.completedAssessments,0);assert.equal(r.completedLevels,0);assert.match(r.issues.join(' '),/approval direction/);
+});
+test('supporting,opposing and materially unchanged directions are qualitative, never numeric confidence',()=>{
+ for(const approvalDirection of ['SUPPORTS_APPROVAL','OPPOSES_APPROVAL','MATERIALLY_UNCHANGED']){
+  const d=investigation(identity,asOf);d.levels[0].assessments[0].approvalDirection=approvalDirection;
+  const r=audit(d);assert.equal(r.status,'READY_FOR_RESEARCH_REVIEW');assert.equal(r.completedAssessments,40);
+  assert.equal(r.probability,undefined);assert.equal(r.predictionConfidence,undefined);
+ }
+});
+test('undetermined directions or blank direction rationales withhold completion despite COMPLETE status',()=>{
+ for(const changes of [{approvalDirection:'UNDETERMINED'},{directionRationale:''},{directionRationale:'  '}]){
+  const d=investigation(identity,asOf);Object.assign(d.levels[0].assessments[0],changes);const r=audit(d);
+  assert.equal(r.status,'NOT_READY');assert.equal(r.completedAssessments,39);assert.equal(r.completedLevels,19);
+ }
+});
+test('arbitrary directions,numerical rationales and predictive promotion fields are rejected by parser',()=>{
+ for(const changes of [{approvalDirection:.95},{approvalDirection:'PASS'},{directionRationale:75},{validatedPredictiveFactor:true}]){
+  const d=investigation(identity,asOf);Object.assign(d.levels[0].assessments[0],changes);assert.throws(()=>parseScienceInvestigation(d));
+ }
+});
+test('forty directional assessments cannot substitute for an adversarial review',()=>{
+ const d=investigation(identity,asOf);delete d.adversarialReview;
+ assert.doesNotThrow(()=>parseScienceInvestigation(d));const r=audit(d);
+ assert.equal(r.completedAssessments,40);assert.equal(r.evidenceCompletenessPct,100);assert.equal(r.status,'NOT_READY');assert.equal(r.adversarialReviewStatus,'MISSING');
+});
+test('challenge must have distinct declared reviewer,resolved findings and supporting and opposing source-bound arguments',()=>{
+ const mutations=[
+  r=>r.reviewer=' SYNTHETIC REVIEWER ',r=>r.independentReviewDeclared=false,r=>r.unresolvedCriticalFindings=1,
+  r=>r.supporting.rationale='',r=>r.opposing.rationale='',r=>r.opposing.sources=[],r=>r.supporting.assessmentIds=[],
+  r=>r.opposing.assessmentIds=['unknown'],r=>r.supporting.assessmentIds.push(r.supporting.assessmentIds[0]),
+  r=>r.supporting.sources[0].independentlyReviewed=false,
+ ];
+ for(const mutate of mutations){const d=investigation(identity,asOf);mutate(d.adversarialReview);const r=audit(d);
+  assert.equal(r.status,'NOT_READY');assert.equal(r.adversarialReviewStatus,'INCOMPLETE');assert.equal(r.completedAssessments,40);
+ }
+});
+test('challenge review and its source observations must be chronologically available',()=>{
+ for(const reviewedAt of [asOf,'2026-10-27T00:00:00Z','2026-02-31T00:00:00Z','2026-10-24T10:00:00Z','2026-10-25T10:00:00']){
+  const d=investigation(identity,asOf);d.adversarialReview.reviewedAt=reviewedAt;assert.equal(audit(d).status,'NOT_READY');
+ }
+ const d=investigation(identity,asOf);d.adversarialReview.opposing.sources[0].observedAt=asOf;assert.equal(audit(d).status,'NOT_READY');
+ const newer=investigation(identity,asOf);newer.levels[0].assessments[0].sources[0].observedAt='2026-10-26T10:30:00Z';
+ const r=audit(newer);assert.equal(r.completedAssessments,40);assert.equal(r.adversarialReviewStatus,'INCOMPLETE');assert.equal(r.status,'NOT_READY');
+});
+test('challenge shape and exact primary-trial identity stay bounded and cannot assert independent verification',()=>{
+ for(const mutate of [r=>r.independentlyVerified=true,r=>r.independentReviewDeclared='true',r=>r.opposing.sources[0].url='http://example.org/source',r=>r.supporting.assessmentIds=Array(41).fill('assessment-0-0'),r=>r.supporting.sources[0].primaryTrial={trialId:'NCT87654321',protocolId:'SYNTHETIC'}]){
+  const d=investigation(identity,asOf);mutate(d.adversarialReview);assert.throws(()=>parseScienceInvestigation(d));
+ }
 });
