@@ -7,9 +7,11 @@ on:
       - 'scripts/pdufa_readiness_gate.py'
       - 'scripts/evaluate_fda_predictions.py'
       - 'scripts/compare_fda_prediction_baseline.py'
+      - 'scripts/screen_fda_evidence.py'
       - 'tests/test_pdufa_readiness_gate.py'
       - 'tests/test_evaluate_fda_predictions.py'
       - 'tests/test_compare_fda_prediction_baseline.py'
+      - 'tests/test_screen_fda_evidence.py'
       - '.github/workflows/fda-historical-prediction-unit-tests.yml'
   pull_request:
     paths:
@@ -41,4 +43,5 @@ jobs:
           python -m pytest -q \
             tests/test_pdufa_readiness_gate.py \
             tests/test_evaluate_fda_predictions.py \
-            tests/test_compare_fda_prediction_baseline.py
+            tests/test_compare_fda_prediction_baseline.py \
+            tests/test_screen_fda_evidence.py
