@@ -26,6 +26,9 @@ def main():
         with engine.connect() as connection:
             with connection.begin():
                 connection.execute(text("SET TRANSACTION READ ONLY"))
+                identity = connection.execute(text("SELECT current_database(), current_user, current_schema()")).one()
+                tables = connection.execute(text("SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_type = 'BASE TABLE' ORDER BY table_schema, table_name LIMIT 100")).all()
+                print(json.dumps({"audit": "database_inventory", "database": identity[0], "user": identity[1], "schema": identity[2], "visible_tables": [{"schema": schema, "table": name} for schema, name in tables], "scientific_analysis_complete": False, "trade_authorized": False}, sort_keys=True))
                 table = connection.execute(text("SELECT to_regclass('full_trial_records')")).scalar_one()
                 if table is None:
                     tables = connection.execute(text("SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_type = 'BASE TABLE' ORDER BY table_schema, table_name LIMIT 100")).all()
