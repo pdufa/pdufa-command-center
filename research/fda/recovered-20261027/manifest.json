@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "record_type": "RECOVERED_HOP_ARTIFACT_PROVENANCE",
+  "retrieved_on": "2026-10-27",
+  "artifacts": [
+    {
+      "role": "CRL_SNAPSHOT",
+      "artifact_id": 12610736354,
+      "run_id": 40224038609,
+      "repository": "pdufa/pdufa-command-center",
+      "relative_path": "fda-crl-source-artifact.zip",
+      "sha256": "e2270f2ba87688c348429f1e37225eaa1aba0bb196ad6b96277342c866ff6b70",
+      "source_run_head_sha": "3729db0e7c21dd71ccf569fbebf80afa2eebd87f",
+      "created_at": "2026-10-25T19:01:47Z"
+    },
+    {
+      "role": "DRUGSFDA_SNAPSHOT",
+      "artifact_id": 12611090768,
+      "run_id": 40224730350,
+      "repository": "pdufa/pdufa-command-center",
+      "relative_path": "fda-drugsfda-source-artifact.zip",
+      "sha256": "58f9197c4d040fbf21f2bbf4edf223318b46c4df354a2a1efc95a844cad502c0",
+      "source_run_head_sha": "c27a6ca061356859408029a94bf71a6e02126249",
+      "created_at": "2026-10-25T19:10:24Z"
+    },
+    {
+      "role": "ACTION_REVIEW",
+      "artifact_id": 12615481622,
+      "run_id": 40236833550,
+      "repository": "pdufa/pdufa-command-center",
+      "relative_path": "fda-action-review-artifact.zip",
+      "sha256": "e3f90ebcc3aa96fbc70518e14b40d9705402e46851832802c34668bf23603a25",
+      "source_run_head_sha": "3d3b74ba1420fffe3ab5387d5f9b07b96a5ebf8a",
+      "created_at": "2026-10-25T21:45:12Z"
+    }
+  ]
+}

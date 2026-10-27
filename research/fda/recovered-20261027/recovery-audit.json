@@ -1,0 +1,168 @@
+{
+  "application_identity_link_counts": {
+    "APPLICATION_ID_UNRESOLVED": 15,
+    "MULTIPLE_OR_AMBIGUOUS_APPLICATION_LINKS": 2,
+    "NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 107,
+    "PRESENT_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT": 334
+  },
+  "complete_decision_denominator_verified": false,
+  "counts": {
+    "action_review_observations": 458,
+    "backtesting_eligible_decisions": 0,
+    "crl_source_observations": 458,
+    "identified_adjudicated_review_cycles": 0,
+    "independently_verified_fail": 0,
+    "independently_verified_pass": 0,
+    "pdf_check_observations": 458,
+    "recovered_artifacts": 3,
+    "registry_application_ids_unparseable": 0,
+    "registry_applications": 29416,
+    "registry_applications_without_submissions": 2706,
+    "registry_canonical_application_id_collisions": 0,
+    "registry_submission_observations": 188890,
+    "registry_submissions_without_status": 1,
+    "review_worksheet_observations": 154,
+    "usable_predecision_scientific_evidence_decisions": 0
+  },
+  "independently_verified": false,
+  "limitations": [
+    "Pinned GitHub ZIP receipts attest recovered artifact bytes, not original FDA document truth.",
+    "Original FDA archives, manifests and PDFs were not retained by the historical collectors.",
+    "CRL publication selection and approved-product registry selection do not establish an unbiased review-cycle denominator.",
+    "AP/CR/TA source codes and published letter dates are not adjudicated cycle labels or effective action dates.",
+    "Drug, indication, trial, PDUFA target, source publication and predecision features remain missing; no inference fills them."
+  ],
+  "original_fda_bytes_retained": false,
+  "prediction_model_validated": false,
+  "prediction_probability": null,
+  "published_letter_date_range": {
+    "maximum": "2026-08-07",
+    "minimum": "2002-03-15",
+    "unknown_or_invalid_dates": 0,
+    "valid_dates": 458
+  },
+  "published_letter_type_counts": {
+    "COMPLETE RESPONSE": 445,
+    "CORRECTED PROVISIONAL DETERMINATION": 1,
+    "PROVISIONAL DETERMINATION": 1,
+    "REFUSAL TO FILE": 1,
+    "RESCIND COMPLETE RESPONSE": 1,
+    "TENTATIVE APPROVAL": 4,
+    "UNCLASSIFIED": 5
+  },
+  "published_submission_status_counts": {
+    "AP": 187733,
+    "CR": 1,
+    "TA": 1155
+  },
+  "published_submission_status_date_range": {
+    "maximum": "2026-10-21",
+    "minimum": "1939-02-09",
+    "unknown_or_invalid_dates": 7,
+    "valid_dates": 188883
+  },
+  "recovered_on": "2026-10-27",
+  "source_artifacts": [
+    {
+      "artifact_id": 12615481622,
+      "created_at": "2026-10-25T21:45:12Z",
+      "members": {
+        "fda_all_published_action_pdf_checks.json": {
+          "sha256": "61c32f5cdeda5925cae4c06d346119a2226fdd34c2523efdc15bce471cec8bac",
+          "size_bytes": 415912
+        },
+        "fda_all_published_action_pdf_checks_audit.json": {
+          "sha256": "ba445260cc3d0bde96a9e4b4e62f21b75eba2e44b32ca6f3bd32d67b80f6bcc4",
+          "size_bytes": 1076
+        },
+        "fda_all_published_action_review_audit.json": {
+          "sha256": "55633f86eaab3124913f90a419ed183e643a3ba16c1c74df4b163c195c1bc356",
+          "size_bytes": 1628
+        },
+        "fda_all_published_action_review_worklist.json": {
+          "sha256": "e1816de66f867ffcb19b5917e76ef961f931a87fed6f58330f92348842b19ddd",
+          "size_bytes": 763090
+        },
+        "fda_shared_pdf_document_page_mapping_review.json": {
+          "sha256": "7b866d7bd34027f32f8b0742ddaf570f21b4580b1b93b6da64584178c72576b8",
+          "size_bytes": 126856
+        },
+        "fda_shared_pdf_document_reconciliation_audit.json": {
+          "sha256": "36992d911f7af0747ce41ec449e98bea72f5fb13b9804d50bb836bb4516ae751",
+          "size_bytes": 1497
+        },
+        "fda_shared_pdf_independent_review_worksheet.csv": {
+          "sha256": "859a4489664c66c5266c407ac33db5eeb91208438cbb558bfb71a135cb38e871",
+          "size_bytes": 69906
+        },
+        "fda_shared_pdf_provisional_page_candidates.json": {
+          "sha256": "c50795e71be2d875f16e9ccaa662fb10529b11cd3cf7d847318540cc5f0d20a2",
+          "size_bytes": 367281
+        },
+        "fda_shared_pdf_provisional_page_candidates_audit.json": {
+          "sha256": "62b0031fcd4dcdd0b6bac0fb4040df518df62ab67fd5aaaca11deb2468bd08ec",
+          "size_bytes": 1379
+        },
+        "fda_shared_pdf_review_worksheet_audit.json": {
+          "sha256": "9c977aa9cc18d71d3dcba818684e6980079aefd26c461a131102ff9eabbfbe2f",
+          "size_bytes": 947
+        }
+      },
+      "relative_path": "fda-action-review-artifact.zip",
+      "repository": "pdufa/pdufa-command-center",
+      "role": "ACTION_REVIEW",
+      "run_id": 40236833550,
+      "sha256": "e3f90ebcc3aa96fbc70518e14b40d9705402e46851832802c34668bf23603a25",
+      "source_run_head_sha": "3d3b74ba1420fffe3ab5387d5f9b07b96a5ebf8a"
+    },
+    {
+      "artifact_id": 12610736354,
+      "created_at": "2026-10-25T19:01:47Z",
+      "members": {
+        "fda_crl_audit.json": {
+          "sha256": "233d52884c45589fca8cba133ddfc12826883c84307bec7e7f62a8e04677c9df",
+          "size_bytes": 1230
+        },
+        "fda_crl_published_quarantined.json": {
+          "sha256": "d3d284e1ec0aa62b6dfb7523bd7bbfc7324c3b218a412fd6ee357a35f5c39898",
+          "size_bytes": 362656
+        }
+      },
+      "relative_path": "fda-crl-source-artifact.zip",
+      "repository": "pdufa/pdufa-command-center",
+      "role": "CRL_SNAPSHOT",
+      "run_id": 40224038609,
+      "sha256": "e2270f2ba87688c348429f1e37225eaa1aba0bb196ad6b96277342c866ff6b70",
+      "source_run_head_sha": "3729db0e7c21dd71ccf569fbebf80afa2eebd87f"
+    },
+    {
+      "artifact_id": 12611090768,
+      "created_at": "2026-10-25T19:10:24Z",
+      "members": {
+        "drugsfda_approved_registry_audit.json": {
+          "sha256": "44fa0212394d4c145659aec0ccdf5e4bbdf3999df3c9ae8ac6c021bf7dd06f22",
+          "size_bytes": 1354
+        },
+        "drugsfda_approved_registry_quarantined.json": {
+          "sha256": "adb24d7921d56bc3824b57e785164a32287efc69a9d3fe9b940da97f6c65f5b2",
+          "size_bytes": 72523862
+        }
+      },
+      "relative_path": "fda-drugsfda-source-artifact.zip",
+      "repository": "pdufa/pdufa-command-center",
+      "role": "DRUGSFDA_SNAPSHOT",
+      "run_id": 40224730350,
+      "sha256": "58f9197c4d040fbf21f2bbf4edf223318b46c4df354a2a1efc95a844cad502c0",
+      "source_run_head_sha": "c27a6ca061356859408029a94bf71a6e02126249"
+    }
+  ],
+  "source_export_dates": {
+    "crl": "2026-10-21",
+    "registry": "2026-10-23"
+  },
+  "source_retrieved_on": {
+    "crl": "2026-10-25",
+    "registry": "2026-10-25"
+  },
+  "status": "RECOVERED_METADATA_QUARANTINED_NOT_VERIFIED_FDA_OUTCOMES"
+}
