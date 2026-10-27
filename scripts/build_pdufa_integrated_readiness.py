@@ -18,6 +18,13 @@ def assemble(ledger, fingerprints, reconciliation):
         identity = ("application_id", "submission_id", "review_cycle", "official_source_url")
         if any(candidate.get(k) != evidence.get(k) for k in identity):
             raise ValueError("candidate/reconciliation identity mismatch")
+    fingerprint_records = fingerprints.get("records", [])
+    if len(fingerprint_records) != len(candidates):
+        raise ValueError("candidate and fingerprint counts differ")
+    for candidate, source in zip(candidates, fingerprint_records):
+        if (candidate.get("application_id") != source.get("application_id") or
+                candidate.get("official_source_url") != source.get("official_source_url")):
+            raise ValueError("candidate/fingerprint identity mismatch")
     return {
         "system": "PDUFA SCIENCE-OUTCOME-MAIN",
         "readiness": "NOT_VALIDATED_FOR_TRADING",
