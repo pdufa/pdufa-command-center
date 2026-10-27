@@ -30,8 +30,12 @@ original-byte retention was implemented but not enabled in any live workflow.
 Preserved all **84** upstream commits through `2ffbfba0` via same-branch merge
 `bc8aefdc`. Both earlier requested commits remain ancestors. Post-integration
 verification: **2,611 Python passed, 1 existing skip, 557 subtests; 665 frontend
-passed; TypeScript/build passed**. New-head GitHub and remote-preview results
-must be checked separately. Vercel deployment listing returned permission 403;
+passed; TypeScript/build passed**. All **15 GitHub workflows passed at
+`66087103`**, which was pushed normally to the development branch and PR #498.
+Vercel marked its branch preview Ready, but actual preview fetch returned
+permission **403** at deployment alias access; rendered remote content remains
+unverified. Authorize team `pdufa` / project `pdufa-new-dashboard` in the connection
+and confirm account access before retrying. No CLI fallback is installed;
 no protection or production changes are authorized. No operational scan timing
 or restriction/FS/FA association was edited.
 

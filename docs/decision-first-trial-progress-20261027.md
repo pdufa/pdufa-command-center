@@ -184,6 +184,7 @@ Post-integration verification:
 | Independent implementation review | No material case-data, identity, display or restriction regression found |
 | Recovered research SQLite | Integrity `ok`; zero foreign-key violations; exact source counts reconciled |
 | Whitespace/source checks | Passed |
+| GitHub Actions at implementation/verification head `66087103` | **15 workflows completed successfully**, including full contracts and frozen census |
 
 Synthetic regression fixtures verify arithmetic and software contracts only.
 The real saved-record integrity test verifies reproducibility, not truth or
@@ -205,6 +206,29 @@ secret. After pushing, inspect GitHub's existing Vercel status/PR comment for
 the feature-preview URL and attempt ordinary authorized preview verification.
 If access remains blocked, the remote-display milestone stays incomplete.
 No manual production deployment is performed.
+
+The normal push to the exact development ref succeeded at **`66087103`** and
+existing PR #498 was updated; the working tree was clean after the push. GitHub
+reported the existing Vercel automation **success / Ready** for deployment
+`YCnrjgz3MoaxzmevTgvcxHwCDsdr`. This establishes automation status, not rendered
+content verification. The authorized fetch of the actual feature-preview path
+returned **403 Forbidden** at `read_protection_bypass`, endpoint
+`/v2/deployments/dpl_YCnrjgz3MoaxzmevTgvcxHwCDsdr/aliases`.
+The tool reported that the connected Vercel account lacks deployment access.
+No mapped CLI fallback is installed. Do not retry unchanged or disable
+protection. To unblock remote verification, authorize this project's team in
+the Vercel connection and confirm that account has project/deployment access:
+project `pdufa-new-dashboard`, team `pdufa`.
+
+The unverified feature-preview URL is
+`https://pdufa-new-dashboard-git-feature-decision-workstrea-f8ba86-pdufa.vercel.app/prediction-pilot`.
+Production remains untouched. The first case still requires the scientific and
+source inputs listed above even after preview access is fixed.
+
+The successful new-head workflow receipt is committed as
+`research/first-trial/github-ci-66087103.json`. Later documentation-only commits
+do not change the tested implementation; their own workflow status must still
+be checked separately rather than inferred from this receipt.
 
 No existing GEM JR/GEM/WT restriction, FS/FA association, live source dataset,
 production configuration/database, trading permission or order was changed.
