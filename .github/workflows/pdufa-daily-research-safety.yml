@@ -99,11 +99,19 @@ jobs:
           import os
           from pathlib import Path
           outcome = os.environ["BULK_STAGE_OUTCOME"]
+          summary_path = Path("historical_drugsatfda_candidates.json")
+          summary = json.loads(summary_path.read_text()) if outcome == "success" and summary_path.exists() else {}
+          report = {"status": "SUCCEEDED" if outcome == "success" and summary else "FAILED_OR_SKIPPED",
+                    "step_outcome": outcome,
+                    "candidate_count": summary.get("candidate_count"),
+                    "submission_types": summary.get("submission_types"),
+                    "with_source_documents": summary.get("with_source_documents"),
+                    "without_source_documents": summary.get("without_source_documents"),
+                    "with_action_descriptions": summary.get("with_action_descriptions"),
+                    "historical_outcomes_independently_verified": False,
+                    "model_ready": False}
           Path("historical_drugsatfda_ingestion_status.json").write_text(
-              json.dumps({"status": "SUCCEEDED" if outcome == "success" else "FAILED_OR_SKIPPED",
-                          "step_outcome": outcome,
-                          "historical_outcomes_independently_verified": False,
-                          "model_ready": False}, indent=2) + "\n"
+              json.dumps(report, indent=2, sort_keys=True) + "\n"
           )
           PY
       - name: Publish Drugs@FDA ingestion outcome
