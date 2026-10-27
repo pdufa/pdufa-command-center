@@ -39,3 +39,21 @@ Original issuer-hosted Form 6-K PDF: https://abivax.gcs-web.com/static-files/5e3
 7. Confirm actual GEM JR membership/rank separately; frozen Pipeline census inclusion does not imply GEM JR membership.
 
 **Decision state:** NOT_READY. `modelValidated=false`; `probability=null`; `tradeAuthorized=false`. This worksheet is preliminary evidence triage, not an approved reviewed-evidence payload.
+
+
+## Registry-document discovery (27 October 2026)
+
+An independent registry-index search surfaced the following **document metadata**, which should now be verified against the actual ClinicalTrials.gov document files before asserting that their contents were reviewed:
+
+- Protocol **dated 10 April 2024**, reportedly posted **14 August 2026**.
+- Statistical analysis plan **dated 15 July 2025**, reportedly posted **14 August 2026**.
+- Results reportedly submitted **3 July 2026** and first posted **10 September 2026**.
+- Registry-index population: **636 started, 578 completed, 19 with serious adverse events**. These figures are not interchangeable with the sponsor's **580-person randomized maintenance efficacy/safety analysis**. Differences in enrolled/started/randomized/completed populations, analysis periods and definitions require direct participant-flow and adverse-event-table reconciliation.
+
+Discovery reference: https://ctis.eu/trial/2022-500536-11-01 (third-party index of ClinicalTrials.gov record); authoritative record and version history: https://clinicaltrials.gov/study/NCT05535946 and https://clinicaltrials.gov/study/NCT05535946?tab=history
+
+**Chronology:** The document dates precede the June 2026 topline disclosure, but their public posting dates appear to be after it. A document's internal date alone does not prove public availability at an earlier historical prediction cutoff. The first public availability and actual version/contents must be independently verified before use in point-in-time model validation.
+
+**Unresolved:** Original protocol and SAP bytes have not been downloaded/read in this review. No claims about exact prespecified estimands, multiplicity, imputation, or primary population are yet validated. The registry's aggregate serious-adverse-event count must not be compared directly with the sponsor's arm-level serious TEAE counts until matching populations and periods are established.
+
+**No readiness promotion:** NOT_READY; modelValidated=false; probability=null; tradeAuthorized=false.
