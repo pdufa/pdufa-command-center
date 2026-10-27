@@ -72,7 +72,8 @@ jobs:
             tests/test_fda_historical_candidate_ledger.py \
             tests/test_collect_fda_source_hashes.py \
             tests/test_reconcile_fda_source_evidence.py \
-            tests/test_pdufa_integrated_readiness.py
+            tests/test_pdufa_integrated_readiness.py \
+            tests/test_prepare_fda_review_packet.py
       - name: Produce quarantined historical FDA candidate ledger
         working-directory: research
         run: |
@@ -99,6 +100,19 @@ jobs:
             --fingerprints historical_fda_source_hashes.json \
             --reconciliation historical_fda_reconciliation.json > pdufa_integrated_readiness.json
           python -m json.tool pdufa_integrated_readiness.json > /dev/null
+      - name: Prepare FDA independent-review packets
+        working-directory: research
+        run: |
+          python scripts/prepare_fda_review_packet.py \
+            --ledger historical_fda_candidate_ledger.json \
+            --reconciliation historical_fda_reconciliation.json > historical_fda_review_packet.json
+          python -m json.tool historical_fda_review_packet.json > /dev/null
+      - name: Publish FDA review packets
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-fda-review-packets
+          path: research/historical_fda_review_packet.json
+          retention-days: 30
       - name: Publish integrated PDUFA readiness report
         uses: actions/upload-artifact@v4
         with:
