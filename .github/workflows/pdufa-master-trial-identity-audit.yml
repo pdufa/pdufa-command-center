@@ -14,6 +14,11 @@ jobs:
           python-version: '3.12'
       - name: Verify audit logic before database access
         run: python -m unittest discover -s tests -p 'test_trial_census_identity_audit.py' -v
+      - name: Verify SCIENCE source identity runtime tests
+        run: |
+          cd new-platform/frontend
+          npm ci --ignore-scripts
+          node --test tests/decision-trial-source-identity.test.cjs tests/decision-science-source-identity-runtime.test.cjs
       - name: Verify database connection exists
         env:
           DATABASE_URL: ${{ secrets.PDUFA_DATABASE_URL }}
