@@ -13,7 +13,8 @@ function load(filename, requireFn) {
   return exports;
 }
 const catalog = load("science-question-catalog.proposed.ts", require);
-const register = load("peak-evidence-register.proposed.ts", () => catalog).PEAK_SCIENCE_REGISTER;
+const reported = load("peak-reported-evidence.proposed.ts", require);
+const register = load("peak-evidence-register.proposed.ts", (id) => id.includes("peak-reported-evidence") ? reported : catalog).PEAK_SCIENCE_REGISTER;
 test("PEAK register is exact-trial and includes all catalog questions", () => {
   assert.equal(register.trialId, "NCT05208047");
   assert.equal(register.list, "GEM");
@@ -27,7 +28,21 @@ test("no unverified evidence, scores, reviewers or FDA probabilities are fabrica
     assert.equal(a.score, null);
     assert.equal(a.confidence, null);
     assert.equal(a.reviewer, null);
-    assert.equal(a.evidence.length, 0);
+    const linked = reported.PEAK_REPORTED_EVIDENCE.filter(item => item.assessmentId === a.id);
+    assert.equal(a.evidence.length, linked.length);
+    for (const e of a.evidence) {
+      assert.equal(e.verified, false);
+      assert.equal(e.verifiedAt, null);
+      assert.equal(e.publishedAt, null);
+      assert.equal(e.status, "PUBLISHED_UNVERIFIED");
+      assert.ok(e.requiredFollowup.length > 0);
+    }
     assert.ok(a.missingEvidence.length > 0);
   }
+});
+
+test("eleven published mappings do not erase evidence gaps", () => {
+  assert.equal(register.assessments.reduce((n,a)=>n+a.evidence.length,0),11);
+  assert.equal(register.assessments.filter(a=>a.evidence.length===0).length,29);
+  assert.equal(register.assessments.every(a=>a.missingEvidence.length>0),true);
 });
