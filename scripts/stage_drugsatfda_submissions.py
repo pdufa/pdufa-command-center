@@ -72,6 +72,15 @@ def stage(zip_path):
         "submission_types": dict(sorted(Counter(r["submission_type"] for r in candidates).items())),
         "review_priority_counts": dict(sorted(Counter((r["review_priority"] or "").strip() or "UNSPECIFIED" for r in candidates).items())),
         "candidate_decisions_verified": 0,
+        "evidence_coverage_by_submission_type": {
+            submission_type: {
+                "total": sum(r["submission_type"] == submission_type for r in candidates),
+                "with_source_documents": sum(r["submission_type"] == submission_type and bool(r["source_documents"]) for r in candidates),
+                "with_action_descriptions": sum(r["submission_type"] == submission_type and bool(r["action_descriptions"]) for r in candidates),
+            }
+            for submission_type in sorted({r["submission_type"] for r in candidates})
+        },
+
         "status_code_counts": dict(sorted(Counter(x["submission_status_code"] for x in candidates).items())),
         "candidates": candidates,
         "warning": "Submission status codes and document links are not independently verified FDA PASS/FAIL outcomes.",
