@@ -20,13 +20,18 @@ export async function GET() {
     const runs = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/${workflow}/runs?per_page=10&status=completed`, { headers, cache: "no-store", signal: AbortSignal.timeout(8000) });
     if (!runs.ok) return unavailable("Historical workflow run unavailable");
     const body = await runs.json() as { workflow_runs?: Array<{ id: number; conclusion: string; created_at: string }> };
-    const run = body.workflow_runs?.find(r => r.conclusion === "success");
-    if (!run) return unavailable("No successful historical workflow run");
-    const artifacts = await fetch(`https://api.github.com/repos/${repo}/actions/runs/${run.id}/artifacts?per_page=100`, { headers, cache: "no-store", signal: AbortSignal.timeout(8000) });
-    if (!artifacts.ok) return unavailable("Historical artifact index unavailable");
-    const data = await artifacts.json() as { artifacts?: Array<{ name: string; expired: boolean; html_url: string }> };
-    const artifact = data.artifacts?.find(a => a.name === artifactName && !a.expired);
-    if (!artifact) return unavailable("Historical ingestion status artifact not published");
+    const successfulRuns = body.workflow_runs?.filter(r => r.conclusion === "success") ?? [];
+    if (!successfulRuns.length) return unavailable("No successful historical workflow run");
+    let selected: { run: (typeof successfulRuns)[number]; artifact: { name: string; expired: boolean; html_url: string } } | null = null;
+    for (const run of successfulRuns.slice(0, 5)) {
+      const response = await fetch(`https://api.github.com/repos/${repo}/actions/runs/${run.id}/artifacts?per_page=100`, { headers, cache: "no-store", signal: AbortSignal.timeout(8000) });
+      if (!response.ok) continue;
+      const data = await response.json() as { artifacts?: Array<{ name: string; expired: boolean; html_url: string }> };
+      const artifact = data.artifacts?.find(a => a.name === artifactName && !a.expired);
+      if (artifact) { selected = { run, artifact }; break; }
+    }
+    if (!selected) return unavailable("Historical ingestion status artifact not published in the last five successful runs");
+    const { run, artifact } = selected;
     return NextResponse.json({
       status: "ARTIFACT_AVAILABLE", run_id: run.id, run_created_at: run.created_at,
       artifact_url: artifact.html_url, candidate_count: null,
