@@ -18,3 +18,9 @@ Status: RESEARCH ONLY. Do not use as trading signal or automatically assign indi
 4. Do not infer that missing ClinicalTrials.gov posted results means a failed study.
 
 Research note only; no production deployment, scanner change, or FS/FA preset reassignment.
+
+## Trial mapping follow-up
+- NCT06389214 = ADX-102-DED-030, 132 enrolled, chamber endpoint; source https://spzco.com/security/ALDX/trials
+- NCT06424444 = ADX-102-DED-031, 421 enrolled, field endpoint; source https://spzco.com/security/ALDX/trials
+- NCT06493604 = ADX-102-DED-032, 116 enrolled, chamber endpoint; source https://spzco.com/security/ALDX/trials
+- Independent trial-level result confirmation remains required before definitive evidence grades.
