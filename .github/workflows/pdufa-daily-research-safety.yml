@@ -70,7 +70,8 @@ jobs:
             tests/test_fda_decision_taxonomy.py \
             tests/test_audit_fda_decisions.py \
             tests/test_fda_historical_candidate_ledger.py \
-            tests/test_collect_fda_source_hashes.py
+            tests/test_collect_fda_source_hashes.py \
+            tests/test_reconcile_fda_source_evidence.py
       - name: Produce quarantined historical FDA candidate ledger
         working-directory: research
         run: |
@@ -82,6 +83,19 @@ jobs:
         run: |
           python scripts/collect_fda_source_hashes.py --candidate-dir data > historical_fda_source_hashes.json
           python -m json.tool historical_fda_source_hashes.json > /dev/null
+      - name: Reconcile FDA candidate and source evidence reports
+        working-directory: research
+        run: |
+          python scripts/reconcile_fda_source_evidence.py \
+            --ledger historical_fda_candidate_ledger.json \
+            --fingerprints historical_fda_source_hashes.json > historical_fda_reconciliation.json
+          python -m json.tool historical_fda_reconciliation.json > /dev/null
+      - name: Publish FDA reconciliation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-fda-evidence-reconciliation
+          path: research/historical_fda_reconciliation.json
+          retention-days: 30
       - name: Publish FDA source fingerprint report
         uses: actions/upload-artifact@v4
         with:
