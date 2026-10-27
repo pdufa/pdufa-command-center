@@ -85,6 +85,8 @@ const dossierShape = object({identity:identitySchema, asOf:text, drug:text, indi
 const scienceDossier: Check = nullable(v => {
   dossierShape(v);
   const d = parseScienceInvestigation(v);
+  const primaryProtocolIds = new Set(d.levels.flatMap(level => level.assessments.flatMap(assessment => assessment.sources.map(source => (source as typeof source & {primaryTrial?:{protocolId:string}}).primaryTrial?.protocolId).filter((id): id is string => typeof id === "string"))));
+  if (primaryProtocolIds.size > 1) invalid();
   for (const level of d.levels) for (const assessment of level.assessments) for (const source of assessment.sources) {
     const primary = (source as typeof source & {primaryTrial?:{trialId:string;protocolId:string}}).primaryTrial;
     if (primary) validatePrimaryTrialSourceIdentity({trialId:d.identity.trialId, protocolId:primary.protocolId}, primary);
