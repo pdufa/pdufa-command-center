@@ -26,6 +26,14 @@ def stage(zip_path):
     with zipfile.ZipFile(zip_path) as zf:
         submissions = read_table(zf, "Submissions.txt")
         documents = read_table(zf, "ApplicationDocs.txt")
+        actions = read_table(zf, "Join_Submission_ActionType_Lookup.txt")
+        action_names = read_table(zf, "ActionTypes_Lookup.txt")
+    action_lookup = {r.get("ActionTypes_LookupID"): r.get("ActionTypes_LookupDescription")
+                     for r in action_names}
+    action_by_submission = {}
+    for row in actions:
+        key = tuple((row.get(field) or "").strip() for field in ("ApplNo", "SubmissionType", "SubmissionNo"))
+        action_by_submission.setdefault(key, []).append(action_lookup.get(row.get("ActionTypes_LookupID")))
     docs = {}
     for row in documents:
         key = tuple((row.get(field) or "").strip() for field in ("ApplNo", "SubmissionType", "SubmissionNo"))
@@ -44,6 +52,7 @@ def stage(zip_path):
             "submission_status_code": row.get("SubmissionStatus"),
             "submission_status_date": row.get("SubmissionStatusDate"),
             "source_documents": docs.get(key, []),
+            "action_descriptions": action_by_submission.get(key, []),
             "independently_verified": False,
             "model_eligible": False,
         })
