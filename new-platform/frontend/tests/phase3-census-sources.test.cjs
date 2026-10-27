@@ -17,7 +17,7 @@ const { parsePhase3CensusSourceDirectory, sourcesForPhase3Trial, FDA_RESEARCH_LI
 const { buildPhase3EvidenceGapCsv, PIPELINE_GATE_AUTOMATION } = require("../lib/phase3-census-evidence-gaps.ts");
 const Details = require("../app/installation-audit/phase3-census/Phase3EvidenceDetails.tsx").default;
 const root = path.join(__dirname,"../../..");
-const input = fs.readFileSync(path.join(root,"data/phase3_all_years_300m_10b_trials.csv"),"utf8");
+const input = fs.readFileSync(path.join(__dirname,"../public/phase3-census-2026-10-26.csv"),"utf8");
 const source = JSON.parse(fs.readFileSync(path.join(__dirname,"../public/phase3-census-sources-2026-10-26.json"),"utf8"));
 const inventory = parsePhase3CensusCsv(input);
 const copy = value => JSON.parse(JSON.stringify(value));

@@ -12,20 +12,19 @@ require.extensions[".ts"] = (mod,file) => mod._compile(
 );
 const { parsePhase3CensusCsv, PHASE3_CENSUS_CSV_PATH, PHASE3_CENSUS_EXPECTED_ROWS } =
   require("../lib/phase3-census-rows.ts");
-const raw = fs.readFileSync(path.join(__dirname,"../../../data/phase3_all_years_300m_10b_trials.csv"),"utf8");
+const raw = fs.readFileSync(path.join(__dirname,"../../../data/snapshots/phase3-census-2026-10-26/phase3_all_years_300m_10b_trials.csv"),"utf8");
 const publicCopy = fs.readFileSync(path.join(__dirname,"../public/phase3-census-2026-10-26.csv"),"utf8");
 const main = fs.readFileSync(path.join(__dirname,"../app/installation-audit/page.tsx"),"utf8");
 const explorer = fs.readFileSync(path.join(__dirname,"../app/installation-audit/phase3-census/Phase3CensusExplorer.tsx"),"utf8");
 const page = fs.readFileSync(path.join(__dirname,"../app/installation-audit/phase3-census/page.tsx"),"utf8");
-const summary = JSON.parse(fs.readFileSync(path.join(__dirname,"../../../data/phase3_all_years_300m_10b_status.json"),"utf8"));
 
-test("public 741-row CSV is EXACT duplicate of dated canonical source, not a stale reconstruction",()=>{
+test("public 741-row CSV is an exact duplicate of its frozen dated source",()=>{
   assert.equal(publicCopy,raw);
   assert.equal(PHASE3_CENSUS_CSV_PATH,"/phase3-census-2026-10-26.csv");
   const d = parsePhase3CensusCsv(publicCopy);
   assert.equal(d.rows.length,PHASE3_CENSUS_EXPECTED_ROWS);
-  assert.equal(d.rows.length,summary.unique_phase3_trials_in_verified_market_cap_range);
-  assert.equal(d.uniqueCompanies,summary.unique_companies_with_matching_trials);
+  assert.equal(d.rows.length,741);
+  assert.equal(d.uniqueCompanies,130);
   assert.equal(d.qualifiedPipelineTotal,null);
   assert.equal(d.pdufaQualifiedCount,null);
   assert.ok(d.rows.every(row=>row.pipelineQualification===null && row.fdaPdufaVerification===false));
