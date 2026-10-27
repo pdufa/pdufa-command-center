@@ -34,9 +34,19 @@ class ScanLaunchTests(unittest.TestCase):
     def run_dispatch(self, mode, action, fail=False):
         workflow = (WORKFLOWS / "pdufa-nightly-pacific-start.yml").read_text()
         step = workflow.split("- name: Dispatch the entire awaited sequence", 1)[1]
-        script = textwrap.dedent(step.split("run: |\n", 1)[1])
-        script = script.replace("${{ steps.pacific.outputs.scan_mode }}", mode)
-        script = script.replace("${{ steps.pacific.outputs.gem_action }}", action)
+        script = textwrap.dedent(step.split("run: |\n", 1)[1]
+                                 .split("\n      - name:", 1)[0])
+        # GitHub evaluates recovery-aware expressions before invoking bash.
+        # Exercise the ordinary Pacific admission path with neither one-time
+        # recovery override set; leave the real launcher unchanged.
+        def expression(match):
+            value = match.group()
+            if "steps.pacific.outputs.scan_mode" in value:
+                return mode
+            if "steps.pacific.outputs.gem_action" in value:
+                return action
+            raise AssertionError("Unexpected launcher expression: " + value)
+        script = re.sub(r"\$\{\{[^}]+\}\}", expression, script)
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
             capture = folder / "request.json"

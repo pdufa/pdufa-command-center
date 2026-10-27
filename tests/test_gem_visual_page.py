@@ -243,6 +243,7 @@ class GemVisualPageTests(unittest.TestCase):
             "Second close": "2026-06-01",
             "First SEC source": "https://www.sec.gov/first",
             "Second SEC source": "https://www.sec.gov/second",
+            "Second financing verified": True,
             "Source review as of": "2026-10-15",
             "PDUFA verified": True,
             "PDUFA saved": "2027-03-20",
@@ -269,6 +270,14 @@ class GemVisualPageTests(unittest.TestCase):
         self.assertIsNone(checks[9]["status"])  # position plan still required
         self.assertTrue(all(c["points"] == "—" for c in checks))
 
+        unreviewed = dict(record, **{"Second financing verified": False})
+        saved_only = _gem_section9_entry_checks(
+            unreviewed, event, profile, runway,
+            date(2026, 10, 17), source_current=True
+        )
+        self.assertIsNone(saved_only[1]["status"])
+        self.assertIsNone(saved_only[2]["status"])
+
         stale = _gem_section9_entry_checks(
             record, event, profile, runway,
             date(2026, 10, 17), source_current=False
@@ -280,7 +289,9 @@ class GemVisualPageTests(unittest.TestCase):
             old, event, profile, runway,
             date(2026, 10, 17), source_current=True
         )
-        self.assertIs(stale[3]["status"], False)
+        # Optional funding review age cannot override a current global SEC
+        # source check. Missing current SEC coverage above still holds entry.
+        self.assertIs(stale[3]["status"], True)
 
     def test_section9_gem_missing_second_financing_never_passes(self):
         record = {

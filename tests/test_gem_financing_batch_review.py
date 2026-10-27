@@ -8,6 +8,7 @@ from datetime import date
 from pathlib import Path
 
 from gem_financing_batch_review import build_financing_review
+from gem_verified_snapshot import source_cleared_gems
 
 
 def csvwrite(root, name, rows):
@@ -19,6 +20,23 @@ def csvwrite(root, name, rows):
 
 
 class FinancingBlockAuditTests(unittest.TestCase):
+    def test_clinical_membership_does_not_expand_financing_denominator(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            csvwrite(root, "pdufa_candidates.csv", [{
+                "event_key": "DDD|X", "ticker": "DDD", "drug": "Alpha Drug",
+                "phase3_status": "PRIMARY_MET_VERIFIED", "phase3_date": "2026-01-01",
+                "nct_id": "NCT00000001",
+                "trial_evidence_url": "https://issuer.example/real",
+                "pdufa_date": "2027-06-01",
+            }])
+            active, _, _ = source_cleared_gems(root, as_of=date(2026, 10, 14))
+            self.assertEqual(len(active), 1)  # Optional funding keeps GEM research listed.
+            rows, summary = build_financing_review(root, as_of=date(2026, 10, 14))
+            self.assertEqual(rows, [])
+            self.assertEqual(summary["active_benchmark_cleared"], 0)
+            self.assertEqual(summary["pending_or_excluded"], 0)
+
     def test_repository_entire_financing_block_stays_visible(self):
         data = Path(__file__).resolve().parents[1] / "data"
         rows, summary = build_financing_review(data, as_of=date(2026, 10, 14))

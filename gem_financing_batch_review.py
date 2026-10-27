@@ -113,6 +113,19 @@ def build_financing_review(root="data", *, as_of=None):
     events, duplicate_event_keys = _unique(_read(root / "pdufa_candidates.csv"))
     finance, duplicate_finance_keys = _unique(financing_rows)
     cleared, historical, global_sec_current = source_cleared_gems(root, as_of=today)
+    # GEM research membership now permits an optional second financing. That
+    # clinical qualification is not the two-close certification this report
+    # displays. Keep the finance denominator exact and fail closed for missing
+    # or duplicated funding records without changing GEM membership itself.
+    def financing_certified(record):
+        key = record["Exact program"]
+        return (record.get("Second financing verified") is True
+                and key in finance and key in events
+                and key not in duplicate_finance_keys
+                and key not in duplicate_event_keys)
+
+    cleared = [record for record in cleared if financing_certified(record)]
+    historical = [record for record in historical if financing_certified(record)]
     clearance = {x["Exact program"]: (x, False) for x in cleared}
     clearance.update({x["Exact program"]: (x, True) for x in historical})
     rows = []
