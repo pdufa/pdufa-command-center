@@ -25,6 +25,8 @@ class DrugsAtFDAStageTests(unittest.TestCase):
                     "7\tApproval\n")
             report = stage(path)
             self.assertEqual(report["candidate_count"], 1)
+            self.assertEqual(report["submission_types"]["ORIG"], 1)
+            self.assertEqual(report["candidate_decisions_verified"], 0)
             self.assertEqual(report["with_source_documents"], 1)
             self.assertEqual(report["without_source_documents"], 0)
             self.assertEqual(report["with_action_descriptions"], 1)
