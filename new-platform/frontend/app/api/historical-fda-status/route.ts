@@ -8,7 +8,7 @@ const workflow = "pdufa-daily-research-safety.yml";
 const artifactName = "historical-drugsatfda-ingestion-status";
 
 export async function GET() {
-  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  const token = process.env.PDUFA_GITHUB_TOKEN || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
   const unavailable = (reason: string) => NextResponse.json({
     status: "UNAVAILABLE", reason, candidate_count: null,
     historical_outcomes_independently_verified: false,
