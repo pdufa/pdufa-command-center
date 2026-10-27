@@ -19,6 +19,8 @@ def main():
         raise SystemExit("AUDIT_BLOCKED: DATABASE_URL is missing; no database access attempted")
     if url.startswith("postgresql+psycopg://"):
         url = "postgresql+psycopg2://" + url.split("://", 1)[1]
+    if url.startswith("postgresql://"):
+        url = "postgresql+psycopg2://" + url.split("://", 1)[1]
     engine = create_engine(url, pool_pre_ping=True, connect_args={"connect_timeout": 10})
     try:
         with engine.connect() as connection:
