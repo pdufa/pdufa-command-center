@@ -11,6 +11,8 @@ class ReviewPacketTests(unittest.TestCase):
                          {"records": [dict(row, status="SOURCE_HASH_AVAILABLE_ADJUDICATION_PENDING",
                                            source_sha256="a" * 64)]})
         self.assertEqual(report["verified"], 0)
+        self.assertEqual(report["total_to_review"], 1)
+        self.assertEqual(report["priority_counts"]["INDEPENDENT_ADJUDICATION_REQUIRED"], 1)
         self.assertFalse(report["records"][0]["model_eligible"])
 
     def test_duplicate_identity_rejected(self):
