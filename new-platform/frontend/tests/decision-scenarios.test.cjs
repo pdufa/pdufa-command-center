@@ -9,8 +9,9 @@ const compiled=ts.transpileModule(fs.readFileSync(filename,"utf8"),{compilerOpti
 const mod=new Module(filename,module);mod.filename=filename;mod.paths=module.paths;mod._compile(compiled,filename);
 const {evaluateDecisionScenario}=mod.exports;
 const baseline={asOf:"2026-10-26T12:00:00Z",currentPrice:10,approvalProbability:0.7,approvalPrice:16,rejectionPrice:4,delayProbability:0.1,delayPrice:8,roundTripCostPct:1,sourceVerified:true,calibrated:true};
-test("three-outcome expected return after costs",()=>{const r=evaluateDecisionScenario(baseline);assert.equal(r.status,"RESEARCH_ONLY");assert.ok(Math.abs(r.expectedPrice-12.8)<1e-9);assert.ok(Math.abs(r.expectedReturnPct-27)<1e-9);});
-test("unverified sources block output",()=>{const r=evaluateDecisionScenario({...baseline,sourceVerified:false});assert.equal(r.status,"NOT_READY");assert.equal(r.expectedPrice,null);});
-test("uncalibrated model blocks output",()=>assert.equal(evaluateDecisionScenario({...baseline,calibrated:false}).status,"NOT_READY"));
-test("invalid probability total blocks output",()=>assert.equal(evaluateDecisionScenario({...baseline,delayProbability:0.4}).status,"NOT_READY"));
-test("nonpositive prices block output",()=>assert.equal(evaluateDecisionScenario({...baseline,rejectionPrice:0}).status,"NOT_READY"));
+test("three-outcome expected return after costs",()=>{const r=evaluateDecisionScenario(baseline,new Date('2026-10-26T13:00:00Z'));assert.equal(r.status,"RESEARCH_ONLY");assert.ok(Math.abs(r.expectedPrice-12.8)<1e-9);assert.ok(Math.abs(r.expectedReturnPct-27)<1e-9);});
+test("unverified sources block output",()=>{const r=evaluateDecisionScenario({...baseline,sourceVerified:false},new Date('2026-10-26T13:00:00Z'));assert.equal(r.status,"NOT_READY");assert.equal(r.expectedPrice,null);});
+test("uncalibrated model blocks output",()=>assert.equal(evaluateDecisionScenario({...baseline,calibrated:false},new Date('2026-10-26T13:00:00Z')).status,"NOT_READY"));
+test("invalid probability total blocks output",()=>assert.equal(evaluateDecisionScenario({...baseline,delayProbability:0.4},new Date('2026-10-26T13:00:00Z')).status,"NOT_READY"));
+test("nonpositive prices block output",()=>assert.equal(evaluateDecisionScenario({...baseline,rejectionPrice:0},new Date('2026-10-26T13:00:00Z')).status,"NOT_READY"));
+test("stale inputs fail closed",()=>assert.equal(evaluateDecisionScenario(baseline,new Date('2026-11-10T13:00:00Z')).status,'NOT_READY'));
