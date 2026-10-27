@@ -72,6 +72,8 @@ def stage(zip_path):
         "submission_types": dict(sorted(Counter(r["submission_type"] for r in candidates).items())),
         "review_priority_counts": dict(sorted(Counter((r["review_priority"] or "").strip() or "UNSPECIFIED" for r in candidates).items())),
         "candidate_decisions_verified": 0,
+        "readiness": "SOURCE_REVIEW_REQUIRED",
+        "prediction_model_validated": False,
         "evidence_coverage_by_submission_type": {
             submission_type: {
                 "total": sum(r["submission_type"] == submission_type for r in candidates),
