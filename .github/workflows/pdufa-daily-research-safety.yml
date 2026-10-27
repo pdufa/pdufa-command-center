@@ -65,4 +65,7 @@ jobs:
             tests/test_compare_fda_prediction_baseline.py \
             tests/test_screen_fda_evidence.py \
             tests/test_build_fda_evidence_review_queue.py \
-            tests/test_fda_bepirovirsen_candidate.py
+            tests/test_fda_bepirovirsen_candidate.py \
+            tests/test_historical_parallel_matching.py \
+            tests/test_fda_decision_taxonomy.py \
+            tests/test_audit_fda_decisions.py
