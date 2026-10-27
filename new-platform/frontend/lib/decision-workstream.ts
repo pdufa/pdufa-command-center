@@ -10,12 +10,16 @@ import {assessCalibrationCohortAtCutoff} from "./decision-calibration-cohort-gat
 import {evaluateChronologicalCalibration, type ChronologicalCalibrationPlan, type ChronologicalCalibrationRow} from "./decision-calibration-holdout";
 import {auditOutcomeStatus, type OutcomeStatus} from "./science-outcome-gates";
 import {researchReadiness} from "./research-readiness";
+import {auditScienceInvestigation,type ScienceInvestigation,type ScienceInvestigationAudit} from "./decision-science-investigation";
 
 export type DecisionIdentity = {exactKey:string; programId:string; trialId:string; ticker:string; stage:AssessmentStage};
 /** A separate reviewed manifest is required. Candidate scores and aggregate archive counts
  * cannot populate these records or certify an OUTCOME model. */
 export type ReviewedDecisionEvidence = {
   identity:DecisionIdentity;
+  scienceDossier?:ScienceInvestigation|null;
+  outcomeApplicationNumber?:string|null;
+  mainCompanyCik?:string|null;
   science:ResearchReadiness|null; outcome:ResearchReadiness|null;
   target:AnalogueTarget; history:HistoricalPdufaAnalogue[]; coverage:HistoricalCoverageInput;
   chronology:Record<string, HistoricalSourceRecord[]>; main:MainEvidence|null;
@@ -32,6 +36,7 @@ export type DecisionWorkstream = {
   modelValidated:false;
   probability:null;
   tradeAuthorized:false;
+  scienceInvestigation:ScienceInvestigationAudit;
 };
 
 /** Compose every evidence gate without changing membership, restrictions, scores or FS/FA.
@@ -54,11 +59,18 @@ export function assessDecisionWorkstream(identity:DecisionIdentity, detail:Asses
   }
   // Do not evaluate or display another trial's manifest, even as individual ready stages.
   const evidence=identityIssues.length?null:reviewed;
-  const science=evidence?.science ?? candidateAssessmentToScienceReadiness(matchedDetail);
+  const investigation=auditScienceInvestigation(evidence?.scienceDossier??null,identity,evidence?.target.asOf??matchedDetail?.asOf??"");
+  const science=investigation.readiness ?? candidateAssessmentToScienceReadiness(matchedDetail);
   const outcome=evidence?.outcome ?? candidateAssessmentToOutcomeReadiness(matchedDetail);
   const readiness=assessScienceOutcomeReadiness(science,outcome,now);
-  const scienceIssues=readiness.issues.filter(s=>s.startsWith("SCIENCE"));
+  const scienceIssues=[...readiness.issues.filter(s=>s.startsWith("SCIENCE")),...investigation.issues];
+  if(evidence?.science&&investigation.readiness&&["programId","trialId","asOf","reviewedLevels","requiredLevels","status","sourceStatus","criticalFindingsResolved"].some(k=>evidence.science![k as keyof ResearchReadiness]!==investigation.readiness![k as keyof ResearchReadiness]))
+    scienceIssues.push("SCIENCE: summary disagrees with source-cited investigation");
+  if(evidence?.scienceDossier&&(!evidence.scienceDossier.fdaApplication||evidence.scienceDossier.indication.trim().toLowerCase()!==evidence.target.indication.trim().toLowerCase()))
+    scienceIssues.push("SCIENCE: FDA application or indication identity has not been reconciled");
   const outcomeIssues=readiness.issues.filter(s=>s.startsWith("OUTCOME"));
+  if(evidence&&(!evidence.scienceDossier?.fdaApplication||evidence.outcomeApplicationNumber!==evidence.scienceDossier.fdaApplication))
+    outcomeIssues.push("OUTCOME: declared FDA application identity differs from the scientific dossier or is missing");
   const sourceIssues:string[]=[];
   let source:OutcomeStatus|null=null;
   if(historicalSource!=null) {
@@ -76,6 +88,8 @@ export function assessDecisionWorkstream(identity:DecisionIdentity, detail:Asses
   const historyIssues=joined ? joined.issues.filter(s=>!readiness.issues.includes(s) && !s.startsWith("MAIN:"))
     : ["Reviewed close analogues, source chronology and complete historical denominator are not connected"];
   const mainIssues=joined?.mainIssues ?? ["Independently audited MAIN evidence is not connected"];
+  if(evidence&&(!evidence.scienceDossier?.companyCik||evidence.mainCompanyCik!==evidence.scienceDossier.companyCik))
+    mainIssues.push("MAIN: declared company CIK differs from the scientific dossier or is missing");
   const calibration=evidence ? assessCalibrationCohortAtCutoff(evidence.calibrationRows,evidence.target.asOf) : null;
   const holdout=evidence?.holdout ? evaluateChronologicalCalibration(evidence.holdout.training,evidence.holdout.rows,evidence.holdout.plan) : null;
   const calibrationIssues=[...(calibration?.issues ?? ["Independent point-in-time historical calibration is not connected"]),
@@ -84,9 +98,10 @@ export function assessDecisionWorkstream(identity:DecisionIdentity, detail:Asses
     calibrationIssues.push("Holdout evaluation is unavailable at the target cutoff");
   if(holdout?.holdout && holdout.holdout.improvementVsTrainingBaseline<=0)
     calibrationIssues.push("No holdout improvement over the frozen training baseline");
-  const issues=[...identityIssues,...readiness.issues,...historyIssues,...mainIssues,...calibrationIssues];
+  const issues=[...identityIssues,...readiness.issues,...scienceIssues,...outcomeIssues,...historyIssues,...mainIssues,...calibrationIssues];
   const ready=identityIssues.length===0 && joined?.status==="EVIDENCE_READY_FOR_REVIEW"
-    && calibration?.status==="RESEARCH_ONLY" && holdout?.status==="RESEARCH_ONLY" && calibrationIssues.length===0;
+    && calibration?.status==="RESEARCH_ONLY" && holdout?.status==="RESEARCH_ONLY" && calibrationIssues.length===0
+    &&scienceIssues.length===0&&outcomeIssues.length===0&&mainIssues.length===0;
   return {
     status:ready?"RESEARCH_REVIEW_REQUIRED":"NOT_READY",
     stages:[
@@ -98,6 +113,6 @@ export function assessDecisionWorkstream(identity:DecisionIdentity, detail:Asses
       {name:"Calibration",status:calibrationIssues.length?"NOT_READY":"RESEARCH_ONLY",issues:calibrationIssues},
     ],
     historicalSource:source,historicalMatches:identityIssues.length?0:joined?.historicalMatches ?? 0,
-    sourceIssues,issues:[...new Set(issues)],modelValidated:false,probability:null,tradeAuthorized:false,
+    sourceIssues,issues:[...new Set(issues)],modelValidated:false,probability:null,tradeAuthorized:false,scienceInvestigation:investigation,
   };
 }

@@ -2,6 +2,7 @@ const test=require("node:test"),assert=require("node:assert/strict"),fs=require(
 const root=path.resolve(__dirname,"../lib"),cache={};
 function load(name){if(cache[name])return cache[name].exports;const file=path.join(root,name+".ts");const js=ts.transpileModule(fs.readFileSync(file,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;const m=new Module(file,module);cache[name]=m;m.filename=file;m.paths=module.paths;m.require=id=>id.startsWith("./")?load(id.slice(2)):require(id);m._compile(js,file);return m.exports;}
 const {assessDecisionWorkstream}=load("decision-workstream");
+const {investigation}=require("./fixtures/decision-investigation.cjs");
 const asOf="2026-10-26T11:00:00Z",now=new Date("2026-10-26T12:00:00Z");
 const identity={exactKey:"TRIAL|NCT12345678|TEST",programId:"PDUFA-999999",trialId:"NCT12345678",ticker:"TEST",stage:"GEM_JR"};
 const stage=(result,name)=>result.stages.find(row=>row.name===name);
@@ -14,7 +15,7 @@ function evidence(){
  const price=(observedAt,adjustedClose)=>({programId:identity.programId,ticker:identity.ticker,observedAt,capturedAt:"2026-10-25T00:00:00Z",adjustedClose,currency:"USD",priceSource:"https://example.org/prices",adjustmentMethod:"SPLIT_AND_DIVIDEND_ADJUSTED",corporateActionsReviewed:true,verifiedBy:"synthetic-contract-reviewer"});
  const rows=(offset,year)=>Array.from({length:30},(_,i)=>({programId:"PDUFA-"+(100000+offset+i),applicationNumber:"NDA"+(100000+offset+i),predictedAt:year+"-02-01T00:00:00Z",predictionCapturedAt:year+"-02-01T00:00:00Z",decisionAt:year+"-03-01T00:00:00Z",decisionObservedAt:year+"-03-02T00:00:00Z",predictionSource:"https://example.org/forecast",decisionSource:"https://example.org/action",probability:i%2?.2:.8,approved:i%2===0,reviewStatus:"INDEPENDENTLY_VERIFIED",modelVersion:"frozen-v1",subgroup:"synthetic-contract-cohort"}));
  const training=rows(0,"2023"),holdout=rows(30,"2025");
- return {identity:{...identity},science:{...record},outcome:{...record},target,history,chronology,
+ return {identity:{...identity},scienceDossier:investigation(identity,asOf),outcomeApplicationNumber:"NDA999999",mainCompanyCik:"0000000001",science:{...record},outcome:{...record},target,history,chronology,
   coverage:{asOf,windowStart:"2020-01-01",windowEnd:"2025-01-01",eligibleApplications:10,reviewedDecisions:10,approved:6,crl:3,withdrawn:1,unresolved:0,sourceCoverageConfirmed:true,includesNonApprovals:true},
   main:{programId:identity.programId,ticker:identity.ticker,asOf,restrictionsReviewed:true,unresolvedCriticalRisks:0,marketEntry:price("2025-01-01",10),marketExit:price("2025-02-01",12)},
   calibrationRows:structuredClone(holdout),holdout:{training,rows:holdout,plan:{modelVersion:"frozen-v1",planSource:"https://example.org/frozen-plan",frozenAt:"2025-01-01",holdoutStart:"2025-01-01",holdoutEnd:"2026-01-01",evaluatedAt:"2026-02-01",trainingProgramIds:training.map(row=>row.programId),holdoutProgramIds:holdout.map(row=>row.programId)}}};
@@ -81,8 +82,22 @@ test("complete candidate scores alone cannot certify independent SCIENCE or OUTC
  const result=assess(null,{detail});assert.equal(result.status,"NOT_READY");assert.equal(stage(result,"SCIENCE").status,"NOT_READY");assert.equal(stage(result,"OUTCOME").status,"NOT_READY");
 });
 test("each independent reviewed evidence stage is mandatory",()=>{
- for(const field of ["science","outcome","main"]){const manifest=evidence();manifest[field]=null;const result=assess(manifest);assert.equal(result.status,"NOT_READY");}
+ for(const field of ["scienceDossier","outcome","main"]){const manifest=evidence();manifest[field]=null;const result=assess(manifest);assert.equal(result.status,"NOT_READY");}
  const manifest=evidence();manifest.science.reviewedLevels=19;assert.equal(assess(manifest).status,"NOT_READY");
+});
+test("source-cited investigation can derive science readiness when a redundant summary is absent",()=>{
+ const manifest=evidence();manifest.science=null;assert.equal(assess(manifest).status,"RESEARCH_REVIEW_REQUIRED");
+ manifest.scienceDossier.levels[0].assessments[0].uncertainty="";assert.equal(assess(manifest).status,"NOT_READY");
+});
+test("a 20-level summary alone cannot replace 40 source-cited assessments or eight layers",()=>{
+ const manifest=evidence();delete manifest.scienceDossier;const result=assess(manifest);
+ assert.equal(result.status,"NOT_READY");assert.match(stage(result,"SCIENCE").issues.join(" "),/40-assessment/);
+});
+test("scientific application and indication identity must be reconciled before integrated review",()=>{
+ for(const changes of [{fdaApplication:null},{indication:"different indication"}]){const manifest=evidence();Object.assign(manifest.scienceDossier,changes);assert.equal(assess(manifest).status,"NOT_READY");}
+});
+test("OUTCOME application and MAIN company must match the scientific dossier's declared identities",()=>{
+ for(const changes of [{outcomeApplicationNumber:"BLA999998"},{outcomeApplicationNumber:null},{mainCompanyCik:"0000000002"},{mainCompanyCik:null}]){const manifest=Object.assign(evidence(),changes);assert.equal(assess(manifest).status,"NOT_READY");}
 });
 test("historical matches require denominator and source chronology, not only close scientific similarity",()=>{
  for(const mutate of [m=>m.coverage.sourceCoverageConfirmed=false,m=>m.coverage.includesNonApprovals=false,m=>m.chronology={},m=>m.history=[]]){
