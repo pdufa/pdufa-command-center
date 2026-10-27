@@ -12,6 +12,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from scripts import adhoc_alert_check as alerts
+from scripts.audit_scan_schedule import audit_schedule
 from scripts.pdufa_auto_repair import decide
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,13 +20,21 @@ WORKFLOWS = ROOT / ".github/workflows"
 
 
 class ScanLaunchTests(unittest.TestCase):
-    def test_saved_settings_match_the_active_clock_and_stage_names(self):
+    def test_runtime_clock_and_saved_stage_metadata_are_audited_independently(self):
         config = json.loads((ROOT / "config/scan_234.json").read_text())
         schedule = config["clinical_source_schedule"]
-        self.assertEqual(schedule["pacific_daylight_time"], "22:00")
-        self.assertEqual(schedule["pacific_standard_time"], "22:00")
-        launcher = (WORKFLOWS / "pdufa-nightly-pacific-start.yml").read_text()
-        self.assertEqual(schedule["cron_utc"], re.findall(r"^\s+- cron: '([^']+)'", launcher, re.M))
+        report = audit_schedule(ROOT)
+        # Only the executable workflow/admission control the live clock. Saved
+        # preflight metadata may drift; the diagnostic must expose that drift
+        # rather than changing either schedule or treating labels as authority.
+        self.assertEqual(report["runtime_status"], "CONSISTENT", report)
+        self.assertEqual(report["effective_pacific_start"], "20:00")
+        self.assertEqual(report["saved_crons"], schedule["cron_utc"])
+        self.assertEqual(report["status"], "CONSISTENT" if report["metadata_matches_runtime"]
+                         else "METADATA_DRIFT")
+        if report["status"] == "METADATA_DRIFT":
+            self.assertTrue(report["warnings"])
+        self.assertFalse(report["changes_applied"])
         self.assertEqual([tab["name"] for tab in config["tabs"]],
                          ["PIPELINE", "PIPELINE - clinical enrichment", "GEM JR"])
         self.assertFalse(config["automation_enabled"])

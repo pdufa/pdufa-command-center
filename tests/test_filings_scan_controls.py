@@ -1,12 +1,15 @@
 """Offline authorization, dispatch and rendered four-button behavior."""
 import json
+import time
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
 from streamlit.testing.v1 import AppTest
 
 from filings_scan_controls import authorized, dispatch_section_scan, section_run
+from pipeline_universe import COLUMNS
 from scripts.filings_section_scan import SECTIONS
 
 
@@ -87,13 +90,45 @@ class SectionControlTests(unittest.TestCase):
             "render_filings_base_amendments()\n", default_timeout=30)
         app.secrets["PDUFA_GITHUB_TOKEN"] = "server-token"
         app.secrets["PDUFA_SCAN_CONTROL_PIN"] = "1234"
-        empty = pd.DataFrame(columns=["event_key", "ticker", "category", "claim"])
+        # This test exercises authorization and section-specific button state,
+        # not the changing repository-wide publication. Mock at the complete
+        # loader boundaries: returning None from published_filings_files used
+        # to fall through to thousands of real Pipeline/SEC source rows and
+        # turned a four-button unit test into an unbounded bulk reconciliation.
+        universe = pd.DataFrame([
+            {"record_id": "TRIAL|NCT00000001", "record_type": "TRIAL",
+             "ticker": "TEST", "nct_id": "NCT00000001",
+             "current_stage": "Phase 3", "registered_phase": "Phase 3"},
+            {"record_id": "TRIAL|NCT00000002", "record_type": "TRIAL",
+             "ticker": "TEST", "nct_id": "NCT00000002",
+             "current_stage": "Phase 3", "registered_phase": "Phase 3"},
+        ], columns=COLUMNS, dtype=object).fillna("")
+        details = {
+            "sec": [], "verified": [], "extensions": [],
+            "bases": {"SEC": [], "FDA": []},
+            "tables": {name: [] for name in (
+                "SEC Base", "SEC Amendments", "FDA Base", "FDA Amendments")},
+            "queue": [], "queue_notice": "", "registry": [],
+            "notes": [], "reports": {}, "refresh_notice": "",
+        }
         with patch("filings_scan_controls.section_runs", return_value=([], "")), \
-                patch("filings_base_amendments_ui.published_filings_files", return_value=(None, "")), \
-                patch("filings_base_amendments_ui.required_issue_queue", return_value=(empty, "")), \
+                patch("filings_base_amendments_ui.load_section_details", return_value=details), \
+                patch("filings_base_amendments_ui.current_pipeline_universe", return_value=universe), \
+                patch("filings_base_amendments_ui.published_filings_files",
+                      side_effect=AssertionError("Control test must not fetch source publications")), \
+                patch("filings_base_amendments_ui.required_issue_queue",
+                      side_effect=AssertionError("Control test must not load the live issue queue")), \
+                patch("filings_scan_controls.time", SimpleNamespace(
+                    time=lambda: 1_700_000_000,
+                    strftime=time.strftime, gmtime=time.gmtime)), \
                 patch("filings_scan_controls.dispatch_section_scan") as submit:
             app.run()
             self.assertFalse(app.exception)
+            self.assertEqual(
+                [(metric.label, metric.value) for metric in app.metric],
+                [("Pipeline filtered total", "2"),
+                 ("SEC baseline rows", "2"), ("FDA baseline rows", "2")],
+            )
             labels = [item.label for item in app.expander]
             self.assertEqual(len(labels), 6)
             for label in ("SEC Base details", "SEC Amendment details", "FDA Base details", "FDA Amendment details"):

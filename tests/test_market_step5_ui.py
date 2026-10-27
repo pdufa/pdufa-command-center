@@ -1,11 +1,11 @@
 """Step 5 page integration regression; avoids multipage AppTest router redirects."""
+from supported_dashboard_checks import run_frontend_contract
 import ast
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKET = ROOT / "pages" / "03_Market_Intelligence.py"
-PREVIOUS = ROOT / "app.py"
 
 
 class Step5UiIntegrationTests(unittest.TestCase):
@@ -30,17 +30,10 @@ class Step5UiIntegrationTests(unittest.TestCase):
         self.assertNotIn("fetch_stooq_daily(ticker, as_of)", before)
         self.assertNotIn("save_snapshot(snapshot)", before)
 
-    def test_pre_phase3_remains_blank_and_step5_does_not_inject_ui(self):
-        main = PREVIOUS.read_text(encoding="utf-8")
-        src = MARKET.read_text(encoding="utf-8")
-        a = main.index("def render_pre_phase3():")
-        b = main.index("\nquery_event =", a)
-        handler = main[a:b]
-        self.assertIn("_step7_snapshot(signature)", handler)
-        self.assertIn('st.markdown("## PIPELINE — EARLY CLINICAL SOURCE MONITOR")', handler)
-        self.assertNotIn("render_clinical_review()", handler)
-        self.assertNotIn("market_step5", handler)
-        self.assertNotIn("render_pre_phase3(", src)
+    def test_supported_market_research_requires_exact_identity_and_read_only_boundaries(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('research-only-backend.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('research-readiness.test.cjs'), 0)
 
 
 if __name__ == "__main__":

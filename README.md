@@ -49,10 +49,10 @@ If secrets are updated, restarting the Streamlit app may be necessary.
 **Operational boundary:** The new tab and workflows are code-installed, but a successful *live end-to-end scan and email delivery* must still be observed after secrets are configured. Before a first published artifact the page explicitly says that no audited report exists. A clinical `PARTIAL` result means clinical-source collection succeeded, **not** that FDA/SEC/issuer/market data was verified. `VERIFY ALL` revalidates archived clinical JSON, not the missing source families. The automated syntax/unit-test check is in `pdufa-nightly-report-checks.yml`.
 
 
-## Active daily PM scan survey — 10:00 PM Pacific
+## Active daily PM scan survey — 8:00 PM Pacific
 
 **Enabled:** `.github/workflows/pdufa-nightly-pacific-start.yml` starts the
-strictly ordered **daily 10:00 PM Pacific** sequence:
+strictly ordered **daily 8:00 PM Pacific** sequence:
 **#2 PIPELINE → #3 PRE3 → #4 POST3 → GEM research → GEM financing
 full-coverage audit → nightly report → FDA → SEC → FINANCIAL → MARKET →
 ISSUER → source reconciliation → source report → PRE3 display refresh →
@@ -60,9 +60,11 @@ scoring → error check → guarded repair**.
 Each main research step waits for the prior one to finish, even on a
 recorded failure. Morning results are a separate read-only report.
 
-GitHub UTC cron uses `0 5 * * *` during PDT (UTC−7) and
-`0 6 * * *` during PST (UTC−8), with 10:15/10:30 PM guarded backups.
+GitHub UTC cron uses `0 3 * * *` during PDT (UTC−7) and
+`0 4 * * *` during PST (UTC−8), with 8:15/8:30 PM guarded backups.
 After-midnight recovery crons can start a missed nightly run until 2:59 AM Pacific.
+
+The executable launcher and `scripts/nightly_start.py` are the clock authority. Saved `config/scan_234.json` timing labels still describe 10 PM and are nonauthoritative metadata. `python scripts/audit_scan_schedule.py` exposes this drift without dispatching scans or changing schedules; see [the read-only schedule audit](docs/scan-schedule-metadata-audit.md). Earlier dated Streamlit notes above describe historical UI behavior and do not override the active launcher.
 Duplicate detection checks only the complete workflow, so a targeted manual
 clinical scan cannot suppress the full overnight run. An active older full run
 also blocks a duplicate. One workflow-wide lock covers the entire sequence.

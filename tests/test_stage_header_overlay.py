@@ -1,4 +1,5 @@
 """Guard the placement of checkbox filters in both Streamlit and HTML headers."""
+from supported_dashboard_checks import run_frontend_contract
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
@@ -24,14 +25,7 @@ class HeaderOverlayTests(TestCase):
         self.assertIn("horizontalScroll", _SCRIPT)
         self.assertIn("observer.disconnect()", _SCRIPT)
 
-    def test_prediction_grid_places_checkbox_inside_header(self):
-        app = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        self.assertIn('sort_button += stage_filter_button', app)
-        self.assertIn('class="stage-filter-head"', app)
-        self.assertIn('class="stage-choice"', app)
-        self.assertIn('class="finance-filter-head"', app)
-        self.assertIn('class="finance-choice"', app)
-        self.assertIn('const refreshFinancing = () =>', app)
-        self.assertIn('const sortFinance = () =>', app)
-        self.assertIn('const sortStageRows = () =>', app)
-        self.assertNotIn('frame = stage_filter_panel(frame, key="merged_stage_"', app)
+    def test_supported_filter_checkboxes_are_accessible_and_do_not_invent_wt_overlays(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('trial-filters.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('wt-chart-checkbox-map.test.cjs'), 0)

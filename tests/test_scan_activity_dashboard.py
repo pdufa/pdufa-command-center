@@ -1,4 +1,5 @@
 """Offline guardrails for the consolidated PDUFA SCANS workspace."""
+from supported_dashboard_checks import run_frontend_contract
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -9,15 +10,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ScanActivityDashboardTests(unittest.TestCase):
-    def test_single_pdufa_scans_tab_replaces_top_level_duplicate(self):
-        src = (ROOT / "app.py").read_text(encoding="utf-8")
-        self.assertIn('nav_options = ["PDUFA", "2. PDUFA CALENDAR"]', src)
-        self.assertNotIn('elif page == "SCANS":', src)
-        self.assertIn('if st.session_state.nav == "SCANS":', src)
-        self.assertIn('st.session_state["pdufa_subtab"] = "SCANS"', src)
-        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', src)
-        self.assertIn("render_nightly_scan_report()", src)
-        self.assertNotIn("render_scans_activity()", src)
+    def test_supported_scans_has_one_top_level_entry_and_source_bound_results(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('scans-navigation-contract.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('scans-new-results.test.cjs'), 0)
 
     def test_activity_monitor_embedded_without_repeating_gem_log_buttons(self):
         activity = (ROOT / "scan_activity_dashboard.py").read_text(encoding="utf-8")

@@ -1,0 +1,5 @@
+# Local/CI verification only; this does not restore or deploy Streamlit.
+-r requirements.txt
+-r new-platform/backend/requirements.txt
+pytest>=9,<10
+streamlit>=1.50,<2

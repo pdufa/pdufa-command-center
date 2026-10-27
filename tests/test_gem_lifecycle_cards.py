@@ -1,4 +1,5 @@
 """Regression tests for per-exact-trial GEM JR/GEM lifecycle display."""
+from supported_dashboard_checks import run_frontend_contract
 import ast
 import unittest
 from pathlib import Path
@@ -32,28 +33,10 @@ class GemLifecycleCardTests(unittest.TestCase):
         self.assertIn("AWAITING", observations[-1]["Observed"])
         self.assertIn("NOT VERIFIED", observations[1]["Observed"])
 
-    def test_card_and_previous_list_wiring(self):
-        ui = (ROOT / "gem_trial_hierarchy_ui.py").read_text(encoding="utf-8")
-        junior = (ROOT / "gem_jr_ui.py").read_text(encoding="utf-8")
-        gem = (ROOT / "gem_potential_ui.py").read_text(encoding="utf-8")
-        master = (ROOT / "gem_nested_master_ui.py").read_text(encoding="utf-8")
-        app = (ROOT / "app.py").read_text(encoding="utf-8")
-        reference = (ROOT / "gem_reference_dashboard.py").read_text(encoding="utf-8")
-        for name, code in [("ui", ui), ("junior", junior), ("gem", gem),
-                           ("master", master), ("app", app), ("reference", reference)]:
-            ast.parse(code, filename=name)
-        self.assertIn('with st.container(border=True, key=namespace + "_program_" + uid)', ui)
-        self.assertIn('args=(ticker, "watch")', ui)
-        self.assertIn('on_click=open_trade_workspace, args=(ticker,)', ui)
-        self.assertIn("LEVEL 1 — EXACT PROGRAM & LIST STATUS", ui)
-        self.assertIn("LEVEL 2 — WHAT THIS CANDIDATE RECEIVED", ui)
-        self.assertIn("LEVEL 3 — UNDERLYING EVIDENCE", ui)
-        self.assertIn('render_trial_hierarchy(active, namespace="gem_jr"', junior)
-        self.assertIn('render_trial_hierarchy(source_cleared,', gem)
-        self.assertIn('_render_reference_gem_page("GEM")', app)
-        self.assertIn('departed_stage_rows(history,', reference)
-        self.assertIn('"history": histories', reference)
-        self.assertIn('if show_previous:', master)
+    def test_supported_gem_cards_preserve_exact_program_evidence_and_membership(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('gem-evidence-rendering.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('gem-research-defaults.test.cjs'), 0)
 
 
 if __name__ == "__main__":

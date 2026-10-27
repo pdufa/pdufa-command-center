@@ -74,10 +74,14 @@ def filter_pipeline(frame, stages, date_bands, query=""):
         return frame.copy()
     if "current_stage" not in frame or "DATES" not in frame:
         return frame.iloc[:0].copy()
-    selected = frame.loc[
-        (frame["current_stage"].fillna("").isin(list(stages)) if stages else True)
-        & (frame["DATES"].isin(list(date_bands)) if date_bands else True)
-    ].copy()
+    # Keep an index-aligned mask even when both dimensions are unrestricted.
+    # A scalar True is interpreted by .loc as a row label, not a row filter.
+    mask = pd.Series(True, index=frame.index, dtype=bool)
+    if stages:
+        mask &= frame["current_stage"].fillna("").isin(list(stages))
+    if date_bands:
+        mask &= frame["DATES"].isin(list(date_bands))
+    selected = frame.loc[mask].copy()
     if "record_id" in selected:
         selected = selected.drop_duplicates(subset=["record_id"])
     query = str(query or "").strip()

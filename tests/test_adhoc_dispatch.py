@@ -1,4 +1,5 @@
 """Exercise ad hoc PIN authorization and GitHub dispatch without using real secrets/network."""
+from supported_dashboard_checks import run_frontend_contract
 import json
 import inspect
 import unittest
@@ -8,15 +9,10 @@ import nightly_scan_dashboard as mod
 
 
 class DispatchAdhocTests(unittest.TestCase):
-    def test_ad_hoc_control_stays_inside_current_pdufa_scans(self):
-        """Prevent orphaning the PIN-gated audit when navigation changes."""
-        scan_renderer = inspect.getsource(mod.render_nightly_scan_report)
-        self.assertIn("render_adhoc_error_check_controls()", scan_renderer)
-        self.assertIn("## NIGHTLY SCAN REPORT", scan_renderer)
-        app = (Path(__file__).resolve().parents[1] / "app.py").read_text(
-            encoding="utf-8")
-        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', app)
-        self.assertIn("render_nightly_scan_report()", app)
+    def test_scan_navigation_and_history_remain_accessible_without_dispatch(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('scans-navigation-contract.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('scans-new-results.test.cjs'), 0)
 
     def test_dispatch_uses_auth_and_exact_workflow_payload(self):
         response = MagicMock()

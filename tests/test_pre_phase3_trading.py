@@ -1,4 +1,5 @@
 """Candidate ticker discovery is a research queue, never a buy/entry list."""
+from supported_dashboard_checks import run_frontend_contract
 import unittest
 from datetime import date
 import pandas as pd
@@ -232,20 +233,10 @@ class TradingResearchQueueTests(unittest.TestCase):
         self.assertTrue(screen["Verification Status"].str.contains("RECHECK REQUIRED").all())
         self.assertTrue(screen["Trading Entry Gate"].str.contains("NOT ENTRY-READY").all())
 
-    def test_source_app_exposes_candidates_without_hidden_toggle(self):
-        from pathlib import Path
-        root = Path(__file__).resolve().parents[1]
-        app = (root / "app.py").read_text(encoding="utf-8")
-        section = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
-        clinical = (root / "clinical_step3.py").read_text(encoding="utf-8")
-        self.assertNotIn("render_clinical_review()", section)
-        self.assertIn("_step7_snapshot(signature)", section)
-        self.assertIn("ENTRY READY", section)
-        self.assertIn("Phase 1–3 company–trial leads", clinical)
-        self.assertIn("SAVE NEW AUDIT REVISION", clinical)
-        self.assertIn("Versioned assessment history", clinical)
-        self.assertNotIn("top_trials_container = st.container()", section)
-        self.assertNotIn('["ALL", 90, 180, 365], index=0', section)
+    def test_supported_pipeline_keeps_research_visible_without_promoting_trading_readiness(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('main-phase3-research-panel.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('numeric-forecast-metrics.test.cjs'), 0)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 """Ensure all-ticker scan is wired to its own page and never PRE PHASE 3."""
+from supported_dashboard_checks import run_frontend_contract
 import ast
 import unittest
 from pathlib import Path
@@ -27,17 +28,10 @@ class BulkUiTests(unittest.TestCase):
         self.assertIn("NEUTRAL_WEIGHTS", scanner)
         self.assertNotIn("run_bulk(", ui.split("if launch:", 1)[0])
 
-    def test_prephase_3_not_rendered_and_workflow_is_manual(self):
-        app = (ROOT / "app.py").read_text(encoding="utf-8")
-        pre = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
-        self.assertIn('st.markdown("## PIPELINE — EARLY CLINICAL SOURCE MONITOR")', pre)
-        self.assertIn("_step7_snapshot(signature)", pre)
-        self.assertNotIn("market_bulk", pre)
-        self.assertNotIn("render_clinical_review()", pre)
-        # Prior scanner GitHub workflows were intentionally removed at the
-        # user's request. The market scanner and its on-screen manual UI remain.
-        self.assertFalse((ROOT / ".github" / "workflows" / "full-market-scan.yml").exists())
-        self.assertTrue((ROOT / "market_bulk_scan.py").is_file())
+    def test_supported_pipeline_research_reads_cannot_trigger_writes_or_orders(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('research-only-backend.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('read-only-warm-retry.test.cjs'), 0)
 
 
 if __name__ == "__main__":

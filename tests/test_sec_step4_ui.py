@@ -3,6 +3,7 @@
 The Streamlit AppTest router can skip loading multipage scripts entirely without
 raising an exception. Keep this deterministic until hosted browser is verified.
 """
+from supported_dashboard_checks import run_frontend_contract
 import ast
 import unittest
 from pathlib import Path
@@ -31,15 +32,10 @@ class Step4UiSourceTests(unittest.TestCase):
         ):
             self.assertIn(required, src)
 
-    def test_sec_page_does_not_modify_blank_prephase_or_auto_scan(self):
-        src = PAGE.read_text(encoding="utf-8")
-        app = (ROOT / "app.py").read_text(encoding="utf-8")
-        self.assertNotIn("render_pre_phase3(", src)
-        self.assertNotIn("render_clinical_review()", app)
-        self.assertIn("from step7_cached_snapshot import load_current_snapshot", app)
-        self.assertIn('with st.form("sec_step4_retrieve"):', src)
-        self.assertIn("if pressed:", src)
-        self.assertNotIn("scan_one(ticker, registry=registry, user_agent=user_agent)\n", src.split("if pressed:", 1)[0])
+    def test_supported_source_requests_are_authenticated_read_only_and_identity_bound(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('shared-enrichment.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('research-only-backend.test.cjs'), 0)
 
 
 if __name__ == "__main__":

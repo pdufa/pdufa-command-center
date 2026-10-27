@@ -1,96 +1,22 @@
-"""Real Streamlit regression: active PDUFA views keep the score contract.
+"""Current candidate score and separate GEM qualification contracts.
 
-Values remain NOT SCORED if no independently supported score exists.
+The retired Streamlit dataframe column order is not a Next.js API. Actual React
+rendering now verifies seven categories for each P/J/G model, actual zero versus
+missing values, exact identities, dated citations and complete-score-only order.
 """
 import unittest
-import json
-from pathlib import Path
-
-from streamlit.testing.v1 import AppTest
-
-from pdufa_display_columns import (FRONT, POST_SCORES, PRE_SCORES,
-                                   DISPLAY_ORDER_OPTIONS)
-
-APP = Path(__file__).resolve().parents[1] / "app.py"
-TABS = ("PIPELINE",)
+from supported_dashboard_checks import run_frontend_contract, run_backend_contract
 
 
 class FourPdufaScoreTabTests(unittest.TestCase):
-    def test_every_subtab_exposes_same_scoring_columns(self):
-        app = AppTest.from_file(str(APP), default_timeout=120)
-        app.session_state["nav"] = "PDUFA"
-        app.run()
-        self.assertFalse(list(app.exception), "PDUFA startup failed")
-        for tab in TABS:
-            with self.subTest(tab=tab):
-                app.session_state["pdufa_subtab"] = tab
-                app.run()
-                self.assertFalse(list(app.exception), tab)
-                panel = next(item for item in app.get("tab") if item.label == tab)
-                main = [
-                    item.value for item in panel.get("dataframe")
-                    if {"Ticker", "Score /100", "Score type",
-                        "PDUFA Date", "Days to PDUFA", "F"}.issubset(item.value.columns)
-                ]
-                self.assertTrue(main, f"{tab} is missing its PDUFA score table")
-                self.assertEqual(main[0].columns[:len(FRONT)].tolist(), list(FRONT))
-                self.assertTrue(set(POST_SCORES).issubset(main[0].columns))
-                self.assertTrue(set(PRE_SCORES).issubset(main[0].columns))
-                self.assertEqual(
-                    main[0].columns[:5].tolist(),
-                    ["Ticker", "Score /100", "PDUFA Date",
-                     "Days to PDUFA", "2nd Financing Completed"],
-                )
-                sort_key = {
-                    "PIPELINE": "pipeline_sort_v9",
-                }[tab]
-                sorter = app.selectbox(key=sort_key)
-                self.assertEqual(list(sorter.options), list(DISPLAY_ORDER_OPTIONS))
-                self.assertEqual(sorter.value, "Top Score")
-                if len(main[0]):
-                    self.assertTrue(
-                        main[0]["Score /100"].dropna().is_monotonic_decreasing,
-                        f"{tab} default display must sort highest score first",
-                    )
-                    self.assertTrue(
-                        main[0]["Score /100"].dropna().between(0, 100).all(),
-                        f"{tab} contains an invalid numeric score",
-                    )
-                    self.assertTrue(main[0]["Score type"].notna().all())
-                    for score, group in main[0].groupby("Score /100", dropna=False, sort=False):
-                        self.assertTrue(
-                            group["Days to PDUFA"].dropna().is_monotonic_decreasing,
-                            f"{tab} equal score {score} must sort days to PDUFA descending",
-                        )
-                        dated = group["Days to PDUFA"].notna().tolist()
-                        self.assertEqual(dated, sorted(dated, reverse=True),
-                                         f"{tab} missing PDUFA days must follow dated rows")
+    def test_all_current_ranking_models_expose_sources_and_missingness(self):
+        self.assertGreater(run_frontend_contract("candidate-assessments.test.cjs"), 0)
+        self.assertGreater(run_frontend_contract("numeric-forecast-metrics.test.cjs"), 0)
 
-    def test_gem_jr_and_gem_keep_distinct_qualification_contract(self):
-        app = AppTest.from_file(str(APP), default_timeout=120)
-        app.session_state["nav"] = "PDUFA"
-        app.session_state["pdufa_subtab"] = "GEM JR"
-        app.run()
-        self.assertFalse(list(app.exception))
-        jr = [c for c in app.get("component_instance")
-              if "gem_reference_dashboard" in c.proto.component_name]
-        self.assertEqual(len(jr), 1)
-        jr_payload = json.loads(jr[0].proto.json_args)["payload"]
-        self.assertEqual(jr_payload["stage"], "GEM JR")
-        self.assertTrue(all(r["entry"] is None for r in jr_payload["candidates"]))
-        app.session_state["pdufa_subtab"] = "GEM"
-        app.run()
-        self.assertFalse(list(app.exception))
-        gem = [c for c in app.get("component_instance")
-               if "gem_reference_dashboard" in c.proto.component_name]
-        self.assertEqual(len(gem), 1)
-        payload = json.loads(gem[0].proto.json_args)["payload"]
-        self.assertEqual(payload["stage"], "GEM")
-        for row in payload["candidates"]:
-            self.assertEqual(len(row["financings"]), 2)
-            self.assertTrue(all(f["status"] == "Confirmed" for f in row["financings"]))
-        self.assertFalse(any("DETAILED SOURCE WORKBENCH" in x.label
-                             for x in app.get("toggle")))
+    def test_gem_jr_and_gem_keep_separate_qualification_and_source_contracts(self):
+        self.assertGreater(run_frontend_contract("gem-original-checkbox-groups.test.cjs"), 0)
+        self.assertGreater(run_frontend_contract("gem-research-defaults.test.cjs"), 0)
+        self.assertGreater(run_backend_contract("test_trial_qualification.py"), 0)
 
 
 if __name__ == "__main__":
