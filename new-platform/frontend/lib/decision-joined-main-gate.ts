@@ -19,6 +19,7 @@ export function assessJoinedMainDecision(
  if(!main)mainIssues.push("MAIN: evidence record missing");
  else{
   if(main.programId!==target.programId||main.asOf!==target.asOf)mainIssues.push("MAIN: program or cutoff mismatch");
+  if(!Number.isFinite(Date.parse(main.asOf))||Date.parse(main.asOf)>now.getTime()+300000)mainIssues.push("MAIN: invalid or future cutoff");
   if(!/^[A-Z][A-Z0-9.-]{0,9}$/.test(main.ticker))mainIssues.push("MAIN: invalid ticker");
   if(!main.restrictionsReviewed)mainIssues.push("MAIN: restrictions not reviewed");
   if(!Number.isSafeInteger(main.unresolvedCriticalRisks)||main.unresolvedCriticalRisks!==0)mainIssues.push("MAIN: unresolved critical risks");
@@ -27,6 +28,8 @@ export function assessJoinedMainDecision(
    if(main.marketEntry.programId!==main.programId||main.marketExit.programId!==main.programId||
       main.marketEntry.ticker!==main.ticker||main.marketExit.ticker!==main.ticker)
     mainIssues.push("MAIN: market pair identity mismatch");
+   const entryAt=Date.parse(main.marketEntry.observedAt),exitAt=Date.parse(main.marketExit.observedAt),cutoff=Date.parse(main.asOf);
+   if(!Number.isFinite(entryAt)||!Number.isFinite(exitAt)||entryAt>=cutoff||exitAt>=cutoff)mainIssues.push("MAIN: market observations must precede decision cutoff");
    const market=auditHistoricalMarketPair(main.marketEntry,main.marketExit);
    mainIssues.push(...market.issues.map(issue=>"MAIN: "+issue));
   }
