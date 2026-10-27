@@ -37,6 +37,8 @@ def collect(rows, opener=None):
     for row in rows:
         url = row.get("official_source_url") if isinstance(row, dict) else None
         item = {"application_id": row.get("application_id") if isinstance(row, dict) else None,
+                "submission_id": row.get("submission_id") if isinstance(row, dict) else None,
+                "review_cycle": row.get("review_cycle") if isinstance(row, dict) else None,
                 "official_source_url": url, "status": "NOT_FETCHED",
                 "sha256": None, "independently_verified": False, "model_eligible": False}
         if not permitted_fda_pdf(url):
