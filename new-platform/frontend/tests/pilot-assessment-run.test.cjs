@@ -1,4 +1,4 @@
-// Synthetic software-contract fixtures only; no FDA prediction accuracy is tested.
+// Synthetic software contracts and saved-record integrity only; no FDA prediction accuracy is tested.
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),ts=require('typescript');
 for(const extension of ['.ts','.tsx'])require.extensions[extension]=(module,file)=>module._compile(ts.transpileModule(fs.readFileSync(file,'utf8'),{
  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}
@@ -21,6 +21,20 @@ function fixture(){return {
  blockers:['Synthetic fixture has no independently verified scientific evidence.'],
 };}
 const assess=(run=fixture(),identity=expected)=>evaluatePilotRun(run,identity,now);
+test('the dashboard input and saved real-case result have identical bytes and abstention audit',()=>{
+ const crypto=require('node:crypto'),path=require('node:path');
+ const bytes=fs.readFileSync(path.join(__dirname,'../data/peak-pilot-run-20261027.json'));
+ const saved=JSON.parse(fs.readFileSync(path.join(__dirname,'../../../research/first-trial/peak-pilot-evaluation-20261027.json'),'utf8'));
+ assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),saved.inputSha256);
+ const result=evaluatePilotRun(JSON.parse(bytes),{
+  exactKey:'APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130',nctId:'NCT05208047'
+ },new Date(saved.evaluatedAt));
+ const {schemaVersion,evaluatedAt,inputSha256,evaluatorRuntimeMs,measurementScope,...storedAudit}=saved;
+ assert.deepEqual(result,storedAudit);
+ assert.equal(result.preliminaryOutcome,'INDETERMINATE');assert.equal(result.science,null);
+ assert.equal(result.run.timing.totalSeconds,null);assert.equal(result.tradeAuthorized,false);
+ assert.match(measurementScope,/excludes manual source collection and scientific investigation/);
+});
 test('persisted source-linked record is reusable but evidence gaps force explicit abstention',()=>{
  const result=assess();assert.equal(result.status,'INCOMPLETE');assert.equal(result.preliminaryOutcome,'INDETERMINATE');
  assert.equal(result.run.runId,'synthetic-contract-only');assert.equal(result.sources.usableFindingCount,2);assert.equal(result.sources.unknownPublicationDate,1);

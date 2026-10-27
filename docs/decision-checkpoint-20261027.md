@@ -2,7 +2,40 @@
 
 Repository: `pdufa/pdufa-command-center`. Development branch: `feature/decision-workstream-20261026`. Existing draft PR: #498. Never merge it or push to main, deploy to production, change live scan schedules, place real/paper trades, or alter GEM JR/GEM/WT restrictions or separate FS/FA associations without explicit authorization.
 
-## Later master-directive continuation — read first
+## Latest first-trial priority continuation — read first
+
+Latest report: `docs/decision-first-trial-progress-20261027.md`. The user now
+prioritizes one real current trial over completing the whole historical database.
+COGT PEAK (NCT05208047, CGT9486-21-301) has a saved, source-cited assessment and
+actual dashboard display at `/prediction-pilot`: **INCOMPLETE / INDETERMINATE**,
+9 findings, 3 selected historical contexts, **0/40 SCIENCE assessments**, no
+probability/confidence, no trading authorization. One saved research abstention
+is not a completed scientific workflow; **0 full cases completed, 0 queued**.
+Do not activate batch processing until the first case passes all required checks.
+
+Reviewed SCIENCE criteria, original PEAK protocol/SAP, exact current application
+and persistent registry reconciliation, historical-cycle adjudication and a
+justified preliminary classification method remain missing. Do not invent them.
+Full/stage processing time is unmeasured; the saved 1.633 ms evaluator runtime
+excludes research and cannot establish the 45-minute objective.
+
+Recovered and pinned three existing Actions metadata artifacts under
+`research/fda/recovered-20261027/`; source-only importer created the ignored
+research database `work/phase2-20261027/historical-source-metadata.sqlite3`.
+458 letters, 29,416 registry applications, 188,890 submission observations;
+independently adjudicated eligible PASS/FAIL/backtest cases **0/0/0**.
+Original FDA document/manifest/archive bytes remain absent. Optional future
+original-byte retention was implemented but not enabled in any live workflow.
+
+Preserved all **84** upstream commits through `2ffbfba0` via same-branch merge
+`bc8aefdc`. Both earlier requested commits remain ancestors. Post-integration
+verification: **2,611 Python passed, 1 existing skip, 557 subtests; 665 frontend
+passed; TypeScript/build passed**. New-head GitHub and remote-preview results
+must be checked separately. Vercel deployment listing returned permission 403;
+no protection or production changes are authorized. No operational scan timing
+or restriction/FS/FA association was edited.
+
+## Earlier master-directive continuation
 
 The PR advanced by 49 commits after this checkpoint, through `8a0f1184`.
 All were fast-forwarded and preserved before continuing. Both `dd4f9f65` and

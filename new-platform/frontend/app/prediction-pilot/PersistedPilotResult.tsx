@@ -18,6 +18,11 @@ export default function PersistedPilotResult({run,expectedIdentity}:{run:unknown
   <p role="status"><strong>Preliminary outcome: {assessment.preliminaryOutcome}</strong> · {assessment.status.replaceAll("_"," ")}. This is an abstention, not an FDA regulatory outcome.</p>
   <p>Approval probability: unavailable. Nonapproval probability: unavailable. Prediction confidence: unavailable. Model validation: incomplete. Trading authorization: disabled.</p>
   <p>{assessment.sources.textObserved} source text observations; {assessment.sources.unavailable} unavailable; {assessment.sources.unknownPublicationDate} without verified publication dates. These counts do not certify independent evidence review.</p>
+  <details aria-label="Source observation catalog"><summary>Source availability and provenance notes</summary>
+   {saved.sources.map(source=><article key={source.id}><h4>{source.id} · {source.captureStatus.replaceAll("_"," ")}</h4>
+    {citations([source.id])}{source.notes.map((note,i)=><p key={i}>{note}</p>)}
+   </article>)}
+  </details>
   <h3>Source-cited findings</h3>
   {findings.length?findings.map(finding=><article key={finding.id}><h4>{finding.domain} · {finding.approvalDirection.replaceAll("_"," ")}</h4><p>{finding.text}</p>{citations(finding.sourceIds)}</article>):<p>No source-available findings can be displayed at this cutoff.</p>}
   {saved.findings.length>findings.length&&<p>{saved.findings.length-findings.length} findings withheld because citations are unavailable or outside the cutoff.</p>}

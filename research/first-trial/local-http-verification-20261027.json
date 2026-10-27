@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-27T23:34:03.107528+00:00",
+  "url": "http://127.0.0.1:3138/prediction-pilot",
+  "httpStatus": 200,
+  "checks": {
+    "actualSavedRun": true,
+    "explicitAbstention": true,
+    "citedFindings": true,
+    "scienceIncomplete": true,
+    "timingUnmeasured": true,
+    "historicalContext": true,
+    "missingClassifier": true,
+    "sourceNotesVisible": true,
+    "sourceCatalogCollapsed": true,
+    "legacyPreviewCollapsed": true
+  },
+  "scope": "Built local Next.js HTTP page, not remote deployment verification or browser interaction testing."
+}
