@@ -69,13 +69,25 @@ jobs:
             tests/test_historical_parallel_matching.py \
             tests/test_fda_decision_taxonomy.py \
             tests/test_audit_fda_decisions.py \
-            tests/test_fda_historical_candidate_ledger.py
+            tests/test_fda_historical_candidate_ledger.py \
+            tests/test_collect_fda_source_hashes.py
       - name: Produce quarantined historical FDA candidate ledger
         working-directory: research
         run: |
           python scripts/build_fda_historical_candidate_ledger.py \
             --candidate-dir data > historical_fda_candidate_ledger.json
           python -m json.tool historical_fda_candidate_ledger.json > /dev/null
+      - name: Collect official FDA PDF source fingerprints (non-blocking)
+        working-directory: research
+        run: |
+          python scripts/collect_fda_source_hashes.py --candidate-dir data > historical_fda_source_hashes.json
+          python -m json.tool historical_fda_source_hashes.json > /dev/null
+      - name: Publish FDA source fingerprint report
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-fda-source-fingerprints
+          path: research/historical_fda_source_hashes.json
+          retention-days: 30
       - name: Publish candidate ledger for review
         uses: actions/upload-artifact@v4
         with:
