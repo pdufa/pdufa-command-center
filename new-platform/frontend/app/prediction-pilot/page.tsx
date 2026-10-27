@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import peakRun from "../../data/peak-pilot-run-20261027.json";
+import PersistedPilotResult from "./PersistedPilotResult";
 import {PREDICTION_METRICS,SECONDARY_PREDICTION_GROUPS,proposedMetricValue} from "../../lib/prediction-priority-metrics";
 import {
   PEAK_PILOT,PEAK_SOURCES,PEAK_PILOT_METRICS,
@@ -7,7 +9,7 @@ import {
 
 export const metadata: Metadata = {
   title: "COGT PEAK · Real-trial Prediction Research Pilot | PDUFA",
-  description: "Read-only real clinical trial evidence and historical comparable preview, frozen October 26 2026; no validated FDA probability.",
+  description: "Saved PEAK trial evidence, historical comparisons and an explicit preliminary research assessment; no validated FDA probability.",
 };
 export const dynamic = "force-static";
 validatePeakPilot();
@@ -45,16 +47,22 @@ export default function PeakPredictionPilot() {
       <p><strong>PEAK Phase 3 · NCT05208047</strong> · GIST after prior imatinib · PDUFA target <strong>November 30, 2026</strong></p>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",margin:"12px 0"}}>
         <span style={pill}>GEM saved member · Oct 25</span>
-        <span style={pill}>Research cutoff · Oct 26, 2026</span>
+        <span style={pill}>Saved assessment · Oct 27, 2026</span>
         <span style={pill}>Real reported trial results</span>
       </div>
       <p style={subtle}>
-        This is a <strong>frozen, manual, source-linked demonstration</strong>, not a live analytical job.
-        Clinical data are sponsor-reported and published at ASCO; FDA review materials have not independently
-        adjudicated efficacy/safety for this pilot. The qualified GEM membership is from the saved snapshot,
+        The saved assessment below contains <strong>source-linked research observations and an explicit abstention</strong>.
+        Clinical findings are sponsor reported; source availability and missing scientific reviews are recorded individually.
+        The GEM membership is from the saved snapshot,
         not proof of current trading eligibility. <Source item="membership"/>.
       </p>
     </header>
+
+    <PersistedPilotResult run={peakRun} expectedIdentity={{exactKey:PEAK_PILOT.exactPipelineId,nctId:PEAK_PILOT.nctId}}/>
+
+    <details aria-label="Earlier frozen manual pilot preview" style={{marginTop:18}}>
+      <summary>Earlier October 26 reference preview · manual observations and unreviewed metrics</summary>
+      <p style={subtle}>This earlier preview is retained as reference. The saved October 27 assessment above records the sources actually reopened, current limitations and preliminary result.</p>
 
     <section className="panel" aria-label="Pilot outcome preview" style={{marginBottom:16}}>
       <h2>Trial prediction · preliminary scientific outlook</h2>
@@ -185,5 +193,6 @@ export default function PeakPredictionPilot() {
         historical-cohort certification, or source-scanning writes.
       </p>
     </section>
+    </details>
   </main>;
 }
