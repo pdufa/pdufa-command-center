@@ -2,6 +2,37 @@
 
 Repository: `pdufa/pdufa-command-center`. Development branch: `feature/decision-workstream-20261026`. Existing draft PR: #498. Never merge it or push to main, deploy to production, change live scan schedules, place real/paper trades, or alter GEM JR/GEM/WT restrictions or separate FS/FA associations without explicit authorization.
 
+## Later master-directive continuation — read first
+
+The PR advanced by 49 commits after this checkpoint, through `8a0f1184`.
+All were fast-forwarded and preserved before continuing. Both `dd4f9f65` and
+`e5800a07` remain in history. The governing document is now
+`docs/MASTER_PDUFA_PASS_FAIL_DIRECTIVE.md`. The sections below retain the earlier
+session's verified results and are not the latest full-suite counts.
+
+Latest continuation report:
+`docs/decision-master-directive-progress-20261027.md`. Implementation commits:
+`e59f3a2a`, `43defa46`, `a58f3f4c`, `c74939ae`, `cf93ffc3`, `6b109651`.
+They add retained-byte FDA intake, separate JSON feature/outcome chronology,
+honest candidate-only cycle matching/staging, rescission/correction dependency
+review, qualitative SCIENCE direction and adversarial arguments, and explicit
+INSUFFICIENT EVIDENCE prediction abstention. Original receipt timestamps follow
+document acquisition and hashing. No trained/validated prediction is installed.
+
+Three real FDA PDF text observations for ZEVASKYN are committed under
+`research/fda/`. They show one CRL and a later approval, plus FDA resubmission
+history. Original PDF bytes and publication/cycle adjudication remain unavailable;
+verified eligible PASS = 0, FAIL = 0, model-eligible = 0 for this intake. Direct
+acquisition returned `Tunnel connection failed: 403 Forbidden` without creating
+an archive. Use supported network configuration or reviewed offline originals;
+never promote connected-tool transcriptions into original PDFs or predecision
+features. Next task is independent document/cycle/coverage adjudication and real
+point-in-time evidence, followed by the existing blinded validation gates.
+
+No production database, schedule/configuration, restriction/FS/FA association or
+trading permission was modified. All work stays on the named feature branch and
+existing draft PR #498.
+
 ## Starting state and preserved work
 
 The pasted request identified remote head `b80577c449b4ba123b64cee9bac24d520b2e2194`. Local uncommitted work was checkpointed before fast-forwarding to that head; the five intervening remote commits, frozen market-cap file and supported SCANS regression were preserved. All eight GitHub workflows on that starting head were successful. The older PR description's census CI failure was already resolved by those remote corrections.
