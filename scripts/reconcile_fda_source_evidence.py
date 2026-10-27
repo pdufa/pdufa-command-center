@@ -12,7 +12,9 @@ def reconcile(ledger, fingerprints):
     entries = []
     for candidate in ledger.get("candidate_review_cycles", []):
         matches = [r for r in by_app.get(candidate.get("application_id"), [])
-                   if r.get("official_source_url") == candidate.get("official_source_url")]
+                   if r.get("official_source_url") == candidate.get("official_source_url")
+                   and r.get("submission_id") == candidate.get("submission_id")
+                   and r.get("review_cycle") == candidate.get("review_cycle")]
         hashed = [r for r in matches if r.get("status") == "BYTES_HASHED_NOT_ADJUDICATED"
                   and isinstance(r.get("sha256"), str) and len(r["sha256"]) == 64]
         hashes = {r["sha256"] for r in hashed}
