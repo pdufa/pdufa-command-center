@@ -54,10 +54,19 @@ def build_ledger(rows):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("files", nargs="+", type=Path)
+    parser.add_argument("files", nargs="*", type=Path)
+    parser.add_argument("--candidate-dir", type=Path, help="Discover all fda_candidate_*.json files in this directory")
     args = parser.parse_args()
     try:
-        rows = [json.loads(path.read_text(encoding="utf-8")) for path in args.files]
+        paths = list(args.files)
+        if args.candidate_dir is not None:
+            if not args.candidate_dir.is_dir():
+                raise ValueError("candidate directory does not exist")
+            paths.extend(sorted(args.candidate_dir.glob("fda_candidate_*.json")))
+        paths = sorted(set(paths))
+        if not paths:
+            raise ValueError("no candidate files found")
+        rows = [json.loads(path.read_text(encoding="utf-8")) for path in paths]
         print(json.dumps(build_ledger(rows), indent=2, sort_keys=True))
     except (OSError, ValueError, TypeError) as exc:
         print(f"LEDGER_FAILED: {exc}", file=sys.stderr)
