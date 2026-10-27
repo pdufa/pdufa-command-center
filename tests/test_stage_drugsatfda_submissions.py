@@ -13,7 +13,7 @@ class DrugsAtFDAStageTests(unittest.TestCase):
             with zipfile.ZipFile(path, "w") as archive:
                 archive.writestr("Submissions.txt",
                     "ApplNo\tSubmissionType\tSubmissionNo\tSubmissionStatus\tSubmissionStatusDate\n"
-                    "221276\tORIG\t1\tAP\t2026-10-20\n")
+                    " 221276 \tORIG\t1\tAP\t2026-10-20\n")
                 archive.writestr("ApplicationDocs.txt",
                     "ApplNo\tSubmissionType\tSubmissionNo\tApplicationDocsTitle\tApplicationDocsURL\tApplicationDocsDate\n"
                     "221276\tORIG\t1\tApproval letter\thttps://www.accessdata.fda.gov/a.pdf\t2026-10-20\n")
