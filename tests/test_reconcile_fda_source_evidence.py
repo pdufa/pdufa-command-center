@@ -28,6 +28,20 @@ class ReconcileTests(unittest.TestCase):
              "status": "BYTES_HASHED_NOT_ADJUDICATED", "sha256": "a" * 64}]}
         self.assertEqual(reconcile(self.ledger, f)["records"][0]["status"], "NO_MATCHING_SOURCE_REPORT")
 
+    def test_claimed_hash_mismatch_is_flagged(self):
+        ledger = {"candidate_review_cycles": [dict(self.ledger["candidate_review_cycles"][0],
+                                                   document_sha256="b" * 64)]}
+        source = dict(self.ledger["candidate_review_cycles"][0],
+                      status="BYTES_HASHED_NOT_ADJUDICATED", sha256="a" * 64)
+        self.assertEqual(reconcile(ledger, {"records": [source]})["records"][0]["status"],
+                         "CANDIDATE_SOURCE_HASH_MISMATCH")
+
+    def test_malformed_hash_is_not_accepted(self):
+        source = dict(self.ledger["candidate_review_cycles"][0],
+                      status="BYTES_HASHED_NOT_ADJUDICATED", sha256="z" * 64)
+        self.assertEqual(reconcile(self.ledger, {"records": [source]})["records"][0]["status"],
+                         "SOURCE_FETCH_UNSUCCESSFUL_OR_BLOCKED")
+
     def test_conflicting_hashes_are_flagged(self):
         f = {"records": [{"application_id": "NDA221276", "submission_id": "ORIG-1",
              "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf",
