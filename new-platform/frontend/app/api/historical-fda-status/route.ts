@@ -65,7 +65,7 @@ export async function GET() {
     const body = await runs.json() as { workflow_runs?: Array<{ id: number; conclusion: string; created_at: string }> };
     const successfulRuns = body.workflow_runs?.filter(r => r.conclusion === "success") ?? [];
     if (!successfulRuns.length) return unavailable("No successful historical workflow run");
-    let selected: { run: (typeof successfulRuns)[number]; artifact: { name: string; expired: boolean; html_url: string } } | null = null;
+    let selected: { run: (typeof successfulRuns)[number]; artifact: { name: string; expired: boolean; html_url: string; id: number } } | null = null;
     for (const run of successfulRuns.slice(0, 5)) {
       const response = await fetch(`https://api.github.com/repos/${repo}/actions/runs/${run.id}/artifacts?per_page=100`, { headers, cache: "no-store", signal: AbortSignal.timeout(8000) });
       if (!response.ok) continue;
