@@ -21,6 +21,14 @@ class IntegratedReadinessTests(unittest.TestCase):
             assemble({"candidate_review_cycles": [row]}, {"records": []},
                      {"records": [dict(row, application_id="NDA999999")]})
 
+    def test_wrong_cycle_fingerprint_fails_closed(self):
+        row = {"application_id": "NDA221276", "submission_id": "ORIG-1",
+               "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf"}
+        with self.assertRaises(ValueError):
+            assemble({"candidate_review_cycles": [row]},
+                     {"records": [dict(row, review_cycle=2)]},
+                     {"records": [dict(row, status="NO_MATCHING_SOURCE_REPORT")]})
+
     def test_missing_fingerprint_record_fails_closed(self):
         row = {"application_id": "NDA221276", "submission_id": "ORIG-1",
                "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf"}
