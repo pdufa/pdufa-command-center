@@ -1,7 +1,8 @@
 import type {DecisionIdentity} from "./decision-workstream";
 import type {ResearchReadiness} from "./decision-research-readiness";
+import {validatePrimaryTrialSourceIdentity} from "./decision-trial-source-identity";
 
-export type InvestigationSource={url:string;publishedAt:string;observedAt:string;independentlyReviewed:boolean};
+export type InvestigationSource={url:string;publishedAt:string;observedAt:string;independentlyReviewed:boolean;primaryTrial?:{trialId:string;protocolId:string}};
 export type InvestigationAssessment={id:string;status:"COMPLETE"|"PARTIAL"|"MISSING"|"CONFLICT";reviewer:string;criticalEvaluation:string;uncertainty:string;unresolvedCriticalFindings:number;sources:InvestigationSource[]};
 export type ScienceInvestigation={
  identity:DecisionIdentity;asOf:string;drug:string;indication:string;companyCik:string;fdaApplication:string|null;
@@ -48,8 +49,15 @@ export function parseScienceInvestigation(value:unknown):ScienceInvestigation {
     ||!text(a.reviewer,512)||!text(a.criticalEvaluation)||!text(a.uncertainty)
     ||!Number.isSafeInteger(a.unresolvedCriticalFindings)||Number(a.unresolvedCriticalFindings)<0
     ||!Array.isArray(a.sources)||a.sources.length>20)throw new Error("Scientific assessment is invalid");
-   for(const s of a.sources)if(!object(s)||!keys(s,["url","publishedAt","observedAt","independentlyReviewed"])||!text(s.url,4096)||!https(s.url)||!text(s.publishedAt,100)
+   for(const s of a.sources)if(!object(s)||!keys(s,["url","publishedAt","observedAt","independentlyReviewed","primaryTrial"])||!text(s.url,4096)||!https(s.url)||!text(s.publishedAt,100)
     ||!text(s.observedAt,100)||typeof s.independentlyReviewed!=="boolean")throw new Error("Scientific source record is invalid");
+   for(const s of a.sources){
+    if(object(s)&&s.primaryTrial!==undefined){
+     if(!object(s.primaryTrial)||!keys(s.primaryTrial,["trialId","protocolId"])||!text(s.primaryTrial.trialId,32)||!text(s.primaryTrial.protocolId,100))
+      throw new Error("Primary trial source metadata is invalid");
+     validatePrimaryTrialSourceIdentity({trialId:identity.trialId as string,protocolId:s.primaryTrial.protocolId as string},s.primaryTrial);
+    }
+   }
   }
  }
  return value as unknown as ScienceInvestigation;
