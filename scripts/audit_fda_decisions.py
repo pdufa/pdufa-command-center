@@ -1,7 +1,9 @@
 """Import sourced FDA decision events from JSONL or CSV into an auditable review report.
 
 This is a *staging* validator, not a scraper and not a historical data corpus.
-Each row must have: application_id, action, decision_date, source_url.
+Rows need exact application_id/submission_id/review_cycle, action, decision_date,
+source_url, evidence_as_of (publication availability), and retrieved_on. Missing
+identities or dates remain quarantined. None of these fields proves source truth.
 Use: python scripts/audit_fda_decisions.py input.jsonl --as-of 2026-10-27
 No files or database rows are modified.
 """
@@ -44,6 +46,13 @@ def audit(rows, *, as_of):
         "classification_counts": dict(sorted(counts.items())),
         "application_counts": deduped["counts"],
         "conflicting_applications": deduped["conflicting_applications"],
+        "conflicting_review_cycles": deduped["conflicting_review_cycles"],
+        "candidate_review_cycles": deduped["candidates"],
+        "excluded_observations": deduped["excluded"],
+        "independently_verified_pass_count": 0,
+        "independently_verified_fail_count": 0,
+        "model_eligible_records": 0,
+        "complete_application_denominator_verified": False,
         "source_content_verified": False,
         "independent_backtest_complete": False,
         "prediction_model_validated": False,

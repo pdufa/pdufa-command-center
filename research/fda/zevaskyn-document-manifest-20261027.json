@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "bla125807-crl-20240416",
+      "url": "https://download.open.fda.gov/crl/CRL_BLA125807_20240416.pdf",
+      "document_date": "2024-04-16",
+      "publication_date": null
+    },
+    {
+      "id": "bla125807-approval-20250428",
+      "url": "https://www.fda.gov/media/186513/download",
+      "document_date": "2025-04-28",
+      "publication_date": null
+    },
+    {
+      "id": "bla125807-sbra-20250428",
+      "url": "https://www.fda.gov/media/186796/download",
+      "document_date": "2025-04-28",
+      "publication_date": null
+    }
+  ]
+}
