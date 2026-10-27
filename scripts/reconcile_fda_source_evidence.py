@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse
 import json
+import re
 from pathlib import Path
 
 
@@ -16,10 +17,13 @@ def reconcile(ledger, fingerprints):
                    and r.get("submission_id") == candidate.get("submission_id")
                    and r.get("review_cycle") == candidate.get("review_cycle")]
         hashed = [r for r in matches if r.get("status") == "BYTES_HASHED_NOT_ADJUDICATED"
-                  and isinstance(r.get("sha256"), str) and len(r["sha256"]) == 64]
+                  and isinstance(r.get("sha256"), str)
+                  and re.fullmatch(r"[0-9a-f]{64}", r["sha256"])]
         hashes = {r["sha256"] for r in hashed}
         if len(hashes) > 1:
             status = "CONFLICTING_SOURCE_HASHES"
+        elif len(hashes) == 1 and candidate.get("document_sha256") and candidate["document_sha256"] not in hashes:
+            status = "CANDIDATE_SOURCE_HASH_MISMATCH"
         elif len(hashes) == 1:
             status = "SOURCE_HASH_AVAILABLE_ADJUDICATION_PENDING"
         elif matches:
