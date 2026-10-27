@@ -24,3 +24,14 @@ Research note only; no production deployment, scanner change, or FS/FA preset re
 - NCT06424444 = ADX-102-DED-031, 421 enrolled, field endpoint; source https://spzco.com/security/ALDX/trials
 - NCT06493604 = ADX-102-DED-032, 116 enrolled, chamber endpoint; source https://spzco.com/security/ALDX/trials
 - Independent trial-level result confirmation remains required before definitive evidence grades.
+
+## Source-linked endpoint classification (research update)
+Trial protocol mapping corroborated at https://glance.eyesoneyecare.com/stories/2025-07-18/fda-accepts-aldeyra-s-resubmitted-reproxalap-nda/ . Sponsor's comparative efficacy exhibit (including FDA-position characterizations) at https://ir.aldeyra.com/static-files/744efa34-7136-495c-8eae-0c7c85ef6b60 .
+
+| NCT | Protocol | Sponsor-reported primary endpoint | Sponsor-characterized FDA concern | Assessment |
+|---|---|---|---|---|
+| NCT06389214 | ADX-102-DED-030 | Statistically significant | Methodological concerns | Endpoint positive, evidence disputed |
+| NCT06424444 | ADX-102-DED-031 | Not statistically significant | None specified beyond nonsignificance | Endpoint not met |
+| NCT06493604 | ADX-102-DED-032 | Statistically significant | Endpoint met | Endpoint positive |
+
+Do not equate sponsor characterization with independently reviewed FDA findings. Keep program-level Complete Response Letter separate from trial-level primary endpoints. Research only; no trade signal.
