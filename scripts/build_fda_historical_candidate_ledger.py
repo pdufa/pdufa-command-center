@@ -32,6 +32,11 @@ def build_ledger(rows):
         else:
             seen[key] = len(results)
         results.append({
+            "event_key": row.get("event_key") if isinstance(row, dict) else None,
+            "official_source_url": row.get("official_source_url") if isinstance(row, dict) else None,
+            "action_date": row.get("action_date") if isinstance(row, dict) else None,
+            "document_sha256_present": bool(row.get("document_sha256")) if isinstance(row, dict) else False,
+            "review_required": True,
             "application_id": row.get("application_id") if isinstance(row, dict) else None,
             "submission_id": row.get("submission_id") if isinstance(row, dict) else None,
             "review_cycle": row.get("review_cycle") if isinstance(row, dict) else None,
@@ -47,6 +52,7 @@ def build_ledger(rows):
         "independently_verified_pass": 0,
         "independently_verified_fail": 0,
         "model_eligible": 0,
+        "needs_independent_adjudication": len(results),
         "candidate_review_cycles": results,
         "warning": "Metadata and source links do not verify FDA documents, independent adjudication, or model readiness.",
     }
