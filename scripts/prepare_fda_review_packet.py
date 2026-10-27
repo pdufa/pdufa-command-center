@@ -11,6 +11,7 @@ def prepare(ledger, reconciliation):
         raise ValueError("FDA evidence count mismatch")
     packet = []
     seen = set()
+    seen_cycles = set()
     for candidate, record in zip(candidates, records):
         identity = ("application_id", "submission_id", "review_cycle", "official_source_url")
         if any(candidate.get(k) != record.get(k) for k in identity):
@@ -19,6 +20,10 @@ def prepare(ledger, reconciliation):
         if key in seen:
             raise ValueError("duplicate FDA decision identity in review packet")
         seen.add(key)
+        cycle_key = tuple(candidate.get(k) for k in ("application_id", "submission_id", "review_cycle"))
+        if cycle_key in seen_cycles:
+            raise ValueError("same FDA review cycle has multiple source identities")
+        seen_cycles.add(cycle_key)
         packet.append({
             **{k: candidate.get(k) for k in identity},
             "claimed_action": candidate.get("action_type"),
