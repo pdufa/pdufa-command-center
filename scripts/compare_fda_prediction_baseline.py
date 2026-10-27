@@ -13,11 +13,18 @@ def compare_to_prior_rate(training_rows, holdout_rows):
     """Return Brier skill vs strictly prior approval-rate baseline, or abstain."""
     try:
         train = []
+        training_keys = set()
+        training_applications = set()
         for row in training_rows:
             if row.get("independently_adjudicated") is not True:
                 continue
             if row["outcome"] not in ("PASS", "FAIL"):
                 continue
+            key = (row["application_id"], row["submission_id"], int(row["review_cycle"]))
+            if key in training_keys:
+                return _abstain("Duplicate training review cycle")
+            training_keys.add(key)
+            training_applications.add(row["application_id"])
             train.append((date.fromisoformat(row["decision_date"]),
                           int(row["outcome"] == "PASS")))
         holdout = []
@@ -29,6 +36,8 @@ def compare_to_prior_rate(training_rows, holdout_rows):
             if key in keys:
                 return _abstain("Duplicate holdout review cycle")
             keys.add(key)
+            if row["application_id"] in training_applications:
+                return _abstain("Training and holdout share an application")
             forecast_date = date.fromisoformat(row["prediction_as_of"])
             decision_date = date.fromisoformat(row["decision_date"])
             if forecast_date >= decision_date:
@@ -53,7 +62,7 @@ def compare_to_prior_rate(training_rows, holdout_rows):
                 "brier_skill": (1-model_brier/baseline_brier if baseline_brier > 0 else None),
                 "independently_validated": False, "trading_authorized": False,
                 "warning": "Caller-supplied verification is not independently authenticated; "
-                           "review-cycle overlap across sets, cohort selection, and source provenance "
+                           "cohort selection and source provenance "
                            "require separate independent audit."}
     except (KeyError, ValueError, TypeError, OverflowError):
         return _abstain("Malformed row")
