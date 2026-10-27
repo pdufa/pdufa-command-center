@@ -50,3 +50,19 @@ jobs:
       - run: python -m pip install pytest
       - name: Verify existing nightly scan clock and publication safeguards
         run: python -m unittest discover -s tests -p 'test_nightly_pacific_sequence.py' -v
+      - name: Checkout isolated SCIENCE and OUTCOME research branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/decision-workstream-20261026
+          path: research
+          persist-credentials: false
+      - name: Run isolated FDA prediction research tests
+        working-directory: research
+        run: |
+          python -m pytest -q \
+            tests/test_pdufa_readiness_gate.py \
+            tests/test_evaluate_fda_predictions.py \
+            tests/test_compare_fda_prediction_baseline.py \
+            tests/test_screen_fda_evidence.py \
+            tests/test_build_fda_evidence_review_queue.py \
+            tests/test_fda_bepirovirsen_candidate.py
