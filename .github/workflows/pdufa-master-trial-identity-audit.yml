@@ -1,0 +1,42 @@
+name: Audit PDUFA Master Trial Identities
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identity-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify database connection exists
+        env:
+          DATABASE_URL: ${{ secrets.PDUFA_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::PDUFA_DATABASE_URL is not configured."
+            exit 1
+          fi
+      - name: Install read-only export dependencies
+        run: python -m pip install 'sqlalchemy>=2.0' 'psycopg2-binary>=2.9'
+      - name: Export master trial archive
+        env:
+          DATABASE_URL: ${{ secrets.PDUFA_DATABASE_URL }}
+          TRIAL_EXPORT_PATH: ${{ runner.temp }}/master-trials.csv
+        run: python new-platform/backend/export_master_trials.py
+      - name: Audit trial identity format and duplicates
+        run: python scripts/trial_census_identity_audit.py "${{ runner.temp }}/master-trials.csv" > "${{ runner.temp }}/identity-audit.json"
+      - name: Publish aggregate audit summary
+        run: |
+          python -c 'import json,sys; d=json.load(open(sys.argv[1])); print("Master trial identity audit:",json.dumps(d["counts"],sort_keys=True))' "${{ runner.temp }}/identity-audit.json"
+          cat "${{ runner.temp }}/identity-audit.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Save aggregate audit only
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-master-identity-audit
+          path: ${{ runner.temp }}/identity-audit.json
+          retention-days: 7
+          if-no-files-found: error
