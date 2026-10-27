@@ -1,0 +1,18 @@
+{
+  "event_key": "IONS|BEPIROVIRSEN_CHB_20261026",
+  "application_id": "NDA221276",
+  "submission_id": "ORIG-1",
+  "review_cycle": 1,
+  "action_type": "APPROVAL",
+  "action_date": "2026-10-20",
+  "retrieved_at": "2026-10-27T00:00:00Z",
+  "official_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/221276Orig1s000Ltr.pdf",
+  "document_title": "NDA 221276 original approval letter — Hibsago (bepirovirsen)",
+  "evidence_locator": "FDA approval letter; original application and October 20, 2026 action",
+  "document_sha256": null,
+  "independently_verified": false,
+  "model_eligible": false,
+  "ingestion_status": "CANDIDATE_PENDING_DOCUMENT_HASH_AND_INDEPENDENT_ADJUDICATION",
+  "secondary_official_source_url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-its-kind-chronic-hepatitis-b-treatment",
+  "note": "Authoritative public FDA record located; hash source bytes and independently adjudicate application, applicant and review cycle before promoting."
+}
