@@ -16,3 +16,6 @@ test("MAIN unresolved risk blocks readiness",()=>assert.equal(assess({...main,un
 test("MAIN ticker mismatch blocks readiness",()=>assert.equal(assess({...main,ticker:"OTHER"}).status,"NOT_READY"));
 test("MAIN raw prices block readiness",()=>assert.equal(assess({...main,marketEntry:{...main.marketEntry,adjustmentMethod:"RAW"}}).status,"NOT_READY"));
 test("missing historical source still blocks MAIN",()=>assert.equal(assess(main,{}).status,"NOT_READY"));
+test("market exit after prediction cutoff blocks readiness",()=>assert.equal(assess({...main,marketExit:{...main.marketExit,observedAt:"2026-11-01",capturedAt:"2026-11-02"}}).status,"NOT_READY"));
+test("market entry on prediction cutoff blocks readiness",()=>assert.equal(assess({...main,marketEntry:{...main.marketEntry,observedAt:asOf,capturedAt:"2026-10-27"}}).status,"NOT_READY"));
+test("MAIN future cutoff blocks readiness",()=>assert.equal(assess({...main,asOf:"2027-01-01"}).status,"NOT_READY"));
