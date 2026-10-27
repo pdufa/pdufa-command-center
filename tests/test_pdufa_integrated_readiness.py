@@ -7,7 +7,7 @@ class IntegratedReadinessTests(unittest.TestCase):
         row = {"application_id": "NDA221276", "submission_id": "ORIG-1",
                "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf"}
         ledger = {"candidate_review_cycles": [row]}
-        fingerprints = {"records": [{"sha256": "a" * 64}]}
+        fingerprints = {"records": [dict(row, sha256="a" * 64)]}
         reconciliation = {"records": [dict(row, status="SOURCE_HASH_AVAILABLE_ADJUDICATION_PENDING")]}
         report = assemble(ledger, fingerprints, reconciliation)
         self.assertEqual(report["outcome"]["model_eligible_records"], 0)
@@ -20,3 +20,10 @@ class IntegratedReadinessTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             assemble({"candidate_review_cycles": [row]}, {"records": []},
                      {"records": [dict(row, application_id="NDA999999")]})
+
+    def test_missing_fingerprint_record_fails_closed(self):
+        row = {"application_id": "NDA221276", "submission_id": "ORIG-1",
+               "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf"}
+        with self.assertRaises(ValueError):
+            assemble({"candidate_review_cycles": [row]}, {"records": []},
+                     {"records": [dict(row, status="NO_MATCHING_SOURCE_REPORT")]})
