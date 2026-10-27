@@ -8,7 +8,7 @@ class ReconcileTests(unittest.TestCase):
                          "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf"}]}
 
     def test_hashed_pdf_remains_unverified(self):
-        f = {"records": [{"application_id": "NDA221276",
+        f = {"records": [{"application_id": "NDA221276", "submission_id": "ORIG-1", "review_cycle": 1,
              "official_source_url": "https://www.fda.gov/a.pdf",
              "status": "BYTES_HASHED_NOT_ADJUDICATED", "sha256": "a" * 64}]}
         r = reconcile(self.ledger, f)
@@ -19,6 +19,12 @@ class ReconcileTests(unittest.TestCase):
     def test_mismatched_url_does_not_join(self):
         f = {"records": [{"application_id": "NDA221276",
              "official_source_url": "https://www.fda.gov/other.pdf",
+             "status": "BYTES_HASHED_NOT_ADJUDICATED", "sha256": "a" * 64}]}
+        self.assertEqual(reconcile(self.ledger, f)["records"][0]["status"], "NO_MATCHING_SOURCE_REPORT")
+
+    def test_different_cycle_cannot_borrow_source_hash(self):
+        f = {"records": [{"application_id": "NDA221276", "submission_id": "ORIG-1",
+             "review_cycle": 2, "official_source_url": "https://www.fda.gov/a.pdf",
              "status": "BYTES_HASHED_NOT_ADJUDICATED", "sha256": "a" * 64}]}
         self.assertEqual(reconcile(self.ledger, f)["records"][0]["status"], "NO_MATCHING_SOURCE_REPORT")
 
