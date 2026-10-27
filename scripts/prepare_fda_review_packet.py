@@ -39,7 +39,16 @@ def prepare(ledger, reconciliation):
             "independently_verified": False,
             "model_eligible": False,
         })
-    return {"records": packet, "verified": 0, "model_eligible": 0}
+    priority_order = {"SOURCE_EVIDENCE_BLOCKED": 0,
+                      "METADATA_REVIEW_REQUIRED": 1,
+                      "INDEPENDENT_ADJUDICATION_REQUIRED": 2}
+    packet.sort(key=lambda r: (priority_order[r["review_priority"]],
+                               str(r["application_id"]), str(r["submission_id"]),
+                               str(r["review_cycle"])))
+    counts = {priority: sum(r["review_priority"] == priority for r in packet)
+              for priority in priority_order}
+    return {"records": packet, "total_to_review": len(packet),
+            "priority_counts": counts, "verified": 0, "model_eligible": 0}
 
 
 def main():
