@@ -70,3 +70,15 @@ jobs:
             tests/test_fda_decision_taxonomy.py \
             tests/test_audit_fda_decisions.py \
             tests/test_fda_historical_candidate_ledger.py
+      - name: Produce quarantined historical FDA candidate ledger
+        working-directory: research
+        run: |
+          python scripts/build_fda_historical_candidate_ledger.py \
+            data/fda_candidate_bepirovirsen_20261020.json > historical_fda_candidate_ledger.json
+          python -m json.tool historical_fda_candidate_ledger.json > /dev/null
+      - name: Publish candidate ledger for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-fda-candidate-ledger
+          path: research/historical_fda_candidate_ledger.json
+          retention-days: 30
