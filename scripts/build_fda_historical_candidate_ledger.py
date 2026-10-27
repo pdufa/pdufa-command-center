@@ -12,7 +12,10 @@ import json
 from pathlib import Path
 import sys
 
-from screen_fda_evidence import screen_candidate
+try:
+    from .screen_fda_evidence import screen_candidate
+except ImportError:  # direct script execution
+    from screen_fda_evidence import screen_candidate
 
 
 def build_ledger(rows):
