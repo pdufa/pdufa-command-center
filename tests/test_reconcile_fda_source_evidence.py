@@ -29,8 +29,8 @@ class ReconcileTests(unittest.TestCase):
         self.assertEqual(reconcile(self.ledger, f)["records"][0]["status"], "NO_MATCHING_SOURCE_REPORT")
 
     def test_conflicting_hashes_are_flagged(self):
-        f = {"records": [{"application_id": "NDA221276",
-             "official_source_url": "https://www.fda.gov/a.pdf",
+        f = {"records": [{"application_id": "NDA221276", "submission_id": "ORIG-1",
+             "review_cycle": 1, "official_source_url": "https://www.fda.gov/a.pdf",
              "status": "BYTES_HASHED_NOT_ADJUDICATED", "sha256": x * 64} for x in ("a", "b")]}
         self.assertEqual(reconcile(self.ledger, f)["records"][0]["status"], "CONFLICTING_SOURCE_HASHES")
 
