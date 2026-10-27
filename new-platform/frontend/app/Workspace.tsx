@@ -26,6 +26,7 @@ import SpecialDesignationCounts from "./SpecialDesignationCounts";
 import { useTrialDesignations } from "./TrialDesignations";
 import { filterBySelectedDesignations, SPECIAL_DESIGNATION_CATEGORIES, type DesignationKey } from "../lib/trial-designations";
 import TrialFields from "./TrialFields";
+import ScienceEvidencePanel from "./ScienceEvidencePanel";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
@@ -1686,6 +1687,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
                       <GemInlineSection title="Candidate assessment scores and all data" description="Seven clinical and seven opportunity assessments, individual points, rules, sources and history"
                         open={isSectionOpen("assessments")} onToggle={()=>toggleSection("assessments")}>
                         <CandidateAssessments key={r.id+"-assessments"} row={r} initialStage={stage}/>
+                        <ScienceEvidencePanel programId={r.programId || r.id} list={stage === "GEM_JR" ? "GEM_JR" : "GEM"} />
                       </GemInlineSection>
                       <GemInlineSection title="Entry and exit scores" description="Weighted evidence, completeness and risk overrides"
                         open={isSectionOpen("scores")} onToggle={()=>toggleSection("scores")}>

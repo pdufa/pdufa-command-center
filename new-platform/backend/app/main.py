@@ -8,6 +8,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+from .science_chronology import strict_iso_day, registry_publication_day, source_eligible_at_cutoff, preliminary_archive_gate
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
@@ -1013,6 +1014,371 @@ def validate_program_checklist(session: Session, program_id: str, stage: str) ->
     if not session.get(ProgramIdentity, serial):
         raise HTTPException(status_code=404, detail="Permanent Program ID not registered")
     return program_id, stage
+
+
+@app.get("/api/science/dossier", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_science_dossier(programId: str, list: str):
+    """Read-only publication boundary. Never fabricate 40 scores from registry metadata."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or list not in {"GEM_JR", "GEM", "WT"}:
+        raise HTTPException(status_code=422, detail="Invalid scientific dossier identity")
+    with Session(ENGINE) as session:
+        serial = int(programId[6:])
+        if session.get(ProgramIdentity, serial) is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+    # There is no reviewed, versioned SCIENCE dossier source installed yet.
+    # Explicit 404 prevents the frontend from treating incomplete metadata as evidence.
+    raise HTTPException(status_code=404, detail="Verified SCIENCE dossier not published")
+
+
+@app.get("/api/science/source-inventory", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_source_inventory(programId: str):
+    """Inventory archived source records; never promote a source inventory to SCIENCE scoring."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program ID")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        # The registry's source key is not guaranteed to be a validated NCT link.
+        # Do not infer an NCT from ticker or drug; only report exact NCT identifiers.
+        nct_matches = sorted(set(re.findall(r"NCT[0-9]{8}", identity.source_key)))
+        records = []
+        for nct_id in nct_matches:
+            row = session.get(FullTrialRecord, nct_id)
+            if row:
+                records.append({
+                    "nctId": nct_id,
+                    "sha256": row.sha256,
+                    "fetchedAt": row.fetched_at.isoformat(),
+                    "hasArchivedPayload": True,
+                    "scientificEvidenceVerified": False,
+                })
+    return {
+        "programId": programId,
+        "schemaVersion": "science-source-inventory-v1",
+        "sourceRecords": records,
+        "exactNctIdsFromProgramSourceKey": nct_matches,
+        "linkageVerified": False,
+        "scientificDossierPublished": False,
+        "assessmentScoresAvailable": False,
+        "approvalProbability": None,
+        "note": "Archival source inventory only; no historical cutoff or clinical evidence verification performed.",
+    }
+
+
+@app.get("/api/science/source-extract", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_source_extract(programId: str, nctId: str):
+    """Extract archived registry fields with provenance; never convert them into scored evidence."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid exact program or NCT identifier")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        # Program source_key is a candidate link, not clinical identity verification.
+        linked_ids = set(re.findall(r"NCT[0-9]{8}", identity.source_key))
+        if nctId not in linked_ids:
+            raise HTTPException(status_code=409, detail="Exact NCT is not present in program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived exact NCT record not found")
+        summary = row.summary if isinstance(row.summary, dict) else {}
+        statistics = row.statistics if isinstance(row.statistics, list) else []
+        # Whitelist output to avoid leaking arbitrary archived registry payloads.
+        fields = {name: summary[name] for name in (
+            "nctId", "briefTitle", "overallStatus", "phase", "phases",
+            "studyType", "enrollment", "startDate", "primaryCompletionDate",
+            "completionDate", "lastUpdatePostDate", "primaryOutcomeMeasures",
+        ) if name in summary}
+        return {
+            "schemaVersion": "science-source-extract-v1",
+            "programId": programId, "nctId": nctId,
+            "source": "archived-clinicaltrials-gov",
+            "archiveSha256": row.sha256,
+            "archiveFetchedAt": row.fetched_at.isoformat(),
+            "fields": fields,
+            "reportedStatisticsCount": len(statistics),
+            "linkageVerified": False,
+            "publicationDatesVerified": False,
+            "scientificEvidenceVerified": False,
+            "assessmentScoresAvailable": False,
+            "approvalProbability": None,
+        }
+
+
+@app.get("/api/science/assessment-coverage", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_assessment_coverage(programId: str, nctId: str):
+    """Conservative 8 x 5 assessment coverage map, not a scientific rating."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid exact program or NCT identifier")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT not present in program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived trial record not found")
+        summary = row.summary if isinstance(row.summary, dict) else {}
+        fields = (
+            ("primaryOutcomeMeasures", "resultsSummary", "effectSize", "clinicalResults", "outcomeMeasures"),
+            ("pValue", "confidenceInterval", "statisticalMethods", "statisticalAnalysis", "sampleSize"),
+            ("studyType", "allocation", "masking", "interventionModel", "primaryPurpose"),
+            ("adverseEvents", "seriousAdverseEvents", "safetyResults", "mortality", "withdrawals"),
+            ("replicationStudies", "subgroupAnalysis", "sensitivityAnalysis", "consistency", "externalReplication"),
+            ("regulatoryDesignation", "fdaMeetings", "submissionStatus", "reviewCycle", "labeling"),
+            ("manufacturing", "qualityControl", "batchConsistency", "inspection", "cGMP"),
+            ("eligibilityCriteria", "population", "comparator", "standardOfCare", "generalizability"),
+        )
+        labels = (
+            "Clinical efficacy", "Statistical integrity", "Trial design", "Safety",
+            "Reproducibility", "Regulatory pathway", "Manufacturing and quality",
+            "External validity and comparators",
+        )
+        assessments = []
+        for layer, names in enumerate(fields, 1):
+            for index, name in enumerate(names, 1):
+                value = summary.get(name)
+                present = value is not None and value != "" and value != [] and value != {}
+                assessments.append({
+                    "id": f"S{(layer - 1) * 5 + index:02d}",
+                    "layer": layer, "layerLabel": labels[layer - 1],
+                    "candidateField": name, "sourceFieldPresent": present,
+                    "evidenceVerified": False, "score": None, "confidence": None,
+                    "readiness": "NOT_READY",
+                })
+        return {
+            "schemaVersion": "science-coverage-v1",
+            "programId": programId, "nctId": nctId,
+            "sourceSha256": row.sha256,
+            "sourceFetchedAt": row.fetched_at.isoformat(),
+            "assessments": assessments,
+            "total": 40, "verified": 0,
+            "trialLinkageVerified": False,
+            "sourceDatesVerified": False,
+            "readyForAnalysis": False,
+            "approvalProbability": None,
+            "note": "Field-presence inventory only; field presence is not scientific evidence or validation.",
+        }
+
+
+@app.get("/api/science/linkage-review", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_linkage_review(programId: str, nctId: str):
+    """Explain why a registry candidate link cannot yet be certified."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        source_ids = sorted(set(re.findall(r"NCT[0-9]{8}", identity.source_key)))
+        if nctId not in source_ids:
+            raise HTTPException(status_code=409, detail="NCT absent from immutable program source key")
+        trial = session.get(FullTrialRecord, nctId)
+        if trial is None:
+            raise HTTPException(status_code=404, detail="Exact archived NCT record unavailable")
+        summary = trial.summary if isinstance(trial.summary, dict) else {}
+        declared_nct = summary.get("nctId")
+        checks = {
+            "exactNctInProgramSourceKey": True,
+            "archivedNctMatchesRequested": trial.nct_id == nctId,
+            "summaryNctMatchesRequested": declared_nct == nctId,
+            "uniqueNctInProgramSourceKey": len(source_ids) == 1,
+            "archiveFingerprintPresent": bool(re.fullmatch(r"[0-9a-fA-F]{64}", trial.sha256 or "")),
+            "programDrugPresent": bool(identity.drug.strip()),
+        }
+        return {
+            "schemaVersion": "science-linkage-review-v1",
+            "programId": programId, "nctId": nctId,
+            "checks": checks,
+            "allPreliminaryChecksPass": all(checks.values()),
+            "linkageVerified": False,
+            "reviewRequired": True,
+            "missingVerification": [
+                "Independent confirmation of sponsor, intervention, indication and PDUFA review cycle",
+                "Source publication chronology and historical evidence cutoff",
+                "Human or separately audited linkage attestation",
+            ],
+            "sourceSha256": trial.sha256,
+            "approvalProbability": None,
+        }
+
+
+@app.get("/api/science/chronology-review", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_chronology_review(programId: str, nctId: str, cutoffDate: str):
+    """Audit available archive chronology without mistaking fetch time for publication time."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    cutoff = strict_iso_day(cutoffDate)
+    if cutoff is None:
+        raise HTTPException(status_code=422, detail="Evidence cutoff must be valid YYYY-MM-DD")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT absent from program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived NCT record unavailable")
+        summary = row.summary if isinstance(row.summary, dict) else {}
+        # Registry last-update dates are not proof of when each result became public.
+        published = summary.get("lastUpdatePostDate")
+        publication_day = registry_publication_day(published)
+        archive_day = row.fetched_at.date()
+        return {
+            "schemaVersion": "science-chronology-review-v1",
+            "programId": programId, "nctId": nctId,
+            "cutoffDate": cutoff.isoformat(),
+            "archiveFetchedAt": row.fetched_at.isoformat(),
+            "archiveAvailableByCutoff": archive_day <= cutoff,
+            "registryLastUpdatePostDate": publication_day.isoformat() if publication_day else None,
+            "registryUpdateByCutoff": publication_day <= cutoff if publication_day else None,
+            "sourceChronologyVerified": False,
+            "historicalSnapshotCertified": False,
+            "eligibleForHistoricalPrediction": False,
+            "approvalProbability": None,
+            "reason": "An archive fetch and registry update date cannot certify when individual results became public.",
+        }
+
+
+@app.get("/api/science/evidence-date-review", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_evidence_date_review(programId: str, nctId: str, cutoffDate: str,
+                                 publishedAt: str, verifiedAt: str):
+    """Review declared source dates without claiming independent authenticity."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    if strict_iso_day(cutoffDate) is None:
+        raise HTTPException(status_code=422, detail="Invalid evidence cutoff")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT absent from program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived NCT record unavailable")
+        date_pass = source_eligible_at_cutoff(publishedAt, verifiedAt, cutoffDate)
+        # Dates are caller-declared; they cannot certify the source independently.
+        return {
+            "schemaVersion": "science-evidence-date-review-v1",
+            "programId": programId, "nctId": nctId,
+            "cutoffDate": cutoffDate,
+            "declaredPublishedAt": publishedAt,
+            "declaredVerifiedAt": verifiedAt,
+            "declaredDatesPassCutoff": date_pass,
+            "sourceAuthenticated": False,
+            "sourceChronologyVerified": False,
+            "assessmentScorePermitted": False,
+            "approvalProbability": None,
+            "sourceSha256": row.sha256,
+            "reason": "Declared dates alone cannot establish an authenticated, historically available source.",
+        }
+
+
+@app.get("/api/science/source-authenticity-review", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_source_authenticity_review(programId: str, nctId: str):
+    """Validate archival byte integrity, not clinical truth or independent publication."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT absent from program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived NCT record unavailable")
+        import hashlib
+        computed = hashlib.sha256(row.payload_gzip).hexdigest()
+        stored = row.sha256 or ""
+        digest_match = secrets.compare_digest(computed, stored.lower())
+        return {
+            "schemaVersion": "science-source-authenticity-v1",
+            "programId": programId, "nctId": nctId,
+            "archiveDigestMatchesStored": digest_match,
+            "archiveSha256": computed,
+            "archiveFetchedAt": row.fetched_at.isoformat(),
+            "independentlyAuthenticated": False,
+            "publicationChronologyVerified": False,
+            "scientificEvidenceVerified": False,
+            "assessmentScorePermitted": False,
+            "approvalProbability": None,
+            "reason": "Matching archived bytes to a stored digest detects changes, not original-source authenticity.",
+        }
+
+
+@app.get("/api/science/evidence-gate", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def science_evidence_gate(programId: str, nctId: str, cutoffDate: str):
+    """Combine stored archive integrity and chronology; fail closed on scientific scoring."""
+    if not PROGRAM_ID_PATTERN.fullmatch(programId) or not re.fullmatch(r"NCT[0-9]{8}", nctId):
+        raise HTTPException(status_code=422, detail="Invalid permanent program or NCT identifier")
+    cutoff = strict_iso_day(cutoffDate)
+    if cutoff is None:
+        raise HTTPException(status_code=422, detail="Invalid evidence cutoff")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(programId[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent program ID not registered")
+        if nctId not in set(re.findall(r"NCT[0-9]{8}", identity.source_key)):
+            raise HTTPException(status_code=409, detail="NCT absent from program source key")
+        row = session.get(FullTrialRecord, nctId)
+        if row is None:
+            raise HTTPException(status_code=404, detail="Archived NCT record unavailable")
+        import hashlib
+        actual_digest = hashlib.sha256(row.payload_gzip).hexdigest()
+        digest_ok = secrets.compare_digest(actual_digest, (row.sha256 or "").lower())
+        archive_by_cutoff = row.fetched_at.date() <= cutoff
+        summary = row.summary if isinstance(row.summary, dict) else {}
+        registry_day = registry_publication_day(summary.get("lastUpdatePostDate"))
+        registry_by_cutoff = registry_day is not None and registry_day <= cutoff
+        preliminary_pass = preliminary_archive_gate(digest_ok, row.fetched_at.date().isoformat(), registry_day.isoformat() if registry_day else None, cutoffDate)
+        return {
+            "schemaVersion": "science-evidence-gate-v1",
+            "programId": programId, "nctId": nctId,
+            "cutoffDate": cutoffDate,
+            "archiveDigestMatchesStored": digest_ok,
+            "archiveAvailableByCutoff": archive_by_cutoff,
+            "registryUpdateByCutoff": registry_by_cutoff,
+            "preliminaryArchiveChecksPass": preliminary_pass,
+            "gateStage": "PRELIMINARY_ARCHIVE_PASSED" if preliminary_pass else "PRELIMINARY_ARCHIVE_FAILED",
+            "blockingRequirements": [
+                *([] if digest_ok else ["ARCHIVE_DIGEST_MISMATCH"]),
+                *([] if archive_by_cutoff else ["ARCHIVE_NOT_AVAILABLE_BY_CUTOFF"]),
+                *([] if registry_by_cutoff else ["REGISTRY_UPDATE_DATE_MISSING_OR_AFTER_CUTOFF"]),
+                "INDEPENDENT_SOURCE_AUTHENTICATION",
+                "SOURCE_LEVEL_PUBLICATION_VERIFICATION",
+                "CLINICAL_PROGRAM_LINKAGE_VERIFICATION",
+            ],
+            "independentSourceAuthenticated": False,
+            "sourcePublicationVerified": False,
+            "clinicalLinkageVerified": False,
+            "eligibleForScientificScoring": False,
+            "eligibleForHistoricalPrediction": False,
+            "approvalProbability": None,
+            "reason": "Archive integrity and registry dates cannot independently verify source-level publication or trial linkage.",
+        }
 
 
 @app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
