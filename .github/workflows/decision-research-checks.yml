@@ -1,0 +1,29 @@
+name: DECISION research checks
+on:
+  pull_request:
+    paths:
+      - 'new-platform/frontend/lib/decision-*.ts'
+      - 'new-platform/frontend/tests/decision-*.test.cjs'
+      - 'new-platform/frontend/package*.json'
+      - '.github/workflows/decision-research-checks.yml'
+  workflow_dispatch:
+jobs:
+  decision-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - run: npm ci
+      - name: DECISION tests
+        run: node --test tests/decision-*.test.cjs
+      - name: TypeScript typecheck
+        run: npm run typecheck
