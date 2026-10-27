@@ -46,7 +46,7 @@ def stage(zip_path):
         })
     candidates = []
     for row in submissions:
-        key = (row.get("ApplNo"), row.get("SubmissionType"), row.get("SubmissionNo"))
+        key = tuple((row.get(field) or "").strip() for field in ("ApplNo", "SubmissionType", "SubmissionNo"))
         candidates.append({
             "application_id": key[0],
             "submission_type": key[1],
