@@ -28,6 +28,10 @@ class SourceHashTests(unittest.TestCase):
         self.assertEqual(result["model_eligible"], 0)
         self.assertFalse(result["records"][0]["independently_verified"])
 
+    def test_fda_url_rejects_credentials_and_nonstandard_port(self):
+        self.assertFalse(permitted_fda_pdf("https://user@www.fda.gov/a.pdf"))
+        self.assertFalse(permitted_fda_pdf("https://www.fda.gov:8443/a.pdf"))
+
     def test_nonofficial_source_blocked(self):
         result = collect([{"official_source_url": "https://example.org/a.pdf"}], opener=FakeOpener())
         self.assertEqual(result["records"][0]["status"], "BLOCKED_NOT_ALLOWLISTED_FDA_PDF")
