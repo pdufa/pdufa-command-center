@@ -1,6 +1,11 @@
 name: Audit PDUFA Master Trial Identities
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/decision-workstream-20261026
+    paths:
+      - .github/workflows/pdufa-master-trial-identity-audit.yml
 permissions:
   contents: read
 jobs:
