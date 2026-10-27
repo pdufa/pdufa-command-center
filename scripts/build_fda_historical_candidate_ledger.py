@@ -36,6 +36,7 @@ def build_ledger(rows):
             "official_source_url": row.get("official_source_url") if isinstance(row, dict) else None,
             "action_date": row.get("action_date") if isinstance(row, dict) else None,
             "document_sha256_present": bool(row.get("document_sha256")) if isinstance(row, dict) else False,
+            "document_sha256": row.get("document_sha256") if isinstance(row, dict) else None,
             "review_required": True,
             "application_id": row.get("application_id") if isinstance(row, dict) else None,
             "submission_id": row.get("submission_id") if isinstance(row, dict) else None,
