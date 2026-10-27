@@ -8,11 +8,14 @@ export type ScenarioInput={
 export type ScenarioResult={status:DecisionState;reasons:string[];expectedPrice:number|null;expectedReturnPct:number|null;approvalReturnPct:number|null;rejectionReturnPct:number|null};
 const finite=(v:number)=>Number.isFinite(v);
 /** Deliberately fail closed: illustrative math is never an actionable BUY signal. */
-export function evaluateDecisionScenario(x:ScenarioInput):ScenarioResult{
+export function evaluateDecisionScenario(x:ScenarioInput, evaluatedAt=new Date()):ScenarioResult{
  const reasons:string[]=[];
  if(!x.sourceVerified)reasons.push("Critical source evidence is unverified");
  if(!x.calibrated)reasons.push("Approval probability is not historically calibrated");
- if(!Number.isFinite(Date.parse(x.asOf)))reasons.push("Invalid as-of timestamp");
+ const asOfMs=Date.parse(x.asOf);
+ const evaluatedAtMs=evaluatedAt.getTime();
+ if(!Number.isFinite(asOfMs)||!Number.isFinite(evaluatedAtMs))reasons.push("Invalid as-of or evaluation timestamp");
+ else if(asOfMs>evaluatedAtMs+5*60*1000||evaluatedAtMs-asOfMs>7*86400000)reasons.push("Scenario evidence is stale or future-dated");
  if(![x.currentPrice,x.approvalPrice,x.rejectionPrice,x.delayPrice].every(v=>finite(v)&&v>0))reasons.push("Invalid or missing positive prices");
  if(!finite(x.approvalProbability)||!finite(x.delayProbability)||x.approvalProbability<0||x.delayProbability<0||x.approvalProbability+x.delayProbability>1)reasons.push("Invalid scenario probabilities");
  if(!finite(x.roundTripCostPct)||x.roundTripCostPct<0||x.roundTripCostPct>=100)reasons.push("Invalid transaction cost");
