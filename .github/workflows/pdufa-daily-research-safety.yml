@@ -73,7 +73,8 @@ jobs:
             tests/test_collect_fda_source_hashes.py \
             tests/test_reconcile_fda_source_evidence.py \
             tests/test_pdufa_integrated_readiness.py \
-            tests/test_prepare_fda_review_packet.py
+            tests/test_prepare_fda_review_packet.py \
+            tests/test_summarize_fda_discovery.py
       - name: Produce quarantined historical FDA candidate ledger
         working-directory: research
         run: |
@@ -107,6 +108,18 @@ jobs:
             --ledger historical_fda_candidate_ledger.json \
             --reconciliation historical_fda_reconciliation.json > historical_fda_review_packet.json
           python -m json.tool historical_fda_review_packet.json > /dev/null
+      - name: Summarize FDA announcement discovery queue
+        working-directory: research
+        run: |
+          python scripts/summarize_fda_discovery.py \
+            --discovery data/fda_official_announcement_discovery_20261027.json > historical_fda_discovery_summary.json
+          python -m json.tool historical_fda_discovery_summary.json > /dev/null
+      - name: Publish FDA discovery summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-fda-discovery-summary
+          path: research/historical_fda_discovery_summary.json
+          retention-days: 30
       - name: Publish FDA review packets
         uses: actions/upload-artifact@v4
         with:
