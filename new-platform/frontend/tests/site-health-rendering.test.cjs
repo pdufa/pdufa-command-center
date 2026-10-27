@@ -41,6 +41,9 @@ test('Header control opens and closes its own dialog; zero mail is visible; fail
   assert.match(root.root.findAllByType('button')[0].props.className,/unknown/);
   assert.equal(root.root.findAllByType('details').length,10);
   assert.match(JSON.stringify(root.toJSON()),/Count unavailable/);
+  assert.match(JSON.stringify(root.toJSON()),/Last verified · refresh required · Verified/);
+  assert.match(JSON.stringify(root.toJSON()),/Read-only verification/);
+  assert.doesNotMatch(JSON.stringify(root.toJSON()),/0 emails · 0 unread/);
  }finally{
   if(root)await act(async()=>root.unmount());
   global.fetch=oldFetch;
