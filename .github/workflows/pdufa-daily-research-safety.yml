@@ -86,7 +86,7 @@ jobs:
             'https://www.fda.gov/media/89850/download?attachment=' \
             --output drugsatfda.zip
           python scripts/stage_drugsatfda_submissions.py \
-            --zip drugsatfda.zip --output historical_drugsatfda_candidates.json
+            --zip drugsatfda.zip --summary-only --output historical_drugsatfda_candidates.json
           python -m json.tool historical_drugsatfda_candidates.json > /dev/null
       - name: Publish official Drugs@FDA staged candidates
         if: steps.fda_bulk_stage.outcome == 'success'
