@@ -1,0 +1,44 @@
+name: DECISION nightly development audit
+# Schedule becomes active only after this workflow is merged into the default branch.
+on:
+  schedule:
+    - cron: '0 3 * * *' # 8 PM Pacific during daylight saving time; 7 PM PST
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - name: Checkout decision development branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/decision-workstream-20261026
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - run: npm ci
+      - name: DECISION research tests
+        run: node --test tests/decision-*.test.cjs
+      - name: Frontend typecheck
+        run: npm run typecheck
+      - name: Publish development audit summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          {
+            echo '## DECISION development audit'
+            echo "- Result: ${JOB_STATUS}"
+            echo '- Branch: feature/decision-workstream-20261026'
+            echo '- This workflow performs tests and typechecking only.'
+            echo '- No code generation, automatic merge, production deployment, or trading actions.'
+            echo '- Historical FDA data and predictive calibration still require independent validation.'
+          } >> "$GITHUB_STEP_SUMMARY"
