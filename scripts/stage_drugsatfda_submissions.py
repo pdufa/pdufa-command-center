@@ -69,8 +69,12 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--zip", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--summary-only", action="store_true", help="Emit counts without full candidate list")
     args = p.parse_args()
-    args.output.write_text(json.dumps(stage(args.zip), indent=2, sort_keys=True), encoding="utf-8")
+    report = stage(args.zip)
+    if args.summary_only:
+        report.pop("candidates")
+    args.output.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
 
 
 if __name__ == "__main__":
