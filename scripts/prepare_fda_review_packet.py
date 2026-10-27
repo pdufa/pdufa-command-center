@@ -53,7 +53,11 @@ def prepare(ledger, reconciliation):
     counts = {priority: sum(r["review_priority"] == priority for r in packet)
               for priority in priority_order}
     return {"records": packet, "total_to_review": len(packet),
-            "priority_counts": counts, "verified": 0, "model_eligible": 0}
+            "priority_counts": counts, "verified": 0, "model_eligible": 0,
+            "cleared_for_independent_review": counts["INDEPENDENT_ADJUDICATION_REQUIRED"],
+            "blocked_before_independent_review": counts["SOURCE_EVIDENCE_BLOCKED"] + counts["METADATA_REVIEW_REQUIRED"],
+            "remaining_to_verify": len(packet),
+            "warning": "Cleared for review does not mean independently verified or model eligible."}
 
 
 def main():
