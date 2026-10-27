@@ -1,0 +1,18 @@
+const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path"),Module=require("node:module"),ts=require("typescript");
+const root=path.resolve(__dirname,"../lib"),cache={};function load(n){if(cache[n])return cache[n].exports;const f=path.join(root,n+".ts"),js=ts.transpileModule(fs.readFileSync(f,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText,m=new Module(f,module);cache[n]=m;m.filename=f;m.paths=module.paths;m.require=id.startsWith("./")?load(id.slice(2)):require(id);m._compile(js,f);return m.exports;}
+const {assessJoinedMainDecision}=load("decision-joined-main-gate"),asOf="2026-10-26T11:00:00Z",now=new Date("2026-10-26T12:00:00Z");
+const record={programId:"PDUFA-999999",trialId:"NCT12345678",asOf,status:"COMPLETE",sourceStatus:"VERIFIED",reviewedLevels:20,requiredLevels:20,criticalFindingsResolved:true,calibrationStatus:"VALIDATED"};
+const target={programId:record.programId,asOf,diseaseSubtype:"A",indication:"B",mechanism:"C",primaryEndpoint:"OS"};
+const history=Array.from({length:3},(_,i)=>({programId:"PDUFA-"+String(100001+i),decisionAt:"2025-01-01T00:00:00Z",diseaseSubtype:"A",indication:"B",mechanism:"C",primaryEndpoint:"OS",trialPhase:3,outcome:"APPROVED",sourceUrl:"https://example.org/fda",independentlyReviewed:true}));
+const coverage={asOf,windowStart:"2020-01-01",windowEnd:"2025-01-01",eligibleApplications:10,reviewedDecisions:10,approved:6,crl:3,withdrawn:1,unresolved:0,sourceCoverageConfirmed:true,includesNonApprovals:true};
+const chronology=Object.fromEntries(history.map(r=>[r.programId,[{sourceUrl:r.sourceUrl,publishedAt:"2025-01-02",observedAt:"2025-01-03",decisionAt:r.decisionAt,predictionCutoff:asOf,independentlyReviewed:true}]]));
+const price=(observedAt,adjustedClose)=>({programId:target.programId,ticker:"TEST",observedAt,capturedAt:"2026-10-25",adjustedClose,currency:"USD",priceSource:"https://example.org/price",adjustmentMethod:"SPLIT_AND_DIVIDEND_ADJUSTED",corporateActionsReviewed:true,verifiedBy:"reviewer"});
+const main={programId:target.programId,ticker:"TEST",asOf,restrictionsReviewed:true,unresolvedCriticalRisks:0,marketEntry:price("2025-01-01",10),marketExit:price("2025-02-01",12)};
+const assess=(m=main,c=chronology)=>assessJoinedMainDecision(record,record,target,history,coverage,c,m,now);
+test("synthetic joined MAIN evidence is research-only",()=>{const r=assess();assert.equal(r.status,"EVIDENCE_READY_FOR_REVIEW");assert.equal(r.tradeAuthorized,false);});
+test("missing MAIN blocks joined research decision",()=>assert.equal(assess(null).status,"NOT_READY"));
+test("unreviewed MAIN restrictions block readiness",()=>assert.equal(assess({...main,restrictionsReviewed:false}).status,"NOT_READY"));
+test("MAIN unresolved risk blocks readiness",()=>assert.equal(assess({...main,unresolvedCriticalRisks:1}).status,"NOT_READY"));
+test("MAIN ticker mismatch blocks readiness",()=>assert.equal(assess({...main,ticker:"OTHER"}).status,"NOT_READY"));
+test("MAIN raw prices block readiness",()=>assert.equal(assess({...main,marketEntry:{...main.marketEntry,adjustmentMethod:"RAW"}}).status,"NOT_READY"));
+test("missing historical source still blocks MAIN",()=>assert.equal(assess(main,{}).status,"NOT_READY"));
