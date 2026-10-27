@@ -53,6 +53,15 @@ def build_ledger(rows):
         "independently_verified_fail": 0,
         "model_eligible": 0,
         "needs_independent_adjudication": len(results),
+        "review_priority": sorted(({
+            "application_id": r["application_id"],
+            "submission_id": r["submission_id"],
+            "review_cycle": r["review_cycle"],
+            "action_type": r["action_type"],
+            "reason": ("DUPLICATE_OR_INVALID" if r["status"] == "QUARANTINED"
+                       else "DOCUMENT_HASH_MISSING" if not r["document_sha256_present"]
+                       else "INDEPENDENT_ADJUDICATION_REQUIRED"),
+        } for r in results), key=lambda x: (x["reason"], str(x["application_id"]), str(x["submission_id"]))),
         "candidate_review_cycles": results,
         "warning": "Metadata and source links do not verify FDA documents, independent adjudication, or model readiness.",
     }
