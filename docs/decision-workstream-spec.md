@@ -1,6 +1,6 @@
 # DECISION workstream — implementation contract (draft)
 
-Status: design specification only. No live signals or orders are authorized.
+Status: research integration implemented on the isolated development branch; independent source and predictive validation remain incomplete. See `decision-calibration-validation.md` for the holdout audit contract. No live signals or orders are authorized.
 
 ## Scope
 Evaluate two separate trading horizons: (1) positive Phase 3 readout through FDA decision; (2) holding after FDA decision through commercialization. Compare entry immediately after a verified Phase 3 release with entry after FDA filing acceptance. For each existing position evaluate exit before PDUFA, partial exit, and holding through the binary event. Preserve independent MAIN, SCIENCE, OUTCOME and all existing Pipeline/GEM JR/GEM/WT restrictions and FS/FA associations.

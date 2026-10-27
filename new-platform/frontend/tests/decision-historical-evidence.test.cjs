@@ -5,3 +5,11 @@ test("post-decision captured prediction is rejected",()=>assert.equal(auditHisto
 test("missing source is rejected",()=>assert.equal(auditHistoricalEvidence(rows.map((r,i)=>i?r:{...r,decisionSource:""})).status,"NOT_READY"));
 test("unreviewed evidence is rejected",()=>assert.equal(auditHistoricalEvidence(rows.map((r,i)=>i?r:{...r,reviewStatus:"PENDING"})).status,"NOT_READY"));
 test("underpowered historical cohort is rejected",()=>assert.equal(auditHistoricalEvidence(rows.slice(0,29)).status,"NOT_READY"));
+test("prediction captured exactly at the decision timestamp is not predecision evidence",()=>{
+ const r=auditHistoricalEvidence(rows.map((row,i)=>i?row:{...row,predictionCapturedAt:row.decisionAt}));
+ assert.equal(r.status,"NOT_READY");assert.equal(r.accepted,29);
+});
+test("a declared review flag never counts an invalid source row as accepted",()=>{
+ const r=auditHistoricalEvidence(rows.map((row,i)=>i?row:{...row,decisionSource:""}));
+ assert.equal(r.status,"NOT_READY");assert.equal(r.accepted,29);
+});

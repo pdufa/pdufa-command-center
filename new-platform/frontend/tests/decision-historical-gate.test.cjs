@@ -5,3 +5,11 @@ test("missing analogues block decision readiness",()=>assert.equal(assessDecisio
 test("missing science blocks decision readiness",()=>assert.equal(assessDecisionWithHistory(null,record,target,history,now).status,"NOT_READY"));
 test("unvalidated outcome blocks decision readiness",()=>assert.equal(assessDecisionWithHistory(record,{...record,calibrationStatus:"UNVALIDATED"},target,history,now).status,"NOT_READY"));
 test("program mismatch blocks decision readiness",()=>assert.equal(assessDecisionWithHistory({...record,programId:"PDUFA-888888"},record,target,history,now).status,"NOT_READY"));
+test("current science cannot satisfy a different historical prediction cutoff",()=>{
+ const r=assessDecisionWithHistory({...record,asOf:"2026-10-26T10:00:00Z"},record,target,history,now);
+ assert.equal(r.status,"NOT_READY");assert.ok(r.issues.includes("SCIENCE/target cutoff mismatch"));
+});
+test("outcome evidence at another cutoff cannot be joined",()=>{
+ const r=assessDecisionWithHistory(record,{...record,asOf:"2026-10-26T10:00:00Z"},target,history,now);
+ assert.equal(r.status,"NOT_READY");assert.ok(r.issues.includes("OUTCOME/target cutoff mismatch"));
+});

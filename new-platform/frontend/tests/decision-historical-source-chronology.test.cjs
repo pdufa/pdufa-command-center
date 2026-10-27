@@ -4,3 +4,5 @@ test("later publication cannot leak into earlier prediction",()=>assert.equal(au
 test("observed before publication is invalid",()=>assert.equal(auditHistoricalSourceChronology({...row,observedAt:"2024-01-02"}).status,"NOT_READY"));
 test("source published before decision needs investigation",()=>assert.equal(auditHistoricalSourceChronology({...row,publishedAt:"2023-12-31"}).status,"NOT_READY"));
 test("unreviewed source fails closed",()=>assert.equal(auditHistoricalSourceChronology({...row,independentlyReviewed:false}).status,"NOT_READY"));
+
+test("truthy review labels and credential-bearing sources cannot establish source review",()=>{assert.equal(auditHistoricalSourceChronology({...row,independentlyReviewed:"false"}).status,"NOT_READY");assert.equal(auditHistoricalSourceChronology({...row,sourceUrl:"https://user@www.fda.gov/letter"}).status,"NOT_READY");});

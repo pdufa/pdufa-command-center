@@ -6,3 +6,6 @@ test("future decision excluded",()=>assert.equal(compareHistoricalPdufa(target,c
 test("different mechanism excluded",()=>assert.equal(compareHistoricalPdufa(target,cases.map((r,i)=>i?r:{...r,mechanism:"MOA B"})).status,"NOT_READY"));
 test("unreviewed case excluded",()=>assert.equal(compareHistoricalPdufa(target,cases.map((r,i)=>i?r:{...r,independentlyReviewed:false})).status,"NOT_READY"));
 test("duplicate historical identity fails closed",()=>assert.equal(compareHistoricalPdufa(target,[cases[0],cases[0],cases[2]]).status,"NOT_READY"));
+
+test("malformed or credential-bearing HTTPS sources are excluded",()=>{for(const sourceUrl of ["https://","https://user:password@example.org/letter"]){assert.equal(compareHistoricalPdufa(target,cases.map((r,i)=>i?r:{...r,sourceUrl})).status,"NOT_READY");}});
+test("unsupported outcomes and phases never count as reviewed analogues",()=>{for(const patch of [{outcome:"UNKNOWN"},{trialPhase:99},{trialPhase:3.5}])assert.equal(compareHistoricalPdufa(target,cases.map((r,i)=>i?r:{...r,...patch})).status,"NOT_READY");});

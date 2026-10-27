@@ -4,6 +4,7 @@ export type ArchivedFdaDecision={programId:string;decisionDate:string;decisionTy
 export type HistoricalIngestion={status:"NOT_READY"|"READY_FOR_REVIEW";records:HistoricalPdufaAnalogue[];issues:string[]};
 export function mapArchivedFdaDecisions(rows:ArchivedFdaDecision[]):HistoricalIngestion{
  const issues:string[]=[];const records:HistoricalPdufaAnalogue[]=[];const seen=new Set<string>();
+ if(!rows.length)issues.push("No archived FDA decisions supplied");
  for(const [i,r] of rows.entries()){
   const date=Date.parse(r.decisionDate),reviewed=Date.parse(r.reviewedAt);
   if(!/^PDUFA-\d{6,}$/.test(r.programId)||seen.has(r.programId)){issues.push("Row "+i+": invalid or duplicate program");continue;}
@@ -13,7 +14,7 @@ export function mapArchivedFdaDecisions(rows:ArchivedFdaDecision[]):HistoricalIn
   if(!sourceOk||!r.reviewedBy.trim()){issues.push("Row "+i+": source or review metadata missing");continue;}
   const outcome=r.decisionType==="APPROVAL"?"APPROVED":r.decisionType==="COMPLETE_RESPONSE_LETTER"?"CRL":r.decisionType==="WITHDRAWAL"?"WITHDRAWN":null;
   if(!outcome){issues.push("Row "+i+": unsupported FDA outcome");continue;}
-  if(![r.diseaseSubtype,r.indication,r.mechanism,r.primaryEndpoint].every(x=>x.trim())||!Number.isInteger(r.trialPhase)||r.trialPhase<3){issues.push("Row "+i+": insufficient trial attributes");continue;}
+  if(![r.diseaseSubtype,r.indication,r.mechanism,r.primaryEndpoint].every(x=>x.trim())||!Number.isInteger(r.trialPhase)||r.trialPhase<3||r.trialPhase>4){issues.push("Row "+i+": insufficient trial attributes");continue;}
   records.push({programId:r.programId,decisionAt:r.decisionDate,diseaseSubtype:r.diseaseSubtype,indication:r.indication,mechanism:r.mechanism,primaryEndpoint:r.primaryEndpoint,trialPhase:r.trialPhase,outcome,sourceUrl:r.sourceUrl,independentlyReviewed:false});
  }
  return {status:issues.length?"NOT_READY":"READY_FOR_REVIEW",records,issues:[...issues,"Imported records require independent source verification before comparison eligibility"]};

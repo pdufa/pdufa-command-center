@@ -10,6 +10,8 @@ Autonomous code generation requires a separately installed and authorized coding
 
 ## Approved research backlog, in order
 
+Engineering progress (October 26, 2026 Pacific): source chronology is joined to the historical gate; authenticated openFDA retrieval now includes provenance and an unclassified submission ledger; a per-trial dashboard panel connects candidate assessments, aggregate HOP source progress, and existing stage-specific MAIN source readiness. The composed review manifest requires exact trial/stage identity, historical denominator/chronology, audited MAIN market captures, and a frozen chronological calibration holdout. These are software connections and fail-closed research checks, not completed independent evidence review or validated forecasts. Missing reviewed records remain explicit blockers. Local commits must not be pushed while the existing Vercel integration could trigger a deployment without operator approval.
+
 1. Integrate FDA source publication chronology into the complete historical decision gate.
 2. Add authenticated read-only historical data retrieval and source provenance checks.
 3. Build a reviewable application-indication review-cycle ledger with explicit missing-data flags.

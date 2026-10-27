@@ -13,10 +13,14 @@ export function assessCalibrationCohortAtCutoff(rows:HistoricalEvidenceRow[],cut
   if(!Number.isFinite(decided)||!Number.isFinite(time)||decided>=time){
    issues.push("Historical outcome unavailable at target cutoff: "+row.programId);
   }
+  const observed=Date.parse(row.decisionObservedAt);
+  if(!Number.isFinite(observed)||!Number.isFinite(time)||observed>=time){
+   issues.push("Historical outcome observation unavailable at target cutoff: "+row.programId);
+  }
  }
  if(audit.status!=="RESEARCH_ONLY"||!audit.calibration)issues.push("Historical calibration unavailable");
  else if((audit.calibration.improvementVsBaseline??0)<=0)
   issues.push("No improvement over historical cohort baseline");
  return {status:issues.length?"NOT_READY" as const:"RESEARCH_ONLY" as const,
-  issues,calibration:audit.calibration,tradeAuthorized:false as const};
+  issues,warnings:audit.warnings,calibration:issues.length?null:audit.calibration,tradeAuthorized:false as const};
 }

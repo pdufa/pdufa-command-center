@@ -7,3 +7,13 @@ test("historical synthetic cohort is research only",()=>{const r=assessCalibrati
 test("outcomes after cutoff are rejected",()=>assert.equal(assessCalibrationCohortAtCutoff(rows,"2025-01-15").status,"NOT_READY"));
 test("invalid cutoff rejected",()=>assert.equal(assessCalibrationCohortAtCutoff(rows,"invalid").status,"NOT_READY"));
 test("missing review blocks calibration",()=>assert.equal(assessCalibrationCohortAtCutoff(rows.map((r,i)=>i? r:{...r,reviewStatus:"PENDING"}),"2026-10-26").status,"NOT_READY"));
+test("decision observation at or beyond cutoff rejects retrospective leakage and withholds metrics",()=>{
+ for(const decisionObservedAt of ["2026-10-26T00:00:00Z","2026-10-27T00:00:00Z"]){
+  const r=assessCalibrationCohortAtCutoff(rows.map((row,i)=>i?row:{...row,decisionObservedAt}),"2026-10-26");
+  assert.equal(r.status,"NOT_READY");assert.equal(r.calibration,null);
+ }
+});
+test("research diagnostics retain source verification warning separately from blocking issues",()=>{
+ const r=assessCalibrationCohortAtCutoff(rows,"2026-10-26");
+ assert.deepEqual(r.issues,[]);assert.match(r.warnings.join(" "),/independently verify/);
+});

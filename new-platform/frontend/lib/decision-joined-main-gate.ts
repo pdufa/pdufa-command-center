@@ -21,7 +21,7 @@ export function assessJoinedMainDecision(
   if(main.programId!==target.programId||main.asOf!==target.asOf)mainIssues.push("MAIN: program or cutoff mismatch");
   if(!Number.isFinite(Date.parse(main.asOf))||Date.parse(main.asOf)>now.getTime()+300000)mainIssues.push("MAIN: invalid or future cutoff");
   if(!/^[A-Z][A-Z0-9.-]{0,9}$/.test(main.ticker))mainIssues.push("MAIN: invalid ticker");
-  if(!main.restrictionsReviewed)mainIssues.push("MAIN: restrictions not reviewed");
+  if(main.restrictionsReviewed!==true)mainIssues.push("MAIN: restrictions not reviewed");
   if(!Number.isSafeInteger(main.unresolvedCriticalRisks)||main.unresolvedCriticalRisks!==0)mainIssues.push("MAIN: unresolved critical risks");
   if(!main.marketEntry||!main.marketExit)mainIssues.push("MAIN: audited market pair missing");
   else{
@@ -30,6 +30,8 @@ export function assessJoinedMainDecision(
     mainIssues.push("MAIN: market pair identity mismatch");
    const entryAt=Date.parse(main.marketEntry.observedAt),exitAt=Date.parse(main.marketExit.observedAt),cutoff=Date.parse(main.asOf);
    if(!Number.isFinite(entryAt)||!Number.isFinite(exitAt)||entryAt>=cutoff||exitAt>=cutoff)mainIssues.push("MAIN: market observations must precede decision cutoff");
+   const entryCaptured=Date.parse(main.marketEntry.capturedAt),exitCaptured=Date.parse(main.marketExit.capturedAt);
+   if(!Number.isFinite(entryCaptured)||!Number.isFinite(exitCaptured)||entryCaptured>=cutoff||exitCaptured>=cutoff)mainIssues.push("MAIN: market captures must precede decision cutoff");
    const market=auditHistoricalMarketPair(main.marketEntry,main.marketExit);
    mainIssues.push(...market.issues.map(issue=>"MAIN: "+issue));
   }

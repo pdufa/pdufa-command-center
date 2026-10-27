@@ -10,7 +10,7 @@ export function assessScienceOutcomeReadiness(science:ResearchReadiness|null,out
   if(!/^PDUFA-\d{6,}$/.test(record.programId)||!/^NCT\d{8}$/.test(record.trialId))issues.push(name+": invalid identity");
   if(record.status!=="COMPLETE"||record.sourceStatus!=="VERIFIED")issues.push(name+": assessment or source incomplete");
   if(!Number.isSafeInteger(record.reviewedLevels)||!Number.isSafeInteger(record.requiredLevels)||record.requiredLevels!==20||record.reviewedLevels!==20)issues.push(name+": 20-level review incomplete");
-  if(!record.criticalFindingsResolved)issues.push(name+": critical findings unresolved");
+  if(record.criticalFindingsResolved!==true)issues.push(name+": critical findings unresolved");
   if(!dateOk(record.asOf,now))issues.push(name+": stale evidence");
  }
  if(science&&outcome&&(science.programId!==outcome.programId||science.trialId!==outcome.trialId))issues.push("SCIENCE/OUTCOME identities disagree");

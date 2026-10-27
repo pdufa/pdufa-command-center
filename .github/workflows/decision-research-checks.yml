@@ -4,6 +4,12 @@ on:
     paths:
       - 'new-platform/frontend/lib/decision-*.ts'
       - 'new-platform/frontend/tests/decision-*.test.cjs'
+      - 'new-platform/frontend/app/DecisionWorkstream.tsx'
+      - 'new-platform/frontend/app/CandidateAssessments.tsx'
+      - 'new-platform/frontend/app/api/decision-fda-research/route.ts'
+      - 'new-platform/frontend/lib/research-readiness.ts'
+      - 'new-platform/frontend/lib/science-outcome-gates.ts'
+      - 'new-platform/frontend/lib/hop-readiness.ts'
       - 'new-platform/frontend/package*.json'
       - '.github/workflows/decision-research-checks.yml'
   workflow_dispatch:
@@ -23,7 +29,7 @@ jobs:
           cache: npm
           cache-dependency-path: new-platform/frontend/package-lock.json
       - run: npm ci
-      - name: DECISION tests
-        run: node --test tests/decision-*.test.cjs
+      - name: Frontend regression tests including DECISION and restriction associations
+        run: npm test
       - name: TypeScript typecheck
         run: npm run typecheck

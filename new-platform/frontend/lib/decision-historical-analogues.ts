@@ -11,7 +11,9 @@ export function compareHistoricalPdufa(target:AnalogueTarget,history:HistoricalP
   if(!/^PDUFA-\d{6,}$/.test(r.programId)||seen.has(r.programId)){issues.push("Invalid or duplicate historical program");return false;}
   seen.add(r.programId);
   if(!Number.isFinite(decision)||decision>=asOf||r.programId===target.programId)return false;
-  if(!r.independentlyReviewed||!r.sourceUrl.startsWith("https://"))return false;
+  let sourceOk=false;try{const u=new URL(r.sourceUrl);sourceOk=u.protocol==="https:"&&Boolean(u.hostname)&&!u.username&&!u.password;}catch{}
+  if(r.independentlyReviewed!==true||!sourceOk)return false;
+  if(!["APPROVED","CRL","WITHDRAWN"].includes(r.outcome)||!Number.isInteger(r.trialPhase)||r.trialPhase<3||r.trialPhase>4){issues.push("Invalid historical outcome or trial phase");return false;}
   return r.trialPhase>=3&&same(r.diseaseSubtype,target.diseaseSubtype)&&same(r.indication,target.indication)&&same(r.mechanism,target.mechanism)&&same(r.primaryEndpoint,target.primaryEndpoint);
  });
  if(!Number.isSafeInteger(minimum)||minimum<3||matched.length<minimum)issues.push("Insufficient independently reviewed, pre-cutoff close analogues");

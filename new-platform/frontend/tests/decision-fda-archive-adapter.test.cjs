@@ -4,3 +4,6 @@ test("CRL maps as nonapproval",()=>assert.equal(mapArchivedFdaDecisions([{...row
 test("unsupported decision does not become approval",()=>assert.equal(mapArchivedFdaDecisions([{...row,decisionType:"OTHER"}]).status,"NOT_READY"));
 test("missing source blocks ingestion",()=>assert.equal(mapArchivedFdaDecisions([{...row,sourceUrl:""}]).status,"NOT_READY"));
 test("duplicate program blocks ingestion",()=>assert.equal(mapArchivedFdaDecisions([row,row]).status,"NOT_READY"));
+
+test("empty import does not imply FDA evidence readiness",()=>assert.equal(mapArchivedFdaDecisions([]).status,"NOT_READY"));
+test("invalid trial phase cannot enter archive comparison records",()=>assert.equal(mapArchivedFdaDecisions([{...row,trialPhase:99}]).status,"NOT_READY"));
