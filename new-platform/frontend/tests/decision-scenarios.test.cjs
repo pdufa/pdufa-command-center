@@ -15,3 +15,4 @@ test("uncalibrated model blocks output",()=>assert.equal(evaluateDecisionScenari
 test("invalid probability total blocks output",()=>assert.equal(evaluateDecisionScenario({...baseline,delayProbability:0.4},new Date('2026-10-26T13:00:00Z')).status,"NOT_READY"));
 test("nonpositive prices block output",()=>assert.equal(evaluateDecisionScenario({...baseline,rejectionPrice:0},new Date('2026-10-26T13:00:00Z')).status,"NOT_READY"));
 test("stale inputs fail closed",()=>assert.equal(evaluateDecisionScenario(baseline,new Date('2026-11-10T13:00:00Z')).status,'NOT_READY'));
+test("future-dated evidence fails closed",()=>assert.equal(evaluateDecisionScenario({...baseline,asOf:"2026-10-28T13:00:00Z"},new Date("2026-10-26T13:00:00Z")).status,"NOT_READY"));
