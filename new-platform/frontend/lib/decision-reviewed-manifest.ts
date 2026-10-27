@@ -1,5 +1,6 @@
 import type {DecisionIdentity, ReviewedDecisionEvidence} from "./decision-workstream";
 import {parseScienceInvestigation} from "./decision-science-investigation";
+import {validatePrimaryTrialSourceIdentity} from "./decision-trial-source-identity";
 
 /** Validation checks transport shape and identity, never the truth of review assertions. */
 export const MAX_REVIEWED_MANIFEST_BYTES = 2 * 1024 * 1024;
@@ -80,8 +81,15 @@ const dossierShape = object({identity:identitySchema, asOf:text, drug:text, indi
   levels:list(object({id:text, label:text, layerId:text, assessments:list(object({id:text,
     status:choices("COMPLETE", "PARTIAL", "MISSING", "CONFLICT"), reviewer:text,
     criticalEvaluation:longText, uncertainty:longText, unresolvedCriticalFindings:count,
-    sources:list(object({url:sourceUrl, publishedAt:text, observedAt:text, independentlyReviewed:bool}), 20)}), 2)}), 20)});
-const scienceDossier: Check = nullable(v => { dossierShape(v); parseScienceInvestigation(v); });
+    sources:list(object({url:sourceUrl, publishedAt:text, observedAt:text, independentlyReviewed:bool, primaryTrial:object({trialId:text, protocolId:text})}, ["primaryTrial"]), 20)}), 2)}), 20)});
+const scienceDossier: Check = nullable(v => {
+  dossierShape(v);
+  const d = parseScienceInvestigation(v);
+  for (const level of d.levels) for (const assessment of level.assessments) for (const source of assessment.sources) {
+    const primary = (source as typeof source & {primaryTrial?:{trialId:string;protocolId:string}}).primaryTrial;
+    if (primary) validatePrimaryTrialSourceIdentity({trialId:d.identity.trialId, protocolId:primary.protocolId}, primary);
+  }
+});
 const evidenceSchema = object({identity:identitySchema, science:review, outcome:review, target, history:list(analogue),
   coverage, chronology, main, calibrationRows:list(prediction), scienceDossier,
   outcomeApplicationNumber:nullable(text), mainCompanyCik:nullable(text),
