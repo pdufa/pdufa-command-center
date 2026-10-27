@@ -22,8 +22,8 @@ def assemble(ledger, fingerprints, reconciliation):
     if len(fingerprint_records) != len(candidates):
         raise ValueError("candidate and fingerprint counts differ")
     for candidate, source in zip(candidates, fingerprint_records):
-        if (candidate.get("application_id") != source.get("application_id") or
-                candidate.get("official_source_url") != source.get("official_source_url")):
+        if any(candidate.get(k) != source.get(k) for k in
+               ("application_id", "submission_id", "review_cycle", "official_source_url")):
             raise ValueError("candidate/fingerprint identity mismatch")
     return {
         "system": "PDUFA SCIENCE-OUTCOME-MAIN",
