@@ -60,3 +60,17 @@ def test_invalid_probability_abstains():
     for value in [-.1, 1.1, "0.8", True, float("nan")]:
         result = compare_to_prior_rate([training()], [holdout(approval_probability=value)])
         assert result["status"] == "INSUFFICIENT_VERIFIED_HOLDOUT"
+
+
+def test_training_and_holdout_same_application_abstains():
+    result = compare_to_prior_rate(
+        [training(application_id="NDA000002")],
+        [holdout(review_cycle=2)])
+    assert result["status"] == "INSUFFICIENT_VERIFIED_HOLDOUT"
+    assert "share an application" in result["reason"]
+
+
+def test_duplicate_training_review_cycle_abstains():
+    result = compare_to_prior_rate([training(), training()], [holdout()])
+    assert result["status"] == "INSUFFICIENT_VERIFIED_HOLDOUT"
+    assert "Duplicate training" in result["reason"]
