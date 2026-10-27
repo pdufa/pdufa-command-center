@@ -74,7 +74,8 @@ jobs:
             tests/test_reconcile_fda_source_evidence.py \
             tests/test_pdufa_integrated_readiness.py \
             tests/test_prepare_fda_review_packet.py \
-            tests/test_summarize_fda_discovery.py
+            tests/test_summarize_fda_discovery.py \
+            tests/test_stage_drugsatfda_submissions.py
       - name: Produce quarantined historical FDA candidate ledger
         working-directory: research
         run: |
