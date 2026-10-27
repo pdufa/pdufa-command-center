@@ -32,6 +32,9 @@ Preserved all **84** upstream commits through `2ffbfba0` via same-branch merge
 verification: **2,611 Python passed, 1 existing skip, 557 subtests; 665 frontend
 passed; TypeScript/build passed**. All **15 GitHub workflows passed at
 `66087103`**, which was pushed normally to the development branch and PR #498.
+CI ran **2,612 Python tests without skips**. The local skip was traced to missing
+`pypdf`, not an opt-in smoke test; after installing the declared dependency,
+all **10 PDF page-candidate tests passed locally**, including that test.
 Vercel marked its branch preview Ready, but actual preview fetch returned
 permission **403** at deployment alias access; rendered remote content remains
 unverified. Authorize team `pdufa` / project `pdufa-new-dashboard` in the connection

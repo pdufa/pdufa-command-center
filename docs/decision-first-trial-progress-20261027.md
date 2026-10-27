@@ -167,15 +167,17 @@ readiness checks. Existing changes were not overwritten; `dd4f9f65` and
 `e5800a07` remain ancestors. Their research-only workflow is preserved as
 received; no operational scan schedule was edited or dispatched.
 
-Before integration, full checks passed: **2,549 Python tests**, one existing
-opt-in skip, 557 subtests, 13 existing dependency/Pandas warnings; **664 frontend
+Before integration, full checks passed: **2,549 Python tests**, one local
+missing-`pypdf` dependency skip, 557 subtests, 13 existing dependency/Pandas warnings; **664 frontend
 tests**, TypeScript and the Next.js build. A real-case integrity regression
 also reconciles the dashboard input bytes/hash and every stored computed result.
 Post-integration verification:
 
 | Check | Result |
 | --- | --- |
-| Complete default pytest | **2,611 passed, 1 existing skipped; 557 subtests passed**, 13 existing warnings |
+| Local complete default pytest | **2,611 passed, 1 missing-`pypdf` skip; 557 subtests passed**, 13 existing warnings |
+| Follow-up local PDF suite after installing declared `pypdf>=5.0,<7` | **10 passed, 0 skips**, including the previously skipped blank-PDF test |
+| GitHub complete Python job at `66087103` | **2,612 passed, 0 skips; 557 subtests passed**, 15 warnings |
 | Complete frontend suite | **665 passed, 0 failures, 0 skips** |
 | TypeScript without incremental cache | Passed |
 | Local Next.js production build | Passed; not a deployment |
@@ -190,6 +192,14 @@ Synthetic regression fixtures verify arithmetic and software contracts only.
 The real saved-record integrity test verifies reproducibility, not truth or
 prediction accuracy. Local HTTP checks do not establish browser interaction,
 live dashboard authentication or a remotely deployed version.
+The local skip was initially misdescribed as opt-in; it was actually the
+`pytest.importorskip("pypdf")` blank-PDF extraction check. The declared dependency
+was installed, and that entire PDF suite then passed locally from the backend
+working directory. A first targeted invocation from the root lacked the backend
+import path and failed collection; the corrected invocation passed. CI included
+`pypdf` and ran all 2,612 tests without skips. Its additional warnings include
+Python 3.12 invalid-escape warnings in existing code; no warning is a validation
+result or hidden test failure.
 
 The source implementation commits are `bd26a4bd`, `1a97c81a`, `24b96af4`,
 `b6e10d4f`, `a6cb26bd`, with remote work preserved by `bc8aefdc`; later report/UI
