@@ -15,6 +15,9 @@ def read_table(zf, basename):
     paths = [n for n in zf.namelist() if Path(n).name.lower() == basename.lower()]
     if len(paths) != 1:
         raise ValueError("missing or ambiguous FDA table: " + basename)
+    info = zf.getinfo(paths[0])
+    if info.file_size > 100_000_000:
+        raise ValueError("FDA table exceeds safe size limit: " + basename)
     with zf.open(paths[0]) as handle:
         return list(csv.DictReader(io.TextIOWrapper(handle, encoding="utf-8-sig"), delimiter="\t"))
 
@@ -25,7 +28,7 @@ def stage(zip_path):
         documents = read_table(zf, "ApplicationDocs.txt")
     docs = {}
     for row in documents:
-        key = (row.get("ApplNo"), row.get("SubmissionType"), row.get("SubmissionNo"))
+        key = tuple((row.get(field) or "").strip() for field in ("ApplNo", "SubmissionType", "SubmissionNo"))
         docs.setdefault(key, []).append({
             "title": row.get("ApplicationDocsTitle"),
             "url": row.get("ApplicationDocsURL"),
