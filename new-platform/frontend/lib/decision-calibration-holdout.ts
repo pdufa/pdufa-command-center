@@ -1,5 +1,5 @@
 import {auditHistoricalEvidence,type HistoricalEvidenceRow} from "./decision-historical-evidence";
-import {summarizeHistoricalCalibration,type CalibrationSummary} from "./decision-calibration";
+import {summarizeHistoricalCalibration,type CalibrationSummary,type DiscriminationSummary} from "./decision-calibration";
 
 /** A declared plan is an audit input, never proof that it was actually frozen in advance. */
 export type ChronologicalCalibrationPlan={
@@ -14,6 +14,12 @@ export type ChronologicalCalibrationPlan={
 };
 export type ChronologicalCalibrationRow=HistoricalEvidenceRow&{applicationNumber:string;modelVersion:string;subgroup:string};
 export type ReliabilityBin={lower:number;upper:number;count:number;meanProbability:number|null;observedApprovalRate:number|null};
+export type HistoricalForecastError={
+ programId:string;applicationNumber:string;modelVersion:string;subgroup:string;
+ predictedAt:string;predictionCapturedAt:string;decisionAt:string;decisionObservedAt:string;
+ predictionSource:string;decisionSource:string;
+ approvalProbability:number;observedApproved:boolean;probabilityError:number;squaredError:number;logLoss:number;
+};
 export type ChronologicalHoldoutMetrics={
  brierScore:number;
  logLoss:number;
@@ -21,6 +27,10 @@ export type ChronologicalHoldoutMetrics={
  baselineBrier:number;
  improvementVsTrainingBaseline:number;
  expectedCalibrationError:number;
+ discrimination:DiscriminationSummary;
+ forecastErrors:HistoricalForecastError[];
+ abstentionCoverage:{evaluatedProbabilities:number;eligibleDecisionCount:null;explicitAbstentionCount:null;coverage:null;unavailableReason:string};
+ uncertainty:{confidenceInterval:null;method:null;unavailableReason:string};
  reliabilityBins:ReliabilityBin[];
  subgroups:{name:string;metrics:CalibrationSummary}[];
 };
@@ -46,7 +56,8 @@ export function evaluateChronologicalCalibration(
  const issues:string[]=[];
  const warnings=[
   "Research diagnostics only; declared review flags, model versions, plan timestamps and URLs require independent source verification.",
-  "A complete approval/nonapproval denominator, independent forward validation and review of model selection remain required. No validated prediction accuracy or trading authorization is established."
+  "A complete approval/nonapproval denominator, independent forward validation and review of model selection remain required. No validated prediction accuracy or trading authorization is established.",
+  "AUROC measures ranking, not calibrated probability or classification accuracy. No classification threshold, abstention policy, complete eligible population or independent uncertainty plan is inferred from these forecast rows."
  ];
  const freeze=Date.parse(plan.frozenAt),start=Date.parse(plan.holdoutStart),end=Date.parse(plan.holdoutEnd),evaluated=Date.parse(plan.evaluatedAt);
  if(![freeze,start,end,evaluated].every(Number.isFinite)||freeze>start||start>=end||end>evaluated)
@@ -108,7 +119,20 @@ export function evaluateChronologicalCalibration(
  const expectedCalibrationError=reliabilityBins.reduce((sum,bin)=>sum+bin.count/holdout.length*Math.abs((bin.meanProbability??0)-(bin.observedApprovalRate??0)),0);
  const subgroups=[...new Set(predictions.map(row=>row.cohort))].sort().map(name=>({name,
   metrics:summarizeHistoricalCalibration(predictions.filter(row=>row.cohort===name),minimumPerPartition)}));
+ const forecastErrors:HistoricalForecastError[]=[...holdout].sort((a,b)=>a.programId<b.programId?-1:a.programId>b.programId?1:0).map(row=>{
+  const probabilityError=row.probability-Number(row.approved);
+  return {programId:row.programId,applicationNumber:row.applicationNumber,modelVersion:row.modelVersion,subgroup:row.subgroup,
+   predictedAt:row.predictedAt,predictionCapturedAt:row.predictionCapturedAt,decisionAt:row.decisionAt,decisionObservedAt:row.decisionObservedAt,
+   predictionSource:row.predictionSource,decisionSource:row.decisionSource,
+   approvalProbability:row.probability,observedApproved:row.approved,probabilityError,squaredError:probabilityError**2,
+   logLoss:-Math.log(Math.max(1e-12,row.approved?row.probability:1-row.probability))};
+ });
  return {...result,status:"RESEARCH_ONLY",holdout:{brierScore:summary.brierScore,logLoss:summary.logLoss,
   trainingBaselineProbability,baselineBrier,improvementVsTrainingBaseline:baselineBrier-summary.brierScore,
-  expectedCalibrationError,reliabilityBins,subgroups}};
+  expectedCalibrationError,discrimination:summary.discrimination,forecastErrors,
+  abstentionCoverage:{evaluatedProbabilities:holdout.length,eligibleDecisionCount:null,explicitAbstentionCount:null,coverage:null,
+   unavailableReason:"The frozen plan does not enumerate an eligible decision universe, explicit abstentions or a predeclared abstention policy; missing forecasts cannot be counted as abstentions."},
+  uncertainty:{confidenceInterval:null,method:null,
+   unavailableReason:"No prespecified independent or application-clustered uncertainty analysis is supplied; multiple cycles may share one application."},
+  reliabilityBins,subgroups}};
 }

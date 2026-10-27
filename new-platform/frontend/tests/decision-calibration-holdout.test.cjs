@@ -26,6 +26,7 @@ test("synthetic holdout arithmetic uses the frozen training baseline, not holdou
  assert.ok(Math.abs(r.holdout.expectedCalibrationError-.2)<1e-12);
  assert.equal(r.holdout.reliabilityBins.reduce((n,bin)=>n+bin.count,0),30);
  assert.equal(r.holdout.subgroups[0].metrics.status,"RESEARCH_ONLY");
+ assert.equal(r.holdout.discrimination.auroc,1);assert.equal(r.holdout.discrimination.approvalCount,6);assert.equal(r.holdout.discrimination.nonapprovalCount,24);
 });
 test("shuffling input cannot change chronological cohort membership or metrics",()=>{
  const a=evaluateChronologicalCalibration([...training].reverse(),[...holdout].reverse(),plan),b=evaluateChronologicalCalibration(training,holdout,plan);
@@ -89,4 +90,40 @@ test("underpowered subgroups stay explicitly unscored",()=>{
  const r=evaluateChronologicalCalibration(training,holdout.map((row,i)=>({...row,subgroup:i<15?"A":"B"})),plan);
  assert.equal(r.status,"RESEARCH_ONLY");assert.equal(r.holdout.subgroups.length,2);
  assert.ok(r.holdout.subgroups.every(group=>group.metrics.status==="INSUFFICIENT_DATA"&&group.metrics.brierScore===null));
+ assert.ok(r.holdout.subgroups.every(group=>group.metrics.discrimination.auroc===null));
+});
+test("per-case proper scoring errors reconcile to aggregate scores without invented PASS/FAIL thresholds",()=>{
+ const before=structuredClone(holdout),r=evaluateChronologicalCalibration(training,holdout,plan),errors=r.holdout.forecastErrors;
+ assert.equal(errors.length,30);assert.deepEqual(holdout,before);
+ assert.deepEqual(errors.map(row=>row.programId),holdout.map(row=>row.programId).sort());
+ for(const error of errors){
+  const source=holdout.find(row=>row.programId===error.programId);assert.equal(error.applicationNumber,source.applicationNumber);assert.equal(error.modelVersion,plan.modelVersion);assert.equal(error.subgroup,source.subgroup);
+  assert.equal(error.predictedAt,source.predictedAt);assert.equal(error.predictionCapturedAt,source.predictionCapturedAt);
+  assert.equal(error.decisionAt,source.decisionAt);assert.equal(error.decisionObservedAt,source.decisionObservedAt);
+  assert.equal(error.predictionSource,source.predictionSource);assert.equal(error.decisionSource,source.decisionSource);
+  assert.equal(error.observedApproved,source.approved);assert.equal(error.approvalProbability,source.probability);
+  assert.equal(error.probabilityError,source.probability-Number(source.approved));assert.equal(error.predictedOutcome,undefined);
+ }
+ assert.ok(Math.abs(errors.reduce((sum,row)=>sum+row.squaredError,0)/errors.length-r.holdout.brierScore)<1e-12);
+ assert.ok(Math.abs(errors.reduce((sum,row)=>sum+row.logLoss,0)/errors.length-r.holdout.logLoss)<1e-12);
+ assert.deepEqual(evaluateChronologicalCalibration([...training].reverse(),[...holdout].reverse(),plan).holdout.forecastErrors,errors);
+});
+test("contradicted boundary probabilities preserve finite clipped proper losses for diagnostic error review",()=>{
+ const rows=holdout.map((row,i)=>i===0?{...row,probability:0}:i===29?{...row,probability:1}:row);
+ const r=evaluateChronologicalCalibration(training,rows,plan);
+ assert.equal(r.status,"RESEARCH_ONLY");assert.ok(Number.isFinite(r.holdout.logLoss));
+ for(const index of [0,29]){const error=r.holdout.forecastErrors[index];assert.equal(error.squaredError,1);assert.ok(Math.abs(error.logLoss+Math.log(1e-12))<1e-12);}
+});
+test("single-class holdout withholds AUROC instead of assigning neutral or perfect discrimination",()=>{
+ const r=evaluateChronologicalCalibration(training,holdout.map(row=>({...row,approved:true})),plan);
+ assert.equal(r.status,"RESEARCH_ONLY");assert.equal(r.holdout.discrimination.auroc,null);assert.equal(r.holdout.discrimination.unavailableReason,"SINGLE_OUTCOME_CLASS");
+ assert.equal(r.holdout.forecastErrors.length,30);assert.equal(r.validatedPredictionAccuracy,false);
+});
+test("forecast rows alone cannot supply an eligible denominator,abstention policy or confidence interval",()=>{
+ const r=evaluateChronologicalCalibration(training,holdout,plan);
+ assert.equal(r.holdout.abstentionCoverage.evaluatedProbabilities,30);
+ assert.equal(r.holdout.abstentionCoverage.eligibleDecisionCount,null);assert.equal(r.holdout.abstentionCoverage.explicitAbstentionCount,null);assert.equal(r.holdout.abstentionCoverage.coverage,null);
+ assert.match(r.holdout.abstentionCoverage.unavailableReason,/missing forecasts cannot be counted as abstentions/);
+ assert.deepEqual(r.holdout.uncertainty,{confidenceInterval:null,method:null,unavailableReason:"No prespecified independent or application-clustered uncertainty analysis is supplied; multiple cycles may share one application."});
+ assert.equal(r.validatedPredictionAccuracy,false);assert.equal(r.tradeAuthorized,false);assert.match(r.warnings.join(" "),/not calibrated probability or classification accuracy/);
 });
