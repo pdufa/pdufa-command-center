@@ -76,6 +76,25 @@ jobs:
             tests/test_prepare_fda_review_packet.py \
             tests/test_summarize_fda_discovery.py \
             tests/test_stage_drugsatfda_submissions.py
+      - name: Download and stage official Drugs@FDA archive (non-blocking)
+        id: fda_bulk_stage
+        continue-on-error: true
+        working-directory: research
+        run: |
+          curl --fail --location --retry 2 --connect-timeout 20 --max-time 120 \
+            --max-filesize 50000000 \
+            'https://www.fda.gov/media/89850/download?attachment=' \
+            --output drugsatfda.zip
+          python scripts/stage_drugsatfda_submissions.py \
+            --zip drugsatfda.zip --output historical_drugsatfda_candidates.json
+          python -m json.tool historical_drugsatfda_candidates.json > /dev/null
+      - name: Publish official Drugs@FDA staged candidates
+        if: steps.fda_bulk_stage.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-drugsatfda-staged-candidates
+          path: research/historical_drugsatfda_candidates.json
+          retention-days: 7
       - name: Produce quarantined historical FDA candidate ledger
         working-directory: research
         run: |
