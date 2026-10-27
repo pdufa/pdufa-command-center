@@ -12,8 +12,8 @@ class DrugsAtFDAStageTests(unittest.TestCase):
             path = Path(folder) / "drugsatfda.zip"
             with zipfile.ZipFile(path, "w") as archive:
                 archive.writestr("Submissions.txt",
-                    "ApplNo\tSubmissionType\tSubmissionNo\tSubmissionStatus\tSubmissionStatusDate\n"
-                    " 221276 \tORIG\t1\tAP\t2026-10-20\n")
+                    "ApplNo\tSubmissionType\tSubmissionNo\tSubmissionStatus\tSubmissionStatusDate\tReviewPriority\tSubmissionsPublicNotes\tSubmissionClassCodeID\n"
+                    " 221276 \tORIG\t1\tAP\t2026-10-20\tPriority\tOriginal application\t2\n")
                 archive.writestr("ApplicationDocs.txt",
                     "ApplNo\tSubmissionType\tSubmissionNo\tApplicationDocsTitle\tApplicationDocsURL\tApplicationDocsDate\n"
                     "221276\tORIG\t1\tApproval letter\thttps://www.accessdata.fda.gov/a.pdf\t2026-10-20\n")
@@ -26,6 +26,8 @@ class DrugsAtFDAStageTests(unittest.TestCase):
             report = stage(path)
             self.assertEqual(report["candidate_count"], 1)
             self.assertEqual(report["submission_types"]["ORIG"], 1)
+            self.assertEqual(report["review_priority_counts"]["Priority"], 1)
+            self.assertEqual(report["candidates"][0]["submission_class_code_id"], "2")
             self.assertEqual(report["candidate_decisions_verified"], 0)
             self.assertEqual(report["with_source_documents"], 1)
             self.assertEqual(report["without_source_documents"], 0)
