@@ -24,6 +24,8 @@ def read_table(zf, basename):
 
 def stage(zip_path):
     with zipfile.ZipFile(zip_path) as zf:
+        if len(zf.infolist()) > 100:
+            raise ValueError("unexpectedly large FDA archive file count")
         submissions = read_table(zf, "Submissions.txt")
         documents = read_table(zf, "ApplicationDocs.txt")
         actions = read_table(zf, "Join_Submission_ActionType_Lookup.txt")
@@ -59,6 +61,9 @@ def stage(zip_path):
     return {
         "source": "Drugs@FDA official data-file ZIP",
         "candidate_count": len(candidates),
+        "with_source_documents": sum(bool(r["source_documents"]) for r in candidates),
+        "without_source_documents": sum(not r["source_documents"] for r in candidates),
+        "with_action_descriptions": sum(bool(r["action_descriptions"]) for r in candidates),
         "status_code_counts": dict(sorted(Counter(x["submission_status_code"] for x in candidates).items())),
         "candidates": candidates,
         "warning": "Submission status codes and document links are not independently verified FDA PASS/FAIL outcomes.",
