@@ -17,8 +17,15 @@ class DrugsAtFDAStageTests(unittest.TestCase):
                 archive.writestr("ApplicationDocs.txt",
                     "ApplNo\tSubmissionType\tSubmissionNo\tApplicationDocsTitle\tApplicationDocsURL\tApplicationDocsDate\n"
                     "221276\tORIG\t1\tApproval letter\thttps://www.accessdata.fda.gov/a.pdf\t2026-10-20\n")
+                archive.writestr("Join_Submission_ActionType_Lookup.txt",
+                    "ApplNo\tSubmissionType\tSubmissionNo\tActionTypes_LookupID\n"
+                    "221276\tORIG\t1\t7\n")
+                archive.writestr("ActionTypes_Lookup.txt",
+                    "ActionTypes_LookupID\tActionTypes_LookupDescription\n"
+                    "7\tApproval\n")
             report = stage(path)
             self.assertEqual(report["candidate_count"], 1)
             self.assertEqual(len(report["candidates"][0]["source_documents"]), 1)
             self.assertFalse(report["candidates"][0]["model_eligible"])
             self.assertEqual(report["status_code_counts"]["AP"], 1)
+            self.assertEqual(report["candidates"][0]["action_descriptions"], ["Approval"])
