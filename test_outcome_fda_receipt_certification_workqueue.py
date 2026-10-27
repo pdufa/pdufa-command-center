@@ -13,3 +13,15 @@ def test_known_receipt_gaps_are_actionable_and_not_certified():
         assert task["evidence_gap"]["evidence"]["next_evidence"]
         assert task["fda_receipt_verified"] is False
         assert task["model_eligible"] is False
+
+
+def test_workqueue_has_unique_prioritized_source_backed_tasks():
+    report = build_receipt_certification_workqueue()
+    tasks = report["tasks"]
+    assert len({task["task_id"] for task in tasks}) == len(tasks)
+    assert [task["action_date"] for task in tasks] == sorted(task["action_date"] for task in tasks)
+    for task in tasks:
+        assert task["priority"] == "BLOCKING_CERTIFICATION"
+        assert task["next_required_document"]
+        assert task["receipt_blocker"]
+        assert task["original_fda_action_source"].startswith("https://")
