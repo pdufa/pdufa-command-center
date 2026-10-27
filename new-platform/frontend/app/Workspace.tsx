@@ -2110,6 +2110,15 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     {top==="RESULTS" && <DailyResultsPanel />}
     {top==="BACKUP" && <BackupStatusPanel />}
     {top==="PDUFA" && nav==="TRADING" && <TradingDashboard tickers={tradingTickers} tagsReady={tagsReady} />}
+    {top==="SCANS" && <section className="panel">
+      <details>
+        <summary><strong>Historical FDA evidence and prediction readiness</strong></summary>
+        <p className="subtle">The official Drugs@FDA ingestion runs in a separate research workflow. This dashboard does not currently receive a verified live ingestion report.</p>
+        <p><strong>Historical data:</strong> Source review required. <strong>Independently verified PASS/FAIL decisions:</strong> not established from a published dataset.</p>
+        <p><strong>Prediction validation:</strong> Not validated for trading. Submission status codes alone do not establish trial-level FDA PASS/FAIL labels.</p>
+        <a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-daily-research-safety.yml" target="_blank" rel="noopener noreferrer">Open FDA research workflow and evidence artifacts</a>
+      </details>
+    </section>}
     {top==="SCANS" && <PublishedScansPanel />}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
       <p className="subtle">Reported dates only, not FDA-confirmed future events unless the source explicitly verifies them.</p>
