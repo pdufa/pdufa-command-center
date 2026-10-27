@@ -26,3 +26,11 @@ def source_eligible_at_cutoff(published_at, verified_at, cutoff):
     limit = strict_iso_day(cutoff)
     return bool(publication and verification and limit and
                 publication <= limit and verification <= limit)
+
+def preliminary_archive_gate(digest_matches, archive_date, registry_date, cutoff_date):
+    """Fail closed when any preliminary archive prerequisite is unknown."""
+    archive = strict_iso_day(archive_date)
+    registry = strict_iso_day(registry_date)
+    cutoff = strict_iso_day(cutoff_date)
+    return bool(digest_matches is True and archive and registry and cutoff and
+                archive <= cutoff and registry <= cutoff)

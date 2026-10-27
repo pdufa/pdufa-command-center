@@ -8,7 +8,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from .science_chronology import strict_iso_day, registry_publication_day, source_eligible_at_cutoff
+from .science_chronology import strict_iso_day, registry_publication_day, source_eligible_at_cutoff, preliminary_archive_gate
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
@@ -1353,7 +1353,7 @@ def science_evidence_gate(programId: str, nctId: str, cutoffDate: str):
         summary = row.summary if isinstance(row.summary, dict) else {}
         registry_day = registry_publication_day(summary.get("lastUpdatePostDate"))
         registry_by_cutoff = registry_day is not None and registry_day <= cutoff
-        preliminary_pass = digest_ok and archive_by_cutoff and registry_by_cutoff
+        preliminary_pass = preliminary_archive_gate(digest_ok, row.fetched_at.date().isoformat(), registry_day.isoformat() if registry_day else None, cutoffDate)
         return {
             "schemaVersion": "science-evidence-gate-v1",
             "programId": programId, "nctId": nctId,

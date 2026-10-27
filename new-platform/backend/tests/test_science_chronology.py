@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.science_chronology import strict_iso_day, registry_publication_day, source_eligible_at_cutoff
+from app.science_chronology import strict_iso_day, registry_publication_day, source_eligible_at_cutoff, preliminary_archive_gate
 
 
 class ChronologyTests(unittest.TestCase):
@@ -42,3 +42,19 @@ class SourceCutoffTests(unittest.TestCase):
         self.assertFalse(source_eligible_at_cutoff(None, "2026-09-30", "2026-10-01"))
         self.assertFalse(source_eligible_at_cutoff("2026-09-01", None, "2026-10-01"))
         self.assertFalse(source_eligible_at_cutoff("2026-09-01", "2026-09-30", "2026-02-30"))
+
+class ArchiveGateTests(unittest.TestCase):
+    def test_all_preliminary_checks_pass(self):
+        self.assertTrue(preliminary_archive_gate(True, "2026-09-01", "2026-09-02", "2026-10-01"))
+
+    def test_digest_mismatch_fails(self):
+        self.assertFalse(preliminary_archive_gate(False, "2026-09-01", "2026-09-02", "2026-10-01"))
+
+    def test_future_archive_fails(self):
+        self.assertFalse(preliminary_archive_gate(True, "2026-10-02", "2026-09-02", "2026-10-01"))
+
+    def test_future_registry_update_fails(self):
+        self.assertFalse(preliminary_archive_gate(True, "2026-09-01", "2026-10-02", "2026-10-01"))
+
+    def test_missing_registry_date_fails(self):
+        self.assertFalse(preliminary_archive_gate(True, "2026-09-01", None, "2026-10-01"))
