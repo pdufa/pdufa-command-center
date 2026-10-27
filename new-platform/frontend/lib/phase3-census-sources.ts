@@ -30,9 +30,12 @@ export type Phase3CensusSourceDirectory = {
   companies: Phase3CompanySources[];
 };
 
-const INPUT_PATHS = ["data/phase3_all_years_300m_10b_trials.csv", "data/company_registry.csv",
-  "data/phase_pipeline_market_caps_census_2026-10-26.csv", "config/issuer_sources.json"];
-const CENSUS_SHA256 = "a426ac6c01726a2c3a9916698e50f3cc87b0e6230260068231c88f1b4a30a143";
+const INPUT_PATHS = ["data/snapshots/phase3-census-2026-10-26/phase3_all_years_300m_10b_trials.csv", "data/snapshots/phase3-census-2026-10-26/company_registry.csv",
+  "data/phase_pipeline_market_caps_census_2026-10-26.csv", "data/snapshots/phase3-census-2026-10-26/issuer_sources.json"];
+const INPUT_SHA256 = ["a426ac6c01726a2c3a9916698e50f3cc87b0e6230260068231c88f1b4a30a143",
+  "91c2613d43aad5a8054cb4e0f7ef0179b53f8d8ad2e7aa2229c38692288c2498",
+  "b958410f13310d3dd35c2304280364256126331cb5d99cdafc476e6933a47dd4",
+  "bae8f8604d17435e437813d08d9fa061ee549cb678f0fd44013b13706e9d6f3e"];
 const COMPANY_KEYS = ["ticker","company","cik","leadSponsorNames","nctIds","marketCapUsd",
   "marketCapCheckedAt","marketCapSourceUrl","secFilingsUrl","secSubmissionsUrl","configuredIssuerHomepages"];
 function fail(): never { throw new Error("Census research sources blocked: exact saved identities or source scope differ."); }
@@ -63,7 +66,7 @@ export function parsePhase3CensusSourceDirectory(value: unknown, inventory: Phas
   for (const [i, input] of value.inputs.entries()) {
     if (!record(input) || !exactKeys(input,["path","sha256"]) || input.path !== INPUT_PATHS[i]
         || typeof input.sha256 !== "string" || !/^[a-f0-9]{64}$/.test(input.sha256)
-        || (i === 0 && input.sha256 !== CENSUS_SHA256)) fail();
+        || input.sha256 !== INPUT_SHA256[i]) fail();
   }
   const trials = new Map(inventory.rows.map(row => [row.nctId, row]));
   if (trials.size !== 741) fail();

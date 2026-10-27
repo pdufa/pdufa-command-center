@@ -16,12 +16,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "new-platform/frontend/public/phase3-census-sources-2026-10-26.json"
 INPUTS = (
-    "data/phase3_all_years_300m_10b_trials.csv",
-    "data/company_registry.csv",
+    "data/snapshots/phase3-census-2026-10-26/phase3_all_years_300m_10b_trials.csv",
+    "data/snapshots/phase3-census-2026-10-26/company_registry.csv",
     "data/phase_pipeline_market_caps_census_2026-10-26.csv",
-    "config/issuer_sources.json",
+    "data/snapshots/phase3-census-2026-10-26/issuer_sources.json",
 )
 AS_OF = "2026-10-26T12:21:15.972309+00:00"
+INPUT_SHA256 = (
+    "a426ac6c01726a2c3a9916698e50f3cc87b0e6230260068231c88f1b4a30a143",
+    "91c2613d43aad5a8054cb4e0f7ef0179b53f8d8ad2e7aa2229c38692288c2498",
+    "b958410f13310d3dd35c2304280364256126331cb5d99cdafc476e6933a47dd4",
+    "bae8f8604d17435e437813d08d9fa061ee549cb678f0fd44013b13706e9d6f3e",
+)
+PROVENANCE = "data/snapshots/phase3-census-2026-10-26/provenance.json"
+SOURCE_COMMIT = "b80577c449b4ba123b64cee9bac24d520b2e2194"
+ORIGINAL_PATHS = ("data/phase3_all_years_300m_10b_trials.csv", "data/company_registry.csv",
+                  "data/phase_pipeline_market_caps_census_2026-10-26.csv", "config/issuer_sources.json")
 
 
 def require(condition):
@@ -29,8 +39,19 @@ def require(condition):
         raise ValueError("Saved census source identity, URL, date or count mismatch")
 
 
-def build():
-    raw = {name: (ROOT / name).read_bytes() for name in INPUTS}
+def build(root=ROOT):
+    root = Path(root)
+    raw = {name: (root / name).read_bytes() for name in INPUTS}
+    provenance = json.loads((root / PROVENANCE).read_bytes())
+    require(provenance.get("schemaVersion") == 1 and provenance.get("scope") == "RESEARCH_POINTERS_ONLY"
+            and provenance.get("censusAsOf") == AS_OF and len(provenance.get("inputs", [])) == len(INPUTS))
+    for name, original, digest, source in zip(INPUTS, ORIGINAL_PATHS, INPUT_SHA256, provenance["inputs"]):
+        content = raw[name]
+        require(hashlib.sha256(content).hexdigest() == digest)
+        require(source == {"path": name, "sourcePath": original, "sha256": digest,
+                           "sourceCommit": SOURCE_COMMIT,
+                           "sourceBlob": hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest(),
+                           "sourceUrl": f"https://github.com/pdufa/pdufa-command-center/blob/{SOURCE_COMMIT}/{original}"})
     rows = lambda name: list(csv.DictReader(io.StringIO(raw[name].decode("utf-8"))))
     trials, registry, caps = [rows(name) for name in INPUTS[:3]]
     issuers = json.loads(raw[INPUTS[3]])

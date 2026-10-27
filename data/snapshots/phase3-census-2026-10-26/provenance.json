@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "scope": "RESEARCH_POINTERS_ONLY",
+  "censusAsOf": "2026-10-26T12:21:15.972309+00:00",
+  "inputs": [
+    {
+      "sourcePath": "data/phase3_all_years_300m_10b_trials.csv",
+      "path": "data/snapshots/phase3-census-2026-10-26/phase3_all_years_300m_10b_trials.csv",
+      "sha256": "a426ac6c01726a2c3a9916698e50f3cc87b0e6230260068231c88f1b4a30a143",
+      "sourceCommit": "b80577c449b4ba123b64cee9bac24d520b2e2194",
+      "sourceBlob": "831686ceb838710e4c68053f3fa28f7e702e3df9",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/b80577c449b4ba123b64cee9bac24d520b2e2194/data/phase3_all_years_300m_10b_trials.csv"
+    },
+    {
+      "sourcePath": "data/company_registry.csv",
+      "path": "data/snapshots/phase3-census-2026-10-26/company_registry.csv",
+      "sha256": "91c2613d43aad5a8054cb4e0f7ef0179b53f8d8ad2e7aa2229c38692288c2498",
+      "sourceCommit": "b80577c449b4ba123b64cee9bac24d520b2e2194",
+      "sourceBlob": "519a6968204c3cd83080a0b2ea879cf2b09f906a",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/b80577c449b4ba123b64cee9bac24d520b2e2194/data/company_registry.csv"
+    },
+    {
+      "sourcePath": "data/phase_pipeline_market_caps_census_2026-10-26.csv",
+      "path": "data/phase_pipeline_market_caps_census_2026-10-26.csv",
+      "sha256": "b958410f13310d3dd35c2304280364256126331cb5d99cdafc476e6933a47dd4",
+      "sourceCommit": "b80577c449b4ba123b64cee9bac24d520b2e2194",
+      "sourceBlob": "33dabf4520d659c1f0a0f4308765d61d3f0c8b33",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/b80577c449b4ba123b64cee9bac24d520b2e2194/data/phase_pipeline_market_caps_census_2026-10-26.csv"
+    },
+    {
+      "sourcePath": "config/issuer_sources.json",
+      "path": "data/snapshots/phase3-census-2026-10-26/issuer_sources.json",
+      "sha256": "bae8f8604d17435e437813d08d9fa061ee549cb678f0fd44013b13706e9d6f3e",
+      "sourceCommit": "b80577c449b4ba123b64cee9bac24d520b2e2194",
+      "sourceBlob": "734326aa256b29ad31f669b491170f5ff238a7b6",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/b80577c449b4ba123b64cee9bac24d520b2e2194/config/issuer_sources.json"
+    }
+  ]
+}
