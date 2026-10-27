@@ -1,0 +1,44 @@
+name: FDA historical prediction research unit tests
+on:
+  push:
+    branches:
+      - feature/decision-workstream-20261026
+    paths:
+      - 'scripts/pdufa_readiness_gate.py'
+      - 'scripts/evaluate_fda_predictions.py'
+      - 'scripts/compare_fda_prediction_baseline.py'
+      - 'tests/test_pdufa_readiness_gate.py'
+      - 'tests/test_evaluate_fda_predictions.py'
+      - 'tests/test_compare_fda_prediction_baseline.py'
+      - '.github/workflows/fda-historical-prediction-unit-tests.yml'
+  pull_request:
+    paths:
+      - 'scripts/pdufa_readiness_gate.py'
+      - 'scripts/evaluate_fda_predictions.py'
+      - 'scripts/compare_fda_prediction_baseline.py'
+      - 'tests/test_pdufa_readiness_gate.py'
+      - 'tests/test_evaluate_fda_predictions.py'
+      - 'tests/test_compare_fda_prediction_baseline.py'
+      - '.github/workflows/fda-historical-prediction-unit-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historical-prediction-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Run historical prediction safety and metrics tests
+        run: |
+          python -m pytest -q \
+            tests/test_pdufa_readiness_gate.py \
+            tests/test_evaluate_fda_predictions.py \
+            tests/test_compare_fda_prediction_baseline.py
