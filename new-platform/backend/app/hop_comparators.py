@@ -23,6 +23,8 @@ class HistoricalCase:
     source_url: str
     public_features_as_of: date | None = None
     independently_adjudicated: bool = False
+    application_id: str | None = None
+    review_cycle: int | None = None
 
 @dataclass(frozen=True)
 class TargetCase:
