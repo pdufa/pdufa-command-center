@@ -108,6 +108,9 @@ jobs:
                     "with_source_documents": summary.get("with_source_documents"),
                     "without_source_documents": summary.get("without_source_documents"),
                     "with_action_descriptions": summary.get("with_action_descriptions"),
+                    "evidence_coverage_by_submission_type": summary.get("evidence_coverage_by_submission_type"),
+                    "readiness": summary.get("readiness", "INGESTION_UNVERIFIED"),
+                    "prediction_model_validated": False,
                     "historical_outcomes_independently_verified": False,
                     "model_ready": False}
           Path("historical_drugsatfda_ingestion_status.json").write_text(
