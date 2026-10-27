@@ -55,7 +55,7 @@ export function parseScienceInvestigation(value:unknown):ScienceInvestigation {
     if(object(s)&&s.primaryTrial!==undefined){
      if(!object(s.primaryTrial)||!keys(s.primaryTrial,["trialId","protocolId"])||!text(s.primaryTrial.trialId,32)||!text(s.primaryTrial.protocolId,100))
       throw new Error("Primary trial source metadata is invalid");
-     validatePrimaryTrialSourceIdentity({trialId:identity.trialId as string,protocolId:s.primaryTrial.protocolId as string},s.primaryTrial);
+     validatePrimaryTrialSourceIdentity({trialId:identity.trialId as string,protocolId:s.primaryTrial.protocolId as string},{trialId:s.primaryTrial.trialId,protocolId:s.primaryTrial.protocolId});
     }
    }
   }
