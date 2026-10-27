@@ -57,3 +57,11 @@ Discovery reference: https://ctis.eu/trial/2022-500536-11-01 (third-party index 
 **Unresolved:** Original protocol and SAP bytes have not been downloaded/read in this review. No claims about exact prespecified estimands, multiplicity, imputation, or primary population are yet validated. The registry's aggregate serious-adverse-event count must not be compared directly with the sponsor's arm-level serious TEAE counts until matching populations and periods are established.
 
 **No readiness promotion:** NOT_READY; modelValidated=false; probability=null; tradeAuthorized=false.
+
+## CORRECTION — registry identity mismatch discovered 2026-10-27
+
+**Critical: the EU CTIS index at https://ctis.eu/trial/2022-500536-11-01 explicitly cross-references NCT05507216 (ABTECT-2 induction), NOT NCT05535946 (ABTECT maintenance).** The previous "Registry-document discovery" section inadvertently attributed that index's 636 started / 578 completed / 19 serious-AE and protocol/SAP posting dates to the maintenance trial. **Those figures and dates must be withdrawn from the NCT05535946 evidence inventory and must not be used in its readiness assessment.** They refer to a distinct trial. The 580 maintenance analysis population from the sponsor's June 2026 announcement remains a separate sponsor-reported figure and has not been reconciled against the authoritative maintenance registry record.
+
+Authoritative identity check required: https://clinicaltrials.gov/study/NCT05535946 ; study ID ABX464-107. The registry API could not be accessed in this environment; original maintenance protocol, SAP, participant flow, and results are **NOT YET RETRIEVED**. No conclusions about their dates or counts are justified. Preserve both sections above as a transparent audit trail, but treat the incorrect index attribution as **RETRACTED**. The unrelated induction CTIS index is only an example of the cross-study contamination hazard.
+
+**Disposition:** BLOCKED_SOURCE_IDENTITY / NOT_READY; modelValidated=false; probability=null; tradeAuthorized=false. A source must match exact NCT ID and sponsor protocol ID before any numeric result or document date is attached to a trial dossier.
