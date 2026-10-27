@@ -13,11 +13,15 @@ from urllib.parse import urlsplit
 
 APPROVAL_ACTIONS = {"approval", "accelerated_approval", "traditional_approval"}
 NONAPPROVAL_ACTIONS = {"complete_response_letter", "complete_response", "crl"}
+ACTION_REVISIONS = {
+    "rescinded_crl", "rescind_complete_response", "corrected_crl",
+    "corrected_complete_response", "corrected_provisional_determination",
+    "rescinded_approval", "corrected_approval", "rescission", "correction",
+}
 CENSORED_ACTIONS = {
     "withdrawn", "withdrawal", "delayed", "pending", "resubmitted", "unresolved",
     "refuse_to_file", "refusal_to_file", "rtf", "tentative_approval",
-    "administrative_extension", "provisional_determination", "rescinded_crl",
-    "rescind_complete_response", "corrected_provisional_determination",
+    "administrative_extension", "provisional_determination",
 }
 FDA_HOSTS = frozenset({"fda.gov", "www.fda.gov", "accessdata.fda.gov",
                        "www.accessdata.fda.gov", "download.open.fda.gov",
@@ -119,6 +123,8 @@ def classify_decision(event: Mapping[str, Any], *, as_of: str) -> dict[str, Any]
     if action in NONAPPROVAL_ACTIONS:
         return {**base, "status": "binary_candidate_requires_independent_review",
                 "candidate_label": "FAIL", "issues": []}
+    if action in ACTION_REVISIONS:
+        return {**base, "status": "prior_action_adjudication_required", "issues": []}
     if action in CENSORED_ACTIONS:
         return {**base, "status": "censored_or_out_of_scope", "issues": []}
     return {**base, "status": "unknown_action_requires_review", "issues": []}
@@ -129,34 +135,50 @@ def deduplicate_applications(events: list[Mapping[str, Any]], *, as_of: str) -> 
 
     Repeated trials/documents for one application/submission/cycle count once.
     Conflicting action dates or binary labels quarantine that entire cycle.
+    Source-dated corrections/rescissions also quarantine binary candidates for
+    that exact cycle until the original and dependent actions are adjudicated.
+    No correction date overwrites an earlier action or its publication date.
     No quantity returned here is an independently verified PASS/FAIL count.
     """
     if _date(as_of) is None:
         raise ValueError("as_of must be a valid YYYY-MM-DD date")
     grouped: dict[tuple[str, str, int], list[dict[str, Any]]] = {}
+    revisions: dict[tuple[str, str, int], list[dict[str, Any]]] = {}
     excluded = []
     for event in events:
         result = classify_decision(event, as_of=as_of)
+        if result["status"] == "prior_action_adjudication_required":
+            key = (result["application_id"], result["submission_id"], result["review_cycle"])
+            revisions.setdefault(key, []).append(result)
         if result["status"] != "binary_candidate_requires_independent_review":
             excluded.append(result)
             continue
         key = (result["application_id"], result["submission_id"], result["review_cycle"])
         grouped.setdefault(key, []).append(result)
-    candidates, conflicts = [], []
+    candidates, conflicts, dependencies = [], [], []
     for key, rows in sorted(grouped.items()):
         claims = {(row["candidate_label"], row["decision_date"]) for row in rows}
+        if key in revisions:
+            dependencies.append({"application_id": key[0], "submission_id": key[1],
+                                 "review_cycle": key[2],
+                                 "status": "prior_action_adjudication_required",
+                                 "binary_observations": rows,
+                                 "revision_observations": revisions[key],
+                                 "source_content_verified": False,
+                                 "model_eligible": False})
         if len(claims) != 1:
             conflicts.append({"application_id": key[0], "submission_id": key[1],
                               "review_cycle": key[2], "status": "conflicting_review_cycle",
                               "claims": [{"candidate_label": label, "decision_date": day}
                                          for label, day in sorted(claims)]})
-        else:
+        elif key not in revisions:
             candidates.append({**rows[0], "source_observation_count": len(rows),
                                "source_urls": sorted({row["source_url"] for row in rows})})
     conflict_apps = sorted({row["application_id"] for row in conflicts})
     return {"accepted": [], "candidates": candidates,
             "conflicting_applications": conflict_apps,
-            "conflicting_review_cycles": conflicts, "excluded": excluded,
+            "conflicting_review_cycles": conflicts,
+            "revision_dependent_review_cycles": dependencies, "excluded": excluded,
             "counts": {"verified_applications": 0, "verified_review_cycles": 0,
                        "verified_pass": 0, "verified_fail": 0,
                        "model_eligible_records": 0,
@@ -166,4 +188,5 @@ def deduplicate_applications(events: list[Mapping[str, Any]], *, as_of: str) -> 
                        "candidate_fail": sum(r["candidate_label"] == "FAIL" for r in candidates),
                        "conflicting_applications": len(conflict_apps),
                        "conflicting_review_cycles": len(conflicts),
+                       "revision_dependent_review_cycles": len(dependencies),
                        "excluded_events": len(excluded)}}

@@ -8,6 +8,7 @@
     "conflicting_review_cycles": 0,
     "excluded_events": 2,
     "model_eligible_records": 0,
+    "revision_dependent_review_cycles": 0,
     "verified_applications": 0,
     "verified_fail": 0,
     "verified_pass": 0,
@@ -72,6 +73,7 @@
   "input_events": 2,
   "model_eligible_records": 0,
   "prediction_model_validated": false,
+  "revision_dependent_review_cycles": [],
   "source_content_verified": false,
   "warning": "A URL field is not proof the FDA source supports the event. Source documents and application identity require separate verification."
 }

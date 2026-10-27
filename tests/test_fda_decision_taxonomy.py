@@ -87,7 +87,7 @@ def test_invalid_cutoff_fails(as_of):
 
 
 @pytest.mark.parametrize("action", ["withdrawn", "delayed", "pending", "resubmitted", "rtf",
-                                    "tentative_approval", "unresolved", "rescinded_crl"])
+                                    "tentative_approval", "unresolved"])
 def test_nonbinary_censoring(action):
     result = classify_decision(event(action), as_of="2020-02-01")
     assert result["status"] == "censored_or_out_of_scope"
@@ -129,3 +129,56 @@ def test_supplements_are_distinct_explicit_submissions():
 
 def test_invalid_row_shape_quarantines():
     assert classify_decision([], as_of="2020-02-01")["status"] == "invalid_event"
+
+
+@pytest.mark.parametrize("action", ["rescinded_crl", "rescind_complete_response",
+    "corrected_crl", "corrected_complete_response", "corrected_provisional_determination",
+    "rescinded_approval", "corrected_approval", "rescission", "correction"])
+def test_revisions_require_prior_action_adjudication(action):
+    revision = event(action, decision_date="2020-01-10", evidence_as_of="2020-01-11",
+                     retrieved_on="2020-01-12")
+    classification = classify_decision(revision, as_of="2020-02-01")
+    assert classification["status"] == "prior_action_adjudication_required"
+    assert classification["candidate_label"] is None
+    result = deduplicate_applications([event("crl"), revision], as_of="2020-02-01")
+    assert result["counts"]["candidate_fail"] == 0
+    assert result["counts"]["candidate_review_cycles"] == 0
+    assert result["counts"]["revision_dependent_review_cycles"] == 1
+    assert result["counts"]["verified_fail"] == 0
+    dependency = result["revision_dependent_review_cycles"][0]
+    assert dependency["binary_observations"][0]["decision_date"] == "2020-01-01"
+    assert dependency["binary_observations"][0]["evidence_as_of"] == "2020-01-02"
+    assert dependency["revision_observations"][0]["decision_date"] == "2020-01-10"
+    assert dependency["revision_observations"][0]["evidence_as_of"] == "2020-01-11"
+    assert dependency["revision_observations"][0]["retrieved_on"] == "2020-01-12"
+
+
+@pytest.mark.parametrize("changes", [{"review_cycle": 2}, {"submission_id": "SUPPL-001"},
+                                     {"application_id": "BLA123456"}])
+def test_revision_different_exact_cycle_does_not_suppress_unrelated_claim(changes):
+    result = deduplicate_applications([event("crl"), event("rescinded_crl", **changes)], as_of="2020-02-01")
+    assert result["counts"]["candidate_fail"] == 1
+    assert result["counts"]["revision_dependent_review_cycles"] == 0
+
+
+@pytest.mark.parametrize("action", ["resubmitted", "delayed", "pending"])
+def test_ordinary_nonbinary_events_do_not_imply_revision(action):
+    result = deduplicate_applications([event("crl"), event(action)], as_of="2020-02-01")
+    assert result["counts"]["candidate_fail"] == 1
+    assert result["counts"]["revision_dependent_review_cycles"] == 0
+
+
+@pytest.mark.parametrize("changes", [{"decision_date": "2020-02-02"},
+    {"evidence_as_of": "2020-02-02", "retrieved_on": "2020-02-03"},
+    {"retrieved_on": "2020-02-02"}, {"source_url": "https://example.com/doc"},
+    {"evidence_as_of": None}])
+def test_revision_not_available_by_cutoff_does_not_rewrite_past_candidate(changes):
+    result = deduplicate_applications([event("crl"), event("rescinded_crl", **changes)], as_of="2020-02-01")
+    assert result["counts"]["candidate_fail"] == 1
+    assert result["counts"]["revision_dependent_review_cycles"] == 0
+
+
+def test_unknown_action_still_requires_classification_not_binary_promotion():
+    result = deduplicate_applications([event("unrecognized_correction_kind")], as_of="2020-02-01")
+    assert result["counts"]["candidate_review_cycles"] == 0
+    assert result["excluded"][0]["status"] == "unknown_action_requires_review"

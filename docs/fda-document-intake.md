@@ -55,7 +55,8 @@ digest must match before any destination is created. The manifest is limited to
 overwritten or removed. A filesystem failure while writing may leave a partial
 new archive; a successful archive has its complete `receipt.json`.
 
-An offline receipt records the time these bytes were **received**, leaving
+An offline receipt records the per-document time these bytes finished being
+**received and integrity-checked**, leaving
 `retrieved_at` null. It cannot establish who retrieved the original, the URL that
 served those bytes, or when the original first became public. A matching hash
 only establishes consistency with the supplied expected hash.
@@ -73,7 +74,12 @@ verified TLS. Only an HTTP 200 response from the exact declared URL, an accepted
 PDF media type and bounded PDF-header-bearing bytes can be retained. Redirects,
 changed URLs, HTML responses, oversize content and digest mismatches fail closed.
 The tool does not alter network policy or bypass a source-access denial. Download
-receipts record actual acquisition time separately from declared source dates.
+receipts record each document's completed acquisition/integrity-check time
+separately from declared source dates. `intake_started_at` is only the batch's
+start time; it does not make documents acquired later available at an earlier
+cutoff. The CLI samples the actual UTC clock after each document is acquired and
+hashed. Tests may inject a fixed time or advancing clock, but completion times
+before intake start or a previous document's completion are rejected.
 
 The present cloud policy excludes FDA hosts. Automated tests exercised mocked
 HTTP behavior and synthetic local bytes. A real acquisition attempt using the

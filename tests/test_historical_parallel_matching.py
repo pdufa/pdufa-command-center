@@ -197,3 +197,66 @@ def test_non_mapping_record_diagnosed_and_does_not_crash_batch():
     result = retrieve([None, historical()])
     assert result["candidate_match_count"] == 1
     assert result["excluded_record_counts"]["invalid_record"] == 1
+
+
+@pytest.mark.parametrize("revision", [
+    "rescinded_crl", "rescind_complete_response", "corrected_complete_response",
+    "corrected_crl", "corrected_provisional_determination", "rescinded_approval",
+    "corrected_approval", "rescission", "correction",
+])
+def test_revision_claim_quarantines_dependent_cycle_before_feature_matching(revision):
+    # Revision action provenance is independent from clinical comparison features.
+    revised = historical(program_id="revision", fda_outcome=revision,
+                         fda_decision_date="2020-04-01", evidence_as_of="2020-04-02",
+                         indication="unrelated", mechanism="different",
+                         public_features_as_of=None, source_urls=None)
+    result = retrieve([historical(), revised])
+    assert result["matches"] == []
+    assert result["revision_dependent_review_cycle_count"] == 1
+    assert result["excluded_record_counts"]["prior_action_adjudication_required"] == 1
+    assert result["verified_match_count"] == 0
+
+
+@pytest.mark.parametrize("changes", [
+    {"fda_decision_date": "2021-01-01", "evidence_as_of": "2021-01-01"},
+    {"fda_decision_date": "2021-02-01", "evidence_as_of": "2021-02-02"},
+    {"evidence_as_of": "2021-01-01"},
+    {"evidence_as_of": "2020-01-01"},
+    {"evidence_as_of": None},
+    {"fda_decision_date": "2020-02-30"},
+    {"outcome_source_url": "https://example.com/unverified-revision"},
+    {"review_cycle": None},
+    {"submission_id": None},
+])
+def test_invalid_or_postcutoff_revision_does_not_contaminate_earlier_cutoff(changes):
+    revised = historical(program_id="revision", fda_outcome="rescinded_crl",
+                         fda_decision_date="2020-04-01", evidence_as_of="2020-04-02")
+    revised.update(changes)
+    result = retrieve([historical(), revised])
+    assert result["candidate_match_count"] == 1
+    assert result["revision_dependent_review_cycle_count"] == 0
+
+
+@pytest.mark.parametrize("changes", [
+    {"review_cycle": 2}, {"submission_id": "SUPPL001"}, {"application_id": "NDA123457"},
+])
+def test_revision_of_different_exact_cycle_does_not_suppress_unrelated_candidate(changes):
+    revised = historical(program_id="revision", fda_outcome="corrected_crl",
+                         fda_decision_date="2020-04-01", evidence_as_of="2020-04-02",
+                         **changes)
+    result = retrieve([historical(), revised])
+    assert result["candidate_match_count"] == 1
+    assert result["revision_dependent_review_cycle_count"] == 0
+
+
+def test_revision_quarantines_only_earlier_crl_cycle_and_keeps_later_approval_cycle():
+    revised = historical(program_id="revision", fda_outcome="rescinded_crl",
+                         fda_decision_date="2020-04-01", evidence_as_of="2020-04-02")
+    later = historical(program_id="later", review_cycle=2, fda_outcome="approved",
+                       fda_decision_date="2020-10-01", public_features_as_of="2020-08-01",
+                       evidence_as_of="2020-10-02")
+    result = retrieve([historical(), later, revised])
+    assert result["candidate_match_count"] == 1
+    assert result["matches"][0]["candidate_fda_outcome"] == "approved"
+    assert result["matches"][0]["review_cycle"] == 2
+    assert result["revision_dependent_review_cycle_count"] == 1

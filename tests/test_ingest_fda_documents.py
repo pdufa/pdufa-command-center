@@ -236,3 +236,85 @@ def test_existing_output_refused_before_network(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match="must be new"):
         intake.ingest(manifest(tmp_path, download_document()), mode="download", output_dir=archive, now=NOW)
     assert (archive / "keep.txt").read_text() == "unchanged"
+
+
+def test_download_completion_times_cross_cutoff_only_after_each_document_arrives(tmp_path, monkeypatch):
+    start = datetime(2026, 10, 27, 23, 59, 50, tzinfo=timezone.utc)
+    first_done = datetime(2026, 10, 27, 23, 59, 59, tzinfo=timezone.utc)
+    second_done = datetime(2026, 10, 28, 0, 0, 3, tzinfo=timezone.utc)
+    ticks = iter([start, first_done, second_done])
+    fetched = []
+
+    def fetch(url):
+        fetched.append(url)
+        return PDF
+
+    def clock():
+        # Start is sampled before any acquisition; subsequent reads happen
+        # only after the corresponding document has actually been acquired.
+        value = next(ticks)
+        assert len(fetched) == ({start: 0, first_done: 1, second_done: 2}[value])
+        return value
+
+    monkeypatch.setattr(intake, "fetch_pdf", fetch)
+    path = manifest(tmp_path, download_document(),
+                    download_document(id="second", url="https://www.fda.gov/media/654321/download"))
+    report = intake.ingest(path, mode="download", output_dir=tmp_path / "archive", clock=clock)
+    assert report["intake_started_at"] == start.isoformat()
+    assert [r["retrieved_at"] for r in report["records"]] == [first_done.isoformat(), second_done.isoformat()]
+    cutoff = datetime(2026, 10, 28, tzinfo=timezone.utc)
+    available = [r["id"] for r in report["records"]
+                 if datetime.fromisoformat(r["received_at"]) <= cutoff]
+    assert available == ["source-one"]
+    saved = json.loads((tmp_path / "archive" / "receipt.json").read_text())
+    assert saved == report
+
+
+def test_offline_receipt_is_after_bytes_and_digest_checked_not_intake_start(tmp_path, monkeypatch):
+    source = original(tmp_path)
+    path = manifest(tmp_path)
+    done = datetime(2026, 10, 27, 18, 1, tzinfo=timezone.utc)
+    ticks = iter([NOW, done])
+    checked = []
+    real_pdf_check = intake._pdf
+    real_sha256 = intake.hashlib.sha256
+
+    def pdf_check(content):
+        real_pdf_check(content)
+        checked.append("PDF")
+
+    def digest(content):
+        if content == PDF:
+            checked.append("SHA256")
+        return real_sha256(content)
+
+    def clock():
+        value = next(ticks)
+        if value == done:
+            assert checked == ["PDF", "SHA256"]
+        return value
+
+    monkeypatch.setattr(intake, "_pdf", pdf_check)
+    monkeypatch.setattr(intake.hashlib, "sha256", digest)
+    report = intake.ingest(path, source_dir=source, clock=clock)
+    assert report["intake_started_at"] == NOW.isoformat()
+    assert report["records"][0]["received_at"] == done.isoformat()
+    assert report["records"][0]["retrieved_at"] is None
+
+
+@pytest.mark.parametrize("ticks", [
+    [datetime(2026, 10, 27, 18, 1, tzinfo=timezone.utc), NOW],
+    [NOW, datetime(2026, 10, 27, 18, 2, tzinfo=timezone.utc),
+     datetime(2026, 10, 27, 18, 1, tzinfo=timezone.utc)],
+])
+def test_backdated_or_regressing_completion_clock_rejects_before_archive(tmp_path, monkeypatch, ticks):
+    documents = [download_document()]
+    if len(ticks) == 3:
+        documents.append(download_document(id="second"))
+    times = iter(ticks)
+    monkeypatch.setattr(intake, "fetch_pdf", lambda _: PDF)
+    archive = tmp_path / "archive"
+    with pytest.raises(ValueError, match="receipt clock moved"):
+        intake.ingest(manifest(tmp_path, *documents), mode="download", output_dir=archive,
+                      clock=lambda: next(times))
+    assert not archive.exists()

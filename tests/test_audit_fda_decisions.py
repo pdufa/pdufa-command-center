@@ -63,3 +63,12 @@ def test_nonobject_jsonl_rejected(tmp_path):
 def test_empty_inventory_still_validates_cutoff():
     with pytest.raises(ValueError, match="as_of"):
         audit([], as_of="20261027")
+
+
+def test_rescission_dependency_visible_in_audit_not_fail_count():
+    result = audit([row(), row(action="rescind_complete_response", decision_date="2024-04-20",
+                    evidence_as_of="2024-04-21", retrieved_on="2024-04-22")], as_of="2026-10-27")
+    assert result["application_counts"]["candidate_fail"] == 0
+    assert result["application_counts"]["revision_dependent_review_cycles"] == 1
+    assert result["revision_dependent_review_cycles"][0]["status"] == "prior_action_adjudication_required"
+    assert result["independently_verified_fail_count"] == 0

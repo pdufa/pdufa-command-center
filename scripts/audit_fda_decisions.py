@@ -47,6 +47,7 @@ def audit(rows, *, as_of):
         "application_counts": deduped["counts"],
         "conflicting_applications": deduped["conflicting_applications"],
         "conflicting_review_cycles": deduped["conflicting_review_cycles"],
+        "revision_dependent_review_cycles": deduped["revision_dependent_review_cycles"],
         "candidate_review_cycles": deduped["candidates"],
         "excluded_observations": deduped["excluded"],
         "independently_verified_pass_count": 0,

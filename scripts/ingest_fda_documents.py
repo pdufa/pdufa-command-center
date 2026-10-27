@@ -16,6 +16,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import sys
+from typing import Callable
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
@@ -199,15 +200,24 @@ def _write_exclusive(directory_fd: int, name: str, content: bytes) -> None:
         os.close(fd)
 
 
-def ingest(manifest_path: Path, *, mode: str = "offline", source_dir: Path | None = None,
-           output_dir: Path | None = None, now: datetime | None = None) -> dict:
-    now = now or datetime.now(timezone.utc)
-    if now.tzinfo is None or now.utcoffset() is None:
+def _utc_time(value: datetime) -> datetime:
+    if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         raise ValueError("timezone-aware receipt time required")
-    timestamp = now.astimezone(timezone.utc).isoformat()
+    return value.astimezone(timezone.utc)
+
+
+def ingest(manifest_path: Path, *, mode: str = "offline", source_dir: Path | None = None,
+           output_dir: Path | None = None, now: datetime | None = None,
+           clock: Callable[[], datetime] | None = None) -> dict:
+    if now is not None and clock is not None:
+        raise ValueError("provide either a fixed test time or a clock, not both")
+    read_time = clock or ((lambda: now) if now is not None else
+                          (lambda: datetime.now(timezone.utc)))
+    started_at = _utc_time(read_time())
+    last_completed_at = started_at
     manifest_path = Path(manifest_path)
     raw = _read_file(manifest_path.parent, manifest_path.name, MAX_MANIFEST_BYTES)
-    documents = parse_manifest(raw, mode=mode, as_of=now.date())
+    documents = parse_manifest(raw, mode=mode, as_of=started_at.date())
     if mode == "offline" and source_dir is None:
         raise ValueError("offline mode requires an explicit source directory")
     output = Path(output_dir).absolute() if output_dir is not None else None
@@ -225,6 +235,7 @@ def ingest(manifest_path: Path, *, mode: str = "offline", source_dir: Path | Non
     blobs, records, total = {}, [], 0
     for item in documents:
         content = None
+        completed_at = None
         if mode == "offline":
             content = _read_file(Path(source_dir), item["relative_path"], MAX_PDF_BYTES)
         elif output is not None:
@@ -239,12 +250,19 @@ def ingest(manifest_path: Path, *, mode: str = "offline", source_dir: Path | Non
             if item.get("expected_sha256", digest) != digest:
                 raise ValueError("original document SHA-256 mismatch")
             blobs[digest] = content
+            # Acquisition and integrity checking must finish before a receipt
+            # can claim that this document was available to this intake.
+            completed = _utc_time(read_time())
+            if completed < last_completed_at:
+                raise ValueError("receipt clock moved before intake start or prior document completion")
+            last_completed_at = completed
+            completed_at = completed.isoformat()
         records.append({
             "id": item["id"], "source_url_as_declared": item["url"],
             "document_date_as_declared": item["document_date"],
             "publication_date_as_declared": item["publication_date"],
-            "received_at": timestamp if content is not None else None,
-            "retrieved_at": timestamp if content is not None and mode == "download" else None,
+            "received_at": completed_at,
+            "retrieved_at": completed_at if mode == "download" else None,
             "capture_status": ("MANIFEST_VALIDATED_NOT_FETCHED" if content is None else
                                "OFFLINE_BYTES_INTEGRITY_CONFIRMED" if mode == "offline" else
                                "HTTP_PDF_BYTES_RECEIVED"),
@@ -256,7 +274,8 @@ def ingest(manifest_path: Path, *, mode: str = "offline", source_dir: Path | Non
         })
     report = {
         "schema_version": 1, "status": "QUARANTINED_DOCUMENT_RECEIPT_ONLY",
-        "mode": mode, "dry_run": output is None, "manifest_sha256": hashlib.sha256(raw).hexdigest(),
+        "mode": mode, "dry_run": output is None, "intake_started_at": started_at.isoformat(),
+        "manifest_sha256": hashlib.sha256(raw).hexdigest(),
         "document_count": len(records), "bytes_inspected": total, "records": records,
         "independently_verified_pass_records": 0, "independently_verified_fail_records": 0,
         "complete_application_denominator_verified": False, "model_eligible_records": 0,

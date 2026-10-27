@@ -16,6 +16,11 @@ FIELDS = ("indication", "population", "line_of_therapy", "mechanism",
           "modality", "endpoint_family", "regulatory_pathway")
 DECISIONS = {"approved", "crl", "withdrawn"}
 DEVELOPMENT = {"terminated", "discontinued", "no_application"}
+ACTION_REVISIONS = {
+    "rescinded_crl", "rescind_complete_response", "corrected_complete_response",
+    "corrected_crl", "corrected_provisional_determination", "rescinded_approval",
+    "corrected_approval", "rescission", "correction",
+}
 FDA_HOSTS = {"fda.gov", "www.fda.gov", "accessdata.fda.gov",
              "www.accessdata.fda.gov", "download.open.fda.gov", "api.fda.gov"}
 
@@ -74,7 +79,8 @@ def find_parallels(
     and before this target cutoff. No later decision is relabeled as development.
 
     Multiple NCT/program rows for the same application/submission/cycle contribute
-    one candidate. Conflicting dates/outcomes quarantine the entire cycle. Distinct
+    one candidate. Conflicting dates/outcomes or pre-cutoff corrections/rescissions
+    quarantine the entire cycle pending prior-action adjudication. Distinct
     cycles remain separate, with distinct application and cycle counts. Those
     counts do not establish an unbiased independent denominator or probabilities.
     """
@@ -92,6 +98,7 @@ def find_parallels(
     rejected: Counter[str] = Counter()
     candidates = []
     cycle_claims: dict[tuple, set[tuple]] = defaultdict(set)
+    revision_cycles = set()
     for h in historical:
         if not isinstance(h, Mapping):
             rejected["invalid_record"] += 1
@@ -100,20 +107,10 @@ def find_parallels(
         if not program_id or program_id == _text(current["program_id"]):
             rejected["missing_or_target_program"] += 1
             continue
-        sources = h.get("source_urls")
-        if (not isinstance(sources, list) or not sources
-                or not all(_source_url(url) for url in sources)):
-            rejected["invalid_source_urls"] += 1
-            continue
-        features_date = _as_date(h.get("public_features_as_of"))
-        if features_date is None or features_date >= cutoff:
-            rejected["invalid_or_postcutoff_features"] += 1
-            continue
-
         outcome = _text(h.get("fda_outcome")).lower()
         application_id, submission_id, cycle = None, None, None
         decision_date, outcome_date = None, None
-        if outcome in DECISIONS:
+        if outcome in DECISIONS | ACTION_REVISIONS:
             application_id = _application(h.get("application_id"))
             submission_id = _text(h.get("submission_id"))
             cycle = h.get("review_cycle")
@@ -130,13 +127,19 @@ def find_parallels(
             outcome_date = _as_date(h.get("evidence_as_of"))
             if (decision_date is None or outcome_date is None
                     or decision_date >= cutoff or outcome_date >= cutoff
-                    or outcome_date < decision_date or features_date >= decision_date):
+                    or outcome_date < decision_date):
                 rejected["invalid_or_leaking_decision_chronology"] += 1
                 continue
             if not _source_url(h.get("outcome_source_url"), fda=True):
                 rejected["official_fda_outcome_source_required"] += 1
                 continue
             key = (application_id, submission_id, cycle)
+            if outcome in ACTION_REVISIONS:
+                # A revision changes whether the prior action can be used. It
+                # must be reconciled even without clinical matching features.
+                revision_cycles.add(key)
+                rejected["action_revision_requires_prior_action_review"] += 1
+                continue
             # Reconcile every well-formed cycle claim, even if one row has no
             # matching dimensions. Never hide an opposing claim by ranking it out.
             cycle_claims[key].add((outcome, decision_date))
@@ -149,6 +152,19 @@ def find_parallels(
             kind = "development_candidate"
         else:
             rejected["unknown_or_missing_outcome"] += 1
+            continue
+
+        sources = h.get("source_urls")
+        if (not isinstance(sources, list) or not sources
+                or not all(_source_url(url) for url in sources)):
+            rejected["invalid_source_urls"] += 1
+            continue
+        features_date = _as_date(h.get("public_features_as_of"))
+        if features_date is None or features_date >= cutoff:
+            rejected["invalid_or_postcutoff_features"] += 1
+            continue
+        if decision_date is not None and features_date >= decision_date:
+            rejected["invalid_or_leaking_decision_chronology"] += 1
             continue
 
         compared = [f for f in FIELDS if _text(current.get(f)) and _text(h.get(f))]
@@ -183,6 +199,9 @@ def find_parallels(
     grouped: dict[tuple, dict] = {}
     for match in candidates:
         key = match.pop("_key")
+        if key in revision_cycles:
+            rejected["prior_action_adjudication_required"] += 1
+            continue
         if key in conflicting:
             rejected["conflicting_review_cycle"] += 1
             continue
@@ -203,6 +222,7 @@ def find_parallels(
         "candidate_review_cycle_count": sum(m["group"] == "fda_decision_candidate"
                                             for m in all_candidates),
         "conflicting_review_cycle_count": len(conflicting),
+        "revision_dependent_review_cycle_count": len(revision_cycles & cycle_claims.keys()),
         "excluded_record_counts": dict(sorted(rejected.items())),
         "verified_match_count": 0,
         "source_content_verified": False,
