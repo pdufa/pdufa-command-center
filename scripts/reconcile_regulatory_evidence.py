@@ -11,7 +11,7 @@ def reconcile_evidence(records: Sequence[Mapping], decision_date: str | None = N
     """Compare reported measures without silently choosing a preferred value.
 
     Dates are ISO 8601 calendar dates. Missing dates are excluded from the
-    pre-decision evidence set (fail closed). Different populations remain
+    pre-decision evidence set (fail closed). A missing decision date also\n    excludes every record. Different populations remain
     separate; discrepancies are flagged, not automatically resolved.
     """
     cutoff = date.fromisoformat(decision_date) if decision_date else None
@@ -27,8 +27,7 @@ def reconcile_evidence(records: Sequence[Mapping], decision_date: str | None = N
                 parsed = date.fromisoformat(available)
             except ValueError:
                 pass
-        eligible = bool(source and metric and population and parsed and
-                        (cutoff is None or parsed < cutoff))
+        eligible = bool(source and metric and population and parsed and cutoff and parsed < cutoff)
         normalized.append({
             "source": source, "source_url": item.get("source_url"),
             "metric": metric, "population": population,
