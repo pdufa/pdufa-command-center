@@ -243,3 +243,33 @@ def load_public_outcome_disclosure_leads(letter_manifest: dict, *, as_of: date) 
         object_pairs_hook=_no_duplicate_json_fields,
     )
     return audit_public_outcome_disclosure_leads(source, letter_manifest, as_of=as_of)
+
+
+def load_historical_fda_public_outcome_packet(*, as_of: date) -> dict:
+    """Combine distinct regulator action and publisher-disclosure clocks safely."""
+    from .hop_primary_action_letter_samples import (
+        _SAMPLE_FILE, audit_primary_letter_samples,
+    )
+    original_letters = json.loads(
+        _SAMPLE_FILE.read_text(encoding="utf-8"),
+        object_pairs_hook=_no_duplicate_json_fields,
+    )
+    action_audit = audit_primary_letter_samples(original_letters, as_of=as_of)
+    disclosure = load_public_outcome_disclosure_leads(
+        original_letters, as_of=as_of,
+    )
+    return {
+        "mode": "READ_ONLY_HISTORICAL_FDA_ACTION_AND_DISCLOSURE_RESEARCH",
+        "asOf": as_of.isoformat(),
+        "actionLetterResearch": action_audit,
+        "publicDisclosureResearch": disclosure,
+        "independentModelEligibleCycles": 0,
+        "independentHistoricalBacktests": 0,
+        "accuracy": None,
+        "approvalProbability": None,
+        "predictionStatus": "INSUFFICIENT_EVIDENCE",
+        "trainingAuthorized": False,
+        "databaseWritten": False,
+        "spreadsheetWritten": False,
+        "tradeAuthorized": False,
+    }
