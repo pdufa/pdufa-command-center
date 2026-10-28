@@ -48,6 +48,25 @@ class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
                 result = assess_original_prediction_evidence(self.inventory, [record])
                 self.assertFalse(result["cases"][0]["artifact_metadata_complete"])
 
+    def test_inventory_action_date_mismatch_rejected(self):
+        inventory = {"cases": [{"event_key": "TNXP|2025-08-15", "action_date": "2025-08-15"}]}
+        record = {**self.good, "fda_action_at": "2025-08-16T16:00:00Z"}
+        result = assess_original_prediction_evidence(inventory, [record])
+        self.assertFalse(result["cases"][0]["action_date_matches_inventory"])
+        self.assertFalse(result["cases"][0]["chronology_consistent"])
+
+    def test_same_day_prediction_rejected_without_independent_action_time(self):
+        inventory = {"cases": [{"event_key": "TNXP|2025-08-15", "action_date": "2025-08-15"}]}
+        record = {**self.good, "prediction_created_at": "2025-08-15T08:00:00Z"}
+        result = assess_original_prediction_evidence(inventory, [record])
+        self.assertFalse(result["cases"][0]["chronology_consistent"])
+
+    def test_inventory_date_prior_day_prediction_allowed_for_review(self):
+        inventory = {"cases": [{"event_key": "TNXP|2025-08-15", "action_date": "2025-08-15"}]}
+        result = assess_original_prediction_evidence(inventory, [self.good])
+        self.assertTrue(result["cases"][0]["chronology_consistent"])
+        self.assertFalse(result["cases"][0]["independently_verified"])
+
     def test_post_action_prediction_rejected(self):
         record = {**self.good, "prediction_created_at": "2025-08-16T12:00:00Z"}
         result = assess_original_prediction_evidence(self.inventory, [record])
