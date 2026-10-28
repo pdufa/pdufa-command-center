@@ -6,6 +6,7 @@ are admitted. Ambiguous membership or absent Phase 3 evidence remains unknown.
 from collections.abc import Mapping
 from typing import Any
 from scripts.build_priority_prediction_queue import build_initial_queue
+from scripts.reconcile_regulatory_evidence import reconcile_evidence
 
 STAGE_NAMES = {"GEM_JR": "GEM JR", "GEM": "GEM", "WT": "WT"}
 
@@ -78,5 +79,21 @@ def workspace_to_priority_queue(payload: Mapping[str, Any]) -> dict:
     result["source_groups_missing"] = missing_groups
     result["status"] = "SOURCE_PARTIAL" if missing_groups else "CLASSIFICATION_QUEUE_BUILT"
     result["source_records_accepted"] = len(rows)
+    # Historical replay uses only records known before the FDA decision.
+    for program in result["queue"]:
+        source_rows = [row for row in rows if row["program_id"] == program["program_id"]]
+        evidence_rows = [entry for row in source_rows
+                         for entry in (row.get("regulatory_evidence_records") or [])
+                         if isinstance(entry, Mapping)]
+        decision_dates = {row.get("historical_decision_date") for row in source_rows
+                          if row.get("historical_decision_date")}
+        if evidence_rows:
+            cutoff = next(iter(decision_dates)) if len(decision_dates) == 1 else None
+            audit = reconcile_evidence(evidence_rows, decision_date=cutoff)
+            program["evidence_reconciliation"] = audit
+            program["historical_replay_ready"] = bool(
+                cutoff and audit["pre_decision_records"] and not audit["has_discrepancy"])
+        else:
+            program["historical_replay_ready"] = False
     result["source_verification_required"] = True
     return result
