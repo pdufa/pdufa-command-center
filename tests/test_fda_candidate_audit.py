@@ -29,6 +29,24 @@ class CandidateAuditTests(unittest.TestCase):
         self.assertIn("candidate_union_not_representative", result["abstention_reasons"])
         self.assertIsNone(result["approval_rate"])
 
+    def test_duplicate_review_cycle_abstains(self):
+        record = {
+            "action_type": "approval",
+            "official_fda_action_source": "https://www.fda.gov/example",
+            "application_id": "NDA-TEST",
+            "review_cycle_id": "cycle-1",
+            "action_date": "2025-06-01",
+            "evidence_cutoff_date": "2025-05-31",
+            "source_cohort": "complete_original_filing_population",
+            "original_filing_denominator_verified": True,
+            "program_family_disjoint_verified": True,
+        }
+        result = audit_candidates([record, dict(record)])
+        self.assertEqual(result["eligible_for_further_review"], 1)
+        self.assertEqual(result["abstained"], 1)
+        self.assertEqual(result["abstention_reasons"]["duplicate_review_cycle"], 1)
+        self.assertIsNone(result["approval_rate"])
+
     def test_unknown_action_abstains(self):
         result = audit_candidates([{"action_type": "pending"}])
         self.assertEqual(result["abstained"], 1)
