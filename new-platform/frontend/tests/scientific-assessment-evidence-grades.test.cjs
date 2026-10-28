@@ -1,0 +1,243 @@
+"use strict";
+const { test } = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const ts = require("typescript");
+const React = require("react");
+const { create, act } = require("react-test-renderer");
+global.IS_REACT_ACT_ENVIRONMENT = true;
+
+for (const ext of [".ts", ".tsx"]) {
+  require.extensions[ext] = (mod, file) => mod._compile(
+    ts.transpileModule(fs.readFileSync(file, "utf8"), {
+      compilerOptions: {
+        module: ts.ModuleKind.CommonJS,
+        target: ts.ScriptTarget.ES2022,
+        jsx: ts.JsxEmit.ReactJSX,
+        esModuleInterop: true,
+      },
+    }).outputText, file,
+  );
+}
+const Component = require("../app/ScientificAssessment.tsx").default;
+const ID = "TRIAL|NCT02142738";
+const NCT = "NCT02142738";
+const LAYERS = [
+  "trial_design", "efficacy", "safety", "biological_rationale",
+  "statistical_integrity", "evidence_reproducibility", "regulatory", "timeline_and_uncertainty",
+];
+
+const REQUIREMENT_IDS = [
+  "archive_integrity", "indication", "design", "eligibility", "interventions",
+  "enrollment", "timeline", "registered_primary", "primary_analysis",
+  "safety_denominators", "participant_flow", "baseline", "protocol_sap",
+  "published_results", "independent_replication", "official_regulatory",
+];
+
+function payload(id = ID) {
+  return {
+    exactId: id,
+    assessment: {
+      overall_score: null, status: "insufficient_verified_evidence",
+      domains: { trial_design: { score: null, verified_fields: 0, required_fields: 5, missing_fields: ["randomization"] } },
+    },
+    readinessGrades: {
+      nctId: NCT, externalEvidenceVerified: false,
+      scientificScore: null, fdaApprovalProbability: null,
+      requirements: REQUIREMENT_IDS.map((item, i) => ({
+        id: item, label: "Scientific source check " + item,
+        available: i < 10,
+        evidenceLevel: i === 0 ? "archive_verified"
+          : i >= 12 ? "independent_review_not_loaded"
+          : i < 10 ? "registry_field_present" : "missing_in_archive",
+        sourcePath: i >= 12 ? null : "source.path." + item,
+        nextAction: "Independently inspect " + item + " source and reconcile uncertainty",
+        independentlyVerified: false,
+      })),
+      missingRequirementIds: REQUIREMENT_IDS.slice(10),
+      analysisReadiness: {
+        grade: "C", coveragePercent: 63, requirementsCovered: 10, requirementsTotal: 16,
+        readyForFullScientificConclusion: false, verdict: "NOT_READY", passFail: "FAIL_INCOMPLETE_INPUTS",
+      },
+      scientificReluctance: {
+        grade: "F", level: "CRITICAL", reluctanceToConclude: "MAXIMUM",
+        verdict: "WITHHOLD_SCIENTIFIC_CONCLUSION",
+      },
+    },
+    investigation20: {
+      nctId: NCT, levelCount: 20, scientificallyVerifiedLevels: 0,
+      overallScore: null, fdaApprovalProbability: null,
+      levels: Array.from({ length: 20 }, (_, i) => ({
+        level: i + 1, title: "Review level " + (i + 1), status: "external_review_required",
+        sourceEvidenceCount: 0, sourceFieldCount: 1, requiresExternalReview: true,
+        scientificallyVerified: false, score: null, caution: "Independent source check required.",
+      })),
+    },
+    investigation40: {
+      nctId: NCT,
+      layers: LAYERS.map(id => ({
+        id, assessments: Array.from({ length: 5 }, (_, i) => "assessment_" + (i + 1)),
+      })),
+      verification: {
+        required_assessments: 40, verified_assessments: 0, ready_for_analysis: false,
+        scientific_score: null, approval_probability: null,
+      },
+      depthReview: {
+        requiredTasks: 320, completedTasks: 0,
+        readyForScientificConclusion: false, approvalProbability: null,
+        depthLevels: [
+          "identity", "registry", "source", "methods", "quantitative",
+          "triangulation", "regulatory", "adjudication",
+        ].map((id, i) => ({ level: i + 1, id, objective: "Review " + id + " evidence independently" })),
+        tasks: LAYERS.flatMap(layer => Array.from({ length: 5 }, (_, i) =>
+          Array.from({ length: 8 }, (_, j) => ({
+            assessmentId: layer + ".assessment_" + (i + 1),
+            depthLevel: j + 1,
+            depthId: [
+              "identity", "registry", "source", "methods", "quantitative",
+              "triangulation", "regulatory", "adjudication",
+            ][j],
+            status: "pending_independent_review",
+            independentlyVerified: false, scientificScore: null,
+          }))
+        ).flat()),
+      },
+    },
+  };
+}
+
+function allText(root) {
+  return root.findAll(() => true).map(node =>
+    node.children.filter(child => typeof child === "string").join(" ")).join(" ");
+}
+
+async function mountAndLoad(data) {
+  let tree;
+  await act(async () => { tree = create(React.createElement(Component, { exactId: ID })); });
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({ ok: true, json: async () => data, status: 200 });
+  try {
+    await act(async () => {
+      await tree.root.findAllByType("button")[0].props.onClick();
+    });
+    return tree;
+  } finally {
+    global.fetch = originalFetch;
+  }
+}
+
+test("two evidence grades, 20 stages, 40 assessments and all 320 pending depth tasks are visible", async () => {
+  const tree = await mountAndLoad(payload());
+  const displayed = allText(tree.root);
+  assert.match(displayed, /Analysis readiness:\s*C/);
+  assert.match(displayed, /Reluctance grade:\s*F/);
+  assert.match(displayed, /Maximum reluctance/);
+  assert.match(displayed, /Level\s+1\s*:\s*Review level 1/);
+  assert.match(displayed, /Level\s+20\s*:\s*Review level 20/);
+  assert.match(displayed, /40 assessments/);
+  assert.match(displayed, /0\s*\/\s*40 independently verified/);
+  assert.match(displayed, /0\s*\/\s*320\s+planned in-depth review tasks/);
+  assert.match(displayed, /FDA approval probability/);
+  assert.match(displayed, /NOT ASSIGNED/);
+  assert.doesNotMatch(displayed, /Scientific score: [0-9]/);
+  assert.equal(tree.root.findAllByType("li").length, 396);
+  assert.match(displayed, /Scientific evidence input checklist/);
+  assert.match(displayed, /10\s*\/\s*16 source inputs available/);
+  assert.match(displayed, /Independent review not completed/);
+  assert.match(displayed, /Required next action:/);
+  assert.match(displayed, /Independently verified: NO/);
+  assert.match(displayed, /Depth\s+1\s*:\s*identity/);
+  assert.match(displayed, /Depth\s+8\s*:\s*adjudication/);
+  assert.match(displayed, /Open a layer and then an assessment to inspect each of the 320 pending tasks/);
+  await act(async () => tree.unmount());
+});
+
+
+test("forged independent depth completion or score fails closed", async () => {
+  for (const mutate of [
+    p => { p.investigation40.depthReview.completedTasks = 1; },
+    p => { p.investigation40.depthReview.tasks[0].scientificScore = 98; },
+    p => { p.investigation40.depthReview.tasks[0].independentlyVerified = true; },
+    p => { p.investigation40.depthReview.tasks[0].status = "complete"; },
+    p => { p.investigation40.depthReview.tasks[0] = { ...p.investigation40.depthReview.tasks[1] }; },
+    p => { p.investigation40.depthReview.depthLevels[0].level = 7; },
+    p => { p.investigation40.depthReview.tasks = p.investigation40.depthReview.tasks.slice(1); },
+  ]) {
+    const corrupted = payload();
+    mutate(corrupted);
+    const tree = await mountAndLoad(corrupted);
+    const rendered = allText(tree.root);
+    assert.match(rendered, /Scientific source coverage failed validation/);
+    assert.doesNotMatch(rendered, /Analysis readiness:\\s*C/);
+    assert.doesNotMatch(rendered, /Depth 8:\\s*adjudication/);
+    await act(async () => tree.unmount());
+  }
+});
+
+test("missing, forged or inconsistent evidence requirements fail closed", async () => {
+  for (const mutate of [
+    p => { delete p.readinessGrades.requirements; },
+    p => { p.readinessGrades.requirements.pop(); },
+    p => { p.readinessGrades.requirements[0].independentlyVerified = true; },
+    p => { p.readinessGrades.requirements[15].available = true; },
+    p => { p.readinessGrades.requirements[13].evidenceLevel = "archive_verified"; },
+    p => { p.readinessGrades.requirements[1].sourcePath = null; },
+    p => { p.readinessGrades.requirements[1].id = "indication_fake"; },
+    p => { p.readinessGrades.analysisReadiness.requirementsCovered = 11; },
+    p => { p.readinessGrades.missingRequirementIds = []; },
+  ]) {
+    const data = payload();
+    mutate(data);
+    const tree = await mountAndLoad(data);
+    const text = allText(tree.root);
+    assert.match(text, /Scientific source coverage failed validation/);
+    assert.doesNotMatch(text, /Scientific evidence input checklist/);
+    await act(async () => tree.unmount());
+  }
+});
+
+test("unverified numeric scientific scores are blocked without displaying grades", async () => {
+  const corrupted = payload();
+  corrupted.assessment.overall_score = 95;
+  const tree = await mountAndLoad(corrupted);
+  assert.match(allText(tree.root), /unverified scientific score/);
+  assert.equal(tree.root.findAllByProps({ "aria-label": "Two evidence readiness grades" }).length, 0);
+  await act(async () => tree.unmount());
+});
+
+test("mismatched archived trial identity rejects all review claims", async () => {
+  const corrupted = payload("TRIAL|NCT04280705");
+  const tree = await mountAndLoad(corrupted);
+  assert.match(allText(tree.root), /identity or structure failed verification/);
+  assert.equal(tree.root.findAllByProps({ "aria-label": "Two evidence readiness grades" }).length, 0);
+  await act(async () => tree.unmount());
+});
+
+test("missing archived evidence is labeled unavailable, never passed", async () => {
+  const empty = payload();
+  empty.readinessGrades = null;
+  empty.investigation20 = null;
+  empty.investigation40 = null;
+  const tree = await mountAndLoad(empty);
+  const displayed = allText(tree.root);
+  assert.match(displayed, /grades are unavailable/);
+  assert.match(displayed, /no checksum-verified trial archive/);
+  assert.doesNotMatch(displayed, /Analysis readiness: A/);
+  await act(async () => tree.unmount());
+});
+
+test("switching NCT clears previous trial grades and archived review levels", async () => {
+  let tree;
+  await act(async () => { tree = create(React.createElement(Component, { exactId: ID })); });
+  const original = global.fetch;
+  global.fetch = async () => ({ ok: true, status: 200, json: async () => payload() });
+  try {
+    await act(async () => { await tree.root.findAllByType("button")[0].props.onClick(); });
+    assert.match(allText(tree.root), /Analysis readiness:\s*C/);
+    await act(async () => tree.update(React.createElement(Component, { exactId: "TRIAL|NCT04280705" })));
+    assert.doesNotMatch(allText(tree.root), /Analysis readiness:\s*C/);
+  } finally {
+    global.fetch = original;
+    await act(async () => tree.unmount());
+  }
+});

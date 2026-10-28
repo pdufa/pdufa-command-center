@@ -1,0 +1,54 @@
+name: Trial Science Dossier Contract
+on:
+  push:
+    branches: [feature/trial-science-dossier-20261024]
+  pull_request:
+    branches: [feature/scientific-assessment-v1]
+permissions:
+  contents: read
+jobs:
+  dossier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated backend test dependencies
+        run: python -m pip install -r new-platform/backend/requirements.txt
+      - name: Verify dossier evidence, archival integrity and HTTP authentication
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_dossier.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_dossier_archive.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_dossier_http.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_assessment_auth.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_stored_record.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_assessment_adapter.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_external_sources.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_reference_http.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_evidence_review.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_results.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_keynote024_http.py' -v
+          python -m unittest discover -s new-platform/backend/tests -p 'test_scientific_pilot_live_verify.py' -v
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install locked frontend dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Typecheck scientific pilot and existing dashboard
+        run: npm run typecheck
+      - name: Test historical pilot source identity, UI and protected proxy
+        run: node --test tests/trial-science-pilot.test.cjs

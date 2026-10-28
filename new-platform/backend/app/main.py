@@ -7,12 +7,13 @@ import secrets
 import threading
 import time
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-from typing import Annotated
+from datetime import date, datetime, timezone
+from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
-from pydantic import BaseModel, Field
-from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, create_engine, select, update
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel, Field, ConfigDict
+from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, UniqueConstraint, create_engine, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
@@ -98,6 +99,176 @@ class FullTrialRecord(Base):
     summary: Mapped[dict] = mapped_column(JSON, nullable=False)
     statistics: Mapped[list] = mapped_column(JSON, nullable=False)
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ScientificBatchJob(Base):
+    """Durable, isolated scientific import history; one unfinished batch at a time."""
+    __tablename__ = "scientific_batch_jobs"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    status: Mapped[str] = mapped_column(String(28), nullable=False)
+    nct_ids: Mapped[list] = mapped_column(JSON, nullable=False)
+    events: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    total: Mapped[int] = mapped_column(Integer, nullable=False)
+    processed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    imported: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    already_exists: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    failed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    # Unique nullable slot prevents overlapping unfinished batches, across workers.
+    active_slot: Mapped[str | None] = mapped_column(String(32), nullable=True, unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ScientificEvidenceLedgerEntry(Base):
+    """Append-only independent-source candidate, never an auto-verified conclusion."""
+    __tablename__ = "scientific_evidence_ledger"
+    __table_args__ = (
+        # Concurrent attempts to correct the same version cannot both succeed.
+        UniqueConstraint("nct_id", "thread_id", "revision",
+                         name="uq_scientific_evidence_revision"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    thread_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    supersedes_id: Mapped[str | None] = mapped_column(String(32))
+    gate_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    source_url: Mapped[str] = mapped_column(String(800), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(40), nullable=False)
+    source_published_at: Mapped[str | None] = mapped_column(String(10))
+    claim_text: Mapped[str] = mapped_column(String(1000), nullable=False)
+    relationship: Mapped[str] = mapped_column(String(24), nullable=False)
+    caution: Mapped[str] = mapped_column(String(1000), nullable=False)
+    review_status: Mapped[str] = mapped_column(String(40), nullable=False)
+    recorded_by: Mapped[str] = mapped_column(String(80), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
+class ScientificReviewerFinding(Base):
+    """Immutable, source-linked reviewer claim. NEVER independent verification."""
+    __tablename__ = "scientific_reviewer_findings"
+    __table_args__ = (
+        UniqueConstraint("nct_id", "thread_id", "revision",
+                         name="uq_scientific_reviewer_finding_revision"),
+        UniqueConstraint("supersedes_id", name="uq_scientific_reviewer_finding_parent"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    question_id: Mapped[str] = mapped_column(String(70), nullable=False)
+    gate_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    thread_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    supersedes_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    source_url: Mapped[str] = mapped_column(String(800), nullable=False)
+    source_locator: Mapped[str] = mapped_column(String(200), nullable=False)
+    finding_type: Mapped[str] = mapped_column(String(30), nullable=False)
+    assertion: Mapped[str] = mapped_column(String(1500), nullable=False)
+    uncertainty: Mapped[str] = mapped_column(String(1000), nullable=False)
+    reviewer_label: Mapped[str] = mapped_column(String(80), nullable=False)
+    reviewed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
+class ScientificSourceDocument(Base):
+    """Captured original PDF bytes; archival integrity is NOT scientific review."""
+    __tablename__ = "scientific_source_documents"
+    __table_args__ = (
+        UniqueConstraint("nct_id", "sha256",
+                         name="uq_scientific_source_document_content"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    gate_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    source_url: Mapped[str] = mapped_column(String(800), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(40), nullable=False)
+    filename: Mapped[str] = mapped_column(String(140), nullable=False)
+    captured_by: Mapped[str] = mapped_column(String(80), nullable=False)
+    captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    byte_length: Mapped[int] = mapped_column(Integer, nullable=False)
+    payload: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    capture_status: Mapped[str] = mapped_column(String(40), nullable=False)
+    manifest_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
+class ScientificReviewerAccount(Base):
+    """Isolated Google subject allowlist; a login alone grants no review role."""
+    __tablename__ = "scientific_reviewer_accounts"
+
+    google_subject: Mapped[str] = mapped_column(String(255), primary_key=True)
+    verified_email: Mapped[str] = mapped_column(String(320), nullable=False)
+    role: Mapped[str] = mapped_column(String(32), nullable=False, default="pending")
+    credentials_verified: Mapped[bool] = mapped_column(nullable=False, default=False)
+    enabled: Mapped[bool] = mapped_column(nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ScientificReviewerNomination(Base):
+    """Operator-only reviewer candidate queue; NO permissions or invitations.
+
+    Nomination is never a ScientificReviewerAccount and cannot authenticate
+    against reviewer endpoints. Qualifications and independence are unverified.
+    """
+    __tablename__ = "scientific_reviewer_nominations"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    candidate_email: Mapped[str] = mapped_column(String(320), unique=True, nullable=False)
+    display_name: Mapped[str] = mapped_column(String(160), nullable=False, default="")
+    specialty: Mapped[str] = mapped_column(String(40), nullable=False)
+    qualifications_note: Mapped[str] = mapped_column(String(1200), nullable=False, default="")
+    nomination_status: Mapped[str] = mapped_column(String(40), nullable=False)
+    nominated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    # This table intentionally has no Google subject, credential-verified field,
+    # enabled permission, reviewer role, or scientific adjudication status.
+
+
+class ScientificReviewAuditEvent(Base):
+    """Append-only audit envelope. Never constitutes clinical adjudication."""
+    __tablename__ = "scientific_review_audit_events"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    question_id: Mapped[str] = mapped_column(String(70), nullable=False)
+    google_subject: Mapped[str] = mapped_column(String(255), nullable=False)
+    event_type: Mapped[str] = mapped_column(String(48), nullable=False)
+    event_payload: Mapped[dict] = mapped_column(JSON, nullable=False)
+    event_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ScientificReviewSubmission(Base):
+    """Immutable reviewer submission; no scientific adjudication or score."""
+    __tablename__ = "scientific_review_submissions"
+    __table_args__ = (
+        UniqueConstraint("nct_id", "question_id", "source_sha256", "google_subject",
+                         name="uq_scientific_review_subject_source"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    question_id: Mapped[str] = mapped_column(String(70), nullable=False)
+    source_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    google_subject: Mapped[str] = mapped_column(String(255), nullable=False)
+    decision: Mapped[str] = mapped_column(String(32), nullable=False)
+    attestation: Mapped[dict] = mapped_column(JSON, nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ScientificSmokeClaim(Base):
+    """One durable execution claim per trial for temporary isolated live smoke."""
+    __tablename__ = "scientific_smoke_claims"
+
+    nct_id: Mapped[str] = mapped_column(String(11), primary_key=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    claimed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class CandidateAssessmentHistory(Base):
@@ -190,6 +361,27 @@ def require_internal_key(
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
+
+def require_isolated_scientific_read_key(
+    x_pdufa_internal_key: Annotated[str | None, Header()] = None,
+) -> None:
+    """Accept a preview-only key on audited scientific read-only GET routes.
+
+    The original internal key protects ordinary API endpoints and remains
+    unchanged. Preview key is scoped to one frozen Render scientific service.
+    """
+    configured = os.getenv("PDUFA_SCIENTIFIC_PREVIEW_READ_KEY", "")
+    if (
+        os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"
+        and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes")
+        and len(configured) >= 32
+        and x_pdufa_internal_key
+        and secrets.compare_digest(configured, x_pdufa_internal_key)
+    ):
+        return
+    require_internal_key(x_pdufa_internal_key)
+
+
 def storage_ready() -> bool:
     # Hosted staging must NEVER silently save ticker data to ephemeral SQLite.
     return not REQUIRE_POSTGRES or DATABASE_URL.startswith("postgresql+psycopg://")
@@ -228,6 +420,117 @@ async def lifespan(app: FastAPI):
         try:
             Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
             _DB_STATE.update(available=True, reason="READY")
+            # Safe, read-only startup diagnostic; logs counts only, never trial data or secrets.
+            try:
+                from sqlalchemy import func, inspect
+                with Session(ENGINE) as session:
+                    present = inspect(session.get_bind()).has_table("full_trial_records")
+                    total = session.scalar(select(func.count()).select_from(FullTrialRecord)) if present else None
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_ARCHIVE_STATUS table_present=%s stored_trial_count=%s",
+                    present, total,
+                )
+            except Exception as diagnostic_error:
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_ARCHIVE_STATUS unavailable error_type=%s",
+                    type(diagnostic_error).__name__,
+                )
+            # Read-only verification of the persistent batch-history table.
+            try:
+                from sqlalchemy import func
+                with Session(ENGINE) as session:
+                    batch_count = session.scalar(
+                        select(func.count()).select_from(ScientificBatchJob)
+                    )
+                    active_count = session.scalar(
+                        select(func.count()).select_from(ScientificBatchJob)
+                        .where(ScientificBatchJob.active_slot.is_not(None))
+                    )
+                    claim_count = session.scalar(
+                        select(func.count()).select_from(ScientificSmokeClaim)
+                    )
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_BATCH_STORAGE_STATUS status=PASS stored_job_count=%s "
+                    "active_job_count=%s smoke_claim_count=%s",
+                    batch_count, active_count, claim_count,
+                )
+            except Exception as batch_diagnostic_error:
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_BATCH_STORAGE_STATUS status=FAIL error_type=%s",
+                    type(batch_diagnostic_error).__name__,
+                )
+            # Read-only evidence ledger verification. Candidate entries must
+            # never be counted as adjudicated clinical or FDA evidence.
+            try:
+                from sqlalchemy import func
+                with Session(ENGINE) as ledger_session:
+                    evidence_count = ledger_session.scalar(
+                        select(func.count()).select_from(ScientificEvidenceLedgerEntry)
+                    )
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_EVIDENCE_LEDGER_STORAGE status=PASS "
+                    "candidate_revision_count=%d verified_gate_count=0",
+                    evidence_count,
+                )
+                try:
+                    from .scientific_source_documents import read_document_manifest
+                    pdf_manifest = read_document_manifest("NCT02142738")
+                    source_archive_ok = (
+                        pdf_manifest["allCapturedBytesRehashed"] is True
+                        and pdf_manifest["independentSourceVerificationCompleted"] is False
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_PDF_ARCHIVE_READBACK status=%s "
+                        "captured_pdfs=%d byte_integrity_checked=True "
+                        "independent_content_verification=False",
+                        "PASS" if source_archive_ok else "FAIL",
+                        pdf_manifest["sourceDocumentCount"],
+                    )
+                except Exception as pdf_archive_error:
+                    logging.getLogger(__name__).error(
+                        "SCIENTIFIC_PDF_ARCHIVE_READBACK status=FAIL error_type=%s",
+                        type(pdf_archive_error).__name__,
+                    )
+                from .scientific_reviewer_findings import read_reviewer_statements
+                reviewer = read_reviewer_statements("NCT02142738")
+                reviewer_ok = (
+                    reviewer["questionsIndependentlyResolved"] == 0
+                    and reviewer["independentConfirmationImplemented"] is False
+                    and reviewer["fdaApprovalProbability"] is None
+                )
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_REVIEWER_NOTES_READBACK status=%s "
+                    "statements=%d conflicted_questions=%d "
+                    "independent_verification=False read_only=True",
+                    "PASS" if reviewer_ok else "FAIL",
+                    reviewer["totalStatements"],
+                    reviewer["questionsWithConflictingStatements"],
+                )
+                from .scientific_evidence_ledger import pilot_candidates
+                from .scientific_reconciliation_worklist import reconciliation_worklist
+                worklist = reconciliation_worklist("NCT02142738")
+                candidates = pilot_candidates("NCT02142738")
+                safe = (
+                    worklist["totalChecks"] == 8
+                    and worklist["unresolvedChecks"] == 8
+                    and worklist["verifiedChecks"] == 0
+                    and all(item["independentlyVerified"] is False
+                            for item in candidates)
+                    and len(candidates) == 7
+                )
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_SOURCE_RECONCILIATION status=%s "
+                    "questions=%d unresolved=%d candidate_sources=%d "
+                    "verified=0 read_only=True",
+                    "PASS" if safe else "FAIL",
+                    worklist["totalChecks"],
+                    worklist["unresolvedChecks"], len(candidates),
+                )
+            except Exception as ledger_check_error:
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_EVIDENCE_LEDGER_STORAGE status=FAIL error_type=%s",
+                    type(ledger_check_error).__name__,
+                )
         except Exception as exc:
             # Neon's free-plan quota can return HTTP 402 while Postgres tables
             # and identities remain intact. Keep the health endpoint available
@@ -256,13 +559,312 @@ async def lifespan(app: FastAPI):
                 "PDUFA_DATABASE_COPY_FAILED error_type=%s", type(exc).__name__
             )
             raise RuntimeError("PDUFA migration verification failed; source left unchanged") from None
+    # Read back and checksum-verify one archived record after every startup.
+    # Diagnostic is read-only and does not log the trial payload.
+    if _DB_STATE["available"] and REQUIRE_POSTGRES:
+        try:
+            from .scientific_stored_record import evidence_from_archive
+            with Session(ENGINE) as verify_session:
+                sample = verify_session.scalars(
+                    select(FullTrialRecord).order_by(FullTrialRecord.nct_id).limit(1)
+                ).first()
+                if sample is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_ARCHIVE_READBACK status=EMPTY"
+                    )
+                else:
+                    verified = evidence_from_archive(
+                        sample.nct_id, sample.payload_gzip, sample.sha256
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_ARCHIVE_READBACK status=PASS nct_id=%s evidence_status=%s",
+                        sample.nct_id, verified.get("verificationStatus"),
+                    )
+        except Exception as verify_exc:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_ARCHIVE_READBACK status=FAIL error_type=%s",
+                type(verify_exc).__name__,
+            )
+    # Read-only depth-20 coverage smoke: checksum-verified archive, never a score.
+    if _DB_STATE["available"] and REQUIRE_POSTGRES:
+        try:
+            from .scientific_stored_record import verified_record_from_archive
+            from .scientific_investigation_20 import investigation_20
+            from .scientific_quantitative_results import reported_quantitative_results
+            with Session(ENGINE) as depth_session:
+                depth_record = depth_session.scalars(
+                    select(FullTrialRecord).order_by(FullTrialRecord.nct_id).limit(1)
+                ).first()
+                if depth_record is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_INVESTIGATION20_READBACK status=EMPTY"
+                    )
+                else:
+                    snapshot = verified_record_from_archive(
+                        depth_record.nct_id,
+                        depth_record.payload_gzip,
+                        depth_record.sha256,
+                    )
+                    dossier = investigation_20(
+                        depth_record.nct_id,
+                        snapshot,
+                        retrieved_at=depth_record.fetched_at.isoformat(),
+                    )
+                    ok = (
+                        dossier["levelCount"] == 20
+                        and dossier["scientificallyVerifiedLevels"] == 0
+                        and dossier["overallScore"] is None
+                        and dossier["fdaApprovalProbability"] is None
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_INVESTIGATION20_READBACK status=%s "
+                        "level_count=%s source_covered_levels=%s scored=False",
+                        "PASS" if ok else "FAIL",
+                        dossier["levelCount"], dossier["levelsWithSourceFields"],
+                    )
+                    reported = reported_quantitative_results(depth_record.nct_id, snapshot)
+                    quantitative_ok = (
+                        reported["independentlyVerified"] is False
+                        and reported["effectivenessConclusion"] is None
+                        and reported["approvalProbability"] is None
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_QUANTITATIVE_READBACK status=%s "
+                        "outcomes=%d analyses=%d pvalues_shown=%d source_only=True",
+                        "PASS" if quantitative_ok else "FAIL",
+                        reported["outcomeCountTotal"],
+                        reported["analysisCountTotal"],
+                        reported["reportedPValuesShown"],
+                    )
+                    from .scientific_readiness_grades import review_readiness
+                    readiness = review_readiness(
+                        depth_record.nct_id, snapshot,
+                        archive_retrieved_at=depth_record.fetched_at.isoformat()
+                        if depth_record.fetched_at else None,
+                    )
+                    analysis = readiness["analysisReadiness"]
+                    reluctance = readiness["scientificReluctance"]
+                    grade_ok = (
+                        len(readiness["requirements"]) == 16
+                        and analysis["readyForFullScientificConclusion"] is False
+                        and analysis["verdict"] == "NOT_READY"
+                        and reluctance["grade"] == "F"
+                        and readiness["scientificScore"] is None
+                        and readiness["fdaApprovalProbability"] is None
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_EVIDENCE_GRADES_READBACK status=%s "
+                        "input_grade=%s input_coverage=%s reluctance_grade=%s "
+                        "full_science_ready=False scores_assigned=False",
+                        "PASS" if grade_ok else "FAIL",
+                        analysis["grade"], analysis["coveragePercent"],
+                        reluctance["grade"],
+                    )
+                    from .scientific_review_packet import (
+                        build_review_packet, check_packet_integrity,
+                    )
+                    packet = build_review_packet(depth_record.nct_id)
+                    packet_ok = (
+                        check_packet_integrity(packet)
+                        and packet["investigation20"]["levelCount"] == 20
+                        and len(packet["evidenceInputGrades"]["requirements"]) == 16
+                        and packet["reconciliation"]["independentlyResolvedCount"] == 0
+                        and packet["adjudicationPreflight"]["questionsReadyForAdjudication"] == 0
+                        and packet["adjudicationPreflight"]["questionsIndependentlyResolved"] == 0
+                        and packet["adjudicationPreflight"]["independentDualReviewImplemented"] is False
+                        and packet["scientificConclusion"] is None
+                        and packet["fdaApprovalProbability"] is None
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_REVIEW_PACKET_READBACK status=%s "
+                        "nct_id=%s questions=%d sha256_verified=%s "
+                        "scored=False read_only=True",
+                        "PASS" if packet_ok else "FAIL",
+                        depth_record.nct_id,
+                        packet["reconciliation"]["unresolvedCount"], packet_ok,
+                    )
+                    preflight = packet["adjudicationPreflight"]
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_ADJUDICATION_PREFLIGHT status=%s "
+                        "nct_id=%s total_questions=%d reviewer_observed=%d "
+                        "current_disputes=%d eligible=0 resolved=0 "
+                        "identity_verified=False source_content_verified=False",
+                        "PASS" if packet_ok else "FAIL",
+                        depth_record.nct_id,
+                        preflight["questionCount"],
+                        preflight["questionsWithRecordedObservations"],
+                        preflight["questionsWithCurrentDisputes"],
+                    )
+        except Exception as depth_error:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_INVESTIGATION20_READBACK status=FAIL error_type=%s",
+                type(depth_error).__name__,
+            )
+    # Verify the actual scientific API handler against the persisted archived
+    # pilot (not synthetic pytest stubs). No credentials, payloads, or patient
+    # details are logged, and this cannot promote evidence or trigger jobs.
+    if (_DB_STATE["available"] and REQUIRE_POSTGRES
+            and os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"):
+        try:
+            live_trial = get_scientific_assessment("TRIAL|NCT02142738")
+            forty = live_trial.get("investigation40") or {}
+            plan = forty.get("depthReview") or {}
+            tasks = plan.get("tasks") or []
+            stage_links = forty.get("stageCrosswalk") or {}
+            ids = {
+                (item.get("assessmentId"), item.get("depthLevel"))
+                for item in tasks
+            }
+            forty_ok = (
+                live_trial.get("registryEvidenceStatus") == "source_record_loaded"
+                and forty.get("nctId") == "NCT02142738"
+                and len(forty.get("layers") or []) == 8
+                and forty.get("verification", {}).get("verified_assessments") == 0
+                and plan.get("requiredTasks") == 320
+                and plan.get("completedTasks") == 0
+                and len(tasks) == len(ids) == 320
+                and all(item.get("status") == "pending_independent_review"
+                        and item.get("independentlyVerified") is False
+                        and item.get("scientificScore") is None
+                        for item in tasks)
+                and plan.get("readyForScientificConclusion") is False
+                and plan.get("approvalProbability") is None
+                and live_trial.get("assessment", {}).get("overall_score") is None
+                and stage_links.get("stageCount") == 20
+                and stage_links.get("assessmentCount") == 40
+                and stage_links.get("stagesWithLinkedAssessments") == 20
+                and stage_links.get("independentlyVerifiedAssessments") == 0
+                and stage_links.get("approvalProbability") is None
+            )
+            logging.getLogger(__name__).warning(
+                "SCIENTIFIC_INVESTIGATION40_API_READBACK status=%s "
+                "nct_id=NCT02142738 layers=%d assessments=%d tasks=%d "
+                "stages=20 stage_coverage=20 independently_verified=0 "
+                "scored=False read_only=True",
+                "PASS" if forty_ok else "FAIL",
+                len(forty.get("layers") or []),
+                sum(len(layer.get("assessments") or [])
+                    for layer in forty.get("layers") or []),
+                len(tasks),
+            )
+        except Exception as check_exc:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_INVESTIGATION40_API_READBACK status=FAIL error_type=%s",
+                type(check_exc).__name__,
+            )
+    # Isolated review startup: read one known archived Phase 3 pilot, validate
+    # evidence/source identity and eight unscored domains, log only booleans
+    # and counts. Never changes any stored trial or candidate rankings.
+    if (_DB_STATE["available"] and REQUIRE_POSTGRES
+            and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes")):
+        try:
+            from .scientific_pilot_live_verify import verify_archived_keynote024
+            with Session(ENGINE) as pilot_session:
+                pilot_record = pilot_session.get(FullTrialRecord, "NCT02142738")
+                if pilot_record is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=NOT_ARCHIVED"
+                    )
+                else:
+                    pilot_diagnostic = verify_archived_keynote024(
+                        pilot_record.nct_id,
+                        pilot_record.payload_gzip,
+                        pilot_record.sha256,
+                        pilot_record.fetched_at,
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=%s nct_id=%s "
+                        "archive_verified=%s domains=%d publications=%d "
+                        "completed=%s scored=%s read_only=%s",
+                        pilot_diagnostic["status"],
+                        pilot_diagnostic["nct_id"],
+                        pilot_diagnostic["archived_source_verified"],
+                        pilot_diagnostic["scientific_domains"],
+                        pilot_diagnostic["published_analyses"],
+                        pilot_diagnostic["scientific_assessment_completed"],
+                        pilot_diagnostic["score_assigned"],
+                        pilot_diagnostic["read_only"],
+                    )
+        except Exception as pilot_error:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=FAIL error_type=%s",
+                type(pilot_error).__name__,
+            )
+    # One exact archived-trial evidence audit in the ISOLATED review environment.
+    # Never runs live source requests or scanner jobs and never mutates storage.
+    if (_DB_STATE["available"] and REQUIRE_POSTGRES
+            and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes")):
+        try:
+            from .scientific_dossier_archive import (
+                dossier_from_archive, verified_archived_registry_record,
+            )
+            from .scientific_pilot_evidence_audit import keynote024_preinterim_evidence_audit
+            from .scientific_protocol_readiness import keynote024_protocol_readiness
+            from .scientific_pilot_keynote024_results import keynote024_published_results
+            with Session(ENGINE) as audit_session:
+                audit_record = audit_session.get(FullTrialRecord, "NCT02142738")
+                if audit_record is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_SOURCE_AUDIT status=NOT_ARCHIVED"
+                    )
+                else:
+                    archived_dossier = dossier_from_archive(
+                        "TRIAL|NCT02142738", audit_record.nct_id,
+                        audit_record.payload_gzip, audit_record.sha256, audit_record.fetched_at,
+                    )
+                    registry = verified_archived_registry_record(
+                        audit_record.nct_id, audit_record.payload_gzip, audit_record.sha256,
+                    )
+                    publication = keynote024_published_results()
+                    source_audit = keynote024_preinterim_evidence_audit(registry, publication)
+                    grade = keynote024_protocol_readiness(archived_dossier, publication)
+                    if (source_audit["earlyDesignEvidence"]["signedSapVerified"] is not False
+                            or source_audit["inputReadinessGradeChanged"] is not False
+                            or grade["inputReadiness"]["grade"] != "FAIL"
+                            or grade["reluctance"]["grade"] != "HIGH"):
+                        raise ValueError("Unsafe historical grade promotion")
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_SOURCE_AUDIT status=PASS nct_id=%s "
+                        "timeline=%d safety_groups=%d preinterim_sap_verified=%s "
+                        "input_grade=%s reluctance_grade=%s read_only=%s",
+                        source_audit["nctId"],
+                        len(source_audit["timeline"]),
+                        source_audit["registrySafety"]["groupCount"],
+                        source_audit["earlyDesignEvidence"]["signedSapVerified"],
+                        grade["inputReadiness"]["grade"],
+                        grade["reluctance"]["grade"],
+                        source_audit["readOnly"],
+                    )
+        except Exception as audit_exc:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_KEYNOTE024_SOURCE_AUDIT status=FAIL error_type=%s",
+                type(audit_exc).__name__,
+            )
+    # Explicit one-record bootstrap for isolated review; disabled by default.
+    # Never runs for production unless separately and deliberately configured.
+    bootstrap_nct = os.getenv("PDUFA_SCIENTIFIC_BOOTSTRAP_NCT", "").strip()
+    if bootstrap_nct and _DB_STATE["available"] and REQUIRE_POSTGRES:
+        try:
+            from .scientific_import import import_one
+            bootstrap_result = import_one(bootstrap_nct)
+            logging.getLogger(__name__).warning(
+                "SCIENTIFIC_BOOTSTRAP nct_id=%s status=%s", bootstrap_nct, bootstrap_result
+            )
+        except Exception as bootstrap_exc:
+            # Log only HTTP status code and exception class; never URLs or secrets.
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_BOOTSTRAP status=ERROR error_type=%s http_status=%s",
+                type(bootstrap_exc).__name__,
+                getattr(bootstrap_exc, "code", None),
+            )
     logging.getLogger(__name__).warning(
         "PDUFA checklist write freeze active: %s",
         os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes"),
     )
 
-    # Optional asynchronous source diagnostics; never delay service readiness.
-    # Full workspace/index preparation is explicitly enabled below.
+    # Lightweight asynchronous read-only smoke check; never delays service
+    # readiness and never starts a survey, crawler, scan or trading order.
+    # Use the module-level threading import so startup controls remain testable.
     def verify_published_sources():
         try:
             from .alpaca_market_chart import _credentials, _feed, get_alpaca_bars
@@ -418,9 +1020,8 @@ async def lifespan(app: FastAPI):
                 traceback_entry.tb_frame.f_code.co_name if traceback_entry else "UNKNOWN",
                 traceback_entry.tb_lineno if traceback_entry else "UNKNOWN",
             )
-    # Full source verification can outlive a short-lived API/test instance and
-    # retain database work after shutdown. Run this optional diagnostic only
-    # when explicitly enabled; normal authenticated reads remain on demand.
+    # Full source verification can outlive short-lived instances or modify source cache.
+    # Preserve production opt-in: no startup survey or source work by default.
     if (_DB_STATE["available"]
             and os.getenv("PDUFA_STARTUP_FULL_SOURCE_VERIFY", "0").lower() in ("1", "true", "yes")):
         threading.Thread(target=verify_published_sources, daemon=True).start()
@@ -430,6 +1031,24 @@ async def lifespan(app: FastAPI):
         threading.Thread(target=bootstrap, daemon=True).start()
     from .full_trial_archive import cleanup_retired_zip_exports
     cleanup_retired_zip_exports()
+    # Explicit, temporary isolated-service opt-in only; never starts ordinary scans.
+    if _DB_STATE["available"]:
+        from .scientific_live_smoke import launch_once_if_requested
+        launch_once_if_requested()
+    from .scientific_api_read_probe import launch_if_isolated_review
+    launch_if_isolated_review()
+    # Explicitly approved, fixed-source archive-only bootstrap. A background
+    # worker avoids blocking health readiness during government-site delays.
+    # This never starts trial scans, grades, orders or verification.
+    if (os.getenv("PDUFA_SCIENTIFIC_PILOT_PINNED_PDF_BOOTSTRAP") == "1"
+            and os.getenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED") == "1"
+            and os.getenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED") == "1"
+            and os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"
+            and DATABASE_URL.startswith("postgresql+psycopg://")
+            and _DB_STATE["available"]
+            and "PYTEST_CURRENT_TEST" not in os.environ):
+        from .scientific_official_pdf_fetch import bootstrap_pinned_pilot_sources
+        threading.Thread(target=bootstrap_pinned_pilot_sources, daemon=True).start()
     yield
 
 
@@ -499,6 +1118,1258 @@ def preview_published_phase3_discovery(payload: PublishedPhase3DiscoveryPreviewR
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except (RuntimeError, OSError):
         raise HTTPException(status_code=503, detail="Published discovery unavailable") from None
+
+
+@app.get(
+    "/api/scientific-assessment/captured-source-manifest/{nct_id}",
+    dependencies=[
+        Depends(require_isolated_scientific_read_key),
+        Depends(require_storage),
+    ],
+)
+def scientific_pilot_captured_source_manifest(nct_id: str, response: Response):
+    """Authenticated, read-only digest inventory; no PDF bytes or reviewer data.
+
+    The pilot manifest is checksum checked at read time. Captured bytes, even
+    captured from pinned URLs, remain UNVERIFIED as scientific source evidence.
+    The preview read key remains limited to this single NCT pilot.
+    """
+    # Guard is declared later in this module; evaluate it at request time
+    # before ANY manifest lookup, never at FastAPI decorator import time.
+    require_isolated_scientific_review_service()
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=422, detail="Only exact pilot trial supported")
+    from .scientific_source_documents import read_document_manifest
+    try:
+        manifest = read_document_manifest(nct_id)
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Captured archive integrity failed") from None
+    if (
+        manifest["nctId"] != nct_id
+        or manifest["sourceDocumentCount"] > 8
+        or manifest["allCapturedBytesRehashed"] is not True
+        or manifest["independentSourceVerificationCompleted"] is not False
+        or manifest["scientificGradePromotionAllowed"] is not False
+    ):
+        raise HTTPException(status_code=409, detail="Archived source safety contract mismatch")
+    response.headers["X-PDUFA-Scientific-API-Contract"] = "science-captured-hashes-v1"
+    response.headers["Cache-Control"] = "private, no-store"
+    return {
+        "nctId": nct_id,
+        "sourceDocumentCount": manifest["sourceDocumentCount"],
+        "allCapturedBytesRehashed": True,
+        "independentSourceVerificationCompleted": False,
+        "reviewerIdentityVerified": False,
+        "scientificGradePromotionAllowed": False,
+        "scientificScore": None,
+        "fdaApprovalProbability": None,
+        "documents": [
+            {
+                "documentId": item["documentId"],
+                "nctId": nct_id,
+                "gateId": item["gateId"],
+                "sourceType": item["sourceType"],
+                "sha256": item["sha256"],
+                "byteLength": item["byteLength"],
+                "captureStatus": item["captureStatus"],
+                "byteIntegrityChecked": True,
+                "sourceAuthorshipVerified": False,
+                "documentContentScientificallyVerified": False,
+                "canCountTowardReadiness": False,
+            }
+            for item in manifest["documents"]
+        ],
+    }
+
+
+@app.get("/api/scientific-assessment/reviewer/auth-status", dependencies=[Depends(require_internal_key)])
+def scientific_reviewer_auth_status():
+    """Configuration diagnostics without disclosing tokens, IDs or credentials."""
+    configured = bool(os.getenv("PDUFA_SCIENTIFIC_GOOGLE_CLIENT_ID", "").strip())
+    single_operator = os.getenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "").strip() == "single_operator"
+    operator_email = os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip()
+    return {
+        "googleClientConfigured": configured,
+        "googleIdentityVerificationEnabled": configured,
+        "accessMode": "single_operator" if single_operator else "reviewer_allowlist",
+        "singleOperatorConfigured": bool(configured and single_operator and operator_email),
+        "independentVerificationRequiresDistinctReviewers": True,
+        "reviewerSelfRegistrationAllowed": False,
+        "credentialAutoVerificationAllowed": False,
+        "scientificScoreAutoPromotionAllowed": False,
+        "nextAction": (
+            "single_operator_google_signin_then_admin_reviewer_provisioning"
+            if configured and single_operator and operator_email
+            else "admin_provision_and_real_google_signin" if configured
+            else "configure_google_oauth_client_id_in_isolated_service"
+        ),
+    }
+
+
+@app.get("/scientific/operator", response_class=HTMLResponse)
+def scientific_single_operator_page():
+    """Single-operator Google sign-in UI on the isolated review server."""
+    from .scientific_operator_ui import operator_html
+
+    if os.getenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "").strip() != "single_operator":
+        raise HTTPException(status_code=503, detail="Single-operator login not configured")
+    client_id = os.getenv("PDUFA_SCIENTIFIC_GOOGLE_CLIENT_ID", "").strip()
+    if not client_id or not os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip():
+        raise HTTPException(status_code=503, detail="Google operator login not configured")
+
+    nonce = secrets.token_urlsafe(24)
+    response = HTMLResponse(content=operator_html(client_id, nonce))
+    response.headers["Cache-Control"] = "no-store, private"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; base-uri 'none'; form-action 'none'; "
+        "frame-ancestors 'none'; object-src 'none'; "
+        f"script-src 'nonce-{nonce}' https://accounts.google.com https://ssl.gstatic.com; "
+        f"style-src 'nonce-{nonce}' https://accounts.google.com; "
+        "connect-src 'self' https://accounts.google.com; "
+        "frame-src https://accounts.google.com; "
+        "img-src https://accounts.google.com https://ssl.gstatic.com data:"
+    )
+    return response
+
+
+@app.get("/api/scientific-assessment/operator/me")
+def scientific_single_operator_me(
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Identify the one configured operator. This is NOT a reviewer or signoff role.
+
+    No self-provisioning, review submission authorization, source verification,
+    score promotion, or independence assertion can be derived from this endpoint.
+    """
+    from .scientific_google_identity import verified_google_identity
+
+    single_operator = os.getenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "").strip() == "single_operator"
+    allowed_email = os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip()
+    if not single_operator or not allowed_email:
+        raise HTTPException(status_code=503, detail="Single-operator login not configured")
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Google identity token required")
+    try:
+        identity = verified_google_identity(authorization[7:])
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google identity token")
+    if identity["verifiedEmail"].casefold() != allowed_email.casefold():
+        raise HTTPException(status_code=403, detail="Not the configured scientific operator")
+    return {
+        "provider": "google",
+        "role": "operator",
+        "identityVerified": True,
+        "maySubmitScientificReview": False,
+        "maySignOff": False,
+        "mayArchiveSourcePdf": (
+            os.getenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED") == "1"
+            and os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"
+            and DATABASE_URL.startswith("postgresql+psycopg://")
+            and _DB_STATE["available"]
+        ),
+        "mayFetchOfficialPdf": (
+            os.getenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED") == "1"
+            and os.getenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED") == "1"
+            and os.getenv("RENDER_SERVICE_ID") == "srv-dbehn9fb9u1s739ok5vg"
+            and DATABASE_URL.startswith("postgresql+psycopg://")
+            and _DB_STATE["available"]
+        ),
+        "independentlyVerified": False,
+        "mayPromoteScientificScore": False,
+        "reviewerProvisioningRequired": True,
+    }
+
+
+def require_scientific_google_reviewer(
+    authorization: Annotated[str | None, Header()] = None,
+) -> dict:
+    """Google token + isolated allowlist; fail closed, no signoff authorization."""
+    from .scientific_google_identity import verified_google_identity
+    from .scientific_reviewer_accounts import reviewer_access_preflight
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Google identity token required")
+    try:
+        identity = verified_google_identity(authorization[7:])
+    except ValueError as exc:
+        if "not configured" in str(exc):
+            raise HTTPException(status_code=503, detail="Google reviewer sign-in not configured")
+        raise HTTPException(status_code=401, detail="Invalid Google identity token")
+    # The existing single Google operator can never become their own
+    # "independent" reviewer, even if a database allowlist row was created.
+    operator_email = os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip()
+    if (operator_email and identity["verifiedEmail"].casefold() == operator_email.casefold()):
+        raise HTTPException(status_code=403, detail="Operator cannot be an independent reviewer")
+    access = reviewer_access_preflight(identity["providerSubject"], identity["verifiedEmail"])
+    if not access["roleAuthorized"]:
+        raise HTTPException(status_code=403, detail="Scientific reviewer access not authorized")
+    return {
+        "provider": "google",
+        "providerSubject": identity["providerSubject"],
+        "verifiedEmail": identity["verifiedEmail"],
+        "roleAuthorized": True,
+        "credentialsVerified": access["credentialsVerified"],
+        "maySignOff": False,
+    }
+
+
+class ScientificReviewSubmissionInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    nctId: str = Field(min_length=11, max_length=11)
+    questionId: str = Field(min_length=3, max_length=70)
+    sourceSha256: str = Field(min_length=64, max_length=64)
+    decision: Literal["requires_review", "supports_reconciliation", "disputes_reconciliation"]
+    sourceLocator: str = Field(min_length=1, max_length=200)
+    reviewNote: str = Field(min_length=1, max_length=1500)
+    uncertaintyDisclosed: Literal[True]
+
+
+@app.post("/api/scientific-assessment/reviewer/submissions", status_code=201)
+def scientific_reviewer_submit(
+    body: ScientificReviewSubmissionInput,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Append an authenticated reviewer statement and audit event atomically."""
+    from .scientific_review_submission import record_reviewer_submission
+    try:
+        return record_reviewer_submission(
+            google_subject=reviewer["providerSubject"], nct_id=body.nctId,
+            question_id=body.questionId, source_sha256=body.sourceSha256,
+            decision=body.decision,
+            attestation={
+                "sourceLocator": body.sourceLocator,
+                "reviewNote": body.reviewNote,
+                "uncertaintyDisclosed": body.uncertaintyDisclosed,
+            },
+        )
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="Reviewer not authorized")
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+
+
+@app.get("/api/scientific-assessment/reviewer/pairing")
+def scientific_reviewer_pairing(
+    nct_id: str,
+    question_id: str,
+    source_sha256: str,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Read-only two-identity comparison; no adjudication or score promotion."""
+    from .scientific_review_pairing import review_pairing_status
+    try:
+        return review_pairing_status(nct_id, question_id, source_sha256)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@app.get("/api/scientific-assessment/reviewer/audit")
+def scientific_reviewer_audit(
+    nct_id: str,
+    question_id: str,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Authorized read-only integrity check of reviewer submission history."""
+    from .scientific_review_audit import audit_readback
+    try:
+        return audit_readback(nct_id, question_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+
+
+@app.get("/api/scientific-assessment/operator/reviewer-setup")
+def scientific_operator_reviewer_setup(
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Operator-only provisioning counts; no reviewer identities or grants."""
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
+    from .scientific_reviewer_accounts import reviewer_setup_summary
+    result = reviewer_setup_summary()
+    response.headers["Cache-Control"] = "private, no-store"
+    return result
+
+
+class ScientificReviewerNominationInput(BaseModel):
+    """Nominate candidate only: never authorize, contact or credential-check."""
+    model_config = ConfigDict(extra="forbid")
+
+    candidateEmail: str = Field(min_length=5, max_length=320)
+    displayName: str = Field(default="", max_length=160)
+    specialty: Literal["clinical_oncology", "biostatistics", "drug_safety", "regulatory_science"]
+    qualificationsNote: str = Field(default="", max_length=1200)
+    nominationOnlyAcknowledged: Literal[True]
+
+
+@app.get("/api/scientific-assessment/operator/reviewer-nominations")
+def scientific_operator_list_nominations(
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """List nomination-only candidates to the verified Google operator."""
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
+    from .scientific_reviewer_nominations import list_nominations
+    response.headers["Cache-Control"] = "private, no-store"
+    return list_nominations()
+
+
+@app.post("/api/scientific-assessment/operator/reviewer-nominations", status_code=201)
+def scientific_operator_nominate_reviewer(
+    body: ScientificReviewerNominationInput,
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Capture candidate details ONLY; never provision or invite a reviewer."""
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
+    from .scientific_reviewer_nominations import nominate_reviewer, DuplicateNomination
+    try:
+        result = nominate_reviewer(
+            candidate_email=body.candidateEmail,
+            display_name=body.displayName,
+            specialty=body.specialty,
+            qualifications_note=body.qualificationsNote,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except (DuplicateNomination, IntegrityError):
+        raise HTTPException(status_code=409, detail="Candidate already nominated") from None
+    response.headers["Cache-Control"] = "private, no-store"
+    return result
+
+
+@app.get("/api/scientific-assessment/reviewer/onboarding-status")
+def scientific_reviewer_onboarding_status(
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Identity-only onboarding diagnostic; never creates a reviewer account."""
+    from .scientific_google_identity import verified_google_identity
+    from .scientific_reviewer_accounts import reviewer_access_preflight
+
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Google reviewer identity required")
+    try:
+        identity = verified_google_identity(authorization[7:])
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google reviewer identity token")
+    operator_email = os.getenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "").strip()
+    if operator_email and identity["verifiedEmail"].casefold() == operator_email.casefold():
+        raise HTTPException(status_code=403, detail="Operator identity cannot be an independent reviewer")
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated reviewer database unavailable")
+    access = reviewer_access_preflight(identity["providerSubject"], identity["verifiedEmail"])
+    response.headers["Cache-Control"] = "private, no-store"
+    return {
+        "identityVerified": True,
+        "separateGoogleIdentity": True,
+        "registered": access["registered"],
+        "roleAuthorized": access["roleAuthorized"],
+        "credentialsVerified": access["credentialsVerified"],
+        "maySubmitAuditedStatements": access["roleAuthorized"],
+        "maySignOff": False,
+        "independentScientificAdjudicationImplemented": False,
+        "status": access["status"],
+        "adminProvisioningRequired": not access["roleAuthorized"],
+        "selfRegistrationAvailable": False,
+        "automaticCredentialVerification": False,
+    }
+
+
+@app.get("/api/scientific-assessment/reviewer/packet/{nct_id}")
+def scientific_reviewer_review_packet(
+    nct_id: str,
+    response: Response,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Authorized, source-integrity-checked review worksheet; no grading."""
+    from .scientific_review_packet import build_review_packet
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id or ""):
+        raise HTTPException(status_code=422, detail="Exact trial identifier required")
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Scientific source archive unavailable")
+    try:
+        packet = build_review_packet(nct_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Exact archived trial not found") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Archived scientific packet integrity failed") from None
+    if packet["scientificallyVerified"] is not False or packet["readyForFullScientificConclusion"] is not False:
+        raise HTTPException(status_code=409, detail="Scientific review safety contract violated")
+    response.headers["Cache-Control"] = "private, no-store"
+    return packet
+
+
+@app.get("/api/scientific-assessment/reviewer/source-documents/{nct_id}/{document_id}")
+def scientific_reviewer_download_source_document(
+    nct_id: str,
+    document_id: str,
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Only vetted reviewer accounts may inspect source-checked PDF bytes."""
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id or "") or not re.fullmatch(r"[a-f0-9]{32}", document_id or ""):
+        raise HTTPException(status_code=422, detail="Exact trial and PDF identifiers required")
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Scientific source archive unavailable")
+    from .scientific_source_documents import get_captured_document
+    try:
+        meta, payload = get_captured_document(nct_id, document_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Exact archived PDF not found") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Archived PDF integrity failed") from None
+    return Response(content=payload, media_type="application/pdf", headers={
+        "Content-Disposition": 'attachment; filename="' + meta["filename"] + '"',
+        "Cache-Control": "private, no-store",
+        "Pragma": "no-cache",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Security-Policy": "sandbox",
+        "X-Source-Document-SHA256": meta["sha256"],
+        "X-Source-Scientific-Status": "not-independently-verified",
+    })
+
+
+@app.get("/scientific/reviewer", response_class=HTMLResponse)
+def scientific_independent_reviewer_page():
+    """Distinct Google reviewer login; no self-provisioning or signoff."""
+    from .scientific_reviewer_ui import reviewer_html
+
+    client_id = os.getenv("PDUFA_SCIENTIFIC_GOOGLE_CLIENT_ID", "").strip()
+    if not client_id:
+        raise HTTPException(status_code=503, detail="Scientific Google sign-in not configured")
+    if os.getenv("RENDER_SERVICE_ID", "") != "srv-dbehn9fb9u1s739ok5vg":
+        raise HTTPException(status_code=503, detail="Separate reviewer page requires isolated service")
+    nonce = secrets.token_urlsafe(24)
+    response = HTMLResponse(content=reviewer_html(client_id, nonce))
+    response.headers["Cache-Control"] = "no-store, private"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'none'; base-uri 'none'; form-action 'none'; "
+        "frame-ancestors 'none'; object-src 'none'; "
+        f"script-src 'nonce-{nonce}' https://accounts.google.com https://ssl.gstatic.com; "
+        f"style-src 'nonce-{nonce}' https://accounts.google.com; "
+        "connect-src 'self' https://accounts.google.com; "
+        "frame-src https://accounts.google.com; "
+        "img-src https://accounts.google.com https://ssl.gstatic.com data:"
+    )
+    return response
+
+
+@app.get("/api/scientific-assessment/reviewer/me")
+def scientific_reviewer_me(
+    reviewer: dict = Depends(require_scientific_google_reviewer),
+):
+    """Authenticated identity preflight; never grants evidence signoff."""
+    return reviewer
+
+
+@app.get("/api/scientific-assessment/operator/research")
+def scientific_operator_research(
+    exact_id: str,
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Read-only archived science data for the one verified Google operator.
+
+    Intentionally delegates to the existing scientific inventory code. No
+    review assertion, audit mutation, independent verification, or score write.
+    """
+    scientific_single_operator_me(authorization)
+    if not re.fullmatch(r"TRIAL\|NCT[0-9]{8}", exact_id or ""):
+        raise HTTPException(status_code=422, detail="Exact archived NCT identity required")
+    response.headers["Cache-Control"] = "private, no-store"
+    result = get_scientific_assessment(exact_id)
+    status = result.get("registryEvidenceStatus")
+    if status == "record_not_found":
+        raise HTTPException(status_code=404, detail="Trial not present in scientific archive")
+    if status != "source_record_loaded":
+        raise HTTPException(status_code=503, detail="Archived scientific evidence unavailable")
+    # Keep returned grades and evidence flags as-is, especially unverified status.
+    return result
+
+
+@app.get("/api/scientific-assessment/operator/source-comparison/{nct_id}")
+def scientific_operator_pilot_source_comparison(
+    nct_id: str,
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Source-cited historical pilot comparison; never an independent finding.
+
+    Read-only; archived PDF integrity and science-ledger integrity must hold.
+    This endpoint cannot change reviewer status, readiness, or FDA forecasts.
+    """
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Scientific archive unavailable")
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=404, detail="Pilot source comparison not available")
+    from .scientific_pilot_source_comparison import preliminary_pilot_evidence_comparison
+
+    try:
+        report = preliminary_pilot_evidence_comparison(nct_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Pilot archive missing") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Archived source integrity or review policy failed") from None
+    response.headers["Cache-Control"] = "private, no-store"
+    return report
+
+
+@app.get("/api/scientific-assessment/operator/worksheet/{nct_id}")
+def scientific_operator_review_worksheet(
+    nct_id: str,
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Authenticated read-only source worksheet with reproducible SHA-256.
+
+    A worksheet contains unresolved questions, candidate citations and
+    acceptance criteria; it never marks evidence verified or assigns scores.
+    """
+    scientific_single_operator_me(authorization)
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id or ""):
+        raise HTTPException(status_code=422, detail="Exact archived NCT identity required")
+    from .scientific_review_packet import build_review_packet
+
+    try:
+        packet = build_review_packet(nct_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Trial not present in scientific archive") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Archived review worksheet integrity failed") from None
+    response.headers["Cache-Control"] = "private, no-store"
+    return packet
+
+
+class ScientificOperatorPdfSubmission(BaseModel):
+    """Byte-preserving source capture request; no review claim or credential."""
+    model_config = ConfigDict(extra="forbid")
+
+    gate_id: Literal["protocol_sap", "official_regulatory"] = Field(alias="gateId")
+    source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
+    source_type: Literal["protocol_sap", "official_agency_document", "clinical_study_report"] = Field(alias="sourceType")
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    content_base64: str = Field(min_length=32, max_length=5592408, alias="contentBase64")
+
+
+def require_scientific_operator_pdf_archive() -> None:
+    """Explicit opt-in for byte archiving, only on the isolated Postgres service."""
+    if os.getenv("PDUFA_SCIENTIFIC_OPERATOR_PDF_CAPTURE_ENABLED") != "1":
+        raise HTTPException(status_code=403, detail="Operator PDF archive disabled")
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated Postgres archive unavailable")
+
+
+@app.post("/api/scientific-assessment/operator/source-documents/{nct_id}/fetch/{source}")
+def scientific_operator_fetch_official_pdf(
+    nct_id: str,
+    source: Literal["protocol", "fda", "csr", "ema"],
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Explicit Google-operator action to fetch a fixed vetted public PDF.
+
+    No caller-provided URLs, redirects, scheduled jobs, document scientific
+    verification, reviewer privileges, or evidence-score promotions.
+    """
+    scientific_single_operator_me(authorization)
+    require_scientific_operator_pdf_archive()
+    if os.getenv("PDUFA_SCIENTIFIC_OPERATOR_REMOTE_PDF_FETCH_ENABLED") != "1":
+        raise HTTPException(status_code=403, detail="Official PDF fetching disabled")
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=403, detail="Only the historical pilot is supported")
+    from .scientific_official_pdf_fetch import (
+        OfficialSourceUnavailable, archive_official_pdf,
+    )
+
+    try:
+        return archive_official_pdf(nct_id, source)
+    except OfficialSourceUnavailable:
+        raise HTTPException(
+            status_code=502,
+            detail="The original source PDF could not be retrieved; use manual upload",
+        ) from None
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="PDF content already archived") from None
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Original PDF archive validation failed") from None
+
+
+@app.post("/api/scientific-assessment/operator/source-documents/{nct_id}", status_code=201)
+def scientific_operator_archive_pdf(
+    nct_id: str,
+    body: ScientificOperatorPdfSubmission,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Save bytes of a known pilot PDF after Google identity verification only.
+
+    This is not a reviewer submission; no content verification, outcome score,
+    FDA prediction, gate promotion, or other program mutation is possible here.
+    """
+    scientific_single_operator_me(authorization)
+    require_scientific_operator_pdf_archive()
+    if nct_id != "NCT02142738":
+        raise HTTPException(status_code=403, detail="Only the archived pilot can accept operator PDFs")
+    from .scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL, GERMAN_REGULATOR_CSR, EMA_2016_ASSESSMENT
+
+    approved = {
+        ("protocol_sap", "protocol_sap", PROTOCOL_SAP),
+        ("official_regulatory", "official_agency_document", FDA_2016_APPROVAL),
+        ("protocol_sap", "clinical_study_report", GERMAN_REGULATOR_CSR),
+        ("protocol_sap", "official_agency_document", EMA_2016_ASSESSMENT),
+    }
+    if (body.gate_id, body.source_type, body.source_url) not in approved:
+        raise HTTPException(
+            status_code=422,
+            detail="Pilot PDF URL, source type, and evidence gate must match",
+        )
+    from .scientific_source_documents import capture_document
+
+    try:
+        payload = body.model_dump(by_alias=True)
+        payload["capturedBy"] = "Verified Google operator"
+        return capture_document(nct_id, payload)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Duplicate PDF snapshot") from None
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+
+
+@app.get("/api/scientific-assessment/operator/source-documents/{nct_id}/{document_id}")
+def scientific_operator_download_pdf(
+    nct_id: str,
+    document_id: str,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Return only integrity-checked archival bytes to the Google operator."""
+    scientific_single_operator_me(authorization)
+    require_isolated_scientific_review_service()
+    if not storage_ready() or not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail="Isolated Postgres archive unavailable")
+    from .scientific_source_documents import get_captured_document
+
+    try:
+        meta, payload = get_captured_document(nct_id, document_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Exact trial PDF not found") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Stored PDF failed byte integrity verification") from None
+    return Response(
+        content=payload,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="' + meta["filename"] + '"',
+            "Cache-Control": "private, no-store",
+            "Pragma": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Security-Policy": "sandbox",
+            "X-Source-Document-SHA256": meta["sha256"],
+            "X-Source-Scientific-Status": "not-independently-verified",
+        },
+    )
+
+
+@app.get("/api/scientific-assessment/storage-status", dependencies=[Depends(require_internal_key)])
+def scientific_assessment_storage_status():
+    """Authenticated, read-only schema and record-count diagnostic."""
+    if not storage_ready() or not _DB_STATE["available"]:
+        return {"storageReady": False, "trialTablePresent": False, "storedTrialCount": None}
+    try:
+        from sqlalchemy import func, inspect
+        with Session(ENGINE) as session:
+            table_present = inspect(session.get_bind()).has_table("full_trial_records")
+            count = session.scalar(select(func.count()).select_from(FullTrialRecord)) if table_present else None
+        return {"storageReady": True, "trialTablePresent": table_present, "storedTrialCount": count}
+    except Exception:
+        return {"storageReady": False, "trialTablePresent": None, "storedTrialCount": None}
+
+
+@app.get("/api/scientific-assessment/pilot/keynote024", dependencies=[
+    Depends(require_isolated_scientific_read_key), Depends(require_storage),
+])
+def get_keynote024_scientific_pilot(response: Response):
+    """Source-attributed historical Phase 3 pilot; never a scoring decision.
+
+    Requires a checksum-verified archived registry record for exact NCT ID.
+    No network, imports, candidate score changes, FS/FA changes or DB writes.
+    """
+    from .scientific_pilot_keynote024_results import keynote024_published_results
+    from .scientific_pilot_keynote024 import keynote024_pilot_manifest
+    from .scientific_dossier_archive import dossier_from_archive, verified_archived_registry_record
+
+    nct_id = "NCT02142738"
+    exact_id = "TRIAL|" + nct_id
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        archived = session.get(FullTrialRecord, nct_id)
+        if archived is None:
+            raise HTTPException(status_code=404, detail="Phase 3 pilot record not archived")
+        try:
+            dossier = dossier_from_archive(
+                exact_id, nct_id,
+                archived.payload_gzip, archived.sha256, archived.fetched_at,
+            )
+            registry_record = verified_archived_registry_record(
+                nct_id, archived.payload_gzip, archived.sha256,
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=503, detail="Archived Phase 3 pilot failed verification",
+            ) from None
+    pilot = keynote024_pilot_manifest()
+    published = keynote024_published_results()
+    if (pilot["nct_id"] != nct_id or published["nct_id"] != nct_id
+            or dossier["nct_id"] != nct_id
+            or published["overall_score"] is not None
+            or published["fda_approval_probability"] is not None):
+        raise HTTPException(status_code=503, detail="Pilot evidence identity validation failed")
+    from .scientific_protocol_readiness import keynote024_protocol_readiness
+    try:
+        scientific_readiness = keynote024_protocol_readiness(dossier, published)
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Scientific pilot readiness inputs failed validation",
+        ) from None
+    from .scientific_pilot_evidence_audit import keynote024_preinterim_evidence_audit
+    try:
+        evidence_audit = keynote024_preinterim_evidence_audit(
+            registry_record, published,
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Archived pilot safety and chronology audit failed verification",
+        ) from None
+    from .scientific_pilot_safety_chronology import keynote024_safety_chronology
+    try:
+        published_safety = keynote024_safety_chronology(published, evidence_audit)
+        if (scientific_readiness["inputReadiness"]["grade"] != "FAIL"
+                or scientific_readiness["reluctance"]["grade"] != "HIGH"
+                or published_safety["inputReadinessGradeChanged"] is not False
+                or published_safety["reluctanceGradeChanged"] is not False):
+            raise ValueError("Unsupported scientific safety grade promotion")
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Historical pilot safety reconciliation failed validation",
+        ) from None
+    from .scientific_pilot_interim_design import published_keynote024_interim_design
+    try:
+        interim_design = published_keynote024_interim_design(published, scientific_readiness)
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Pilot statistical source comparison failed validation",
+        ) from None
+    from .scientific_pilot_eu_plan_crosscheck import keynote024_eu_protocol_crosscheck
+    try:
+        eu_registry_crosscheck = keynote024_eu_protocol_crosscheck(
+            interim_design, published, scientific_readiness,
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=503, detail="Historical EU endpoint cross-source check failed validation",
+        ) from None
+    from .scientific_pilot_regulatory_timeline import keynote024_historical_pdufa_timeline
+    try:
+        regulatory_history = keynote024_historical_pdufa_timeline(
+            published, scientific_readiness, interim_design, eu_registry_crosscheck,
+        )
+    except ValueError:
+        raise HTTPException(
+            status_code=503,
+            detail="Historical interim-to-FDA timeline input verification failed",
+        ) from None
+    return {
+        "historicalRegulatoryTimeline": regulatory_history,
+        "europeanRegistryCrosscheck": eu_registry_crosscheck,
+        "publishedInterimDesign": interim_design,
+        "publishedSafetyReconciliation": published_safety,
+        "sourceEvidenceAudit": evidence_audit,
+        "scientificReadiness": scientific_readiness,
+        "pilot": pilot,
+        "dossier": dossier,
+        "publishedResults": published,
+        "assessmentStatus": "source_reported_requires_independent_appraisal",
+        "scoringModified": False,
+        "qualificationPresetsModified": False,
+        "researchOnly": True,
+    }
+
+
+@app.get("/api/scientific-assessment/dossier/references", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def get_scientific_dossier_references(
+    exact_id: str, response: Response, application_number: str = "",
+):
+    """Explicit, bounded, source-only PubMed and FDA lookup for one stored NCT.
+
+    Off by default. This endpoint is never called by a scan or bulk job, does
+    not write to a database, and does not score or adjudicate source findings.
+    """
+    if os.getenv("PDUFA_SCIENTIFIC_EXTERNAL_LOOKUP_ENABLED", "").lower() not in (
+        "1", "true", "yes",
+    ):
+        raise HTTPException(status_code=404, detail="External source research disabled")
+    match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id or "")
+    if match is None:
+        raise HTTPException(status_code=422, detail="Exact TRIAL|NCT######## identity required")
+    from .scientific_external_sources import (
+        APPLICATION_PATTERN, SourceLookupError, attach_research_references,
+        lookup_fda_application, lookup_pubmed_nct,
+    )
+    if application_number and not APPLICATION_PATTERN.fullmatch(application_number):
+        raise HTTPException(status_code=422, detail="Exact NDA/BLA application number required")
+    nct_id = match.group(1)
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        record = session.get(FullTrialRecord, nct_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="Scientific archive record not found")
+        from .scientific_dossier_archive import dossier_from_archive
+        try:
+            dossier = dossier_from_archive(
+                exact_id, nct_id, record.payload_gzip, record.sha256, record.fetched_at,
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=503, detail="Archived scientific source failed verification",
+            ) from None
+    # Only after validating the archive and caller-provided identifiers may
+    # live lookups run. A lookup failure is not negative scientific evidence.
+    try:
+        pubmed = lookup_pubmed_nct(nct_id)
+        fda = lookup_fda_application(application_number) if application_number else None
+        result = attach_research_references(dossier, pubmed, fda)
+    except SourceLookupError:
+        raise HTTPException(status_code=503, detail="Scientific reference lookup unavailable") from None
+    result["reference_lookups"] = {
+        "pubmed": pubmed["status"],
+        "fda": fda["status"] if fda is not None else "not_requested",
+        "fda_application_linked_to_trial": False,
+    }
+    return result
+
+
+@app.get("/api/scientific-assessment/dossier", dependencies=[
+    Depends(require_isolated_scientific_read_key), Depends(require_storage),
+])
+def get_scientific_dossier(exact_id: str, response: Response):
+    """Authenticated, read-only dossier from a verified, stored NCT source.
+
+    This endpoint cannot import sources or change existing rankings, presets,
+    scores, scanning, trade lists, or database records.
+    """
+    match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id or "")
+    if match is None:
+        raise HTTPException(status_code=422, detail="Exact TRIAL|NCT######## identity required")
+    nct_id = match.group(1)
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        stored = session.get(FullTrialRecord, nct_id)
+        if stored is None:
+            raise HTTPException(status_code=404, detail="Scientific archive record not found")
+        from .scientific_dossier_archive import dossier_from_archive
+        try:
+            return dossier_from_archive(
+                exact_id, nct_id, stored.payload_gzip, stored.sha256, stored.fetched_at,
+            )
+        except ValueError:
+            # Never return a partially verified trial, even with metadata present.
+            raise HTTPException(
+                status_code=503, detail="Archived scientific source failed verification",
+            ) from None
+
+
+@app.get("/api/scientific-assessment", dependencies=[Depends(require_isolated_scientific_read_key)])
+def get_scientific_assessment(exact_id: str, response: Response = None):
+    """Read-only scientific assessment; never invent missing trial evidence."""
+    # A stable, nonsecret integration contract marker lets protected previews
+    # reject a LIVE but older scientific Render service. This attests only to
+    # installed API code, NOT scientific validity, scoring, or FDA outcomes.
+    if response is not None:
+        response.headers["X-PDUFA-Scientific-API-Contract"] = "science-integrated-v1"
+        response.headers["Cache-Control"] = "private, no-store"
+    if not exact_id or len(exact_id) > 512 or not exact_id.startswith(("TRIAL|", "REG|", "PDUFA|")):
+        raise HTTPException(status_code=422, detail="Exact trial identity required")
+    from .scientific_assessment_adapter import scientific_trial_payload
+    result = scientific_trial_payload(exact_id)
+    result["registryEvidence"] = None
+    result["registryEvidenceStatus"] = "not_available"
+    result["investigation20"] = None
+    result["investigation40"] = None
+    result["quantitativeResults"] = None
+    result["readinessGrades"] = None
+    result["evidenceLedger"] = None
+    result["evidenceLedgerStatus"] = "not_available"
+    # Never use an ephemeral SQLite fallback on hosted review services.
+    match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id)
+    if match and storage_ready() and _DB_STATE["available"]:
+        try:
+            from .scientific_stored_record import verified_record_from_archive
+            from .scientific_registry_evidence import extract_trial_evidence
+            from .scientific_investigation_20 import investigation_20
+            from .scientific_quantitative_results import reported_quantitative_results
+            from .scientific_readiness_grades import review_readiness
+            with Session(ENGINE) as session:
+                record = session.get(FullTrialRecord, match.group(1))
+                if record is not None:
+                    snapshot = verified_record_from_archive(
+                        match.group(1), record.payload_gzip, record.sha256
+                    )
+                    result["registryEvidence"] = extract_trial_evidence(match.group(1), snapshot)
+                    result["investigation20"] = investigation_20(
+                        match.group(1), snapshot,
+                        retrieved_at=record.fetched_at.isoformat() if record.fetched_at else None,
+                    )
+                    result["quantitativeResults"] = reported_quantitative_results(
+                        match.group(1), snapshot,
+                    )
+                    result["readinessGrades"] = review_readiness(
+                        match.group(1), snapshot,
+                        archive_retrieved_at=record.fetched_at.isoformat() if record.fetched_at else None,
+                    )
+                    # Read-only 40-assessment inventory. Candidate citations and
+                    # reviewer statements cannot self-certify independent evidence.
+                    # This view is never a scientific outcome or approval forecast.
+                    from .scientific_investigation_contract import (
+                        LAYERS, investigation_plan, readiness,
+                    )
+                    from .scientific_stage_crosswalk import stage_crosswalk
+                    result["investigation40"] = {
+                        "schemaVersion": "scientific-investigation40-v1",
+                        "nctId": match.group(1),
+                        "layers": [
+                            {"id": layer, "assessments": list(fields)}
+                            for layer, fields in LAYERS.items()
+                        ],
+                        "verification": readiness({}),
+                        "depthReview": investigation_plan(),
+                        "stageCrosswalk": stage_crosswalk(result["investigation20"]),
+                        "verificationSource": "independent_adjudication_not_available",
+                        "note": (
+                            "This is the required-question inventory only. No"
+                            " independent review gates are satisfied by imported"
+                            " registry records or candidate citations."
+                        ),
+                    }
+                    # Optional read-only source queue: ledger failure cannot
+                    # contaminate verified archive metadata or readiness grades.
+                    try:
+                        from .scientific_evidence_ledger import read_ledger
+                        result["evidenceLedger"] = read_ledger(match.group(1))
+                        result["evidenceLedgerStatus"] = "candidate_inventory_loaded"
+                    except Exception:
+                        result["evidenceLedgerStatus"] = "ledger_unavailable_or_invalid"
+                    result["registryEvidenceStatus"] = "source_record_loaded"
+                else:
+                    result["registryEvidenceStatus"] = "record_not_found"
+        except Exception:
+            # A corrupt archive or unavailable database must never produce a score.
+            result["registryEvidenceStatus"] = "record_unavailable_or_invalid"
+    return result
+
+
+@app.get(
+    "/api/scientific-assessment/review-packet/{nct_id}",
+    dependencies=[Depends(require_internal_key), Depends(require_storage)],
+)
+def get_scientific_review_packet(nct_id: str):
+    """Download a bounded, audited review worksheet; no scientific auto-grading."""
+    import json as _json
+    from .scientific_review_packet import build_review_packet
+    try:
+        packet = build_review_packet(nct_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Exact archived trial not found") from None
+    except ValueError:
+        raise HTTPException(
+            status_code=409,
+            detail="Trial archive or source ledger failed integrity verification",
+        ) from None
+    serialized = _json.dumps(
+        packet, ensure_ascii=False, allow_nan=False, sort_keys=True, indent=2,
+    ).encode("utf-8")
+    if len(serialized) > 2_000_000:
+        raise HTTPException(status_code=413, detail="Review packet exceeds safe export limit")
+    # Credentials remain request headers only, never serialized or placed in URLs.
+    return Response(
+        content=serialized,
+        media_type="application/json",
+        headers={
+            "Content-Disposition": (
+                'attachment; filename="' + nct_id + '_scientific_review_packet.json"'
+            ),
+            "Cache-Control": "no-store, private",
+            "Pragma": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+            "X-Packet-SHA256": packet["packetIntegrity"]["digest"],
+        },
+    )
+
+
+def require_scientific_evidence_write_key(
+    x_pdufa_scientific_review_key: Annotated[str | None, Header()] = None,
+) -> None:
+    """Separate from the batch API key; disabled on all services by default."""
+    if (os.getenv("RENDER_SERVICE_ID") != "srv-dbehn9fb9u1s739ok5vg"
+            or os.getenv("PDUFA_SCIENTIFIC_LEDGER_WRITE_ENABLED") != "1"
+            or not DATABASE_URL.startswith("postgresql+psycopg://")):
+        raise HTTPException(status_code=403, detail="Scientific evidence writing disabled")
+    expected = os.getenv("PDUFA_SCIENTIFIC_REVIEW_WRITE_KEY")
+    if not expected or expected == os.getenv("PDUFA_INTERNAL_API_KEY"):
+        raise HTTPException(status_code=503, detail="Separate evidence review key not configured")
+    if (not x_pdufa_scientific_review_key or
+            not secrets.compare_digest(expected, x_pdufa_scientific_review_key)):
+        raise HTTPException(status_code=401, detail="Unauthorized scientific evidence curator")
+
+
+
+class ScientificReviewerStatementSubmission(BaseModel):
+    """A source-anchored reviewer statement; not a verified medical finding."""
+    model_config = ConfigDict(extra="forbid")
+
+    question_id: str = Field(
+        min_length=4, max_length=70, pattern=r"^[a-z0-9_]+$", alias="questionId"
+    )
+    source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
+    source_locator: str = Field(min_length=5, max_length=200, alias="sourceLocator")
+    finding_type: Literal[
+        "supports", "contradicts", "uncertain", "not_assessable"
+    ] = Field(alias="findingType")
+    assertion: str = Field(min_length=30, max_length=1500)
+    uncertainty: str = Field(min_length=20, max_length=1000)
+    reviewer_label: str = Field(min_length=2, max_length=80, alias="reviewerLabel")
+    reviewer_attests_read_source: Literal[True] = Field(alias="reviewerAttestsReadSource")
+    supersedes_id: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{32}$", alias="supersedesId"
+    )
+
+
+@app.post(
+    "/api/scientific-assessment/reviewer-statements/{nct_id}",
+    status_code=201,
+    dependencies=[Depends(require_internal_key), Depends(require_storage),
+                  Depends(require_scientific_evidence_write_key)],
+)
+def submit_scientific_reviewer_statement(
+    nct_id: str,
+    payload: ScientificReviewerStatementSubmission,
+):
+    """Append unverified evidence commentary; no gate or approval score changes."""
+    from .scientific_reviewer_findings import append_reviewer_statement
+    try:
+        return append_reviewer_statement(nct_id, payload.model_dump(by_alias=True))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except IntegrityError:
+        raise HTTPException(
+            status_code=409, detail="Reviewer statement revision already recorded"
+        ) from None
+
+
+class ScientificSourceDocumentSubmission(BaseModel):
+    """Curator-supplied PDF bytes, not independently authenticated science."""
+    model_config = ConfigDict(extra="forbid")
+
+    gate_id: Literal[
+        "protocol_sap", "published_results",
+        "independent_replication", "official_regulatory"
+    ] = Field(alias="gateId")
+    source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
+    source_type: Literal[
+        "peer_reviewed_publication", "official_agency_document",
+        "protocol_sap", "clinical_study_report",
+        "institutional_summary", "other"
+    ] = Field(alias="sourceType")
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    content_base64: str = Field(
+        min_length=32, max_length=5592408, alias="contentBase64"
+    )
+    captured_by: str = Field(
+        min_length=2, max_length=80, alias="capturedBy"
+    )
+
+
+def require_isolated_scientific_review_service() -> None:
+    if (os.getenv("RENDER_SERVICE_ID") != "srv-dbehn9fb9u1s739ok5vg"
+            or not DATABASE_URL.startswith("postgresql+psycopg://")):
+        raise HTTPException(status_code=403, detail="Isolated scientific review service required")
+
+
+def require_source_document_capture_enabled() -> None:
+    # An additional opt-in beyond the independent scientific-review write key.
+    if os.getenv("PDUFA_SCIENTIFIC_DOCUMENT_CAPTURE_ENABLED") != "1":
+        raise HTTPException(status_code=403, detail="Scientific document capture disabled")
+
+
+@app.post(
+    "/api/scientific-assessment/source-documents/{nct_id}",
+    status_code=201,
+    dependencies=[
+        Depends(require_internal_key), Depends(require_storage),
+        Depends(require_scientific_evidence_write_key),
+        Depends(require_source_document_capture_enabled),
+    ],
+)
+def submit_scientific_source_document(
+    nct_id: str,
+    payload: ScientificSourceDocumentSubmission,
+):
+    """Store submitted PDF bytes only; never fetch sources or verify their claims."""
+    from .scientific_source_documents import capture_document
+    try:
+        return capture_document(nct_id, payload.model_dump(by_alias=True))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Duplicate document content") from None
+
+
+@app.get(
+    "/api/scientific-assessment/source-documents/{nct_id}/{document_id}",
+    dependencies=[
+        Depends(require_internal_key), Depends(require_storage),
+        Depends(require_isolated_scientific_review_service),
+    ],
+)
+def download_scientific_source_document(nct_id: str, document_id: str):
+    """Authenticated byte-for-byte PDF download from isolated review storage."""
+    from .scientific_source_documents import get_captured_document
+    try:
+        meta, payload = get_captured_document(nct_id, document_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Captured PDF not found") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Captured PDF integrity failure") from None
+    return Response(
+        content=payload,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="' + meta["filename"] + '"',
+            "Cache-Control": "private, no-store",
+            "Pragma": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Security-Policy": "sandbox",
+            "X-Source-Document-SHA256": meta["sha256"],
+            "X-Source-Scientific-Status": "not-independently-verified",
+        },
+    )
+
+
+class ScientificEvidenceCandidateSubmission(BaseModel):
+    """A submitted citation is always unverified; never an FDA/science score."""
+    model_config = ConfigDict(extra="forbid")
+
+    gate_id: Literal[
+        "protocol_sap", "published_results",
+        "independent_replication", "official_regulatory"
+    ] = Field(alias="gateId")
+    source_url: str = Field(min_length=12, max_length=800, alias="sourceUrl")
+    source_type: Literal[
+        "peer_reviewed_publication", "official_agency_document",
+        "protocol_sap", "clinical_study_report",
+        "institutional_summary", "other"
+    ] = Field(alias="sourceType")
+    source_published_at: date | None = Field(default=None, alias="sourcePublishedAt")
+    claim_text: str = Field(min_length=20, max_length=1000, alias="claimText")
+    relationship: Literal["supports", "contradicts", "context", "unresolved"]
+    caution: str = Field(min_length=15, max_length=1000)
+    recorded_by: str = Field(min_length=2, max_length=80, alias="recordedBy")
+    supersedes_id: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{32}$", alias="supersedesId"
+    )
+
+
+@app.post("/api/scientific-assessment/evidence-ledger/{nct_id}",
+          status_code=201,
+          dependencies=[Depends(require_internal_key), Depends(require_storage),
+                        Depends(require_scientific_evidence_write_key)])
+def submit_scientific_evidence_candidate(
+    nct_id: str,
+    payload: ScientificEvidenceCandidateSubmission,
+):
+    """Append-only, review-only cited *candidate*; never verifies it by submission."""
+    from .scientific_evidence_ledger import append_candidate
+    try:
+        return append_candidate(nct_id, payload.model_dump(by_alias=True, mode="json"))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Evidence revision already recorded") from None
+
+
+class ScientificBatchSubmission(BaseModel):
+    nct_ids: list[str] = Field(min_length=1, max_length=25)
+
+
+def require_scientific_batch_review_write() -> None:
+    """Separate opt-in and exact Render service fence; never enable in production."""
+    if (os.getenv("PDUFA_SCIENTIFIC_BATCH_WRITE_ENABLED") != "1"
+            or os.getenv("RENDER_SERVICE_ID") != "srv-dbehn9fb9u1s739ok5vg"
+            or not DATABASE_URL.startswith("postgresql+psycopg://")):
+        raise HTTPException(status_code=403, detail="Scientific batch imports disabled outside isolated review")
+
+
+@app.get("/scientific-assessment/batches")
+def scientific_batch_control_panel():
+    """Static same-origin UI; all job data/actions require the internal API key."""
+    from .scientific_batch_ui import render_batch_panel
+    return render_batch_panel()
+
+
+@app.get("/api/scientific-assessment/batches",
+         dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def list_scientific_batches():
+    from .scientific_batch_jobs import list_jobs
+    return {"jobs": list_jobs()}
+
+
+@app.get("/api/scientific-assessment/batches/{job_id}",
+         dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def get_scientific_batch(job_id: str):
+    from .scientific_batch_jobs import get_job
+    result = get_job(job_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Scientific batch not found")
+    return result
+
+
+@app.get("/api/scientific-assessment/batches-recovery-status",
+         dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def scientific_batch_recovery_status():
+    """Authenticated read-only indication of potentially stranded batches."""
+    from .scientific_batch_jobs import recovery_diagnostics
+    return recovery_diagnostics()
+
+
+@app.post("/api/scientific-assessment/batches", status_code=202,
+          dependencies=[Depends(require_internal_key), Depends(require_storage),
+                        Depends(require_scientific_batch_review_write)])
+def submit_scientific_batch(payload: ScientificBatchSubmission):
+    from .scientific_batch_jobs import submit_job
+    try:
+        return submit_job(payload.nct_ids)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except IntegrityError as exc:
+        raise HTTPException(status_code=409, detail="An unfinished scientific batch already exists") from exc
 
 
 @app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])

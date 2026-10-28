@@ -1,0 +1,37 @@
+name: Scientific WT Preset Release Parity
+
+on:
+  pull_request:
+    branches:
+      - main
+      - integration/scientific-assessment-validation-20261025
+    paths:
+      - "new-platform/frontend/app/Workspace.tsx"
+      - "new-platform/frontend/tests/scientific_wt_preset_release_parity.py"
+      - ".github/workflows/scientific-wt-preset-release-parity.yml"
+  push:
+    branches:
+      - integration/scientific-assessment-validation-20261025
+    paths:
+      - "new-platform/frontend/app/Workspace.tsx"
+      - "new-platform/frontend/tests/scientific_wt_preset_release_parity.py"
+      - ".github/workflows/scientific-wt-preset-release-parity.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  existing-presets-unchanged:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get current production baseline without modifying it
+        run: git fetch origin main --no-tags --quiet
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prove existing FS/FA workspace logic is unchanged
+        run: python new-platform/frontend/tests/scientific_wt_preset_release_parity.py

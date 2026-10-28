@@ -2044,6 +2044,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
               <button type="button" onClick={()=>mark(programId,kind==="watch"?"trade":"watch")}>{kind==="watch"?"MOVE PROGRAM TO TRADING RESEARCH":"RETURN PROGRAM TO WATCHLIST"}</button>
               <button type="button" className="secondary" onClick={()=>mark(programId,"clear")}>REMOVE PROGRAM TAG</button>
               {selectedRecord && <button type="button" className="secondary" onClick={()=>{setMasterProgram(selectedRecord.id);setNav("MASTER");}}>Open program Master Chart</button>}
+              {selectedRecord && trialSheetUrl(selectedRecord) && <a href={trialSheetUrl(selectedRecord)} className="trial-sheet-link">Open trial science · 20 levels / 40 assessments / two evidence-readiness grades ↗</a>}
+              {selectedRecord && !trialSheetUrl(selectedRecord) && <small className="subtle">Trial-science dossier unavailable: no exact NCT linked to this program.</small>}
               {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE",programId)}>Open exact program checklist</button>}
             </div>
             {ticker&&selectedStage&&<div className="wt-trial-indicator-panel">

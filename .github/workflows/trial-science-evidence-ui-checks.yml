@@ -1,0 +1,25 @@
+name: Trial Science Evidence UI Checks
+on:
+  push:
+    branches: [feature/trial-science-dossier-20261024]
+  pull_request:
+    branches: [feature/scientific-assessment-v1]
+permissions:
+  contents: read
+jobs:
+  frontend-science:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install exact frontend dependencies
+        run: npm ci
+      - name: Compile-check complete frontend
+        run: npm run typecheck
+      - name: Verify pilot evidence UI and source guard
+        run: node --test tests/trial-science-evidence-ui-contract.test.cjs
