@@ -6,9 +6,14 @@ on:
       - 'new-platform/backend/app/hop_backtest.py'
       - 'new-platform/backend/app/hop_outcome_cohort.py'
       - 'new-platform/backend/app/hop_outcomes_import.py'
+      - 'new-platform/backend/app/hop_cohort_manifest.py'
+      - 'new-platform/backend/scripts/audit_hop_cohort_manifest.py'
       - 'new-platform/backend/tests/test_hop_backtest*.py'
       - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
       - 'new-platform/backend/tests/test_hop_outcomes_import.py'
+      - 'new-platform/backend/tests/test_hop_cohort_manifest.py'
+      - 'new-platform/backend/tests/test_hop_cohort_roster.py'
+      - 'new-platform/backend/tests/test_hop_cohort_audit_cli.py'
       - 'new-platform/backend/tests/test_hop_fda_identity_review_queue.py'
       - 'new-platform/backend/tests/test_hop_fda_application_crosswalk.py'
       - 'new-platform/backend/app/hop_fda_identity_review_queue.py'
@@ -119,6 +124,9 @@ jobs:
             tests/test_hop_backtest_duplicates.py \
             tests/test_hop_outcome_cohort.py \
             tests/test_hop_outcomes_import.py \
+            tests/test_hop_cohort_manifest.py \
+            tests/test_hop_cohort_roster.py \
+            tests/test_hop_cohort_audit_cli.py \
             tests/test_hop_fda_application_crosswalk.py \
             tests/test_hop_fda_identity_review_queue.py \
             tests/test_hop_fda_review_cycle_triage.py \
