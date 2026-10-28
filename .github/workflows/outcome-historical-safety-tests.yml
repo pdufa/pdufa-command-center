@@ -6,6 +6,11 @@ on:
       - 'new-platform/backend/app/hop_backtest.py'
       - 'new-platform/backend/app/hop_outcome_cohort.py'
       - 'new-platform/backend/app/hop_outcomes_import.py'
+      - 'new-platform/backend/app/hop_primary_action_letter_samples.py'
+      - 'new-platform/backend/app/research_sources/hop_fda_primary_action_letter_samples.json'
+      - 'new-platform/backend/scripts/audit_hop_fda_pdf_bytes.py'
+      - 'new-platform/backend/tests/test_hop_primary_action_letter_samples.py'
+      - 'new-platform/backend/tests/test_hop_fda_pdf_byte_audit.py'
       - 'new-platform/backend/app/hop_cohort_manifest.py'
       - 'new-platform/backend/scripts/audit_hop_cohort_manifest.py'
       - 'new-platform/backend/tests/test_hop_backtest*.py'
@@ -64,6 +69,11 @@ on:
       - 'new-platform/backend/app/hop_backtest.py'
       - 'new-platform/backend/app/hop_outcome_cohort.py'
       - 'new-platform/backend/app/hop_outcomes_import.py'
+      - 'new-platform/backend/app/hop_primary_action_letter_samples.py'
+      - 'new-platform/backend/app/research_sources/hop_fda_primary_action_letter_samples.json'
+      - 'new-platform/backend/scripts/audit_hop_fda_pdf_bytes.py'
+      - 'new-platform/backend/tests/test_hop_primary_action_letter_samples.py'
+      - 'new-platform/backend/tests/test_hop_fda_pdf_byte_audit.py'
       - 'new-platform/backend/tests/test_hop_backtest*.py'
       - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
       - 'new-platform/backend/tests/test_hop_outcomes_import.py'
@@ -146,7 +156,9 @@ jobs:
             tests/test_hop_fda_application_crosswalk.py \
             tests/test_hop_fda_identity_review_queue.py \
             tests/test_hop_fda_review_cycle_triage.py \
-            tests/test_hop_fda_pdf_date_review_examples.py
+            tests/test_hop_fda_pdf_date_review_examples.py \
+            tests/test_hop_primary_action_letter_samples.py \
+            tests/test_hop_fda_pdf_byte_audit.py
       - name: Test FDA action-event normalization and fail-closed gate
         run: python -m pytest -q test_outcome_fda_action_events.py test_outcome_fda_research_action_fixtures.py test_outcome_fda_research_export.py test_outcome_fda_review_timeline_evidence.py test_outcome_fda_review_timeline_export.py test_outcome_fda_receipt_boundary_gap_report.py test_outcome_fda_receipt_asof_audit.py test_outcome_fda_research_feature_projection.py test_outcome_fda_dual_readiness_grades.py test_outcome_fda_readiness_panel.py test_outcome_fda_readiness_streamlit.py test_outcome_receipt_readiness_regression.py test_outcome_fda_cycle_evidence_certification.py test_outcome_fda_receipt_certification_workqueue.py
       - name: Validate machine-readable OUTCOME readiness payload
