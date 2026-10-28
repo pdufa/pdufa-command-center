@@ -8,6 +8,7 @@ on:
       - "research/fda_existing_history_audit.py"
       - "research/fda_archive_chronology_gate.py"
       - "research/fda_archive_lock_chronology.py"
+      - "research/fda_original_evidence_recovery_manifest.py"
       - "research/fda_prediction_provenance_worklist.py"
       - "research/fda_legacy_accuracy_reconciliation.py"
       - "research/fda_original_artifact_inventory.py"
@@ -36,6 +37,7 @@ on:
       - "tests/test_fda_existing_history_audit.py"
       - "tests/test_fda_archive_chronology_gate.py"
       - "tests/test_fda_archive_lock_chronology.py"
+      - "tests/test_fda_original_evidence_recovery_manifest.py"
       - "tests/test_fda_prediction_provenance_worklist.py"
       - "tests/test_fda_legacy_accuracy_reconciliation.py"
       - "tests/test_fda_original_artifact_inventory.py"
@@ -75,6 +77,7 @@ jobs:
           python -m unittest discover -s tests -p "test_fda_existing_history_audit.py" -v
           python -m unittest discover -s tests -p "test_fda_archive_chronology_gate.py" -v
           python -m unittest discover -s tests -p "test_fda_archive_lock_chronology.py" -v
+          python -m unittest discover -s tests -p "test_fda_original_evidence_recovery_manifest.py" -v
           python -m unittest discover -s tests -p "test_fda_prediction_provenance_worklist.py" -v
           python -m unittest discover -s tests -p "test_fda_legacy_accuracy_reconciliation.py" -v
           python -m unittest discover -s tests -p "test_fda_original_artifact_inventory.py" -v
