@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "pdufa-curated-phase3-announcements-v1",
+  "evidencePolicy": "Manual source review of public dated issuer disclosures; NOT independent FDA receipt or review-cycle adjudication",
+  "cases": {
+    "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130": {
+      "nctId": "NCT05208047",
+      "reviewedOn": "2026-10-27",
+      "reviewerMethod": "PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
+      "phase3_results": {
+        "review_status": "VERIFIED",
+        "source_url": "https://cogentbiosciences.gcs-web.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "published_at": "2026-05-30",
+        "event_date": "2026-05-30"
+      },
+      "pdufa_assignment": {
+        "review_status": "VERIFIED",
+        "source_url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+        "published_at": "2026-05-28",
+        "event_date": "2026-05-28",
+        "pdufa_target_date": "2026-11-30"
+      }
+    }
+  }
+}
