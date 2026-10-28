@@ -19,7 +19,7 @@ INPUTS = (
     "data/phase3_all_years_300m_10b_trials.csv",
     "data/company_registry.csv",
     "data/snapshots/phase_pipeline_market_caps_2026-10-26.csv",
-    "config/issuer_sources.json",
+    "config/snapshots/issuer_sources_2026-10-26.json",
 )
 AS_OF = "2026-10-26T12:21:15.972309+00:00"
 
