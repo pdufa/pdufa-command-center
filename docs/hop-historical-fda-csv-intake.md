@@ -19,6 +19,19 @@ Each record also carries an exact NDA/BLA/ANDA application identity, review cycl
 drug, sponsor, indication, modality, phase, primary FDA HTTPS source and source title.
 A domain-format check never proves source-page content or outcome adjudication.
 
+All parseable identity claims are reconciled before row-quality filtering.
+Repeated trimmed case IDs or canonical application/cycle identities reject every
+member row, including claims with invalid dates, missing fields or invalid
+sources. An invalid claim cannot disappear and leave a contradictory sibling
+apparently unique. Each rejected row retains its logical CSV record number
+(header is 1) and combined reasons. The `line` field is a record number for
+multiline quoted CSV fields, not a physical text-line offset. Malformed
+application/cycle identifiers cannot manufacture a valid cycle identity.
+
+The shared [JSON intake](hop-historical-outcome-ingestion.md) rejects an entire
+invalid inventory. Both formats remain quarantined; source review must resolve
+conflicts in a new version while preserving original claims.
+
 ## Run (from repository root)
 
     PYTHONPATH=new-platform/backend python new-platform/backend/scripts/validate_hop_outcomes_csv.py new-platform/backend/data/hop_historical_outcomes_template.csv --as-of 2026-10-25
