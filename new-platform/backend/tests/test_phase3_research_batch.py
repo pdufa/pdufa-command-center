@@ -76,6 +76,26 @@ class BatchTests(unittest.TestCase):
                                   headers=headers)
             self.assertEqual(oversized.status_code,422)
 
+    def test_sheet_preview_fails_closed_on_untrusted_batch(self):
+        from app.phase3_sheet_population_preview import build_sheet_population_preview
+        with self.assertRaises(ValueError):
+            build_sheet_population_preview({"rows":[],"tradeAuthorized":True,
+                                            "sheetPopulationStatus":"NOT_WRITTEN"})
+        with self.assertRaises(ValueError):
+            build_sheet_population_preview({"rows":[],"tradeAuthorized":False,
+                                            "sheetPopulationStatus":"WRITTEN"})
+        with self.assertRaises(ValueError):
+            build_sheet_population_preview({"rows":[]})
+
+    def test_sheet_preview_rejects_duplicate_eligible_rows(self):
+        from app.phase3_sheet_population_preview import build_sheet_population_preview
+        candidate={"exact_key":"A","phase3_results":ev("2026-08-01"),
+                   "pdufa_assignment":ev("2026-09-01","2027-04-01")}
+        batch=evaluate_candidate_batch([candidate],as_of="2026-10-27")
+        batch["rows"].append(dict(batch["rows"][0]))
+        with self.assertRaises(ValueError):
+            build_sheet_population_preview(batch)
+
     def test_empty_batch(self):
         self.assertEqual(evaluate_candidate_batch([],as_of="2026-10-27")["totalDiscovered"],0)
 
