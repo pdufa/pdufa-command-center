@@ -1,5 +1,7 @@
 import snapshot from "../../lib/fda-holdout-reconstruction-snapshot.json";
 
+export const dynamic = "force-static";
+
 export default function FdaResearchStatusPage() {
   if (snapshot.researchOnly !== true || snapshot.tradingAuthorized !== false || snapshot.validatedCases !== 0) {
     throw new Error("Research status safety contract violated");
@@ -12,6 +14,7 @@ export default function FdaResearchStatusPage() {
         evidence are missing. No validated accuracy, approval probability, or authorization to trade.
       </p>
       <p>Research snapshot: {snapshot.asOf} · Historical cases: {snapshot.caseReports.length} · Validated predictions: 0</p>
+      <p><a href="/" style={{ textDecoration: "underline" }}>Return to dashboard</a></p>
       {snapshot.caseReports.map((row) => (
         <details key={row.event_key} style={{ marginBottom: 12, background: "#f1f8f2", border: "1px solid #9fb7a5", padding: 14 }}>
           <summary style={{ cursor: "pointer", fontWeight: 700 }}>
