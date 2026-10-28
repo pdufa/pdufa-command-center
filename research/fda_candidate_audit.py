@@ -19,6 +19,7 @@ def audit_candidates(records: Iterable[Mapping[str, Any]]) -> dict:
     outcomes = Counter()
     seen_cycles = {}
     eligible_cycles = set()
+    conflicted_cycles = set()
     for record in records:
         total += 1
         decision = assess_label_eligibility(record)
@@ -29,6 +30,7 @@ def audit_candidates(records: Iterable[Mapping[str, Any]]) -> dict:
         if cycle_key and all(cycle_key):
             if cycle_key in seen_cycles:
                 reasons["duplicate_review_cycle"] += 1
+                conflicted_cycles.add(cycle_key)
                 if cycle_key in eligible_cycles:
                     eligible_cycles.remove(cycle_key)
                     eligible -= 1
@@ -48,7 +50,8 @@ def audit_candidates(records: Iterable[Mapping[str, Any]]) -> dict:
         "eligible_for_further_review": eligible,
         "abstained": total - eligible,
         "abstention_reasons": dict(sorted(reasons.items())),
-        "eligible_action_counts": dict(sorted(outcomes.items())),
+        "eligible_action_counts": {k: v for k, v in sorted(outcomes.items()) if v > 0},
+        "conflicted_review_cycles": len(conflicted_cycles),
         "approval_rate": None,
         "validated_training_cohort": False,
         "research_only": True,
