@@ -547,6 +547,18 @@ def health():
     }
 
 
+@app.get("/api/internal/hop/public-outcome-disclosures",
+         dependencies=[Depends(require_internal_key)])
+def historical_fda_public_outcome_disclosures():
+    """Read-only FDA action vs announcement dates; never a model label or trade."""
+    from .hop_fda_public_disclosure_clock import (
+        load_historical_fda_public_outcome_packet,
+    )
+    return load_historical_fda_public_outcome_packet(
+        as_of=datetime.now(timezone.utc).date()
+    )
+
+
 @app.get("/api/hop/readiness", dependencies=[Depends(require_internal_key)])
 def hop_readiness():
     """Research-only status; no storage dependency and no predictions."""

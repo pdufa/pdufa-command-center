@@ -1,0 +1,63 @@
+{
+  "schema_version": "hop-public-outcome-disclosure-leads-v1",
+  "research_compiled_on": "2026-10-28",
+  "research_status": "PUBLIC_DISCLOSURE_SOURCE_LEADS_ONLY_NOT_MODEL_LABELS",
+  "collection_policy": "PURPOSIVELY_SELECTED_TWO_ACTION_LETTER_SAMPLES_NOT_COMPLETE_DENOMINATOR",
+  "notes": "These dated original-publisher release pages report drug/indication outcomes. They do not separately certify exact FDA application/review-cycle identity at the publication timestamp, earliest possible public availability, PDF letter publication date, or original source bytes. They are not model-eligible labels.",
+  "events": [
+    {
+      "event_id": "NDA213973_20200515_FDA_RELEASE",
+      "related_letter_record_id": "NDA213973_ORIGINAL_1_20200515_APPROVED",
+      "publisher_origin": "U.S. FOOD AND DRUG ADMINISTRATION",
+      "channel": "FDA_PRESS_RELEASE_SYNDICATED_VIA_PRNEWSWIRE",
+      "source_url": "https://www.prnewswire.com/news-releases/fda-approves-first-drug-for-fourth-line-treatment-of-advanced-gastrointestinal-stromal-tumors-301060275.html",
+      "source_reported_publication_time": "2020-05-15T15:44:00-04:00",
+      "source_observed_on": "2026-10-28",
+      "source_reported_outcome": "APPROVED",
+      "drug": "ripretinib",
+      "indication_scope": "advanced GIST after three or more prior kinase inhibitors",
+      "source_claim": "FDA publicly announced the approval of QINLOCK/ripretinib for fourth-line advanced GIST.",
+      "exact_application_id_named_in_release": false,
+      "exact_original_unit_named_in_release": false,
+      "release_original_bytes_sha256": null,
+      "independently_adjudicated_as_cycle_label": false
+    },
+    {
+      "event_id": "NDA213973_20200515_DECIPHERA_RELEASE",
+      "related_letter_record_id": "NDA213973_ORIGINAL_1_20200515_APPROVED",
+      "publisher_origin": "DECIPHERA PHARMACEUTICALS",
+      "channel": "ISSUER_OWN_SITE",
+      "source_url": "https://www.deciphera.com/news/fda-grants-full-approval-deciphera-pharmaceuticals-qinlocktm-ripretinib-treatment-fourth-line",
+      "source_reported_publication_time": "2020-05-15T16:05:00-04:00",
+      "source_observed_on": "2026-10-28",
+      "source_reported_outcome": "APPROVED",
+      "drug": "ripretinib",
+      "indication_scope": "advanced GIST after three or more prior kinase inhibitors",
+      "source_claim": "Deciphera's timed release reported FDA approval of QINLOCK for advanced GIST.",
+      "exact_application_id_named_in_release": false,
+      "exact_original_unit_named_in_release": false,
+      "release_original_bytes_sha256": null,
+      "independently_adjudicated_as_cycle_label": false
+    },
+    {
+      "event_id": "BLA761303_20240325_REGENERON_RELEASE",
+      "related_letter_record_id": "BLA761303_ORIGINAL_1_20240322_CRL",
+      "publisher_origin": "REGENERON PHARMACEUTICALS",
+      "channel": "ISSUER_OWN_SITE",
+      "source_url": "https://investor.regeneron.com/news-releases/news-release-details/regeneron-provides-update-biologics-license-application",
+      "source_reported_publication_time": "2024-03-25T07:00:00-04:00",
+      "source_observed_on": "2026-10-28",
+      "source_reported_outcome": "COMPLETE_RESPONSE",
+      "drug": "odronextamab",
+      "indication_scope": "follicular lymphoma AND diffuse large B-cell lymphoma; two separate CRLs and original-submission units not mapped by the release",
+      "source_claim": "Regeneron publicly announced two CRLs, one each for follicular lymphoma and DLBCL, without identifying the exact BLA Original 1 versus Original 2 unit.",
+      "exact_application_id_named_in_release": false,
+      "exact_original_unit_named_in_release": false,
+      "release_original_bytes_sha256": null,
+      "independently_adjudicated_as_cycle_label": false
+    }
+  ],
+  "model_eligible_cycles": 0,
+  "independently_backtested_cases": 0,
+  "calibrated_probability": null
+}
