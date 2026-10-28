@@ -48,6 +48,17 @@ export default function FdaResearchStatusPage() {
               ))}
             </ol>
           </details>
+          <details><summary>Predecision evidence chronology · excluded hindsight</summary>
+            <p>Research cutoff: {row.reconstruction_cutoff}; original forecast freeze: not authenticated. Source dates are not proof of the original model input.</p>
+            <ol>{row.source_classification.map((source) => (
+              <li key={source.source_id} style={{ marginBottom: 10 }}>
+                <strong>{source.source_id}</strong> · Available: {source.available_on} · {source.classification.replaceAll("_", " ")}
+                <div>{source.finding}</div>
+                <div>Independent review: {source.independently_reviewed ? "Recorded" : "Not completed"} · Eligible for frozen prediction: NO</div>
+                <a href={source.source_url} target="_blank" rel="noopener noreferrer">Inspect source ↗</a>
+              </li>
+            ))}</ol>
+          </details>
           <p>OUTCOME: No approval probability or PASS/FAIL grade. Reluctant grade: insufficient verified evidence.</p>
           <p>Original prediction cutoff: not authenticated. Evidence blockers:</p>
           <ul>{row.blockers.slice(0, 6).map((reason) => <li key={reason}>{reason.replaceAll("_", " ")}</li>)}</ul>
