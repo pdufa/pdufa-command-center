@@ -19,6 +19,7 @@ import DailyResultsPanel from "./DailyResultsPanel";
 import BackupStatusPanel from "./BackupStatusPanel";
 import PipelineData from "./PipelineData";
 import MainPhase3ResearchPanel from "./MainPhase3ResearchPanel";
+import PeakResearchPanel from "./PeakResearchPanel";
 import DetailButton from "./DetailButton";
 import SharedEnrichment from "./SharedEnrichment";
 import RestrictionImpact from "./RestrictionImpact";
@@ -1849,6 +1850,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </div>}
     {summaryError && !publishedCounts && top!=="GOAL" && <p className="workspace-banner" role="alert">{summaryError} Candidate lists are preserved; retry loading candidates to try again.</p>}
     {snapshot?.sourceHealth && top!=="GOAL" && <div className="source-health workspace-source-health-full" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
+    {top==="PDUFA" && nav==="PIPELINE" && <PeakResearchPanel />}
     {top==="PDUFA" && nav==="PIPELINE" && <MainPhase3ResearchPanel />}
     {(top==="RESTRICTIONS" || top==="PDUFA" && (nav==="PIPELINE" || nav==="GEM_JR" || nav==="GEM")) && <SharedEnrichment key={top+nav} stage={nav==="GEM_JR" || nav==="GEM" ? nav : "PIPELINE"}/>}
     {!snapshot && top!=="GOAL" && <div className="panel" role="status" aria-live="polite">
