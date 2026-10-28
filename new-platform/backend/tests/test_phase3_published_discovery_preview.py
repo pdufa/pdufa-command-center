@@ -51,8 +51,9 @@ def test_curated_peak_starts_science_only_and_never_authorizes_trade():
     assert row["analysis"]["status"] == "RESEARCH_IN_PROGRESS"
     assert row["analysis"]["science"]["reviewed"] == 0
     assert row["analysis"]["approvalProbability"] is None
-    assert row["analysis"]["outcome"] is None
-    assert row["analysis"]["main"] is None
+    assert row["analysis"]["outcome"]["decisionReadinessGrade"] == "ABSTAIN"
+    assert row["analysis"]["outcome"]["approvalProbability"] is None
+    assert row["analysis"]["main"]["prediction"] == "INSUFFICIENT_EVIDENCE"
     assert result["sheetPopulationStatus"] == "NOT_WRITTEN"
     assert result["sheetPreview"]["mode"] == "PREVIEW_ONLY"
     assert result["sheetPreview"]["requiresManualSourceReview"] is True

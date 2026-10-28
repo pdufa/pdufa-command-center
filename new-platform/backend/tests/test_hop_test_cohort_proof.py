@@ -1,3 +1,4 @@
+# Synthetic fixtures explicitly declare publication dates; these are not real FDA source dates.
 from datetime import date
 from app.hop_backtest import walk_forward_backtest
 from app.hop_outcome_cohort import OutcomeObservation
@@ -5,9 +6,9 @@ from app.hop_outcome_cohort import OutcomeObservation
 def test_unverified_heldout_cohort_is_not_scored():
     rows=[
         OutcomeObservation("train",1,date(2019,6,1),"APPROVED",
-            "COMPLETE_APPLICATION_COHORT","c",date(2019,1,1),True),
+            "COMPLETE_APPLICATION_COHORT","c",date(2019,1,1),True, outcome_public_as_of=date(2019,6,1)),
         OutcomeObservation("unverified",1,date(2020,6,1),"COMPLETE_RESPONSE",
-            "COMPLETE_APPLICATION_COHORT","c",date(2020,1,1),False),
+            "COMPLETE_APPLICATION_COHORT","c",date(2020,1,1),False, outcome_public_as_of=date(2020,6,1)),
     ]
     invoked=[]
     def scorer(train,row):

@@ -45,8 +45,9 @@ def test_real_peak_case_eligible_to_start_research_but_not_ready_to_predict():
     assert row["analysis"]["science"]["reviewed"] == 0
     assert row["analysis"]["science"]["required"] > 0
     assert row["analysis"]["science"]["scientificScore"] is None
-    assert row["analysis"]["outcome"] is None
-    assert row["analysis"]["main"] is None
+    assert row["analysis"]["outcome"]["decisionReadinessGrade"] == "ABSTAIN"
+    assert row["analysis"]["outcome"]["approvalProbability"] is None
+    assert row["analysis"]["main"]["prediction"] == "INSUFFICIENT_EVIDENCE"
     assert row["analysis"]["approvalProbability"] is None
 
     assert preview["mode"] == "PREVIEW_ONLY"

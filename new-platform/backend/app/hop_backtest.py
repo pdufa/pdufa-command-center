@@ -4,11 +4,31 @@ Evaluation only: the score callback is a candidate model supplied by callers.
 No trained model, approval probabilities or deployment are created here.
 """
 from __future__ import annotations
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field
 from datetime import date
 from math import isfinite
 from typing import Callable, Sequence
-from .hop_outcome_cohort import OutcomeObservation, DENOMINATOR_SOURCES, OUTCOMES
+from .hop_outcome_cohort import OutcomeObservation, observation_exclusion
+
+
+@dataclass(frozen=True)
+class PredictionCase:
+    """Only predecision fields cross the scoring boundary.
+
+    FDA decision/publication dates and postdecision cohort metadata are absent.
+    The constant outcome preserves the previous masked-label callback contract.
+    """
+    application_id: str
+    review_cycle: int
+    public_features_as_of: date
+    outcome: str = field(default="WITHHELD", init=False)
+
+
+def _latest_application_cycles(rows):
+    latest = {}
+    for row in sorted(rows, key=lambda r: (r.decision_date, r.review_cycle)):
+        latest[row.application_id] = row
+    return list(latest.values())
 
 @dataclass(frozen=True)
 class BacktestFold:
@@ -23,46 +43,53 @@ class BacktestFold:
 def walk_forward_backtest(
     rows: Sequence[OutcomeObservation],
     cutoffs: Sequence[date],
-    score_fn: Callable[[Sequence[OutcomeObservation], OutcomeObservation], float | None],
+    score_fn: Callable[[Sequence[OutcomeObservation], PredictionCase], float | None],
     min_train: int = 100,
+    *, evaluation_as_of: date | None = None,
 ) -> list[BacktestFold]:
     """Evaluate only on later decisions; no same-application outcome leakage.
 
     The score function must be fitted exclusively on the supplied train rows.
-    Test outcomes are withheld from score_fn. The callback must not fetch\n    outcome labels through external sources; independent audit still required.
+    Labels must have been publicly available strictly before each prediction's
+    feature cutoff. Decision/publication dates and test labels are not passed to
+    score_fn. The callback must not retrieve labels through other sources;
+    independent model/data audit and an untouched final cohort remain required.
     """
-    if min_train < 1:
+    if type(min_train) is not int or min_train < 1:
         raise ValueError("min_train must be positive")
+    if any(type(c) is not date for c in cutoffs):
+        raise ValueError("cutoffs must be dates")
     if list(cutoffs) != sorted(set(cutoffs)):
         raise ValueError("cutoffs must be unique and chronological")
     if len(cutoffs) < 2:
         raise ValueError("at least two cutoffs required")
+    audit_as_of = cutoffs[-1] if evaluation_as_of is None else evaluation_as_of
+    if type(audit_as_of) is not date or audit_as_of < cutoffs[-1]:
+        raise ValueError("evaluation_as_of must be a date on or after the final cutoff")
+    if any(not isinstance(r, OutcomeObservation) for r in rows):
+        raise ValueError("backtest input must contain outcome observations")
+    if any(not isinstance(r.application_id, str) or not r.application_id.strip()
+           or type(r.review_cycle) is not int or r.review_cycle < 1 for r in rows):
+        raise ValueError("exact application identity and positive integer review cycle required")
+    if any(type(r.decision_date) is not date for r in rows):
+        raise ValueError("FDA decision dates must be valid date objects")
     # Reject duplicate application/review-cycle labels before any evaluation.
     keys = [(r.application_id, r.review_cycle) for r in rows]
     if len(keys) != len(set(keys)):
         raise ValueError("duplicate application review cycle in backtest input")
     result = []
+    heldout_application_ids = set()
+    valid = [r for r in rows if observation_exclusion(r, as_of=audit_as_of) is None]
     for left, right in zip(cutoffs, cutoffs[1:]):
-        train = [r for r in rows if r.decision_date < left]
-        test = [r for r in rows if left <= r.decision_date < right]
-        train = [r for r in train if r.public_features_as_of is not None
-                 and r.public_features_as_of < r.decision_date
-                 and r.ascertainment_source in DENOMINATOR_SOURCES
-                 and r.outcome in OUTCOMES and r.cohort_id
-                 and r.cohort_complete_verified is True]
+        train_pool = [r for r in valid if r.decision_date < left and r.outcome_public_as_of < left]
+        test = [r for r in rows if type(r.decision_date) is date and left <= r.decision_date < right]
         # Multiple completed review cycles for one application must not
         # overweight that application in training. Keep its latest cycle.
-        latest_train = {}
-        for row in sorted(train, key=lambda r: (r.decision_date, r.review_cycle)):
-            latest_train[row.application_id] = row
-        train = list(latest_train.values())
-        train_ids = set(latest_train)
-        usable = [r for r in test if r.application_id not in train_ids
-                  and r.public_features_as_of is not None
-                  and r.public_features_as_of < r.decision_date
-                  and r.ascertainment_source in DENOMINATOR_SOURCES
-                  and r.outcome in OUTCOMES and r.cohort_id
-                  and r.cohort_complete_verified is True]
+        train = _latest_application_cycles(train_pool)
+        train_ids = {r.application_id for r in train}
+        usable = [r for r in valid if left <= r.decision_date < right
+                  and r.application_id not in train_ids
+                  and r.application_id not in heldout_application_ids]
         # A single application must not contribute multiple held-out labels
         # within a fold, even when review-cycle identifiers differ.
         heldout_ids = set()
@@ -72,19 +99,25 @@ def walk_forward_backtest(
                 unique_usable.append(row)
                 heldout_ids.add(row.application_id)
         usable = unique_usable
+        # Prespecify the earliest eligible cycle per held-out application across
+        # all folds, including abstentions. Never select a later cycle merely
+        # because its forecast would be easier or its label is published sooner.
+        heldout_application_ids.update(heldout_ids)
         losses = []
         if len(train) >= min_train:
             for row in usable:
                 # The test snapshot may predate the fold boundary. Only labels
                 # decided before that snapshot can train its prediction.
-                asof_train = tuple(
-                    candidate for candidate in train
+                asof_train = tuple(_latest_application_cycles(
+                    candidate for candidate in train_pool
                     if candidate.decision_date < row.public_features_as_of
                     and candidate.public_features_as_of < row.public_features_as_of
-                )
+                    and candidate.outcome_public_as_of < row.public_features_as_of
+                ))
                 if len(asof_train) < min_train:
                     continue
-                value = score_fn(asof_train, replace(row, outcome="WITHHELD"))
+                value = score_fn(asof_train, PredictionCase(
+                    row.application_id, row.review_cycle, row.public_features_as_of))
                 if value is not None:
                     if (isinstance(value, bool) or not isinstance(value, (int, float))
                             or not isfinite(value) or not 0 <= value <= 1):

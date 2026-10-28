@@ -1,10 +1,11 @@
+# Synthetic fixtures explicitly declare publication dates; these are not real FDA source dates.
 from datetime import date
 from app.hop_outcome_cohort import OutcomeObservation, audit_outcome_cohort
 from app.hop_backtest import walk_forward_backtest
 
 def observation(app, year, verified=False):
     return OutcomeObservation(app,1,date(year,6,1),"APPROVED",
-        "COMPLETE_APPLICATION_COHORT","claimed-cohort",date(year,1,1),verified)
+        "COMPLETE_APPLICATION_COHORT","claimed-cohort",date(year,1,1),verified, outcome_public_as_of=date(year,6,1))
 
 def test_cohort_name_alone_is_not_proof():
     result=audit_outcome_cohort([observation("a",2019)],date(2021,1,1))
