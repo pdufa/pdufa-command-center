@@ -1,4 +1,5 @@
 """Watch/Trading toggles stay ticker-level, compact, and shared across #2/#3/#4."""
+from supported_dashboard_checks import run_frontend_contract
 import ast
 import json
 import unittest
@@ -47,27 +48,10 @@ class TickerToggleTests(unittest.TestCase):
         self.assertIsNone(parse_saved("not json"))
         self.assertIsNone(parse_saved({"version": 1, "watch": "", "trade": []}))
 
-    def test_every_section_has_first_columns_and_shared_callbacks(self):
-        self.assertLessEqual(ROWS_PER_PAGE, 10)
-        module = (ROOT / "ticker_toggle_panel.py").read_text(encoding="utf-8")
-        app = (ROOT / "app.py").read_text(encoding="utf-8")
-        unified = (ROOT / "unified_clinical_trading.py").read_text(encoding="utf-8")
-        for filename, content in (("ticker_toggle_panel.py", module),
-                                  ("app.py", app),
-                                  ("unified_clinical_trading.py", unified)):
-            ast.parse(content, filename=filename)
-        self.assertIn('st.button("W",', module)
-        self.assertIn('st.button("T",', module)
-        self.assertIn('on_click=_toggle, args=(symbol, "watch")', module)
-        self.assertIn('on_click=_toggle, args=(symbol, "trade")', module)
-        self.assertIn('render_ticker_toggle_panel("pipeline_2", prepared', app)
-        self.assertIn('render_ticker_toggle_panel("pre3_3", tab', app)
-        # UNIFIED OVERVIEW now embeds W/T controls into its merged HTML
-        # ticker cells. Its source uses a separate POST3 toggle panel.
-        self.assertIn('render_ticker_toggle_panel("post3_4"', unified)
-        self.assertIn('from ticker_toggle_panel import render_ticker_toggle_panel', unified)
-        self.assertIn("streamlit-js-eval==1.0.0",
-                      (ROOT / "requirements.txt").read_text())
+    def test_supported_wt_preserves_selection_scope_without_creating_hidden_studies(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('wt-chart-checkbox-map.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('gem-original-checkbox-groups.test.cjs'), 0)
 
     def test_buttons_are_manual_labels_not_broker_orders(self):
         source = (ROOT / "ticker_toggle_panel.py").read_text(encoding="utf-8")

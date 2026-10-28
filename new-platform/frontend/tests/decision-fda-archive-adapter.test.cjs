@@ -1,0 +1,9 @@
+const test=require("node:test");const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");const Module=require("node:module");const ts=require("typescript");const f=path.resolve(__dirname,"../lib/decision-fda-archive-adapter.ts");const js=ts.transpileModule(fs.readFileSync(f,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;const m=new Module(f,module);m.filename=f;m.paths=module.paths;m._compile(js,f);const {mapArchivedFdaDecisions}=m.exports;const row={programId:"PDUFA-123456",decisionDate:"2025-01-01T00:00:00Z",decisionType:"APPROVAL",diseaseSubtype:"A",indication:"B",mechanism:"C",primaryEndpoint:"OS",trialPhase:3,sourceUrl:"https://example.org/fda",reviewedBy:"analyst",reviewedAt:"2025-02-01T00:00:00Z"};
+test("archived approval maps but never self-verifies",()=>{const r=mapArchivedFdaDecisions([row]);assert.equal(r.status,"READY_FOR_REVIEW");assert.equal(r.records[0].outcome,"APPROVED");assert.equal(r.records[0].independentlyReviewed,false);});
+test("CRL maps as nonapproval",()=>assert.equal(mapArchivedFdaDecisions([{...row,decisionType:"COMPLETE_RESPONSE_LETTER"}]).records[0].outcome,"CRL"));
+test("unsupported decision does not become approval",()=>assert.equal(mapArchivedFdaDecisions([{...row,decisionType:"OTHER"}]).status,"NOT_READY"));
+test("missing source blocks ingestion",()=>assert.equal(mapArchivedFdaDecisions([{...row,sourceUrl:""}]).status,"NOT_READY"));
+test("duplicate program blocks ingestion",()=>assert.equal(mapArchivedFdaDecisions([row,row]).status,"NOT_READY"));
+
+test("empty import does not imply FDA evidence readiness",()=>assert.equal(mapArchivedFdaDecisions([]).status,"NOT_READY"));
+test("invalid trial phase cannot enter archive comparison records",()=>assert.equal(mapArchivedFdaDecisions([{...row,trialPhase:99}]).status,"NOT_READY"));

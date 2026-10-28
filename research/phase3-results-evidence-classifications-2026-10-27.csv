@@ -1,0 +1,3 @@
+nct_id,ticker,program,study_id,endpoint_outcome,evidence_level,primary_source,secondary_source,regulatory_outcome,limitations
+NCT00563394,ABEO,pexiganan,MSI-78-303,EQUIVALENCE_NOT_DEMONSTRATED,publication_plus_secondary_mapping,https://pubmed.ncbi.nlm.nih.gov/18990064/,https://www.mdpi.com/1422-0067/27/18/8035,NOT_ASSESSED,Study-specific effect size not yet extracted
+NCT00563433,ABEO,pexiganan,MSI-78-304,EQUIVALENCE_DEMONSTRATED,publication_plus_secondary_mapping,https://pubmed.ncbi.nlm.nih.gov/18990064/,https://www.centerwatch.com/clinical-trials/listings/NCT00563433/msi-78-topical-cream-vs-oral-ofloxacin-in-the-treatment-of-infected-diabetic-ulcers,NOT_ASSESSED,Study-specific effect size not yet extracted

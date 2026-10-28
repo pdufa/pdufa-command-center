@@ -148,543 +148,464 @@ def read_csv(path):
     with path.open(newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
-for rel, required in REQUIRED.items():
-    path = ROOT / rel
-    if not path.exists():
-        raise SystemExit(f"missing required file: {rel}")
-    with path.open(newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        headers = set(reader.fieldnames or [])
-    missing = required - headers
-    if missing:
-        raise SystemExit(f"{rel}: missing columns {sorted(missing)}")
+def run_repository_smoke():
+    """Validate archived data integrity and the supported read-only dashboard.
 
-registry = read_csv(ROOT / "data/company_registry.csv")
-registry_tickers = [(r.get("ticker") or "").strip().upper() for r in registry]
-if len(registry) < 716:
-    raise SystemExit(f"company_registry.csv: registry shrank below original 716 companies: {len(registry)}")
-if any(not t for t in registry_tickers):
-    raise SystemExit("company_registry.csv: blank ticker")
-if len(registry_tickers) != len(set(registry_tickers)):
-    raise SystemExit("company_registry.csv: duplicate ticker")
+    Importing this module performs no checks, scans, writes or network requests.
+    CLI execution and pytest run the same complete snapshot assertions.
+    """
+    for rel, required in REQUIRED.items():
+        path = ROOT / rel
+        if not path.exists():
+            raise SystemExit(f"missing required file: {rel}")
+        with path.open(newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            headers = set(reader.fieldnames or [])
+        missing = required - headers
+        if missing:
+            raise SystemExit(f"{rel}: missing columns {sorted(missing)}")
 
-discovery_events = read_csv(ROOT / "data/discovery_events.csv")
-discovery_keys = [(r.get("discovery_key") or "").strip() for r in discovery_events]
-if any(not k for k in discovery_keys):
-    raise SystemExit("discovery_events.csv: blank discovery_key")
-if len(discovery_keys) != len(set(discovery_keys)):
-    raise SystemExit("discovery_events.csv: duplicate discovery_key")
+    registry = read_csv(ROOT / "data/company_registry.csv")
+    registry_tickers = [(r.get("ticker") or "").strip().upper() for r in registry]
+    if len(registry) < 716:
+        raise SystemExit(f"company_registry.csv: registry shrank below original 716 companies: {len(registry)}")
+    if any(not t for t in registry_tickers):
+        raise SystemExit("company_registry.csv: blank ticker")
+    if len(registry_tickers) != len(set(registry_tickers)):
+        raise SystemExit("company_registry.csv: duplicate ticker")
 
-discovery_queue = read_csv(ROOT / "data/discovery_backfill_queue.csv")
-queue_keys = [(r.get("discovery_key") or "").strip() for r in discovery_queue]
-if any(not k for k in queue_keys):
-    raise SystemExit("discovery_backfill_queue.csv: blank discovery_key")
-if len(queue_keys) != len(set(queue_keys)):
-    raise SystemExit("discovery_backfill_queue.csv: duplicate discovery_key")
+    discovery_events = read_csv(ROOT / "data/discovery_events.csv")
+    discovery_keys = [(r.get("discovery_key") or "").strip() for r in discovery_events]
+    if any(not k for k in discovery_keys):
+        raise SystemExit("discovery_events.csv: blank discovery_key")
+    if len(discovery_keys) != len(set(discovery_keys)):
+        raise SystemExit("discovery_events.csv: duplicate discovery_key")
 
-candidates = read_csv(ROOT / "data/pdufa_candidates.csv")
-keys = [r["event_key"].strip() for r in candidates]
-if any(not k for k in keys):
-    raise SystemExit("pdufa_candidates.csv: blank event_key")
-if len(keys) != len(set(keys)):
-    raise SystemExit("pdufa_candidates.csv: duplicate event_key")
-if len(candidates) < MINIMUM_LIVE_EVENT_COUNT:
-    raise SystemExit(
-        f"pdufa_candidates.csv: live feed shrank below baseline {MINIMUM_LIVE_EVENT_COUNT}; found {len(candidates)}"
+    discovery_queue = read_csv(ROOT / "data/discovery_backfill_queue.csv")
+    queue_keys = [(r.get("discovery_key") or "").strip() for r in discovery_queue]
+    if any(not k for k in queue_keys):
+        raise SystemExit("discovery_backfill_queue.csv: blank discovery_key")
+    if len(queue_keys) != len(set(queue_keys)):
+        raise SystemExit("discovery_backfill_queue.csv: duplicate discovery_key")
+
+    candidates = read_csv(ROOT / "data/pdufa_candidates.csv")
+    keys = [r["event_key"].strip() for r in candidates]
+    if any(not k for k in keys):
+        raise SystemExit("pdufa_candidates.csv: blank event_key")
+    if len(keys) != len(set(keys)):
+        raise SystemExit("pdufa_candidates.csv: duplicate event_key")
+    if len(candidates) < MINIMUM_LIVE_EVENT_COUNT:
+        raise SystemExit(
+            f"pdufa_candidates.csv: live feed shrank below baseline {MINIMUM_LIVE_EVENT_COUNT}; found {len(candidates)}"
+        )
+    missing_required_events = REQUIRED_LIVE_EVENTS - set(keys)
+    if missing_required_events:
+        raise SystemExit(
+            "pdufa_candidates.csv: missing reconciled authoritative event(s): "
+            + ", ".join(sorted(missing_required_events))
+        )
+
+    for r in candidates:
+        d = r["pdufa_date"].strip()
+        if d:
+            datetime.strptime(d, "%Y-%m-%d")
+
+    recheck = read_csv(ROOT / "data/recheck_status.csv")
+    recheck_keys = [(r.get("event_key") or "").strip() for r in recheck]
+    if len(recheck_keys) != len(set(recheck_keys)):
+        raise SystemExit("recheck_status.csv: duplicate event_key")
+    unknown_recheck_keys = set(recheck_keys) - set(keys)
+    if unknown_recheck_keys:
+        raise SystemExit(
+            "recheck_status.csv: contains event_key(s) not present in live candidates: "
+            + ", ".join(sorted(unknown_recheck_keys)[:5])
+        )
+    if not (ROOT / "scripts/recheck_events.py").exists():
+        raise SystemExit("missing scripts/recheck_events.py")
+    if not (ROOT / "scripts/fda_decision_engine.py").exists():
+        raise SystemExit("missing scripts/fda_decision_engine.py")
+    if not (ROOT / "data/fda_engine_config.json").exists():
+        raise SystemExit("missing data/fda_engine_config.json")
+    if not (ROOT / "scripts/fda_v3_historical_backtest.py").exists():
+        raise SystemExit("missing scripts/fda_v3_historical_backtest.py")
+    if not (ROOT / "scripts/complete_fda_v3_historical_review.py").exists():
+        raise SystemExit("missing scripts/complete_fda_v3_historical_review.py")
+    if not (ROOT / "data/fda_v3_historical_summary.json").exists():
+        raise SystemExit("missing data/fda_v3_historical_summary.json")
+
+    second_financing = read_csv(ROOT / "data/second_financing_status.csv")
+    sf_keys = [(r.get("event_key") or "").strip() for r in second_financing]
+    if len(sf_keys) != len(set(sf_keys)):
+        raise SystemExit("second_financing_status.csv: duplicate event_key")
+    unknown_sf_keys = set(sf_keys) - set(keys)
+    if unknown_sf_keys:
+        raise SystemExit(
+            "second_financing_status.csv: contains event_key(s) not present in live candidates: "
+            + ", ".join(sorted(unknown_sf_keys)[:5])
+        )
+
+    verified_second_financing = 0
+    for r in second_financing:
+        status = (r.get("second_financing_audit_status") or "").strip()
+        if status == "VERIFIED_SECOND_POST_PHASE3_FINANCING":
+            verified_second_financing += 1
+            if (r.get("second_financing_status") or "").strip() != "CLOSED":
+                raise SystemExit(f"second_financing_status.csv: verified row is not CLOSED: {r['event_key']}")
+            for field in ("second_financing_announced","second_financing_running","second_financing_closed"):
+                if (r.get(field) or "").strip().upper() != "YES":
+                    raise SystemExit(f"second_financing_status.csv: verified row missing {field}: {r['event_key']}")
+            if not (r.get("second_financing_source") or "").strip():
+                raise SystemExit(f"second_financing_status.csv: verified row missing source: {r['event_key']}")
+            if not (r.get("second_financing_evidence_note") or "").strip():
+                raise SystemExit(f"second_financing_status.csv: verified row missing evidence note: {r['event_key']}")
+    # A past count of 17 included false/uncertain eligibility claims (for example
+    # Phase 2 SUMMIT and a GIST ATM with no actual dated second settlement).
+    # Quality corrections MUST be permitted to reduce this number. Instead enforce
+    # full program coverage and preserve the independently supported core claims.
+    if len(second_financing) < 38:
+        raise SystemExit(
+            f"second_financing_status.csv: financing research universe shrank below 38 programs; found {len(second_financing)}"
+        )
+    verified_keys = {
+        (r.get("event_key") or "").strip()
+        for r in second_financing
+        if (r.get("second_financing_audit_status") or "").strip()
+           == "VERIFIED_SECOND_POST_PHASE3_FINANCING"
+    }
+    core_attested = {
+        "NTLA|LONVOZ_HAE_20270310",
+        "ZBIO|OBEXELIMAB_IGG4RD_20270527",
+        "PRAX|ULIXACALTAMIDE_ET_20270129",
+        "MLYS|LORUNDROSTAT_20261222",
+        "SVRA|MOLBREEVI_PAP_20261122",
+        "SRRK|APITEGROMAB_20260930",
+    }
+    if not core_attested.issubset(verified_keys):
+        raise SystemExit(
+            "second_financing_status.csv: a core two-close event lost evidence: "
+            + ", ".join(sorted(core_attested - verified_keys))
+        )
+    if "COGT|BEZUCLASTINIB_NONADVSM_20261230" in verified_keys:
+        raise SystemExit("Phase 2 SUMMIT incorrectly promoted to GEM financing verification")
+    if "COGT|BEZUCLASTINIB_GIST_20261130" in verified_keys:
+        raise SystemExit("GIST ATM with no dated second settlement incorrectly promoted")
+
+    unresearched_financing = [
+        r["event_key"] for r in second_financing
+        if not (r.get("second_financing_audit_status") or "").strip()
+        or (r.get("second_financing_audit_status") or "").strip() == "NOT_VERIFIED"
+    ]
+    if unresearched_financing:
+        raise SystemExit(
+            "second_financing_status.csv: live events remain unresearched: "
+            + ", ".join(unresearched_financing[:5])
+        )
+
+    history = read_csv(ROOT / "data/prediction_engine_history.csv")
+    hkeys = [r["event_key"].strip() for r in history]
+    if len(hkeys) != len(set(hkeys)):
+        raise SystemExit("prediction_engine_history.csv: duplicate event_key")
+
+    pvalues = read_csv(ROOT / "data/prediction_engine_pvalues.csv")
+    pkeys = [r["event_key"].strip() for r in pvalues]
+    if len(pkeys) != len(set(pkeys)):
+        raise SystemExit("prediction_engine_pvalues.csv: duplicate event_key")
+    # The p-value file is a provenance/evidence ledger and intentionally preserves
+    # superseded source event keys after canonical audit repairs. It may therefore
+    # contain more rows than the current canonical history and is not required to
+    # match history event_key-for-event_key.
+    verified_pvalues = sum(
+        1 for r in pvalues
+        if (r.get("reported_p_values") or "").strip()
+        and (r.get("p_value_audit_status") or "").strip() == "VERIFIED_PRIMARY_OR_PIVOTAL"
     )
-missing_required_events = REQUIRED_LIVE_EVENTS - set(keys)
-if missing_required_events:
-    raise SystemExit(
-        "pdufa_candidates.csv: missing reconciled authoritative event(s): "
-        + ", ".join(sorted(missing_required_events))
-    )
+    if verified_pvalues < 1:
+        raise SystemExit("prediction_engine_pvalues.csv: no verified historical P values found")
+    for r in pvalues:
+        if (r.get("reported_p_values") or "").strip() and not (r.get("p_value_source_url") or "").strip():
+            raise SystemExit(f"prediction_engine_pvalues.csv: populated P without source: {r['event_key']}")
 
-for r in candidates:
-    d = r["pdufa_date"].strip()
-    if d:
-        datetime.strptime(d, "%Y-%m-%d")
+    designations = read_csv(ROOT / "data/prediction_engine_designations.csv")
+    dkeys = [r["event_key"].strip() for r in designations]
+    if len(dkeys) != len(set(dkeys)):
+        raise SystemExit("prediction_engine_designations.csv: duplicate event_key")
+    # The designation file is also a provenance/evidence ledger. Canonical audit
+    # repairs can leave valid historical source keys that no longer equal the
+    # current prediction_engine_history event_key set.
 
-recheck = read_csv(ROOT / "data/recheck_status.csv")
-recheck_keys = [(r.get("event_key") or "").strip() for r in recheck]
-if len(recheck_keys) != len(set(recheck_keys)):
-    raise SystemExit("recheck_status.csv: duplicate event_key")
-unknown_recheck_keys = set(recheck_keys) - set(keys)
-if unknown_recheck_keys:
-    raise SystemExit(
-        "recheck_status.csv: contains event_key(s) not present in live candidates: "
-        + ", ".join(sorted(unknown_recheck_keys)[:5])
-    )
-if not (ROOT / "scripts/recheck_events.py").exists():
-    raise SystemExit("missing scripts/recheck_events.py")
-if not (ROOT / "scripts/fda_decision_engine.py").exists():
-    raise SystemExit("missing scripts/fda_decision_engine.py")
-if not (ROOT / "data/fda_engine_config.json").exists():
-    raise SystemExit("missing data/fda_engine_config.json")
-if not (ROOT / "scripts/fda_v3_historical_backtest.py").exists():
-    raise SystemExit("missing scripts/fda_v3_historical_backtest.py")
-if not (ROOT / "scripts/complete_fda_v3_historical_review.py").exists():
-    raise SystemExit("missing scripts/complete_fda_v3_historical_review.py")
-if not (ROOT / "data/fda_v3_historical_summary.json").exists():
-    raise SystemExit("missing data/fda_v3_historical_summary.json")
+    designation_fields = [
+        "orphan_drug","no_available_therapy","serious_condition","life_threatening",
+        "fast_track","breakthrough_therapy","priority_review","accelerated_approval",
+        "rmat","qidp","rare_pediatric_disease","priority_review_voucher",
+        "rolling_review","rtor","project_orbis","spa",
+    ]
+    bad_values = []
+    verified_checks = 0
+    for r in designations:
+        for field in designation_fields:
+            v = (r.get(field) or "").strip()
+            if v not in {"", "YES"}:
+                bad_values.append((r["event_key"], field, v))
+            if v == "YES":
+                verified_checks += 1
+    if bad_values:
+        raise SystemExit(f"prediction_engine_designations.csv: invalid designation values {bad_values[:5]}")
+    if verified_checks < 1:
+        raise SystemExit("prediction_engine_designations.csv: no verified positive designations found")
 
-second_financing = read_csv(ROOT / "data/second_financing_status.csv")
-sf_keys = [(r.get("event_key") or "").strip() for r in second_financing]
-if len(sf_keys) != len(set(sf_keys)):
-    raise SystemExit("second_financing_status.csv: duplicate event_key")
-unknown_sf_keys = set(sf_keys) - set(keys)
-if unknown_sf_keys:
-    raise SystemExit(
-        "second_financing_status.csv: contains event_key(s) not present in live candidates: "
-        + ", ".join(sorted(unknown_sf_keys)[:5])
-    )
+    for year, expected in ((2020, 20), (2021, 24), (2022, 22)):
+        year_rows = [r for r in history if (r.get("pdufa_date") or "").startswith(f"{year}-")]
+        if len(year_rows) != expected:
+            raise SystemExit(f"prediction_engine_history.csv: expected {expected} audited {year} rows, found {len(year_rows)}")
+        for r in year_rows:
+            cap = float(r["historical_market_cap_billions"])
+            if not (0.3 <= cap <= 10.0):
+                raise SystemExit(f"{year} history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
+            if (r.get("public_approval_probability") or "").strip() or (r.get("biopharmawatch_probability") or "").strip():
+                raise SystemExit(f"{year} row fabricates unavailable historical public/vendor probability: {r['event_key']}")
 
-verified_second_financing = 0
-for r in second_financing:
-    status = (r.get("second_financing_audit_status") or "").strip()
-    if status == "VERIFIED_SECOND_POST_PHASE3_FINANCING":
-        verified_second_financing += 1
-        if (r.get("second_financing_status") or "").strip() != "CLOSED":
-            raise SystemExit(f"second_financing_status.csv: verified row is not CLOSED: {r['event_key']}")
-        for field in ("second_financing_announced","second_financing_running","second_financing_closed"):
-            if (r.get(field) or "").strip().upper() != "YES":
-                raise SystemExit(f"second_financing_status.csv: verified row missing {field}: {r['event_key']}")
-        if not (r.get("second_financing_source") or "").strip():
-            raise SystemExit(f"second_financing_status.csv: verified row missing source: {r['event_key']}")
-        if not (r.get("second_financing_evidence_note") or "").strip():
-            raise SystemExit(f"second_financing_status.csv: verified row missing evidence note: {r['event_key']}")
-# A past count of 17 included false/uncertain eligibility claims (for example
-# Phase 2 SUMMIT and a GIST ATM with no actual dated second settlement).
-# Quality corrections MUST be permitted to reduce this number. Instead enforce
-# full program coverage and preserve the independently supported core claims.
-if len(second_financing) < 38:
-    raise SystemExit(
-        f"second_financing_status.csv: financing research universe shrank below 38 programs; found {len(second_financing)}"
-    )
-verified_keys = {
-    (r.get("event_key") or "").strip()
-    for r in second_financing
-    if (r.get("second_financing_audit_status") or "").strip()
-       == "VERIFIED_SECOND_POST_PHASE3_FINANCING"
-}
-core_attested = {
-    "NTLA|LONVOZ_HAE_20270310",
-    "ZBIO|OBEXELIMAB_IGG4RD_20270527",
-    "PRAX|ULIXACALTAMIDE_ET_20270129",
-    "MLYS|LORUNDROSTAT_20261222",
-    "SVRA|MOLBREEVI_PAP_20261122",
-    "SRRK|APITEGROMAB_20260930",
-}
-if not core_attested.issubset(verified_keys):
-    raise SystemExit(
-        "second_financing_status.csv: a core two-close event lost evidence: "
-        + ", ".join(sorted(core_attested - verified_keys))
-    )
-if "COGT|BEZUCLASTINIB_NONADVSM_20261230" in verified_keys:
-    raise SystemExit("Phase 2 SUMMIT incorrectly promoted to GEM financing verification")
-if "COGT|BEZUCLASTINIB_GIST_20261130" in verified_keys:
-    raise SystemExit("GIST ATM with no dated second settlement incorrectly promoted")
-
-unresearched_financing = [
-    r["event_key"] for r in second_financing
-    if not (r.get("second_financing_audit_status") or "").strip()
-    or (r.get("second_financing_audit_status") or "").strip() == "NOT_VERIFIED"
-]
-if unresearched_financing:
-    raise SystemExit(
-        "second_financing_status.csv: live events remain unresearched: "
-        + ", ".join(unresearched_financing[:5])
-    )
-
-history = read_csv(ROOT / "data/prediction_engine_history.csv")
-hkeys = [r["event_key"].strip() for r in history]
-if len(hkeys) != len(set(hkeys)):
-    raise SystemExit("prediction_engine_history.csv: duplicate event_key")
-
-pvalues = read_csv(ROOT / "data/prediction_engine_pvalues.csv")
-pkeys = [r["event_key"].strip() for r in pvalues]
-if len(pkeys) != len(set(pkeys)):
-    raise SystemExit("prediction_engine_pvalues.csv: duplicate event_key")
-# The p-value file is a provenance/evidence ledger and intentionally preserves
-# superseded source event keys after canonical audit repairs. It may therefore
-# contain more rows than the current canonical history and is not required to
-# match history event_key-for-event_key.
-verified_pvalues = sum(
-    1 for r in pvalues
-    if (r.get("reported_p_values") or "").strip()
-    and (r.get("p_value_audit_status") or "").strip() == "VERIFIED_PRIMARY_OR_PIVOTAL"
-)
-if verified_pvalues < 1:
-    raise SystemExit("prediction_engine_pvalues.csv: no verified historical P values found")
-for r in pvalues:
-    if (r.get("reported_p_values") or "").strip() and not (r.get("p_value_source_url") or "").strip():
-        raise SystemExit(f"prediction_engine_pvalues.csv: populated P without source: {r['event_key']}")
-
-designations = read_csv(ROOT / "data/prediction_engine_designations.csv")
-dkeys = [r["event_key"].strip() for r in designations]
-if len(dkeys) != len(set(dkeys)):
-    raise SystemExit("prediction_engine_designations.csv: duplicate event_key")
-# The designation file is also a provenance/evidence ledger. Canonical audit
-# repairs can leave valid historical source keys that no longer equal the
-# current prediction_engine_history event_key set.
-
-designation_fields = [
-    "orphan_drug","no_available_therapy","serious_condition","life_threatening",
-    "fast_track","breakthrough_therapy","priority_review","accelerated_approval",
-    "rmat","qidp","rare_pediatric_disease","priority_review_voucher",
-    "rolling_review","rtor","project_orbis","spa",
-]
-bad_values = []
-verified_checks = 0
-for r in designations:
-    for field in designation_fields:
-        v = (r.get(field) or "").strip()
-        if v not in {"", "YES"}:
-            bad_values.append((r["event_key"], field, v))
-        if v == "YES":
-            verified_checks += 1
-if bad_values:
-    raise SystemExit(f"prediction_engine_designations.csv: invalid designation values {bad_values[:5]}")
-if verified_checks < 1:
-    raise SystemExit("prediction_engine_designations.csv: no verified positive designations found")
-
-for year, expected in ((2020, 20), (2021, 24), (2022, 22)):
-    year_rows = [r for r in history if (r.get("pdufa_date") or "").startswith(f"{year}-")]
-    if len(year_rows) != expected:
-        raise SystemExit(f"prediction_engine_history.csv: expected {expected} audited {year} rows, found {len(year_rows)}")
-    for r in year_rows:
+    history_2023 = [r for r in history if (r.get("pdufa_date") or "").startswith("2023-")]
+    if len(history_2023) != 24:
+        raise SystemExit(f"prediction_engine_history.csv: expected 24 audited 2023 rows, found {len(history_2023)}")
+    for r in history_2023:
         cap = float(r["historical_market_cap_billions"])
         if not (0.3 <= cap <= 10.0):
-            raise SystemExit(f"{year} history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
+            raise SystemExit(f"2023 history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
         if (r.get("public_approval_probability") or "").strip() or (r.get("biopharmawatch_probability") or "").strip():
-            raise SystemExit(f"{year} row fabricates unavailable historical public/vendor probability: {r['event_key']}")
+            raise SystemExit(f"2023 row fabricates unavailable historical public/vendor probability: {r['event_key']}")
 
-history_2023 = [r for r in history if (r.get("pdufa_date") or "").startswith("2023-")]
-if len(history_2023) != 24:
-    raise SystemExit(f"prediction_engine_history.csv: expected 24 audited 2023 rows, found {len(history_2023)}")
-for r in history_2023:
-    cap = float(r["historical_market_cap_billions"])
-    if not (0.3 <= cap <= 10.0):
-        raise SystemExit(f"2023 history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
-    if (r.get("public_approval_probability") or "").strip() or (r.get("biopharmawatch_probability") or "").strip():
-        raise SystemExit(f"2023 row fabricates unavailable historical public/vendor probability: {r['event_key']}")
+    history_2024 = [r for r in history if (r.get("pdufa_date") or "").startswith("2024-")]
+    if len(history_2024) != 26:
+        raise SystemExit(f"prediction_engine_history.csv: expected 26 audited 2024 rows, found {len(history_2024)}")
+    for r in history_2024:
+        cap = float(r["historical_market_cap_billions"])
+        if not (0.3 <= cap <= 10.0):
+            raise SystemExit(f"2024 history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
 
-history_2024 = [r for r in history if (r.get("pdufa_date") or "").startswith("2024-")]
-if len(history_2024) != 26:
-    raise SystemExit(f"prediction_engine_history.csv: expected 26 audited 2024 rows, found {len(history_2024)}")
-for r in history_2024:
-    cap = float(r["historical_market_cap_billions"])
-    if not (0.3 <= cap <= 10.0):
-        raise SystemExit(f"2024 history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
-
-app = (ROOT / "app.py").read_text(encoding="utf-8")
-required_ui_contracts = [
-    "Probability of Approval % — Public",
-    "Probability of Approval % — All Sources",
-    "Direction / FDA Match",
-    "calendar-event-link",
-    "color:#17211a !important",
-    'return "Not scored"',
-    'def _merged_table_sort_series',
-    'def _sort_header_button',
-    'def _merged_sort_payload',
-    'components.html(table_html',
-    "btn.addEventListener('click'",
-    "icon.textContent = idx === activeIndex ? (ascending ? '▲' : '▼') : '⇅'",
-    'Click the boxed ⇅ icon',
-    'def load_second_financing_backfill',
-    'second-fin-verified',
-    '"Second Financing Verified"',
-    '"Financing #2 Status"',
-    'FINANCING CACHE FIX',
-    '"2F Announced"',
-    '"2F Running"',
-    '"2F Closed"',
-    'SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]',
-    'colspan="3">2nd Financing',
-    'APPLICATION_COLUMNS = ["N", "B"]',
-    'colspan="2">Application',
-    '"PDUFA"',
-    '"data/second_financing_status.csv"',
-    'def run_recheck_worker',
-    '"data/recheck_status.csv"',
-    'nav_options = ["PDUFA"',
-    'on_change=_on_main_nav_change',
-    'key="pdufa_subtab", on_change="rerun"',
-    '["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]',
-    '"PIPELINE"',
-    '## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS',
-    'master_with_phase3(df)',
-    '### PDUFA COUNTDOWN — DATE GRADIENT',
-    'WATCHLIST MANAGEMENT',
-    'render_watchlist_indicators()',
-    'render_analysis_invest_signals()',
-    'if not applied:',
-    'st.session_state.get("pipeline_applied_v9") == selection_signature',
-    '"FDA MODEL %"',
-    '"FDA CALL"',
-    '"FDA GATE"',
-    'def load_fda_review_engine',
-    '"data/fda_review_engine.csv"',
-    '"data/fda_prediction_freezes.csv"',
-    '"data/fda_review_backfill_queue.csv"',
-    'def load_fda_review_backfill_queue',
-    '"FDA Backfill"',
-    '"FDA Direction"',
-    'def load_fda_v3_historical_backtest',
-    '@media (max-width: 768px)',
-    'FDA DECISION ENGINE V3.2',
-    'Stats gate',
-    'CMC gate',
-    'Facility gate',
-    'Primary endpoint',
-    'Process validation',
-    'Preapproval inspection',
-    'def load_fda_facility_registry',
-    '"FDA Facilities"',
-    'Manufacturing / Facility Evidence',
-    '"data/fda_facility_registry.csv"',
-    'FDA DECISION ENGINE V3.2',
-    'BIMO / data integrity',
-    'Data-integrity gate',
-    '"FDA Monitor"',
-    '"FDA regulatory signals"',
-    '"FDA Extension"',
-    '"FDA extensions"',
-    'Current PDUFA',
-    '"FDA Directional"',
-]
-for label in required_ui_contracts:
-    if label not in app:
-        raise SystemExit(f"app.py missing required audit/UI contract: {label}")
-if ',"10. MATCH OPTIMIZER","11. PLAN"' in app or 'elif page == "10. MATCH OPTIMIZER":' in app:
-    raise SystemExit("Match Optimizer must not remain a standalone navigation page")
-# Standalone Prediction Engine and Match Optimizer were intentionally
-# retired. Both archived model inputs and the clinical GEM scans remain.
-if 'nav_options = ["PDUFA", "2. PDUFA CALENDAR"]' not in app:
-    raise SystemExit("Main navigation must contain PDUFA and Calendar; SCANS is nested")
-if 'elif page == "SCANS":' in app or 'render_scans_activity()' in app:
-    raise SystemExit("Duplicate standalone SCANS page must remain retired")
-if 'if st.session_state.nav == "SCANS":' not in app or 'st.session_state["pdufa_subtab"] = "SCANS"' not in app:
-    raise SystemExit("Former standalone SCANS bookmarks must migrate to PDUFA SCANS")
-if not (Path("scan_activity_dashboard.py").is_file()
-        and Path("tests/test_scan_activity_dashboard.py").is_file()
-        and 'render_scans_activity(embedded=True)' in Path("nightly_scan_dashboard.py").read_text(encoding="utf-8")):
-    raise SystemExit("Read-only scan history must remain accessible in unified PDUFA SCANS")
-if 'elif page == "9. PREDICTION ENGINE":' in app or 'elif page == "10. MATCH OPTIMIZER":' in app:
-    raise SystemExit("Retired Prediction Engine/Match Optimizer page was restored")
-if 'if st.session_state.nav in ("9. PREDICTION ENGINE", "10. MATCH OPTIMIZER"):' not in app:
-    raise SystemExit("Legacy prediction bookmarks must redirect safely to PDUFA")
-if app.index('nav_options = ["PDUFA"') > app.index('elif page == "2. PDUFA CALENDAR":'):
-    raise SystemExit("PDUFA navigation must precede the calendar")
-if 'render_nightly_scan_report()' not in app:
-    raise SystemExit("Retiring the Prediction Engine must not remove SCANS")
-
-# Obsolete navigation and the oversized table grid must not return.
-if 'if page == "WATCHLIST":' in app:
-    raise SystemExit("app.py: obsolete standalone WATCHLIST page restored")
-if "master_watchlist_main_editor" in app:
-    raise SystemExit("app.py: removed Master Table editor was restored")
-
-# Missing probabilities must remain missing/not-scored rather than being silently
-# coerced into a misleading literal 0% display.
-for row in candidates:
-    confidence = (row.get("confidence") or "").strip().upper()
-    for field in ("approval_probability", "public_approval_probability", "biopharmawatch_probability"):
-        raw = (row.get(field) or "").strip()
-        if not raw and confidence in {"", "NOT SCORED", "UNSCORED"}:
-            continue
-
-print(
-    f"smoke test passed: {len(registry)} company registry rows, {len(candidates)} live events, "
-    f"{verified_second_financing} verified second-financing rows, "
-    f"{len(history)} historical rows, {verified_checks} verified designation checks, {verified_pvalues} verified P values, authoritative event reconciliation locked"
-)
-
-# 100% directional layer contract: every counted live/historical row must have a direction.
-directional_live = read_csv(ROOT / "data/fda_directional_100pct_live.csv")
-directional_hist = read_csv(ROOT / "data/fda_directional_100pct_historical.csv")
-for label, rows in [("live", directional_live), ("historical", directional_hist)]:
-    counted = [r for r in rows if (r.get("count_in_coverage") or "YES").strip().upper() == "YES"]
-    missing_direction = [r.get("event_key","") for r in counted if (r.get("forced_direction") or "").strip().upper() not in {"APPROVED","CRL"}]
-    if missing_direction:
-        raise SystemExit(f"100pct directional {label}: missing direction for {missing_direction[:5]}")
-    if counted and len(counted) != sum(1 for r in counted if (r.get("forced_direction") or "").strip().upper() in {"APPROVED","CRL"}):
-        raise SystemExit(f"100pct directional {label}: coverage below 100%")
-
-directional_freezes = read_csv(ROOT / "data/fda_directional_100pct_freezes.csv")
-summary = json.loads((ROOT / "data/fda_directional_100pct_summary.json").read_text(encoding="utf-8"))
-if float(summary.get("historical_coverage_pct", 0)) != 100.0:
-    raise SystemExit("100pct directional summary: historical coverage is not 100%")
-if float(summary.get("live_coverage_pct", 0)) != 100.0:
-    raise SystemExit("100pct directional summary: live coverage is not 100%")
-if int(summary.get("historical_directional_calls", 0)) != int(summary.get("historical_candidates", -1)):
-    raise SystemExit("100pct directional summary: historical calls do not cover every candidate")
-eligible_current = [
-    r for r in directional_freezes
-    if (r.get("model_version") or "") == "FDA-DIRECTIONAL-100-V1.9"
-    and (r.get("prospective_eligible") or "").upper() == "YES"
-    and (r.get("count_in_coverage") or "").upper() == "YES"
-]
-if any((r.get("actual_fda_decision") or "").strip() for r in eligible_current if not (r.get("decision_date") or "").strip()):
-    raise SystemExit("100pct directional freezes: known outcome entered prospective pool")
-freeze_sigs = [
-    "|".join([
-        (r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip(),
-        (r.get("pdufa_date") or "").strip(),
-        (r.get("model_version") or "").strip(),
-    ])
-    for r in eligible_current
-]
-if len(freeze_sigs) != len(set(freeze_sigs)):
-    raise SystemExit("100pct directional freezes: duplicate case/date/model snapshot")
-open_case_ids = {
-    (r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip()
-    for r in eligible_current
-    if not (r.get("decision_date") or "").strip()
-}
-if len(open_case_ids) != int(summary.get("prospective_freezes", -1)):
-    raise SystemExit(
-        f"100pct directional summary: open regulatory-cycle count mismatch "
-        f"{len(open_case_ids)} != {summary.get('prospective_freezes')}"
-    )
-
-residual = read_csv(ROOT / "data/fda_directional_residual_miss_audit.csv")
-hist_current = read_csv(ROOT / "data/fda_directional_100pct_historical.csv")
-hist_misses = {r.get("event_key","") for r in hist_current if (r.get("match_result") or "").upper() == "MISS"}
-residual_keys = {r.get("event_key","") for r in residual}
-if residual_keys != hist_misses:
-    raise SystemExit(
-        f"residual miss audit mismatch: audit={len(residual_keys)} historical_misses={len(hist_misses)}"
-    )
-if any((r.get("recoverability") or "").upper() not in {"LOW","VERY_LOW"} for r in residual):
-    raise SystemExit("residual miss audit: invalid recoverability classification")
-
-signals = read_csv(ROOT / "data/fda_regulatory_signal_monitor.csv")
-fda_reviews_for_signals = read_csv(ROOT / "data/fda_review_engine.csv")
-signal_keys = {r.get("event_key","") for r in signals}
-review_keys = {r.get("event_key","") for r in fda_reviews_for_signals}
-if signal_keys != review_keys:
-    raise SystemExit(
-        f"regulatory signal monitor mismatch: signals={len(signal_keys)} reviews={len(review_keys)}"
-    )
-if any((r.get("blindspot_risk_level") or "").upper() not in {"HIGH","MEDIUM","LOW"} for r in signals):
-    raise SystemExit("regulatory signal monitor: invalid blindspot risk level")
-valid_extension_reasons = {
-    "NONE","CMC_MANUFACTURING","CLINICAL_DATA_ANALYSIS",
-    "LABELING_POSTMARKETING","GENERAL_INFO_REQUEST","UNKNOWN",
-}
-if any((r.get("extension_reason") or "") not in valid_extension_reasons for r in signals):
-    raise SystemExit("regulatory signal monitor: invalid extension reason")
-
-extension_ledger = read_csv(ROOT / "data/fda_pdufa_extension_ledger.csv")
-ledger_ids = [(r.get("ledger_id") or "").strip() for r in extension_ledger]
-if any(not x for x in ledger_ids) or len(ledger_ids) != len(set(ledger_ids)):
-    raise SystemExit("PDUFA extension ledger: blank or duplicate ledger_id")
-valid_extension_status = {
-    "OPEN_PENDING","EXTENDED_PENDING","RESOLVED","OUTCOME_KNOWN_DATE_UNVERIFIED",
-}
-if any((r.get("extension_status") or "") not in valid_extension_status for r in extension_ledger):
-    raise SystemExit("PDUFA extension ledger: invalid extension_status")
-for r in extension_ledger:
-    status = (r.get("extension_status") or "").strip()
-    prior = (r.get("prior_pdufa_date") or "").strip()
-    current = (r.get("current_pdufa_date") or "").strip()
-    if prior and current and prior == current:
-        raise SystemExit(f"PDUFA extension ledger: unchanged date marked as transition {r.get('ledger_id')}")
-    if status == "RESOLVED" and not (
-        (r.get("decision_date") or "").strip() and (r.get("actual_fda_decision") or "").strip()
+    # The root Streamlit app was intentionally retired. Keep snapshot and
+    # historical source checks below, and execute supported frontend contracts
+    # rather than asserting obsolete widget names or an executable FDA-call UI.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "pdufa_supported_dashboard_checks", ROOT / "tests/supported_dashboard_checks.py")
+    supported = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(supported)
+    for contract in (
+        "scans-navigation-contract.test.cjs", "scans-new-results.test.cjs",
+        "pipeline-data.test.cjs", "candidate-assessments.test.cjs",
+        "research-only-backend.test.cjs", "science-outcome-gates.test.cjs",
+        "decision-workstream.test.cjs", "gem-original-checkbox-groups.test.cjs",
     ):
-        raise SystemExit(f"PDUFA extension ledger: resolved cycle missing decision {r.get('ledger_id')}")
+        supported.run_frontend_contract(contract)
 
+    # Missing probabilities must remain missing/not-scored rather than being silently
+    # coerced into a misleading literal 0% display.
+    for row in candidates:
+        confidence = (row.get("confidence") or "").strip().upper()
+        for field in ("approval_probability", "public_approval_probability", "biopharmawatch_probability"):
+            raw = (row.get(field) or "").strip()
+            if not raw and confidence in {"", "NOT SCORED", "UNSCORED"}:
+                continue
 
-# 100-on-100 precision gate contract.
-gate_hist = read_csv(ROOT / "data/fda_100_on_100_historical.csv")
-gate_live = read_csv(ROOT / "data/fda_100_on_100_live.csv")
-gate_summary = json.loads((ROOT / "data/fda_100_on_100_summary.json").read_text(encoding="utf-8"))
+    print(
+        f"smoke test passed: {len(registry)} company registry rows, {len(candidates)} live events, "
+        f"{verified_second_financing} verified second-financing rows, "
+        f"{len(history)} historical rows, {verified_checks} verified designation checks, {verified_pvalues} verified P values, authoritative event reconciliation locked"
+    )
 
-if not gate_hist:
-    raise SystemExit("100-on-100: historical qualified set is empty")
-if any((r.get("qualified_direction") or "").upper() not in {"APPROVED","CRL"} for r in gate_hist):
-    raise SystemExit("100-on-100: non-directional historical row entered qualified bucket")
-gate_matches = sum(r.get("match_result") == "MATCH" for r in gate_hist)
-if int(gate_summary.get("historical_qualified",-1)) != len(gate_hist):
-    raise SystemExit("100-on-100: historical summary count mismatch")
-if int(gate_summary.get("historical_matches",-1)) != gate_matches:
-    raise SystemExit("100-on-100: historical match count mismatch")
-if float(gate_summary.get("historical_accuracy_pct",0)) != round(100 * gate_matches / len(gate_hist), 2):
-    raise SystemExit("100-on-100: historical accuracy calculation mismatch")
-if (gate_summary.get("historical_validation_status") or "") != "RETROSPECTIVE_NOT_BLIND":
-    raise SystemExit("100-on-100: retrospective status must remain explicit")
-if bool(gate_summary.get("future_guarantee", True)):
-    raise SystemExit("100-on-100: future guarantee must remain false")
-for r in gate_live:
-    if (r.get("qualified_direction") or "").upper() not in {"APPROVED","CRL"}:
-        raise SystemExit("100-on-100: REVIEW/NO_CALL leaked into live qualified bucket")
-decided_gate = [r for r in gate_live if (r.get("actual_fda_decision") or "").upper() in {"APPROVED","CRL"}]
-if not decided_gate and gate_summary.get("prospective_accuracy_pct") is not None:
-    raise SystemExit("100-on-100: prospective accuracy claimed before a qualified case was decided")
+    # 100% directional layer contract: every counted live/historical row must have a direction.
+    directional_live = read_csv(ROOT / "data/fda_directional_100pct_live.csv")
+    directional_hist = read_csv(ROOT / "data/fda_directional_100pct_historical.csv")
+    for label, rows in [("live", directional_live), ("historical", directional_hist)]:
+        counted = [r for r in rows if (r.get("count_in_coverage") or "YES").strip().upper() == "YES"]
+        missing_direction = [r.get("event_key","") for r in counted if (r.get("forced_direction") or "").strip().upper() not in {"APPROVED","CRL"}]
+        if missing_direction:
+            raise SystemExit(f"100pct directional {label}: missing direction for {missing_direction[:5]}")
+        if counted and len(counted) != sum(1 for r in counted if (r.get("forced_direction") or "").strip().upper() in {"APPROVED","CRL"}):
+            raise SystemExit(f"100pct directional {label}: coverage below 100%")
 
-# Every strict abstention retains its recorded broad direction and identity.
-assessed = read_csv(ROOT / "data/historical_assessed_decisions.csv")
-assessed_summary = json.loads((ROOT / "data/historical_assessed_decisions_summary.json").read_text())
-assessed_by_key = {r["event_key"]: r for r in assessed}
-hist_by_key = {r["event_key"]: r for r in hist_current}
-strict_by_key = {r["event_key"]: r for r in gate_hist}
-if len(assessed_by_key) != len(assessed) or set(assessed_by_key) != set(hist_by_key):
-    raise SystemExit("Historical assessments: missing or duplicate historical identity")
-for key, row in assessed_by_key.items():
-    source = strict_by_key[key] if key in strict_by_key else hist_by_key[key]
-    expected = source["qualified_direction"] if key in strict_by_key else source["forced_direction"]
-    basis = "STRICT" if key in strict_by_key else "BROAD"
-    if row["assessed_direction"] != expected or row["assessment_basis"] != basis:
-        raise SystemExit(f"Historical assessments: recorded direction or qualification changed for {key}")
-    actual = hist_by_key[key]["actual_outcome"]
-    match = ("MATCH" if expected == actual else "MISS") if actual in {"APPROVED", "CRL"} else "PENDING"
-    if row["actual_outcome"] != actual or row["match_result"] != match:
-        raise SystemExit(f"Historical assessments: outcome comparison mismatch for {key}")
-    if not row["decision_reason"] or not row["strict_reason"]:
-        raise SystemExit(f"Historical assessments: missing decision reasoning for {key}")
-    if row["validation_status"] != "RETROSPECTIVE_DEVELOPMENT_NOT_BLIND":
-        raise SystemExit("Historical assessments: retrospective status missing")
-for basis in ["BROAD", "STRICT"]:
-    rows = [r for r in assessed if r["assessment_basis"] == basis]
-    scored = [r for r in rows if r["actual_outcome"] in {"APPROVED", "CRL"}]
-    reported = assessed_summary[basis.lower()]
-    counts = {
-        "assessed": len(rows), "scored": len(scored),
-        "approval_calls": sum(r["assessed_direction"] == "APPROVED" for r in rows),
-        "crl_calls": sum(r["assessed_direction"] == "CRL" for r in rows),
-        "matches": sum(r["match_result"] == "MATCH" for r in scored),
-        "misses": sum(r["match_result"] == "MISS" for r in scored),
+    directional_freezes = read_csv(ROOT / "data/fda_directional_100pct_freezes.csv")
+    summary = json.loads((ROOT / "data/fda_directional_100pct_summary.json").read_text(encoding="utf-8"))
+    if float(summary.get("historical_coverage_pct", 0)) != 100.0:
+        raise SystemExit("100pct directional summary: historical coverage is not 100%")
+    if float(summary.get("live_coverage_pct", 0)) != 100.0:
+        raise SystemExit("100pct directional summary: live coverage is not 100%")
+    if int(summary.get("historical_directional_calls", 0)) != int(summary.get("historical_candidates", -1)):
+        raise SystemExit("100pct directional summary: historical calls do not cover every candidate")
+    eligible_current = [
+        r for r in directional_freezes
+        if (r.get("model_version") or "") == "FDA-DIRECTIONAL-100-V1.9"
+        and (r.get("prospective_eligible") or "").upper() == "YES"
+        and (r.get("count_in_coverage") or "").upper() == "YES"
+    ]
+    if any((r.get("actual_fda_decision") or "").strip() for r in eligible_current if not (r.get("decision_date") or "").strip()):
+        raise SystemExit("100pct directional freezes: known outcome entered prospective pool")
+    freeze_sigs = [
+        "|".join([
+            (r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip(),
+            (r.get("pdufa_date") or "").strip(),
+            (r.get("model_version") or "").strip(),
+        ])
+        for r in eligible_current
+    ]
+    if len(freeze_sigs) != len(set(freeze_sigs)):
+        raise SystemExit("100pct directional freezes: duplicate case/date/model snapshot")
+    open_case_ids = {
+        (r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip()
+        for r in eligible_current
+        if not (r.get("decision_date") or "").strip()
     }
-    if any(reported[k] != value for k, value in counts.items()):
-        raise SystemExit(f"Historical assessments: {basis} summary mismatch")
-if assessed_summary["total_assessed"] != len(assessed) or assessed_summary["unresolved_assessments"] != 0:
-    raise SystemExit("Historical assessments: total or unresolved count mismatch")
-if gate_summary.get("historical_review_no_call_analyzed") != len(assessed) - len(gate_hist):
-    raise SystemExit("Historical assessments: strict withheld count mismatch")
+    if len(open_case_ids) != int(summary.get("prospective_freezes", -1)):
+        raise SystemExit(
+            f"100pct directional summary: open regulatory-cycle count mismatch "
+            f"{len(open_case_ids)} != {summary.get('prospective_freezes')}"
+        )
 
-# The fixed original 126 must all be evaluated, including those still abstaining.
-strict_input = json.loads((ROOT / "data/strict_historical_126_inputs.json").read_text())
-strict_reviews = read_csv(ROOT / "data/strict_historical_126_review.csv")
-strict_candidates = read_csv(ROOT / "data/strict_historical_126_source_candidates.csv")
-strict_keys = {r["event_key"] for r in strict_reviews}
-if len(strict_reviews) != 126 or strict_keys != {r["event_key"] for r in strict_input["events"]}:
-    raise SystemExit("Strict 126: missing/duplicate/changed run identity")
-if {r["event_key"] for r in strict_candidates} != strict_keys:
-    raise SystemExit("Strict 126: source-screen coverage mismatch")
-if not strict_keys.issubset(hist_by_key):
-    raise SystemExit("Strict 126: historical identity mismatch")
-for row in strict_reviews:
-    key, call = row["event_key"], row["fda_prediction"]
-    if call not in {"APPROVED", "CRL", "REVIEW"}:
-        raise SystemExit("Strict 126: invalid engine result")
-    if call in {"APPROVED", "CRL"}:
-        if row["cutoff_status"] != "VERIFIED_DATE_ONLY" or int(row["admitted_evidence_count"]) < 1:
-            raise SystemExit(f"Strict 126: unsafe qualified source/cutoff {key}")
-        if key not in strict_by_key or strict_by_key[key]["qualified_direction"] != call:
-            raise SystemExit(f"Strict 126: qualification not propagated {key}")
-    elif key in strict_by_key:
-        raise SystemExit(f"Strict 126: REVIEW entered qualified set {key}")
-    if assessed_by_key[key]["strict_run_id"] != "STRICT-126-20261006":
-        raise SystemExit(f"Strict 126: assessed ledger lost run provenance {key}")
+    residual = read_csv(ROOT / "data/fda_directional_residual_miss_audit.csv")
+    hist_current = read_csv(ROOT / "data/fda_directional_100pct_historical.csv")
+    hist_misses = {r.get("event_key","") for r in hist_current if (r.get("match_result") or "").upper() == "MISS"}
+    residual_keys = {r.get("event_key","") for r in residual}
+    if residual_keys != hist_misses:
+        raise SystemExit(
+            f"residual miss audit mismatch: audit={len(residual_keys)} historical_misses={len(hist_misses)}"
+        )
+    if any((r.get("recoverability") or "").upper() not in {"LOW","VERY_LOW"} for r in residual):
+        raise SystemExit("residual miss audit: invalid recoverability classification")
+
+    signals = read_csv(ROOT / "data/fda_regulatory_signal_monitor.csv")
+    fda_reviews_for_signals = read_csv(ROOT / "data/fda_review_engine.csv")
+    signal_keys = {r.get("event_key","") for r in signals}
+    review_keys = {r.get("event_key","") for r in fda_reviews_for_signals}
+    if signal_keys != review_keys:
+        raise SystemExit(
+            f"regulatory signal monitor mismatch: signals={len(signal_keys)} reviews={len(review_keys)}"
+        )
+    if any((r.get("blindspot_risk_level") or "").upper() not in {"HIGH","MEDIUM","LOW"} for r in signals):
+        raise SystemExit("regulatory signal monitor: invalid blindspot risk level")
+    valid_extension_reasons = {
+        "NONE","CMC_MANUFACTURING","CLINICAL_DATA_ANALYSIS",
+        "LABELING_POSTMARKETING","GENERAL_INFO_REQUEST","UNKNOWN",
+    }
+    if any((r.get("extension_reason") or "") not in valid_extension_reasons for r in signals):
+        raise SystemExit("regulatory signal monitor: invalid extension reason")
+
+    extension_ledger = read_csv(ROOT / "data/fda_pdufa_extension_ledger.csv")
+    ledger_ids = [(r.get("ledger_id") or "").strip() for r in extension_ledger]
+    if any(not x for x in ledger_ids) or len(ledger_ids) != len(set(ledger_ids)):
+        raise SystemExit("PDUFA extension ledger: blank or duplicate ledger_id")
+    valid_extension_status = {
+        "OPEN_PENDING","EXTENDED_PENDING","RESOLVED","OUTCOME_KNOWN_DATE_UNVERIFIED",
+    }
+    if any((r.get("extension_status") or "") not in valid_extension_status for r in extension_ledger):
+        raise SystemExit("PDUFA extension ledger: invalid extension_status")
+    for r in extension_ledger:
+        status = (r.get("extension_status") or "").strip()
+        prior = (r.get("prior_pdufa_date") or "").strip()
+        current = (r.get("current_pdufa_date") or "").strip()
+        if prior and current and prior == current:
+            raise SystemExit(f"PDUFA extension ledger: unchanged date marked as transition {r.get('ledger_id')}")
+        if status == "RESOLVED" and not (
+            (r.get("decision_date") or "").strip() and (r.get("actual_fda_decision") or "").strip()
+        ):
+            raise SystemExit(f"PDUFA extension ledger: resolved cycle missing decision {r.get('ledger_id')}")
+
+
+    # 100-on-100 precision gate contract.
+    gate_hist = read_csv(ROOT / "data/fda_100_on_100_historical.csv")
+    gate_live = read_csv(ROOT / "data/fda_100_on_100_live.csv")
+    gate_summary = json.loads((ROOT / "data/fda_100_on_100_summary.json").read_text(encoding="utf-8"))
+
+    if not gate_hist:
+        raise SystemExit("100-on-100: historical qualified set is empty")
+    if any((r.get("qualified_direction") or "").upper() not in {"APPROVED","CRL"} for r in gate_hist):
+        raise SystemExit("100-on-100: non-directional historical row entered qualified bucket")
+    gate_matches = sum(r.get("match_result") == "MATCH" for r in gate_hist)
+    if int(gate_summary.get("historical_qualified",-1)) != len(gate_hist):
+        raise SystemExit("100-on-100: historical summary count mismatch")
+    if int(gate_summary.get("historical_matches",-1)) != gate_matches:
+        raise SystemExit("100-on-100: historical match count mismatch")
+    if float(gate_summary.get("historical_accuracy_pct",0)) != round(100 * gate_matches / len(gate_hist), 2):
+        raise SystemExit("100-on-100: historical accuracy calculation mismatch")
+    if (gate_summary.get("historical_validation_status") or "") != "RETROSPECTIVE_NOT_BLIND":
+        raise SystemExit("100-on-100: retrospective status must remain explicit")
+    if bool(gate_summary.get("future_guarantee", True)):
+        raise SystemExit("100-on-100: future guarantee must remain false")
+    for r in gate_live:
+        if (r.get("qualified_direction") or "").upper() not in {"APPROVED","CRL"}:
+            raise SystemExit("100-on-100: REVIEW/NO_CALL leaked into live qualified bucket")
+    decided_gate = [r for r in gate_live if (r.get("actual_fda_decision") or "").upper() in {"APPROVED","CRL"}]
+    if not decided_gate and gate_summary.get("prospective_accuracy_pct") is not None:
+        raise SystemExit("100-on-100: prospective accuracy claimed before a qualified case was decided")
+
+    # Every strict abstention retains its recorded broad direction and identity.
+    assessed = read_csv(ROOT / "data/historical_assessed_decisions.csv")
+    assessed_summary = json.loads((ROOT / "data/historical_assessed_decisions_summary.json").read_text())
+    assessed_by_key = {r["event_key"]: r for r in assessed}
+    hist_by_key = {r["event_key"]: r for r in hist_current}
+    strict_by_key = {r["event_key"]: r for r in gate_hist}
+    if len(assessed_by_key) != len(assessed) or set(assessed_by_key) != set(hist_by_key):
+        raise SystemExit("Historical assessments: missing or duplicate historical identity")
+    for key, row in assessed_by_key.items():
+        source = strict_by_key[key] if key in strict_by_key else hist_by_key[key]
+        expected = source["qualified_direction"] if key in strict_by_key else source["forced_direction"]
+        basis = "STRICT" if key in strict_by_key else "BROAD"
+        if row["assessed_direction"] != expected or row["assessment_basis"] != basis:
+            raise SystemExit(f"Historical assessments: recorded direction or qualification changed for {key}")
+        actual = hist_by_key[key]["actual_outcome"]
+        match = ("MATCH" if expected == actual else "MISS") if actual in {"APPROVED", "CRL"} else "PENDING"
+        if row["actual_outcome"] != actual or row["match_result"] != match:
+            raise SystemExit(f"Historical assessments: outcome comparison mismatch for {key}")
+        if not row["decision_reason"] or not row["strict_reason"]:
+            raise SystemExit(f"Historical assessments: missing decision reasoning for {key}")
+        if row["validation_status"] != "RETROSPECTIVE_DEVELOPMENT_NOT_BLIND":
+            raise SystemExit("Historical assessments: retrospective status missing")
+    for basis in ["BROAD", "STRICT"]:
+        rows = [r for r in assessed if r["assessment_basis"] == basis]
+        scored = [r for r in rows if r["actual_outcome"] in {"APPROVED", "CRL"}]
+        reported = assessed_summary[basis.lower()]
+        counts = {
+            "assessed": len(rows), "scored": len(scored),
+            "approval_calls": sum(r["assessed_direction"] == "APPROVED" for r in rows),
+            "crl_calls": sum(r["assessed_direction"] == "CRL" for r in rows),
+            "matches": sum(r["match_result"] == "MATCH" for r in scored),
+            "misses": sum(r["match_result"] == "MISS" for r in scored),
+        }
+        if any(reported[k] != value for k, value in counts.items()):
+            raise SystemExit(f"Historical assessments: {basis} summary mismatch")
+    if assessed_summary["total_assessed"] != len(assessed) or assessed_summary["unresolved_assessments"] != 0:
+        raise SystemExit("Historical assessments: total or unresolved count mismatch")
+    if gate_summary.get("historical_review_no_call_analyzed") != len(assessed) - len(gate_hist):
+        raise SystemExit("Historical assessments: strict withheld count mismatch")
+
+    # The fixed original 126 must all be evaluated, including those still abstaining.
+    strict_input = json.loads((ROOT / "data/strict_historical_126_inputs.json").read_text())
+    strict_reviews = read_csv(ROOT / "data/strict_historical_126_review.csv")
+    strict_candidates = read_csv(ROOT / "data/strict_historical_126_source_candidates.csv")
+    strict_keys = {r["event_key"] for r in strict_reviews}
+    if len(strict_reviews) != 126 or strict_keys != {r["event_key"] for r in strict_input["events"]}:
+        raise SystemExit("Strict 126: missing/duplicate/changed run identity")
+    if {r["event_key"] for r in strict_candidates} != strict_keys:
+        raise SystemExit("Strict 126: source-screen coverage mismatch")
+    if not strict_keys.issubset(hist_by_key):
+        raise SystemExit("Strict 126: historical identity mismatch")
+    for row in strict_reviews:
+        key, call = row["event_key"], row["fda_prediction"]
+        if call not in {"APPROVED", "CRL", "REVIEW"}:
+            raise SystemExit("Strict 126: invalid engine result")
+        if call in {"APPROVED", "CRL"}:
+            if row["cutoff_status"] != "VERIFIED_DATE_ONLY" or int(row["admitted_evidence_count"]) < 1:
+                raise SystemExit(f"Strict 126: unsafe qualified source/cutoff {key}")
+            if key not in strict_by_key or strict_by_key[key]["qualified_direction"] != call:
+                raise SystemExit(f"Strict 126: qualification not propagated {key}")
+        elif key in strict_by_key:
+            raise SystemExit(f"Strict 126: REVIEW entered qualified set {key}")
+        if assessed_by_key[key]["strict_run_id"] != "STRICT-126-20261006":
+            raise SystemExit(f"Strict 126: assessed ledger lost run provenance {key}")
+
+
+def test_repository_snapshot_smoke():
+    run_repository_smoke()
+
+
+if __name__ == "__main__":
+    run_repository_smoke()

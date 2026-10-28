@@ -1,0 +1,17 @@
+{
+  "path": "work/phase2-20261027/historical-source-metadata.sqlite3",
+  "sizeBytes": 121782272,
+  "integrityCheck": "ok",
+  "foreignKeyViolations": 0,
+  "tables": {
+    "source_artifacts": 3,
+    "artifact_members": 14,
+    "source_records": 30912,
+    "crl_observations": 458,
+    "registry_applications": 29416,
+    "registry_submissions": 188890,
+    "action_review_observations": 458,
+    "pdf_check_observations": 458,
+    "review_cycles": 0
+  }
+}

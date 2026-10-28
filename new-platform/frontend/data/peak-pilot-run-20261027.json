@@ -1,0 +1,333 @@
+{
+  "schemaVersion": 1,
+  "runId": "PEAK-NCT05208047-20261027-research-001",
+  "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+  "nctId": "NCT05208047",
+  "drug": "Bezuclastinib plus sunitinib",
+  "indication": "Advanced gastrointestinal stromal tumor after progression on or intolerance to imatinib",
+  "asOf": "2026-10-27T23:19:59Z",
+  "decisionTarget": {
+    "date": "2026-11-30",
+    "status": "SPONSOR_REPORTED",
+    "sourceIds": [
+      "cogent-nda-acceptance"
+    ]
+  },
+  "sources": [
+    {
+      "id": "cogent-nda-acceptance",
+      "url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+      "publishedOn": "2026-05-28",
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "SPONSOR_REGULATORY_DISCLOSURE",
+      "notes": [
+        "Dated issuer release reopened through connected research tool. Acceptance, Priority Review and target are sponsor reports, not an independently examined FDA filing letter.",
+        "GIST combination application is separate from NonAdvSM and AdvSM programs."
+      ]
+    },
+    {
+      "id": "cogent-peak-results",
+      "url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+      "publishedOn": "2026-05-30",
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "SPONSOR_PHASE3_RESULTS",
+      "notes": [
+        "Issuer-reported primary analysis; original clinical study report and patient-level data were not reviewed."
+      ]
+    },
+    {
+      "id": "sec-peak-presentation",
+      "url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525273315/d54064dex991.htm",
+      "publishedOn": null,
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "SEC_FILED_SPONSOR_PRESENTATION",
+      "notes": [
+        "Presentation dated November 10, 2025; September 30, 2025 clinical cutoff. SEC hosting does not constitute FDA or independent scientific endorsement.",
+        "Slide 8 describes design; slide 9 population; slides 10-14 efficacy and safety. Document date is the reported presentation date; original filing timestamp was not independently retrieved."
+      ]
+    },
+    {
+      "id": "nci-peak-identity",
+      "url": "https://www.cancer.gov/research/participate/clinical-trials-search/v?id=NCI-2022-02257",
+      "publishedOn": null,
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "GOVERNMENT_TRIAL_CATALOG",
+      "notes": [
+        "NCI identifies NCT05208047, sponsor Cogent and protocol CGT9486-21-301, Phase III, including separate study parts. Original publication date unknown; page availability observed before the future target."
+      ]
+    },
+    {
+      "id": "asco-full-abstract",
+      "url": "https://ascopubs.org/doi/10.1200/JCO.2026.44.16_suppl.11500",
+      "publishedOn": null,
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "UNAVAILABLE",
+      "sourceClass": "CONFERENCE_ABSTRACT",
+      "notes": [
+        "Full-text request returned 403. Search excerpts are discovery leads; no finding relies on this inaccessible full text."
+      ]
+    },
+    {
+      "id": "ctgov-peak-api",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05208047",
+      "publishedOn": null,
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "UNAVAILABLE",
+      "sourceClass": "TRIAL_REGISTRY_API",
+      "notes": [
+        "Direct API unavailable through the connected research tool; the main study page rendered shell-only. NCI provides an additional official trial identity source."
+      ]
+    },
+    {
+      "id": "sutent-original-fda-letter",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2006/021938s000ltr.pdf",
+      "publishedOn": null,
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "FDA_APPROVAL_LETTER",
+      "notes": [
+        "PDF text examined: page 1 approves NDA 21-938 for imatinib-resistant/intolerant GIST; separate NDA 21-968 concerns renal cancer. Electronic signature page dated January 26, 2006.",
+        "Original PDF bytes/publication date and complete historical cycle history are not independently retained/adjudicated."
+      ]
+    },
+    {
+      "id": "nci-gist-evidence",
+      "url": "https://www.cancer.gov/types/soft-tissue-sarcoma/hp/gist-treatment-pdq",
+      "publishedOn": null,
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "GOVERNMENT_CLINICAL_EVIDENCE_SUMMARY",
+      "notes": [
+        "Reviewed sunitinib and GRID sections. Current summary is context for this future prediction, not a predecision feature snapshot for the older approvals."
+      ]
+    },
+    {
+      "id": "regorafenib-fda-indication",
+      "url": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/detailedIndex.cfm?cfgridkey=329410",
+      "publishedOn": null,
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "FDA_ORPHAN_APPROVAL_REGISTRY",
+      "notes": [
+        "FDA record reports GIST marketing approval February 25, 2013 after imatinib and sunitinib. Numeric application and exact supplemental cycle remain unreconciled in this case."
+      ]
+    },
+    {
+      "id": "ripretinib-original-fda-letter",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2020/213973Orig1s000ltr.pdf",
+      "publishedOn": null,
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "FDA_APPROVAL_LETTER",
+      "notes": [
+        "PDF text examined: NDA 213973, Deciphera, approval for advanced GIST after at least three kinase inhibitors. Read with FDA authors' summary for action date and trial linkage; original publication chronology remains unknown."
+      ]
+    },
+    {
+      "id": "ripretinib-fda-authors-summary",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10238554/",
+      "publishedOn": "2023-12-01",
+      "observedAt": "2026-10-27T23:19:59Z",
+      "captureStatus": "TEXT_OBSERVED",
+      "sourceClass": "FDA_AUTHORED_APPROVAL_SUMMARY",
+      "notes": [
+        "Final journal publication dated June 1, 2023; PMC availability December 1, 2023. Neither date predates the 2020 decision. Used only as later historical context available before this 2026 target."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "trial-identity",
+      "domain": "Exact trial and analysis population",
+      "approvalDirection": "MATERIALLY_UNCHANGED",
+      "text": "NCI links NCT05208047 to CGT9486-21-301. The study has multiple parts; the imatinib-only pretreatment population in Part 2 matches this GIST application. Whole-study planned enrollment cannot replace the randomized analysis count.",
+      "sourceIds": [
+        "nci-peak-identity"
+      ]
+    },
+    {
+      "id": "pfs-benefit",
+      "domain": "Primary efficacy",
+      "approvalDirection": "SUPPORTS_APPROVAL",
+      "text": "Sponsor reports PFS HR 0.50 (95% CI 0.39-0.65), p<0.0001, with medians 16.5 versus 9.2 months against active sunitinib. The magnitude and precision support efficacy; independent protocol/SAP and censoring review remain necessary.",
+      "sourceIds": [
+        "cogent-peak-results"
+      ]
+    },
+    {
+      "id": "response-benefit",
+      "domain": "Secondary efficacy",
+      "approvalDirection": "SUPPORTS_APPROVAL",
+      "text": "SEC presentation reports ORR 45.6% versus 25.8%, a 19.8-point difference; issuer releases round these to 46% versus 26%. This supports activity, while multiplicity and hierarchy require the original SAP.",
+      "sourceIds": [
+        "sec-peak-presentation"
+      ]
+    },
+    {
+      "id": "randomized-design",
+      "domain": "Design and sample",
+      "approvalDirection": "SUPPORTS_APPROVAL",
+      "text": "SEC slides report 413 randomized: 204 combination, 209 control. Randomization and blinded central PFS assessment support interpretability. Open treatment assignment still permits bias requiring review; this is not proof of an unbiased dataset.",
+      "sourceIds": [
+        "sec-peak-presentation"
+      ]
+    },
+    {
+      "id": "hepatic-risk",
+      "domain": "Safety challenge",
+      "approvalDirection": "OPPOSES_APPROVAL",
+      "text": "Reported grade 3+ ALT/AST elevations were 10.8% versus 1.4%. The imbalance is an opposing benefit-risk consideration, not proof of rejection; exposure, reversibility and clinical consequences require independent evaluation.",
+      "sourceIds": [
+        "cogent-nda-acceptance"
+      ]
+    },
+    {
+      "id": "tolerability-risk",
+      "domain": "Tolerability challenge",
+      "approvalDirection": "OPPOSES_APPROVAL",
+      "text": "Treatment-related discontinuation was reported as 7.4% versus 3.8%. Safety denominators in the SEC presentation are 204 and 208 dosed patients, whereas randomized counts are 204 and 209. Do not interchange those denominators.",
+      "sourceIds": [
+        "sec-peak-presentation"
+      ]
+    },
+    {
+      "id": "survival-uncertainty",
+      "domain": "Overall survival",
+      "approvalDirection": "UNDETERMINED",
+      "text": "Issuer describes OS as immature. This prevents a firm survival conclusion, but immature OS alone is not a demonstrated FDA failure criterion for GIST.",
+      "sourceIds": [
+        "cogent-nda-acceptance"
+      ]
+    },
+    {
+      "id": "filing-status",
+      "domain": "Regulatory context",
+      "approvalDirection": "MATERIALLY_UNCHANGED",
+      "text": "The May 28 issuer disclosure reports NDA acceptance, Priority Review and a November 30, 2026 target for the GIST combination. Filing acceptance establishes neither approval nor absence of later review issues.",
+      "sourceIds": [
+        "cogent-nda-acceptance"
+      ]
+    },
+    {
+      "id": "historical-endpoint-context",
+      "domain": "Historical regulatory comparison",
+      "approvalDirection": "MATERIALLY_UNCHANGED",
+      "text": "FDA authors discuss robust, clinically meaningful PFS with acceptable benefit-risk as a GIST approval basis. Selected approvals contextualize the endpoint; they do not estimate approval odds for PEAK or validate transfer across treatment lines.",
+      "sourceIds": [
+        "ripretinib-fda-authors-summary"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "id": "sunitinib-gist",
+      "drug": "Sunitinib",
+      "nctId": "NCT00075218",
+      "applicationId": "NDA021938",
+      "actionObserved": "APPROVAL",
+      "actionDate": "2006-01-26",
+      "sourceIds": [
+        "sutent-original-fda-letter",
+        "nci-gist-evidence",
+        "ripretinib-fda-authors-summary"
+      ],
+      "similarities": [
+        "GIST after imatinib; kinase inhibition; randomized tumor-control endpoint"
+      ],
+      "differences": [
+        "Placebo comparator versus PEAK active control; sunitinib monotherapy versus combination",
+        "NCI reports TTP 27.3 versus 6.4 weeks, HR 0.33; do not relabel TTP as PFS",
+        "Do not transfer the separate renal-cell NDA's accelerated-approval status to GIST"
+      ],
+      "modelEligible": false
+    },
+    {
+      "id": "regorafenib-grid",
+      "drug": "Regorafenib",
+      "nctId": "NCT01271712",
+      "applicationId": null,
+      "actionObserved": "APPROVAL",
+      "actionDate": "2013-02-25",
+      "sourceIds": [
+        "regorafenib-fda-indication",
+        "nci-gist-evidence"
+      ],
+      "similarities": [
+        "GIST; randomized PFS; kinase inhibition"
+      ],
+      "differences": [
+        "Later-line population after imatinib and sunitinib; placebo rather than active control",
+        "NCI reports PFS 4.8 versus 0.9 months, HR 0.27; cross-trial hazard ratios do not estimate a comparative treatment effect",
+        "Application/supplement identity remains unresolved"
+      ],
+      "modelEligible": false
+    },
+    {
+      "id": "ripretinib-invictus",
+      "drug": "Ripretinib",
+      "nctId": "NCT03353753",
+      "applicationId": "NDA213973",
+      "actionObserved": "APPROVAL",
+      "actionDate": "2020-05-15",
+      "sourceIds": [
+        "ripretinib-original-fda-letter",
+        "ripretinib-fda-authors-summary"
+      ],
+      "similarities": [
+        "GIST; randomized BICR-assessed PFS; KIT-directed treatment"
+      ],
+      "differences": [
+        "Fourth-line or later after at least three kinase inhibitors; double-blind placebo control",
+        "FDA authors report PFS 6.3 versus 1.0 months, HR 0.15; population and control preclude direct effect-size ranking against PEAK"
+      ],
+      "modelEligible": false
+    }
+  ],
+  "science": {
+    "status": "NEEDS_REVIEWED_PROTOCOL",
+    "requiredLevels": 20,
+    "requiredAssessments": 40,
+    "requiredLayers": 8,
+    "completedAssessments": 0,
+    "notes": [
+      "Clinical observations and qualitative arguments were examined; no reviewed 20-level/40-assessment/eight-layer protocol definitions were found in the repository or the connected task tracker.",
+      "No replacement taxonomy, completed SCIENCE assessments, independent reviewer identity or persistent PDUFA program ID was invented."
+    ]
+  },
+  "adversarial": {
+    "supportingFindingIds": [
+      "pfs-benefit",
+      "response-benefit",
+      "randomized-design"
+    ],
+    "opposingFindingIds": [
+      "hepatic-risk",
+      "tolerability-risk"
+    ],
+    "notes": [
+      "Source-linked qualitative challenge prepared during development; not an independent expert benefit-risk adjudication.",
+      "All three selected historical examples are approvals and are development context. They must not also serve as independent validation cases."
+    ]
+  },
+  "timing": {
+    "totalSeconds": null,
+    "collectionSeconds": null,
+    "comparisonSeconds": null,
+    "scienceSeconds": null,
+    "predictionSeconds": null,
+    "measurementBasis": "Manual retrieval and qualitative review were not fully instrumented. A timing log for the remaining work began at 2026-10-27T23:15:41.610256Z; earlier source discovery is excluded. End-to-end and stage durations are unavailable, so the 45-minute objective is not claimed as achieved."
+  },
+  "blockers": [
+    "Reviewed definitions and evaluation criteria for the existing 20-level / 40-assessment / eight-layer SCIENCE framework are missing; complete assessment execution cannot be certified.",
+    "The original PEAK protocol/SAP and patient-flow, missing-data, censoring and multiplicity analyses have not been independently reviewed.",
+    "Exact current NDA number, current FDA review correspondence, CMC/facility findings and persistent program registry mapping remain unreconciled.",
+    "Historical examples have FDA source-text support but lack independently adjudicated full application/cycle/source-publication records and predecision feature snapshots.",
+    "A justified preliminary classification method and independent scientific challenge are not yet established. No numerical probability or confidence is assigned.",
+    "This one-case assessment does not require the entire historical database to be populated; case-specific scientific and source gaps are the current blockers.",
+    "Batch processing remains disabled until the first real case passes its scientific, source and workflow checks."
+  ]
+}

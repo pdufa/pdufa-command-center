@@ -1,4 +1,5 @@
 """WT stage tables never promote candidates or infer missing information."""
+from supported_dashboard_checks import run_frontend_contract
 import ast
 import unittest
 from pathlib import Path
@@ -54,23 +55,10 @@ class StageWTTests(unittest.TestCase):
                   {"Ticker": "OK", "Drug": "z"}]
         self.assertEqual([r["Ticker"] for r in stage_rows(source, "PIPELINE")], ["OK"])
 
-    def test_ui_only_connects_existing_stage_collections(self):
-        app = (ROOT / "app.py").read_text(encoding="utf-8")
-        junior = (ROOT / "gem_jr_ui.py").read_text(encoding="utf-8")
-        gem = (ROOT / "gem_potential_ui.py").read_text(encoding="utf-8")
-        wt = (ROOT / "stage_wt_tables.py").read_text(encoding="utf-8")
-        for path in ("app.py", "gem_jr_ui.py", "gem_potential_ui.py",
-                     "stage_wt_tables.py"):
-            source = (ROOT / path).read_text(encoding="utf-8")
-            ast.parse(source, filename=path)
-        self.assertIn('render_stage_wt_tables(\n                    "PIPELINE", prepared', app)
-        self.assertIn('"GEM JR", active, namespace="gem_jr"', junior)
-        self.assertIn('render_trial_hierarchy(active, namespace="gem_jr"', junior)
-        self.assertIn('"GEM", source_cleared, namespace="gem"', gem)
-        self.assertNotIn('gem_jr_col, gem_col = st.columns', app)
-        self.assertIn('st.dataframe(', wt)
-        self.assertIn('render_ticker_toggle_panel(', wt)
-        self.assertIn('st.session_state.get("trading_tickers", [])', wt)
+    def test_supported_wt_uses_existing_memberships_and_exact_program_checkboxes(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('gem-research-defaults.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('wt-chart-checkbox-map.test.cjs'), 0)
 
 
 if __name__ == "__main__":

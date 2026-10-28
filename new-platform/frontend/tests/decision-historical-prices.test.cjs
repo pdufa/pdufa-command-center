@@ -1,0 +1,7 @@
+const test=require("node:test");const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");const Module=require("node:module");const ts=require("typescript");const f=path.resolve(__dirname,"../lib/decision-historical-prices.ts");const js=ts.transpileModule(fs.readFileSync(f,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;const m=new Module(f,module);m.filename=f;m.paths=module.paths;m._compile(js,f);const {evaluateHistoricalPriceWindow}=m.exports;
+const entry={programId:"PDUFA-123456",observedAt:"2025-01-01T21:00:00Z",capturedAt:"2025-01-02T00:00:00Z",close:10,source:"https://example.org/prices"};const exit={...entry,observedAt:"2025-02-01T21:00:00Z",capturedAt:"2025-02-02T00:00:00Z",close:12};
+test("synthetic price window computes net return with costs",()=>{const r=evaluateHistoricalPriceWindow(entry,exit,1);assert.equal(r.status,"RESEARCH_ONLY");assert.ok(Math.abs(r.window.netReturnPct-19)<1e-9);});
+test("invalid chronological order fails closed",()=>assert.equal(evaluateHistoricalPriceWindow(exit,entry,1).status,"NOT_READY"));
+test("different program fails closed",()=>assert.equal(evaluateHistoricalPriceWindow(entry,{...exit,programId:"PDUFA-654321"},1).status,"NOT_READY"));
+test("missing source fails closed",()=>assert.equal(evaluateHistoricalPriceWindow({...entry,source:""},exit,1).status,"NOT_READY"));
+test("negative prices fail closed",()=>assert.equal(evaluateHistoricalPriceWindow({...entry,close:-1},exit,1).status,"NOT_READY"));

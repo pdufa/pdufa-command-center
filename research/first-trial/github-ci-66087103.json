@@ -1,0 +1,99 @@
+{
+  "repository": "pdufa/pdufa-command-center",
+  "branch": "feature/decision-workstream-20261026",
+  "commit": "6608710399eb96867daf9b221203886ce003a5fb",
+  "checkedAt": "2026-10-27 23:38:13 UTC",
+  "workflowRuns": [
+    {
+      "id": 40603039035,
+      "name": "PDUFA Command Center CI",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603036883,
+      "name": "PDUFA Published Evidence & Source Checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603036886,
+      "name": "FDA historical prediction research unit tests",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603037339,
+      "name": "PDUFA Daily Research Safety Checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603037835,
+      "name": "MAIN 130 original SEC issuer identity research",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603036897,
+      "name": "VALIDATE — PDUFA overnight",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603037346,
+      "name": "PDUFA Decision Research Automated Safety Checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603037463,
+      "name": "MAIN Phase 3 census drilldown safety",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603037684,
+      "name": "Pipeline origin and SEC FDA GEM lineage checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603036881,
+      "name": "MAIN 741-trial Pipeline evidence gap safety",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603036882,
+      "name": "Isolated Source Recovery Rehearsal",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603037497,
+      "name": "WT ENTRY STAY EXIT UI Checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603037640,
+      "name": "DECISION research checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603036885,
+      "name": "PDUFA Next.js Frontend Checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 40603037066,
+      "name": "Supported dashboard and historical research contracts",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "scope": "Software and source-contract CI only; not FDA prediction accuracy or remotely rendered dashboard verification."
+}

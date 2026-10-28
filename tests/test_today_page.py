@@ -1,4 +1,5 @@
 """TODAY tab: date/source evidence and performance regressions."""
+from supported_dashboard_checks import run_frontend_contract
 import unittest
 from pathlib import Path
 
@@ -56,33 +57,10 @@ class TodayTabTests(unittest.TestCase):
                   "today_page.py").read_text(encoding="utf-8")
         self.assertIn("a source link is not proof of a positive primary endpoint", source)
 
-    def test_standalone_today_removed_and_gem_reference_workspace_installed(self):
-        root = Path(__file__).resolve().parents[1]
-        app = (root / "app.py").read_text(encoding="utf-8")
-        source = (root / "today_page.py").read_text(encoding="utf-8")
-        pipeline = app.split('if page == "PDUFA":', 1)[1].split(
-            'elif page == "2. PDUFA CALENDAR":', 1
-        )[0]
-        nav_line = next(line for line in app.splitlines()
-                        if line.startswith("nav_options ="))
-        self.assertNotIn('"TODAY"', nav_line)
-        self.assertNotIn('if page == "TODAY":', app)
-        self.assertIn('pipeline_tab, gem_jr_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(', pipeline)
-        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', pipeline)
-        self.assertNotIn('"PDUFA WORKBENCH"', pipeline)
-        self.assertIn("with gem_tab:", pipeline)
-        post = pipeline.split("with gem_jr_tab:", 1)[1].split("with gem_tab:", 1)[0]
-        self.assertIn("if gem_jr_tab.open:", post)
-        self.assertIn('_render_reference_gem_page("GEM JR")', post)
-        self.assertNotIn("render_post_phase3_workspace()", post)
-        self.assertNotIn("pipeline_phase3_daily_details_v1", post)
-        self.assertNotIn("render_today(", post)
-        self.assertIn("from post_phase3_workspace import render_post_phase3_workspace", app)
-        self.assertNotIn("from today_page import render_today", app)
-        # The original data collector and report source remain available.
-        self.assertIn("EXPORT PHASE 3 DAILY CSV", source)
-        self.assertIn("phase3_daily_", source)
-        self.assertIn('st.subheader("DAILY PHASE 3 RESULT REPORT")', source)
+    def test_supported_published_results_keep_exact_trial_sources_and_no_inferred_outcome(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('scans-new-results.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('candidate-assessments.test.cjs'), 0)
 
     def test_phase3_collector_and_data_preserved_but_old_schedule_removed(self):
         root = Path(__file__).resolve().parents[1]

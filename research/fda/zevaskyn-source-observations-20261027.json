@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "status": "CONNECTED_SOURCE_TEXT_OBSERVATIONS_PENDING_INDEPENDENT_REVIEW",
+  "observed_at": "2026-10-27T18:11:06Z",
+  "acquisition_method": "Connected research tool opened the official FDA PDF URLs; observations are transcribed structured facts, not retained original PDF bytes.",
+  "application_identifier_as_published": "BL 125807/0",
+  "application_identifier_in_sbra": "BLA 125807/0",
+  "canonical_application_candidate": "BLA125807",
+  "submission_identifier_as_published": "0",
+  "drug": "prademagene zamikeracel",
+  "trade_name": "ZEVASKYN",
+  "sponsor": "Abeona Therapeutics, Inc.",
+  "indication_at_approval": "Wounds in adults and children with recessive dystrophic epidermolysis bullosa",
+  "documents": [
+    {
+      "id": "bla125807-crl-20240416",
+      "source_url": "https://download.open.fda.gov/crl/CRL_BLA125807_20240416.pdf",
+      "document_date": "2024-04-16",
+      "publication_date": null,
+      "page_locators": [1, 9],
+      "observations": {
+        "action_heading": "COMPLETE RESPONSE",
+        "application_identifier": "BL 125807/0",
+        "original_submission_received": "2023-09-25",
+        "approval_not_granted": true,
+        "deficiency_family_observed": "CMC",
+        "partial_response_does_not_restart_review_cycle": true
+      },
+      "evidence_role": "RETROSPECTIVE_ACTION_LABEL_ONLY",
+      "original_pdf_bytes_retained": false,
+      "original_pdf_sha256": null
+    },
+    {
+      "id": "bla125807-approval-20250428",
+      "source_url": "https://www.fda.gov/media/186513/download",
+      "document_date": "2025-04-28",
+      "publication_date": null,
+      "page_locators": [1],
+      "observations": {
+        "action_heading": "BLA APPROVAL",
+        "application_identifier": "BL 125807/0",
+        "original_submission_received": "2023-09-25",
+        "license_number": "2329",
+        "associated_nct_ids": ["NCT01263379", "NCT04227106", "NCT05708677", "NCT05725018"]
+      },
+      "evidence_role": "RETROSPECTIVE_ACTION_LABEL_ONLY",
+      "original_pdf_bytes_retained": false,
+      "original_pdf_sha256": null
+    },
+    {
+      "id": "bla125807-sbra-20250428",
+      "source_url": "https://www.fda.gov/media/186796/download",
+      "document_date": "2025-04-28",
+      "publication_date": null,
+      "page_locators": [1, 4, 6],
+      "observations": {
+        "application_identifier": "BLA 125807/0",
+        "original_submission_received": "2023-09-25",
+        "crl_action_date": "2024-04-16",
+        "resubmission_received": "2024-10-28",
+        "pdufa_action_due_date": "2025-04-29",
+        "recommended_action": "APPROVAL"
+      },
+      "evidence_role": "RETROSPECTIVE_CYCLE_RECONCILIATION_ONLY",
+      "original_pdf_bytes_retained": false,
+      "original_pdf_sha256": null
+    }
+  ],
+  "review_cycle_ordinal": null,
+  "source_text_observed_actions": {"APPROVAL": 1, "COMPLETE_RESPONSE": 1},
+  "independently_verified_pass_cycles": 0,
+  "independently_verified_fail_cycles": 0,
+  "independent_review_complete": false,
+  "complete_application_denominator_verified": false,
+  "predecision_features_verified": false,
+  "model_eligible": false,
+  "prediction_probability": null,
+  "limitations": [
+    "Same application identity does not collapse a CRL and a later approval into one outcome or a conflicting label.",
+    "The FDA summary supports different submission receipts; no official cycle ordinal or independent boundary adjudication is asserted.",
+    "A document date is not its public release date. These documents were observed in 2026 and cannot be inserted as predecision features.",
+    "NCT identifiers associated with a review do not establish their exact pivotal/supportive role or phase.",
+    "Original PDFs, publication chronology, exact indication across cycles, and independent reviewers remain required.",
+    "This deliberately selected single application cannot establish historical coverage or predictive performance."
+  ]
+}

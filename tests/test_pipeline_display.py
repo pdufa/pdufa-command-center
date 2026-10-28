@@ -1,3 +1,4 @@
+from supported_dashboard_checks import run_frontend_contract
 import unittest
 from datetime import date
 
@@ -38,16 +39,28 @@ def example_records():
 
 
 class PipelineDisplayTests(unittest.TestCase):
-    def test_no_click_no_stages_or_dates_is_zero(self):
+    def test_cleared_dimensions_are_unrestricted_without_scalar_boolean_indexing(self):
         frame = example_records()
-        for stages, bands in (
-            ([], []),
-            (["PDUFA Decision"], []),
-            ([], ["0–30 DAYS"]),
+        original = frame.copy(deep=True)
+        for stages, bands, expected in (
+            ([], [], 16),
+            (["PDUFA Decision"], [], 12),
+            ([], ["0–30 DAYS"], 15),
+            (["not a recorded stage"], [], 0),
         ):
-            shown = chart_rows(filter_pipeline(frame, stages, bands))
-            self.assertEqual(len(shown), 0)
-            self.assertIn("Ticker", shown.columns)
+            with self.subTest(stages=stages, bands=bands):
+                shown = chart_rows(filter_pipeline(frame, stages, bands))
+                self.assertEqual(len(shown), expected)
+                self.assertIn("Ticker", shown.columns)
+        pd.testing.assert_frame_equal(frame, original)
+
+    def test_cleared_filters_keep_custom_indexes_and_literal_query_scope(self):
+        frame = example_records()
+        frame.index = ["exact-" + str(i) for i in range(len(frame))]
+        filtered = filter_pipeline(frame, [], [], query="Company 15")
+        self.assertEqual(filtered.index.tolist(), ["exact-15"])
+        self.assertEqual(filtered.iloc[0]["nct_id"], "NCT00000001")
+        self.assertEqual(len(filter_pipeline(frame, [], [], query="[not a regex]")), 0)
 
     def test_exact_stage_and_window_show_12_not_15(self):
         frame = example_records()
@@ -80,64 +93,19 @@ class PipelineDisplayTests(unittest.TestCase):
         self.assertEqual(sum(selected["current_stage"].value_counts()), len(result))
         self.assertEqual(sum(selected["DATES"].value_counts()), len(result))
 
-    def test_stage_and_date_controls_are_both_present_above_chart(self):
-        from pathlib import Path
-        source = Path("app.py").read_text(encoding="utf-8")
-        start = source.index('if page == "PDUFA":')
-        end = source.index('elif page == "2. PDUFA CALENDAR":', start)
-        section = source[start:end]
-        self.assertIn('with pipeline_tab:', section)
-        self.assertIn('pipeline_tab, gem_jr_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(', section)
-        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', section)
-        self.assertIn('key="pdufa_subtab", on_change="rerun"', section)
-        self.assertIn('with gem_tab:', section)
-        self.assertIn('if gem_tab.open:', section)
-        self.assertIn('render_pre_phase3()', section)
-        self.assertNotIn('elif page == "PRE PHASE 3":', source)
-        self.assertNotIn('"PDUFA WORKBENCH"', section)
-        self.assertEqual(section.count('with pipeline_tab:'), 3)
-        self.assertNotIn('"TRIALS AND DATES"', section)
-        self.assertIn('## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS', section)
-        self.assertIn('if pipeline_tab.open:', section)
-        self.assertRegex(section, r'st\.multiselect\(\s*\n\s*"STAGES"')
-        self.assertRegex(section, r'st\.multiselect\(\s*\n\s*"DATES"')
-        self.assertLess(section.index('selected_dates ='), section.index('### PDUFA TRIALS / PROGRAMS'))
-        self.assertLess(section.index('### PDUFA TRIALS / PROGRAMS'), section.index('STAGES / DATES count audit'))
-        self.assertIn('if not applied:', section)
-        self.assertIn('empty_chart', section)
+    def test_supported_stage_and_date_filters_preserve_exact_counts(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('trial-filters.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('pipeline-data.test.cjs'), 0)
 
-    def test_trade_workflow_lives_inside_pipeline_without_master_grid(self):
-        from pathlib import Path
-        source = Path("app.py").read_text(encoding="utf-8")
-        nav = source.split("nav_options =", 1)[1].split("\n", 1)[0]
-        self.assertIn('"PDUFA"', nav)
-        self.assertNotIn('"PRE PHASE 3"', nav)
-        self.assertNotIn('"WATCHLIST"', nav)
-        section = source.split('if page == "PDUFA":', 1)[1].split(
-            'elif page == "2. PDUFA CALENDAR":', 1
-        )[0]
-        self.assertLess(
-            section.index('with pipeline_tab:'), section.index('## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS')
-        )
-        self.assertIn('### PDUFA COUNTDOWN — DATE GRADIENT', section)
-        self.assertIn('master_with_phase3(df)', section)
-        self.assertIn('WATCHLIST MANAGEMENT', section)
-        self.assertIn('render_watchlist_indicators()', section)
-        self.assertIn('render_analysis_invest_signals()', section)
-        self.assertNotIn('master_watchlist_main_editor', section)
-        self.assertNotIn('if page == "WATCHLIST":', source)
+    def test_supported_workspace_preserves_trial_pages_and_research_only_wt(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('workspace-pages.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('wt-entry-stay-exit.test.cjs'), 0)
 
-    def test_pipeline_mobile_selectors_precede_both_count_charts(self):
-        """Both selectors must be before chart columns when st.columns stack."""
-        from pathlib import Path
-        app = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        p = app.split('if page == "PDUFA":', 1)[1].split('## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS', 1)[0]
-        stage = p.index('key="pipeline_stages_v9"')
-        dates = p.index('key="pipeline_dates_v9"')
-        charts = p.index('stage_chart_col, date_chart_col = st.columns(2, gap="medium")')
-        self.assertLess(stage, dates)
-        self.assertLess(dates, charts)
-        self.assertNotIn("with stage_col:\\n            stage_count_slot", p)
+    def test_supported_central_restrictions_keep_original_filters_and_presets(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('restrictions-central-placement.test.cjs'), 0)
 
 
 

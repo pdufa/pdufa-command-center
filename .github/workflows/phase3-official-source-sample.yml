@@ -1,0 +1,18 @@
+name: Phase 3 official source sample (read-only)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/decision-workstream-20261026
+    paths:
+      - .github/workflows/phase3-official-source-sample.yml
+jobs:
+  source-sample:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify first ten Phase 3 candidates from official registry
+        run: python scripts/verify_phase3_sources.py data/all_phase_trials.csv --limit 10

@@ -1,0 +1,586 @@
+{
+  "AGIO": {
+    "events": {
+      "AGIO|MITAPIVAT_SCD_20261101": {
+        "urls": [
+          "https://investor.agios.com/news-releases/news-release-details/us-fda-grants-priority-review-agios-snda-mitapivat-sickle-cell"
+        ],
+        "primary_target_anchor": "FDA’s PDUFA goal date is November 1, 2026"
+      }
+    },
+    "hosts": [
+      "investor.agios.com"
+    ]
+  },
+  "ANAB": {
+    "events": {
+      "ANAB|IMSIDOLIMAB_GPP_20261212": {
+        "urls": [
+          "https://ir.anaptysbio.com/news-releases/news-release-details/anaptys-announces-first-quarter-2026-financial-results-and",
+          "https://www.sec.gov/Archives/edgar/data/1370053/000119312526396690/anab-ex99_1.htm"
+        ],
+        "primary_target_anchor": "FDA target action date (PDUFA) of Dec. 12, 2026 for imsidolimab in generalized pustular psoriasis (GPP)"
+      }
+    },
+    "hosts": [
+      "anaptysbio.gcs-web.com",
+      "ir.anaptysbio.com"
+    ]
+  },
+  "BBIO": {
+    "events": {
+      "BBIO|BBP418_LGMD2IR9_20261127": {
+        "urls": [
+          "https://investor.bridgebio.com/news/news-details/2026/BridgeBio-Announces-FDA-Acceptance-and-Priority-Review-of-NDA-for-BBP-418-for-LGMD2IR9/default.aspx"
+        ]
+      }
+    },
+    "hosts": [
+      "investor.bridgebio.com"
+    ]
+  },
+  "BLTE": {
+    "hosts": [
+      "investors.belitebio.com"
+    ],
+    "cash_fact_reference": {
+      "url": "https://investors.belitebio.com/sec-filings/sec-filing/6-k/0001104659-26-095218",
+      "accession": "0001104659-26-095218",
+      "as_of": "2026-06-30",
+      "cash_and_cash_equivalents_usd": 279900000,
+      "us_treasury_investments_usd": 500100000,
+      "source": "Belite Bio August 13 2026 Form 6-K (accession 0001104659-26-095218), exhibit 99.1",
+      "verification_scope": "DOCUMENTED_REFERENCE_ONLY; not a validated operating-cash-flow runway or automatic GEM entry authorization",
+      "sec_exhibit_url": "https://www.sec.gov/Archives/edgar/data/1889109/000110465926095218/tm2623018d1_ex99-1.htm",
+      "runway_status": "NOT_VERIFIED_WITHOUT_SAME_PERIOD_OPERATING_CASH_FLOW"
+    },
+    "events": {
+      "BLTE|TINLAREBANT_STGD1_20270212": {
+        "individual_financing_close": {
+          "date": "2025-12-03",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1889109/000110465926037374/blte-20251231x20f.htm",
+          "evidence_type": "ONE_POST_DRAGON_TOPLINE_COMPLETED_PUBLIC_EQUITY_OFFERING_ONLY",
+          "explanation": "Issuer's filed 2025 Form 20-F states public ADS offering closed December 3 2025 (~$350m gross), after December 1 2025 final DRAGON Phase 3 readout. Earlier September 9 2025 $125m PIPE closed BEFORE final readout and does not qualify as second post-readout financing. Underwriter overallotment is same December transaction. Even if this dated closing verifies, GEM two-financing gate remains BLOCKED."
+        }
+      }
+    }
+  },
+  "BMY": {
+    "events": {
+      "BMY|MEZIGDOMIDE_RRMM_20270513": {
+        "urls": [
+          "https://news.bms.com/news/details/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx",
+          "https://investors.bms.com/iframes/press-releases/press-release-details/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx",
+          "https://news.bms.com/news/corporate-financial/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx"
+        ],
+        "primary_release_date": "2026-07-13"
+      }
+    },
+    "hosts": [
+      "news.bms.com",
+      "investors.bms.com"
+    ]
+  },
+  "CAPR": {
+    "events": {
+      "CAPR|DERAMIOCEL_DMD_20261122": {
+        "urls": [
+          "https://www.capricor.com/investors/news-events/press-releases/detail/354/capricor-therapeutics-announces-extension-of-pdufa-target"
+        ],
+        "financing_research_documents": [
+          "https://www.sec.gov/Archives/edgar/data/1133869/000110465926097294/capr-20260630x10q.htm"
+        ]
+      }
+    },
+    "hosts": [
+      "www.capricor.com"
+    ]
+  },
+  "CGEM": {
+    "hosts": [
+      "investors.cullinantherapeutics.com"
+    ]
+  },
+  "COGT": {
+    "events": {
+      "COGT|BEZUCLASTINIB_GIST_20261130": {
+        "urls": [
+          "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0"
+        ],
+        "first_financing_primary_source": {
+          "date": "2025-11-18",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
+          "evidence_type": "FIRST_POST_READOUT_DEBT_OFFERING_SINGLE_FUNDED_CLOSE",
+          "note": "SEC 8-K dated November 18 2025 explicitly states offering of $230 million convertible senior notes was completed. November 10 GIST Phase3 PEAK readout precedes first close; no exact subsequent ATM settlement day verified."
+        },
+        "individual_financing_close": {
+          "date": "2025-11-18",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
+          "evidence_type": "SINGLE_FUNDED_DEBT_TRANSACTION_ONLY",
+          "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
+        }
+      },
+      "COGT|BEZUCLASTINIB_ADVSM_20270629": {
+        "individual_financing_close": {
+          "date": "2025-11-18",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
+          "evidence_type": "SINGLE_FUNDED_DEBT_TRANSACTION_ONLY",
+          "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
+        }
+      },
+      "COGT|BEZUCLASTINIB_NONADVSM_20261230": {
+        "individual_financing_close": {
+          "date": "2025-11-18",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526053334/cogt-20251231.htm",
+          "evidence_type": "INDIVIDUAL_CLOSED_CONVERTIBLE_DEBT_ONLY",
+          "explanation": "Company's 2025 Form 10-K states that on November 18 2025 it completed a $230m convertible-note offering; a separate November 13 common-stock offering is disclosed. The issuer/program-specific Phase 3 chronology for NONADVSM and whether these financings qualify as two distinct post-readout closes are NOT established. Research only; do not authorize trade entry."
+        }
+      }
+    },
+    "hosts": [
+      "investors.cogentbio.com"
+    ]
+  },
+  "CORT": {
+    "events": {
+      "CORT|RELACORILANT_CUSHINGS_20261217": {
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1088856/000162828026050607/cort072926ex991pressrelease.htm"
+        ]
+      }
+    }
+  },
+  "DYN": {
+    "events": {
+      "DYN|ZROSTUDIRSEN_DMD_20270121": {
+        "drug_aliases": [
+          "z-rostudirsen",
+          "zeleciment rostudirsen",
+          "DYNE-251"
+        ],
+        "urls": [
+          "https://www.dyne-tx.com/fda-accepts-bla-for-z-rostudirsen/",
+          "https://investors.dyne-tx.com/news-releases/news-release-details/dyne-therapeutics-announces-us-fda-acceptance-biologics-license/"
+        ],
+        "financing_research_documents": [
+          "https://www.sec.gov/Archives/edgar/data/1818794/000119312526323940/dyn-ex99_1.htm"
+        ],
+        "individual_financing_close": {
+          "date": "2026-06-16",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1818794/000181879426000003/dyn-20260616.htm",
+          "evidence_type": "SINGLE_FUNDED_50M_DEBT_TRANCHE_ONLY",
+          "explanation": "June 16 SEC 8-K reports a completed $50m term-loan tranche borrowing. Do not count available $400m facility, undrawn tranches or post-Phase-3 financing #2; trade entry remains blocked."
+        }
+      }
+    },
+    "hosts": [
+      "investors.dyne-tx.com",
+      "www.dyne-tx.com"
+    ]
+  },
+  "EXEL": {
+    "events": {
+      "EXEL|ZANZALINTINIB_CRC": {
+        "urls": [
+          "https://ir.exelixis.com/news-releases/news-release-details/exelixis-announces-us-fda-accepted-new-drug-application",
+          "https://ir.exelixis.com/node/27136"
+        ],
+        "primary_target_anchor": "target action date of December 3, 2026"
+      }
+    },
+    "hosts": [
+      "exelixis.gcs-web.com",
+      "ir.exelixis.com"
+    ]
+  },
+  "GILD": {
+    "events": {
+      "GILD|ANITOCEL_MM_20261223": {
+        "drug_aliases": [
+          "anito-cel",
+          "anitocabtagene autoleucel"
+        ],
+        "indication_aliases": [
+          "4L+ R/R MM"
+        ],
+        "urls": [
+          "https://www.gilead.com/news/news-details/2026/gilead-sciences-to-acquire-arcellx-to-maximize-long-term-potential-of-anito-cel",
+          "https://investors.gilead.com/news/news-details/2026/Gilead-Sciences-Announces-First-Quarter-Financial-Results/default.aspx"
+        ]
+      }
+    },
+    "hosts": [
+      "investors.gilead.com",
+      "www.gilead.com"
+    ]
+  },
+  "HRMY": {
+    "events": {
+      "HRMY|PITOLISANT_GR_20270401": {
+        "urls": [
+          "https://harmonybiosciences.gcs-web.com/news-releases/news-release-details/harmony-biosciences-announces-record-q2-2026-revenue-and-shares",
+          "https://www.sec.gov/Archives/edgar/data/1802665/000110465926090086/hrmy-20260804xex99d1.htm"
+        ],
+        "primary_target_anchor": "target PDUFA date of April 1, 2027"
+      }
+    },
+    "hosts": [
+      "harmonybiosciences.gcs-web.com"
+    ]
+  },
+  "INBX": {
+    "hosts": [
+      "inhibrx.investorroom.com"
+    ]
+  },
+  "INO": {
+    "events": {
+      "INO|INO3107_RRP_20261030": {
+        "urls": [
+          "https://ir.inovio.com/news/news-details/2025/FDA-Accepts-for-Review-INOVIOs-BLA-for-INO-3107-for-the-Treatment-of-Adults-with-Recurrent-Respiratory-Papillomatosis-RRP/default.aspx"
+        ],
+        "primary_target_anchor": "The FDA assigned INO-3107 a Prescription Drug User Fee Act (PDUFA) review goal date of October 30, 2026",
+        "individual_financing_close": {
+          "date": "2026-07-31",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1055726/000105572626000023/ino-20260630.htm",
+          "evidence_type": "EXACT_DATED_SEC_DISCOVERY_REQUIRES_LIVE_VERIFICATION",
+          "explanation": "SEC Form 10-Q states that the July 31 2026 registered common-stock/warrant offering closed, with net proceeds of $18.3m. Separate April 6 offering is also disclosed. Specific transaction only; no Phase 3 sequencing/entry authorization."
+        }
+      }
+    },
+    "hosts": [
+      "ir.inovio.com"
+    ]
+  },
+  "IONS": {
+    "hosts": [
+      "ir.ionis.com"
+    ],
+    "events": {
+      "IONS|BEPIROVIRSEN_CHB_20261026": {
+        "individual_financing_close": {
+          "date": "2025-11-17",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/874015/000119312525284609/d31230d8k.htm",
+          "evidence_type": "EXACT_DATED_SEC_DISCOVERY_REQUIRES_LIVE_VERIFICATION",
+          "explanation": "Same-issuer SEC 8-K states $770m aggregate principal amount convertible-notes private offering completed November 17, 2025. Initial purchasers' $70m option is part of the same financing. Specific transaction only."
+        }
+      }
+    }
+  },
+  "IRD": {
+    "events": {
+      "IRD|PHENTOLAMINE_PRESBYOPIA_20261017": {
+        "financing_urls": [
+          "https://www.sec.gov/Archives/edgar/data/1228627/000114036126006176/ef20066083_form8k.htm"
+        ],
+        "urls": [
+          "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217064Orig1s005ltr.pdf",
+          "https://ir.opusgtx.com/press-releases/detail/546/opus-genetics-announces-fda-approval-of-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia",
+          "https://ir.opusgtx.com/press-releases/detail/519/opus-genetics-announces-fda-acceptance-of-supplemental-new-drug-application-for-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia"
+        ],
+        "primary_target_anchor": "The FDA has assigned a PDUFA goal date of October 17, 2026",
+        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf",
+        "fda_application_number": "217064",
+        "fda_supplement_number": "005",
+        "fda_regulatory_applicant": "FamyGen Life Sciences, Inc.",
+        "fda_issuer_approval_url": "https://ir.opusgtx.com/press-releases/detail/546/opus-genetics-announces-fda-approval-of-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia"
+      }
+    },
+    "hosts": [
+      "ir.opusgtx.com"
+    ]
+  },
+  "MLYS": {
+    "events": {
+      "MLYS|LORUNDROSTAT_20261222": {
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000048/mlys202603068kex991.htm",
+          "https://ir.mineralystx.com/news-events/press-releases/detail/111/mineralys-therapeutics-reports-second-quarter-2026"
+        ],
+        "financing_research_documents": [
+          "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000142/mlys-20250930.htm"
+        ],
+        "financing_urls": [
+          "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000139/mlys2025q38kex991.htm"
+        ],
+        "individual_financing_close": {
+          "date": "2025-09-04",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000139/mlys2025q38kex991.htm",
+          "evidence_type": "SINGLE_COMPLETED_EQUITY_FINANCING_FROM_EXACT_DATED_SEC_EXHIBIT",
+          "explanation": "SEC-filed Nov 10, 2025 Exhibit 99.1 states Sept 4, 2025 public equity financing completed, gross proceeds approx $287.5M. ONE transaction only; distinct post-Phase-3 second closing and GEM eligibility still require separate verification."
+        }
+      }
+    },
+    "hosts": [
+      "ir.mineralystx.com"
+    ]
+  },
+  "NUVB": {
+    "events": {
+      "NUVB|IBTROZI_ROS1NSCLC_20270104": {
+        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219713s004lbl.pdf",
+        "urls": [
+          "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219713Orig1s004ltr.pdf",
+          "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Announces-FDA-Approval-of-Supplemental-New-Drug-Application-for-IBTROZI-taletrectinib-with-Updated-Duration-of-Response-in-TKI-Nave-Advanced-ROS1-Positive-Non-Small-Cell-Lung-Cancer/default.aspx"
+        ],
+        "individual_financing_close": {
+          "date": "2026-06-30",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1811063/000119312526290823/d81296d8k.htm",
+          "evidence_type": "EXACT_DATED_SEC_DISCOVERY_REQUIRES_LIVE_VERIFICATION",
+          "explanation": "Same-issuer SEC 8-K states June 30, 2026 closing of registered $250m convertible notes offering. July underwriters option is same issuance, not a distinct second financing."
+        }
+      }
+    },
+    "hosts": [
+      "investors.nuvationbio.com"
+    ]
+  },
+  "PHAR": {
+    "financial_report": {
+      "cash": {
+        "label": "Total cash and cash equivalents at June 30",
+        "number_index": 0
+      },
+      "currency": "USD",
+      "currency_text": "US$",
+      "end": "2026-06-30",
+      "flow": {
+        "label": "Net cash flows generated from (used in) operating activities",
+        "number_index": 0
+      },
+      "ordered_headers": [
+        "Amounts in $’000",
+        "1H 2026",
+        "1H 2025"
+      ],
+      "period_text": "For the period ended June 30",
+      "scale": 1000,
+      "start": "2026-01-01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1828316/000182831626000033/a2026hy1pressrelease.htm"
+    },
+    "hosts": [
+      "www.pharming.com"
+    ]
+  },
+  "PHVS": {
+    "hosts": [
+      "ir.pharvaris.com"
+    ],
+    "events": {
+      "PHVS|DEUCRICTIBANT_HAE_20270423": {
+        "urls": [],
+        "individual_financing_close": {
+          "date": "2026-05-11",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526216957/d134419d6k.htm",
+          "evidence_type": "SINGLE_FUNDED_TRANSACTION_ONLY",
+          "explanation": "May 11 2026 SEC 6-K says Offering closed and identifies shares/proceeds. Does not establish Phase 3 timeline or second financing."
+        }
+      }
+    },
+    "financial_report": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526345702/phvs-ex99_3.htm",
+      "start": "2026-01-01",
+      "end": "2026-06-30",
+      "scale": 1,
+      "period_text": "For the six months ended June 30, 2026",
+      "currency": "EUR",
+      "currency_text": "€",
+      "ordered_headers": [
+        "2026",
+        "2025",
+        "€",
+        "€"
+      ],
+      "cash": {
+        "label": "Cash and cash equivalents at the end of the period",
+        "number_index": 1
+      },
+      "flow": {
+        "label": "Net cash flows used in operating activities",
+        "number_index": 0
+      }
+    }
+  },
+  "PRAX": {
+    "events": {
+      "PRAX|ULIXACALTAMIDE_ET_20270129": {
+        "urls": [
+          "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-fda-acceptance-new-drug",
+          "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-fda-acceptance-new-drug"
+        ]
+      },
+      "PRAX|RELUTRIGINE_DEE_20261227": {
+        "individual_financing_close": {
+          "date": "2026-01-07",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000047/prax-20260331.htm",
+          "evidence_type": "EXACT_DATED_SEC_DISCOVERY_REQUIRES_LIVE_VERIFICATION",
+          "explanation": "Issuer SEC March 2026 10-Q states January 7 2026 public offering completed with $621.2m net proceeds. Underwriter option is part of same closing. This is one transaction only; Phase3 sequencing and trading permission remain separately blocked."
+        }
+      }
+    },
+    "hosts": [
+      "investors.praxismedicines.com",
+      "ir.praxismedicines.com"
+    ]
+  },
+  "SMMT": {
+    "events": {
+      "SMMT|IVONESCIMAB_20261114": {
+        "urls": [
+          "https://smmttx.com/news/press-releases/news-details/2026/Summit-Therapeutics-Announces-U-S--FDA-Acceptance-of-Biologics-License-Application-BLA-Seeking-Approval-for-Ivonescimab-in-Combination-with-Chemotherapy-in-Treatment-of-Patients-with-EGFRm-NSCLC-Post-TKI-Therapy/default.aspx",
+          "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000006/a2026_prx0129xfdablaacce.htm"
+        ],
+        "individual_financing_close": {
+          "date": "2026-10-05",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1599298/000119312526415755/d126889dpre14a.htm",
+          "evidence_type": "SINGLE_COMPLETED_2026_PREFERRED_PRIVATE_PLACEMENT_ONLY",
+          "explanation": "SEC PRE 14A filed 2026-10-06 explicitly says $2.0B Class A preferred-stock private placement closed 2026-10-05. This is separate from October 2025 $500m PIPE in the historical second-financing ledger; this 2026 transaction is NOT proof that the old ledger's 2025-10-31 day is correct or that two qualifying post-Phase3 closings occurred."
+        }
+      }
+    },
+    "hosts": [
+      "smmttx.com"
+    ]
+  },
+  "SRPT": {
+    "hosts": [
+      "investorrelations.sarepta.com"
+    ]
+  },
+  "SRRK": {
+    "events": {
+      "SRRK|APITEGROMAB_20260930": {
+        "urls": [
+          "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761463Orig1s000ltr.pdf"
+        ]
+      }
+    },
+    "hosts": []
+  },
+  "SVRA": {
+    "events": {
+      "SVRA|MOLBREEVI_PAP_20261122": {
+        "drug_aliases": [
+          "molgramostim"
+        ],
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1160308/000119312526344585/svra-20260630.htm",
+          "https://investors.savarapharma.com/news/news-details/2026/Savara-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+          "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx"
+        ],
+        "primary_target_anchor": "target action date to November 22, 2026",
+        "primary_target_context_window": 2400
+      }
+    },
+    "hosts": [
+      "investors.savarapharma.com"
+    ]
+  },
+  "VRTX": {
+    "hosts": [
+      "investors.vrtx.com"
+    ]
+  },
+  "VTRS": {
+    "events": {
+      "VTRS|MR107A02_ACUTEPAIN_20261227": {
+        "urls": [
+          "https://investor.viatris.com/news-releases/news-release-details/us-fda-accepts-viatris-new-drug-application-fast-acting/",
+          "https://newsroom.viatris.com/2026-05-18-U-S-FDA-Accepts-Viatris-New-Drug-Application-for-Fast-Acting-Meloxicam-for-the-Treatment-of-Moderate-to-Severe-Acute-Pain"
+        ],
+        "individual_financing_close": {
+          "date": "2026-06-17",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1792044/000114036126025744/ef20076340_8k.htm",
+          "evidence_type": "SINGLE_EUR_SENIOR_NOTES_DEBT_REFINANCING_NOT_BIOTECH_FINANCING_SEQUENCE",
+          "explanation": "One EUR650m 4.250% senior-notes sale completed June 17, 2026, used in part to refinance 2026 notes. Same Viatris issuer and same deal across both drug-event views; never count twice or qualify second separate post-readout financing."
+        },
+        "financing_urls": [
+          "https://www.sec.gov/Archives/edgar/data/1792044/000114036126025744/ef20076340_8k.htm"
+        ]
+      },
+      "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017": {
+        "urls": [
+          "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217064Orig1s005ltr.pdf",
+          "https://newsroom.viatris.com/2026-10-16-Viatris-Receives-U-S-FDA-Approval-for-RYZUMVI-R-for-the-Treatment-of-Presbyopia",
+          "https://investor.viatris.com/news-releases/news-release-details/fda-accepts-viatris-supplemental-new-drug-application-mr-141",
+          "https://newsroom.viatris.com/2026-02-25-FDA-Accepts-Viatris-Supplemental-New-Drug-Application-for-MR-141-Phentolamine-Ophthalmic-Solution-0-75-for-the-Treatment-of-Presbyopia"
+        ],
+        "individual_financing_close": {
+          "date": "2026-06-17",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1792044/000114036126025744/ef20076340_8k.htm",
+          "evidence_type": "SINGLE_EUR_SENIOR_NOTES_DEBT_REFINANCING_NOT_BIOTECH_FINANCING_SEQUENCE",
+          "explanation": "One EUR650m 4.250% senior-notes sale completed June 17, 2026, used in part to refinance 2026 notes. Same Viatris issuer and same deal across both drug-event views; never count twice or qualify second separate post-readout financing."
+        },
+        "financing_urls": [
+          "https://www.sec.gov/Archives/edgar/data/1792044/000114036126025744/ef20076340_8k.htm"
+        ],
+        "approval_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf",
+        "fda_application_number": "217064",
+        "fda_supplement_number": "005",
+        "fda_regulatory_applicant": "FamyGen Life Sciences, Inc.",
+        "fda_issuer_approval_url": "https://newsroom.viatris.com/2026-10-16-Viatris-Receives-U-S-FDA-Approval-for-RYZUMVI-R-for-the-Treatment-of-Presbyopia"
+      }
+    },
+    "hosts": [
+      "newsroom.viatris.com",
+      "investor.viatris.com"
+    ]
+  },
+  "ZLAB": {
+    "events": {
+      "ZLAB|POVETACICEPT_IGAN_20261130": {
+        "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1704292/000162828026053791/zlab-202686x8kex991.htm"
+        ]
+      }
+    }
+  },
+  "IMNM": {
+    "events": {
+      "IMNM|VAREGACESTAT_DESMOID_20270428": {
+        "individual_financing_close": {
+          "date": "2025-01-31",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1472012/000155837025003302/tmb-20241231x10k.htm",
+          "evidence_type": "SINGLE_FUNDED_TRANSACTION_ONLY",
+          "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
+        }
+      }
+    }
+  },
+  "BMRN": {
+    "events": {
+      "BMRN|VOXZOGO_ACHONDROPLASIA_20270228": {
+        "individual_financing_close": {
+          "date": "2026-02-12",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1048477/000119312526048736/d63881d8k.htm",
+          "evidence_type": "SINGLE_FUNDED_DEBT_TRANSACTION_ONLY",
+          "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
+        }
+      }
+    }
+  },
+  "CYTK": {
+    "events": {
+      "CYTK|MYQORZO_HCM_20261114": {
+        "individual_financing_close": {
+          "date": "2026-05-08",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm",
+          "evidence_type": "EXACT_DATE_SEC_RECHECK_CANDIDATE_ONLY",
+          "explanation": "Issuer SEC Q2 2026 10-Q says May 8 2026 offering closed and net proceeds; must still pass fresh strict source-verification parser before VERIFIED. Same offering's underwriter option is not a second financing."
+        },
+        "financing_urls": [
+          "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm"
+        ]
+      }
+    }
+  },
+  "APMD": {
+    "events": {
+      "APMD|OXNIMBI_OSA_20270228": {
+        "financing_research_documents": [
+          "https://www.sec.gov/Archives/edgar/data/1745648/000119312526385356/apmd-20260630.htm"
+        ]
+      }
+    }
+  }
+}

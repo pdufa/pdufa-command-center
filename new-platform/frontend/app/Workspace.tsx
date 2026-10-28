@@ -1763,6 +1763,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" className={top==="SCANS"?"nav-selected":""} aria-current={top==="SCANS"?"page":undefined} onClick={()=>{setTop("SCANS");setMobileNavOpen(false);}}>SCANS</button>
       <button type="button" className={top==="RESULTS"?"nav-selected":""} aria-current={top==="RESULTS"?"page":undefined} onClick={()=>{setTop("RESULTS");setMobileNavOpen(false);}}>RESULTS</button>
       <a href="/installation-audit" className="nav-selected" style={{display:"inline-flex",alignItems:"center",padding:"8px 12px",textDecoration:"none",border:"1px solid currentColor",borderRadius:6}}>SYSTEM STATUS</a>
+      <a href="/prediction-pilot" style={{display:"inline-flex",alignItems:"center",padding:"8px 12px",textDecoration:"none",border:"1px solid currentColor",borderRadius:6}}>FIRST TRIAL ASSESSMENT</a>
       <button type="button" className={top==="BACKUP"?"nav-selected":""} aria-current={top==="BACKUP"?"page":undefined} onClick={()=>{setTop("BACKUP");setMobileNavOpen(false);}}>BACKUP</button>
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="PREDICTION"?"nav-selected":""} aria-current={top==="PREDICTION"?"page":undefined} onClick={()=>{setTop("PREDICTION");setMobileNavOpen(false);}}>PREDICTION</button>

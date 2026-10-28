@@ -1,4 +1,5 @@
 """Static integration tests for Step 4 closing review; no remote SEC calls."""
+from supported_dashboard_checks import run_frontend_contract
 import ast
 import unittest
 from pathlib import Path
@@ -32,14 +33,10 @@ class FinancingClosureUIIntegrationTests(unittest.TestCase):
         before = closure.split("if fetch:", 1)[0]
         self.assertNotIn("fetch_sec_document(", before)
 
-    def test_core_pre_phase3_remains_blank(self):
-        app = (ROOT / "app.py").read_text(encoding="utf-8")
-        pre = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
-        self.assertIn("POST-READOUT HANDOFF", pre)
-        self.assertIn("ENTRY READY", pre)
-        self.assertNotIn("sec_financing_closure", pre)
-        self.assertNotIn("render_clinical_review()", pre)
-        self.assertNotIn("render_financing_closure(", pre)
+    def test_supported_financial_research_does_not_change_qualification_or_fsfa(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('research-only-backend.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('research-readiness.test.cjs'), 0)
 
 
 if __name__ == "__main__":

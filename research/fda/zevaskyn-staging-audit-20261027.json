@@ -1,0 +1,79 @@
+{
+  "application_counts": {
+    "candidate_applications": 0,
+    "candidate_fail": 0,
+    "candidate_pass": 0,
+    "candidate_review_cycles": 0,
+    "conflicting_applications": 0,
+    "conflicting_review_cycles": 0,
+    "excluded_events": 2,
+    "model_eligible_records": 0,
+    "revision_dependent_review_cycles": 0,
+    "verified_applications": 0,
+    "verified_fail": 0,
+    "verified_pass": 0,
+    "verified_review_cycles": 0
+  },
+  "as_of": "2026-10-27",
+  "audit": "historical_fda_decision_ingestion",
+  "candidate_review_cycles": [],
+  "classification_counts": {
+    "missing_exact_application_submission_cycle": 2
+  },
+  "complete_application_denominator_verified": false,
+  "conflicting_applications": [],
+  "conflicting_review_cycles": [],
+  "excluded_observations": [
+    {
+      "action": "complete_response_letter",
+      "application_id": "BLA125807",
+      "candidate_label": null,
+      "decision_date": "2024-04-16",
+      "eligible_for_binary_training": false,
+      "evidence_as_of": null,
+      "independently_verified": false,
+      "issues": [
+        "missing_exact_application_submission_cycle",
+        "unknown_or_invalid_source_chronology"
+      ],
+      "label": null,
+      "model_eligible": false,
+      "retrieved_on": "2026-10-27",
+      "review_cycle": null,
+      "source_content_verified": false,
+      "source_url": "https://download.open.fda.gov/crl/CRL_BLA125807_20240416.pdf",
+      "status": "missing_exact_application_submission_cycle",
+      "submission_id": "0"
+    },
+    {
+      "action": "approval",
+      "application_id": "BLA125807",
+      "candidate_label": null,
+      "decision_date": "2025-04-28",
+      "eligible_for_binary_training": false,
+      "evidence_as_of": null,
+      "independently_verified": false,
+      "issues": [
+        "missing_exact_application_submission_cycle",
+        "unknown_or_invalid_source_chronology"
+      ],
+      "label": null,
+      "model_eligible": false,
+      "retrieved_on": "2026-10-27",
+      "review_cycle": null,
+      "source_content_verified": false,
+      "source_url": "https://www.fda.gov/media/186513/download",
+      "status": "missing_exact_application_submission_cycle",
+      "submission_id": "0"
+    }
+  ],
+  "independent_backtest_complete": false,
+  "independently_verified_fail_count": 0,
+  "independently_verified_pass_count": 0,
+  "input_events": 2,
+  "model_eligible_records": 0,
+  "prediction_model_validated": false,
+  "revision_dependent_review_cycles": [],
+  "source_content_verified": false,
+  "warning": "A URL field is not proof the FDA source supports the event. Source documents and application identity require separate verification."
+}

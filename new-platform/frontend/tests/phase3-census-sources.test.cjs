@@ -17,7 +17,7 @@ const { parsePhase3CensusSourceDirectory, sourcesForPhase3Trial, FDA_RESEARCH_LI
 const { buildPhase3EvidenceGapCsv, PIPELINE_GATE_AUTOMATION } = require("../lib/phase3-census-evidence-gaps.ts");
 const Details = require("../app/installation-audit/phase3-census/Phase3EvidenceDetails.tsx").default;
 const root = path.join(__dirname,"../../..");
-const input = fs.readFileSync(path.join(root,"data/phase3_all_years_300m_10b_trials.csv"),"utf8");
+const input = fs.readFileSync(path.join(__dirname,"../public/phase3-census-2026-10-26.csv"),"utf8");
 const source = JSON.parse(fs.readFileSync(path.join(__dirname,"../public/phase3-census-sources-2026-10-26.json"),"utf8"));
 const inventory = parsePhase3CensusCsv(input);
 const copy = value => JSON.parse(JSON.stringify(value));
@@ -67,6 +67,14 @@ test("missing, duplicate, wrong-issuer and forged FDA-qualified manifests cannot
   }
   assert.throws(()=>sourcesForPhase3Trial({...inventory.rows[0],ticker:inventory.rows.find(r=>r.ticker!==inventory.rows[0].ticker).ticker},source));
   assert.throws(()=>buildPhase3EvidenceGapCsv(input,undefined));
+});
+test("every frozen input hash and historical path is pinned without live-source fallback",()=>{
+ for(let i=0;i<source.inputs.length;i++){
+  const changed=copy(source);changed.inputs[i].sha256='0'.repeat(64);
+  assert.throws(()=>parsePhase3CensusSourceDirectory(changed,inventory));
+ }
+ const changed=copy(source);changed.inputs[2].path='data/phase_pipeline_market_caps.csv';
+ assert.throws(()=>parsePhase3CensusSourceDirectory(changed,inventory));
 });
 
 test("741-row export includes exact source pointers and methods without promoting any gate",()=>{

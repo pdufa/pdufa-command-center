@@ -1,0 +1,16 @@
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const Module=require("node:module");
+const ts=require("typescript");
+const filename=path.resolve(__dirname,"../lib/decision-entry-bridge.ts");
+const js=ts.transpileModule(fs.readFileSync(filename,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const m=new Module(filename,module);m.filename=filename;m.paths=module.paths;m._compile(js,filename);
+const {bridgeEntrySignalToDecision}=m.exports;
+const now=new Date("2026-10-26T12:00:30Z");
+const input={programId:"PDUFA-123456",ticker:"TEST",status:"BUY",green:true,calculatedAt:"2026-10-26T12:00:00Z"};
+test("technical BUY never becomes an FDA decision",()=>{const r=bridgeEntrySignalToDecision(input,"PDUFA-123456","TEST",now);assert.equal(r.status,"NOT_READY");assert.equal(r.technicalEntryObserved,true);});
+test("identity mismatch rejects technical observation",()=>assert.equal(bridgeEntrySignalToDecision(input,"PDUFA-123457","TEST",now).technicalEntryObserved,false));
+test("stale technical signal rejects observation",()=>assert.equal(bridgeEntrySignalToDecision(input,"PDUFA-123456","TEST",new Date("2026-10-26T12:03:00Z")).technicalEntryObserved,false));
+test("missing entry signal fails closed",()=>assert.equal(bridgeEntrySignalToDecision(null,"PDUFA-123456","TEST",now).status,"NOT_READY"));

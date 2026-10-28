@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Candidate } from "./Workspace";
 import NumericForecastMetrics from "./NumericForecastMetrics";
+import DecisionWorkstream from "./DecisionWorkstream";
 import { ASSESSMENT_LABELS, ASSESSMENT_STAGES, ASSESSMENT_WEIGHTS, categoryId, downloadJson, scoreFor, stageLabel, validateAssessmentIndex, type AssessmentDetail, type AssessmentIndex, type AssessmentIndexRecord, type AssessmentStage } from "../lib/candidate-assessments";
 
 const n = (value: number) => Number(value.toFixed(2)).toLocaleString("en-US");
@@ -143,6 +144,7 @@ export default function CandidateAssessments({ row, initialStage = "PIPELINE" }:
       <button type="button" className="secondary" disabled={rescoring} onClick={() => { setRescoring(true); refreshIndex(); setRetry(v => v + 1); }}>{rescoring ? "Refreshing trial evidence…" : "Score This Trial · All 3 Rankings"}</button>
       {data && <button type="button" className="secondary" onClick={() => downloadJson(data, (row.programId || data.nctId || "candidate") + "-all-scores.json")}>Download all scores &amp; data</button>}
     </div>
+    <DecisionWorkstream exactKey={row.id} programId={row.programId || ""} trialId={row.nctId || data?.nctId || ""} ticker={row.ticker} stage={stage} detail={data} />
     {rescoring && <p role="status" aria-live="polite">Refreshing scoring index and trial evidence. Updated results will appear below; this does not force a fresh external-source rescan.</p>}
     {!data && !error && <p role="status">Loading all 21 assessments and exact-program evidence…</p>}
     {error && <div role="alert"><p className="error">{error}</p><button type="button" className="secondary" onClick={() => setRetry(v => v + 1)}>Retry scoring data</button></div>}

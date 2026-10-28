@@ -15,7 +15,7 @@ const {
   summarizePhase3EvidenceGaps, buildPhase3EvidenceGapCsv,
 } = require("../lib/phase3-census-evidence-gaps.ts");
 const input = fs.readFileSync(
-  path.join(__dirname,"../../../data/phase3_all_years_300m_10b_trials.csv"),"utf8");
+  path.join(__dirname,"../public/phase3-census-2026-10-26.csv"),"utf8");
 const directoryValue = JSON.parse(fs.readFileSync(
   path.join(__dirname,"../public/phase3-census-sources-2026-10-26.json"),"utf8"));
 const view = fs.readFileSync(

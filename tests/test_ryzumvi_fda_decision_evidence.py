@@ -100,6 +100,10 @@ class RyzumviOutcomeEvidenceTests(unittest.TestCase):
                         return b"issuer-approval", issuer_text
                     return b"unrelated", "Unrelated filing with no FDA decision"
                 verifier.document = document
+                # The signed-letter path also hashes the approved label's
+                # original bytes. Stub that boundary as well as extraction;
+                # this synthetic regression must never fetch a live FDA URL.
+                verifier.fetcher = lambda url: document(url)[0]
                 self.assertTrue(company_matches({"company": "FamyGen Life Sciences, Inc."}, letter))
                 self.assertTrue(company_matches(event, issuer_text), ticker)
                 self.assertTrue(drug_matches(event, issuer_text), ticker)

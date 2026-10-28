@@ -1,4 +1,5 @@
 """Four PDUFA subtab presentation and financing identity regression checks."""
+from supported_dashboard_checks import run_frontend_contract
 import csv
 import tempfile
 import unittest
@@ -128,22 +129,10 @@ class PdufaGridTests(unittest.TestCase):
                 self.assertNotIn("render_countdown_band_key", code)
                 self.assertNotIn("COUNTDOWN_HEADER_SUBLINE", code)
 
-    def test_custom_pdufa_chart_has_no_wide_legend_and_only_colors_day_cells(self):
-        source = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        self.assertNotIn("render_countdown_band_key", source)
-        self.assertNotIn("pdufa-band-chip", source)
-        self.assertNotIn("countdown-band-row", source)
-        self.assertIn("th.countdown-head{background:#fff !important;background-image:none !important;color:#111 !important}", source)
-        self.assertIn("table-layout:auto", source)
-        self.assertIn("width:max-content", source)
-        self.assertIn("white-space:nowrap !important", source)
-        self.assertIn("overflow:visible", source)
-        self.assertIn("height:auto !important", source)
-        self.assertNotIn("PDUFA_COLUMN_WIDTH_PX", source)
-        self.assertNotIn("<colgroup>", source)
-        self.assertNotIn("table-layout:fixed", source)
-        self.assertIn("pdufa_date_color(raw)", source)
-        self.assertIn('label = html.escape("Days to PDUFA"', source)
+    def test_supported_pipeline_renders_dates_and_filters_without_fabricating_missing_values(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('pipeline-data.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('trial-filters.test.cjs'), 0)
 
     def test_days_column_coloring_preserves_original_values_and_finance_style(self):
         frame = pd.DataFrame({

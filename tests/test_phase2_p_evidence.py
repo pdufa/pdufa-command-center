@@ -1,4 +1,5 @@
 """Phase 2 p evidence must predate scoring and match exact Phase 2 trial."""
+from supported_dashboard_checks import run_frontend_contract
 import unittest
 from datetime import date
 import pandas as pd
@@ -88,17 +89,10 @@ class Phase2PTests(unittest.TestCase):
         out=join_phase2_p(row,observation(),as_of=AS_OF)
         self.assertEqual(out.iloc[0]["Phase 2 p Evidence"],"NO LINKED PHASE 2 NCT")
 
-    def test_pre_readout_pipeline_displays_observation_without_scoring_from_it(self):
-        from pathlib import Path
-        root=Path(__file__).resolve().parents[1]
-        app=(root/"app.py").read_text(encoding="utf-8")
-        clinical=(root/"clinical_step3.py").read_text(encoding="utf-8")
-        self.assertNotIn("render_clinical_review()", app)
-        self.assertIn("from step7_cached_snapshot import load_current_snapshot", app)
-        self.assertNotIn("render_clinical_review()", app)
-        self.assertIn("NOT SCORED — INCOMPLETE OR UNVERIFIED", clinical)
-        self.assertNotIn("attach_phase2_p(", clinical)
-        self.assertTrue((root/"data/phase2_primary_p_evidence.csv").exists())
+    def test_supported_measurements_keep_endpoint_context_and_withhold_unvalidated_forecasts(self):
+        """Retained product contract, executed against supported Next.js code."""
+        self.assertGreater(run_frontend_contract('candidate-assessments.test.cjs'), 0)
+        self.assertGreater(run_frontend_contract('numeric-forecast-metrics.test.cjs'), 0)
 
 
 if __name__=="__main__":

@@ -15,7 +15,7 @@ const {
 }=require("../lib/peak-prediction-pilot.ts");
 const {SECONDARY_PREDICTION_GROUPS,PREDICTION_METRICS}=require("../lib/prediction-priority-metrics.ts");
 
-test("GEM PEAK identity is immutable and clinical figures reconcile to public reports",()=>{
+test("legacy GEM PEAK identity and reported figures remain internally consistent without certifying source truth",()=>{
   assert.doesNotThrow(validatePeakPilot);
   assert.equal(PEAK_PILOT.stage,"GEM");
   assert.equal(PEAK_PILOT.nctId,"NCT05208047");
@@ -59,7 +59,7 @@ test("historical examples have dated decision outcomes, but remain ineligible fo
   assert.ok(PEAK_HISTORICAL_PRECEDENTS.every(x=>x.qualification.includes("but")||x.qualification.includes("different")));
 });
 
-test("the pilot route keeps the primary 12 visible and hides the 48 secondary slots behind closed carets",async()=>{
+test("the pilot route displays the saved first-case result and keeps historical and legacy details closed",async()=>{
   global.IS_REACT_ACT_ENVIRONMENT=true;
   const Page=require("../app/prediction-pilot/page.tsx").default;
   let root;
@@ -73,15 +73,25 @@ test("the pilot route keeps the primary 12 visible and hides the 48 secondary sl
     assert.match(json,/7.3 mo/);
     assert.match(json,/10.8% \/ 1.4%/);
     assert.match(json,/NOT VALIDATED/);
+    assert.match(json,/INDETERMINATE/);
+    assert.match(json,/PEAK-NCT05208047-20261027-research-001/);
+    assert.match(json,/CGT9486-21-301/);
+    assert.match(json,/2026-10-27T23:19:59Z/);
     assert.ok(json.includes('"7","/12"'));
     const details=root.root.findAllByType("details");
-    assert.equal(details.length,6);
     details.forEach(d=>assert.equal(d.props.open,undefined));
+    const saved=root.root.findAllByProps({"aria-label":"Persisted trial assessment"})[0];
+    assert.ok(saved);
+    const earlier=root.root.findAllByProps({"aria-label":"Earlier frozen manual pilot preview"})[0];
+    assert.equal(earlier.type,"details");
+    assert.equal(earlier.props.open,undefined);
     const metricSection=root.root.findAllByProps({"aria-label":"Twelve primary prediction factors"})[0];
     assert.ok(metricSection);
     assert.equal(metricSection.findByType("tbody").findAllByType("tr").length,12);
-    for(let i=0;i<4;i++){
-      assert.equal(details[i].findByType("tbody").findAllByType("tr").length,12);
+    for(const group of SECONDARY_PREDICTION_GROUPS){
+      const disclosure=details.find(d=>d.findAllByType("summary")[0]?.children.join("").startsWith(group.title));
+      assert.ok(disclosure);
+      assert.equal(disclosure.findByType("tbody").findAllByType("tr").length,12);
     }
     assert.doesNotMatch(json,/100% probability of approval/);
   }finally{if(root)await act(async()=>root.unmount())}
@@ -96,4 +106,6 @@ test("pilot route never mutates saved scores, historical cohort, FS FA presets o
   }
   assert.match(page,/force-static/);
   assert.match(page,/read-only|Read-only/i);
+  const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+  assert.match(workspace,/href="\/prediction-pilot"[^>]*>FIRST TRIAL ASSESSMENT<\/a>/);
 });
