@@ -1,0 +1,86 @@
+name: FDA FY2024-2025 action-source candidate replay (research only)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hop-fda-action-candidate-replay.yml'
+      - 'new-platform/backend/app/hop_fda_action_candidate_universe.py'
+      - 'new-platform/backend/scripts/audit_hop_fda_action_candidate_sources.py'
+      - 'new-platform/backend/tests/test_hop_fda_action_candidate_universe.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  original-archived-source-replay:
+    name: Verify archived FDA candidate-source fingerprints and research queue
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Read-only download of quarantined source snapshots from past GitHub Actions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hop-source-registry" "$RUNNER_TEMP/hop-source-crl" "$RUNNER_TEMP/hop-candidate-replay"
+          gh run download 40224730350 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name hop-drugsfda-approved-registry-quarantined \
+            --dir "$RUNNER_TEMP/hop-source-registry"
+          gh run download 40224038609 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name hop-fda-crl-public-source-quarantined \
+            --dir "$RUNNER_TEMP/hop-source-crl"
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import zipfile
+          base = Path(os.environ["RUNNER_TEMP"])
+          for source, target in (("hop-source-registry","hop-approved-snapshot-artifact.zip"),
+                                 ("hop-source-crl","hop-crl-snapshot-artifact.zip")):
+              with zipfile.ZipFile(base / target, "w", zipfile.ZIP_DEFLATED) as z:
+                  for f in sorted((base / source).iterdir()):
+                      if not f.is_file() or f.is_symlink():
+                          raise SystemExit("Unexpected source-artifact member")
+                      z.write(f, arcname=f.name)
+          PY
+      - name: Replay only SHA-pinned FDA source candidates, never training labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/audit_hop_fda_action_candidate_sources.py \
+            --approved-artifact "$RUNNER_TEMP/hop-approved-snapshot-artifact.zip" \
+            --crl-artifact "$RUNNER_TEMP/hop-crl-snapshot-artifact.zip" \
+            --as-of 2026-10-28 \
+            --output-directory "$RUNNER_TEMP/hop-candidate-replay" \
+            | tee "$RUNNER_TEMP/hop-candidate-replay/console-summary.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p = Path(os.environ["RUNNER_TEMP"])/"hop-candidate-replay"/"hop_fda_source_candidate_audit_research_only.json"
+          r = json.loads(p.read_text())
+          assert r["trainingAuthorized"] is False
+          assert r["independentlyVerifiedModelEligibleCycles"] == 0
+          assert r["approvalProbability"] is None
+          assert r["researchCandidateRows"] > 0
+          assert len(r["selectedFiscalActionYears"]) == 2
+          assert all(x["filingDenominatorCoverage"] is None for x in r["selectedFiscalActionYears"])
+          print("RESEARCH_SOURCE_CANDIDATES_OBSERVED; NOT A COMPLETE FDA APPLICATION COHORT")
+          PY
+      - name: Retain research-only candidate audit briefly
+        uses: actions/upload-artifact@v4
+        with:
+          name: hop-fda-2024-2025-action-candidates-unverified
+          path: ${{ runner.temp }}/hop-candidate-replay/
+          retention-days: 14
+          if-no-files-found: error
