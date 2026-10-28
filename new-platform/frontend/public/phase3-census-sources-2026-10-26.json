@@ -14,7 +14,7 @@
       "sha256": "91c2613d43aad5a8054cb4e0f7ef0179b53f8d8ad2e7aa2229c38692288c2498"
     },
     {
-      "path": "data/phase_pipeline_market_caps.csv",
+      "path": "data/snapshots/phase_pipeline_market_caps_2026-10-26.csv",
       "sha256": "b958410f13310d3dd35c2304280364256126331cb5d99cdafc476e6933a47dd4"
     },
     {
@@ -38,7 +38,7 @@
         "NCT05507216",
         "NCT05535946"
       ],
-      "marketCapUsd": 7679206674.0,
+      "marketCapUsd": 7679206674,
       "marketCapCheckedAt": "2026-10-26T03:21:21.813474+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ABVX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001956827&owner=exclude",
@@ -77,7 +77,7 @@
         "NCT06420297",
         "NCT07095465"
       ],
-      "marketCapUsd": 3399587870.0,
+      "marketCapUsd": 3399587870,
       "marketCapCheckedAt": "2026-10-26T03:21:21.831472+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ACAD/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001070494&owner=exclude",
@@ -102,7 +102,7 @@
         "NCT06435221",
         "NCT07392125"
       ],
-      "marketCapUsd": 667837160.0,
+      "marketCapUsd": 667837160,
       "marketCapCheckedAt": "2026-10-26T03:21:21.858125+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ACHV/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000949858&owner=exclude",
@@ -124,7 +124,7 @@
         "NCT03691831",
         "NCT03812510"
       ],
-      "marketCapUsd": 551995849.0,
+      "marketCapUsd": 551995849,
       "marketCapCheckedAt": "2026-10-26T03:21:21.955820+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ACRS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001557746&owner=exclude",
@@ -142,7 +142,7 @@
         "NCT00538915",
         "NCT01814800"
       ],
-      "marketCapUsd": 2392156382.0,
+      "marketCapUsd": 2392156382,
       "marketCapCheckedAt": "2026-10-26T03:21:22.123486+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ADMA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001368514&owner=exclude",
@@ -170,7 +170,7 @@
         "NCT07656415",
         "NCT07859423"
       ],
-      "marketCapUsd": 2208969634.0,
+      "marketCapUsd": 2208969634,
       "marketCapCheckedAt": "2026-10-26T03:21:22.237404+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AGIO/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001439222&owner=exclude",
@@ -222,7 +222,7 @@
         "NCT07502443",
         "NCT07540897"
       ],
-      "marketCapUsd": 7319511557.0,
+      "marketCapUsd": 7319511557,
       "marketCapCheckedAt": "2026-10-26T03:21:22.401229+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ALKS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001520262&owner=exclude",
@@ -241,7 +241,7 @@
         "NCT06588738",
         "NCT06846541"
       ],
-      "marketCapUsd": 877570920.0,
+      "marketCapUsd": 877570920,
       "marketCapCheckedAt": "2026-10-26T03:21:22.538693+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ALMS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001847367&owner=exclude",
@@ -258,7 +258,7 @@
       "nctIds": [
         "NCT07795164"
       ],
-      "marketCapUsd": 412377526.0,
+      "marketCapUsd": 412377526,
       "marketCapCheckedAt": "2026-10-26T03:21:22.593915+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ALT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001326190&owner=exclude",
@@ -279,7 +279,7 @@
         "NCT06122662",
         "NCT06747468"
       ],
-      "marketCapUsd": 3412465298.0,
+      "marketCapUsd": 3412465298,
       "marketCapCheckedAt": "2026-10-26T03:21:22.707320+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AMLX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001658551&owner=exclude",
@@ -304,7 +304,7 @@
         "NCT05539872",
         "NCT07560150"
       ],
-      "marketCapUsd": 1069403912.0,
+      "marketCapUsd": 1069403912,
       "marketCapCheckedAt": "2026-10-26T03:21:22.762401+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AMPH/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001297184&owner=exclude",
@@ -329,7 +329,7 @@
         "NCT02125253",
         "NCT05401357"
       ],
-      "marketCapUsd": 7098272826.0,
+      "marketCapUsd": 7098272826,
       "marketCapCheckedAt": "2026-10-26T03:21:22.786611+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AMRX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001723128&owner=exclude",
@@ -349,7 +349,7 @@
         "NCT07020819",
         "NCT07807969"
       ],
-      "marketCapUsd": 710921753.0,
+      "marketCapUsd": 710921753,
       "marketCapCheckedAt": "2026-10-26T03:21:22.874572+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ANNX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001528115&owner=exclude",
@@ -368,7 +368,7 @@
         "NCT05813275",
         "NCT06566820"
       ],
-      "marketCapUsd": 790568493.0,
+      "marketCapUsd": 790568493,
       "marketCapCheckedAt": "2026-10-26T03:21:23.066391+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/APMD/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001745648&owner=exclude",
@@ -385,7 +385,7 @@
       "nctIds": [
         "NCT03428360"
       ],
-      "marketCapUsd": 502046592.0,
+      "marketCapUsd": 502046592,
       "marketCapCheckedAt": "2026-10-26T03:21:23.165596+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AQST/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001398733&owner=exclude",
@@ -411,7 +411,7 @@
         "NCT05905926",
         "NCT07382167"
       ],
-      "marketCapUsd": 767497722.0,
+      "marketCapUsd": 767497722,
       "marketCapCheckedAt": "2026-10-26T03:21:23.216922+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ARDX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001437402&owner=exclude",
@@ -436,7 +436,7 @@
         "NCT04973228",
         "NCT05028582"
       ],
-      "marketCapUsd": 3921589183.0,
+      "marketCapUsd": 3921589183,
       "marketCapCheckedAt": "2026-10-26T03:21:23.268782+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ARQT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001787306&owner=exclude",
@@ -460,7 +460,7 @@
         "NCT07037771",
         "NCT07473843"
       ],
-      "marketCapUsd": 8195584175.0,
+      "marketCapUsd": 8195584175,
       "marketCapCheckedAt": "2026-10-26T03:21:23.450378+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ARWR/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000879407&owner=exclude",
@@ -485,7 +485,7 @@
         "NCT05288855",
         "NCT05962788"
       ],
-      "marketCapUsd": 2243242692.0,
+      "marketCapUsd": 2243242692,
       "marketCapCheckedAt": "2026-10-26T03:21:23.710530+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AUPH/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001600620&owner=exclude",
@@ -502,7 +502,7 @@
       "nctIds": [
         "NCT06007690"
       ],
-      "marketCapUsd": 653340297.0,
+      "marketCapUsd": 653340297,
       "marketCapCheckedAt": "2026-10-26T03:21:23.737194+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AURA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001501796&owner=exclude",
@@ -520,7 +520,7 @@
         "NCT05607550",
         "NCT07185997"
       ],
-      "marketCapUsd": 1035462309.0,
+      "marketCapUsd": 1035462309,
       "marketCapCheckedAt": "2026-10-26T03:21:23.770052+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AVBP/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001868279&owner=exclude",
@@ -539,7 +539,7 @@
         "NCT06868264",
         "NCT07037277"
       ],
-      "marketCapUsd": 324026984.0,
+      "marketCapUsd": 324026984,
       "marketCapCheckedAt": "2026-10-26T03:21:23.808728+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AVIR/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001593899&owner=exclude",
@@ -583,7 +583,7 @@
         "NCT07766655",
         "NCT07773883"
       ],
-      "marketCapUsd": 7597313843.0,
+      "marketCapUsd": 7597313843,
       "marketCapCheckedAt": "2026-10-26T03:21:23.876819+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/AXSM/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001579428&owner=exclude",
@@ -600,7 +600,7 @@
       "nctIds": [
         "NCT06788990"
       ],
-      "marketCapUsd": 1129571983.0,
+      "marketCapUsd": 1129571983,
       "marketCapCheckedAt": "2026-10-26T03:21:23.995652+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/BCAX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002023658&owner=exclude",
@@ -630,7 +630,7 @@
         "NCT04933721",
         "NCT05453968"
       ],
-      "marketCapUsd": 1954843553.0,
+      "marketCapUsd": 1954843553,
       "marketCapCheckedAt": "2026-10-26T03:21:24.117646+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/BCRX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000882796&owner=exclude",
@@ -649,7 +649,7 @@
         "NCT05949593",
         "NCT06388083"
       ],
-      "marketCapUsd": 5933294976.0,
+      "marketCapUsd": 5933294976,
       "marketCapCheckedAt": "2026-10-26T03:21:24.462864+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/BLTE/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001889109&owner=exclude",
@@ -668,7 +668,7 @@
       "nctIds": [
         "NCT07755904"
       ],
-      "marketCapUsd": 1930435495.0,
+      "marketCapUsd": 1930435495,
       "marketCapCheckedAt": "2026-10-26T03:21:24.739506+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/BRVE/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002131524&owner=exclude",
@@ -686,7 +686,7 @@
         "NCT01436968",
         "NCT07660094"
       ],
-      "marketCapUsd": 614444077.0,
+      "marketCapUsd": 614444077,
       "marketCapCheckedAt": "2026-10-26T03:21:24.787746+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CADL/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001841387&owner=exclude",
@@ -705,7 +705,7 @@
         "NCT04452591",
         "NCT06111235"
       ],
-      "marketCapUsd": 5469997541.0,
+      "marketCapUsd": 5469997541,
       "marketCapCheckedAt": "2026-10-26T03:21:25.100712+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CGON/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001991792&owner=exclude",
@@ -726,7 +726,7 @@
         "NCT07256392",
         "NCT07266402"
       ],
-      "marketCapUsd": 2296988811.0,
+      "marketCapUsd": 2296988811,
       "marketCapCheckedAt": "2026-10-26T03:21:25.196974+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CLDX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000744218&owner=exclude",
@@ -745,7 +745,7 @@
         "NCT05711940",
         "NCT07570654"
       ],
-      "marketCapUsd": 1548170870.0,
+      "marketCapUsd": 1548170870,
       "marketCapCheckedAt": "2026-10-26T03:21:25.370529+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CMPS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001816590&owner=exclude",
@@ -762,7 +762,7 @@
       "nctIds": [
         "NCT05208047"
       ],
-      "marketCapUsd": 5415714688.0,
+      "marketCapUsd": 5415714688,
       "marketCapCheckedAt": "2026-10-26T03:21:25.521464+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/COGT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001622229&owner=exclude",
@@ -781,7 +781,7 @@
       "nctIds": [
         "NCT01685684"
       ],
-      "marketCapUsd": 747476874.0,
+      "marketCapUsd": 747476874,
       "marketCapCheckedAt": "2026-10-26T03:21:25.528336+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/COLL/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001267565&owner=exclude",
@@ -811,7 +811,7 @@
         "NCT04329949",
         "NCT05257408"
       ],
-      "marketCapUsd": 9281328366.0,
+      "marketCapUsd": 9281328366,
       "marketCapCheckedAt": "2026-10-26T03:21:25.542126+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CORT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001088856&owner=exclude",
@@ -829,7 +829,7 @@
         "NCT04734873",
         "NCT06561048"
       ],
-      "marketCapUsd": 885793540.0,
+      "marketCapUsd": 885793540,
       "marketCapCheckedAt": "2026-10-26T03:21:25.754587+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CRVS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001626971&owner=exclude",
@@ -858,7 +858,7 @@
         "NCT06412666",
         "NCT06736574"
       ],
-      "marketCapUsd": 8512403884.0,
+      "marketCapUsd": 8512403884,
       "marketCapCheckedAt": "2026-10-26T03:21:25.940436+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/CYTK/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001061983&owner=exclude",
@@ -875,7 +875,7 @@
       "nctIds": [
         "NCT05065216"
       ],
-      "marketCapUsd": 470232078.0,
+      "marketCapUsd": 470232078,
       "marketCapCheckedAt": "2026-10-26T03:21:26.002479+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/DMAC/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001401040&owner=exclude",
@@ -893,7 +893,7 @@
         "NCT05371613",
         "NCT06075537"
       ],
-      "marketCapUsd": 2942790689.0,
+      "marketCapUsd": 2942790689,
       "marketCapCheckedAt": "2026-10-26T03:21:26.057931+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/DNLI/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001714899&owner=exclude",
@@ -911,7 +911,7 @@
         "NCT07486934",
         "NCT07608432"
       ],
-      "marketCapUsd": 2916979252.0,
+      "marketCapUsd": 2916979252,
       "marketCapCheckedAt": "2026-10-26T03:21:26.182408+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/DYN/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001818794&owner=exclude",
@@ -935,7 +935,7 @@
         "NCT01491607",
         "NCT03877926"
       ],
-      "marketCapUsd": 319432883.0,
+      "marketCapUsd": 319432883,
       "marketCapCheckedAt": "2026-10-26T03:21:26.196485+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/EBS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001367644&owner=exclude",
@@ -953,7 +953,7 @@
         "NCT06697301",
         "NCT07365319"
       ],
-      "marketCapUsd": 393238118.0,
+      "marketCapUsd": 393238118,
       "marketCapCheckedAt": "2026-10-26T03:21:26.255048+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/EIKN/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001861123&owner=exclude",
@@ -971,7 +971,7 @@
         "NCT02334423",
         "NCT02334436"
       ],
-      "marketCapUsd": 463013584.0,
+      "marketCapUsd": 463013584,
       "marketCapCheckedAt": "2026-10-26T03:21:26.475131+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/EOLS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001570562&owner=exclude",
@@ -988,7 +988,7 @@
       "nctIds": [
         "NCT06346067"
       ],
-      "marketCapUsd": 5033075684.0,
+      "marketCapUsd": 5033075684,
       "marketCapCheckedAt": "2026-10-26T03:21:26.625324+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ERAS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001761918&owner=exclude",
@@ -1005,7 +1005,7 @@
       "nctIds": [
         "NCT05416307"
       ],
-      "marketCapUsd": 546700178.0,
+      "marketCapUsd": 546700178,
       "marketCapCheckedAt": "2026-10-26T03:21:26.662912+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ETRA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002088082&owner=exclude",
@@ -1024,7 +1024,7 @@
         "NCT07064759",
         "NCT07867080"
       ],
-      "marketCapUsd": 596637479.0,
+      "marketCapUsd": 596637479,
       "marketCapCheckedAt": "2026-10-26T03:21:26.787652+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/FDMT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001650648&owner=exclude",
@@ -1041,7 +1041,7 @@
       "nctIds": [
         "NCT04365868"
       ],
-      "marketCapUsd": 322421613.0,
+      "marketCapUsd": 322421613,
       "marketCapCheckedAt": "2026-10-26T03:21:26.888514+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/GALT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001133416&owner=exclude",
@@ -1059,7 +1059,7 @@
         "NCT07276724",
         "NCT07359846"
       ],
-      "marketCapUsd": 1592853731.0,
+      "marketCapUsd": 1592853731,
       "marketCapCheckedAt": "2026-10-26T03:21:26.915832+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/GENB/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002100782&owner=exclude",
@@ -1077,7 +1077,7 @@
         "NCT02598661",
         "NCT04576156"
       ],
-      "marketCapUsd": 719570218.0,
+      "marketCapUsd": 719570218,
       "marketCapCheckedAt": "2026-10-26T03:21:26.979257+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/GERN/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000886744&owner=exclude",
@@ -1094,7 +1094,7 @@
       "nctIds": [
         "NCT07832552"
       ],
-      "marketCapUsd": 1066154454.0,
+      "marketCapUsd": 1066154454,
       "marketCapCheckedAt": "2026-10-26T03:21:27.234741+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/HROW/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001360214&owner=exclude",
@@ -1118,7 +1118,7 @@
         "NCT07524257",
         "NCT07551544"
       ],
-      "marketCapUsd": 8711854164.0,
+      "marketCapUsd": 8711854164,
       "marketCapCheckedAt": "2026-10-26T03:21:27.375246+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IBRX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001326110&owner=exclude",
@@ -1137,7 +1137,7 @@
         "NCT07015190",
         "NCT07804186"
       ],
-      "marketCapUsd": 3349149990.0,
+      "marketCapUsd": 3349149990,
       "marketCapCheckedAt": "2026-10-26T03:21:27.393373+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IDYA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001676725&owner=exclude",
@@ -1154,7 +1154,7 @@
       "nctIds": [
         "NCT04871282"
       ],
-      "marketCapUsd": 2122876057.0,
+      "marketCapUsd": 2122876057,
       "marketCapCheckedAt": "2026-10-26T03:21:27.531534+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IMNM/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001472012&owner=exclude",
@@ -1171,7 +1171,7 @@
       "nctIds": [
         "NCT06295731"
       ],
-      "marketCapUsd": 1374335091.0,
+      "marketCapUsd": 1374335091,
       "marketCapCheckedAt": "2026-10-26T03:21:27.671693+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/INBX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002007919&owner=exclude",
@@ -1215,7 +1215,7 @@
         "NCT07727538",
         "NCT07782827"
       ],
-      "marketCapUsd": 7134292943.0,
+      "marketCapUsd": 7134292943,
       "marketCapCheckedAt": "2026-10-26T03:21:27.935419+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IONS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000874015&owner=exclude",
@@ -1234,7 +1234,7 @@
       "nctIds": [
         "NCT05727904"
       ],
-      "marketCapUsd": 6382367477.0,
+      "marketCapUsd": 6382367477,
       "marketCapCheckedAt": "2026-10-26T03:21:27.993323+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IOVA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001425205&owner=exclude",
@@ -1252,7 +1252,7 @@
         "NCT05883748",
         "NCT06910358"
       ],
-      "marketCapUsd": 2860650806.0,
+      "marketCapUsd": 2860650806,
       "marketCapCheckedAt": "2026-10-26T03:21:28.045516+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IRON/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001816736&owner=exclude",
@@ -1275,7 +1275,7 @@
         "NCT03561883",
         "NCT03573908"
       ],
-      "marketCapUsd": 571730217.0,
+      "marketCapUsd": 571730217,
       "marketCapCheckedAt": "2026-10-26T03:21:28.141366+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/IRWD/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001446847&owner=exclude",
@@ -1294,7 +1294,7 @@
         "NCT07210723",
         "NCT07771465"
       ],
-      "marketCapUsd": 1196847347.0,
+      "marketCapUsd": 1196847347,
       "marketCapCheckedAt": "2026-10-26T03:21:28.319822+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KARD/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002123613&owner=exclude",
@@ -1315,7 +1315,7 @@
         "NCT02912845",
         "NCT04204252"
       ],
-      "marketCapUsd": 448409070.0,
+      "marketCapUsd": 448409070,
       "marketCapCheckedAt": "2026-10-26T03:21:28.359540+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KMDA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001567529&owner=exclude",
@@ -1333,7 +1333,7 @@
         "NCT04447469",
         "NCT07010159"
       ],
-      "marketCapUsd": 5986782517.0,
+      "marketCapUsd": 5986782517,
       "marketCapCheckedAt": "2026-10-26T03:21:28.415360+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KNSA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001730430&owner=exclude",
@@ -1360,7 +1360,7 @@
         "NCT06996080",
         "NCT07734844"
       ],
-      "marketCapUsd": 5507497917.0,
+      "marketCapUsd": 5507497917,
       "marketCapCheckedAt": "2026-10-26T03:21:28.434215+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KOD/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001468748&owner=exclude",
@@ -1379,7 +1379,7 @@
         "NCT04917874",
         "NCT07016750"
       ],
-      "marketCapUsd": 9220037414.0,
+      "marketCapUsd": 9220037414,
       "marketCapCheckedAt": "2026-10-26T03:21:28.582746+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KRYS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001711279&owner=exclude",
@@ -1396,7 +1396,7 @@
       "nctIds": [
         "NCT07007312"
       ],
-      "marketCapUsd": 854911549.0,
+      "marketCapUsd": 854911549,
       "marketCapCheckedAt": "2026-10-26T03:21:28.608479+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KURA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001422143&owner=exclude",
@@ -1413,7 +1413,7 @@
       "nctIds": [
         "NCT06193889"
       ],
-      "marketCapUsd": 333336163.0,
+      "marketCapUsd": 333336163,
       "marketCapCheckedAt": "2026-10-26T03:21:28.671269+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/KYTX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001994702&owner=exclude",
@@ -1431,7 +1431,7 @@
         "NCT07363577",
         "NCT07369154"
       ],
-      "marketCapUsd": 1249397848.0,
+      "marketCapUsd": 1249397848,
       "marketCapCheckedAt": "2026-10-26T03:21:28.756186+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/LBRX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001691082&owner=exclude",
@@ -1449,7 +1449,7 @@
         "NCT00141323",
         "NCT00163137"
       ],
-      "marketCapUsd": 6051055400.0,
+      "marketCapUsd": 6051055400,
       "marketCapCheckedAt": "2026-10-26T03:21:28.825118+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/LGND/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000886163&owner=exclude",
@@ -1471,7 +1471,7 @@
         "NCT05479058",
         "NCT06652633"
       ],
-      "marketCapUsd": 2085642297.0,
+      "marketCapUsd": 2085642297,
       "marketCapCheckedAt": "2026-10-26T03:21:28.874828+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/LKFT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001421876&owner=exclude",
@@ -1505,7 +1505,7 @@
         "NCT03521934",
         "NCT06481891"
       ],
-      "marketCapUsd": 631837426.0,
+      "marketCapUsd": 631837426,
       "marketCapCheckedAt": "2026-10-26T03:21:29.080718+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/LXRX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001062822&owner=exclude",
@@ -1524,7 +1524,7 @@
         "NCT06972264",
         "NCT07146022"
       ],
-      "marketCapUsd": 5798247274.0,
+      "marketCapUsd": 5798247274,
       "marketCapCheckedAt": "2026-10-26T03:21:29.161130+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MANE/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001827635&owner=exclude",
@@ -1541,7 +1541,7 @@
       "nctIds": [
         "NCT07699471"
       ],
-      "marketCapUsd": 2335764656.0,
+      "marketCapUsd": 2335764656,
       "marketCapCheckedAt": "2026-10-26T03:21:29.262246+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MBX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001776111&owner=exclude",
@@ -1570,7 +1570,7 @@
         "NCT06325566",
         "NCT07568535"
       ],
-      "marketCapUsd": 1597441479.0,
+      "marketCapUsd": 1597441479,
       "marketCapCheckedAt": "2026-10-26T03:21:29.352607+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MESO/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001345099&owner=exclude",
@@ -1598,7 +1598,7 @@
         "NCT07298330",
         "NCT07454837"
       ],
-      "marketCapUsd": 5219899799.0,
+      "marketCapUsd": 5219899799,
       "marketCapCheckedAt": "2026-10-26T03:21:29.380047+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MIRM/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001759425&owner=exclude",
@@ -1621,7 +1621,7 @@
         "NCT07007637",
         "NCT07223138"
       ],
-      "marketCapUsd": 1008514217.0,
+      "marketCapUsd": 1008514217,
       "marketCapCheckedAt": "2026-10-26T03:21:29.417647+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MLTX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001821586&owner=exclude",
@@ -1639,7 +1639,7 @@
         "NCT05968430",
         "NCT06153693"
       ],
-      "marketCapUsd": 1816761487.0,
+      "marketCapUsd": 1816761487,
       "marketCapCheckedAt": "2026-10-26T03:21:29.463389+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MLYS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001933414&owner=exclude",
@@ -1670,7 +1670,7 @@
         "NCT04974528",
         "NCT06418711"
       ],
-      "marketCapUsd": 1025726904.0,
+      "marketCapUsd": 1025726904,
       "marketCapCheckedAt": "2026-10-26T03:21:29.498054+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MNKD/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000899460&owner=exclude",
@@ -1687,7 +1687,7 @@
       "nctIds": [
         "NCT04648020"
       ],
-      "marketCapUsd": 474214952.0,
+      "marketCapUsd": 474214952,
       "marketCapCheckedAt": "2026-10-26T03:21:29.537287+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/MNPR/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001645469&owner=exclude",
@@ -1704,7 +1704,7 @@
       "nctIds": [
         "NCT05898620"
       ],
-      "marketCapUsd": 471268046.0,
+      "marketCapUsd": 471268046,
       "marketCapCheckedAt": "2026-10-26T03:21:29.715805+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NGNE/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001404644&owner=exclude",
@@ -1730,7 +1730,7 @@
         "NCT07690371",
         "NCT07711418"
       ],
-      "marketCapUsd": 1270802237.0,
+      "marketCapUsd": 1270802237,
       "marketCapCheckedAt": "2026-10-26T03:21:29.760740+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NKTR/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000906709&owner=exclude",
@@ -1747,7 +1747,7 @@
       "nctIds": [
         "NCT07516093"
       ],
-      "marketCapUsd": 2768390287.0,
+      "marketCapUsd": 2768390287,
       "marketCapCheckedAt": "2026-10-26T03:21:29.817132+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NRIX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001549595&owner=exclude",
@@ -1766,7 +1766,7 @@
         "NCT06634420",
         "NCT06672237"
       ],
-      "marketCapUsd": 1570820229.0,
+      "marketCapUsd": 1570820229,
       "marketCapCheckedAt": "2026-10-26T03:21:29.930504+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NTLA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001652130&owner=exclude",
@@ -1786,7 +1786,7 @@
         "NCT07154706",
         "NCT07712757"
       ],
-      "marketCapUsd": 1604633175.0,
+      "marketCapUsd": 1604633175,
       "marketCapCheckedAt": "2026-10-26T03:21:29.946118+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NUVB/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001811063&owner=exclude",
@@ -1820,7 +1820,7 @@
         "NCT06482359",
         "NCT06485752"
       ],
-      "marketCapUsd": 1599973542.0,
+      "marketCapUsd": 1599973542,
       "marketCapCheckedAt": "2026-10-26T03:21:29.993758+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/NVAX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001000694&owner=exclude",
@@ -1850,7 +1850,7 @@
         "NCT07235085",
         "NCT07516132"
       ],
-      "marketCapUsd": 1427503142.0,
+      "marketCapUsd": 1427503142,
       "marketCapCheckedAt": "2026-10-26T03:21:30.153637+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OCUL/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001393434&owner=exclude",
@@ -1868,7 +1868,7 @@
         "NCT06016738",
         "NCT07085767"
       ],
-      "marketCapUsd": 560859661.0,
+      "marketCapUsd": 560859661,
       "marketCapCheckedAt": "2026-10-26T03:21:30.317751+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OLMA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001750284&owner=exclude",
@@ -1895,7 +1895,7 @@
         "NCT03205995",
         "NCT03608033"
       ],
-      "marketCapUsd": 1199474396.0,
+      "marketCapUsd": 1199474396,
       "marketCapCheckedAt": "2026-10-26T03:21:30.392470+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OMER/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001285819&owner=exclude",
@@ -1919,7 +1919,7 @@
         "NCT03874013",
         "NCT05543928"
       ],
-      "marketCapUsd": 1216515007.0,
+      "marketCapUsd": 1216515007,
       "marketCapCheckedAt": "2026-10-26T03:21:30.468993+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OPK/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000944809&owner=exclude",
@@ -1936,7 +1936,7 @@
       "nctIds": [
         "NCT07723248"
       ],
-      "marketCapUsd": 1365105480.0,
+      "marketCapUsd": 1365105480,
       "marketCapCheckedAt": "2026-10-26T03:21:30.494947+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ORIC/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001796280&owner=exclude",
@@ -1953,7 +1953,7 @@
       "nctIds": [
         "NCT04106557"
       ],
-      "marketCapUsd": 421843371.0,
+      "marketCapUsd": 421843371,
       "marketCapCheckedAt": "2026-10-26T03:21:30.632480+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/OVID/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001636651&owner=exclude",
@@ -1971,7 +1971,7 @@
         "NCT00878709",
         "NCT01808573"
       ],
-      "marketCapUsd": 568853127.0,
+      "marketCapUsd": 568853127,
       "marketCapCheckedAt": "2026-10-26T03:21:30.835149+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PBYI/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001401667&owner=exclude",
@@ -1990,7 +1990,7 @@
         "NCT07365826",
         "NCT07425392"
       ],
-      "marketCapUsd": 9511056731.0,
+      "marketCapUsd": 9511056731,
       "marketCapCheckedAt": "2026-10-26T03:21:30.948370+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PCVX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001649094&owner=exclude",
@@ -2010,7 +2010,7 @@
         "NCT05195528",
         "NCT07752407"
       ],
-      "marketCapUsd": 464371361.0,
+      "marketCapUsd": 464371361,
       "marketCapCheckedAt": "2026-10-26T03:21:31.069974+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PHAT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001783183&owner=exclude",
@@ -2034,7 +2034,7 @@
         "NCT07287163",
         "NCT07505004"
       ],
-      "marketCapUsd": 7062640164.0,
+      "marketCapUsd": 7062640164,
       "marketCapCheckedAt": "2026-10-26T03:21:31.181270+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PRAX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001689548&owner=exclude",
@@ -2055,7 +2055,7 @@
         "NCT05099770",
         "NCT05286853"
       ],
-      "marketCapUsd": 426274944.0,
+      "marketCapUsd": 426274944,
       "marketCapCheckedAt": "2026-10-26T03:21:31.237290+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PROK/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001850270&owner=exclude",
@@ -2093,7 +2093,7 @@
         "NCT06302348",
         "NCT07681713"
       ],
-      "marketCapUsd": 5056889993.0,
+      "marketCapUsd": 5056889993,
       "marketCapCheckedAt": "2026-10-26T03:21:31.357344+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PTCT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001070081&owner=exclude",
@@ -2111,7 +2111,7 @@
         "NCT05210790",
         "NCT06033586"
       ],
-      "marketCapUsd": 8957567893.0,
+      "marketCapUsd": 8957567893,
       "marketCapCheckedAt": "2026-10-26T03:21:31.364062+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PTGX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001377121&owner=exclude",
@@ -2132,7 +2132,7 @@
         "NCT05643872",
         "NCT06239480"
       ],
-      "marketCapUsd": 1802491716.0,
+      "marketCapUsd": 1802491716,
       "marketCapCheckedAt": "2026-10-26T03:21:31.409706+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/PVLA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001583648&owner=exclude",
@@ -2150,7 +2150,7 @@
         "NCT07563881",
         "NCT07594119"
       ],
-      "marketCapUsd": 1244076956.0,
+      "marketCapUsd": 1244076956,
       "marketCapCheckedAt": "2026-10-26T03:21:31.674657+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RAPP/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002012593&owner=exclude",
@@ -2181,7 +2181,7 @@
         "NCT06617429",
         "NCT06636071"
       ],
-      "marketCapUsd": 1542915862.0,
+      "marketCapUsd": 1542915862,
       "marketCapCheckedAt": "2026-10-26T03:21:31.753049+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RARE/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001515673&owner=exclude",
@@ -2200,7 +2200,7 @@
         "NCT06608927",
         "NCT07011719"
       ],
-      "marketCapUsd": 2360760791.0,
+      "marketCapUsd": 2360760791,
       "marketCapCheckedAt": "2026-10-26T03:21:31.786537+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RCUS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001724521&owner=exclude",
@@ -2219,7 +2219,7 @@
         "NCT05693142",
         "NCT07236606"
       ],
-      "marketCapUsd": 440968123.0,
+      "marketCapUsd": 440968123,
       "marketCapCheckedAt": "2026-10-26T03:21:31.905552+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RGNX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001590877&owner=exclude",
@@ -2241,7 +2241,7 @@
         "NCT04138927",
         "NCT04629703"
       ],
-      "marketCapUsd": 899061854.0,
+      "marketCapUsd": 899061854,
       "marketCapCheckedAt": "2026-10-26T03:21:31.908411+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RIGL/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001034842&owner=exclude",
@@ -2258,7 +2258,7 @@
       "nctIds": [
         "NCT06982521"
       ],
-      "marketCapUsd": 3983994852.0,
+      "marketCapUsd": 3983994852,
       "marketCapCheckedAt": "2026-10-26T03:21:31.942159+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RLAY/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001812364&owner=exclude",
@@ -2280,7 +2280,7 @@
         "NCT07342517",
         "NCT07464145"
       ],
-      "marketCapUsd": 348810396.0,
+      "marketCapUsd": 348810396,
       "marketCapCheckedAt": "2026-10-26T03:21:32.031472+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RLMD/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001553643&owner=exclude",
@@ -2297,7 +2297,7 @@
       "nctIds": [
         "NCT05130866"
       ],
-      "marketCapUsd": 2208464029.0,
+      "marketCapUsd": 2208464029,
       "marketCapCheckedAt": "2026-10-26T03:21:32.175749+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RXRX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001601830&owner=exclude",
@@ -2323,7 +2323,7 @@
         "NCT06596135",
         "NCT06760546"
       ],
-      "marketCapUsd": 6146425360.0,
+      "marketCapUsd": 6146425360,
       "marketCapCheckedAt": "2026-10-26T03:21:32.178466+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/RYTM/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001649904&owner=exclude",
@@ -2342,7 +2342,7 @@
         "NCT06692283",
         "NCT07863193"
       ],
-      "marketCapUsd": 675705604.0,
+      "marketCapUsd": 675705604,
       "marketCapCheckedAt": "2026-10-26T03:21:32.321554+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SGMT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001400118&owner=exclude",
@@ -2359,7 +2359,7 @@
       "nctIds": [
         "NCT07160634"
       ],
-      "marketCapUsd": 634773409.0,
+      "marketCapUsd": 634773409,
       "marketCapCheckedAt": "2026-10-26T03:21:32.403953+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SLDB/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001707502&owner=exclude",
@@ -2376,7 +2376,7 @@
       "nctIds": [
         "NCT04229979"
       ],
-      "marketCapUsd": 2330453482.0,
+      "marketCapUsd": 2330453482,
       "marketCapCheckedAt": "2026-10-26T03:21:32.511478+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SLS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001390478&owner=exclude",
@@ -2393,7 +2393,7 @@
       "nctIds": [
         "NCT07211958"
       ],
-      "marketCapUsd": 1196580952.0,
+      "marketCapUsd": 1196580952,
       "marketCapCheckedAt": "2026-10-26T03:21:32.582585+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SNDX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001395937&owner=exclude",
@@ -2418,7 +2418,7 @@
         "NCT06246513",
         "NCT06952686"
       ],
-      "marketCapUsd": 1872767082.0,
+      "marketCapUsd": 1872767082,
       "marketCapCheckedAt": "2026-10-26T03:21:32.749440+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SRPT/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000873303&owner=exclude",
@@ -2437,7 +2437,7 @@
       "nctIds": [
         "NCT06872125"
       ],
-      "marketCapUsd": 1615737100.0,
+      "marketCapUsd": 1615737100,
       "marketCapCheckedAt": "2026-10-26T03:21:32.768128+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/STOK/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001623526&owner=exclude",
@@ -2472,7 +2472,7 @@
         "NCT04143217",
         "NCT05655520"
       ],
-      "marketCapUsd": 2365769429.0,
+      "marketCapUsd": 2365769429,
       "marketCapCheckedAt": "2026-10-26T03:21:32.883910+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SUPN/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001356576&owner=exclude",
@@ -2515,7 +2515,7 @@
         "NCT07611513",
         "NCT07793227"
       ],
-      "marketCapUsd": 643779512.0,
+      "marketCapUsd": 643779512,
       "marketCapCheckedAt": "2026-10-26T03:21:32.898704+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SVA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001084201&owner=exclude",
@@ -2535,7 +2535,7 @@
         "NCT04544293",
         "NCT06431776"
       ],
-      "marketCapUsd": 867041263.0,
+      "marketCapUsd": 867041263,
       "marketCapCheckedAt": "2026-10-26T03:21:32.902585+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/SVRA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001160308&owner=exclude",
@@ -2555,7 +2555,7 @@
         "NCT04475432",
         "NCT04784091"
       ],
-      "marketCapUsd": 3362492767.0,
+      "marketCapUsd": 3362492767,
       "marketCapCheckedAt": "2026-10-26T03:21:33.059668+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TARS/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001819790&owner=exclude",
@@ -2581,7 +2581,7 @@
         "NCT07211633",
         "NCT07220252"
       ],
-      "marketCapUsd": 8291750601.0,
+      "marketCapUsd": 8291750601,
       "marketCapCheckedAt": "2026-10-26T03:21:33.286030+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TGTX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001001316&owner=exclude",
@@ -2604,7 +2604,7 @@
         "NCT07671911",
         "NCT07868419"
       ],
-      "marketCapUsd": 1796620355.0,
+      "marketCapUsd": 1796620355,
       "marketCapCheckedAt": "2026-10-26T03:21:33.669408+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TRVI/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001563880&owner=exclude",
@@ -2622,7 +2622,7 @@
         "NCT05606614",
         "NCT07480564"
       ],
-      "marketCapUsd": 1290300838.0,
+      "marketCapUsd": 1290300838,
       "marketCapCheckedAt": "2026-10-26T03:21:33.675359+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TSHA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001806310&owner=exclude",
@@ -2639,7 +2639,7 @@
       "nctIds": [
         "NCT07355075"
       ],
-      "marketCapUsd": 313876197.0,
+      "marketCapUsd": 313876197,
       "marketCapCheckedAt": "2026-10-26T03:21:33.679246+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TTRX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0002023016&owner=exclude",
@@ -2660,7 +2660,7 @@
         "NCT06247085",
         "NCT06431893"
       ],
-      "marketCapUsd": 4720594987.0,
+      "marketCapUsd": 4720594987,
       "marketCapCheckedAt": "2026-10-26T03:21:33.765570+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/TVTX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001438533&owner=exclude",
@@ -2683,7 +2683,7 @@
         "NCT06331299",
         "NCT06774131"
       ],
-      "marketCapUsd": 1685890652.0,
+      "marketCapUsd": 1685890652,
       "marketCapCheckedAt": "2026-10-26T03:21:33.949692+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/URGN/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001668243&owner=exclude",
@@ -2704,7 +2704,7 @@
         "NCT03588975",
         "NCT06915233"
       ],
-      "marketCapUsd": 2177817293.0,
+      "marketCapUsd": 2177817293,
       "marketCapCheckedAt": "2026-10-26T03:21:33.988079+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VCEL/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0000887359&owner=exclude",
@@ -2722,7 +2722,7 @@
         "NCT04716231",
         "NCT05609812"
       ],
-      "marketCapUsd": 2017052747.0,
+      "marketCapUsd": 2017052747,
       "marketCapCheckedAt": "2026-10-26T03:21:34.067703+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VERA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001831828&owner=exclude",
@@ -2742,7 +2742,7 @@
         "NCT06903338",
         "NCT07128550"
       ],
-      "marketCapUsd": 1807273863.0,
+      "marketCapUsd": 1807273863,
       "marketCapCheckedAt": "2026-10-26T03:21:34.167449+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VIR/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001706431&owner=exclude",
@@ -2762,7 +2762,7 @@
         "NCT07868835",
         "NCT07868939"
       ],
-      "marketCapUsd": 3066803084.0,
+      "marketCapUsd": 3066803084,
       "marketCapCheckedAt": "2026-10-26T03:21:34.238165+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VKTX/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001607678&owner=exclude",
@@ -2782,7 +2782,7 @@
         "NCT06456580",
         "NCT07404865"
       ],
-      "marketCapUsd": 1080303488.0,
+      "marketCapUsd": 1080303488,
       "marketCapCheckedAt": "2026-10-26T03:21:34.279725+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VOR/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001817229&owner=exclude",
@@ -2799,7 +2799,7 @@
       "nctIds": [
         "NCT06072781"
       ],
-      "marketCapUsd": 1219047915.0,
+      "marketCapUsd": 1219047915,
       "marketCapCheckedAt": "2026-10-26T03:21:34.404164+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/VSTM/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001526119&owner=exclude",
@@ -2826,7 +2826,7 @@
         "NCT07172516",
         "NCT07217860"
       ],
-      "marketCapUsd": 3422340867.0,
+      "marketCapUsd": 3422340867,
       "marketCapCheckedAt": "2026-10-26T03:21:34.635398+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/XENE/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001582313&owner=exclude",
@@ -2844,7 +2844,7 @@
         "NCT03995108",
         "NCT06056297"
       ],
-      "marketCapUsd": 321235447.0,
+      "marketCapUsd": 321235447,
       "marketCapCheckedAt": "2026-10-26T03:21:34.638394+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/XFOR/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001501697&owner=exclude",
@@ -2862,7 +2862,7 @@
         "NCT03292952",
         "NCT03460652"
       ],
-      "marketCapUsd": 582554892.0,
+      "marketCapUsd": 582554892,
       "marketCapCheckedAt": "2026-10-26T03:21:34.814668+00:00",
       "marketCapSourceUrl": "https://api.nasdaq.com/api/quote/ZVRA/summary?assetclass=stocks",
       "secFilingsUrl": "https://www.sec.gov/edgar/browse/?CIK=0001434647&owner=exclude",
