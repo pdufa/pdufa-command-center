@@ -155,11 +155,11 @@ def audit_public_outcome_disclosure_leads(
         publisher = event["publisher_origin"]
         if publisher not in _PUBLISHERS:
             raise ValueError("Unrecognized publisher origin")
+        if event["source_url"] in seen_url:
+            raise ValueError("Duplicate URL cannot inflate independent source count")
         channel, host = _PUBLISHERS[publisher]
         if event["channel"] != channel or not _source_url(event["source_url"], host):
             raise ValueError("Publisher channel/official URL mismatch")
-        if event["source_url"] in seen_url:
-            raise ValueError("Duplicate URL cannot inflate independent source count")
         seen_url.add(event["source_url"])
         announced = _reported_at(event["source_reported_publication_time"])
         observed = _day(event["source_observed_on"])
