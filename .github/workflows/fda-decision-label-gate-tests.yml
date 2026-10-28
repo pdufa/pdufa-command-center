@@ -5,9 +5,11 @@ on:
       - "research/fda_decision_label_gate.py"
       - "research/fda_candidate_audit.py"
       - "research/fda_candidate_audit_cli.py"
+      - "research/fda_existing_history_audit.py"
       - "tests/test_fda_decision_label_gate.py"
       - "tests/test_fda_candidate_audit.py"
       - "tests/test_fda_candidate_audit_cli.py"
+      - "tests/test_fda_existing_history_audit.py"
       - ".github/workflows/fda-decision-label-gate-tests.yml"
   workflow_dispatch:
 
@@ -28,3 +30,4 @@ jobs:
           python -m unittest discover -s tests -p "test_fda_decision_label_gate.py" -v
           python -m unittest discover -s tests -p "test_fda_candidate_audit.py" -v
           python -m unittest discover -s tests -p "test_fda_candidate_audit_cli.py" -v
+          python -m unittest discover -s tests -p "test_fda_existing_history_audit.py" -v
