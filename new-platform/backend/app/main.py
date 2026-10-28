@@ -481,6 +481,26 @@ def evaluate_phase3_research_batch(payload: Phase3ResearchBatchRequest):
 
 
 
+class PublishedPhase3DiscoveryPreviewRequest(BaseModel):
+    """Select exact identities from the existing published Pipeline index."""
+    exact_keys: list[str] = Field(min_length=1, max_length=200)
+
+
+@app.post("/api/internal/phase3-research/preview-published-discovery",
+          dependencies=[Depends(require_internal_key)])
+def preview_published_phase3_discovery(payload: PublishedPhase3DiscoveryPreviewRequest):
+    """Read-only snapshot join; never certifies scanner-only dates as verified."""
+    from .source_workspace import workspace
+    from .phase3_published_discovery_preview import preview_published_discoveries
+    try:
+        snapshot = workspace()
+        return preview_published_discoveries(snapshot, payload.exact_keys)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except (RuntimeError, OSError):
+        raise HTTPException(status_code=503, detail="Published discovery unavailable") from None
+
+
 @app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def validate_reconciliation_package(payload: "ReviewPackage"):
     """Authenticated, read-only validation. No identity, preset, or scanner writes."""
