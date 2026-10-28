@@ -83,10 +83,12 @@ def workspace_to_priority_queue(payload: Mapping[str, Any]) -> dict:
     for program in result["queue"]:
         source_rows = [row for row in rows if row["program_id"] == program["program_id"]]
         evidence_rows = [entry for row in source_rows
-                         for entry in (row.get("regulatory_evidence_records")\n                                       if isinstance(row.get("regulatory_evidence_records"), list) else [])
+                         for entry in (row.get("regulatory_evidence_records")
+                                       if isinstance(row.get("regulatory_evidence_records"), list) else [])
                          if isinstance(entry, Mapping)]
         decision_dates = {row.get("historical_decision_date") for row in source_rows
-                          if isinstance(row.get("historical_decision_date"), str)\n                          and row.get("historical_decision_date")}
+                          if isinstance(row.get("historical_decision_date"), str)
+                          and row.get("historical_decision_date")}
         if evidence_rows:
             cutoff = next(iter(decision_dates)) if len(decision_dates) == 1 else None
             audit = reconcile_evidence(evidence_rows, decision_date=cutoff)
