@@ -105,6 +105,17 @@ class WorkspaceAdapterTests(unittest.TestCase):
         self.assertTrue(item["historical_replay_ready"])
         self.assertFalse(result["trading_ready"])
 
+    def test_malformed_decision_date_does_not_crash_queue(self):
+        result = workspace_to_priority_queue({"lists": {
+            "GEM_JR": [{"programId": "P1", "historical_decision_date": "bad-date",
+                "regulatory_evidence_records": [
+                    {"source": "registry", "metric": "primary", "population": "ITT",
+                     "value": 1, "available_date": "2020-01-01"}]}],
+            "GEM": [], "WT": [],
+        }})
+        self.assertFalse(result["queue"][0]["historical_replay_ready"])
+        self.assertEqual(result["queue"][0]["evidence_reconciliation"]["pre_decision_records"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
