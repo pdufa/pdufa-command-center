@@ -7,21 +7,22 @@
     "phase3_collector_current": true,
     "phase3_discovery_ledger_reconciled": true,
     "required_saved_sources_valid": true,
-    "saved_scan_feed_current": true,
+    "saved_scan_feed_current": false,
     "sec_financing_source_current": false
   },
-  "action": "REVERIFY_PARTIAL",
+  "action": "VERIFY_ALL",
   "artifact_integrity": "NOT INDEPENDENTLY CHECKED",
   "awaiting_second_financing": 0,
   "blocking_or_review_flags": [
-    "DISCOVERY_SOURCE_TIMESTAMPS_REQUIRE_REVIEW",
+    "GEM_SEC_CASH_RUNWAY_COLLECTION_MISSING_PARTIAL_OR_STALE",
+    "CURRENT_RANKING_FEED_STALE_OR_UNVERIFIED",
     "UNVALIDATED_HISTORICAL_STOCK_RETURNS",
     "SEC_FINANCING_COVERAGE_BLOCKED_OR_STALE"
   ],
   "bpw_comparable": {},
   "cash_runway": {
     "collected_count": 33,
-    "collector_status": "COLLECTED \u2014 CURRENT SEC STEP 4 SNAPSHOTS",
+    "collector_status": "STALE \u2014 SEC RUNWAY COLLECTION NOT CURRENT",
     "deteriorating": 0,
     "dilution_alerts": 37,
     "minimum_entry_months": 12.0,
@@ -32,17 +33,17 @@
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-27T03:21:52.898522+00:00",
-    "matched_posted_results": 97,
-    "new_records": 0,
-    "stored_results": 2493,
-    "studies_checked": 3974
+    "finished_at": null,
+    "matched_posted_results": null,
+    "new_records": null,
+    "stored_results": null,
+    "studies_checked": null
   },
-  "collector_performed": true,
-  "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
+  "collector_performed": false,
+  "collector_status": "NOT_RUN \u2014 SAVED-SOURCE VERIFICATION ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-27T03:24:11.141092+00:00",
+  "generated_at_utc": "2026-10-28T01:07:42.134098+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -63,7 +64,7 @@
   "label": "BLOCK 4 \u2014 GEMS",
   "market_source_health": {
     "blocked_records": 0,
-    "last_check_age_days": 0,
+    "last_check_age_days": 1,
     "source_completeness_not_guaranteed": true,
     "status": "CURRENT_SOURCE_ONLY"
   },
@@ -73,15 +74,15 @@
     "Phase 3": 0,
     "Post-Financing": 0
   },
-  "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 40443182030,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40443182030",
+  "research_status": "HOLD_STALE_OR_MISSING_SOURCES",
+  "run_id": 40613087925,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40613087925",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
   "sec_source_health": {
     "blocked_records": 38,
-    "last_check_age_days": 21,
+    "last_check_age_days": 22,
     "source_completeness_not_guaranteed": true,
     "status": "PARTIAL_STALE_OR_BLOCKED"
   },
