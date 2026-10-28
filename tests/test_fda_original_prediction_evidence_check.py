@@ -9,7 +9,7 @@ class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
             "fda_action_at": "2025-08-15T16:00:00Z",
             "prediction_created_at": "2025-08-14T12:00:00Z",
             "model_frozen_at": "2025-08-13T12:00:00Z",
-            "immutable_prediction_uri": "https://github.com/example/research/commit/1234567890abcdef",
+            "immutable_prediction_uri": "https://github.com/example/research/commit/1234567890abcdef1234567890abcdef12345678",
             "prediction_sha256": "a"*64,
             "model_sha256": "b"*64,
             "independent_reviewer": "reviewer",
@@ -29,6 +29,15 @@ class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
         result = assess_original_prediction_evidence(self.inventory, [record])
         self.assertFalse(result["cases"][0]["artifact_metadata_complete"])
         self.assertEqual(result["cases"][0]["status"], "INSUFFICIENT_OR_NONPROSPECTIVE_EVIDENCE")
+
+    def test_short_or_non_commit_github_path_rejected(self):
+        for uri in ("https://github.com/example/research/commit/main",
+                    "https://github.com/example/research/releases/download/latest/file",
+                    "https://github.com/example/research/commit/1234"):
+            with self.subTest(uri=uri):
+                record = {**self.good, "immutable_prediction_uri": uri}
+                result = assess_original_prediction_evidence(self.inventory, [record])
+                self.assertFalse(result["cases"][0]["artifact_metadata_complete"])
 
     def test_post_action_prediction_rejected(self):
         record = {**self.good, "prediction_created_at": "2025-08-16T12:00:00Z"}
