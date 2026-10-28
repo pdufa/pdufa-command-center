@@ -14,6 +14,9 @@ on:
       - 'new-platform/backend/scripts/audit_hop_fda_pdf_bytes.py'
       - 'new-platform/backend/scripts/capture_hop_fda_original_https.py'
       - 'new-platform/backend/app/hop_fda_original_capture_receipts.py'
+      - 'new-platform/backend/app/hop_fda_approval_survivor_sequences.py'
+      - 'new-platform/backend/app/research_sources/hop_fda_approval_survivor_sequences.json'
+      - 'new-platform/backend/tests/test_hop_fda_approval_survivor_sequences.py'
       - 'new-platform/backend/app/research_sources/hop_fda_original_byte_capture_receipts.json'
       - 'new-platform/backend/tests/test_hop_real_fda_original_capture_receipts.py'
       - 'new-platform/backend/tests/test_hop_original_https_capture.py'
@@ -85,6 +88,9 @@ on:
       - 'new-platform/backend/scripts/audit_hop_fda_pdf_bytes.py'
       - 'new-platform/backend/scripts/capture_hop_fda_original_https.py'
       - 'new-platform/backend/app/hop_fda_original_capture_receipts.py'
+      - 'new-platform/backend/app/hop_fda_approval_survivor_sequences.py'
+      - 'new-platform/backend/app/research_sources/hop_fda_approval_survivor_sequences.json'
+      - 'new-platform/backend/tests/test_hop_fda_approval_survivor_sequences.py'
       - 'new-platform/backend/app/research_sources/hop_fda_original_byte_capture_receipts.json'
       - 'new-platform/backend/tests/test_hop_real_fda_original_capture_receipts.py'
       - 'new-platform/backend/tests/test_hop_original_https_capture.py'
@@ -177,6 +183,7 @@ jobs:
             tests/test_hop_fda_pdf_byte_audit.py \
             tests/test_hop_original_https_capture.py \
             tests/test_hop_real_fda_original_capture_receipts.py \
+            tests/test_hop_fda_approval_survivor_sequences.py \
             tests/test_hop_fda_public_disclosure_clock.py
       - name: Test FDA action-event normalization and fail-closed gate
         run: python -m pytest -q test_outcome_fda_action_events.py test_outcome_fda_research_action_fixtures.py test_outcome_fda_research_export.py test_outcome_fda_review_timeline_evidence.py test_outcome_fda_review_timeline_export.py test_outcome_fda_receipt_boundary_gap_report.py test_outcome_fda_receipt_asof_audit.py test_outcome_fda_research_feature_projection.py test_outcome_fda_dual_readiness_grades.py test_outcome_fda_readiness_panel.py test_outcome_fda_readiness_streamlit.py test_outcome_receipt_readiness_regression.py test_outcome_fda_cycle_evidence_certification.py test_outcome_fda_receipt_certification_workqueue.py
