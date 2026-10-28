@@ -34,7 +34,7 @@ def assess_label_eligibility(record: Mapping[str, Any]) -> dict:
     try:
         action_text = record["action_date"]
         cutoff_text = record["evidence_cutoff_date"]
-        if not all(isinstance(value, str) and re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", value) for value in (action_text, cutoff_text)):
+        if not all(isinstance(value, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value) for value in (action_text, cutoff_text)):
             raise ValueError("Dates must use strict YYYY-MM-DD format")
         action_date = date.fromisoformat(action_text)
         cutoff = date.fromisoformat(cutoff_text)
