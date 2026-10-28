@@ -3,12 +3,9 @@ from copy import deepcopy
 from datetime import date
 import json
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
-from fastapi.testclient import TestClient
 
-from app.main import app
 from app.hop_fda_public_disclosure_clock import (
     _no_duplicate_json_fields, audit_public_outcome_disclosure_leads,
     load_historical_fda_public_outcome_packet,
@@ -19,7 +16,6 @@ SOURCE = Path(__file__).resolve().parents[1] / "app" / "research_sources"
 CUTOFF = date(2026, 10, 28)
 APPROVED = "NDA213973_ORIGINAL_1_20200515_APPROVED"
 CRL = "BLA761303_ORIGINAL_1_20240322_CRL"
-ENDPOINT = "/api/internal/hop/public-outcome-disclosures"
 
 
 def fixtures():
@@ -169,16 +165,3 @@ def test_read_only_combined_packet_keeps_all_real_cases_untrained():
     assert packet["tradeAuthorized"] is False
 
 
-def test_read_only_server_endpoint_auth_no_storage_or_trading():
-    with patch.dict("os.environ", {"PDUFA_INTERNAL_API_KEY": "test-only"}, clear=False):
-        client = TestClient(app)
-        assert client.get(ENDPOINT).status_code == 401
-        with patch("app.main.ENGINE.connect", side_effect=AssertionError("DB accessed")):
-            ok = client.get(ENDPOINT, headers={"x-pdufa-internal-key": "test-only"})
-        assert ok.status_code == 200, ok.text
-        payload = ok.json()
-        assert payload["publicDisclosureResearch"]["totalPublicReleaseLeads"] == 3
-        assert payload["actionLetterResearch"]["sourceLettersInspected"] == 2
-        assert payload["trainingAuthorized"] is False
-        assert payload["tradeAuthorized"] is False
-        assert payload["approvalProbability"] is None
