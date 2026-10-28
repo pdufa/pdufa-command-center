@@ -1,6 +1,7 @@
-"""Research-only adjudication of TNXP RESILIENT ITT exclusion.
+"""Research-only TNXP RESILIENT ITT exclusion adjudication.
 
-No model probabilities, retrospective outcome features, or production wiring.
+No production wiring, model probabilities, or retrospective outcome features.
+Boolean evidence flags are NOT evidence of authenticated documents.
 """
 from __future__ import annotations
 
@@ -28,28 +29,13 @@ class Evidence:
 
 
 def adjudicate(evidence: Evidence) -> Adjudication:
-    """Return a finding only with authenticated and complete evidence.
+    """Legacy flag-only inputs are never sufficient to certify compliance.
 
-    A missing all-randomized sensitivity result blocks scientific readiness
-    even when an exclusion's governance could be otherwise adjudicated.
+    Even all-true flags are caller assertions, not verified source provenance.
+    Until authenticated document identifiers, hashes, dates, and independently
+    reviewed adjudication are implemented, the only safe state is UNRESOLVED.
     """
-    required = (
-        evidence.final_signed_sap,
-        evidence.version_history,
-        evidence.database_lock_timing,
-        evidence.csr_population_listing,
-        evidence.deviation_record,
-        evidence.adjudication_record,
-        evidence.all_randomized_sensitivity,
-        evidence.authenticated_sources,
-    )
-    if not all(required) or evidence.explicit_conformance_finding is None:
-        return Adjudication.UNRESOLVED
-    return (
-        Adjudication.CONFORMANT
-        if evidence.explicit_conformance_finding
-        else Adjudication.NONCONFORMANT
-    )
+    return Adjudication.UNRESOLVED
 
 
 def prediction_gate(evidence: Evidence) -> str:
