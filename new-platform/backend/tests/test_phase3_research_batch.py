@@ -39,6 +39,28 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(preview["rows"][0]["trialExactKey"],"B")
         self.assertIsNone(preview["rows"][0]["approvalProbability"])
 
+    def test_authenticated_batch_endpoint_is_read_only(self):
+        from unittest.mock import patch
+        from fastapi.testclient import TestClient
+        from app.main import app
+        rows=[{"exact_key":"A","list_memberships":["Pipeline"]},
+              {"exact_key":"B","list_memberships":["GEM JR"],
+               "phase3_results":ev("2026-08-01"),
+               "pdufa_assignment":ev("2026-09-01","2027-04-01")}]
+        with patch.dict("os.environ", {"PDUFA_INTERNAL_API_KEY":"test-secret"}):
+            client=TestClient(app)
+            route="/api/internal/phase3-research/evaluate-batch"
+            self.assertEqual(client.post(route,json={"candidates":rows}).status_code,401)
+            response=client.post(route,json={"candidates":rows},
+                                 headers={"x-pdufa-internal-key":"test-secret"})
+            self.assertEqual(response.status_code,200,response.text)
+            body=response.json()
+            self.assertEqual(body["totalDiscovered"],2)
+            self.assertEqual(body["eligibleForResearch"],1)
+            self.assertEqual(len(body["sheetPreview"]["rows"]),1)
+            self.assertFalse(body["sheetPreview"]["writtenToSheet"])
+            self.assertFalse(body["tradeAuthorized"])
+
     def test_empty_batch(self):
         self.assertEqual(evaluate_candidate_batch([],as_of="2026-10-27")["totalDiscovered"],0)
 
