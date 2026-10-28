@@ -1,3 +1,5 @@
+import re
+
 """Build a conservative source-by-source SCIENCE review queue for historical cases.
 
 The queue uses existing evidence metadata; it does not assert independent
@@ -26,10 +28,16 @@ def build_science_source_review_queue(reconstruction, authenticated_intakes=None
             )
             intake = authenticated_intakes.get(obs["id"])
             if intake is not None:
+                if not isinstance(intake, dict):
+                    raise ValueError("intake must be a mapping")
                 if intake.get("schema_version") != "fda-crl-offline-intake-v1":
                     raise ValueError("unknown intake schema")
                 if intake.get("fda_authenticity_verified") or intake.get("eligible_for_predictive_training"):
                     raise ValueError("offline intake cannot self-certify evidence")
+                if not re.fullmatch(r"[0-9a-f]{64}", intake.get("sha256", "")):
+                    raise ValueError("intake requires a valid lowercase SHA-256 digest")
+                if intake.get("status") != "HASHED_UNVERIFIED_SOURCE":
+                    raise ValueError("offline intake status must remain unverified")
                 if role != "OUTCOME_ONLY":
                     raise ValueError("FDA action letters cannot be attached to predecision observations")
                 if intake.get("application") != case.get("application_id"):
