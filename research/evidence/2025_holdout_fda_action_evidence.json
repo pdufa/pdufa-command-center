@@ -1,7 +1,7 @@
 {
   "research_only": true,
   "validated_training_cohort": false,
-  "action_evidence_verified_count": 3,
+  "action_evidence_verified_count": 6,
   "records": [
     {
       "ticker": "TNXP",
@@ -54,7 +54,57 @@
       "program_family_disjoint_verified": false,
       "eligible_for_training": false,
       "correction_required": "Do not treat April 1 as an approval action date; preserve original legacy row and flag for canonical action-date reconciliation."
+    },
+    {
+      "ticker": "UNCY",
+      "event_key": "UNCY|2025-06-28",
+      "product": "oxylanthanum carbonate",
+      "application_id": "NDA 218607",
+      "legacy_recorded_outcome": "CRL",
+      "fda_original_action_date": "2025-06-27",
+      "verification_status": "LEGACY_GOAL_DATE_NOT_ACTION_DATE",
+      "fda_document_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20260629.pdf",
+      "evidence_summary": "FDA June 2026 CRL expressly references its prior June 27 2025 action letter; legacy record lists June 28 2025. The linked document is a later review cycle and cannot substitute for the original CRL.",
+      "review_cycle_id": "2025_cycle_unverified",
+      "predecision_inputs_verified": false,
+      "sampling_denominator_verified": false,
+      "program_family_disjoint_verified": false,
+      "eligible_for_training": false
+    },
+    {
+      "ticker": "BCRX",
+      "event_key": "BCRX|2025-12-12",
+      "product": "Orladeyo (berotralstat) pediatric expansion",
+      "application_id": "NDA 219776",
+      "legacy_recorded_outcome": "APPROVED",
+      "fda_action_date": "2025-12-11",
+      "verification_status": "LEGACY_GOAL_DATE_NOT_ACTION_DATE",
+      "fda_document_url": "https://www.fda.gov/media/190527/download",
+      "evidence_summary": "FDA December 2025 Orange Book additions list NDA 219776 oral pellets approved December 11, 2025; legacy PDUFA date is December 12.",
+      "review_cycle_id": "unverified",
+      "predecision_inputs_verified": false,
+      "sampling_denominator_verified": false,
+      "program_family_disjoint_verified": false,
+      "eligible_for_training": false
+    },
+    {
+      "ticker": "VNDA",
+      "event_key": "VNDA|2025-12-30",
+      "product": "Nereus (tradipitant)",
+      "application_id": "NDA 220152",
+      "legacy_recorded_outcome": "APPROVED",
+      "fda_action_date": "2025-12-30",
+      "verification_status": "FDA_APPROVAL_DATE_CONFIRMED",
+      "fda_document_url": "https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2025",
+      "supporting_fda_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/220152Orig1s000lbl.pdf",
+      "evidence_summary": "FDA novel drug approval list records Nereus tradipitant approved December 30 2025; original 2025 label identifies NDA 220152.",
+      "review_cycle_id": "Orig1s000",
+      "predecision_inputs_verified": false,
+      "sampling_denominator_verified": false,
+      "program_family_disjoint_verified": false,
+      "eligible_for_training": false
     }
   ],
-  "legacy_action_date_mismatches_identified": 1
+  "legacy_action_date_mismatches_identified": 3,
+  "notes": "Action evidence includes later documents explicitly referencing prior FDA actions; source timing and review-cycle identity require separate audit. All six remain excluded from validated predictive accuracy."
 }
