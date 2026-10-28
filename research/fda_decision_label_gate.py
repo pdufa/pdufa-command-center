@@ -24,12 +24,23 @@ def assess_label_eligibility(record: Mapping[str, Any]) -> dict:
     if not isinstance(source, str) or not source:
         reasons.append("missing_official_fda_action_source")
     else:
-        parsed = urlparse(source)
-        if parsed.scheme != "https" or parsed.hostname not in {"fda.gov", "www.fda.gov", "accessdata.fda.gov"}:
+        try:
+            parsed = urlparse(source)
+            trusted = (parsed.scheme == "https" and parsed.hostname in {
+                "fda.gov", "www.fda.gov", "accessdata.fda.gov", "www.accessdata.fda.gov",
+                "download.open.fda.gov"
+            } and parsed.username is None and parsed.password is None
+                and parsed.port is None and not parsed.fragment and parsed.path not in {"", "/"})
+        except ValueError:
+            trusted = False
+        if not trusted:
             reasons.append("unverified_fda_source_domain")
     if not record.get("application_id"):
         reasons.append("missing_application_id")
-    if not record.get("review_cycle_id"):
+    cycle = record.get("review_cycle_id")
+    if (not isinstance(cycle, str) or not cycle.strip() or any(
+            token in cycle.casefold() for token in
+            ("unverified", "unknown", "unresolved", "pending", "not_verified", "not verified"))):
         reasons.append("missing_review_cycle_id")
     try:
         action_text = record["action_date"]

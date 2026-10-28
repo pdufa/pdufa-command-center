@@ -1,0 +1,758 @@
+{
+  "schema_version": 1,
+  "research_only": true,
+  "as_of": "2026-10-28",
+  "cases": [
+    {
+      "ticker": "NVAX",
+      "event_key": "NVAX|2025-04-01",
+      "application_id": "BLA125817",
+      "indication": "COVID-19 vaccine full biologics license; NUVAXOVID",
+      "program_family": "novavax-covid19-vaccine",
+      "legacy_goal_date": "2025-04-01",
+      "action_date": "2025-05-16",
+      "reconstruction_cutoff": "2025-03-31",
+      "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+      "original_prediction_cutoff": null,
+      "observations": [
+        {
+          "id": "NVAX-10K-REG-CMC",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069425000004/nvax-20241231.htm",
+          "available_on": "2025-02-27",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069425000004/0001000694-25-000004-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Contemporaneous annual-report context describes the COVID-19 vaccine business and risks involving regulatory approval and third-party manufacturing. It is not a complete reconstruction of the BLA efficacy, safety or CMC submission.",
+          "science_question_ids": [
+            "S26",
+            "S29",
+            "S31",
+            "S34"
+          ],
+          "source_location": "Annual report business and manufacturing/regulatory risk factors",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "NVAX-AFTER-GOAL-STATEMENT",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000110465925037728/tm2512925d1_8k.htm",
+          "available_on": "2025-04-23",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "An April 23 issuer statement about BLA approvability follows the legacy April 1 goal and is excluded from that reconstruction.",
+          "science_question_ids": [
+            "S27",
+            "S29"
+          ],
+          "source_location": null,
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "NVAX-FDA-ACTION",
+          "source_url": "https://www.fda.gov/media/186545/download?stream=top",
+          "available_on": "2025-05-16",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "OUTCOME_ONLY",
+          "finding": "FDA original license letter records May 16 approval under BL 125817/0. Its approved population and manufacturing findings are outcome evidence, not March 31 prediction inputs.",
+          "science_question_ids": [
+            "S26",
+            "S29"
+          ],
+          "source_location": "Page 1 licensing and indication",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        }
+      ],
+      "supporting_factors": [
+        "A licensed/EUA vaccine development program existed before the goal; full license is a separate regulatory event."
+      ],
+      "opposing_factors": [
+        "Approval delay and May 16 population restrictions cannot be imported into March 31 inputs. Detailed pre-goal BLA safety, effectiveness and CMC evidence is not yet reconstructed."
+      ],
+      "related_precedents": [
+        {
+          "name": "Prior EUA versus full BLA",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069425000004/nvax-20241231.htm",
+          "comparison": "Same sponsor/product, but EUA authorization and full licensure have different evidence requirements; neither an independent prior case nor a substitute for exact cycle adjudication.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false
+        }
+      ],
+      "missing_documents": [
+        "Original protocols, amendments and prespecified SAP versions",
+        "Complete efficacy/safety tables and independent scientific review",
+        "Contemporaneous manufacturing/inspection evidence and exact availability",
+        "Original prediction, feature freeze and linked model/training chronology",
+        "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+      ],
+      "prediction_provenance": {
+        "model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "feature_snapshot_hash": null,
+        "model_frozen_at": "2026-10-04T03:16:07.148686+00:00",
+        "prediction_generated_at": null,
+        "model_training_end": null,
+        "lock_event_keys": [
+          "ATRA|2025-01-15",
+          "BCRX|2025-06-23",
+          "BCRX|2025-09-12",
+          "BCRX|2025-12-12",
+          "CAPR|2025-03-04",
+          "CYTK|2025-12-26",
+          "DNLI|2025-10-13",
+          "ETON|2025-02-06",
+          "ETON|2025-02-28",
+          "FBIO|2025-06-30",
+          "FBIO|2025-09-30",
+          "INSM|2025-02-06",
+          "INSM|2025-02-24",
+          "INSM|2025-08-12",
+          "LQDA|2025-03-28",
+          "LQDA|2025-05-24",
+          "MIST|2025-03-27",
+          "NVAX|2025-04-01",
+          "NVAX|2025-04-02",
+          "NVAX|2025-04-23",
+          "OTLK|2025-04-08",
+          "OTLK|2025-08-27",
+          "TNXP|2025-08-15",
+          "UNCY|2025-06-28"
+        ],
+        "program_family_disjoint_verified": false,
+        "sampling_denominator_verified": false,
+        "independent_review_complete": false,
+        "lock_model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "prediction_lock_created_at": "2026-10-04T03:16:07.245780+00:00"
+      },
+      "prediction_provenance_scope": "RECOVERED_2026_RETROSPECTIVE_ARTIFACT_NOT_A_2025_PREDICTION_FREEZE",
+      "archive_prediction_file_sha256": "8703bed176cc7793d336593a719bb0225d3ea9acde25900308e649cb0cc5fdfa"
+    },
+    {
+      "ticker": "UNCY",
+      "event_key": "UNCY|2025-06-28",
+      "application_id": "NDA218607",
+      "indication": "Hyperphosphatemia in chronic kidney disease patients on dialysis; oxylanthanum carbonate",
+      "program_family": "oxylanthanum-carbonate",
+      "legacy_goal_date": "2025-06-28",
+      "action_date": "2025-06-27",
+      "reconstruction_cutoff": "2025-06-26",
+      "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+      "original_prediction_cutoff": null,
+      "observations": [
+        {
+          "id": "UNCY-PREDECISION-CGMP",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390025052824/ea024524601ex99-1_unicycive.htm",
+          "available_on": "2025-06-10",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390025052824/0001213900-25-052824-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Issuer disclosed an FDA cGMP deficiency at a third-party manufacturing vendor and that labeling discussions were precluded. This was public before the June 26 research cutoff; it does not by itself establish the eventual FDA decision.",
+          "science_question_ids": [
+            "S27",
+            "S29",
+            "S34",
+            "S35"
+          ],
+          "source_location": "Exhibit 99.1 FDA manufacturing update",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "UNCY-ORIGINAL-CRL",
+          "source_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20250627.pdf",
+          "available_on": "2025-06-27",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "OUTCOME_ONLY",
+          "finding": "Original 2025 CRL PDF is located with partial extracted text and Reference ID 5616346. First-page verification remains required; the filename is not proof of original publication.",
+          "science_question_ids": [
+            "S26",
+            "S29"
+          ],
+          "source_location": null,
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "UNCY-LATER-CYCLE",
+          "source_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20260629.pdf",
+          "available_on": "2026-06-29",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "OUTCOME_ONLY",
+          "finding": "A later-cycle CRL references the June 27, 2025 action; it must not replace the original cycle or enter 2025 clinical/manufacturing prediction inputs.",
+          "science_question_ids": [
+            "S25",
+            "S29"
+          ],
+          "source_location": null,
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        }
+      ],
+      "supporting_factors": [
+        "The program had a defined NDA/goal; clinical effectiveness still requires original protocol and results reconstruction."
+      ],
+      "opposing_factors": [
+        "Precutoff manufacturing deficiency and halted label discussions were a concrete opposing factor to the legacy approval prediction. No calibrated probability effect is assigned."
+      ],
+      "related_precedents": [
+        {
+          "name": "Other phosphate binders",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390025052824/ea024524601ex99-1_unicycive.htm",
+          "comparison": "Clinical pill burden and phosphate control require comparison with existing binders; another compound or formulation does not resolve this facility deficiency. Exact independent historical action/trial comparator remains unadjudicated.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false
+        }
+      ],
+      "missing_documents": [
+        "Original protocols, amendments and prespecified SAP versions",
+        "Complete efficacy/safety tables and independent scientific review",
+        "Contemporaneous manufacturing/inspection evidence and exact availability",
+        "Original prediction, feature freeze and linked model/training chronology",
+        "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+      ],
+      "prediction_provenance": {
+        "model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "feature_snapshot_hash": null,
+        "model_frozen_at": "2026-10-04T03:16:07.148686+00:00",
+        "prediction_generated_at": null,
+        "model_training_end": null,
+        "lock_event_keys": [
+          "ATRA|2025-01-15",
+          "BCRX|2025-06-23",
+          "BCRX|2025-09-12",
+          "BCRX|2025-12-12",
+          "CAPR|2025-03-04",
+          "CYTK|2025-12-26",
+          "DNLI|2025-10-13",
+          "ETON|2025-02-06",
+          "ETON|2025-02-28",
+          "FBIO|2025-06-30",
+          "FBIO|2025-09-30",
+          "INSM|2025-02-06",
+          "INSM|2025-02-24",
+          "INSM|2025-08-12",
+          "LQDA|2025-03-28",
+          "LQDA|2025-05-24",
+          "MIST|2025-03-27",
+          "NVAX|2025-04-01",
+          "NVAX|2025-04-02",
+          "NVAX|2025-04-23",
+          "OTLK|2025-04-08",
+          "OTLK|2025-08-27",
+          "TNXP|2025-08-15",
+          "UNCY|2025-06-28"
+        ],
+        "program_family_disjoint_verified": false,
+        "sampling_denominator_verified": false,
+        "independent_review_complete": false,
+        "lock_model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "prediction_lock_created_at": "2026-10-04T03:16:07.245780+00:00"
+      },
+      "prediction_provenance_scope": "RECOVERED_2026_RETROSPECTIVE_ARTIFACT_NOT_A_2025_PREDICTION_FREEZE",
+      "archive_prediction_file_sha256": "8703bed176cc7793d336593a719bb0225d3ea9acde25900308e649cb0cc5fdfa"
+    },
+    {
+      "ticker": "TNXP",
+      "event_key": "TNXP|2025-08-15",
+      "application_id": "NDA219428",
+      "indication": "Fibromyalgia in adults; sublingual cyclobenzaprine TNX-102 SL / Tonmya",
+      "program_family": "tnx102sl-cyclobenzaprine",
+      "legacy_goal_date": "2025-08-15",
+      "action_date": "2025-08-15",
+      "reconstruction_cutoff": "2025-08-14",
+      "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+      "original_prediction_cutoff": null,
+      "observations": [
+        {
+          "id": "TNXP-PREDECISION-RESILIENT",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002787/ex99-1.htm",
+          "available_on": "2025-03-18",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002787/0001999371-25-002787-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Issuer reported RESILIENT primary pain endpoint p=0.00005 and supportive prespecified secondary endpoints, with an August 15 goal. The exhibit header says March 17 while its body says March 18; SEC filing/acceptance on March 18 is the conservative availability bound.",
+          "science_question_ids": [
+            "S01",
+            "S03",
+            "S07",
+            "S21",
+            "S25",
+            "S27"
+          ],
+          "source_location": "Operational highlights: TNX-102 SL",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "TNXP-FDA-ACTION",
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219428Orig1s000ltr.pdf",
+          "available_on": "2025-08-15",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "OUTCOME_ONLY",
+          "finding": "Original NDA 219428 approval letter and postmarketing requirements are outcome-only evidence and cannot complete historical pre-August-15 safety assessment.",
+          "science_question_ids": [
+            "S16",
+            "S19",
+            "S26"
+          ],
+          "source_location": null,
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        }
+      ],
+      "supporting_factors": [
+        "A positive issuer-reported pivotal result and supportive secondary outcomes were available before the research cutoff."
+      ],
+      "opposing_factors": [
+        "Full protocol/SAP, failed or inconsistent prior trials, missing-data handling, discontinuations, long-term safety and manufacturing records still require adversarial review."
+      ],
+      "related_precedents": [
+        {
+          "name": "Existing fibromyalgia therapies and earlier cyclobenzaprine trials",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002787/ex99-1.htm",
+          "comparison": "Compare population, pain endpoint, blinding and route/formulation rather than borrowing another therapy's approval or treating two positive trials as the full program history.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false
+        }
+      ],
+      "missing_documents": [
+        "Original protocols, amendments and prespecified SAP versions",
+        "Complete efficacy/safety tables and independent scientific review",
+        "Contemporaneous manufacturing/inspection evidence and exact availability",
+        "Original prediction, feature freeze and linked model/training chronology",
+        "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+      ],
+      "prediction_provenance": {
+        "model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "feature_snapshot_hash": null,
+        "model_frozen_at": "2026-10-04T03:16:07.148686+00:00",
+        "prediction_generated_at": null,
+        "model_training_end": null,
+        "lock_event_keys": [
+          "ATRA|2025-01-15",
+          "BCRX|2025-06-23",
+          "BCRX|2025-09-12",
+          "BCRX|2025-12-12",
+          "CAPR|2025-03-04",
+          "CYTK|2025-12-26",
+          "DNLI|2025-10-13",
+          "ETON|2025-02-06",
+          "ETON|2025-02-28",
+          "FBIO|2025-06-30",
+          "FBIO|2025-09-30",
+          "INSM|2025-02-06",
+          "INSM|2025-02-24",
+          "INSM|2025-08-12",
+          "LQDA|2025-03-28",
+          "LQDA|2025-05-24",
+          "MIST|2025-03-27",
+          "NVAX|2025-04-01",
+          "NVAX|2025-04-02",
+          "NVAX|2025-04-23",
+          "OTLK|2025-04-08",
+          "OTLK|2025-08-27",
+          "TNXP|2025-08-15",
+          "UNCY|2025-06-28"
+        ],
+        "program_family_disjoint_verified": false,
+        "sampling_denominator_verified": false,
+        "independent_review_complete": false,
+        "lock_model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "prediction_lock_created_at": "2026-10-04T03:16:07.245780+00:00"
+      },
+      "prediction_provenance_scope": "RECOVERED_2026_RETROSPECTIVE_ARTIFACT_NOT_A_2025_PREDICTION_FREEZE",
+      "archive_prediction_file_sha256": "8703bed176cc7793d336593a719bb0225d3ea9acde25900308e649cb0cc5fdfa"
+    },
+    {
+      "ticker": "BCRX",
+      "event_key": "BCRX|2025-12-12",
+      "application_id": "NDA219776",
+      "indication": "Hereditary angioedema prophylaxis age 2 to less than 12; berotralstat oral pellets",
+      "program_family": "berotralstat-hae",
+      "legacy_goal_date": "2025-12-12",
+      "action_date": "2025-12-11",
+      "reconstruction_cutoff": "2025-12-10",
+      "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+      "original_prediction_cutoff": null,
+      "observations": [
+        {
+          "id": "BCRX-PREDECISION-TARGET-REVISION",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/882796/000117184325004091/f8k_062525.htm",
+          "available_on": "2025-06-25",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/882796/000117184325004091/0001171843-25-004091-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "June 25 filing reports FDA notification June 23 of a three-month goal extension for additional final reports and formulation data. New target was December 12; notification, amendment and public filing dates are different clocks.",
+          "science_question_ids": [
+            "S15",
+            "S25",
+            "S27",
+            "S29",
+            "S33"
+          ],
+          "source_location": "Item 8.01 Other Events",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "BCRX-APEX-P-LEAD",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/882796/000117184325003152/exh_991.htm",
+          "available_on": "2025-05-14",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Issuer reported positive pediatric APeX-P interim observations and an original September 12 target. Content was observed, but the filing-index timestamp was not successfully retrieved; this dated lead remains quarantined.",
+          "science_question_ids": [
+            "S01",
+            "S05",
+            "S16",
+            "S19",
+            "S36"
+          ],
+          "source_location": null,
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "BCRX-FDA-ACTION",
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219776Orig1s000ltr.pdf",
+          "available_on": "2025-12-11",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "OUTCOME_ONLY",
+          "finding": "Original NDA 219776 approval letter distinguishes pediatric oral pellets from parent capsules NDA 214094, and notes a June 11 major amendment. These FDA conclusions are outcome-only evidence.",
+          "science_question_ids": [
+            "S15",
+            "S26",
+            "S39"
+          ],
+          "source_location": null,
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        }
+      ],
+      "supporting_factors": [
+        "Issuer-reported pediatric results and established parent-product experience provide research context, subject to age/formulation differences."
+      ],
+      "opposing_factors": [
+        "Formulation/final-report amendment extended review. The 2020 parent berotralstat decision already appears in legacy history; program-family leakage has not been ruled out."
+      ],
+      "related_precedents": [
+        {
+          "name": "Parent ORLADEYO capsules NDA 214094",
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219776Orig1s000ltr.pdf",
+          "comparison": "Same active ingredient/program; adult/adolescent capsules and pediatric pellets NDA 219776 differ in population/formulation. Parent is correlated evidence, not an independent held-out case.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false
+        }
+      ],
+      "missing_documents": [
+        "Original protocols, amendments and prespecified SAP versions",
+        "Complete efficacy/safety tables and independent scientific review",
+        "Contemporaneous manufacturing/inspection evidence and exact availability",
+        "Original prediction, feature freeze and linked model/training chronology",
+        "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+      ],
+      "prediction_provenance": {
+        "model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "feature_snapshot_hash": null,
+        "model_frozen_at": "2026-10-04T03:16:07.148686+00:00",
+        "prediction_generated_at": null,
+        "model_training_end": null,
+        "lock_event_keys": [
+          "ATRA|2025-01-15",
+          "BCRX|2025-06-23",
+          "BCRX|2025-09-12",
+          "BCRX|2025-12-12",
+          "CAPR|2025-03-04",
+          "CYTK|2025-12-26",
+          "DNLI|2025-10-13",
+          "ETON|2025-02-06",
+          "ETON|2025-02-28",
+          "FBIO|2025-06-30",
+          "FBIO|2025-09-30",
+          "INSM|2025-02-06",
+          "INSM|2025-02-24",
+          "INSM|2025-08-12",
+          "LQDA|2025-03-28",
+          "LQDA|2025-05-24",
+          "MIST|2025-03-27",
+          "NVAX|2025-04-01",
+          "NVAX|2025-04-02",
+          "NVAX|2025-04-23",
+          "OTLK|2025-04-08",
+          "OTLK|2025-08-27",
+          "TNXP|2025-08-15",
+          "UNCY|2025-06-28"
+        ],
+        "program_family_disjoint_verified": false,
+        "sampling_denominator_verified": false,
+        "independent_review_complete": false,
+        "lock_model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "prediction_lock_created_at": "2026-10-04T03:16:07.245780+00:00"
+      },
+      "prediction_provenance_scope": "RECOVERED_2026_RETROSPECTIVE_ARTIFACT_NOT_A_2025_PREDICTION_FREEZE",
+      "archive_prediction_file_sha256": "8703bed176cc7793d336593a719bb0225d3ea9acde25900308e649cb0cc5fdfa"
+    },
+    {
+      "ticker": "CORT",
+      "event_key": "CORT|2025-12-30",
+      "application_id": "NDA219398",
+      "indication": "Endogenous Cushing syndrome; relacorilant",
+      "program_family": "relacorilant",
+      "legacy_goal_date": "2025-12-30",
+      "action_date": "2025-12-30",
+      "reconstruction_cutoff": "2025-12-29",
+      "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+      "original_prediction_cutoff": null,
+      "observations": [
+        {
+          "id": "CORT-PREDECISION-GRACE",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/cort-20250930.htm",
+          "available_on": "2025-11-04",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/0001628280-25-048841-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Issuer describes positive pivotal GRACE findings and an enriched randomized-withdrawal architecture. Full enrollment, attrition, estimand and SAP review are needed before judging the evidence.",
+          "science_question_ids": [
+            "S01",
+            "S08",
+            "S11",
+            "S13",
+            "S21"
+          ],
+          "source_location": "Business: relacorilant Cushing GRACE discussion",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "CORT-PREDECISION-GRADIENT",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/cort-20250930.htm",
+          "available_on": "2025-11-04",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/0001628280-25-048841-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "GRADIENT between-group systolic-pressure comparison was not statistically significant despite a reported within-relacorilant reduction from baseline. Within-arm significance is not proof of superiority versus placebo. This opposing evidence predates the CRL.",
+          "science_question_ids": [
+            "S01",
+            "S07",
+            "S10",
+            "S12",
+            "S21",
+            "S25"
+          ],
+          "source_location": "Business: GRADIENT hypertension results",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "CORT-CORRECTED-CRL",
+          "source_url": "https://download.open.fda.gov/crl/CRL_NDA219398_20260128.pdf",
+          "available_on": "2026-01-28",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "OUTCOME_ONLY",
+          "finding": "Corrected January 2026 CRL preserves December 30 action date. Its detailed FDA efficacy objections must not be used to construct a pre-December-30 model feature.",
+          "science_question_ids": [
+            "S25",
+            "S29"
+          ],
+          "source_location": null,
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        }
+      ],
+      "supporting_factors": [
+        "GRACE met the issuer-reported primary endpoint, which warrants source-specific review rather than dismissal after the known outcome."
+      ],
+      "opposing_factors": [
+        "GRADIENT between-arm result and GRACE enrichment/attrition are predecision challenges. The legacy CRL override lacks a dated freeze and cannot be counted as a successful forecast."
+      ],
+      "related_precedents": [
+        {
+          "name": "Korlym and other Cushing treatments",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/cort-20250930.htm",
+          "comparison": "Existing hypercortisolism treatment is context; relacorilant hypertension/withdrawal endpoints differ from another drug's glycemic indication. Keep ovarian-cancer relacorilant trials separate from Cushing evidence.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false
+        }
+      ],
+      "missing_documents": [
+        "Original protocols, amendments and prespecified SAP versions",
+        "Complete efficacy/safety tables and independent scientific review",
+        "Contemporaneous manufacturing/inspection evidence and exact availability",
+        "Original prediction, feature freeze and linked model/training chronology",
+        "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+      ],
+      "prediction_provenance": {
+        "model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "feature_snapshot_hash": null,
+        "model_frozen_at": "2026-10-04T03:16:07.148686+00:00",
+        "prediction_generated_at": null,
+        "model_training_end": null,
+        "lock_event_keys": [
+          "VNDA|2025-12-30",
+          "AGIO|2025-09-07",
+          "CORT|2025-12-30",
+          "EXEL|2025-04-03",
+          "MESO|2025-01-07",
+          "PGEN|2025-08-27",
+          "URGN|2025-06-13",
+          "ARWR|2025-11-18",
+          "ABEO|2025-04-29",
+          "OMER|2025-09-25"
+        ],
+        "program_family_disjoint_verified": false,
+        "sampling_denominator_verified": false,
+        "independent_review_complete": false,
+        "lock_model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "prediction_lock_created_at": "2026-10-04T14:27:03.234105+00:00"
+      },
+      "prediction_provenance_scope": "RECOVERED_2026_RETROSPECTIVE_ARTIFACT_NOT_A_2025_PREDICTION_FREEZE",
+      "archive_prediction_file_sha256": "2136594dfb6bdf9655f94bf748f7a8cae8f8071da2c5feeaa749db0730d26871"
+    },
+    {
+      "ticker": "VNDA",
+      "event_key": "VNDA|2025-12-30",
+      "application_id": "NDA220152",
+      "indication": "Prevention of vomiting induced by motion in adults; tradipitant / Nereus",
+      "program_family": "tradipitant",
+      "legacy_goal_date": "2025-12-30",
+      "action_date": "2025-12-30",
+      "reconstruction_cutoff": "2025-12-29",
+      "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+      "original_prediction_cutoff": null,
+      "observations": [
+        {
+          "id": "VNDA-PREDECISION-INDICATION",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025047317/vnda-20250930.htm",
+          "available_on": "2025-10-30",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025047317/0001628280-25-047317-index.html",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Issuer distinguishes the tradipitant motion-sickness NDA with a December 30 goal from the gastroparesis NDA and associated litigation/review history. Those are not interchangeable regulatory cycles.",
+          "science_question_ids": [
+            "S11",
+            "S21",
+            "S25",
+            "S26",
+            "S27",
+            "S39"
+          ],
+          "source_location": "Business and regulatory discussion: tradipitant",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "VNDA-FDA-ORIGINAL-ACTION",
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220152Orig1s000Approv.pdf",
+          "available_on": "2025-12-30",
+          "availability_basis": "PRINTED_DATE_ONLY",
+          "availability_source_url": null,
+          "source_role": "OUTCOME_ONLY",
+          "finding": "FDA package contains original NDA 220152 approval letter for motion-induced vomiting in adults, Reference ID 5720300. Packaging under a 2026 directory does not establish original publication time.",
+          "science_question_ids": [
+            "S26",
+            "S29",
+            "S39"
+          ],
+          "source_location": null,
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        }
+      ],
+      "supporting_factors": [
+        "A defined motion-sickness application/goal existed before the research cutoff; clinical efficacy and safety tables still require original-study reconstruction."
+      ],
+      "opposing_factors": [
+        "Gastroparesis results/CRL, motion-sickness partial-hold issues and later labeling/approval must remain separated by indication and publication date. Prior tradipitant staging raises a family-overlap check."
+      ],
+      "related_precedents": [
+        {
+          "name": "Prior tradipitant gastroparesis submission",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025047317/vnda-20250930.htm",
+          "comparison": "Same molecule, different indication and trials. Prior negative action is a source-specific challenge and family-overlap concern, not the motion-sickness outcome or an independent comparator.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false
+        }
+      ],
+      "missing_documents": [
+        "Original protocols, amendments and prespecified SAP versions",
+        "Complete efficacy/safety tables and independent scientific review",
+        "Contemporaneous manufacturing/inspection evidence and exact availability",
+        "Original prediction, feature freeze and linked model/training chronology",
+        "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+      ],
+      "prediction_provenance": {
+        "model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "feature_snapshot_hash": null,
+        "model_frozen_at": "2026-10-04T03:16:07.148686+00:00",
+        "prediction_generated_at": null,
+        "model_training_end": null,
+        "lock_event_keys": [
+          "VNDA|2025-12-30",
+          "AGIO|2025-09-07",
+          "CORT|2025-12-30",
+          "EXEL|2025-04-03",
+          "MESO|2025-01-07",
+          "PGEN|2025-08-27",
+          "URGN|2025-06-13",
+          "ARWR|2025-11-18",
+          "ABEO|2025-04-29",
+          "OMER|2025-09-25"
+        ],
+        "program_family_disjoint_verified": false,
+        "sampling_denominator_verified": false,
+        "independent_review_complete": false,
+        "lock_model_hash": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+        "prediction_lock_created_at": "2026-10-04T14:27:03.234105+00:00"
+      },
+      "prediction_provenance_scope": "RECOVERED_2026_RETROSPECTIVE_ARTIFACT_NOT_A_2025_PREDICTION_FREEZE",
+      "archive_prediction_file_sha256": "2136594dfb6bdf9655f94bf748f7a8cae8f8071da2c5feeaa749db0730d26871"
+    }
+  ],
+  "certified_science_assessments": 0,
+  "independently_validated_cases": 0,
+  "notes": [
+    "SEC-index timestamps bound issuer disclosure availability, not independent truth of clinical assertions.",
+    "All document byte hashes remain null: browser text is not preserved original document bytes.",
+    "Research bounds never overwrite legacy records or original prediction timestamps."
+  ]
+}

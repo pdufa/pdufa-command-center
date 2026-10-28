@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "research_only": true,
+  "as_of": "2026-10-28",
+  "raw_private_files_published": false,
+  "model_spec": {
+    "file_name": "2025_L8_FROZEN_MODEL_SPEC.json",
+    "actual_bytes": 1437,
+    "computed_sha256": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+    "frozen_at_utc": "2026-10-04T03:16:07.148686+00:00",
+    "training_file_basename": "jan_sep_2026_LEVEL8_PREDECISION_RECONSTRUCTION.csv",
+    "training_rows_claimed": 72,
+    "training_records_independently_audited": false
+  },
+  "prediction_archives": [
+    {
+      "prediction_file_sha256": "8703bed176cc7793d336593a719bb0225d3ea9acde25900308e649cb0cc5fdfa",
+      "prediction_file_bytes": 1490,
+      "prediction_rows": 24,
+      "model_sha256": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+      "archive_lock_created_at": "2026-10-04T03:16:07.245780+00:00",
+      "matched_priority_event_keys": [
+        "BCRX|2025-12-12",
+        "NVAX|2025-04-01",
+        "TNXP|2025-08-15",
+        "UNCY|2025-06-28"
+      ],
+      "numeric_prediction_match_tolerance": 1e-12
+    },
+    {
+      "prediction_file_sha256": "2136594dfb6bdf9655f94bf748f7a8cae8f8071da2c5feeaa749db0730d26871",
+      "prediction_file_bytes": 870,
+      "prediction_rows": 10,
+      "model_sha256": "03c1820bd36a096515a974d1b3be9bb3914eaf109529010caa940a02e08178b7",
+      "archive_lock_created_at": "2026-10-04T14:27:03.234105+00:00",
+      "matched_priority_event_keys": [
+        "CORT|2025-12-30",
+        "VNDA|2025-12-30"
+      ],
+      "numeric_prediction_match_tolerance": 1e-12
+    }
+  ],
+  "matched_priority_cases": 6,
+  "numeric_match_scope": "Exact event keys and legacy probabilities within 1e-12 CSV floating-point roundtrip tolerance; no accuracy calculation.",
+  "chronology_result": "MODEL_AND_ARCHIVE_LOCKS_POSTDATE_ALL_SIX_2025_ACTIONS",
+  "original_2025_prediction_timestamps_verified": false,
+  "validated_cases": 0,
+  "accuracy": null,
+  "brier_score": null,
+  "notes": [
+    "Computed hashes identify downloaded archive bytes, not FDA documents or independently reviewed evidence.",
+    "The training period is described by an archive filename; full training-row chronology remains unaudited.",
+    "A separate LEVEL17H six-case lock belongs to other events and was not substituted.",
+    "NVAX and BCRX goal-date aliases in archive tables require cycle reconciliation; they are not extra independent FDA decisions."
+  ]
+}

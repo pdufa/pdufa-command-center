@@ -34,7 +34,8 @@
       "sampling_denominator_verified": false,
       "program_family_disjoint_verified": false,
       "eligible_for_training": false,
-      "correction_warning": "Corrected document was issued after the FDA action and must never be used as a predecision input."
+      "correction_warning": "Corrected document was issued after the FDA action and must never be used as a predecision input.",
+      "original_action_document_status": "CORRECTED_DOCUMENT_ONLY_ORIGINAL_NOT_RETRIEVED"
     },
     {
       "ticker": "NVAX",
@@ -69,7 +70,14 @@
       "predecision_inputs_verified": false,
       "sampling_denominator_verified": false,
       "program_family_disjoint_verified": false,
-      "eligible_for_training": false
+      "eligible_for_training": false,
+      "later_cycle_corrob_document_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20260629.pdf",
+      "original_2025_document_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20250627.pdf",
+      "original_document_reference_id": "5616346",
+      "original_action_document_status": "ORIGINAL_CRL_PARTIAL_TEXT_FIRST_PAGE_VISUAL_REVIEW_REQUIRED",
+      "original_document_evidence": "The original 2025 PDF is accessible; extracted later pages identify NDA 218607 and Reference ID 5616346. First-page visual verification and original public-availability time remain incomplete.",
+      "source_bytes_retained": false,
+      "original_publication_date": null
     },
     {
       "ticker": "BCRX",
@@ -97,17 +105,24 @@
       "legacy_recorded_outcome": "APPROVED",
       "fda_action_date": "2025-12-30",
       "verification_status": "FDA_APPROVAL_DATE_CONFIRMED",
-      "fda_document_url": "https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2025",
+      "fda_document_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220152Orig1s000Approv.pdf",
       "supporting_fda_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/220152Orig1s000lbl.pdf",
       "evidence_summary": "FDA novel drug approval list records Nereus tradipitant approved December 30 2025; original 2025 label identifies NDA 220152.",
       "review_cycle_id": "Orig1s000",
       "predecision_inputs_verified": false,
       "sampling_denominator_verified": false,
       "program_family_disjoint_verified": false,
-      "eligible_for_training": false
+      "eligible_for_training": false,
+      "fda_listing_url": "https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2025",
+      "document_reference_id": "5720300",
+      "document_evidence": "FDA approval package includes the original NDA 220152 approval letter and December 30, 2025 approval date; the archive directory year 2026 is not a publication timestamp.",
+      "original_action_document_status": "ORIGINAL_APPROVAL_LETTER_CONTENT_OBSERVED",
+      "source_bytes_retained": false,
+      "original_publication_date": null
     }
   ],
   "legacy_action_date_mismatches_identified": 3,
-  "notes": "Action evidence includes later documents explicitly referencing prior FDA actions; source timing and review-cycle identity require separate audit. All six remain excluded from validated predictive accuracy.",
-  "primary_fda_action_document_verified_count": 3
+  "notes": "Six cases have FDA action evidence; four original action documents have content verification, one original CRL has partial extracted text pending first-page review, and CORT uses a later corrected CRL. Original bytes/publication clocks, exact cycles and independent prediction validation remain unverified.",
+  "primary_fda_action_document_verified_count": 4,
+  "original_fda_action_document_partial_text_count": 1
 }

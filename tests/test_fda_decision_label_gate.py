@@ -71,5 +71,27 @@ class LabelGateTests(unittest.TestCase):
         record = {**BASE, "action_type": "pending"}
         self.assertEqual(assess_label_eligibility(record)["status"], "ABSTAIN")
 
+    def test_official_crl_host_is_supported_without_certifying_the_document(self):
+        result = assess_label_eligibility({**BASE, "action_type":"complete_response_letter",
+            "official_fda_action_source":"https://download.open.fda.gov/crl/example.pdf"})
+        self.assertEqual(result["status"], "ELIGIBLE_FOR_FURTHER_REVIEW")
+        self.assertEqual(result["label"],0)
+        self.assertTrue(result["research_only"])
+
+    def test_cycle_placeholders_are_not_verified_review_cycles(self):
+        for value in ("unverified", "2025_cycle_unverified", "UNKNOWN", "pending", None, True):
+            with self.subTest(value=value):
+                result = assess_label_eligibility({**BASE,"review_cycle_id":value})
+                self.assertIsNone(result["label"])
+                self.assertIn("missing_review_cycle_id", result["reasons"])
+
+    def test_source_credentials_ports_fragments_and_root_cannot_pass(self):
+        for url in ("https://user@www.fda.gov/action", "https://www.fda.gov:8443/action",
+                    "https://www.fda.gov/action#claim", "https://www.fda.gov/",
+                    "https://www.fda.gov:invalid/action"):
+            with self.subTest(url=url):
+                self.assertIn("unverified_fda_source_domain", assess_label_eligibility(
+                    {**BASE,"official_fda_action_source":url})["reasons"])
+
 if __name__ == "__main__":
     unittest.main()
