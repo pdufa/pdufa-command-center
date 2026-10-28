@@ -67,7 +67,8 @@ class ScienceSourceReviewQueueTests(unittest.TestCase):
                 "source_url": "https://example.test/crl.pdf", "available_on": "2025-06-27"}]}]}
         intake = {"obs": {"schema_version": "fda-crl-offline-intake-v1",
                           "application": "NDA999999", "action_date": "2025-06-27",
-                          "source_url_claimed": "https://example.test/crl.pdf"}}
+                          "source_url_claimed": "https://example.test/crl.pdf",
+                          "status": "HASHED_UNVERIFIED_SOURCE", "sha256": "a" * 64}}
         with self.assertRaisesRegex(ValueError, "application"):
             build_science_source_review_queue(data, intake)
 
