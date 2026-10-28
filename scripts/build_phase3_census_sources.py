@@ -97,7 +97,7 @@ def main():
             changed = [item["path"] for item in current["inputs"]
                        if saved_inputs.get(item["path"]) != item["sha256"]]
             raise SystemExit("Saved census research pointers differ from their source files; "
-                             f"changed source identities or hashes: {changed}; rebuild and review.")
+                             f"changed source identities or hashes: {changed}; actual: "+str({item["path"]: item["sha256"] for item in current["inputs"] if item["path"] in changed})+"; rebuild and review.")
         print("741 exact trial mappings / 130 saved issuer-cap records reproducible. No external source recheck or qualification.")
     else:
         OUTPUT.write_text(content, encoding="utf-8")
