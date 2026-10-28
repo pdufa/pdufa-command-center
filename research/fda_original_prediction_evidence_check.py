@@ -5,6 +5,7 @@ fetch or authenticate external artifacts and cannot authorize trading.
 """
 from datetime import datetime, timezone
 from urllib.parse import urlsplit
+import re
 
 
 def _instant(value):
@@ -37,14 +38,12 @@ def assess_original_prediction_evidence(inventory, evidence_records):
         uri = record.get("immutable_prediction_uri")
         parsed_uri = urlsplit(uri) if isinstance(uri, str) else None
         # A generic mutable web page is not an immutable prediction artifact.
+        github_commit = bool(parsed_uri and parsed_uri.hostname == "github.com" and re.fullmatch(r"/[^/]+/[^/]+/commit/[0-9a-fA-F]{40}", parsed_uri.path))
         immutable_uri_plausible = bool(
             parsed_uri and parsed_uri.scheme == "https" and parsed_uri.hostname
             and not parsed_uri.username and not parsed_uri.password
             and (
-                "/commit/" in parsed_uri.path or
-                "/releases/download/" in parsed_uri.path or
-                "/artifacts/" in parsed_uri.path or
-                "/objects/" in parsed_uri.path
+                github_commit
             )
         )
         sha_valid = all(len(record.get(field, "")) == 64 and
