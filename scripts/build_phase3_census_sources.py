@@ -91,7 +91,13 @@ def main():
     content = json.dumps(build(), indent=2, ensure_ascii=False) + "\n"
     if args.check:
         if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != content:
-            raise SystemExit("Saved census research pointers differ from their source files; rebuild and review.")
+            saved = json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
+            current = json.loads(content)
+            saved_inputs = {item["path"]: item["sha256"] for item in saved.get("inputs", [])}
+            changed = [item["path"] for item in current["inputs"]
+                       if saved_inputs.get(item["path"]) != item["sha256"]]
+            raise SystemExit("Saved census research pointers differ from their source files; "
+                             f"changed source identities or hashes: {changed}; rebuild and review.")
         print("741 exact trial mappings / 130 saved issuer-cap records reproducible. No external source recheck or qualification.")
     else:
         OUTPUT.write_text(content, encoding="utf-8")
