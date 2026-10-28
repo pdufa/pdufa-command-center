@@ -16,6 +16,7 @@ on:
       - "research/fda_reconstruction_input_gate.py"
       - "research/fda_science_provenance_gate.py"
       - "research/fda_outcome_provenance_gate.py"
+      - "research/fda_science_outcome_status_view.py"
       - "research/fda_verification_queue.py"
       - "research/fda_predecision_reconstruction.py"
       - "research/fda_science_dossier.py"
@@ -42,6 +43,7 @@ on:
       - "tests/test_fda_reconstruction_input_gate.py"
       - "tests/test_fda_science_provenance_gate.py"
       - "tests/test_fda_outcome_provenance_gate.py"
+      - "tests/test_fda_science_outcome_status_view.py"
       - "tests/test_fda_predecision_reconstruction.py"
       - "tests/test_fda_holdout_reconstruction_integration.py"
       - "tests/test_fda_science_dossier.py"
@@ -79,6 +81,7 @@ jobs:
           python -m unittest discover -s tests -p "test_fda_reconstruction_input_gate.py" -v
           python -m unittest discover -s tests -p "test_fda_science_provenance_gate.py" -v
           python -m unittest discover -s tests -p "test_fda_outcome_provenance_gate.py" -v
+          python -m unittest discover -s tests -p "test_fda_science_outcome_status_view.py" -v
           python -m research.fda_provenance_checkpoint research/evidence/2025_holdout_archive_provenance_audit.json research/evidence/2025_holdout_predecision_reconstruction.json > "$RUNNER_TEMP/fda_provenance_checkpoint.json"
           python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"fda_provenance_checkpoint.json"))); assert r["total_priority_cases"] == 6 and r["verified_prospective_predictions"] == 0 and len(r["missing_evidence_events"]) == 6 and r["historical_accuracy"] is None; print("Provenance checkpoint blocked:",r["total_priority_cases"])'
           python -m research.fda_legacy_accuracy_reconciliation data/prediction_engine_audit.csv research/evidence/2025_holdout_archive_provenance_audit.json research/evidence/2025_holdout_predecision_reconstruction.json > "$RUNNER_TEMP/fda_legacy_accuracy_reconciliation.json"
