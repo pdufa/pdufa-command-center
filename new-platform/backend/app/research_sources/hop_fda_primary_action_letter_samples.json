@@ -5,7 +5,7 @@
   "provenance_caveat": "FDA-hosted PDF rendered and signature page reviewed; original bytes were NOT downloaded to a controlled archive and no SHA-256 of original PDF is known. Publication availability and precise review-cycle identity remain unverified. These historical outcomes are NOT model eligible.",
   "letters": [
     {
-      "record_id": "NDA213973_ORIG1_20200515_APPROVED",
+      "record_id": "NDA213973_ORIGINAL_1_20200515_APPROVED",
       "application_id": "NDA213973",
       "submission_unit": "ORIGINAL_1",
       "submission_unit_basis": "FDA_PDF_FILENAME_ONLY",
@@ -37,7 +37,7 @@
       "limitation": "Original 1 designation is explicit in FDA-hosted filename, not independently reconciled with full review-cycle history. Approval letter is after the decision and must never be a predecision input."
     },
     {
-      "record_id": "BLA761303_ORIG1_20240322_CRL",
+      "record_id": "BLA761303_ORIGINAL_1_20240322_CRL",
       "application_id": "BLA761303",
       "submission_unit": "ORIGINAL_1",
       "submission_unit_basis": "FDA_LETTER_TEXT",
