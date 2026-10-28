@@ -1,0 +1,58 @@
+name: FDA original-source HTTPS capture (research, not model labels)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hop-fda-original-source-capture.yml'
+      - 'new-platform/backend/scripts/capture_hop_fda_original_https.py'
+      - 'new-platform/backend/tests/test_hop_original_https_capture.py'
+      - 'new-platform/backend/app/research_sources/hop_fda_primary_action_letter_samples.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-source-capture:
+    name: Try exact FDA HTTPS documents (informational)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run exact-URL bounded source capture
+        id: source_capture
+        continue-on-error: true
+        env:
+          PYTHONPATH: new-platform/backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hop-fda-originals"
+          python new-platform/backend/scripts/capture_hop_fda_original_https.py \
+            "$RUNNER_TEMP/hop-fda-originals" \
+            | tee "$RUNNER_TEMP/hop-fda-originals/source-capture-summary.json"
+      - name: State exact outcome without model or publication promotion
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.source_capture.outcome }}
+        shell: bash
+        run: |
+          if [[ "$CAPTURE_OUTCOME" == "success" ]]; then
+            echo 'CAPTURE_OBSERVED: original FDA HTTPS bytes hashed and locally preserved; review-cycle/publication still NOT independently verified'
+          else
+            echo 'SOURCE_CAPTURE_BLOCKED: external FDA HTTPS retrieval did not complete; zero original-source hashes established by this run'
+          fi
+          echo 'MODEL_ELIGIBLE_CYCLES=0; INDEPENDENT_BACKTESTS=0; FDA_APPROVAL_PROBABILITY=UNAVAILABLE'
+      - name: Retain fetched public FDA PDF bytes temporarily for authorized review
+        if: steps.source_capture.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fda-original-pdf-provenance-research-only
+          path: ${{ runner.temp }}/hop-fda-originals/
+          if-no-files-found: error
+          retention-days: 14
