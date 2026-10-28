@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T03:40:23.580047+00:00",
+  "updated_at_utc": "2026-10-28T04:03:33.683080+00:00",
   "days": [
     {
       "date_pacific": "2026-10-27",
       "run_id": 40625670011,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40625670011",
-      "status": "RUN_FAILED",
-      "registered_at_utc": "2026-10-28T03:40:23.579201+00:00",
+      "status": "PARTIAL",
+      "registered_at_utc": "2026-10-28T04:03:33.682050+00:00",
       "sections": {
         "master": {
           "previous": null,
@@ -52,10 +52,9 @@
       },
       "notes": [
         "53 tracked trial records changed during this run; newly added trials and qualified Pipeline additions remain unverified.",
-        "Same-run source audit: 950 of 1076 verified; 21 unresolved, 2 conflicted, 93 unavailable, 10 not applicable. Full coverage verified: no.",
+        "Same-run source audit: 994 of 1121 verified; 22 unresolved, 2 conflicted, 93 unavailable, 10 not applicable. Full coverage verified: no.",
         "Clinical collection and the full overnight sequence are different verification standards; full-source certification is not implied.",
-        "FDA, SEC, issuer and/or market source families remain unverified.",
-        "Nightly workflow conclusion: failure."
+        "FDA, SEC, issuer and/or market source families remain unverified."
       ]
     },
     {
