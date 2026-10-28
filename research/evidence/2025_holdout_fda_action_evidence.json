@@ -64,7 +64,7 @@
       "fda_original_action_date": "2025-06-27",
       "verification_status": "LEGACY_GOAL_DATE_NOT_ACTION_DATE",
       "fda_document_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20260629.pdf",
-      "evidence_summary": "FDA June 2026 CRL expressly references its prior June 27 2025 action letter; legacy record lists June 28 2025. The linked document is a later review cycle and cannot substitute for the original CRL.",
+      "evidence_summary": "FDA June 29, 2026 CRL acknowledges December 29, 2025 amendment as response to its June 27, 2025 action letter. This corroborates original action date but is not the original 2025 CRL and cannot establish predecision evidence.",
       "review_cycle_id": "2025_cycle_unverified",
       "predecision_inputs_verified": false,
       "sampling_denominator_verified": false,
@@ -79,13 +79,15 @@
       "legacy_recorded_outcome": "APPROVED",
       "fda_action_date": "2025-12-11",
       "verification_status": "LEGACY_GOAL_DATE_NOT_ACTION_DATE",
-      "fda_document_url": "https://www.fda.gov/media/190527/download",
-      "evidence_summary": "FDA December 2025 Orange Book additions list NDA 219776 oral pellets approved December 11, 2025; legacy PDUFA date is December 12.",
-      "review_cycle_id": "unverified",
+      "fda_document_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219776Orig1s000ltr.pdf",
+      "evidence_summary": "FDA original NDA 219776 approval letter, signed December 11, 2025, confirms approval effective that day; FDA multidisciplinary review lists December 12, 2025 as PDUFA goal date. Distinguish goal date from action date.",
+      "review_cycle_id": "Orig1s000",
       "predecision_inputs_verified": false,
       "sampling_denominator_verified": false,
       "program_family_disjoint_verified": false,
-      "eligible_for_training": false
+      "eligible_for_training": false,
+      "fda_primary_document_reference_id": "5710240",
+      "pdufa_goal_date_confirmed": "2025-12-12"
     },
     {
       "ticker": "VNDA",
@@ -106,5 +108,6 @@
     }
   ],
   "legacy_action_date_mismatches_identified": 3,
-  "notes": "Action evidence includes later documents explicitly referencing prior FDA actions; source timing and review-cycle identity require separate audit. All six remain excluded from validated predictive accuracy."
+  "notes": "Action evidence includes later documents explicitly referencing prior FDA actions; source timing and review-cycle identity require separate audit. All six remain excluded from validated predictive accuracy.",
+  "primary_fda_action_document_verified_count": 3
 }
