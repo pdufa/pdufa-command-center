@@ -39,6 +39,39 @@ Sources published before 27 October 2026:
 
 The legacy first-trial research abstention remains in [draft PR #498](https://github.com/pdufa/pdufa-command-center/pull/498) and has not been merged.
 
+## PEAK source-reported research leads (not independent SCIENCE)
+
+The read-only case dossier now surfaces **10 question-linked issuer source leads**
+for S01–S05 (efficacy), S17–S19 (safety and exposure), and S26/S30
+(regulatory pathway). Source dates are May 28 and May 30, 2026;
+the leads were indexed on October 27, 2026 and are excluded from
+any earlier point-in-time snapshot.
+
+From the detailed May 30 issuer announcement:
+
+- Reported median PFS 16.5 versus 9.2 months (hazard ratio 0.50,
+  95% CI 0.39–0.65, p<0.0001).
+- Reported PFS2 HR 0.57 (95% CI 0.41–0.78), as well as claims about
+  KIT subgroup consistency.
+- Reported grade 3+ ALT/AST elevations 10.8% versus 1.4% and
+  treatment-related discontinuation 7.4% versus 3.8%.
+- Reported mean duration of combination treatment 21.4 months is
+  **not** equivalent to independently verified efficacy durability
+  or long-term safety.
+
+The May 28 issuer release reports NDA acceptance, Priority Review,
+and a November 30 target. It does not provide an independently
+examined FDA receipt letter.
+
+Each lead has an explicit `originalSourceHashAvailable: false` and
+`independentlyReviewed: false`. No original source bytes, SAP,
+clinical study report or independent FDA correspondence was
+authenticated for these leads. The leads are useful **tasks for
+evidence collection**, not completed 40/40 questions, and are not
+counted toward source submissions or independent readiness.
+All ten records remain `NOT_SUBMITTED` for adjudication and the case
+remains **0/40, RELUCTANT**, without probability or trading.
+
 ## Tests
 
 ```sh
