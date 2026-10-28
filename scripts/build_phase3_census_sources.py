@@ -90,7 +90,7 @@ def main():
     args = parser.parse_args()
     content = json.dumps(build(), indent=2, ensure_ascii=False) + "\n"
     if args.check:
-        if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != content:
+        if not OUTPUT.exists() or json.loads(OUTPUT.read_text(encoding="utf-8")) != json.loads(content):
             saved = json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
             current = json.loads(content)
             saved_inputs = {item["path"]: item["sha256"] for item in saved.get("inputs", [])}
