@@ -5,7 +5,12 @@ document authentication or completed scientific assessment.
 """
 
 
-def build_science_source_review_queue(reconstruction):
+def build_science_source_review_queue(reconstruction, authenticated_intakes=None):
+    # Intake hashes are identity metadata only; never auto-certify source evidence.
+    authenticated_intakes = authenticated_intakes or {}
+    if not isinstance(authenticated_intakes, dict):
+        raise ValueError('intakes must be a mapping keyed by observation ID')
+
     rows = []
     for case in reconstruction["cases"]:
         cutoff = case.get("reconstruction_cutoff")
@@ -19,8 +24,16 @@ def build_science_source_review_queue(reconstruction):
                 and obs.get("original_document_sha256")
                 and obs.get("independently_reviewed")
             )
+            intake = authenticated_intakes.get(obs["id"])
+            if intake is not None:
+                if intake.get("schema_version") != "fda-crl-offline-intake-v1":
+                    raise ValueError("unknown intake schema")
+                if intake.get("fda_authenticity_verified") or intake.get("eligible_for_predictive_training"):
+                    raise ValueError("offline intake cannot self-certify evidence")
             rows.append({
                 "event_key": case["event_key"],
+                "offline_intake_sha256": intake.get("sha256") if intake else None,
+                "offline_intake_status": intake.get("status") if intake else None,
                 "observation_id": obs["id"],
                 "source_url": obs.get("source_url"),
                 "science_question_ids": obs.get("science_question_ids", []),
