@@ -258,11 +258,14 @@ def load_historical_fda_public_outcome_packet(*, as_of: date) -> dict:
     disclosure = load_public_outcome_disclosure_leads(
         original_letters, as_of=as_of,
     )
+    from .hop_fda_original_capture_receipts import load_real_fda_capture_receipts
+    pdf_receipts = load_real_fda_capture_receipts(as_of=as_of)
     return {
         "mode": "READ_ONLY_HISTORICAL_FDA_ACTION_AND_DISCLOSURE_RESEARCH",
         "asOf": as_of.isoformat(),
         "actionLetterResearch": action_audit,
         "publicDisclosureResearch": disclosure,
+        "originalPdfCaptureResearch": pdf_receipts,
         "independentModelEligibleCycles": 0,
         "independentHistoricalBacktests": 0,
         "accuracy": None,
