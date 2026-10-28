@@ -27,6 +27,7 @@ on:
       - 'new-platform/backend/app/hop_cohort_manifest.py'
       - 'new-platform/backend/scripts/audit_hop_cohort_manifest.py'
       - 'new-platform/backend/tests/test_hop_backtest*.py'
+      - 'new-platform/backend/tests/test_hop_backtest_program_disjoint.py'
       - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
       - 'new-platform/backend/tests/test_hop_outcomes_import.py'
       - 'new-platform/backend/app/hop_history_ingest.py'
@@ -101,6 +102,7 @@ on:
       - 'new-platform/backend/tests/test_hop_primary_action_letter_samples.py'
       - 'new-platform/backend/tests/test_hop_fda_pdf_byte_audit.py'
       - 'new-platform/backend/tests/test_hop_backtest*.py'
+      - 'new-platform/backend/tests/test_hop_backtest_program_disjoint.py'
       - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
       - 'new-platform/backend/tests/test_hop_outcomes_import.py'
       - 'new-platform/backend/app/hop_history_ingest.py'
@@ -171,6 +173,7 @@ jobs:
             tests/test_hop_forecast_metrics.py \
             tests/test_hop_backtest_cohort_safety.py \
             tests/test_hop_backtest_duplicates.py \
+            tests/test_hop_backtest_program_disjoint.py \
             tests/test_hop_outcome_cohort.py \
             tests/test_hop_outcomes_import.py \
             tests/test_hop_point_in_time_labels.py \
