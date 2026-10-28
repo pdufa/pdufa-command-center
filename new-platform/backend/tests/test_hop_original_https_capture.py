@@ -146,3 +146,48 @@ def test_pdf_redirects_unconditionally_rejected():
     handler = capture.NoRedirects()
     with pytest.raises(ValueError, match="redirect"):
         handler.redirect_request(None, None, 302, "found", {}, "https://other.example/file.pdf")
+
+
+@pytest.mark.parametrize("case_id,new_url", [
+    (GOOD_ID, "https://www.accessdata.fda.gov/unrelated-but-fda-hosted.pdf"),
+    (CRL_ID, "https://download.open.fda.gov/crl/different-bla.pdf"),
+    (GOOD_ID, "https://download.open.fda.gov/crl/CRL_BLA761303Original1_20240322.pdf"),
+])
+def test_same_fda_host_or_swapped_letter_cannot_replace_curated_exact_url(
+    tmp_path, case_id, new_url,
+):
+    # A domain allowlist alone does not bind the *specific* reviewed letter.
+    # Altering a versioned manifest must not silently change this source.
+    fake = json.loads(json.dumps(MANIFEST))
+    target = next(r for r in fake["letters"] if r["record_id"] == case_id)
+    target["original_document_url"] = new_url
+    transport = Opener()
+    with pytest.raises(ValueError, match="immutable official FDA URL"):
+        capture.capture_fda_pdf_bytes(fake, case_id, tmp_path, opener=transport)
+    assert transport.calls == []
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_failed_json_receipt_write_rolls_back_newly_captured_pdf(tmp_path, monkeypatch):
+    # Simulate a sudden disk error after a *valid* PDF has already been
+    # hard-linked into its final path but while its receipt is being written.
+    # Nothing should be published without the matching receipt.
+    def fail_json_write(*args, **kwargs):
+        raise OSError("simulated receipt-write failure")
+
+    monkeypatch.setattr(capture.json, "dump", fail_json_write)
+    with pytest.raises(OSError, match="receipt-write failure"):
+        capture.capture_fda_pdf_bytes(
+            MANIFEST, GOOD_ID, tmp_path,
+            opener=Opener(), observed_at=datetime(2026, 10, 28, 15, 0,
+                                                   tzinfo=timezone.utc),
+        )
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_exact_curated_url_pins_match_original_fda_letter_manifest():
+    assert set(capture.EXACT_FDA_DOCUMENT_URLS) == {GOOD_ID, CRL_ID}
+    assert {
+        item["record_id"]: item["original_document_url"]
+        for item in MANIFEST["letters"]
+    } == capture.EXACT_FDA_DOCUMENT_URLS
