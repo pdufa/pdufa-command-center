@@ -26,6 +26,13 @@ from urllib.request import (
 
 from app.hop_primary_action_letter_samples import _SAMPLE_FILE, _url_ok
 
+EXACT_FDA_DOCUMENT_URLS = {
+    "NDA213973_ORIGINAL_1_20200515_APPROVED":
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2020/213973Orig1s000ltr.pdf",
+    "BLA761303_ORIGINAL_1_20240322_CRL":
+        "https://download.open.fda.gov/crl/CRL_BLA761303Original1_20240322.pdf",
+}
+
 MAX_BYTES = 20 * 1024 * 1024
 MIN_BYTES = 1024
 CHUNK_SIZE = 128 * 1024
@@ -47,6 +54,7 @@ def _source_record(manifest: dict, record_id: str) -> dict:
         raise ValueError("Only one previously curated exact FDA letter ID may be fetched")
     row = matches[0]
     if (not _url_ok(row.get("original_document_url"))
+            or row.get("original_document_url") != EXACT_FDA_DOCUMENT_URLS.get(record_id)
             or row.get("eligible_for_training") is not False
             or row.get("source_document_bytes_sha256") is not None):
         raise ValueError("Expected immutable official FDA URL and unadjudicated source status")
@@ -90,6 +98,8 @@ def capture_fda_pdf_bytes(
     head = b""
     tail = b""
     response_headers = {}
+    created_pdf = False
+    created_json = False
     try:
         with closing(operation.open(request, timeout=30)) as response:
             status = getattr(response, "status", None)
@@ -147,10 +157,21 @@ def capture_fda_pdf_bytes(
         }
         # Materialize the PDF only after all checks; never append or overwrite.
         os.link(path, target_pdf)
+        created_pdf = True
         with target_json.open("x", encoding="utf-8") as f:
+            created_json = True
             json.dump(result, f, indent=2, sort_keys=True)
             f.write("\n")
         return result
+    except Exception:
+        # Fail closed on interrupted/failed provenance output. Never leave a
+        # completed-looking PDF without its matching response metadata. Only
+        # delete paths that this exact invocation created.
+        if created_json:
+            target_json.unlink(missing_ok=True)
+        if created_pdf:
+            target_pdf.unlink(missing_ok=True)
+        raise
     finally:
         if path is not None:
             Path(path).unlink(missing_ok=True)
