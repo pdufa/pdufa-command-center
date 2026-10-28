@@ -10,6 +10,8 @@ def audit_reconstruction_leakage(reconstruction):
     for case in reconstruction["cases"]:
         cutoff = date.fromisoformat(case["reconstruction_cutoff"])
         action = date.fromisoformat(case["action_date"])
+        if cutoff >= action:
+            raise ValueError("reconstruction cutoff must precede FDA action")
         seen = set()
         excluded = []
         candidates = []
@@ -27,10 +29,15 @@ def audit_reconstruction_leakage(reconstruction):
                 reasons.append("AVAILABLE_AFTER_RECONSTRUCTION_CUTOFF")
             if available >= action:
                 reasons.append("AT_OR_AFTER_FDA_ACTION")
-            if observation.get("original_document_sha256") is None:
+            digest = observation.get("original_document_sha256")
+            if not isinstance(digest, str) or len(digest) != 64 or any(ch not in "0123456789abcdefABCDEF" for ch in digest):
                 reasons.append("SOURCE_BYTES_NOT_HASH_VERIFIED")
             if observation.get("independently_reviewed") is not True:
                 reasons.append("NOT_INDEPENDENTLY_REVIEWED")
+            if observation.get("source_bytes_retained") is not True:
+                reasons.append("SOURCE_BYTES_NOT_RETAINED")
+            if observation.get("availability_basis") not in ("SEC_FILING_INDEX", "INDEPENDENT_TIMESTAMPED_ARCHIVE"):
+                reasons.append("PUBLICATION_TIME_NOT_INDEPENDENTLY_ESTABLISHED")
             entry = {"observation_id": oid, "reasons": reasons}
             (excluded if reasons else candidates).append(entry)
         reports.append({
