@@ -61,3 +61,26 @@ research lead with its own uncertainty.
 Model-eligible historical cycles remain **zero**; real independent
 backtests **zero**; PASS/FAIL prediction confidence and calibration
 **unavailable** until genuine cohort and evidence adjudication are complete.
+
+## Source-integrity hardening (2026-10-28)
+
+After this capture utility was first deployed and the two original FDA PDF
+SHA-256 receipts were verified in PR #515, a follow-up code audit addressed
+two specific failure modes:
+
+1. The allowed **FDA host alone is not enough**. An altered source-manifest
+   entry could otherwise replace an expected FDA document with an unrelated
+   PDF from the same FDA-hosted domain. Two exact action-letter record IDs
+   are now bound to two exact HTTPS URLs in code. Any substituted path or
+   swapped FDA letter fails before issuing an HTTP request.
+2. A filesystem error after successful PDF hard-linking but while writing
+   the accompanying JSON receipt could previously leave an orphaned PDF
+   without trustworthy matching provenance. The new rollback deletes only
+   PDF/receipt paths created by that invocation, while preserving unrelated
+   files and records. It does not overwrite successful existing captures.
+
+The tests exercise both cases with a synthetic HTTP client and simulated
+filesystem errors. They do **not** redownload the two real documents or change
+their previously recorded SHA-256 values. The source capture remains a
+provenance-only stage and never authorizes a historical training row,
+independent scientific finding, model probability, or trade.
