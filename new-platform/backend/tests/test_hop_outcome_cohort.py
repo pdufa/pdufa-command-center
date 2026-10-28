@@ -1,8 +1,9 @@
+# Synthetic fixtures explicitly declare publication dates; these are not real FDA source dates.
 from datetime import date
 from app.hop_outcome_cohort import OutcomeObservation, audit_outcome_cohort
 
 def row(app, outcome, source="COMPLETE_APPLICATION_COHORT", feature_date=date(2020,1,1), cycle=1):
-    return OutcomeObservation(app, cycle, date(2020,6,1), outcome, source, "cohort-2020", feature_date, True)
+    return OutcomeObservation(app, cycle, date(2020,6,1), outcome, source, "cohort-2020", feature_date, True, outcome_public_as_of=date(2020,6,1))
 
 def test_crl_publication_is_not_representative_denominator():
     result = audit_outcome_cohort([row("A", "COMPLETE_RESPONSE", "FDA_CRL_PUBLICATION")], date(2021,1,1))

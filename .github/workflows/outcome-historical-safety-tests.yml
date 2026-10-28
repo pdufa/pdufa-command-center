@@ -7,6 +7,7 @@ on:
       - 'new-platform/backend/app/hop_outcome_cohort.py'
       - 'new-platform/backend/app/hop_outcomes_import.py'
       - 'new-platform/backend/tests/test_hop_backtest*.py'
+      - 'new-platform/backend/tests/test_hop_point_in_time_labels.py'
       - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
       - 'new-platform/backend/tests/test_hop_outcomes_import.py'
       - 'new-platform/backend/tests/test_hop_fda_identity_review_queue.py'
@@ -117,6 +118,7 @@ jobs:
             tests/test_hop_backtest.py \
             tests/test_hop_backtest_cohort_safety.py \
             tests/test_hop_backtest_duplicates.py \
+            tests/test_hop_point_in_time_labels.py \
             tests/test_hop_outcome_cohort.py \
             tests/test_hop_outcomes_import.py \
             tests/test_hop_fda_application_crosswalk.py \

@@ -1,9 +1,10 @@
+# Synthetic fixtures explicitly declare publication dates; these are not real FDA source dates.
 from datetime import date
 from app.hop_backtest import walk_forward_backtest
 from app.hop_outcome_cohort import OutcomeObservation
 
 def row(app,cycle,year):
-    return OutcomeObservation(app,cycle,date(year,6,1),'APPROVED','COMPLETE_APPLICATION_COHORT','cohort',date(year,1,1),True)
+    return OutcomeObservation(app,cycle,date(year,6,1),'APPROVED','COMPLETE_APPLICATION_COHORT','cohort',date(year,1,1),True, outcome_public_as_of=date(year,6,1))
 
 def test_training_application_not_weighted_twice():
     rows=[row('repeat',1,2018),row('repeat',2,2019),row('heldout',1,2020)]
