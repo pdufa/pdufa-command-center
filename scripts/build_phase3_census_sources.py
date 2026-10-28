@@ -94,6 +94,11 @@ def main():
             saved = json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
             current = json.loads(content)
             saved_inputs = {item["path"]: item["sha256"] for item in saved.get("inputs", [])}
+            if saved == current:
+                raise SystemExit("Saved census JSON content is semantically identical but byte formatting differs; regenerate canonical JSON.")
+            differing_companies = [i for i, (a, b) in enumerate(zip(saved.get("companies", []), current.get("companies", []))) if a != b]
+            if differing_companies:
+                raise SystemExit(f"Saved census company rows differ at indices {differing_companies[:10]}; rebuild and review.")
             changed = [item["path"] for item in current["inputs"]
                        if saved_inputs.get(item["path"]) != item["sha256"]]
             raise SystemExit("Saved census research pointers differ from their source files; "
