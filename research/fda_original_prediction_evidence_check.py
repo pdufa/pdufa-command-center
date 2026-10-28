@@ -67,7 +67,7 @@ def assess_original_prediction_evidence(inventory, evidence_records):
         chronology_ok = bool(
             action and prediction and cutoff and cutoff <= prediction < action
             and action_matches_inventory
-            and (not inventory_day or prediction < inventory_day)
+            and inventory_day is not None and prediction < inventory_day
         )
         results.append({"event_key": key, "artifact_metadata_complete": bool(complete and sha_valid and immutable_uri_plausible),
                         "chronology_consistent": chronology_ok,
