@@ -22,5 +22,6 @@ jobs:
         with:
           python-version: "3.11"
       - name: Verify FDA historical decision label gate
-        run: python -m unittest discover -s tests -p "test_fda_decision_label_gate.py" -v
+        run: |
+          python -m unittest discover -s tests -p "test_fda_decision_label_gate.py" -v
           python -m unittest discover -s tests -p "test_fda_candidate_audit.py" -v
