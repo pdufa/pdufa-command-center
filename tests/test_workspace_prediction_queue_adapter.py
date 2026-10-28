@@ -90,6 +90,21 @@ class WorkspaceAdapterTests(unittest.TestCase):
         self.assertFalse(result["queue"][0]["historical_replay_ready"])
         self.assertEqual(result["queue"][0]["evidence_reconciliation"]["pre_decision_records"], [])
 
+    def test_historical_replay_accepts_consistent_predated_evidence_only(self):
+        result = workspace_to_priority_queue({"lists": {
+            "GEM_JR": [{"programId": "P1", "historical_decision_date": "2020-06-01",
+                "regulatory_evidence_records": [
+                    {"source": "registry", "metric": "primary_p", "population": "ITT",
+                     "value": "0.01", "available_date": "2020-01-01"},
+                    {"source": "publication", "metric": "primary_p", "population": "ITT",
+                     "value": "0.01", "available_date": "2020-02-01"},
+                ]}],
+            "GEM": [], "WT": [],
+        }})
+        item = result["queue"][0]
+        self.assertTrue(item["historical_replay_ready"])
+        self.assertFalse(result["trading_ready"])
+
 
 if __name__ == "__main__":
     unittest.main()
