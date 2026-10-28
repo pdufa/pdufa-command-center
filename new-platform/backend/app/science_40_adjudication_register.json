@@ -1,0 +1,6 @@
+{
+  "schemaVersion": "science40-adjudication-register-v1",
+  "status": "NO_INDEPENDENT_ASSESSMENTS_CERTIFIED",
+  "cases": {},
+  "notes": "Only separately adjudicated evidence may be added after independent human source-document review; never automatically trust submitted `review_status` flags."
+}

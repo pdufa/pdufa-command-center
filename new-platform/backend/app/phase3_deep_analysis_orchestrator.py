@@ -6,6 +6,7 @@ production job is wired to this module until integration and validation.
 from __future__ import annotations
 from .phase3_pdufa_eligibility import phase3_pdufa_eligibility
 from .science_independent_investigation import scientific_investigation
+from .science_40_dossier import evaluate_science_40
 
 def prepare_deep_analysis(*, exact_key: str, phase3_results: dict,
                           pdufa_assignment: dict, scientific_evidence: dict,
@@ -18,14 +19,18 @@ def prepare_deep_analysis(*, exact_key: str, phase3_results: dict,
         return {
             "exactKey": exact_key, "asOf": as_of,
             "status": "BLOCKED", "gate": gate,
-            "science": None, "outcome": None, "main": None,
+            "science": None, "science40": None, "outcome": None, "main": None,
             "approvalProbability": None, "tradeAuthorized": False,
         }
     science = scientific_investigation(
         exact_key=exact_key, evidence=scientific_evidence, as_of=as_of)
+    # Independent 40-question contract runs alongside the established legacy
+    # investigation; neither can infer evidence from a publication-date gate.
+    science40 = evaluate_science_40(
+        exact_key=exact_key, evidence=scientific_evidence, as_of=as_of)
     return {
         "exactKey": exact_key, "asOf": as_of,
         "status": "RESEARCH_IN_PROGRESS", "gate": gate,
-        "science": science, "outcome": None, "main": None,
+        "science": science, "science40": science40, "outcome": None, "main": None,
         "approvalProbability": None, "tradeAuthorized": False,
     }
