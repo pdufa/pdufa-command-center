@@ -9,6 +9,7 @@ from datetime import date
 from math import isfinite
 from typing import Callable, Sequence
 from .hop_outcome_cohort import OutcomeObservation, observation_exclusion
+from .hop_forecast_metrics import summarize_binary_forecasts
 
 
 @dataclass(frozen=True)
@@ -39,6 +40,8 @@ class BacktestFold:
     abstained_test_count: int
     excluded_test_count: int
     brier_score: float | None
+    research_metrics: dict | None = None
+    independent_fda_validation_complete: bool = False
 
 def walk_forward_backtest(
     rows: Sequence[OutcomeObservation],
@@ -104,6 +107,8 @@ def walk_forward_backtest(
         # because its forecast would be easier or its label is published sooner.
         heldout_application_ids.update(heldout_ids)
         losses = []
+        scored_labels = []
+        baseline_probabilities = []
         if len(train) >= min_train:
             for row in usable:
                 # The test snapshot may predate the fold boundary. Only labels
@@ -124,11 +129,21 @@ def walk_forward_backtest(
                         raise ValueError("score must be a probability in [0,1] or None")
                     target = 1.0 if row.outcome == "APPROVED" else 0.0
                     losses.append((float(value)-target)**2)
+                    scored_labels.append((float(value), int(target)))
+                    baseline_probabilities.append(
+                        sum(x.outcome == "APPROVED" for x in asof_train) / len(asof_train)
+                    )
+        research_metrics = summarize_binary_forecasts(
+            scored_labels, eligible_count=len(usable),
+            baseline_probabilities=baseline_probabilities,
+        )
         result.append(BacktestFold(
             cutoff=left, train_count=len(train), test_count=len(losses),
             eligible_test_count=len(usable),
             abstained_test_count=len(usable)-len(losses),
             excluded_test_count=len(test)-len(usable),
             brier_score=sum(losses)/len(losses) if losses else None,
+            research_metrics=research_metrics,
+            independent_fda_validation_complete=False,
         ))
     return result
