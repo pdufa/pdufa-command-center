@@ -30,6 +30,25 @@ def workspace_to_priority_queue(payload: Mapping[str, Any]) -> dict:
     if not isinstance(lists, Mapping):
         return {"status": "SOURCE_SCHEMA_UNVERIFIED", "reason": "Missing explicit lists or members mapping",
                 "queue": [], "trading_ready": False}
+    # WT is a separate saved watch/trade collection; match exact identities.
+    wt = payload.get("program_watch_trade")
+    if isinstance(wt, Mapping):
+        identities = wt.get("identities")
+        watch, trade = wt.get("watch"), wt.get("trade")
+        if isinstance(identities, list) and isinstance(watch, list) and isinstance(trade, list):
+            identity_map = {x["id"]: x["programId"] for x in identities
+                            if isinstance(x, Mapping) and isinstance(x.get("id"), str)
+                            and isinstance(x.get("programId"), str)}
+            records = {}
+            for stage in ("GEM_JR", "GEM"):
+                for row in lists.get(stage, []):
+                    if isinstance(row, Mapping):
+                        program = row.get("programId") or row.get("program_id")
+                        if isinstance(program, str):
+                            records[program] = row
+            selected = {identity_map[x] for x in watch + trade
+                        if isinstance(x, str) and x in identity_map}
+            lists = {**lists, "WT": [records[p] for p in sorted(selected) if p in records]}
     rows = []
     missing_groups = []
     for stage, label in STAGE_NAMES.items():
