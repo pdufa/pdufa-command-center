@@ -1,0 +1,72 @@
+{
+  "schema_version": "hop-fda-fy2024-fy2025-action-candidate-summary-v1",
+  "compiled_on": "2026-10-28",
+  "status": "SOURCE_SELECTED_CANDIDATES_NOT_VERIFIED_DECISION_COHORT",
+  "replay": {
+    "run_id": 40723526247,
+    "artifact_id": 12831901791,
+    "artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40723526247/artifacts/12831901791",
+    "source_replay_commit": "f5c0fe7fbe66e6dcbc7e5a7c64f2e97ce6433bb3",
+    "queue_sha256": "b3642cb6a5bdc563b9274a157505bdeec758f2faf0c69cee624ed829dc39c187",
+    "github_artifact_retention_days": 14,
+    "queue_durable_archived": false
+  },
+  "sources": {
+    "drugsfda": {
+      "exported_on": "2026-10-23",
+      "retrieved_on": "2026-10-25",
+      "records": 29416,
+      "sha256": "adb24d7921d56bc3824b57e785164a32287efc69a9d3fe9b940da97f6c65f5b2",
+      "selection": "APPROVED_PRODUCT_REGISTRY_NOT_COMPLETE"
+    },
+    "crl": {
+      "exported_on": "2026-10-21",
+      "retrieved_on": "2026-10-25",
+      "records": 458,
+      "sha256": "d3d284e1ec0aa62b6dfb7523bd7bbfc7324c3b218a412fd6ee357a35f5c39898",
+      "selection": "SELECTIVELY_PUBLISHED_FDA_LETTERS_NOT_COMPLETE"
+    }
+  },
+  "fiscal_action_years": [
+    {
+      "year": 2024,
+      "original_filing_year_reported_count": 129,
+      "original_ap_registry_action_candidates": 137,
+      "distinct_apps_original_ap": 137,
+      "tentative_approval_nonbinary_candidates": 5,
+      "selected_crl_parent_only": 45,
+      "selected_crl_explicit_original": 2,
+      "selected_crl_supplement_excluded": 2,
+      "selected_crl_legacy_unresolved": 2,
+      "selected_crl_multiple_missing": 0,
+      "distinct_parent_apps_crl": 48,
+      "source_overlap_same_action_fy": 1
+    },
+    {
+      "year": 2025,
+      "original_filing_year_reported_count": 157,
+      "original_ap_registry_action_candidates": 155,
+      "distinct_apps_original_ap": 150,
+      "tentative_approval_nonbinary_candidates": 5,
+      "selected_crl_parent_only": 52,
+      "selected_crl_explicit_original": 0,
+      "selected_crl_supplement_excluded": 2,
+      "selected_crl_legacy_unresolved": 4,
+      "selected_crl_multiple_missing": 1,
+      "distinct_parent_apps_crl": 51,
+      "source_overlap_same_action_fy": 4
+    }
+  ],
+  "source_candidate_rows": 412,
+  "verified_original_filing_denominator": false,
+  "all_original_filing_application_ids_known": false,
+  "every_review_cycle_decision_verified": false,
+  "every_predecision_feature_snapshot_verified": false,
+  "model_eligible_cycles": 0,
+  "independent_real_backtests": 0,
+  "approval_probability": null,
+  "measured_accuracy": null,
+  "training_authorized": false,
+  "trade_authorized": false,
+  "caution": "The official FY filings counts 129 and 157 are for filed original applications, while observed candidate actions span approvals and selectively published CRLs in the fiscal ACTION year. Their denominators differ; these are NOT a valid approval/failure rate or historical validation population."
+}
