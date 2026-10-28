@@ -70,6 +70,30 @@ class ScienceSourceReviewQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "application"):
             build_science_source_review_queue(data, intake)
 
+    def test_invalid_sha256_is_rejected(self):
+        data = {"cases": [{"event_key": "X", "application_id": "NDA218607",
+            "action_date": "2025-06-27", "reconstruction_cutoff": "2025-06-26",
+            "observations": [{"id": "obs", "source_role": "OUTCOME_ONLY",
+                "source_url": "https://example.test/crl.pdf", "available_on": "2025-06-27"}]}]}
+        intake = {"obs": {"schema_version": "fda-crl-offline-intake-v1",
+                          "application": "NDA218607", "action_date": "2025-06-27",
+                          "source_url_claimed": "https://example.test/crl.pdf",
+                          "status": "HASHED_UNVERIFIED_SOURCE", "sha256": "not-a-hash"}}
+        with self.assertRaisesRegex(ValueError, "SHA-256"):
+            build_science_source_review_queue(data, intake)
+
+    def test_forged_status_is_rejected(self):
+        data = {"cases": [{"event_key": "X", "application_id": "NDA218607",
+            "action_date": "2025-06-27", "reconstruction_cutoff": "2025-06-26",
+            "observations": [{"id": "obs", "source_role": "OUTCOME_ONLY",
+                "source_url": "https://example.test/crl.pdf", "available_on": "2025-06-27"}]}]}
+        intake = {"obs": {"schema_version": "fda-crl-offline-intake-v1",
+                          "application": "NDA218607", "action_date": "2025-06-27",
+                          "source_url_claimed": "https://example.test/crl.pdf",
+                          "status": "VERIFIED", "sha256": "a" * 64}}
+        with self.assertRaisesRegex(ValueError, "status"):
+            build_science_source_review_queue(data, intake)
+
 
 if __name__ == "__main__":
     unittest.main()
