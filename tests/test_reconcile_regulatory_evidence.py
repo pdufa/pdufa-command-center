@@ -31,7 +31,7 @@ class RegulatoryEvidenceTests(unittest.TestCase):
             {"source": "trial", "metric": "rate", "population": "ITT", "value": 0, "available_date": "2017-01-01"},
             {"source": "FDA", "metric": "rate", "population": "safety", "value": 1, "available_date": "2017-01-01"},
         ])
-        self.assertFalse(result["has_discrepancy"])
+        self.assertFalse(result["has_discrepancy"])\n        self.assertEqual(result["pre_decision_records"], [])
 
 
 if __name__ == "__main__":
