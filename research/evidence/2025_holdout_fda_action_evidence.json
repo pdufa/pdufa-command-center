@@ -1,7 +1,7 @@
 {
   "research_only": true,
   "validated_training_cohort": false,
-  "action_evidence_verified_count": 2,
+  "action_evidence_verified_count": 3,
   "records": [
     {
       "ticker": "TNXP",
@@ -35,6 +35,26 @@
       "program_family_disjoint_verified": false,
       "eligible_for_training": false,
       "correction_warning": "Corrected document was issued after the FDA action and must never be used as a predecision input."
+    },
+    {
+      "ticker": "NVAX",
+      "event_key": "NVAX|2025-04-01",
+      "product": "NUVAXOVID",
+      "application_id": "BLA 125817/0",
+      "legacy_recorded_outcome": "APPROVED",
+      "legacy_pdufa_date": "2025-04-01",
+      "fda_original_approval_date": "2025-05-16",
+      "fda_approval_letter_url": "https://www.fda.gov/media/186545/download?stream=top",
+      "fda_addendum_url": "https://www.fda.gov/media/186880/download",
+      "verification_status": "LEGACY_GOAL_DATE_NOT_ACTION_DATE",
+      "evidence_summary": "FDA May 16 approval letter and addendum explicitly distinguish April 1 PDUFA goal from paused approval and May 16 actual license approval.",
+      "review_cycle_id": "BLA 125817/0",
+      "predecision_inputs_verified": false,
+      "sampling_denominator_verified": false,
+      "program_family_disjoint_verified": false,
+      "eligible_for_training": false,
+      "correction_required": "Do not treat April 1 as an approval action date; preserve original legacy row and flag for canonical action-date reconciliation."
     }
-  ]
+  ],
+  "legacy_action_date_mismatches_identified": 1
 }
