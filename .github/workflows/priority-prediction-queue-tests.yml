@@ -1,0 +1,29 @@
+name: Priority prediction queue unit tests
+
+on:
+  push:
+    branches:
+      - feature/decision-workstream-20261026
+    paths:
+      - 'scripts/build_priority_prediction_queue.py'
+      - 'scripts/export_priority_prediction_queue.py'
+      - 'scripts/workspace_prediction_queue_adapter.py'
+      - 'tests/test_build_priority_prediction_queue.py'
+      - 'tests/test_workspace_prediction_queue_adapter.py'
+      - '.github/workflows/priority-prediction-queue-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  queue-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Execute queue tests
+        run: python -m unittest discover -s tests -p 'test_*prediction_queue*.py' -v
