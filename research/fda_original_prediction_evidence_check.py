@@ -4,6 +4,7 @@ Evidence records are supplied by an independent reviewer; the checker does not
 fetch or authenticate external artifacts and cannot authorize trading.
 """
 from datetime import datetime, timezone
+from urllib.parse import urlsplit
 
 
 def _instant(value):
@@ -33,15 +34,28 @@ def assess_original_prediction_evidence(inventory, evidence_records):
         required = ("immutable_prediction_uri", "prediction_sha256", "model_sha256",
                     "independent_reviewer", "source_timestamp_provenance")
         complete = all(isinstance(record.get(field), str) and record[field].strip() for field in required)
+        uri = record.get("immutable_prediction_uri")
+        parsed_uri = urlsplit(uri) if isinstance(uri, str) else None
+        # A generic mutable web page is not an immutable prediction artifact.
+        immutable_uri_plausible = bool(
+            parsed_uri and parsed_uri.scheme == "https" and parsed_uri.hostname
+            and not parsed_uri.username and not parsed_uri.password
+            and (
+                "/commit/" in parsed_uri.path or
+                "/releases/download/" in parsed_uri.path or
+                "/artifacts/" in parsed_uri.path or
+                "/objects/" in parsed_uri.path
+            )
+        )
         sha_valid = all(len(record.get(field, "")) == 64 and
                         all(ch in "0123456789abcdefABCDEF" for ch in record[field])
                         for field in ("prediction_sha256", "model_sha256"))
         chronology_ok = bool(action and prediction and cutoff and cutoff <= prediction < action)
-        results.append({"event_key": key, "artifact_metadata_complete": bool(complete and sha_valid),
+        results.append({"event_key": key, "artifact_metadata_complete": bool(complete and sha_valid and immutable_uri_plausible),
                         "chronology_consistent": chronology_ok,
                         "independently_verified": False,
                         "status": "REQUIRES_EXTERNAL_AUTHENTICATION_AND_LEAKAGE_AUDIT"
-                        if complete and sha_valid and chronology_ok else "INSUFFICIENT_OR_NONPROSPECTIVE_EVIDENCE"})
+                        if complete and sha_valid and immutable_uri_plausible and chronology_ok else "INSUFFICIENT_OR_NONPROSPECTIVE_EVIDENCE"})
     return {"research_only": True, "trading_authorized": False,
             "verified_prospective_predictions": 0, "evidence_records_reviewed": len(results),
             "missing_evidence_events": sorted(set(expected) - seen), "cases": results}
