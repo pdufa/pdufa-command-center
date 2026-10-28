@@ -36,7 +36,12 @@ def assess_original_prediction_evidence(inventory, evidence_records):
                     "independent_reviewer", "source_timestamp_provenance")
         complete = all(isinstance(record.get(field), str) and record[field].strip() for field in required)
         uri = record.get("immutable_prediction_uri")
-        parsed_uri = urlsplit(uri) if isinstance(uri, str) else None
+        try:
+            parsed_uri = urlsplit(uri) if isinstance(uri, str) else None
+            if parsed_uri:
+                _ = parsed_uri.hostname, parsed_uri.port
+        except ValueError:
+            parsed_uri = None
         # A generic mutable web page is not an immutable prediction artifact.
         github_commit = bool(parsed_uri and parsed_uri.hostname == "github.com" and parsed_uri.port in (None, 443) and not parsed_uri.query and not parsed_uri.fragment and re.fullmatch(r"/[^/]+/[^/]+/commit/[0-9a-fA-F]{40}", parsed_uri.path))
         immutable_uri_plausible = bool(
