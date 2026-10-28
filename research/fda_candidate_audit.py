@@ -17,9 +17,19 @@ def audit_candidates(records: Iterable[Mapping[str, Any]]) -> dict:
     eligible = 0
     reasons = Counter()
     outcomes = Counter()
+    seen_cycles = set()
     for record in records:
         total += 1
         decision = assess_label_eligibility(record)
+        # Duplicate review cycles cannot become independent research examples.
+        application = record.get("application_id")
+        cycle = record.get("review_cycle_id")
+        cycle_key = (application, cycle) if isinstance(application, str) and isinstance(cycle, str) else None
+        if cycle_key and all(cycle_key):
+            if cycle_key in seen_cycles:
+                reasons["duplicate_review_cycle"] += 1
+                continue
+            seen_cycles.add(cycle_key)
         if decision["status"] == "ELIGIBLE_FOR_FURTHER_REVIEW":
             eligible += 1
             outcomes["approval" if decision["label"] == 1 else "crl"] += 1
