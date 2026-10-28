@@ -4,7 +4,7 @@
 
 ## Exact case and dates
 
-- Trial identity: `COGT|NCT05208047|BEZUCLASTINIB+SUNITINIB|GIST-POST-IMATINIB`.
+- Trial identity: existing immutable program key `APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130`, mapped to PEAK study **NCT05208047**. Reusing this key avoids minting a duplicate program identity.
 - May 28, 2026: Cogent reports the FDA accepted the GIST NDA with priority review and assigned **November 30, 2026** as the PDUFA target date. This is a **company announcement of an FDA assignment**, not direct FDA action-letter adjudication. Source: https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0
 - May 30, 2026: Cogent publicly releases detailed Phase 3 PEAK results at ASCO. Source: https://cogentbiosciences.gcs-web.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3
 - Source review cutoff: **October 27, 2026**. Both public disclosures are earlier than cutoff. The gate allows **research to start**, not an FDA decision or trading.
