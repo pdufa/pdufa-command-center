@@ -17,8 +17,18 @@ def workspace_to_priority_queue(payload: Mapping[str, Any]) -> dict:
     Each row needs program_id or id. Never infer list membership from score.
     """
     lists = payload.get("lists")
+    # Actual Next.js /api/workspace response stores list members in
+    # members.GEM_JR.rows and members.GEM.rows; WT is a separate saved tag set.
     if not isinstance(lists, Mapping):
-        return {"status": "SOURCE_SCHEMA_UNVERIFIED", "reason": "Missing explicit lists mapping",
+        members = payload.get("members")
+        if isinstance(members, Mapping):
+            lists = {}
+            for stage in ("GEM_JR", "GEM"):
+                member = members.get(stage)
+                if isinstance(member, Mapping) and isinstance(member.get("rows"), list):
+                    lists[stage] = member["rows"]
+    if not isinstance(lists, Mapping):
+        return {"status": "SOURCE_SCHEMA_UNVERIFIED", "reason": "Missing explicit lists or members mapping",
                 "queue": [], "trading_ready": False}
     rows = []
     missing_groups = []
@@ -30,7 +40,7 @@ def workspace_to_priority_queue(payload: Mapping[str, Any]) -> dict:
         for item in members:
             if not isinstance(item, Mapping):
                 continue
-            key = item.get("program_id") or item.get("id")
+            key = item.get("program_id") or item.get("programId") or item.get("id")
             if not isinstance(key, str) or not key.strip():
                 continue
             rows.append({**item, "program_id": key.strip(), "list_name": label})
