@@ -10,19 +10,19 @@
     "saved_scan_feed_current": false,
     "sec_financing_source_current": false
   },
-  "action": "VERIFY_ALL",
+  "action": "REVERIFY_PARTIAL",
   "artifact_integrity": "NOT INDEPENDENTLY CHECKED",
   "awaiting_second_financing": 0,
   "blocking_or_review_flags": [
-    "GEM_SEC_CASH_RUNWAY_COLLECTION_MISSING_PARTIAL_OR_STALE",
     "CURRENT_RANKING_FEED_STALE_OR_UNVERIFIED",
+    "DISCOVERY_SOURCE_TIMESTAMPS_REQUIRE_REVIEW",
     "UNVALIDATED_HISTORICAL_STOCK_RETURNS",
     "SEC_FINANCING_COVERAGE_BLOCKED_OR_STALE"
   ],
   "bpw_comparable": {},
   "cash_runway": {
     "collected_count": 33,
-    "collector_status": "STALE \u2014 SEC RUNWAY COLLECTION NOT CURRENT",
+    "collector_status": "COLLECTED \u2014 CURRENT SEC STEP 4 SNAPSHOTS",
     "deteriorating": 0,
     "dilution_alerts": 37,
     "minimum_entry_months": 12.0,
@@ -33,17 +33,17 @@
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": null,
-    "matched_posted_results": null,
-    "new_records": null,
-    "stored_results": null,
-    "studies_checked": null
+    "finished_at": "2026-10-28T03:23:38.660063+00:00",
+    "matched_posted_results": 95,
+    "new_records": 0,
+    "stored_results": 2493,
+    "studies_checked": 3977
   },
-  "collector_performed": false,
-  "collector_status": "NOT_RUN \u2014 SAVED-SOURCE VERIFICATION ONLY",
+  "collector_performed": true,
+  "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-28T01:07:42.134098+00:00",
+  "generated_at_utc": "2026-10-28T03:25:52.055074+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -75,8 +75,8 @@
     "Post-Financing": 0
   },
   "research_status": "HOLD_STALE_OR_MISSING_SOURCES",
-  "run_id": 40613087925,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40613087925",
+  "run_id": 40625670011,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40625670011",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
