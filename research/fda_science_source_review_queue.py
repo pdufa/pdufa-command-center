@@ -30,6 +30,14 @@ def build_science_source_review_queue(reconstruction, authenticated_intakes=None
                     raise ValueError("unknown intake schema")
                 if intake.get("fda_authenticity_verified") or intake.get("eligible_for_predictive_training"):
                     raise ValueError("offline intake cannot self-certify evidence")
+                if role != "OUTCOME_ONLY":
+                    raise ValueError("FDA action letters cannot be attached to predecision observations")
+                if intake.get("application") != case.get("application_id"):
+                    raise ValueError("intake application does not match case")
+                if intake.get("action_date") != case.get("action_date"):
+                    raise ValueError("intake action date does not match case")
+                if intake.get("source_url_claimed") != obs.get("source_url"):
+                    raise ValueError("intake source URL does not match observation")
             rows.append({
                 "event_key": case["event_key"],
                 "offline_intake_sha256": intake.get("sha256") if intake else None,
