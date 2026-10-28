@@ -459,6 +459,28 @@ def evaluate_phase3_research_candidate(payload: Phase3ResearchCandidate):
 
 
 
+class Phase3ResearchBatchRequest(BaseModel):
+    candidates: list[Phase3ResearchCandidate] = Field(default_factory=list, max_length=200)
+
+
+@app.post("/api/internal/phase3-research/evaluate-batch", dependencies=[Depends(require_internal_key)])
+def evaluate_phase3_research_batch(payload: Phase3ResearchBatchRequest):
+    """Authenticated, read-only batch evaluation with source-gated sheet preview."""
+    from datetime import date as _date
+    from .phase3_research_batch import evaluate_candidate_batch
+    from .phase3_sheet_population_preview import build_sheet_population_preview
+    try:
+        result = evaluate_candidate_batch(
+            [candidate.model_dump() for candidate in payload.candidates],
+            as_of=_date.today().isoformat(),
+        )
+        result["sheetPreview"] = build_sheet_population_preview(result)
+        return result
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+
 @app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def validate_reconciliation_package(payload: "ReviewPackage"):
     """Authenticated, read-only validation. No identity, preset, or scanner writes."""
