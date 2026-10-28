@@ -15,12 +15,19 @@ PRIORITY = {
 }
 
 
-def build_verification_queue(path):
+def build_verification_queue(path, evidence_manifest=None):
     with Path(path).open(newline="", encoding="utf-8") as stream:
         rows = list(csv.DictReader(stream))
+    evidence_by_event = {}
+    if evidence_manifest is not None:
+        manifest = json.loads(Path(evidence_manifest).read_text(encoding="utf-8"))
+        evidence_by_event = {item["event_key"]: item for item in manifest.get("records", [])}
     queue = []
     for row in rows:
+        evidence = evidence_by_event.get(row.get("event_key", ""), {})
         queue.append({
+            "fda_evidence_status": evidence.get("verification_status", "NOT_YET_RECONCILED"),
+            "legacy_action_date_mismatch": evidence.get("verification_status") == "LEGACY_GOAL_DATE_NOT_ACTION_DATE",
             "event_key": row.get("event_key", ""),
             "ticker": row.get("ticker", ""),
             "pdufa_date": row.get("pdufa_date", ""),
@@ -48,6 +55,6 @@ def build_verification_queue(path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        raise SystemExit("usage: python -m research.fda_verification_queue data/prediction_engine_history.csv")
-    print(json.dumps(build_verification_queue(sys.argv[1]), indent=2))
+    if len(sys.argv) not in (2, 3):
+        raise SystemExit("usage: python -m research.fda_verification_queue history.csv [evidence_manifest.json]")
+    print(json.dumps(build_verification_queue(sys.argv[1], sys.argv[2] if len(sys.argv) == 3 else None), indent=2))
