@@ -232,3 +232,66 @@ test('both existing research views show fifty tasks, three withheld outcomes and
     assert.match(html, /https:\/\/cdn.clinicaltrials.gov\/large-docs\/49\/NCT05273749\/SAP_003.pdf/);
   }
 });
+
+test('both research views preserve TNXP primary failure, sensitivity roles and uncertain populations', () => {
+  const matrix = snapshot.caseReports.find(c => c.event_key.startsWith('TNXP|')).scientific_dossier.tnxp_trial_comparison;
+  assert.deepEqual(matrix.trials.map(t => t.name), ['RELIEF', 'RALLY', 'RESILIENT']);
+  assert.equal(matrix.trials[1].primary_analysis.p_value, '0.115');
+  assert.equal(matrix.trials[1].primary_analysis.source_reported_outcome, 'FAILED');
+  assert.equal(matrix.trials[1].sensitivity_analyses[0].p_value, '0.014');
+  assert.equal(matrix.trials[0].populations.randomized_total, null);
+  const FdaPage = require('../app/fda-research-status/page.tsx').default;
+  for (const View of [Panel, FdaPage]) {
+    const html = renderToStaticMarkup(React.createElement(View));
+    for (const pattern of [/TNXP RELIEF \/ RALLY \/ RESILIENT/, /RALLY remains a failed primary endpoint \(p=0.115\)/,
+      /favorable sensitivity analysis \(p=0.014\) does not replace/, /No p values, treatment effects or safety rates are pooled/,
+      /Adverse-event withdrawal does not by itself establish drug causality/, /Not recorded in this matrix; agreement or disagreement is unknown/]) assert.match(html, pattern);
+  }
+});
+
+test('TNXP matrix rejects altered clinical roles, invented populations and forecast/certification claims', () => {
+  for (const mutate of [
+    m => m.application_id = 'NDA000001', m => m.original_prediction_cutoff = '2025-08-14',
+    m => m.eligible_for_predecision_features = true, m => m.eligible_for_validated_accuracy = true,
+    m => m.independently_completed_assessments = 3, m => m.sources[0].source_url = 'javascript:alert(1)',
+    m => m.sources[0].public_availability_verified = true, m => m.sources[0].source_bytes_retained = true,
+    m => m.sources[0].document_date = '2025-08-16', m => m.trials[1].primary_analysis.p_value = '0.014',
+    m => m.trials[1].primary_analysis.source_reported_outcome = 'POSITIVE',
+    m => m.trials[1].sensitivity_analyses[0].analysis_role = 'PRESPECIFIED_PRIMARY',
+    m => m.trials[0].populations.randomized_total = 503, m => m.trials[2].populations.efficacy_total = 457,
+    m => m.trials[1].safety.causality_status = 'DRUG_CAUSALITY_ESTABLISHED',
+    m => m.trials[1].safety.source_reported_events[0].independently_adjudicated = true,
+    m => m.comparison_summary.resilient_exclusion_compliance_status = 'COMPLIANT',
+    m => m.comparison_summary.pooled_p_value = '0.01', m => m.comparison_summary.prediction_accuracy = 1,
+    m => m.comparison_summary.probabilities.PASS = 0.9,
+    m => m.comparison_summary.within_program_comparison_is_independent_fda_cohort = true,
+  ]) {
+    const bad = copy(); mutate(bad.caseReports.find(c => c.event_key.startsWith('TNXP|')).scientific_dossier.tnxp_trial_comparison);
+    assert.throws(() => auditHoldoutReconstruction(bad));
+  }
+  const bad = copy();
+  bad.caseReports[0].scientific_dossier.tnxp_trial_comparison = bad.caseReports.find(c => c.event_key.startsWith('TNXP|')).scientific_dossier.tnxp_trial_comparison;
+  assert.throws(() => auditHoldoutReconstruction(bad));
+});
+
+test('FDA label denominator corroboration stays outcome-only and cannot establish SAP compliance', () => {
+  const issue = snapshot.caseReports.find(c => c.event_key.startsWith('TNXP|')).scientific_dossier.scientific_issues[0];
+  assert.equal(issue.postdecision_context.source_role, 'OUTCOME_ONLY');
+  assert.equal(issue.postdecision_context.reported_efficacy_population.total, 456);
+  const FdaPage = require('../app/fda-research-status/page.tsx').default;
+  for (const View of [Panel, FdaPage]) {
+    const html = renderToStaticMarkup(React.createElement(View));
+    for (const pattern of [/FDA postdecision label corroboration · excluded from prediction inputs/,
+      /225 placebo \+ 231 active = 456/, /corroborates the reported denominator, not authority for the exclusion/,
+      /219428s000lbl.pdf/, /postdecision evidence cannot complete historical predecision features or establish SAP compliance/]) assert.match(html, pattern);
+  }
+  for (const mutate of [
+    c => c.source_role = 'PREDECISION_RESEARCH', c => c.eligible_for_predecision_features = true,
+    c => c.protocol_exclusion_authority_established = true, c => c.public_availability_verified = true,
+    c => c.reported_efficacy_population.total = 457, c => c.source_url = 'https://www.accessdata.fda.gov.evil.example/label.pdf',
+    c => c.application_index_url = 'javascript:alert(1)',
+  ]) {
+    const bad = copy(); mutate(bad.caseReports.find(c => c.event_key.startsWith('TNXP|')).scientific_dossier.scientific_issues[0].postdecision_context);
+    assert.throws(() => auditHoldoutReconstruction(bad));
+  }
+});

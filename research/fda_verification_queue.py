@@ -13,6 +13,7 @@ from research.fda_predecision_reconstruction import audit_reconstructions
 from research.fda_science_dossier import build_scientific_dossier
 from research.fda_outcome_provenance_gate import build_unvalidated_decision_contract
 from research.tnxp_resilient_population import build_population_issue
+from research.tnxp_trial_comparison import build_tnxp_trial_comparison
 
 PRIORITY = {
     "2025_EXTERNAL_BLIND": 0,
@@ -75,6 +76,8 @@ def _attach_science_framework(reconstruction):
         case["scientific_dossier"] = build_scientific_dossier(case,catalog)
         case["scientific_dossier"]["scientific_issues"] = (
             [build_population_issue()] if case["event_key"] == "TNXP|2025-08-15" else [])
+        case["scientific_dossier"]["tnxp_trial_comparison"] = (
+            build_tnxp_trial_comparison() if case["event_key"] == "TNXP|2025-08-15" else None)
         case["decision_contract"] = build_unvalidated_decision_contract(
             blockers=case["blockers"], as_of=date.fromisoformat(reconstruction["as_of"]))
         case["main"].update({

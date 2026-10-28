@@ -7,19 +7,67 @@
   "research_cutoff": "2025-08-14",
   "original_prediction_cutoff": null,
   "reviewed_content_on": "2026-10-28",
-  "randomized_population": {"active": 231, "placebo": 226, "total": 457},
-  "reported_efficacy_population": {"active": 231, "placebo": 225, "total": 456},
-  "reported_safety_population": {"active": 231, "placebo": 226, "total": 457},
+  "randomized_population": {
+    "active": 231,
+    "placebo": 226,
+    "total": 457
+  },
+  "reported_efficacy_population": {
+    "active": 231,
+    "placebo": 225,
+    "total": 456
+  },
+  "reported_safety_population": {
+    "active": 231,
+    "placebo": 226,
+    "total": 457
+  },
   "sponsor_explanation": "Sponsor poster states one placebo participant was randomized in error after not meeting a safety criterion, retained in safety and excluded from the reported efficacy population. The participant-specific exclusion record has not been independently reviewed.",
   "population_rule_observed": "Retrieved protocol and SAP define primary efficacy ITT as all randomized patients, analyzed as randomized. No applicable prespecified exception has been established from the examined documents.",
   "protocol_compliance_status": "NOT_ESTABLISHED",
   "independently_adjudicated": false,
   "sources": [
-    {"id": "ACR-2024-SPONSOR-POSTER", "url": "https://www.tonixpharma.com/wp-content/uploads/2024/11/ACR-2024-Poster-F307-Trial_vFinal2_10-15-2024_QRcode.pdf", "location": "Figure 1 participant disposition and analysis population", "document_date": null, "public_availability_verified": false, "finding": "Sponsor reports the one-placebo exclusion and distinct randomized/efficacy/safety populations. A URL directory or conference year alone is not a verified original public-availability timestamp."},
-    {"id": "RESILIENT-SAP-FINAL-V1", "url": "https://cdn.clinicaltrials.gov/large-docs/49/NCT05273749/SAP_003.pdf", "location": "Section 7 printed page 16; section 9.2 page 25; section 13 page 37", "document_date": "2023-10-17", "public_availability_verified": false, "finding": "Final v1.0 specifies all-randomized ITT and analysis by randomized assignment. The listed PGIC analysis change does not establish authority for this population exclusion. Signed approval and complete amendment history remain unverified."},
-    {"id": "RESILIENT-PROTOCOL-AMENDMENT-2", "url": "https://cdn.clinicaltrials.gov/large-docs/49/NCT05273749/Prot_002.pdf", "location": "Section 13.1 printed page 69", "document_date": "2023-06-15", "public_availability_verified": false, "finding": "Amendment 2 defines all-randomized ITT for primary efficacy and requires SAP finalization before database lock/unblinding. Internal dates do not prove original public availability or when an exclusion decision occurred."},
-    {"id": "RESILIENT-PUBLISHED-PAPER", "url": "https://doi.org/10.1093/pm/pnaf089", "location": "Publisher online date and participant disposition", "document_date": "2025-07-08", "public_availability_verified": false, "finding": "Publisher metadata gives July 8, 2025 online publication despite January 2026 issue dating; July 23 typesetting is also before the research cutoff. Paper reports an excluded inadvertently randomized placebo participant. Original version bytes have not been retained."},
-    {"id": "SEC-JULY9-SUPPLEMENT", "url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/ex99-02.htm", "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/0001999371-25-008877-index.htm", "location": "Exhibit 99.02 supplementary methods", "document_date": "2025-07-09", "public_availability_verified": true, "finding": "SEC filing index records July 9, 2025 availability. This exhibit is supplementary material, not the full main paper or a signed final SAP/exclusion audit."}
+    {
+      "id": "ACR-2024-SPONSOR-POSTER",
+      "url": "https://www.tonixpharma.com/wp-content/uploads/2024/11/ACR-2024-Poster-F307-Trial_vFinal2_10-15-2024_QRcode.pdf",
+      "location": "Figure 1 participant disposition and analysis population",
+      "document_date": null,
+      "public_availability_verified": false,
+      "finding": "Sponsor reports the one-placebo exclusion and distinct randomized/efficacy/safety populations. A URL directory or conference year alone is not a verified original public-availability timestamp."
+    },
+    {
+      "id": "RESILIENT-SAP-FINAL-V1",
+      "url": "https://cdn.clinicaltrials.gov/large-docs/49/NCT05273749/SAP_003.pdf",
+      "location": "Section 7 printed page 16; section 9.2 page 25; section 13 page 37",
+      "document_date": "2023-10-17",
+      "public_availability_verified": false,
+      "finding": "Final v1.0 specifies all-randomized ITT and analysis by randomized assignment. The listed PGIC analysis change does not establish authority for this population exclusion. Signed approval and complete amendment history remain unverified."
+    },
+    {
+      "id": "RESILIENT-PROTOCOL-AMENDMENT-2",
+      "url": "https://cdn.clinicaltrials.gov/large-docs/49/NCT05273749/Prot_002.pdf",
+      "location": "Section 13.1 printed page 69",
+      "document_date": "2023-06-15",
+      "public_availability_verified": false,
+      "finding": "Amendment 2 defines all-randomized ITT for primary efficacy and requires SAP finalization before database lock/unblinding. Internal dates do not prove original public availability or when an exclusion decision occurred."
+    },
+    {
+      "id": "RESILIENT-PUBLISHED-PAPER",
+      "url": "https://doi.org/10.1093/pm/pnaf089",
+      "location": "Publisher online date and participant disposition",
+      "document_date": "2025-07-08",
+      "public_availability_verified": false,
+      "finding": "Publisher metadata gives July 8, 2025 online publication despite January 2026 issue dating; July 23 typesetting is also before the research cutoff. Paper reports an excluded inadvertently randomized placebo participant. Original version bytes have not been retained."
+    },
+    {
+      "id": "SEC-JULY9-SUPPLEMENT",
+      "url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/ex99-02.htm",
+      "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/0001999371-25-008877-index.htm",
+      "location": "Exhibit 99.02 supplementary methods",
+      "document_date": "2025-07-09",
+      "public_availability_verified": true,
+      "finding": "SEC filing index records July 9, 2025 availability. This exhibit is supplementary material, not the full main paper or a signed final SAP/exclusion audit."
+    }
   ],
   "required_resolution_artifacts": [
     "Signed final SAP, complete versions/amendments and dated approval history",
@@ -32,5 +80,24 @@
   "original_document_sha256": null,
   "eligible_for_predecision_features": false,
   "eligible_for_validated_accuracy": false,
-  "trading_authorized": false
+  "trading_authorized": false,
+  "postdecision_context": {
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/219428s000lbl.pdf",
+    "application_index_url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?ApplNo=219428&event=overview.process",
+    "source_role": "OUTCOME_ONLY",
+    "source_location": "Section 14, Table 2, printed page 15; Trial 3 NCT05273749",
+    "finding": "The FDA label reports Trial 3 efficacy baseline denominators of 225 placebo and 231 TONMYA (456 total). This corroborates the displayed analysis population, but does not establish authority for excluding a randomized participant under the final prespecified SAP.",
+    "application_index_observation": "The FDA index records ORIG-1 approval August 15, 2025, Type 3 New Dosage Form and STANDARD review. Currently displayed documents are label and approval letter; absence of a listed clinical/statistical review is not proof such records do not exist.",
+    "reported_efficacy_population": {
+      "active": 231,
+      "placebo": 225,
+      "total": 456
+    },
+    "public_availability_verified": false,
+    "source_bytes_retained": false,
+    "original_document_sha256": null,
+    "protocol_exclusion_authority_established": false,
+    "eligible_for_predecision_features": false,
+    "content_observed_on": "2026-10-28"
+  }
 }

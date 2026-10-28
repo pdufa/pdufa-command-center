@@ -1,6 +1,6 @@
 import snapshot from "../../lib/fda-holdout-reconstruction-snapshot.json";
 import { auditHoldoutReconstruction } from "../../lib/fda-holdout-reconstruction";
-import { DecisionResearchSummary, InvestigationProtocolDetails, ScientificIssueDetails } from "../installation-audit/HistoricalHoldoutReconstruction";
+import { DecisionResearchSummary, InvestigationProtocolDetails, ScientificIssueDetails, TnxpTrialComparisonDetails } from "../installation-audit/HistoricalHoldoutReconstruction";
 
 export const dynamic = "force-static";
 
@@ -46,6 +46,7 @@ export default function FdaResearchStatusPage() {
           <InvestigationProtocolDetails framework={row.scientific_dossier.extended_investigation_framework} extended/>
           <InvestigationProtocolDetails framework={row.scientific_dossier.depth_framework}/>
           {row.scientific_dossier.scientific_issues.map(issue => <ScientificIssueDetails key={issue.issue_id} issue={issue}/>)}
+          {row.scientific_dossier.tnxp_trial_comparison ? <TnxpTrialComparisonDetails comparison={row.scientific_dossier.tnxp_trial_comparison}/> : null}
           <details><summary>Predecision evidence chronology · excluded hindsight</summary>
             <p>Research cutoff: {row.reconstruction_cutoff}; original forecast freeze: not authenticated. Source dates are not proof of the original model input.</p>
             <ol>{row.source_classification.map((source) => (

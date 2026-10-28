@@ -41,6 +41,31 @@ export type ScientificIssue = {
   uncertainty: string; effect_on_proposed_fda_decision: "ABSTAIN_NO_CERTIFIED_PROBABILITY_EFFECT";
   original_prediction_cutoff: null; research_cutoff: string; reviewed_content_on: string;
   sources: ScientificIssueSource[];
+  postdecision_context: {source_url: string; application_index_url: string; source_role: "OUTCOME_ONLY";
+    source_location: string; finding: string; application_index_observation: string;
+    reported_efficacy_population: {active:231; placebo:225; total:456}; content_observed_on: string};
+};
+type TrialAnalysis = {analysis_role: "PRESPECIFIED_PRIMARY" | "SENSITIVITY_NOT_PRIMARY";
+  method: string; endpoint: string; p_value: string; placebo_adjusted_ls_mean_difference: string;
+  standard_error: string | null; source_id: string; source_reported_outcome?: "POSITIVE" | "FAILED"};
+export type TnxpTrialComparison = {
+  event_key: "TNXP|2025-08-15"; application_id: "NDA219428"; research_cutoff: string;
+  original_prediction_cutoff: null; assembled_on: string;
+  sources: {source_id: string; source_url: string; document_date: string | null;
+    public_availability_verified: false; provenance_note: string}[];
+  trials: {trial_id: string; name: string; registry_id: string | null; primary_analysis: TrialAnalysis;
+    sensitivity_analyses: TrialAnalysis[];
+    populations: {randomized_total: number | null; randomized_active: number | null; randomized_placebo: number | null;
+      efficacy_total: number | null; efficacy_active: number | null; efficacy_placebo: number | null;
+      safety_total: number | null; safety_active: number | null; safety_placebo: number | null; status: string};
+    design: {sites: number | null; duration_weeks: number | null};
+    safety: {ae_related_discontinuation_percent: {active: string; placebo: string; source_id: string};
+      source_reported_events: {finding: string; source_id: string; independently_adjudicated: false}[];
+      causality_status: "NOT_INDEPENDENTLY_ADJUDICATED"};
+    unresolved_requirements: string[];
+  }[];
+  comparison_limits: string[]; required_resolution_artifacts: string[];
+  comparison_summary: {predicted_decision: "ABSTAIN"; resilient_exclusion_compliance_status: "NOT_ESTABLISHED"};
 };
 type ScientificDossier = {
   layers: {layer: number; layer_name: string; questions: ScientificQuestion[];
@@ -49,6 +74,7 @@ type ScientificDossier = {
   depth_framework: InvestigationFramework;
   extended_investigation_framework: InvestigationFramework;
   scientific_issues: ScientificIssue[];
+  tnxp_trial_comparison: TnxpTrialComparison | null;
 };
 export type DecisionContract = {
   predicted_decision: "ABSTAIN"; target_classes: ["PASS", "CRL", "EXTENSION"];
@@ -165,6 +191,15 @@ function auditScientificIssues(value: unknown, caseReport: Record<string, unknow
   for (const field of ["supporting_findings", "contradictory_findings", "missing_information", "required_resolution_artifacts"]) {
     check(strings(issue[field]) && (issue[field] as string[]).length > 0);
   }
+  const context = record(issue.postdecision_context), labelPopulation = record(context.reported_efficacy_population);
+  check(context.source_url === "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/219428s000lbl.pdf"
+    && context.application_index_url === "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?ApplNo=219428&event=overview.process"
+    && context.source_role === "OUTCOME_ONLY" && text(context.source_location) && text(context.finding)
+    && text(context.application_index_observation) && labelPopulation.active === 231 && labelPopulation.placebo === 225
+    && labelPopulation.total === 456 && context.public_availability_verified === false
+    && context.source_bytes_retained === false && context.original_document_sha256 === null
+    && context.protocol_exclusion_authority_established === false && context.eligible_for_predecision_features === false
+    && day(context.content_observed_on) <= asOf);
   const sourceIds = new Set<string>();
   check(Array.isArray(issue.sources) && issue.sources.length === 5);
   for (const rawSource of issue.sources) {
@@ -181,6 +216,91 @@ function auditScientificIssues(value: unknown, caseReport: Record<string, unknow
     } else check(source.public_availability_verified === false);
   }
   check(["ACR-2024-SPONSOR-POSTER", "RESILIENT-SAP-FINAL-V1", "RESILIENT-PROTOCOL-AMENDMENT-2", "RESILIENT-PUBLISHED-PAPER", "SEC-JULY9-SUPPLEMENT"].every(id => sourceIds.has(id)));
+}
+
+function auditTnxpComparison(value: unknown, caseReport: Record<string, unknown>, asOf: number) {
+  if (caseReport.event_key !== "TNXP|2025-08-15") { check(value === null); return; }
+  const comparison = record(value);
+  check(comparison.schema_version === "tnxp-three-trial-comparison-v1" && comparison.event_key === caseReport.event_key
+    && comparison.application_id === caseReport.application_id && comparison.research_cutoff === caseReport.reconstruction_cutoff
+    && comparison.original_prediction_cutoff === null && day(comparison.assembled_on) <= asOf
+    && comparison.research_only === true && comparison.independently_completed_assessments === 0
+    && comparison.independently_completed_levels === 0 && comparison.eligible_for_predecision_features === false
+    && comparison.eligible_for_validated_accuracy === false && comparison.trading_authorized === false
+    && comparison.interpretation_scope === "DESCRIPTIVE_WITHIN_PROGRAM_RESEARCH_NOT_FORECAST_OR_META_ANALYSIS");
+  for (const field of ["comparison_limits", "required_resolution_artifacts"]) check(strings(comparison[field]) && (comparison[field] as string[]).length > 0);
+  const expectedSources: Record<string, [string, string | null]> = {
+    "TNXP-RALLY-RELIEF-20220321": ["https://www.sec.gov/Archives/edgar/data/1430306/000138713122003807/ex99-01.htm", "2022-03-21"],
+    "TNXP-RESILIENT-EFFECT-20240610": ["https://www.sec.gov/Archives/edgar/data/1430306/000183988224018368/ex99-02.htm", "2024-06-10"],
+    "TNXP-RESILIENT-DISPOSITION-2024": ["https://www.sec.gov/Archives/edgar/data/1430306/000183988224043326/ex99-03.htm", null],
+  };
+  check(Array.isArray(comparison.sources) && comparison.sources.length === 3);
+  const sourceIds = new Set<string>();
+  for (const rawSource of comparison.sources) {
+    const source = record(rawSource);
+    check(text(source.source_id) && !sourceIds.has(source.source_id) && Object.hasOwn(expectedSources, source.source_id));
+    const [url, documentDate] = expectedSources[source.source_id];
+    check(source.source_url === url && holdoutSourceUrl(source.source_url) && source.document_date === documentDate
+      && source.public_availability_verified === false && source.original_document_sha256 === null
+      && source.source_bytes_retained === false && source.independently_reviewed === false && text(source.provenance_note));
+    if (documentDate !== null) check(day(documentDate) <= day(comparison.research_cutoff));
+    sourceIds.add(source.source_id);
+  }
+  check(Array.isArray(comparison.trials) && comparison.trials.length === 3);
+  const profiles = [
+    {id:"F304", name:"RELIEF", registry:null, primary:["0.010","-0.4","0.16","POSITIVE"], sensitivity:["0.004","-0.5",null],
+      populations:[null,null,null,null,null,null,null,null,null], sites:null, duration:null, ae:["8.5","3.5"], populationStatus:"NOT_ESTABLISHED_FROM_CURRENT_COMPARISON_SOURCES"},
+    {id:"F306", name:"RALLY", registry:null, primary:["0.115","-0.2","0.16","FAILED"], sensitivity:["0.014","-0.4","0.16"],
+      populations:[514,null,null,null,null,null,null,null,null], sites:36, duration:14, ae:["15.2","6.2"], populationStatus:"SOURCE_REPORTED_PARTIAL_POPULATION_DEFINITION"},
+    {id:"F307", name:"RESILIENT", registry:"NCT05273749", primary:["0.00005","-0.65","0.16","POSITIVE"], sensitivity:null,
+      populations:[457,231,226,456,231,225,457,231,226], sites:33, duration:14, ae:["6.1","3.5"], populationStatus:"SOURCE_REPORTED_EXCLUSION_COMPLIANCE_NOT_ESTABLISHED"},
+  ];
+  comparison.trials.forEach((rawTrial, index) => {
+    const trial = record(rawTrial), profile = profiles[index];
+    const analysisSource = profile.id === "F307" ? "TNXP-RESILIENT-EFFECT-20240610" : "TNXP-RALLY-RELIEF-20220321";
+    const populationSource = profile.id === "F304" ? null : profile.id === "F307" ? "TNXP-RESILIENT-DISPOSITION-2024" : analysisSource;
+    check(trial.trial_id === profile.id && trial.name === profile.name && trial.registry_id === profile.registry
+      && trial.independently_reviewed === false && trial.eligible_for_frozen_prediction === false
+      && trial.assessment_status === "SOURCE_REPORTED_NOT_INDEPENDENTLY_ADJUDICATED");
+    const primary = record(trial.primary_analysis);
+    check(primary.analysis_role === "PRESPECIFIED_PRIMARY" && primary.method === "MMRM_WITH_MULTIPLE_IMPUTATION"
+      && primary.endpoint === "pain numeric rating score" && primary.source_id === analysisSource
+      && primary.p_value === profile.primary[0] && primary.placebo_adjusted_ls_mean_difference === profile.primary[1]
+      && primary.standard_error === profile.primary[2] && primary.source_reported_outcome === profile.primary[3]);
+    check(Array.isArray(trial.sensitivity_analyses) && trial.sensitivity_analyses.length === (profile.sensitivity ? 1 : 0));
+    if (profile.sensitivity) {
+      const sensitivity = record(trial.sensitivity_analyses[0]);
+      check(sensitivity.analysis_role === "SENSITIVITY_NOT_PRIMARY" && sensitivity.method === "MMRM_WITHOUT_MULTIPLE_IMPUTATION"
+        && sensitivity.endpoint === "pain numeric rating score" && sensitivity.source_id === analysisSource
+        && sensitivity.p_value === profile.sensitivity[0] && sensitivity.placebo_adjusted_ls_mean_difference === profile.sensitivity[1]
+        && sensitivity.standard_error === profile.sensitivity[2] && sensitivity.source_reported_outcome === undefined);
+    }
+    const populations = record(trial.populations);
+    ["randomized_total","randomized_active","randomized_placebo","efficacy_total","efficacy_active","efficacy_placebo","safety_total","safety_active","safety_placebo"]
+      .forEach((field, i) => check(populations[field] === profile.populations[i]));
+    check(populations.source_id === populationSource && populations.status === profile.populationStatus);
+    const design = record(trial.design), safety = record(trial.safety), ae = record(safety.ae_related_discontinuation_percent);
+    check(design.sites === profile.sites && design.duration_weeks === profile.duration && design.source_id === populationSource
+      && safety.causality_status === "NOT_INDEPENDENTLY_ADJUDICATED" && ae.active === profile.ae[0] && ae.placebo === profile.ae[1]
+      && ae.source_id === (profile.id === "F307" ? populationSource : analysisSource));
+    check(Array.isArray(safety.source_reported_events));
+    for (const rawEvent of safety.source_reported_events) {
+      const event = record(rawEvent);
+      check(text(event.finding) && event.source_id === ae.source_id && event.independently_adjudicated === false);
+    }
+    check(strings(trial.unresolved_requirements) && trial.unresolved_requirements.length > 0);
+  });
+  const summary = record(comparison.comparison_summary), probabilities = record(summary.probabilities);
+  check(summary.primary_replication_status === "MIXED_SOURCE_REPORTED_NOT_INDEPENDENTLY_ADJUDICATED"
+    && Array.isArray(summary.source_reported_positive_primary_trials) && summary.source_reported_positive_primary_trials.join(",") === "F304,F307"
+    && Array.isArray(summary.source_reported_failed_primary_trials) && summary.source_reported_failed_primary_trials.join(",") === "F306"
+    && summary.rally_sensitivity_does_not_replace_primary === true && summary.within_program_comparison_is_independent_fda_cohort === false
+    && summary.cross_trial_causal_explanation_established === false && summary.resilient_exclusion_compliance_status === "NOT_ESTABLISHED"
+    && summary.pooled_p_value === null && summary.pooled_effect === null && summary.confidence_interval === null
+    && summary.prediction_accuracy === null && summary.predicted_decision === "ABSTAIN" && summary.confidence_grade === "NOT_ESTABLISHED"
+    && probabilities.PASS === null && probabilities.CRL === null && probabilities.EXTENSION === null
+    && summary.independently_completed_assessments === 0 && summary.independently_completed_levels === 0
+    && summary.source_count === 3 && summary.trial_count === 3);
 }
 
 function auditInvestigationFramework(value: unknown, candidates: Record<string, unknown>[], levelCount: number, catalogVersion: string) {
@@ -317,6 +437,7 @@ export function auditHoldoutReconstruction(value: unknown): HoldoutReconstructio
       && extended.independently_completed_level_count === 0 && extended.legacy_backend_review_boundary_changed === false
       && JSON.stringify((extended.levels as unknown[]).slice(0, 20)) === JSON.stringify(base.levels));
     auditScientificIssues(dossier.scientific_issues, c, asOf);
+    auditTnxpComparison(dossier.tnxp_trial_comparison, c, asOf);
     check(Array.isArray(dossier.layers) && dossier.layers.length === 8);
     dossier.layers.forEach((rawLayer, layerIndex) => {
       const layer = record(rawLayer);

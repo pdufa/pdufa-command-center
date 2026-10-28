@@ -48,8 +48,21 @@ def build_population_issue(record=None):
         if (source['url']!=url or source.get('document_date')!=printed
                 or source.get('public_availability_verified') is not verified):
             raise ValueError('unverified public availability cannot be promoted or source identity changed')
-    if record['sources'][-1].get('availability_source_url')!='https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/0001999371-25-008877-index.htm':
+    sec_source=next(source for source in record['sources'] if source['id']=='SEC-JULY9-SUPPLEMENT')
+    if sec_source.get('availability_source_url')!='https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/0001999371-25-008877-index.htm':
         raise ValueError('exact SEC supplementary methods filing index required')
+    context=record.get('postdecision_context')
+    if (not isinstance(context,dict)
+            or context.get('source_url')!='https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/219428s000lbl.pdf'
+            or context.get('application_index_url')!='https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?ApplNo=219428&event=overview.process'
+            or context.get('source_role')!='OUTCOME_ONLY'
+            or context.get('reported_efficacy_population')!={'active':231,'placebo':225,'total':456}
+            or not all(isinstance(context.get(k),str) and context[k].strip()
+                       for k in ('finding','source_location','application_index_observation'))
+            or context.get('original_document_sha256') is not None
+            or any(context.get(k) is not False for k in ('public_availability_verified','source_bytes_retained',
+                'protocol_exclusion_authority_established','eligible_for_predecision_features'))):
+        raise ValueError('FDA label context cannot establish SAP authority or enter predecision features')
     artifacts=record.get('required_resolution_artifacts')
     if not isinstance(artifacts,list) or len(artifacts)<5 or any(not isinstance(x,str) or not x.strip() for x in artifacts):
         raise ValueError('complete unresolved compliance requirements required')

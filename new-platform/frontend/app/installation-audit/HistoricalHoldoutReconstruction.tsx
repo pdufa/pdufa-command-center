@@ -1,5 +1,5 @@
 import snapshot from "../../lib/fda-holdout-reconstruction-snapshot.json";
-import { auditHoldoutReconstruction, type HoldoutCase, type InvestigationFramework, type ScientificIssue } from "../../lib/fda-holdout-reconstruction";
+import { auditHoldoutReconstruction, type HoldoutCase, type InvestigationFramework, type ScientificIssue, type TnxpTrialComparison } from "../../lib/fda-holdout-reconstruction";
 
 const labels: Record<string, string> = {
   PREDECISION_RESEARCH_CANDIDATE: "Pre-cutoff research observation · not independently certified",
@@ -33,6 +33,47 @@ export function DecisionResearchSummary({record}: {record: HoldoutCase}) {
   </section>;
 }
 
+function TrialReportLink({source}: {source: TnxpTrialComparison["sources"][number]}) {
+  return <a href={source.source_url} target="_blank" rel="noopener noreferrer">Source report</a>;
+}
+
+export function TnxpTrialComparisonDetails({comparison}: {comparison: TnxpTrialComparison}) {
+  const sourceById = new Map(comparison.sources.map(source => [source.source_id, source]));
+  const known = (value: number | null) => value === null ? "Not established" : String(value);
+  return <details style={{margin:"12px 0",padding:12,border:"1px solid #b7c7ce"}}>
+    <summary><strong>TNXP RELIEF / RALLY / RESILIENT · primary results, sensitivity analyses and safety uncertainty</strong></summary>
+    <p>Descriptive within-program research only. These three trials are not independent FDA decision cases. No p values, treatment effects or safety rates are pooled; no approval probability is derived.</p>
+    <div style={{overflowX:"auto"}}><table>
+      <caption>Source-reported primary efficacy and separate sensitivity results</caption>
+      <thead><tr><th scope="col">Trial</th><th scope="col">Prespecified primary: MMRM with multiple imputation</th><th scope="col">Sensitivity: MMRM without multiple imputation</th></tr></thead>
+      <tbody>{comparison.trials.map(trial => <tr key={trial.trial_id}>
+        <th scope="row">{trial.name} · {trial.trial_id}</th>
+        <td>{trial.primary_analysis.source_reported_outcome === "FAILED" ? "Failed primary endpoint" : "Positive primary result"} (source reported). p={trial.primary_analysis.p_value}; placebo-adjusted LS mean difference {trial.primary_analysis.placebo_adjusted_ls_mean_difference}, SE {trial.primary_analysis.standard_error ?? "not recorded"}. <TrialReportLink source={sourceById.get(trial.primary_analysis.source_id)!}/></td>
+        <td>{trial.sensitivity_analyses.length ? trial.sensitivity_analyses.map(analysis => <p key={analysis.source_id}>p={analysis.p_value}; placebo-adjusted LS mean difference {analysis.placebo_adjusted_ls_mean_difference}, SE {analysis.standard_error ?? "not recorded"}. <TrialReportLink source={sourceById.get(analysis.source_id)!}/></p>) : "Not recorded in this matrix; agreement or disagreement is unknown."}</td>
+      </tr>)}</tbody>
+    </table></div>
+    <p><strong>RALLY remains a failed primary endpoint (p=0.115).</strong> Its favorable sensitivity analysis (p=0.014) does not replace the prespecified primary analysis or establish why the primary failed.</p>
+    {comparison.trials.map(trial => <details key={trial.trial_id}>
+      <summary>{trial.name} · populations, safety and missing evidence</summary>
+      <p>{trial.registry_id ?? "Registry identity not established by this matrix"}. Sites: {known(trial.design.sites)}; duration: {known(trial.design.duration_weeks)} weeks.</p>
+      <dl><dt>Randomized population</dt><dd>{known(trial.populations.randomized_total)}</dd>
+        <dt>Reported efficacy population</dt><dd>{known(trial.populations.efficacy_total)}</dd>
+        <dt>Reported safety population</dt><dd>{known(trial.populations.safety_total)}</dd>
+      </dl>
+      <p>Source-reported adverse-event discontinuation: active {trial.safety.ae_related_discontinuation_percent.active}% versus placebo {trial.safety.ae_related_discontinuation_percent.placebo}%. <TrialReportLink source={sourceById.get(trial.safety.ae_related_discontinuation_percent.source_id)!}/>. Adverse-event withdrawal does not by itself establish drug causality.</p>
+      {trial.safety.source_reported_events.length ? <ul>{trial.safety.source_reported_events.map((event, index) => <li key={index}>{event.finding} <TrialReportLink source={sourceById.get(event.source_id)!}/>. Independent causality review remains outstanding.</li>)}</ul> : <p>No event narrative is recorded here; this does not establish an absence of safety events.</p>}
+      <Facts title="Trial-specific unresolved requirements" values={trial.unresolved_requirements}/>
+    </details>)}
+    <Facts title="Comparison limits" values={comparison.comparison_limits}/>
+    <Facts title="Required resolution evidence" values={comparison.required_resolution_artifacts}/>
+    <details><summary>Comparison source provenance</summary><ul>{comparison.sources.map(source => <li key={source.source_id}>
+      <strong>{source.source_id}</strong> · <a href={source.source_url} target="_blank" rel="noopener noreferrer">Source document</a><br/>
+      Document date: {source.document_date ?? "Not established"}; original public availability, source bytes and independent review: not verified.<br/>{source.provenance_note}
+    </li>)}</ul></details>
+    <p>Research cutoff: {comparison.research_cutoff}; original prediction cutoff: unverified. RESILIENT exclusion compliance remains NOT ESTABLISHED. Proposed FDA decision: ABSTAIN.</p>
+  </details>;
+}
+
 export function ScientificIssueDetails({issue}: {issue: ScientificIssue}) {
   const populations = [
     {label: "Randomized", value: issue.randomized_population},
@@ -63,6 +104,13 @@ export function ScientificIssueDetails({issue}: {issue: ScientificIssue}) {
         <br/>Document date: {source.document_date ?? "Not established"}. Original public availability: {source.public_availability_verified ? "Recorded from SEC index; not original model-input proof" : "Not verified"}.
       </li>)}
     </ul></details>
+    <details><summary>FDA postdecision label corroboration · excluded from prediction inputs</summary>
+      <p><strong>OUTCOME ONLY.</strong> {issue.postdecision_context.finding}</p>
+      <p>FDA label efficacy population: {issue.postdecision_context.reported_efficacy_population.placebo} placebo + {issue.postdecision_context.reported_efficacy_population.active} active = {issue.postdecision_context.reported_efficacy_population.total}. This corroborates the reported denominator, not authority for the exclusion.</p>
+      <p>{issue.postdecision_context.source_location}. <a href={issue.postdecision_context.source_url} target="_blank" rel="noopener noreferrer">FDA original label</a> · <a href={issue.postdecision_context.application_index_url} target="_blank" rel="noopener noreferrer">FDA application index</a></p>
+      <p>{issue.postdecision_context.application_index_observation}</p>
+      <p>Content examined: {issue.postdecision_context.content_observed_on}. Original public-availability clock and source bytes remain unverified. This postdecision evidence cannot complete historical predecision features or establish SAP compliance.</p>
+    </details>
   </details>;
 }
 
@@ -101,6 +149,7 @@ function CaseDetails({record}: {record: HoldoutCase}) {
       Original PDF bytes are not retained; original public availability is unverified.</p>
     <DecisionResearchSummary record={record}/>
     {record.scientific_dossier.scientific_issues.map(issue => <ScientificIssueDetails key={issue.issue_id} issue={issue}/>)}
+    {record.scientific_dossier.tnxp_trial_comparison ? <TnxpTrialComparisonDetails comparison={record.scientific_dossier.tnxp_trial_comparison}/> : null}
     <Facts title="Supporting research factors" values={record.supporting_factors}/>
     <Facts title="Opposing evidence and unresolved risks" values={record.opposing_factors}/>
     <details><summary>Evidence matrix · {record.source_classification.length} observations</summary>

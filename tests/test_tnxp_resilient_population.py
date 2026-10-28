@@ -64,3 +64,23 @@ def test_dossier_keeps_tnxp_issue_separate_from_frozen_features_and_other_cases(
                 assert q['supporting_findings']==q['contradictory_findings']==[]
                 assert q['confidence_grade']=='NOT_ESTABLISHED'
                 assert q['effect_on_proposed_fda_decision']=='NO_CERTIFIED_EFFECT_ABSTAIN'
+
+
+def test_original_fda_label_corrobates_denominator_without_sap_authority_or_historical_features():
+    row=build_population_issue()
+    context=row['postdecision_context']
+    assert context['reported_efficacy_population']['total']==456
+    assert context['source_role']=='OUTCOME_ONLY'
+    assert context['protocol_exclusion_authority_established'] is False
+    assert context['eligible_for_predecision_features'] is False
+    assert row['protocol_compliance_status']=='NOT_ESTABLISHED'
+    for field,value in [('source_role','PREDECISION_RESEARCH'),
+                        ('protocol_exclusion_authority_established',True),
+                        ('eligible_for_predecision_features',True)]:
+        changed=json.loads(AUDIT.read_text());changed['postdecision_context'][field]=value
+        with pytest.raises(ValueError,match='FDA label'):build_population_issue(changed)
+
+
+def test_source_order_does_not_change_supplementary_index_binding():
+    row=json.loads(AUDIT.read_text());row['sources'].reverse()
+    assert build_population_issue(row)['protocol_compliance_status']=='NOT_ESTABLISHED'
