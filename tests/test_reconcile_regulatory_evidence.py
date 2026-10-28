@@ -34,6 +34,14 @@ class RegulatoryEvidenceTests(unittest.TestCase):
         self.assertFalse(result["has_discrepancy"])
         self.assertEqual(result["pre_decision_records"], [])
 
+    def test_malformed_decision_date_fails_closed(self):
+        result = reconcile_evidence([
+            {"source": "trial", "metric": "primary", "population": "ITT",
+             "value": "0.01", "available_date": "2020-01-01"}
+        ], decision_date="not-a-date")
+        self.assertEqual(result["pre_decision_records"], [])
+        self.assertFalse(result["trading_ready"])
+
 
 if __name__ == "__main__":
     unittest.main()
