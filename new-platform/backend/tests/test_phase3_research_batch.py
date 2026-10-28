@@ -61,6 +61,21 @@ class BatchTests(unittest.TestCase):
             self.assertFalse(body["sheetPreview"]["writtenToSheet"])
             self.assertFalse(body["tradeAuthorized"])
 
+    def test_batch_endpoint_rejects_duplicate_identities_and_overflow(self):
+        from unittest.mock import patch
+        from fastapi.testclient import TestClient
+        from app.main import app
+        route="/api/internal/phase3-research/evaluate-batch"
+        with patch.dict("os.environ", {"PDUFA_INTERNAL_API_KEY":"test-secret"}):
+            client=TestClient(app)
+            headers={"x-pdufa-internal-key":"test-secret"}
+            duplicate=client.post(route,json={"candidates":[{"exact_key":"A"},{"exact_key":"A"}]},
+                                  headers=headers)
+            self.assertEqual(duplicate.status_code,422)
+            oversized=client.post(route,json={"candidates":[{"exact_key":str(i)} for i in range(201)]},
+                                  headers=headers)
+            self.assertEqual(oversized.status_code,422)
+
     def test_empty_batch(self):
         self.assertEqual(evaluate_candidate_batch([],as_of="2026-10-27")["totalDiscovered"],0)
 
