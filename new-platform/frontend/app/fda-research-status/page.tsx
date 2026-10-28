@@ -22,7 +22,24 @@ export default function FdaResearchStatusPage() {
           </summary>
           <p>Application: {row.application_id ?? "Unverified"} · Reconstruction cutoff: {row.reconstruction_cutoff}</p>
           <p>SCIENCE: {row.scientific_dossier.summary.independently_completed_assessments}/40 independently completed assessments; {row.scientific_dossier.summary.independently_completed_depth_levels}/20 independently completed depth levels.</p>
-          <details><summary>Eight scientific layers · evidence completeness</summary><ul>{row.scientific_dossier.layers.map((layer) => <li key={layer.layer}><strong>{layer.layer_name}</strong>: {layer.questions_with_research_observations}/5 questions with research observations; {layer.independently_completed_assessments}/5 independently completed assessments.</li>)}</ul></details>
+          <details><summary>Eight scientific layers · 40 questions and evidence status</summary>
+            {row.scientific_dossier.layers.map((layer) => (
+              <details key={layer.layer} style={{ margin: "10px 0", padding: 10, border: "1px solid #bfd0c0" }}>
+                <summary><strong>{layer.layer}. {layer.layer_name}</strong> · {layer.questions_with_research_observations}/5 questions with research observations · {layer.independently_completed_assessments}/5 independently assessed</summary>
+                <ol start={(layer.layer - 1) * 5 + 1}>
+                  {layer.questions.map((question) => (
+                    <li key={question.question_id} style={{ marginBottom: 12 }}>
+                      <strong>{question.question_id}: {question.question}</strong>
+                      <div>Evidence: {question.research_status === "RESEARCH_OBSERVATION_ONLY" ? "Research observation only — not verified" : "Missing predecision source"} · Independent assessment: NOT COMPLETED</div>
+                      <div>Required: {question.required_evidence}</div>
+                      {question.observations.length > 0 && <details><summary>{question.observations.length} research source observation(s)</summary><ul>{question.observations.map((source) => <li key={source.source_id}>{source.source_id} · {source.available_on} · <a href={source.source_url} target="_blank" rel="noopener noreferrer">Source document ↗</a> · Not independently reviewed</li>)}</ul></details>}
+                      {question.excluded_or_quarantined_sources.length > 0 && <div>Excluded or quarantined sources: {question.excluded_or_quarantined_sources.map((source) => source.reason).join(", ")}</div>}
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            ))}
+          </details>
           <p>OUTCOME: No approval probability or PASS/FAIL grade. Reluctant grade: insufficient verified evidence.</p>
           <p>Original prediction cutoff: not authenticated. Evidence blockers:</p>
           <ul>{row.blockers.slice(0, 6).map((reason) => <li key={reason}>{reason.replaceAll("_", " ")}</li>)}</ul>
