@@ -31,3 +31,5 @@ jobs:
           python -m unittest discover -s tests -p "test_fda_candidate_audit.py" -v
           python -m unittest discover -s tests -p "test_fda_candidate_audit_cli.py" -v
           python -m unittest discover -s tests -p "test_fda_existing_history_audit.py" -v
+          python -m research.fda_existing_history_audit data/prediction_engine_history.csv > "$RUNNER_TEMP/fda_legacy_history_audit.json"
+          python -c 'import json,os; p=os.path.join(os.environ["RUNNER_TEMP"],"fda_legacy_history_audit.json"); r=json.load(open(p)); assert r["eligible_for_further_review"] == 0 and r["approval_rate"] is None; print("Legacy audit rows:",r["total_candidates"],"eligible:",r["eligible_for_further_review"]); print("Validation periods:",r["legacy_validation_period_counts"])'
