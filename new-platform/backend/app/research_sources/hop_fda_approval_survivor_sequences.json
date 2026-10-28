@@ -1,0 +1,136 @@
+{
+  "schema_version": "hop-fda-approval-survivor-sequence-examples-v1",
+  "as_of_research": "2026-10-28",
+  "source_report": "FY 2023 PDUFA Performance Report to Congress",
+  "source_report_url": "https://www.govinfo.gov/content/pkg/CMR-HE20_4000-00195429/pdf/CMR-HE20_4000-00195429.pdf",
+  "source_cover_letter_dated": "2024-04-18",
+  "source_first_publication_verified": null,
+  "source_table": "Appendix A, FY 2023 approved NDA/BLA application cycle histories",
+  "denominator": "ONLY_APPS_EVENTUALLY_APPROVED_IN_FY2023_NOT_ALL_FILINGS",
+  "model_eligible_cycles": 0,
+  "adjudicated_fda_action_dates": 0,
+  "verified_application_ids": 0,
+  "independent_real_backtests": 0,
+  "approval_probability": null,
+  "cases": [
+    {
+      "case_id": "FDA_FY2023_APPROVAL_NGENLA_SOMATROGON",
+      "product": "NGENLA",
+      "established_name": "somatrogon-ghla",
+      "applicant": "PFIZER IRELAND PHARMACEUTICALS",
+      "source_pdf_zero_indexed_page": 82,
+      "source_appendix_page": "A-72",
+      "filing_fiscal_year": null,
+      "review_cycles": [
+        {
+          "cycle_ordinal": 1,
+          "action_code": "CR",
+          "review_time_months": 15
+        },
+        {
+          "cycle_ordinal": 2,
+          "action_code": "AP",
+          "review_time_months": 7.1
+        }
+      ],
+      "sponsor_intervals_months": [
+        10
+      ],
+      "total_approval_time_months": 32.1
+    },
+    {
+      "case_id": "FDA_FY2023_APPROVAL_LANTIDRA_DONISLECEL",
+      "product": "LANTIDRA",
+      "established_name": "donislecel-jujn",
+      "applicant": "CellTrans Inc.",
+      "source_pdf_zero_indexed_page": 82,
+      "source_appendix_page": "A-72",
+      "filing_fiscal_year": 2020,
+      "review_cycles": [
+        {
+          "cycle_ordinal": 1,
+          "action_code": "CR",
+          "review_time_months": 15
+        },
+        {
+          "cycle_ordinal": 2,
+          "action_code": "AP",
+          "review_time_months": 5.9
+        }
+      ],
+      "sponsor_intervals_months": [
+        16.4
+      ],
+      "total_approval_time_months": 37.3
+    },
+    {
+      "case_id": "FDA_FY2023_APPROVAL_RYKINDO_RISPERIDONE",
+      "product": "RYKINDO",
+      "established_name": "risperidone",
+      "applicant": "SHANDONG LUYE PHARMACEUTICAL Co. Ltd.",
+      "source_pdf_zero_indexed_page": 83,
+      "source_appendix_page": "A-73",
+      "filing_fiscal_year": 2019,
+      "review_cycles": [
+        {
+          "cycle_ordinal": 1,
+          "action_code": "CR",
+          "review_time_months": 10
+        },
+        {
+          "cycle_ordinal": 2,
+          "action_code": "CR",
+          "review_time_months": 6
+        },
+        {
+          "cycle_ordinal": 3,
+          "action_code": "AP",
+          "review_time_months": 6
+        }
+      ],
+      "sponsor_intervals_months": [
+        18.7,
+        4.8
+      ],
+      "total_approval_time_months": 45.6
+    },
+    {
+      "case_id": "FDA_FY2023_APPROVAL_YCANTH_CANTHARIDIN",
+      "product": "YCANTH",
+      "established_name": "cantharidin",
+      "applicant": "VERRICA PHARMACEUTICALS Inc.",
+      "source_pdf_zero_indexed_page": 83,
+      "source_appendix_page": "A-73",
+      "filing_fiscal_year": 2019,
+      "review_cycles": [
+        {
+          "cycle_ordinal": 1,
+          "action_code": "CR",
+          "review_time_months": 10
+        },
+        {
+          "cycle_ordinal": 2,
+          "action_code": "CR",
+          "review_time_months": 8.8
+        },
+        {
+          "cycle_ordinal": 3,
+          "action_code": "CR",
+          "review_time_months": 5.9
+        },
+        {
+          "cycle_ordinal": 4,
+          "action_code": "AP",
+          "review_time_months": 5.9
+        }
+      ],
+      "sponsor_intervals_months": [
+        5.4,
+        2.3,
+        8
+      ],
+      "total_approval_time_months": 46.3
+    }
+  ],
+  "note": "Four selected clinical-product historical outcome trajectories from FDA approval-only appendix. Historical prior CRs are reported in eventually approved applications; NOT an unbiased set of all FDA decisions. Cycle dates and application numbers cannot be inferred from review time months."
+}
