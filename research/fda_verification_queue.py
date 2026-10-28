@@ -27,6 +27,8 @@ def build_verification_queue(path):
             "validation_period": row.get("validation_period", ""),
             "independence_status": row.get("independence_status", ""),
             "verification_status": "REQUIRES_INDEPENDENT_FDA_ACTION_EVIDENCE",
+            "legacy_notes_quarantined": True,
+            "prediction_input_eligibility": "BLOCKED_PENDING_PREDECISION_EVIDENCE_AUDIT",
             "requirements": [
                 "FDA original action document and application identifier",
                 "FDA review cycle and actual action date",
