@@ -48,6 +48,25 @@ class CandidateAuditTests(unittest.TestCase):
         self.assertEqual(result["abstention_reasons"]["duplicate_review_cycle_previous_occurrence"], 1)
         self.assertIsNone(result["approval_rate"])
 
+    def test_conflicting_duplicate_actions_are_both_excluded(self):
+        base = {
+            "action_type": "approval",
+            "official_fda_action_source": "https://www.fda.gov/example",
+            "application_id": "BLA-TEST",
+            "review_cycle_id": "original-1",
+            "action_date": "2025-07-01",
+            "evidence_cutoff_date": "2025-06-30",
+            "source_cohort": "complete_original_filing_population",
+            "original_filing_denominator_verified": True,
+            "program_family_disjoint_verified": True,
+        }
+        conflicting = dict(base, action_type="complete_response_letter")
+        report = audit_candidates([base, conflicting])
+        self.assertEqual(report["eligible_for_further_review"], 0)
+        self.assertEqual(report["abstained"], 2)
+        self.assertEqual(report["eligible_action_counts"].get("approval", 0), 0)
+        self.assertEqual(report["eligible_action_counts"].get("crl", 0), 0)
+
     def test_unknown_action_abstains(self):
         result = audit_candidates([{"action_type": "pending"}])
         self.assertEqual(result["abstained"], 1)
