@@ -17,6 +17,9 @@ def test_read_only_server_endpoint_auth_no_storage_or_trading():
         assert payload["actionLetterResearch"]["sourceLettersInspected"] == 2
         assert payload["originalPdfCaptureResearch"]["capturedPdfRecords"] == 2
         assert payload["approvedSurvivorSequenceResearch"]["reportedSequenceCases"] == 4
+        assert payload["historicalFdaSourceCandidateResearch"]["researchCandidateRows"] == 412
+        assert payload["historicalFdaSourceCandidateResearch"]["trainingAuthorized"] is False
+        assert payload["historicalFdaSourceCandidateResearch"]["fdaApprovalProbability"] is None
         assert payload["approvedSurvivorSequenceResearch"]["priorCRLActionsInEventuallyApprovedCases"] == 7
         assert payload["approvedSurvivorSequenceResearch"]["modelEligibleHistoricalCycles"] == 0
         assert payload["originalPdfCaptureResearch"]["independentlyVerifiedModelCycles"] == 0
