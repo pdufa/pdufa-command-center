@@ -3,7 +3,7 @@ from research.fda_original_prediction_evidence_check import assess_original_pred
 
 class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
     def setUp(self):
-        self.inventory = {"cases": [{"event_key": "TNXP|2025-08-15"}]}
+        self.inventory = {"cases": [{"event_key": "TNXP|2025-08-15", "action_date": "2025-08-15"}]}
         self.good = {
             "event_key": "TNXP|2025-08-15",
             "fda_action_at": "2025-08-15T16:00:00Z",
@@ -74,6 +74,12 @@ class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
                 record = {**self.good, "immutable_prediction_uri": uri}
                 result = assess_original_prediction_evidence(self.inventory, [record])
                 self.assertFalse(result["cases"][0]["artifact_metadata_complete"])
+
+    def test_missing_independent_action_date_fails_closed(self):
+        inventory = {"cases": [{"event_key": "TNXP|2025-08-15"}]}
+        result = assess_original_prediction_evidence(inventory, [self.good])
+        self.assertFalse(result["cases"][0]["chronology_consistent"])
+        self.assertFalse(result["cases"][0]["independently_verified"])
 
     def test_post_action_prediction_rejected(self):
         record = {**self.good, "prediction_created_at": "2025-08-16T12:00:00Z"}
