@@ -49,6 +49,13 @@ class LabelGateTests(unittest.TestCase):
         record = {**BASE, "program_family_disjoint_verified": False}
         self.assertEqual(assess_label_eligibility(record)["status"], "ABSTAIN")
 
+    def test_non_fda_or_non_https_source_abstains(self):
+        for source in ("https://notfda.gov/action", "http://www.fda.gov/action", "FDA press release"):
+            with self.subTest(source=source):
+                result = assess_label_eligibility({**BASE, "official_fda_action_source": source})
+                self.assertEqual(result["status"], "ABSTAIN")
+                self.assertIn("unverified_fda_source_domain", result["reasons"])
+
     def test_unknown_outcome_abstains(self):
         record = {**BASE, "action_type": "pending"}
         self.assertEqual(assess_label_eligibility(record)["status"], "ABSTAIN")
