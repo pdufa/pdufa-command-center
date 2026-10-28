@@ -16,6 +16,8 @@ on:
       - 'new-platform/backend/tests/test_hop_original_https_capture.py'
       - 'new-platform/backend/tests/test_hop_primary_action_letter_samples.py'
       - 'new-platform/backend/tests/test_hop_fda_pdf_byte_audit.py'
+      - 'new-platform/backend/scripts/capture_hop_fda_original_https.py'
+      - 'new-platform/backend/tests/test_hop_fda_original_https_capture.py'
       - 'new-platform/backend/app/hop_cohort_manifest.py'
       - 'new-platform/backend/scripts/audit_hop_cohort_manifest.py'
       - 'new-platform/backend/tests/test_hop_backtest*.py'
@@ -84,6 +86,8 @@ on:
       - 'new-platform/backend/tests/test_hop_original_https_capture.py'
       - 'new-platform/backend/tests/test_hop_primary_action_letter_samples.py'
       - 'new-platform/backend/tests/test_hop_fda_pdf_byte_audit.py'
+      - 'new-platform/backend/scripts/capture_hop_fda_original_https.py'
+      - 'new-platform/backend/tests/test_hop_fda_original_https_capture.py'
       - 'new-platform/backend/tests/test_hop_backtest*.py'
       - 'new-platform/backend/tests/test_hop_outcome_cohort.py'
       - 'new-platform/backend/tests/test_hop_outcomes_import.py'
@@ -169,6 +173,7 @@ jobs:
             tests/test_hop_fda_pdf_date_review_examples.py \
             tests/test_hop_primary_action_letter_samples.py \
             tests/test_hop_fda_pdf_byte_audit.py \
+            tests/test_hop_fda_original_https_capture.py
             tests/test_hop_original_https_capture.py \
             tests/test_hop_fda_public_disclosure_clock.py
       - name: Test FDA action-event normalization and fail-closed gate
