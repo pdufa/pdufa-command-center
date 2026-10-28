@@ -39,6 +39,15 @@ class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
                 result = assess_original_prediction_evidence(self.inventory, [record])
                 self.assertFalse(result["cases"][0]["artifact_metadata_complete"])
 
+    def test_commit_url_query_fragment_and_port_rejected(self):
+        valid = self.good["immutable_prediction_uri"]
+        for uri in (valid + "?ref=main", valid + "#fragment",
+                    valid.replace("github.com", "github.com:8443")):
+            with self.subTest(uri=uri):
+                record = {**self.good, "immutable_prediction_uri": uri}
+                result = assess_original_prediction_evidence(self.inventory, [record])
+                self.assertFalse(result["cases"][0]["artifact_metadata_complete"])
+
     def test_post_action_prediction_rejected(self):
         record = {**self.good, "prediction_created_at": "2025-08-16T12:00:00Z"}
         result = assess_original_prediction_evidence(self.inventory, [record])
