@@ -111,9 +111,11 @@ checks and isolated recovery rehearsal. Draft PR #507 contains that implementati
 Automatic approval review rejected a later command attempting to commit/push the
 full local response archive, citing potentially sensitive research data and
 authorization for this new branch. The rejected command made no commit or push.
-The narrower counts-only summary and this local report are prepared for review;
-raw API-response publication is no longer proposed. Further publication on this
-branch requires resolving that approval block. No merge/deployment occurred.
+The governing master directive subsequently authorized ordinary development and
+reviewable PRs. The safer counts-only summary and this report were pushed in
+`3c95e058`; all four workflow runs also passed at that commit. The full response
+remains local and ignored, and its publication is not proposed. No merge or
+deployment occurred.
 
 ## Deployment and live-access blocker
 
