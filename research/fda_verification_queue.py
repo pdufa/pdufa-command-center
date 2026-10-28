@@ -10,6 +10,7 @@ from collections import Counter
 from datetime import date
 from pathlib import Path
 from research.fda_predecision_reconstruction import audit_reconstructions
+from research.fda_science_dossier import build_scientific_dossier
 
 PRIORITY = {
     "2025_EXTERNAL_BLIND": 0,
@@ -69,6 +70,7 @@ def _attach_science_framework(reconstruction):
             definition = by_id[row["question_id"]]
             row.update(layer=definition["layer"],layer_name=definition["layerName"],question=definition["question"])
         case["action_metadata_binding"] = "MATCHED_CURATED_ACTION_MANIFEST_NOT_INDEPENDENT_ADJUDICATION"
+        case["scientific_dossier"] = build_scientific_dossier(case,catalog)
         case["main"].update({
             "supporting_factors":case["supporting_factors"],"opposing_factors":case["opposing_factors"],
             "evidence_completeness":{"status":"INCOMPLETE","missing_documents":case["missing_documents"]},
@@ -96,6 +98,15 @@ def build_verification_queue(path, evidence_manifest=None, *, reconstruction_man
         packet = _read_json(reconstruction_manifest)
         _bind_action_metadata(packet,evidence_by_event)
         reconstruction = audit_reconstructions(packet, rows, as_of=date.today() if as_of is None else as_of)
+        for case in reconstruction["case_reports"]:
+            evidence = evidence_by_event[case["event_key"]]
+            case["action_document"] = {
+                "status": evidence.get("original_action_document_status",
+                    "ORIGINAL_ACTION_LETTER_CONTENT_RECORDED_NOT_INDEPENDENTLY_ADJUDICATED"),
+                "source_url": evidence.get("original_2025_document_url") or
+                              evidence.get("fda_document_url") or evidence.get("fda_approval_letter_url"),
+                "source_bytes_retained": False, "original_publication_date": None,
+            }
         _attach_science_framework(reconstruction)
         reconstructions_by_event = {case["event_key"]: case for case in reconstruction["case_reports"]}
     queue = []

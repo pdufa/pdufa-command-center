@@ -186,6 +186,30 @@
           "independently_reviewed": false
         },
         {
+          "id": "UNCY-UNI-OLC-201-DENOMINATORS",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390024055436/ea020843701ex99-1_unicycive.htm",
+          "available_on": "2024-06-25",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390024055436/0001213900-24-055436-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "UNI-OLC-201 enrolled 106 patients; 86 entered the safety population and 71 the evaluable maintenance population. Treatment-related maintenance discontinuation was 1/71; all adverse-event discontinuations were 5/86, including three treatment-related. Phosphate control was reported in 77/86 after titration. The study was not designed to evaluate efficacy and lacked a concurrent active comparator. The issuer comparison with Fosrenol historical discontinuation cannot establish comparative safety or efficacy.",
+          "science_question_ids": [
+            "S01",
+            "S08",
+            "S12",
+            "S16",
+            "S17",
+            "S19",
+            "S21",
+            "S39"
+          ],
+          "source_location": "Exhibit 99.1 topline safety, tolerability, phosphate and population sections",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
           "id": "UNCY-LATER-CYCLE",
           "source_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20260629.pdf",
           "available_on": "2026-06-29",
@@ -205,10 +229,12 @@
         }
       ],
       "supporting_factors": [
-        "The program had a defined NDA/goal; clinical effectiveness still requires original protocol and results reconstruction."
+        "The program had a defined NDA/goal; clinical effectiveness still requires original protocol and results reconstruction.",
+        "A June 25, 2024 issuer disclosure reports tolerability and phosphate-control findings from UNI-OLC-201 before the research cutoff."
       ],
       "opposing_factors": [
-        "Precutoff manufacturing deficiency and halted label discussions were a concrete opposing factor to the legacy approval prediction. No calibrated probability effect is assigned."
+        "Precutoff manufacturing deficiency and halted label discussions were a concrete opposing factor to the legacy approval prediction. No calibrated probability effect is assigned.",
+        "Different enrolled, safety and evaluable populations must remain separate; a study not designed for efficacy and historical Fosrenol comparison cannot establish comparative benefit or safety."
       ],
       "related_precedents": [
         {
@@ -217,6 +243,18 @@
           "comparison": "Clinical pill burden and phosphate control require comparison with existing binders; another compound or formulation does not resolve this facility deficiency. Exact independent historical action/trial comparator remains unadjudicated.",
           "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
           "eligible_for_training": false
+        },
+        {
+          "name": "FOSRENOL NDA021468 \u2014 prior lanthanum carbonate clinical label context",
+          "application_id": "NDA021468",
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2004/21468lbl.pdf",
+          "comparison": "FDA-hosted historical labeling reports short-term placebo-controlled ESRD studies and two longer open-label comparisons; the 14% adverse-event discontinuation figure comes from the longer comparative studies. UNI-OLC-201 uses different populations, exposure and design, so its maintenance treatment-related discontinuation fraction cannot be compared directly with that 14% rate. Formulation and manufacturing identity differ.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false,
+          "content_observed_on": "2026-10-28",
+          "public_availability_verified": false,
+          "exact_original_action_date_verified": false,
+          "original_document_sha256": null
         }
       ],
       "missing_documents": [
@@ -302,6 +340,67 @@
           "independently_reviewed": false
         },
         {
+          "id": "TNXP-10K-TRIAL-CONSISTENCY",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/tnxp-10k_123124.htm",
+          "available_on": "2025-03-18",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/0001999371-25-002786-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Issuer reports positive RESILIENT (F307) and RELIEF (F304) studies but a negative RALLY (F306) primary pain result after an IDMC futility recommendation. These are within-program trial comparisons, not independent FDA decision precedents. Missing-data handling requires review.",
+          "science_question_ids": [
+            "S01",
+            "S08",
+            "S09",
+            "S21",
+            "S25"
+          ],
+          "source_location": "TNX-102 SL; completed RESILIENT, RALLY and RELIEF studies, pages 14\u201318",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "TNXP-10K-SAFETY",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/tnxp-10k_123124.htm",
+          "available_on": "2025-03-18",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/0001999371-25-002786-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "RESILIENT reported adverse-event treatment discontinuations of 6.1% versus 3.5% with placebo; one pancreatitis serious adverse event was considered possibly treatment-related. These issuer-reported findings require original safety-table and causality review.",
+          "science_question_ids": [
+            "S16",
+            "S17",
+            "S19"
+          ],
+          "source_location": "Completed RESILIENT safety discussion",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "TNXP-10K-REG-CMC",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/tnxp-10k_123124.htm",
+          "available_on": "2025-03-18",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/0001999371-25-002786-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "The filing describes exposure bridging to Amrix, a proposed 505(b)(2) pathway, commercial cGMP facilities and stability data. These issuer statements are not independently inspected FDA manufacturing findings.",
+          "science_question_ids": [
+            "S26",
+            "S27",
+            "S32",
+            "S33",
+            "S34"
+          ],
+          "source_location": "Regulatory strategy and manufacturing sections",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
           "id": "TNXP-FDA-ACTION",
           "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219428Orig1s000ltr.pdf",
           "available_on": "2025-08-15",
@@ -322,16 +421,25 @@
         }
       ],
       "supporting_factors": [
-        "A positive issuer-reported pivotal result and supportive secondary outcomes were available before the research cutoff."
+        "A positive issuer-reported pivotal result and supportive secondary outcomes were available before the research cutoff.",
+        "The March 18 annual report describes two positive studies, RELIEF and RESILIENT, within the same development program."
       ],
       "opposing_factors": [
-        "Full protocol/SAP, failed or inconsistent prior trials, missing-data handling, discontinuations, long-term safety and manufacturing records still require adversarial review."
+        "Full protocol/SAP, failed or inconsistent prior trials, missing-data handling, discontinuations, long-term safety and manufacturing records still require adversarial review.",
+        "The same pre-cutoff filing reports negative RALLY efficacy and RESILIENT adverse-event discontinuation and pancreatitis findings; consistent efficacy, missing-data handling and safety remain unresolved independently."
       ],
       "related_precedents": [
         {
           "name": "Existing fibromyalgia therapies and earlier cyclobenzaprine trials",
           "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002787/ex99-1.htm",
           "comparison": "Compare population, pain endpoint, blinding and route/formulation rather than borrowing another therapy's approval or treating two positive trials as the full program history.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false
+        },
+        {
+          "name": "RELIEF / RALLY / RESILIENT within-program trials",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/tnxp-10k_123124.htm",
+          "comparison": "F304 and F307 positive versus F306 negative primary result. Same program; these comparisons must not count as independent FDA decisions or program-disjoint training cases.",
           "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
           "eligible_for_training": false
         }
@@ -679,6 +787,45 @@
           "independently_reviewed": false
         },
         {
+          "id": "VNDA-NOV28-HOLD-REVIEW",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025054225/vnda8-k11282025exhibit991.htm",
+          "available_on": "2025-11-28",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025054225/0001628280-25-054225-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Issuer reported that partial-hold re-review was extended to December 5 and that NDA labeling discussions had begun. The December 30 NDA target remained unchanged. Labeling discussions alone do not establish approval.",
+          "science_question_ids": [
+            "S25",
+            "S27",
+            "S29"
+          ],
+          "source_location": "Exhibit 99.1 regulatory update",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "VNDA-DEC4-HOLD-LIFTED",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025055393/vnda8-k1242025exhibit991.htm",
+          "available_on": "2025-12-04",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025055393/0001628280-25-055393-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "Issuer reported that FDA lifted the partial clinical hold on protocol VP-VLY-686-3403, previously limited to 90 doses, following reclassification of motion-sickness use as acute and event-driven. The NDA remained under review with a December 30 target. Hold removal is distinct from NDA approval and does not establish unlimited-exposure safety.",
+          "science_question_ids": [
+            "S19",
+            "S25",
+            "S27",
+            "S29"
+          ],
+          "source_location": "Exhibit 99.1 partial-hold update; supersedes November 28 pending re-review as issuer-reported status",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
           "id": "VNDA-FDA-ORIGINAL-ACTION",
           "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220152Orig1s000Approv.pdf",
           "available_on": "2025-12-30",
@@ -699,10 +846,12 @@
         }
       ],
       "supporting_factors": [
-        "A defined motion-sickness application/goal existed before the research cutoff; clinical efficacy and safety tables still require original-study reconstruction."
+        "A defined motion-sickness application/goal existed before the research cutoff; clinical efficacy and safety tables still require original-study reconstruction.",
+        "The December 4 issuer disclosure reports removal of the partial hold before the research cutoff; it supersedes the November 28 pending re-review status."
       ],
       "opposing_factors": [
-        "Gastroparesis results/CRL, motion-sickness partial-hold issues and later labeling/approval must remain separated by indication and publication date. Prior tradipitant staging raises a family-overlap check."
+        "Gastroparesis results/CRL, motion-sickness partial-hold issues and later labeling/approval must remain separated by indication and publication date. Prior tradipitant staging raises a family-overlap check.",
+        "Hold removal concerned protocol exposure restrictions and acute event-driven use; it does not establish NDA approval, full efficacy or safety under other exposure patterns."
       ],
       "related_precedents": [
         {

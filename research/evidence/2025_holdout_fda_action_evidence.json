@@ -75,7 +75,7 @@
       "original_2025_document_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20250627.pdf",
       "original_document_reference_id": "5616346",
       "original_action_document_status": "ORIGINAL_CRL_PARTIAL_TEXT_FIRST_PAGE_VISUAL_REVIEW_REQUIRED",
-      "original_document_evidence": "The original 2025 PDF is accessible; extracted later pages identify NDA 218607 and Reference ID 5616346. First-page visual verification and original public-availability time remain incomplete.",
+      "original_document_evidence": "The original 2025 FDA PDF extracted later pages identify NDA 218607 and Reference ID 5616346. The signature page records 06/27/2025 04:49:06 PM, timezone unspecified. First-page visual verification and original public-availability time remain incomplete.",
       "source_bytes_retained": false,
       "original_publication_date": null
     },

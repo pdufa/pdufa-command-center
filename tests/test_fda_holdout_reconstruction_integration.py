@@ -29,9 +29,9 @@ def test_saved_six_case_research_packet_joins_history_without_promoting_any_pred
     assert all(value is None for value in summary["metrics"].values())
     cases = [row["predecision_reconstruction"] for row in queue["queue"] if "predecision_reconstruction" in row]
     assert len(cases) == 6
-    assert sum(case["predecision_research_candidate_count"] for case in cases) == 7
+    assert sum(case["predecision_research_candidate_count"] for case in cases) == 13
     classifications = Counter(source["classification"] for case in cases for source in case["source_classification"])
-    assert classifications == {"PREDECISION_RESEARCH_CANDIDATE":7,"EXCLUDED_OUTCOME_ONLY":7,
+    assert classifications == {"PREDECISION_RESEARCH_CANDIDATE":13,"EXCLUDED_OUTCOME_ONLY":7,
                                "EXCLUDED_AFTER_RECONSTRUCTION_CUTOFF":1,"QUARANTINED_PRINTED_DATE_ONLY":1}
     for case in cases:
         assert case["original_prediction_cutoff"] is None
