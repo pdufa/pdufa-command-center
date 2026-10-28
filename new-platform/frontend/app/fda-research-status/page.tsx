@@ -40,6 +40,14 @@ export default function FdaResearchStatusPage() {
               </details>
             ))}
           </details>
+          <details><summary>20 investigation depth levels · independent review status</summary>
+            <p>All levels require independently authenticated evidence and review; an observation alone never completes a level.</p>
+            <ol>
+              {row.scientific_dossier.depth_framework.levels.map((level) => (
+                <li key={level.depth_level}>Level {level.depth_level}: {level.status.replaceAll("_", " ")} · {level.independently_reviewed_question_ids.length} independently reviewed questions</li>
+              ))}
+            </ol>
+          </details>
           <p>OUTCOME: No approval probability or PASS/FAIL grade. Reluctant grade: insufficient verified evidence.</p>
           <p>Original prediction cutoff: not authenticated. Evidence blockers:</p>
           <ul>{row.blockers.slice(0, 6).map((reason) => <li key={reason}>{reason.replaceAll("_", " ")}</li>)}</ul>
