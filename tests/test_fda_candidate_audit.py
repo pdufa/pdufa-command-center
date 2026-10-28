@@ -42,9 +42,10 @@ class CandidateAuditTests(unittest.TestCase):
             "program_family_disjoint_verified": True,
         }
         result = audit_candidates([record, dict(record)])
-        self.assertEqual(result["eligible_for_further_review"], 1)
-        self.assertEqual(result["abstained"], 1)
+        self.assertEqual(result["eligible_for_further_review"], 0)
+        self.assertEqual(result["abstained"], 2)
         self.assertEqual(result["abstention_reasons"]["duplicate_review_cycle"], 1)
+        self.assertEqual(result["abstention_reasons"]["duplicate_review_cycle_previous_occurrence"], 1)
         self.assertIsNone(result["approval_rate"])
 
     def test_unknown_action_abstains(self):
