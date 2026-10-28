@@ -15,6 +15,8 @@ def test_read_only_server_endpoint_auth_no_storage_or_trading():
         payload = ok.json()
         assert payload["publicDisclosureResearch"]["totalPublicReleaseLeads"] == 3
         assert payload["actionLetterResearch"]["sourceLettersInspected"] == 2
+        assert payload["originalPdfCaptureResearch"]["capturedPdfRecords"] == 2
+        assert payload["originalPdfCaptureResearch"]["independentlyVerifiedModelCycles"] == 0
         assert payload["trainingAuthorized"] is False
         assert payload["tradeAuthorized"] is False
         assert payload["approvalProbability"] is None
