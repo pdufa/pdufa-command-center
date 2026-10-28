@@ -46,6 +46,8 @@ class CandidateAuditTests(unittest.TestCase):
         self.assertEqual(result["abstained"], 2)
         self.assertEqual(result["abstention_reasons"]["duplicate_review_cycle"], 1)
         self.assertEqual(result["abstention_reasons"]["duplicate_review_cycle_previous_occurrence"], 1)
+        self.assertEqual(result["conflicted_review_cycles"], 1)
+        self.assertEqual(result["eligible_action_counts"], {})
         self.assertIsNone(result["approval_rate"])
 
     def test_conflicting_duplicate_actions_are_both_excluded(self):
