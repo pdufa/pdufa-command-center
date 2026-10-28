@@ -63,6 +63,33 @@ class WorkspaceAdapterTests(unittest.TestCase):
         self.assertEqual(result["status"], "SOURCE_SCHEMA_UNVERIFIED")
         self.assertEqual(result["queue"], [])
 
+    def test_historical_replay_rejects_post_decision_fda_evidence(self):
+        result = workspace_to_priority_queue({"lists": {
+            "GEM_JR": [{"programId": "BIJUVA",
+                "historical_decision_date": "2018-10-28",
+                "regulatory_evidence_records": [
+                    {"source": "trial", "metric": "hyperplasia", "population": "1mg/100mg",
+                     "value": 0, "available_date": "2018-01-01"},
+                    {"source": "FDA", "metric": "hyperplasia", "population": "1mg/100mg",
+                     "value": 0.36, "available_date": "2018-11-01"},
+                ]}],
+            "GEM": [], "WT": [],
+        }})
+        item = result["queue"][0]
+        self.assertTrue(item["evidence_reconciliation"]["has_discrepancy"])
+        self.assertEqual(len(item["evidence_reconciliation"]["pre_decision_records"]), 1)
+        self.assertFalse(item["historical_replay_ready"])
+
+    def test_historical_replay_requires_decision_date(self):
+        result = workspace_to_priority_queue({"lists": {
+            "GEM_JR": [{"programId": "P1", "regulatory_evidence_records": [
+                {"source": "trial", "metric": "efficacy", "population": "ITT",
+                 "value": 1, "available_date": "2018-01-01"}]}],
+            "GEM": [], "WT": [],
+        }})
+        self.assertFalse(result["queue"][0]["historical_replay_ready"])
+        self.assertEqual(result["queue"][0]["evidence_reconciliation"]["pre_decision_records"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
