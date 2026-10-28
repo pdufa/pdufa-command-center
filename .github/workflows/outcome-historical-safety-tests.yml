@@ -26,6 +26,9 @@ on:
       - 'new-platform/backend/tests/test_hop_fda_pdf_byte_audit.py'
       - 'new-platform/backend/app/hop_cohort_manifest.py'
       - 'new-platform/backend/app/hop_fda_action_candidate_universe.py'
+      - 'new-platform/backend/app/hop_fda_candidate_source_audit_index.py'
+      - 'new-platform/backend/app/research_sources/hop_fda_action_candidate_2024_2025_audit_index.json'
+      - 'new-platform/backend/tests/test_hop_fda_candidate_source_audit_index.py'
       - 'new-platform/backend/scripts/audit_hop_fda_action_candidate_sources.py'
       - 'new-platform/backend/tests/test_hop_fda_action_candidate_universe.py'
       - 'new-platform/backend/scripts/audit_hop_cohort_manifest.py'
@@ -172,6 +175,7 @@ jobs:
           python -m pytest -q \
             tests/test_hop_backtest.py \
             tests/test_hop_fda_action_candidate_universe.py \
+            tests/test_hop_fda_candidate_source_audit_index.py \
             tests/test_hop_forecast_metrics.py \
             tests/test_hop_backtest_cohort_safety.py \
             tests/test_hop_backtest_duplicates.py \
