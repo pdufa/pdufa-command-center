@@ -14,7 +14,10 @@ def reconcile_evidence(records: Sequence[Mapping], decision_date: str | None = N
     pre-decision evidence set (fail closed). A missing decision date also\n    excludes every record. Different populations remain
     separate; discrepancies are flagged, not automatically resolved.
     """
-    cutoff = date.fromisoformat(decision_date) if decision_date else None
+    try:
+        cutoff = date.fromisoformat(decision_date) if isinstance(decision_date, str) and decision_date else None
+    except ValueError:
+        cutoff = None
     normalized = []
     for item in records:
         source = str(item.get("source") or "").strip()
