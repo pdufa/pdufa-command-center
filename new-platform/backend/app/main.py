@@ -437,6 +437,49 @@ from .reconciliation_review import ReviewPackage
 
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 
+# Internal, read-only scanner-to-research integration seam. This endpoint does
+# not schedule scans, mutate lists, persist scores, or authorize trades.
+class Phase3ResearchCandidate(BaseModel):
+    exact_key: str = Field(min_length=1, max_length=512)
+    list_memberships: list[str] = Field(default_factory=list, max_length=20)
+    phase3_results: dict = Field(default_factory=dict)
+    pdufa_assignment: dict = Field(default_factory=dict)
+    scientific_evidence: dict = Field(default_factory=dict)
+
+
+@app.post("/api/internal/phase3-research/evaluate", dependencies=[Depends(require_internal_key)])
+def evaluate_phase3_research_candidate(payload: Phase3ResearchCandidate):
+    """Fail-closed Phase 3/PDUFA gate; report readiness without trading."""
+    from .phase3_scanner_research_adapter import route_scanned_candidate
+    from datetime import date as _date
+    try:
+        return route_scanned_candidate(payload.model_dump(), as_of=_date.today().isoformat())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+
+class Phase3ResearchBatchRequest(BaseModel):
+    candidates: list[Phase3ResearchCandidate] = Field(default_factory=list, max_length=200)
+
+
+@app.post("/api/internal/phase3-research/evaluate-batch", dependencies=[Depends(require_internal_key)])
+def evaluate_phase3_research_batch(payload: Phase3ResearchBatchRequest):
+    """Authenticated, read-only batch evaluation with source-gated sheet preview."""
+    from datetime import date as _date
+    from .phase3_research_batch import evaluate_candidate_batch
+    from .phase3_sheet_population_preview import build_sheet_population_preview
+    try:
+        result = evaluate_candidate_batch(
+            [candidate.model_dump() for candidate in payload.candidates],
+            as_of=_date.today().isoformat(),
+        )
+        result["sheetPreview"] = build_sheet_population_preview(result)
+        return result
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
 
 @app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def validate_reconciliation_package(payload: "ReviewPackage"):

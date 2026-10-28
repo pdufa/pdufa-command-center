@@ -18,8 +18,8 @@ OUTPUT = ROOT / "new-platform/frontend/public/phase3-census-sources-2026-10-26.j
 INPUTS = (
     "data/phase3_all_years_300m_10b_trials.csv",
     "data/company_registry.csv",
-    "data/phase_pipeline_market_caps.csv",
-    "config/issuer_sources.json",
+    "data/snapshots/phase_pipeline_market_caps_2026-10-26.csv",
+    "config/snapshots/issuer_sources_2026-10-26.json",
 )
 AS_OF = "2026-10-26T12:21:15.972309+00:00"
 
@@ -90,8 +90,19 @@ def main():
     args = parser.parse_args()
     content = json.dumps(build(), indent=2, ensure_ascii=False) + "\n"
     if args.check:
-        if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != content:
-            raise SystemExit("Saved census research pointers differ from their source files; rebuild and review.")
+        if not OUTPUT.exists() or json.loads(OUTPUT.read_text(encoding="utf-8")) != json.loads(content):
+            saved = json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
+            current = json.loads(content)
+            saved_inputs = {item["path"]: item["sha256"] for item in saved.get("inputs", [])}
+            if saved == current:
+                raise SystemExit("Saved census JSON content is semantically identical but byte formatting differs; regenerate canonical JSON.")
+            differing_companies = [i for i, (a, b) in enumerate(zip(saved.get("companies", []), current.get("companies", []))) if a != b]
+            if differing_companies:
+                raise SystemExit(f"Saved census company rows differ at indices {differing_companies[:10]}; rebuild and review.")
+            changed = [item["path"] for item in current["inputs"]
+                       if saved_inputs.get(item["path"]) != item["sha256"]]
+            raise SystemExit("Saved census research pointers differ from their source files; "
+                             f"changed source identities or hashes: {changed}; actual: "+str({item["path"]: item["sha256"] for item in current["inputs"] if item["path"] in changed})+"; rebuild and review.")
         print("741 exact trial mappings / 130 saved issuer-cap records reproducible. No external source recheck or qualification.")
     else:
         OUTPUT.write_text(content, encoding="utf-8")

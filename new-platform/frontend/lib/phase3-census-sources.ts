@@ -31,7 +31,7 @@ export type Phase3CensusSourceDirectory = {
 };
 
 const INPUT_PATHS = ["data/phase3_all_years_300m_10b_trials.csv", "data/company_registry.csv",
-  "data/phase_pipeline_market_caps.csv", "config/issuer_sources.json"];
+  "data/snapshots/phase_pipeline_market_caps_2026-10-26.csv", "config/snapshots/issuer_sources_2026-10-26.json"];
 const CENSUS_SHA256 = "a426ac6c01726a2c3a9916698e50f3cc87b0e6230260068231c88f1b4a30a143";
 const COMPANY_KEYS = ["ticker","company","cik","leadSponsorNames","nctIds","marketCapUsd",
   "marketCapCheckedAt","marketCapSourceUrl","secFilingsUrl","secSubmissionsUrl","configuredIssuerHomepages"];
