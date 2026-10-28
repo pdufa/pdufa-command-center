@@ -4,6 +4,7 @@ Research only. A candidate record is not automatically a training example.
 No live forecasts, trading actions, or dataset mutations are performed.
 """
 from datetime import date
+import re
 from urllib.parse import urlparse
 from typing import Mapping, Any
 
@@ -31,8 +32,12 @@ def assess_label_eligibility(record: Mapping[str, Any]) -> dict:
     if not record.get("review_cycle_id"):
         reasons.append("missing_review_cycle_id")
     try:
-        action_date = date.fromisoformat(record["action_date"])
-        cutoff = date.fromisoformat(record["evidence_cutoff_date"])
+        action_text = record["action_date"]
+        cutoff_text = record["evidence_cutoff_date"]
+        if not all(isinstance(value, str) and re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", value) for value in (action_text, cutoff_text)):
+            raise ValueError("Dates must use strict YYYY-MM-DD format")
+        action_date = date.fromisoformat(action_text)
+        cutoff = date.fromisoformat(cutoff_text)
         if cutoff >= action_date:
             reasons.append("hindsight_or_same_day_evidence")
     except (KeyError, ValueError, TypeError):
