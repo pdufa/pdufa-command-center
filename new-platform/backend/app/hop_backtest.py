@@ -49,7 +49,7 @@ def _prespecified_program_holdout(rows, program_group_by_application, heldout_pr
     for app in apps:
         group = program_group_by_application[app]
         if not isinstance(group, str) or not re.fullmatch(r"[A-Z0-9][A-Z0-9_.:-]{0,79}", group):
-            raise ValueError("Canonical, nonempty program group IDs required")
+            raise ValueError("canonical, nonempty program group IDs required")
         groups[app] = group
     selected = frozenset(heldout_program_groups)
     if not selected or not selected < set(groups.values()):
