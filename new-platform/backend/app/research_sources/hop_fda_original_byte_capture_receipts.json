@@ -1,0 +1,63 @@
+{
+  "schema_version": "hop-fda-original-byte-provenance-receipts-v1",
+  "research_compiled_on": "2026-10-28",
+  "status": "REAL_ORIGINAL_PDF_BYTES_CAPTURED_NOT_INDEPENDENT_CYCLE_ADJUDICATION",
+  "source_capture": {
+    "github_workflow_run_id": 40716416188,
+    "github_artifact_id": 12828286739,
+    "github_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40716416188/artifacts/12828286739",
+    "artifact_sha256": "765dc93ca2fafa048dceb2d48221d00b74eaa909cbc24b3c570a33d6ca7060eb",
+    "artifact_retention_days": 14,
+    "original_fda_pdf_files_persisted_in_git": false,
+    "tool": "new-platform/backend/scripts/capture_hop_fda_original_https.py",
+    "capture_method": "EXACT_ALLOWLISTED_TLS_HTTPS_NO_REDIRECT",
+    "verification_note": "Downloaded artifact ZIP bytes and recomputed ZIP and both embedded PDF SHA-256 digests in a separate container session; matches workflow log and provenance JSON. Direct original FDA PDF download was not available from local model container, but GitHub Actions captured two HTTP 200 source responses."
+  },
+  "receipts": [
+    {
+      "record_id": "NDA213973_ORIGINAL_1_20200515_APPROVED",
+      "original_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2020/213973Orig1s000ltr.pdf",
+      "retrieval_observed_at_utc": "2026-10-28T15:29:20+00:00",
+      "http_status": 200,
+      "redirected": false,
+      "content_type": "application/pdf",
+      "response_byte_length": 768468,
+      "pdf_sha256": "5c559425eddb609ab8c2c2545413860947ca0f30e9a937fd81eca502dba4626e",
+      "pdf_pages": 8,
+      "document_reference_id": "4609421",
+      "fda_action_date_from_signature_page": "2020-05-15",
+      "first_page_action_observed": "NDA APPROVAL",
+      "first_page_application_observed": "NDA 213973",
+      "source_document_text_check": "FIRST_PAGE_EXTRACTABLE_AND_LAST_SIGNATURE_PAGE_EXTRACTABLE",
+      "http_last_modified_header": "Tue, 19 May 2020 12:25:55 GMT",
+      "http_etag": "\"804b7fa4d82dd61:0\"",
+      "original_fda_pdf_first_publication_date_verified": null,
+      "independently_adjudicated_fda_review_cycle": false,
+      "eligible_for_model_training": false
+    },
+    {
+      "record_id": "BLA761303_ORIGINAL_1_20240322_CRL",
+      "original_url": "https://download.open.fda.gov/crl/CRL_BLA761303Original1_20240322.pdf",
+      "retrieval_observed_at_utc": "2026-10-28T15:29:20+00:00",
+      "http_status": 200,
+      "redirected": false,
+      "content_type": "application/pdf",
+      "response_byte_length": 168170,
+      "pdf_sha256": "394bc0667eb2704b34fbb40046e068b0c087e07865dd89658ef4f2f858c8f880",
+      "pdf_pages": 7,
+      "document_reference_id": "5352252",
+      "fda_action_date_from_signature_page": "2024-03-22",
+      "first_page_action_observed": "COMPLETE RESPONSE",
+      "first_page_application_observed": "BLA 761303/Original 1",
+      "source_document_text_check": "FIRST_PAGE_IMAGE_ONLY_VISUALLY_RENDERED_AND_LAST_SIGNATURE_PAGE_EXTRACTABLE",
+      "http_last_modified_header": "Sun, 25 Oct 2026 16:42:34 GMT",
+      "http_etag": "\"6d4efa00685c56aeb697228ba85025f3\"",
+      "original_fda_pdf_first_publication_date_verified": null,
+      "independently_adjudicated_fda_review_cycle": false,
+      "eligible_for_model_training": false
+    }
+  ],
+  "model_eligible_records": 0,
+  "independent_real_backtest_cases": 0,
+  "approval_probability": null
+}
