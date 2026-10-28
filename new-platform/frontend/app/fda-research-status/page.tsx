@@ -51,6 +51,13 @@ export default function FdaResearchStatusPage() {
           <p>OUTCOME: No approval probability or PASS/FAIL grade. Reluctant grade: insufficient verified evidence.</p>
           <p>Original prediction cutoff: not authenticated. Evidence blockers:</p>
           <ul>{row.blockers.slice(0, 6).map((reason) => <li key={reason}>{reason.replaceAll("_", " ")}</li>)}</ul>
+          <details><summary>Missing documents · independent-review worklist ({row.missing_documents.length})</summary>
+            <ol>{row.missing_documents.map((document, index) => <li key={index}>{document}</li>)}</ol>
+            <p>Completion requires original document bytes, authenticated publication timing, application/cycle binding, source hashes, independent scientific review, and a proven predecision prediction freeze.</p>
+          </details>
+          <details><summary>All validation blockers ({row.blockers.length})</summary>
+            <ol>{row.blockers.map((reason) => <li key={reason}>{reason.replaceAll("_", " ")}</li>)}</ol>
+          </details>
           <p>Missing source documents: {row.missing_documents.length}. This record cannot be used for validated model training.</p>
         </details>
       ))}
