@@ -47,9 +47,26 @@ def assess_original_prediction_evidence(inventory, evidence_records):
         sha_valid = all(len(record.get(field, "")) == 64 and
                         all(ch in "0123456789abcdefABCDEF" for ch in record[field])
                         for field in ("prediction_sha256", "model_sha256"))
-        chronology_ok = bool(action and prediction and cutoff and cutoff <= prediction < action)
+        # The inventory action date is independent of reviewer-supplied metadata.
+        # With date-only evidence, reject predictions made on the action day.
+        inventory_action_date = expected[key].get("action_date")
+        inventory_day = None
+        if inventory_action_date:
+            try:
+                inventory_day = datetime.strptime(inventory_action_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            except (ValueError, TypeError):
+                raise ValueError("invalid inventory action_date")
+        action_matches_inventory = bool(
+            not inventory_day or (action and action.date() == inventory_day.date())
+        )
+        chronology_ok = bool(
+            action and prediction and cutoff and cutoff <= prediction < action
+            and action_matches_inventory
+            and (not inventory_day or prediction < inventory_day)
+        )
         results.append({"event_key": key, "artifact_metadata_complete": bool(complete and sha_valid and immutable_uri_plausible),
                         "chronology_consistent": chronology_ok,
+                        "action_date_matches_inventory": action_matches_inventory,
                         "independently_verified": False,
                         "status": "REQUIRES_EXTERNAL_AUTHENTICATION_AND_LEAKAGE_AUDIT"
                         if complete and sha_valid and immutable_uri_plausible and chronology_ok else "INSUFFICIENT_OR_NONPROSPECTIVE_EVIDENCE"})
