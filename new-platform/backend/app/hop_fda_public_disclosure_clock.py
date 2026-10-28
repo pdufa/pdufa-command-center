@@ -262,6 +262,8 @@ def load_historical_fda_public_outcome_packet(*, as_of: date) -> dict:
     pdf_receipts = load_real_fda_capture_receipts(as_of=as_of)
     from .hop_fda_approval_survivor_sequences import load_approved_survivor_sequences
     historical_sequences = load_approved_survivor_sequences(as_of=as_of)
+    from .hop_fda_candidate_source_audit_index import load_fda_action_candidate_replay_summary
+    candidate_source_research = load_fda_action_candidate_replay_summary(as_of=as_of)
     return {
         "mode": "READ_ONLY_HISTORICAL_FDA_ACTION_AND_DISCLOSURE_RESEARCH",
         "asOf": as_of.isoformat(),
@@ -269,6 +271,7 @@ def load_historical_fda_public_outcome_packet(*, as_of: date) -> dict:
         "publicDisclosureResearch": disclosure,
         "originalPdfCaptureResearch": pdf_receipts,
         "approvedSurvivorSequenceResearch": historical_sequences,
+        "historicalFdaSourceCandidateResearch": candidate_source_research,
         "independentModelEligibleCycles": 0,
         "independentHistoricalBacktests": 0,
         "accuracy": None,
