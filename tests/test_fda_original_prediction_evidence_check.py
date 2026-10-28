@@ -67,6 +67,14 @@ class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
         self.assertTrue(result["cases"][0]["chronology_consistent"])
         self.assertFalse(result["cases"][0]["independently_verified"])
 
+    def test_malformed_url_authorities_fail_closed(self):
+        for uri in ("https://github.com:bad/example/research/commit/" + "a"*40,
+                    "https://[invalid/example/research/commit/" + "a"*40):
+            with self.subTest(uri=uri):
+                record = {**self.good, "immutable_prediction_uri": uri}
+                result = assess_original_prediction_evidence(self.inventory, [record])
+                self.assertFalse(result["cases"][0]["artifact_metadata_complete"])
+
     def test_post_action_prediction_rejected(self):
         record = {**self.good, "prediction_created_at": "2025-08-16T12:00:00Z"}
         result = assess_original_prediction_evidence(self.inventory, [record])
