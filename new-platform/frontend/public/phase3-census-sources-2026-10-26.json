@@ -18,7 +18,7 @@
       "sha256": "b958410f13310d3dd35c2304280364256126331cb5d99cdafc476e6933a47dd4"
     },
     {
-      "path": "config/issuer_sources.json",
+      "path": "config/snapshots/issuer_sources_2026-10-26.json",
       "sha256": "bae8f8604d17435e437813d08d9fa061ee549cb678f0fd44013b13706e9d6f3e"
     }
   ],
