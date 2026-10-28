@@ -9,19 +9,55 @@ export type HoldoutQuestion = {
   question_id: string; question: string; layer: number; layer_name: string;
   source_ids: string[]; status: "NOT_CERTIFIED"; scientific_score: null;
 };
-type ScientificQuestion = {question_id: string; question: string; required_evidence: string; uncertainties: string[]};
+type ScientificQuestion = {
+  question_id: string; question: string; required_evidence: string; uncertainties: string[];
+  scientific_rationale: string; historical_prediction_cutoff: null; research_cutoff: string;
+  supporting_findings: string[]; contradictory_findings: string[]; missing_information: string[];
+  confidence_grade: "NOT_ESTABLISHED"; independent_verification_status: "NOT_INDEPENDENTLY_ASSESSED";
+  effect_on_proposed_fda_decision: "NO_CERTIFIED_EFFECT_ABSTAIN"; research_status: string;
+  observations: {source_id: string; source_url: string; available_on: string}[];
+  excluded_or_quarantined_sources: {source_id: string; source_url: string; reason: string}[];
+};
 type InvestigationDepth = {
   depth_level: number; level_id: string; title: string; objective: string; question_ids: string[];
   prerequisite_levels: number[]; blocking_prerequisite_levels: number[]; question_ids_without_source_leads: string[];
   requirements: string[]; completion_artifacts: string[]; source_lead_ids: string[]; completion_artifacts_status: "NOT_INDEPENDENTLY_ADJUDICATED";
   status: "INDEPENDENT_REVIEW_MISSING";
 };
+export type InvestigationFramework = {
+  semantic_level_definitions_status: "DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED";
+  catalog_version: string; levels: InvestigationDepth[];
+};
+type ScientificIssueSource = {id: string; url: string; location: string; document_date: string | null;
+  public_availability_verified: boolean; availability_source_url?: string; finding: string};
+export type ScientificIssue = {
+  issue_id: "RESILIENT-457-VS-456"; trial_id: "NCT05273749"; protocol_id: "TNX-CY-F307";
+  randomized_population: {active: 231; placebo: 226; total: 457};
+  reported_efficacy_population: {active: 231; placebo: 225; total: 456};
+  reported_safety_population: {active: 231; placebo: 226; total: 457};
+  sponsor_explanation: string; population_rule_observed: string; scientific_rationale: string;
+  protocol_compliance_status: "NOT_ESTABLISHED"; confidence_grade: "NOT_ESTABLISHED";
+  supporting_findings: string[]; contradictory_findings: string[]; missing_information: string[];
+  uncertainty: string; effect_on_proposed_fda_decision: "ABSTAIN_NO_CERTIFIED_PROBABILITY_EFFECT";
+  original_prediction_cutoff: null; research_cutoff: string; reviewed_content_on: string;
+  sources: ScientificIssueSource[];
+};
 type ScientificDossier = {
-  layers: {layer: number; layer_name: string; questions: ScientificQuestion[]}[];
-  depth_framework: {
-    semantic_level_definitions_status: "DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED";
-    catalog_version: string; levels: InvestigationDepth[];
-  };
+  layers: {layer: number; layer_name: string; questions: ScientificQuestion[];
+    questions_with_research_observations: number; independently_completed_assessments: 0}[];
+  summary: {independently_completed_assessments: 0; independently_completed_depth_levels: 0};
+  depth_framework: InvestigationFramework;
+  extended_investigation_framework: InvestigationFramework;
+  scientific_issues: ScientificIssue[];
+};
+export type DecisionContract = {
+  predicted_decision: "ABSTAIN"; target_classes: ["PASS", "CRL", "EXTENSION"];
+  class_definitions: {PASS: string; CRL: string; EXTENSION: string};
+  probabilities: {PASS: null; CRL: null; EXTENSION: null};
+  science_readiness_grade: "NOT_READY"; prediction_confidence_grade: "NOT_ESTABLISHED";
+  reluctance_grade: "INSUFFICIENT_VERIFIED_EVIDENCE"; evidence_completeness: "INCOMPLETE_NOT_QUANTIFIED";
+  source_verification_status: "NOT_INDEPENDENTLY_AUTHENTICATED";
+  historical_validation_status: "NOT_INDEPENDENTLY_VALIDATED"; last_updated: string;
 };
 export type HoldoutCase = {
   event_key: string; application_id: string; indication: string; program_family: string;
@@ -33,7 +69,7 @@ export type HoldoutCase = {
   supporting_factors: string[]; opposing_factors: string[]; missing_documents: string[]; blockers: string[];
   related_precedents: {name: string; comparison: string; status: string; source_url?: string; eligible_for_training: false}[];
   eligible_for_validation: false; model_eligible: false;
-  outcome: Abstention; main: Abstention; scientific_dossier: ScientificDossier;
+  outcome: Abstention; main: Abstention; decision_contract: DecisionContract; scientific_dossier: ScientificDossier;
   action_document: {status: string; source_url: string; source_bytes_retained: false; original_publication_date: null};
 };
 type Abstention = {status: "INSUFFICIENT_EVIDENCE"; pass_probability: null; fail_probability: null; prediction_confidence: null; model_validated: false; trading_authorized: false};
@@ -75,6 +111,128 @@ function abstains(value: unknown) {
     && r.prediction_confidence === null && r.model_validated === false && r.trading_authorized === false);
 }
 
+function auditDecisionContract(value: unknown, caseReport: Record<string, unknown>, asOf: number) {
+  const contract = record(value), probabilities = record(contract.probabilities), definitions = record(contract.class_definitions);
+  check(contract.schema_version === "fda-three-outcome-research-contract-v1" && contract.research_only === true
+    && Array.isArray(contract.target_classes) && contract.target_classes.join(",") === "PASS,CRL,EXTENSION"
+    && text(definitions.PASS) && text(definitions.CRL) && text(definitions.EXTENSION)
+    && contract.target_definition_status === "PRESPECIFIED_REVIEW_HORIZON_REQUIRED"
+    && contract.extension_is_binary_nonapproval === false && contract.predicted_decision === "ABSTAIN"
+    && contract.abstention_reason === "INSUFFICIENT_INDEPENDENTLY_VERIFIED_EVIDENCE_AND_MODEL_VALIDATION"
+    && probabilities.PASS === null && probabilities.CRL === null && probabilities.EXTENSION === null
+    && contract.science_readiness_grade === "NOT_READY" && contract.prediction_confidence_grade === "NOT_ESTABLISHED"
+    && contract.reluctance_grade === "INSUFFICIENT_VERIFIED_EVIDENCE" && contract.evidence_completeness === "INCOMPLETE_NOT_QUANTIFIED"
+    && contract.source_verification_status === "NOT_INDEPENDENTLY_AUTHENTICATED"
+    && contract.historical_validation_status === "NOT_INDEPENDENTLY_VALIDATED"
+    && contract.uncertainty_range === null && contract.model_version === null && contract.prediction_version === null
+    && contract.eligible_for_validated_accuracy === false && contract.trading_authorized === false
+    && day(contract.last_updated) <= asOf && strings(contract.blockers) && contract.blockers.length > 0
+    && strings(caseReport.blockers) && caseReport.blockers.every(reason => (contract.blockers as string[]).includes(reason)));
+}
+
+export function scientificIssueSourceUrl(value: unknown): string | undefined {
+  if (typeof value !== "string" || /\s/.test(value)) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password && !url.port && !url.hash
+      && value.match(/^https:\/\/([^/]+)/)?.[1] === url.host
+      && ["www.tonixpharma.com", "cdn.clinicaltrials.gov", "doi.org", "www.sec.gov"].includes(url.hostname)
+      && url.pathname !== "/" ? value : undefined;
+  } catch { return undefined; }
+}
+function auditScientificIssues(value: unknown, caseReport: Record<string, unknown>, asOf: number) {
+  check(Array.isArray(value));
+  if (caseReport.event_key !== "TNXP|2025-08-15") { check(value.length === 0); return; }
+  check(value.length === 1);
+  const issue = record(value[0]);
+  check(issue.schema_version === "tnxp-resilient-population-audit-v1" && issue.issue_id === "RESILIENT-457-VS-456"
+    && issue.event_key === caseReport.event_key && issue.application_id === caseReport.application_id
+    && issue.trial_id === "NCT05273749" && issue.protocol_id === "TNX-CY-F307"
+    && issue.research_cutoff === caseReport.reconstruction_cutoff && issue.original_prediction_cutoff === null
+    && day(issue.reviewed_content_on) <= asOf && issue.protocol_compliance_status === "NOT_ESTABLISHED"
+    && issue.arithmetic_reconciliation_status === "SPONSOR_EXPLANATION_RECORDED_NOT_INDEPENDENTLY_ADJUDICATED"
+    && issue.independently_adjudicated === false && issue.source_bytes_retained === false
+    && issue.original_document_sha256 === null && issue.eligible_for_predecision_features === false
+    && issue.eligible_for_validated_accuracy === false && issue.trading_authorized === false
+    && issue.confidence_grade === "NOT_ESTABLISHED" && issue.approval_probability === null
+    && issue.effect_on_proposed_fda_decision === "ABSTAIN_NO_CERTIFIED_PROBABILITY_EFFECT");
+  for (const [field, expected] of [["randomized_population", [231, 226, 457]], ["reported_efficacy_population", [231, 225, 456]],
+    ["reported_safety_population", [231, 226, 457]]] as const) {
+    const population = record(issue[field]);
+    check(population.active === expected[0] && population.placebo === expected[1] && population.total === expected[2]);
+  }
+  for (const field of ["sponsor_explanation", "population_rule_observed", "scientific_rationale", "uncertainty"]) check(text(issue[field]));
+  for (const field of ["supporting_findings", "contradictory_findings", "missing_information", "required_resolution_artifacts"]) {
+    check(strings(issue[field]) && (issue[field] as string[]).length > 0);
+  }
+  const sourceIds = new Set<string>();
+  check(Array.isArray(issue.sources) && issue.sources.length === 5);
+  for (const rawSource of issue.sources) {
+    const source = record(rawSource);
+    check(text(source.id) && !sourceIds.has(source.id) && scientificIssueSourceUrl(source.url)
+      && text(source.location) && text(source.finding));
+    sourceIds.add(source.id);
+    check(source.availability_source_url === undefined || holdoutSourceUrl(source.availability_source_url));
+    if (source.document_date !== null) day(source.document_date);
+    if (source.public_availability_verified === true) {
+      check(source.id === "SEC-JULY9-SUPPLEMENT" && source.document_date === "2025-07-09"
+        && source.url === "https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/ex99-02.htm"
+        && source.availability_source_url === "https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/0001999371-25-008877-index.htm");
+    } else check(source.public_availability_verified === false);
+  }
+  check(["ACR-2024-SPONSOR-POSTER", "RESILIENT-SAP-FINAL-V1", "RESILIENT-PROTOCOL-AMENDMENT-2", "RESILIENT-PUBLISHED-PAPER", "SEC-JULY9-SUPPLEMENT"].every(id => sourceIds.has(id)));
+}
+
+function auditInvestigationFramework(value: unknown, candidates: Record<string, unknown>[], levelCount: number, catalogVersion: string) {
+  const framework = record(value);
+    check(framework.semantic_level_definitions_status === "DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED"
+      && framework.catalog_version === catalogVersion
+      && framework.predictive_value_validated === false
+      && Array.isArray(framework.independently_reviewed_levels) && framework.independently_reviewed_levels.length === 0
+      && Array.isArray(framework.levels) && framework.levels.length === levelCount);
+    const completionPolicy = record(framework.completion_policy);
+    check(completionPolicy.source_leads_complete_levels === false && completionPolicy.automatic_completion_enabled === false
+      && completionPolicy.fixed_800_review_requirement === false && completionPolicy.independent_evidence_and_interpretation_required === true
+      && completionPolicy.missing_evidence_is_unknown === true);
+    const depthIds = new Set<string>();
+    framework.levels.forEach((rawDepth, index) => {
+      const depth = record(rawDepth);
+      check(depth.depth_level === index + 1 && depth.level_id === "D" + String(index + 1).padStart(2, "0") && !depthIds.has(depth.level_id as string)
+        && text(depth.title) && text(depth.objective) && depth.status === "INDEPENDENT_REVIEW_MISSING"
+        && strings(depth.question_ids) && depth.question_ids.length > 0
+        && new Set(depth.question_ids).size === depth.question_ids.length
+        && depth.question_ids.every(id => /^S(?:0[1-9]|[12][0-9]|3[0-9]|40)$/.test(id)));
+      depthIds.add(depth.level_id as string);
+      for (const field of ["requirements", "completion_artifacts"]) {
+        check(strings(depth[field]) && (depth[field] as string[]).length > 0);
+      }
+      check(depth.independently_completed === false && depth.ready_for_independent_certification === false
+        && depth.completion_artifacts_status === "NOT_INDEPENDENTLY_ADJUDICATED"
+        && Array.isArray(depth.independently_reviewed_question_ids) && depth.independently_reviewed_question_ids.length === 0
+        && Array.isArray(depth.prerequisite_levels) && new Set(depth.prerequisite_levels).size === depth.prerequisite_levels.length
+        && depth.prerequisite_levels.every(level => Number.isInteger(level) && level >= 1 && level < index + 1)
+        && Array.isArray(depth.blocking_prerequisite_levels)
+        && depth.blocking_prerequisite_levels.length === depth.prerequisite_levels.length
+        && new Set(depth.blocking_prerequisite_levels).size === depth.prerequisite_levels.length
+        && depth.prerequisite_levels.every(level => (depth.blocking_prerequisite_levels as unknown[]).includes(level)));
+      check(strings(depth.source_lead_ids) && new Set(depth.source_lead_ids).size === depth.source_lead_ids.length);
+      const expectedSources = candidates.filter(source =>
+        (source.science_question_ids as string[]).some(id => (depth.question_ids as string[]).includes(id))
+      ).map(source => source.source_id);
+      check(depth.source_lead_ids.length === expectedSources.length
+        && expectedSources.every(id => (depth.source_lead_ids as string[]).includes(id as string)));
+      const questionsWithLeads = (depth.question_ids as string[]).filter(id => candidates.some(source =>
+        (source.science_question_ids as string[]).includes(id)));
+      const questionsWithoutLeads = (depth.question_ids as string[]).filter(id => !questionsWithLeads.includes(id));
+      for (const [field, expected] of [["question_ids_with_source_leads", questionsWithLeads],
+        ["question_ids_without_source_leads", questionsWithoutLeads]] as const) {
+        check(strings(depth[field]) && (depth[field] as string[]).length === expected.length
+          && new Set(depth[field] as string[]).size === expected.length
+          && expected.every(id => (depth[field] as string[]).includes(id)));
+      }
+    });
+}
+
 export function auditHoldoutReconstruction(value: unknown): HoldoutReconstruction {
   const r = record(value);
   check(r.schemaVersion === "fda-holdout-reconstruction-view-v1" && r.researchOnly === true
@@ -94,6 +252,7 @@ export function auditHoldoutReconstruction(value: unknown): HoldoutReconstructio
     check(c.original_prediction_cutoff === null && c.frozen_prediction_source_count === 0
       && c.independently_certified_assessments === 0 && c.eligible_for_validation === false && c.model_eligible === false);
     abstains(c.outcome); abstains(c.main);
+    auditDecisionContract(c.decision_contract, c, asOf);
     const actionDocument = record(c.action_document);
     check(text(actionDocument.status) && holdoutSourceUrl(actionDocument.source_url)
       && actionDocument.source_bytes_retained === false && actionDocument.original_publication_date === null);
@@ -151,53 +310,13 @@ export function auditHoldoutReconstruction(value: unknown): HoldoutReconstructio
       && summary.independently_completed_assessments === 0 && summary.independently_completed_depth_levels === 0
       && summary.eligible_frozen_features === 0 && summary.scientific_score === null
       && summary.approval_probability === null && summary.independent_scientific_conclusion === null);
-    const framework = record(dossier.depth_framework);
-    check(framework.semantic_level_definitions_status === "DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED"
-      && framework.catalog_version === "science-investigation-depth-catalog-v1"
-      && framework.predictive_value_validated === false
-      && Array.isArray(framework.independently_reviewed_levels) && framework.independently_reviewed_levels.length === 0
-      && Array.isArray(framework.levels) && framework.levels.length === 20);
-    const completionPolicy = record(framework.completion_policy);
-    check(completionPolicy.source_leads_complete_levels === false && completionPolicy.automatic_completion_enabled === false
-      && completionPolicy.fixed_800_review_requirement === false && completionPolicy.independent_evidence_and_interpretation_required === true
-      && completionPolicy.missing_evidence_is_unknown === true);
-    const depthIds = new Set<string>();
-    framework.levels.forEach((rawDepth, index) => {
-      const depth = record(rawDepth);
-      check(depth.depth_level === index + 1 && depth.level_id === "D" + String(index + 1).padStart(2, "0") && !depthIds.has(depth.level_id as string)
-        && text(depth.title) && text(depth.objective) && depth.status === "INDEPENDENT_REVIEW_MISSING"
-        && strings(depth.question_ids) && depth.question_ids.length > 0
-        && new Set(depth.question_ids).size === depth.question_ids.length
-        && depth.question_ids.every(id => /^S(?:0[1-9]|[12][0-9]|3[0-9]|40)$/.test(id)));
-      depthIds.add(depth.level_id as string);
-      for (const field of ["requirements", "completion_artifacts"]) {
-        check(strings(depth[field]) && (depth[field] as string[]).length > 0);
-      }
-      check(depth.independently_completed === false && depth.ready_for_independent_certification === false
-        && depth.completion_artifacts_status === "NOT_INDEPENDENTLY_ADJUDICATED"
-        && Array.isArray(depth.independently_reviewed_question_ids) && depth.independently_reviewed_question_ids.length === 0
-        && Array.isArray(depth.prerequisite_levels) && new Set(depth.prerequisite_levels).size === depth.prerequisite_levels.length
-        && depth.prerequisite_levels.every(level => Number.isInteger(level) && level >= 1 && level < index + 1)
-        && Array.isArray(depth.blocking_prerequisite_levels)
-        && depth.blocking_prerequisite_levels.length === depth.prerequisite_levels.length
-        && new Set(depth.blocking_prerequisite_levels).size === depth.prerequisite_levels.length
-        && depth.prerequisite_levels.every(level => (depth.blocking_prerequisite_levels as unknown[]).includes(level)));
-      check(strings(depth.source_lead_ids) && new Set(depth.source_lead_ids).size === depth.source_lead_ids.length);
-      const expectedSources = candidates.filter(source =>
-        (source.science_question_ids as string[]).some(id => (depth.question_ids as string[]).includes(id))
-      ).map(source => source.source_id);
-      check(depth.source_lead_ids.length === expectedSources.length
-        && expectedSources.every(id => (depth.source_lead_ids as string[]).includes(id as string)));
-      const questionsWithLeads = (depth.question_ids as string[]).filter(id => candidates.some(source =>
-        (source.science_question_ids as string[]).includes(id)));
-      const questionsWithoutLeads = (depth.question_ids as string[]).filter(id => !questionsWithLeads.includes(id));
-      for (const [field, expected] of [["question_ids_with_source_leads", questionsWithLeads],
-        ["question_ids_without_source_leads", questionsWithoutLeads]] as const) {
-        check(strings(depth[field]) && (depth[field] as string[]).length === expected.length
-          && new Set(depth[field] as string[]).size === expected.length
-          && expected.every(id => (depth[field] as string[]).includes(id)));
-      }
-    });
+    auditInvestigationFramework(dossier.depth_framework, candidates, 20, "science-investigation-depth-catalog-v1");
+    auditInvestigationFramework(dossier.extended_investigation_framework, candidates, 50, "science-investigation-50-level-extension-v1");
+    const extended = record(dossier.extended_investigation_framework), base = record(dossier.depth_framework);
+    check(extended.base_catalog_version === "science-investigation-depth-catalog-v1"
+      && extended.independently_completed_level_count === 0 && extended.legacy_backend_review_boundary_changed === false
+      && JSON.stringify((extended.levels as unknown[]).slice(0, 20)) === JSON.stringify(base.levels));
+    auditScientificIssues(dossier.scientific_issues, c, asOf);
     check(Array.isArray(dossier.layers) && dossier.layers.length === 8);
     dossier.layers.forEach((rawLayer, layerIndex) => {
       const layer = record(rawLayer);
@@ -207,7 +326,14 @@ export function auditHoldoutReconstruction(value: unknown): HoldoutReconstructio
         const q = record(rawQuestion), worklist = record((c.science_worklist as unknown[])[layerIndex * 5 + questionIndex]);
         check(q.question_id === worklist.question_id && q.question === worklist.question && layer.layer_name === worklist.layer_name
           && text(q.required_evidence) && strings(q.uncertainties) && q.uncertainties.length > 0
-          && q.assessment_status === "NOT_INDEPENDENTLY_ASSESSED" && q.scientific_conclusion === null);
+          && q.assessment_status === "NOT_INDEPENDENTLY_ASSESSED" && q.scientific_conclusion === null
+          && text(q.scientific_rationale) && q.historical_prediction_cutoff === null
+          && q.research_cutoff === c.reconstruction_cutoff && q.confidence_grade === "NOT_ESTABLISHED"
+          && q.independent_verification_status === "NOT_INDEPENDENTLY_ASSESSED"
+          && q.effect_on_proposed_fda_decision === "NO_CERTIFIED_EFFECT_ABSTAIN"
+          && Array.isArray(q.supporting_findings) && q.supporting_findings.length === 0
+          && Array.isArray(q.contradictory_findings) && q.contradictory_findings.length === 0
+          && strings(q.missing_information) && q.missing_information.length > 0);
       });
     });
     check(Array.isArray(c.related_precedents));

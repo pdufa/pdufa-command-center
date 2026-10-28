@@ -231,12 +231,12 @@
           "availability_basis": "PRINTED_DATE_ONLY",
           "availability_source_url": null,
           "source_role": "OUTCOME_ONLY",
-          "finding": "Original 2025 CRL PDF is located with partial extracted text and Reference ID 5616346. First-page verification remains required; the filename is not proof of original publication.",
+          "finding": "Extracted original FDA CRL pages identify NDA 218607, Reference ID 5616346 and a June 27, 2025 signature. First-page visual verification and original public availability remain incomplete. This outcome document is excluded from pre-decision SCIENCE.",
           "science_question_ids": [
             "S26",
             "S29"
           ],
-          "source_location": null,
+          "source_location": "Extracted later pages and signature; first page unverified",
           "content_observed_on": "2026-10-28",
           "original_document_sha256": null,
           "source_bytes_retained": false,

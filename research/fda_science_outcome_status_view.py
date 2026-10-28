@@ -25,6 +25,7 @@ def build_research_status(reconstruction):
         "cases": [{"eventKey": row["event_key"],
                    "scienceStatus": "NOT_INDEPENDENTLY_VERIFIED",
                    "outcomeDecision": row["outcome_decision"],
+                   "decisionContract": row["decision_contract"],
                    "approvalProbability": row["approval_probability"],
                    "readyForAnalysis": row["ready_for_analysis_grade"],
                    "reluctantGrade": row["reluctant_grade"],

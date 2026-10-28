@@ -11,7 +11,10 @@ class FDAOutcomeAcquisitionTests(unittest.TestCase):
         reconstruction = json.loads(source.read_text(encoding="utf-8"))
         queue = build_fda_outcome_acquisition_queue(reconstruction)
         self.assertEqual(len({r["ticker"] for r in queue["sources"]}), 6)
-        self.assertEqual(queue["source_count"], 8)
+        # Six cases: UNCY has original plus later-cycle documents; CORT
+        # has only its corrected letter. Do not invent an eighth source.
+        self.assertEqual(queue["source_count"], 7)
+        self.assertEqual(len({r["observation_id"] for r in queue["sources"]}), 7)
         by_id = {r["observation_id"]: r for r in queue["sources"]}
         self.assertTrue(by_id["UNCY-LATER-CYCLE"]["source_is_later_or_corrected"])
         self.assertTrue(by_id["CORT-CORRECTED-CRL"]["source_is_later_or_corrected"])

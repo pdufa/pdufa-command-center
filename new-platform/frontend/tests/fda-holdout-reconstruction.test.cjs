@@ -5,7 +5,7 @@ const ts = require('typescript');
 for (const ext of ['.ts', '.tsx']) require.extensions[ext] = (m, file) => m._compile(ts.transpileModule(fs.readFileSync(file, 'utf8'), {
   compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true}
 }).outputText, file);
-const {auditHoldoutReconstruction, holdoutSourceUrl} = require('../lib/fda-holdout-reconstruction.ts');
+const {auditHoldoutReconstruction, holdoutSourceUrl, scientificIssueSourceUrl} = require('../lib/fda-holdout-reconstruction.ts');
 const snapshot = require('../lib/fda-holdout-reconstruction-snapshot.json');
 const React = require('react');
 const {renderToStaticMarkup} = require('react-dom/server');
@@ -91,8 +91,9 @@ test('MAIN panel renders source-backed details and withholds all counts on inval
   assert.match(html, /PARTIAL TEXT FIRST PAGE VISUAL REVIEW REQUIRED/);
   assert.match(html, /CORRECTED DOCUMENT ONLY ORIGINAL NOT RETRIEVED/);
   assert.match(html, /Required documents: protocol and efficacy results/);
-  assert.match(html, /twenty-level research protocol defines the required analysis/);
-  assert.match(html, /Twenty-level investigation protocol · 0\/20 independently completed/);
+  assert.match(html, /fifty-level research protocol preserves the twenty-level foundation/);
+  assert.match(html, /Fifty-level investigation protocol · 0\/50 independently completed/);
+  assert.match(html, /Preserved twenty-level foundation · 0\/20 independently completed/);
   assert.match(html, /Completion artifacts required/);
   for (const depth of snapshot.caseReports[0].scientific_dossier.depth_framework.levels) {
     assert.ok(html.includes(depth.title));
@@ -145,5 +146,89 @@ test('twenty-level research protocol cannot self-certify completed investigation
   ]) {
     const bad = copy(); mutate(bad.caseReports[0].scientific_dossier.depth_framework);
     assert.throws(() => auditHoldoutReconstruction(bad));
+  }
+});
+
+
+test('fifty-level extension preserves the foundation and cannot claim completed investigation', () => {
+  const dossier = snapshot.caseReports[0].scientific_dossier;
+  assert.equal(dossier.extended_investigation_framework.levels.length, 50);
+  assert.deepEqual(dossier.extended_investigation_framework.levels.slice(0, 20), dossier.depth_framework.levels);
+  for (const mutate of [
+    f => f.levels.pop(),
+    f => f.levels[49].level_id = 'D20',
+    f => f.levels[0].title = 'Replaced legacy definition',
+    f => f.independently_completed_level_count = 50,
+    f => f.legacy_backend_review_boundary_changed = true,
+    f => f.levels[49].independently_completed = true,
+    f => f.levels[49].source_lead_ids = ['NONEXISTENT'],
+  ]) {
+    const bad = copy(); mutate(bad.caseReports[0].scientific_dossier.extended_investigation_framework);
+    assert.throws(() => auditHoldoutReconstruction(bad));
+  }
+});
+
+test('three-class research contract preserves extension semantics and withholds unsupported grades/probabilities', () => {
+  for (const c of snapshot.caseReports) {
+    assert.deepEqual(c.decision_contract.target_classes, ['PASS', 'CRL', 'EXTENSION']);
+    assert.equal(c.decision_contract.predicted_decision, 'ABSTAIN');
+    assert.deepEqual(c.decision_contract.probabilities, {PASS:null, CRL:null, EXTENSION:null});
+  }
+  for (const mutate of [
+    c => c.predicted_decision = 'PASS',
+    c => c.probabilities = {PASS:0.8, CRL:0.1, EXTENSION:0.1},
+    c => c.probabilities.EXTENSION = 0,
+    c => c.target_classes = ['PASS', 'FAIL'],
+    c => c.extension_is_binary_nonapproval = true,
+    c => c.science_readiness_grade = 'READY',
+    c => c.prediction_confidence_grade = 'HIGH',
+    c => c.eligible_for_validated_accuracy = true,
+    c => c.trading_authorized = true,
+    c => c.blockers = [],
+  ]) {
+    const bad = copy(); mutate(bad.caseReports[0].decision_contract);
+    assert.throws(() => auditHoldoutReconstruction(bad));
+  }
+});
+
+test('TNXP sponsor arithmetic cannot establish protocol compliance or a frozen historical feature', () => {
+  const tnxp = snapshot.caseReports.find(c => c.event_key.startsWith('TNXP|'));
+  const issue = tnxp.scientific_dossier.scientific_issues[0];
+  assert.equal(issue.randomized_population.total, 457);
+  assert.equal(issue.reported_efficacy_population.total, 456);
+  assert.equal(issue.reported_safety_population.total, 457);
+  assert.equal(issue.protocol_compliance_status, 'NOT_ESTABLISHED');
+  for (const mutate of [
+    i => i.protocol_compliance_status = 'COMPLIANT',
+    i => i.reported_efficacy_population.total = 457,
+    i => i.independently_adjudicated = true,
+    i => i.eligible_for_predecision_features = true,
+    i => i.approval_probability = 0.9,
+    i => i.effect_on_proposed_fda_decision = 'PASS',
+    i => i.sources[0].public_availability_verified = true,
+    i => i.sources[0].url = 'https://www.tonixpharma.com.evil.example/doc',
+    i => i.original_prediction_cutoff = '2025-08-14',
+  ]) {
+    const bad = copy(); mutate(bad.caseReports.find(c => c.event_key.startsWith('TNXP|')).scientific_dossier.scientific_issues[0]);
+    assert.throws(() => auditHoldoutReconstruction(bad));
+  }
+  for (const url of ['javascript:alert(1)', 'https://cdn.clinicaltrials.gov.evil.example/doc', 'https://user:secret@doi.org/doc',
+    'https://doi.org:443/doc', 'https://doi.org/doc#fragment']) assert.equal(scientificIssueSourceUrl(url), undefined);
+});
+
+test('both existing research views show fifty tasks, three withheld outcomes and unresolved TNXP compliance', () => {
+  const FdaPage = require('../app/fda-research-status/page.tsx').default;
+  for (const View of [Panel, FdaPage]) {
+    const html = renderToStaticMarkup(React.createElement(View));
+    assert.match(html, /Fifty-level investigation protocol · 0\/50 independently completed/);
+    assert.match(html, /50 tasks in total, not 70/);
+    assert.match(html, /PASS \/ CRL \/ EXTENSION probabilities: withheld/);
+    assert.match(html, /Protocol compliance: <strong>NOT ESTABLISHED/);
+    assert.match(html, /457 randomized versus 456 in reported efficacy analysis/);
+    assert.match(html, /all-randomized analysis/);
+    assert.match(html, /Document date:/);
+    assert.match(html, /Original public availability:/);
+    assert.match(html, /Original historical prediction cutoff: unverified/);
+    assert.match(html, /https:\/\/cdn.clinicaltrials.gov\/large-docs\/49\/NCT05273749\/SAP_003.pdf/);
   }
 });

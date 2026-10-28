@@ -1,11 +1,11 @@
 import snapshot from "../../lib/fda-holdout-reconstruction-snapshot.json";
+import { auditHoldoutReconstruction } from "../../lib/fda-holdout-reconstruction";
+import { DecisionResearchSummary, InvestigationProtocolDetails, ScientificIssueDetails } from "../installation-audit/HistoricalHoldoutReconstruction";
 
 export const dynamic = "force-static";
 
 export default function FdaResearchStatusPage() {
-  if (snapshot.researchOnly !== true || snapshot.tradingAuthorized !== false || snapshot.validatedCases !== 0) {
-    throw new Error("Research status safety contract violated");
-  }
+  const report = auditHoldoutReconstruction(snapshot);
   return (
     <main style={{ maxWidth: 1080, margin: "2rem auto", padding: "1rem", color: "#173126" }}>
       <h1>FDA SCIENCE / OUTCOME — Historical Research</h1>
@@ -13,15 +13,15 @@ export default function FdaResearchStatusPage() {
         Research reconstruction only. Original prediction timestamps and independently authenticated source
         evidence are missing. No validated accuracy, approval probability, or authorization to trade.
       </p>
-      <p>Research snapshot: {snapshot.asOf} · Historical cases: {snapshot.caseReports.length} · Validated predictions: 0</p>
+      <p>Research snapshot: {report.asOf} · Historical cases: {report.caseReports.length} · Validated predictions: 0</p>
       <p><a href="/" style={{ textDecoration: "underline" }}>Return to dashboard</a></p>
-      {snapshot.caseReports.map((row) => (
+      {report.caseReports.map((row) => (
         <details key={row.event_key} style={{ marginBottom: 12, background: "#f1f8f2", border: "1px solid #9fb7a5", padding: 14 }}>
           <summary style={{ cursor: "pointer", fontWeight: 700 }}>
             {row.event_key} · SCIENCE: NOT VERIFIED · OUTCOME: ABSTAIN · READY: NO
           </summary>
           <p>Application: {row.application_id ?? "Unverified"} · Reconstruction cutoff: {row.reconstruction_cutoff}</p>
-          <p>SCIENCE: {row.scientific_dossier.summary.independently_completed_assessments}/40 independently completed assessments; {row.scientific_dossier.summary.independently_completed_depth_levels}/20 independently completed depth levels.</p>
+          <p>SCIENCE: {row.scientific_dossier.summary.independently_completed_assessments}/40 independently completed assessments; {row.scientific_dossier.summary.independently_completed_depth_levels}/20 independently completed foundation depths; 0/50 independently completed investigation levels.</p>
           <details><summary>Eight scientific layers · 40 questions and evidence status</summary>
             {row.scientific_dossier.layers.map((layer) => (
               <details key={layer.layer} style={{ margin: "10px 0", padding: 10, border: "1px solid #bfd0c0" }}>
@@ -32,6 +32,9 @@ export default function FdaResearchStatusPage() {
                       <strong>{question.question_id}: {question.question}</strong>
                       <div>Evidence: {question.research_status === "RESEARCH_OBSERVATION_ONLY" ? "Research observation only — not verified" : "Missing predecision source"} · Independent assessment: NOT COMPLETED</div>
                       <div>Required: {question.required_evidence}</div>
+                      <div>Scientific rationale: {question.scientific_rationale}</div>
+                      <div>Confidence: NOT ESTABLISHED · Independent verification: NOT COMPLETED · FDA decision effect: ABSTAIN</div>
+                      <div>Research cutoff: {question.research_cutoff}; original historical prediction cutoff: unverified.</div>
                       {question.observations.length > 0 && <details><summary>{question.observations.length} research source observation(s)</summary><ul>{question.observations.map((source) => <li key={source.source_id}>{source.source_id} · {source.available_on} · <a href={source.source_url} target="_blank" rel="noopener noreferrer">Source document ↗</a> · Not independently reviewed</li>)}</ul></details>}
                       {question.excluded_or_quarantined_sources.length > 0 && <div>Excluded or quarantined sources: {question.excluded_or_quarantined_sources.map((source) => source.reason).join(", ")}</div>}
                     </li>
@@ -40,26 +43,21 @@ export default function FdaResearchStatusPage() {
               </details>
             ))}
           </details>
-          <details><summary>20 investigation depth levels · independent review status</summary>
-            <p>All levels require independently authenticated evidence and review; an observation alone never completes a level.</p>
-            <ol>
-              {row.scientific_dossier.depth_framework.levels.map((level) => (
-                <li key={level.depth_level}>Level {level.depth_level}: {level.status.replaceAll("_", " ")} · {level.independently_reviewed_question_ids.length} independently reviewed questions</li>
-              ))}
-            </ol>
-          </details>
+          <InvestigationProtocolDetails framework={row.scientific_dossier.extended_investigation_framework} extended/>
+          <InvestigationProtocolDetails framework={row.scientific_dossier.depth_framework}/>
+          {row.scientific_dossier.scientific_issues.map(issue => <ScientificIssueDetails key={issue.issue_id} issue={issue}/>)}
           <details><summary>Predecision evidence chronology · excluded hindsight</summary>
             <p>Research cutoff: {row.reconstruction_cutoff}; original forecast freeze: not authenticated. Source dates are not proof of the original model input.</p>
             <ol>{row.source_classification.map((source) => (
               <li key={source.source_id} style={{ marginBottom: 10 }}>
-                <strong>{source.source_id}</strong> · Available: {source.available_on} · {source.classification.replaceAll("_", " ")}
+                <strong>{source.source_id}</strong> · Recorded source date: {source.available_on} · {source.classification.replaceAll("_", " ")}
                 <div>{source.finding}</div>
                 <div>Independent review: {source.independently_reviewed ? "Recorded" : "Not completed"} · Eligible for frozen prediction: NO</div>
                 <a href={source.source_url} target="_blank" rel="noopener noreferrer">Inspect source ↗</a>
               </li>
             ))}</ol>
           </details>
-          <p>OUTCOME: No approval probability or PASS/FAIL grade. Reluctant grade: insufficient verified evidence.</p>
+          <DecisionResearchSummary record={row}/>
           <p>Original prediction cutoff: not authenticated. Evidence blockers:</p>
           <ul>{row.blockers.slice(0, 6).map((reason) => <li key={reason}>{reason.replaceAll("_", " ")}</li>)}</ul>
           <details><summary>Missing documents · independent-review worklist ({row.missing_documents.length})</summary>

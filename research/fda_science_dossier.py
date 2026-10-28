@@ -9,6 +9,7 @@ from copy import deepcopy
 from datetime import date
 
 from research.science_investigation_depths import build_depth_framework
+from research.science_investigation_extension import build_extended_investigation_framework
 
 CANDIDATE = "PREDECISION_RESEARCH_CANDIDATE"
 
@@ -96,6 +97,15 @@ def build_scientific_dossier(case_report, catalog):
         question_rows.append({
             "question_id": question["id"], "layer": question["layer"],
             "question": question["question"], "required_evidence": question["requiredEvidence"],
+            "scientific_rationale": "Evaluate this question using " + question["requiredEvidence"] + "; source reports alone do not establish the finding.",
+            "historical_prediction_cutoff": case_report.get("original_prediction_cutoff"),
+            "research_cutoff": case_report["reconstruction_cutoff"],
+            "supporting_findings": [], "contradictory_findings": [],
+            "finding_classification_status": "INDEPENDENT_REVIEW_REQUIRED",
+            "missing_information": [question["requiredEvidence"], "Independent supporting/opposing interpretation and source provenance"],
+            "confidence_grade": "NOT_ESTABLISHED",
+            "independent_verification_status": "NOT_INDEPENDENTLY_ASSESSED",
+            "effect_on_proposed_fda_decision": "NO_CERTIFIED_EFFECT_ABSTAIN",
             "research_status": "RESEARCH_OBSERVATION_ONLY" if observations else "MISSING_PREDECISION_SOURCE",
             "observations": [{"source_id": s["source_id"], "source_url": s["source_url"],
                               "available_on": s["available_on"],
@@ -136,6 +146,8 @@ def build_scientific_dossier(case_report, catalog):
         "layers": layers,
         "depth_framework": build_depth_framework(catalog, sources,
             reconstruction_cutoff=case_report["reconstruction_cutoff"]),
+        "extended_investigation_framework": build_extended_investigation_framework(
+            catalog, sources, reconstruction_cutoff=case_report["reconstruction_cutoff"]),
         "historical_comparison": {
             "status": "UNADJUDICATED_RESEARCH_CONTEXT", "model_eligible_comparisons": 0,
             "contexts": deepcopy(case_report.get("related_precedents", [])),

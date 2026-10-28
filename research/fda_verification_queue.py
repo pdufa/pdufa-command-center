@@ -11,6 +11,8 @@ from datetime import date
 from pathlib import Path
 from research.fda_predecision_reconstruction import audit_reconstructions
 from research.fda_science_dossier import build_scientific_dossier
+from research.fda_outcome_provenance_gate import build_unvalidated_decision_contract
+from research.tnxp_resilient_population import build_population_issue
 
 PRIORITY = {
     "2025_EXTERNAL_BLIND": 0,
@@ -71,6 +73,10 @@ def _attach_science_framework(reconstruction):
             row.update(layer=definition["layer"],layer_name=definition["layerName"],question=definition["question"])
         case["action_metadata_binding"] = "MATCHED_CURATED_ACTION_MANIFEST_NOT_INDEPENDENT_ADJUDICATION"
         case["scientific_dossier"] = build_scientific_dossier(case,catalog)
+        case["scientific_dossier"]["scientific_issues"] = (
+            [build_population_issue()] if case["event_key"] == "TNXP|2025-08-15" else [])
+        case["decision_contract"] = build_unvalidated_decision_contract(
+            blockers=case["blockers"], as_of=date.fromisoformat(reconstruction["as_of"]))
         case["main"].update({
             "supporting_factors":case["supporting_factors"],"opposing_factors":case["opposing_factors"],
             "evidence_completeness":{"status":"INCOMPLETE","missing_documents":case["missing_documents"]},
