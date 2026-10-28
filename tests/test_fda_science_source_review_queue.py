@@ -23,6 +23,28 @@ class ScienceSourceReviewQueueTests(unittest.TestCase):
         result = build_science_source_review_queue(data)
         self.assertFalse(result["sources"][0]["ready_for_independent_science"])
 
+    def test_offline_hash_is_visible_but_not_certified(self):
+        data = {"cases": [{"event_key": "X", "reconstruction_cutoff": "2025-01-01",
+            "observations": [{"id": "obs", "source_role": "PREDECISION_RESEARCH",
+                "available_on": "2024-12-01"}]}]}
+        intake = {"obs": {"schema_version": "fda-crl-offline-intake-v1",
+                          "sha256": "a" * 64, "status": "HASHED_UNVERIFIED_SOURCE",
+                          "fda_authenticity_verified": False,
+                          "eligible_for_predictive_training": False}}
+        report = build_science_source_review_queue(data, intake)
+        self.assertEqual(report["sources"][0]["offline_intake_sha256"], "a" * 64)
+        self.assertFalse(report["sources"][0]["ready_for_independent_science"])
+        self.assertEqual(report["eligible_for_predictive_training"], 0)
+
+    def test_self_certified_intake_rejected(self):
+        data = {"cases": [{"event_key": "X", "reconstruction_cutoff": "2025-01-01",
+            "observations": [{"id": "obs", "source_role": "PREDECISION_RESEARCH",
+                "available_on": "2024-12-01"}]}]}
+        with self.assertRaises(ValueError):
+            build_science_source_review_queue(data, {"obs": {
+                "schema_version": "fda-crl-offline-intake-v1",
+                "fda_authenticity_verified": True}})
+
 
 if __name__ == "__main__":
     unittest.main()
