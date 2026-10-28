@@ -1,0 +1,68 @@
+name: Manual FDA source-byte research capture
+
+# Deliberately never invoked by push, PR, cron or existing nightly scans.
+# Only an authorized repository user can initiate this manual workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      source_set:
+        description: Exact FDA original action letter(s) to capture
+        required: true
+        type: choice
+        default: both
+        options:
+          - both
+          - nda213973
+          - bla761303
+
+permissions:
+  contents: read
+
+jobs:
+  source-byte-capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout reviewed source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Use Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download only the pinned official FDA PDF URLs
+        env:
+          FDA_CAPTURE_SET: ${{ inputs.source_set }}
+          PYTHONPATH: new-platform/backend
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pdufa-fda-evidence
+          chmod 700 /tmp/pdufa-fda-evidence
+          case "$FDA_CAPTURE_SET" in
+            both)
+              python new-platform/backend/scripts/capture_hop_fda_original_https.py /tmp/pdufa-fda-evidence --record-id NDA213973_ORIGINAL_1_20200515_APPROVED --record-id BLA761303_ORIGINAL_1_20240322_CRL
+              ;;
+            nda213973)
+              python new-platform/backend/scripts/capture_hop_fda_original_https.py /tmp/pdufa-fda-evidence --record-id NDA213973_ORIGINAL_1_20200515_APPROVED
+              ;;
+            bla761303)
+              python new-platform/backend/scripts/capture_hop_fda_original_https.py /tmp/pdufa-fda-evidence --record-id BLA761303_ORIGINAL_1_20240322_CRL
+              ;;
+            *) echo 'Invalid curated FDA source selection' >&2; exit 2 ;;
+          esac
+      - name: Preserve short-lived source bytes and SHA receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fda-original-source-byte-research
+          path: /tmp/pdufa-fda-evidence/*
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: State evidence boundary
+        if: always()
+        run: |
+          echo 'Successful capture proves only exact-URL HTTPS byte retrieval.'
+          echo 'FDA action interpretation, review cycle, first public availability,'
+          echo 'predecision features and model eligibility remain unadjudicated.'
+          echo 'No predictions, trades or database writes.'
