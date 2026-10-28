@@ -22,6 +22,7 @@ export default function FdaResearchStatusPage() {
           </summary>
           <p>Application: {row.application_id ?? "Unverified"} · Reconstruction cutoff: {row.reconstruction_cutoff}</p>
           <p>SCIENCE: {row.scientific_dossier.summary.independently_completed_assessments}/40 independently completed assessments; {row.scientific_dossier.summary.independently_completed_depth_levels}/20 independently completed depth levels.</p>
+          <details><summary>Eight scientific layers · evidence completeness</summary><ul>{row.scientific_dossier.layers.map((layer) => <li key={layer.layer}><strong>{layer.layer_name}</strong>: {layer.questions_with_research_observations}/5 questions with research observations; {layer.independently_completed_assessments}/5 independently completed assessments.</li>)}</ul></details>
           <p>OUTCOME: No approval probability or PASS/FAIL grade. Reluctant grade: insufficient verified evidence.</p>
           <p>Original prediction cutoff: not authenticated. Evidence blockers:</p>
           <ul>{row.blockers.slice(0, 6).map((reason) => <li key={reason}>{reason.replaceAll("_", " ")}</li>)}</ul>
