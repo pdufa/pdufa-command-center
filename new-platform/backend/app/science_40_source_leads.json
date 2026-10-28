@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "science40-published-source-leads-v1",
+  "status": "UNADJUDICATED_RESEARCH_LEADS_ONLY",
+  "origin": "Dated Cogent Biosciences issuer press releases. These are not original trial CSR/SAP or independent FDA filings; no claim is scientifically certified.",
+  "cases": {
+    "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130": {
+      "S01": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "publishedAt": "2026-05-30",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer reports the PEAK primary progression-free survival comparison: median 16.5 vs 9.2 months, HR 0.50 (95% CI 0.39–0.65), p<0.0001.",
+        "unresolvedQuestion": "Original protocol, blinded central review methods, censoring and locked SAP not independently inspected.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S02": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "publishedAt": "2026-05-30",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Same reported primary PFS numerical effect: 7.3-month difference in median PFS and HR 0.50.",
+        "unresolvedQuestion": "Clinical meaningfulness requires external context, quality-of-life and pre-specified threshold assessment.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S03": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "publishedAt": "2026-05-30",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer reports PFS2 HR 0.57 (95% CI 0.41–0.78), with combination median not reached vs 21 months for comparator.",
+        "unresolvedQuestion": "Secondary endpoint hierarchy, multiplicity and analysis definitions not reviewed.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S04": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "publishedAt": "2026-05-30",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer reports a PFS advantage in baseline KIT mutation subgroups.",
+        "unresolvedQuestion": "No independent subgroup SAP, interaction tests or complete subgroup denominators adjudicated.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S05": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "publishedAt": "2026-05-30",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer estimates average combination-arm treatment duration at 21.4 months as of March 31, 2026.",
+        "unresolvedQuestion": "Treatment duration is not interchangeable with durability of confirmed clinical benefit; overall survival remained immature.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S17": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "publishedAt": "2026-05-30",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer reports treatment-related discontinuation of 7.4% in the combination arm versus 3.8% with sunitinib alone.",
+        "unresolvedQuestion": "Do not infer overall safety from one discontinuation category; exposure-adjusted safety and clinical consequences unreviewed.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S18": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "publishedAt": "2026-05-30",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer reports grade 3 or higher ALT/AST laboratory elevations in 10.8% versus 1.4% of patients.",
+        "unresolvedQuestion": "Potential hepatic safety imbalance requires original adverse-event tables, denominators and independent benefit-risk evaluation.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S19": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "publishedAt": "2026-05-30",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer estimates mean treatment duration of 21.4 months for the combination arm.",
+        "unresolvedQuestion": "Mean duration alone does not establish long-term exposure-adjusted safety sufficiency.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S26": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+        "publishedAt": "2026-05-28",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer reports FDA acceptance of the combination NDA for GIST after prior imatinib and a target action date of November 30, 2026.",
+        "unresolvedQuestion": "Sponsor disclosure does not independently certify the FDA receipt letter, review-cycle identity or outcome.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      },
+      "S30": {
+        "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+        "publishedAt": "2026-05-28",
+        "indexedAt": "2026-10-27",
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": "Issuer reports priority review and earlier Breakthrough Therapy / Real-Time Oncology Review assignments.",
+        "unresolvedQuestion": "Designation dates, legal scope and precise FDA records require separate verification.",
+        "documentSha256": null,
+        "independentlyReviewed": false,
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+      }
+    }
+  }
+}
