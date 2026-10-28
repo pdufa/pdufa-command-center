@@ -68,7 +68,6 @@ def test_two_real_fda_pdf_hashes_recomputed_from_original_bytes_are_now_versione
 
 
 @pytest.mark.parametrize("changed", [
-    lambda data: data["receipts"][0].update(pdf_sha256="a"*64),
     lambda data: data["receipts"][0].update(pdf_sha256="bad"),
     lambda data: data["receipts"][0].update(response_byte_length=0),
     lambda data: data["receipts"][0].update(response_byte_length=True),
@@ -99,6 +98,18 @@ def test_receipt_tampering_or_unearned_regulatory_certification_rejected(changed
     changed(sources)
     with pytest.raises(ValueError):
         audit(register=sources, letters=letters)
+
+
+def test_syntactically_valid_but_unchecked_hash_cannot_create_prediction_clearance():
+    # A manifest-only string audit cannot prove actual source bytes; the
+    # independent artifact SHA verifier is needed for that stronger claim.
+    source, letters = manifests()
+    source["receipts"][0]["pdf_sha256"] = "a" * 64
+    meta = audit(register=source, letters=letters)
+    assert meta["capturedPdfRecords"] == 2
+    assert meta["independentlyVerifiedModelCycles"] == 0
+    assert meta["trainingAuthorized"] is False
+    assert meta["approvalProbability"] is None
 
 
 def test_retrospective_date_before_oct_28_cannot_observe_later_pdf_capture():
