@@ -1,0 +1,34 @@
+{
+  "schema_version": "pdufa-real-trial-research-fixture-v1",
+  "as_of": "2026-10-27",
+  "case_label": "COGT PEAK — source-announcement gate pilot, no FDA outcome adjudication",
+  "public_source_review": {
+    "phase3": "Cogent May 30, 2026 ASCO detailed PEAK Phase 3 clinical results announcement",
+    "pdufa": "Cogent May 28, 2026 announced FDA NDA acceptance and November 30, 2026 PDUFA target",
+    "caveat": "VERIFIED identifies reviewed public source announcements only. Neither source independently certifies the exact FDA review-cycle record or a clinical approval probability.",
+    "limitations": [
+      "Source links are dated issuer announcements, not an FDA regulatory dossier",
+      "No 40-item SCIENCE independent assessment is certified",
+      "No historical FDA cycles are adjudicated or used for outcome validation",
+      "No GEM JR/GEM/WT preset memberships are inferred"
+    ]
+  },
+  "candidate": {
+    "exact_key": "COGT|NCT05208047|BEZUCLASTINIB+SUNITINIB|GIST-POST-IMATINIB",
+    "list_memberships": [],
+    "phase3_results": {
+      "review_status": "VERIFIED",
+      "source_url": "https://cogentbiosciences.gcs-web.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+      "published_at": "2026-05-30",
+      "event_date": "2026-05-30"
+    },
+    "pdufa_assignment": {
+      "review_status": "VERIFIED",
+      "source_url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+      "published_at": "2026-05-28",
+      "event_date": "2026-05-28",
+      "pdufa_target_date": "2026-11-30"
+    },
+    "scientific_evidence": {}
+  }
+}
