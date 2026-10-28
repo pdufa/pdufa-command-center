@@ -9,7 +9,7 @@ class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
             "fda_action_at": "2025-08-15T16:00:00Z",
             "prediction_created_at": "2025-08-14T12:00:00Z",
             "model_frozen_at": "2025-08-13T12:00:00Z",
-            "immutable_prediction_uri": "archive:prediction:123",
+            "immutable_prediction_uri": "https://github.com/example/research/commit/1234567890abcdef",
             "prediction_sha256": "a"*64,
             "model_sha256": "b"*64,
             "independent_reviewer": "reviewer",
@@ -23,6 +23,12 @@ class OriginalPredictionEvidenceCheckTests(unittest.TestCase):
         self.assertTrue(result["cases"][0]["chronology_consistent"])
         self.assertTrue(result["cases"][0]["artifact_metadata_complete"])
         self.assertFalse(result["cases"][0]["independently_verified"])
+
+    def test_mutable_page_cannot_count_as_immutable_artifact(self):
+        record = {**self.good, "immutable_prediction_uri": "https://example.com/latest-prediction"}
+        result = assess_original_prediction_evidence(self.inventory, [record])
+        self.assertFalse(result["cases"][0]["artifact_metadata_complete"])
+        self.assertEqual(result["cases"][0]["status"], "INSUFFICIENT_OR_NONPROSPECTIVE_EVIDENCE")
 
     def test_post_action_prediction_rejected(self):
         record = {**self.good, "prediction_created_at": "2025-08-16T12:00:00Z"}
