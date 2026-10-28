@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-27T03:25:12.731759+00:00",
+  "updated_at_utc": "2026-10-28T01:07:17.984888+00:00",
   "latest_run_id": 40443182030,
   "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40443182030",
   "latest_run_started_at_utc": "2026-10-27T03:15:44Z",
-  "latest_run_conclusion": null,
+  "latest_run_conclusion": "success",
   "scope": "CLINICAL_PIPELINE_AND_GEM_JR_COLLECTORS_ONLY",
   "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-10-27T03:25:12.731775+00:00",
+    "checked_at_utc": "2026-10-28T01:07:17.984936+00:00",
     "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
@@ -100,7 +100,7 @@
       "run_id": 40443182030,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40443182030",
       "started_at_utc": "2026-10-27T03:15:44Z",
-      "run_conclusion": null,
+      "run_conclusion": "success",
       "status": "PARTIAL",
       "new_records": null,
       "changed_trials": null,
