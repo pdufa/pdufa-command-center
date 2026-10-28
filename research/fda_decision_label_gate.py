@@ -4,6 +4,7 @@ Research only. A candidate record is not automatically a training example.
 No live forecasts, trading actions, or dataset mutations are performed.
 """
 from datetime import date
+from urllib.parse import urlparse
 from typing import Mapping, Any
 
 VALID_ACTIONS = {"approval", "complete_response_letter"}
@@ -18,8 +19,13 @@ def assess_label_eligibility(record: Mapping[str, Any]) -> dict:
     action = record.get("action_type")
     if action not in VALID_ACTIONS:
         reasons.append("unverified_or_unsupported_action")
-    if not record.get("official_fda_action_source"):
+    source = record.get("official_fda_action_source")
+    if not isinstance(source, str) or not source:
         reasons.append("missing_official_fda_action_source")
+    else:
+        parsed = urlparse(source)
+        if parsed.scheme != "https" or parsed.hostname not in {"fda.gov", "www.fda.gov", "accessdata.fda.gov"}:
+            reasons.append("unverified_fda_source_domain")
     if not record.get("application_id"):
         reasons.append("missing_application_id")
     if not record.get("review_cycle_id"):
