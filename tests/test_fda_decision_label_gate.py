@@ -41,6 +41,17 @@ class LabelGateTests(unittest.TestCase):
                 record = {**BASE, "evidence_cutoff_date": cutoff}
                 self.assertIn("hindsight_or_same_day_evidence", assess_label_eligibility(record)["reasons"])
 
+    def test_noncanonical_dates_abstain(self):
+        for action_date in ("20250601", "2025-6-1", "2025-06-01T00:00:00", "2025-02-30"):
+            with self.subTest(action_date=action_date):
+                result = assess_label_eligibility({**BASE, "action_date": action_date})
+                self.assertEqual(result["status"], "ABSTAIN")
+                self.assertIn("invalid_or_missing_dates", result["reasons"])
+
+    def test_noncanonical_cutoff_abstains(self):
+        result = assess_label_eligibility({**BASE, "evidence_cutoff_date": "20250531"})
+        self.assertIn("invalid_or_missing_dates", result["reasons"])
+
     def test_missing_dates_abstains(self):
         record = {**BASE, "action_date": "not-a-date"}
         self.assertEqual(assess_label_eligibility(record)["status"], "ABSTAIN")
