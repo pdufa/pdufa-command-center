@@ -1,3 +1,4 @@
+# Synthetic fixtures explicitly declare publication dates; these are not real FDA source dates.
 from datetime import date
 import pytest
 from app.hop_backtest import walk_forward_backtest
@@ -5,7 +6,7 @@ from app.hop_outcome_cohort import OutcomeObservation
 
 def row(app, year, outcome="APPROVED", evidence_year=None):
     return OutcomeObservation(app, 1, date(year, 6, 1), outcome,
-                              "COMPLETE_APPLICATION_COHORT", "cohort", date(evidence_year or year, 1, 1), True)
+                              "COMPLETE_APPLICATION_COHORT", "cohort", date(evidence_year or year, 1, 1), True, outcome_public_as_of=date(year, 6, 1))
 
 def test_empty_history_abstains():
     folds = walk_forward_backtest([], [date(2020,1,1), date(2021,1,1)], lambda train, case: 0.5)
@@ -26,7 +27,7 @@ def test_repeated_application_is_excluded():
     records = [row("same",2019),row("same",2020)]
     records[1] = OutcomeObservation("same", 2, records[1].decision_date, records[1].outcome,
                                     records[1].ascertainment_source, records[1].cohort_id,
-                                    records[1].public_features_as_of, True)
+                                    records[1].public_features_as_of, True, outcome_public_as_of=records[1].decision_date)
     folds = walk_forward_backtest(records,[date(2020,1,1),date(2021,1,1)],lambda train, case: 0.9,min_train=1)
     assert folds[0].excluded_test_count == 1
     assert folds[0].brier_score is None
@@ -77,7 +78,7 @@ def test_insufficient_asof_history_abstains_without_scoring():
 def test_training_features_must_exist_by_heldout_snapshot():
     records = [
         OutcomeObservation("late_features", 1, date(2018, 6, 1), "APPROVED",
-                           "COMPLETE_APPLICATION_COHORT", "cohort", date(2019, 3, 1), True),
+                           "COMPLETE_APPLICATION_COHORT", "cohort", date(2019, 3, 1), True, outcome_public_as_of=date(2018, 6, 1)),
         row("known", 2017),
         row("heldout", 2020, evidence_year=2019),
     ]
@@ -95,7 +96,7 @@ def test_training_features_must_exist_by_heldout_snapshot():
 def test_unavailable_training_features_trigger_abstention():
     records = [
         OutcomeObservation("late_features", 1, date(2018, 6, 1), "APPROVED",
-                           "COMPLETE_APPLICATION_COHORT", "cohort", date(2019, 3, 1), True),
+                           "COMPLETE_APPLICATION_COHORT", "cohort", date(2019, 3, 1), True, outcome_public_as_of=date(2018, 6, 1)),
         row("heldout", 2020, evidence_year=2019),
     ]
     folds = walk_forward_backtest(

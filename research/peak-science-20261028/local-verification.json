@@ -1,0 +1,39 @@
+{
+  "checkedAtUtc": "2026-10-28T13:36:32.907993+00:00",
+  "implementationCommit": "b70177a228524d279ed5897c83355a10f30e730b",
+  "baselineMainCommit": "7a88764c6a5d798b917d3b1cdcfe8a07964343e2",
+  "scope": "Local authenticated ASGI integration with the real saved PEAK source case. Test-only authorization; not a live Render request, independent scientific review or FDA accuracy measurement.",
+  "requestSha256": "24ce4e06be21b5ab295ac77cc2450203e7363654059e44621aed1bccca4debc5",
+  "httpStatus": {
+    "unauthorizedView": 401,
+    "authorizedView": 200,
+    "authorizedBatch": 200
+  },
+  "remoteVerification": {
+    "renderBaselineDeploy": "dep-dbgnvknlk1mc7392bml0",
+    "renderBaselineStatus": "LIVE_PROVIDER_METADATA",
+    "liveAuthenticatedTests": "NOT_RUN_MISSING_SECURE_KEY_BINDING",
+    "healthProbeHttpStatus": 403,
+    "networkPolicy": "ENFORCED_RENDER_HOST_NOT_ALLOWED",
+    "postgresqlQuery": "EXTERNAL_CONNECTION_BLOCKED_BY_EXISTING_ALLOWLIST",
+    "deploymentOfThisChange": "NOT_PERFORMED"
+  },
+  "peakMeasurements": {
+    "questionRecords": 40,
+    "questionsWithSourceObservations": 27,
+    "missingRequiredDocumentFamilies": 12,
+    "historicalSourceContexts": 3,
+    "independentlyAdjudicatedHistoricalCycles": 0,
+    "originalSourceBytesRetained": 0,
+    "independentlyCertifiedAssessments": 0,
+    "pointInTimeTrainingEligible": false,
+    "curatedSourceLeads": 10,
+    "certifiedAssessments": 0,
+    "researchReadiness": "RELUCTANT",
+    "decisionReadiness": "ABSTAIN",
+    "batchEligibleForResearch": 1,
+    "sheetPreviewRows": 1,
+    "sheetWritten": false
+  },
+  "fullResponseHandling": "Full local response retained only in ignored work/peak-science-20261028/local-api-response.json; excluded from proposed publication."
+}

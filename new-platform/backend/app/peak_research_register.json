@@ -1,0 +1,1189 @@
+{
+  "schemaVersion": "peak-research-register-v1",
+  "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+  "nctId": "NCT05208047",
+  "drug": "Bezuclastinib plus sunitinib",
+  "indication": "GIST after imatinib",
+  "indexedOn": "2026-10-28",
+  "status": "UNADJUDICATED_RESEARCH_ONLY",
+  "originalBytesRetained": false,
+  "sources": [
+    {
+      "id": "sec-peak",
+      "url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525273315/d54064dex991.htm",
+      "documentDate": "2025-11-10",
+      "publishedAt": null,
+      "observedOn": "2026-10-28",
+      "accessStatus": "TEXT_OBSERVED",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false
+    },
+    {
+      "id": "nci-trial",
+      "url": "https://www.cancer.gov/research/participate/clinical-trials-search/v?id=NCI-2022-02257",
+      "documentDate": null,
+      "publishedAt": null,
+      "observedOn": "2026-10-28",
+      "accessStatus": "TEXT_OBSERVED",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false
+    },
+    {
+      "id": "issuer-results",
+      "url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+      "documentDate": null,
+      "publishedAt": "2026-05-30",
+      "observedOn": "2026-10-28",
+      "accessStatus": "PRIOR_TEXT_OBSERVED_CURRENT_FETCH_403",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false
+    },
+    {
+      "id": "issuer-target",
+      "url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+      "documentDate": null,
+      "publishedAt": "2026-05-28",
+      "observedOn": "2026-10-28",
+      "accessStatus": "PRIOR_TEXT_OBSERVED_CURRENT_FETCH_403",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false
+    },
+    {
+      "id": "nci-treatment",
+      "url": "https://www.cancer.gov/types/soft-tissue-sarcoma/hp/gist-treatment-pdq",
+      "documentDate": null,
+      "publishedAt": null,
+      "observedOn": "2026-10-28",
+      "accessStatus": "TEXT_OBSERVED",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false
+    },
+    {
+      "id": "fda-sunitinib",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2006/021938s000ltr.pdf",
+      "documentDate": null,
+      "publishedAt": null,
+      "observedOn": "2026-10-28",
+      "accessStatus": "TEXT_OBSERVED",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false
+    },
+    {
+      "id": "fda-ripretinib",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2020/213973Orig1s000ltr.pdf",
+      "documentDate": null,
+      "publishedAt": null,
+      "observedOn": "2026-10-28",
+      "accessStatus": "TEXT_OBSERVED",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false
+    },
+    {
+      "id": "sec-poziotinib",
+      "url": "https://www.sec.gov/Archives/edgar/data/831547/000083154723000007/R9.htm",
+      "documentDate": null,
+      "publishedAt": null,
+      "observedOn": "2026-10-28",
+      "accessStatus": "TEXT_OBSERVED",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false
+    },
+    {
+      "id": "fda-poziotinib-identity",
+      "url": "https://public-inspection.federalregister.gov/2022-15609.pdf",
+      "documentDate": "2022-07-21",
+      "publishedAt": null,
+      "observedOn": "2026-10-28",
+      "accessStatus": "TEXT_OBSERVED",
+      "originalDocumentSha256": null,
+      "originalBytesRetained": false,
+      "independentlyReviewed": false,
+      "dateNote": "Notice states scheduled Federal Register publication July 21, 2022; actual original publication timestamp not independently recovered."
+    }
+  ],
+  "requiredDocuments": [
+    {
+      "id": "protocol",
+      "name": "Versioned complete PEAK protocol",
+      "status": "MISSING"
+    },
+    {
+      "id": "amendments",
+      "name": "Dated protocol amendments and change history",
+      "status": "MISSING"
+    },
+    {
+      "id": "sap",
+      "name": "Pre-unblinding statistical analysis plan and multiplicity hierarchy",
+      "status": "MISSING"
+    },
+    {
+      "id": "csr",
+      "name": "Full clinical study report and prespecified analysis tables",
+      "status": "MISSING"
+    },
+    {
+      "id": "reproduction",
+      "name": "Patient-level or independently reproducible analysis data and code",
+      "status": "MISSING"
+    },
+    {
+      "id": "safety",
+      "name": "Adjudicated serious-adverse-event and death narratives with exposure tables",
+      "status": "MISSING"
+    },
+    {
+      "id": "ddi",
+      "name": "Original drug-interaction and exposure-response clinical reports",
+      "status": "MISSING"
+    },
+    {
+      "id": "fda-correspondence",
+      "name": "Exact NDA, FDA filing/PDUFA correspondence and review agreements",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "cmc-process",
+      "name": "Drug substance/product characterization and process validation",
+      "status": "MISSING"
+    },
+    {
+      "id": "cmc-stability",
+      "name": "Commercial specifications, stability and analytical validation",
+      "status": "MISSING"
+    },
+    {
+      "id": "inspection",
+      "name": "Facility inspection, quality-system and supply-chain evidence",
+      "status": "MISSING"
+    },
+    {
+      "id": "historical-cohort",
+      "name": "Complete application/cycle histories, original nonapproval documents and predecision comparator snapshots",
+      "status": "MISSING"
+    }
+  ],
+  "questions": [
+    {
+      "id": "S01",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slides 8 and 10 report BICR PFS as primary endpoint; HR 0.50 (95% CI 0.39-0.65), p<0.0001.",
+      "interpretation": "SUPPORTS",
+      "uncertainties": [
+        "The original prespecified estimand, censoring rules and final analysis report are unavailable."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "sap",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S02",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 10 reports median PFS 16.5 versus 9.2 months.",
+      "interpretation": "SUPPORTS",
+      "uncertainties": [
+        "Clinical importance needs the prespecified threshold, patient experience and safety context; a median difference is not an approval probability."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S03",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slides 8 and 11 report secondary endpoints and ORR 45.6% versus 25.8%.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Multiplicity-controlled inference and complete secondary results, including OS, require the SAP and report."
+      ],
+      "missingDocumentIds": [
+        "sap",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S04",
+      "sourceIds": [
+        "issuer-results"
+      ],
+      "sourceLocation": "Published source text",
+      "researchObservation": "The dated detailed-results disclosure reports activity across KIT mutation subgroups.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Subgroup sample sizes, interaction tests and prespecification were not independently examined."
+      ],
+      "missingDocumentIds": [
+        "sap",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S05",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 8 lists duration of response; slide 10 reports a PFS follow-up curve.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Neither a treatment-duration claim nor a PFS median establishes mature durability for all relevant outcomes."
+      ],
+      "missingDocumentIds": [
+        "csr",
+        "safety"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S06",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No dated, pre-unblinding SAP was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Prospective finalization and amendment timing cannot be established."
+      ],
+      "missingDocumentIds": [
+        "sap",
+        "amendments"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S07",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Nominal PFS and ORR p-values appear in slides 10-11.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Reported p-values do not establish alpha allocation or a prespecified testing hierarchy."
+      ],
+      "missingDocumentIds": [
+        "sap"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S08",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 8 permits crossover after BICR-confirmed progression.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Missingness, intercurrent-event and OS treatment-switching strategies require the original estimand/SAP."
+      ],
+      "missingDocumentIds": [
+        "sap",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S09",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No complete sensitivity-analysis tables were obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Consistency under alternative censoring and missing-data assumptions is unknown."
+      ],
+      "missingDocumentIds": [
+        "sap",
+        "csr",
+        "reproduction"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S10",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slides 10-11 report hazard-ratio and response-rate confidence intervals.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Proportional-hazards assumptions, censoring balance and independently reproduced estimates remain unexamined."
+      ],
+      "missingDocumentIds": [
+        "sap",
+        "csr",
+        "reproduction"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S11",
+      "sourceIds": [
+        "nci-trial"
+      ],
+      "sourceLocation": "Trial description and eligibility",
+      "researchObservation": "The NCI record separates Part 2 after imatinib from earlier dose/DDI parts and a first-line substudy.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "The proposed indication must be bound to the Part 2 cohort, not the entire multipart registry enrollment."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "fda-correspondence"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S12",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 8 compares the combination with sunitinib 37.5 mg once daily.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Dose choice, comparator optimization and regulatory agreements need the protocol and correspondence."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "fda-correspondence"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S13",
+      "sourceIds": [
+        "nci-trial"
+      ],
+      "sourceLocation": "Trial description and eligibility",
+      "researchObservation": "NCI describes an open-label trial; SEC slide 8 specifies blinded independent central endpoint review.",
+      "interpretation": "MIXED",
+      "uncertainties": [
+        "Open-label treatment and blinded image review are different properties; allocation concealment and bias mitigation remain unreviewed."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S14",
+      "sourceIds": [
+        "nci-trial"
+      ],
+      "sourceLocation": "Trial description and eligibility",
+      "researchObservation": "NCI describes approximately 388 planned Part 2 participants; SEC slide 9 reports 413 randomized.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Planning versus actual enrollment requires versioned sample-size assumptions; this is not proof of a data contradiction."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "amendments",
+        "sap"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S15",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "A complete protocol-amendment and deviation history was not obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Effects on eligibility, power and analysis populations cannot be independently assessed."
+      ],
+      "missingDocumentIds": [
+        "amendments",
+        "csr"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S16",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 12 reports serious adverse reactions in 34/204 versus 24/208 participants.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Serious reactions are not interchangeable with all serious adverse events; narratives and causality review are missing."
+      ],
+      "missingDocumentIds": [
+        "safety",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S17",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 12 reports treatment-related discontinuation in 15/204 versus 8/208.",
+      "interpretation": "MIXED",
+      "uncertainties": [
+        "Acceptability requires comparative exposure, reasons, severity and clinical-benefit context."
+      ],
+      "missingDocumentIds": [
+        "safety",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S18",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 13 reports grade 3+ ALT/AST increases in 22/204 versus 3/208.",
+      "interpretation": "CHALLENGES",
+      "uncertainties": [
+        "Liver-event narratives, reversibility, Hy's-law evaluation and monitoring remain unavailable."
+      ],
+      "missingDocumentIds": [
+        "safety",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S19",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 12 reports dose reductions in 114/204 versus 92/208; exposure is described in sponsor material.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Exposure-adjusted events, delayed toxicity and original DDI reports require further review."
+      ],
+      "missingDocumentIds": [
+        "safety",
+        "ddi",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S20",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "PFS benefit and higher grade 3+ treatment-related toxicity are both reported in slides 10 and 12.",
+      "interpretation": "MIXED",
+      "uncertainties": [
+        "Overall benefit-risk cannot be independently concluded from a sponsor slide set; OS, quality of life and full safety data are incomplete."
+      ],
+      "missingDocumentIds": [
+        "csr",
+        "safety",
+        "reproduction"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S21",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "The investor presentation and later issuer disclosure describe the PEAK program.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Repeated reports of the same cohort are not independent replication; earlier dose/combination cohorts differ."
+      ],
+      "missingDocumentIds": [
+        "csr",
+        "reproduction"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S22",
+      "sourceIds": [
+        "nci-trial"
+      ],
+      "sourceLocation": "Trial description and eligibility",
+      "researchObservation": "NCI planned enrollment and SEC actual randomized/safety populations use different denominators.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "The safety denominator excludes one control participant never dosed, as footnoted on SEC slide 12; original records still require reconciliation."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "amendments",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S23",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No patient-level data, analysis code or independent replication package was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Principal analyses cannot be independently reproduced."
+      ],
+      "missingDocumentIds": [
+        "reproduction",
+        "sap"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S24",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No source-data audit, monitoring or independent data-integrity report was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Regulatory audit-trail adequacy remains unknown."
+      ],
+      "missingDocumentIds": [
+        "csr",
+        "reproduction",
+        "inspection"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S25",
+      "sourceIds": [
+        "nci-trial"
+      ],
+      "sourceLocation": "Trial description and eligibility",
+      "researchObservation": "Enrollment scope and open-label versus BICR descriptions require contextual reconciliation.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Different study parts, analysis populations and assessor masking must not be treated as interchangeable or fabricated contradictions."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "amendments",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S26",
+      "sourceIds": [
+        "issuer-target"
+      ],
+      "sourceLocation": "Published source text",
+      "researchObservation": "The issuer identifies an NDA for bezuclastinib plus sunitinib in GIST after imatinib.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "The exact FDA application number and original correspondence remain unverified; mastocytosis filings are separate."
+      ],
+      "missingDocumentIds": [
+        "fda-correspondence"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S27",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No original FDA meeting minutes, special protocol agreement or review correspondence was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Filing acceptance is not agreement that all clinical, safety or CMC issues are resolved."
+      ],
+      "missingDocumentIds": [
+        "fda-correspondence"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S28",
+      "sourceIds": [
+        "fda-sunitinib"
+      ],
+      "sourceLocation": "Published source text",
+      "researchObservation": "An FDA letter supports sunitinib for imatinib-resistant/intolerant GIST; a separate application in that letter concerns RCC.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Endpoint precedents differ by indication and era; RCC accelerated approval must not be assigned to the GIST application."
+      ],
+      "missingDocumentIds": [
+        "fda-correspondence",
+        "historical-cohort"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S29",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No current PEAK deficiency letter or relevant facility-inspection record was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Absence of an examined deficiency document does not establish absence of a regulatory risk."
+      ],
+      "missingDocumentIds": [
+        "fda-correspondence",
+        "inspection"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S30",
+      "sourceIds": [
+        "issuer-target"
+      ],
+      "sourceLocation": "Published source text",
+      "researchObservation": "The May 28 issuer announcement reports Priority Review and a November 30 target.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Priority Review concerns review timing, not guaranteed approval or an inferred accelerated-approval pathway."
+      ],
+      "missingDocumentIds": [
+        "fda-correspondence"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S31",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No original drug-substance or product-process dossier was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Manufacturing characterization cannot be assessed from clinical efficacy disclosures."
+      ],
+      "missingDocumentIds": [
+        "cmc-process"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S32",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No commercial-scale validation package was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Process readiness remains unknown, not failed or cleared."
+      ],
+      "missingDocumentIds": [
+        "cmc-process"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S33",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No product specifications, stability tables or analytical validation dossier was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Commercial shelf life and analytical adequacy remain unknown."
+      ],
+      "missingDocumentIds": [
+        "cmc-stability"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S34",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No relevant facility inspection or quality-system evidence was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Inspection readiness and unresolved observations cannot be inferred."
+      ],
+      "missingDocumentIds": [
+        "inspection"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S35",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "No CMC deficiency reconciliation or supply-chain qualification package was obtained.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Supply-chain/quality risks remain open rather than assumed absent."
+      ],
+      "missingDocumentIds": [
+        "cmc-process",
+        "cmc-stability",
+        "inspection"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S36",
+      "sourceIds": [
+        "nci-trial"
+      ],
+      "sourceLocation": "Trial description and eligibility",
+      "researchObservation": "NCI eligibility excludes PDGFR-driven/SDH-deficient disease and significant cardiac disease.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Generalization outside enrolled molecular, performance-status and comorbidity groups needs original subgroup evidence."
+      ],
+      "missingDocumentIds": [
+        "protocol",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S37",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "sourceLocation": "SEC presentation slides 8-13",
+      "researchObservation": "Slide 9 describes the randomized second-line population and regional enrollment.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Transferability to routine care, other treatment lines and less fit patients is not independently established."
+      ],
+      "missingDocumentIds": [
+        "csr",
+        "reproduction"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S38",
+      "sourceIds": [],
+      "sourceLocation": null,
+      "researchObservation": "The selected FDA examples are deliberately chosen context, not a systematic historical cohort.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Both action histories and a complete inclusion/exclusion denominator are needed before validation."
+      ],
+      "missingDocumentIds": [
+        "historical-cohort"
+      ],
+      "reviewStatus": "MISSING",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S39",
+      "sourceIds": [
+        "fda-ripretinib"
+      ],
+      "sourceLocation": "Published source text",
+      "researchObservation": "Ripretinib NDA213973 concerns GIST after at least three prior kinase inhibitors.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "That later-line placebo-controlled precedent differs from PEAK's active second-line comparator; the poziotinib nonapproval context is a different disease and evidence design."
+      ],
+      "missingDocumentIds": [
+        "historical-cohort"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    },
+    {
+      "id": "S40",
+      "sourceIds": [
+        "nci-treatment"
+      ],
+      "sourceLocation": "Published source text",
+      "researchObservation": "NCI describes approved GIST treatment options across successive treatment lines.",
+      "interpretation": "INCONCLUSIVE",
+      "uncertainties": [
+        "Cross-trial response/PFS comparisons are descriptive; no superiority or approval likelihood is inferred."
+      ],
+      "missingDocumentIds": [
+        "historical-cohort",
+        "csr"
+      ],
+      "reviewStatus": "UNADJUDICATED_RESEARCH",
+      "independentlyReviewed": false,
+      "reviewedDepthLevels": [],
+      "exactKey": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+      "nctId": "NCT05208047",
+      "independentReviewRequired": true
+    }
+  ],
+  "historicalContexts": [
+    {
+      "id": "sunitinib-gist",
+      "applicationId": "NDA021938",
+      "submissionId": null,
+      "reviewCycle": null,
+      "drug": "Sunitinib",
+      "indication": "GIST after imatinib",
+      "actionClaim": "APPROVAL",
+      "actionDate": "2006-01-26",
+      "actionDateBasis": "FDA_LETTER_SIGNATURE_REPORTED",
+      "sourceIds": [
+        "fda-sunitinib"
+      ],
+      "similarities": [
+        "GIST after imatinib",
+        "Kinase inhibition"
+      ],
+      "differences": [
+        "Monotherapy versus combination",
+        "Different trial and regulatory era"
+      ],
+      "modelEligible": false,
+      "independentlyAdjudicated": false
+    },
+    {
+      "id": "ripretinib-gist",
+      "applicationId": "NDA213973",
+      "submissionId": "ORIG-1",
+      "reviewCycle": null,
+      "drug": "Ripretinib",
+      "indication": "GIST after at least three prior kinase inhibitors",
+      "actionClaim": "APPROVAL",
+      "actionDate": "2020-05-15",
+      "actionDateBasis": "FDA_APPROVAL_LETTER",
+      "sourceIds": [
+        "fda-ripretinib"
+      ],
+      "similarities": [
+        "GIST",
+        "Kinase inhibition"
+      ],
+      "differences": [
+        "Later line",
+        "Placebo comparator",
+        "Different mechanism profile"
+      ],
+      "modelEligible": false,
+      "independentlyAdjudicated": false
+    },
+    {
+      "id": "poziotinib-nsclc",
+      "applicationId": "NDA215643",
+      "submissionId": null,
+      "reviewCycle": null,
+      "drug": "Poziotinib",
+      "indication": "Previously treated HER2 exon-20-insertion NSCLC",
+      "actionClaim": "ISSUER_REPORTED_COMPLETE_RESPONSE",
+      "actionDate": null,
+      "reportedOn": "2022-11-25",
+      "actionDateBasis": "ISSUER_REPORTED_RECEIPT_NOT_ORIGINAL_FDA_ACTION_DATE",
+      "sourceIds": [
+        "sec-poziotinib",
+        "fda-poziotinib-identity"
+      ],
+      "similarities": [
+        "Targeted oncology kinase inhibitor",
+        "Benefit-risk and confirmatory-evidence concerns"
+      ],
+      "differences": [
+        "Different cancer and target",
+        "Single-arm evidence context",
+        "Not a close GIST efficacy comparator"
+      ],
+      "modelEligible": false,
+      "independentlyAdjudicated": false
+    }
+  ],
+  "timeline": [
+    {
+      "date": "2025-11-10",
+      "event": "Sponsor presentation dated; September 30 clinical data cutoff",
+      "sourceId": "sec-peak",
+      "basis": "DOCUMENT_DATE_NOT_VERIFIED_PUBLICATION_DATE"
+    },
+    {
+      "date": "2026-05-28",
+      "event": "NDA acceptance, Priority Review and November 30 target announced",
+      "sourceId": "issuer-target",
+      "basis": "SPONSOR_REPORTED"
+    },
+    {
+      "date": "2026-05-30",
+      "event": "Detailed Phase 3 efficacy and safety disclosure",
+      "sourceId": "issuer-results",
+      "basis": "SPONSOR_REPORTED"
+    },
+    {
+      "date": "2026-11-30",
+      "event": "Anticipated PDUFA target; future outcome unknown",
+      "sourceId": "issuer-target",
+      "basis": "SPONSOR_REPORTED_FUTURE_MILESTONE"
+    }
+  ],
+  "criticalConcerns": [
+    "Original protocol/SAP and full report unavailable",
+    "Higher reported hepatic laboratory toxicity and treatment-related discontinuations",
+    "Open-label treatment, BICR assessment and crossover require separate bias/estimand review",
+    "CMC, inspection and exact FDA application correspondence unresolved",
+    "No representative, independently adjudicated historical validation cohort"
+  ],
+  "depthFramework": {
+    "requiredLevels": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "independentlyReviewedLevels": [],
+    "status": "NO_DEPTH_EXECUTION_OR_INDEPENDENT_SIGNOFF_CERTIFIED"
+  },
+  "modelValidated": false,
+  "approvalProbability": null,
+  "tradeAuthorized": false,
+  "evidenceDiscrepancies": [
+    {
+      "id": "planned-vs-actual-enrollment",
+      "status": "CONTEXT_RECONCILIATION_REQUIRED",
+      "sourceIds": [
+        "nci-trial",
+        "sec-peak"
+      ],
+      "observation": "NCI describes approximately 388 planned Part 2 participants; the sponsor presentation reports 413 randomized. Different versions and planned versus actual enrollment require original protocol/amendment reconciliation. No data contradiction is established."
+    },
+    {
+      "id": "randomized-vs-safety-population",
+      "status": "SOURCE_EXPLANATION_AVAILABLE_NOT_INDEPENDENTLY_ADJUDICATED",
+      "sourceIds": [
+        "sec-peak"
+      ],
+      "observation": "The presentation reports 204/209 randomized versus 204/208 safety participants. Its footnote states one control participant was never dosed; denominators must remain separate."
+    }
+  ]
+}

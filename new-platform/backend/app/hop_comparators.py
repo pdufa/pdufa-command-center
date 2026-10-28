@@ -8,7 +8,7 @@ from collections import Counter
 from dataclasses import dataclass
 from datetime import date
 from typing import Iterable
-from .hop_outcomes_import import _fda_url
+from .hop_outcomes_import import _fda_url, normalize_application_id
 
 @dataclass(frozen=True)
 class HistoricalCase:
@@ -23,6 +23,11 @@ class HistoricalCase:
     source_url: str
     public_features_as_of: date | None = None
     independently_adjudicated: bool = False
+    application_id: str | None = None
+    review_cycle: int | None = None
+    drug_name: str | None = None
+    sponsor: str | None = None
+    source_title: str | None = None
 
 @dataclass(frozen=True)
 class TargetCase:
@@ -50,27 +55,41 @@ def match_historical_cases(target: TargetCase, history: Iterable[HistoricalCase]
     validation, successful PDF downloading, or archive existence alone.
     Similarity is descriptive, NOT an FDA approval probability.
     """
-    if limit < 1:
+    if type(limit) is not int or limit < 1:
         raise ValueError("limit must be positive")
+    if type(target.prediction_as_of) is not date:
+        raise ValueError("prediction_as_of must be a date")
     cases = tuple(history)
     duplicates = Counter(case.case_id for case in cases if case.case_id)
+    # Local case IDs do not establish FDA event identity. Reconcile exact cycles
+    # before other quality filtering so a bad conflicting claim cannot vanish.
+    identities = [
+        (normalize_application_id(case.application_id), case.review_cycle)
+        if normalize_application_id(case.application_id) is not None
+        and type(case.review_cycle) is int and case.review_cycle > 0 else None
+        for case in cases
+    ]
+    cycle_counts = Counter(key for key in identities if key is not None)
     matched: list[Comparator] = []
-    for case in cases:
+    for case, identity in zip(cases, identities):
         if (not case.case_id or duplicates[case.case_id] != 1
+            or identity is None or cycle_counts[identity] != 1
             or not _fda_url(case.source_url)
             or case.independently_adjudicated is not True
             or case.outcome not in VALID_OUTCOMES
+            or type(case.decision_date) is not date
+            or type(case.evidence_as_of) is not date
             or case.decision_date >= target.prediction_as_of
             # Outcome evidence can only exist on/after the FDA decision;
             # it must be public before the target prediction cutoff.
             or case.evidence_as_of < case.decision_date
-            or case.evidence_as_of > target.prediction_as_of
+            or case.evidence_as_of >= target.prediction_as_of
             # Clinical comparison features must have been public BEFORE
             # the historical FDA decision, never reconstructed afterward.
-            or case.public_features_as_of is None
+            or type(case.public_features_as_of) is not date
             or case.public_features_as_of >= case.decision_date
             or case.public_features_as_of > target.prediction_as_of
-            or case.phase < 3):
+            or type(case.phase) is not int or not 3 <= case.phase <= 4):
             continue
         score = (
             0.45 * (case.indication.strip().casefold() == target.indication.strip().casefold())
