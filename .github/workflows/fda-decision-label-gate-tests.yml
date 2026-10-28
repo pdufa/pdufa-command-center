@@ -7,6 +7,7 @@ on:
       - "research/fda_candidate_audit_cli.py"
       - "research/fda_existing_history_audit.py"
       - "research/fda_archive_chronology_gate.py"
+      - "research/fda_prediction_provenance_worklist.py"
       - "research/fda_verification_queue.py"
       - "research/fda_predecision_reconstruction.py"
       - "research/fda_science_dossier.py"
@@ -24,6 +25,7 @@ on:
       - "tests/test_fda_candidate_audit_cli.py"
       - "tests/test_fda_existing_history_audit.py"
       - "tests/test_fda_archive_chronology_gate.py"
+      - "tests/test_fda_prediction_provenance_worklist.py"
       - "tests/test_fda_predecision_reconstruction.py"
       - "tests/test_fda_holdout_reconstruction_integration.py"
       - "tests/test_fda_science_dossier.py"
@@ -52,6 +54,7 @@ jobs:
           python -m unittest discover -s tests -p "test_fda_candidate_audit_cli.py" -v
           python -m unittest discover -s tests -p "test_fda_existing_history_audit.py" -v
           python -m unittest discover -s tests -p "test_fda_archive_chronology_gate.py" -v
+          python -m unittest discover -s tests -p "test_fda_prediction_provenance_worklist.py" -v
           python -m research.fda_archive_chronology_gate research/evidence/2025_holdout_archive_provenance_audit.json research/evidence/2025_holdout_predecision_reconstruction.json > "$RUNNER_TEMP/fda_archive_chronology.json"
           python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"fda_archive_chronology.json"))); assert len(r["cases"]) == 6 and r["eligible_cases"] == 0 and all(x["model_freeze_after_fda_action"] and x["prediction_archive_lock_after_fda_action"] for x in r["cases"]); print("Historical archive chronology: 6 post-action cases, 0 validated")'
           python -m pytest -q tests/test_fda_predecision_reconstruction.py tests/test_fda_holdout_reconstruction_integration.py tests/test_fda_science_dossier.py tests/test_fda_holdout_dashboard_snapshot.py
