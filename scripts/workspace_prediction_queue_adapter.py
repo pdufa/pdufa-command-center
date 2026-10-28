@@ -62,7 +62,18 @@ def workspace_to_priority_queue(payload: Mapping[str, Any]) -> dict:
             key = item.get("program_id") or item.get("programId") or item.get("id")
             if not isinstance(key, str) or not key.strip():
                 continue
-            rows.append({**item, "program_id": key.strip(), "list_name": label})
+            # phase3Status is a development-stage label, not proof that
+            # results have been publicly released. Accept only a separately
+            # attested evidence status with a source citation.
+            evidence = str(item.get("phase3_evidence_status") or "").strip().lower()
+            evidence_url = item.get("phase3_evidence_url")
+            verified = (evidence in {"phase3_results_released", "phase3_results_published"}
+                        and isinstance(evidence_url, str)
+                        and evidence_url.startswith(("https://", "http://")))
+            normalized = {**item, "program_id": key.strip(), "list_name": label}
+            if not verified:
+                normalized["phase3_evidence_status"] = "source_verification_required"
+            rows.append(normalized)
     result = build_initial_queue(rows)
     result["source_groups_missing"] = missing_groups
     result["status"] = "SOURCE_PARTIAL" if missing_groups else "CLASSIFICATION_QUEUE_BUILT"
