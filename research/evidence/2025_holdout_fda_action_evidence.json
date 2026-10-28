@@ -1,0 +1,40 @@
+{
+  "research_only": true,
+  "validated_training_cohort": false,
+  "action_evidence_verified_count": 2,
+  "records": [
+    {
+      "ticker": "TNXP",
+      "event_key": "TNXP|2025-08-15",
+      "product": "Tonmya (cyclobenzaprine hydrochloride sublingual tablets)",
+      "application_id": "NDA 219428",
+      "action": "approval",
+      "action_date": "2025-08-15",
+      "fda_document_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219428Orig1s000ltr.pdf",
+      "document_reference_id": "5643862",
+      "document_evidence": "FDA original approval letter signed August 15, 2025",
+      "review_cycle_id": "Orig1s000",
+      "predecision_inputs_verified": false,
+      "sampling_denominator_verified": false,
+      "program_family_disjoint_verified": false,
+      "eligible_for_training": false
+    },
+    {
+      "ticker": "CORT",
+      "event_key": "CORT|2025-12-30",
+      "product": "relacorilant for Cushing syndrome",
+      "application_id": "NDA 219398",
+      "action": "complete_response_letter",
+      "action_date": "2025-12-30",
+      "fda_document_url": "https://download.open.fda.gov/crl/CRL_NDA219398_20260128.pdf",
+      "document_reference_id": "5735859",
+      "document_evidence": "Corrected FDA complete response letter signed January 28, 2026 expressly retains original action date December 30, 2025",
+      "review_cycle_id": "unverified",
+      "predecision_inputs_verified": false,
+      "sampling_denominator_verified": false,
+      "program_family_disjoint_verified": false,
+      "eligible_for_training": false,
+      "correction_warning": "Corrected document was issued after the FDA action and must never be used as a predecision input."
+    }
+  ]
+}
