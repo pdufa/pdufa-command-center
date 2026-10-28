@@ -18,6 +18,7 @@ from urllib.parse import urlsplit
 
 QUESTION_CATALOG = Path(__file__).with_name("science_40_question_catalog.json")
 ADJUDICATION_REGISTER = Path(__file__).with_name("science_40_adjudication_register.json")
+SOURCE_LEADS = Path(__file__).with_name("science_40_source_leads.json")
 INTERPRETATIONS = frozenset({"SUPPORTS", "CHALLENGES", "MIXED", "INCONCLUSIVE"})
 SOURCE_SHA = re.compile(r"[a-f0-9]{64}\Z")
 DEPTH_LEVELS = tuple(range(1, 21))
@@ -77,6 +78,48 @@ def _trusted_register() -> dict:
             or not isinstance(register.get("cases"), dict)):
         raise ValueError("Invalid SCIENCE independent review register")
     return register
+
+
+@lru_cache(maxsize=1)
+def _source_leads_catalog() -> dict:
+    catalogue = json.loads(SOURCE_LEADS.read_text(encoding="utf-8"))
+    if (catalogue.get("schemaVersion") != "science40-published-source-leads-v1"
+            or catalogue.get("status") != "UNADJUDICATED_RESEARCH_LEADS_ONLY"
+            or not isinstance(catalogue.get("cases"), dict)):
+        raise ValueError("Invalid noncertified SCIENCE source-lead catalog")
+    return catalogue
+
+
+def _eligible_source_lead(raw: object, cutoff: date) -> dict | None:
+    """A source *lead* has zero evidentiary certification or readiness weight."""
+    if not isinstance(raw, dict):
+        return None
+    published = _date(raw.get("publishedAt"))
+    indexed = _date(raw.get("indexedAt"))
+    report = raw.get("sourceReportedFact")
+    caveat = raw.get("unresolvedQuestion")
+    if not (
+        published and indexed and published <= indexed <= cutoff
+        and _valid_https(raw.get("sourceUrl"))
+        and raw.get("sourceType") == "ISSUER_PRESS_RELEASE"
+        and raw.get("sourceStatus") == "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW"
+        and raw.get("independentlyReviewed") is False
+        and raw.get("documentSha256") is None
+        and isinstance(report, str) and 0 < len(report.strip()) <= 1200
+        and isinstance(caveat, str) and 0 < len(caveat.strip()) <= 1200
+    ):
+        return None
+    return {
+        "sourceUrl": raw["sourceUrl"],
+        "publishedAt": published.isoformat(),
+        "indexedAt": indexed.isoformat(),
+        "sourceType": "ISSUER_PRESS_RELEASE",
+        "sourceReportedFact": report.strip(),
+        "unresolvedQuestion": caveat.strip(),
+        "sourceStatus": "SOURCE_LEAD_AWAITING_ORIGINAL_DOCUMENT_REVIEW",
+        "originalSourceHashAvailable": False,
+        "independentlyReviewed": False,
+    }
 
 
 def _source_submission(record: object, cutoff: date) -> tuple[str, dict | None]:
@@ -167,13 +210,19 @@ def evaluate_science_40(
     entry = register["cases"].get(exact_key, {})
     if not isinstance(entry, dict):
         raise ValueError("Invalid exact-case independent SCIENCE register")
+    leads = _source_leads_catalog()["cases"].get(exact_key, {})
+    if not isinstance(leads, dict):
+        raise ValueError("Invalid exact-case SCIENCE source leads")
 
     rows = []
-    submitted_count = reviewed_count = rejected_count = 0
+    submitted_count = reviewed_count = rejected_count = source_lead_count = 0
     depth_covered = set()
     critical_questions = []
     for q in catalog:
         question_id = q["id"]
+        lead = _eligible_source_lead(leads.get(question_id), cutoff)
+        if lead is not None:
+            source_lead_count += 1
         status, source = _source_submission(evidence.get(question_id), cutoff)
         certified = (source is not None
                      and _certified(source, entry.get(question_id), cutoff))
@@ -197,6 +246,7 @@ def evaluate_science_40(
             "independentlyReviewed": certified,
             # Source assertions are clearly labeled; no calculated score.
             "sourceObservation": source,
+            "sourceLead": lead,
             "scientificScore": None,
         })
     unexpected_keys = sorted(k for k in evidence if k not in {q["id"] for q in catalog})
@@ -211,6 +261,7 @@ def evaluate_science_40(
         "totalAssessments": 40,
         "maximumInvestigationDepth": 20,
         "submittedSourceObservations": submitted_count,
+        "sourceLeadsDiscovered": source_lead_count,
         "rejectedSourceSubmissions": rejected_count,
         "independentlyReviewedAssessments": reviewed_count,
         "independentEvidenceCoveragePercent": round(100 * reviewed_count / 40, 1),
