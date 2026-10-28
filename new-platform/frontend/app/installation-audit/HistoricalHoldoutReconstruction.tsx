@@ -39,7 +39,7 @@ function CaseDetails({record}: {record: HoldoutCase}) {
       </li>)}</ul>
     </details>
     <details><summary>SCIENCE · eight layers, 40 questions and 20 investigation depths</summary>
-      <p>Independently certified assessments: 0/40. Certified depths: 0/20. Source observations are leads for investigation; they do not satisfy an assessment. No semantic definitions or completion is inferred for the numbered depth levels.</p>
+      <p>Independently certified assessments: 0/40. Certified depths: 0/20. Source observations are leads for investigation; they do not satisfy an assessment. The twenty-level research protocol defines the required analysis and completion artifacts. It has not independently validated the investigation method or completed these case investigations.</p>
       {Array.from({length:8}, (_, i) => {
         const questions = record.science_worklist.filter(q => q.layer === i + 1);
         return <details key={i}><summary>{i + 1}. {questions[0].layer_name}</summary>
@@ -53,7 +53,22 @@ function CaseDetails({record}: {record: HoldoutCase}) {
           })}</ul>
         </details>;
       })}
-      <p>Investigation levels {record.depth_worklist.map(d => d.depth_level).join(", ")}: not certified.</p>
+      <details><summary>Twenty-level investigation protocol · 0/20 independently completed</summary>
+        <p>Protocol version: {record.scientific_dossier.depth_framework.catalog_version}. Source leads identify work to review; they are not completion evidence.</p>
+        {record.scientific_dossier.depth_framework.levels.map(depth => <details key={depth.level_id}>
+          <summary>{depth.depth_level}. {depth.title} · independent review missing</summary>
+          <p>{depth.objective}</p>
+          <p>Scientific questions: {depth.question_ids.join(", ")}. {depth.source_lead_ids.length
+            ? `Candidate source leads: ${depth.source_lead_ids.join(", ")}.`
+            : "Pre-cutoff source leads are missing for these questions."}</p>
+          <Facts title="Required analysis" values={depth.requirements}/>
+          <Facts title="Completion artifacts required" values={depth.completion_artifacts}/>
+          <p>All completion artifacts require independent adjudication.
+            {depth.blocking_prerequisite_levels.length > 0 && <> Prerequisite levels still incomplete: {depth.blocking_prerequisite_levels.join(", ")}.</>}
+            {depth.question_ids_without_source_leads.length > 0 && <> Questions without candidate sources: {depth.question_ids_without_source_leads.join(", ")}.</>}
+          </p>
+        </details>)}
+      </details>
     </details>
     <details><summary>Historical comparator research</summary>
       <p>These are unadjudicated research contexts, not validated matched comparators or independent training cases.</p>

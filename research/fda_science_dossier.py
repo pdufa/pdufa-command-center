@@ -8,6 +8,8 @@ from collections.abc import Mapping
 from copy import deepcopy
 from datetime import date
 
+from research.science_investigation_depths import build_depth_framework
+
 CANDIDATE = "PREDECISION_RESEARCH_CANDIDATE"
 
 
@@ -132,16 +134,8 @@ def build_scientific_dossier(case_report, catalog):
         "original_prediction_cutoff": case_report.get("original_prediction_cutoff"),
         "scope": "RECONSTRUCTED_OBSERVATIONS_NOT_COMPLETED_SCIENTIFIC_ASSESSMENTS",
         "layers": layers,
-        "depth_framework": {
-            "source": "Existing SCIENCE catalog and independent depth-review boundary",
-            "semantic_level_definitions_status": "NOT_DEFINED_IN_EXISTING_CATALOG",
-            "required_levels": list(range(1, 21)), "independently_reviewed_levels": [],
-            "levels": [{"depth_level": level, "status": "INDEPENDENT_REVIEW_MISSING",
-                "independently_reviewed_question_ids": [],
-                "requirements": ["Source-bound independent adjudication assigned to this existing depth level"]}
-                for level in range(1, 21)],
-            "completion_rule": "No depth is completed by a source count, source lead, or generated narrative.",
-        },
+        "depth_framework": build_depth_framework(catalog, sources,
+            reconstruction_cutoff=case_report["reconstruction_cutoff"]),
         "historical_comparison": {
             "status": "UNADJUDICATED_RESEARCH_CONTEXT", "model_eligible_comparisons": 0,
             "contexts": deepcopy(case_report.get("related_precedents", [])),

@@ -81,9 +81,11 @@ def test_missing_sources_are_unknown_and_do_not_create_a_fail_assessment(cases):
     assert all(q["scientific_conclusion"] is None for q in flat(dossier))
 
 
-def test_numeric_depth_boundaries_are_not_invented_semantic_definitions(cases):
+def test_versioned_semantic_depth_definitions_do_not_complete_independent_review(cases):
     depth=build_scientific_dossier(cases["VNDA"],CATALOG)["depth_framework"]
-    assert depth["semantic_level_definitions_status"] == "NOT_DEFINED_IN_EXISTING_CATALOG"
+    assert depth["semantic_level_definitions_status"] == "DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED"
+    assert depth["catalog_version"] == "science-investigation-depth-catalog-v1"
+    assert all(row["requirements"] and row["completion_artifacts"] for row in depth["levels"])
     assert all(row["independently_reviewed_question_ids"] == [] for row in depth["levels"])
 
 

@@ -10,9 +10,18 @@ export type HoldoutQuestion = {
   source_ids: string[]; status: "NOT_CERTIFIED"; scientific_score: null;
 };
 type ScientificQuestion = {question_id: string; question: string; required_evidence: string; uncertainties: string[]};
+type InvestigationDepth = {
+  depth_level: number; level_id: string; title: string; objective: string; question_ids: string[];
+  prerequisite_levels: number[]; blocking_prerequisite_levels: number[]; question_ids_without_source_leads: string[];
+  requirements: string[]; completion_artifacts: string[]; source_lead_ids: string[]; completion_artifacts_status: "NOT_INDEPENDENTLY_ADJUDICATED";
+  status: "INDEPENDENT_REVIEW_MISSING";
+};
 type ScientificDossier = {
   layers: {layer: number; layer_name: string; questions: ScientificQuestion[]}[];
-  depth_framework: {semantic_level_definitions_status: "NOT_DEFINED_IN_EXISTING_CATALOG"};
+  depth_framework: {
+    semantic_level_definitions_status: "DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED";
+    catalog_version: string; levels: InvestigationDepth[];
+  };
 };
 export type HoldoutCase = {
   event_key: string; application_id: string; indication: string; program_family: string;
@@ -143,8 +152,52 @@ export function auditHoldoutReconstruction(value: unknown): HoldoutReconstructio
       && summary.eligible_frozen_features === 0 && summary.scientific_score === null
       && summary.approval_probability === null && summary.independent_scientific_conclusion === null);
     const framework = record(dossier.depth_framework);
-    check(framework.semantic_level_definitions_status === "NOT_DEFINED_IN_EXISTING_CATALOG"
-      && Array.isArray(framework.independently_reviewed_levels) && framework.independently_reviewed_levels.length === 0);
+    check(framework.semantic_level_definitions_status === "DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED"
+      && framework.catalog_version === "science-investigation-depth-catalog-v1"
+      && framework.predictive_value_validated === false
+      && Array.isArray(framework.independently_reviewed_levels) && framework.independently_reviewed_levels.length === 0
+      && Array.isArray(framework.levels) && framework.levels.length === 20);
+    const completionPolicy = record(framework.completion_policy);
+    check(completionPolicy.source_leads_complete_levels === false && completionPolicy.automatic_completion_enabled === false
+      && completionPolicy.fixed_800_review_requirement === false && completionPolicy.independent_evidence_and_interpretation_required === true
+      && completionPolicy.missing_evidence_is_unknown === true);
+    const depthIds = new Set<string>();
+    framework.levels.forEach((rawDepth, index) => {
+      const depth = record(rawDepth);
+      check(depth.depth_level === index + 1 && depth.level_id === "D" + String(index + 1).padStart(2, "0") && !depthIds.has(depth.level_id as string)
+        && text(depth.title) && text(depth.objective) && depth.status === "INDEPENDENT_REVIEW_MISSING"
+        && strings(depth.question_ids) && depth.question_ids.length > 0
+        && new Set(depth.question_ids).size === depth.question_ids.length
+        && depth.question_ids.every(id => /^S(?:0[1-9]|[12][0-9]|3[0-9]|40)$/.test(id)));
+      depthIds.add(depth.level_id as string);
+      for (const field of ["requirements", "completion_artifacts"]) {
+        check(strings(depth[field]) && (depth[field] as string[]).length > 0);
+      }
+      check(depth.independently_completed === false && depth.ready_for_independent_certification === false
+        && depth.completion_artifacts_status === "NOT_INDEPENDENTLY_ADJUDICATED"
+        && Array.isArray(depth.independently_reviewed_question_ids) && depth.independently_reviewed_question_ids.length === 0
+        && Array.isArray(depth.prerequisite_levels) && new Set(depth.prerequisite_levels).size === depth.prerequisite_levels.length
+        && depth.prerequisite_levels.every(level => Number.isInteger(level) && level >= 1 && level < index + 1)
+        && Array.isArray(depth.blocking_prerequisite_levels)
+        && depth.blocking_prerequisite_levels.length === depth.prerequisite_levels.length
+        && new Set(depth.blocking_prerequisite_levels).size === depth.prerequisite_levels.length
+        && depth.prerequisite_levels.every(level => (depth.blocking_prerequisite_levels as unknown[]).includes(level)));
+      check(strings(depth.source_lead_ids) && new Set(depth.source_lead_ids).size === depth.source_lead_ids.length);
+      const expectedSources = candidates.filter(source =>
+        (source.science_question_ids as string[]).some(id => (depth.question_ids as string[]).includes(id))
+      ).map(source => source.source_id);
+      check(depth.source_lead_ids.length === expectedSources.length
+        && expectedSources.every(id => (depth.source_lead_ids as string[]).includes(id as string)));
+      const questionsWithLeads = (depth.question_ids as string[]).filter(id => candidates.some(source =>
+        (source.science_question_ids as string[]).includes(id)));
+      const questionsWithoutLeads = (depth.question_ids as string[]).filter(id => !questionsWithLeads.includes(id));
+      for (const [field, expected] of [["question_ids_with_source_leads", questionsWithLeads],
+        ["question_ids_without_source_leads", questionsWithoutLeads]] as const) {
+        check(strings(depth[field]) && (depth[field] as string[]).length === expected.length
+          && new Set(depth[field] as string[]).size === expected.length
+          && expected.every(id => (depth[field] as string[]).includes(id)));
+      }
+    });
     check(Array.isArray(dossier.layers) && dossier.layers.length === 8);
     dossier.layers.forEach((rawLayer, layerIndex) => {
       const layer = record(rawLayer);

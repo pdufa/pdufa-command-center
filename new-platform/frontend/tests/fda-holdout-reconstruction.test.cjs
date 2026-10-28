@@ -91,10 +91,59 @@ test('MAIN panel renders source-backed details and withholds all counts on inval
   assert.match(html, /PARTIAL TEXT FIRST PAGE VISUAL REVIEW REQUIRED/);
   assert.match(html, /CORRECTED DOCUMENT ONLY ORIGINAL NOT RETRIEVED/);
   assert.match(html, /Required documents: protocol and efficacy results/);
-  assert.match(html, /No semantic definitions or completion is inferred/);
+  assert.match(html, /twenty-level research protocol defines the required analysis/);
+  assert.match(html, /Twenty-level investigation protocol · 0\/20 independently completed/);
+  assert.match(html, /Completion artifacts required/);
+  for (const depth of snapshot.caseReports[0].scientific_dossier.depth_framework.levels) {
+    assert.ok(html.includes(depth.title));
+  }
   for (const ticker of ['NVAX', 'UNCY', 'TNXP', 'BCRX', 'CORT', 'VNDA']) assert.match(html, new RegExp(ticker));
   const bad = copy(); bad.validatedCases = 6;
   const rejected = renderToStaticMarkup(React.createElement(Panel, {value:bad}));
   assert.match(rejected, /Evidence counts and predictions withheld/);
   assert.doesNotMatch(rejected, /Six priority cases|NVAX|0\/40/);
+});
+
+
+test('twenty-level research protocol cannot self-certify completed investigation or predictive value', () => {
+  const framework = snapshot.caseReports[0].scientific_dossier.depth_framework;
+  assert.equal(framework.catalog_version, 'science-investigation-depth-catalog-v1');
+  assert.equal(framework.levels.length, 20);
+  assert.equal(framework.predictive_value_validated, false);
+  assert.equal(framework.completion_policy.automatic_completion_enabled, false);
+  assert.equal(framework.completion_policy.source_leads_complete_levels, false);
+  for (const [index, level] of framework.levels.entries()) {
+    assert.equal(level.depth_level, index + 1);
+    assert.ok(level.title && level.objective);
+    assert.ok(level.requirements.length && level.completion_artifacts.length);
+    assert.equal(level.independently_completed, false);
+    assert.equal(level.ready_for_independent_certification, false);
+    assert.deepEqual(level.independently_reviewed_question_ids, []);
+  }
+  const outcome = snapshot.caseReports[0].source_classification.find(source => source.source_role === 'OUTCOME_ONLY');
+  for (const mutate of [
+    f => f.catalog_version = 'UNREVIEWED_VERSION',
+    f => f.predictive_value_validated = true,
+    f => f.completion_policy.automatic_completion_enabled = true,
+    f => f.completion_policy.source_leads_complete_levels = true,
+    f => f.completion_policy.missing_evidence_is_unknown = false,
+    f => f.levels.pop(),
+    f => f.levels[0].title = '',
+    f => f.levels[0].objective = '',
+    f => f.levels[0].requirements = [],
+    f => f.levels[0].completion_artifacts = [],
+    f => f.levels[0].level_id = 'D20',
+    f => f.levels[0].status = 'CERTIFIED',
+    f => f.levels[0].independently_completed = true,
+    f => f.levels[0].ready_for_independent_certification = true,
+    f => f.levels[0].independently_reviewed_question_ids = ['S01'],
+    f => f.levels[0].question_ids = ['S99'],
+    f => f.levels[0].source_lead_ids = [outcome.source_id],
+    f => f.levels[0].question_ids_with_source_leads = ['S99'],
+    f => f.levels[0].prerequisite_levels = [20],
+    f => f.levels[0].blocking_prerequisite_levels = [20],
+  ]) {
+    const bad = copy(); mutate(bad.caseReports[0].scientific_dossier.depth_framework);
+    assert.throws(() => auditHoldoutReconstruction(bad));
+  }
 });

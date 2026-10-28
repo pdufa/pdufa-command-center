@@ -1,0 +1,17 @@
+# Investigation protocol and holdout allocation — October 28, 2026
+
+Continues PR #522 from e9a2428a. This milestone implements scientific research tasks and evaluation safeguards. It does not certify completed investigations or FDA prediction accuracy.
+
+The six priority packets now have 26 observations: 17 pre-cutoff research observations from 12 SEC filings, seven outcome-only exclusions, one late exclusion and one printed-date quarantine. The 146-row legacy history is unchanged. No additional historical case is promoted to model eligibility.
+
+NVAX's exact-index-dated February 28, 2023 10-K supplies historical PREVENT-19 and UK trial efficacy/design/durability context. Older formulation, follow-up and variant-era results remain distinct from a complete 2025 BLA reconstruction. FDA's June 2022 briefing supplies unadjudicated older-adult uncertainty and myocarditis context; its original public availability is not independently recovered. BCRX's August 5, 2025 10-Q supplies pediatric formulation, primary-endpoint status and target-extension context. Its June 30 period end is not used as its availability date. The May 14 source remains quarantined. Exact citations and source limitations are preserved in the research packet.
+
+The versioned twenty-level research protocol defines concrete objectives, dependencies, forty-question mappings, required documents and completion artifacts. It reuses the eight-layer SCIENCE catalog. Dossiers and the existing read-only dashboard display those tasks and unresolved prerequisites. Source leads cannot complete a level; independent completion remains zero. Subsequent user instructions request a fifty-level extension; this twenty-level foundation is preserved for compatibility and is not claimed as that extension.
+
+OUTCOME's walk-forward backtest previously filtered unavailable public action labels before selecting holdout cycles. That could omit an earlier CRL and select a later published approval from the same application/program. Allocation now reserves the earliest otherwise eligible cycle before publication filtering, preserves reservations across folds, and uses deterministic same-day ordering. Unscorable cycles are excluded rather than replaced or counted as model abstentions. Synthetic regressions demonstrate the fix; they are not real prediction validation.
+
+Local research verification: 119 tests passed plus 20 subtests. Targeted backtest suite: 43 passed. Full backend suite: 1001 passed, six warnings. Frontend tests, type checking and normal production build passed. GitHub Actions results are recorded on PR #522 after push. No deployment was initiated.
+
+All six cases remain ineligible for independent chronological validation because original prediction/feature freezes and training chronology are unverified; recovered model/lock artifacts postdate their actions. Independently certified SCIENCE assessments remain 0/40 per case. Accuracy, calibration, uncertainty ranges and prediction coverage remain unmeasured. Original FDA PDF bytes/publication clocks, UNCY first-page verification and CORT original CRL remain outstanding.
+
+No merge, deployment, trading, production data writes, scanner/schedule changes, list membership changes or FS/FA changes. Next scientific priority follows the latest continuation instructions: TNXP RESILIENT's 457-randomized versus 456-efficacy population and prespecified SAP compliance; keep uncertainty unresolved without final supporting records.

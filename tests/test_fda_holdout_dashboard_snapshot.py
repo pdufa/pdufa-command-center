@@ -20,7 +20,7 @@ def test_committed_dashboard_is_reproducible_from_the_actual_six_case_sources():
         assert sum(len(layer['questions']) for layer in dossier['layers']) == 40
         assert dossier['summary']['independently_completed_assessments'] == 0
         assert len(dossier['depth_framework']['levels']) == 20
-        assert dossier['depth_framework']['semantic_level_definitions_status'] == 'NOT_DEFINED_IN_EXISTING_CATALOG'
+        assert dossier['depth_framework']['semantic_level_definitions_status'] == 'DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED'
         assert case['main']['status'] == 'INSUFFICIENT_EVIDENCE'
 
 
@@ -65,3 +65,17 @@ def test_late_contrary_source_is_excluded_from_question_level_dossier(tmp_path):
     assert not question['observations']
     assert any(s['source_id']=='TNXP-10K-SAFETY' and s['reason']=='EXCLUDED_AFTER_RECONSTRUCTION_CUTOFF' for s in question['excluded_or_quarantined_sources'])
     assert question['scientific_conclusion'] is None
+
+
+def test_new_nvax_and_bcrx_sources_use_filing_availability_not_trial_or_period_dates():
+    cases={c['event_key'].split('|')[0]:c for c in build_dashboard_snapshot(as_of=date(2026,10,28))['caseReports']}
+    nvax={s['source_id']:s for s in cases['NVAX']['source_classification']}
+    assert nvax['NVAX-2023-PREVENT19']['available_on']=='2023-02-28'
+    assert '29,949' in nvax['NVAX-2023-PREVENT19']['finding']
+    assert 'not an FDA approval probability' in nvax['NVAX-2023-PREVENT19']['finding']
+    assert all(p['eligible_for_training'] is False for p in cases['NVAX']['related_precedents'])
+    bcrx={s['source_id']:s for s in cases['BCRX']['source_classification']}
+    assert bcrx['BCRX-AUG5-REVIEW-EXTENSION']['available_on']=='2025-08-05'
+    assert bcrx['BCRX-AUG5-REVIEW-EXTENSION']['classification']=='PREDECISION_RESEARCH_CANDIDATE'
+    assert bcrx['BCRX-APEX-P-LEAD']['classification']=='QUARANTINED_PRINTED_DATE_ONLY'
+    assert 'not its June 30 period end' in bcrx['BCRX-AUG5-REVIEW-EXTENSION']['finding']

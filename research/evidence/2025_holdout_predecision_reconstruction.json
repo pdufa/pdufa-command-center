@@ -54,6 +54,50 @@
           "independently_reviewed": false
         },
         {
+          "id": "NVAX-2023-PREVENT19",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069423000005/nvax-20221231.htm",
+          "available_on": "2023-02-28",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069423000005/0001000694-23-000005-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "The issuer describes PREVENT-19 as randomized, placebo-controlled and observer-blinded, enrolling 29,949 adults at 119 US/Mexico sites and reporting 90.4% vaccine efficacy. These are historical trial results, not an FDA approval probability or complete 2025 BLA/current-strain evidence.",
+          "science_question_ids": [
+            "S01",
+            "S02",
+            "S11",
+            "S12",
+            "S13",
+            "S21"
+          ],
+          "source_location": "Business: PREVENT-19 phase 3 trial, pages 9\u201310",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "NVAX-2023-UK-DURABILITY",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069423000005/nvax-20221231.htm",
+          "available_on": "2023-02-28",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069423000005/0001000694-23-000005-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "The UK Phase 3 discussion reports 89.7% original efficacy and 82.5% in a later six-month analysis. These estimates concern different follow-up analyses and must not be pooled or treated as interchangeable. Variant, formulation, population and exposure differences require review before comparison with the 2025 application.",
+          "science_question_ids": [
+            "S01",
+            "S04",
+            "S05",
+            "S09",
+            "S21",
+            "S25"
+          ],
+          "source_location": "Business: UK phase 3 trial, pages 10\u201311",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
           "id": "NVAX-FDA-ACTION",
           "source_url": "https://www.fda.gov/media/186545/download?stream=top",
           "available_on": "2025-05-16",
@@ -73,10 +117,12 @@
         }
       ],
       "supporting_factors": [
-        "A licensed/EUA vaccine development program existed before the goal; full license is a separate regulatory event."
+        "A licensed/EUA vaccine development program existed before the goal; full license is a separate regulatory event.",
+        "An exact-index-dated February 28, 2023 filing provides positive historical PREVENT-19 and UK trial efficacy context before the research cutoff."
       ],
       "opposing_factors": [
-        "Approval delay and May 16 population restrictions cannot be imported into March 31 inputs. Detailed pre-goal BLA safety, effectiveness and CMC evidence is not yet reconstructed."
+        "Approval delay and May 16 population restrictions cannot be imported into March 31 inputs. Detailed pre-goal BLA safety, effectiveness and CMC evidence is not yet reconstructed.",
+        "Historical efficacy analyses do not establish current-strain effectiveness, adequate older-adult precision, or absence of myocarditis risk for the 2025 application."
       ],
       "related_precedents": [
         {
@@ -85,6 +131,17 @@
           "comparison": "Same sponsor/product, but EUA authorization and full licensure have different evidence requirements; neither an independent prior case nor a substitute for exact cycle adjudication.",
           "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
           "eligible_for_training": false
+        },
+        {
+          "name": "FDA June 7, 2022 NVX-CoV2373 EUA briefing \u2014 safety and subgroup context",
+          "source_url": "https://www.fda.gov/media/158912/download",
+          "availability_context_url": "https://www.fda.gov/advisory-committees/advisory-committee-calendar/vaccines-and-related-biological-products-advisory-committee-june-7-2022-meeting-announcement",
+          "comparison": "FDA briefing Table 8 identifies wide older-adult efficacy uncertainty; section 10.3 discusses myocarditis concerns. Historical EUA evidence requires separate evaluation from the 2025 BLA, updated formulation and circulating variants. The original public-availability clock is not independently recovered, so this source is context only, not an admitted prediction feature.",
+          "status": "RESEARCH_CONTEXT_NOT_ADJUDICATED",
+          "eligible_for_training": false,
+          "public_availability_verified": false,
+          "original_document_sha256": null,
+          "content_observed_on": "2026-10-28"
         }
       ],
       "missing_documents": [
@@ -547,6 +604,48 @@
           "independently_reviewed": false
         },
         {
+          "id": "BCRX-AUG5-PEDIATRIC-CONTEXT",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/882796/000162828025037795/bcrx-20250630.htm",
+          "available_on": "2025-08-05",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/882796/000162828025037795/0001628280-25-037795-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "The issuer quarterly report describes APeX-P as complete through its primary endpoint, with continued assessment of oral granules in children aged 2 to 11. Existing capsule approvals for patients aged 12 and older are separate. Reported symptom reductions are not a substitute for a complete pediatric clinical study report or a randomized efficacy comparison.",
+          "science_question_ids": [
+            "S01",
+            "S11",
+            "S12",
+            "S21",
+            "S25"
+          ],
+          "source_location": "MD&A Products and Product Candidates; Recent Developments",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
+          "id": "BCRX-AUG5-REVIEW-EXTENSION",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/882796/000162828025037795/bcrx-20250630.htm",
+          "available_on": "2025-08-05",
+          "availability_basis": "SEC_FILING_INDEX",
+          "availability_source_url": "https://www.sec.gov/Archives/edgar/data/882796/000162828025037795/0001628280-25-037795-index.htm",
+          "source_role": "PREDECISION_RESEARCH",
+          "finding": "The report records a September 12 original target and June 23 notification extending the goal to December 12 after additional final reports and formulation data. August 5 is the verified SEC filing availability, not its June 30 period end or the earlier event date. A standard review extension alone does not establish approval or nonapproval.",
+          "science_question_ids": [
+            "S26",
+            "S27",
+            "S29",
+            "S31",
+            "S34"
+          ],
+          "source_location": "Recent Developments: ORLADEYO pediatric NDA review extension",
+          "content_observed_on": "2026-10-28",
+          "original_document_sha256": null,
+          "source_bytes_retained": false,
+          "independently_reviewed": false
+        },
+        {
           "id": "BCRX-FDA-ACTION",
           "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219776Orig1s000ltr.pdf",
           "available_on": "2025-12-11",
@@ -567,10 +666,12 @@
         }
       ],
       "supporting_factors": [
-        "Issuer-reported pediatric results and established parent-product experience provide research context, subject to age/formulation differences."
+        "Issuer-reported pediatric results and established parent-product experience provide research context, subject to age/formulation differences.",
+        "An August 5 SEC filing places pediatric primary-endpoint completion and clinical-development context within the conservative research window."
       ],
       "opposing_factors": [
-        "Formulation/final-report amendment extended review. The 2020 parent berotralstat decision already appears in legacy history; program-family leakage has not been ruled out."
+        "Formulation/final-report amendment extended review. The 2020 parent berotralstat decision already appears in legacy history; program-family leakage has not been ruled out.",
+        "Pediatric granules require their own exposure, safety and formulation evidence; older-patient capsule experience is not an independent pediatric approval case. The August filing does not validate earlier source availability."
       ],
       "related_precedents": [
         {
