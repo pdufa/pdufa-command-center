@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import depth20 from "../../lib/prediction-depths-20.json";
+import depthExtension from "../../lib/prediction-depths-21-50.json";
 
 type Trial = {id: string; programId?: string; ticker?: string; drug?: string; nctId?: string; fdaSource?: string; phase3Source?: string};
 type Workspace = {asOf?: string; mode?: string; sourceHealth?: {state?: string}; members?: {GEM_JR?: {rows?: Trial[]}; GEM?: {rows?: Trial[]}}};
 type Candidate = Trial & {groups: string[]};
+const DEPTH_LEVELS = [...depth20.levels, ...depthExtension.additional_levels].sort((a,b) => a.depth_level - b.depth_level);
 
 function publishedCandidates(data: Workspace): Candidate[] {
   if (!data.asOf || data.mode === "STALE_PREVIOUS_FETCH" || data.sourceHealth?.state === "STALE") return [];
@@ -56,6 +59,18 @@ export default function PublishedTrialSelector() {
     {trial && <div><p>Program: {trial.programId || trial.id} · NCT: {trial.nctId || "Not recorded"} · Membership: {trial.groups.join(", ")}</p>
       <p>{trial.fdaSource?.startsWith("https://") ? <a href={trial.fdaSource} target="_blank" rel="noopener noreferrer">FDA source ↗</a> : null}
       {" "}{trial.phase3Source?.startsWith("https://") ? <a href={trial.phase3Source} target="_blank" rel="noopener noreferrer">Phase 3 source ↗</a> : null}</p></div>}
+    {trial && <section aria-label="Selected trial scientific investigation protocol">
+      <h3>50-level scientific investigation — {trial.ticker || trial.id}</h3>
+      <p>0 / 50 independently assessed. This is a required-work checklist, not completed analysis or verified evidence.</p>
+      <progress value={0} max={50} aria-label="Completed investigation levels" />
+      {DEPTH_LEVELS.map(level => <details key={level.level_id} style={{margin:"8px 0",padding:10,border:"1px solid #b4c7b9"}}>
+        <summary>{level.level_id} · {level.title} — NOT STARTED</summary>
+        <p>{level.objective}</p>
+        <p>Linked scientific questions: {level.question_ids.join(", ")}</p>
+        <strong>Evidence required:</strong><ul>{level.requirements.map((requirement,i) => <li key={i}>{requirement}</li>)}</ul>
+        <p>Independent findings: NOT AVAILABLE · Confidence: NOT ESTABLISHED · Decision: ABSTAIN</p>
+      </details>)}
+    </section>}
     <p><button disabled>START PREDICTION</button></p>
     <p>Selection is read-only. No verified Phase 3 results-release or WT feed is asserted; scientific worker not connected. No prediction is issued.</p>
   </section>;
