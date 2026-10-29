@@ -74,3 +74,16 @@ def test_aware_backend_cap_timestamp_is_preserved_as_timely_source_claim():
     assert report['cap_source_present']
     assert not report['listing_verified'] and not report['restrictions_verified']
     assert report['scope'] == 'BLOCKED'
+
+
+def test_sec_sponsor_disclosure_does_not_masquerade_as_fda_verification():
+    # Pending PDUFA goal dates are often disclosed by sponsors through SEC
+    # filings. A filing URL is a lead for application-level review, not proof
+    # that FDA independently published or confirmed the pending goal date.
+    row = {"programId": "PDUFA-SEC-001", "pdufaDate": "2026-12-01",
+           "fdaSource": "https://www.sec.gov/Archives/edgar/data/123/filing.htm",
+           "checkStatus": "FDA_VERIFIED"}
+    result = map_published_row(row)
+    assert result["fda_source_present"] is False
+    assert result["candidate"]["fda_pdufa_target_confirmed"] is False
+    assert result["scope"] == "BLOCKED"
