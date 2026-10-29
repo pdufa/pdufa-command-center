@@ -52,13 +52,22 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000):
     # Never silently infer public listing, market cap, restriction membership,
     # or FDA confirmation from an unverified backend row.
     candidates = []
+    seen_program_ids = set()
+    cap_evidence_count = 0
+    fda_evidence_count = 0
     for row in rows:
         if not isinstance(row, dict):
             raise ValueError("invalid workspace record")
         identity = row.get("programId")
         if not isinstance(identity, str) or not identity:
             raise ValueError("stable backend programId required")
-        candidates.append(map_published_row(row)["candidate"])
+        if identity in seen_program_ids:
+            raise ValueError("duplicate programId across workspace pages")
+        seen_program_ids.add(identity)
+        mapped = map_published_row(row)
+        candidates.append(mapped["candidate"])
+        cap_evidence_count += bool(mapped["cap_source_present"])
+        fda_evidence_count += bool(mapped["fda_source_present"])
     reports = []
     for start in range(0, len(candidates), 10000):
         reports.append(triage_pipeline_export(candidates[start:start + 10000]))
@@ -80,7 +89,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000):
         "backend_rows_received": len(rows),
         "screening_fields_verified": False,
         "field_mapping_applied": True,
-        "market_cap_evidence_present": sum(bool(map_published_row(row)["cap_source_present"]) for row in rows),
-        "fda_target_evidence_present": sum(bool(map_published_row(row)["fda_source_present"]) for row in rows),
+        "market_cap_evidence_present": cap_evidence_count,
+        "fda_target_evidence_present": fda_evidence_count,
         "prediction_status": "ABSTAIN",
     }
