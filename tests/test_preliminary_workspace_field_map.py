@@ -21,3 +21,13 @@ def test_missing_market_cap_provenance_does_not_pass():
     result = map_published_row(row)
     assert result["cap_source_present"] is False
     assert result["candidate"]["market_cap_usd"] is None
+
+
+def test_non_fda_source_cannot_claim_fda_target_provenance():
+    row = {"programId": "PDUFA-000004", "pdufaDate": "2026-12-01",
+           "fdaSource": "https://not-fda.example/announcement",
+           "checkStatus": "FDA_VERIFIED"}
+    result = map_published_row(row)
+    assert result["fda_source_present"] is False
+    assert result["candidate"]["fda_pdufa_target_confirmed"] is False
+    assert result["scope"] == "BLOCKED"
