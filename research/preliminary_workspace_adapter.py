@@ -4,6 +4,8 @@ Caller provides an HTTP GET function; this module never stores credentials or
 treats backend membership as independently verified. Backend GET processing may
 refresh sources and allocate persistent program IDs; see the retrieval report.
 """
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 from hashlib import sha256
 import json
 
@@ -40,13 +42,30 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         if version is None:
             version = page_version
             as_of = page.get("asOf")
-            stamp = _aware(as_of)
-            if stamp is None:
-                raise ValueError("aware workspace source timestamp required")
-            if now is not None:
-                current = _aware(now)
-                if current is None or not 0 <= (current - stamp).total_seconds() <= max_age_hours * 3600:
-                    raise ValueError("stale or future workspace snapshot")
+            # Backend source_workspace emits asOf as a Los Angeles calendar date,
+            # not a timestamp. Never invent a time or timezone offset for it.
+            if isinstance(as_of, str) and len(as_of) == 10:
+                try:
+                    source_day = date.fromisoformat(as_of)
+                except ValueError:
+                    raise ValueError("invalid workspace source date") from None
+                if source_day.isoformat() != as_of:
+                    raise ValueError("invalid workspace source date")
+                if now is not None:
+                    current = _aware(now)
+                    if current is None:
+                        raise ValueError("aware observation timestamp required")
+                    local_day = current.astimezone(ZoneInfo("America/Los_Angeles")).date()
+                    if source_day != local_day:
+                        raise ValueError("stale or future workspace source date")
+            else:
+                stamp = _aware(as_of)
+                if stamp is None:
+                    raise ValueError("aware workspace source timestamp required")
+                if now is not None:
+                    current = _aware(now)
+                    if current is None or not 0 <= (current - stamp).total_seconds() <= max_age_hours * 3600:
+                        raise ValueError("stale or future workspace snapshot")
         if page_version != version or page.get("asOf") != as_of:
             raise ValueError("workspace snapshot changed during pagination")
         if (type(page.get("offset")) is not int or type(page.get("limit")) is not int
@@ -140,6 +159,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         "retrieval_complete": True,
         "summary_reconciled": get_summary is not None,
         "snapshot_freshness_checked": now is not None,
+        "source_time_precision": "CALENDAR_DATE_LOS_ANGELES" if len(as_of) == 10 else "OFFSET_TIMESTAMP",
         "page_count": len(page_hashes),
         "page_sha256": page_hashes,
         "source_rows_sha256": sha256(json.dumps(rows, sort_keys=True, separators=(',', ':'),
