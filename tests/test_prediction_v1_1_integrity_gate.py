@@ -28,6 +28,7 @@ class IntegrityGateTests(unittest.TestCase):
   self.assertFalse(audit_all_research_chains(self.db)["valid"])
   with self.assertRaises(RuntimeError):
    read_program_evidence(self.db,{"fields":[]} ,self.reader,"P1")
+  self.db.commit()  # Second SQLite connection must see the corrupt committed record.
   with self.assertRaises(RuntimeError):
    open_research_evidence_store(self.path)
  def test_blank_submitter_binding_rejected(self):
