@@ -1,0 +1,128 @@
+{
+  "version": "1.1.0-research-draft",
+  "status": "PARTIAL_CATALOG_NOT_VALIDATED",
+  "proposed_slots": 650,
+  "rule": "Fields are defined only when scientific meaning, provenance, applicability and assessment mapping are explicit. Never pad to 650 with placeholder variables.",
+  "fields": [
+    {
+      "id": "TRIAL-001",
+      "segment": "TRIAL",
+      "name": "Pivotal trial registration identifier",
+      "definition": "Registry identifier of the trial supporting the application",
+      "data_type": "string",
+      "applicability": "Pivotal clinical evidence used",
+      "source": "ClinicalTrials.gov trial registration",
+      "assessment_ids": [
+        "S11",
+        "S24"
+      ],
+      "mandatory": true,
+      "critical": true
+    },
+    {
+      "id": "TRIAL-002",
+      "segment": "TRIAL",
+      "name": "Prespecified primary endpoint",
+      "definition": "Primary outcome and analysis specification established before outcome unblinding",
+      "data_type": "text",
+      "applicability": "Pivotal efficacy trial",
+      "source": "Registry history and protocol/statistical analysis plan",
+      "assessment_ids": [
+        "S01",
+        "S06"
+      ],
+      "mandatory": true,
+      "critical": true
+    },
+    {
+      "id": "EFFICACY-001",
+      "segment": "EFFICACY",
+      "name": "Primary endpoint estimate and uncertainty",
+      "definition": "Reported effect size with confidence interval and analysis population",
+      "data_type": "structured_result",
+      "applicability": "Pivotal efficacy analysis reported",
+      "source": "Trial results publication or clinical study report",
+      "assessment_ids": [
+        "S01",
+        "S02",
+        "S10"
+      ],
+      "mandatory": true,
+      "critical": true
+    },
+    {
+      "id": "SAFETY-001",
+      "segment": "SAFETY",
+      "name": "Serious adverse event incidence",
+      "definition": "Serious adverse events by randomized arm with exposure denominator",
+      "data_type": "structured_result",
+      "applicability": "Pivotal safety population",
+      "source": "Clinical study report or ClinicalTrials.gov results",
+      "assessment_ids": [
+        "S16"
+      ],
+      "mandatory": true,
+      "critical": true
+    },
+    {
+      "id": "CMC-001",
+      "segment": "CMC",
+      "name": "Manufacturing inspection and quality evidence",
+      "definition": "Documented CMC readiness and known inspection or quality deficiencies, with undisclosed matters explicitly unknown",
+      "data_type": "evidence_summary",
+      "applicability": "NDA or BLA under FDA review",
+      "source": "FDA public records and company regulatory disclosures",
+      "assessment_ids": [
+        "S29",
+        "S34",
+        "S35"
+      ],
+      "mandatory": true,
+      "critical": true
+    },
+    {
+      "id": "VALIDATION-001",
+      "segment": "VALIDATION",
+      "name": "Point-in-time evidence cutoff",
+      "definition": "Timestamp after which evidence is excluded from prospective or retrospective reconstruction",
+      "data_type": "datetime",
+      "applicability": "Every prediction or backtest",
+      "source": "Versioned prediction run metadata",
+      "assessment_ids": [
+        "S24"
+      ],
+      "mandatory": true,
+      "critical": true
+    },
+    {
+      "id": "PRECEDENT-001",
+      "segment": "PRECEDENT",
+      "name": "Comparable FDA decisions",
+      "definition": "Prior decisions selected using predeclared indication, modality, endpoint and review criteria",
+      "data_type": "reference_list",
+      "applicability": "Comparable cases exist",
+      "source": "FDA approval letters, review documents, CRL disclosures",
+      "assessment_ids": [
+        "S38",
+        "S39"
+      ],
+      "mandatory": false,
+      "critical": false
+    },
+    {
+      "id": "BIO-001",
+      "segment": "BIO",
+      "name": "Disease natural history and unmet need",
+      "definition": "Documented baseline prognosis, standard care and clinically meaningful unmet need",
+      "data_type": "evidence_summary",
+      "applicability": "Every disease indication",
+      "source": "Peer-reviewed natural-history studies and treatment guidelines",
+      "assessment_ids": [
+        "S40"
+      ],
+      "mandatory": false,
+      "critical": false
+    }
+  ],
+  "note": "Proposed S01-S40 mappings checked against canonical science_40_question_catalog.json; scientific appropriateness still requires independent review."
+}
