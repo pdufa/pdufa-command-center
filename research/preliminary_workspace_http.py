@@ -26,11 +26,14 @@ def _invalid_constant(value):
     raise ValueError('nonfinite workspace JSON')
 
 
-def make_workspace_get(base_url, *, api_key=None, timeout=20):
-    return make_workspace_client(base_url, api_key=api_key, timeout=timeout)[0]
+def make_workspace_get(base_url, *, api_key=None, timeout=20, allow_identity_allocation=False):
+    return make_workspace_client(base_url, api_key=api_key, timeout=timeout,
+                                 allow_identity_allocation=allow_identity_allocation)[0]
 
 
-def make_workspace_client(base_url, *, api_key=None, timeout=20):
+def make_workspace_client(base_url, *, api_key=None, timeout=20, allow_identity_allocation=False):
+    if allow_identity_allocation is not True:
+        raise ValueError('explicit authorization for possible staging program-ID allocation required')
     if not isinstance(base_url, str):
         raise ValueError("HTTPS backend origin required")
     parsed = urlparse(base_url)
@@ -82,15 +85,19 @@ def make_workspace_client(base_url, *, api_key=None, timeout=20):
     return get_page, lambda: get_json("/api/workspace/summary")
 
 
-def screen_backend_workspace(base_url, *, api_key=None):
-    page, summary = make_workspace_client(base_url, api_key=api_key)
+def screen_backend_workspace(base_url, *, api_key=None, allow_identity_allocation=False):
+    if allow_identity_allocation is not True:
+        raise ValueError('explicit authorization for possible staging program-ID allocation required')
+    page, summary = make_workspace_client(base_url, api_key=api_key,
+                                          allow_identity_allocation=allow_identity_allocation)
     return triage_workspace_pages(page, get_summary=summary,
         now=datetime.now(timezone.utc).isoformat())
 
 
-def safe_workspace_diagnostics(base_url, *, api_key=None):
+def safe_workspace_diagnostics(base_url, *, api_key=None, allow_identity_allocation=False):
     """Return aggregate screening diagnostics without exposing individual records."""
-    report = screen_backend_workspace(base_url, api_key=api_key)
+    report = screen_backend_workspace(base_url, api_key=api_key,
+                                     allow_identity_allocation=allow_identity_allocation)
     keys = (
         "workspace_version", "workspace_as_of", "backend_rows_received",
         "market_cap_evidence_present", "fda_target_evidence_present",
@@ -112,11 +119,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--backend-origin', required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--allow-staging-identity-allocation', action='store_true',
+                        help='operator authorizes insert-only allocation of missing permanent IDs')
     args = parser.parse_args(argv)
     if args.output.exists():
         parser.error('output exists; refusing overwrite')
     try:
-        result = safe_workspace_diagnostics(args.backend_origin)
+        result = safe_workspace_diagnostics(args.backend_origin,
+            allow_identity_allocation=args.allow_staging_identity_allocation)
     except ValueError as exc:
         parser.exit(2, str(exc) + '\n')
     with args.output.open('x', encoding='utf-8') as handle:

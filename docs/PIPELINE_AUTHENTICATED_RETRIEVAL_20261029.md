@@ -2,6 +2,29 @@
 
 Prediction status: **NOT READY / ABSTAIN**.
 
+## Authorization guard follow-up
+
+The HTTP factories, screening API, diagnostics API and CLI now require explicit
+operator authorization for possible staging identity allocation. The Python
+keyword is `allow_identity_allocation=True`; the CLI flag is
+`--allow-staging-identity-allocation`. Omission, false, null, strings and integer
+aliases fail before constructing a client or making any request. This records
+an operator's approval; it does not authenticate the operator or replace the
+backend's existing key authentication.
+
+Current database authorization is **pending**, as required separately by the
+active operator directive. No live workspace request has been made by this session.
+
+Follow-up verification: **99 preliminary tests passed**; the combined
+preliminary/official/scientific/evidence/FDA suites passed **945 tests plus 298
+subtests**, with one external fixture skipped. The full backend suite passed
+**1,007 tests**, with one external fixture skipped and zero failures. Three new
+isolated registry regressions verify no DML for existing IDs, insert-only missing
+IDs with unrelated tables unchanged, and actual database uniqueness constraints.
+These use an isolated SQLite database, not staging PostgreSQL. Independent code
+review found and closed a factory-level authorization bypass; all four supported
+HTTP entrypoints are now guarded. Remote CI is checked after publication.
+
 Fetched research branch HEAD `f6f2f148b69befd8141ace54a90fc44bb3012a38`.
 All 14 associated pull-request workflows completed successfully. Both existing
 10,001-record duplicate-ID regressions were rerun locally and passed. Inspection
@@ -52,7 +75,13 @@ Source inspection at the fetched commit shows:
 
 No backend behavior, scanner, authentication, database setting, membership,
 FS/FA association or restriction was modified. Inspection describes repository
-code; the exact staging deployment/source equivalence is not established here.
+code. The subsequent Render control-plane check reports live deployment
+`dep-dbf47d4s728c73e26mng` at `abad93df976b852ec48359469765280feada9fbd`.
+That exact commit's `main.py` and `program_registry.py` were retrieved read-only
+from GitHub. Both required routes, internal-key authentication and the same
+insert-only registry implementation are present. This establishes source at
+the reported deployment commit, not a fresh authenticated application response.
+The research client changes require no backend deployment.
 
 The Render monitoring plugin confirmed `pdufa-new-api-staging` exists in the
 user-specified **My Workspace**, service `srv-db976hfbtjjs73bb98fg`, with origin
@@ -61,11 +90,27 @@ This is control-plane metadata, not an authenticated workload or SQL probe.
 
 The current execution environment has **no bound `PDUFA_INTERNAL_API_KEY`** and
 its enforced host policy excludes the staging origin. The actual operator
-command below exited **2 before any HTTP request**, reporting the missing key.
+command at `19c9817b` exited **2 before any HTTP request**, reporting the missing key.
 No repeated blocked-host probes, credential extraction, auth weakening, database
 allowlist changes or deployment were attempted. The previously reported 11,812
 assessment records and 11,636 registry entries were not independently retrieved
 or reconciled here; they describe different populations from a Pipeline page.
+
+Alternative access paths were inspected. The Render connector can inspect
+service/deploy metadata and update environment variables, but exposes no secure
+read/bind operation for staging environment secrets or authenticated application
+request transport. No local Render API credential or outbound identity binding
+is available. The existing GitHub secret reference belongs to
+`isolated-alpaca-review` and a different service; it was not reused. No secret
+values, environment dumps or credential files were read, displayed or committed.
+
+Existing IDs are selected by exact source key and are not updated. New keys use
+`ON CONFLICT(source_key) DO NOTHING`, then re-read the winning mapping. The
+unique source-key constraint and primary-key constraint prevent duplicate stored
+identities. Concurrency may consume sequence numbers and leave gaps; this does
+not mean an existing ID changes. Actual staging PostgreSQL constraints/data have
+not been probed from this environment. Source inspection and isolated tests do
+not replace that live verification.
 
 ## Authorized operator command
 
@@ -77,6 +122,7 @@ described above before invoking the endpoints.
 ```sh
 python -m research.preliminary_workspace_http \
   --backend-origin https://pdufa-new-api-staging.onrender.com \
+  --allow-staging-identity-allocation \
   --output /authorized/pipeline-aggregate-diagnostics.json
 ```
 
@@ -84,6 +130,14 @@ The runner refuses overwrites and only writes diagnostics after complete
 reconciliation. For authorized in-process per-record investigation,
 `screen_backend_workspace` returns the full blocked research report; keep it in
 the authorized research environment rather than committing private snapshots.
+That API also requires `allow_identity_allocation=True`, only after approval.
+
+One operator action is required: **attach the existing staging internal key as
+the managed secret binding `PDUFA_INTERNAL_API_KEY`, allow
+`pdufa-new-api-staging.onrender.com` in this session's network policy, and approve
+one reconciliation run permitting only the existing insert-only allocation of
+missing program IDs**. Do not paste the key into chat, rotate it, or reuse the
+separate review-service secret.
 
 ## Verification and next executable milestone
 

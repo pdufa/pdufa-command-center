@@ -8,13 +8,13 @@ from research.preliminary_workspace_http import make_workspace_get
 ])
 def test_rejects_unsafe_origin(origin):
     with pytest.raises(ValueError):
-        make_workspace_get(origin, api_key="test")
+        make_workspace_get(origin, api_key="test", allow_identity_allocation=True)
 
 
 def test_missing_key_fails_closed(monkeypatch):
     monkeypatch.delenv("PDUFA_INTERNAL_API_KEY", raising=False)
     with pytest.raises(ValueError, match="required"):
-        make_workspace_get("https://example.com")
+        make_workspace_get("https://example.com", allow_identity_allocation=True)
 
 
 def test_http_get_uses_only_protected_read_endpoint(monkeypatch):
@@ -31,7 +31,7 @@ def test_http_get_uses_only_protected_read_endpoint(monkeypatch):
         observed["key"] = request.get_header("X-pdufa-internal-key")
         return Response()
     monkeypatch.setattr("research.preliminary_workspace_http.urlopen", fake_urlopen)
-    get = make_workspace_get("https://example.com", api_key="secret-test")
+    get = make_workspace_get("https://example.com", api_key="secret-test", allow_identity_allocation=True)
     result = get(offset=0, limit=100, version="")
     assert result["total"] == 0
     assert observed["method"] == "GET"
@@ -62,7 +62,7 @@ def test_ambiguous_or_nonfinite_json_is_rejected_without_response_disclosure(mon
         def __exit__(self, *args): pass
         def read(self, limit): return raw
     monkeypatch.setattr('research.preliminary_workspace_http.urlopen', lambda *a, **k: Response())
-    get = make_workspace_get('https://example.com', api_key='SYNTHETIC_SECRET')
+    get = make_workspace_get('https://example.com', api_key='SYNTHETIC_SECRET', allow_identity_allocation=True)
     with pytest.raises(ValueError, match='invalid workspace JSON') as caught:
         get(offset=0, limit=100, version='')
     assert 'SYNTHETIC_SECRET' not in str(caught.value)
@@ -82,7 +82,7 @@ def test_internal_key_is_never_forwarded_through_redirect(monkeypatch):
         assert handler.redirect_request(None, None, 302, None, {}, 'https://unrelated.example') is None
         return Opener()
     monkeypatch.setattr(http, 'build_opener', builder)
-    get = http.make_workspace_get('https://example.com', api_key='SYNTHETIC_SECRET')
+    get = http.make_workspace_get('https://example.com', api_key='SYNTHETIC_SECRET', allow_identity_allocation=True)
     with pytest.raises(ValueError, match='unavailable or access denied') as caught:
         get(offset=0, limit=100, version='')
     assert len(calls) == 1
@@ -118,7 +118,8 @@ def test_authenticated_summary_and_pages_are_reconciled_end_to_end(monkeypatch):
             'rows': [{'programId': f'PDUFA-{i:06d}'} for i in range(offset, min(offset + 100, 101))],
             'nextOffset': 100 if offset == 0 else None})
     monkeypatch.setattr(http, 'urlopen', transport)
-    report = http.safe_workspace_diagnostics('https://example.com', api_key='SYNTHETIC_SECRET')
+    report = http.safe_workspace_diagnostics('https://example.com', api_key='SYNTHETIC_SECRET',
+                                             allow_identity_allocation=True)
     assert paths == ['/api/workspace/summary', '/api/workspace/page', '/api/workspace/page', '/api/workspace/summary']
     assert report['backend_rows_received'] == report['blocked'] == 101
     assert report['summary_reconciled'] and report['retrieval_complete']
@@ -132,7 +133,8 @@ def test_operator_runner_fails_before_network_when_key_missing(monkeypatch, tmp_
     monkeypatch.setattr(http, 'urlopen', lambda *a, **k: pytest.fail('unexpected network request'))
     output = tmp_path / 'diagnostics.json'
     with pytest.raises(SystemExit) as caught:
-        http.main(['--backend-origin', 'https://example.com', '--output', str(output)])
+        http.main(['--backend-origin', 'https://example.com', '--output', str(output),
+                   '--allow-staging-identity-allocation'])
     assert caught.value.code == 2
     assert not output.exists()
 
@@ -141,4 +143,35 @@ def test_operator_runner_fails_before_network_when_key_missing(monkeypatch, tmp_
                                     'https://example.com/\n'])
 def test_origin_cannot_hide_unsafe_ports_or_control_characters(origin):
     with pytest.raises(ValueError):
-        make_workspace_get(origin, api_key='SYNTHETIC_SECRET')
+        make_workspace_get(origin, api_key='SYNTHETIC_SECRET', allow_identity_allocation=True)
+
+
+@pytest.mark.parametrize('approval', [False, None, 'true', 1])
+def test_bulk_retrieval_requires_explicit_database_side_effect_authorization(monkeypatch, approval):
+    from research import preliminary_workspace_http as http
+    monkeypatch.setattr(http, 'make_workspace_client', lambda *a, **k: pytest.fail('client created before authorization'))
+    with pytest.raises(ValueError, match='explicit authorization'):
+        http.screen_backend_workspace('https://example.com', api_key='SYNTHETIC_SECRET',
+                                       allow_identity_allocation=approval)
+
+
+def test_operator_runner_never_contacts_backend_without_allocation_authorization(monkeypatch, tmp_path):
+    from research import preliminary_workspace_http as http
+    monkeypatch.setenv('PDUFA_INTERNAL_API_KEY', 'SYNTHETIC_SECRET')
+    monkeypatch.setattr(http, 'make_workspace_client', lambda *a, **k: pytest.fail('unexpected backend request'))
+    output = tmp_path / 'report.json'
+    with pytest.raises(SystemExit) as caught:
+        http.main(['--backend-origin', 'https://example.com', '--output', str(output)])
+    assert caught.value.code == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize('factory_name', ['make_workspace_get', 'make_workspace_client',
+                                        'screen_backend_workspace', 'safe_workspace_diagnostics'])
+@pytest.mark.parametrize('approval', [False, None, 'true', 1])
+def test_all_http_entrypoints_fail_closed_before_network(monkeypatch, factory_name, approval):
+    from research import preliminary_workspace_http as http
+    monkeypatch.setattr(http, 'urlopen', lambda *a, **k: pytest.fail('unauthorized network request'))
+    with pytest.raises(ValueError, match='explicit authorization'):
+        getattr(http, factory_name)('https://example.com', api_key='SYNTHETIC_SECRET',
+                                    allow_identity_allocation=approval)
