@@ -8,10 +8,13 @@ from __future__ import annotations
 
 import base64
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 import json
 import re
 from typing import Mapping
+
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
@@ -43,7 +46,7 @@ def verify_anchor_receipt(
     *,
     expected_head_sha256: str,
 ) -> bool:
-    if not _DIGEST.fullmatch(receipt.ledger_head_sha256):
+    if not isinstance(receipt.ledger_head_sha256, str) or not _DIGEST.fullmatch(receipt.ledger_head_sha256):
         return False
     if receipt.ledger_head_sha256 != expected_head_sha256:
         return False
@@ -53,10 +56,9 @@ def verify_anchor_receipt(
         stamp = datetime.fromisoformat(receipt.anchored_at_utc.replace("Z", "+00:00"))
         if stamp.tzinfo is None or stamp.utcoffset() is None:
             return False
-        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
         key = Ed25519PublicKey.from_public_bytes(trusted_signers[receipt.signer_id])
         signature = base64.b64decode(receipt.signature_base64, validate=True)
         key.verify(signature, receipt_payload(receipt))
-    except (ImportError, ValueError, TypeError):
+    except (InvalidSignature, ValueError, TypeError, AttributeError):
         return False
     return True
