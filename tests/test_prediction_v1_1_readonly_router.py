@@ -1,5 +1,8 @@
 """Read-only evidence API authorization checks, no production router mount."""
 import unittest
+import tempfile
+from pathlib import Path
+from research.prediction_v1_1_storage_adapter import open_research_evidence_store
 from types import SimpleNamespace
 from research.prediction_v1_1_authorization import ResearchPrincipal
 from fastapi import HTTPException
@@ -8,6 +11,14 @@ from research.prediction_v1_1_readonly_router import (
 )
 
 class ResearchEvidenceRouterTests(unittest.TestCase):
+ def test_authorized_read_uses_integrity_checked_service(self):
+  with tempfile.TemporaryDirectory() as root:
+   conn=open_research_evidence_store(Path(root)/"test.sqlite3")
+   principal=ResearchPrincipal("reader",frozenset({"evidence_reader"}),frozenset({"P1"}))
+   result=read_evidence_status("P1",db=conn,catalog={"fields":[]},principal=principal)
+   self.assertEqual(result["decision"],"ABSTAIN")
+   self.assertEqual(result["integrity"],"CHECKED_LOCAL_CHAIN_ONLY")
+   conn.close()
  def test_unconfigured_dependencies_fail_closed(self):
   for dependency in (_unconfigured_database,_unconfigured_identity,_unconfigured_catalog):
    with self.assertRaises(HTTPException) as ctx:
