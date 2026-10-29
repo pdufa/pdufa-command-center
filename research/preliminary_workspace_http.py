@@ -49,3 +49,15 @@ def make_workspace_get(base_url, *, api_key=None, timeout=20):
 
 def screen_backend_workspace(base_url, *, api_key=None):
     return triage_workspace_pages(make_workspace_get(base_url, api_key=api_key))
+
+
+def safe_workspace_diagnostics(base_url, *, api_key=None):
+    """Return aggregate screening diagnostics without exposing individual records."""
+    report = screen_backend_workspace(base_url, api_key=api_key)
+    keys = (
+        "workspace_version", "workspace_as_of", "backend_rows_received",
+        "market_cap_evidence_present", "fda_target_evidence_present",
+        "candidate_for_evidence_review", "blocked", "prediction_status",
+        "data_authenticity_verified",
+    )
+    return {key: report[key] for key in keys}
