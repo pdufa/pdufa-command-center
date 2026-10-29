@@ -82,3 +82,17 @@ def test_duplicate_program_ids_across_ten_thousand_record_boundary_rejected():
                 "rows": rows}
     with pytest.raises(ValueError, match="duplicate programId"):
         triage_workspace_pages(page)
+
+
+def test_rejects_duplicate_program_id_across_ten_thousand_boundary():
+    total = 10001
+    def page(offset, limit, version):
+        rows = [{"programId": f"PDUFA-{i:06d}"} for i in range(offset, min(offset + limit, total))]
+        if offset == 10000:
+            rows[0]["programId"] = "PDUFA-000000"
+        return {"version": "v1", "asOf": "2026-10-29T00:00:00Z",
+                "total": total, "offset": offset, "limit": limit,
+                "rows": rows,
+                "nextOffset": offset + limit if offset + limit < total else None}
+    with pytest.raises(ValueError, match="duplicate programId"):
+        triage_workspace_pages(page)
