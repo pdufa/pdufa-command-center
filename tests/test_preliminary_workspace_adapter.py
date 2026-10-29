@@ -188,3 +188,23 @@ def test_boolean_page_bounds_never_alias_integer_bounds(field, value):
         return result
     with pytest.raises(ValueError, match='bounds|pagination'):
         triage_workspace_pages(page, page_size=1)
+
+
+def test_backend_los_angeles_calendar_date_accepted():
+    def page(offset, limit, version):
+        return {"version": "v1", "asOf": "2026-10-29", "total": 1,
+                "offset": offset, "limit": limit, "nextOffset": None,
+                "rows": [{"programId": "PDUFA-000001"}]}
+    result = triage_workspace_pages(page, now="2026-10-29T18:00:00+00:00")
+    assert result["source_time_precision"] == "CALENDAR_DATE_LOS_ANGELES"
+    assert result["blocked"] == 1
+
+
+@pytest.mark.parametrize("as_of", ["2026-10-28", "2026-10-30", "2026-02-30", "2026-10-29T18:00:00"])
+def test_rejects_stale_future_invalid_or_naive_source_clock(as_of):
+    def page(offset, limit, version):
+        return {"version": "v1", "asOf": as_of, "total": 1,
+                "offset": offset, "limit": limit, "nextOffset": None,
+                "rows": [{"programId": "PDUFA-000001"}]}
+    with pytest.raises(ValueError):
+        triage_workspace_pages(page, now="2026-10-29T18:00:00+00:00")
