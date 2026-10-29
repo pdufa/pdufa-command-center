@@ -316,5 +316,7 @@ def test_aggregate_fda_evidence_diagnostics_do_not_promote_prediction():
     assert result["fda_host_evidence_present"] == 2
     assert result["accepted_fda_verification_status_present"] == 2
     assert result["fda_target_evidence_present"] == 1
+    assert result["dated_records_missing_fda_host_evidence"] == 1
+    assert result["dated_records_missing_accepted_verification_status"] == 1
     assert result["blocked"] == 4
     assert result["prediction_status"] == "ABSTAIN"
