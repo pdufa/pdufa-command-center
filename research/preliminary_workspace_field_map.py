@@ -66,6 +66,11 @@ def map_published_row(row, *, as_of=None, max_cap_age_days=7):
         target_valid = target.isoformat() == row.get('pdufaDate')
     except (ValueError, TypeError):
         target_valid = False
+    # Preserve sponsor-disclosed dates as leads, never as FDA confirmation.
+    # URL provenance alone cannot verify application, indication or the date.
+    sponsor_source_host = _https(row.get("sponsorSource"))
+    sponsor_disclosure_lead = bool(target_valid and sponsor_source_host and
+        (sponsor_source_host == "sec.gov" or sponsor_source_host.endswith(".sec.gov")))
     fda_supported = (target_valid and host is not None
                      and (host == "fda.gov" or host.endswith(".fda.gov"))
                      and row.get("checkStatus") in ("VERIFIED", "FDA_VERIFIED"))
@@ -81,6 +86,7 @@ def map_published_row(row, *, as_of=None, max_cap_age_days=7):
     return {"candidate": candidate,
             "cap_source_present": cap_supported,
             "fda_source_present": bool(fda_supported),
+            "sponsor_disclosure_lead": sponsor_disclosure_lead,
             "listing_verified": False,
             "restrictions_verified": False,
             "scope": preliminary_candidate_scope(candidate)["scope"]}
