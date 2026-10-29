@@ -1,6 +1,7 @@
 """Read-only evidence API authorization checks, no production router mount."""
 import unittest
 from types import SimpleNamespace
+from research.prediction_v1_1_authorization import ResearchPrincipal
 from fastapi import HTTPException
 from research.prediction_v1_1_readonly_router import (
  read_evidence_status, _unconfigured_database, _unconfigured_identity, _unconfigured_catalog
@@ -21,8 +22,13 @@ class ResearchEvidenceRouterTests(unittest.TestCase):
   with self.assertRaises(HTTPException) as ctx:
    read_evidence_status("P1",db=object(),catalog={},principal=principal)
   self.assertEqual(ctx.exception.status_code,403)
+ def test_untrusted_object_cannot_read_even_with_matching_claims(self):
+  principal=SimpleNamespace(is_authenticated=True,roles=("evidence_reader",),program_ids=("P1",))
+  with self.assertRaises(HTTPException) as ctx:
+   read_evidence_status("P1",db=object(),catalog={},principal=principal)
+  self.assertEqual(ctx.exception.status_code,403)
  def test_cross_program_access_is_denied(self):
-  principal=SimpleNamespace(is_authenticated=True,roles=("evidence_reader",),program_ids=("P2",))
+  principal=ResearchPrincipal("reader",frozenset({"evidence_reader"}),frozenset({"P2"}))
   with self.assertRaises(HTTPException) as ctx:
    read_evidence_status("P1",db=object(),catalog={},principal=principal)
   self.assertEqual(ctx.exception.status_code,403)
