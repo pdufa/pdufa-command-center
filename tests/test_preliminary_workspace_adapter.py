@@ -15,6 +15,7 @@ def test_pagination_does_not_fabricate_eligibility():
     assert result["blocked"] == 2
     assert result["candidate_for_evidence_review"] == 0
     assert result["prediction_status"] == "ABSTAIN"
+    assert result["field_mapping_applied"] is True
 
 
 def test_rejects_snapshot_version_drift():
@@ -49,3 +50,20 @@ def test_more_than_ten_thousand_pipeline_programs_not_truncated():
     assert report["blocked"] == total
     assert report["candidate_for_evidence_review"] == 0
     assert report["records"][-1]["program_id"] == "PDUFA-010000"
+
+
+def test_field_evidence_counts_without_promoting_eligibility():
+    def page(offset, limit, version):
+        return {"version": "v1", "asOf": "2026-10-29T00:00:00Z",
+                "total": 1, "offset": offset, "limit": limit,
+                "nextOffset": None,
+                "rows": [{"programId": "PDUFA-000003", "marketCap": 500000000,
+                          "capSource": "https://example.com/market",
+                          "capChecked": "2026-10-29", "pdufaDate": "2026-12-01",
+                          "fdaSource": "https://www.fda.gov/example",
+                          "checkStatus": "FDA_VERIFIED"}]}
+    result = triage_workspace_pages(page)
+    assert result["market_cap_evidence_present"] == 1
+    assert result["fda_target_evidence_present"] == 1
+    assert result["blocked"] == 1
+    assert result["prediction_status"] == "ABSTAIN"
