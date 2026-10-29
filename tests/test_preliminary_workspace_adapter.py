@@ -34,3 +34,18 @@ def test_rejects_inconsistent_pagination():
         return page
     with pytest.raises(ValueError, match="pagination"):
         triage_workspace_pages(broken, page_size=1)
+
+
+def test_more_than_ten_thousand_pipeline_programs_not_truncated():
+    total = 10001
+    def page(offset, limit, version):
+        end = min(offset + limit, total)
+        return {"version": "v-large", "asOf": "2026-10-29T00:00:00Z",
+                "total": total, "offset": offset, "limit": limit,
+                "rows": [{"programId": f"PDUFA-{i:06d}"} for i in range(offset, end)],
+                "nextOffset": offset + limit if offset + limit < total else None}
+    report = triage_workspace_pages(page)
+    assert report["total"] == total
+    assert report["blocked"] == total
+    assert report["candidate_for_evidence_review"] == 0
+    assert report["records"][-1]["program_id"] == "PDUFA-010000"
