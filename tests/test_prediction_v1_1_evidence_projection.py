@@ -2,7 +2,8 @@
 import json
 import unittest
 from pathlib import Path
-from types import SimpleNamespace
+from research.prediction_v1_1_authorization import ResearchPrincipal
+from research.prediction_v1_1_submitter_binding import initialize_submitter_bindings, bind_verified_submitter
 from research.prediction_v1_1_audit_ledger import connect_ledger, append_submission
 from research.prediction_v1_1_review_workflow import initialize_review_ledger, record_review
 from research.prediction_v1_1_evidence_projection import program_evidence_summary
@@ -18,6 +19,7 @@ class EvidenceProjectionTests(unittest.TestCase):
  def setUp(self):
   self.db=connect_ledger(":memory:")
   initialize_review_ledger(self.db)
+  initialize_submitter_bindings(self.db)
  def tearDown(self):
   self.db.close()
  def test_empty_program_is_not_ready(self):
@@ -28,7 +30,9 @@ class EvidenceProjectionTests(unittest.TestCase):
   self.assertEqual(result["decision"],"ABSTAIN")
  def test_reviewed_provenance_does_not_auto_verify(self):
   event=append_submission(self.db,RECORD,CATALOG)["event_id"]
-  auth=SimpleNamespace(is_authenticated=True,principal="reviewer-2",roles=("evidence_reviewer",))
+  submitter=ResearchPrincipal("submitter-1",frozenset({"evidence_submitter"}),frozenset({RECORD["program_id"]}))
+  bind_verified_submitter(self.db,event,submitter)
+  auth=ResearchPrincipal("reviewer-2",frozenset({"evidence_reviewer"}),frozenset({RECORD["program_id"]}))
   record_review(self.db,evidence_event_id=event,reviewer_principal="reviewer-2",
    outcome="APPROVE_PROVENANCE",checks={"source_bytes":True,"publication_date":True,"identity":True},
    rationale="Synthetic review",trusted_identity=auth)
