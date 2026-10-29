@@ -138,6 +138,8 @@ def safe_workspace_diagnostics(base_url, *, api_key=None, timeout=20, allow_iden
     result = {key: report[key] for key in keys}
     for key in ('raw_target_date_present', 'valid_target_date_present',
                 'fda_host_evidence_present', 'accepted_fda_verification_status_present',
+                'dated_records_missing_fda_host_evidence',
+                'dated_records_missing_accepted_verification_status',
                 'retrieval_complete', 'summary_reconciled', 'snapshot_freshness_checked',
                 'source_time_precision', 'freshness_basis', 'observation_timestamp',
                 'cap_freshness_reference_timestamp', 'cap_freshness_reference_basis',
