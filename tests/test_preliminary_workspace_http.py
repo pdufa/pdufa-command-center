@@ -175,3 +175,71 @@ def test_all_http_entrypoints_fail_closed_before_network(monkeypatch, factory_na
     with pytest.raises(ValueError, match='explicit authorization'):
         getattr(http, factory_name)('https://example.com', api_key='SYNTHETIC_SECRET',
                                     allow_identity_allocation=approval)
+
+
+def test_hidden_prompt_keeps_secret_out_of_environment_arguments_and_report(monkeypatch, tmp_path):
+    from research import preliminary_workspace_http as http
+    import json
+    import os
+    monkeypatch.delenv('PDUFA_INTERNAL_API_KEY', raising=False)
+    monkeypatch.setattr(http, '_prompt_staging_key', lambda: 'SYNTHETIC_SECRET')
+    observed = []
+    def diagnostics(origin, *, api_key, allow_identity_allocation):
+        assert api_key == 'SYNTHETIC_SECRET'
+        assert allow_identity_allocation is True
+        assert 'PDUFA_INTERNAL_API_KEY' not in os.environ
+        observed.append(origin)
+        return {'prediction_status': 'ABSTAIN', 'backend_rows_received': 0}
+    monkeypatch.setattr(http, 'safe_workspace_diagnostics', diagnostics)
+    output = tmp_path / 'report.json'
+    args = ['--backend-origin', http.STAGING_ORIGIN, '--output', str(output),
+            '--allow-staging-identity-allocation', '--prompt-key']
+    assert http.main(args) == 0
+    assert observed == [http.STAGING_ORIGIN]
+    assert json.loads(output.read_text())['prediction_status'] == 'ABSTAIN'
+    assert 'SYNTHETIC_SECRET' not in output.read_text()
+    assert 'SYNTHETIC_SECRET' not in repr(args)
+    assert 'PDUFA_INTERNAL_API_KEY' not in os.environ
+
+
+@pytest.mark.parametrize('authorized,origin', [(False, 'https://pdufa-new-api-staging.onrender.com'),
+                                              (True, 'https://unrelated.example')])
+def test_authorization_and_exact_staging_origin_checked_before_secret_prompt(monkeypatch, tmp_path, authorized, origin):
+    from research import preliminary_workspace_http as http
+    monkeypatch.setattr(http, '_prompt_staging_key', lambda: pytest.fail('secret requested before validation'))
+    monkeypatch.setattr(http, 'urlopen', lambda *a, **k: pytest.fail('unexpected request'))
+    output = tmp_path / 'report.json'
+    args = ['--backend-origin', origin, '--output', str(output), '--prompt-key']
+    if authorized:
+        args.append('--allow-staging-identity-allocation')
+    with pytest.raises(SystemExit) as caught:
+        http.main(args)
+    assert caught.value.code == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize('input_tty,error_tty', [(False, False), (False, True), (True, False)])
+def test_prompt_refuses_noninteractive_or_piped_input(monkeypatch, input_tty, error_tty):
+    from research import preliminary_workspace_http as http
+    import getpass
+    import sys
+    monkeypatch.setattr(sys.stdin, 'isatty', lambda: input_tty)
+    monkeypatch.setattr(sys.stderr, 'isatty', lambda: error_tty)
+    monkeypatch.setattr(getpass, 'getpass', lambda *a, **k: pytest.fail('unsafe input requested'))
+    with pytest.raises(ValueError, match='interactive operator terminal'):
+        http._prompt_staging_key()
+
+
+def test_prompt_never_falls_back_to_echoed_secret_input(monkeypatch):
+    from research import preliminary_workspace_http as http
+    import getpass
+    import sys
+    import warnings
+    monkeypatch.setattr(sys.stdin, 'isatty', lambda: True)
+    monkeypatch.setattr(sys.stderr, 'isatty', lambda: True)
+    def unsafe_prompt(*a, **k):
+        warnings.warn('echo unavailable', getpass.GetPassWarning)
+        pytest.fail('must stop before echo fallback')
+    monkeypatch.setattr(getpass, 'getpass', unsafe_prompt)
+    with pytest.raises(ValueError, match='secure terminal input unavailable'):
+        http._prompt_staging_key()

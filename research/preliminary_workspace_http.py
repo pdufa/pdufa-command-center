@@ -26,6 +26,24 @@ def _invalid_constant(value):
     raise ValueError('nonfinite workspace JSON')
 
 
+STAGING_ORIGIN = 'https://pdufa-new-api-staging.onrender.com'
+
+
+def _prompt_staging_key():
+    """Operator terminal only: never fall back to echoed or piped input."""
+    import getpass
+    import sys
+    import warnings
+    if not sys.stdin.isatty() or not sys.stderr.isatty():
+        raise ValueError('hidden key prompt requires an interactive operator terminal')
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter('error', getpass.GetPassWarning)
+            return getpass.getpass('Existing staging API key (hidden): ')
+    except (getpass.GetPassWarning, EOFError, OSError, KeyboardInterrupt):
+        raise ValueError('secure terminal input unavailable; no request made') from None
+
+
 def make_workspace_get(base_url, *, api_key=None, timeout=20, allow_identity_allocation=False):
     return make_workspace_client(base_url, api_key=api_key, timeout=timeout,
                                  allow_identity_allocation=allow_identity_allocation)[0]
@@ -121,12 +139,25 @@ def main(argv=None):
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--allow-staging-identity-allocation', action='store_true',
                         help='operator authorizes insert-only allocation of missing permanent IDs')
+    parser.add_argument('--prompt-key', action='store_true',
+                        help='read existing staging key without echo in an approved operator terminal')
     args = parser.parse_args(argv)
     if args.output.exists():
         parser.error('output exists; refusing overwrite')
     try:
-        result = safe_workspace_diagnostics(args.backend_origin,
-            allow_identity_allocation=args.allow_staging_identity_allocation)
+        if not args.allow_staging_identity_allocation:
+            raise ValueError('explicit authorization for possible staging program-ID allocation required')
+        if args.prompt_key and args.backend_origin.rstrip('/') != STAGING_ORIGIN:
+            raise ValueError('hidden key prompt is restricted to the authorized staging origin')
+        if args.prompt_key:
+            key = _prompt_staging_key()
+            try:
+                result = safe_workspace_diagnostics(args.backend_origin, api_key=key,
+                    allow_identity_allocation=True)
+            finally:
+                del key  # Release reference; immutable string memory erasure is not guaranteed.
+        else:
+            result = safe_workspace_diagnostics(args.backend_origin, allow_identity_allocation=True)
     except ValueError as exc:
         parser.exit(2, str(exc) + '\n')
     with args.output.open('x', encoding='utf-8') as handle:

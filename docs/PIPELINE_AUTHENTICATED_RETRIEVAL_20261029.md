@@ -12,8 +12,11 @@ aliases fail before constructing a client or making any request. This records
 an operator's approval; it does not authenticate the operator or replace the
 backend's existing key authentication.
 
-Current database authorization is **pending**, as required separately by the
-active operator directive. No live workspace request has been made by this session.
+One reconciliation run permitting the existing insert-only allocation of missing
+program IDs has been explicitly authorized. It remains unused because this
+execution environment has no staging key binding or host permission. No live
+workspace request has been made by this session; no further database approval
+is needed for that one run.
 
 Follow-up verification: **99 preliminary tests passed**; the combined
 preliminary/official/scientific/evidence/FDA suites passed **945 tests plus 298
@@ -132,12 +135,49 @@ reconciliation. For authorized in-process per-record investigation,
 the authorized research environment rather than committing private snapshots.
 That API also requires `allow_identity_allocation=True`, only after approval.
 
-One operator action is required: **attach the existing staging internal key as
-the managed secret binding `PDUFA_INTERNAL_API_KEY`, allow
-`pdufa-new-api-staging.onrender.com` in this session's network policy, and approve
-one reconciliation run permitting only the existing insert-only allocation of
-missing program IDs**. Do not paste the key into chat, rotate it, or reuse the
-separate review-service secret.
+The runtime supports reporting secret bindings, but the available Cloud
+Environment tools expose only status/diagnostics. No secret-injection control or
+verified UI menu path is exposed to this agent. The exact configuration backing
+this session is
+`7b12e40c-e824-4db2-9b7f-6c642ecda6f3~cecfg_6ae019e98ccc819a86be89c295a30a95`,
+revision 1. Its supported environment-configuration workflow must attach the
+existing staging key as `PDUFA_INTERNAL_API_KEY` and grant the staging hostname;
+changing the Render service environment does not inject a secret into this
+runner. No UI click path is claimed here.
+
+## Concrete operator alternative: hidden terminal input
+
+An operator can run the existing authorized retrieval from this research branch
+in an approved terminal environment with staging network access, without binding
+or exporting an environment variable:
+
+```sh
+python -m research.preliminary_workspace_http \
+  --backend-origin https://pdufa-new-api-staging.onrender.com \
+  --allow-staging-identity-allocation --prompt-key \
+  --output /authorized/pipeline-aggregate-diagnostics.json
+```
+
+Enter the existing staging key only at the terminal's hidden prompt, never in
+chat or a shell command. `--prompt-key` is restricted to the exact staging origin
+and requires the allocation-authorization flag before requesting the key. Both
+stdin and stderr must be terminals. If no-echo input is unavailable, the runner
+stops rather than falling back to echoed or piped input. The key is passed to the
+client in process memory only; it is not exported to the environment, put in
+command arguments, logged, written to a file or included in the aggregate report.
+Releasing the reference does not guarantee erasure of immutable string memory.
+
+This alternative does not bypass the current execution environment's blocked
+network policy or supply this agent with a secret. It makes the operator handoff
+executable without inventing a settings menu. No new credentials or deployment
+are required. Do not reuse the separate review-service secret.
+
+Hidden-prompt increment verification: **106 preliminary tests passed**, including
+seven new prompt/privacy regressions; combined research suites **952 passed plus
+298 subtests**, one external fixture skipped; full backend **1,007 passed**, one
+external fixture skipped; zero failures. Independent review reran all 44 HTTP
+tests and found no material issues. These remain software checks, not live
+authentication or Pipeline reconciliation results.
 
 ## Verification and next executable milestone
 
