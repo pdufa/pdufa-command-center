@@ -80,3 +80,33 @@ def record_review(conn, *, evidence_event_id, reviewer_principal, outcome, check
     return {"review_id": cursor.lastrowid, "review_hash": digest,
             "provenance_review_recorded": True, "independently_verified": False,
             "readiness": "NOT_READY", "decision": "ABSTAIN"}
+
+
+def audit_review_chain(conn):
+    """Check review event integrity, evidence references and previous-hash links.
+
+    Hash chaining detects accidental or unauthorized in-place edits only if
+    the expected head digest is independently anchored outside this database.
+    """
+    previous = None
+    count = 0
+    rows = conn.execute("""SELECT reviewed_at,evidence_event_id,reviewer_principal,
+        review_outcome,source_bytes_verified,publication_date_verified,identity_verified,
+        rationale,previous_review_hash,review_hash FROM review_events ORDER BY review_id""")
+    for row in rows:
+        (when, evidence_id, principal, outcome, source_ok, published_ok, identity_ok,
+         rationale, linked, digest) = row
+        if linked != previous:
+            return {"valid": False, "checked": count, "reason": "review chain mismatch"}
+        if not conn.execute("SELECT 1 FROM evidence_events WHERE event_id=? AND event_kind='RECEIVED_UNVERIFIED'", (evidence_id,)).fetchone():
+            return {"valid": False, "checked": count, "reason": "review evidence missing or rejected"}
+        envelope = {"reviewed_at": when, "evidence_event_id": evidence_id,
+                    "reviewer_principal": principal, "outcome": outcome,
+                    "checks": {"source_bytes": bool(source_ok), "publication_date": bool(published_ok),
+                               "identity": bool(identity_ok)},
+                    "rationale": rationale, "previous_review_hash": linked}
+        if hashlib.sha256(_json_bytes(envelope)).hexdigest() != digest:
+            return {"valid": False, "checked": count, "reason": "review digest mismatch"}
+        previous = digest
+        count += 1
+    return {"valid": True, "checked": count, "last_review_hash": previous}
