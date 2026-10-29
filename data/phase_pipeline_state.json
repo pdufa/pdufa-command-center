@@ -1,22 +1,38 @@
 {
-  "started_at": "2026-10-28T03:21:25.033928+00:00",
-  "status": "COMPLETE WITH WARNINGS",
+  "started_at": "2026-10-29T03:20:08.085932+00:00",
+  "status": "COMPLETE",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-10-28",
+  "scope": "Industry Phase 2/3 records updated since 2024-10-29",
   "source_max_age_days": 180,
-  "studies_scanned": 15585,
-  "matched_trials": 3697,
+  "studies_scanned": 15581,
+  "matched_trials": 3701,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [],
-  "finished_at": "2026-10-28T03:22:06.444575+00:00",
-  "stored_trials": 7389,
-  "phase2_programs": 1039,
-  "master_programs": 124,
-  "review_trials": 3082,
+  "new_master_programs": [
+    {
+      "ticker": "MDGL",
+      "drug": "MGL-3196",
+      "nct_id": "NCT03900429"
+    },
+    {
+      "ticker": "MDGL",
+      "drug": "Resmetirom",
+      "nct_id": "NCT05500222"
+    },
+    {
+      "ticker": "MDGL",
+      "drug": "Resmetirom",
+      "nct_id": "NCT04951219"
+    }
+  ],
+  "finished_at": "2026-10-29T03:20:41.479855+00:00",
+  "stored_trials": 7394,
+  "phase2_programs": 1051,
+  "master_programs": 130,
+  "review_trials": 3080,
   "market_cap_verified_tickers": 417,
   "market_cap_listing_excluded_tickers": 1,
-  "market_cap_source_unavailable": 1,
-  "market_cap_recent_cache_retained": 1
+  "market_cap_source_unavailable": 0,
+  "market_cap_recent_cache_retained": 0
 }
