@@ -31,3 +31,11 @@ def test_non_fda_source_cannot_claim_fda_target_provenance():
     assert result["fda_source_present"] is False
     assert result["candidate"]["fda_pdufa_target_confirmed"] is False
     assert result["scope"] == "BLOCKED"
+
+
+def test_unparseable_market_cap_check_date_is_not_provenance():
+    row = {"programId": "PDUFA-000005", "marketCap": 500000000,
+           "capSource": "https://example.com/market", "capChecked": "not-a-date"}
+    result = map_published_row(row)
+    assert result["cap_source_present"] is False
+    assert result["candidate"]["market_cap_usd"] is None
