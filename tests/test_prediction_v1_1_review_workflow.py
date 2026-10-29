@@ -27,6 +27,29 @@ class ReviewWorkflowTests(unittest.TestCase):
         self.auth=ResearchPrincipal("reviewer-2",frozenset({"evidence_reviewer"}),frozenset({"TEST|NCT00000000"}))
     def tearDown(self):
         self.db.close()
+    def test_self_review_rejected_by_record_review(self):
+        self.db.execute("DROP TRIGGER evidence_submitter_bindings_no_update")
+        self.db.execute("UPDATE evidence_submitter_bindings SET submitter_principal='reviewer-2' WHERE evidence_event_id=?", (self.event,))
+        with self.assertRaises(PermissionError):
+            record_review(self.db,evidence_event_id=self.event,reviewer_principal="reviewer-2",
+                          outcome="APPROVE_PROVENANCE",checks=CHECKS,rationale="Self review",
+                          trusted_identity=self.auth)
+        self.assertEqual(self.db.execute("SELECT COUNT(*) FROM review_events").fetchone()[0],0)
+    def test_cross_program_review_rejected_by_record_review(self):
+        outsider=ResearchPrincipal("reviewer-3",frozenset({"evidence_reviewer"}),frozenset({"OTHER"}))
+        with self.assertRaises(PermissionError):
+            record_review(self.db,evidence_event_id=self.event,reviewer_principal="reviewer-3",
+                          outcome="APPROVE_PROVENANCE",checks=CHECKS,rationale="Cross program",
+                          trusted_identity=outsider)
+        self.assertEqual(self.db.execute("SELECT COUNT(*) FROM review_events").fetchone()[0],0)
+    def test_missing_binding_rejected_by_record_review(self):
+        self.db.execute("DROP TRIGGER evidence_submitter_bindings_no_delete")
+        self.db.execute("DELETE FROM evidence_submitter_bindings WHERE evidence_event_id=?", (self.event,))
+        with self.assertRaises(PermissionError):
+            record_review(self.db,evidence_event_id=self.event,reviewer_principal="reviewer-2",
+                          outcome="APPROVE_PROVENANCE",checks=CHECKS,rationale="Unbound",
+                          trusted_identity=self.auth)
+        self.assertEqual(self.db.execute("SELECT COUNT(*) FROM review_events").fetchone()[0],0)
     def test_reject_without_authenticated_identity(self):
         with self.assertRaises(PermissionError):
             record_review(self.db,evidence_event_id=self.event,reviewer_principal="reviewer-2",
