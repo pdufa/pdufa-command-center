@@ -7,8 +7,6 @@ on:
       - 'tests/test_preliminary_candidate_scope.py'
       - 'research/preliminary_pipeline_batch.py'
       - 'tests/test_preliminary_pipeline_batch.py'
-      - 'research/preliminary_pipeline_batch.py'
-      - 'tests/test_preliminary_pipeline_batch.py'
       - '.github/workflows/preliminary-candidate-scope-safety.yml'
   push:
     branches:
@@ -16,6 +14,8 @@ on:
     paths:
       - 'research/preliminary_candidate_scope.py'
       - 'tests/test_preliminary_candidate_scope.py'
+      - 'research/preliminary_pipeline_batch.py'
+      - 'tests/test_preliminary_pipeline_batch.py'
       - '.github/workflows/preliminary-candidate-scope-safety.yml'
 
 permissions:
