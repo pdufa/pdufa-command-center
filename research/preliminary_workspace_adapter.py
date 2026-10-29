@@ -126,6 +126,8 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
     valid_target_count = 0
     fda_host_count = 0
     fda_status_count = 0
+    dated_without_fda_host = 0
+    dated_without_accepted_status = 0
     for row in rows:
         if not isinstance(row, dict):
             raise ValueError("invalid workspace record")
@@ -154,7 +156,16 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         from research.preliminary_workspace_field_map import _https
         host = _https(row.get("fdaSource"))
         fda_host_count += bool(host and (host == "fda.gov" or host.endswith(".fda.gov")))
-        fda_status_count += row.get("checkStatus") in ("VERIFIED", "FDA_VERIFIED")
+        accepted = row.get("checkStatus") in ("VERIFIED", "FDA_VERIFIED")
+        fda_status_count += accepted
+        if isinstance(target_text, str):
+            try:
+                valid = date.fromisoformat(target_text).isoformat() == target_text
+            except ValueError:
+                valid = False
+            if valid:
+                dated_without_fda_host += not (host and (host == "fda.gov" or host.endswith(".fda.gov")))
+                dated_without_accepted_status += not accepted
         mapped = map_published_row(row, as_of=cap_reference)
         candidates.append(mapped["candidate"])
         cap_evidence_count += bool(mapped["cap_source_present"])
@@ -212,5 +223,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         "valid_target_date_present": valid_target_count,
         "fda_host_evidence_present": fda_host_count,
         "accepted_fda_verification_status_present": fda_status_count,
+        "dated_records_missing_fda_host_evidence": dated_without_fda_host,
+        "dated_records_missing_accepted_verification_status": dated_without_accepted_status,
         "prediction_status": "ABSTAIN",
     }
