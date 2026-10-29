@@ -11,6 +11,8 @@ on:
       - 'tests/test_preliminary_pipeline_snapshot.py'
       - 'research/preliminary_pipeline_snapshot_cli.py'
       - 'tests/test_preliminary_pipeline_snapshot_cli.py'
+      - 'research/workspace_pipeline_adapter.py'
+      - 'tests/test_workspace_pipeline_adapter.py'
       - '.github/workflows/preliminary-candidate-scope-safety.yml'
   push:
     branches:
@@ -24,6 +26,8 @@ on:
       - 'tests/test_preliminary_pipeline_snapshot.py'
       - 'research/preliminary_pipeline_snapshot_cli.py'
       - 'tests/test_preliminary_pipeline_snapshot_cli.py'
+      - 'research/workspace_pipeline_adapter.py'
+      - 'tests/test_workspace_pipeline_adapter.py'
       - '.github/workflows/preliminary-candidate-scope-safety.yml'
 
 permissions:
@@ -41,4 +45,4 @@ jobs:
       - name: Run preliminary candidate scope tests
         run: |
           python -m pip install pytest
-          python -m pytest -q tests/test_preliminary_candidate_scope.py tests/test_preliminary_pipeline_batch.py tests/test_preliminary_pipeline_snapshot.py tests/test_preliminary_pipeline_snapshot_cli.py
+          python -m pytest -q tests/test_preliminary_candidate_scope.py tests/test_preliminary_pipeline_batch.py tests/test_preliminary_pipeline_snapshot.py tests/test_preliminary_pipeline_snapshot_cli.py tests/test_workspace_pipeline_adapter.py
