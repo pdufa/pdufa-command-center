@@ -122,6 +122,10 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
     seen_source_ids = set()
     cap_evidence_count = 0
     fda_evidence_count = 0
+    raw_target_count = 0
+    valid_target_count = 0
+    fda_host_count = 0
+    fda_status_count = 0
     for row in rows:
         if not isinstance(row, dict):
             raise ValueError("invalid workspace record")
@@ -139,6 +143,18 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
             if source_id in seen_source_ids:
                 raise ValueError("duplicate exact source program identity")
             seen_source_ids.add(source_id)
+        # Aggregate diagnostics only; a date alone is not FDA confirmation.
+        target_text = row.get("pdufaDate")
+        raw_target_count += bool(target_text)
+        if isinstance(target_text, str):
+            try:
+                valid_target_count += date.fromisoformat(target_text).isoformat() == target_text
+            except ValueError:
+                pass
+        from research.preliminary_workspace_field_map import _https
+        host = _https(row.get("fdaSource"))
+        fda_host_count += bool(host and (host == "fda.gov" or host.endswith(".fda.gov")))
+        fda_status_count += row.get("checkStatus") in ("VERIFIED", "FDA_VERIFIED")
         mapped = map_published_row(row, as_of=cap_reference)
         candidates.append(mapped["candidate"])
         cap_evidence_count += bool(mapped["cap_source_present"])
@@ -192,5 +208,9 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         "field_mapping_applied": True,
         "market_cap_evidence_present": cap_evidence_count,
         "fda_target_evidence_present": fda_evidence_count,
+        "raw_target_date_present": raw_target_count,
+        "valid_target_date_present": valid_target_count,
+        "fda_host_evidence_present": fda_host_count,
+        "accepted_fda_verification_status_present": fda_status_count,
         "prediction_status": "ABSTAIN",
     }
