@@ -24,6 +24,7 @@ function publishedCandidates(data: Workspace): Candidate[] {
 export default function PublishedTrialSelector() {
   const [rows, setRows] = useState<Candidate[]>([]);
   const [selected, setSelected] = useState("");
+  const [query, setQuery] = useState("");
   const [asOf, setAsOf] = useState("");
   const [status, setStatus] = useState("Loading published GEM JR / GEM records…");
   useEffect(() => {
@@ -40,14 +41,17 @@ export default function PublishedTrialSelector() {
     return () => controller.abort();
   }, []);
   const trial = rows.find(row => row.id === selected);
+  const matches = rows.filter(row => [row.ticker, row.programId, row.drug, row.nctId, row.id].some(value => value?.toLowerCase().includes(query.toLowerCase())));
   return <section style={{background:"#f1f8f2",border:"1px solid #9fb7a5",padding:18}}>
     <h2>Choose a published trial</h2>
     <p role="status">{status}{asOf ? " · Source snapshot: " + asOf : ""}</p>
     <label htmlFor="published-prediction-trial">GEM JR / GEM sourced records</label><br/>
+    <input aria-label="Search published trials" placeholder="Search ticker, program, drug, or NCT" value={query} onChange={event => setQuery(event.target.value)} style={{padding:10,width:"100%",maxWidth:680,display:"block",margin:"8px 0"}} />
+    <p>{matches.length} matching sourced trial records</p>
     <select id="published-prediction-trial" value={selected} onChange={event => setSelected(event.target.value)}
       style={{padding:10,width:"100%",maxWidth:680}}>
       <option value="">Select a trial…</option>
-      {rows.map(row => <option key={row.id} value={row.id}>{row.ticker || row.programId || row.id} · {row.drug || row.nctId || row.id} · {row.groups.join(" + ")}</option>)}
+      {matches.map(row => <option key={row.id} value={row.id}>{row.ticker || row.programId || row.id} · {row.drug || row.nctId || row.id} · {row.groups.join(" + ")}</option>)}
     </select>
     {trial && <div><p>Program: {trial.programId || trial.id} · NCT: {trial.nctId || "Not recorded"} · Membership: {trial.groups.join(", ")}</p>
       <p>{trial.fdaSource?.startsWith("https://") ? <a href={trial.fdaSource} target="_blank" rel="noopener noreferrer">FDA source ↗</a> : null}
