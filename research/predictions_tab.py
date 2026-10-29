@@ -43,6 +43,7 @@ def render_predictions_tab(
     on_start=None,
     job_directory: str | Path | None = None,
     evidence_provider=None,
+    availability_provider=None,
 ) -> None:
     """Render persisted checklist. Explicit on_start overrides local queue."""
     import streamlit as st
@@ -62,6 +63,24 @@ def render_predictions_tab(
         format_func=lambda item: f"{item['label']} — {', '.join(item['groups'])}",
         key="predictions_trial_selection",
     )
+    from research.predictions_data_availability import assess_data_availability
+    st.subheader("Data readiness")
+    fields = availability_provider(selected["trial_id"]) if availability_provider is not None else ()
+    availability = assess_data_availability(fields)
+    st.metric("DATA AVAILABILITY", f"{availability['available_percent']:.1f}%")
+    st.write(f"Verified fields: {availability['verified_fields']} / {availability['required_fields']}")
+    st.write(f"Rating readiness: {availability['readiness']}")
+    if availability_provider is None:
+        st.caption("Live evidence inventory not connected; 0% means not measured, not confirmed absence.")
+    for category, summary in availability["categories"].items():
+        with st.expander(f"{category} — {summary['percent']:.1f}% verified"):
+            for field in availability["fields"]:
+                if field["category"] == category:
+                    st.write(f"{field['field']}: {field['status']}")
+                    if field["source_url"]:
+                        st.write("Source:", field["source_url"])
+                    if field["notes"]:
+                        st.write(field["notes"])
     if st.button("START PREDICTION", type="primary", disabled=on_start is None and job_directory is None):
         if on_start is not None:
             on_start(selected["trial_id"])
@@ -93,6 +112,7 @@ def render_predictions_tab(
         checks = [row for row in assessment_rows if row.get("trial_id") == selected["trial_id"]]
     done, total = assessment_progress(checks)
     st.progress(done / total if total else 0)
+    st.metric("ANALYSIS COMPLETION", f"{100 * done / total:.1f}%" if total else "Not started")
     st.write(f"{done} of {total} assessments completed")
     if not checks:
         st.info("No assessment job results available for this trial.")
