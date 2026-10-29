@@ -103,6 +103,7 @@ def render_predictions_tab(
                 except (ValueError, OSError, KeyError) as exc:
                     st.error(f"Evidence checklist could not run: {exc}")
     st.subheader("Assessment checklist")
+    job = None
     if job_directory is not None:
         job = latest_trial_job(job_directory, selected["trial_id"])
         if job:
