@@ -11,6 +11,7 @@ import json
 
 from research.preliminary_pipeline_batch import triage_pipeline_export
 from research.preliminary_workspace_field_map import map_published_row
+from research.preliminary_target_provenance import classify_target_provenance
 from research.preliminary_pipeline_snapshot import _aware
 
 
@@ -126,6 +127,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
     valid_target_count = 0
     fda_host_count = 0
     fda_status_count = 0
+    provenance_counts = {}
     dated_without_fda_host = 0
     dated_without_accepted_status = 0
     for row in rows:
@@ -166,6 +168,9 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
             if valid:
                 dated_without_fda_host += not (host and (host == "fda.gov" or host.endswith(".fda.gov")))
                 dated_without_accepted_status += not accepted
+        provenance = classify_target_provenance(row)
+        category = provenance["category"]
+        provenance_counts[category] = provenance_counts.get(category, 0) + 1
         mapped = map_published_row(row, as_of=cap_reference)
         candidates.append(mapped["candidate"])
         cap_evidence_count += bool(mapped["cap_source_present"])
@@ -223,6 +228,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         "valid_target_date_present": valid_target_count,
         "fda_host_evidence_present": fda_host_count,
         "accepted_fda_verification_status_present": fda_status_count,
+        "target_provenance_category_counts": dict(sorted(provenance_counts.items())),
         "dated_records_missing_fda_host_evidence": dated_without_fda_host,
         "dated_records_missing_accepted_verification_status": dated_without_accepted_status,
         "prediction_status": "ABSTAIN",
