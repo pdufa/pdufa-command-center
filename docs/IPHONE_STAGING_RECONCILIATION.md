@@ -1,11 +1,27 @@
 # iPhone operator workflow for staging reconciliation
 
-Status: **NOT READY / ABSTAIN**. The approved research-branch workflow was
-executed, but no complete Pipeline dataset or reconciliation artifact has been
-obtained. See the observed execution results below. Operator authorization
-covers only the established insert-only allocation of missing staging identities.
+Status: **NOT READY / ABSTAIN**. The approved inventory retrieval and aggregate
+reconciliation are complete. Independent scientific and program eligibility
+verification remain incomplete.
 
-## Latest verified state (2026-10-29 22:32 UTC)
+## Successful reconciliation (2026-10-29)
+
+[Run 40969177461](https://github.com/pdufa/pdufa-command-center/actions/runs/40969177461)
+at research commit `07968fec1182168f60de9ccf735710bca96a0b77` succeeded and
+uploaded its artifact. Actual results: **11,812 records, 119 pages, 11,812 unique
+permanent and source IDs, zero duplicates and zero missing records/IDs**.
+There are **114 market-cap source claims, zero qualifying FDA target claims,
+zero candidates passing research scope and 11,812 blocked records**. Source date
+is `2026-10-29` with explicit Los Angeles calendar-day precision. The original
+ZIP's hash matches GitHub's digest; its sole JSON member and audit manifest are
+preserved locally in the repository before the one-day artifact expiry.
+
+See the [complete report and limitations](PIPELINE_RECONCILIATION_20261029.md).
+Actual eligibility remains unestablished; zero scientific predictions were
+generated. The prior one-run staging authorization has been exercised. No
+additional run is needed for this completed inventory reconciliation.
+
+## Earlier verified state (2026-10-29 22:32 UTC)
 
 Research HEAD `59fb6d8aa4afb08702c7451eec79f942834a6cdf` was fetched and all
 14 associated PR workflows were independently confirmed successful. The

@@ -8,7 +8,29 @@ staging secret. One reconciliation run was explicitly approved and attempted;
 the current result is documented below. Previous GO instructions alone do not
 authorize staging identity allocation.
 
-## Latest verified state: authentication works, new dispatch pending
+## Latest verified state: authenticated reconciliation succeeded
+
+[Run 40969177461](https://github.com/pdufa/pdufa-command-center/actions/runs/40969177461)
+at research commit `07968fec1182168f60de9ccf735710bca96a0b77` succeeded. Its
+actual artifact reports **11,812 records across 119 pages**, all permanent/source
+identities unique and present, no duplicates or missing records, and successful
+summary reconciliation. The downloaded original ZIP matched GitHub's SHA-256;
+the original JSON and a versioned audit manifest are preserved in the repository.
+An independent software reviewer also verified the actual bytes/counts/clocks.
+
+There are **114 cap source claims and zero qualifying FDA target claims**.
+All **11,812 records remain blocked**, with zero candidates passing the current
+research scope gate. These facts do not establish economic eligibility, original
+scientific-source authenticity or predictive readiness. The source date is a
+Los Angeles calendar date, not an exact publication timestamp.
+
+See [the full report, hashes and interpretation](PIPELINE_RECONCILIATION_20261029.md).
+The one-run approval has been exercised; no additional retrieval was performed
+to audit its artifact. Complete inventory reconciliation is now achieved.
+Program-level evidence, independent eligibility and FDA decision verification
+remain the next dependencies. No production or authentication setting changed.
+
+## Earlier verified state: authentication worked, new dispatch pending
 
 Fetched research HEAD `59fb6d8aa4afb08702c7451eec79f942834a6cdf`; all 14 PR
 workflows passed. Its completed source-calendar-date repair is preserved. The
