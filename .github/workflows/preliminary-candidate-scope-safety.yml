@@ -20,6 +20,8 @@ on:
       - 'research/workspace_pipeline_adapter.py'
       - 'tests/test_workspace_pipeline_adapter.py'
       - '.github/workflows/preliminary-candidate-scope-safety.yml'
+      - '.github/workflows/isolated-readiness-smoke.yml'
+      - 'tests/test_mobile_staging_workflow.py'
   push:
     branches:
       - 'research/fda-decision-label-gate-20261028'
@@ -41,6 +43,8 @@ on:
       - 'research/workspace_pipeline_adapter.py'
       - 'tests/test_workspace_pipeline_adapter.py'
       - '.github/workflows/preliminary-candidate-scope-safety.yml'
+      - '.github/workflows/isolated-readiness-smoke.yml'
+      - 'tests/test_mobile_staging_workflow.py'
 
 permissions:
   contents: read
@@ -56,5 +60,5 @@ jobs:
           python-version: '3.11'
       - name: Run preliminary candidate scope tests
         run: |
-          python -m pip install pytest
-          python -m pytest -q tests/test_preliminary_*.py tests/test_workspace_pipeline_adapter.py
+          python -m pip install pytest pyyaml
+          python -m pytest -q tests/test_preliminary_*.py tests/test_workspace_pipeline_adapter.py tests/test_mobile_staging_workflow.py

@@ -2,6 +2,11 @@
 
 Prediction status: **NOT READY / ABSTAIN**.
 
+For iPhone-only operation, use the [Safari/GitHub Actions handoff](IPHONE_STAGING_RECONCILIATION.md).
+It reuses the existing registered manual workflow and client with a distinct
+staging secret. This phone workflow awaits the fresh write approval requested
+by the current directive; previous GO instructions do not start it.
+
 ## Authorization guard follow-up
 
 The HTTP factories, screening API, diagnostics API and CLI now require explicit
