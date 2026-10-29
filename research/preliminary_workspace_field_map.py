@@ -3,7 +3,6 @@
 Only explicit, source-supported fields are eligible. Membership in the
 published Pipeline does not prove that the approved restrictions were applied.
 """
-from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 from urllib.parse import urlparse
 
@@ -29,11 +28,14 @@ def map_published_row(row, *, as_of=None):
     cap_checked = row.get("capChecked")
     cap_supported = bool(cap_value is not None and isinstance(cap_source, str)
                          and urlparse(cap_source).scheme == "https"
+                         and urlparse(cap_source).hostname
                          and isinstance(cap_checked, str) and cap_checked)
     fda_source = row.get("fdaSource")
     fda_supported = (bool(row.get("pdufaDate"))
                      and isinstance(fda_source, str)
                      and urlparse(fda_source).scheme == "https"
+                     and (urlparse(fda_source).hostname == "fda.gov"
+                          or urlparse(fda_source).hostname.endswith(".fda.gov"))
                      and row.get("checkStatus") in ("VERIFIED", "FDA_VERIFIED"))
     # No assumption of listing status or active restriction membership from a
     # ticker alone. The caller must independently establish both.
