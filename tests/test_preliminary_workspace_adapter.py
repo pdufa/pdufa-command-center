@@ -96,3 +96,95 @@ def test_rejects_duplicate_program_id_across_ten_thousand_boundary():
                 "nextOffset": offset + limit if offset + limit < total else None}
     with pytest.raises(ValueError, match="duplicate programId"):
         triage_workspace_pages(page)
+
+
+def test_summary_before_and_after_reconciles_snapshot_and_hashes():
+    calls = []
+    def summary():
+        calls.append('summary')
+        return {'pipeline': 2, 'asOf': '2026-10-29T00:00:00Z', 'sourceState': 'COMPLETE_PUBLISHED'}
+    report = triage_workspace_pages(_page, page_size=1, get_summary=summary,
+                                   now='2026-10-29T12:00:00Z')
+    assert calls == ['summary', 'summary']
+    assert report['summary_reconciled'] and report['retrieval_complete']
+    assert report['snapshot_freshness_checked']
+    assert report['page_count'] == len(report['page_sha256']) == 2
+    assert len(report['source_rows_sha256']) == 64
+    assert not report['data_authenticity_verified']
+    assert report['prediction_status'] == 'ABSTAIN'
+
+
+def test_same_version_cannot_hide_changing_total():
+    def page(offset, limit, version):
+        result = _page(offset, limit, version)
+        if offset:
+            result['total'] = 3
+            result['nextOffset'] = 2
+        return result
+    with pytest.raises(ValueError, match='total changed'):
+        triage_workspace_pages(page, page_size=1)
+
+
+@pytest.mark.parametrize('bad_summary', [
+    {'pipeline': 3, 'asOf': '2026-10-29T00:00:00Z', 'sourceState': 'PARTIAL'},
+    {'pipeline': 2, 'asOf': '2026-10-28T00:00:00Z', 'sourceState': 'PARTIAL'},
+    {'pipeline': 2, 'asOf': '2026-10-29T00:00:00Z', 'sourceState': 'STALE'},
+    {'pipeline': True, 'asOf': '2026-10-29T00:00:00Z', 'sourceState': 'PARTIAL'},
+])
+def test_summary_must_agree_with_pages(bad_summary):
+    with pytest.raises(ValueError, match='summary'):
+        triage_workspace_pages(_page, get_summary=lambda: bad_summary)
+
+
+def test_post_retrieval_summary_change_invalidates_result():
+    calls = iter([{'pipeline': 2, 'asOf': '2026-10-29T00:00:00Z', 'sourceState': 'PARTIAL'},
+                  {'pipeline': 3, 'asOf': '2026-10-29T00:00:00Z', 'sourceState': 'PARTIAL'}])
+    with pytest.raises(ValueError, match='summary changed'):
+        triage_workspace_pages(_page, get_summary=lambda: next(calls))
+
+
+@pytest.mark.parametrize('stamp', [None, '2026-10-29', '2026-10-29T00:00:00',
+                                  '2026-10-27T00:00:00Z', '2026-10-30T00:00:00Z'])
+def test_missing_stale_future_or_naive_source_clock_rejected(stamp):
+    def page(**kwargs):
+        result = _page(**kwargs)
+        result['asOf'] = stamp
+        return result
+    with pytest.raises(ValueError, match='timestamp|snapshot'):
+        triage_workspace_pages(page, now='2026-10-29T12:00:00Z')
+
+
+def test_short_intermediate_page_fails_before_next_request():
+    calls = []
+    def page(**kwargs):
+        calls.append(kwargs['offset'])
+        result = _page(**kwargs)
+        result['rows'] = result['rows'][:1]
+        return result
+    with pytest.raises(ValueError, match='incomplete'):
+        triage_workspace_pages(page)
+    assert calls == [0]
+
+
+def test_different_permanent_ids_cannot_alias_one_exact_source_program_across_batches():
+    total = 10001
+    def page(offset, limit, version):
+        rows = [{'programId': f'PDUFA-{i:06d}', 'id': f'TRIAL|SYNTHETIC|{i}'}
+                for i in range(offset, min(offset + limit, total))]
+        if offset == 10000:
+            rows[0]['id'] = 'TRIAL|SYNTHETIC|0'
+        return {'version': 'v1', 'asOf': '2026-10-29T00:00:00Z', 'total': total,
+                'offset': offset, 'limit': limit, 'rows': rows,
+                'nextOffset': offset + limit if offset + limit < total else None}
+    with pytest.raises(ValueError, match='duplicate exact source'):
+        triage_workspace_pages(page)
+
+
+@pytest.mark.parametrize('field,value', [('offset', False), ('limit', True), ('nextOffset', True)])
+def test_boolean_page_bounds_never_alias_integer_bounds(field, value):
+    def page(**kwargs):
+        result = _page(**kwargs)
+        result[field] = value
+        return result
+    with pytest.raises(ValueError, match='bounds|pagination'):
+        triage_workspace_pages(page, page_size=1)
