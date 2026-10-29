@@ -8,7 +8,58 @@ staging secret. One reconciliation run was explicitly approved and attempted;
 the current result is documented below. Previous GO instructions alone do not
 authorize staging identity allocation.
 
-## Latest execution result: first response timed out
+## Latest verified state: authentication works, new dispatch pending
+
+Fetched research HEAD `59fb6d8aa4afb08702c7451eec79f942834a6cdf`; all 14 PR
+workflows passed. Its completed source-calendar-date repair is preserved. The
+relevant local suite passed **141 tests**, zero failures.
+
+[Run 40955794298](https://github.com/pdufa/pdufa-command-center/actions/runs/40955794298)
+at `45b0abb1` authenticated and received the initial summary and first page,
+then failed the original aware-timestamp check. No full reconciliation artifact
+was produced. The backend intentionally reports `asOf` as a Los Angeles date.
+The completed adapter repair validates that date against the current Los Angeles
+day and preserves the raw value; it does not manufacture a time or offset. The
+legacy offset-timestamp path still enforces its exact bounded age. Calendar-day
+agreement must not be represented as an exact elapsed-hour freshness result or
+independent publication-time verification.
+
+The two newest manual runs, `40965784414` and `40965773373`, selected `main` and
+were skipped. No manual run at `59fb6d8` was found. The connected GitHub tool can
+inspect and retry jobs but cannot dispatch a new workflow; retrying an older job
+retains the older commit. The operator's continuation authorizes the existing
+staging scope, but a new manual research-branch dispatch is still required. The
+current Cloud shell has neither the staging credential nor an allowed staging
+origin; no attempt to bypass those restrictions was made. No production or
+authentication configuration was changed.
+
+All complete-inventory reconciliation metrics remain unmeasured until a new
+report is available. A source-presence count is not independently verified
+listing, restriction eligibility, FDA evidence or predictive accuracy.
+
+## Downstream cap counts and exported audit metadata
+
+The existing `59fb6d8` source-date check is preserved. Calendar snapshots now use
+the actual aware retrieval observation clock for cap-claim freshness, avoiding
+the field mapper's previous all-zero count when given a date-only cutoff. Without
+that observation, cap claims remain unverified. Offset snapshots retain the
+original source timestamp cutoff, including rejection of later cap claims.
+
+The safe aggregate exports source precision, explicit freshness basis, actual
+observation timestamp and the separately identified cap-reference clock. It
+also exports declared total, unique permanent/source ID counts, missing source
+IDs, duplicate counts and missing records after complete pagination/validation.
+These fields do not expose raw IDs, rows or credentials. Zero duplicates in a
+successful report follows global checks; a failed run yields no partial success
+artifact. Listing, restriction and scientific readiness remain unverified.
+
+Validation: **148 relevant tests passed**, zero failures; broader research
+selection **903 passed plus 43 subtests**, one genuine external TSA fixture
+skipped, zero failures. Independent review found no blocking issues and reran
+148 relevant tests successfully. No production/backend configuration or source
+calendar validation was changed.
+
+## Earlier execution result: first response timed out
 
 Research-branch [run 40942416784](https://github.com/pdufa/pdufa-command-center/actions/runs/40942416784)
 ran at `f71a7baba4d89388e63f065dc08363b64b236a46`. Attempt 1 failed local key
@@ -76,8 +127,11 @@ and after version-pinned `/api/workspace/page` pagination. It requires consisten
 Pipeline counts, source timestamp and source state. Every page must preserve
 version, timestamp and total, contain exactly the requested row count except
 for the final remainder, and expose correct integer bounds/next offset. Boolean
-offsets cannot alias integers. Source timestamps must be aware and, for actual
-HTTP screening, within the explicit 24-hour research freshness window.
+offsets cannot alias integers. Offset source timestamps must be aware and, for
+actual HTTP screening, within the explicit 24-hour research freshness window.
+The backend's canonical date-only `asOf` follows its distinct current Los Angeles
+calendar-day contract; its precision remains explicit rather than being converted
+to an invented midnight timestamp.
 
 Duplicate permanent program IDs remain blocked across all pages and across
 10,000-record screening batches. Different permanent IDs sharing one supplied

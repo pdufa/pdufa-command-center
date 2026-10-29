@@ -111,6 +111,12 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
     # Backend field names are not equivalent to the research screening claims.
     # Never silently infer public listing, market cap, restriction membership,
     # or FDA confirmation from an unverified backend row.
+    calendar_source = len(as_of) == 10
+    # A business date is not an exact publication cutoff. Use the caller's
+    # actual aware observation clock for cap-claim freshness in this case;
+    # never invent midnight or loosen an unavailable reference to None.
+    # Legacy aware source timestamps retain their stricter original cutoff.
+    cap_reference = now if calendar_source and now is not None else as_of
     candidates = []
     seen_program_ids = set()
     seen_source_ids = set()
@@ -133,7 +139,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
             if source_id in seen_source_ids:
                 raise ValueError("duplicate exact source program identity")
             seen_source_ids.add(source_id)
-        mapped = map_published_row(row, as_of=as_of)
+        mapped = map_published_row(row, as_of=cap_reference)
         candidates.append(mapped["candidate"])
         cap_evidence_count += bool(mapped["cap_source_present"])
         fda_evidence_count += bool(mapped["fda_source_present"])
@@ -155,11 +161,28 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         **report,
         "workspace_version": version,
         "workspace_as_of": as_of,
+        "workspace_total": snapshot_total,
         "backend_rows_received": len(rows),
+        "unique_program_ids": len(seen_program_ids),
+        "unique_source_program_ids": len(seen_source_ids),
+        "source_program_ids_missing": len(rows) - len(seen_source_ids),
+        # These zero counts are emitted only after complete pagination and all
+        # global identity checks succeed; failures never yield a success report.
+        "duplicate_program_ids": 0,
+        "duplicate_source_program_ids": 0,
+        "missing_records": snapshot_total - len(rows),
         "retrieval_complete": True,
         "summary_reconciled": get_summary is not None,
         "snapshot_freshness_checked": now is not None,
-        "source_time_precision": "CALENDAR_DATE_LOS_ANGELES" if len(as_of) == 10 else "OFFSET_TIMESTAMP",
+        "source_time_precision": "CALENDAR_DATE_LOS_ANGELES" if calendar_source else "OFFSET_TIMESTAMP",
+        "freshness_basis": ("NOT_CHECKED" if now is None else
+                            "CURRENT_LA_CALENDAR_DATE" if calendar_source else "OFFSET_TIMESTAMP_AGE"),
+        "observation_timestamp": now,
+        "cap_freshness_reference_timestamp": (now if calendar_source else as_of),
+        "cap_freshness_reference_basis": (
+            "UNAVAILABLE" if calendar_source and now is None else
+            "OBSERVATION_TIME_NOT_SOURCE_PUBLICATION" if calendar_source else
+            "WORKSPACE_AS_OF_OFFSET_TIMESTAMP"),
         "page_count": len(page_hashes),
         "page_sha256": page_hashes,
         "source_rows_sha256": sha256(json.dumps(rows, sort_keys=True, separators=(',', ':'),

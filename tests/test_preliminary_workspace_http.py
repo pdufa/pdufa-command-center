@@ -356,3 +356,68 @@ def test_client_rejects_invalid_timeout_before_network(monkeypatch, timeout):
     with pytest.raises(ValueError, match='bounded request timeout'):
         http.make_workspace_client(http.STAGING_ORIGIN, api_key='SYNTHETIC_SECRET',
                                    timeout=timeout, allow_identity_allocation=True)
+
+
+def test_cli_calendar_artifact_preserves_precision_and_complete_inventory_audit(monkeypatch, tmp_path):
+    from datetime import datetime, timezone
+    import json
+    from urllib.parse import parse_qs, urlparse
+    from research import preliminary_workspace_http as http
+    class ObservationClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return datetime(2026, 10, 30, 2, tzinfo=timezone.utc).astimezone(tz)
+    rows = [
+        {'programId': 'PDUFA-000001', 'id': 'TRIAL|SYNTHETIC|1',
+         'marketCap': 500000000, 'capSource': 'https://example.com/cap',
+         'capChecked': '2026-10-30T01:00:00Z', 'pdufaDate': '2026-12-01',
+         'fdaSource': 'https://www.fda.gov/example', 'checkStatus': 'FDA_VERIFIED'},
+        {'programId': 'PDUFA-000002', 'id': 'TRIAL|SYNTHETIC|2'},
+        {'programId': 'PDUFA-000003'},
+    ]
+    paths = []
+    class Response:
+        status = 200
+        def __init__(self, content): self.content = content
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def read(self, limit): return json.dumps(self.content).encode()
+    def transport(request, timeout):
+        assert request.get_header('X-pdufa-internal-key') == 'SYNTHETIC_SECRET'
+        assert timeout == 120
+        parsed = urlparse(request.full_url)
+        paths.append(parsed.path)
+        if parsed.path.endswith('/summary'):
+            return Response({'pipeline': 3, 'asOf': '2026-10-29', 'sourceState': 'PARTIAL'})
+        query = parse_qs(parsed.query)
+        return Response({'version': 'calendar-v1', 'asOf': '2026-10-29', 'total': 3,
+                         'offset': int(query['offset'][0]), 'limit': int(query['limit'][0]),
+                         'rows': rows, 'nextOffset': None})
+    monkeypatch.setenv('PDUFA_INTERNAL_API_KEY', 'SYNTHETIC_SECRET')
+    monkeypatch.setattr(http, 'datetime', ObservationClock)
+    monkeypatch.setattr(http, 'urlopen', transport)
+    output = tmp_path / 'report.json'
+    assert http.main(['--backend-origin', http.STAGING_ORIGIN, '--output', str(output),
+                      '--allow-staging-identity-allocation', '--request-timeout', '120']) == 0
+    artifact = output.read_text()
+    report = json.loads(artifact)
+    assert paths == ['/api/workspace/summary', '/api/workspace/page', '/api/workspace/summary']
+    assert report['workspace_version'] == 'calendar-v1'
+    assert report['workspace_as_of'] == '2026-10-29'
+    assert report['source_time_precision'] == 'CALENDAR_DATE_LOS_ANGELES'
+    assert report['freshness_basis'] == 'CURRENT_LA_CALENDAR_DATE'
+    assert report['observation_timestamp'] == '2026-10-30T02:00:00+00:00'
+    assert report['cap_freshness_reference_timestamp'] == report['observation_timestamp']
+    assert report['cap_freshness_reference_basis'] == 'OBSERVATION_TIME_NOT_SOURCE_PUBLICATION'
+    assert report['workspace_total'] == report['backend_rows_received'] == report['unique_program_ids'] == 3
+    assert report['unique_source_program_ids'] == 2
+    assert report['source_program_ids_missing'] == 1
+    assert report['duplicate_program_ids'] == report['duplicate_source_program_ids'] == report['missing_records'] == 0
+    assert report['page_count'] == 1
+    assert report['market_cap_evidence_present'] == report['fda_target_evidence_present'] == 1
+    assert report['retrieval_complete'] and report['summary_reconciled'] and report['snapshot_freshness_checked']
+    assert report['blocked'] == 3 and report['candidate_for_evidence_review'] == 0
+    assert report['prediction_status'] == 'ABSTAIN' and not report['data_authenticity_verified']
+    assert len(report['source_rows_sha256']) == 64
+    assert not any(secret in artifact for secret in ('SYNTHETIC_SECRET', 'PDUFA-000001', 'TRIAL|SYNTHETIC|1'))
+    assert 'rows' not in report and 'records' not in report

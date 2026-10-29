@@ -208,3 +208,90 @@ def test_rejects_stale_future_invalid_or_naive_source_clock(as_of):
                 "rows": [{"programId": "PDUFA-000001"}]}
     with pytest.raises(ValueError):
         triage_workspace_pages(page, now="2026-10-29T18:00:00+00:00")
+
+
+def _source_pages(rows, as_of):
+    def page(offset, limit, version):
+        return {'version': 'calendar-v1', 'asOf': as_of, 'total': len(rows),
+                'offset': offset, 'limit': limit, 'rows': rows[offset:offset + limit],
+                'nextOffset': offset + limit if offset + limit < len(rows) else None}
+    return page
+
+
+def test_calendar_snapshot_counts_cap_claims_against_actual_observation_without_certifying_eligibility():
+    rows = [
+        {'programId': f'PDUFA-{i:06d}', 'id': f'TRIAL|SYNTHETIC|{i}',
+         'marketCap': 500000000, 'capSource': 'https://example.com/cap',
+         'capChecked': checked}
+        for i, checked in enumerate([
+            '2026-10-29', '2026-10-20', '2026-10-30',
+            '2026-10-29T18:00:01Z', '2026-10-29T17:00:00Z', '2026-10-29'])
+    ]
+    rows[-1].pop('capSource')
+    rows[-1].pop('id')
+    report = triage_workspace_pages(_source_pages(rows, '2026-10-29'), page_size=2,
+        get_summary=lambda: {'pipeline': len(rows), 'asOf': '2026-10-29', 'sourceState': 'PARTIAL'},
+        now='2026-10-29T18:00:00Z')
+    assert report['market_cap_evidence_present'] == 2
+    assert report['workspace_as_of'] == '2026-10-29'
+    assert report['source_time_precision'] == 'CALENDAR_DATE_LOS_ANGELES'
+    assert report['freshness_basis'] == 'CURRENT_LA_CALENDAR_DATE'
+    assert report['observation_timestamp'] == '2026-10-29T18:00:00Z'
+    assert report['cap_freshness_reference_timestamp'] == report['observation_timestamp']
+    assert report['cap_freshness_reference_basis'] == 'OBSERVATION_TIME_NOT_SOURCE_PUBLICATION'
+    assert report['workspace_total'] == report['backend_rows_received'] == 6
+    assert report['page_count'] == 3
+    assert report['unique_program_ids'] == 6
+    assert report['unique_source_program_ids'] == 5
+    assert report['source_program_ids_missing'] == 1
+    assert report['duplicate_program_ids'] == report['duplicate_source_program_ids'] == report['missing_records'] == 0
+    assert report['summary_reconciled'] and report['retrieval_complete']
+    assert report['blocked'] == 6 and report['candidate_for_evidence_review'] == 0
+    assert report['prediction_status'] == 'ABSTAIN' and not report['data_authenticity_verified']
+
+
+def test_calendar_snapshot_without_observation_keeps_cap_claims_unverified():
+    row = {'programId': 'PDUFA-000001', 'marketCap': 500000000,
+           'capSource': 'https://example.com/cap', 'capChecked': '2026-10-29'}
+    report = triage_workspace_pages(_source_pages([row], '2026-10-29'))
+    assert report['market_cap_evidence_present'] == 0
+    assert report['freshness_basis'] == 'NOT_CHECKED'
+    assert not report['snapshot_freshness_checked']
+    assert report['observation_timestamp'] is None
+    assert report['cap_freshness_reference_timestamp'] is None
+    assert report['cap_freshness_reference_basis'] == 'UNAVAILABLE'
+    assert report['blocked'] == 1
+
+
+def test_calendar_business_date_survives_utc_boundary_without_inventing_publication_clock():
+    row = {'programId': 'PDUFA-000001', 'marketCap': 500000000,
+           'capSource': 'https://example.com/cap', 'capChecked': '2026-10-30T01:00:00Z'}
+    report = triage_workspace_pages(_source_pages([row], '2026-10-29'),
+                                   now='2026-10-30T02:00:00Z')
+    assert report['workspace_as_of'] == '2026-10-29'
+    assert report['cap_freshness_reference_timestamp'] == '2026-10-30T02:00:00Z'
+    assert report['market_cap_evidence_present'] == 1
+    assert report['freshness_basis'] == 'CURRENT_LA_CALENDAR_DATE'
+    assert report['prediction_status'] == 'ABSTAIN'
+
+
+def test_legacy_aware_snapshot_retains_source_cutoff_even_with_later_observation():
+    row = {'programId': 'PDUFA-000001', 'marketCap': 500000000,
+           'capSource': 'https://example.com/cap', 'capChecked': '2026-10-29T01:00:00Z'}
+    report = triage_workspace_pages(_source_pages([row], '2026-10-29T00:00:00Z'),
+                                   now='2026-10-29T12:00:00Z')
+    assert report['market_cap_evidence_present'] == 0
+    assert report['source_time_precision'] == 'OFFSET_TIMESTAMP'
+    assert report['freshness_basis'] == 'OFFSET_TIMESTAMP_AGE'
+    assert report['observation_timestamp'] == '2026-10-29T12:00:00Z'
+    assert report['cap_freshness_reference_timestamp'] == '2026-10-29T00:00:00Z'
+    assert report['cap_freshness_reference_basis'] == 'WORKSPACE_AS_OF_OFFSET_TIMESTAMP'
+
+
+@pytest.mark.parametrize('identity', ['programId', 'id'])
+def test_calendar_snapshot_still_rejects_global_duplicate_identities(identity):
+    rows = [{'programId': f'PDUFA-{i:06d}', 'id': f'TRIAL|SYNTHETIC|{i}'} for i in range(3)]
+    rows[-1][identity] = rows[0][identity]
+    with pytest.raises(ValueError, match='duplicate'):
+        triage_workspace_pages(_source_pages(rows, '2026-10-29'), page_size=1,
+                               now='2026-10-29T18:00:00Z')

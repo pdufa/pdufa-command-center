@@ -137,6 +137,11 @@ def safe_workspace_diagnostics(base_url, *, api_key=None, timeout=20, allow_iden
     )
     result = {key: report[key] for key in keys}
     for key in ('retrieval_complete', 'summary_reconciled', 'snapshot_freshness_checked',
+                'source_time_precision', 'freshness_basis', 'observation_timestamp',
+                'cap_freshness_reference_timestamp', 'cap_freshness_reference_basis',
+                'workspace_total', 'unique_program_ids', 'unique_source_program_ids',
+                'source_program_ids_missing', 'duplicate_program_ids',
+                'duplicate_source_program_ids', 'missing_records',
                 'page_count', 'source_rows_sha256', 'hash_scope'):
         if key in report:
             result[key] = report[key]

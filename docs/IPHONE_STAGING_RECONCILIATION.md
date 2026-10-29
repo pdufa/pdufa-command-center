@@ -2,8 +2,70 @@
 
 Status: **NOT READY / ABSTAIN**. The approved research-branch workflow was
 executed, but no complete Pipeline dataset or reconciliation artifact has been
-obtained. See the observed execution results below. Explicit approval for
-possible staging identity allocation remains required for a new run.
+obtained. See the observed execution results below. Operator authorization
+covers only the established insert-only allocation of missing staging identities.
+
+## Latest verified state (2026-10-29 22:32 UTC)
+
+Research HEAD `59fb6d8aa4afb08702c7451eec79f942834a6cdf` was fetched and all
+14 associated PR workflows were independently confirmed successful. The
+completed calendar-date compatibility repair was preserved and **141 relevant
+regression tests passed locally**, with zero failures.
+
+The newest manual runs, [40965784414](https://github.com/pdufa/pdufa-command-center/actions/runs/40965784414)
+and [40965773373](https://github.com/pdufa/pdufa-command-center/actions/runs/40965773373),
+selected `main` and were skipped. No manual retrieval run at `59fb6d8` was found.
+The available GitHub connector exposes old-job retries and run inspection, but
+no new workflow-dispatch operation. Retrying an old job retains its old commit;
+it cannot execute this repair. A new Safari dispatch on the research branch is
+the remaining operator action. Approval is already provided by the continuation
+directive; no replacement credential or production deployment is needed.
+
+[Run 40955794298](https://github.com/pdufa/pdufa-command-center/actions/runs/40955794298)
+at the preceding `45b0abb1` authenticated successfully and returned the summary
+and first page, then stopped with `aware workspace source timestamp required`.
+No complete report was produced. The backend's `asOf` is a Los Angeles calendar
+date, and the completed repair checks it as such without inventing midnight or
+a timestamp offset. The original precise timestamp path still enforces bounded
+age and rejects future timestamps. An accepted calendar date proves a matching
+reported business day, not an exact elapsed-hour source age or original source
+publication time.
+
+Workspace version, source date value, complete row/page counts, duplicate counts,
+source-evidence counts and verified eligibility remain **unmeasured** until a
+successful report is inspected. Earlier registry (11,636) and candidate-assessment
+(11,812) observations are different populations, not substitute Pipeline totals.
+
+## Downstream report repair after the verified calendar-date baseline
+
+The completed `59fb6d8` source-date validation is unchanged. Inspection found
+that the separate cap field mapper still expected an offset timestamp, silently
+counting every calendar-snapshot cap claim as unsupported. Calendar snapshots
+now use the actual aware caller observation clock for cap-claim freshness. A
+missing observation remains conservative, future claims are withheld, and legacy
+offset snapshots retain their original source cutoff. No source publication
+timestamp is invented and no listing/restriction gate is upgraded.
+
+The aggregate artifact now retains `source_time_precision`, `freshness_basis`,
+`observation_timestamp`, and the cap freshness reference timestamp/basis. A
+current Los Angeles calendar date is explicitly distinct from bounded elapsed
+timestamp age. These clocks do not independently verify publication or trial,
+regulatory or market evidence.
+
+After complete pagination and global identity checks, the report also records
+`workspace_total`, `unique_program_ids`, `unique_source_program_ids`,
+`source_program_ids_missing`, both duplicate-ID counts and `missing_records`.
+Zero duplicate counts are emitted only after the checks succeed; failure still
+produces no success artifact. Missing source IDs stay visible. Missing records
+means missing relative to the API-declared Pipeline total, not relative to the
+separate registry/assessment populations. Raw IDs and individual rows remain
+excluded from the aggregate artifact.
+
+Validation: **148 preliminary/workflow/bridge tests passed**, zero failures;
+broader research selection **903 passed plus 43 subtests**, one genuine external
+TSA fixture skipped, zero failures. Independent review reran all 148 relevant
+tests and found no blocking issues. These synthetic checks do not supply actual
+Pipeline counts or scientific validation.
 
 ## Observed execution results (2026-10-29)
 
@@ -59,6 +121,9 @@ push, PR or schedule.
 
 ## Phone steps
 
+The existing secret already authenticated in run `40955794298`. Steps 1–2 are
+initial setup instructions only; do not repeat them or replace a working key.
+
 1. Open the [Render staging service](https://dashboard.render.com/web/srv-db976hfbtjjs73bb98fg)
    in Safari. Tap **Environment** and check **Environment Variables** (or a
    **Linked Environment Group**) for `PDUFA_INTERNAL_API_KEY`. This is the
@@ -72,7 +137,8 @@ push, PR or schedule.
    chat, workflow inputs, repository files, logs or screenshots. Do not reuse the
    `isolated-alpaca-review` key. This stores the existing key for the approved
    runner; it does not change or rotate Render's key.
-3. Obtain fresh explicit approval for one staging reconciliation run. A summary
+3. Confirm explicit approval covers the intended staging reconciliation run;
+   the current continuation directive provides it. A summary
    or page GET can refresh published-source caches. Page preparation can insert
    missing exact program identities into staging `program_identity`, including
    keys used by Pipeline and GEM history. Existing IDs are read unchanged;
@@ -81,8 +147,10 @@ push, PR or schedule.
    path does not update restrictions, FS/FA associations, scientific assessments
    or trading settings. Staging database state/constraints remain unprobed.
 4. **Only after approval**, open [the manual workflow](https://github.com/pdufa/pdufa-command-center/actions/workflows/isolated-readiness-smoke.yml).
-   Tap **Run workflow**, select branch
-   **research/fda-decision-label-gate-20261028**, then tap **Run workflow**.
+   Tap **Run workflow**, then the small gray **main ▼** button inside its popup.
+   In the **Switch branches/tags** search field, type **fda-decision** and select
+   **research/fda-decision-label-gate-20261028**. Confirm that the selected branch
+   has replaced **main**, then tap the lower green **Run workflow** once.
    The page retains the registered name **Isolated PDUFA Readiness Smoke**;
    the research-branch job is **Authorized staging Pipeline reconciliation**.
    Do not choose main or the separate isolated-review branch.
