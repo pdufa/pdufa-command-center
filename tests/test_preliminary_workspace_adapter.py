@@ -295,3 +295,26 @@ def test_calendar_snapshot_still_rejects_global_duplicate_identities(identity):
     with pytest.raises(ValueError, match='duplicate'):
         triage_workspace_pages(_source_pages(rows, '2026-10-29'), page_size=1,
                                now='2026-10-29T18:00:00Z')
+
+
+def test_aggregate_fda_evidence_diagnostics_do_not_promote_prediction():
+    def page(offset, limit, version):
+        return {"version": "v-diagnostic", "asOf": "2026-10-29", "total": 4,
+                "offset": offset, "limit": limit, "nextOffset": None,
+                "rows": [
+                    {"programId": "PDUFA-101", "pdufaDate": "2026-12-01",
+                     "fdaSource": "https://www.fda.gov/approved", "checkStatus": "FDA_VERIFIED"},
+                    {"programId": "PDUFA-102", "pdufaDate": "2026-12-02",
+                     "fdaSource": "https://example.org/unverified", "checkStatus": "NOT VERIFIED"},
+                    {"programId": "PDUFA-103", "pdufaDate": "2026-02-30",
+                     "fdaSource": "https://www.fda.gov/example", "checkStatus": "VERIFIED"},
+                    {"programId": "PDUFA-104"},
+                ]}
+    result = triage_workspace_pages(page, page_size=4, now="2026-10-29T18:00:00Z")
+    assert result["raw_target_date_present"] == 3
+    assert result["valid_target_date_present"] == 2
+    assert result["fda_host_evidence_present"] == 2
+    assert result["accepted_fda_verification_status_present"] == 2
+    assert result["fda_target_evidence_present"] == 1
+    assert result["blocked"] == 4
+    assert result["prediction_status"] == "ABSTAIN"
