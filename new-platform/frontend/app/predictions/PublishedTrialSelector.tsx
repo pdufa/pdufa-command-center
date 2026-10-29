@@ -16,9 +16,11 @@ function publishedCandidates(data: Workspace): Candidate[] {
     if (!Array.isArray(rows)) continue;
     for (const row of rows) {
       if (!row || !row.id || !(row.fdaSource?.startsWith("https://") || row.phase3Source?.startsWith("https://"))) continue;
-      const current = found.get(row.id);
+      // Prefer a program-specific key; never merge separate clinical trial IDs by ticker alone.
+      const identity = row.programId && row.nctId ? row.programId + "|" + row.nctId : row.id;
+      const current = found.get(identity);
       if (current) { if (!current.groups.includes(group)) current.groups.push(group); }
-      else found.set(row.id, {...row, groups: [group]});
+      else found.set(identity, {...row, groups: [group]});
     }
   }
   return [...found.values()].sort((a,b) => (a.ticker || a.id).localeCompare(b.ticker || b.id));
@@ -39,11 +41,11 @@ export default function PublishedTrialSelector() {
         const candidates = publishedCandidates(data);
         setRows(candidates);
         setAsOf(data.asOf || "");
-        setStatus(candidates.length ? "Published sourced GEM JR / GEM candidates" : "No sourced eligible candidates in the published GEM JR / GEM lists.");
+        setStatus(candidates.length ? "Published GEM JR / GEM records with source references (not independently verified)" : "No sourced candidates in the published GEM JR / GEM lists.");
       }).catch(() => {if (!controller.signal.aborted) setStatus("Published workspace unavailable; no trial records displayed.");});
     return () => controller.abort();
   }, []);
-  const trial = rows.find(row => row.id === selected);
+  const trial = rows.find(row => (row.programId && row.nctId ? row.programId + "|" + row.nctId : row.id) === selected);
   const matches = rows.filter(row => [row.ticker, row.programId, row.drug, row.nctId, row.id].some(value => value?.toLowerCase().includes(query.toLowerCase())));
   return <section style={{background:"#f1f8f2",border:"1px solid #9fb7a5",padding:18}}>
     <h2>Choose a published trial</h2>
@@ -54,7 +56,7 @@ export default function PublishedTrialSelector() {
     <select id="published-prediction-trial" value={selected} onChange={event => setSelected(event.target.value)}
       style={{padding:10,width:"100%",maxWidth:680}}>
       <option value="">Select a trial…</option>
-      {matches.map(row => <option key={row.id} value={row.id}>{row.ticker || row.programId || row.id} · {row.drug || row.nctId || row.id} · {row.groups.join(" + ")}</option>)}
+      {matches.map(row => <option key={row.programId && row.nctId ? row.programId + "|" + row.nctId : row.id} value={row.programId && row.nctId ? row.programId + "|" + row.nctId : row.id}>{row.ticker || row.programId || row.id} · {row.drug || row.nctId || row.id} · {row.groups.join(" + ")}</option>)}
     </select>
     {trial && <div><p>Program: {trial.programId || trial.id} · NCT: {trial.nctId || "Not recorded"} · Membership: {trial.groups.join(", ")}</p>
       <p>{trial.fdaSource?.startsWith("https://") ? <a href={trial.fdaSource} target="_blank" rel="noopener noreferrer">FDA source ↗</a> : null}
@@ -72,6 +74,6 @@ export default function PublishedTrialSelector() {
       </details>)}
     </section>}
     <p><button disabled>START PREDICTION</button></p>
-    <p>Selection is read-only. No verified Phase 3 results-release or WT feed is asserted; scientific worker not connected. No prediction is issued.</p>
+    <p>Selection is read-only. Source links have not been independently checked for identity, chronology, or content. No verified Phase 3 results-release or WT feed is asserted; scientific worker not connected. No prediction is issued.</p>
   </section>;
 }
