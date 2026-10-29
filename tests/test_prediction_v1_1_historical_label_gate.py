@@ -47,6 +47,44 @@ class HistoricalLabelGateTests(unittest.TestCase):
     def test_missing_cutoff_rejected_when_requested(self):
         self.assertTrue(validate_historical_label(BASE, evidence_cutoff="not-a-date"))
 
+    def test_malformed_outcome_values_return_errors_instead_of_raising(self):
+        for outcome in (None, [], {}, ["PASS"], True, 1):
+            with self.subTest(outcome=outcome):
+                receipt = historical_label_receipt(dict(BASE, outcome=outcome))
+                self.assertFalse(receipt["accepted_for_research_review"])
+                self.assertFalse(receipt["independently_verified"])
+                self.assertEqual(receipt["prediction_action"], "ABSTAIN")
+
+    def test_malformed_nested_identity_source_and_digest_values_fail_closed(self):
+        for key in ("program_id", "decision_document_id", "source_url", "source_document_sha256"):
+            for value in (None, [], {}, True, 42):
+                with self.subTest(key=key, value=value):
+                    self.assertTrue(validate_historical_label(dict(BASE, **{key: value})))
+
+    def test_timestamp_claims_require_explicit_aware_instants(self):
+        values = (None, [], {}, True, "2025-02-15", "2025-02-15T12:00:00",
+                  "2025-02-15 12:00:00Z", " 2025-02-15T12:00:00Z", "2025-99-15T12:00:00Z")
+        for key in ("decision_at", "source_published_at"):
+            for value in values:
+                with self.subTest(key=key, value=value):
+                    self.assertTrue(validate_historical_label(dict(BASE, **{key: value})))
+        for cutoff in values:
+            if cutoff is not None:  # None means that no cutoff check was requested.
+                with self.subTest(cutoff=cutoff):
+                    self.assertTrue(validate_historical_label(BASE, evidence_cutoff=cutoff))
+
+    def test_dirty_identity_or_source_reference_is_not_attributable(self):
+        for key, value in (("program_id", " TEST-DRUG"), ("decision_document_id", "DOC\n1"),
+                           ("source_url", "https://www.fda.gov/doc\nument"),
+                           ("source_url", "https://user:secret@www.fda.gov/document"),
+                           ("source_url", "https://www.fda.gov/document#claim")):
+            with self.subTest(key=key, value=value):
+                self.assertTrue(validate_historical_label(dict(BASE, **{key: value})))
+
+    def test_offset_equivalent_known_outcome_is_rejected_at_cutoff(self):
+        self.assertTrue(validate_historical_label(
+            BASE, evidence_cutoff="2025-02-15T04:00:00-08:00"))
+
 
 if __name__ == "__main__":
     unittest.main()

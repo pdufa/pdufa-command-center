@@ -6,9 +6,9 @@ into 650 invented scientific fields. It tracks which slots are actually defined.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
 
 CATALOG_PATH = Path(__file__).parent / "evidence" / "prediction_v1_1_field_catalog_draft.json"
 EXPECTED_SLOTS = 650
@@ -35,7 +35,12 @@ def load_defined_fields(path: Path = CATALOG_PATH) -> dict[str, dict]:
 def summarize_registry(
     fields: Mapping[str, dict], observations: Mapping[str, SlotStatus] | None = None
 ) -> dict:
-    observations = observations or {}
+    if not isinstance(fields, Mapping) or any(not isinstance(key, str) or not key for key in fields):
+        raise ValueError("Defined fields must be a mapping of nonempty field identifiers")
+    if observations is None:
+        observations = {}
+    if not isinstance(observations, Mapping) or any(not isinstance(key, str) or not key for key in observations):
+        raise ValueError("Observations must be a mapping of nonempty field identifiers")
     if len(fields) > EXPECTED_SLOTS:
         raise ValueError("More defined fields than proposed slots")
     unknown = set(observations) - set(fields)
@@ -43,12 +48,15 @@ def summarize_registry(
         raise ValueError("Evidence references undefined fields: " + ", ".join(sorted(unknown)))
     counts = {state: 0 for state in sorted(VALID_STATES)}
     for field_id in fields:
-        status = observations.get(field_id)
-        if status is None:
+        if field_id not in observations:
             counts["MISSING"] += 1
             continue
-        if status.field_id != field_id or status.evidence_state not in VALID_STATES:
+        status = observations[field_id]
+        if (not isinstance(status, SlotStatus) or status.field_id != field_id
+                or not isinstance(status.evidence_state, str) or status.evidence_state not in VALID_STATES):
             raise ValueError("Invalid evidence status for " + field_id)
+        if type(status.independently_verified) is not bool:
+            raise ValueError("Independent verification must be an explicit boolean for " + field_id)
         if not isinstance(status.source_count, int) or isinstance(status.source_count, bool) or status.source_count < 0:
             raise ValueError("Invalid source count for " + field_id)
         if status.evidence_state == "VERIFIED" and (

@@ -12,11 +12,12 @@ REQUIRED = frozenset({"program_id", "outcome", "decision_at", "source_published_
 
 
 def _date(value):
-    if not isinstance(value, str):
+    if (not isinstance(value, str) or not value or len(value) > 64
+            or value != value.strip() or "T" not in value):
         return None
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-        return parsed if parsed.tzinfo else None
+        return parsed if parsed.tzinfo is not None and parsed.utcoffset() is not None else None
     except ValueError:
         return None
 
@@ -29,12 +30,17 @@ def validate_historical_label(label, *, evidence_cutoff=None):
         return ["missing " + key for key in sorted(missing)]
     errors = []
     for key in ("program_id", "decision_document_id"):
-        if not isinstance(label[key], str) or not label[key].strip():
+        value = label[key]
+        if (not isinstance(value, str) or not value or len(value) > 512
+                or value != value.strip() or any(ord(c) < 32 or ord(c) == 127 for c in value)):
             errors.append("invalid " + key)
-    if label["outcome"] not in OUTCOMES:
+    if not isinstance(label["outcome"], str) or label["outcome"] not in OUTCOMES:
         errors.append("unknown or unresolved outcome; do not infer from target date")
     from research.prediction_v1_1_evidence_intake import _valid_url
-    if not _valid_url(label["source_url"]):
+    source_url = label["source_url"]
+    if (not isinstance(source_url, str) or len(source_url) > 4000
+            or any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in source_url)
+            or not _valid_url(source_url)):
         errors.append("source URL must be HTTPS")
     digest = label["source_document_sha256"]
     if not isinstance(digest, str) or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
