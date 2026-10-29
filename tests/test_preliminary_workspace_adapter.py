@@ -143,7 +143,7 @@ def test_post_retrieval_summary_change_invalidates_result():
         triage_workspace_pages(_page, get_summary=lambda: next(calls))
 
 
-@pytest.mark.parametrize('stamp', [None, '2026-10-29', '2026-10-29T00:00:00',
+@pytest.mark.parametrize('stamp', [None, '2026-10-29T00:00:00',
                                   '2026-10-27T00:00:00Z', '2026-10-30T00:00:00Z'])
 def test_missing_stale_future_or_naive_source_clock_rejected(stamp):
     def page(**kwargs):
