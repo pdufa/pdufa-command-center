@@ -59,7 +59,21 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000):
         if not isinstance(identity, str) or not identity:
             raise ValueError("stable backend programId required")
         candidates.append(map_published_row(row)["candidate"])
-    # Triage batches separately: the published Pipeline can exceed the 10k\n    # single-export guard without weakening that guard or dropping records.\n    reports = [triage_pipeline_export(candidates[i:i + 10000])\n               for i in range(0, len(candidates), 10000)]\n    if not reports:\n        reports = [triage_pipeline_export([])]\n    report = {\n        'records': [record for batch in reports for record in batch['records']],\n        'total': len(candidates),\n        'candidate_for_evidence_review': sum(batch['candidate_for_evidence_review'] for batch in reports),\n        'blocked': sum(batch['blocked'] for batch in reports),\n        'prediction_status': 'ABSTAIN',\n        'research_only': True,\n        'data_authenticity_verified': False,\n    }\n    return {
+    reports = []
+    for start in range(0, len(candidates), 10000):
+        reports.append(triage_pipeline_export(candidates[start:start + 10000]))
+    if not reports:
+        reports.append(triage_pipeline_export([]))
+    report = {
+        'records': [item for group in reports for item in group['records']],
+        'total': len(candidates),
+        'candidate_for_evidence_review': sum(group['candidate_for_evidence_review'] for group in reports),
+        'blocked': sum(group['blocked'] for group in reports),
+        'prediction_status': 'ABSTAIN',
+        'research_only': True,
+        'data_authenticity_verified': False,
+    }
+    return {
         **report,
         "workspace_version": version,
         "workspace_as_of": as_of,
