@@ -3,6 +3,7 @@
 Only explicit, source-supported fields are eligible. Membership in the
 published Pipeline does not prove that the approved restrictions were applied.
 """
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from urllib.parse import urlparse
 
@@ -26,10 +27,14 @@ def map_published_row(row, *, as_of=None):
         cap_value = None
     cap_source = row.get("capSource")
     cap_checked = row.get("capChecked")
+    try:
+        checked_day = date.fromisoformat(cap_checked[:10]) if isinstance(cap_checked, str) else None
+    except ValueError:
+        checked_day = None
     cap_supported = bool(cap_value is not None and isinstance(cap_source, str)
                          and urlparse(cap_source).scheme == "https"
                          and urlparse(cap_source).hostname
-                         and isinstance(cap_checked, str) and cap_checked)
+                         and checked_day is not None)
     fda_source = row.get("fdaSource")
     fda_supported = (bool(row.get("pdufaDate"))
                      and isinstance(fda_source, str)
