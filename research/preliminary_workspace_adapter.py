@@ -4,6 +4,7 @@ Caller provides an HTTP GET function; this module never stores credentials,
 writes to the backend, or treats backend membership as independently verified.
 """
 from research.preliminary_pipeline_batch import triage_pipeline_export
+from research.preliminary_workspace_field_map import map_published_row
 
 
 def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000):
@@ -57,12 +58,15 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000):
         identity = row.get("programId")
         if not isinstance(identity, str) or not identity:
             raise ValueError("stable backend programId required")
-        candidates.append({"program_id": identity})
+        candidates.append(map_published_row(row)["candidate"])
     # Triage batches separately: the published Pipeline can exceed the 10k\n    # single-export guard without weakening that guard or dropping records.\n    reports = [triage_pipeline_export(candidates[i:i + 10000])\n               for i in range(0, len(candidates), 10000)]\n    if not reports:\n        reports = [triage_pipeline_export([])]\n    report = {\n        'records': [record for batch in reports for record in batch['records']],\n        'total': len(candidates),\n        'candidate_for_evidence_review': sum(batch['candidate_for_evidence_review'] for batch in reports),\n        'blocked': sum(batch['blocked'] for batch in reports),\n        'prediction_status': 'ABSTAIN',\n        'research_only': True,\n        'data_authenticity_verified': False,\n    }\n    return {
         **report,
         "workspace_version": version,
         "workspace_as_of": as_of,
         "backend_rows_received": len(rows),
         "screening_fields_verified": False,
+        "field_mapping_applied": True,
+        "market_cap_evidence_present": sum(bool(map_published_row(row)["cap_source_present"]) for row in rows),
+        "fda_target_evidence_present": sum(bool(map_published_row(row)["fda_source_present"]) for row in rows),
         "prediction_status": "ABSTAIN",
     }
