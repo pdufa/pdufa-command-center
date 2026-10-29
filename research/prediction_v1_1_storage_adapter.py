@@ -10,6 +10,7 @@ from pathlib import Path
 from research.prediction_v1_1_audit_ledger import connect_ledger, audit_chain
 from research.prediction_v1_1_review_workflow import initialize_review_ledger, audit_review_chain
 from research.prediction_v1_1_submitter_binding import initialize_submitter_bindings
+from research.prediction_v1_1_integrity_gate import audit_all_research_chains
 
 
 def open_research_evidence_store(path: str | Path | None = None):
@@ -26,9 +27,8 @@ def open_research_evidence_store(path: str | Path | None = None):
     conn = connect_ledger(resolved)
     initialize_review_ledger(conn)
     initialize_submitter_bindings(conn)
-    evidence = audit_chain(conn)
-    reviews = audit_review_chain(conn)
-    if not evidence["valid"] or not reviews["valid"]:
+    integrity = audit_all_research_chains(conn)
+    if not integrity["valid"]:
         conn.close()
         raise RuntimeError("Research evidence audit integrity failed")
     return conn
@@ -36,8 +36,8 @@ def open_research_evidence_store(path: str | Path | None = None):
 
 def store_health(conn: sqlite3.Connection):
     """Read-only health status; local chains are not externally anchored."""
-    evidence = audit_chain(conn)
-    reviews = audit_review_chain(conn)
-    return {"healthy": evidence["valid"] and reviews["valid"],
-            "evidence_events": evidence["checked"], "review_events": reviews["checked"],
+    integrity = audit_all_research_chains(conn)
+    return {"healthy": integrity["valid"],
+            "evidence_events": integrity["evidence"]["checked"], "review_events": integrity["reviews"]["checked"],
+            "submitter_bindings": integrity["bindings"]["checked"],
             "externally_anchored": False, "production_connected": False}
