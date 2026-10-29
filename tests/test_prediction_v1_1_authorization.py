@@ -5,6 +5,13 @@ from research.prediction_v1_1_authorization import (
 )
 
 class AuthorizationTests(unittest.TestCase):
+ def test_malformed_principal_grants_are_rejected(self):
+  for changed in ({"roles":"evidence_reader"},{"program_ids":"P1"},{"is_authenticated":1},
+                  {"principal":" alice "},{"roles":frozenset({"admin"})},{"program_ids":frozenset({"*"})}):
+   with self.subTest(changed=changed),self.assertRaises(ValueError):
+    values={"principal":"alice","roles":frozenset({"evidence_reader"}),"program_ids":frozenset({"P1"})}
+    values.update(changed)
+    ResearchPrincipal(**values)
  def test_reader_only_sees_granted_program(self):
   p=ResearchPrincipal("reader",frozenset({"evidence_reader"}),frozenset({"P1"}))
   self.assertTrue(authorize_research_read(p,"P1"))

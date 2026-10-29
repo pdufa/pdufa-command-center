@@ -39,4 +39,4 @@ def program_evidence_summary(conn, catalog, program_id):
             "catalog_status": catalog.get("status"), "defined_fields": len(fields),
             "proposed_slots": catalog.get("proposed_slots"), "independently_verified": 0,
             "readiness": "NOT_READY", "decision": "ABSTAIN", "fields": fields,
-            "warning": "Research-only local projection; no authenticated API, independent source verification, or prediction."}
+            "warning": "Research-only local projection; chain checks do not establish independent source verification or prediction validation."}

@@ -8,6 +8,9 @@ class IdentityBoundaryTests(unittest.TestCase):
  def test_untrusted_json_role_lists_rejected(self):
   with self.assertRaises(ResearchIdentityUnavailable):
    principal_from_verified_claims({"subject":"alice","roles":["evidence_reader"],"program_ids":["P1"]},verified_by_provider=True)
+ def test_boolean_flag_cannot_promote_even_plausible_role_sets(self):
+  with self.assertRaises(ResearchIdentityUnavailable):
+   principal_from_verified_claims({"subject":"alice","roles":{"evidence_reviewer"},"program_ids":{"P1"}},verified_by_provider=True)
  def test_missing_verified_subject_rejected(self):
   with self.assertRaises(ResearchIdentityUnavailable):
    principal_from_verified_claims({"subject":"","roles":{"evidence_reader"},"program_ids":{"P1"}},verified_by_provider=True)

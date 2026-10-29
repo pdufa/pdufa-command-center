@@ -1,7 +1,7 @@
 """Trusted principal and program-scope contract for future v1.1 backend.
 
 This does NOT authenticate credentials. Only a future verified authentication
-provider may construct principals; do not deserialize this from client JSON.
+provider and server-owned directory may construct principals; do not deserialize client JSON.
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -14,6 +14,18 @@ class ResearchPrincipal:
     roles: FrozenSet[str]
     program_ids: FrozenSet[str]
     is_authenticated: bool = True
+
+    def __post_init__(self):
+        if (not isinstance(self.principal,str) or not self.principal
+                or self.principal!=self.principal.strip() or len(self.principal)>256
+                or any(ord(ch)<32 for ch in self.principal) or type(self.is_authenticated) is not bool):
+            raise ValueError("canonical server principal and explicit authentication state required")
+        allowed={"evidence_reader","evidence_submitter","evidence_reviewer"}
+        if (type(self.roles) is not frozenset or any(type(role) is not str or role not in allowed for role in self.roles)
+                or type(self.program_ids) is not frozenset or any(not isinstance(program,str) or not program
+                    or program!=program.strip() or len(program)>256 or program=="*"
+                    or any(ord(ch)<32 for ch in program) for program in self.program_ids)):
+            raise ValueError("immutable server roles and exact program grants required")
 
 
 def authorize_research_read(principal, program_id: str):
