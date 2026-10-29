@@ -2,7 +2,8 @@
 import json
 import unittest
 from pathlib import Path
-from types import SimpleNamespace
+from research.prediction_v1_1_authorization import ResearchPrincipal
+from research.prediction_v1_1_submitter_binding import initialize_submitter_bindings, bind_verified_submitter
 from research.prediction_v1_1_audit_ledger import connect_ledger, append_submission
 from research.prediction_v1_1_review_workflow import initialize_review_ledger, record_review, audit_review_chain
 
@@ -19,8 +20,11 @@ class ReviewWorkflowTests(unittest.TestCase):
     def setUp(self):
         self.db=connect_ledger(":memory:")
         initialize_review_ledger(self.db)
+        initialize_submitter_bindings(self.db)
         self.event=append_submission(self.db,RECORD,CATALOG)["event_id"]
-        self.auth=SimpleNamespace(is_authenticated=True,principal="reviewer-2",roles=("evidence_reviewer",))
+        submitter=ResearchPrincipal("submitter-1",frozenset({"evidence_submitter"}),frozenset({"TEST|NCT00000000"}))
+        bind_verified_submitter(self.db,self.event,submitter)
+        self.auth=ResearchPrincipal("reviewer-2",frozenset({"evidence_reviewer"}),frozenset({"TEST|NCT00000000"}))
     def tearDown(self):
         self.db.close()
     def test_reject_without_authenticated_identity(self):
