@@ -1,16 +1,25 @@
 {
   "mode": "daily",
-  "started_at": "2026-10-28T03:23:28.949389+00:00",
+  "started_at": "2026-10-29T03:21:04.716115+00:00",
   "registry_companies": 717,
   "pages": 4,
-  "studies_checked": 3977,
-  "matched_posted_results": 95,
-  "new_records": 0,
-  "new_record_details": [],
+  "studies_checked": 3968,
+  "matched_posted_results": 96,
+  "new_records": 1,
+  "new_record_details": [
+    {
+      "ticker": "AMGN",
+      "drug": "Erenumab Dose 1 | Erenumab Dose 2 | Erenumab Dose 3",
+      "nct_id": "NCT03832998",
+      "results_posted_at": "2026-10-28",
+      "source_url": "https://clinicaltrials.gov/study/NCT03832998",
+      "verification_status": "DRUG_IDENTITY_REVIEW"
+    }
+  ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-10-28T03:23:38.660063+00:00",
-  "stored_results": 2493,
+  "finished_at": "2026-10-29T03:21:10.193971+00:00",
+  "stored_results": 2494,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
