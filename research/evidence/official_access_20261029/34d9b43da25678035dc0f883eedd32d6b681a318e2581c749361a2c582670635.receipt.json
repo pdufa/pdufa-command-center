@@ -1,0 +1,14 @@
+{
+  "attempts": [
+    {
+      "classification": "SOURCE TEMPORARILY UNAVAILABLE",
+      "error_type": "URLError"
+    }
+  ],
+  "availability": "SOURCE TEMPORARILY UNAVAILABLE",
+  "fetched_at": "2026-10-29T13:15:43.887571+00:00",
+  "independently_verified": false,
+  "prediction_action": "ABSTAIN",
+  "source": "openfda_index",
+  "url": "https://api.fda.gov/download.json"
+}
