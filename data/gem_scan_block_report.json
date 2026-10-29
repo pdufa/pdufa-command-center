@@ -33,17 +33,17 @@
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-28T03:23:38.660063+00:00",
-    "matched_posted_results": 95,
+    "finished_at": "2026-10-29T03:21:51.242838+00:00",
+    "matched_posted_results": 96,
     "new_records": 0,
-    "stored_results": 2493,
-    "studies_checked": 3977
+    "stored_results": 2494,
+    "studies_checked": 3968
   },
   "collector_performed": true,
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-28T03:25:52.055074+00:00",
+  "generated_at_utc": "2026-10-29T03:24:25.341278+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -68,21 +68,21 @@
     "source_completeness_not_guaranteed": true,
     "status": "CURRENT_SOURCE_ONLY"
   },
-  "observed_phase3_rows": 2493,
+  "observed_phase3_rows": 2494,
   "ranked_research_only": {
     "PDUFA": 0,
     "Phase 3": 0,
     "Post-Financing": 0
   },
   "research_status": "HOLD_STALE_OR_MISSING_SOURCES",
-  "run_id": 40625670011,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40625670011",
+  "run_id": 40811143302,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40811143302",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
   "sec_source_health": {
     "blocked_records": 38,
-    "last_check_age_days": 22,
+    "last_check_age_days": 23,
     "source_completeness_not_guaranteed": true,
     "status": "PARTIAL_STALE_OR_BLOCKED"
   },
