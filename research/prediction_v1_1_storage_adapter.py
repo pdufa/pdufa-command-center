@@ -9,6 +9,7 @@ import sqlite3
 from pathlib import Path
 from research.prediction_v1_1_audit_ledger import connect_ledger, audit_chain
 from research.prediction_v1_1_review_workflow import initialize_review_ledger, audit_review_chain
+from research.prediction_v1_1_submitter_binding import initialize_submitter_bindings
 
 
 def open_research_evidence_store(path: str | Path | None = None):
@@ -24,6 +25,7 @@ def open_research_evidence_store(path: str | Path | None = None):
         raise FileNotFoundError("Research evidence storage directory missing")
     conn = connect_ledger(resolved)
     initialize_review_ledger(conn)
+    initialize_submitter_bindings(conn)
     evidence = audit_chain(conn)
     reviews = audit_review_chain(conn)
     if not evidence["valid"] or not reviews["valid"]:
