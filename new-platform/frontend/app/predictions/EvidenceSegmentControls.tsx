@@ -51,12 +51,14 @@ export default function EvidenceSegmentControls({trialKey}:{trialKey:string}) {
   const update=(id:string,patch:Partial<Setting>)=>setSettings(prev=>({...prev,[id]:{...prev[id],...patch}}));
   const excludedCritical=SEGMENTS.filter(s=>s.critical && !settings[s.id]?.included);
   const enabled=SEGMENTS.filter(s=>settings[s.id]?.included).length;
-  const excludedFields=catalog.fields.filter(f=>f.critical && !fieldSettings[f.id]?.included);
+  const excludedFields=catalog.fields.filter(f=>f.critical && (!fieldSettings[f.id]?.included || !fieldSettings[f.id]?.mandatory));
+  const weakenedCritical=SEGMENTS.filter(s=>s.critical && !settings[s.id]?.mandatory);
   return <section style={{border:"2px solid #8a9d8e",padding:16,marginTop:18,background:"#fff"}} aria-label="Requirements v1.1 evidence segment controls">
     <h3>Scientific evidence controls · Requirements v1.1</h3>
     <p><strong>Planning inventory:</strong> 8 segments / 650 proposed field slots. Only 8 draft fields are enumerated; the rest have not been defined or deduplicated. Segment switches are research-only and do not change Pipeline, GEM JR, GEM, WT or FS/FA restrictions.</p>
     <p>Segments included: {enabled}/8 · Independently verified fields: 0 · Missing field count: unknown until catalog and ingestion are complete.</p>
-    {excludedFields.length>0 && <p role="alert" style={{border:"2px solid #a11",padding:12,background:"#fff1f1"}}>CRITICAL FIELD OVERRIDE: {excludedFields.map(f=>f.id).join(", ")} excluded. Readiness BLOCKED. Browser-only audit; server audit pending.</p>}
+    {weakenedCritical.length>0 && <p role="alert" style={{border:"2px solid #a11",padding:12,background:"#fff1f1"}}>CRITICAL SEGMENT OVERRIDE: {weakenedCritical.map(s=>s.title).join("; ")} set optional. Readiness BLOCKED. These controls cannot waive scientific evidence requirements.</p>}
+    {excludedFields.length>0 && <p role="alert" style={{border:"2px solid #a11",padding:12,background:"#fff1f1"}}>CRITICAL FIELD OVERRIDE: {excludedFields.map(f=>f.id).join(", ")} excluded or marked optional. Readiness BLOCKED. Browser-only audit; server audit pending.</p>}
     {excludedCritical.length>0 && <p role="alert" style={{border:"2px solid #a11",background:"#fff1f1",padding:12}}>
       CRITICAL EVIDENCE OVERRIDE: {excludedCritical.map(s=>s.title).join("; ")} excluded. Readiness is BLOCKED; no decision may be issued. This choice is recorded in browser storage only, not a server audit trail.
     </p>}
@@ -78,7 +80,7 @@ export default function EvidenceSegmentControls({trialKey}:{trialKey:string}) {
         <label style={{marginRight:16}}><input type="checkbox" checked={!!fieldSettings[f.id]?.included} onChange={e=>updateField(f.id,{included:e.target.checked})}/> Include field</label>
         <label><input type="checkbox" checked={!!fieldSettings[f.id]?.mandatory} onChange={e=>updateField(f.id,{mandatory:e.target.checked})}/> Mandatory</label>
         <p>Evidence status: UNVERIFIED · Citation: NOT INGESTED · Last verified: NEVER · Weight: NOT ASSIGNED</p>
-        {f.critical && !fieldSettings[f.id]?.included && <p role="alert" style={{color:"#a11",fontWeight:700}}>Critical field excluded. Readiness BLOCKED; no prediction may be issued.</p>}
+        {f.critical && (!fieldSettings[f.id]?.included || !fieldSettings[f.id]?.mandatory) && <p role="alert" style={{color:"#a11",fontWeight:700}}>Critical field excluded or made optional. Readiness BLOCKED; no prediction may be issued.</p>}
       </details>)}
       <p>Field weights and independently authenticated evidence ingestion are not implemented. No field is scored.</p>
     </details>)}
