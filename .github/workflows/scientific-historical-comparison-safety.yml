@@ -7,6 +7,7 @@ on:
       - 'research/historical_decision_registry.py'
       - 'research/fda_*.py'
       - 'research/evidence/scientific_catalog_parts/**'
+      - 'research/evidence/historical_verification_worklist_*.json'
       - 'research/evidence/2025_holdout_*.json'
       - 'research/evidence/tnxp_three_trial_comparison.json'
       - 'research/prediction_v1_1_*.py'
@@ -43,3 +44,5 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_prediction_v1_1_*.py' -v
       - name: Test historical comparison, point-in-time evidence and abstention
         run: python -m pytest -q tests/test_scientific_*.py tests/test_historical_decision_registry.py
+      - name: Verify reproducible historical verification worklist
+        run: python -m research.scientific_historical_verification --output research/evidence/historical_verification_worklist_20261029.json --check

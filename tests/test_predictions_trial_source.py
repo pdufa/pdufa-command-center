@@ -12,9 +12,11 @@ def test_merge_verified_sources():
         wt=[{"trial_id": "NCT003", "source_url": "https://example.org/wt"}],
     )
     assert len(rows) == 2
-    assert rows[0]["groups"] == ["GEM", "GEM_JR", "PHASE3_DATA_RELEASED"]
-    assert len(rows[0]["source_urls"]) == 3
-    assert rows[1]["groups"] == ["WT"]
+    # The selector sorts by display label, not trial ID or source order.
+    by_id = {row['trial_id']: row for row in rows}
+    assert by_id['NCT001']["groups"] == ["GEM", "GEM_JR", "PHASE3_DATA_RELEASED"]
+    assert len(by_id['NCT001']["source_urls"]) == 3
+    assert by_id['NCT003']["groups"] == ["WT"]
 
 
 def test_unverifiable_rows_not_shown():
