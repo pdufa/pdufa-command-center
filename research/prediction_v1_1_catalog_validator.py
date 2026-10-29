@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 CATALOG = Path(__file__).parent / "evidence" / "prediction_v1_1_field_catalog_draft.json"
+CANONICAL_QUESTIONS = Path(__file__).parents[1] / "new-platform" / "backend" / "app" / "science_40_question_catalog.json"
 SEGMENTS = {"BIO", "MOA", "TRIAL", "EFFICACY", "SAFETY", "CMC", "PRECEDENT", "VALIDATION"}
 REQUIRED = {"id", "segment", "name", "definition", "data_type", "applicability", "source", "assessment_ids", "mandatory", "critical"}
 
@@ -13,6 +14,10 @@ REQUIRED = {"id", "segment", "name", "definition", "data_type", "applicability",
 def validate_catalog(document):
     errors = []
     seen = set()
+    canonical = json.loads(CANONICAL_QUESTIONS.read_text(encoding="utf-8"))
+    valid_questions = {q["id"] for q in canonical["questions"]}
+    if len(valid_questions) != 40:
+        errors.append("canonical question catalog does not contain 40 unique IDs")
     fields = document.get("fields", [])
     if not isinstance(fields, list):
         return ["fields must be a list"]
@@ -37,6 +42,9 @@ def validate_catalog(document):
                 errors.append(f"field {index}: empty {key}")
         if not isinstance(field["assessment_ids"], list) or not field["assessment_ids"]:
             errors.append(f"field {index}: missing assessment cross-reference")
+        for question_id in field["assessment_ids"] if isinstance(field["assessment_ids"], list) else []:
+            if question_id not in valid_questions:
+                errors.append(f"field {index}: unknown canonical assessment ID {question_id}")
         for key in ("mandatory", "critical"):
             if not isinstance(field[key], bool):
                 errors.append(f"field {index}: {key} must be boolean")
