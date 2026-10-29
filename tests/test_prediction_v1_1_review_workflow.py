@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from research.prediction_v1_1_audit_ledger import connect_ledger, append_submission
-from research.prediction_v1_1_review_workflow import initialize_review_ledger, record_review
+from research.prediction_v1_1_review_workflow import initialize_review_ledger, record_review, audit_review_chain
 
 CATALOG=json.loads((Path(__file__).parents[1]/"research/evidence/prediction_v1_1_field_catalog_draft.json").read_text())
 RECORD=dict(program_id="TEST|NCT00000000",field_id="TRIAL-001",
@@ -42,6 +42,15 @@ class ReviewWorkflowTests(unittest.TestCase):
                              trusted_identity=self.auth)
         self.assertFalse(result["independently_verified"])
         self.assertEqual(result["decision"],"ABSTAIN")
+    def test_review_chain_detects_modified_review(self):
+        record_review(self.db,evidence_event_id=self.event,reviewer_principal="reviewer-2",
+                      outcome="REQUEST_MORE_EVIDENCE",checks=CHECKS,
+                      rationale="Synthetic test",trusted_identity=self.auth)
+        self.assertTrue(audit_review_chain(self.db)["valid"])
+        self.db.execute("DROP TRIGGER review_events_no_update")
+        self.db.execute("UPDATE review_events SET rationale='tampered'")
+        self.assertFalse(audit_review_chain(self.db)["valid"])
+
     def test_review_rows_are_append_only(self):
         record_review(self.db,evidence_event_id=self.event,reviewer_principal="reviewer-2",
                       outcome="REQUEST_MORE_EVIDENCE",checks=CHECKS,rationale="Synthetic test",trusted_identity=self.auth)
