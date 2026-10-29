@@ -13,7 +13,8 @@
       "applicability": "Pivotal clinical evidence used",
       "source": "ClinicalTrials.gov trial registration",
       "assessment_ids": [
-        "Q11"
+        "S11",
+        "S24"
       ],
       "mandatory": true,
       "critical": true
@@ -27,7 +28,8 @@
       "applicability": "Pivotal efficacy trial",
       "source": "Registry history and protocol/statistical analysis plan",
       "assessment_ids": [
-        "Q13"
+        "S01",
+        "S06"
       ],
       "mandatory": true,
       "critical": true
@@ -41,7 +43,9 @@
       "applicability": "Pivotal efficacy analysis reported",
       "source": "Trial results publication or clinical study report",
       "assessment_ids": [
-        "Q18"
+        "S01",
+        "S02",
+        "S10"
       ],
       "mandatory": true,
       "critical": true
@@ -55,7 +59,7 @@
       "applicability": "Pivotal safety population",
       "source": "Clinical study report or ClinicalTrials.gov results",
       "assessment_ids": [
-        "Q24"
+        "S16"
       ],
       "mandatory": true,
       "critical": true
@@ -69,7 +73,9 @@
       "applicability": "NDA or BLA under FDA review",
       "source": "FDA public records and company regulatory disclosures",
       "assessment_ids": [
-        "Q30"
+        "S29",
+        "S34",
+        "S35"
       ],
       "mandatory": true,
       "critical": true
@@ -83,7 +89,7 @@
       "applicability": "Every prediction or backtest",
       "source": "Versioned prediction run metadata",
       "assessment_ids": [
-        "Q38"
+        "S24"
       ],
       "mandatory": true,
       "critical": true
@@ -97,7 +103,8 @@
       "applicability": "Comparable cases exist",
       "source": "FDA approval letters, review documents, CRL disclosures",
       "assessment_ids": [
-        "Q35"
+        "S38",
+        "S39"
       ],
       "mandatory": false,
       "critical": false
@@ -111,11 +118,11 @@
       "applicability": "Every disease indication",
       "source": "Peer-reviewed natural-history studies and treatment guidelines",
       "assessment_ids": [
-        "Q01"
+        "S40"
       ],
       "mandatory": false,
       "critical": false
     }
   ],
-  "note": "Assessment IDs are proposed cross-references pending reconciliation with canonical 40-assessment catalog; do not assume confirmed mappings."
+  "note": "Proposed S01-S40 mappings checked against canonical science_40_question_catalog.json; scientific appropriateness still requires independent review."
 }
