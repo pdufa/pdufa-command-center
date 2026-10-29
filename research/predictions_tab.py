@@ -42,6 +42,7 @@ def render_predictions_tab(
     *,
     on_start=None,
     job_directory: str | Path | None = None,
+    evidence_provider=None,
 ) -> None:
     """Render persisted checklist. Explicit on_start overrides local queue."""
     import streamlit as st
@@ -69,6 +70,19 @@ def render_predictions_tab(
         st.success("Prediction job queued. Scientific analysis requires a connected worker.")
     if on_start is None and job_directory is None:
         st.warning("Prediction runner and job store not connected. START PREDICTION is disabled.")
+    if job_directory is not None and evidence_provider is not None:
+        from research.predictions_execution_adapter import execute_existing_job
+        queued = latest_trial_job(job_directory, selected["trial_id"])
+        if queued is not None and queued["status"] == "QUEUED":
+            if st.button("RUN EVIDENCE CHECKLIST", key="predictions_run_evidence"):
+                try:
+                    evidence = evidence_provider(selected["trial_id"])
+                    if not isinstance(evidence, Mapping):
+                        raise ValueError("Evidence provider must return a mapping")
+                    execute_existing_job(job_directory, queued["job_id"], evidence)
+                    st.success("Evidence checklist processed; scientific prediction remains unvalidated.")
+                except (ValueError, OSError, KeyError) as exc:
+                    st.error(f"Evidence checklist could not run: {exc}")
     st.subheader("Assessment checklist")
     if job_directory is not None:
         job = latest_trial_job(job_directory, selected["trial_id"])
@@ -92,4 +106,14 @@ def render_predictions_tab(
             st.write("Evidence:", row.get("evidence") or "Not available")
             st.write("Uncertainty:", row.get("uncertainty") or "Not assessed")
     st.subheader("Decision")
-    st.info("PASS / CRL / EXTENSION / ABSTAIN — not calculated until a validated analysis runner returns a result.")
+    if job_directory is not None:
+        from research.prediction_assessment_runner import research_decision
+        current_job = latest_trial_job(job_directory, selected["trial_id"])
+        if current_job is not None:
+            result = research_decision(current_job)
+            st.write(f"Decision: {result['decision']} · Readiness: {result['readiness']}")
+            st.caption(result["reason"])
+        else:
+            st.info("No prediction job has been created for this trial.")
+    else:
+        st.info("PASS / CRL / EXTENSION / ABSTAIN — not calculated until a validated analysis runner returns a result.")
