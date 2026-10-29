@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-28T03:26:49.951457+00:00",
-  "latest_run_id": 40625670011,
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40625670011",
-  "latest_run_started_at_utc": "2026-10-28T03:15:44Z",
+  "updated_at_utc": "2026-10-29T03:25:31.321745+00:00",
+  "latest_run_id": 40811143302,
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40811143302",
+  "latest_run_started_at_utc": "2026-10-29T03:15:46Z",
   "latest_run_conclusion": null,
   "scope": "CLINICAL_PIPELINE_AND_GEM_JR_COLLECTORS_ONLY",
   "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-10-28T03:26:49.951474+00:00",
+    "checked_at_utc": "2026-10-29T03:25:31.321770+00:00",
     "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
@@ -19,67 +19,76 @@
       "label": "PIPELINE \u2014 trial inventory",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 40625670011,
+      "run_id": 40811143302,
       "new_records": null,
-      "changed_trials_this_execution": 53,
+      "changed_trials_this_execution": 58,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_checked": 717,
         "companies_due": 717,
-        "tracked_trials_checked": 11607,
-        "tracked_trials_total": 11607,
+        "tracked_trials_checked": 11612,
+        "tracked_trials_total": 11612,
         "registry_companies": 717,
         "companies_with_warnings": 0,
         "tracked_trials_with_warnings": 0
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-10-28T03:20:44.438557+00:00",
+      "collected_at_utc": "2026-10-29T03:19:56.355514+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40625670011"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40811143302"
     },
     {
       "scan": "3",
       "label": "PIPELINE \u2014 clinical enrichment",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 40625670011,
+      "run_id": 40811143302,
       "new_records": null,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 15585,
-        "matched_trials": 3697,
+        "studies_checked": 15581,
+        "matched_trials": 3701,
         "registry_companies": 717,
-        "market_cap_source_unavailable": 1
+        "market_cap_source_unavailable": 0
       },
-      "collector_status": "COMPLETE WITH WARNINGS",
-      "collected_at_utc": "2026-10-28T03:22:06.639093+00:00",
+      "collector_status": "COMPLETE",
+      "collected_at_utc": "2026-10-29T03:20:41.697008+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40625670011"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40811143302"
     },
     {
       "scan": "4",
       "label": "GEM JR \u2014 Phase 3 readout",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 40625670011,
-      "new_records": 0,
+      "run_id": 40811143302,
+      "new_records": 1,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 3977,
-        "matched_posted_results": 95,
+        "studies_checked": 3968,
+        "matched_posted_results": 96,
         "registry_companies": 717
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-10-28T03:22:43.270236+00:00",
-      "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40625670011"
+      "collected_at_utc": "2026-10-29T03:21:10.313811+00:00",
+      "new_record_details": [
+        {
+          "ticker": "AMGN",
+          "drug": "Erenumab Dose 1 | Erenumab Dose 2 | Erenumab Dose 3",
+          "nct_id": "NCT03832998",
+          "results_posted_at": "2026-10-28",
+          "source_url": "https://clinicaltrials.gov/study/NCT03832998",
+          "verification_status": "DRUG_IDENTITY_REVIEW"
+        }
+      ],
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40811143302"
     }
   ],
   "metrics": {
@@ -96,6 +105,16 @@
     "issuer/program identity and complete source coverage audit"
   ],
   "history": [
+    {
+      "run_id": 40811143302,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40811143302",
+      "started_at_utc": "2026-10-29T03:15:46Z",
+      "run_conclusion": null,
+      "status": "PARTIAL",
+      "new_records": null,
+      "changed_trials": null,
+      "errors": 0
+    },
     {
       "run_id": 40625670011,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40625670011",
