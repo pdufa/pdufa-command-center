@@ -1,0 +1,39 @@
+{
+  "schema_version": "official-validation-protocol-v1",
+  "status": "FROZEN_ENGINEERING_PROTOCOL_REQUIRES_INDEPENDENT_SCIENTIFIC_REVIEW",
+  "research_only": true,
+  "prediction_action": "ABSTAIN",
+  "outcomes": ["PASS", "CRL", "EXTENSION"],
+  "outcome_policy": "FIRST_FORMAL_FDA_ACTION_BY_PRESPECIFIED_HORIZON",
+  "unit": "EXACT_APPLICATION_SUBMISSION_REVIEW_CYCLE",
+  "partition_policy": "CHRONOLOGICAL_WITH_APPLICATION_AND_PROGRAM_FAMILY_DISJOINTNESS",
+  "evaluation_starts_at": null,
+  "required_prediction_fields": null,
+  "model_version": null,
+  "minimum_sample_size": null,
+  "abstention_threshold": null,
+  "unresolved_parameters": "Must be independently prespecified in a new immutable protocol version before cohort selection or fitting; null does not authorize a default.",
+  "evidence_policy": {
+    "publication": "PROVEN_PUBLICATION_AND_PUBLIC_AVAILABILITY_STRICTLY_BEFORE_CUTOFF",
+    "outcome_documents": "EXCLUDED_FROM_PREDICTION_INPUTS",
+    "missing_conflicting_or_unverified_evidence": "ABSTAIN",
+    "related_applications": "MUST_NOT_CROSS_TRAIN_EVALUATION_BOUNDARY",
+    "independence": "REQUIRES_AUTHENTICATED_INDEPENDENT_ADJUDICATION_NOT_CALLER_FLAGS",
+    "integrity": "RETAIN_ORIGINAL_BYTES_SHA256_AND_IMMUTABLE_SNAPSHOT_IDENTITIES",
+    "late_registry_updates": "REQUIRE_HISTORICAL_VERSION_PROOF"
+  },
+  "metrics": {
+    "confusion_matrix": "ROWS_TRUE_COLUMNS_PREDICTED_PASS_CRL_EXTENSION; ABSTENTIONS_REPORTED_SEPARATELY",
+    "precision_recall": "PER_CLASS_ON_NONABSTAINED_CASES_WITH_EXPLICIT_DENOMINATORS",
+    "brier": "MEAN_SUM_OF_THREE_SQUARED_CLASS_PROBABILITY_ERRORS_RANGE_0_2",
+    "log_loss": "MEAN_NEGATIVE_NATURAL_LOG_TRUE_CLASS_PROBABILITY; ZERO_PROBABILITY_RETURNS_NULL_WITH_INFINITE_FLAG",
+    "calibration": "FIVE_FIXED_TOP_LABEL_CONFIDENCE_BINS_[0,.2),[.2,.4),[.4,.6),[.6,.8),[.8,1]; ECE_WEIGHTED_BY_SCORED_CASES",
+    "abstention": "COUNT_AND_RATE_ON_ALL_CASES",
+    "strata": ["therapeutic_area", "decision_year"],
+    "uncertainty": "95_PERCENT_WILSON_INTERVALS_FOR_BINOMIAL_RATES_ONLY; DESCRIPTIVE_IID_ASSUMPTION_NOT_ESTABLISHED_FOR_FDA_COHORTS",
+    "score_intervals": "UNAVAILABLE_UNTIL_PRESPECIFIED_INDEPENDENT_FAMILY_CLUSTER_RESAMPLING_PROTOCOL_AND_SUFFICIENT_CLUSTERS",
+    "zero_denominator": "NULL_NEVER_ZERO",
+    "operational_reporting": "BLOCKED_UNTIL_INDEPENDENT_OUTCOMES_SCIENCE_AND_PROTOCOL_ADJUDICATION"
+  },
+  "fixture_diagnostics": "BUILT_IN_SYNTHETIC_FIXTURES_ONLY_NOT_PLATFORM_PERFORMANCE"
+}

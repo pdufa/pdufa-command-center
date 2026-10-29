@@ -17,7 +17,8 @@ import socket
 import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import Request, build_opener, HTTPRedirectHandler
+from urllib.request import Request, build_opener
+from research.fda_official_document_fetch import _NoRedirects
 import zipfile
 
 SOURCES = {
@@ -39,16 +40,11 @@ MAX_BYTES = 256 * 1024 * 1024
 
 def official_url(source, url):
     parts = urlsplit(url)
-    if (source not in SOURCES or parts.scheme != 'https' or parts.hostname != SOURCES[source][0]
+    hosts = {'www.accessdata.fda.gov', 'www.fda.gov', 'download.open.fda.gov'} if source == 'fda_document' else {SOURCES[source][0]} if source in SOURCES else set()
+    if (source not in SOURCES or parts.scheme != 'https' or parts.hostname not in hosts
             or parts.username or parts.password or parts.port not in (None, 443)):
         raise ValueError('unsupported official HTTPS origin')
     return url
-
-
-class NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        # Require explicit acquisition of the published official destination.
-        return None
 
 
 def application_id(value):
@@ -84,12 +80,13 @@ def validate_payload(source, raw):
                 if key in apps:
                     raise ValueError('duplicate application')
                 apps[key] = row
+            application_numbers = {a[3:] for a in apps}
             cycles = set()
             for row in tables['Submissions.txt']:
                 key = (row['ApplNo'], row['SubmissionType'], row['SubmissionNo'])
                 if not all(key) or key in cycles:
                     raise ValueError('duplicate or missing submission identity')
-                if not any(a[3:] == row['ApplNo'].zfill(6) for a in apps):
+                if row['ApplNo'].zfill(6) not in application_numbers:
                     raise ValueError('orphan submission application')
                 cycles.add(key)
             return {'application_count': len(apps), 'submission_count': len(cycles)}
@@ -142,7 +139,7 @@ class OfficialAdapter:
         if source not in SOURCES or not 0 < timeout <= 120 or not 1 <= attempts <= 5 or interval < 1:
             raise ValueError('invalid bounded connection policy')
         self.source, self.timeout, self.attempts, self.interval = source, timeout, attempts, interval
-        self.opener, self.sleep = opener or build_opener(NoRedirect()), sleep
+        self.opener, self.sleep = opener or build_opener(_NoRedirects()), sleep
 
     def retrieve(self, directory, *, url=None):
         url = official_url(self.source, url or SOURCES[self.source][1] or '')

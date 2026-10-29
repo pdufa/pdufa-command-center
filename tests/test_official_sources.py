@@ -132,3 +132,10 @@ def test_official_bulk_zip_and_history_snapshot():
     study = json.loads(RAW)['studies'][0]
     result = validate_payload('trial_history', json.dumps(study).encode())
     assert not result['historical_snapshot_verified']
+
+
+@pytest.mark.parametrize('url', ['https://www.fda.gov/media/186545/download?stream=top', 'https://download.open.fda.gov/crl/CRL_NDA219398_20260128.pdf', 'https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219776Orig1s000ltr.pdf'])
+def test_all_curated_official_document_hosts_supported(tmp_path, url):
+    receipt = OfficialAdapter('fda_document').import_bytes(tmp_path, b'%PDF-synthetic', url=url)
+    assert receipt['availability'] == AVAILABLE
+    assert not receipt['independently_verified']

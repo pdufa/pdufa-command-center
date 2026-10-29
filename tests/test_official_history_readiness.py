@@ -136,3 +136,22 @@ def test_required_protocol_and_boundary_are_explicit():
         prepare_chronological_backtest([], evaluation_starts_at='2021-01-01', required_fields={'efficacy'})
     with pytest.raises(ValueError):
         prepare_chronological_backtest([], evaluation_starts_at='2021-01-01T00:00:00Z', required_fields=set())
+
+
+def test_extension_requires_explicit_formal_target_revision_not_elapsed_date():
+    row = case()
+    row['outcome_label']['outcome'] = 'EXTENSION'
+    assert 'CONFIRMED_REGULATORY_EXTENSION_NOT_ESTABLISHED' in reasons(row)
+    row['regulatory_event'] = {'kind': 'FORMAL_TARGET_REVISION', 'action_date': '2020-02-01',
+        'public_available_on': '2020-02-02', 'source_url': row['outcome_label']['source_url'],
+        'target_date': '2020-02-15', 'revised_target_date': '2020-05-15', 'decision_label': None}
+    assert 'CONFIRMED_REGULATORY_EXTENSION_NOT_ESTABLISHED' not in reasons(row)
+    row['regulatory_event']['kind'] = 'DELAY'
+    row['regulatory_event']['revised_target_date'] = None
+    assert 'CONFIRMED_REGULATORY_EXTENSION_NOT_ESTABLISHED' in reasons(row)
+
+
+def test_nonofficial_outcome_cannot_enter_evaluation():
+    row = case()
+    row['outcome_label']['source_url'] = 'https://example.test/claimed-fda-outcome'
+    assert 'NON_OFFICIAL_REGULATORY_SOURCE' in reasons(row)

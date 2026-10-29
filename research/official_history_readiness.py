@@ -13,6 +13,7 @@ import re
 
 from research.prediction_v1_1_historical_label_gate import validate_historical_label
 from research.official_sources import AVAILABLE
+from research.scientific_historical_comparison import classify_fda_event, _url
 
 _APPLICATION = re.compile(r'(?:NDA|BLA)[0-9]{6}\Z')
 _DIGEST = re.compile(r'[0-9a-f]{64}\Z')
@@ -101,6 +102,20 @@ def prepare_chronological_backtest(records, *, evaluation_starts_at, required_fi
         if label_errors:
             reasons.append('INVALID_OR_UNVERIFIED_OUTCOME_LABEL')
         if isinstance(label, dict):
+            try:
+                _url(label.get('source_url'), fda=True)
+            except ValueError:
+                reasons.append('NON_OFFICIAL_REGULATORY_SOURCE')
+            if label.get('outcome') == 'EXTENSION':
+                event = row.get('regulatory_event')
+                try:
+                    if (classify_fda_event(event) != 'EXTENSION'
+                            or event['source_url'] != label.get('source_url')
+                            or _clock(label.get('decision_at')) is None
+                            or event['action_date'] != _clock(label['decision_at']).date().isoformat()):
+                        raise ValueError('extension event does not bind label')
+                except (ValueError, TypeError, KeyError):
+                    reasons.append('CONFIRMED_REGULATORY_EXTENSION_NOT_ESTABLISHED')
             if label.get('program_id') != row.get('program_id'):
                 reasons.append('LABEL_PROGRAM_IDENTITY_MISMATCH')
             # Do not discard submission/cycle identity when associating labels.
