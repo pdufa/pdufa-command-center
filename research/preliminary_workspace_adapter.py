@@ -6,7 +6,7 @@ writes to the backend, or treats backend membership as independently verified.
 from research.preliminary_pipeline_batch import triage_pipeline_export
 
 
-def triage_workspace_pages(get_page, *, page_size=100, max_rows=10000):
+def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000):
     if not callable(get_page) or not 1 <= page_size <= 100:
         raise ValueError("valid GET function and page size 1..100 required")
     version = None
@@ -58,8 +58,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=10000):
         if not isinstance(identity, str) or not identity:
             raise ValueError("stable backend programId required")
         candidates.append({"program_id": identity})
-    report = triage_pipeline_export(candidates)
-    return {
+    # Triage batches separately: the published Pipeline can exceed the 10k\n    # single-export guard without weakening that guard or dropping records.\n    reports = [triage_pipeline_export(candidates[i:i + 10000])\n               for i in range(0, len(candidates), 10000)]\n    if not reports:\n        reports = [triage_pipeline_export([])]\n    report = {\n        'records': [record for batch in reports for record in batch['records']],\n        'total': len(candidates),\n        'candidate_for_evidence_review': sum(batch['candidate_for_evidence_review'] for batch in reports),\n        'blocked': sum(batch['blocked'] for batch in reports),\n        'prediction_status': 'ABSTAIN',\n        'research_only': True,\n        'data_authenticity_verified': False,\n    }\n    return {
         **report,
         "workspace_version": version,
         "workspace_as_of": as_of,
