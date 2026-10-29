@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from research.prediction_v1_1_audit_ledger import _json_bytes
+from research.prediction_v1_1_submitter_binding import authorize_independent_review
 
 REVIEW_SCHEMA = """
 CREATE TABLE IF NOT EXISTS review_events (
@@ -48,6 +49,8 @@ def record_review(conn, *, evidence_event_id, reviewer_principal, outcome, check
         raise PermissionError("reviewer principal does not match authenticated identity")
     if "evidence_reviewer" not in getattr(trusted_identity, "roles", ()):
         raise PermissionError("reviewer role required")
+    # Reject unbound, cross-program and self-review before any write.
+    authorize_independent_review(conn, evidence_event_id, trusted_identity)
     if outcome not in ("APPROVE_PROVENANCE","REJECT_PROVENANCE","REQUEST_MORE_EVIDENCE"):
         raise ValueError("invalid review outcome")
     if not isinstance(rationale, str) or not rationale.strip():
