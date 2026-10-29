@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install pytest -r research/requirements-security.txt
+      - run: python -m pip install pytest pandas -r research/requirements-security.txt
       - run: python -m pytest -q tests/test_official_*.py tests/test_scientific_*.py tests/test_historical_decision_registry.py tests/test_prediction_v1_1_*.py tests/test_fda_*.py
       - run: python research/prediction_v1_1_catalog_validator.py
       - run: python -m research.scientific_field_catalog

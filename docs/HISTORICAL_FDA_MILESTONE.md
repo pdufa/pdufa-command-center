@@ -2,6 +2,11 @@
 
 Status: **NOT READY / ABSTAIN**. No trained model, calibrated probabilities, independently verified FDA decisions, or measured platform performance.
 
+October 29 follow-up: [original-byte adjudication packets](OFFICIAL_ADJUDICATION_PACKETS.md)
+now bind retained acquisition candidates to the six-case worklist without closing
+independent review tasks. The recovery CI's missing pandas test dependency is
+fixed; scientific acquisition/adjudication remains outstanding.
+
 ## Completed engineering
 
 - `research/official_sources.py`: reusable official-source adapters and bounded authorized offline imports. Original bytes, SHA-256, source URL, schema checks, duplicate detection, timestamps and dataset versions remain distinct from origin authentication and publication verification. Existing FDA redirect policy is reused. See [acquisition instructions](OFFICIAL_SOURCE_RECOVERY.md).
