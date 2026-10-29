@@ -67,3 +67,18 @@ def test_field_evidence_counts_without_promoting_eligibility():
     assert result["fda_target_evidence_present"] == 1
     assert result["blocked"] == 1
     assert result["prediction_status"] == "ABSTAIN"
+
+
+def test_duplicate_program_ids_across_ten_thousand_record_boundary_rejected():
+    import pytest
+    total = 10001
+    def page(offset, limit, version):
+        rows = [{"programId": f"PDUFA-{i:06d}"} for i in range(offset, min(offset + limit, total))]
+        if offset == 10000:
+            rows[0]["programId"] = "PDUFA-000000"
+        return {"version": "v1", "asOf": "2026-10-29T00:00:00Z",
+                "total": total, "offset": offset, "limit": limit,
+                "nextOffset": offset + limit if offset + limit < total else None,
+                "rows": rows}
+    with pytest.raises(ValueError, match="duplicate programId"):
+        triage_workspace_pages(page)
