@@ -4,8 +4,36 @@ Prediction status: **NOT READY / ABSTAIN**.
 
 For iPhone-only operation, use the [Safari/GitHub Actions handoff](IPHONE_STAGING_RECONCILIATION.md).
 It reuses the existing registered manual workflow and client with a distinct
-staging secret. This phone workflow awaits the fresh write approval requested
-by the current directive; previous GO instructions do not start it.
+staging secret. One reconciliation run was explicitly approved and attempted;
+the current result is documented below. Previous GO instructions alone do not
+authorize staging identity allocation.
+
+## Latest execution result: first response timed out
+
+Research-branch [run 40942416784](https://github.com/pdufa/pdufa-command-center/actions/runs/40942416784)
+ran at `f71a7baba4d89388e63f065dc08363b64b236a46`. Attempt 1 failed local key
+validation before contacting staging. After the operator reported saving the
+existing staging secret, attempt 2 passed local key validation, then its first
+summary request timed out waiting for a response after 20 seconds. No pages or
+complete records were received, and no aggregate artifact was created.
+Authentication and any continued server-side work remain unconfirmed; a timeout
+does not cancel backend processing. Staging log/event queries returned no
+matching entries and do not identify the cause. No production change or deploy
+was performed.
+
+The repair adds a bounded `--request-timeout` option (default 20 seconds, maximum
+120), uses 120 seconds in the existing manual workflow, and catches request/body
+timeouts without leaking exception text or issuing another request. The job
+still has a ten-minute overall limit and the client writes a report only after
+complete reconciliation. A new research-branch manual dispatch is required to
+use the new commit; rerunning the old job cannot pick up this repair. These
+software changes do not establish successful staging authentication, Pipeline
+counts or independently verified eligibility.
+
+Timeout repair: **137 relevant regression tests passed**; broader research
+selection **887 passed plus 43 subtests, six skipped, zero failures**.
+Independent HTTP/workflow review passed **75 tests**, finding no blocking issues.
+No new backend code, database schema or production configuration was changed.
 
 ## Authorization guard follow-up
 
@@ -18,10 +46,10 @@ an operator's approval; it does not authenticate the operator or replace the
 backend's existing key authentication.
 
 One reconciliation run permitting the existing insert-only allocation of missing
-program IDs has been explicitly authorized. It remains unused because this
-execution environment has no staging key binding or host permission. No live
-workspace request has been made by this session; no further database approval
-is needed for that one run.
+program IDs was explicitly authorized and attempted through GitHub Actions.
+The current result above supersedes the earlier direct-Cloud access observations
+below. This Cloud shell still has no staging key binding or host permission;
+the GitHub runner uses its separate authorized repository secret.
 
 Follow-up verification: **99 preliminary tests passed**; the combined
 preliminary/official/scientific/evidence/FDA suites passed **945 tests plus 298
@@ -131,6 +159,7 @@ described above before invoking the endpoints.
 python -m research.preliminary_workspace_http \
   --backend-origin https://pdufa-new-api-staging.onrender.com \
   --allow-staging-identity-allocation \
+  --request-timeout 120 \
   --output /authorized/pipeline-aggregate-diagnostics.json
 ```
 

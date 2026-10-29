@@ -30,6 +30,7 @@ def test_staging_uses_only_distinct_staging_secret_and_fixed_origin():
     assert step['env'] == {'PDUFA_INTERNAL_API_KEY': '${{ secrets.PDUFA_STAGING_INTERNAL_API_KEY }}'}
     assert '--backend-origin https://pdufa-new-api-staging.onrender.com' in step['run']
     assert '--allow-staging-identity-allocation' in step['run']
+    assert '--request-timeout 120' in step['run']
     assert '${{ inputs.' not in step['run']
     assert 'secrets.' not in step['run']
     assert 'set -x' not in step['run']

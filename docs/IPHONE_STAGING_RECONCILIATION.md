@@ -1,8 +1,42 @@
 # iPhone operator workflow for staging reconciliation
 
-Status: **NOT READY / ABSTAIN**. No staging retrieval has been executed by this
-workflow yet. Fresh approval for possible staging identity allocation is required
-before starting it.
+Status: **NOT READY / ABSTAIN**. The approved research-branch workflow was
+executed, but no complete Pipeline dataset or reconciliation artifact has been
+obtained. See the observed execution results below. Explicit approval for
+possible staging identity allocation remains required for a new run.
+
+## Observed execution results (2026-10-29)
+
+[Manual run #10](https://github.com/pdufa/pdufa-command-center/actions/runs/40942416784)
+used research commit `f71a7baba4d89388e63f065dc08363b64b236a46`.
+
+- Attempt 1 stopped with `PDUFA_INTERNAL_API_KEY is required` before making any
+  staging request. It caused no staging database writes.
+- After the operator reported saving the existing key as the staging repository
+  secret, attempt 2 passed local credential validation and issued the initial
+  `/api/workspace/summary` request. Waiting for its response raised a
+  `TimeoutError` at the original 20-second client deadline. No page was requested,
+  and no reconciliation artifact was produced. Server authentication, response
+  schema and server-side completion remain unconfirmed. A client timeout does
+  not prove that server-side processing stopped.
+- Render's service metadata identifies the intended staging service. Queries
+  for matching summary logs and service events returned no entries for this
+  attempt; they do not establish the cause of the timeout or verify authentication.
+
+The existing workflow now gives each request a bounded 120-second timeout while
+retaining its ten-minute overall job limit. The client reports timeouts without
+tracebacks, response bodies or credentials, exits without producing a partial
+success report, and does not automatically retry. This accommodates slower
+responses without assuming a cold start caused the observed failure. Re-running
+the old failed job still uses its old commit and 20-second deadline: a new manual
+dispatch on the research branch is needed to use the repair.
+
+Timeout-repair verification: **137 preliminary/workflow/bridge tests passed**,
+zero failures. Broader research selection: **887 passed, 43 subtests passed,
+six skipped**, zero failures. Independent review reran **75 HTTP/workflow
+tests** and found no blocking issues. These checks use synthetic transport;
+they do not establish a successful live response or independently verified
+program eligibility.
 
 ## What is supported
 

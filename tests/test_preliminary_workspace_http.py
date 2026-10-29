@@ -184,8 +184,9 @@ def test_hidden_prompt_keeps_secret_out_of_environment_arguments_and_report(monk
     monkeypatch.delenv('PDUFA_INTERNAL_API_KEY', raising=False)
     monkeypatch.setattr(http, '_prompt_staging_key', lambda: 'SYNTHETIC_SECRET')
     observed = []
-    def diagnostics(origin, *, api_key, allow_identity_allocation):
+    def diagnostics(origin, *, api_key, timeout, allow_identity_allocation):
         assert api_key == 'SYNTHETIC_SECRET'
+        assert timeout == 20
         assert allow_identity_allocation is True
         assert 'PDUFA_INTERNAL_API_KEY' not in os.environ
         observed.append(origin)
@@ -243,3 +244,115 @@ def test_prompt_never_falls_back_to_echoed_secret_input(monkeypatch):
     monkeypatch.setattr(getpass, 'getpass', unsafe_prompt)
     with pytest.raises(ValueError, match='secure terminal input unavailable'):
         http._prompt_staging_key()
+
+
+@pytest.mark.parametrize('phase', ['summary', 'page'])
+@pytest.mark.parametrize('failure', ['open', 'read', 'wrapped-open'])
+def test_timeout_exits_safely_without_retry_or_partial_report(monkeypatch, tmp_path, capsys, phase, failure):
+    from datetime import datetime, timezone
+    import json
+    from urllib.error import URLError
+    from research import preliminary_workspace_http as http
+    stamp = datetime.now(timezone.utc).isoformat()
+    calls = []
+    class Response:
+        status = 200
+        def __init__(self, should_fail): self.should_fail = should_fail
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def read(self, limit):
+            if self.should_fail:
+                raise TimeoutError('SYNTHETIC_SECRET private response contents')
+            return json.dumps({'pipeline': 1, 'asOf': stamp, 'sourceState': 'PARTIAL'}).encode()
+    def transport(request, timeout):
+        calls.append(request.full_url)
+        should_fail = f'/api/workspace/{phase}' in request.full_url
+        if should_fail and failure == 'open':
+            raise TimeoutError('SYNTHETIC_SECRET private request details')
+        if should_fail and failure == 'wrapped-open':
+            raise URLError(TimeoutError('SYNTHETIC_SECRET private request details'))
+        return Response(should_fail)
+    monkeypatch.setenv('PDUFA_INTERNAL_API_KEY', 'SYNTHETIC_SECRET')
+    monkeypatch.setattr(http, 'urlopen', transport)
+    output = tmp_path / 'report.json'
+    with pytest.raises(SystemExit) as caught:
+        http.main(['--backend-origin', http.STAGING_ORIGIN, '--output', str(output),
+                   '--allow-staging-identity-allocation'])
+    assert caught.value.code == 2
+    assert not output.exists()
+    assert len(calls) == (1 if phase == 'summary' else 2)
+    assert sum(f'/api/workspace/{phase}' in path for path in calls) == 1
+    error = capsys.readouterr().err
+    assert 'timed out' in error
+    assert 'completion unconfirmed' in error
+    assert 'server may continue processing' in error
+    assert 'no automatic retry' in error
+    assert 'SYNTHETIC_SECRET' not in error
+    assert 'private' not in error
+    assert 'Traceback' not in error
+
+
+@pytest.mark.parametrize('timeout_args,expected', [([], 20), (['--request-timeout', '120'], 120)])
+def test_cli_timeout_reaches_both_summary_reads_and_page(monkeypatch, tmp_path, timeout_args, expected):
+    from datetime import datetime, timezone
+    import json
+    from urllib.parse import urlparse
+    from research import preliminary_workspace_http as http
+    stamp = datetime.now(timezone.utc).isoformat()
+    calls = []
+    class Response:
+        status = 200
+        def __init__(self, content): self.content = content
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def read(self, limit): return json.dumps(self.content).encode()
+    def transport(request, timeout):
+        path = urlparse(request.full_url).path
+        calls.append((path, timeout))
+        if path.endswith('/summary'):
+            return Response({'pipeline': 0, 'asOf': stamp, 'sourceState': 'COMPLETE_PUBLISHED'})
+        return Response({'version': 'empty-v1', 'asOf': stamp, 'total': 0,
+                         'offset': 0, 'limit': 100, 'rows': [], 'nextOffset': None})
+    monkeypatch.setenv('PDUFA_INTERNAL_API_KEY', 'SYNTHETIC_SECRET')
+    monkeypatch.setattr(http, 'urlopen', transport)
+    output = tmp_path / 'report.json'
+    assert http.main(['--backend-origin', http.STAGING_ORIGIN, '--output', str(output),
+                      '--allow-staging-identity-allocation', *timeout_args]) == 0
+    assert calls == [(path, expected) for path in (
+        '/api/workspace/summary', '/api/workspace/page', '/api/workspace/summary')]
+    report = json.loads(output.read_text())
+    assert report['retrieval_complete'] and report['summary_reconciled']
+    assert report['backend_rows_received'] == 0
+
+
+@pytest.mark.parametrize('timeout', ['0', '-1', '121', 'nan', 'inf', 'invalid'])
+def test_cli_invalid_timeout_rejected_before_prompt_or_network(monkeypatch, tmp_path, timeout):
+    from research import preliminary_workspace_http as http
+    monkeypatch.setattr(http, '_prompt_staging_key', lambda: pytest.fail('secret requested for invalid timeout'))
+    monkeypatch.setattr(http, 'urlopen', lambda *a, **k: pytest.fail('request made for invalid timeout'))
+    output = tmp_path / 'report.json'
+    with pytest.raises(SystemExit) as caught:
+        http.main(['--backend-origin', http.STAGING_ORIGIN, '--output', str(output),
+                   '--allow-staging-identity-allocation', '--prompt-key',
+                   '--request-timeout', timeout])
+    assert caught.value.code == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize('factory_name', ['make_workspace_get', 'make_workspace_client',
+                                        'screen_backend_workspace', 'safe_workspace_diagnostics'])
+def test_http_timeout_ceiling_applies_to_all_entrypoints(monkeypatch, factory_name):
+    from research import preliminary_workspace_http as http
+    monkeypatch.setattr(http, 'urlopen', lambda *a, **k: pytest.fail('request made for invalid timeout'))
+    with pytest.raises(ValueError, match='bounded request timeout'):
+        getattr(http, factory_name)(http.STAGING_ORIGIN, api_key='SYNTHETIC_SECRET',
+                                   timeout=121, allow_identity_allocation=True)
+
+
+@pytest.mark.parametrize('timeout', [0, -1, float('nan'), float('inf'), True, '120', None])
+def test_client_rejects_invalid_timeout_before_network(monkeypatch, timeout):
+    from research import preliminary_workspace_http as http
+    monkeypatch.setattr(http, 'urlopen', lambda *a, **k: pytest.fail('request made for invalid timeout'))
+    with pytest.raises(ValueError, match='bounded request timeout'):
+        http.make_workspace_client(http.STAGING_ORIGIN, api_key='SYNTHETIC_SECRET',
+                                   timeout=timeout, allow_identity_allocation=True)

@@ -27,6 +27,16 @@ def _invalid_constant(value):
 
 
 STAGING_ORIGIN = 'https://pdufa-new-api-staging.onrender.com'
+REQUEST_TIMEOUT_MESSAGE = (
+    'workspace request timed out; completion unconfirmed because the server may '
+    'continue processing; no automatic retry'
+)
+
+
+def _validate_request_timeout(timeout):
+    if type(timeout) not in (int, float) or not 0 < timeout <= 120:
+        raise ValueError('bounded request timeout must be greater than 0 and at most 120 seconds')
+    return timeout
 
 
 def _prompt_staging_key():
@@ -69,8 +79,7 @@ def make_workspace_client(base_url, *, api_key=None, timeout=20, allow_identity_
     if (not isinstance(key, str) or not key or key != key.strip()
             or any(ord(c) < 32 or ord(c) == 127 for c in key)):
         raise ValueError("PDUFA_INTERNAL_API_KEY is required")
-    if type(timeout) not in (int, float) or not 0 < timeout <= 120:
-        raise ValueError("bounded timeout required")
+    _validate_request_timeout(timeout)
     origin = base_url.rstrip("/")
 
     def get_json(path):
@@ -84,7 +93,11 @@ def make_workspace_client(base_url, *, api_key=None, timeout=20, allow_identity_
                 if response.status != 200:
                     raise ValueError("workspace returned non-200 status")
                 raw = response.read(2_000_001)
+        except TimeoutError:
+            raise ValueError(REQUEST_TIMEOUT_MESSAGE) from None
         except (HTTPError, URLError) as exc:
+            if isinstance(exc.reason, TimeoutError):
+                raise ValueError(REQUEST_TIMEOUT_MESSAGE) from None
             raise ValueError("workspace unavailable or access denied") from None
         if len(raw) > 2_000_000:
             raise ValueError("workspace page too large")
@@ -103,18 +116,18 @@ def make_workspace_client(base_url, *, api_key=None, timeout=20, allow_identity_
     return get_page, lambda: get_json("/api/workspace/summary")
 
 
-def screen_backend_workspace(base_url, *, api_key=None, allow_identity_allocation=False):
+def screen_backend_workspace(base_url, *, api_key=None, timeout=20, allow_identity_allocation=False):
     if allow_identity_allocation is not True:
         raise ValueError('explicit authorization for possible staging program-ID allocation required')
-    page, summary = make_workspace_client(base_url, api_key=api_key,
+    page, summary = make_workspace_client(base_url, api_key=api_key, timeout=timeout,
                                           allow_identity_allocation=allow_identity_allocation)
     return triage_workspace_pages(page, get_summary=summary,
         now=datetime.now(timezone.utc).isoformat())
 
 
-def safe_workspace_diagnostics(base_url, *, api_key=None, allow_identity_allocation=False):
+def safe_workspace_diagnostics(base_url, *, api_key=None, timeout=20, allow_identity_allocation=False):
     """Return aggregate screening diagnostics without exposing individual records."""
-    report = screen_backend_workspace(base_url, api_key=api_key,
+    report = screen_backend_workspace(base_url, api_key=api_key, timeout=timeout,
                                      allow_identity_allocation=allow_identity_allocation)
     keys = (
         "workspace_version", "workspace_as_of", "backend_rows_received",
@@ -137,6 +150,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--backend-origin', required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--request-timeout', type=float, default=20,
+                        help='per-request timeout in seconds, greater than 0 and at most 120; no retry')
     parser.add_argument('--allow-staging-identity-allocation', action='store_true',
                         help='operator authorizes insert-only allocation of missing permanent IDs')
     parser.add_argument('--prompt-key', action='store_true',
@@ -147,17 +162,19 @@ def main(argv=None):
     try:
         if not args.allow_staging_identity_allocation:
             raise ValueError('explicit authorization for possible staging program-ID allocation required')
+        _validate_request_timeout(args.request_timeout)
         if args.prompt_key and args.backend_origin.rstrip('/') != STAGING_ORIGIN:
             raise ValueError('hidden key prompt is restricted to the authorized staging origin')
         if args.prompt_key:
             key = _prompt_staging_key()
             try:
                 result = safe_workspace_diagnostics(args.backend_origin, api_key=key,
-                    allow_identity_allocation=True)
+                    timeout=args.request_timeout, allow_identity_allocation=True)
             finally:
                 del key  # Release reference; immutable string memory erasure is not guaranteed.
         else:
-            result = safe_workspace_diagnostics(args.backend_origin, allow_identity_allocation=True)
+            result = safe_workspace_diagnostics(args.backend_origin,
+                timeout=args.request_timeout, allow_identity_allocation=True)
     except ValueError as exc:
         parser.exit(2, str(exc) + '\n')
     with args.output.open('x', encoding='utf-8') as handle:
