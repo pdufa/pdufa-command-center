@@ -48,7 +48,7 @@ def official_url(source, url):
 
 
 def application_id(value):
-    if not isinstance(value, str) or not re.fullmatch(r'(NDA|BLA)\d{6}', value):
+    if not isinstance(value, str) or not re.fullmatch(r'(NDA|BLA)[0-9]{6}', value):
         raise ValueError('exact NDA/BLA application identifier required')
     return value
 

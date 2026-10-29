@@ -13,6 +13,12 @@ URL = SOURCES['clinical_trials'][1]
 RAW = json.dumps({'studies': [{'protocolSection': {'identificationModule': {'nctId': 'NCT01234567'}}}]}).encode()
 
 
+@pytest.mark.parametrize('value', ['NDA１２３４５６', 'BLA١٢٣٤٥٦'])
+def test_application_identity_requires_canonical_ascii_digits(value):
+    with pytest.raises(ValueError, match='exact NDA/BLA'):
+        application_id(value)
+
+
 class Response(io.BytesIO):
     headers = {'ETag': 'version-1', 'Last-Modified': 'Wed, 28 Oct 2026 00:00:00 GMT'}
 

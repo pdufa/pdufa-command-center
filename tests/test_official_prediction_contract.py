@@ -64,6 +64,9 @@ def test_readiness_is_source_availability_separate_from_confidence():
     assert missing['evidence_readiness_grade'] == 'NO_TIMELY_EVIDENCE'
     assert reported['evidence_readiness_grade'] == 'PARTIAL_SOURCE_REPORTED'
     assert reported['prediction_confidence_grade'] == 'NOT_ESTABLISHED'
+    assert reported['scientific_assessment_readiness_grade'] == 'NOT_INDEPENDENTLY_ASSESSED'
+    assert reported['historical_validation_readiness_grade'] == 'NOT_VALIDATED'
+    assert missing['scientific_assessment_readiness_grade'] == reported['scientific_assessment_readiness_grade']
     assert sections(reported)['confidence_uncertainty']['missing_timely_evidence_slots'] == 649
     assert sections(reported)['model_validation']['measured_performance'] is None
     assert sections(reported)['model_validation']['independently_verified_decisions'] == 0

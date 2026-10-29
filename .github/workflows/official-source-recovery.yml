@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'research/official_*.py'
+      - 'research/evidence/official_*.json'
       - 'tests/test_official_*.py'
       - '.github/workflows/official-source-recovery.yml'
   workflow_dispatch:
@@ -22,3 +23,4 @@ jobs:
       - run: python research/prediction_v1_1_catalog_validator.py
       - run: python -m research.scientific_field_catalog
       - run: python -m research.scientific_historical_verification --output research/evidence/historical_verification_worklist_20261029.json --check
+      - run: python -m research.official_acquisition_manifest --output research/evidence/official_acquisition_manifest_20261029.json --check

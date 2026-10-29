@@ -2,6 +2,11 @@
 
 Status: **NOT READY / ABSTAIN**. No trained model, calibrated probabilities, independently verified FDA decisions, or measured platform performance.
 
+Latest follow-up: [historical verification and backtesting increment](HISTORICAL_FDA_VERIFICATION_BACKTESTING_20261029.md)
+adds the six-case acquisition manifest/offline import, frozen event-target
+chronology and reproducible train/calibration/evaluation preparation. Genuine
+source acquisition and independent scientific adjudication remain outstanding.
+
 October 29 follow-up: [original-byte adjudication packets](OFFICIAL_ADJUDICATION_PACKETS.md)
 now bind retained acquisition candidates to the six-case worklist without closing
 independent review tasks. The recovery CI's missing pandas test dependency is

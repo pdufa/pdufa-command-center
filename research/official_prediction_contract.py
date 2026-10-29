@@ -119,6 +119,8 @@ def build_prediction_output(*, principal, current, historical_cases, observation
         'prediction_validated': False,
         'evidence_readiness_grade': science['evidence_completeness_grade'],
         'evidence_grade_scope': 'TIMELY_SOURCE_AVAILABILITY_NOT_SCIENTIFIC_VALIDATION',
+        'scientific_assessment_readiness_grade': 'NOT_INDEPENDENTLY_ASSESSED',
+        'historical_validation_readiness_grade': 'NOT_VALIDATED',
         'prediction_confidence_grade': 'NOT_ESTABLISHED',
         'probabilities': {'PASS': None, 'CRL': None, 'EXTENSION': None},
         'architecture': {'draft_fields': catalog['defined_slots'],
