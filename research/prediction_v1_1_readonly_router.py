@@ -5,7 +5,6 @@ be implemented by the hosting application before mounting this router.
 """
 from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 
 from research.prediction_v1_1_evidence_projection import program_evidence_summary
 
