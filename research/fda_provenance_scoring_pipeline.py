@@ -12,6 +12,7 @@ from typing import Mapping
 from research.fda_anchor_receipt import AnchorReceipt
 from research.fda_anchor_cutoff_gate import check_anchor_before_cutoff
 from research.fda_outcome_document_integrity import check_outcome_document
+from research.fda_prediction_membership_gate import check_prediction_membership
 from research.fda_prospective_outcome_scoring import FrozenPrediction, VerifiedOutcome, Score
 
 
@@ -20,6 +21,7 @@ class PipelineResult:
     prediction_gate: str
     outcome_gate: str
     score: Score
+    membership_gate: str = "NOT_CHECKED"
 
 
 def inspect_prospective_evidence(
@@ -37,6 +39,10 @@ def inspect_prospective_evidence(
         ledger_path, anchor_receipt, trusted_signers,
         prediction_cutoff_utc=prediction.cutoff_utc,
     )
+    membership = check_prediction_membership(
+        ledger_path, expected_head_sha256=anchor_receipt.ledger_head_sha256,
+        prediction=prediction,
+    )
     document = check_outcome_document(
         outcome_document_path, pinned_sha256=outcome.original_document_sha256,
     )
@@ -45,4 +51,5 @@ def inspect_prospective_evidence(
         prediction_gate=ledger.status,
         outcome_gate=document.status,
         score=Score(prediction.trial_id, "PROVENANCE_NOT_VERIFIED", None),
+        membership_gate=membership,
     )
