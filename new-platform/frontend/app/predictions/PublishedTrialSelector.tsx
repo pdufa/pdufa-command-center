@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import EvidenceSegmentControls from "./EvidenceSegmentControls";
+import ResearchEvidenceStatus from "./ResearchEvidenceStatus";
 import depth20 from "../../lib/prediction-depths-20.json";
 import depthExtension from "../../lib/prediction-depths-21-50.json";
 
@@ -62,6 +63,7 @@ export default function PublishedTrialSelector() {
     {trial && <div><p>Program: {trial.programId || trial.id} · NCT: {trial.nctId || "Not recorded"} · Membership: {trial.groups.join(", ")}</p>
       <p>{trial.fdaSource?.startsWith("https://") ? <a href={trial.fdaSource} target="_blank" rel="noopener noreferrer">FDA source ↗</a> : null}
       {" "}{trial.phase3Source?.startsWith("https://") ? <a href={trial.phase3Source} target="_blank" rel="noopener noreferrer">Phase 3 source ↗</a> : null}</p></div>}
+    {trial && <ResearchEvidenceStatus programId={selected} />}
     {trial && <EvidenceSegmentControls trialKey={selected} />}
     {trial && <section aria-label="Selected trial scientific investigation protocol">
       <h3>50-level scientific investigation — {trial.ticker || trial.id}</h3>
