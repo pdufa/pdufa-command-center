@@ -406,100 +406,11 @@ async def lifespan(app: FastAPI):
                 "PDUFA_STORAGE_CENSUS_FAILED error_type=%s", type(exc).__name__
             )
     if _DB_STATE["available"] and os.getenv("PDUFA_ARCHIVE_INTEGRITY_AUDIT", "1") == "1":
-        def verify_archive_integrity():
-            import gzip
-            import hashlib
-            import json
-            import logging
-            from sqlalchemy import text
-            totals = {"rows": 0, "valid_ids": 0, "invalid_ids": 0,
-                      "duplicate_ids": 0, "bad_gzip": 0, "bad_sha256": 0,
-                      "payload_id_mismatch": 0, "invalid_json": 0}
-            seen = set()
-            try:
-                with ENGINE.connect() as connection:
-                    if ENGINE.dialect.name == "postgresql":
-                        connection.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"))
-                    database = (connection.execute(text("SELECT current_database()")).scalar_one()
-                                if ENGINE.dialect.name == "postgresql" else "non_postgresql")
-                    # Independently aggregate identifiers and reconcile against the saved
-                    # authoritative download scope in the same read-only snapshot.
-                    census = dict(connection.execute(text("""
-                        SELECT COUNT(*) AS physical_records,
-                               COUNT(*) FILTER (WHERE nct_id ~ '^NCT[0-9]{8}$') AS valid_identifiers,
-                               COUNT(*) - COUNT(DISTINCT nct_id) AS duplicate_identifiers
-                        FROM full_trial_records
-                    """)).mappings().one())
-                    jobs = list(connection.execute(text(
-                        "SELECT scope_ids, completed_ids FROM full_trial_download"
-                    )))
-                    scope = {nct for job in jobs for nct in job.scope_ids}
-                    completed = {nct for job in jobs for nct in job.completed_ids}
-                    physical_ids = set(connection.execute(text(
-                        "SELECT nct_id FROM full_trial_records"
-                    )).scalars())
-                    reconciliation = {
-                        "scope_source": "full_trial_download.scope_ids",
-                        "expected_scope_records": len(scope),
-                        "missing_expected_records": len(scope - physical_ids),
-                        "unexpected_records": len(physical_ids - scope),
-                        "tracking_missing_records": len(completed - physical_ids),
-                        "scope_available": bool(scope),
-                        "independent_census": census,
-                    }
-                    logging.getLogger(__name__).warning(
-                        "PDUFA_ARCHIVE_RECONCILIATION %s", json.dumps(reconciliation, sort_keys=True)
-                    )
-                    rows = connection.execution_options(stream_results=True).execute(
-                        text("SELECT nct_id, payload_gzip, sha256 FROM full_trial_records ORDER BY nct_id")
-                    )
-                    for nct, packed_payload, expected_hash in rows:
-                        totals["rows"] += 1
-                        if totals["rows"] % 1000 == 0:
-                            logging.getLogger(__name__).warning("PDUFA_ARCHIVE_INTEGRITY_PROGRESS rows=%d", totals["rows"])
-                        if not re.fullmatch(r"NCT[0-9]{8}", nct or ""):
-                            totals["invalid_ids"] += 1
-                        else:
-                            totals["valid_ids"] += 1
-                        if nct in seen:
-                            totals["duplicate_ids"] += 1
-                        seen.add(nct)
-                        try:
-                            raw = gzip.decompress(packed_payload)
-                        except Exception:
-                            totals["bad_gzip"] += 1
-                            continue
-                        if hashlib.sha256(raw).hexdigest() != expected_hash:
-                            totals["bad_sha256"] += 1
-                        try:
-                            study = json.loads(raw)
-                            payload_id = study.get("protocolSection", {}).get("identificationModule", {}).get("nctId")
-                            if payload_id != nct:
-                                totals["payload_id_mismatch"] += 1
-                        except Exception:
-                            totals["invalid_json"] += 1
-                passed = totals["rows"] == 11622 and all(
-                    value == 0 for key, value in totals.items() if key not in ("rows", "valid_ids")
-                ) and totals["valid_ids"] == totals["rows"]
-                passed = (passed and reconciliation["scope_available"]
-                          and reconciliation["expected_scope_records"] == 11622
-                          and reconciliation["missing_expected_records"] == 0
-                          and reconciliation["unexpected_records"] == 0
-                          and reconciliation["tracking_missing_records"] == 0
-                          and census["physical_records"] == totals["rows"]
-                          and census["valid_identifiers"] == totals["valid_ids"]
-                          and census["duplicate_identifiers"] == totals["duplicate_ids"])
-                logging.getLogger(__name__).warning(
-                    "PDUFA_ARCHIVE_INTEGRITY %s",
-                    json.dumps({"database": database, "result": "PASS" if passed else "REVIEW_REQUIRED",
-                                **totals, **reconciliation, "read_only": True, "trade_authorized": False}, sort_keys=True)
-                )
-            except Exception as exc:
-                logging.getLogger(__name__).error(
-                    "PDUFA_ARCHIVE_INTEGRITY_FAILED error_type=%s", type(exc).__name__
-                )
-        threading.Thread(target=verify_archive_integrity, daemon=True).start()
+        from .archive_protection import start
+        start(ENGINE)
     yield
+    from .archive_protection import stop
+    stop()
 
 
 from .reconciliation_review import ReviewPackage
@@ -525,7 +436,17 @@ def health():
     # An HTTP 200 permits configuration inspection without claiming DB readiness.
     from .full_trial_archive import archive_status
     from .assessment_service import public_status
+    archive_protection = {"status": "REVIEW_REQUIRED", "archive_integrity": "REVIEW_REQUIRED",
+                          "manifest_verification": "REVIEW_REQUIRED", "last_verified": None,
+                          "next_scheduled_verification": None}
+    if _DB_STATE["available"]:
+        try:
+            from .archive_protection import public_status as archive_public_status
+            archive_protection = archive_public_status(ENGINE)
+        except Exception:
+            pass  # Additive archive tables may still be initializing; never claim PASS.
     return {
+        "archive_protection": archive_protection,
         "candidate_assessments": public_status(),
         "status": ("ok" if _DB_STATE["available"] else
                    "waiting_for_database" if _DB_STATE["reason"] == "POSTGRES_NOT_CONFIGURED"
@@ -538,6 +459,24 @@ def health():
         "startup_source_verification_enabled": os.getenv("PDUFA_STARTUP_FULL_SOURCE_VERIFY", "0").lower() in ("1", "true", "yes"),
         "full_trial_download": archive_status(),
     }
+
+
+@app.get("/api/archive-health", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def archive_health():
+    from .archive_protection import dashboard
+    try:
+        return dashboard(ENGINE)
+    except Exception:
+        raise HTTPException(status_code=503, detail="Archive verification is initializing or unavailable")
+
+
+@app.get("/api/archive-manifest", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def archive_manifest():
+    from .archive_protection import saved_manifest
+    result = saved_manifest(ENGINE)
+    if result is None:
+        raise HTTPException(status_code=404, detail="No verified baseline manifest")
+    return result
 
 
 @app.get("/api/internal/storage-census", dependencies=[Depends(require_internal_key), Depends(require_storage)])
@@ -1067,3 +1006,4 @@ def save_program_checklist(program_id: str, stage: str, payload: ChecklistPayloa
         session.commit()
         return {"saved": True, "programId": program_id,
                 "version": payload.version + 1, "updated_at": now}
+

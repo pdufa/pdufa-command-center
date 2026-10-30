@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Workspace from "./Workspace";
+import ArchiveHealthPanel from "./ArchiveHealthPanel";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Selections = Record<string, boolean>;
@@ -204,6 +205,7 @@ export default function Home() {
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
       <div className="banner"><strong>Streamlit is preserved.</strong> This is the new platform setup; survey execution and live trading remain disabled.</div>
+      <ArchiveHealthPanel />
       <Workspace onInspect={inspectProgram} />
       {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
       <div className="panel controls">
@@ -242,3 +244,4 @@ export default function Home() {
     </main>
   );
 }
+
