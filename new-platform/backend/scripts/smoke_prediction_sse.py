@@ -46,7 +46,7 @@ def main():
         events[0].get("type") == "started",
         events[0].get("mode") == "SAVED_EVIDENCE_REPLAY",
         events[0].get("research_running") is False,
-        len([e for e in events if e["type"] == "assessment"]) == 40,
+        [e.get("assessment_id") for e in events if e["type"] == "assessment"] == [f"S{i:02d}" for i in range(1, 41)],
         all(e.get("status") == "NOT_ASSESSED" for e in events if e["type"] == "assessment"),
         events[-1].get("type") == "complete",
         events[-1].get("decision") == "ABSTAIN",
