@@ -7,7 +7,7 @@ def test_incremental_leaf_order_and_abstain():
     events = list(field_events("NCT01234567", {"nct_id": "NCT01234567", "sponsor": {"name": "Example"}}))
     assert [e["type"] for e in events[:6]] == ["started", "leaf", "leaf", "leaf", "leaf", "progress"]
     assert events[-1]["type"] == "complete"
-    assert [e["section"] for e in events if e["type"] == "progress"] == ["trial_identity", "trial_design", "clinical_results", "regulatory"]
+    assert [e["section"] for e in events if e["type"] == "progress"] == ["trial_identity", "trial_design", "clinical_results", "regulatory", "science"]
     assert events[1]["status"] == "AVAILABLE"
     assert events[2]["status"] == "UNAVAILABLE"
     assert events[5]["available"] == 1
@@ -20,7 +20,7 @@ def test_sse_format_and_identity():
     stream = "".join(sse_lines("NCT01234567", {"nct_id": "NCT01234567"}))
     assert "event: started\n" in stream
     assert "event: complete\n" in stream
-    assert len([x for x in stream.splitlines() if x.startswith("data: ")]) == 62
+    assert len([x for x in stream.splitlines() if x.startswith("data: ")]) == 63
     with pytest.raises(ValueError):
         list(field_events("NCT01234567", {"nct_id": "NCT87654321"}))
 
@@ -59,3 +59,15 @@ def test_empty_and_unadjudicated_science_does_not_count_as_evidence():
     events = list(field_events("NCT01234567", dossier))
     clinical = [e for e in events if e["type"] == "progress" and e["section"] == "clinical_results"][0]
     assert clinical["available"] == 0
+
+
+def test_readiness_inventory_reports_missing_fields_without_claiming_assessment():
+    events = list(field_events("NCT01234567", {"nct_id": "NCT01234567"}))
+    readiness = [e for e in events if e["type"] == "readiness"]
+    assert len(readiness) == 1
+    assert readiness[0]["status"] == "EVIDENCE_INCOMPLETE"
+    assert readiness[0]["evidence_fields_present"] == 0
+    assert readiness[0]["evidence_fields_total"] == 10
+    assert len(readiness[0]["missing_fields"]) == 10
+    assert readiness[0]["assessments_completed"] == 0
+    assert readiness[0]["decision"] == "ABSTAIN"
