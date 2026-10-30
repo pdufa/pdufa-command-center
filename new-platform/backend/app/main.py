@@ -486,6 +486,24 @@ def scientific_candidate_dossier(nct_id: str):
     return result
 
 
+@app.get("/api/prediction-by-nct/{nct_id}", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def prediction_by_nct(nct_id: str):
+    from .candidate_review_service import detail
+    from .prediction_by_nct import prediction_payload
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id):
+        raise HTTPException(status_code=422, detail="An exact NCT identifier is required")
+    try:
+        dossier = detail(ENGINE, nct_id)
+    except Exception:
+        raise HTTPException(status_code=503, detail="Verified dossier unavailable")
+    if dossier is None:
+        raise HTTPException(status_code=404, detail="No verified dossier for this NCT")
+    try:
+        return prediction_payload(nct_id, dossier)
+    except ValueError:
+        raise HTTPException(status_code=503, detail="Dossier identity verification failed")
+
+
 @app.get("/api/archive-health", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def archive_health():
     from .archive_protection import dashboard
