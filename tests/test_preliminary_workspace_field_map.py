@@ -87,3 +87,27 @@ def test_sec_sponsor_disclosure_does_not_masquerade_as_fda_verification():
     assert result["fda_source_present"] is False
     assert result["candidate"]["fda_pdufa_target_confirmed"] is False
     assert result["scope"] == "BLOCKED"
+
+
+def test_sec_sponsor_lead_is_not_fda_verified_or_prediction_ready():
+    row = {"programId": "PDUFA-SEC-002", "pdufaDate": "2026-12-01",
+           "sponsorSource": "https://www.sec.gov/Archives/edgar/data/123/filing.htm",
+           "checkStatus": "FDA_VERIFIED"}
+    result = map_published_row(row)
+    assert result["sponsor_disclosure_lead"] is True
+    assert result["fda_source_present"] is False
+    assert result["candidate"]["fda_pdufa_target_confirmed"] is False
+    assert result["scope"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("source", [
+    "https://sec.gov.evil.example/filing",
+    "http://www.sec.gov/Archives/filing",
+    "https://user@sec.gov/filing",
+    "https://www.sec.gov/filing#fragment",
+])
+def test_untrusted_sponsor_source_is_not_a_lead(source):
+    row = {"programId": "PDUFA-SEC-003", "pdufaDate": "2026-12-01",
+           "sponsorSource": source}
+    result = map_published_row(row)
+    assert result["sponsor_disclosure_lead"] is False
