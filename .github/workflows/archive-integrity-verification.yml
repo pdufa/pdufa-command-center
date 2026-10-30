@@ -1,0 +1,113 @@
+name: Archive Integrity Verification
+
+on:
+  # 20:00 Pacific is 03:00 UTC during PDT and 04:00 UTC during PST.
+  # The local-hour gate selects one of these runs, including DST changes.
+  schedule:
+    - cron: '0 3 * * *'
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/archive-integrity-verification.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-archive-integrity-verification
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Select the Pacific verification window
+        id: window
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
+          now = datetime.now(timezone.utc)
+          scheduled = os.environ["EVENT_NAME"] == "schedule"
+          target = None
+          if scheduled:
+              schedule = os.environ.get("EVENT_SCHEDULE")
+              if schedule not in ("0 3 * * *", "0 4 * * *"):
+                  raise SystemExit("Unexpected archive verification schedule")
+              hour = 3 if schedule == "0 3 * * *" else 4
+              candidate = now.replace(hour=hour, minute=0, second=0, microsecond=0)
+              if candidate > now:
+                  candidate -= timedelta(days=1)
+              target = candidate.astimezone(ZoneInfo("America/Los_Angeles"))
+          run = not scheduled or target.hour == 20
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("run=" + str(run).lower() + "\n")
+              output.write("target=" + (target.isoformat() if scheduled and run else "") + "\n")
+          print("Pacific time:", now.astimezone(ZoneInfo("America/Los_Angeles")).isoformat(),
+                "scheduled target:", target.isoformat() if target else "manual", "verification window:", run)
+          PY
+
+      - name: Wake the existing staging service
+        if: steps.window.outputs.run == 'true'
+        run: |
+          # This public health GET wakes the service; its durable scheduler alone
+          # decides whether a due verification is needed. No scan is started.
+          curl --fail --silent --show-error --max-time 90 \
+            https://pdufa-new-api-staging.onrender.com/health > /dev/null
+
+      - name: Verify the persisted archive result
+        if: steps.window.outputs.run == 'true'
+        env:
+          TARGET_VERIFICATION: ${{ steps.window.outputs.target }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+          from datetime import datetime
+
+          target = os.environ.get("TARGET_VERIFICATION")
+          target = datetime.fromisoformat(target) if target else None
+          deadline = time.monotonic() + 480
+          summary = None
+          last_error = None
+          while time.monotonic() < deadline:
+              try:
+                  with urllib.request.urlopen("https://pdufa-new-api-staging.onrender.com/health", timeout=30) as response:
+                      health = json.load(response)
+                  summary = health.get("archive_protection") or {}
+                  verified = summary.get("last_verified")
+                  verified = datetime.fromisoformat(verified.replace("Z", "+00:00")) if verified else None
+                  fresh = verified is not None and (target is None or verified >= target)
+                  passed = (health.get("service") == "pdufa-new-backend"
+                            and health.get("storage_ready") is True
+                            and summary.get("archive_integrity") == "PASS"
+                            and summary.get("manifest_verification") == "PASS"
+                            and fresh)
+                  # Only this intentionally public, credential-free summary is logged.
+                  print(json.dumps(summary, sort_keys=True))
+                  if passed:
+                      with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as output:
+                          output.write("Archive and manifest verification: PASS. Last verified: "
+                                       + str(summary.get("last_verified")) + "\n")
+                          output.write("The service uses its database lock to prevent overlapping runs. "
+                                       "No archive payload, scan schedule, list membership, or trading control was changed.\n")
+                      break
+              except (OSError, ValueError, TypeError) as error:
+                  last_error = type(error).__name__
+                  print("Health retry:", last_error)
+              remaining = deadline - time.monotonic()
+              if remaining > 0:
+                  time.sleep(min(20, remaining))
+          else:
+              raise SystemExit("REVIEW_REQUIRED: no current passing archive and manifest result within eight minutes. "
+                               + (last_error or "Review staging archive logs and scheduler status."))
+          PY
