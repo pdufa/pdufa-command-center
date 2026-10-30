@@ -7,7 +7,7 @@ from __future__ import annotations
 from .phase3_pdufa_eligibility import phase3_pdufa_eligibility
 from .science_independent_investigation import scientific_investigation
 from .science_40_dossier import evaluate_science_40
-from .peak_research import research_register, outcome_readiness
+from .peak_research import research_register, outcome_readiness, main_readiness
 
 def prepare_deep_analysis(*, exact_key: str, phase3_results: dict,
                           pdufa_assignment: dict, scientific_evidence: dict,
@@ -31,11 +31,7 @@ def prepare_deep_analysis(*, exact_key: str, phase3_results: dict,
         exact_key=exact_key, evidence=scientific_evidence, as_of=as_of)
     register = research_register(exact_key=exact_key, as_of=as_of)
     outcome = outcome_readiness(science40, register)
-    main = {"exactKey": exact_key, "asOf": as_of,
-            "researchReadinessGrade": science40["readinessGrade"],
-            "decisionReadinessGrade": "ABSTAIN", "prediction": "INSUFFICIENT_EVIDENCE",
-            "approvalProbability": None, "confidence": None, "modelValidated": False,
-            "tradeAuthorized": False, "researchRegister": register}
+    main = main_readiness(science40, register)
     return {
         "exactKey": exact_key, "asOf": as_of,
         "status": "RESEARCH_IN_PROGRESS", "gate": gate,

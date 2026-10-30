@@ -19,7 +19,7 @@ import hashlib
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlalchemy import Column, DateTime, Integer, JSON, MetaData, String, Table, create_engine, func, insert, select
@@ -40,8 +40,8 @@ def url_from_env(name: str):
 
 
 def is_same_database(source, target):
-    return (source.host, source.port or 5432, source.database) == (
-        target.host, target.port or 5432, target.database
+    return ((source.host or "").lower(), source.port or 5432, source.database) == (
+        (target.host or "").lower(), target.port or 5432, target.database
     )
 
 
@@ -61,6 +61,8 @@ def _canonical(row):
     record = dict(row)
     updated_at = record.get("updated_at")
     if isinstance(updated_at, datetime):
+        if updated_at.tzinfo is not None:
+            updated_at = updated_at.astimezone(timezone.utc)
         record["updated_at"] = updated_at.isoformat()
     return json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=str)
 
@@ -133,6 +135,13 @@ def main():
             copied_rows, copied_digest = snapshot(dst)
             if len(copied_rows) != len(source_rows) or copied_digest != source_digest:
                 raise RuntimeError("Target checksum mismatch; rolling back new rows")
+            # The environment flag is an operator assertion, not a database
+            # lock. Re-read through a fresh transaction before committing any
+            # target rows, so an intervening source edit cannot certify cutover.
+            with source_engine.connect() as src:
+                source_after, source_after_digest = snapshot(src)
+            if len(source_after) != len(source_rows) or source_after_digest != source_digest:
+                raise RuntimeError("Source changed during copy; rolling back new rows")
         print(json.dumps({
             "mode": "copied-and-verified", "rows": len(source_rows),
             "sha256": source_digest, "source_unchanged": True,

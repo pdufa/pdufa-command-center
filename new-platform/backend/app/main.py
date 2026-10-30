@@ -484,7 +484,7 @@ def evaluate_phase3_research_batch(payload: Phase3ResearchBatchRequest):
 def peak_research_register():
     """Read server-maintained research; no workspace refresh, DB or sheet writes."""
     from zoneinfo import ZoneInfo
-    from .peak_research import KEY, research_register, outcome_readiness
+    from .peak_research import KEY, research_register, outcome_readiness, main_readiness
     from .science_40_dossier import evaluate_science_40
     cutoff = datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
     science = evaluate_science_40(exact_key=KEY, evidence={}, as_of=cutoff)
@@ -492,6 +492,7 @@ def peak_research_register():
     return {"schemaVersion": "peak-research-view-v1", "exactKey": KEY, "asOf": cutoff,
             "science40": science, "researchRegister": register,
             "outcome": outcome_readiness(science, register),
+            "main": main_readiness(science, register),
             "sheetWritesEnabled": False, "productionSchedulingEnabled": False,
             "tradeAuthorized": False}
 
