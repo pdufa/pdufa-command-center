@@ -1,0 +1,24 @@
+name: Phase 3 public source diagnosis
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/phase3_source_probe.cjs'
+      - '.github/workflows/phase3-source-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-source-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect public FDA source responses without credentials
+        run: node scripts/phase3_source_probe.cjs
