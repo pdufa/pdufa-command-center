@@ -43,6 +43,30 @@ def field_events(nct_id, dossier):
         "status": "AVAILABLE" if available == len(FIELDS) else "PARTIAL",
         "research_running": False,
     }
+    sections = (
+        ("trial_design", "Trial design", ("primary_endpoints", "study_completion_status")),
+        ("clinical_results", "Clinical results", ("primary_endpoint_results", "statistical_significance", "clinical_effect_size", "safety_findings", "serious_adverse_events")),
+        ("regulatory", "FDA & regulatory", ("fda_regulatory_pathway", "special_designations", "regulatory_submission_evidence", "pdufa_date")),
+    )
+    for section_id, label, keys in sections:
+        present_count = 0
+        for key in keys:
+            value = dossier.get(key)
+            present = value not in (None, "", [])
+            if present:
+                present_count += 1
+            yield {
+                "type": "leaf", "nct_id": nct_id, "node_id": key,
+                "section": section_id, "label": key.replace("_", " ").title(),
+                "level": 4, "status": "AVAILABLE" if present else "UNAVAILABLE",
+                "value": value if present else None, "research_running": False, "spinner": False,
+            }
+        yield {
+            "type": "progress", "nct_id": nct_id, "section": section_id,
+            "label": label, "available": present_count, "total": len(keys),
+            "status": "AVAILABLE" if present_count == len(keys) else "PARTIAL",
+            "research_running": False,
+        }
     yield {"type": "complete", "nct_id": nct_id, "decision": "ABSTAIN", "research_running": False}
 
 
