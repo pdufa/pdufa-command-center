@@ -523,6 +523,26 @@ def prediction_progress(nct_id: str):
         raise HTTPException(status_code=503, detail="Dossier identity mismatch")
 
 
+@app.get("/api/prediction-events/{nct_id}", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def prediction_events(nct_id: str):
+    """Stream saved dossier fields individually; not a live research job."""
+    from fastapi.responses import StreamingResponse
+    from .candidate_review_service import detail
+    from .prediction_events import sse_lines
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id):
+        raise HTTPException(status_code=422, detail="An exact NCT identifier is required")
+    try:
+        dossier = detail(ENGINE, nct_id)
+    except Exception:
+        raise HTTPException(status_code=503, detail="Saved dossier unavailable")
+    if dossier is None:
+        raise HTTPException(status_code=404, detail="No saved dossier for this NCT")
+    if dossier.get("nct_id") != nct_id:
+        raise HTTPException(status_code=503, detail="Dossier identity mismatch")
+    return StreamingResponse(sse_lines(nct_id, dossier), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
 @app.get("/api/archive-health", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def archive_health():
     from .archive_protection import dashboard
