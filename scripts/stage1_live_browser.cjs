@@ -241,7 +241,7 @@ async function main() {
       result.checks.run_create_auth_rejected = [401, 403].includes(created.status());
       result.checks.run_create_server_error = created.status() >= 500;
       result.checks.run_create_retry_after_present = typeof retryAfter === 'string';
-      console.log('Stage 1 run creation HTTP status: ' + created.status());
+      console.log('Stage 1 run creation HTTP status: ' + created.status() + '; classification: ' + (created.status() === 429 ? 'rate_limited' : [401, 403].includes(created.status()) ? 'auth_rejected' : created.status() >= 500 ? 'server_error' : 'other_http_error') + '; retry-after present: ' + (typeof retryAfter === 'string'));
     }
     requireCheck(created.ok(), 'run_created_through_authenticated_browser');
     const run = await created.json();
