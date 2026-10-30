@@ -72,15 +72,29 @@ def review_target_application_evidence(row, evidence):
                or not evidence[field].strip()]
     date_match = (provenance["valid_target_date"] and
                   evidence.get("target_date") == row.get("pdufaDate"))
-    identity_match = (bool(evidence.get("drug") and evidence.get("indication")
-                           and evidence.get("application_id")))
+    identity_match = all(isinstance(evidence.get(field), str) and evidence[field].strip()
+                         for field in ("drug", "indication", "application_id"))
+    # Review metadata is only a checklist: mismatched source URLs or invalid
+    # document dates must never be described as ready for review.
+    source_match = (isinstance(evidence.get("document_url"), str) and
+                    evidence["document_url"] == row.get("fdaSource") and
+                    _host(evidence["document_url"]) is not None)
+    try:
+        document_date_valid = (isinstance(evidence.get("document_date"), str) and
+                               date.fromisoformat(evidence["document_date"]).isoformat()
+                               == evidence["document_date"])
+    except ValueError:
+        document_date_valid = False
     return {
         "category": provenance["category"],
         "missing_review_fields": missing,
         "target_date_matches_row": bool(date_match),
         "application_identity_fields_present": identity_match,
+        "document_url_matches_source": source_match,
+        "document_date_valid": document_date_valid,
         "document_content_verified": False,
         "review_status": ("READY_FOR_INDEPENDENT_REVIEW" if
-                          not missing and date_match else "INCOMPLETE_EVIDENCE"),
+                          not missing and date_match and identity_match and source_match and document_date_valid
+                          else "INCOMPLETE_EVIDENCE"),
         "prediction_status": "ABSTAIN",
     }
