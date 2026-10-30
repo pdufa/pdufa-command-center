@@ -22,7 +22,7 @@ def main():
             if response.status != 200 or "text/event-stream" not in response.headers.get("Content-Type", ""):
                 raise RuntimeError("Unexpected HTTP response or content type")
             body = response.read(1_000_000).decode("utf-8")
-    except (urllib.error.URLError, TimeoutError, RuntimeError) as exc:
+    except (urllib.error.URLError, TimeoutError, RuntimeError, UnicodeDecodeError) as exc:
         print(f"Smoke test failed: {type(exc).__name__}", file=sys.stderr)
         return 1
     frames = [part for part in body.split("\n\n") if part.strip()]
