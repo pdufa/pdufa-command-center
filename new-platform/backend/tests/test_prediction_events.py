@@ -95,3 +95,13 @@ def test_complete_evidence_inventory_does_not_authorize_prediction():
     assert readiness["missing_fields"] == []
     assert readiness["assessments_completed"] == 0
     assert events[-1]["decision"] == "ABSTAIN"
+
+
+def test_verified_evidence_requires_nonempty_value_and_valid_digest():
+    from app.prediction_events import evidence_available
+    base = {"status": "VERIFIED", "source_url": "https://example.org/document", "source_document_sha256": "a" * 64}
+    assert evidence_available({**base, "value": "documented"})
+    assert not evidence_available({**base, "value": ""})
+    assert not evidence_available({**base, "value": []})
+    assert not evidence_available({**base, "value": {"interpretation": "NOT_INFERRED"}})
+    assert not evidence_available({**base, "value": "documented", "source_document_sha256": "not-a-digest"})
