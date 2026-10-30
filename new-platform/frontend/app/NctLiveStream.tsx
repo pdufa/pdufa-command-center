@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Phase3TrialLibrary from "./Phase3TrialLibrary";
 import { eventCursor, initialRun, NCT_PATTERN, NctSseParser, nodeLabel, parseSnapshot, reduceNctEvent,
   savedPointer, type NctEvent, type NctRunState, type RunPointer } from "../lib/nct-live-stream";
 
@@ -50,6 +49,8 @@ export default function NctLiveStream() {
   const currentRun = useRef<NctRunState | null>(null);
   const generation = useRef(0);
   const controller = useRef<AbortController | null>(null);
+  const analyzing = useRef<{ nct: string; generation: number } | null>(null);
+  const analysisKeys = useRef(new Map<string, string>());
 
   const update = (state: NctRunState, current: number) => {
     if (generation.current !== current) return;
@@ -105,9 +106,16 @@ export default function NctLiveStream() {
     }
   }
 
-  async function load(nct: string, pointer?: RunPointer) {
+  async function load(nct: string, pointer?: RunPointer, reuseExisting = false) {
+    if (reuseExisting && analyzing.current?.nct === nct) return;
+    if (reuseExisting && currentRun.current?.nct_id === nct) {
+      setInput(nct);
+      if (currentRun.current.terminal && (!pointer || pointer.run_id === currentRun.current.run_id)) return;
+      pointer ||= { nct_id: nct, run_id: currentRun.current.run_id };
+    }
     generation.current += 1;
     const current = generation.current;
+    analyzing.current = reuseExisting ? { nct, generation: current } : null;
     controller.current?.abort();
     const nextController = new AbortController();
     controller.current = nextController;
@@ -120,13 +128,34 @@ export default function NctLiveStream() {
     setNotice(pointer ? "Restoring the saved processing run…" : "Starting a persisted processing run…");
     try {
       let state: NctRunState;
+      let restoredState: NctRunState | undefined;
+      if (reuseExisting && !pointer) {
+        const latestResponse = await fetch(endpoint(nct) + "/latest", { cache: "no-store", signal });
+        if (latestResponse.ok) {
+          const latestData: unknown = await latestResponse.json();
+          const latestPointer = savedPointer(latestData);
+          if (!latestPointer || latestPointer.nct_id !== nct) throw new Error("Saved processing run identity could not be verified.");
+          pointer = latestPointer;
+          restoredState = parseSnapshot(latestData, pointer);
+        } else if (latestResponse.status !== 404) {
+          throw new Error(latestResponse.status === 401 ? "Sign-in expired. Sign in again." : "Saved processing run lookup is unavailable (" + latestResponse.status + ").");
+        }
+      }
       if (pointer) {
-        const response = await fetch(endpoint(nct, pointer.run_id), { cache: "no-store", signal });
-        if (!response.ok) throw new Error(response.status === 401 ? "Sign-in expired. Sign in again." : "Saved run is unavailable (" + response.status + ").");
-        state = parseSnapshot(await response.json(), pointer);
+        if (restoredState) state = restoredState;
+        else {
+          const response = await fetch(endpoint(nct, pointer.run_id), { cache: "no-store", signal });
+          if (!response.ok) throw new Error(response.status === 401 ? "Sign-in expired. Sign in again." : "Saved run is unavailable (" + response.status + ").");
+          state = parseSnapshot(await response.json(), pointer);
+        }
       } else {
+        let requestKey = reuseExisting ? analysisKeys.current.get(nct) : undefined;
+        if (!requestKey) {
+          requestKey = crypto.randomUUID();
+          if (reuseExisting) analysisKeys.current.set(nct, requestKey);
+        }
         const response = await fetch(endpoint(nct), { method: "POST", cache: "no-store", signal,
-          headers: { "Content-Type": "application/json" }, body: JSON.stringify({ request_key: crypto.randomUUID() }) });
+          headers: { "Content-Type": "application/json" }, body: JSON.stringify({ request_key: requestKey, ...(reuseExisting ? { reuse_existing: true } : {}) }) });
         if (!response.ok) throw new Error(response.status === 401 ? "Sign-in expired. Sign in again." : "Unable to start this trial run (" + response.status + ").");
         const data: unknown = await response.json();
         const created = savedPointer(data);
@@ -144,6 +173,8 @@ export default function NctLiveStream() {
       if (signal.aborted || generation.current !== current || aborted(error)) return;
       setNotice(error instanceof Error ? error.message : "Unable to load this processing run.");
       setInterrupted(!!pointer); setBusy(false);
+    } finally {
+      if (analyzing.current?.generation === current) analyzing.current = null;
     }
   }
 
@@ -156,7 +187,18 @@ export default function NctLiveStream() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => { const handler = (event: Event) => { const nct = (event as CustomEvent<string>).detail; if (typeof nct === "string" && NCT_PATTERN.test(nct)) void load(nct); }; window.addEventListener("pdufa:analyze-nct", handler); return () => window.removeEventListener("pdufa:analyze-nct", handler); }, []);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = (event: Event) => {
+      const detail: unknown = (event as CustomEvent<unknown>).detail;
+      const nct = typeof detail === "string" ? detail : detail && typeof detail === "object" ? (detail as Record<string, unknown>).nct_id : null;
+      if (typeof nct !== "string" || !NCT_PATTERN.test(nct)) return;
+      const pointer = detail && typeof detail === "object" ? savedPointer(detail) : null;
+      void load(nct, pointer || undefined, true);
+    };
+    window.addEventListener("pdufa:analyze-nct", handler);
+    return () => window.removeEventListener("pdufa:analyze-nct", handler);
+  }, []);
 
   const nodes = Object.values(run?.nodes || {}).sort((a, b) => a.sequence - b.sequence);
   return <section className="panel" aria-label="Live NCT processing" id="nct-live-processing">
@@ -176,6 +218,5 @@ export default function NctLiveStream() {
     </details>)}
     <p className="subtle">PENDING means queued. Only LOADING steps show a processing indicator. FAILED and INSUFFICIENT EVIDENCE require review; parent status comes from persisted dependency events.</p>
     <style>{`.nct-processing-spinner{display:inline-block;width:12px;height:12px;margin-right:8px;border:2px solid #b9c6ba;border-top-color:#214e2c;border-radius:50%;animation:nct-processing-rotate .8s linear infinite}@keyframes nct-processing-rotate{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.nct-processing-spinner{animation:none;border-style:dotted}}`}</style>
-    <Phase3TrialLibrary onAnalyze={nct => { setInput(nct); void load(nct); }} />
   </section>;
 }

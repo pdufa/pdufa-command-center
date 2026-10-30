@@ -24,7 +24,9 @@ export async function relayNctRun(req: NextRequest, nct: string, run?: string, e
     try { data = JSON.parse(raw); } catch { return error("Invalid request JSON", 422); }
     const requestKey = data && typeof data === "object" ? (data as Record<string, unknown>).request_key : null;
     if (typeof requestKey !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestKey)) return error("A request UUID is required", 422);
-    body = JSON.stringify({ request_key: requestKey });
+    const reuseExisting = (data as Record<string, unknown>).reuse_existing;
+    if (reuseExisting !== undefined && typeof reuseExisting !== "boolean") return error("Invalid saved-run option", 422);
+    body = JSON.stringify({ request_key: requestKey, ...(reuseExisting === true ? { reuse_existing: true } : {}) });
   } else {
     path += "/" + encodeURIComponent(run!);
     if (integrity) path += "/dossier-integrity";

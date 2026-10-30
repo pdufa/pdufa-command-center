@@ -8,6 +8,7 @@ import AlpacaStockChart from "./AlpacaStockChart";
 import ProgramMarketEnrichment from "./ProgramMarketEnrichment";
 import TradingDashboard, { type TradingTicker } from "./TradingDashboard";
 import HopReadinessPanel from "./HopReadinessPanel";
+import Phase3TrialLibrary from "./Phase3TrialLibrary";
 import EntrySignal from "./EntrySignal";
 import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
@@ -1791,6 +1792,10 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           {rows.length>100 && <p>Showing first 100 of {rows.length} records; historical matching is not yet active.</p>}
         </details>)}
       </>}
+      <Phase3TrialLibrary onAnalyze={(nct, runId) => {
+        window.dispatchEvent(new CustomEvent("pdufa:analyze-nct", { detail: { nct_id: nct, run_id: runId } }));
+        document.getElementById("nct-live-processing")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }} />
       <p>Source data is read-only. Pipeline, GEM JR, GEM, WT and FS/FA presets remain unchanged.</p>
     </section>}
     {top==="RESTRICTIONS" && <div aria-label="Restriction sub-tabs" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"12px 0"}}>
