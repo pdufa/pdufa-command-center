@@ -120,3 +120,15 @@ def test_stream_serializes_all_events_and_preserves_nct_identity():
         assert payload["type"] == event_line.removeprefix("event: ")
         assert payload["nct_id"] == nct
     assert json.loads(frames[-1].splitlines()[1].removeprefix("data: "))["decision"] == "ABSTAIN"
+
+
+def test_unverified_nested_value_does_not_count_as_verified():
+    from app.prediction_events import evidence_available
+    base = {"status": "VERIFIED", "source_url": "https://example.org/document", "source_document_sha256": "a" * 64}
+    assert not evidence_available({**base, "value": {"status": "NOT_ATTEMPTED", "value": "2026-12-01"}})
+    assert not evidence_available({**base, "value": {"clinical_meaningfulness": "NOT_ADJUDICATED"}})
+
+
+def test_stream_rejects_mismatched_dossier_before_first_event():
+    with pytest.raises(ValueError, match="Dossier identity mismatch"):
+        next(sse_lines("NCT01234567", {"nct_id": "NCT87654321"}))
