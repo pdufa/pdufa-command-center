@@ -3,13 +3,14 @@ import { useEffect, useRef, useState } from "react";
 
 type Assessment = { assessment_id: string; status: string; evidence_count: number; spinner?: boolean };
 type Leaf = { node_id: string; label: string; status: string; section?: string; value?: unknown; spinner?: boolean };
-type Event = { type: string; nct_id: string; node_id?: string; label?: string; status?: string; value?: unknown; spinner?: boolean; decision?: string; section?: string; available?: number; total?: number; assessment_id?: string; evidence_count?: number };
+type Event = { type: string; nct_id: string; node_id?: string; label?: string; status?: string; value?: unknown; spinner?: boolean; decision?: string; section?: string; available?: number; total?: number; assessment_id?: string; evidence_count?: number; evidence_fields_present?: number; evidence_fields_total?: number; missing_fields?: string[] };
 
 export default function PredictionTab() {
   const [code, setCode] = useState("");
   const [active, setActive] = useState("");
   const [leaves, setLeaves] = useState<Leaf[]>([]);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [readiness, setReadiness] = useState<{ status: string; present: number; total: number; missing: string[] } | null>(null);
   const [state, setState] = useState("Enter an NCT number to load saved trial evidence.");
   const [decision, setDecision] = useState("ABSTAIN");
   const [progress, setProgress] = useState<Record<string, { available: number; total: number; status: string }>>({});
@@ -22,7 +23,7 @@ export default function PredictionTab() {
     const current = generation.current;
     controller.current?.abort();
     controller.current = new AbortController();
-    setActive(nct); setLeaves([]); setAssessments([]); setDecision("ABSTAIN"); setProgress({});
+    setActive(nct); setLeaves([]); setAssessments([]); setReadiness(null); setDecision("ABSTAIN"); setProgress({});
     if (!/^NCT[0-9]{8}$/.test(nct)) { setState("Enter an exact NCT identifier."); return; }
     setState("Retrieving saved trial evidence…");
     try {
@@ -48,6 +49,9 @@ export default function PredictionTab() {
           if (event.type === "leaf" && event.node_id && event.label && event.status) {
             const leaf: Leaf = { node_id: event.node_id, label: event.label, status: event.status, section: event.section || "trial_identity", value: event.value, spinner: event.spinner };
             setLeaves(prev => [...prev.filter(x => x.node_id !== leaf.node_id), leaf]);
+          }
+          if (event.type === "readiness" && event.status) {
+            setReadiness({ status: event.status, present: event.evidence_fields_present ?? 0, total: event.evidence_fields_total ?? 10, missing: event.missing_fields ?? [] });
           }
           if (event.type === "assessment" && event.assessment_id && event.status) {
             const assessment: Assessment = { assessment_id: event.assessment_id, status: event.status, evidence_count: event.evidence_count ?? 0, spinner: event.spinner };
@@ -87,7 +91,7 @@ export default function PredictionTab() {
         <div style={{ overflowWrap: "anywhere" }}>{leaf.value == null ? "Unavailable" : JSON.stringify(leaf.value)}</div>
       </div>)}
     </details>)}
-    <details><summary>SCIENCE · {progress.science?.available ?? 0}/{progress.science?.total ?? 40} assessed</summary><p>Assessments remain pending until verified scientific processing runs.</p>{assessments.map(item => <div key={item.assessment_id}>{item.assessment_id} · {item.status} · {item.evidence_count} evidence items</div>)}</details>
+    <details><summary>SCIENCE · {progress.science?.available ?? 0}/{progress.science?.total ?? 40} assessed</summary><p>Assessments remain pending until verified scientific processing runs.</p>{readiness && <p>Evidence readiness: {readiness.status} · {readiness.present}/{readiness.total} fields present. {readiness.missing.length > 0 && <>Missing: {readiness.missing.join(", ")}</>}</p>}{assessments.map(item => <div key={item.assessment_id}>{item.assessment_id} · {item.status} · {item.evidence_count} evidence items</div>)}</details>
     <details><summary>OUTCOME · Pending</summary><p>Independent regulatory assessment pending.</p></details>
     <details><summary>MAIN · {decision}</summary><p>Not authorized as a trading recommendation.</p></details>
   </section>;
