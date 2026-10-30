@@ -105,3 +105,18 @@ def test_verified_evidence_requires_nonempty_value_and_valid_digest():
     assert not evidence_available({**base, "value": []})
     assert not evidence_available({**base, "value": {"interpretation": "NOT_INFERRED"}})
     assert not evidence_available({**base, "value": "documented", "source_document_sha256": "not-a-digest"})
+
+
+def test_stream_serializes_all_events_and_preserves_nct_identity():
+    nct = "NCT01234567"
+    lines = "".join(sse_lines(nct, {"nct_id": nct})).split("\n\n")
+    frames = [frame for frame in lines if frame.strip()]
+    assert len(frames) == 63
+    for frame in frames:
+        event_line, data_line = frame.splitlines()
+        assert event_line.startswith("event: ")
+        assert data_line.startswith("data: ")
+        payload = json.loads(data_line.removeprefix("data: "))
+        assert payload["type"] == event_line.removeprefix("event: ")
+        assert payload["nct_id"] == nct
+    assert json.loads(frames[-1].splitlines()[1].removeprefix("data: "))["decision"] == "ABSTAIN"
