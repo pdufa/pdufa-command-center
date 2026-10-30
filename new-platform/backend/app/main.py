@@ -410,6 +410,9 @@ async def lifespan(app: FastAPI):
         start(ENGINE)
         from .candidate_review_service import start as start_candidate_review
         start_candidate_review(ENGINE)
+    if _DB_STATE["available"]:
+        from .nct_live_stream import start as start_nct_live_stream
+        start_nct_live_stream(ENGINE)
     yield
     from .archive_protection import stop
     stop()
@@ -418,6 +421,9 @@ async def lifespan(app: FastAPI):
 from .reconciliation_review import ReviewPackage
 
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
+from .nct_live_stream import install_routes as install_nct_stream_routes
+install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+
 # Compress large read-only candidate inventories before sending them to Vercel.
 # This does not change persisted records, identifiers, scans, or trading state.
 app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=5)
@@ -1088,4 +1094,5 @@ def save_program_checklist(program_id: str, stage: str, payload: ChecklistPayloa
         session.commit()
         return {"saved": True, "programId": program_id,
                 "version": payload.version + 1, "updated_at": now}
+
 
