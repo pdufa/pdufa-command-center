@@ -22,6 +22,10 @@ deployment protection disabled. No protection was changed.
 
 - `scripts/export_render_postgres.py`: create private `0600` dump files using
   exclusive creation; failed creation no longer deletes a competing backup.
+- Apply the same fix to the existing container-packaged
+  `new-platform/backend/scripts/export_render_postgres.py`, and restore its
+  missing URL-credential decoding. Both entrypoints run the same behavioral
+  regressions; checking the root script alone had missed this packaged defect.
 - `tests/test_render_postgres_export.py`: exercise the competing-file race and
   verify restrictive permissions as well as existing credential/cleanup checks.
 - `new-platform/migration/copy_checklists.py`: re-read the source in a fresh
@@ -41,8 +45,8 @@ deployment protection disabled. No protection was changed.
 
 - Full backend after dependency repair: **1,000 passed, zero skips**, six existing
   dependency warnings. Before repair it was 999 passed with one missing-pypdf skip.
-- Targeted scanner/clock/identity/archive/progress/export selection: **83 passed,
-  59 subtests passed**. Separate migration/export selection: **13 passed**;
+- Targeted scanner/clock/identity/archive/progress/export selection: **90 passed,
+  59 subtests passed**. Separate migration/export selection: **20 passed**;
   these counts overlap and must not be added as unique tests.
 - Existing complete frontend verification remains **391 passed**; no TSX changed.
 - Production Next.js build: **passed**, including TypeScript and page generation,
@@ -57,6 +61,19 @@ deployment protection disabled. No protection was changed.
   performance. Main lacks a production three-class PASS/CRL/EXTENSION classifier;
   newer historical-label contracts remain in draft research work. Do not infer an
   extension from a missed deadline or turn unavailable evidence into a forecast.
+
+## Preview release checkpoint
+
+Existing repository branch `fix/transfer-safety-20261030` was pushed only after
+confirming the remote, main SHA, repository push permissions and dry-run. Draft
+[PR #527](https://github.com/pdufa/pdufa-command-center/pull/527) targets main.
+Initial implementation `25e370411943130834c9498135c815decbe43b57` has READY
+preview `dpl_DKhPxAWo5BsQ5MNgnDm7F98EnRYQ` at
+`https://pdufa-new-dashboard-hla5f0nta-pdufa.vercel.app`. Its four PR workflows
+(Command Center CI, backup safety, source checks and isolated recovery rehearsal)
+passed. The follow-up aligns the actual container backup entrypoint and tests
+both copies. Preview READY certifies hosting/build only: remote authenticated
+smoke remains blocked, and no merge or production promotion occurred.
 
 ## Live evidence and limits
 

@@ -14,9 +14,11 @@ spec.loader.exec_module(module)
 
 
 class ExportTests(unittest.TestCase):
+    exporter = module
+
     def run_cli(self, args, env=None):
         with patch.object(sys, "argv", ["export_render_postgres.py", *args]), patch.dict(os.environ, env or {}, clear=True):
-            return module.main()
+            return self.exporter.main()
 
     def test_missing_url_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -32,7 +34,7 @@ class ExportTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "existing.dump"
             target.write_bytes(b"preserve")
-            with patch.object(module.shutil, "which", return_value="/usr/bin/pg_dump"):
+            with patch.object(self.exporter.shutil, "which", return_value="/usr/bin/pg_dump"):
                 with self.assertRaises(SystemExit):
                     self.run_cli(["--output", str(target)], {"DATABASE_URL": "postgresql://user:pass@localhost:5432/sample"})
             self.assertEqual(target.read_bytes(), b"preserve")
@@ -45,7 +47,7 @@ class ExportTests(unittest.TestCase):
                 self.assertEqual(env["PGPASSWORD"], "secret-pass")
                 stdout.write(b"PGDMP")
                 return type("Result", (), {"returncode": 0})()
-            with patch.object(module.shutil, "which", return_value="/usr/bin/pg_dump"), patch.object(module.subprocess, "run", side_effect=fake_run):
+            with patch.object(self.exporter.shutil, "which", return_value="/usr/bin/pg_dump"), patch.object(self.exporter.subprocess, "run", side_effect=fake_run):
                 self.assertEqual(self.run_cli(["--output", str(target)], {"DATABASE_URL": "postgresql://user:secret-pass@localhost:5432/sample"}), 0)
             self.assertEqual(target.read_bytes(), b"PGDMP")
             self.assertEqual(target.stat().st_mode & 0o777, 0o600)
@@ -58,9 +60,9 @@ class ExportTests(unittest.TestCase):
                 if Path(path) == target:
                     target.write_bytes(b"another-process-backup")
                 return real_open(path, flags, mode, **kwargs)
-            with patch.object(module.shutil, "which", return_value="/usr/bin/pg_dump"), \
-                 patch.object(module.os, "open", side_effect=raced_open), \
-                 patch.object(module.subprocess, "run") as dump:
+            with patch.object(self.exporter.shutil, "which", return_value="/usr/bin/pg_dump"), \
+                 patch.object(self.exporter.os, "open", side_effect=raced_open), \
+                 patch.object(self.exporter.subprocess, "run") as dump:
                 self.assertEqual(self.run_cli(["--output", str(target)], {"DATABASE_URL": "postgresql://user:pass@localhost:5432/sample"}), 1)
             dump.assert_not_called()
             self.assertEqual(target.read_bytes(), b"another-process-backup")
@@ -71,7 +73,7 @@ class ExportTests(unittest.TestCase):
             def fake_run(argv, stdout, stderr, env, timeout, check):
                 stdout.write(b"incomplete")
                 return type("Result", (), {"returncode": 1})()
-            with patch.object(module.shutil, "which", return_value="/usr/bin/pg_dump"), patch.object(module.subprocess, "run", side_effect=fake_run):
+            with patch.object(self.exporter.shutil, "which", return_value="/usr/bin/pg_dump"), patch.object(self.exporter.subprocess, "run", side_effect=fake_run):
                 self.assertEqual(self.run_cli(["--output", str(target)], {"DATABASE_URL": "postgresql://user:pass@localhost:5432/sample"}), 1)
             self.assertFalse(target.exists())
 
@@ -87,9 +89,20 @@ class ExportTests(unittest.TestCase):
                 self.assertNotIn("s:p@ss/word", " ".join(argv))
                 stdout.write(b"PGDMP")
                 return type("Result", (), {"returncode": 0})()
-            with patch.object(module.shutil, "which", return_value="/usr/bin/pg_dump"), patch.object(module.subprocess, "run", side_effect=fake_run):
+            with patch.object(self.exporter.shutil, "which", return_value="/usr/bin/pg_dump"), patch.object(self.exporter.subprocess, "run", side_effect=fake_run):
                 self.assertEqual(self.run_cli(["--output", str(target)], {"DATABASE_URL": "postgresql://test%40user:s%3Ap%40ss%2Fword@localhost:5432/my%20db"}), 0)
             self.assertEqual(target.read_bytes(), b"PGDMP")
+
+# Exercise the actual container-packaged entrypoint as well as the root CLI.
+container_script = SCRIPT.parents[1] / "new-platform/backend/scripts/export_render_postgres.py"
+container_spec = importlib.util.spec_from_file_location("container_export_render_postgres", container_script)
+container_module = importlib.util.module_from_spec(container_spec)
+container_spec.loader.exec_module(container_module)
+
+
+class ContainerExportTests(ExportTests):
+    exporter = container_module
+
 
 if __name__ == "__main__":
     unittest.main()
