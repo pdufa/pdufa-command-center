@@ -21,43 +21,43 @@
   ],
   "bpw_comparable": {},
   "cash_runway": {
-    "collected_count": 33,
+    "collected_count": 32,
     "collector_status": "COLLECTED \u2014 CURRENT SEC STEP 4 SNAPSHOTS",
     "deteriorating": 0,
     "dilution_alerts": 37,
     "minimum_entry_months": 12.0,
-    "missing_or_stale": 1922,
+    "missing_or_stale": 1929,
     "source_backed_pass": 16,
-    "target_count": 33,
-    "under_12_months": 32
+    "target_count": 32,
+    "under_12_months": 26
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-29T03:21:51.242838+00:00",
+    "finished_at": "2026-10-30T03:22:58.318978+00:00",
     "matched_posted_results": 96,
     "new_records": 0,
     "stored_results": 2494,
-    "studies_checked": 3968
+    "studies_checked": 3969
   },
   "collector_performed": true,
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-29T03:24:25.341278+00:00",
+  "generated_at_utc": "2026-10-30T03:25:14.818597+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
     "managers_complete": 4,
     "managers_targeted": 4,
-    "matched_programs": 1251,
+    "matched_programs": 1252,
     "with_manager_accumulation": 430
   },
   "historical_return_edge_validated": false,
   "insider_form4": {
     "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-    "issuers_complete": 30,
-    "issuers_targeted": 33,
-    "matched_program_rows": 298,
+    "issuers_complete": 29,
+    "issuers_targeted": 32,
+    "matched_program_rows": 292,
     "source_errors": 3,
     "with_open_market_purchases": 3
   },
@@ -75,14 +75,14 @@
     "Post-Financing": 0
   },
   "research_status": "HOLD_STALE_OR_MISSING_SOURCES",
-  "run_id": 40811143302,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40811143302",
+  "run_id": 40996378340,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40996378340",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
   "sec_source_health": {
     "blocked_records": 38,
-    "last_check_age_days": 23,
+    "last_check_age_days": 24,
     "source_completeness_not_guaranteed": true,
     "status": "PARTIAL_STALE_OR_BLOCKED"
   },

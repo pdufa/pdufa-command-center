@@ -1,8 +1,8 @@
 {
-  "as_of_pacific": "2026-10-28",
+  "as_of_pacific": "2026-10-29",
   "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-  "generated_at_utc": "2026-10-29T03:24:19.305977+00:00",
-  "issuer_count": 33,
+  "generated_at_utc": "2026-10-30T03:25:09.954186+00:00",
+  "issuer_count": 32,
   "issuer_errors": [
     {
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
@@ -17,11 +17,11 @@
       "ticker": "INBX"
     }
   ],
-  "issuers_complete": 30,
+  "issuers_complete": 29,
   "limits": "Issuer filing index capped to 25 Form 4 documents per 105-day window, 90-day transaction window. Source errors and amendments require manual review. P/S does not guarantee discretionary investment or future returns.",
   "records": [
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001160308",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-25",
@@ -30,7 +30,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001622229",
       "filings_reviewed": 2,
       "latest_filing": "2026-10-05",
@@ -60,9 +60,9 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001933414",
-      "filings_reviewed": 13,
+      "filings_reviewed": 11,
       "latest_filing": "2026-10-20",
       "status": "COMPLETE",
       "ticker": "MLYS",
@@ -130,7 +130,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001689548",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -139,7 +139,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001652130",
       "filings_reviewed": 4,
       "latest_filing": "2026-10-28",
@@ -179,7 +179,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001953926",
       "filings_reviewed": 1,
       "latest_filing": "2026-09-02",
@@ -188,57 +188,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
-      "cik": "0001439222",
-      "filings_reviewed": 3,
-      "latest_filing": "2026-10-28",
-      "status": "COMPLETE",
-      "ticker": "AGIO",
-      "transactions": [
-        {
-          "code": "S",
-          "date": "2026-10-26",
-          "filed": "2026-10-28",
-          "owner": "Gheuens Sarah",
-          "price": 37.69,
-          "shares": 7866,
-          "source": "https://www.sec.gov/Archives/edgar/data/1439222/000143922226000124/wk-form4_1793217741.xml",
-          "ticker": "AGIO"
-        },
-        {
-          "code": "S",
-          "date": "2026-10-21",
-          "filed": "2026-10-23",
-          "owner": "Gheuens Sarah",
-          "price": 37.53,
-          "shares": 1489,
-          "source": "https://www.sec.gov/Archives/edgar/data/1439222/000143922226000122/wk-form4_1792785942.xml",
-          "ticker": "AGIO"
-        },
-        {
-          "code": "S",
-          "date": "2026-10-22",
-          "filed": "2026-10-23",
-          "owner": "Gheuens Sarah",
-          "price": 37.52,
-          "shares": 500,
-          "source": "https://www.sec.gov/Archives/edgar/data/1439222/000143922226000122/wk-form4_1792785942.xml",
-          "ticker": "AGIO"
-        },
-        {
-          "code": "S",
-          "date": "2026-08-04",
-          "filed": "2026-08-06",
-          "owner": "Gheuens Sarah",
-          "price": 30.48,
-          "shares": 30000,
-          "source": "https://www.sec.gov/Archives/edgar/data/1439222/000143922226000120/wk-form4_1786047196.xml",
-          "ticker": "AGIO"
-        }
-      ]
-    },
-    {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001061983",
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "filings_reviewed": 0,
@@ -248,7 +198,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001599298",
       "filings_reviewed": 1,
       "latest_filing": "2026-10-14",
@@ -257,7 +207,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001133869",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -266,7 +216,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001743881",
       "filings_reviewed": 6,
       "latest_filing": "2026-09-21",
@@ -362,21 +312,11 @@
           "shares": 100,
           "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000848/wk-form4_1787257884.xml",
           "ticker": "BBIO"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-30",
-          "filed": "2026-08-03",
-          "owner": "Apuli Maricel",
-          "price": 80.06,
-          "shares": 2000,
-          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000745/wk-form4_1785788451.xml",
-          "ticker": "BBIO"
         }
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0000875320",
       "filings_reviewed": 10,
       "latest_filing": "2026-10-22",
@@ -385,7 +325,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001704292",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-05",
@@ -394,7 +334,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0000939767",
       "filings_reviewed": 1,
       "latest_filing": "2026-08-12",
@@ -414,7 +354,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001370053",
       "filings_reviewed": 4,
       "latest_filing": "2026-10-02",
@@ -434,7 +374,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001088856",
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "filings_reviewed": 0,
@@ -444,7 +384,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0000882095",
       "filings_reviewed": 20,
       "latest_filing": "2026-10-16",
@@ -714,7 +654,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001792044",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-02",
@@ -723,7 +663,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001326110",
       "filings_reviewed": 2,
       "latest_filing": "2026-10-06",
@@ -753,7 +693,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001818794",
       "filings_reviewed": 11,
       "latest_filing": "2026-10-22",
@@ -923,7 +863,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001828316",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -932,7 +872,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001889109",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-05",
@@ -941,7 +881,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001787306",
       "filings_reviewed": 15,
       "latest_filing": "2026-10-28",
@@ -1091,7 +1031,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001789972",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-10",
@@ -1121,7 +1061,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001745648",
       "filings_reviewed": 10,
       "latest_filing": "2026-08-05",
@@ -1151,7 +1091,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001048477",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-01",
@@ -1171,7 +1111,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0000873303",
       "filings_reviewed": 5,
       "latest_filing": "2026-09-08",
@@ -1180,7 +1120,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001802665",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-18",
@@ -1260,7 +1200,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0002007919",
       "error": "SEC issuer Form 4 amendments require manual reconciliation",
       "filings_reviewed": 0,
@@ -1270,9 +1210,9 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001830487",
-      "filings_reviewed": 22,
+      "filings_reviewed": 21,
       "latest_filing": "2026-10-13",
       "status": "COMPLETE",
       "ticker": "PHVS",
@@ -1470,7 +1410,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001472012",
       "filings_reviewed": 11,
       "latest_filing": "2026-09-15",
@@ -1550,7 +1490,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0001579428",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-03",
@@ -1590,7 +1530,7 @@
       ]
     },
     {
-      "as_of": "2026-10-28",
+      "as_of": "2026-10-29",
       "cik": "0000014272",
       "filings_reviewed": 11,
       "latest_filing": "2026-10-05",
