@@ -246,7 +246,7 @@ async function main() {
     phase = 'browser_context_sse_resume';
     const sseUrl = BASE + '/api/nct-stream/' + NCT + '/runs/' + run.run_id + '/events';
     const firstSse = await context.request.get(sseUrl, { timeout: 30000 });
-    requireCheck(firstSse.status() === 200 && /text\\/event-stream/i.test(firstSse.headers()['content-type'] || ''), 'browser_context_sse_initial_200');
+    requireCheck(firstSse.status() === 200 && (firstSse.headers()['content-type'] || '').toLowerCase().includes('text/event-stream'), 'browser_context_sse_initial_200');
     const initialText = await firstSse.text();
     const ids = [...initialText.matchAll(/^id:\s*(\d+)\s*$/gm)].map(m => Number(m[1]));
     requireCheck(ids.length > 1 && ids.every((id, i) => i === 0 || id > ids[i - 1]), 'browser_context_sse_ordered_ids');
