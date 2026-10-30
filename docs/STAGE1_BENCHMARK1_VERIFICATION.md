@@ -1,6 +1,6 @@
 # Stage 1 / Benchmark 1 verification
 
-Final completion status: **FINAL CHECKS PENDING** (authenticated live-browser workflow PASS; explicit tab navigation, active-browser reconnect and post-run dossier checksum not yet demonstrated).
+Final completion status: **FINAL CHECKS PENDING** (latest authenticated live-browser workflow PASS, including explicit PREDICTION navigation and browser-context SSE cursor replay; active UI interruption/reconnect and independent post-run saved-dossier checksum not yet demonstrated).
 
 The authenticated backend live-streaming path is verified. The mandatory deployed
 frontend/browser population and reload checks remain unverified because the actual
@@ -375,3 +375,13 @@ The checked-in browser script requires successful normal login, an authenticated
 **Completion gate: NOT YET FORMALLY CLOSED.** The currently checked-in browser script does not explicitly navigate to the PREDICTION tab or deliberately interrupt and resume an *active frontend browser SSE connection*. Its reload test restores an already completed run; the separate backend test previously verified Last-Event-ID reconnect. The live browser script also does not freshly re-read and compare the original saved dossier checksum *after* this run. These three explicit follow-up requirements must be implemented and observed before declaring the expanded Benchmark 1 acceptance criteria VERIFIED COMPLETE. Do not relabel the backend reconnect as a browser reconnect or an earlier dossier hash as a post-run hash.
 
 Protected Pipeline/GEM JR/GEM/WT restrictions, FS/FA presets, scientific scoring, scans, and trading controls remain outside the verification scope. No trading authorization is implied.
+
+## Latest authenticated browser verification — October 30, 2026, 21:24 UTC
+
+**Observed result: PASS** for [workflow run 41130626515](https://github.com/pdufa/pdufa-command-center/actions/runs/41130626515), [job 124320280314](https://github.com/pdufa/pdufa-command-center/actions/runs/41130626515/job/124320280314). The job completed successfully, and its log emitted `Stage 1 live browser: PASS` at `2026-10-30T21:24:13.5882217Z`.
+
+The current passing browser script explicitly navigates to the PREDICTION panel, starts an authenticated NCT00116805 run, observes live loading and bottom-up population, validates citations and source hashes against persisted events, verifies ordered browser-context SSE `Last-Event-ID` replay without duplicates, and restores the same saved run on reload without a second POST. These are assertions required by the executed script; its PASS result establishes they succeeded for this run. The browser-context replay is **not** a deliberate interruption of the active frontend UI connection.
+
+**Completion remains FINAL CHECKS PENDING.** The expanded acceptance gate still requires (1) deliberately interrupting an *active frontend* SSE connection and observing resumed UI delivery without duplicate nodes/events and (2) an independent fresh read-only checksum of the original saved dossier after processing, compared with its original `c7c1d08244597084152238853c3d8357b892218aee1c48db97e83f63216c54de`. The current script's optional snapshot `dossier_sha256` format check is not independent persisted database verification. Do not label this benchmark VERIFIED COMPLETE until both checks actually execute and pass.
+
+The older credential-blocked and browser-failure sections above are historical attempts, not the current status. Pipeline/GEM JR/GEM/WT restrictions, FS/FA preset associations, scoring, scans and trading controls were not modified by this documentation update. MAIN remains ABSTAIN; no FDA decision or trading authorization is implied.
