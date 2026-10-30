@@ -364,6 +364,23 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         if isinstance(exc, ValueError):
             return HTTPException(409, "Invalid identity, integrity check or resume cursor")
         return HTTPException(503, "Live stream storage unavailable")
+    @router.get("/{nct_id}/runs/{run_id}/dossier-integrity")
+    def dossier_integrity(nct_id: str, run_id: str):
+        """Read-only independent DB recheck; never trusts a cached snapshot checksum."""
+        try:
+            run = get_run(engine_provider(), nct_id, run_id)
+            with engine_provider().connect() as connection:
+                original = saved_dossier(connection, nct_id)
+            unchanged = (original["id"] == run["dossier_id"]
+                         and original["sha256"] == run["dossier_sha256"])
+            return {"nct_id": nct_id, "run_id": run_id,
+                    "dossier_id": original["id"],
+                    "database_sha256": original["sha256"],
+                    "run_original_sha256": run["dossier_sha256"],
+                    "unchanged": unchanged}
+        except Exception as exc:
+            raise convert(exc)
+
     @router.post("/{nct_id}/runs")
     def create(nct_id: str, payload: StartRequest):
         if not NCT.fullmatch(nct_id):
