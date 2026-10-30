@@ -1,38 +1,28 @@
 {
-  "started_at": "2026-10-29T03:20:08.085932+00:00",
-  "status": "COMPLETE",
+  "started_at": "2026-10-30T03:21:18.893937+00:00",
+  "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-10-29",
+  "scope": "Industry Phase 2/3 records updated since 2024-10-30",
   "source_max_age_days": 180,
-  "studies_scanned": 15581,
-  "matched_trials": 3701,
+  "studies_scanned": 15587,
+  "matched_trials": 3704,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
   "new_master_programs": [
     {
-      "ticker": "MDGL",
-      "drug": "MGL-3196",
-      "nct_id": "NCT03900429"
-    },
-    {
-      "ticker": "MDGL",
-      "drug": "Resmetirom",
-      "nct_id": "NCT05500222"
-    },
-    {
-      "ticker": "MDGL",
-      "drug": "Resmetirom",
-      "nct_id": "NCT04951219"
+      "ticker": "AVIR",
+      "drug": "Bemnifosbuvir-Ruzasvir (BEM/RZR)",
+      "nct_id": "NCT06868264"
     }
   ],
-  "finished_at": "2026-10-29T03:20:41.479855+00:00",
-  "stored_trials": 7394,
-  "phase2_programs": 1051,
-  "master_programs": 130,
-  "review_trials": 3080,
-  "market_cap_verified_tickers": 417,
+  "finished_at": "2026-10-30T03:21:56.665672+00:00",
+  "stored_trials": 7398,
+  "phase2_programs": 1050,
+  "master_programs": 131,
+  "review_trials": 3081,
+  "market_cap_verified_tickers": 418,
   "market_cap_listing_excluded_tickers": 1,
-  "market_cap_source_unavailable": 0,
-  "market_cap_recent_cache_retained": 0
+  "market_cap_source_unavailable": 1,
+  "market_cap_recent_cache_retained": 1
 }

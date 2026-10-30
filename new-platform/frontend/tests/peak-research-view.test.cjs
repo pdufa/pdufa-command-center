@@ -20,6 +20,17 @@ function fixture(){
 test('actual 40-question register reconciles sources, gaps, contexts and zero certification',()=>{
  const v=validatePeakResearchView(fixture());assert.equal(v.researchRegister.questions.length,40);assert.equal(v.researchRegister.summary.questionsWithSourceObservations,27);assert.equal(v.researchRegister.summary.missingRequiredDocumentFamilies,12);assert.equal(v.science40.sourceLeadsDiscovered,10);assert.equal(v.science40.independentlyReviewedAssessments,0);assert.equal(v.outcome.decisionReadinessGrade,'ABSTAIN');
 });
+test('shared MAIN and three-outcome metadata preserve abstention and reject invented forecasts',()=>{
+ const value=fixture();
+ value.main={schemaVersion:'phase3-main-readiness-v1',exactKey:value.exactKey,asOf:value.asOf,researchReadinessGrade:'RELUCTANT',decisionReadinessGrade:'ABSTAIN',prediction:'INSUFFICIENT_EVIDENCE',approvalProbability:null,confidence:null,modelValidated:false,modelVersion:null,predictionTimestamp:null,tradeAuthorized:false,researchRegister:value.researchRegister};
+ Object.assign(value.outcome,{predictionClasses:['PASS','CRL','EXTENSION'],probabilities:{PASS:null,CRL:null,EXTENSION:null},extensionIsNonapproval:false,modelVersion:null});
+ assert.equal(validatePeakResearchView(value).main.prediction,'INSUFFICIENT_EVIDENCE');
+ for(const mutate of [
+  v=>v.main.exactKey='OTHER',v=>v.main.asOf='2026-01-01',v=>v.main.researchRegister=null,
+  v=>v.main.prediction='PASS',v=>v.main.modelVersion='unvalidated',v=>v.main.predictionTimestamp='2026-10-28T00:00:00Z',
+  v=>v.outcome.probabilities.EXTENSION=.2,v=>v.outcome.predictionClasses=['PASS','CRL'],v=>v.outcome.extensionIsNonapproval=true
+ ]){const changed=structuredClone(value);mutate(changed);assert.throws(()=>validatePeakResearchView(changed));}
+});
 test('cross-trial evidence, future sources and false independent/model claims are withheld',()=>{
  for(const mutate of [v=>v.exactKey='OTHER',v=>v.researchRegister.nctId='NCT00000001',v=>v.science40.independentlyReviewedAssessments=40,v=>v.outcome.modelValidated=true,v=>v.outcome.approvalProbability=.9,v=>v.science40.reviewedDepthLevels=[20],v=>v.sheetWritesEnabled=true,v=>v.researchRegister.questions[0].independentlyReviewed=true,v=>v.researchRegister.questions[0].sourceIds=['missing'],v=>v.researchRegister.sources[0].url='https://user:secret@example.org',v=>v.researchRegister.sources[0].observedOn='2026-10-29',v=>v.researchRegister.historicalContexts[0].modelEligible=true,v=>v.researchRegister.historicalContexts[0].reviewCycle=1,v=>v.researchRegister.summary.questionsWithSourceObservations=40]){
   const v=fixture();mutate(v);assert.throws(()=>validatePeakResearchView(v));

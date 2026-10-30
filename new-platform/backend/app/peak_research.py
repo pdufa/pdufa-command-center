@@ -133,6 +133,9 @@ def outcome_readiness(science40: dict, register: dict | None) -> dict:
         "schemaVersion": "phase3-outcome-readiness-v1", "exactKey": science40["exactKey"],
         "asOf": science40["asOf"], "researchReadinessGrade": science40["readinessGrade"],
         "decisionReadinessGrade": "ABSTAIN", "decision": "ABSTAIN",
+        "predictionClasses": ["PASS", "CRL", "EXTENSION"],
+        "probabilities": {"PASS": None, "CRL": None, "EXTENSION": None},
+        "extensionIsNonapproval": False, "modelVersion": None,
         "scientificEvidence": {
             "independentlyCertified": science40["independentlyReviewedAssessments"],
             "required": 40, "sourceLeads": science40["sourceLeadsDiscovered"],
@@ -154,4 +157,23 @@ def outcome_readiness(science40: dict, register: dict | None) -> dict:
         "blockers": ["Independent scientific review and required primary documents are incomplete.",
                      "Selected historical action claims are not adjudicated cycle labels or a representative validation cohort.",
                      "No independently validated, calibrated FDA prediction method is available."],
+    }
+
+
+def main_readiness(science40: dict, register: dict | None) -> dict:
+    """Shared MAIN projection for batch and server-maintained research reads.
+
+    Target classes describe the intended FDA outcomes, not available forecasts.
+    There is no validated model or prediction timestamp to manufacture here.
+    """
+    if register is not None and register.get("exactKey") != science40["exactKey"]:
+        raise ValueError("MAIN research register identity does not match SCIENCE")
+    return {
+        "schemaVersion": "phase3-main-readiness-v1",
+        "exactKey": science40["exactKey"], "asOf": science40["asOf"],
+        "researchReadinessGrade": science40["readinessGrade"],
+        "decisionReadinessGrade": "ABSTAIN", "prediction": "INSUFFICIENT_EVIDENCE",
+        "approvalProbability": None, "confidence": None, "modelValidated": False,
+        "modelVersion": None, "predictionTimestamp": None,
+        "tradeAuthorized": False, "researchRegister": register,
     }

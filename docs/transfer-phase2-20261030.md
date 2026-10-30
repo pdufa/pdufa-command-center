@@ -145,3 +145,41 @@ identity, assessment-history and other tables. Do not execute it as the full
 system transfer. Existing backups must be restored and reconciled in isolation
 before any live schema or cutover work. Transfer and validated prediction remain
 incomplete; no completion percentages are assigned here.
+
+## Phase 3 continuation
+
+The owner approved the existing Vercel team grant. Immediate helper retry still
+failed at its deployment-alias request; the ordinary default-context alias API
+works. Direct preview/production HTTPS remains blocked by managed host policy,
+and current runtime observations still show no application secret bindings.
+No further unchanged authorization request was issued.
+
+Published SCIENCE/OUTCOME reads now include the same MAIN projection as batch
+evaluation. The dashboard checks its identity, cutoff, evidence link and retained
+abstention. PASS, CRL and formal EXTENSION are explicit target classes with null
+probabilities, not newly generated or validated predictions. MAIN has no invented
+model version or prediction timestamp. The existing smoke runner's `--published`
+mode performs only health/register GETs using the existing dedicated HOP binding,
+rejects redirects and ambiguous responses, and submits no trial fixture.
+
+Changed-path verification: 66 backend tests, seven frontend contract tests,
+TypeScript and production build passed. A real local ASGI response also passed
+the frontend contract (94,304 response bytes). These remain local software checks.
+
+Retained census logs from October 27 show only `checklists` and
+`MASTER_TABLE_NOT_FOUND`; do not reuse that job as current full-storage proof.
+The existing October 29 staging reconciliation artifact is verified as an actual
+successful workflow receipt: 11,812 rows / 119 pages, aggregate identity counts
+reconciled, zero missing/duplicate identities, all candidates still blocked.
+It explicitly does not certify live SQL constraints or scientific evidence.
+No fresh database inventory, backup or restore was performed. Current Render
+private-network documentation retrieval was unavailable; no networking change
+was made from an assumed platform capability.
+
+During this phase main advanced to `2ebf3258` through its normal overnight
+publication, with production deployment `dpl_Dj2Qg8EtuccUaJRd3XLHqk2Y6hmM` READY.
+The complete public source archive was checked against the earlier baseline;
+all 533 changed files were scanner data, with no deletions or source-code changes.
+Those exact upstream data bytes are preserved in the integration tree; this is
+not a new collection or an agent production release. Remote authenticated smoke,
+full database/restore proof and scientific prediction validation remain open.
