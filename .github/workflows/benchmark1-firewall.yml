@@ -1,0 +1,32 @@
+name: Benchmark 1 evidence firewall
+on:
+  workflow_dispatch:
+  push:
+    branches: [new-platform-bootstrap]
+    paths:
+      - 'new-platform/backend/app/benchmark1_firewall.py'
+      - 'new-platform/backend/tests/test_benchmark1_firewall.py'
+      - '.github/workflows/benchmark1-firewall.yml'
+  pull_request:
+    paths:
+      - 'new-platform/backend/app/benchmark1_firewall.py'
+      - 'new-platform/backend/tests/test_benchmark1_firewall.py'
+      - '.github/workflows/benchmark1-firewall.yml'
+permissions:
+  contents: read
+jobs:
+  test-firewall:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install pytest
+      - name: Run Benchmark 1 tests
+        run: python -m pytest -q tests/test_benchmark1_firewall.py
