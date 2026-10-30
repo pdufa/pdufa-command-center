@@ -261,8 +261,8 @@ async function main() {
     const initialText = await firstSse.text();
     // SSE IDs are opaque cursor strings, not necessarily decimal integers.
     // Parse event blocks and compare replay to the original ordered suffix.
-    const eventIds = body => body.split(/\\r?\\n\\r?\\n/).map(block => {
-      const match = block.match(/^id:[ \\t]*(.+?)\\r?$/m);
+    const eventIds = body => body.split(/\r?\n\r?\n/).map(block => {
+      const match = block.match(/^id:[ \t]*(.+?)\r?$/m);
       return match ? match[1].trim() : null;
     }).filter(Boolean);
     const ids = eventIds(initialText);
