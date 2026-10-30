@@ -232,6 +232,17 @@ async function main() {
     await page.locator('#nct-live-input').fill(NCT);
     await section.getByRole('button', { name: 'Start processing', exact: true }).click();
     const created = await createdResponse;
+    // Record only safe HTTP metadata on failure; never persist response bodies,
+    // request headers, cookies, tokens, or other potentially sensitive data.
+    if (!created.ok()) {
+      result.counts.run_create_http_status = created.status();
+      const retryAfter = created.headers()['retry-after'];
+      result.checks.run_create_rate_limited = created.status() === 429;
+      result.checks.run_create_auth_rejected = [401, 403].includes(created.status());
+      result.checks.run_create_server_error = created.status() >= 500;
+      result.checks.run_create_retry_after_present = typeof retryAfter === 'string';
+      console.log('Stage 1 run creation HTTP status: ' + created.status());
+    }
     requireCheck(created.ok(), 'run_created_through_authenticated_browser');
     const run = await created.json();
     requireCheck(run.nct_id === NCT && /^[A-Za-z0-9_-]{8,100}$/.test(run.run_id || '') && typeof run.dossier_id === 'string', 'new_run_identity');
