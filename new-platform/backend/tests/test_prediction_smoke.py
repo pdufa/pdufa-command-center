@@ -83,3 +83,10 @@ def test_smoke_rejects_non_object_json_without_traceback(capsys):
     captured = capsys.readouterr()
     assert "Event type or NCT identity mismatch" in captured.err
     assert "dummy-secret" not in captured.err
+
+
+def test_smoke_rejects_duplicate_assessment_ids(capsys):
+    body = stream().replace('"assessment_id": "S02"', '"assessment_id": "S01"')
+    with patch.dict("os.environ", ENV), patch.object(smoke.urllib.request, "urlopen", return_value=Response(body)):
+        assert smoke.main() == 1
+    assert "SSE invariant failure" in capsys.readouterr().err
