@@ -185,6 +185,21 @@ async function main() {
     requireCheck((await login).status() === 200, 'normal_password_login_succeeded');
     const section = page.locator('#nct-live-processing');
     await section.waitFor({ state: 'visible', timeout: 45000 });
+    // Explicitly verify the active dashboard section is on the PREDICTION surface.
+    // Do not claim a tab click unless the deployed UI exposes a matching control.
+    const predictionTab = page.getByRole('tab', { name: /prediction/i });
+    const predictionLink = page.getByRole('link', { name: /^prediction$/i });
+    if (await predictionTab.count()) {
+      await predictionTab.first().click();
+      requireCheck(await section.isVisible(), 'prediction_tab_live_panel_visible');
+    } else if (await predictionLink.count()) {
+      await predictionLink.first().click();
+      await section.waitFor({ state: 'visible', timeout: 45000 });
+      requireCheck(await section.isVisible(), 'prediction_tab_live_panel_visible');
+    } else {
+      // Existing dashboard may render PREDICTION as a heading rather than a tab.
+      requireCheck(false, 'prediction_tab_navigation_control_not_found');
+    }
     requireCheck(await section.isVisible(), 'authenticated_component_rendered');
     await section.evaluate(section => {
       const observation = { loading_animation: false, pending_without_spinner: false, verified_leaf_before_terminal: false, verified_citation: false, verified_hash: false };
