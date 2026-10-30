@@ -47,8 +47,9 @@ export default function PredictionTab() {
             const leaf: Leaf = { node_id: event.node_id, label: event.label, status: event.status, section: event.section || "trial_identity", value: event.value, spinner: event.spinner };
             setLeaves(prev => [...prev.filter(x => x.node_id !== leaf.node_id), leaf]);
           }
-          if (event.type === "progress" && event.section === "trial_identity" && typeof event.available === "number" && typeof event.total === "number") {
-            setIdentityProgress({ available: event.available, total: event.total, status: event.status || "PARTIAL" });
+          if (event.type === "progress" && event.section && typeof event.available === "number" && typeof event.total === "number") {
+            const section = event.section;
+            setProgress(prev => ({ ...prev, [section]: { available: event.available!, total: event.total!, status: event.status || "PARTIAL" } }));
           }
           if (event.type === "complete") { setDecision(event.decision || "ABSTAIN"); setState("Saved evidence loaded. Full scientific prediction pending."); }
         }
