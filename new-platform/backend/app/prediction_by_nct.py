@@ -41,11 +41,11 @@ def progressive_snapshot(nct_id, dossier):
             "id": key,
             "label": label,
             "level": 4,
-            "status": "VERIFIED" if present else "UNAVAILABLE",
+            "status": "AVAILABLE" if present else "UNAVAILABLE",
             "value": value if present else None,
             "spinner": False,
         })
-    complete = sum(x["status"] == "VERIFIED" for x in leaves)
+    complete = sum(x["status"] == "AVAILABLE" for x in leaves)
     payload["progress"] = {
         "mode": "BOTTOM_UP",
         "live_research_active": False,
@@ -53,7 +53,7 @@ def progressive_snapshot(nct_id, dossier):
         "subordinate": {
             "id": "trial_identity",
             "level": 2,
-            "status": "VERIFIED" if complete == len(leaves) else "PARTIAL",
+            "status": "AVAILABLE" if complete == len(leaves) else "PARTIAL",
             "completed": complete,
             "total": len(leaves),
         },
