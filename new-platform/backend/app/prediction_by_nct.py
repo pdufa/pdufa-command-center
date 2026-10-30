@@ -23,3 +23,45 @@ def prediction_payload(nct_id, dossier):
         "dossier": dossier,
         "message": "Source-grounded evidence only; full SCIENCE/OUTCOME/MAIN prediction pending.",
     }
+
+
+def progressive_snapshot(nct_id, dossier):
+    """Read-only bottom-up snapshot; never claim an unstarted task is running."""
+    payload = prediction_payload(nct_id, dossier)
+    leaves = []
+    for key, label in (
+        ("sponsor", "Sponsor"),
+        ("products", "Drug or product"),
+        ("indication", "Indication"),
+        ("phase", "Trial phase"),
+    ):
+        value = dossier.get(key)
+        present = value is not None and value != "" and value != []
+        leaves.append({
+            "id": key,
+            "label": label,
+            "level": 4,
+            "status": "VERIFIED" if present else "UNAVAILABLE",
+            "value": value if present else None,
+            "spinner": False,
+        })
+    complete = sum(x["status"] == "VERIFIED" for x in leaves)
+    payload["progress"] = {
+        "mode": "BOTTOM_UP",
+        "live_research_active": False,
+        "leaves": leaves,
+        "subordinate": {
+            "id": "trial_identity",
+            "level": 2,
+            "status": "VERIFIED" if complete == len(leaves) else "PARTIAL",
+            "completed": complete,
+            "total": len(leaves),
+        },
+        "main": {
+            "id": "prediction",
+            "level": 1,
+            "status": "PARTIAL",
+            "decision": "ABSTAIN",
+        },
+    }
+    return payload
