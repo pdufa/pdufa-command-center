@@ -431,6 +431,16 @@ async def lifespan(app: FastAPI):
     from .full_trial_archive import cleanup_retired_zip_exports
     cleanup_retired_zip_exports()
     if _DB_STATE["available"]:
+        try:
+            from .phase3_catalog import initialize as initialize_phase3_catalog
+            from .phase3_ingestion import start as start_phase3_ingestion
+            initialize_phase3_catalog(ENGINE)
+            start_phase3_ingestion(ENGINE)
+            from .phase3_regulatory import start as start_phase3_regulatory
+            start_phase3_regulatory(ENGINE)
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).error("PDUFA_PHASE3_STARTUP_FAILED error_type=%s", type(exc).__name__)
         from .nct_live_stream import start as start_nct_live_stream
         start_nct_live_stream(ENGINE)
     yield
@@ -441,6 +451,10 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+from .phase3_catalog import install_routes as install_phase3_catalog_routes
+from .phase3_ingestion import install_routes as install_phase3_ingestion_routes
+install_phase3_catalog_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+install_phase3_ingestion_routes(app, lambda: ENGINE, require_internal_key, require_storage)
 
 
 # Internal, read-only scanner-to-research integration seam. This endpoint does
@@ -1164,4 +1178,3 @@ def save_program_checklist(program_id: str, stage: str, payload: ChecklistPayloa
         session.commit()
         return {"saved": True, "programId": program_id,
                 "version": payload.version + 1, "updated_at": now}
-

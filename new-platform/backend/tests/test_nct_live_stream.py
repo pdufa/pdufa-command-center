@@ -97,6 +97,51 @@ def test_request_idempotency_and_no_cross_nct_reuse(engine):
         live.snapshot(engine, OTHER, first["run_id"])
 
 
+def test_catalog_analyze_reuses_run_while_manual_processing_stays_new(engine):
+    first = live.create_run(engine, NCT, "catalog-analyze-first", submit=False, reuse_existing=True)
+    second = live.create_run(engine, NCT, "catalog-analyze-second", submit=False, reuse_existing=True)
+    assert first["run_id"] == second["run_id"]
+    manual = live.create_run(engine, NCT, "manual-refresh-new", submit=False)
+    assert manual["run_id"] != first["run_id"]
+    with engine.connect() as connection:
+        assert connection.execute(text("SELECT COUNT(*) FROM nct_stream_runs")).scalar_one() == 2
+
+
+def test_verified_catalog_trial_can_process_without_overwriting_legacy_dossiers(engine):
+    from app import phase3_catalog
+    phase3_catalog.initialize(engine)
+    identifier = "NCT99999999"
+    document = registry_study(identifier)
+    document["hasResults"] = True
+    source = {"url": "https://clinicaltrials.gov/api/v2/studies/" + identifier,
+              "sha256": live.digest(document), "retrieved_at": "2026-10-30T20:00:00+00:00", "verification_status": "VERIFIED"}
+    phase3_catalog.upsert_trial(engine, {"nct_id": identifier, "document": document, "source": source})
+    created = live.create_run(engine, identifier, "catalog-new-trial", submit=False)
+    assert created["dossier_id"].startswith("phase3-catalog:")
+    frozen_id = created["dossier_id"]
+    changed = deepcopy(document)
+    changed["protocolSection"]["identificationModule"]["briefTitle"] = "Later source revision"
+    later_source = {**source, "sha256": live.digest(changed), "retrieved_at": "2026-10-31T20:00:00+00:00"}
+    phase3_catalog.upsert_trial(engine, {"nct_id": identifier, "document": changed, "source": later_source})
+    live.worker(engine, created["run_id"], fetcher=fetcher)
+    snapshot = live.snapshot(engine, identifier, created["run_id"])
+    assert snapshot["status"] == "COMPLETE" and snapshot["terminal"]
+    with engine.connect() as connection:
+        original = live.saved_dossier(connection, identifier, frozen_id)
+        assert original["sha256"] == created["dossier_sha256"]
+        assert connection.execute(text("SELECT COUNT(*) FROM scientific_candidate_dossiers")).scalar_one() == 2
+
+
+def test_existing_legacy_run_uses_frozen_revision_after_new_review(engine):
+    created = live.create_run(engine, NCT, "frozen-legacy-review", submit=False)
+    changed = {**saved_document(), "sponsor": {"name": "Later review sponsor"}}
+    with engine.begin() as connection:
+        connection.execute(text("INSERT INTO scientific_review_runs VALUES ('later-review','2026-11-01T18:00:00+00:00')"))
+        connection.execute(text("INSERT INTO scientific_candidate_dossiers VALUES ('later-review',:nct,:doc,:sha)"), {"nct": NCT, "doc": live.canonical(changed), "sha": live.digest(changed)})
+    live.worker(engine, created["run_id"], fetcher=fetcher)
+    assert live.snapshot(engine, NCT, created["run_id"])["status"] == "COMPLETE"
+
+
 def test_real_worker_emits_durable_ordered_hierarchy_without_scoring(engine):
     run = live.create_run(engine, NCT, "hierarchy-request-key", submit=False)
     live.worker(engine, run["run_id"], fetcher=fetcher)
@@ -342,7 +387,13 @@ def test_router_all_routes_require_auth_and_exact_run_scope(engine, monkeypatch)
     app = installed_app(engine)
     registered = [leaf for route in app.routes for leaf in (route.original_router.routes if hasattr(route, "original_router") else [route])]
     routes = {r.path: r for r in registered if r.path.startswith("/api/nct-stream")}
-    assert len(routes) == 3
+    assert set(routes) == {
+        "/api/nct-stream/{nct_id}/runs",
+        "/api/nct-stream/{nct_id}/runs/latest",
+        "/api/nct-stream/{nct_id}/runs/{run_id}",
+        "/api/nct-stream/{nct_id}/runs/{run_id}/events",
+        "/api/nct-stream/{nct_id}/runs/{run_id}/dossier-integrity",
+    }
     for route in routes.values():
         assert len(route.dependencies) == 2
         with pytest.raises(HTTPException) as missing:
@@ -355,6 +406,14 @@ def test_router_all_routes_require_auth_and_exact_run_scope(engine, monkeypatch)
     events = routes["/api/nct-stream/{nct_id}/runs/{run_id}/events"].endpoint
     run = create(NCT, live.StartRequest(request_key="route-request-key"))
     assert read(NCT, run["run_id"])["events"] == []
+    latest = routes["/api/nct-stream/{nct_id}/runs/latest"].endpoint
+    assert latest(NCT)["run_id"] == run["run_id"]
+    with pytest.raises(HTTPException) as no_prior:
+        latest(OTHER)
+    assert no_prior.value.status_code == 404
+    integrity = routes["/api/nct-stream/{nct_id}/runs/{run_id}/dossier-integrity"].endpoint
+    proof = integrity(NCT, run["run_id"])
+    assert proof["unchanged"] and proof["database_sha256"] == run["dossier_sha256"]
     with pytest.raises(HTTPException) as cross_nct:
         read(OTHER, run["run_id"])
     assert cross_nct.value.status_code == 404
