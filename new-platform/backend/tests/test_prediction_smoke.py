@@ -54,3 +54,12 @@ def test_smoke_requires_configuration(capsys):
     with patch.dict("os.environ", {}, clear=True):
         assert smoke.main() == 2
     assert "PDUFA_INTERNAL_API_KEY" in capsys.readouterr().err
+
+
+def test_smoke_rejects_malformed_json_without_traceback(capsys):
+    bad_frame = "event: started\\ndata: {not-json}\\n\\n".replace("\\n", "\n")
+    with patch.dict("os.environ", ENV), patch.object(smoke.urllib.request, "urlopen", return_value=Response(bad_frame)):
+        assert smoke.main() == 1
+    captured = capsys.readouterr()
+    assert "Malformed SSE JSON" in captured.err
+    assert "dummy-secret" not in captured.err
