@@ -248,13 +248,13 @@ async function main() {
     const firstSse = await context.request.get(sseUrl, { timeout: 30000 });
     requireCheck(firstSse.status() === 200 && /text\\/event-stream/i.test(firstSse.headers()['content-type'] || ''), 'browser_context_sse_initial_200');
     const initialText = await firstSse.text();
-    const ids = [...initialText.matchAll(/^id:\\s*(\\d+)\\s*$/gm)].map(m => Number(m[1]));
+    const ids = [...initialText.matchAll(/^id:\s*(\d+)\s*$/gm)].map(m => Number(m[1]));
     requireCheck(ids.length > 1 && ids.every((id, i) => i === 0 || id > ids[i - 1]), 'browser_context_sse_ordered_ids');
     const cursor = ids[Math.floor(ids.length / 2) - 1];
     const resumedSse = await context.request.get(sseUrl, { headers: { 'Last-Event-ID': String(cursor) }, timeout: 30000 });
     requireCheck(resumedSse.status() === 200, 'browser_context_sse_resume_200');
     const resumedText = await resumedSse.text();
-    const resumedIds = [...resumedText.matchAll(/^id:\\s*(\\d+)\\s*$/gm)].map(m => Number(m[1]));
+    const resumedIds = [...resumedText.matchAll(/^id:\s*(\d+)\s*$/gm)].map(m => Number(m[1]));
     requireCheck(resumedIds.length > 0 && resumedIds.every(id => id > cursor), 'browser_context_sse_resume_no_duplicate_ids');
     requireCheck(resumedIds.at(-1) === ids.at(-1), 'browser_context_sse_resume_reaches_terminal');
     result.counts.browser_context_resumed_events = resumedIds.length;
