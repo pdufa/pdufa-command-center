@@ -169,3 +169,100 @@ significance/clinical meaningfulness remain unadjudicated, regulatory fields are
 not inferred from trial phase, and all prediction/trading decisions remain ABSTAIN.
 This Stage1 benchmark executes no scientific-framework assessments and authorizes
 no trading activity.
+
+## Final-verification follow-up — October 30, 2026
+
+Completion remains **INCOMPLETE**. The remaining credential blocker was rechecked
+through the existing authorized workflow, with no application changes.
+
+| Evidence | Actual result |
+|---|---|
+| Browser workflow / attempt | [41108170021, attempt 2](https://github.com/pdufa/pdufa-command-center/actions/runs/41108170021/attempts/2) |
+| Job | [124247427050](https://github.com/pdufa/pdufa-command-center/actions/runs/41108170021/job/124247427050) |
+| Attempt start | 2026-10-30T18:43:35Z |
+| Credential preflight failed | 2026-10-30T18:43:41.4973652Z (11:43:41 a.m. PDT) |
+| Exact diagnostic | `INCOMPLETE: missing GitHub Actions secret DASHBOARD_PASSWORD` |
+| Browser login / authenticated frontend test | Not attempted; blocked before checkout/browser installation |
+| Sanitized browser-result artifacts | None; no authenticated browser run occurred |
+
+The connector does not expose GitHub secret-list metadata. The rerun's value-free
+preflight directly established that `secrets.DASHBOARD_PASSWORD` resolved to an
+empty/unavailable binding for this job. This does not distinguish an absent
+repository secret from an organization secret without repository access or an
+environment-only secret. No secret value was requested, retrieved or generated.
+
+### Minimum secure credential setup
+
+1. The authorized application owner obtains the **existing normal production
+   dashboard login password** from their approved credential store. It must match
+   the deployed `pdufa-new-dashboard` production application's
+   `DASHBOARD_PASSWORD`. Use the application login password, not the backend
+   internal API key or session signing key.
+2. Open [repository Actions secrets](https://github.com/pdufa/pdufa-command-center/settings/secrets/actions):
+   **Settings → Secrets and variables → Actions → New repository secret**.
+3. Enter the exact name **`DASHBOARD_PASSWORD`** and save that existing credential
+   directly in GitHub's secret field. Do not paste it in chat, source, workflow
+   inputs, logs or this report. An approved organization Actions secret with access
+   granted to this repository is also sufficient. An environment-only secret is
+   unavailable because this workflow has no environment binding.
+4. Open [Stage 1 authorized live browser verification](https://github.com/pdufa/pdufa-command-center/actions/workflows/stage1-live-browser.yml),
+   select **Run workflow**, choose **main**, and run. Alternatively, rerun the
+   failed job after the secret is available.
+5. Inspect the actual job outcome and sanitized verification artifact before
+   changing this report's status. A successful credential preflight alone is
+   insufficient.
+
+### Deployment and evidence recheck
+
+Render deployment `dep-dbie5duk1f9s73ej4uhg` still reports LIVE for exact mirror
+`92bb782a24aa8a57aa581da711541e4538ed1a84`. At the 18:43 UTC check, the production Vercel alias
+resolved to READY deployment `dpl_GN81oSc6WdbE4VJvE1G5azjYnV2g`, build URL
+https://pdufa-new-dashboard-h0dt52hx5-pdufa.vercel.app, commit
+`64f7dcb6b73c38f8c212f2898c588398d868cee8`.
+Comparison with tested main `08033fdb` confirms no backend/frontend application
+code changes; the intervening files are this report, the browser workflow/script,
+and the existing automated morning-results data update. No new deployment was
+requested in this follow-up.
+
+The actual deployed backend marker was reread from Render logs. It retains the
+documented PASS for real NCT00116805, saved dossier verification, 70 persisted and
+received events, two HTTP connections, cursor resume without duplicates, matching
+reload snapshots, and an unchanged original dossier. Its execution timestamp is
+18:33:16 UTC; rereading it is not represented as a new execution.
+
+The live browser script checks normal authentication, live SSE, visible bottom-up
+population/loading, persisted ordering, displayed values against authenticated
+snapshots, and reload without a duplicate run. Forced frontend reconnect/error
+cases are exercised by regression tests; the deployed backend independently
+exercised a two-connection cursor resume. Those are separate evidence sources,
+not claims that blocked browser checks executed.
+
+Only verification documentation is changed in this follow-up. All protected
+restrictions, FS/FA associations, scoring, schedules and trading controls remain
+unchanged.
+
+### Fresh regression execution
+
+All four suites actually reran against the unchanged tested application revisions.
+The backend jobs executed in attempt 2; frontend jobs executed in attempt 3 after
+GitHub finished the backend attempts. Inherited successful job entries are not
+counted as new executions.
+
+| Suite | Fresh result | Test/build completion UTC | Executed job |
+|---|---|---|---|
+| Main backend, 08033fdb | **1,024 passed, 1 skipped**, 7 warnings, 11.39s | 2026-10-30T18:50:40.9058028Z | [124250528572](https://github.com/pdufa/pdufa-command-center/actions/runs/41107498655/job/124250528572) |
+| Main frontend, 08033fdb | **402 passed, 0 failed, 0 skipped**; TypeScript and production build passed | tests 18:51:34Z; build 18:51:47Z | [124250915531](https://github.com/pdufa/pdufa-command-center/actions/runs/41107498655/job/124250915531) |
+| Render mirror backend, 92bb782a | **309 passed**, 6 warnings, 6.12s | 2026-10-30T18:50:32.9372122Z | [124250540225](https://github.com/pdufa/pdufa-command-center/actions/runs/41107506125/job/124250540225) |
+| Render mirror frontend, 92bb782a | **39 passed, 0 failed, 0 skipped**; TypeScript and production build passed | tests 18:51:10Z; build 18:51:21Z | [124250868782](https://github.com/pdufa/pdufa-command-center/actions/runs/41107506125/job/124250868782) |
+
+The main workflow's attempt 3 finished SUCCESS at
+`2026-10-30T18:51:51Z`; mirror attempt 3 finished SUCCESS at
+`2026-10-30T18:51:23Z`. The existing main-backend skip is still reported as a skip,
+not a pass. No application code was rebuilt or rewritten to work around the
+credential blocker.
+
+**Final benchmark result: INCOMPLETE — authorization credential unavailable to
+the live-browser job.** Backend live execution and automated regressions pass;
+deployed authenticated browser authentication, population and reload remain
+pending. Only after the authorized workflow succeeds and its evidence is checked
+may Stage 1 be marked VERIFIED COMPLETE.
