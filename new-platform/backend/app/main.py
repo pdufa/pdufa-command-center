@@ -419,9 +419,37 @@ async def lifespan(app: FastAPI):
             try:
                 with ENGINE.connect() as connection:
                     if ENGINE.dialect.name == "postgresql":
-                        connection.execute(text("SET TRANSACTION READ ONLY"))
+                        connection.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"))
                     database = (connection.execute(text("SELECT current_database()")).scalar_one()
                                 if ENGINE.dialect.name == "postgresql" else "non_postgresql")
+                    # Independently aggregate identifiers and reconcile against the saved
+                    # authoritative download scope in the same read-only snapshot.
+                    census = dict(connection.execute(text("""
+                        SELECT COUNT(*) AS physical_records,
+                               COUNT(*) FILTER (WHERE nct_id ~ '^NCT[0-9]{8}$') AS valid_identifiers,
+                               COUNT(*) - COUNT(DISTINCT nct_id) AS duplicate_identifiers
+                        FROM full_trial_records
+                    """)).mappings().one())
+                    jobs = list(connection.execute(text(
+                        "SELECT scope_ids, completed_ids FROM full_trial_download"
+                    )))
+                    scope = {nct for job in jobs for nct in job.scope_ids}
+                    completed = {nct for job in jobs for nct in job.completed_ids}
+                    physical_ids = set(connection.execute(text(
+                        "SELECT nct_id FROM full_trial_records"
+                    )).scalars())
+                    reconciliation = {
+                        "scope_source": "full_trial_download.scope_ids",
+                        "expected_scope_records": len(scope),
+                        "missing_expected_records": len(scope - physical_ids),
+                        "unexpected_records": len(physical_ids - scope),
+                        "tracking_missing_records": len(completed - physical_ids),
+                        "scope_available": bool(scope),
+                        "independent_census": census,
+                    }
+                    logging.getLogger(__name__).warning(
+                        "PDUFA_ARCHIVE_RECONCILIATION %s", json.dumps(reconciliation, sort_keys=True)
+                    )
                     rows = connection.execution_options(stream_results=True).execute(
                         text("SELECT nct_id, payload_gzip, sha256 FROM full_trial_records ORDER BY nct_id")
                     )
@@ -429,7 +457,7 @@ async def lifespan(app: FastAPI):
                         totals["rows"] += 1
                         if totals["rows"] % 1000 == 0:
                             logging.getLogger(__name__).warning("PDUFA_ARCHIVE_INTEGRITY_PROGRESS rows=%d", totals["rows"])
-                        if not re.fullmatch(r"NCT\\d{8}", nct or ""):
+                        if not re.fullmatch(r"NCT[0-9]{8}", nct or ""):
                             totals["invalid_ids"] += 1
                         else:
                             totals["valid_ids"] += 1
@@ -453,10 +481,18 @@ async def lifespan(app: FastAPI):
                 passed = totals["rows"] == 11622 and all(
                     value == 0 for key, value in totals.items() if key not in ("rows", "valid_ids")
                 ) and totals["valid_ids"] == totals["rows"]
+                passed = (passed and reconciliation["scope_available"]
+                          and reconciliation["expected_scope_records"] == 11622
+                          and reconciliation["missing_expected_records"] == 0
+                          and reconciliation["unexpected_records"] == 0
+                          and reconciliation["tracking_missing_records"] == 0
+                          and census["physical_records"] == totals["rows"]
+                          and census["valid_identifiers"] == totals["valid_ids"]
+                          and census["duplicate_identifiers"] == totals["duplicate_ids"])
                 logging.getLogger(__name__).warning(
                     "PDUFA_ARCHIVE_INTEGRITY %s",
                     json.dumps({"database": database, "result": "PASS" if passed else "REVIEW_REQUIRED",
-                                **totals, "read_only": True, "trade_authorized": False}, sort_keys=True)
+                                **totals, **reconciliation, "read_only": True, "trade_authorized": False}, sort_keys=True)
                 )
             except Exception as exc:
                 logging.getLogger(__name__).error(
