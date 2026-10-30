@@ -128,3 +128,108 @@ def test_program_notes_do_not_overwrite_legacy_ticker_checklist(isolated_db):
     )
     assert main.read_checklist("AAA","PIPELINE")["notes"] == "Old ticker-level note"
     assert main.read_program_checklist(number,"PIPELINE")["notes"] == "Specific program note"
+
+
+def test_repeated_numbering_does_not_write_or_revise_existing_identity_metadata(isolated_db):
+    """Warm retrieval reads existing keys; new source descriptions do not upsert."""
+    from sqlalchemy import event
+
+    first = program_registry.number_workspace(snapshot())
+    with Session(isolated_db) as session:
+        before = [(row.id, row.source_key, row.ticker, row.drug, row.created_at)
+                  for row in session.scalars(select(main.ProgramIdentity).order_by(main.ProgramIdentity.id))]
+    changed = snapshot(reverse=True)
+    changed["pipeline"][0].update(ticker="RENAMED", drug="Revised source description")
+    writes = []
+
+    def capture(connection, cursor, statement, parameters, context, executemany):
+        if statement.lstrip().split(None, 1)[0].upper() in {"INSERT", "UPDATE", "DELETE", "REPLACE"}:
+            writes.append(statement)
+
+    event.listen(isolated_db, "before_cursor_execute", capture)
+    try:
+        again = program_registry.number_workspace(changed)
+    finally:
+        event.remove(isolated_db, "before_cursor_execute", capture)
+    assert writes == []
+    assert {r["id"]: r["programId"] for r in first["pipeline"]} == {
+        r["id"]: r["programId"] for r in again["pipeline"]}
+    with Session(isolated_db) as session:
+        assert before == [(row.id, row.source_key, row.ticker, row.drug, row.created_at)
+                          for row in session.scalars(select(main.ProgramIdentity).order_by(main.ProgramIdentity.id))]
+
+
+def test_missing_key_allocation_only_inserts_identity_and_preserves_other_state(isolated_db):
+    """Numbering must not rewrite scientific, FS/FA, checklist or trading data."""
+    from copy import deepcopy
+    from sqlalchemy import event
+
+    first = program_registry.number_workspace(snapshot())
+    number = first["pipeline"][0]["programId"]
+    now = datetime.now(timezone.utc)
+    with Session(isolated_db) as session:
+        session.add(main.ProgramChecklist(program_id=number, stage="GEM_JR",
+            notes="Preserve source review", selections={"FS": True, "FA": False}, version=7, updated_at=now))
+        session.add(main.ProgramWatchTrade(id=1, watch=[number], trade=[], version=3, updated_at=now))
+        session.add(main.WatchTrade(id=1, watch=["AAA"], trade=["BBB"], version=4, updated_at=now))
+        session.add(main.CandidateAssessmentHistory(exact_id="TRIAL|NCT00000001", program_id=number,
+            model_version="SYNTHETIC_TEST", evidence_hash="a" * 64,
+            summary={"independently_verified": False, "prediction": "ABSTAIN"}, assessed_at=now))
+        session.commit()
+
+    def nonidentity_tables():
+        with isolated_db.connect() as connection:
+            return {table.name: connection.execute(select(table)).fetchall()
+                    for table in main.Base.metadata.sorted_tables if table.name != "program_identity"}
+
+    before = nonidentity_tables()
+    source = snapshot()
+    source["pipeline"].append({"id": "TRIAL|NCT00000004", "ticker": "CCC", "drug": "New drug"})
+    source["restrictions"] = {"PIPELINE": ["original"], "GEM_JR": {"FS": "original-FS", "FA": "original-FA"}}
+    source["members"]["GEM_JR"]["presets"] = {"FS": ["source-FS"], "FA": ["source-FA"]}
+    original_source = deepcopy(source)
+    writes = []
+
+    def capture(connection, cursor, statement, parameters, context, executemany):
+        if statement.lstrip().split(None, 1)[0].upper() in {"INSERT", "UPDATE", "DELETE", "REPLACE"}:
+            writes.append(statement)
+
+    event.listen(isolated_db, "before_cursor_execute", capture)
+    try:
+        result = program_registry.number_workspace(source)
+    finally:
+        event.remove(isolated_db, "before_cursor_execute", capture)
+    assert writes and all(statement.lstrip().upper().startswith("INSERT INTO PROGRAM_IDENTITY ") for statement in writes)
+    assert nonidentity_tables() == before
+    assert source == original_source
+    assert result["restrictions"] == original_source["restrictions"]
+    assert result["members"]["GEM_JR"]["presets"] == original_source["members"]["GEM_JR"]["presets"]
+    old_numbers = {r["id"]: r["programId"] for r in first["pipeline"]}
+    assert all(row["programId"] == old_numbers[row["id"]]
+               for row in result["pipeline"] if row["id"] in old_numbers)
+    assert result["pipeline"][-1]["programId"] not in set(old_numbers.values())
+
+
+def test_database_enforces_unique_source_keys_and_permanent_ids(isolated_db):
+    from sqlalchemy.exc import IntegrityError
+
+    source = snapshot()
+    source["pipeline"].append(dict(source["pipeline"][0]))
+    result = program_registry.number_workspace(source)
+    assert result["pipeline"][0]["programId"] == result["pipeline"][-1]["programId"]
+    with Session(isolated_db) as session:
+        assert len(session.scalars(select(main.ProgramIdentity)).all()) == 3
+        row = session.scalars(select(main.ProgramIdentity).order_by(main.ProgramIdentity.id)).first()
+        original_id, original_key = row.id, row.source_key
+    # Constraints protect the actual database, independently of importer logic.
+    with Session(isolated_db) as session:
+        session.add(main.ProgramIdentity(source_key=original_key, ticker="XXX", drug="Duplicate", created_at=datetime.now(timezone.utc)))
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+    with Session(isolated_db) as session:
+        session.add(main.ProgramIdentity(id=original_id, source_key="TRIAL|DIFFERENT", ticker="XXX", drug="Duplicate", created_at=datetime.now(timezone.utc)))
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+        assert len(session.scalars(select(main.ProgramIdentity)).all()) == 3

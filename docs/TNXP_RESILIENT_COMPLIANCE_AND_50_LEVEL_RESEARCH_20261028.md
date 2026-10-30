@@ -1,0 +1,32 @@
+# RESILIENT compliance audit and research contract — October 28, 2026
+
+Continues PR #522 after integrating the remote branch through d4ba7b26. Existing TNXP denominator, safety, RALLY and source-reconciliation work is preserved. The twenty-level foundation and publication-selection backtest fix are retained in the rebased development history. No production changes or deployment.
+
+## Highest-priority scientific finding
+
+**The numerical difference has a sponsor explanation; compliance with the final prespecified SAP remains NOT ESTABLISHED.** Sponsor material reports 457 randomized (231 active, 226 placebo), 456 in the displayed efficacy population (231 active, 225 placebo), and 457 in safety. Its explanation is one placebo participant randomized in error after failing a safety criterion. This is sponsor-reported, not independent participant-level adjudication.
+
+The retrieved [SAP Final v1.0, October 17, 2023](https://cdn.clinicaltrials.gov/large-docs/49/NCT05273749/SAP_003.pdf), section 7 printed page 16, and [Protocol Amendment 2, June 15, 2023](https://cdn.clinicaltrials.gov/large-docs/49/NCT05273749/Prot_002.pdf), section 13.1 printed page 69, define primary efficacy ITT using all randomized participants. No applicable prespecified exception has been established from the examined records. An eligibility criterion alone does not establish authority for a post-randomization exclusion. Neither compliance nor a protocol violation is independently established.
+
+Resolution requires signed final SAP/amendment history, the participant-specific deviation/exclusion record, timing relative to database lock/unblinding, an all-457 analysis, original CSR population tables and relevant FDA statistical adjudication. The SAP's internal date is not a recovered original public upload timestamp. Signature/amendment completeness and original bytes remain unverified.
+
+The [journal article](https://doi.org/10.1093/pm/pnaf089) has July 8, 2025 online publication metadata despite January 2026 issue dating. The [July 9 SEC index](https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/0001999371-25-008877-index.htm) establishes filing availability for its [supplementary methods exhibit](https://www.sec.gov/Archives/edgar/data/1430306/000199937125008877/ex99-02.htm); that exhibit is not the full main paper, final signed SAP or an exclusion audit. Original version bytes have not been retained. Direct managed-shell document retrieval returned HTTP 403; no policy bypass or invented hashes.
+
+A structured audit and strict population-issue validator now keep the issue open, preserve the exact denominators and citations, reject self-certified compliance/accuracy and prevent internal dates from becoming public availability. The issue is attached to TNXP's dossier as a retrospective methodological audit, not a recovered forecast feature. Independent prediction status remains ABSTAIN.
+
+## Working research implementation
+
+- A **50-level research extension** inherits the existing twenty tasks without replacing their definitions or backend certification boundary. Thirty additional tasks cover protocol/SAP compliance, exclusions, estimands, missing data, safety, CMC, comparators and prospective validation. Concrete evidence requirements, prerequisites and completion artifacts are displayed. Designing fifty tasks does not complete them; independently completed levels remain zero.
+- Every question in the existing forty-assessment/eight-layer dossier now records rationale, original prediction-cutoff status, conservative research cutoff, missing evidence, uncertainty, verification status and effect on the proposed decision. Supporting/opposing interpretation remains explicitly unadjudicated rather than generated from source counts.
+- The existing OUTCOME provenance component exposes **PASS, CRL, EXTENSION and ABSTAIN** through an additive contract. All three probabilities are null, readiness NOT_READY, confidence NOT_ESTABLISHED and reluctance INSUFFICIENT_VERIFIED_EVIDENCE. EXTENSION requires a formal target revision and a prespecified prediction horizon; a missed date, delay, CRL or later approval is not automatically EXTENSION. Legacy binary validation behavior is retained.
+- Existing historical research dashboard views display the fifty-level worklist, the unresolved TNXP issue and the abstaining three-outcome contract. Detailed source/uncertainty content remains expandable. No live scanning, source fetching, list movement, spreadsheet or trading operation is added.
+
+## Records, verification and limits
+
+The unchanged 146-record history is processed by the research queue; six priority cases are reconstructed, with 26 observations including seventeen pre-cutoff research observations from twelve SEC filings. Original outcome documents remain seven observations: UNCY has original plus later-cycle evidence; CORT has only its corrected letter. An obsolete acquisition test expected an eighth source; it now checks the actual seven distinct records, preserving later-cycle separation rather than inventing a missing original.
+
+Local research suite after integration: **245 passed, 43 subtests passed**. Earlier in this increment the targeted backtest suite passed 43 tests and the complete backend suite passed 1001 tests with six warnings. Frontend: **401 tests passed**, TypeScript type checking and the standard production build passed. The broadened FDA CI test collection initially exposed a missing existing pandas dependency; the research job now installs it alongside pytest. Final GitHub Actions results are recorded in PR #522.
+
+No case qualifies for independent chronological prediction validation. Original prediction/feature freezes, training chronology and cohort completeness are unverified; recovered model/lock artifacts postdate these actions. Independently certified assessments remain 0/40 per case. No measured accuracy, calibration, confidence interval, validated three-class probability or prospective success is claimed.
+
+Next: obtain the original dated exclusion-authority and all-randomized analysis records, complete primary FDA document authentication, and establish a prespecified model/feature/prediction freeze for genuinely unseen future decisions. The fifty-level protocol is research methodology, not certified scientific completion. Pipeline → GEM JR → GEM → WT, original FS/FA associations, restrictions, scanners, schedules and production data remain unchanged.

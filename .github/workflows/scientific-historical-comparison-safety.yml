@@ -1,0 +1,48 @@
+name: Scientific historical comparison safety
+
+on:
+  pull_request:
+    paths:
+      - 'research/scientific_*.py'
+      - 'research/historical_decision_registry.py'
+      - 'research/fda_*.py'
+      - 'research/evidence/scientific_catalog_parts/**'
+      - 'research/evidence/historical_verification_worklist_*.json'
+      - 'research/evidence/2025_holdout_*.json'
+      - 'research/evidence/tnxp_three_trial_comparison.json'
+      - 'research/prediction_v1_1_*.py'
+      - 'research/science_investigation_*.py'
+      - 'research/evidence/science_investigation_*.json'
+      - 'research/requirements-security.txt'
+      - 'new-platform/backend/app/science_40_question_catalog.json'
+      - 'data/prediction_engine_history.csv'
+      - 'tests/test_scientific_*.py'
+      - 'tests/test_historical_decision_registry.py'
+      - 'tests/test_prediction_v1_1_*.py'
+      - '.github/workflows/scientific-historical-comparison-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated research test dependencies
+        run: python -m pip install pytest -r research/requirements-security.txt
+      - name: Preserve the original eight-field catalog contract
+        run: python research/prediction_v1_1_catalog_validator.py
+      - name: Validate draft scientific architecture without certifying evidence
+        run: python -m research.scientific_field_catalog
+      - name: Verify existing identity, authorization, audit and FDA label gates
+        run: python -m unittest discover -s tests -p 'test_prediction_v1_1_*.py' -v
+      - name: Test historical comparison, point-in-time evidence and abstention
+        run: python -m pytest -q tests/test_scientific_*.py tests/test_historical_decision_registry.py
+      - name: Verify reproducible historical verification worklist
+        run: python -m research.scientific_historical_verification --output research/evidence/historical_verification_worklist_20261029.json --check

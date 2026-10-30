@@ -1,0 +1,49 @@
+{
+  "aggregate_count_invariants_verified": true,
+  "archive_bytes": 787,
+  "archive_crc_verified": true,
+  "archive_file": "staging-pipeline-reconciliation.zip",
+  "archive_sha256": "8c89a4e99f8c35aa93ea2e3879212bbcd09ae9660873a9d66a174972ab772bf8",
+  "archive_single_expected_member": true,
+  "artifact_id": 12940010697,
+  "artifact_name": "staging-pipeline-reconciliation",
+  "audit_kind": "OFFLINE_AGGREGATE_TRANSPORT_AND_COUNT_REVIEW",
+  "audit_manifest_version": 1,
+  "branch": "research/fda-decision-label-gate-20261028",
+  "exact_elapsed_source_age_verified": false,
+  "github_archive_digest": "sha256:8c89a4e99f8c35aa93ea2e3879212bbcd09ae9660873a9d66a174972ab772bf8",
+  "github_digest_matched": true,
+  "independent_listing_or_restriction_verification": false,
+  "live_registry_constraints_queried": false,
+  "new_registry_identity_allocation_count": null,
+  "original_source_publication_clocks_verified": false,
+  "prediction_status": "NOT READY / ABSTAIN",
+  "preliminary_predictions_generated": 0,
+  "prior_population_observations": {
+    "candidate_assessments": {
+      "count": 11812,
+      "current_count_verified": false
+    },
+    "registry_entries": {
+      "count": 11636,
+      "current_count_verified": false
+    },
+    "same_population_as_retrieved_pipeline_verified": false
+  },
+  "raw_program_identities_recounted_independently": false,
+  "raw_rows_retained": false,
+  "report_bytes": 1208,
+  "report_file": "pdufa-pipeline-reconciliation.json",
+  "report_sha256": "66a166adc368d779cb59574fb77b32f227968cb9e288ddaf44c056b2016fc6b8",
+  "repository": "pdufa/pdufa-command-center",
+  "retrieval_commit": "07968fec1182168f60de9ccf735710bca96a0b77",
+  "run_attempt": 1,
+  "run_conclusion": "success",
+  "run_id": 40969177461,
+  "run_started_at": "2026-10-29T22:52:59Z",
+  "run_status": "completed",
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40969177461",
+  "source_rows_hash_recomputed_independently": false,
+  "verified_at": "2026-10-29T23:01:55.716515+00:00",
+  "workflow": ".github/workflows/isolated-readiness-smoke.yml"
+}

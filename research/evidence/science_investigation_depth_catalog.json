@@ -1,0 +1,534 @@
+{
+  "schema_version": "science-investigation-depth-catalog-v1",
+  "protocol_status": "DEFINED_RESEARCH_PROTOCOL_NOT_INDEPENDENTLY_VALIDATED",
+  "question_catalog_version": "science-40-question-catalog-v1",
+  "required_levels": 20,
+  "required_question_ids": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08",
+    "S09",
+    "S10",
+    "S11",
+    "S12",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S18",
+    "S19",
+    "S20",
+    "S21",
+    "S22",
+    "S23",
+    "S24",
+    "S25",
+    "S26",
+    "S27",
+    "S28",
+    "S29",
+    "S30",
+    "S31",
+    "S32",
+    "S33",
+    "S34",
+    "S35",
+    "S36",
+    "S37",
+    "S38",
+    "S39",
+    "S40"
+  ],
+  "basis": [
+    "new-platform/backend/app/science_40_question_catalog.json",
+    "new-platform/backend/app/science_independent_investigation.py"
+  ],
+  "scope": "New versioned analytical protocol; not recovered historical depth definitions, a scientific completion claim, or a prediction accuracy claim.",
+  "completion_policy": {
+    "source_leads_complete_levels": false,
+    "automatic_completion_enabled": false,
+    "fixed_800_review_requirement": false,
+    "independent_evidence_and_interpretation_required": true,
+    "missing_evidence_is_unknown": true
+  },
+  "levels": [
+    {
+      "level_id": "D01",
+      "depth_level": 1,
+      "title": "Application and review-cycle identity",
+      "objective": "Resolve the exact drug, indication, formulation, application and review cycle before comparing evidence.",
+      "question_ids": [
+        "S26"
+      ],
+      "prerequisite_levels": [],
+      "requirements": [
+        "Bind application, indication, formulation and review cycle to primary regulatory records.",
+        "Keep delays, withdrawals, complete responses and approvals distinct; do not infer a decision from a target date."
+      ],
+      "completion_artifacts": [
+        "Primary application/cycle identity record with unresolved aliases documented."
+      ]
+    },
+    {
+      "level_id": "D02",
+      "depth_level": 2,
+      "title": "Point-in-time evidence boundary",
+      "objective": "Separate the research cutoff, source availability, retrospective review and original prediction freeze.",
+      "question_ids": [
+        "S24",
+        "S26"
+      ],
+      "prerequisite_levels": [
+        1
+      ],
+      "requirements": [
+        "Document the original prediction cutoff or explicitly preserve it as unknown.",
+        "Establish public availability before the research cutoff; an action date, printed date or folder year is insufficient.",
+        "Keep retrospective review timestamps separate from source publication and original prediction generation."
+      ],
+      "completion_artifacts": [
+        "Timestamped source-availability ledger and explicit cutoff/freezing chronology."
+      ]
+    },
+    {
+      "level_id": "D03",
+      "depth_level": 3,
+      "title": "Source corpus and reconciliation",
+      "objective": "Collect and reconcile original documents, corrections and contradictory disclosures without promoting leads.",
+      "question_ids": [
+        "S22",
+        "S24",
+        "S25"
+      ],
+      "prerequisite_levels": [
+        1,
+        2
+      ],
+      "requirements": [
+        "Retain original source bytes and hashes, accession identities and relevant locations.",
+        "Identify corrected, superseded, duplicated and unavailable documents and reconcile conflicting claims.",
+        "Exclude outcome-only and post-cutoff material from pre-decision findings."
+      ],
+      "completion_artifacts": [
+        "Versioned source inventory, byte/hash provenance and exclusion/reconciliation log."
+      ]
+    },
+    {
+      "level_id": "D04",
+      "depth_level": 4,
+      "title": "Mechanistic and translational context",
+      "objective": "Assess biological rationale and translation to the proposed indication without assuming mechanism implies efficacy.",
+      "question_ids": [
+        "S02",
+        "S28",
+        "S39"
+      ],
+      "prerequisite_levels": [
+        1,
+        2,
+        3
+      ],
+      "requirements": [
+        "Document mechanism, target engagement, translational limitations and pathway-relevant evidence.",
+        "Distinguish direct clinical evidence from extrapolation across diseases, formulations or treatment settings."
+      ],
+      "completion_artifacts": [
+        "Source-bound mechanistic rationale with contrary findings and translational limitations."
+      ]
+    },
+    {
+      "level_id": "D05",
+      "depth_level": 5,
+      "title": "Population and comparator suitability",
+      "objective": "Assess eligibility, selection and comparator relevance to the intended use.",
+      "question_ids": [
+        "S11",
+        "S12",
+        "S36"
+      ],
+      "prerequisite_levels": [
+        1,
+        2,
+        3
+      ],
+      "requirements": [
+        "Verify trial inclusion/exclusion, baseline characteristics and analysis-population denominators.",
+        "Justify concurrent comparator choice and identify selection or enrichment limitations."
+      ],
+      "completion_artifacts": [
+        "Protocol-linked population/comparator assessment and denominator reconciliation."
+      ]
+    },
+    {
+      "level_id": "D06",
+      "depth_level": 6,
+      "title": "Design and protocol integrity",
+      "objective": "Evaluate randomization, blinding, amendments and deviations as potential sources of bias.",
+      "question_ids": [
+        "S13",
+        "S15"
+      ],
+      "prerequisite_levels": [
+        3,
+        5
+      ],
+      "requirements": [
+        "Review protocol versions, allocation methods, blinding, deviations and amendment timing.",
+        "Identify changes made after relevant data access and their consequences."
+      ],
+      "completion_artifacts": [
+        "Dated protocol/amendment history and design-bias review."
+      ]
+    },
+    {
+      "level_id": "D07",
+      "depth_level": 7,
+      "title": "Power and prespecified analysis",
+      "objective": "Establish the power assumptions and statistical analysis plan frozen before relevant data review.",
+      "question_ids": [
+        "S06",
+        "S14"
+      ],
+      "prerequisite_levels": [
+        6
+      ],
+      "requirements": [
+        "Verify sample-size assumptions, event targets and plausible treatment effects.",
+        "Retain the dated statistical plan and document changes relative to data access."
+      ],
+      "completion_artifacts": [
+        "Prespecification and power assessment with dated protocol/SAP support."
+      ]
+    },
+    {
+      "level_id": "D08",
+      "depth_level": 8,
+      "title": "Primary efficacy and clinical meaning",
+      "objective": "Evaluate the primary treatment effect and uncertainty against clinically relevant thresholds.",
+      "question_ids": [
+        "S01",
+        "S02",
+        "S10"
+      ],
+      "prerequisite_levels": [
+        5,
+        6,
+        7
+      ],
+      "requirements": [
+        "Verify primary endpoint definition, analysis population, effect estimate, uncertainty and statistical assumptions.",
+        "Distinguish statistical significance, effect magnitude and clinical relevance."
+      ],
+      "completion_artifacts": [
+        "Reproducible primary endpoint/effect-size assessment with uncertainty and clinical interpretation."
+      ]
+    },
+    {
+      "level_id": "D09",
+      "depth_level": 9,
+      "title": "Secondary endpoints and multiplicity",
+      "objective": "Evaluate secondary findings under the actual type-I-error strategy.",
+      "question_ids": [
+        "S03",
+        "S07"
+      ],
+      "prerequisite_levels": [
+        7,
+        8
+      ],
+      "requirements": [
+        "Reconstruct endpoint hierarchy, multiplicity control and failed gates.",
+        "Separate confirmatory secondary outcomes from nominal or exploratory findings."
+      ],
+      "completion_artifacts": [
+        "Endpoint hierarchy and multiplicity assessment linked to prespecified tests."
+      ]
+    },
+    {
+      "level_id": "D10",
+      "depth_level": 10,
+      "title": "Estimands and missing data",
+      "objective": "Evaluate the treatment question, intercurrent events, exclusions and missing-data assumptions.",
+      "question_ids": [
+        "S08"
+      ],
+      "prerequisite_levels": [
+        5,
+        6,
+        7
+      ],
+      "requirements": [
+        "Reconcile randomized, treated, evaluable and reported analysis populations.",
+        "Assess estimand, intercurrent-event strategy, missingness assumptions and informative dropout."
+      ],
+      "completion_artifacts": [
+        "Estimand/denominator reconciliation with missing-data bias assessment."
+      ]
+    },
+    {
+      "level_id": "D11",
+      "depth_level": 11,
+      "title": "Sensitivity, subgroup and durability",
+      "objective": "Challenge robustness across analyses, populations and time.",
+      "question_ids": [
+        "S04",
+        "S05",
+        "S09"
+      ],
+      "prerequisite_levels": [
+        8,
+        9,
+        10
+      ],
+      "requirements": [
+        "Review prespecified sensitivity analyses, subgroup interaction evidence and follow-up.",
+        "Separate within-arm change from between-arm effects and subgroup observations from proven heterogeneity."
+      ],
+      "completion_artifacts": [
+        "Robustness assessment with subgroup, sensitivity and durability limitations."
+      ]
+    },
+    {
+      "level_id": "D12",
+      "depth_level": 12,
+      "title": "Serious harms and discontinuations",
+      "objective": "Characterize serious adverse events, deaths and discontinuations with correct denominators and context.",
+      "question_ids": [
+        "S16",
+        "S17"
+      ],
+      "prerequisite_levels": [
+        3,
+        5,
+        6
+      ],
+      "requirements": [
+        "Reconcile adverse-event definitions, seriousness, causality, severity and discontinuation denominators.",
+        "Review deaths and withdrawals in both arms rather than relying on selected tolerability summaries."
+      ],
+      "completion_artifacts": [
+        "Safety event/denominator assessment with causality and competing explanations."
+      ]
+    },
+    {
+      "level_id": "D13",
+      "depth_level": 13,
+      "title": "Organ toxicity and exposure safety",
+      "objective": "Assess organ-specific risks and adequacy of exposure for the proposed use.",
+      "question_ids": [
+        "S18",
+        "S19"
+      ],
+      "prerequisite_levels": [
+        12
+      ],
+      "requirements": [
+        "Review laboratory, organ-specific and class risks, exposure duration and at-risk populations.",
+        "Identify limits of long-term or repeated-use safety and restrictions on exposure."
+      ],
+      "completion_artifacts": [
+        "Exposure-adjusted safety and organ-risk assessment with missing long-term requirements."
+      ]
+    },
+    {
+      "level_id": "D14",
+      "depth_level": 14,
+      "title": "Benefit-risk and generalizability",
+      "objective": "Integrate benefit and harm for the intended clinical setting without converting gaps into a directional conclusion.",
+      "question_ids": [
+        "S20",
+        "S37"
+      ],
+      "prerequisite_levels": [
+        8,
+        11,
+        12,
+        13
+      ],
+      "requirements": [
+        "Compare benefits and harms at matched exposure and in the intended population.",
+        "Assess transferability to clinical practice, unmet need and uncertainty; missing evidence stays unknown."
+      ],
+      "completion_artifacts": [
+        "Population-specific benefit-risk analysis with explicit uncertainties and competing interpretations."
+      ]
+    },
+    {
+      "level_id": "D15",
+      "depth_level": 15,
+      "title": "Consistency and independent reproducibility",
+      "objective": "Compare all relevant studies and reconcile registry, publications and sponsor disclosures.",
+      "question_ids": [
+        "S21",
+        "S22",
+        "S23",
+        "S24",
+        "S25"
+      ],
+      "prerequisite_levels": [
+        3,
+        8,
+        9,
+        10,
+        11
+      ],
+      "requirements": [
+        "Identify supportive and failed studies within the program and distinguish independent replication from reuse.",
+        "Reconcile registered, published and disclosed analyses and verify principal calculations where possible."
+      ],
+      "completion_artifacts": [
+        "Cross-study reconciliation and independent verification record with unresolved conflicts."
+      ]
+    },
+    {
+      "level_id": "D16",
+      "depth_level": 16,
+      "title": "Regulatory pathway and interactions",
+      "objective": "Verify pathway-specific evidence requirements, FDA interactions and special designations.",
+      "question_ids": [
+        "S26",
+        "S27",
+        "S28",
+        "S30"
+      ],
+      "prerequisite_levels": [
+        1,
+        2,
+        3,
+        7
+      ],
+      "requirements": [
+        "Establish application pathway, relevant FDA feedback and endpoint agreements from actual records.",
+        "Verify special designations and their scope without treating them as approval or relaxed safety standards."
+      ],
+      "completion_artifacts": [
+        "Pathway/interaction/designation matrix with source-supported implications and unknowns."
+      ]
+    },
+    {
+      "level_id": "D17",
+      "depth_level": 17,
+      "title": "Manufacturing process and product quality",
+      "objective": "Assess process characterization, scale readiness, analytical methods and stability.",
+      "question_ids": [
+        "S31",
+        "S32",
+        "S33"
+      ],
+      "prerequisite_levels": [
+        1,
+        2,
+        3
+      ],
+      "requirements": [
+        "Identify formulation, critical quality attributes, process controls, validation and commercial-scale evidence.",
+        "Review specifications, analytical methods and stability; do not equate sponsor assertions with an FDA inspection."
+      ],
+      "completion_artifacts": [
+        "CMC process/quality assessment tied to the exact product and manufacturing version."
+      ]
+    },
+    {
+      "level_id": "D18",
+      "depth_level": 18,
+      "title": "Facilities, deficiencies and supply risk",
+      "objective": "Investigate inspection readiness, quality systems and unresolved manufacturing or supply deficiencies.",
+      "question_ids": [
+        "S29",
+        "S34",
+        "S35"
+      ],
+      "prerequisite_levels": [
+        16,
+        17
+      ],
+      "requirements": [
+        "Bind facilities, inspections, vendors and deficiencies to the exact review cycle and evidence cutoff.",
+        "Assess corrective actions, quality-system readiness and supply-chain risks, including opposing evidence."
+      ],
+      "completion_artifacts": [
+        "Facility/deficiency/corrective-action ledger with cutoff-bound uncertainty."
+      ]
+    },
+    {
+      "level_id": "D19",
+      "depth_level": 19,
+      "title": "Historical comparisons and standard of care",
+      "objective": "Select historical clinical and regulatory comparators without outcome-based selection or duplicated cycles.",
+      "question_ids": [
+        "S36",
+        "S37",
+        "S38",
+        "S39",
+        "S40"
+      ],
+      "prerequisite_levels": [
+        1,
+        2,
+        3,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "requirements": [
+        "Prespecify comparator selection and account for indication, mechanism, population, design, endpoints, treatment era and CMC differences.",
+        "Verify action-cycle identities, denominator completeness and program-family independence before model use.",
+        "Distinguish clinical context and within-program studies from independent FDA decision precedents."
+      ],
+      "completion_artifacts": [
+        "Source-linked comparator matrix, exclusions and family/cycle deduplication proof."
+      ]
+    },
+    {
+      "level_id": "D20",
+      "depth_level": 20,
+      "title": "Adversarial synthesis and frozen handoff",
+      "objective": "Challenge the strongest opposing decision and assemble an independently reviewed dossier with a reproducible handoff.",
+      "question_ids": [
+        "S10",
+        "S20",
+        "S25",
+        "S29",
+        "S35",
+        "S38"
+      ],
+      "prerequisite_levels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "requirements": [
+        "Test the strongest clinical, statistical, safety, manufacturing and regulatory case for the opposite decision.",
+        "Record unresolved evidence, reviewer disagreement and conditions requiring abstention.",
+        "Bind the reviewed evidence version and model/prediction chronology separately; this scientific protocol does not establish forecasting accuracy."
+      ],
+      "completion_artifacts": [
+        "Independent adversarial review, unresolved-requirement ledger and versioned evidence handoff; no prediction validation inferred."
+      ]
+    }
+  ]
+}

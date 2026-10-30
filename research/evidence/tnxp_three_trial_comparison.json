@@ -1,0 +1,251 @@
+{
+  "schema_version": "tnxp-three-trial-comparison-v1",
+  "event_key": "TNXP|2025-08-15",
+  "application_id": "NDA219428",
+  "research_cutoff": "2025-08-14",
+  "original_prediction_cutoff": null,
+  "assembled_on": "2026-10-28",
+  "research_only": true,
+  "sources": [
+    {
+      "source_id": "TNXP-RALLY-RELIEF-20220321",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000138713122003807/ex99-01.htm",
+      "document_date": "2022-03-21",
+      "public_availability_verified": false,
+      "original_document_sha256": null,
+      "source_bytes_retained": false,
+      "independently_reviewed": false,
+      "provenance_note": "SEC-filed sponsor announcement cited by the existing research; original bytes and exact filing-index availability are not retained in this matrix."
+    },
+    {
+      "source_id": "TNXP-RESILIENT-EFFECT-20240610",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000183988224018368/ex99-02.htm",
+      "document_date": "2024-06-10",
+      "public_availability_verified": false,
+      "original_document_sha256": null,
+      "source_bytes_retained": false,
+      "independently_reviewed": false,
+      "provenance_note": "Sponsor presentation date recorded in the existing effect-size review; original bytes, filing clock and independent CSR reproduction remain unverified."
+    },
+    {
+      "source_id": "TNXP-RESILIENT-DISPOSITION-2024",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000183988224043326/ex99-03.htm",
+      "document_date": null,
+      "public_availability_verified": false,
+      "original_document_sha256": null,
+      "source_bytes_retained": false,
+      "independently_reviewed": false,
+      "provenance_note": "2024 SEC-filed sponsor presentation cited by the existing population/safety reviews. Exact original public-availability date and bytes are not established here."
+    }
+  ],
+  "trials": [
+    {
+      "trial_id": "F304",
+      "name": "RELIEF",
+      "registry_id": null,
+      "primary_analysis": {
+        "analysis_role": "PRESPECIFIED_PRIMARY",
+        "method": "MMRM_WITH_MULTIPLE_IMPUTATION",
+        "endpoint": "pain numeric rating score",
+        "p_value": "0.010",
+        "placebo_adjusted_ls_mean_difference": "-0.4",
+        "standard_error": "0.16",
+        "source_id": "TNXP-RALLY-RELIEF-20220321",
+        "source_reported_outcome": "POSITIVE"
+      },
+      "sensitivity_analyses": [
+        {
+          "analysis_role": "SENSITIVITY_NOT_PRIMARY",
+          "method": "MMRM_WITHOUT_MULTIPLE_IMPUTATION",
+          "endpoint": "pain numeric rating score",
+          "p_value": "0.004",
+          "placebo_adjusted_ls_mean_difference": "-0.5",
+          "standard_error": null,
+          "source_id": "TNXP-RALLY-RELIEF-20220321"
+        }
+      ],
+      "populations": {
+        "randomized_total": null,
+        "randomized_active": null,
+        "randomized_placebo": null,
+        "efficacy_total": null,
+        "efficacy_active": null,
+        "efficacy_placebo": null,
+        "safety_total": null,
+        "safety_active": null,
+        "safety_placebo": null,
+        "source_id": null,
+        "status": "NOT_ESTABLISHED_FROM_CURRENT_COMPARISON_SOURCES"
+      },
+      "design": {
+        "sites": null,
+        "duration_weeks": null,
+        "source_id": null
+      },
+      "safety": {
+        "ae_related_discontinuation_percent": {
+          "active": "8.5",
+          "placebo": "3.5",
+          "source_id": "TNXP-RALLY-RELIEF-20220321"
+        },
+        "source_reported_events": [],
+        "causality_status": "NOT_INDEPENDENTLY_ADJUDICATED"
+      },
+      "unresolved_requirements": [
+        "Independently establish randomized, efficacy and safety population definitions, site count and study duration.",
+        "Obtain protocol/SAP and CSR estimand, imputation and dropout records."
+      ],
+      "independently_reviewed": false,
+      "eligible_for_frozen_prediction": false,
+      "assessment_status": "SOURCE_REPORTED_NOT_INDEPENDENTLY_ADJUDICATED"
+    },
+    {
+      "trial_id": "F306",
+      "name": "RALLY",
+      "registry_id": null,
+      "primary_analysis": {
+        "analysis_role": "PRESPECIFIED_PRIMARY",
+        "method": "MMRM_WITH_MULTIPLE_IMPUTATION",
+        "endpoint": "pain numeric rating score",
+        "p_value": "0.115",
+        "placebo_adjusted_ls_mean_difference": "-0.2",
+        "standard_error": "0.16",
+        "source_id": "TNXP-RALLY-RELIEF-20220321",
+        "source_reported_outcome": "FAILED"
+      },
+      "sensitivity_analyses": [
+        {
+          "analysis_role": "SENSITIVITY_NOT_PRIMARY",
+          "method": "MMRM_WITHOUT_MULTIPLE_IMPUTATION",
+          "endpoint": "pain numeric rating score",
+          "p_value": "0.014",
+          "placebo_adjusted_ls_mean_difference": "-0.4",
+          "standard_error": "0.16",
+          "source_id": "TNXP-RALLY-RELIEF-20220321"
+        }
+      ],
+      "populations": {
+        "randomized_total": 514,
+        "randomized_active": null,
+        "randomized_placebo": null,
+        "efficacy_total": null,
+        "efficacy_active": null,
+        "efficacy_placebo": null,
+        "safety_total": null,
+        "safety_active": null,
+        "safety_placebo": null,
+        "source_id": "TNXP-RALLY-RELIEF-20220321",
+        "status": "SOURCE_REPORTED_PARTIAL_POPULATION_DEFINITION"
+      },
+      "design": {
+        "sites": 36,
+        "duration_weeks": 14,
+        "source_id": "TNXP-RALLY-RELIEF-20220321"
+      },
+      "safety": {
+        "ae_related_discontinuation_percent": {
+          "active": "15.2",
+          "placebo": "6.2",
+          "source_id": "TNXP-RALLY-RELIEF-20220321"
+        },
+        "source_reported_events": [
+          {
+            "finding": "Six serious adverse events in the active group; sponsor reports none judged related to investigational product.",
+            "source_id": "TNXP-RALLY-RELIEF-20220321",
+            "independently_adjudicated": false
+          }
+        ],
+        "causality_status": "NOT_INDEPENDENTLY_ADJUDICATED"
+      },
+      "unresolved_requirements": [
+        "Primary failure cannot be replaced by the favorable no-imputation sensitivity result.",
+        "Higher adverse-event withdrawal and imputation sensitivity do not establish a causal explanation for failure.",
+        "Obtain event narratives, exposure-adjusted incidence and the complete prespecified missing-data analyses."
+      ],
+      "independently_reviewed": false,
+      "eligible_for_frozen_prediction": false,
+      "assessment_status": "SOURCE_REPORTED_NOT_INDEPENDENTLY_ADJUDICATED"
+    },
+    {
+      "trial_id": "F307",
+      "name": "RESILIENT",
+      "registry_id": "NCT05273749",
+      "primary_analysis": {
+        "analysis_role": "PRESPECIFIED_PRIMARY",
+        "method": "MMRM_WITH_MULTIPLE_IMPUTATION",
+        "endpoint": "pain numeric rating score",
+        "p_value": "0.00005",
+        "placebo_adjusted_ls_mean_difference": "-0.65",
+        "standard_error": "0.16",
+        "source_id": "TNXP-RESILIENT-EFFECT-20240610",
+        "source_reported_outcome": "POSITIVE"
+      },
+      "sensitivity_analyses": [],
+      "populations": {
+        "randomized_total": 457,
+        "randomized_active": 231,
+        "randomized_placebo": 226,
+        "efficacy_total": 456,
+        "efficacy_active": 231,
+        "efficacy_placebo": 225,
+        "safety_total": 457,
+        "safety_active": 231,
+        "safety_placebo": 226,
+        "source_id": "TNXP-RESILIENT-DISPOSITION-2024",
+        "status": "SOURCE_REPORTED_EXCLUSION_COMPLIANCE_NOT_ESTABLISHED"
+      },
+      "design": {
+        "sites": 33,
+        "duration_weeks": 14,
+        "source_id": "TNXP-RESILIENT-DISPOSITION-2024"
+      },
+      "safety": {
+        "ae_related_discontinuation_percent": {
+          "active": "6.1",
+          "placebo": "3.5",
+          "source_id": "TNXP-RESILIENT-DISPOSITION-2024"
+        },
+        "source_reported_events": [
+          {
+            "finding": "Oral administration-site adverse events reported in 42.9% active versus 10.2% placebo.",
+            "source_id": "TNXP-RESILIENT-DISPOSITION-2024",
+            "independently_adjudicated": false
+          },
+          {
+            "finding": "Pancreatitis serious adverse event was considered possibly related by the sponsor; final-dose timing and independent causality remain uncertain.",
+            "source_id": "TNXP-RESILIENT-DISPOSITION-2024",
+            "independently_adjudicated": false
+          }
+        ],
+        "causality_status": "NOT_INDEPENDENTLY_ADJUDICATED"
+      },
+      "unresolved_requirements": [
+        "The sponsor explains one placebo participant excluded after erroneous randomization; final prespecified SAP compliance remains NOT_ESTABLISHED.",
+        "Missing no-imputation result is unknown; do not infer agreement or disagreement.",
+        "Review signed SAP amendments, participant deviation record, pre-unblinding exclusion decision and all-457 sensitivity analysis."
+      ],
+      "independently_reviewed": false,
+      "eligible_for_frozen_prediction": false,
+      "assessment_status": "SOURCE_REPORTED_NOT_INDEPENDENTLY_ADJUDICATED"
+    }
+  ],
+  "comparison_limits": [
+    "Within-program trial comparisons are not independent FDA-decision training cases.",
+    "Cross-trial percentages and treatment effects are descriptive, not randomized between-trial causal comparisons.",
+    "Prespecified primary results and sensitivity analyses are distinct; p values and effects are not pooled.",
+    "Treatment-emergent events, adverse-event withdrawals and adjudicated drug causality are distinct.",
+    "Document dates and historical narratives do not establish original publication clocks or frozen forecast features."
+  ],
+  "required_resolution_artifacts": [
+    "Final protocols, amendments and prespecified SAPs for all three trials",
+    "Complete CSR and population/disposition records, including RESILIENT all-randomized analysis",
+    "Prespecified missing-data estimands, MNAR and tipping-point sensitivity analyses",
+    "Harmonized exposure-adjusted integrated safety with independent causality review",
+    "Original source bytes, public-availability provenance and independent scientific adjudication"
+  ],
+  "independently_completed_assessments": 0,
+  "independently_completed_levels": 0,
+  "eligible_for_predecision_features": false,
+  "eligible_for_validated_accuracy": false,
+  "trading_authorized": false
+}

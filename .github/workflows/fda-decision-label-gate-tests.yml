@@ -1,0 +1,135 @@
+name: FDA decision label gate tests
+on:
+  pull_request:
+    paths:
+      - "research/fda_decision_label_gate.py"
+      - "research/fda_candidate_audit.py"
+      - "research/fda_candidate_audit_cli.py"
+      - "research/fda_existing_history_audit.py"
+      - "research/fda_archive_chronology_gate.py"
+      - "research/fda_archive_lock_chronology.py"
+      - "research/fda_original_evidence_recovery_manifest.py"
+      - "research/fda_science_source_review_queue.py"
+      - "research/fda_prediction_provenance_worklist.py"
+      - "research/fda_legacy_accuracy_reconciliation.py"
+      - "research/fda_original_artifact_inventory.py"
+      - "research/fda_original_prediction_evidence_check.py"
+      - "research/fda_provenance_checkpoint.py"
+      - "research/fda_reconstruction_leakage_audit.py"
+      - "research/fda_reconstruction_input_gate.py"
+      - "research/fda_science_provenance_gate.py"
+      - "research/fda_outcome_provenance_gate.py"
+      - "research/fda_science_outcome_status_view.py"
+      - "research/fda_verification_queue.py"
+      - "research/fda_predecision_reconstruction.py"
+      - "research/fda_science_dossier.py"
+      - "research/science_investigation_depths.py"
+      - "research/science_investigation_extension.py"
+      - "research/tnxp_resilient_population.py"
+      - "research/tnxp_trial_comparison.py"
+      - "research/fda_prospective_registration.py"
+      - "research/evidence/tnxp_three_trial_comparison.json"
+      - "tests/test_tnxp_trial_comparison.py"
+      - "research/evidence/science_investigation_50_level_extension.json"
+      - "research/evidence/tnxp_resilient_population_audit.json"
+      - "new-platform/frontend/app/fda-research-status/page.tsx"
+      - "tests/test_fda*.py"
+      - "tests/test_science_investigation_extension.py"
+      - "tests/test_tnxp_resilient_population.py"
+      - "research/evidence/science_investigation_depth_catalog.json"
+      - "research/fda_holdout_dashboard_snapshot.py"
+      - "new-platform/backend/app/science_40_question_catalog.json"
+      - "new-platform/frontend/lib/fda-holdout-reconstruction*"
+      - "new-platform/frontend/app/installation-audit/HistoricalHoldoutReconstruction.tsx"
+      - "new-platform/frontend/app/installation-audit/page.tsx"
+      - "new-platform/frontend/tests/fda-holdout-reconstruction.test.cjs"
+      - "research/evidence/2025_holdout_fda_action_evidence.json"
+      - "research/evidence/2025_holdout_predecision_reconstruction.json"
+      - "research/evidence/2025_holdout_archive_provenance_audit.json"
+      - "tests/test_fda_decision_label_gate.py"
+      - "tests/test_fda_candidate_audit.py"
+      - "tests/test_fda_candidate_audit_cli.py"
+      - "tests/test_fda_existing_history_audit.py"
+      - "tests/test_fda_archive_chronology_gate.py"
+      - "tests/test_fda_archive_lock_chronology.py"
+      - "tests/test_fda_original_evidence_recovery_manifest.py"
+      - "tests/test_fda_science_source_review_queue.py"
+      - "tests/test_fda_prediction_provenance_worklist.py"
+      - "tests/test_fda_legacy_accuracy_reconciliation.py"
+      - "tests/test_fda_original_artifact_inventory.py"
+      - "tests/test_fda_original_prediction_evidence_check.py"
+      - "tests/test_fda_provenance_checkpoint.py"
+      - "tests/test_fda_reconstruction_leakage_audit.py"
+      - "tests/test_fda_reconstruction_input_gate.py"
+      - "tests/test_fda_science_provenance_gate.py"
+      - "tests/test_fda_outcome_provenance_gate.py"
+      - "tests/test_fda_science_outcome_status_view.py"
+      - "tests/test_fda_predecision_reconstruction.py"
+      - "tests/test_fda_holdout_reconstruction_integration.py"
+      - "tests/test_fda_science_dossier.py"
+      - "tests/test_science_investigation_depths.py"
+      - "tests/test_fda_holdout_dashboard_snapshot.py"
+      - ".github/workflows/fda-decision-label-gate-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install research regression dependencies
+        run: python -m pip install pytest "pandas>=2.0"
+      - name: Verify FDA historical decision label gate
+        run: |
+          python -m unittest discover -s tests -p "test_fda_decision_label_gate.py" -v
+          python -m unittest discover -s tests -p "test_fda_candidate_audit.py" -v
+          python -m unittest discover -s tests -p "test_fda_candidate_audit_cli.py" -v
+          python -m unittest discover -s tests -p "test_fda_existing_history_audit.py" -v
+          python -m unittest discover -s tests -p "test_fda_archive_chronology_gate.py" -v
+          python -m unittest discover -s tests -p "test_fda_archive_lock_chronology.py" -v
+          python -m unittest discover -s tests -p "test_fda_original_evidence_recovery_manifest.py" -v
+          python -m unittest discover -s tests -p "test_fda_science_source_review_queue.py" -v
+          python -m unittest discover -s tests -p "test_fda_prediction_provenance_worklist.py" -v
+          python -m unittest discover -s tests -p "test_fda_legacy_accuracy_reconciliation.py" -v
+          python -m unittest discover -s tests -p "test_fda_original_artifact_inventory.py" -v
+          python -m unittest discover -s tests -p "test_fda_original_prediction_evidence_check.py" -v
+          python -m unittest discover -s tests -p "test_fda_provenance_checkpoint.py" -v
+          python -m unittest discover -s tests -p "test_fda_reconstruction_leakage_audit.py" -v
+          python -m unittest discover -s tests -p "test_fda_reconstruction_input_gate.py" -v
+          python -m unittest discover -s tests -p "test_fda_science_provenance_gate.py" -v
+          python -m unittest discover -s tests -p "test_fda_outcome_provenance_gate.py" -v
+          python -m unittest discover -s tests -p "test_fda_science_outcome_status_view.py" -v
+          python -m research.fda_provenance_checkpoint research/evidence/2025_holdout_archive_provenance_audit.json research/evidence/2025_holdout_predecision_reconstruction.json > "$RUNNER_TEMP/fda_provenance_checkpoint.json"
+          python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"fda_provenance_checkpoint.json"))); assert r["total_priority_cases"] == 6 and r["verified_prospective_predictions"] == 0 and len(r["missing_evidence_events"]) == 6 and r["historical_accuracy"] is None; print("Provenance checkpoint blocked:",r["total_priority_cases"])'
+          python -m research.fda_legacy_accuracy_reconciliation data/prediction_engine_audit.csv research/evidence/2025_holdout_archive_provenance_audit.json research/evidence/2025_holdout_predecision_reconstruction.json > "$RUNNER_TEMP/fda_legacy_accuracy_reconciliation.json"
+          python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"fda_legacy_accuracy_reconciliation.json"))); assert r["legacy_rows_reconciled"] == 6 and r["verified_prospective_accuracy_cases"] == 0 and all(x["legacy_count_in_audited_accuracy"] == "YES" for x in r["cases"]); print("Legacy YES flags quarantined from prospective metrics:",len(r["cases"]))'
+          python -m research.fda_archive_chronology_gate research/evidence/2025_holdout_archive_provenance_audit.json research/evidence/2025_holdout_predecision_reconstruction.json > "$RUNNER_TEMP/fda_archive_chronology.json"
+          python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"fda_archive_chronology.json"))); assert len(r["cases"]) == 6 and r["eligible_cases"] == 0 and all(x["model_freeze_after_fda_action"] and x["prediction_archive_lock_after_fda_action"] for x in r["cases"]); print("Historical archive chronology: 6 post-action cases, 0 validated")'
+          python -m pytest -q tests/test_fda*.py tests/test_science_investigation_depths.py tests/test_science_investigation_extension.py tests/test_tnxp_resilient_population.py tests/test_tnxp_trial_comparison.py
+          python -m research.fda_verification_queue data/prediction_engine_history.csv research/evidence/2025_holdout_fda_action_evidence.json research/evidence/2025_holdout_predecision_reconstruction.json --as-of 2026-10-28 > "$RUNNER_TEMP/fda_six_case_reconstruction_audit.json"
+          python -m research.fda_holdout_dashboard_snapshot --as-of 2026-10-28 --output new-platform/frontend/lib/fda-holdout-reconstruction-snapshot.json --check
+          python -m research.fda_existing_history_audit data/prediction_engine_history.csv > "$RUNNER_TEMP/fda_legacy_history_audit.json"
+          python -c 'import json,os; p=os.path.join(os.environ["RUNNER_TEMP"],"fda_legacy_history_audit.json"); r=json.load(open(p)); assert r["eligible_for_further_review"] == 0 and r["approval_rate"] is None; print("Legacy audit rows:",r["total_candidates"],"eligible:",r["eligible_for_further_review"]); print("Validation periods:",r["legacy_validation_period_counts"])'
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build

@@ -24,3 +24,39 @@ jobs:
             exit 1
           fi
           python new-platform/backend/scripts/smoke_decision_readiness.py
+
+  staging-pipeline-reconciliation:
+    # The filename is already registered on main. The operator selects this
+    # research branch in Run workflow; push/PR/schedules never launch retrieval.
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/research/fda-decision-label-gate-20261028'
+    name: Authorized staging Pipeline reconciliation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: staging-pipeline-reconciliation
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run operator-approved staging retrieval
+        env:
+          # Distinct repository secret containing the EXISTING staging key.
+          # Never fall back to the unrelated isolated-review credential.
+          PDUFA_INTERNAL_API_KEY: ${{ secrets.PDUFA_STAGING_INTERNAL_API_KEY }}
+        run: |
+          python -m research.preliminary_workspace_http \
+            --backend-origin https://pdufa-new-api-staging.onrender.com \
+            --allow-staging-identity-allocation \
+            --request-timeout 120 \
+            --output "$RUNNER_TEMP/pdufa-pipeline-reconciliation.json"
+      - name: Retain aggregate reconciliation report only
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-pipeline-reconciliation
+          path: ${{ runner.temp }}/pdufa-pipeline-reconciliation.json
+          if-no-files-found: error
+          retention-days: 1

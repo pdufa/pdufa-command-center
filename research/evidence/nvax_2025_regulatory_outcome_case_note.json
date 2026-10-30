@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "research_only": true,
+  "event_key": "NVAX|2025-04-01",
+  "application_id": "BL 125817/0",
+  "document": "FDA May 16 2025 SBRA Addendum",
+  "source_url": "https://www.fda.gov/media/186880/download",
+  "document_date": "2025-05-16",
+  "source_role": "OUTCOME_ONLY",
+  "eligible_for_pre_2025_04_01_prediction_features": false,
+  "verified_predecision_forecast": false,
+  "findings": [
+    {
+      "event": "PDUFA_GOAL",
+      "date": "2025-04-01",
+      "detail": "FDA identifies April 1, 2025 as action goal date."
+    },
+    {
+      "event": "APPROVAL_PAUSED",
+      "date": "2025-04-01",
+      "detail": "FDA addendum states that approval was paused on goal date; this fact was disclosed in a later document and cannot be used as pre-goal input."
+    },
+    {
+      "event": "REVISED_INDICATION",
+      "date": "2025-05-16",
+      "detail": "Applicant revised requested indication to adults 65+ and high-risk individuals ages 12-64."
+    },
+    {
+      "event": "POSTMARKETING_COMMITMENT",
+      "date": "2025-05-16",
+      "detail": "Additional Phase 4 efficacy and safety commitment for adults 50 to under 65 without high-risk conditions."
+    },
+    {
+      "event": "APPROVED",
+      "date": "2025-05-16",
+      "detail": "FDA approval letter establishes licensing on May 16, 2025."
+    }
+  ],
+  "outcome_label_recommendation": "APPROVED_AFTER_GOAL_WITH_REVISED_INDICATION_AND_POSTMARKETING_COMMITMENT",
+  "outcome_label_is_research_only": true,
+  "review_status": "SOURCE_READ_NOT_INDEPENDENTLY_AUTHENTICATED",
+  "prediction_accuracy": null,
+  "trading_authorized": false
+}

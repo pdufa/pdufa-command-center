@@ -1,0 +1,3132 @@
+{
+  "domains": {
+    "PRECEDENT": [
+      {
+        "id": "PRECEDENT-002",
+        "segment": "PRECEDENT",
+        "name": "Comparator drug identity",
+        "definition": "Exact proprietary and nonproprietary drug names for the historical application, with aliases reconciled.",
+        "data_type": "structured_identity",
+        "applicability": "Each candidate historical comparator",
+        "source": "FDA application record",
+        "assessment_ids": [
+          "S26",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Different names can refer to one product; identity errors create false precedents.",
+        "assessment_criteria": [
+          "Document comparator drug identity using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Reconcile aliases to one exact historical product and identify unresolved name collisions.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA application record"
+        ]
+      },
+      {
+        "id": "PRECEDENT-003",
+        "segment": "PRECEDENT",
+        "name": "Comparator active ingredient and moiety",
+        "definition": "Active ingredient, active moiety, salt or biologic construct represented by the historical product.",
+        "data_type": "structured_identity",
+        "applicability": "Each pharmacologic comparator",
+        "source": "FDA label and application chemistry description",
+        "assessment_ids": [
+          "S26",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Shared brand or therapeutic class does not establish ingredient equivalence.",
+        "assessment_criteria": [
+          "Document comparator active ingredient and moiety using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Distinguish active moiety from salt, metabolite and combination components.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA label",
+          "application chemistry description"
+        ]
+      },
+      {
+        "id": "PRECEDENT-004",
+        "segment": "PRECEDENT",
+        "name": "Comparator formulation and administration route",
+        "definition": "Historical dosage form, strength, release characteristics and administration route relevant to the requested comparison.",
+        "data_type": "structured_identity",
+        "applicability": "Formulation or route can alter exposure or regulatory requirements",
+        "source": "FDA label and application record",
+        "assessment_ids": [
+          "S26",
+          "S31",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "The same molecule in a different dosage form may need different evidence.",
+        "assessment_criteria": [
+          "Document comparator formulation and administration route using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "State which formulation or route differences limit transfer of the precedent.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA label",
+          "application record"
+        ]
+      },
+      {
+        "id": "PRECEDENT-005",
+        "segment": "PRECEDENT",
+        "name": "Comparator sponsor and program family",
+        "definition": "Historical sponsor aliases, licensor relationships and development-program family linking related applications.",
+        "data_type": "reference_list",
+        "applicability": "Historical cases used for comparison or model evaluation",
+        "source": "FDA application records and contemporaneous corporate disclosures",
+        "assessment_ids": [
+          "S24",
+          "S38",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Related sponsors or assets can cause the same program to be counted as independent evidence.",
+        "assessment_criteria": [
+          "Document comparator sponsor and program family using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Document ownership transitions and separate issuer identity from program-family identity.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA application records",
+          "contemporaneous corporate disclosures"
+        ]
+      },
+      {
+        "id": "PRECEDENT-006",
+        "segment": "PRECEDENT",
+        "name": "Comparator exact indication",
+        "definition": "Disease, treatment setting and wording of the historical requested indication.",
+        "data_type": "text",
+        "applicability": "Each candidate historical comparator",
+        "source": "FDA application record and review document",
+        "assessment_ids": [
+          "S11",
+          "S26",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Broad disease labels can conceal materially different regulatory questions.",
+        "assessment_criteria": [
+          "Document comparator exact indication using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Compare requested indication rather than importing the final approved label as a predecision input.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA application record",
+          "review document"
+        ]
+      },
+      {
+        "id": "PRECEDENT-007",
+        "segment": "PRECEDENT",
+        "name": "Comparator disease severity and stage",
+        "definition": "Severity, stage, prior treatment and disease course of the historical target population.",
+        "data_type": "structured_result",
+        "applicability": "Severity or treatment line affects the relevance of a precedent",
+        "source": "Historical trial protocol and FDA clinical review",
+        "assessment_ids": [
+          "S11",
+          "S36",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Benefit-risk tolerances and expected effects depend on disease severity and treatment setting.",
+        "assessment_criteria": [
+          "Document comparator disease severity and stage using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Record unmeasured severity differences rather than assuming clinical equivalence.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Historical trial protocol",
+          "FDA clinical review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-008",
+        "segment": "PRECEDENT",
+        "name": "Comparator population eligibility",
+        "definition": "Age, diagnostic criteria and principal eligibility restrictions of the historical evidence population.",
+        "data_type": "evidence_summary",
+        "applicability": "Each clinical historical comparator",
+        "source": "Historical protocol, registry history and FDA review",
+        "assessment_ids": [
+          "S11",
+          "S36",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Population mismatch may invalidate an apparently similar FDA precedent.",
+        "assessment_criteria": [
+          "Document comparator population eligibility using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Identify eligibility restrictions that prevent generalizing the historical result.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Historical protocol, registry history",
+          "FDA review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-009",
+        "segment": "PRECEDENT",
+        "name": "Comparator therapeutic class",
+        "definition": "Pharmacologic or treatment class assigned to the historical product and the basis for that classification.",
+        "data_type": "categorical",
+        "applicability": "Class-based comparisons are proposed",
+        "source": "FDA label and peer-reviewed pharmacology reference",
+        "assessment_ids": [
+          "S37",
+          "S39"
+        ],
+        "mandatory": false,
+        "critical": false,
+        "scientific_rationale": "Class membership can contextualize a case without proving common efficacy or regulatory risk.",
+        "assessment_criteria": [
+          "Document comparator therapeutic class using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "State ambiguous or multi-class membership and avoid class-based probability assignment.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA label",
+          "peer-reviewed pharmacology reference"
+        ]
+      },
+      {
+        "id": "PRECEDENT-010",
+        "segment": "PRECEDENT",
+        "name": "Comparator mechanism relationship",
+        "definition": "Documented mechanistic similarities and differences between the historical product and current application.",
+        "data_type": "evidence_summary",
+        "applicability": "Mechanistic similarity is part of comparator selection",
+        "source": "Primary pharmacology publication and FDA pharmacology review",
+        "assessment_ids": [
+          "S21",
+          "S37",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Mechanistic similarity can be informative only when target and downstream effects are sufficiently comparable.",
+        "assessment_criteria": [
+          "Document comparator mechanism relationship using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Separate demonstrated common mechanism from sponsor hypotheses and unknown mechanisms.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Primary pharmacology publication",
+          "FDA pharmacology review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-011",
+        "segment": "PRECEDENT",
+        "name": "Comparator application type",
+        "definition": "Historical NDA, BLA, supplemental application or other filing type, including the exact application number.",
+        "data_type": "structured_identity",
+        "applicability": "Each historical regulatory comparator",
+        "source": "FDA application database and action document",
+        "assessment_ids": [
+          "S26",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Different application types answer different evidentiary and legal questions.",
+        "assessment_criteria": [
+          "Document comparator application type using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not infer the application type from a press release or product name alone.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA application database",
+          "action document"
+        ]
+      },
+      {
+        "id": "PRECEDENT-012",
+        "segment": "PRECEDENT",
+        "name": "Comparator review-cycle identity",
+        "definition": "Exact review-cycle or original/resubmission identity to which the historical action belongs.",
+        "data_type": "structured_identity",
+        "applicability": "Every historical FDA decision used in comparison",
+        "source": "Original FDA action and resubmission correspondence",
+        "assessment_ids": [
+          "S24",
+          "S26",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "An initial CRL and later approval are distinct cycles and must not overwrite one another.",
+        "assessment_criteria": [
+          "Document comparator review-cycle identity using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep unresolved cycle links separate and exclude them from model-eligible comparisons.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Original FDA action",
+          "resubmission correspondence"
+        ]
+      },
+      {
+        "id": "PRECEDENT-013",
+        "segment": "PRECEDENT",
+        "name": "Comparator submission and amendment scope",
+        "definition": "Nature of the historical original submission, major amendment, supplement or resubmission under review.",
+        "data_type": "evidence_summary",
+        "applicability": "A filing change may affect the evidence burden or review clock",
+        "source": "FDA filing correspondence and dated sponsor regulatory disclosure",
+        "assessment_ids": [
+          "S26",
+          "S27",
+          "S29"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Submission scope can explain why similar products face different review requirements.",
+        "assessment_criteria": [
+          "Document comparator submission and amendment scope using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Document unknown amendment content without attributing an unverified reason for FDA action.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA filing correspondence",
+          "dated sponsor regulatory disclosure"
+        ]
+      },
+      {
+        "id": "PRECEDENT-014",
+        "segment": "PRECEDENT",
+        "name": "Comparator requested label claim",
+        "definition": "Specific efficacy, population, dosing or use claim sought before the historical action.",
+        "data_type": "text",
+        "applicability": "Requested and final labeling may differ",
+        "source": "Predecision FDA correspondence and application description",
+        "assessment_ids": [
+          "S26",
+          "S28",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "The final approved label cannot substitute for the claim evaluated before a decision.",
+        "assessment_criteria": [
+          "Document comparator requested label claim using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Preserve requested-versus-final claim differences and the dates they became public.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Predecision FDA correspondence",
+          "application description"
+        ]
+      },
+      {
+        "id": "PRECEDENT-015",
+        "segment": "PRECEDENT",
+        "name": "Comparator regulatory pathway",
+        "definition": "Documented pathway such as a new active ingredient, reliance on prior findings or an accelerated pathway.",
+        "data_type": "categorical",
+        "applicability": "Pathway affects the comparison of evidence requirements",
+        "source": "FDA application classification and pathway correspondence",
+        "assessment_ids": [
+          "S26",
+          "S28",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Pathway differences can change what evidence is necessary to support a submission.",
+        "assessment_criteria": [
+          "Document comparator regulatory pathway using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not assume pathway eligibility or approval from designation or sponsor terminology.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA application classification",
+          "pathway correspondence"
+        ]
+      },
+      {
+        "id": "PRECEDENT-016",
+        "segment": "PRECEDENT",
+        "name": "Comparator original PDUFA target",
+        "definition": "Original publicly documented PDUFA target for the specific historical application cycle.",
+        "data_type": "date",
+        "applicability": "A target-date prediction is reconstructed",
+        "source": "Dated FDA filing correspondence or contemporaneous regulatory disclosure",
+        "assessment_ids": [
+          "S24",
+          "S26",
+          "S27"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Original targets define the historical forecasting question and must not be replaced retrospectively.",
+        "assessment_criteria": [
+          "Document comparator original pdufa target using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "An unverified or ambiguous target remains unknown rather than being set to the action date.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Dated FDA filing correspondence or contemporaneous regulatory disclosure"
+        ]
+      },
+      {
+        "id": "PRECEDENT-017",
+        "segment": "PRECEDENT",
+        "name": "Comparator revised target history",
+        "definition": "Ordered, source-linked revisions to the historical review target within the same review cycle.",
+        "data_type": "event_history",
+        "applicability": "One or more target revisions are reported",
+        "source": "FDA extension correspondence and contemporaneous disclosure",
+        "assessment_ids": [
+          "S24",
+          "S27",
+          "S29"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A revised target is an event history, not another independent application outcome.",
+        "assessment_criteria": [
+          "Document comparator revised target history using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Retain each documented revision and distinguish formal revisions from missed-date speculation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA extension correspondence",
+          "contemporaneous disclosure"
+        ]
+      },
+      {
+        "id": "PRECEDENT-018",
+        "segment": "PRECEDENT",
+        "name": "Comparator formal extension action",
+        "definition": "Documented date and stated basis of a formal FDA target revision, kept distinct from subsequent approval or CRL.",
+        "data_type": "structured_result",
+        "applicability": "EXTENSION is a candidate historical event class",
+        "source": "Original FDA extension correspondence or exact contemporaneous disclosure",
+        "assessment_ids": [
+          "S26",
+          "S27",
+          "S29"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A delay alone does not establish an extension event.",
+        "assessment_criteria": [
+          "Document comparator formal extension action using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "If the formal revision or reason is not documented, classify it as unresolved rather than EXTENSION.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "Original FDA extension correspondence or exact contemporaneous disclosure"
+        ]
+      },
+      {
+        "id": "PRECEDENT-019",
+        "segment": "PRECEDENT",
+        "name": "Comparator predecision evidence boundary",
+        "definition": "Historically prespecified evidence cutoff for the comparison and what is known about its original freeze.",
+        "data_type": "datetime",
+        "applicability": "Historical evidence is used as a prediction input",
+        "source": "Original forecast protocol and immutable feature-freeze records",
+        "assessment_ids": [
+          "S06",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A reconstruction cutoff is not proof that a forecast or feature set existed before the action.",
+        "assessment_criteria": [
+          "Document comparator predecision evidence boundary using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep a conservative research window distinct from a recovered original prediction cutoff.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Original forecast protocol",
+          "immutable feature-freeze records"
+        ]
+      },
+      {
+        "id": "PRECEDENT-020",
+        "segment": "PRECEDENT",
+        "name": "Comparator actual FDA action date",
+        "definition": "Verified effective date of the original FDA action for the exact review cycle.",
+        "data_type": "date",
+        "applicability": "Each historical FDA action considered",
+        "source": "Original FDA action letter and application history",
+        "assessment_ids": [
+          "S24",
+          "S26",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Misdated actions can admit future evidence or incorrectly credit predictions.",
+        "assessment_criteria": [
+          "Document comparator actual fda action date using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Disclose corrected-letter dates separately and do not replace an original action date with publication date.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "Original FDA action letter",
+          "application history"
+        ]
+      },
+      {
+        "id": "PRECEDENT-021",
+        "segment": "PRECEDENT",
+        "name": "Comparator FDA outcome taxonomy",
+        "definition": "Action classified as approval, complete response, formal extension or a separately unresolved/nonbinary category.",
+        "data_type": "categorical",
+        "applicability": "Every historical action label",
+        "source": "Original FDA action document and adjudicated event taxonomy",
+        "assessment_ids": [
+          "S26",
+          "S38",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Withdrawals, filing refusals and unresolved targets are not automatically binary nonapprovals.",
+        "assessment_criteria": [
+          "Document comparator fda outcome taxonomy using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Preserve uncertain categories and exclude unsupported labels from prediction validation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "Original FDA action document",
+          "adjudicated event taxonomy"
+        ]
+      },
+      {
+        "id": "PRECEDENT-022",
+        "segment": "PRECEDENT",
+        "name": "Comparator original action-document linkage",
+        "definition": "Document identifier and application/cycle linkage of the historical original FDA action source.",
+        "data_type": "document_reference",
+        "applicability": "Historical action authentication is required",
+        "source": "Original FDA letter and application index",
+        "assessment_ids": [
+          "S24",
+          "S26",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A source link must refer to the relevant original action rather than a later or corrected cycle.",
+        "assessment_criteria": [
+          "Document comparator original action-document linkage using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Record partial extraction, missing original bytes and substitute-document limitations explicitly.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "Original FDA letter",
+          "application index"
+        ]
+      },
+      {
+        "id": "PRECEDENT-023",
+        "segment": "PRECEDENT",
+        "name": "Comparator action public-disclosure clock",
+        "definition": "Earliest independently established public availability of the historical action label.",
+        "data_type": "datetime",
+        "applicability": "A historical label may enter a chronological training set",
+        "source": "Contemporaneous FDA posting record and independently timestamped disclosure",
+        "assessment_ids": [
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A label is not available for training merely because its printed action date precedes the cutoff.",
+        "assessment_criteria": [
+          "Document comparator action public-disclosure clock using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not default unknown publication time to the effective FDA action date.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "Contemporaneous FDA posting record",
+          "independently timestamped disclosure"
+        ]
+      },
+      {
+        "id": "PRECEDENT-024",
+        "segment": "PRECEDENT",
+        "name": "Comparator CRL deficiency classification",
+        "definition": "Source-reported clinical, statistical, safety, manufacturing or other deficiencies in the exact CRL cycle.",
+        "data_type": "structured_result",
+        "applicability": "The comparator has a documented CRL",
+        "source": "Original CRL and FDA review correspondence",
+        "assessment_ids": [
+          "S16",
+          "S25",
+          "S29",
+          "S35"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Different deficiency types may carry different relevance to the current application.",
+        "assessment_criteria": [
+          "Document comparator crl deficiency classification using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Separate explicit FDA findings from sponsor explanations and redact or mark undisclosed details unknown.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "Original CRL",
+          "FDA review correspondence"
+        ]
+      },
+      {
+        "id": "PRECEDENT-025",
+        "segment": "PRECEDENT",
+        "name": "Comparator resubmission linkage",
+        "definition": "Relationship between an initial nonapproval action, response package and later FDA review cycle.",
+        "data_type": "event_history",
+        "applicability": "A historical application was resubmitted",
+        "source": "FDA CRL, response acknowledgment and subsequent action record",
+        "assessment_ids": [
+          "S24",
+          "S26",
+          "S29"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Later success must not erase a prior nonapproval or be counted as an independent program.",
+        "assessment_criteria": [
+          "Document comparator resubmission linkage using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep uncertain cycle boundaries unadjudicated and do not infer that all deficiencies were resolved before a later action.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "FDA CRL, response acknowledgment",
+          "subsequent action record"
+        ]
+      },
+      {
+        "id": "PRECEDENT-026",
+        "segment": "PRECEDENT",
+        "name": "Comparator withdrawal and filing-refusal distinction",
+        "definition": "Evidence separating sponsor withdrawal, refusal to file and absence of an FDA action from a substantive CRL.",
+        "data_type": "categorical",
+        "applicability": "A historical record is labeled as nonapproval without an original CRL",
+        "source": "FDA filing/action records and contemporaneous withdrawal disclosure",
+        "assessment_ids": [
+          "S26",
+          "S29",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "These events are outside some regulatory prediction targets and cannot be silently relabeled as CRL.",
+        "assessment_criteria": [
+          "Document comparator withdrawal and filing-refusal distinction using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Retain a nonbinary or unresolved classification when the original event type is not verified.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "FDA filing/action records",
+          "contemporaneous withdrawal disclosure"
+        ]
+      },
+      {
+        "id": "PRECEDENT-027",
+        "segment": "PRECEDENT",
+        "name": "Comparator clinical development phase",
+        "definition": "Phase and evidentiary role of the historical studies supporting the application.",
+        "data_type": "structured_result",
+        "applicability": "Clinical trials are compared across programs",
+        "source": "Registry history, protocol and FDA clinical review",
+        "assessment_ids": [
+          "S11",
+          "S21",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": false,
+        "scientific_rationale": "A similar drug in an earlier phase is not equivalent to an application-supported pivotal study.",
+        "assessment_criteria": [
+          "Document comparator clinical development phase using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Distinguish planned, completed and results-reported phases without inferring success.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Registry history, protocol",
+          "FDA clinical review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-028",
+        "segment": "PRECEDENT",
+        "name": "Comparator pivotal trial design",
+        "definition": "Historical pivotal design including parallel, crossover, withdrawal or single-arm structure and its execution.",
+        "data_type": "structured_result",
+        "applicability": "Trial design is part of comparator relevance",
+        "source": "Historical protocol, amendments and FDA clinical review",
+        "assessment_ids": [
+          "S11",
+          "S12",
+          "S13",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Design differences affect estimands, bias and interpretation of regulatory precedent.",
+        "assessment_criteria": [
+          "Document comparator pivotal trial design using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Document design limitations and avoid transporting results across incompatible designs.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Historical protocol, amendments",
+          "FDA clinical review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-029",
+        "segment": "PRECEDENT",
+        "name": "Comparator control treatment",
+        "definition": "Historical placebo, active, external or standard-care comparator and its clinical/regulatory justification.",
+        "data_type": "structured_result",
+        "applicability": "Control choice influences relevance",
+        "source": "Protocol and FDA endpoint/control discussion",
+        "assessment_ids": [
+          "S12",
+          "S28",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "The same effect estimate can have different meaning against different controls.",
+        "assessment_criteria": [
+          "Document comparator control treatment using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Flag an unvalidated external control or unavailable standard-care context.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Protocol",
+          "FDA endpoint/control discussion"
+        ]
+      },
+      {
+        "id": "PRECEDENT-030",
+        "segment": "PRECEDENT",
+        "name": "Comparator primary endpoint definition",
+        "definition": "Operational definition of the historical primary endpoint and the claim it was intended to support.",
+        "data_type": "text",
+        "applicability": "Primary endpoints are matched across applications",
+        "source": "Protocol, SAP and FDA endpoint assessment",
+        "assessment_ids": [
+          "S01",
+          "S28",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Superficially similar endpoint names can encode different measurements or clinical claims.",
+        "assessment_criteria": [
+          "Document comparator primary endpoint definition using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not equate endpoints unless measurement, direction and analysis definition are reconciled.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Protocol, SAP",
+          "FDA endpoint assessment"
+        ]
+      },
+      {
+        "id": "PRECEDENT-031",
+        "segment": "PRECEDENT",
+        "name": "Comparator endpoint timing and observation window",
+        "definition": "Timing of the historical primary endpoint and duration over which treatment benefit was assessed.",
+        "data_type": "structured_result",
+        "applicability": "Endpoint windows may differ",
+        "source": "Protocol and clinical study report",
+        "assessment_ids": [
+          "S01",
+          "S05",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Treatment effects over different follow-up windows are not automatically comparable.",
+        "assessment_criteria": [
+          "Document comparator endpoint timing and observation window using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Retain follow-up gaps and distinguish prespecified endpoint timing from exploratory later analyses.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Protocol",
+          "clinical study report"
+        ]
+      },
+      {
+        "id": "PRECEDENT-032",
+        "segment": "PRECEDENT",
+        "name": "Comparator primary estimand",
+        "definition": "Historical treatment condition, population, variable, intercurrent-event handling and summary measure of the primary estimand.",
+        "data_type": "structured_result",
+        "applicability": "An estimand-based comparison is attempted",
+        "source": "Final prespecified SAP and statistical review",
+        "assessment_ids": [
+          "S06",
+          "S08",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Different treatment-policy or hypothetical estimands can change the regulatory interpretation.",
+        "assessment_criteria": [
+          "Document comparator primary estimand using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Mark incomplete estimand components unknown rather than reconstructing them from favorable results.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Final prespecified SAP",
+          "statistical review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-033",
+        "segment": "PRECEDENT",
+        "name": "Comparator prespecified primary result",
+        "definition": "Source-reported primary analysis outcome, kept separate from secondary or sensitivity findings.",
+        "data_type": "structured_result",
+        "applicability": "Historical pivotal results are used for comparison",
+        "source": "Final SAP, clinical study report and original results publication",
+        "assessment_ids": [
+          "S01",
+          "S06",
+          "S09"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A favorable alternative analysis cannot convert a failed primary endpoint into success.",
+        "assessment_criteria": [
+          "Document comparator prespecified primary result using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "If the primary analysis cannot be identified, do not assign a trial-success classification.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Final SAP, clinical study report",
+          "original results publication"
+        ]
+      },
+      {
+        "id": "PRECEDENT-034",
+        "segment": "PRECEDENT",
+        "name": "Comparator treatment effect magnitude",
+        "definition": "Historical effect estimate on its original scale and the clinical context of that effect.",
+        "data_type": "structured_result",
+        "applicability": "Treatment effects are compared",
+        "source": "Clinical study report and FDA clinical review",
+        "assessment_ids": [
+          "S02",
+          "S37",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Statistical significance alone does not establish clinical comparability.",
+        "assessment_criteria": [
+          "Document comparator treatment effect magnitude using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Avoid converting or pooling scales without an independently justified transformation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Clinical study report",
+          "FDA clinical review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-035",
+        "segment": "PRECEDENT",
+        "name": "Comparator statistical precision",
+        "definition": "Confidence intervals, variance and uncertainty around the historical primary treatment contrast.",
+        "data_type": "structured_result",
+        "applicability": "Precision informs relevance of the historical result",
+        "source": "Statistical report and FDA statistical review",
+        "assessment_ids": [
+          "S10",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A point estimate without precision can misrepresent the strength of a precedent.",
+        "assessment_criteria": [
+          "Document comparator statistical precision using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Missing uncertainty is unknown and must not be replaced with a fabricated interval.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Statistical report",
+          "FDA statistical review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-036",
+        "segment": "PRECEDENT",
+        "name": "Comparator multiplicity control",
+        "definition": "Historical testing hierarchy, alpha allocation and treatment of multiple endpoints or analyses.",
+        "data_type": "evidence_summary",
+        "applicability": "More than one confirmatory hypothesis was examined",
+        "source": "Final SAP and statistical review",
+        "assessment_ids": [
+          "S07",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Uncontrolled multiplicity can make a seemingly similar positive result less persuasive.",
+        "assessment_criteria": [
+          "Document comparator multiplicity control using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Distinguish confirmatory tests from descriptive findings and identify unavailable final plans.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Final SAP",
+          "statistical review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-037",
+        "segment": "PRECEDENT",
+        "name": "Comparator missing-data strategy",
+        "definition": "Historical missing-data assumptions, imputations, discontinuation patterns and sensitivity checks.",
+        "data_type": "evidence_summary",
+        "applicability": "Missing data or intercurrent events may affect comparison",
+        "source": "Final SAP, clinical study report and statistical review",
+        "assessment_ids": [
+          "S08",
+          "S09",
+          "S17",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Different attrition and imputation assumptions can change an apparent efficacy match.",
+        "assessment_criteria": [
+          "Document comparator missing-data strategy using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not infer that missing-data bias is absent because one analysis is significant.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Final SAP, clinical study report",
+          "statistical review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-038",
+        "segment": "PRECEDENT",
+        "name": "Comparator subgroup applicability",
+        "definition": "Historical subgroup composition, consistency and limitations relative to the current intended population.",
+        "data_type": "evidence_summary",
+        "applicability": "Population transfer is proposed",
+        "source": "Prespecified subgroup plan, results and FDA review",
+        "assessment_ids": [
+          "S04",
+          "S36",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Relevant subgroup mismatch may undermine transfer of benefit-risk conclusions.",
+        "assessment_criteria": [
+          "Document comparator subgroup applicability using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Separate prespecified from post hoc subgroups and preserve imprecision or inconsistent directions.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Prespecified subgroup plan, results",
+          "FDA review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-039",
+        "segment": "PRECEDENT",
+        "name": "Comparator safety exposure",
+        "definition": "Historical numbers exposed and duration/dose distribution supporting safety inference.",
+        "data_type": "structured_result",
+        "applicability": "Safety is compared between applications",
+        "source": "Clinical study report, integrated safety summary and FDA review",
+        "assessment_ids": [
+          "S19",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Safety observations are not comparable without exposure context.",
+        "assessment_criteria": [
+          "Document comparator safety exposure using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not assume equal exposure or adequate long-term follow-up when denominators are unavailable.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Clinical study report, integrated safety summary",
+          "FDA review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-040",
+        "segment": "PRECEDENT",
+        "name": "Comparator serious adverse-event pattern",
+        "definition": "Historical serious events, deaths and available causality assessments relevant to the current program.",
+        "data_type": "structured_result",
+        "applicability": "Safety patterns may influence precedent relevance",
+        "source": "Integrated safety summary and FDA safety review",
+        "assessment_ids": [
+          "S16",
+          "S20",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "The type and seriousness of safety signals may matter more than a crude event total.",
+        "assessment_criteria": [
+          "Document comparator serious adverse-event pattern using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Retain uncertain attribution and do not translate sponsor causality into independent adjudication.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Integrated safety summary",
+          "FDA safety review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-041",
+        "segment": "PRECEDENT",
+        "name": "Comparator adverse-event discontinuations",
+        "definition": "Historical discontinuation counts/rates by treatment arm and the stated reasons for stopping.",
+        "data_type": "structured_result",
+        "applicability": "Tolerability is compared",
+        "source": "Clinical study report disposition and safety tables",
+        "assessment_ids": [
+          "S17",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Different discontinuation definitions or populations can create misleading cross-trial comparisons.",
+        "assessment_criteria": [
+          "Document comparator adverse-event discontinuations using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep all-event, treatment-related and administration-site discontinuations separate.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Clinical study report disposition",
+          "safety tables"
+        ]
+      },
+      {
+        "id": "PRECEDENT-042",
+        "segment": "PRECEDENT",
+        "name": "Comparator organ-specific safety restrictions",
+        "definition": "Historical organ risks, contraindications or monitoring restrictions and their evidence basis.",
+        "data_type": "evidence_summary",
+        "applicability": "A shared safety mechanism or population is relevant",
+        "source": "FDA safety review and historical labeling",
+        "assessment_ids": [
+          "S18",
+          "S20",
+          "S39"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "Product-level restrictions can limit the transferability of an otherwise favorable precedent.",
+        "assessment_criteria": [
+          "Document comparator organ-specific safety restrictions using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep postdecision restrictions out of predecision feature sets and identify uncertainty in their earlier availability.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA safety review",
+          "historical labeling"
+        ]
+      },
+      {
+        "id": "PRECEDENT-043",
+        "segment": "PRECEDENT",
+        "name": "Comparator CMC deficiencies",
+        "definition": "Historical quality, testing, process or inspection deficiencies attributed to the relevant review cycle.",
+        "data_type": "evidence_summary",
+        "applicability": "Manufacturing risk contributes to comparison",
+        "source": "Original CRL, FDA quality review and inspection record",
+        "assessment_ids": [
+          "S29",
+          "S31",
+          "S33",
+          "S35"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A clinical match does not establish similar manufacturing risk.",
+        "assessment_criteria": [
+          "Document comparator cmc deficiencies using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Undisclosed CMC findings remain unknown rather than treated as no deficiency.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Original CRL, FDA quality review",
+          "inspection record"
+        ]
+      },
+      {
+        "id": "PRECEDENT-044",
+        "segment": "PRECEDENT",
+        "name": "Comparator manufacturing-facility relationship",
+        "definition": "Whether historical and current products share facilities or material manufacturing responsibilities.",
+        "data_type": "structured_result",
+        "applicability": "Facility experience is proposed as a precedent",
+        "source": "FDA facility records and source-linked manufacturing disclosures",
+        "assessment_ids": [
+          "S32",
+          "S34",
+          "S35",
+          "S39"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "Facility-level associations may create dependence without proving product-specific readiness.",
+        "assessment_criteria": [
+          "Document comparator manufacturing-facility relationship using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not infer a current inspection outcome from another product manufactured at the same site.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA facility records",
+          "source-linked manufacturing disclosures"
+        ]
+      },
+      {
+        "id": "PRECEDENT-045",
+        "segment": "PRECEDENT",
+        "name": "Comparator manufacturing change history",
+        "definition": "Historical changes in formulation, process, scale, site or analytical control that affected review relevance.",
+        "data_type": "event_history",
+        "applicability": "Manufacturing evolution affects evidence comparability",
+        "source": "Dated CMC amendments and FDA quality review",
+        "assessment_ids": [
+          "S31",
+          "S32",
+          "S33",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Review outcomes before and after major manufacturing changes may not be comparable.",
+        "assessment_criteria": [
+          "Document comparator manufacturing change history using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Retain unknown change dates or comparability outcomes and do not assume bridging success.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Dated CMC amendments",
+          "FDA quality review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-046",
+        "segment": "PRECEDENT",
+        "name": "Comparator advisory-committee context",
+        "definition": "Committee question, vote, briefing evidence and timing relative to the historical FDA action.",
+        "data_type": "structured_result",
+        "applicability": "An advisory committee considered the application",
+        "source": "FDA meeting announcement, briefing package and minutes",
+        "assessment_ids": [
+          "S27",
+          "S28",
+          "S29"
+        ],
+        "mandatory": false,
+        "critical": false,
+        "scientific_rationale": "Advisory recommendations are context and not equivalent to a binding FDA action.",
+        "assessment_criteria": [
+          "Document comparator advisory-committee context using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep advisory votes distinct from FDA decisions and enforce availability before the intended prediction cutoff.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA meeting announcement, briefing package",
+          "minutes"
+        ]
+      },
+      {
+        "id": "PRECEDENT-047",
+        "segment": "PRECEDENT",
+        "name": "Comparator special designation type",
+        "definition": "Verified historical designation such as priority review, fast track, breakthrough therapy or orphan status.",
+        "data_type": "categorical",
+        "applicability": "A designation is used to characterize a precedent",
+        "source": "Original FDA designation correspondence or official record",
+        "assessment_ids": [
+          "S30",
+          "S39"
+        ],
+        "mandatory": false,
+        "critical": false,
+        "scientific_rationale": "Designations describe specific regulatory programs and do not guarantee approval.",
+        "assessment_criteria": [
+          "Document comparator special designation type using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not infer a designation from a shorter observed review or sponsor adjectives.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Original FDA designation correspondence or official record"
+        ]
+      },
+      {
+        "id": "PRECEDENT-048",
+        "segment": "PRECEDENT",
+        "name": "Comparator designation timing and scope",
+        "definition": "Grant date, covered indication and product scope of the historical designation.",
+        "data_type": "structured_result",
+        "applicability": "A verified designation is considered relevant",
+        "source": "FDA designation record and contemporaneous correspondence",
+        "assessment_ids": [
+          "S26",
+          "S30",
+          "S39"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "A designation granted later or for another indication cannot inform an earlier prediction.",
+        "assessment_criteria": [
+          "Document comparator designation timing and scope using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep missing grant dates or indication scope unresolved.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA designation record",
+          "contemporaneous correspondence"
+        ]
+      },
+      {
+        "id": "PRECEDENT-049",
+        "segment": "PRECEDENT",
+        "name": "Comparator documented FDA endpoint agreement",
+        "definition": "Historical FDA feedback or special protocol agreement relevant to endpoint, design or analysis acceptability.",
+        "data_type": "evidence_summary",
+        "applicability": "Agreement is used as a precedent for evidentiary sufficiency",
+        "source": "Dated FDA meeting minutes and agreement correspondence",
+        "assessment_ids": [
+          "S27",
+          "S28",
+          "S39"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "Sponsor statements about agreement need to be distinguished from the actual documented scope.",
+        "assessment_criteria": [
+          "Document comparator documented fda endpoint agreement using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Record conditions or disputed interpretations and do not equate agreement with eventual approval.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Dated FDA meeting minutes",
+          "agreement correspondence"
+        ]
+      },
+      {
+        "id": "PRECEDENT-050",
+        "segment": "PRECEDENT",
+        "name": "Comparator postmarketing evidence requirements",
+        "definition": "Historical postmarketing requirements or commitments linked to the decision and the uncertainties they address.",
+        "data_type": "structured_result",
+        "applicability": "Postmarketing obligations are used to explain a precedent",
+        "source": "Original FDA action letter and postmarketing requirement record",
+        "assessment_ids": [
+          "S19",
+          "S20",
+          "S29"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "Approval with remaining obligations may differ from an unrestricted evidence claim.",
+        "assessment_criteria": [
+          "Document comparator postmarketing evidence requirements using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Treat requirements first disclosed at action as outcome-only and do not use them as historical predecision predictors.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "FDA action content is outcome context for its own application, never a predecision feature for that case. Use for a different candidate only after the action and its public availability both predate that candidate cutoff."
+        ],
+        "required_source_types": [
+          "Original FDA action letter",
+          "postmarketing requirement record"
+        ]
+      },
+      {
+        "id": "PRECEDENT-051",
+        "segment": "PRECEDENT",
+        "name": "Comparator FDA review division and era",
+        "definition": "Responsible review division and contemporaneous policy era for the historical application.",
+        "data_type": "structured_result",
+        "applicability": "Regulatory practice may differ over time or division",
+        "source": "FDA review documents and dated official guidance",
+        "assessment_ids": [
+          "S28",
+          "S38",
+          "S39"
+        ],
+        "mandatory": false,
+        "critical": false,
+        "scientific_rationale": "Changes in standards can make a historical decision less transferable.",
+        "assessment_criteria": [
+          "Document comparator fda review division and era using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Avoid assuming uniform practice across divisions or importing later guidance into an earlier evidence window.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA review documents",
+          "dated official guidance"
+        ]
+      },
+      {
+        "id": "PRECEDENT-052",
+        "segment": "PRECEDENT",
+        "name": "Comparator standard of care at decision",
+        "definition": "Treatment alternatives and clinical practice available at the historical decision cutoff.",
+        "data_type": "evidence_summary",
+        "applicability": "Historical benefit-risk and unmet need are compared",
+        "source": "Contemporaneous treatment guidance and comparator trial literature",
+        "assessment_ids": [
+          "S12",
+          "S40",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Benefit-risk and acceptable control choices depend on the treatment landscape at that time.",
+        "assessment_criteria": [
+          "Document comparator standard of care at decision using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Use historically available care, not a later therapy, when reconstructing regulatory context.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Contemporaneous treatment guidance",
+          "comparator trial literature"
+        ]
+      },
+      {
+        "id": "PRECEDENT-053",
+        "segment": "PRECEDENT",
+        "name": "Prespecified historical comparator-selection rule",
+        "definition": "Eligibility and matching criteria frozen before examining candidate outcomes.",
+        "data_type": "protocol_reference",
+        "applicability": "Any historical comparator set is constructed",
+        "source": "Timestamped comparison protocol and search specification",
+        "assessment_ids": [
+          "S06",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Selecting only favorable precedents after knowing outcomes creates biased comparisons.",
+        "assessment_criteria": [
+          "Document prespecified historical comparator-selection rule using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unfrozen or outcome-informed selection remains exploratory and cannot support independent validation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Timestamped comparison protocol",
+          "search specification"
+        ]
+      },
+      {
+        "id": "PRECEDENT-054",
+        "segment": "PRECEDENT",
+        "name": "Historical comparator search coverage",
+        "definition": "Searched sources, eligible case universe and documented missing or inaccessible cases.",
+        "data_type": "structured_result",
+        "applicability": "A comparator search is reported",
+        "source": "Reproducible search log and complete application inventory",
+        "assessment_ids": [
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "An incomplete search may overrepresent accessible approvals or public CRLs.",
+        "assessment_criteria": [
+          "Document historical comparator search coverage using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Report missing-source coverage and avoid claiming exhaustive comparison without a verifiable universe.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Reproducible search log",
+          "complete application inventory"
+        ]
+      },
+      {
+        "id": "PRECEDENT-055",
+        "segment": "PRECEDENT",
+        "name": "Historical outcome ascertainment bias",
+        "definition": "Assessment of how approvals, CRLs and extensions became observable in the comparator set.",
+        "data_type": "evidence_summary",
+        "applicability": "Historical cases are assembled from different source archives",
+        "source": "Sampling protocol and FDA action-source audit",
+        "assessment_ids": [
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Outcome-specific publication can distort apparent precedent strength.",
+        "assessment_criteria": [
+          "Document historical outcome ascertainment bias using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "A CRL archive or approval-only list is not accepted as a complete decision denominator.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Sampling protocol",
+          "FDA action-source audit"
+        ]
+      },
+      {
+        "id": "PRECEDENT-056",
+        "segment": "PRECEDENT",
+        "name": "Comparator similarity dimensions and scale",
+        "definition": "Prespecified per-dimension comparison of indication, population, mechanism, design, endpoints, safety and CMC.",
+        "data_type": "structured_result",
+        "applicability": "A similarity assessment is reported",
+        "source": "Versioned similarity protocol and source-linked comparison matrix",
+        "assessment_ids": [
+          "S36",
+          "S37",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "An overall similarity number can hide clinically important mismatches.",
+        "assessment_criteria": [
+          "Document comparator similarity dimensions and scale using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not assign a numeric similarity score without an explicit validated method and reviewed inputs.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Versioned similarity protocol",
+          "source-linked comparison matrix"
+        ]
+      },
+      {
+        "id": "PRECEDENT-057",
+        "segment": "PRECEDENT",
+        "name": "Comparator relevance exclusions",
+        "definition": "Explicit reasons a searched case is excluded or down-weighted as clinically or regulatorily irrelevant.",
+        "data_type": "reference_list",
+        "applicability": "Cases are screened out of historical comparisons",
+        "source": "Comparator screening log and source-linked adjudication",
+        "assessment_ids": [
+          "S38",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Documented exclusions prevent convenient deletion of contradictory cases.",
+        "assessment_criteria": [
+          "Document comparator relevance exclusions using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep excluded cases visible and separate evidence absence from confirmed irrelevance.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Comparator screening log",
+          "source-linked adjudication"
+        ]
+      },
+      {
+        "id": "PRECEDENT-058",
+        "segment": "PRECEDENT",
+        "name": "Comparator transportability uncertainty",
+        "definition": "Remaining uncertainty in transferring the historical decision context to the current application.",
+        "data_type": "evidence_summary",
+        "applicability": "A historical precedent is cited in the scientific dossier",
+        "source": "Independent clinical/regulatory comparison review",
+        "assessment_ids": [
+          "S10",
+          "S36",
+          "S37",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Even a close match does not establish the same FDA decision probability.",
+        "assessment_criteria": [
+          "Document comparator transportability uncertainty using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "State unresolved effect modifiers and preserve abstention when transferability is not supported.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Independent clinical/regulatory comparison review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-059",
+        "segment": "PRECEDENT",
+        "name": "Contradictory historical precedents",
+        "definition": "Source-linked cases supporting a materially different regulatory outcome and why they may differ.",
+        "data_type": "reference_list",
+        "applicability": "Relevant contradictory precedents exist or were sought",
+        "source": "Complete comparator search and independent adversarial review",
+        "assessment_ids": [
+          "S25",
+          "S38",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A balanced comparison must seek strong opposing precedents rather than only supportive ones.",
+        "assessment_criteria": [
+          "Document contradictory historical precedents using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Record unsuccessful searches without interpreting them as proof that no counterexample exists.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Complete comparator search",
+          "independent adversarial review"
+        ]
+      },
+      {
+        "id": "PRECEDENT-060",
+        "segment": "PRECEDENT",
+        "name": "Comparator dependence and training overlap",
+        "definition": "Program-family, trial, application-cycle and data overlap between comparators, training and evaluation sets.",
+        "data_type": "structured_result",
+        "applicability": "Comparators inform prediction development or validation",
+        "source": "Program identity mapping and frozen train/test manifests",
+        "assessment_ids": [
+          "S21",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Related cases can inflate apparent independent support and predictive performance.",
+        "assessment_criteria": [
+          "Document comparator dependence and training overlap using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unknown family or record overlap blocks claims of program-independent validation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Program identity mapping",
+          "frozen train/test manifests"
+        ]
+      }
+    ],
+    "VALIDATION": [
+      {
+        "id": "VALIDATION-002",
+        "segment": "VALIDATION",
+        "name": "Prespecified prediction target and horizon",
+        "definition": "Exact application-cycle event and time horizon to which a forecast applies.",
+        "data_type": "protocol_reference",
+        "applicability": "Every prediction or backtest",
+        "source": "Versioned forecasting protocol",
+        "assessment_ids": [
+          "S06",
+          "S24",
+          "S26"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Approval, CRL and extension may occur at different times within an application history.",
+        "assessment_criteria": [
+          "Document prespecified prediction target and horizon using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "A target without a frozen horizon and event-selection policy remains unresolved.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Versioned forecasting protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-003",
+        "segment": "VALIDATION",
+        "name": "Frozen three-outcome class definitions",
+        "definition": "Operational definitions for PASS, CRL and formal EXTENSION, with separate unresolved and withdrawal handling.",
+        "data_type": "categorical",
+        "applicability": "Three-outcome research is proposed",
+        "source": "Versioned outcome taxonomy and labeling protocol",
+        "assessment_ids": [
+          "S24",
+          "S26",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Changing class definitions after outcomes are known invalidates comparisons.",
+        "assessment_criteria": [
+          "Document frozen three-outcome class definitions using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not map a missed target or withdrawal to CRL or EXTENSION without action evidence.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Versioned outcome taxonomy",
+          "labeling protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-004",
+        "segment": "VALIDATION",
+        "name": "Prediction model version",
+        "definition": "Unambiguous version identifier for the exact model or abstention method used.",
+        "data_type": "string",
+        "applicability": "Each registered prediction or research run",
+        "source": "Immutable model release manifest",
+        "assessment_ids": [
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A model name without a version cannot identify which decision rule was evaluated.",
+        "assessment_criteria": [
+          "Document prediction model version using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Missing versions remain unknown and cannot be filled from a later model release.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Immutable model release manifest"
+        ]
+      },
+      {
+        "id": "VALIDATION-005",
+        "segment": "VALIDATION",
+        "name": "Frozen model artifact commitment",
+        "definition": "Digest and retained bytes for the exact model artifact used in the prediction.",
+        "data_type": "artifact_reference",
+        "applicability": "A model artifact is used",
+        "source": "Retained model artifact and immutable manifest",
+        "assessment_ids": [
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "An immutable artifact is necessary to reproduce the forecast method.",
+        "assessment_criteria": [
+          "Document frozen model artifact commitment using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "A supplied hash alone is not proof the artifact existed before the outcome or was scientifically valid.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Retained model artifact",
+          "immutable manifest"
+        ]
+      },
+      {
+        "id": "VALIDATION-006",
+        "segment": "VALIDATION",
+        "name": "Model training-data cutoff",
+        "definition": "Latest allowed training observation/label availability timestamp for the frozen model.",
+        "data_type": "datetime",
+        "applicability": "A trained model is evaluated",
+        "source": "Training manifest and source-availability audit",
+        "assessment_ids": [
+          "S06",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Training on labels unavailable at prediction time creates future-information leakage.",
+        "assessment_criteria": [
+          "Document model training-data cutoff using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unverified training chronology blocks historical or prospective independence claims.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Training manifest",
+          "source-availability audit"
+        ]
+      },
+      {
+        "id": "VALIDATION-007",
+        "segment": "VALIDATION",
+        "name": "Training-cohort provenance",
+        "definition": "Application-cycle membership, source lineage and eligibility of records used for model fitting.",
+        "data_type": "reference_list",
+        "applicability": "Model fitting uses historical observations",
+        "source": "Frozen training dataset and cohort inclusion log",
+        "assessment_ids": [
+          "S21",
+          "S23",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Reproducible provenance is needed to identify biased, duplicated or contaminated training examples.",
+        "assessment_criteria": [
+          "Document training-cohort provenance using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unknown or approval-only training provenance remains unvalidated.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Frozen training dataset",
+          "cohort inclusion log"
+        ]
+      },
+      {
+        "id": "VALIDATION-008",
+        "segment": "VALIDATION",
+        "name": "Original prediction registration timestamp",
+        "definition": "Recorded creation time of the original prediction artifact before outcome evaluation.",
+        "data_type": "datetime",
+        "applicability": "A prospective claim is considered",
+        "source": "Original write-once registration and retained prediction bytes",
+        "assessment_ids": [
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Reconstructed predictions do not become prospective because they carry a historical target date.",
+        "assessment_criteria": [
+          "Document original prediction registration timestamp using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep local clock claims distinct from independently established pre-action timing.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Original write-once registration",
+          "retained prediction bytes"
+        ]
+      },
+      {
+        "id": "VALIDATION-009",
+        "segment": "VALIDATION",
+        "name": "Independent time-anchor authentication",
+        "definition": "Verification binding the exact original prediction digest to an independently observed pre-action timestamp.",
+        "data_type": "evidence_summary",
+        "applicability": "A forecast is claimed to precede the FDA action",
+        "source": "Trusted server receipt or independently verified timestamp token",
+        "assessment_ids": [
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Git author dates and matching hashes can be fabricated without proving contemporaneous existence.",
+        "assessment_criteria": [
+          "Document independent time-anchor authentication using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "An unverified receipt or timestamp authority remains insufficient for prospective validation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Trusted server receipt or independently verified timestamp token"
+        ]
+      },
+      {
+        "id": "VALIDATION-010",
+        "segment": "VALIDATION",
+        "name": "Frozen feature-manifest identity",
+        "definition": "Exact feature definitions, values, versions and digests passed to the model at registration.",
+        "data_type": "artifact_reference",
+        "applicability": "A prediction consumes scientific or historical features",
+        "source": "Retained feature manifest and scoring interface record",
+        "assessment_ids": [
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Later changes to features can invalidate an otherwise reproducible model artifact.",
+        "assessment_criteria": [
+          "Document frozen feature-manifest identity using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unavailable feature bytes or ambiguous transformations block reproduction.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Retained feature manifest",
+          "scoring interface record"
+        ]
+      },
+      {
+        "id": "VALIDATION-011",
+        "segment": "VALIDATION",
+        "name": "Point-in-time source availability audit",
+        "definition": "Source-specific proof that every prediction input was publicly available by the frozen evidence cutoff.",
+        "data_type": "evidence_summary",
+        "applicability": "Any source is used as a feature",
+        "source": "Original source bytes and contemporaneous filing/publication provenance",
+        "assessment_ids": [
+          "S24",
+          "S25"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A printed date is not necessarily the date a document became public.",
+        "assessment_criteria": [
+          "Document point-in-time source availability audit using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unknown availability and post-cutoff sources remain excluded or quarantined.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Original source bytes",
+          "contemporaneous filing/publication provenance"
+        ]
+      },
+      {
+        "id": "VALIDATION-012",
+        "segment": "VALIDATION",
+        "name": "Adversarial information-leakage challenge",
+        "definition": "Independent attempt to find later outcomes, label-derived fields or future metadata crossing the scoring boundary.",
+        "data_type": "evidence_summary",
+        "applicability": "A model or historical evaluation is assessed",
+        "source": "Independent leakage audit and feature lineage",
+        "assessment_ids": [
+          "S23",
+          "S24",
+          "S25"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A plausible chronology check alone may miss indirect outcome leakage.",
+        "assessment_criteria": [
+          "Document adversarial information-leakage challenge using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unresolved leakage pathways prohibit validated accuracy claims.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Independent leakage audit",
+          "feature lineage"
+        ]
+      },
+      {
+        "id": "VALIDATION-013",
+        "segment": "VALIDATION",
+        "name": "Historical application-cycle deduplication",
+        "definition": "Canonical action identities and detection of duplicate targets, revisions, resubmissions and source aliases.",
+        "data_type": "structured_result",
+        "applicability": "Historical data are counted or split",
+        "source": "FDA cycle identity audit and deduplication manifest",
+        "assessment_ids": [
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Duplicate labels can inflate both sample size and apparent performance.",
+        "assessment_criteria": [
+          "Document historical application-cycle deduplication using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Ambiguous duplicates remain quarantined rather than being counted as independent cases.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "FDA cycle identity audit",
+          "deduplication manifest"
+        ]
+      },
+      {
+        "id": "VALIDATION-014",
+        "segment": "VALIDATION",
+        "name": "Evaluation population denominator",
+        "definition": "Prespecified complete eligible application population and the inclusion period for evaluation.",
+        "data_type": "structured_result",
+        "applicability": "Any performance or coverage metric is reported",
+        "source": "Cohort protocol and source-supported application inventory",
+        "assessment_ids": [
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A performance numerator has no interpretable scope without a defensible denominator.",
+        "assessment_criteria": [
+          "Document evaluation population denominator using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "An incomplete or outcome-conditioned population cannot establish general approval accuracy.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Cohort protocol",
+          "source-supported application inventory"
+        ]
+      },
+      {
+        "id": "VALIDATION-015",
+        "segment": "VALIDATION",
+        "name": "Outcome ascertainment and missing-label coverage",
+        "definition": "How many eligible evaluation cases have independently documented outcomes and why other labels are missing.",
+        "data_type": "structured_result",
+        "applicability": "An evaluation cohort is assembled",
+        "source": "Action-label adjudication log and source availability audit",
+        "assessment_ids": [
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Cases with unavailable labels must not disappear in favor of easier later decisions.",
+        "assessment_criteria": [
+          "Document outcome ascertainment and missing-label coverage using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Report missing outcomes separately from model abstentions and scored cases.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Action-label adjudication log",
+          "source availability audit"
+        ]
+      },
+      {
+        "id": "VALIDATION-016",
+        "segment": "VALIDATION",
+        "name": "Chronological split specification",
+        "definition": "Frozen chronological train, tuning and evaluation boundaries with labels restricted to historical availability.",
+        "data_type": "protocol_reference",
+        "applicability": "Chronological backtesting is performed",
+        "source": "Predeclared split manifest and timestamped evaluation protocol",
+        "assessment_ids": [
+          "S06",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Random mixing of historical decisions can mask future-information leakage.",
+        "assessment_criteria": [
+          "Document chronological split specification using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unknown or retrospectively selected boundaries make the result exploratory.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Predeclared split manifest",
+          "timestamped evaluation protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-017",
+        "segment": "VALIDATION",
+        "name": "Program-family holdout specification",
+        "definition": "Prespecified program-family grouping and separation of related products across fitting and evaluation.",
+        "data_type": "reference_list",
+        "applicability": "Claims of independent program generalization are made",
+        "source": "Canonical family map and frozen split manifest",
+        "assessment_ids": [
+          "S21",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Different application numbers can share the same scientific program and outcomes.",
+        "assessment_criteria": [
+          "Document program-family holdout specification using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unadjudicated families cannot support a claim of program-disjoint validation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Canonical family map",
+          "frozen split manifest"
+        ]
+      },
+      {
+        "id": "VALIDATION-018",
+        "segment": "VALIDATION",
+        "name": "Untouched final holdout commitment",
+        "definition": "Locked final evaluation cases and access restrictions before model selection or tuning.",
+        "data_type": "artifact_reference",
+        "applicability": "A final validation claim is proposed",
+        "source": "Immutable holdout manifest and access audit",
+        "assessment_ids": [
+          "S06",
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Repeatedly inspecting the holdout converts it into development data.",
+        "assessment_criteria": [
+          "Document untouched final holdout commitment using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Prior model-selection access must be disclosed; a touched holdout is not independently untouched.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Immutable holdout manifest",
+          "access audit"
+        ]
+      },
+      {
+        "id": "VALIDATION-019",
+        "segment": "VALIDATION",
+        "name": "Prespecified baseline comparison",
+        "definition": "Reproducible simple baseline method and the same target/cohort used for candidate comparison.",
+        "data_type": "protocol_reference",
+        "applicability": "Predictive improvement is claimed",
+        "source": "Versioned baseline implementation and evaluation protocol",
+        "assessment_ids": [
+          "S23",
+          "S38",
+          "S39"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A complex model must demonstrate improvement beyond an appropriate reference method.",
+        "assessment_criteria": [
+          "Document prespecified baseline comparison using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not compare methods on different cases, horizons or outcome definitions.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Versioned baseline implementation",
+          "evaluation protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-020",
+        "segment": "VALIDATION",
+        "name": "Decision and abstention threshold protocol",
+        "definition": "Rules for hard predictions, abstention and readiness thresholds selected before final evaluation.",
+        "data_type": "protocol_reference",
+        "applicability": "A model can issue a decision or abstain",
+        "source": "Frozen threshold-selection protocol",
+        "assessment_ids": [
+          "S06",
+          "S10",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Choosing thresholds after seeing outcomes can inflate decision accuracy or selective coverage.",
+        "assessment_criteria": [
+          "Document decision and abstention threshold protocol using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unfrozen thresholds prevent claims of an unbiased held-out decision result.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Frozen threshold-selection protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-021",
+        "segment": "VALIDATION",
+        "name": "Tuning-data access record",
+        "definition": "Datasets and outcomes used to select features, model complexity, hyperparameters and thresholds.",
+        "data_type": "reference_list",
+        "applicability": "Model development includes tuning",
+        "source": "Training/tuning manifests and development audit",
+        "assessment_ids": [
+          "S23",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A nominal test set may have been indirectly used in repeated model development.",
+        "assessment_criteria": [
+          "Document tuning-data access record using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Undocumented tuning access leaves independence unestablished.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Training/tuning manifests",
+          "development audit"
+        ]
+      },
+      {
+        "id": "VALIDATION-022",
+        "segment": "VALIDATION",
+        "name": "FDA outcome-label adjudication quality",
+        "definition": "Independent authentication of action type, application, cycle and public-availability time for evaluation labels.",
+        "data_type": "evidence_summary",
+        "applicability": "An outcome is used to score a forecast",
+        "source": "Original FDA action sources and adjudication records",
+        "assessment_ids": [
+          "S23",
+          "S24",
+          "S26"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "The known outcome must itself be correctly defined before a forecast can be evaluated.",
+        "assessment_criteria": [
+          "Document fda outcome-label adjudication quality using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Sponsor-only, corrected-only or ambiguous labels retain their verification limits.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Original FDA action sources",
+          "adjudication records"
+        ]
+      },
+      {
+        "id": "VALIDATION-023",
+        "segment": "VALIDATION",
+        "name": "Early FDA action timing check",
+        "definition": "Comparison of original prediction registration with the earliest independently established FDA action or disclosure.",
+        "data_type": "structured_result",
+        "applicability": "Prospective timing is assessed",
+        "source": "Original action record, disclosure clock and prediction receipt",
+        "assessment_ids": [
+          "S24",
+          "S26"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A future PDUFA target does not prove the actual decision was still unseen.",
+        "assessment_criteria": [
+          "Document early fda action timing check using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Same-day or uncertain action timing is treated conservatively and does not receive prospective credit.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Original action record, disclosure clock",
+          "prediction receipt"
+        ]
+      },
+      {
+        "id": "VALIDATION-024",
+        "segment": "VALIDATION",
+        "name": "Prediction lock versus public outcome check",
+        "definition": "Evidence that model output and input artifacts were locked before the outcome became publicly accessible.",
+        "data_type": "structured_result",
+        "applicability": "A prospective or historical frozen-prediction claim is considered",
+        "source": "Immutable prediction bytes and independently authenticated event clocks",
+        "assessment_ids": [
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A late lock can preserve an accurate retrospective value without making it a prediction.",
+        "assessment_criteria": [
+          "Document prediction lock versus public outcome check using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Post-action or unverifiable locks are excluded from validated forecast metrics.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Immutable prediction bytes",
+          "independently authenticated event clocks"
+        ]
+      },
+      {
+        "id": "VALIDATION-025",
+        "segment": "VALIDATION",
+        "name": "Evaluation class prevalence",
+        "definition": "Observed PASS, CRL and EXTENSION prevalence in the prespecified, independently labeled evaluation cohort.",
+        "data_type": "structured_result",
+        "applicability": "Class-dependent metrics are interpreted",
+        "source": "Adjudicated evaluation labels and cohort manifest",
+        "assessment_ids": [
+          "S10",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Accuracy and predictive values depend on the evaluated class distribution.",
+        "assessment_criteria": [
+          "Document evaluation class prevalence using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not infer real-world prevalence from a selected approval-only or CRL-only archive.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Adjudicated evaluation labels",
+          "cohort manifest"
+        ]
+      },
+      {
+        "id": "VALIDATION-026",
+        "segment": "VALIDATION",
+        "name": "Per-class evaluation sample counts",
+        "definition": "Counts of independent evaluation cases and scored predictions for each target class.",
+        "data_type": "structured_result",
+        "applicability": "Classwise performance is reported",
+        "source": "Reconciled scoring ledger and evaluation labels",
+        "assessment_ids": [
+          "S10",
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Sparse classes may make nominal performance estimates unstable or undefined.",
+        "assessment_criteria": [
+          "Document per-class evaluation sample counts using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Zero or inadequate class counts must remain explicit rather than producing unsupported statistics.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Reconciled scoring ledger",
+          "evaluation labels"
+        ]
+      },
+      {
+        "id": "VALIDATION-027",
+        "segment": "VALIDATION",
+        "name": "Classwise probability calibration evidence",
+        "definition": "Reliability of predicted probability against observed outcome frequency separately for each class.",
+        "data_type": "structured_result",
+        "applicability": "Validated probabilities are proposed",
+        "source": "Held-out forecasts, adjudicated labels and prespecified calibration analysis",
+        "assessment_ids": [
+          "S10",
+          "S23"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A useful ranking does not establish calibrated approval, CRL or extension probabilities.",
+        "assessment_criteria": [
+          "Document classwise probability calibration evidence using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "No calibrated probability is assigned without sufficient independent calibration evidence.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Held-out forecasts, adjudicated labels",
+          "prespecified calibration analysis"
+        ]
+      },
+      {
+        "id": "VALIDATION-028",
+        "segment": "VALIDATION",
+        "name": "Three-class Brier score",
+        "definition": "Prespecified proper scoring-rule result for PASS/CRL/EXTENSION probability vectors on independently eligible cases.",
+        "data_type": "structured_result",
+        "applicability": "Probabilistic forecasts are evaluated",
+        "source": "Held-out probability vectors and reproducible metric implementation",
+        "assessment_ids": [
+          "S10",
+          "S23"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Brier score evaluates full probability assignments rather than only winning-class accuracy.",
+        "assessment_criteria": [
+          "Document three-class brier score using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "A missing class, invalid normalization or unverified label blocks reporting the metric.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Held-out probability vectors",
+          "reproducible metric implementation"
+        ]
+      },
+      {
+        "id": "VALIDATION-029",
+        "segment": "VALIDATION",
+        "name": "Three-class logarithmic loss",
+        "definition": "Prespecified logarithmic scoring-rule result with declared treatment of zero probabilities.",
+        "data_type": "structured_result",
+        "applicability": "Probabilistic forecasts are evaluated",
+        "source": "Held-out probability vectors and scoring protocol",
+        "assessment_ids": [
+          "S10",
+          "S23"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Log loss can reveal overconfident errors hidden by classification accuracy.",
+        "assessment_criteria": [
+          "Document three-class logarithmic loss using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not clip or replace probabilities after outcomes are seen without a prespecified rule.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Held-out probability vectors",
+          "scoring protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-030",
+        "segment": "VALIDATION",
+        "name": "Multiclass discrimination evidence",
+        "definition": "Prespecified discrimination measures and averaging convention for the three outcomes.",
+        "data_type": "structured_result",
+        "applicability": "Discrimination is reported",
+        "source": "Independent held-out forecasts and metric protocol",
+        "assessment_ids": [
+          "S10",
+          "S23"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Discrimination metrics depend on outcome contrast and averaging convention.",
+        "assessment_criteria": [
+          "Document multiclass discrimination evidence using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Undefined contrasts or inadequate class support remain unreported rather than imputed.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Independent held-out forecasts",
+          "metric protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-031",
+        "segment": "VALIDATION",
+        "name": "Three-outcome confusion matrix",
+        "definition": "Counts of predicted versus independently adjudicated PASS, CRL and EXTENSION outcomes under frozen decision rules.",
+        "data_type": "structured_result",
+        "applicability": "Hard classification performance is reported",
+        "source": "Locked predictions and adjudicated evaluation labels",
+        "assessment_ids": [
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Aggregate accuracy can conceal clinically or regulatorily important class-specific errors.",
+        "assessment_criteria": [
+          "Document three-outcome confusion matrix using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep abstentions and unresolved labels outside scored cells with separate reconciliation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Locked predictions",
+          "adjudicated evaluation labels"
+        ]
+      },
+      {
+        "id": "VALIDATION-032",
+        "segment": "VALIDATION",
+        "name": "Per-class sensitivity and specificity",
+        "definition": "Classwise true-positive and true-negative performance using a prespecified multiclass contrast.",
+        "data_type": "structured_result",
+        "applicability": "Classwise classification metrics are presented",
+        "source": "Confusion matrix and frozen metric definitions",
+        "assessment_ids": [
+          "S10",
+          "S23"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Each class may have materially different detection and exclusion performance.",
+        "assessment_criteria": [
+          "Document per-class sensitivity and specificity using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "State denominators and undefined metrics; do not borrow counts from unrelated cohorts.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Confusion matrix",
+          "frozen metric definitions"
+        ]
+      },
+      {
+        "id": "VALIDATION-033",
+        "segment": "VALIDATION",
+        "name": "Per-class predictive values",
+        "definition": "Classwise precision and negative predictive value with their denominators and cohort prevalence.",
+        "data_type": "structured_result",
+        "applicability": "Interpretation of predicted decisions is proposed",
+        "source": "Confusion matrix and evaluation population definition",
+        "assessment_ids": [
+          "S10",
+          "S23",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Predictive values change with prevalence and cannot be transported without context.",
+        "assessment_criteria": [
+          "Document per-class predictive values using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not present a selected-cohort predictive value as a universal probability of FDA action.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Confusion matrix",
+          "evaluation population definition"
+        ]
+      },
+      {
+        "id": "VALIDATION-034",
+        "segment": "VALIDATION",
+        "name": "Metric uncertainty intervals",
+        "definition": "Prespecified confidence or uncertainty intervals that respect clustered program families and sampling design.",
+        "data_type": "structured_result",
+        "applicability": "A prediction-performance estimate is reported",
+        "source": "Independent case-level results and resampling/interval protocol",
+        "assessment_ids": [
+          "S10",
+          "S23",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Point estimates without uncertainty can overstate evidence from small or dependent samples.",
+        "assessment_criteria": [
+          "Document metric uncertainty intervals using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not fabricate intervals or treat repeated cycles within one program as independent draws.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Independent case-level results",
+          "resampling/interval protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-035",
+        "segment": "VALIDATION",
+        "name": "Temporal calibration stability",
+        "definition": "Assessment of calibration across prespecified decision-time periods without tuning on the final period.",
+        "data_type": "structured_result",
+        "applicability": "Historical performance is transferred to future decisions",
+        "source": "Chronological forecast cohorts and calibration analysis",
+        "assessment_ids": [
+          "S10",
+          "S21",
+          "S23"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "Regulatory practice and case mix can change, weakening historical calibration.",
+        "assessment_criteria": [
+          "Document temporal calibration stability using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Sparse periods or post hoc windows retain explicit uncertainty and cannot establish temporal stability.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Chronological forecast cohorts",
+          "calibration analysis"
+        ]
+      },
+      {
+        "id": "VALIDATION-036",
+        "segment": "VALIDATION",
+        "name": "Subgroup predictive performance",
+        "definition": "Prespecified performance contrasts across clinically or regulatorily relevant subgroups with adequate counts.",
+        "data_type": "structured_result",
+        "applicability": "Generalization across subgroups is claimed",
+        "source": "Frozen subgroup plan and independent evaluation results",
+        "assessment_ids": [
+          "S04",
+          "S10",
+          "S36",
+          "S39"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "Overall performance may mask poor reliability in a specific disease, modality or pathway.",
+        "assessment_criteria": [
+          "Document subgroup predictive performance using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Avoid unsupported subgroup claims when sample size, multiplicity or relevance is unresolved.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Frozen subgroup plan",
+          "independent evaluation results"
+        ]
+      },
+      {
+        "id": "VALIDATION-037",
+        "segment": "VALIDATION",
+        "name": "Prediction coverage and abstention rate",
+        "definition": "Reconciled proportions of eligible cases receiving scored forecasts, abstentions and exclusions.",
+        "data_type": "structured_result",
+        "applicability": "Any decision accuracy or coverage is reported",
+        "source": "Frozen eligible denominator and complete prediction ledger",
+        "assessment_ids": [
+          "S24",
+          "S38"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "High accuracy on a small selected subset is not the same as broad prediction coverage.",
+        "assessment_criteria": [
+          "Document prediction coverage and abstention rate using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Keep source exclusions, unresolved outcomes and model abstentions as separate categories.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Frozen eligible denominator",
+          "complete prediction ledger"
+        ]
+      },
+      {
+        "id": "VALIDATION-038",
+        "segment": "VALIDATION",
+        "name": "Abstention reason distribution",
+        "definition": "Predeclared reasons for refusing predictions, counted consistently across all eligible applications.",
+        "data_type": "structured_result",
+        "applicability": "The research model can abstain",
+        "source": "Decision-policy version and complete abstention ledger",
+        "assessment_ids": [
+          "S24",
+          "S25"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Abstention can be scientifically responsible but must not hide unrecorded failures.",
+        "assessment_criteria": [
+          "Document abstention reason distribution using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Preserve missing-data and model-uncertainty reasons rather than assigning favorable outcomes.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Decision-policy version",
+          "complete abstention ledger"
+        ]
+      },
+      {
+        "id": "VALIDATION-039",
+        "segment": "VALIDATION",
+        "name": "Selective predictive risk",
+        "definition": "Prespecified error and proper-score behavior as a function of retained coverage under abstention.",
+        "data_type": "structured_result",
+        "applicability": "Selective prediction or confidence-based coverage is claimed",
+        "source": "Untouched forecasts and frozen selective-risk protocol",
+        "assessment_ids": [
+          "S10",
+          "S23",
+          "S38"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "A coverage-risk curve can reveal whether confidence-based abstention actually reduces error.",
+        "assessment_criteria": [
+          "Document selective predictive risk using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not choose the displayed coverage point after seeing favorable outcomes.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability.",
+          "This is held-out evaluation context, not a scientific feature for the same case; unavailable metrics remain unavailable and cannot establish readiness."
+        ],
+        "required_source_types": [
+          "Untouched forecasts",
+          "frozen selective-risk protocol"
+        ]
+      },
+      {
+        "id": "VALIDATION-040",
+        "segment": "VALIDATION",
+        "name": "Calibration fitting separation",
+        "definition": "Proof that probability-calibration fitting uses data separate from the final evaluation cohort.",
+        "data_type": "reference_list",
+        "applicability": "A calibration transformation is trained",
+        "source": "Calibration split manifest and frozen calibrator artifact",
+        "assessment_ids": [
+          "S06",
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Fitting calibration on final test outcomes makes calibration performance optimistic.",
+        "assessment_criteria": [
+          "Document calibration fitting separation using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unverifiable calibrator training membership prevents independent calibration claims.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Calibration split manifest",
+          "frozen calibrator artifact"
+        ]
+      },
+      {
+        "id": "VALIDATION-041",
+        "segment": "VALIDATION",
+        "name": "Probability normalization and class integrity",
+        "definition": "Validation that each eligible probability vector is finite, within bounds and sums across the declared three classes.",
+        "data_type": "structured_result",
+        "applicability": "Any three-outcome probability is produced",
+        "source": "Locked model-output contract and reproducible validation checks",
+        "assessment_ids": [
+          "S10",
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Malformed probabilities cannot be interpreted as a coherent distribution.",
+        "assessment_criteria": [
+          "Document probability normalization and class integrity using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unvalidated probabilities remain withheld; missing values are not replaced with fabricated estimates.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Locked model-output contract",
+          "reproducible validation checks"
+        ]
+      },
+      {
+        "id": "VALIDATION-042",
+        "segment": "VALIDATION",
+        "name": "Missing-feature and out-of-domain policy",
+        "definition": "Prespecified treatment of unavailable, conflicting or out-of-distribution scientific inputs.",
+        "data_type": "protocol_reference",
+        "applicability": "Applications may lack required evidence or differ from training support",
+        "source": "Frozen model/data policy and input coverage audit",
+        "assessment_ids": [
+          "S10",
+          "S25",
+          "S36",
+          "S37"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A model can appear confident despite unsupported inputs or population shift.",
+        "assessment_criteria": [
+          "Document missing-feature and out-of-domain policy using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unknown evidence does not count as negative evidence; enforce the documented abstention policy.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Frozen model/data policy",
+          "input coverage audit"
+        ]
+      },
+      {
+        "id": "VALIDATION-043",
+        "segment": "VALIDATION",
+        "name": "Scientific-review independence",
+        "definition": "Separation of evidence submitter, independent reviewers and model/evaluation decision-makers.",
+        "data_type": "evidence_summary",
+        "applicability": "Human-reviewed inputs or labels support prediction claims",
+        "source": "Authenticated review audit and conflict-of-interest records",
+        "assessment_ids": [
+          "S23",
+          "S24",
+          "S25"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Self-review or outcome-aware adjudication can bias scientific features and labels.",
+        "assessment_criteria": [
+          "Document scientific-review independence using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Identity or role assertions without server-controlled review provenance do not establish independence.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Authenticated review audit",
+          "conflict-of-interest records"
+        ]
+      },
+      {
+        "id": "VALIDATION-044",
+        "segment": "VALIDATION",
+        "name": "Reproducible evaluation environment",
+        "definition": "Code, dependencies, seeds and execution artifacts needed to reproduce the reported evaluation.",
+        "data_type": "artifact_reference",
+        "applicability": "A model-performance result is reported",
+        "source": "Versioned evaluation code and retained execution manifest",
+        "assessment_ids": [
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Reproducibility requires more than a table of final metric values.",
+        "assessment_criteria": [
+          "Document reproducible evaluation environment using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Passing synthetic software tests does not establish real FDA prediction accuracy.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Versioned evaluation code",
+          "retained execution manifest"
+        ]
+      },
+      {
+        "id": "VALIDATION-045",
+        "segment": "VALIDATION",
+        "name": "Model change-control lineage",
+        "definition": "Documented relationship between model versions, changed features, training data and validation evidence.",
+        "data_type": "event_history",
+        "applicability": "A model is revised or compared with a prior version",
+        "source": "Versioned model registry and prespecified change-review record",
+        "assessment_ids": [
+          "S21",
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "A validated older model does not automatically validate a materially changed successor.",
+        "assessment_criteria": [
+          "Document model change-control lineage using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Do not carry forward calibration or performance claims without appropriate re-evaluation.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Versioned model registry",
+          "prespecified change-review record"
+        ]
+      },
+      {
+        "id": "VALIDATION-046",
+        "segment": "VALIDATION",
+        "name": "External replication cohort",
+        "definition": "An independently assembled and adjudicated dataset not used to select the model or analysis rules.",
+        "data_type": "reference_list",
+        "applicability": "External validation is claimed",
+        "source": "External cohort protocol, source provenance and access audit",
+        "assessment_ids": [
+          "S21",
+          "S23",
+          "S38"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "A different file containing overlapping programs is not an independent replication.",
+        "assessment_criteria": [
+          "Document external replication cohort using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Unknown overlap or outcome ascertainment leaves external validation unestablished.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "External cohort protocol, source provenance",
+          "access audit"
+        ]
+      },
+      {
+        "id": "VALIDATION-047",
+        "segment": "VALIDATION",
+        "name": "Prospective experiment preregistration",
+        "definition": "Prespecified research protocol and frozen experimental predictions recorded before genuinely unseen outcomes.",
+        "data_type": "artifact_reference",
+        "applicability": "Prospective evaluation is initiated",
+        "source": "Independent pre-action registration, feature/model commitments and outcome audit",
+        "assessment_ids": [
+          "S06",
+          "S23",
+          "S24"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Prospective research must establish timing and untouched outcomes rather than replay known decisions.",
+        "assessment_criteria": [
+          "Document prospective experiment preregistration using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "A draft method or ABSTAIN-only registration is infrastructure, not evidence of predictive success.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Independent pre-action registration, feature/model commitments",
+          "outcome audit"
+        ]
+      },
+      {
+        "id": "VALIDATION-048",
+        "segment": "VALIDATION",
+        "name": "Blind error-analysis protocol",
+        "definition": "Rules for examining mistakes after evaluation without rewriting the original predictions or outcomes.",
+        "data_type": "protocol_reference",
+        "applicability": "Failure analysis informs further model development",
+        "source": "Locked forecast ledger and versioned post-evaluation review",
+        "assessment_ids": [
+          "S23",
+          "S24",
+          "S25"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "Transparent error review supports improvement while preserving the validity of prior results.",
+        "assessment_criteria": [
+          "Document blind error-analysis protocol using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "New explanations or model revisions must not retroactively alter earlier scored forecasts.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Locked forecast ledger",
+          "versioned post-evaluation review"
+        ]
+      },
+      {
+        "id": "VALIDATION-049",
+        "segment": "VALIDATION",
+        "name": "Input and outcome drift monitoring",
+        "definition": "Prespecified detection of changes in evidence availability, application mix or outcome distribution.",
+        "data_type": "protocol_reference",
+        "applicability": "A model is monitored beyond its original evaluation period",
+        "source": "Monitoring protocol and independently checked time-series summaries",
+        "assessment_ids": [
+          "S10",
+          "S21",
+          "S36",
+          "S38"
+        ],
+        "mandatory": false,
+        "critical": true,
+        "scientific_rationale": "Performance can degrade when deployment cases differ from the validation population.",
+        "assessment_criteria": [
+          "Document input and outcome drift monitoring using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "A monitoring alert is not proof of failure or success; require source review and appropriate abstention.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Monitoring protocol",
+          "independently checked time-series summaries"
+        ]
+      },
+      {
+        "id": "VALIDATION-050",
+        "segment": "VALIDATION",
+        "name": "Prediction release and suspension criteria",
+        "definition": "Predeclared evidence, calibration and independent-validation conditions for displaying or suspending research predictions.",
+        "data_type": "protocol_reference",
+        "applicability": "Any prediction output may be exposed to users",
+        "source": "Approved release protocol and independent validation decision record",
+        "assessment_ids": [
+          "S10",
+          "S23",
+          "S24",
+          "S25"
+        ],
+        "mandatory": true,
+        "critical": true,
+        "scientific_rationale": "Engineering installation must not automatically activate unsupported probabilities or trading recommendations.",
+        "assessment_criteria": [
+          "Document prediction release and suspension criteria using the specified source and preserve the exact application, review-cycle or evaluation-cohort scope.",
+          "Check the source-supported finding against the definition; distinguish an available document from independent verification of its content."
+        ],
+        "uncertainty_handling": [
+          "Remain NOT READY and ABSTAIN while required evidence or validation is missing; authentication alone does not establish scientific readiness.",
+          "Record conflicting findings and missing inputs explicitly; do not manufacture an assessment result or prediction probability."
+        ],
+        "required_source_types": [
+          "Approved release protocol",
+          "independent validation decision record"
+        ]
+      }
+    ]
+  }
+}

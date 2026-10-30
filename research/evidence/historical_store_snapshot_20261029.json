@@ -1,0 +1,1320 @@
+{
+  "claim_count": 6,
+  "claims": [
+    {
+      "actual_decision_date": "2025-12-11",
+      "application_id": "NDA219776",
+      "company": null,
+      "decision_category": "PASS",
+      "drug": "Orladeyo (berotralstat) pediatric expansion",
+      "efficacy_results": null,
+      "evidence_completeness": {
+        "missing_documents": [
+          "Original protocols, amendments and prespecified SAP versions",
+          "Complete efficacy/safety tables and independent scientific review",
+          "Contemporaneous manufacturing/inspection evidence and exact availability",
+          "Original prediction, feature freeze and linked model/training chronology",
+          "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+        ],
+        "status": "INCOMPLETE"
+      },
+      "independent_verification_status": "UNVERIFIED",
+      "indication": "Hereditary angioedema prophylaxis age 2 to less than 12; berotralstat oral pellets",
+      "manufacturing_findings": null,
+      "original_pdufa_date": null,
+      "pdufa_target_date": "2025-12-12",
+      "program_family": "berotralstat-hae",
+      "program_id": "FDA_HISTORICAL_RESEARCH",
+      "provenance": [
+        {
+          "case": {
+            "application_id": "NDA219776",
+            "company": null,
+            "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+            "drug": "Orladeyo (berotralstat) pediatric expansion",
+            "evidence_cutoff": "2025-12-10",
+            "indication": "Hereditary angioedema prophylaxis age 2 to less than 12; berotralstat oral pellets",
+            "linked_trial_metadata": [],
+            "missing_documents": [
+              "Original protocols, amendments and prespecified SAP versions",
+              "Complete efficacy/safety tables and independent scientific review",
+              "Contemporaneous manufacturing/inspection evidence and exact availability",
+              "Original prediction, feature freeze and linked model/training chronology",
+              "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+            ],
+            "observations": [
+              {
+                "assessment_ids": [
+                  "S15",
+                  "S25",
+                  "S27",
+                  "S29",
+                  "S33"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/882796/000117184325004091/0001171843-25-004091-index.htm",
+                "available_on": "2025-06-25",
+                "content_observed_on": "2026-10-28",
+                "finding": "June 25 filing reports FDA notification June 23 of a three-month goal extension for additional final reports and formulation data. New target was December 12; notification, amendment and public filing dates are different clocks.",
+                "independently_reviewed": false,
+                "observation_id": "BCRX-PREDECISION-TARGET-REVISION",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Item 8.01 Other Events",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/882796/000117184325004091/f8k_062525.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S05",
+                  "S16",
+                  "S19",
+                  "S36"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2025-05-14",
+                "content_observed_on": "2026-10-28",
+                "finding": "Issuer reported positive pediatric APeX-P interim observations and an original September 12 target. Content was observed, but the filing-index timestamp was not successfully retrieved; this dated lead remains quarantined.",
+                "independently_reviewed": false,
+                "observation_id": "BCRX-APEX-P-LEAD",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": null,
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/882796/000117184325003152/exh_991.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S11",
+                  "S12",
+                  "S21",
+                  "S25"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/882796/000162828025037795/0001628280-25-037795-index.htm",
+                "available_on": "2025-08-05",
+                "content_observed_on": "2026-10-28",
+                "finding": "The issuer quarterly report describes APeX-P as complete through its primary endpoint, with continued assessment of oral granules in children aged 2 to 11. Existing capsule approvals for patients aged 12 and older are separate. Reported symptom reductions are not a substitute for a complete pediatric clinical study report or a randomized efficacy comparison.",
+                "independently_reviewed": false,
+                "observation_id": "BCRX-AUG5-PEDIATRIC-CONTEXT",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "MD&A Products and Product Candidates; Recent Developments",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/882796/000162828025037795/bcrx-20250630.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S26",
+                  "S27",
+                  "S29",
+                  "S31",
+                  "S34"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/882796/000162828025037795/0001628280-25-037795-index.htm",
+                "available_on": "2025-08-05",
+                "content_observed_on": "2026-10-28",
+                "finding": "The report records a September 12 original target and June 23 notification extending the goal to December 12 after additional final reports and formulation data. August 5 is the verified SEC filing availability, not its June 30 period end or the earlier event date. A standard review extension alone does not establish approval or nonapproval.",
+                "independently_reviewed": false,
+                "observation_id": "BCRX-AUG5-REVIEW-EXTENSION",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Recent Developments: ORLADEYO pediatric NDA review extension",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/882796/000162828025037795/bcrx-20250630.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S15",
+                  "S26",
+                  "S39"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2025-12-11",
+                "content_observed_on": "2026-10-28",
+                "finding": "Original NDA 219776 approval letter distinguishes pediatric oral pellets from parent capsules NDA 214094, and notes a June 11 major amendment. These FDA conclusions are outcome-only evidence.",
+                "independently_reviewed": false,
+                "observation_id": "BCRX-FDA-ACTION",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": null,
+                "source_role": "OUTCOME_ONLY",
+                "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219776Orig1s000ltr.pdf"
+              }
+            ],
+            "original_prediction_cutoff": null,
+            "pdufa_target_date": "2025-12-12",
+            "program_family": "berotralstat-hae",
+            "program_id": "FDA_HISTORICAL_RESEARCH",
+            "record_id": "BCRX|2025-12-12",
+            "reported_action": {
+              "action_date": "2025-12-11",
+              "classification_basis": "CURATED_ACTION_MANIFEST_CLAIM_NOT_INDEPENDENT_DECISION_LABEL",
+              "curated_outcome_claim": "APPROVED",
+              "decision_at": null,
+              "decision_document_id": "5710240",
+              "document_status": "CURATED_ACTION_CONTENT_NOT_INDEPENDENTLY_ADJUDICATED",
+              "reported_outcome": "PASS",
+              "source_context": "FDA original NDA 219776 approval letter, signed December 11, 2025, confirms approval effective that day; FDA multidisciplinary review lists December 12, 2025 as PDUFA goal date. Distinguish goal date from action date.",
+              "source_document_sha256": null,
+              "source_published_at": null,
+              "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219776Orig1s000ltr.pdf"
+            },
+            "review_cycle_id": "Orig1s000",
+            "review_cycle_independently_adjudicated": false,
+            "scientific_fields": {
+              "advisory_committee_information": null,
+              "clinical_trial_identifiers": null,
+              "documented_decision_reasons": null,
+              "drug_modality": null,
+              "efficacy_findings": null,
+              "fda_special_designations": null,
+              "inspection_findings": null,
+              "manufacturing_findings": null,
+              "mechanism_of_action": null,
+              "phase3_trial_characteristics": null,
+              "previous_fda_decisions": null,
+              "primary_endpoints": null,
+              "regulatory_pathway": null,
+              "safety_findings": null,
+              "secondary_endpoints": null,
+              "statistical_evidence": null,
+              "therapeutic_category": null
+            },
+            "source_artifacts": [
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "43930f0f01339d3df9b21de11217e86a2cefb5b4a0ae937599422bedf0776711",
+                "path": "research/evidence/2025_holdout_fda_action_evidence.json"
+              },
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "7e05c3c3b9225860ae86653cbee9fd7ce9db48ef2eb6bd247df6972706bebbac",
+                "path": "research/evidence/2025_holdout_predecision_reconstruction.json"
+              }
+            ],
+            "ticker": "BCRX"
+          },
+          "kind": "EXISTING_CURATED_REGISTRY",
+          "original_document_authenticated": false
+        }
+      ],
+      "record_id": "BCRX|2025-12-12",
+      "regulatory_designations": [],
+      "review_cycle_id": "Orig1s000",
+      "safety_results": null,
+      "source_documents": [
+        {
+          "document_id": "5710240",
+          "sha256": null,
+          "source_published_at": null,
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219776Orig1s000ltr.pdf",
+          "status": "SOURCE_LEAD_NOT_ORIGINAL_BYTES"
+        }
+      ],
+      "submission_number": null,
+      "submission_type": null,
+      "ticker": "BCRX",
+      "trial_identifiers": []
+    },
+    {
+      "actual_decision_date": "2025-12-30",
+      "application_id": "NDA219398",
+      "company": null,
+      "decision_category": "CRL",
+      "drug": "relacorilant for Cushing syndrome",
+      "efficacy_results": null,
+      "evidence_completeness": {
+        "missing_documents": [
+          "Original protocols, amendments and prespecified SAP versions",
+          "Complete efficacy/safety tables and independent scientific review",
+          "Contemporaneous manufacturing/inspection evidence and exact availability",
+          "Original prediction, feature freeze and linked model/training chronology",
+          "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+        ],
+        "status": "INCOMPLETE"
+      },
+      "independent_verification_status": "UNVERIFIED",
+      "indication": "Endogenous Cushing syndrome; relacorilant",
+      "manufacturing_findings": null,
+      "original_pdufa_date": null,
+      "pdufa_target_date": "2025-12-30",
+      "program_family": "relacorilant",
+      "program_id": "FDA_HISTORICAL_RESEARCH",
+      "provenance": [
+        {
+          "case": {
+            "application_id": "NDA219398",
+            "company": null,
+            "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+            "drug": "relacorilant for Cushing syndrome",
+            "evidence_cutoff": "2025-12-29",
+            "indication": "Endogenous Cushing syndrome; relacorilant",
+            "linked_trial_metadata": [],
+            "missing_documents": [
+              "Original protocols, amendments and prespecified SAP versions",
+              "Complete efficacy/safety tables and independent scientific review",
+              "Contemporaneous manufacturing/inspection evidence and exact availability",
+              "Original prediction, feature freeze and linked model/training chronology",
+              "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+            ],
+            "observations": [
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S08",
+                  "S11",
+                  "S13",
+                  "S21"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/0001628280-25-048841-index.htm",
+                "available_on": "2025-11-04",
+                "content_observed_on": "2026-10-28",
+                "finding": "Issuer describes positive pivotal GRACE findings and an enriched randomized-withdrawal architecture. Full enrollment, attrition, estimand and SAP review are needed before judging the evidence.",
+                "independently_reviewed": false,
+                "observation_id": "CORT-PREDECISION-GRACE",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Business: relacorilant Cushing GRACE discussion",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/cort-20250930.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S07",
+                  "S10",
+                  "S12",
+                  "S21",
+                  "S25"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/0001628280-25-048841-index.htm",
+                "available_on": "2025-11-04",
+                "content_observed_on": "2026-10-28",
+                "finding": "GRADIENT between-group systolic-pressure comparison was not statistically significant despite a reported within-relacorilant reduction from baseline. Within-arm significance is not proof of superiority versus placebo. This opposing evidence predates the CRL.",
+                "independently_reviewed": false,
+                "observation_id": "CORT-PREDECISION-GRADIENT",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Business: GRADIENT hypertension results",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/cort-20250930.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S25",
+                  "S29"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2026-01-28",
+                "content_observed_on": "2026-10-28",
+                "finding": "Corrected January 2026 CRL preserves December 30 action date. Its detailed FDA efficacy objections must not be used to construct a pre-December-30 model feature.",
+                "independently_reviewed": false,
+                "observation_id": "CORT-CORRECTED-CRL",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": null,
+                "source_role": "OUTCOME_ONLY",
+                "source_url": "https://download.open.fda.gov/crl/CRL_NDA219398_20260128.pdf"
+              }
+            ],
+            "original_prediction_cutoff": null,
+            "pdufa_target_date": "2025-12-30",
+            "program_family": "relacorilant",
+            "program_id": "FDA_HISTORICAL_RESEARCH",
+            "record_id": "CORT|2025-12-30",
+            "reported_action": {
+              "action_date": "2025-12-30",
+              "classification_basis": "CURATED_ACTION_MANIFEST_CLAIM_NOT_INDEPENDENT_DECISION_LABEL",
+              "curated_outcome_claim": "complete_response_letter",
+              "decision_at": null,
+              "decision_document_id": "5735859",
+              "document_status": "CORRECTED_DOCUMENT_ONLY_ORIGINAL_NOT_RETRIEVED",
+              "reported_outcome": "CRL",
+              "source_context": "Corrected FDA complete response letter signed January 28, 2026 expressly retains original action date December 30, 2025",
+              "source_document_sha256": null,
+              "source_published_at": null,
+              "source_url": "https://download.open.fda.gov/crl/CRL_NDA219398_20260128.pdf"
+            },
+            "review_cycle_id": null,
+            "review_cycle_independently_adjudicated": false,
+            "scientific_fields": {
+              "advisory_committee_information": null,
+              "clinical_trial_identifiers": null,
+              "documented_decision_reasons": null,
+              "drug_modality": null,
+              "efficacy_findings": null,
+              "fda_special_designations": null,
+              "inspection_findings": null,
+              "manufacturing_findings": null,
+              "mechanism_of_action": null,
+              "phase3_trial_characteristics": null,
+              "previous_fda_decisions": null,
+              "primary_endpoints": null,
+              "regulatory_pathway": null,
+              "safety_findings": null,
+              "secondary_endpoints": null,
+              "statistical_evidence": null,
+              "therapeutic_category": null
+            },
+            "source_artifacts": [
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "43930f0f01339d3df9b21de11217e86a2cefb5b4a0ae937599422bedf0776711",
+                "path": "research/evidence/2025_holdout_fda_action_evidence.json"
+              },
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "7e05c3c3b9225860ae86653cbee9fd7ce9db48ef2eb6bd247df6972706bebbac",
+                "path": "research/evidence/2025_holdout_predecision_reconstruction.json"
+              }
+            ],
+            "ticker": "CORT"
+          },
+          "kind": "EXISTING_CURATED_REGISTRY",
+          "original_document_authenticated": false
+        }
+      ],
+      "record_id": "CORT|2025-12-30",
+      "regulatory_designations": [],
+      "review_cycle_id": null,
+      "safety_results": null,
+      "source_documents": [
+        {
+          "document_id": "5735859",
+          "sha256": null,
+          "source_published_at": null,
+          "source_url": "https://download.open.fda.gov/crl/CRL_NDA219398_20260128.pdf",
+          "status": "SOURCE_LEAD_NOT_ORIGINAL_BYTES"
+        }
+      ],
+      "submission_number": null,
+      "submission_type": null,
+      "ticker": "CORT",
+      "trial_identifiers": []
+    },
+    {
+      "actual_decision_date": "2025-05-16",
+      "application_id": "BLA125817",
+      "company": null,
+      "decision_category": "PASS",
+      "drug": "NUVAXOVID",
+      "efficacy_results": null,
+      "evidence_completeness": {
+        "missing_documents": [
+          "Original protocols, amendments and prespecified SAP versions",
+          "Complete efficacy/safety tables and independent scientific review",
+          "Contemporaneous manufacturing/inspection evidence and exact availability",
+          "Original prediction, feature freeze and linked model/training chronology",
+          "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+        ],
+        "status": "INCOMPLETE"
+      },
+      "independent_verification_status": "UNVERIFIED",
+      "indication": "COVID-19 vaccine full biologics license; NUVAXOVID",
+      "manufacturing_findings": null,
+      "original_pdufa_date": null,
+      "pdufa_target_date": "2025-04-01",
+      "program_family": "novavax-covid19-vaccine",
+      "program_id": "FDA_HISTORICAL_RESEARCH",
+      "provenance": [
+        {
+          "case": {
+            "application_id": "BLA125817",
+            "company": null,
+            "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+            "drug": "NUVAXOVID",
+            "evidence_cutoff": "2025-03-31",
+            "indication": "COVID-19 vaccine full biologics license; NUVAXOVID",
+            "linked_trial_metadata": [],
+            "missing_documents": [
+              "Original protocols, amendments and prespecified SAP versions",
+              "Complete efficacy/safety tables and independent scientific review",
+              "Contemporaneous manufacturing/inspection evidence and exact availability",
+              "Original prediction, feature freeze and linked model/training chronology",
+              "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+            ],
+            "observations": [
+              {
+                "assessment_ids": [
+                  "S26",
+                  "S29",
+                  "S31",
+                  "S34"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069425000004/0001000694-25-000004-index.htm",
+                "available_on": "2025-02-27",
+                "content_observed_on": "2026-10-28",
+                "finding": "Contemporaneous annual-report context describes the COVID-19 vaccine business and risks involving regulatory approval and third-party manufacturing. It is not a complete reconstruction of the BLA efficacy, safety or CMC submission.",
+                "independently_reviewed": false,
+                "observation_id": "NVAX-10K-REG-CMC",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Annual report business and manufacturing/regulatory risk factors",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069425000004/nvax-20241231.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S27",
+                  "S29"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2025-04-23",
+                "content_observed_on": "2026-10-28",
+                "finding": "An April 23 issuer statement about BLA approvability follows the legacy April 1 goal and is excluded from that reconstruction.",
+                "independently_reviewed": false,
+                "observation_id": "NVAX-AFTER-GOAL-STATEMENT",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": null,
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000110465925037728/tm2512925d1_8k.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S02",
+                  "S11",
+                  "S12",
+                  "S13",
+                  "S21"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069423000005/0001000694-23-000005-index.htm",
+                "available_on": "2023-02-28",
+                "content_observed_on": "2026-10-28",
+                "finding": "The issuer describes PREVENT-19 as randomized, placebo-controlled and observer-blinded, enrolling 29,949 adults at 119 US/Mexico sites and reporting 90.4% vaccine efficacy. These are historical trial results, not an FDA approval probability or complete 2025 BLA/current-strain evidence.",
+                "independently_reviewed": false,
+                "observation_id": "NVAX-2023-PREVENT19",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Business: PREVENT-19 phase 3 trial, pages 9\u201310",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069423000005/nvax-20221231.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S04",
+                  "S05",
+                  "S09",
+                  "S21",
+                  "S25"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069423000005/0001000694-23-000005-index.htm",
+                "available_on": "2023-02-28",
+                "content_observed_on": "2026-10-28",
+                "finding": "The UK Phase 3 discussion reports 89.7% original efficacy and 82.5% in a later six-month analysis. These estimates concern different follow-up analyses and must not be pooled or treated as interchangeable. Variant, formulation, population and exposure differences require review before comparison with the 2025 application.",
+                "independently_reviewed": false,
+                "observation_id": "NVAX-2023-UK-DURABILITY",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Business: UK phase 3 trial, pages 10\u201311",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1000694/000100069423000005/nvax-20221231.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S26",
+                  "S29"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2025-05-16",
+                "content_observed_on": "2026-10-28",
+                "finding": "FDA original license letter records May 16 approval under BL 125817/0. Its approved population and manufacturing findings are outcome evidence, not March 31 prediction inputs.",
+                "independently_reviewed": false,
+                "observation_id": "NVAX-FDA-ACTION",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Page 1 licensing and indication",
+                "source_role": "OUTCOME_ONLY",
+                "source_url": "https://www.fda.gov/media/186545/download?stream=top"
+              }
+            ],
+            "original_prediction_cutoff": null,
+            "pdufa_target_date": "2025-04-01",
+            "program_family": "novavax-covid19-vaccine",
+            "program_id": "FDA_HISTORICAL_RESEARCH",
+            "record_id": "NVAX|2025-04-01",
+            "reported_action": {
+              "action_date": "2025-05-16",
+              "classification_basis": "CURATED_ACTION_MANIFEST_CLAIM_NOT_INDEPENDENT_DECISION_LABEL",
+              "curated_outcome_claim": "APPROVED",
+              "decision_at": null,
+              "decision_document_id": null,
+              "document_status": "CURATED_ACTION_CONTENT_NOT_INDEPENDENTLY_ADJUDICATED",
+              "reported_outcome": "PASS",
+              "source_context": "FDA May 16 approval letter and addendum explicitly distinguish April 1 PDUFA goal from paused approval and May 16 actual license approval.",
+              "source_document_sha256": null,
+              "source_published_at": null,
+              "source_url": "https://www.fda.gov/media/186545/download?stream=top"
+            },
+            "review_cycle_id": "BLA 125817/0",
+            "review_cycle_independently_adjudicated": false,
+            "scientific_fields": {
+              "advisory_committee_information": null,
+              "clinical_trial_identifiers": null,
+              "documented_decision_reasons": null,
+              "drug_modality": null,
+              "efficacy_findings": null,
+              "fda_special_designations": null,
+              "inspection_findings": null,
+              "manufacturing_findings": null,
+              "mechanism_of_action": null,
+              "phase3_trial_characteristics": null,
+              "previous_fda_decisions": null,
+              "primary_endpoints": null,
+              "regulatory_pathway": null,
+              "safety_findings": null,
+              "secondary_endpoints": null,
+              "statistical_evidence": null,
+              "therapeutic_category": null
+            },
+            "source_artifacts": [
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "43930f0f01339d3df9b21de11217e86a2cefb5b4a0ae937599422bedf0776711",
+                "path": "research/evidence/2025_holdout_fda_action_evidence.json"
+              },
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "7e05c3c3b9225860ae86653cbee9fd7ce9db48ef2eb6bd247df6972706bebbac",
+                "path": "research/evidence/2025_holdout_predecision_reconstruction.json"
+              }
+            ],
+            "ticker": "NVAX"
+          },
+          "kind": "EXISTING_CURATED_REGISTRY",
+          "original_document_authenticated": false
+        }
+      ],
+      "record_id": "NVAX|2025-04-01",
+      "regulatory_designations": [],
+      "review_cycle_id": "BLA 125817/0",
+      "safety_results": null,
+      "source_documents": [
+        {
+          "document_id": null,
+          "sha256": null,
+          "source_published_at": null,
+          "source_url": "https://www.fda.gov/media/186545/download?stream=top",
+          "status": "SOURCE_LEAD_NOT_ORIGINAL_BYTES"
+        }
+      ],
+      "submission_number": null,
+      "submission_type": null,
+      "ticker": "NVAX",
+      "trial_identifiers": []
+    },
+    {
+      "actual_decision_date": "2025-08-15",
+      "application_id": "NDA219428",
+      "company": null,
+      "decision_category": "PASS",
+      "drug": "Tonmya (cyclobenzaprine hydrochloride sublingual tablets)",
+      "efficacy_results": null,
+      "evidence_completeness": {
+        "missing_documents": [
+          "Original protocols, amendments and prespecified SAP versions",
+          "Complete efficacy/safety tables and independent scientific review",
+          "Contemporaneous manufacturing/inspection evidence and exact availability",
+          "Original prediction, feature freeze and linked model/training chronology",
+          "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+        ],
+        "status": "INCOMPLETE"
+      },
+      "independent_verification_status": "UNVERIFIED",
+      "indication": "Fibromyalgia in adults; sublingual cyclobenzaprine TNX-102 SL / Tonmya",
+      "manufacturing_findings": null,
+      "original_pdufa_date": null,
+      "pdufa_target_date": "2025-08-15",
+      "program_family": "tnx102sl-cyclobenzaprine",
+      "program_id": "FDA_HISTORICAL_RESEARCH",
+      "provenance": [
+        {
+          "case": {
+            "application_id": "NDA219428",
+            "company": null,
+            "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+            "drug": "Tonmya (cyclobenzaprine hydrochloride sublingual tablets)",
+            "evidence_cutoff": "2025-08-14",
+            "indication": "Fibromyalgia in adults; sublingual cyclobenzaprine TNX-102 SL / Tonmya",
+            "linked_trial_metadata": [
+              {
+                "eligible_as_prediction_feature": false,
+                "independently_reviewed": false,
+                "original_document_sha256": null,
+                "public_availability_verified": false,
+                "registry_id": null,
+                "reported_primary_analysis_method": "MMRM_WITH_MULTIPLE_IMPUTATION",
+                "reported_primary_endpoint": "pain numeric rating score",
+                "source_document_date": "2022-03-21",
+                "source_id": "TNXP-RALLY-RELIEF-20220321",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000138713122003807/ex99-01.htm",
+                "status": "SOURCE_LEAD_PUBLIC_AVAILABILITY_NOT_INDEPENDENTLY_VERIFIED",
+                "trial_id": "F304",
+                "trial_name": "RELIEF"
+              },
+              {
+                "eligible_as_prediction_feature": false,
+                "independently_reviewed": false,
+                "original_document_sha256": null,
+                "public_availability_verified": false,
+                "registry_id": null,
+                "reported_primary_analysis_method": "MMRM_WITH_MULTIPLE_IMPUTATION",
+                "reported_primary_endpoint": "pain numeric rating score",
+                "source_document_date": "2022-03-21",
+                "source_id": "TNXP-RALLY-RELIEF-20220321",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000138713122003807/ex99-01.htm",
+                "status": "SOURCE_LEAD_PUBLIC_AVAILABILITY_NOT_INDEPENDENTLY_VERIFIED",
+                "trial_id": "F306",
+                "trial_name": "RALLY"
+              },
+              {
+                "eligible_as_prediction_feature": false,
+                "independently_reviewed": false,
+                "original_document_sha256": null,
+                "public_availability_verified": false,
+                "registry_id": "NCT05273749",
+                "reported_primary_analysis_method": "MMRM_WITH_MULTIPLE_IMPUTATION",
+                "reported_primary_endpoint": "pain numeric rating score",
+                "source_document_date": "2024-06-10",
+                "source_id": "TNXP-RESILIENT-EFFECT-20240610",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000183988224018368/ex99-02.htm",
+                "status": "SOURCE_LEAD_PUBLIC_AVAILABILITY_NOT_INDEPENDENTLY_VERIFIED",
+                "trial_id": "F307",
+                "trial_name": "RESILIENT"
+              }
+            ],
+            "missing_documents": [
+              "Original protocols, amendments and prespecified SAP versions",
+              "Complete efficacy/safety tables and independent scientific review",
+              "Contemporaneous manufacturing/inspection evidence and exact availability",
+              "Original prediction, feature freeze and linked model/training chronology",
+              "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+            ],
+            "observations": [
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S03",
+                  "S07",
+                  "S21",
+                  "S25",
+                  "S27"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002787/0001999371-25-002787-index.htm",
+                "available_on": "2025-03-18",
+                "content_observed_on": "2026-10-28",
+                "finding": "Issuer reported RESILIENT primary pain endpoint p=0.00005 and supportive prespecified secondary endpoints, with an August 15 goal. The exhibit header says March 17 while its body says March 18; SEC filing/acceptance on March 18 is the conservative availability bound.",
+                "independently_reviewed": false,
+                "observation_id": "TNXP-PREDECISION-RESILIENT",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Operational highlights: TNX-102 SL",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002787/ex99-1.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S08",
+                  "S09",
+                  "S21",
+                  "S25"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/0001999371-25-002786-index.htm",
+                "available_on": "2025-03-18",
+                "content_observed_on": "2026-10-28",
+                "finding": "Issuer reports positive RESILIENT (F307) and RELIEF (F304) studies but a negative RALLY (F306) primary pain result after an IDMC futility recommendation. These are within-program trial comparisons, not independent FDA decision precedents. Missing-data handling requires review.",
+                "independently_reviewed": false,
+                "observation_id": "TNXP-10K-TRIAL-CONSISTENCY",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "TNX-102 SL; completed RESILIENT, RALLY and RELIEF studies, pages 14\u201318",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/tnxp-10k_123124.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S16",
+                  "S17",
+                  "S19"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/0001999371-25-002786-index.htm",
+                "available_on": "2025-03-18",
+                "content_observed_on": "2026-10-28",
+                "finding": "RESILIENT reported adverse-event treatment discontinuations of 6.1% versus 3.5% with placebo; one pancreatitis serious adverse event was considered possibly treatment-related. These issuer-reported findings require original safety-table and causality review.",
+                "independently_reviewed": false,
+                "observation_id": "TNXP-10K-SAFETY",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Completed RESILIENT safety discussion",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/tnxp-10k_123124.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S26",
+                  "S27",
+                  "S32",
+                  "S33",
+                  "S34"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/0001999371-25-002786-index.htm",
+                "available_on": "2025-03-18",
+                "content_observed_on": "2026-10-28",
+                "finding": "The filing describes exposure bridging to Amrix, a proposed 505(b)(2) pathway, commercial cGMP facilities and stability data. These issuer statements are not independently inspected FDA manufacturing findings.",
+                "independently_reviewed": false,
+                "observation_id": "TNXP-10K-REG-CMC",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Regulatory strategy and manufacturing sections",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1430306/000199937125002786/tnxp-10k_123124.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S16",
+                  "S19",
+                  "S26"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2025-08-15",
+                "content_observed_on": "2026-10-28",
+                "finding": "Original NDA 219428 approval letter and postmarketing requirements are outcome-only evidence and cannot complete historical pre-August-15 safety assessment.",
+                "independently_reviewed": false,
+                "observation_id": "TNXP-FDA-ACTION",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": null,
+                "source_role": "OUTCOME_ONLY",
+                "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219428Orig1s000ltr.pdf"
+              }
+            ],
+            "original_prediction_cutoff": null,
+            "pdufa_target_date": "2025-08-15",
+            "program_family": "tnx102sl-cyclobenzaprine",
+            "program_id": "FDA_HISTORICAL_RESEARCH",
+            "record_id": "TNXP|2025-08-15",
+            "reported_action": {
+              "action_date": "2025-08-15",
+              "classification_basis": "CURATED_ACTION_MANIFEST_CLAIM_NOT_INDEPENDENT_DECISION_LABEL",
+              "curated_outcome_claim": "approval",
+              "decision_at": null,
+              "decision_document_id": "5643862",
+              "document_status": "CURATED_ACTION_CONTENT_NOT_INDEPENDENTLY_ADJUDICATED",
+              "reported_outcome": "PASS",
+              "source_context": "FDA original approval letter signed August 15, 2025",
+              "source_document_sha256": null,
+              "source_published_at": null,
+              "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219428Orig1s000ltr.pdf"
+            },
+            "review_cycle_id": "Orig1s000",
+            "review_cycle_independently_adjudicated": false,
+            "scientific_fields": {
+              "advisory_committee_information": null,
+              "clinical_trial_identifiers": null,
+              "documented_decision_reasons": null,
+              "drug_modality": null,
+              "efficacy_findings": null,
+              "fda_special_designations": null,
+              "inspection_findings": null,
+              "manufacturing_findings": null,
+              "mechanism_of_action": null,
+              "phase3_trial_characteristics": null,
+              "previous_fda_decisions": null,
+              "primary_endpoints": null,
+              "regulatory_pathway": null,
+              "safety_findings": null,
+              "secondary_endpoints": null,
+              "statistical_evidence": null,
+              "therapeutic_category": null
+            },
+            "source_artifacts": [
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "43930f0f01339d3df9b21de11217e86a2cefb5b4a0ae937599422bedf0776711",
+                "path": "research/evidence/2025_holdout_fda_action_evidence.json"
+              },
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "7e05c3c3b9225860ae86653cbee9fd7ce9db48ef2eb6bd247df6972706bebbac",
+                "path": "research/evidence/2025_holdout_predecision_reconstruction.json"
+              },
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "a6c3da20cbc3194d7fca7fc2c0bc1143f1e0af022260a5f6740b611266bae611",
+                "path": "research/evidence/tnxp_three_trial_comparison.json"
+              }
+            ],
+            "ticker": "TNXP"
+          },
+          "kind": "EXISTING_CURATED_REGISTRY",
+          "original_document_authenticated": false
+        }
+      ],
+      "record_id": "TNXP|2025-08-15",
+      "regulatory_designations": [],
+      "review_cycle_id": "Orig1s000",
+      "safety_results": null,
+      "source_documents": [
+        {
+          "document_id": "5643862",
+          "sha256": null,
+          "source_published_at": null,
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219428Orig1s000ltr.pdf",
+          "status": "SOURCE_LEAD_NOT_ORIGINAL_BYTES"
+        }
+      ],
+      "submission_number": null,
+      "submission_type": null,
+      "ticker": "TNXP",
+      "trial_identifiers": []
+    },
+    {
+      "actual_decision_date": "2025-06-27",
+      "application_id": "NDA218607",
+      "company": null,
+      "decision_category": "CRL",
+      "drug": "oxylanthanum carbonate",
+      "efficacy_results": null,
+      "evidence_completeness": {
+        "missing_documents": [
+          "Original protocols, amendments and prespecified SAP versions",
+          "Complete efficacy/safety tables and independent scientific review",
+          "Contemporaneous manufacturing/inspection evidence and exact availability",
+          "Original prediction, feature freeze and linked model/training chronology",
+          "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+        ],
+        "status": "INCOMPLETE"
+      },
+      "independent_verification_status": "UNVERIFIED",
+      "indication": "Hyperphosphatemia in chronic kidney disease patients on dialysis; oxylanthanum carbonate",
+      "manufacturing_findings": null,
+      "original_pdufa_date": null,
+      "pdufa_target_date": "2025-06-28",
+      "program_family": "oxylanthanum-carbonate",
+      "program_id": "FDA_HISTORICAL_RESEARCH",
+      "provenance": [
+        {
+          "case": {
+            "application_id": "NDA218607",
+            "company": null,
+            "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+            "drug": "oxylanthanum carbonate",
+            "evidence_cutoff": "2025-06-26",
+            "indication": "Hyperphosphatemia in chronic kidney disease patients on dialysis; oxylanthanum carbonate",
+            "linked_trial_metadata": [],
+            "missing_documents": [
+              "Original protocols, amendments and prespecified SAP versions",
+              "Complete efficacy/safety tables and independent scientific review",
+              "Contemporaneous manufacturing/inspection evidence and exact availability",
+              "Original prediction, feature freeze and linked model/training chronology",
+              "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+            ],
+            "observations": [
+              {
+                "assessment_ids": [
+                  "S27",
+                  "S29",
+                  "S34",
+                  "S35"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390025052824/0001213900-25-052824-index.htm",
+                "available_on": "2025-06-10",
+                "content_observed_on": "2026-10-28",
+                "finding": "Issuer disclosed an FDA cGMP deficiency at a third-party manufacturing vendor and that labeling discussions were precluded. This was public before the June 26 research cutoff; it does not by itself establish the eventual FDA decision.",
+                "independently_reviewed": false,
+                "observation_id": "UNCY-PREDECISION-CGMP",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Exhibit 99.1 FDA manufacturing update",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390025052824/ea024524601ex99-1_unicycive.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S26",
+                  "S29"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2025-06-27",
+                "content_observed_on": "2026-10-28",
+                "finding": "Extracted original FDA CRL pages identify NDA 218607, Reference ID 5616346 and a June 27, 2025 signature. First-page visual verification and original public availability remain incomplete. This outcome document is excluded from pre-decision SCIENCE.",
+                "independently_reviewed": false,
+                "observation_id": "UNCY-ORIGINAL-CRL",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Extracted later pages and signature; first page unverified",
+                "source_role": "OUTCOME_ONLY",
+                "source_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20250627.pdf"
+              },
+              {
+                "assessment_ids": [
+                  "S01",
+                  "S08",
+                  "S12",
+                  "S16",
+                  "S17",
+                  "S19",
+                  "S21",
+                  "S39"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390024055436/0001213900-24-055436-index.htm",
+                "available_on": "2024-06-25",
+                "content_observed_on": "2026-10-28",
+                "finding": "UNI-OLC-201 enrolled 106 patients; 86 entered the safety population and 71 the evaluable maintenance population. Treatment-related maintenance discontinuation was 1/71; all adverse-event discontinuations were 5/86, including three treatment-related. Phosphate control was reported in 77/86 after titration. The study was not designed to evaluate efficacy and lacked a concurrent active comparator. The issuer comparison with Fosrenol historical discontinuation cannot establish comparative safety or efficacy.",
+                "independently_reviewed": false,
+                "observation_id": "UNCY-UNI-OLC-201-DENOMINATORS",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Exhibit 99.1 topline safety, tolerability, phosphate and population sections",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1766140/000121390024055436/ea020843701ex99-1_unicycive.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S25",
+                  "S29"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2026-06-29",
+                "content_observed_on": "2026-10-28",
+                "finding": "A later-cycle CRL references the June 27, 2025 action; it must not replace the original cycle or enter 2025 clinical/manufacturing prediction inputs.",
+                "independently_reviewed": false,
+                "observation_id": "UNCY-LATER-CYCLE",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": null,
+                "source_role": "OUTCOME_ONLY",
+                "source_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20260629.pdf"
+              }
+            ],
+            "original_prediction_cutoff": null,
+            "pdufa_target_date": "2025-06-28",
+            "program_family": "oxylanthanum-carbonate",
+            "program_id": "FDA_HISTORICAL_RESEARCH",
+            "record_id": "UNCY|2025-06-28",
+            "reported_action": {
+              "action_date": "2025-06-27",
+              "classification_basis": "CURATED_ACTION_MANIFEST_CLAIM_NOT_INDEPENDENT_DECISION_LABEL",
+              "curated_outcome_claim": "CRL",
+              "decision_at": null,
+              "decision_document_id": "5616346",
+              "document_status": "ORIGINAL_CRL_PARTIAL_TEXT_FIRST_PAGE_VISUAL_REVIEW_REQUIRED",
+              "reported_outcome": "CRL",
+              "source_context": "The original 2025 FDA PDF extracted later pages identify NDA 218607 and Reference ID 5616346. The signature page records 06/27/2025 04:49:06 PM, timezone unspecified. First-page visual verification and original public-availability time remain incomplete.",
+              "source_document_sha256": null,
+              "source_published_at": null,
+              "source_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20250627.pdf"
+            },
+            "review_cycle_id": null,
+            "review_cycle_independently_adjudicated": false,
+            "scientific_fields": {
+              "advisory_committee_information": null,
+              "clinical_trial_identifiers": null,
+              "documented_decision_reasons": null,
+              "drug_modality": null,
+              "efficacy_findings": null,
+              "fda_special_designations": null,
+              "inspection_findings": null,
+              "manufacturing_findings": null,
+              "mechanism_of_action": null,
+              "phase3_trial_characteristics": null,
+              "previous_fda_decisions": null,
+              "primary_endpoints": null,
+              "regulatory_pathway": null,
+              "safety_findings": null,
+              "secondary_endpoints": null,
+              "statistical_evidence": null,
+              "therapeutic_category": null
+            },
+            "source_artifacts": [
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "43930f0f01339d3df9b21de11217e86a2cefb5b4a0ae937599422bedf0776711",
+                "path": "research/evidence/2025_holdout_fda_action_evidence.json"
+              },
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "7e05c3c3b9225860ae86653cbee9fd7ce9db48ef2eb6bd247df6972706bebbac",
+                "path": "research/evidence/2025_holdout_predecision_reconstruction.json"
+              }
+            ],
+            "ticker": "UNCY"
+          },
+          "kind": "EXISTING_CURATED_REGISTRY",
+          "original_document_authenticated": false
+        }
+      ],
+      "record_id": "UNCY|2025-06-28",
+      "regulatory_designations": [],
+      "review_cycle_id": null,
+      "safety_results": null,
+      "source_documents": [
+        {
+          "document_id": "5616346",
+          "sha256": null,
+          "source_published_at": null,
+          "source_url": "https://download.open.fda.gov/crl/CRL_NDA218607_20250627.pdf",
+          "status": "SOURCE_LEAD_NOT_ORIGINAL_BYTES"
+        }
+      ],
+      "submission_number": null,
+      "submission_type": null,
+      "ticker": "UNCY",
+      "trial_identifiers": []
+    },
+    {
+      "actual_decision_date": "2025-12-30",
+      "application_id": "NDA220152",
+      "company": null,
+      "decision_category": "PASS",
+      "drug": "Nereus (tradipitant)",
+      "efficacy_results": null,
+      "evidence_completeness": {
+        "missing_documents": [
+          "Original protocols, amendments and prespecified SAP versions",
+          "Complete efficacy/safety tables and independent scientific review",
+          "Contemporaneous manufacturing/inspection evidence and exact availability",
+          "Original prediction, feature freeze and linked model/training chronology",
+          "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+        ],
+        "status": "INCOMPLETE"
+      },
+      "independent_verification_status": "UNVERIFIED",
+      "indication": "Prevention of vomiting induced by motion in adults; tradipitant / Nereus",
+      "manufacturing_findings": null,
+      "original_pdufa_date": null,
+      "pdufa_target_date": "2025-12-30",
+      "program_family": "tradipitant",
+      "program_id": "FDA_HISTORICAL_RESEARCH",
+      "provenance": [
+        {
+          "case": {
+            "application_id": "NDA220152",
+            "company": null,
+            "cutoff_basis": "CONSERVATIVE_RESEARCH_BOUND_NOT_RECOVERED_PREDICTION_CUTOFF",
+            "drug": "Nereus (tradipitant)",
+            "evidence_cutoff": "2025-12-29",
+            "indication": "Prevention of vomiting induced by motion in adults; tradipitant / Nereus",
+            "linked_trial_metadata": [],
+            "missing_documents": [
+              "Original protocols, amendments and prespecified SAP versions",
+              "Complete efficacy/safety tables and independent scientific review",
+              "Contemporaneous manufacturing/inspection evidence and exact availability",
+              "Original prediction, feature freeze and linked model/training chronology",
+              "Adjudicated cycle identity, complete denominator and program-disjoint holdout proof"
+            ],
+            "observations": [
+              {
+                "assessment_ids": [
+                  "S11",
+                  "S21",
+                  "S25",
+                  "S26",
+                  "S27",
+                  "S39"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025047317/0001628280-25-047317-index.html",
+                "available_on": "2025-10-30",
+                "content_observed_on": "2026-10-28",
+                "finding": "Issuer distinguishes the tradipitant motion-sickness NDA with a December 30 goal from the gastroparesis NDA and associated litigation/review history. Those are not interchangeable regulatory cycles.",
+                "independently_reviewed": false,
+                "observation_id": "VNDA-PREDECISION-INDICATION",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Business and regulatory discussion: tradipitant",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025047317/vnda-20250930.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S25",
+                  "S27",
+                  "S29"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025054225/0001628280-25-054225-index.htm",
+                "available_on": "2025-11-28",
+                "content_observed_on": "2026-10-28",
+                "finding": "Issuer reported that partial-hold re-review was extended to December 5 and that NDA labeling discussions had begun. The December 30 NDA target remained unchanged. Labeling discussions alone do not establish approval.",
+                "independently_reviewed": false,
+                "observation_id": "VNDA-NOV28-HOLD-REVIEW",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Exhibit 99.1 regulatory update",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025054225/vnda8-k11282025exhibit991.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S19",
+                  "S25",
+                  "S27",
+                  "S29"
+                ],
+                "availability_basis": "SEC_FILING_INDEX",
+                "availability_source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025055393/0001628280-25-055393-index.htm",
+                "available_on": "2025-12-04",
+                "content_observed_on": "2026-10-28",
+                "finding": "Issuer reported that FDA lifted the partial clinical hold on protocol VP-VLY-686-3403, previously limited to 90 doses, following reclassification of motion-sickness use as acute and event-driven. The NDA remained under review with a December 30 target. Hold removal is distinct from NDA approval and does not establish unlimited-exposure safety.",
+                "independently_reviewed": false,
+                "observation_id": "VNDA-DEC4-HOLD-LIFTED",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": "Exhibit 99.1 partial-hold update; supersedes November 28 pending re-review as issuer-reported status",
+                "source_role": "PREDECISION_RESEARCH",
+                "source_url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828025055393/vnda8-k1242025exhibit991.htm"
+              },
+              {
+                "assessment_ids": [
+                  "S26",
+                  "S29",
+                  "S39"
+                ],
+                "availability_basis": "PRINTED_DATE_ONLY",
+                "availability_source_url": null,
+                "available_on": "2025-12-30",
+                "content_observed_on": "2026-10-28",
+                "finding": "FDA package contains original NDA 220152 approval letter for motion-induced vomiting in adults, Reference ID 5720300. Packaging under a 2026 directory does not establish original publication time.",
+                "independently_reviewed": false,
+                "observation_id": "VNDA-FDA-ORIGINAL-ACTION",
+                "original_document_sha256": null,
+                "program_id": "FDA_HISTORICAL_RESEARCH",
+                "source_bytes_retained": false,
+                "source_location": null,
+                "source_role": "OUTCOME_ONLY",
+                "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220152Orig1s000Approv.pdf"
+              }
+            ],
+            "original_prediction_cutoff": null,
+            "pdufa_target_date": "2025-12-30",
+            "program_family": "tradipitant",
+            "program_id": "FDA_HISTORICAL_RESEARCH",
+            "record_id": "VNDA|2025-12-30",
+            "reported_action": {
+              "action_date": "2025-12-30",
+              "classification_basis": "CURATED_ACTION_MANIFEST_CLAIM_NOT_INDEPENDENT_DECISION_LABEL",
+              "curated_outcome_claim": "APPROVED",
+              "decision_at": null,
+              "decision_document_id": "5720300",
+              "document_status": "ORIGINAL_APPROVAL_LETTER_CONTENT_OBSERVED",
+              "reported_outcome": "PASS",
+              "source_context": "FDA approval package includes the original NDA 220152 approval letter and December 30, 2025 approval date; the archive directory year 2026 is not a publication timestamp.",
+              "source_document_sha256": null,
+              "source_published_at": null,
+              "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220152Orig1s000Approv.pdf"
+            },
+            "review_cycle_id": "Orig1s000",
+            "review_cycle_independently_adjudicated": false,
+            "scientific_fields": {
+              "advisory_committee_information": null,
+              "clinical_trial_identifiers": null,
+              "documented_decision_reasons": null,
+              "drug_modality": null,
+              "efficacy_findings": null,
+              "fda_special_designations": null,
+              "inspection_findings": null,
+              "manufacturing_findings": null,
+              "mechanism_of_action": null,
+              "phase3_trial_characteristics": null,
+              "previous_fda_decisions": null,
+              "primary_endpoints": null,
+              "regulatory_pathway": null,
+              "safety_findings": null,
+              "secondary_endpoints": null,
+              "statistical_evidence": null,
+              "therapeutic_category": null
+            },
+            "source_artifacts": [
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "43930f0f01339d3df9b21de11217e86a2cefb5b4a0ae937599422bedf0776711",
+                "path": "research/evidence/2025_holdout_fda_action_evidence.json"
+              },
+              {
+                "hash_scope": "LOCAL_CURATED_MANIFEST_NOT_ORIGINAL_FDA_SOURCE_BYTES",
+                "local_manifest_sha256": "7e05c3c3b9225860ae86653cbee9fd7ce9db48ef2eb6bd247df6972706bebbac",
+                "path": "research/evidence/2025_holdout_predecision_reconstruction.json"
+              }
+            ],
+            "ticker": "VNDA"
+          },
+          "kind": "EXISTING_CURATED_REGISTRY",
+          "original_document_authenticated": false
+        }
+      ],
+      "record_id": "VNDA|2025-12-30",
+      "regulatory_designations": [],
+      "review_cycle_id": "Orig1s000",
+      "safety_results": null,
+      "source_documents": [
+        {
+          "document_id": "5720300",
+          "sha256": null,
+          "source_published_at": null,
+          "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220152Orig1s000Approv.pdf",
+          "status": "SOURCE_LEAD_NOT_ORIGINAL_BYTES"
+        }
+      ],
+      "submission_number": null,
+      "submission_type": null,
+      "ticker": "VNDA",
+      "trial_identifiers": []
+    }
+  ],
+  "conflicts": [],
+  "independently_verified_decisions": 0,
+  "prediction_action": "ABSTAIN",
+  "schema_version": "official-history-store-v1"
+}

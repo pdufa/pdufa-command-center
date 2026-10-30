@@ -91,6 +91,8 @@ def walk_forward_backtest(
     every training fold. One held-out family contributes at most one test
     decision across all folds. Caller-reported group identities are NOT
     independently adjudicated and cannot confer FDA model validation.
+    A selected cycle whose outcome label is unavailable remains reserved and
+    excluded; a later published cycle/family member cannot replace it.
     """
     if type(min_train) is not int or min_train < 1:
         raise ValueError("min_train must be positive")
@@ -119,7 +121,18 @@ def walk_forward_backtest(
     result = []
     heldout_application_ids = set()
     heldout_group_ids = set()
-    valid = [r for r in rows if observation_exclusion(r, as_of=audit_as_of) is None]
+    exclusions = {(r.application_id, r.review_cycle): observation_exclusion(r, as_of=audit_as_of)
+                  for r in rows}
+    valid = [r for r in rows if exclusions[(r.application_id, r.review_cycle)] is None]
+    # Allocate holdouts before examining whether their labels are available.
+    # Otherwise an unpublished CRL can disappear and be replaced by a later,
+    # published approval from the same application or program family. These
+    # rows pass the other cohort/feature/action gates but cannot be scored.
+    publication_exclusions = {"unknown_outcome_publication", "outcome_not_yet_public",
+                              "outcome_publication_before_action"}
+    allocation_pool = [r for r in rows
+                       if exclusions[(r.application_id, r.review_cycle)] in publication_exclusions
+                       or exclusions[(r.application_id, r.review_cycle)] is None]
     for left, right in zip(cutoffs, cutoffs[1:]):
         train_pool = [r for r in valid if r.decision_date < left and r.outcome_public_as_of < left
                       and (family_map is None or family_map[r.application_id] not in frozen_holdouts)]
@@ -128,7 +141,7 @@ def walk_forward_backtest(
         # overweight that application in training. Keep its latest cycle.
         train = _latest_application_cycles(train_pool)
         train_ids = {r.application_id for r in train}
-        usable = [r for r in valid if left <= r.decision_date < right
+        usable = [r for r in allocation_pool if left <= r.decision_date < right
                   and r.application_id not in train_ids
                   and r.application_id not in heldout_application_ids
                   and (family_map is None or (
@@ -139,14 +152,20 @@ def walk_forward_backtest(
         heldout_ids = set()
         fold_group_ids = set()
         unique_usable = []
-        for row in sorted(usable, key=lambda r: (r.decision_date, r.review_cycle)):
+        for row in sorted(usable, key=lambda r: (r.decision_date, r.review_cycle, r.application_id)):
             group = family_map[row.application_id] if family_map is not None else None
             if row.application_id not in heldout_ids and (group is None or group not in fold_group_ids):
                 unique_usable.append(row)
                 heldout_ids.add(row.application_id)
                 if group is not None:
                     fold_group_ids.add(group)
-        usable = unique_usable
+        selected = unique_usable
+        # An allocated cycle with an unavailable/invalid label is excluded,
+        # not an abstention, and its identity remains reserved across folds.
+        usable = [r for r in selected if exclusions[(r.application_id, r.review_cycle)] is None]
+        unscorable_groups = ({family_map[r.application_id] for r in selected
+                              if exclusions[(r.application_id, r.review_cycle)] is not None}
+                             if family_map is not None else set())
         # Prespecify the earliest eligible cycle per held-out application across
         # all folds, including abstentions. Never select a later cycle merely
         # because its forecast would be easier or its label is published sooner.
@@ -198,7 +217,8 @@ def walk_forward_backtest(
                 "mappingIndependentlyAdjudicated": False,
                 "realFdaOutcomeCohortVerified": False,
                 "selectedHoldoutProgramGroups": sorted(frozen_holdouts),
-                "testProgramGroupsThisFold": sorted(fold_group_ids),
+                "testProgramGroupsThisFold": sorted({family_map[r.application_id] for r in usable}),
+                "reservedUnscorableProgramGroupsThisFold": sorted(unscorable_groups),
                 "allSelectedProgramGroupsExcludedFromTraining": True,
                 "modelCalibrationIndependentlyValidated": False,
             } if family_map is not None else None),
