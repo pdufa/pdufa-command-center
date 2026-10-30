@@ -189,8 +189,13 @@ async function main() {
     // Do not claim a tab click unless the deployed UI exposes a matching control.
     const predictionTab = page.getByRole('tab', { name: /prediction/i });
     const predictionLink = page.getByRole('link', { name: /^prediction$/i });
+    const predictionButton = page.getByRole('button', { name: /^prediction$/i });
     if (await predictionTab.count()) {
       await predictionTab.first().click();
+      requireCheck(await section.isVisible(), 'prediction_tab_live_panel_visible');
+    } else if (await predictionButton.count()) {
+      await predictionButton.first().click();
+      await section.waitFor({ state: 'visible', timeout: 45000 });
       requireCheck(await section.isVisible(), 'prediction_tab_live_panel_visible');
     } else if (await predictionLink.count()) {
       await predictionLink.first().click();
