@@ -24,7 +24,7 @@ def evidence_available(value):
         if status is not None and status != "VERIFIED":
             return False
         if status == "VERIFIED":
-            return bool(value.get("source_url") and value.get("source_document_sha256") and value.get("value") is not None)
+            return bool(value.get("source_url") and re.fullmatch(r"[0-9a-fA-F]{64}", str(value.get("source_document_sha256", ""))) and evidence_available(value.get("value")))
     return True
 
 
