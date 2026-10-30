@@ -408,6 +408,8 @@ async def lifespan(app: FastAPI):
     if _DB_STATE["available"] and os.getenv("PDUFA_ARCHIVE_INTEGRITY_AUDIT", "1") == "1":
         from .archive_protection import start
         start(ENGINE)
+        from .candidate_review_service import start as start_candidate_review
+        start_candidate_review(ENGINE)
     yield
     from .archive_protection import stop
     stop()
@@ -459,6 +461,29 @@ def health():
         "startup_source_verification_enabled": os.getenv("PDUFA_STARTUP_FULL_SOURCE_VERIFY", "0").lower() in ("1", "true", "yes"),
         "full_trial_download": archive_status(),
     }
+
+
+@app.get("/api/scientific-candidates", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def scientific_candidate_reviews():
+    from .candidate_review_service import list_reviews
+    try:
+        return list_reviews(ENGINE)
+    except Exception:
+        raise HTTPException(status_code=503, detail="Scientific candidate review is initializing or unavailable")
+
+
+@app.get("/api/scientific-candidates/{nct_id}", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def scientific_candidate_dossier(nct_id: str):
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id):
+        raise HTTPException(status_code=422, detail="An exact NCT identifier is required")
+    from .candidate_review_service import detail
+    try:
+        result = detail(ENGINE, nct_id)
+    except Exception:
+        raise HTTPException(status_code=503, detail="Scientific dossier is unavailable")
+    if result is None:
+        raise HTTPException(status_code=404, detail="No persisted dossier for this trial")
+    return result
 
 
 @app.get("/api/archive-health", dependencies=[Depends(require_internal_key), Depends(require_storage)])
