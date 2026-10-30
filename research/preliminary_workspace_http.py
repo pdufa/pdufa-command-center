@@ -136,7 +136,7 @@ def safe_workspace_diagnostics(base_url, *, api_key=None, timeout=20, allow_iden
         "data_authenticity_verified",
     )
     result = {key: report[key] for key in keys}
-    for key in ('target_provenance_category_counts', 'raw_target_date_present', 'valid_target_date_present',
+    for key in ('sponsor_disclosure_leads', 'target_provenance_category_counts', 'raw_target_date_present', 'valid_target_date_present',
                 'fda_host_evidence_present', 'accepted_fda_verification_status_present',
                 'dated_records_missing_fda_host_evidence',
                 'dated_records_missing_accepted_verification_status',
