@@ -1,8 +1,10 @@
 """Stage-1 evidence-stream tests use synthetic registry fixtures, never live claims."""
 from copy import deepcopy
+import ast
 import hashlib
 import json
 import os
+from pathlib import Path
 import threading
 from types import SimpleNamespace
 
@@ -363,6 +365,20 @@ def test_router_all_routes_require_auth_and_exact_run_scope(engine, monkeypatch)
     assert response.media_type == "text/event-stream"
     assert response.headers["cache-control"] == "private, no-store, no-transform"
     assert response.headers["x-accel-buffering"] == "no"
+
+
+def test_legacy_archive_path_assertions_include_nested_lazy_router_paths():
+    # Exercise the compatibility helper without importing unrelated archive jobs.
+    source = Path(__file__).with_name("test_full_trial_archive.py")
+    syntax = ast.parse(source.read_text())
+    helper = next(node for node in syntax.body if isinstance(node, ast.FunctionDef) and node.name == "_route_paths")
+    scope = {}
+    exec(compile(ast.Module(body=[helper], type_ignores=[]), str(source), "exec"), scope)
+    ordinary = SimpleNamespace(path="/ordinary")
+    removed_path = "/downloads/pipeline-all-fields/{ticket}"
+    hidden = SimpleNamespace(original_router=SimpleNamespace(routes=[SimpleNamespace(path=removed_path)]))
+    nested = SimpleNamespace(original_router=SimpleNamespace(routes=[ordinary, hidden]))
+    assert scope["_route_paths"]([nested]) == {"/ordinary", removed_path}
 
 
 @pytest.mark.skipif(not os.environ.get("CI"), reason="Local AnyIO blocking-portal limitation; HTTP also verified on deployed service")

@@ -93,5 +93,13 @@ test('initial semantic rendering has expandable section and no invented counts',
 
 test('page adds readiness beside archive health without changing existing controls', () => {
   const page = fs.readFileSync(require.resolve('../app/page.tsx'), 'utf8');
-  assert.match(page, /<ArchiveHealthPanel\s*\/\s*>\s*<ScientificCandidateReadiness\s*\/\s*>\s*<Workspace/);
+  const components = ['<ArchiveHealthPanel', '<ScientificCandidateReadiness', '<NctLiveStream', '<Workspace'];
+  let previous = -1;
+  for (const component of components) {
+    const position = page.indexOf(component);
+    assert.ok(position >= 0, component + ' remains present');
+    assert.ok(position > previous, component + ' retains its placement after prior evidence panels');
+    previous = position;
+  }
 });
+

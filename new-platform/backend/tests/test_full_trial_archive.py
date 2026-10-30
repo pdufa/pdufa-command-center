@@ -90,8 +90,20 @@ def test_retired_zip_cache_cleanup_only_deletes_generated_export_files(monkeypat
     assert archive.cleanup_retired_zip_exports() == {"removed": 0, "bytes": 0}
 
 
+def _route_paths(routes):
+    """Walk ordinary and lazy included routers without dropping nested routes."""
+    paths = set()
+    for route in routes:
+        nested = getattr(route, "original_router", None)
+        if nested is not None:
+            paths.update(_route_paths(nested.routes))
+        elif hasattr(route, "path"):
+            paths.add(route.path)
+    return paths
+
+
 def test_bulk_zip_download_endpoints_are_removed():
-    routes = {route.path for route in main.app.routes}
+    routes = _route_paths(main.app.routes)
     assert "/api/pipeline-full-records/export-link" not in routes
     assert "/downloads/pipeline-all-fields/{ticket}" not in routes
 
@@ -150,3 +162,4 @@ def test_record_view_http_flow_requires_app_auth_and_valid_exact_trial_ticket(is
     assert record.json() == study()
     assert record.headers["x-record-sha256"]
     assert record.headers["access-control-allow-origin"] == "*"
+
