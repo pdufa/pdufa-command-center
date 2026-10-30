@@ -48,6 +48,22 @@ class ExportTests(unittest.TestCase):
             with patch.object(module.shutil, "which", return_value="/usr/bin/pg_dump"), patch.object(module.subprocess, "run", side_effect=fake_run):
                 self.assertEqual(self.run_cli(["--output", str(target)], {"DATABASE_URL": "postgresql://user:secret-pass@localhost:5432/sample"}), 0)
             self.assertEqual(target.read_bytes(), b"PGDMP")
+            self.assertEqual(target.stat().st_mode & 0o777, 0o600)
+
+    def test_racing_existing_output_is_preserved(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "backup.dump"
+            real_open = os.open
+            def raced_open(path, flags, mode=0o777, **kwargs):
+                if Path(path) == target:
+                    target.write_bytes(b"another-process-backup")
+                return real_open(path, flags, mode, **kwargs)
+            with patch.object(module.shutil, "which", return_value="/usr/bin/pg_dump"), \
+                 patch.object(module.os, "open", side_effect=raced_open), \
+                 patch.object(module.subprocess, "run") as dump:
+                self.assertEqual(self.run_cli(["--output", str(target)], {"DATABASE_URL": "postgresql://user:pass@localhost:5432/sample"}), 1)
+            dump.assert_not_called()
+            self.assertEqual(target.read_bytes(), b"another-process-backup")
 
     def test_failed_dump_removed(self):
         with tempfile.TemporaryDirectory() as directory:
