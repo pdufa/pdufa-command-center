@@ -310,6 +310,22 @@ async function main() {
     const snapshotResponse = await context.request.get(BASE + '/api/nct-stream/' + NCT + '/runs/' + run.run_id, { timeout: 30000 });
     requireCheck(snapshotResponse.status() === 200, 'authenticated_snapshot_200');
     const snapshot = await snapshotResponse.json();
+    // Independently re-read the original dossier from persistent DB via the
+    // authenticated backend; do not treat a run snapshot as integrity proof.
+    phase = 'independent_database_dossier_integrity';
+    const integrityResponse = await context.request.get(
+      BASE + '/api/nct-stream/' + NCT + '/runs/' + run.run_id + '/dossier-integrity',
+      { timeout: 30000 }
+    );
+    requireCheck(integrityResponse.status() === 200, 'database_integrity_endpoint_200');
+    const integrity = await integrityResponse.json();
+    requireCheck(integrity.nct_id === NCT && integrity.run_id === run.run_id,
+      'database_integrity_identity_matches');
+    requireCheck(integrity.unchanged === true && integrity.database_sha256 === integrity.run_original_sha256,
+      'independent_database_dossier_unchanged');
+    requireCheck(integrity.database_sha256 === 'c7c1d08244597084152238853c3d8357b892218aee1c48db97e83f63216c54de',
+      'original_benchmark1_database_checksum_matches');
+
     const latest = summarizeSnapshot(snapshot, run.run_id);
     await inspectRenderedNodes(page, latest, 'initial_display');
     const pointer = await page.evaluate(key => JSON.parse(localStorage.getItem(key) || 'null'), POINTER_KEY);
