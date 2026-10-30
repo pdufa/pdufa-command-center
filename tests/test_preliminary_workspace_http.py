@@ -421,3 +421,19 @@ def test_cli_calendar_artifact_preserves_precision_and_complete_inventory_audit(
     assert len(report['source_rows_sha256']) == 64
     assert not any(secret in artifact for secret in ('SYNTHETIC_SECRET', 'PDUFA-000001', 'TRIAL|SYNTHETIC|1'))
     assert 'rows' not in report and 'records' not in report
+
+
+def test_sponsor_lead_count_exposed_without_individual_records(monkeypatch):
+    from research import preliminary_workspace_http as http
+    monkeypatch.setattr(http, "screen_backend_workspace", lambda *args, **kwargs: {
+        "workspace_version": "v1", "workspace_as_of": "2026-10-29",
+        "backend_rows_received": 2, "market_cap_evidence_present": 0,
+        "fda_target_evidence_present": 0, "candidate_for_evidence_review": 0,
+        "blocked": 2, "prediction_status": "ABSTAIN",
+        "data_authenticity_verified": False, "sponsor_disclosure_leads": 1,
+        "records": [{"program_id": "PDUFA-SECRET", "secret": "hidden"}]})
+    result = http.safe_workspace_diagnostics("https://example.com")
+    assert result["sponsor_disclosure_leads"] == 1
+    assert result["prediction_status"] == "ABSTAIN"
+    assert "records" not in result
+    assert "hidden" not in str(result)
