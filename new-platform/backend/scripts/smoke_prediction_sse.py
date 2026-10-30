@@ -37,7 +37,7 @@ def main():
         except (json.JSONDecodeError, UnicodeDecodeError):
             print("Malformed SSE JSON", file=sys.stderr)
             return 1
-        if payload.get("type") != lines[0][7:] or payload.get("nct_id") != nct:
+        if not isinstance(payload, dict) or payload.get("type") != lines[0][7:] or payload.get("nct_id") != nct:
             print("Event type or NCT identity mismatch", file=sys.stderr)
             return 1
         events.append(payload)
