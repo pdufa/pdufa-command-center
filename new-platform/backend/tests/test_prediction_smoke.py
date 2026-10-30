@@ -27,7 +27,7 @@ class Response:
 
 def stream(nct=NCT, decision="ABSTAIN"):
     events = [{"type": "started", "nct_id": nct, "mode": "SAVED_EVIDENCE_REPLAY", "research_running": False}]
-    events += [{"type": "assessment", "nct_id": nct, "status": "NOT_ASSESSED"} for _ in range(40)]
+    events += [{"type": "assessment", "nct_id": nct, "assessment_id": f"S{i:02d}", "status": "NOT_ASSESSED"} for i in range(1, 41)]
     events += [{"type": "progress", "nct_id": nct} for _ in range(21)]
     events += [{"type": "complete", "nct_id": nct, "decision": decision}]
     return "".join(f'event: {e["type"]}\ndata: {json.dumps(e)}\n\n' for e in events)
