@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-type Leaf = { node_id: string; label: string; status: string; value?: unknown; spinner?: boolean };
+type Leaf = { node_id: string; label: string; status: string; section?: string; value?: unknown; spinner?: boolean };
 type Event = { type: string; nct_id: string; node_id?: string; label?: string; status?: string; value?: unknown; spinner?: boolean; decision?: string; section?: string; available?: number; total?: number };
 
 export default function PredictionTab() {
@@ -10,7 +10,7 @@ export default function PredictionTab() {
   const [leaves, setLeaves] = useState<Leaf[]>([]);
   const [state, setState] = useState("Enter an NCT number to load saved trial evidence.");
   const [decision, setDecision] = useState("ABSTAIN");
-  const [identityProgress, setIdentityProgress] = useState<{ available: number; total: number; status: string } | null>(null);
+  const [progress, setProgress] = useState<Record<string, { available: number; total: number; status: string }>>({});
   const controller = useRef<AbortController | null>(null);
   const generation = useRef(0);
   useEffect(() => () => controller.current?.abort(), []);
@@ -20,7 +20,7 @@ export default function PredictionTab() {
     const current = generation.current;
     controller.current?.abort();
     controller.current = new AbortController();
-    setActive(nct); setLeaves([]); setDecision("ABSTAIN"); setIdentityProgress(null);
+    setActive(nct); setLeaves([]); setDecision("ABSTAIN"); setProgress({});
     if (!/^NCT[0-9]{8}$/.test(nct)) { setState("Enter an exact NCT identifier."); return; }
     setState("Retrieving saved trial evidence…");
     try {
@@ -44,7 +44,7 @@ export default function PredictionTab() {
           const event = JSON.parse(line.slice(6)) as Event;
           if (event.nct_id !== nct) continue;
           if (event.type === "leaf" && event.node_id && event.label && event.status) {
-            const leaf: Leaf = { node_id: event.node_id, label: event.label, status: event.status, value: event.value, spinner: event.spinner };
+            const leaf: Leaf = { node_id: event.node_id, label: event.label, status: event.status, section: event.section || "trial_identity", value: event.value, spinner: event.spinner };
             setLeaves(prev => [...prev.filter(x => x.node_id !== leaf.node_id), leaf]);
           }
           if (event.type === "progress" && event.section === "trial_identity" && typeof event.available === "number" && typeof event.total === "number") {
@@ -68,12 +68,18 @@ export default function PredictionTab() {
     </form>
     <p role="status">{state}</p>
     {active && <p><strong>{active}</strong> · MAIN: {decision}</p>}
-    <details open><summary>Trial identity · {identityProgress?.available ?? leaves.filter(x => x.status === "AVAILABLE").length}/{identityProgress?.total ?? 4} available</summary>
-      {leaves.map(leaf => <div key={leaf.node_id} style={{ margin: "8px 0" }}>
+    {([
+      ["trial_identity", "TRIAL IDENTITY", 4],
+      ["trial_design", "TRIAL DESIGN", 2],
+      ["clinical_results", "CLINICAL RESULTS", 5],
+      ["regulatory", "FDA & REGULATORY", 4],
+    ] as const).map(([section, label, total]) => <details key={section} open={section === "trial_identity"}>
+      <summary>{label} · {progress[section]?.available ?? leaves.filter(x => x.section === section && x.status === "AVAILABLE").length}/{progress[section]?.total ?? total} available</summary>
+      {leaves.filter(x => x.section === section).map(leaf => <div key={leaf.node_id} style={{ margin: "8px 0" }}>
         <strong>{leaf.spinner ? "◌ " : leaf.status === "AVAILABLE" ? "✓ " : "⚠ "}{leaf.label}</strong>
         <div style={{ overflowWrap: "anywhere" }}>{leaf.value == null ? "Unavailable" : JSON.stringify(leaf.value)}</div>
       </div>)}
-    </details>
+    </details>)}
     <details><summary>SCIENCE · 0/40 assessed</summary><p>Scientific assessment processing not installed.</p></details>
     <details><summary>OUTCOME · Pending</summary><p>Independent regulatory assessment pending.</p></details>
     <details><summary>MAIN · {decision}</summary><p>Not authorized as a trading recommendation.</p></details>
