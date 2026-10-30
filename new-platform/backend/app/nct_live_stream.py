@@ -80,11 +80,24 @@ def initialize(engine):
                     c.execute(text(f"CREATE TRIGGER IF NOT EXISTS {table}_{operation.lower()} BEFORE {operation} ON {table} BEGIN SELECT RAISE(ABORT, 'NCT stream source/events are append-only'); END"))
 
 
-def saved_dossier(c, nct):
+def saved_dossier(c, nct, dossier_id=None):
+    if dossier_id and dossier_id.startswith("phase3-catalog:"):
+        from .phase3_catalog import saved_catalog_dossier
+        return saved_catalog_dossier(c, nct, dossier_id)
+    revision = None
+    if dossier_id:
+        revision, separator, suffix = dossier_id.rpartition("/")
+        if not separator or suffix != nct:
+            raise ValueError("Saved dossier identity mismatch")
+    revision_clause = " AND d.run_id=:revision" if revision else ""
+    parameters = {"nct": nct, **({"revision": revision} if revision else {})}
     row = c.execute(text("""SELECT d.run_id,d.document,d.sha256
         FROM scientific_candidate_dossiers d JOIN scientific_review_runs r ON r.run_id=d.run_id
-        WHERE d.nct_id=:nct ORDER BY r.verified_at DESC LIMIT 1"""), {"nct": nct}).first()
+        WHERE d.nct_id=:nct""" + revision_clause + " ORDER BY r.verified_at DESC LIMIT 1"), parameters).first()
     if row is None:
+        if dossier_id is None:
+            from .phase3_catalog import saved_catalog_dossier
+            return saved_catalog_dossier(c, nct)
         raise LookupError("No existing saved dossier for this NCT")
     doc = json.loads(row[1])
     if doc.get("nct_id") != nct or digest(doc) != row[2]:
@@ -108,7 +121,7 @@ def get_run(engine, nct, run_id):
     return dict(row)
 
 
-def create_run(engine, nct, request_key, *, submit=True):
+def create_run(engine, nct, request_key, *, submit=True, reuse_existing=False):
     require_nct(nct)
     if not isinstance(request_key, str) or not SAFE_ID.fullmatch(request_key):
         raise ValueError("Invalid idempotency key")
@@ -119,6 +132,10 @@ def create_run(engine, nct, request_key, *, submit=True):
                 if existing["nct_id"] != nct:
                     raise ValueError("Idempotency key belongs to another dossier")
                 return snapshot(engine, nct, existing["run_id"])
+            if reuse_existing:
+                previous = c.execute(text("SELECT run_id FROM nct_stream_runs WHERE nct_id=:nct ORDER BY created_at DESC,run_id DESC LIMIT 1"), {"nct": nct}).scalar()
+                if previous:
+                    return snapshot(engine, nct, previous)
             dossier = saved_dossier(c, nct)
             run_id = str(uuid.uuid4())
             try:
@@ -252,7 +269,7 @@ def worker(engine, run_id, fetcher=None):
             run = dict(c.execute(text("SELECT * FROM nct_stream_runs WHERE run_id=:run"), {"run": run_id}).mappings().one())
             if run["status"] in ("COMPLETE", "FAILED"):
                 return
-            dossier = saved_dossier(c, run["nct_id"])
+            dossier = saved_dossier(c, run["nct_id"], run["dossier_id"])
             if dossier["id"] != run["dossier_id"] or dossier["sha256"] != run["dossier_sha256"]:
                 raise ValueError("Saved dossier revision changed during stream")
             stored = c.execute(text("SELECT * FROM nct_stream_sources WHERE run_id=:run"), {"run": run_id}).mappings().first()
@@ -354,6 +371,7 @@ def stream(engine, nct, run_id, after=0, *, duration=25):
 
 class StartRequest(BaseModel):
     request_key: str = Field(min_length=8, max_length=100, pattern=r"^[A-Za-z0-9_-]+$")
+    reuse_existing: bool = False
 
 
 def install_routes(app, engine_provider, require_internal_key, require_storage):
@@ -370,7 +388,7 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         try:
             run = get_run(engine_provider(), nct_id, run_id)
             with engine_provider().connect() as connection:
-                original = saved_dossier(connection, nct_id)
+                original = saved_dossier(connection, nct_id, run["dossier_id"])
             unchanged = (original["id"] == run["dossier_id"]
                          and original["sha256"] == run["dossier_sha256"])
             return {"nct_id": nct_id, "run_id": run_id,
@@ -386,7 +404,18 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         if not NCT.fullmatch(nct_id):
             raise HTTPException(422, "Invalid NCT identifier")
         try:
-            return create_run(engine_provider(), nct_id, payload.request_key)
+            return create_run(engine_provider(), nct_id, payload.request_key, reuse_existing=payload.reuse_existing)
+        except Exception as exc:
+            raise convert(exc)
+    @router.get("/{nct_id}/runs/latest")
+    def latest(nct_id: str):
+        try:
+            require_nct(nct_id)
+            with engine_provider().connect() as connection:
+                run_id = connection.execute(text("SELECT run_id FROM nct_stream_runs WHERE nct_id=:nct ORDER BY created_at DESC,run_id DESC LIMIT 1"), {"nct": nct_id}).scalar()
+            if run_id is None:
+                raise LookupError("No saved processing run")
+            return snapshot(engine_provider(), nct_id, run_id)
         except Exception as exc:
             raise convert(exc)
     @router.get("/{nct_id}/runs/{run_id}")
