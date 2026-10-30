@@ -104,6 +104,7 @@ def status(engine):
                           "last_automatic_execution_at": state.get("last_automatic_execution_at"),
                           "next_due_at": state.get("next_sync_after"),
                           "verified_execution": bool(state.get("last_automatic_execution_at"))}
+    safe["scheduling"]["daily_recurrence_verified"] = False
     return safe
 
 

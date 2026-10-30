@@ -153,6 +153,11 @@ def test_scope_size_and_source_health_are_honest(engine):
     assert value["status"] == "PENDING"
     assert value["reconciled_trial_application_links"] == 0
     assert value["sec"]["status"] in {"USER_AGENT_CONFIGURATION_REQUIRED", "CONFIGURED_NOT_EXECUTED"}
+
+
+def test_sqlite_verification_never_starts_background_network_workers(engine, monkeypatch):
+    monkeypatch.setattr(regulatory.threading, "Thread", lambda *args, **kwargs: pytest.fail("SQLite tests must not launch production synchronization"))
+    regulatory.start(engine)
     assert value["official_sponsor"]["status"] == "EXPLICIT_PRIMARY_EVIDENCE_REQUIRED"
     with pytest.raises(ValueError):
         regulatory.sync(engine, max_pages=0)
