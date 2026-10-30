@@ -1,13 +1,15 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
+type Assessment = { assessment_id: string; status: string; evidence_count: number; spinner?: boolean };
 type Leaf = { node_id: string; label: string; status: string; section?: string; value?: unknown; spinner?: boolean };
-type Event = { type: string; nct_id: string; node_id?: string; label?: string; status?: string; value?: unknown; spinner?: boolean; decision?: string; section?: string; available?: number; total?: number };
+type Event = { type: string; nct_id: string; node_id?: string; label?: string; status?: string; value?: unknown; spinner?: boolean; decision?: string; section?: string; available?: number; total?: number; assessment_id?: string; evidence_count?: number };
 
 export default function PredictionTab() {
   const [code, setCode] = useState("");
   const [active, setActive] = useState("");
   const [leaves, setLeaves] = useState<Leaf[]>([]);
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [state, setState] = useState("Enter an NCT number to load saved trial evidence.");
   const [decision, setDecision] = useState("ABSTAIN");
   const [progress, setProgress] = useState<Record<string, { available: number; total: number; status: string }>>({});
@@ -20,7 +22,7 @@ export default function PredictionTab() {
     const current = generation.current;
     controller.current?.abort();
     controller.current = new AbortController();
-    setActive(nct); setLeaves([]); setDecision("ABSTAIN"); setProgress({});
+    setActive(nct); setLeaves([]); setAssessments([]); setDecision("ABSTAIN"); setProgress({});
     if (!/^NCT[0-9]{8}$/.test(nct)) { setState("Enter an exact NCT identifier."); return; }
     setState("Retrieving saved trial evidence…");
     try {
@@ -46,6 +48,10 @@ export default function PredictionTab() {
           if (event.type === "leaf" && event.node_id && event.label && event.status) {
             const leaf: Leaf = { node_id: event.node_id, label: event.label, status: event.status, section: event.section || "trial_identity", value: event.value, spinner: event.spinner };
             setLeaves(prev => [...prev.filter(x => x.node_id !== leaf.node_id), leaf]);
+          }
+          if (event.type === "assessment" && event.assessment_id && event.status) {
+            const assessment: Assessment = { assessment_id: event.assessment_id, status: event.status, evidence_count: event.evidence_count ?? 0, spinner: event.spinner };
+            setAssessments(prev => [...prev.filter(x => x.assessment_id !== assessment.assessment_id), assessment].sort((a, b) => a.assessment_id.localeCompare(b.assessment_id)));
           }
           if (event.type === "progress" && event.section && typeof event.available === "number" && typeof event.total === "number") {
             const section = event.section;
@@ -81,7 +87,7 @@ export default function PredictionTab() {
         <div style={{ overflowWrap: "anywhere" }}>{leaf.value == null ? "Unavailable" : JSON.stringify(leaf.value)}</div>
       </div>)}
     </details>)}
-    <details><summary>SCIENCE · 0/40 assessed</summary><p>Scientific assessment processing not installed.</p></details>
+    <details><summary>SCIENCE · {progress.science?.available ?? 0}/{progress.science?.total ?? 40} assessed</summary><p>Assessments remain pending until verified scientific processing runs.</p>{assessments.map(item => <div key={item.assessment_id}>{item.assessment_id} · {item.status} · {item.evidence_count} evidence items</div>)}</details>
     <details><summary>OUTCOME · Pending</summary><p>Independent regulatory assessment pending.</p></details>
     <details><summary>MAIN · {decision}</summary><p>Not authorized as a trading recommendation.</p></details>
   </section>;
