@@ -18,7 +18,9 @@ def evidence_available(value):
     if value is None or value == "" or value == [] or value == {}:
         return False
     if isinstance(value, dict):
-        if value.get("interpretation") in ("NOT_INFERRED", "NOT_ADJUDICATED"):\n            return False\n        status = value.get("status")
+        if value.get("interpretation") in ("NOT_INFERRED", "NOT_ADJUDICATED"):
+            return False
+        status = value.get("status")
         if status is not None and status != "VERIFIED":
             return False
         if status == "VERIFIED":
