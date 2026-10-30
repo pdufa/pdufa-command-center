@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Workspace from "./Workspace";
 import SiteHealthStatus from "./SiteHealthStatus";
+import NctLiveStream from "./NctLiveStream";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Selections = Record<string, boolean>;
@@ -208,6 +209,7 @@ export default function Home() {
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
       <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a></p>
+      <NctLiveStream />
       <Workspace onInspect={inspectProgram} />
       {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
       <div className="panel controls">
@@ -246,3 +248,4 @@ export default function Home() {
     </main>
   );
 }
+

@@ -430,12 +430,18 @@ async def lifespan(app: FastAPI):
         threading.Thread(target=bootstrap, daemon=True).start()
     from .full_trial_archive import cleanup_retired_zip_exports
     cleanup_retired_zip_exports()
+    if _DB_STATE["available"]:
+        from .nct_live_stream import start as start_nct_live_stream
+        start_nct_live_stream(ENGINE)
     yield
 
 
 from .reconciliation_review import ReviewPackage
 
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
+from .nct_live_stream import install_routes as install_nct_stream_routes
+install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+
 
 # Internal, read-only scanner-to-research integration seam. This endpoint does
 # not schedule scans, mutate lists, persist scores, or authorize trades.
@@ -1158,3 +1164,4 @@ def save_program_checklist(program_id: str, stage: str, payload: ChecklistPayloa
         session.commit()
         return {"saved": True, "programId": program_id,
                 "version": payload.version + 1, "updated_at": now}
+
