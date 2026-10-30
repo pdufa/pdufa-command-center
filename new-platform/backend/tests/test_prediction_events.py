@@ -20,7 +20,7 @@ def test_sse_format_and_identity():
     stream = "".join(sse_lines("NCT01234567", {"nct_id": "NCT01234567"}))
     assert "event: started\n" in stream
     assert "event: complete\n" in stream
-    assert len([x for x in stream.splitlines() if x.startswith("data: ")]) == 62
+    assert len([x for x in stream.splitlines() if x.startswith("data: ")]) == 63
     with pytest.raises(ValueError):
         list(field_events("NCT01234567", {"nct_id": "NCT87654321"}))
 
