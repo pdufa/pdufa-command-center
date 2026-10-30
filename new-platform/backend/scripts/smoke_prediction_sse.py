@@ -32,7 +32,11 @@ def main():
         if len(lines) != 2 or not lines[0].startswith("event: ") or not lines[1].startswith("data: "):
             print("Malformed SSE frame", file=sys.stderr)
             return 1
-        payload = json.loads(lines[1][6:])
+        try:
+            payload = json.loads(lines[1][6:])
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            print("Malformed SSE JSON", file=sys.stderr)
+            return 1
         if payload.get("type") != lines[0][7:] or payload.get("nct_id") != nct:
             print("Event type or NCT identity mismatch", file=sys.stderr)
             return 1
