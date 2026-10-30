@@ -74,3 +74,12 @@ def test_smoke_rejects_invalid_utf8_without_traceback(capsys):
     captured = capsys.readouterr()
     assert "Smoke test failed: UnicodeDecodeError" in captured.err
     assert "dummy-secret" not in captured.err
+
+
+def test_smoke_rejects_non_object_json_without_traceback(capsys):
+    frame = "event: started\ndata: []\n\n"
+    with patch.dict("os.environ", ENV), patch.object(smoke.urllib.request, "urlopen", return_value=Response(frame)):
+        assert smoke.main() == 1
+    captured = capsys.readouterr()
+    assert "Event type or NCT identity mismatch" in captured.err
+    assert "dummy-secret" not in captured.err
