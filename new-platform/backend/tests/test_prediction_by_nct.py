@@ -26,3 +26,27 @@ def test_missing_dossier_is_rejected():
 def test_invalid_identifier_is_rejected():
     with pytest.raises(ValueError, match="Invalid"):
         prediction_payload("NCT-123", {"nct_id": "NCT-123"})
+
+
+def test_progress_snapshot_bottom_up_and_no_fake_spinner():
+    from app.prediction_by_nct import progressive_snapshot
+    payload = progressive_snapshot("NCT01234567", {
+        "nct_id": "NCT01234567",
+        "sponsor": {"name": "Example sponsor"},
+        "products": [{"name": "Example drug"}],
+    })
+    progress = payload["progress"]
+    assert progress["mode"] == "BOTTOM_UP"
+    assert progress["subordinate"]["completed"] == 2
+    assert progress["subordinate"]["total"] == 4
+    assert progress["subordinate"]["status"] == "PARTIAL"
+    assert progress["main"]["decision"] == "ABSTAIN"
+    assert progress["live_research_active"] is False
+    assert all(leaf["spinner"] is False for leaf in progress["leaves"])
+    assert all(leaf["status"] != "VERIFIED" for leaf in progress["leaves"])
+
+
+def test_progress_snapshot_rejects_cross_trial_dossier():
+    from app.prediction_by_nct import progressive_snapshot
+    with pytest.raises(ValueError, match="mismatch"):
+        progressive_snapshot("NCT01234567", {"nct_id": "NCT07654321"})
