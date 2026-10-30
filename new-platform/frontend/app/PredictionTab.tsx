@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 
 type Leaf = { node_id: string; label: string; status: string; value?: unknown; spinner?: boolean };
-type Event = { type: string; nct_id: string; node_id?: string; label?: string; status?: string; value?: unknown; spinner?: boolean; decision?: string };
+type Event = { type: string; nct_id: string; node_id?: string; label?: string; status?: string; value?: unknown; spinner?: boolean; decision?: string; section?: string; available?: number; total?: number };
 
 export default function PredictionTab() {
   const [code, setCode] = useState("");
@@ -10,6 +10,7 @@ export default function PredictionTab() {
   const [leaves, setLeaves] = useState<Leaf[]>([]);
   const [state, setState] = useState("Enter an NCT number to load saved trial evidence.");
   const [decision, setDecision] = useState("ABSTAIN");
+  const [identityProgress, setIdentityProgress] = useState<{ available: number; total: number; status: string } | null>(null);
   const controller = useRef<AbortController | null>(null);
   const generation = useRef(0);
   useEffect(() => () => controller.current?.abort(), []);
@@ -19,7 +20,7 @@ export default function PredictionTab() {
     const current = generation.current;
     controller.current?.abort();
     controller.current = new AbortController();
-    setActive(nct); setLeaves([]); setDecision("ABSTAIN");
+    setActive(nct); setLeaves([]); setDecision("ABSTAIN"); setIdentityProgress(null);
     if (!/^NCT[0-9]{8}$/.test(nct)) { setState("Enter an exact NCT identifier."); return; }
     setState("Retrieving saved trial evidence…");
     try {
@@ -46,6 +47,9 @@ export default function PredictionTab() {
             const leaf: Leaf = { node_id: event.node_id, label: event.label, status: event.status, value: event.value, spinner: event.spinner };
             setLeaves(prev => [...prev.filter(x => x.node_id !== leaf.node_id), leaf]);
           }
+          if (event.type === "progress" && event.section === "trial_identity" && typeof event.available === "number" && typeof event.total === "number") {
+            setIdentityProgress({ available: event.available, total: event.total, status: event.status || "PARTIAL" });
+          }
           if (event.type === "complete") { setDecision(event.decision || "ABSTAIN"); setState("Saved evidence loaded. Full scientific prediction pending."); }
         }
       }
@@ -64,7 +68,7 @@ export default function PredictionTab() {
     </form>
     <p role="status">{state}</p>
     {active && <p><strong>{active}</strong> · MAIN: {decision}</p>}
-    <details open><summary>Trial identity · {leaves.filter(x => x.status === "AVAILABLE").length}/4 available</summary>
+    <details open><summary>Trial identity · {identityProgress?.available ?? leaves.filter(x => x.status === "AVAILABLE").length}/{identityProgress?.total ?? 4} available</summary>
       {leaves.map(leaf => <div key={leaf.node_id} style={{ margin: "8px 0" }}>
         <strong>{leaf.spinner ? "◌ " : leaf.status === "AVAILABLE" ? "✓ " : "⚠ "}{leaf.label}</strong>
         <div style={{ overflowWrap: "anywhere" }}>{leaf.value == null ? "Unavailable" : JSON.stringify(leaf.value)}</div>
