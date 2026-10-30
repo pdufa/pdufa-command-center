@@ -248,6 +248,14 @@ async function main() {
     await inspectRenderedNodes(page, latest, 'initial_display');
     const pointer = await page.evaluate(key => JSON.parse(localStorage.getItem(key) || 'null'), POINTER_KEY);
     requireCheck(pointer && pointer.run_id === run.run_id && pointer.nct_id === NCT && Object.keys(pointer).sort().join(',') === 'nct_id,run_id', 'storage_contains_only_run_pointer');
+    // Validate a fresh read-only dossier fingerprint if the snapshot exposes one.
+    // This does not substitute for a direct persisted-dossier database checksum.
+    if (typeof snapshot.dossier_sha256 === 'string') {
+      requireCheck(/^[a-f0-9]{64}$/i.test(snapshot.dossier_sha256), 'snapshot_dossier_hash_format');
+      result.checks.snapshot_dossier_hash_available = true;
+    } else {
+      result.checks.snapshot_dossier_hash_available = false;
+    }
     const normalizedBefore = crypto.createHash('sha256').update(canonical(snapshot.events)).digest('hex');
     const postsBefore = network.posts;
     phase = 'reload_and_restore';
