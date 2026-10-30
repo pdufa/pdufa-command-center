@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Phase3TrialLibrary from "./Phase3TrialLibrary";
 import { eventCursor, initialRun, NCT_PATTERN, NctSseParser, nodeLabel, parseSnapshot, reduceNctEvent,
   savedPointer, type NctEvent, type NctRunState, type RunPointer } from "../lib/nct-live-stream";
 
@@ -155,6 +156,8 @@ export default function NctLiveStream() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => { const handler = (event: Event) => { const nct = (event as CustomEvent<string>).detail; if (typeof nct === "string" && NCT_PATTERN.test(nct)) void load(nct); }; window.addEventListener("pdufa:analyze-nct", handler); return () => window.removeEventListener("pdufa:analyze-nct", handler); }, []);
+
   const nodes = Object.values(run?.nodes || {}).sort((a, b) => a.sequence - b.sequence);
   return <section className="panel" aria-label="Live NCT processing" id="nct-live-processing">
     <h2>NCT · Live processing</h2>
@@ -173,5 +176,6 @@ export default function NctLiveStream() {
     </details>)}
     <p className="subtle">PENDING means queued. Only LOADING steps show a processing indicator. FAILED and INSUFFICIENT EVIDENCE require review; parent status comes from persisted dependency events.</p>
     <style>{`.nct-processing-spinner{display:inline-block;width:12px;height:12px;margin-right:8px;border:2px solid #b9c6ba;border-top-color:#214e2c;border-radius:50%;animation:nct-processing-rotate .8s linear infinite}@keyframes nct-processing-rotate{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.nct-processing-spinner{animation:none;border-style:dotted}}`}</style>
+    <Phase3TrialLibrary onAnalyze={nct => { setInput(nct); void load(nct); }} />
   </section>;
 }
