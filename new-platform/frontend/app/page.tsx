@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Workspace from "./Workspace";
+import PredictionTab from "./PredictionTab";
 import ArchiveHealthPanel from "./ArchiveHealthPanel";
 import ScientificCandidateReadiness from "./ScientificCandidateReadiness";
 
@@ -208,6 +209,7 @@ export default function Home() {
       <div className="banner"><strong>Streamlit is preserved.</strong> This is the new platform setup; survey execution and live trading remain disabled.</div>
       <ArchiveHealthPanel />
       <ScientificCandidateReadiness />
+      <PredictionTab />
       <Workspace onInspect={inspectProgram} />
       {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
       <div className="panel controls">
