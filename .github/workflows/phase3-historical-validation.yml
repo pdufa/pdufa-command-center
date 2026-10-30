@@ -1,0 +1,58 @@
+name: Phase 3 historical prediction validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/phase3_historical_validation.cjs'
+      - '.github/workflows/phase3-historical-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-phase3-historical-validation
+  cancel-in-progress: false
+
+jobs:
+  read-only-historical-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require the existing authorized application credential
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: |
+          if [ -z "${DASHBOARD_PASSWORD:-}" ]; then
+            echo 'INCOMPLETE: missing GitHub Actions secret DASHBOARD_PASSWORD' >> "$GITHUB_STEP_SUMMARY"
+            echo 'INCOMPLETE: missing GitHub Actions secret DASHBOARD_PASSWORD' >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned Playwright in runner temporary storage
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pdufa-phase3-historical" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/pdufa-phase3-historical/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Read time-aware persisted prediction validation through normal login
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          NODE_PATH: ${{ runner.temp }}/pdufa-phase3-historical/node_modules
+          PHASE3_VALIDATION_RESULT_PATH: ${{ runner.temp }}/phase3-historical-validation-result.json
+        run: node scripts/phase3_historical_validation.cjs
+
+      - name: Preserve sanitized validation metrics only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-historical-validation-sanitized-result
+          path: ${{ runner.temp }}/phase3-historical-validation-result.json
+          if-no-files-found: ignore
+          retention-days: 14
