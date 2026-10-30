@@ -23,3 +23,16 @@ def test_sse_format_and_identity():
     assert len([x for x in stream.splitlines() if x.startswith("data: ")]) == 21
     with pytest.raises(ValueError):
         list(field_events("NCT01234567", {"nct_id": "NCT87654321"}))
+
+
+def test_unverified_regulatory_placeholder_does_not_count_as_available():
+    dossier = {
+        "nct_id": "NCT01234567",
+        "pdufa_date": {"status": "NOT_ATTEMPTED", "value": "2026-12-01"},
+        "special_designations": {"status": "VERIFIED", "value": ["FAST_TRACK"]},
+    }
+    events = list(field_events("NCT01234567", dossier))
+    regulatory = [e for e in events if e["type"] == "progress" and e["section"] == "regulatory"][0]
+    assert regulatory["available"] == 0
+    assert regulatory["total"] == 4
+    assert all(e["status"] == "UNAVAILABLE" for e in events if e["type"] == "leaf" and e.get("section") == "regulatory")
