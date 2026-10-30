@@ -405,6 +405,62 @@ async def lifespan(app: FastAPI):
             logging.getLogger(__name__).error(
                 "PDUFA_STORAGE_CENSUS_FAILED error_type=%s", type(exc).__name__
             )
+    if _DB_STATE["available"] and os.getenv("PDUFA_ARCHIVE_INTEGRITY_AUDIT", "1") == "1":
+        def verify_archive_integrity():
+            import gzip
+            import hashlib
+            import json
+            import logging
+            from sqlalchemy import text
+            totals = {"rows": 0, "valid_ids": 0, "invalid_ids": 0,
+                      "duplicate_ids": 0, "bad_gzip": 0, "bad_sha256": 0,
+                      "payload_id_mismatch": 0, "invalid_json": 0}
+            seen = set()
+            try:
+                with ENGINE.connect() as connection:
+                    if ENGINE.dialect.name == "postgresql":
+                        connection.execute(text("SET TRANSACTION READ ONLY"))
+                    database = (connection.execute(text("SELECT current_database()")).scalar_one()
+                                if ENGINE.dialect.name == "postgresql" else "non_postgresql")
+                    rows = connection.execution_options(stream_results=True).execute(
+                        text("SELECT nct_id, payload_gzip, sha256 FROM full_trial_records ORDER BY nct_id")
+                    )
+                    for nct, packed_payload, expected_hash in rows:
+                        totals["rows"] += 1
+                        if not re.fullmatch(r"NCT\\d{8}", nct or ""):
+                            totals["invalid_ids"] += 1
+                        else:
+                            totals["valid_ids"] += 1
+                        if nct in seen:
+                            totals["duplicate_ids"] += 1
+                        seen.add(nct)
+                        try:
+                            raw = gzip.decompress(packed_payload)
+                        except Exception:
+                            totals["bad_gzip"] += 1
+                            continue
+                        if hashlib.sha256(raw).hexdigest() != expected_hash:
+                            totals["bad_sha256"] += 1
+                        try:
+                            study = json.loads(raw)
+                            payload_id = study.get("protocolSection", {}).get("identificationModule", {}).get("nctId")
+                            if payload_id != nct:
+                                totals["payload_id_mismatch"] += 1
+                        except Exception:
+                            totals["invalid_json"] += 1
+                passed = totals["rows"] == 11622 and all(
+                    value == 0 for key, value in totals.items() if key not in ("rows", "valid_ids")
+                ) and totals["valid_ids"] == totals["rows"]
+                logging.getLogger(__name__).warning(
+                    "PDUFA_ARCHIVE_INTEGRITY %s",
+                    json.dumps({"database": database, "result": "PASS" if passed else "REVIEW_REQUIRED",
+                                **totals, "read_only": True, "trade_authorized": False}, sort_keys=True)
+                )
+            except Exception as exc:
+                logging.getLogger(__name__).error(
+                    "PDUFA_ARCHIVE_INTEGRITY_FAILED error_type=%s", type(exc).__name__
+                )
+        threading.Thread(target=verify_archive_integrity, daemon=True).start()
     yield
 
 
