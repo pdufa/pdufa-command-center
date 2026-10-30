@@ -81,6 +81,20 @@ def field_events(nct_id, dossier):
             "status": "AVAILABLE" if present_count == len(keys) else "PARTIAL",
             "research_running": False,
         }
+    # The catalog is a planned framework, not proof that its assessments ran.
+    # Emit all forty explicitly pending records; never infer scores from field presence.
+    for number in range(1, 41):
+        yield {
+            "type": "assessment", "nct_id": nct_id,
+            "assessment_id": f"S{number:02d}", "section": "science",
+            "status": "NOT_ASSESSED", "evidence_count": 0,
+            "spinner": False, "research_running": False,
+        }
+    yield {
+        "type": "progress", "nct_id": nct_id, "section": "science",
+        "available": 0, "total": 40, "status": "NOT_ASSESSED",
+        "research_running": False,
+    }
     yield {"type": "complete", "nct_id": nct_id, "decision": "ABSTAIN", "research_running": False}
 
 
