@@ -427,6 +427,8 @@ async def lifespan(app: FastAPI):
                     )
                     for nct, packed_payload, expected_hash in rows:
                         totals["rows"] += 1
+                        if totals["rows"] % 1000 == 0:
+                            logging.getLogger(__name__).warning("PDUFA_ARCHIVE_INTEGRITY_PROGRESS rows=%d", totals["rows"])
                         if not re.fullmatch(r"NCT\\d{8}", nct or ""):
                             totals["invalid_ids"] += 1
                         else:
