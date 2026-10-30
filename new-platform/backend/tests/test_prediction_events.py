@@ -46,3 +46,16 @@ def test_science_assessments_remain_unassessed_without_scientific_execution():
     assert all(e["status"] == "NOT_ASSESSED" and not e["spinner"] for e in assessments)
     science = [e for e in events if e["type"] == "progress" and e["section"] == "science"][0]
     assert (science["available"], science["total"]) == (0, 40)
+
+
+def test_empty_and_unadjudicated_science_does_not_count_as_evidence():
+    dossier = {
+        "nct_id": "NCT01234567",
+        "primary_endpoint_results": [],
+        "statistical_significance": {"reported_primary_analyses": [], "interpretation": "NOT_INFERRED"},
+        "clinical_effect_size": {"reported_comparative_estimates": [], "clinical_meaningfulness": "NOT_ADJUDICATED"},
+        "safety_findings": {},
+    }
+    events = list(field_events("NCT01234567", dossier))
+    clinical = [e for e in events if e["type"] == "progress" and e["section"] == "clinical_results"][0]
+    assert clinical["available"] == 0
