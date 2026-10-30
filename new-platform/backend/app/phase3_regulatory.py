@@ -367,6 +367,8 @@ def status(engine):
 
 def start(engine):
     """Separate daily worker; an index failure cannot stop CT.gov ingestion."""
+    if engine.dialect.name != "postgresql":
+        return
     initialize(engine)
     key = id(engine)
     with _startup_lock:
