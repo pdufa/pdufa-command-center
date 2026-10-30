@@ -68,7 +68,7 @@ def test_smoke_rejects_malformed_json_without_traceback(capsys):
 def test_smoke_rejects_invalid_utf8_without_traceback(capsys):
     class InvalidUtf8Response(Response):
         def read(self, _):
-            return b"\\xff\\xfe"
+            return bytes([0xFF, 0xFE])
     with patch.dict("os.environ", ENV), patch.object(smoke.urllib.request, "urlopen", return_value=InvalidUtf8Response("")):
         assert smoke.main() == 1
     captured = capsys.readouterr()
