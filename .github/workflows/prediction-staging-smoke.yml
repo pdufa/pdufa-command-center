@@ -1,0 +1,32 @@
+name: Authenticated prediction SSE smoke test
+on:
+  workflow_dispatch:
+    inputs:
+      nct_id:
+        description: 'Exact NCT identifier with an existing saved staging dossier'
+        required: true
+        type: string
+jobs:
+  staging-smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 3
+    defaults:
+      run:
+        working-directory: new-platform/backend
+    env:
+      PDUFA_API_BASE_URL: ${{ vars.PDUFA_STAGING_API_BASE_URL }}
+      PDUFA_INTERNAL_API_KEY: ${{ secrets.PDUFA_STAGING_INTERNAL_API_KEY }}
+      PDUFA_TEST_NCT: ${{ inputs.nct_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify staging configuration
+        run: |
+          test -n "$PDUFA_API_BASE_URL" || { echo "Missing PDUFA_STAGING_API_BASE_URL variable"; exit 2; }
+          test -n "$PDUFA_INTERNAL_API_KEY" || { echo "Missing PDUFA_STAGING_INTERNAL_API_KEY secret"; exit 2; }
+      - name: Authenticated read-only SSE smoke test
+        run: python scripts/smoke_prediction_sse.py
