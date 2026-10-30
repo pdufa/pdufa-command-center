@@ -1,6 +1,6 @@
 # Stage 1 / Benchmark 1 verification
 
-Final completion status: **INCOMPLETE**.
+Final completion status: **FINAL CHECKS PENDING** (authenticated live-browser workflow PASS; explicit tab navigation, active-browser reconnect and post-run dossier checksum not yet demonstrated).
 
 The authenticated backend live-streaming path is verified. The mandatory deployed
 frontend/browser population and reload checks remain unverified because the actual
@@ -357,3 +357,21 @@ were **NOT EXECUTED** in this attempt. Previous successful backend/dossier and
 regression evidence remains unchanged. No successful tests were repeated, no
 application code or production data changed, and all protected functionality and
 trading controls remain intact.
+
+
+## Authenticated live-browser success — October 30, 2026, 19:37 UTC
+
+**Observed GitHub Actions result: PASS (job 124272359051, workflow run 41108170021).**
+
+- The repository-secret preflight succeeded; the existing authorized dashboard credential was supplied to the runner without exposing its value.
+- Playwright installed and executed `node scripts/stage1_live_browser.cjs` against the deployed dashboard.
+- The actual job log emitted `Stage 1 live browser: PASS` at 2026-10-30T19:37:41Z, and the job concluded success.
+- The sanitized verification artifact was uploaded successfully: `stage1-live-browser-sanitized-result`, artifact ID `13006571443` (1103 bytes).
+- Workflow: https://github.com/pdufa/pdufa-command-center/actions/runs/41108170021
+- Artifact: https://github.com/pdufa/pdufa-command-center/actions/runs/41108170021/artifacts/13006571443
+
+The checked-in browser script requires successful normal login, an authenticated live NCT00116805 processing run, actual SSE responses, loading/verified observations, ordered persisted events, source citation/hash equality, bottom-up parent dependencies, browser display-to-snapshot equality, and a browser reload restoring the same run without an extra POST. It asserts that MAIN stays ABSTAIN. These assertions are supported by the script's PASS exit and the successful job; the sanitized artifact can supply per-check detail.
+
+**Completion gate: NOT YET FORMALLY CLOSED.** The currently checked-in browser script does not explicitly navigate to the PREDICTION tab or deliberately interrupt and resume an *active frontend browser SSE connection*. Its reload test restores an already completed run; the separate backend test previously verified Last-Event-ID reconnect. The live browser script also does not freshly re-read and compare the original saved dossier checksum *after* this run. These three explicit follow-up requirements must be implemented and observed before declaring the expanded Benchmark 1 acceptance criteria VERIFIED COMPLETE. Do not relabel the backend reconnect as a browser reconnect or an earlier dossier hash as a post-run hash.
+
+Protected Pipeline/GEM JR/GEM/WT restrictions, FS/FA presets, scientific scoring, scans, and trading controls remain outside the verification scope. No trading authorization is implied.
