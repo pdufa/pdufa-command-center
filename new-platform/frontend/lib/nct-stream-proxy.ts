@@ -6,7 +6,7 @@ const privateHeaders = { "Cache-Control": "private, no-store" };
 function error(message: string, status: number) {
   return NextResponse.json({ error: message }, { status, headers: privateHeaders });
 }
-export async function relayNctRun(req: NextRequest, nct: string, run?: string, events = false) {
+export async function relayNctRun(req: NextRequest, nct: string, run?: string, events = false, integrity = false) {
   if (!authConfigured() || !hasSession(req.cookies.get(COOKIE_NAME)?.value)) return error("Authentication required", 401);
   if (!NCT_PATTERN.test(nct) || (run !== undefined && !RUN_PATTERN.test(run))) return error("Invalid trial or processing run", 422);
   const create = run === undefined;
@@ -27,6 +27,7 @@ export async function relayNctRun(req: NextRequest, nct: string, run?: string, e
     body = JSON.stringify({ request_key: requestKey });
   } else {
     path += "/" + encodeURIComponent(run!);
+    if (integrity) path += "/dossier-integrity";
     if (events) {
       path += "/events";
       const after = req.nextUrl.searchParams.get("after");
