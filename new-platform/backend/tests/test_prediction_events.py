@@ -20,7 +20,7 @@ def test_sse_format_and_identity():
     stream = "".join(sse_lines("NCT01234567", {"nct_id": "NCT01234567"}))
     assert "event: started\n" in stream
     assert "event: complete\n" in stream
-    assert len([x for x in stream.splitlines() if x.startswith("data: ")]) == 21
+    assert len([x for x in stream.splitlines() if x.startswith("data: ")]) == 62
     with pytest.raises(ValueError):
         list(field_events("NCT01234567", {"nct_id": "NCT87654321"}))
 
@@ -36,3 +36,13 @@ def test_unverified_regulatory_placeholder_does_not_count_as_available():
     assert regulatory["available"] == 0
     assert regulatory["total"] == 4
     assert all(e["status"] == "UNAVAILABLE" for e in events if e["type"] == "leaf" and e.get("section") == "regulatory")
+
+
+def test_science_assessments_remain_unassessed_without_scientific_execution():
+    events = list(field_events("NCT01234567", {"nct_id": "NCT01234567"}))
+    assessments = [e for e in events if e["type"] == "assessment"]
+    assert len(assessments) == 40
+    assert [e["assessment_id"] for e in assessments] == [f"S{i:02d}" for i in range(1, 41)]
+    assert all(e["status"] == "NOT_ASSESSED" and not e["spinner"] for e in assessments)
+    science = [e for e in events if e["type"] == "progress" and e["section"] == "science"][0]
+    assert (science["available"], science["total"]) == (0, 40)
