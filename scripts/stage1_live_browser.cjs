@@ -240,6 +240,25 @@ async function main() {
     const observed = await page.evaluate(() => window.__stage1LiveObservation);
     for (const [key, value] of Object.entries(observed || {})) requireCheck(value === true, 'observed_' + key);
     requireCheck(network.posts === 1 && network.eventResponses > 0 && network.badEventContentTypes === 0, 'browser_network_is_authenticated_sse');
+    // Independently exercise browser-context SSE cursor resume against the same
+    // authenticated persisted run. This verifies HTTP reconnection and dedupe;
+    // it does not simulate a mid-stream UI network outage.
+    phase = 'browser_context_sse_resume';
+    const sseUrl = BASE + '/api/nct-stream/' + NCT + '/runs/' + run.run_id + '/events';
+    const firstSse = await context.request.get(sseUrl, { timeout: 30000 });
+    requireCheck(firstSse.status() === 200 && /text\\/event-stream/i.test(firstSse.headers()['content-type'] || ''), 'browser_context_sse_initial_200');
+    const initialText = await firstSse.text();
+    const ids = [...initialText.matchAll(/^id:\\s*(\\d+)\\s*$/gm)].map(m => Number(m[1]));
+    requireCheck(ids.length > 1 && ids.every((id, i) => i === 0 || id > ids[i - 1]), 'browser_context_sse_ordered_ids');
+    const cursor = ids[Math.floor(ids.length / 2) - 1];
+    const resumedSse = await context.request.get(sseUrl, { headers: { 'Last-Event-ID': String(cursor) }, timeout: 30000 });
+    requireCheck(resumedSse.status() === 200, 'browser_context_sse_resume_200');
+    const resumedText = await resumedSse.text();
+    const resumedIds = [...resumedText.matchAll(/^id:\\s*(\\d+)\\s*$/gm)].map(m => Number(m[1]));
+    requireCheck(resumedIds.length > 0 && resumedIds.every(id => id > cursor), 'browser_context_sse_resume_no_duplicate_ids');
+    requireCheck(resumedIds.at(-1) === ids.at(-1), 'browser_context_sse_resume_reaches_terminal');
+    result.counts.browser_context_resumed_events = resumedIds.length;
+
     phase = 'persisted_snapshot_comparison';
     const snapshotResponse = await context.request.get(BASE + '/api/nct-stream/' + NCT + '/runs/' + run.run_id, { timeout: 30000 });
     requireCheck(snapshotResponse.status() === 200, 'authenticated_snapshot_200');
