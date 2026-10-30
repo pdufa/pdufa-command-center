@@ -1,0 +1,58 @@
+name: Stage 1 authorized live browser verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/stage1_live_browser.cjs'
+      - '.github/workflows/stage1-live-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-stage1-live-browser
+  cancel-in-progress: false
+
+jobs:
+  authorized-live-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Require the existing authorized application credential
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: |
+          if [ -z "${DASHBOARD_PASSWORD:-}" ]; then
+            echo 'INCOMPLETE: missing GitHub Actions secret DASHBOARD_PASSWORD' >> "$GITHUB_STEP_SUMMARY"
+            echo 'INCOMPLETE: missing GitHub Actions secret DASHBOARD_PASSWORD' >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned Playwright in runner temporary storage
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pdufa-stage1-browser" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/pdufa-stage1-browser/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Authenticate normally and verify the actual live pipeline
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          NODE_PATH: ${{ runner.temp }}/pdufa-stage1-browser/node_modules
+          STAGE1_RESULT_PATH: ${{ runner.temp }}/pdufa-stage1-live-browser-result.json
+        run: node scripts/stage1_live_browser.cjs
+
+      - name: Preserve sanitized verification results only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage1-live-browser-sanitized-result
+          path: ${{ runner.temp }}/pdufa-stage1-live-browser-result.json
+          if-no-files-found: ignore
+          retention-days: 14
