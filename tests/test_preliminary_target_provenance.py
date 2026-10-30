@@ -44,3 +44,29 @@ def test_application_review_requires_exact_date_and_document_fields():
     assert review_target_application_evidence(row, evidence)["review_status"] == "INCOMPLETE_EVIDENCE"
     evidence.pop("application_id")
     assert "application_id" in review_target_application_evidence(row, evidence)["missing_review_fields"]
+
+
+def test_application_review_rejects_mismatched_document_url():
+    from research.preliminary_target_provenance import review_target_application_evidence
+    row = {"pdufaDate": "2026-12-01", "fdaSource": "https://www.sec.gov/Archives/one"}
+    evidence = {"document_url": "https://www.sec.gov/Archives/two",
+                "document_date": "2026-10-01", "drug": "ExampleDrug",
+                "indication": "Example indication", "application_id": "NDA 123456",
+                "target_date": "2026-12-01", "source_excerpt": "PDUFA goal date"}
+    result = review_target_application_evidence(row, evidence)
+    assert result["document_url_matches_source"] is False
+    assert result["review_status"] == "INCOMPLETE_EVIDENCE"
+    assert result["prediction_status"] == "ABSTAIN"
+
+
+def test_application_review_rejects_invalid_document_date():
+    from research.preliminary_target_provenance import review_target_application_evidence
+    row = {"pdufaDate": "2026-12-01", "fdaSource": "https://www.sec.gov/Archives/one"}
+    evidence = {"document_url": row["fdaSource"],
+                "document_date": "2026-02-30", "drug": "ExampleDrug",
+                "indication": "Example indication", "application_id": "NDA 123456",
+                "target_date": "2026-12-01", "source_excerpt": "PDUFA goal date"}
+    result = review_target_application_evidence(row, evidence)
+    assert result["document_date_valid"] is False
+    assert result["review_status"] == "INCOMPLETE_EVIDENCE"
+    assert result["document_content_verified"] is False
