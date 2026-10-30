@@ -71,3 +71,27 @@ def test_readiness_inventory_reports_missing_fields_without_claiming_assessment(
     assert len(readiness[0]["missing_fields"]) == 10
     assert readiness[0]["assessments_completed"] == 0
     assert readiness[0]["decision"] == "ABSTAIN"
+
+
+def test_invalid_nct_is_rejected_before_streaming():
+    with pytest.raises(ValueError, match="Invalid NCT"):
+        list(field_events("NCT123", {"nct_id": "NCT123"}))
+
+
+def test_complete_evidence_inventory_does_not_authorize_prediction():
+    verified = {"status": "VERIFIED", "source_url": "https://example.org/source",
+                "source_document_sha256": "a" * 64, "value": "documented"}
+    keys = (
+        "primary_endpoints", "primary_endpoint_results", "statistical_significance",
+        "clinical_effect_size", "safety_findings", "serious_adverse_events",
+        "study_completion_status", "fda_regulatory_pathway",
+        "regulatory_submission_evidence", "pdufa_date",
+    )
+    dossier = {"nct_id": "NCT01234567", **{key: verified for key in keys}}
+    events = list(field_events("NCT01234567", dossier))
+    readiness = next(e for e in events if e["type"] == "readiness")
+    assert readiness["status"] == "EVIDENCE_PRESENT_NOT_ADJUDICATED"
+    assert readiness["evidence_fields_present"] == 10
+    assert readiness["missing_fields"] == []
+    assert readiness["assessments_completed"] == 0
+    assert events[-1]["decision"] == "ABSTAIN"
