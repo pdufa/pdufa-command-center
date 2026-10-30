@@ -393,6 +393,18 @@ async def lifespan(app: FastAPI):
     if _DB_STATE["available"] and os.getenv("PDUFA_RECONCILIATION_SELFTEST", "1") == "1":
         from .reconciliation_selftest import verify_live_reconciliation
         threading.Thread(target=verify_live_reconciliation, args=(ENGINE, ProgramIdentity), daemon=True).start()
+    if _DB_STATE["available"]:
+        try:
+            import json
+            import logging
+            logging.getLogger(__name__).warning(
+                "PDUFA_STORAGE_CENSUS %s", json.dumps(internal_storage_census(), sort_keys=True)
+            )
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).error(
+                "PDUFA_STORAGE_CENSUS_FAILED error_type=%s", type(exc).__name__
+            )
     yield
 
 
