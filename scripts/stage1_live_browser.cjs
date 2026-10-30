@@ -247,7 +247,35 @@ async function main() {
     const run = await created.json();
     requireCheck(run.nct_id === NCT && /^[A-Za-z0-9_-]{8,100}$/.test(run.run_id || '') && typeof run.dossier_id === 'string', 'new_run_identity');
     result.run_id = run.run_id;
+    // Interrupt the actual browser page's active SSE transport once, while
+    // processing is in flight. The client must recover and finish from its
+    // persisted cursor; the later snapshot/display checks detect duplicates.
+    phase = 'active_frontend_sse_interruption';
+    let interruptedActiveStream = false;
+    const activeSse = page.waitForResponse(response => {
+      const url = new URL(response.url());
+      return url.pathname.endsWith('/runs/' + run.run_id + '/events') && response.status() === 200;
+    }, { timeout: 45000 });
+    const liveResponse = await activeSse;
+    const liveRequest = liveResponse.request();
+    // Route interception must be installed before starting the run to affect
+    // an already active request; aborting here via CDP targets the exact request.
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('Network.enable');
+    // CDP request interception cannot retroactively pause an existing stream.
+    // Instead simulate an actual transient browser network outage. This is
+    // deliberately performed only while the UI has not reached terminal state.
+    const terminalBeforeOutage = await section.locator('[role="status"]').filter({ hasText: 'Processing run completed.' }).count();
+    if (!terminalBeforeOutage) {
+      await cdp.send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 });
+      await page.waitForTimeout(1200);
+      await cdp.send('Network.emulateNetworkConditions', { offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+      interruptedActiveStream = true;
+    }
+    await cdp.detach();
+    requireCheck(interruptedActiveStream, 'active_frontend_sse_interrupted_before_terminal');
     await section.locator('[role="status"]').filter({ hasText: 'Processing run completed.' }).waitFor({ state: 'visible', timeout: 150000 });
+    result.checks.active_frontend_sse_recovered_to_terminal = true;
     const observed = await page.evaluate(() => window.__stage1LiveObservation);
     for (const [key, value] of Object.entries(observed || {})) requireCheck(value === true, 'observed_' + key);
     requireCheck(network.posts === 1 && network.eventResponses > 0 && network.badEventContentTypes === 0, 'browser_network_is_authenticated_sse');
