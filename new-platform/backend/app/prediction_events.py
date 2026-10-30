@@ -13,6 +13,19 @@ FIELDS = (
 )
 
 
+def evidence_available(value):
+    """A populated placeholder or unverified regulatory claim is not verified evidence."""
+    if value in (None, "", []):
+        return False
+    if isinstance(value, dict):
+        status = value.get("status")
+        if status is not None and status != "VERIFIED":
+            return False
+        if status == "VERIFIED":
+            return bool(value.get("source_url") and value.get("source_document_sha256") and value.get("value") is not None)
+    return True
+
+
 def field_events(nct_id, dossier):
     if not re.fullmatch(r"NCT[0-9]{8}", nct_id):
         raise ValueError("Invalid NCT identifier")
@@ -21,11 +34,12 @@ def field_events(nct_id, dossier):
     yield {"type": "started", "nct_id": nct_id, "mode": "SAVED_EVIDENCE_REPLAY", "research_running": False}
     for key, label in FIELDS:
         value = dossier.get(key)
-        present = value not in (None, "", [])
+        present = evidence_available(value)
         yield {
             "type": "leaf",
             "nct_id": nct_id,
             "node_id": key,
+            "section": "trial_identity",
             "label": label,
             "level": 4,
             "status": "AVAILABLE" if present else "UNAVAILABLE",
@@ -33,7 +47,7 @@ def field_events(nct_id, dossier):
             "research_running": False,
             "spinner": False,
         }
-    available = sum(dossier.get(key) not in (None, "", []) for key, _ in FIELDS)
+    available = sum(evidence_available(dossier.get(key)) for key, _ in FIELDS)
     yield {
         "type": "progress",
         "nct_id": nct_id,
@@ -52,7 +66,7 @@ def field_events(nct_id, dossier):
         present_count = 0
         for key in keys:
             value = dossier.get(key)
-            present = value not in (None, "", [])
+            present = evidence_available(value)
             if present:
                 present_count += 1
             yield {
