@@ -33,6 +33,16 @@ def field_events(nct_id, dossier):
             "research_running": False,
             "spinner": False,
         }
+    available = sum(dossier.get(key) not in (None, "", []) for key, _ in FIELDS)
+    yield {
+        "type": "progress",
+        "nct_id": nct_id,
+        "section": "trial_identity",
+        "available": available,
+        "total": len(FIELDS),
+        "status": "AVAILABLE" if available == len(FIELDS) else "PARTIAL",
+        "research_running": False,
+    }
     yield {"type": "complete", "nct_id": nct_id, "decision": "ABSTAIN", "research_running": False}
 
 
