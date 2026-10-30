@@ -248,15 +248,23 @@ async function main() {
     const firstSse = await context.request.get(sseUrl, { timeout: 30000 });
     requireCheck(firstSse.status() === 200 && (firstSse.headers()['content-type'] || '').toLowerCase().includes('text/event-stream'), 'browser_context_sse_initial_200');
     const initialText = await firstSse.text();
-    const ids = [...initialText.matchAll(/^id:\s*(\d+)\s*$/gm)].map(m => Number(m[1]));
-    requireCheck(ids.length > 1 && ids.every((id, i) => i === 0 || id > ids[i - 1]), 'browser_context_sse_ordered_ids');
-    const cursor = ids[Math.floor(ids.length / 2) - 1];
-    const resumedSse = await context.request.get(sseUrl, { headers: { 'Last-Event-ID': String(cursor) }, timeout: 30000 });
+    // SSE IDs are opaque cursor strings, not necessarily decimal integers.
+    // Parse event blocks and compare replay to the original ordered suffix.
+    const eventIds = body => body.split(/\\r?\\n\\r?\\n/).map(block => {
+      const match = block.match(/^id:[ \\t]*(.+?)\\r?$/m);
+      return match ? match[1].trim() : null;
+    }).filter(Boolean);
+    const ids = eventIds(initialText);
+    result.counts.browser_context_initial_events = ids.length;
+    requireCheck(ids.length > 1 && new Set(ids).size === ids.length, 'browser_context_sse_ordered_ids');
+    const midpoint = Math.floor(ids.length / 2) - 1;
+    const cursor = ids[midpoint];
+    const resumedSse = await context.request.get(sseUrl, { headers: { 'Last-Event-ID': cursor }, timeout: 30000 });
     requireCheck(resumedSse.status() === 200, 'browser_context_sse_resume_200');
     const resumedText = await resumedSse.text();
-    const resumedIds = [...resumedText.matchAll(/^id:\s*(\d+)\s*$/gm)].map(m => Number(m[1]));
-    requireCheck(resumedIds.length > 0 && resumedIds.every(id => id > cursor), 'browser_context_sse_resume_no_duplicate_ids');
-    requireCheck(resumedIds.at(-1) === ids.at(-1), 'browser_context_sse_resume_reaches_terminal');
+    const resumedIds = eventIds(resumedText);
+    requireCheck(resumedIds.length > 0 && new Set(resumedIds).size === resumedIds.length && !resumedIds.includes(cursor), 'browser_context_sse_resume_no_duplicate_ids');
+    requireCheck(JSON.stringify(resumedIds) === JSON.stringify(ids.slice(midpoint + 1)), 'browser_context_sse_resume_reaches_terminal');
     result.counts.browser_context_resumed_events = resumedIds.length;
 
     phase = 'persisted_snapshot_comparison';
