@@ -320,3 +320,21 @@ def test_aggregate_fda_evidence_diagnostics_do_not_promote_prediction():
     assert result["dated_records_missing_accepted_verification_status"] == 1
     assert result["blocked"] == 4
     assert result["prediction_status"] == "ABSTAIN"
+
+
+def test_sponsor_lead_aggregate_count_does_not_change_prediction_scope():
+    def page(offset, limit, version):
+        return {"version": "v-sponsor", "asOf": "2026-10-29", "total": 2,
+                "offset": offset, "limit": limit, "nextOffset": None,
+                "rows": [
+                    {"programId": "PDUFA-SPONSOR-001", "pdufaDate": "2026-12-01",
+                     "sponsorSource": "https://www.sec.gov/Archives/edgar/data/1/report.htm"},
+                    {"programId": "PDUFA-SPONSOR-002", "pdufaDate": "2026-12-02",
+                     "sponsorSource": "https://sec.gov.evil.example/filing"},
+                ]}
+    result = triage_workspace_pages(page, page_size=2, now="2026-10-29T18:00:00Z")
+    assert result["sponsor_disclosure_leads"] == 1
+    assert result["fda_target_evidence_present"] == 0
+    assert result["candidate_for_evidence_review"] == 0
+    assert result["blocked"] == 2
+    assert result["prediction_status"] == "ABSTAIN"
