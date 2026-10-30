@@ -81,6 +81,24 @@ def field_events(nct_id, dossier):
             "status": "AVAILABLE" if present_count == len(keys) else "PARTIAL",
             "research_running": False,
         }
+    # Readiness is an inventory of evidence, not an adjudication or FDA forecast.
+    evidence_keys = (
+        "primary_endpoints", "primary_endpoint_results", "statistical_significance",
+        "clinical_effect_size", "safety_findings", "serious_adverse_events",
+        "study_completion_status", "fda_regulatory_pathway",
+        "regulatory_submission_evidence", "pdufa_date",
+    )
+    missing = [key for key in evidence_keys if not evidence_available(dossier.get(key))]
+    yield {
+        "type": "readiness", "nct_id": nct_id, "section": "science",
+        "status": "EVIDENCE_INCOMPLETE" if missing else "EVIDENCE_PRESENT_NOT_ADJUDICATED",
+        "evidence_fields_present": len(evidence_keys) - len(missing),
+        "evidence_fields_total": len(evidence_keys),
+        "missing_fields": missing,
+        "assessments_completed": 0,
+        "decision": "ABSTAIN",
+        "research_running": False,
+    }
     # The catalog is a planned framework, not proof that its assessments ran.
     # Emit all forty explicitly pending records; never infer scores from field presence.
     for number in range(1, 41):
