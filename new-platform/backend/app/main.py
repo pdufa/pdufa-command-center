@@ -434,6 +434,28 @@ def health():
     }
 
 
+@app.get("/api/internal/storage-census", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def internal_storage_census():
+    """Read-only database identity and archive counts; never expose connection strings."""
+    from sqlalchemy import text
+    with ENGINE.connect() as connection:
+        with connection.begin():
+            if ENGINE.dialect.name == "postgresql":
+                connection.execute(text("SET TRANSACTION READ ONLY"))
+                database = connection.execute(text("SELECT current_database()")).scalar_one()
+            else:
+                database = "non_postgresql"
+            records = connection.execute(text("SELECT COUNT(*) FROM full_trial_records")).scalar_one()
+            downloads = connection.execute(text("SELECT COUNT(*) FROM full_trial_download")).scalar_one()
+            statuses = [dict(row._mapping) for row in connection.execute(
+                text("SELECT status, COUNT(*) AS entries FROM full_trial_download GROUP BY status ORDER BY status")
+            )]
+    return {"database": database, "storage_kind": ENGINE.dialect.name,
+            "physical_trial_records": records, "download_tracking_rows": downloads,
+            "download_statuses": statuses, "read_only": True,
+            "scientific_analysis_complete": False, "trade_authorized": False}
+
+
 @app.get("/api/candidate-assessments", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def candidate_assessment_index():
     from .assessment_service import get_index
