@@ -49,7 +49,11 @@ def main():
                     else:
                         seen.add(identifier)
                         counts["unique_valid_nct"] += 1
-        print(json.dumps({"audit": "master_trial_identity", "counts": dict(counts), "scientific_analysis_complete": False, "trade_authorized": False}, sort_keys=True))
+                result = {key: counts[key] for key in ("rows", "missing_nct", "invalid_nct", "duplicate_nct", "unique_valid_nct")}
+                download_table = connection.execute(text("SELECT to_regclass('full_trial_download')")).scalar_one()
+                if download_table is not None:
+                    result["download_statuses"] = [dict(row._mapping) for row in connection.execute(text("SELECT status, COUNT(*) AS entries FROM full_trial_download GROUP BY status ORDER BY status"))]
+                print(json.dumps({"audit": "master_trial_identity", "database": identity[0], "counts": result, "scientific_analysis_complete": False, "trade_authorized": False}, sort_keys=True))
     finally:
         engine.dispose()
 
