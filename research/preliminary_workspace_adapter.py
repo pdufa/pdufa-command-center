@@ -122,6 +122,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
     seen_program_ids = set()
     seen_source_ids = set()
     cap_evidence_count = 0
+    sponsor_lead_count = 0
     fda_evidence_count = 0
     raw_target_count = 0
     valid_target_count = 0
@@ -175,6 +176,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         candidates.append(mapped["candidate"])
         cap_evidence_count += bool(mapped["cap_source_present"])
         fda_evidence_count += bool(mapped["fda_source_present"])
+        sponsor_lead_count += bool(mapped["sponsor_disclosure_lead"])
     reports = []
     for start in range(0, len(candidates), 10000):
         reports.append(triage_pipeline_export(candidates[start:start + 10000]))
@@ -224,6 +226,7 @@ def triage_workspace_pages(get_page, *, page_size=100, max_rows=20000,
         "field_mapping_applied": True,
         "market_cap_evidence_present": cap_evidence_count,
         "fda_target_evidence_present": fda_evidence_count,
+        "sponsor_disclosure_leads": sponsor_lead_count,
         "raw_target_date_present": raw_target_count,
         "valid_target_date_present": valid_target_count,
         "fda_host_evidence_present": fda_host_count,
