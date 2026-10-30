@@ -314,3 +314,46 @@ evidence remains intact. All protected restrictions, associations, scientific
 methodology, schedules and trading controls remain unchanged. Only this report was
 updated. Stage 1 may be marked VERIFIED COMPLETE only after every mandatory
 authenticated browser check actually passes.
+
+## Final authorization recheck — 2026-10-30T19:08:10Z
+
+**Completion gate: FAIL. Stage 1 status: INCOMPLETE (credential blocked).**
+
+The browser-only [workflow run 41108170021, attempt 4](https://github.com/pdufa/pdufa-command-center/actions/runs/41108170021/attempts/4)
+actually completed FAILURE at 2026-10-30T19:08:15Z. Its
+[job 124258904087](https://github.com/pdufa/pdufa-command-center/actions/runs/41108170021/job/124258904087)
+failed at 2026-10-30T19:08:10.8508948Z with
+`INCOMPLETE: missing GitHub Actions secret DASHBOARD_PASSWORD`.
+The job exited 1 before checkout, browser installation or login.
+
+Starting repository revision was `df13425ac3c127880d591ceec8da096f918af067`.
+The rerun uses the unchanged main-branch browser workflow/script revision
+`144f8c854b05918a2459500c67084037e6c6a07b`. The selected NCT remains
+`NCT00116805`; no new authenticated trial run was created.
+
+The current workflow correctly references `secrets.DASHBOARD_PASSWORD`.
+The GitHub connector explicitly excludes secrets APIs and offers no secret-name
+listing tool. Therefore repository-level secret existence cannot be listed with
+the available connection. The executed preflight establishes that the binding is
+empty/unavailable to this job, not whether a secret exists elsewhere. The workflow
+has no environment binding; an environment-only secret will not reach it.
+
+**Required manual configuration:** The authorized owner must obtain the existing
+production dashboard login password from their approved credential store, then
+open [Settings → Secrets and variables → Actions](https://github.com/pdufa/pdufa-command-center/settings/secrets/actions),
+choose **New repository secret**, and save it with exact name
+**`DASHBOARD_PASSWORD`**. If that repository secret already exists, the owner
+should correct its availability/configuration there using the existing password;
+do not replace the application's password. An organization secret must grant this
+repository access. Do not paste credentials into chat.
+
+Then run [Stage 1 authorized live browser verification](https://github.com/pdufa/pdufa-command-center/actions/workflows/stage1-live-browser.yml)
+on **main** and inspect its actual assertions and sanitized results. A dispatch or
+successful preflight alone is insufficient.
+
+Authentication, live frontend streaming/population, persistence after browser
+refresh, browser reconnection/deduplication and saved-dossier browser verification
+were **NOT EXECUTED** in this attempt. Previous successful backend/dossier and
+regression evidence remains unchanged. No successful tests were repeated, no
+application code or production data changed, and all protected functionality and
+trading controls remain intact.
