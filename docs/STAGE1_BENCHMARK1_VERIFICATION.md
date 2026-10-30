@@ -266,3 +266,51 @@ the live-browser job.** Backend live execution and automated regressions pass;
 deployed authenticated browser authentication, population and reload remain
 pending. Only after the authorized workflow succeeds and its evidence is checked
 may Stage 1 be marked VERIFIED COMPLETE.
+
+## Benchmark 1 final-completion credential check — 2026-10-30
+
+Status remains **INCOMPLETE**. No application code changed and none of the
+previously passing regression suites was rerun during this check.
+
+- Starting report/application revision: `d6b5323bff49ca0d7ad60ad0b5b600797d9a0da9`.
+- Authorized browser workflow: [41108170021, attempt 3](https://github.com/pdufa/pdufa-command-center/actions/runs/41108170021/attempts/3).
+- Actual job: [124254771378](https://github.com/pdufa/pdufa-command-center/actions/runs/41108170021/job/124254771378).
+- Credential preflight executed at **2026-10-30T19:00:23.5219863Z** and exited 1:
+  `INCOMPLETE: missing GitHub Actions secret DASHBOARD_PASSWORD`.
+- `secrets.DASHBOARD_PASSWORD` was empty/unavailable to that job. The existing
+  workflow references the correct exact name. It declares no GitHub environment,
+  so an environment-only secret cannot supply this binding. Repository secrets
+  or organization secrets granting this repository access are supported.
+- The managed execution environment also has no ready credential/session binding.
+  Secret values were not requested, retrieved, generated or guessed.
+- Vercel production alias was inspected: READY deployment
+  `dpl_CFvzLkWuFjQzKzYqNYXdyDpkFiiF`, commit `d6b5323b`,
+  https://pdufa-new-dashboard-ll9th5wqx-pdufa.vercel.app .
+- Render deployment `dep-dbie5duk1f9s73ej4uhg` remains LIVE for `92bb782a`.
+
+**Precise user action:** In repository Settings → Secrets and variables → Actions,
+create repository secret **`DASHBOARD_PASSWORD`** using the **existing production
+dashboard login password** supplied securely by the authorized owner from their
+approved credential store. It must match the production dashboard's configured
+login password. Do not use the session signing key or backend internal API key.
+Do not paste the credential into chat. An approved organization secret with this
+repository selected is also sufficient. Then rerun **Stage 1 authorized live
+browser verification**, branch **main**, using the workflow link above.
+
+No browser login, PREDICTION-tab interaction, live frontend population, refresh or
+frontend reconnect check executed in this attempt. Source inspection shows
+application login uses same-origin POST /api/auth, a successful JSON response and
+an HttpOnly cookie followed by client rendering; an HTTP redirect is not required
+by that application flow. Actual deployed authentication/redirect behavior remains
+unverified because the job stopped before login.
+
+The existing browser script also does not explicitly select the PREDICTION tab or
+force a frontend reconnect. Those requested live checks must be added/executed and
+their results reviewed after authorized access is available; existing backend
+resume and regression results must not be relabeled as those browser observations.
+
+All prior NCT00116805/backend persistence/dossier preservation and regression
+evidence remains intact. All protected restrictions, associations, scientific
+methodology, schedules and trading controls remain unchanged. Only this report was
+updated. Stage 1 may be marked VERIFIED COMPLETE only after every mandatory
+authenticated browser check actually passes.
