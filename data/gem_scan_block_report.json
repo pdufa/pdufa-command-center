@@ -33,17 +33,17 @@
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-30T03:22:58.318978+00:00",
-    "matched_posted_results": 96,
+    "finished_at": "2026-10-31T03:22:29.643175+00:00",
+    "matched_posted_results": 101,
     "new_records": 0,
     "stored_results": 2494,
-    "studies_checked": 3969
+    "studies_checked": 4002
   },
   "collector_performed": true,
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-30T03:25:14.818597+00:00",
+  "generated_at_utc": "2026-10-31T03:24:51.947550+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -55,10 +55,10 @@
   "historical_return_edge_validated": false,
   "insider_form4": {
     "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-    "issuers_complete": 29,
+    "issuers_complete": 30,
     "issuers_targeted": 32,
-    "matched_program_rows": 292,
-    "source_errors": 3,
+    "matched_program_rows": 301,
+    "source_errors": 2,
     "with_open_market_purchases": 3
   },
   "label": "BLOCK 4 \u2014 GEMS",
@@ -75,14 +75,14 @@
     "Post-Financing": 0
   },
   "research_status": "HOLD_STALE_OR_MISSING_SOURCES",
-  "run_id": 40996378340,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40996378340",
+  "run_id": 41163598594,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41163598594",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
   "sec_source_health": {
     "blocked_records": 38,
-    "last_check_age_days": 24,
+    "last_check_age_days": 25,
     "source_completeness_not_guaranteed": true,
     "status": "PARTIAL_STALE_OR_BLOCKED"
   },
