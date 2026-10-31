@@ -586,6 +586,7 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             # Classify only explicitly labeled document types in structured
             # stored evidence. This is a candidate classification, not review.
             candidate_kind = None
+            payload = None
             if source["stored_document_integrity"] == "MATCH" and isinstance(document, str):
                 try:
                     payload = json.loads(document)
@@ -597,6 +598,22 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                                 candidate_kind = "SAP" if normalized == "STATISTICAL_ANALYSIS_PLAN" else normalized
                 except (ValueError, TypeError):
                     pass
+            # Extract only explicitly supplied scalar fields. This is
+            # unadjudicated evidence, never a verified statistical gate.
+            permitted = (
+                ("protocol_endpoint", "endpoint_prespecification", "analysis_population")
+                if candidate_kind == "PROTOCOL" else
+                ("multiplicity_strategy", "analysis_population", "missing_data_method")
+                if candidate_kind == "SAP" else ()
+            )
+            extracted = {}
+            if candidate_kind and isinstance(payload, dict):
+                for field in permitted:
+                    value = payload.get(field)
+                    if isinstance(value, str) and 0 < len(value.strip()) <= 1000:
+                        extracted[field] = value.strip()
+            source["candidate_statistical_fields"] = extracted
+            source["candidate_fields_review_status"] = "NOT_ADJUDICATED"
             source["candidate_document_type"] = candidate_kind
             # Candidate presence is not a verified scientific finding.
             # Preserve a reviewable trail without exposing raw source text.
