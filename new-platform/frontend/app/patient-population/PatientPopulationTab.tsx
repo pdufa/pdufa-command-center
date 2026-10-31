@@ -79,13 +79,13 @@ export default function PatientPopulationTab() {
 
   const matches = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return (data || []).filter(row => !needle ||
-      [row.trial.nctId, row.trial.ticker, row.trial.company,
-        registry[row.trial.nctId]?.status === "ready"
-          ? registryConditions(registry[row.trial.nctId].record) : "",
-        registry[row.trial.nctId]?.status === "ready"
-          ? registryDrugs(registry[row.trial.nctId].record) : "",
-      ].join(" ").toLowerCase().includes(needle));
+    return (data || []).filter(row => {
+      const source = registry[row.trial.nctId];
+      return !needle || [row.trial.nctId, row.trial.ticker, row.trial.company,
+        source?.status === "ready" ? registryConditions(source.record) : "",
+        source?.status === "ready" ? registryDrugs(source.record) : "",
+      ].join(" ").toLowerCase().includes(needle);
+    });
   }, [data, query, registry]);
 
   const pageCount = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
