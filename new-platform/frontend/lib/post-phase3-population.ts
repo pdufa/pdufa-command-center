@@ -39,7 +39,7 @@ function totalFirst12Months(record: TherapyCostRegimen | null | undefined): numb
   if (!record || !record.therapy?.trim() || !record.regimen?.trim()
       || !record.priceBasis || !record.evidenceStatus
       || !record.sourceUrl?.startsWith("https://")
-      || !/^\\d{4}-\\d{2}-\\d{2}$/.test(record.sourceDate || "")) return null;
+      || !/^\d{4}-\d{2}-\d{2}$/.test(record.sourceDate || "")) return null;
   const {drugCostFirst12MonthsUsd:drug,adminMonitoringFirst12MonthsUsd:admin} = record;
   if (typeof drug !== "number" || !Number.isFinite(drug) || drug < 0
       || typeof admin !== "number" || !Number.isFinite(admin) || admin < 0) return null;
