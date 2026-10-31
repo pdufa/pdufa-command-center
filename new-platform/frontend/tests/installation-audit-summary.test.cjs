@@ -39,9 +39,9 @@ test("published snapshot counts partial, implementation and unknown proof separa
   assert.equal(total.gates,59);
   assert.equal(total.excluded,1);
   assert.equal(total.implementationSignals,9);
-  assert.equal(total.partial,9);
-  assert.equal(total.unverified,40);
-  assert.equal(total.independentlyVerified,1);
+  assert.equal(total.partial,10);
+  assert.equal(total.unverified,38);
+  assert.equal(total.independentlyVerified,2);
   assert.equal(total.accepted,0);
   assert.equal(total.gates, total.implementationSignals+total.partial+total.unverified+total.independentlyVerified);
   assert.equal(groups.reduce((n,g)=>n+g.totals.gates,0),59);
@@ -81,7 +81,7 @@ test("successful research cannot hide an unverified technical component or a mis
   const researchReady = items.map(item=>research.has(item.component) ? {...item,code:"Verified",deployment:"Verified",runtime:"Verified",evidence:"Verified"} : item);
   assert.equal(mainTechnicalAcceptance(researchReady).ready,false);
   assert.equal(mainTechnicalAcceptance(researchReady).accepted,0);
-  for (const component of ["Pipeline","GEM JR / GEM / WT","Backup & Recovery","Nightly Scanning"]) {
+  for (const component of ["Pipeline","POOL / PIPELINE","Backup & Recovery","Nightly Scanning"]) {
     const inputs=items.map(item=>({...item,code:"Verified",deployment:"Verified",runtime:item.component===component ? "Not verified" : "Verified",evidence:"Verified"}));
     assert.deepEqual(mainTechnicalAcceptance(inputs).open,[component]);
   }
