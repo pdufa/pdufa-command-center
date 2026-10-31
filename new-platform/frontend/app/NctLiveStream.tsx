@@ -216,6 +216,17 @@ export default function NctLiveStream() {
     return () => { active = false; };
   }, [run?.nct_id, run?.terminal]);
   type SourceRecord = { dossier_id:string;source_evidence_id:string;created_at:string;url?:string|null;retrieved_at?:string|null;verification_status?:string|null;sha256?:string|null;publisher_kind?:string|null;provenance_complete?:boolean;stored_document_integrity?:string;document_review_status?:string;document_classification?:string };
+  const [statisticalComparisons, setStatisticalComparisons] = useState<{field:string;status:string;declaration_sources:string[];reported_field_present:boolean}[] | null>(null);
+  useEffect(() => {
+    if (!run?.nct_id) { setStatisticalComparisons(null); return; }
+    let active = true;
+    setStatisticalComparisons(null);
+    fetch("/api/phase3-trials/" + encodeURIComponent(run.nct_id) + "/statistical-consistency", {cache:"no-store"})
+      .then(async response => { if (!response.ok) throw new Error("Comparison unavailable"); return response.json(); })
+      .then(data => { if (active) setStatisticalComparisons(Array.isArray(data.comparisons) ? data.comparisons : []); })
+      .catch(() => { if (active) setStatisticalComparisons(null); });
+    return () => { active = false; };
+  }, [run?.nct_id, run?.terminal]);
   const [sourceInventory, setSourceInventory] = useState<SourceRecord[] | null>(null);
   useEffect(() => {
     if (!run?.nct_id) { setSourceInventory(null); return; }
@@ -293,6 +304,14 @@ export default function NctLiveStream() {
           <p>SHA-256: <code>{source.sha256 || "not available"}</code></p>
           {source.url?.startsWith("https://") ? <p><a href={source.url} target="_blank" rel="noopener noreferrer">Open original source</a></p> : null}
         </details>) : <p>No saved source records available to display.</p>}
+      </details>
+      <details><summary>SCIENCE — protocol/SAP versus results consistency</summary>
+        <p className="subtle">Textual consistency screen only; scientific adjudication NOT COMPLETED. FDA decision ABSTAIN.</p>
+        {statisticalComparisons?.length ? statisticalComparisons.map(item => <p key={item.field}>
+          <strong>{item.field.replaceAll("_", " ")}:</strong> {item.status.replaceAll("_", " ")}
+          {" · "}Declaration: {item.declaration_sources.join(", ") || "missing"}
+          {" · "}Reported: {item.reported_field_present ? "present" : "missing"}
+        </p>) : <p>Comparisons unavailable or not yet loaded.</p>}
       </details>
       <details open><summary>SCIENCE — collected evidence</summary>
         {nodes.filter(n=>n.level>=3).length ? nodes.filter(n=>n.level>=3).map(n=><ProcessingNode key={"science-"+n.node_id} event={n}/>) : <p>No scientific source checks received. Start a trial run.</p>}
