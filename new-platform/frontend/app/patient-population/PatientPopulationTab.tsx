@@ -29,7 +29,7 @@ function safeResearchRecord(value: unknown, expectedNct: string): RegistryResear
       || !Array.isArray(record.conditions) || !Array.isArray(record.interventions)
       || typeof record.sourceUpdated !== "string" && record.sourceUpdated !== null
       || typeof record.registryOverallStatus !== "string"
-      || record.verifiedPipelineQualification !== undefined
+      || record.verifiedUsFdaPdufa !== false
       || record.verifiedCommercialDevelopment !== false) {
     throw new Error("Exact study source was not verified");
   }
