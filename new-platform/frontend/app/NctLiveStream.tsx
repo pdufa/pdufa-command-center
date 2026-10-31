@@ -200,6 +200,17 @@ export default function NctLiveStream() {
     return () => window.removeEventListener("pdufa:analyze-nct", handler);
   }, []);
 
+  const [savedDecision, setSavedDecision] = useState<{decision:string;status:string;latest_prediction?:{scientific_readiness?:string;uncertainty?:string;created_at?:string}} | null>(null);
+  useEffect(() => {
+    if (!run?.nct_id) { setSavedDecision(null); return; }
+    let active = true;
+    setSavedDecision(null);
+    fetch("/api/phase3-trials/" + encodeURIComponent(run.nct_id) + "/predictions", {cache:"no-store"})
+      .then(async response => { if (!response.ok) throw new Error("Prediction records unavailable"); return response.json(); })
+      .then(result => { if (active && result && typeof result.decision === "string") setSavedDecision(result); })
+      .catch(() => { if (active) setSavedDecision(null); });
+    return () => { active = false; };
+  }, [run?.nct_id, run?.terminal]);
   const nodes = Object.values(run?.nodes || {}).sort((a, b) => a.sequence - b.sequence);
   return <section className="panel" aria-label="Live NCT processing" id="nct-live-processing">
     <h2>NCT · Live processing</h2>
@@ -226,7 +237,7 @@ export default function NctLiveStream() {
       </details>
       <details><summary>MAIN — decision and readiness</summary>
         {nodes.filter(n=>n.level===1).length ? nodes.filter(n=>n.level===1).map(n=><ProcessingNode key={"main-"+n.node_id} event={n}/>) : <p>No MAIN processing event received.</p>}
-        <p role="status" aria-live="polite"><strong>FDA decision prediction: ABSTAIN — NOT READY.</strong> {busy ? "Evidence collection is running; the scientific decision engine has not been validated." : "A completed source-processing run alone cannot support a regulatory decision prediction."}</p>
+        <p role="status" aria-live="polite"><strong>FDA decision prediction: {savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? savedDecision.decision + " — SAVED RECORD (NOT VALIDATED)" : "ABSTAIN — NOT READY"}.</strong> {savedDecision?.latest_prediction ? " Readiness: " + (savedDecision.latest_prediction.scientific_readiness || "unverified") + ". " + (savedDecision.latest_prediction.uncertainty || "") : busy ? "Evidence collection is running; the scientific decision engine has not been validated." : "No verified decision prediction available from this processing run."}</p>
       </details>
       <details><summary>Missing evidence and decision requirements</summary>
         {nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").length ? nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").map(n=><ProcessingNode key={"missing-"+n.node_id} event={n}/>) : <p>No failed, insufficient or pending source checks in the received events. This does not establish complete FDA evidence.</p>}
