@@ -293,10 +293,12 @@ class AwaitedWorkflowTests(unittest.TestCase):
         self.assertIn('needs: scoring', job(scoring,'error-check'))
         self.assertIn('needs: [scoring, error-check]', job(scoring,'safe-repair'))
 
-    def test_all_control_uses_same_sequence_instead_of_parallel_gem_dispatch(self):
+    def test_all_control_uses_same_sequence_without_gem_dispatch(self):
         control=read('pdufa-scan-control.yml')
         self.assertIn('"pdufa-overnight-sequential.yml" if scan == "ALL"',control)
-        self.assertIn("inputs.scan == 'ALL' && inputs.action == 'VERIFY_ALL'",control)
+        self.assertIn("options: [ALL, PIPELINE, PHASE3_RESULTS]", control)
+        self.assertNotIn("gem-research-quality.yml/dispatches", control)
+        self.assertNotIn("GEM_JR", control)
         scheduler=read('pdufa-nightly-pacific-start.yml')
         self.assertIn('actions/workflows/pdufa-overnight-sequential.yml/runs?',scheduler)
         self.assertIn('pdufa-overnight-sequential.yml/dispatches',scheduler)
