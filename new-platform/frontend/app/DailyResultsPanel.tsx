@@ -184,6 +184,6 @@ export default function DailyResultsPanel() {
       </div>
     </div>
     {problem && <p className="risk-line" role="alert">{problem}</p>}
-    <p className={styles.muted}>A dash (—) means evidence is missing or unverified, not zero. Master inventory counts do not imply Phase 3 eligibility. Archived GEM stage totals remain in original historical source files, outside the active dashboard.</p>
+    <p className={styles.muted}>A dash (—) means evidence is missing or unverified, not zero. Master inventory counts do not imply Phase 3 eligibility. Historical classification totals remain in original dated source files, outside the active dashboard.</p>
   </section>;
 }
