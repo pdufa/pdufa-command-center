@@ -404,18 +404,25 @@ def _stale_snapshot(snapshot: dict, reason: str, *, refreshing: bool = False) ->
     }
 
 
-def workspace() -> dict:
-    """Never queue HTTP requests behind a slow external-source refresh.
+def workspace(require_fresh: bool = False) -> dict:
+    """Serve valid cached sources; optionally await an in-flight refresh.
 
-    Serve a valid cached snapshot immediately within TTL. During refresh,
-    concurrent requests get an explicitly STALE copy, never a falsely fresh
-    snapshot. Cold-start requests still wait for the first successful gather.
+    Ordinary research calls remain nonblocking and may receive explicit STALE
+    source during refresh. The protected interactive POOL request opts in to
+    waiting at most 35 seconds for a just-started refresh to finish, so a
+    concurrent partial refresh is not treated as a missing POOL. A failed
+    refresh still returns STALE and cannot qualify Pipeline candidates.
     """
     with _LOCK:
         cached = _CACHE["payload"]
         if cached is not None and time.monotonic() - _CACHE["as_time"] < 300:
             return cached
-    if not _REFRESH_LOCK.acquire(blocking=False):
+    # The interactive authenticated POOL has a strict freshness requirement.
+    # Await the one ongoing refresh rather than returning a cached STALE
+    # snapshot mid-flight. Never change background assessment semantics.
+    acquired = (_REFRESH_LOCK.acquire(timeout=35)
+                if require_fresh else _REFRESH_LOCK.acquire(blocking=False))
+    if not acquired:
         with _LOCK:
             cached = _CACHE["payload"]
         if cached is not None:
