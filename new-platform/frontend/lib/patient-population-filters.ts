@@ -24,6 +24,7 @@ export type PatientPopulationFilters = {
   diseasePopulation: NumberColumnFilter;
   eligibleUsPatients: NumberColumnFilter;
   eligibleGlobalPatients: NumberColumnFilter;
+  adoption12MonthPct: NumberColumnFilter;
   evidence: NumberColumnFilter;
   lastUpdated: DateColumnFilter;
 };
@@ -41,6 +42,7 @@ export const EMPTY_PATIENT_POPULATION_FILTERS: PatientPopulationFilters = {
   diseasePopulation: {status:"all",minimum:"",maximum:""},
   eligibleUsPatients: {status:"all",minimum:"",maximum:""},
   eligibleGlobalPatients: {status:"all",minimum:"",maximum:""},
+  adoption12MonthPct: {status:"all",minimum:"",maximum:""},
   evidence: {status:"all",minimum:"",maximum:""},
   lastUpdated: {status:"all",from:"",to:""},
 };
@@ -94,6 +96,7 @@ export function filterPatientPopulationRows(
       && numericMatch(row.diseasePopulation,filters.diseasePopulation)
       && numericMatch(row.eligibleUsPatients,filters.eligibleUsPatients)
       && numericMatch(row.eligibleGlobalPatients,filters.eligibleGlobalPatients)
+      && numericMatch(row.projectedAdoption12MonthPct,filters.adoption12MonthPct)
       && numericMatch(row.populationEvidenceCompleteness,filters.evidence)
       && dateMatch(row.populationLastVerified,filters.lastUpdated)
       && contains([
