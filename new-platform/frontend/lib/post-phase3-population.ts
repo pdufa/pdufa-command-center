@@ -24,6 +24,10 @@ export type PostPhase3PopulationTrial = {
   diseasePopulation: number | null;
   eligibleUsPatients: number | null;
   eligibleGlobalPatients: number | null;
+  /** Source-backed share of eligible U.S. patients using the therapy at 12 months post-launch, 0-100. */
+  projectedAdoption12MonthPct: number | null;
+  adoptionEvidenceUrl: string | null;
+  adoptionConfidence: "High" | "Moderate" | "Low" | null;
   populationEvidenceCompleteness: number | null;
   populationLastVerified: null;
 };
@@ -70,7 +74,8 @@ export function selectPostPhase3PopulationTrials(
     rows.push({
       trial, companySources,
       diseasePopulation: null, eligibleUsPatients: null,
-      eligibleGlobalPatients: null, populationEvidenceCompleteness: null,
+      eligibleGlobalPatients: null, projectedAdoption12MonthPct: null,
+      adoptionEvidenceUrl: null, adoptionConfidence: null, populationEvidenceCompleteness: null,
       populationLastVerified: null,
     });
   }
