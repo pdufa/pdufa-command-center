@@ -64,6 +64,15 @@ test("patient counts, evidence percentage and dates filter independently and joi
  f.eligibleGlobalPatients.minimum="40001";
  assert.equal(filter(data,f).length,0);
 });
+test("12-month patient adoption percentage is independently filterable without inventing missing values",()=>{
+ const [one,two]=rows;
+ const assessed={...one,projectedAdoption12MonthPct:22.5,adoptionEvidenceUrl:"https://example.org/evidence",adoptionConfidence:"Moderate"};
+ const f=empty();f.adoption12MonthPct={status:"available",minimum:"20",maximum:"25"};
+ assert.deepEqual(filter([assessed,two],f),[assessed]);
+ f.adoption12MonthPct.minimum="23";assert.equal(filter([assessed,two],f).length,0);
+ f.adoption12MonthPct={status:"missing",minimum:"",maximum:""};
+ assert.deepEqual(filter([assessed,two],f),[two]);
+});
 test("missing evidence is discoverable but never passes a numeric or date threshold",()=>{
  const f=empty();
  f.diseasePopulation.status="missing";
@@ -93,7 +102,7 @@ test("UI contains independent filters and global reset without changing the sour
  const ui=read("app/patient-population/PatientPopulationTab.tsx");
  for(const name of ["Filter ticker, study or company","textColumn(\"drug\"","textColumn(\"indication\"",
   'numberColumn("diseasePopulation"','numberColumn("eligibleUsPatients"','numberColumn("eligibleGlobalPatients"',
-  'numberColumn("evidence"',"Last updated from","Last updated through","Clear all filters"]){
+  'numberColumn("adoption12MonthPct"','numberColumn("evidence"',"Last updated from","Last updated through","Clear all filters"]){
     assert.ok(ui.includes(name),name);
  }
  assert.match(ui,/filterPatientPopulationRows/);
