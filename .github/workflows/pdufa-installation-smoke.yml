@@ -8,6 +8,15 @@ on:
     paths:
       - 'new-platform/frontend/app/api/installation-audit/**'
       - 'new-platform/frontend/app/installation-audit/**'
+      - 'new-platform/frontend/app/pool/**'
+      - 'new-platform/frontend/app/pipeline/**'
+      - 'new-platform/frontend/app/patient-population/**'
+      - 'new-platform/frontend/app/goal/**'
+      - 'new-platform/frontend/app/scans/**'
+      - 'new-platform/frontend/app/results/**'
+      - 'new-platform/frontend/app/restrictions/**'
+      - 'new-platform/frontend/app/predictions/**'
+      - 'new-platform/frontend/app/api/scope-funnel/**'
       - 'new-platform/frontend/public/installation-audit/**'
       - '.github/workflows/pdufa-installation-smoke.yml'
 permissions:
@@ -22,26 +31,68 @@ jobs:
           SITE: https://pdufa-new-dashboard.vercel.app
         run: |
           python3 - <<'PY'
-          import json,os,time,urllib.request,urllib.error
-          base=os.environ["SITE"]
-          for path in ("/", "/installation-audit", "/prediction-pilot"):
+
+          import html,json,os,urllib.request,urllib.error,urllib.parse
+          base=os.environ["SITE"].rstrip("/")
+          host=urllib.parse.urlsplit(base).hostname
+          routes={
+              "/":"PDUFA Command Center",
+              "/pool":"Master Trial Universe",
+              "/pipeline":"Post",
+              "/patient-population":"Patient Population",
+              "/goal":"GOAL",
+              "/scans":"SCANS",
+              "/results":"RESULTS",
+              "/restrictions":"RESTRICTIONS",
+              "/predictions":"PREDICTIONS",
+          }
+          def fetch(path, maxbytes=1600000):
+              url=base+path
+              req=urllib.request.Request(url,headers={"User-Agent":"pdufa-pool-pipeline-smoke/2","Accept":"text/html,application/json"})
+              with urllib.request.urlopen(req,timeout=25) as response:
+                  dst=urllib.parse.urlsplit(response.geturl())
+                  if dst.scheme!="https" or dst.hostname!=host or dst.path!=urllib.parse.urlsplit(url).path:
+                      raise AssertionError("Unexpected redirect for "+path)
+                  if response.status!=200: raise AssertionError(path+" returned "+str(response.status))
+                  body=response.read(maxbytes+1)
+                  if len(body)>maxbytes: raise AssertionError(path+" response too large")
+                  return response.headers.get("content-type","").lower(),body
+          for path,marker in routes.items():
+              content_type,body=fetch(path)
+              if "text/html" not in content_type: raise AssertionError("Wrong content type for "+path)
+              document=html.unescape(body.decode("utf-8",errors="replace"))
+              if marker.lower() not in document.lower(): raise AssertionError("Required page heading missing: "+path)
+              print("PASS: public page",path,"HTTP 200, expected heading")
+          content_type,body=fetch("/api/auth",128000)
+          if "application/json" not in content_type: raise AssertionError("Auth status is not JSON")
+          auth=json.loads(body)
+          if auth!={"authenticated":False}: raise AssertionError("Anonymous auth status unavailable or inconsistent")
+          print("PASS: authentication configured, unauthenticated session reported")
+          for path in ("/api/scope-funnel?view=pool&limit=1","/api/site-health","/api/assessments","/api/hop/readiness"):
+              url=base+path
+              req=urllib.request.Request(url,headers={"User-Agent":"pdufa-pool-pipeline-smoke/2","Accept":"application/json"})
               try:
-                  with urllib.request.urlopen(urllib.request.Request(base+path,headers={"User-Agent":"pdufa-installation-smoke/1"}),timeout=15) as response:
-                      print(path, response.status)
-                      assert response.status==200, f"{path} not ready"
-              except Exception as e:
-                  raise SystemExit(f"FAIL: {path}: {e}")
-          url=base+"/api/installation-audit/live-task-evidence"
-          with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"pdufa-installation-smoke/1"}),timeout=30) as response:
-              assert response.status==200, f"Audit API returned {response.status}"
-              payload=json.load(response)
+                  with urllib.request.urlopen(req,timeout=20) as response:
+                      raise AssertionError("Private API exposed anonymously: "+path+" HTTP "+str(response.status))
+              except urllib.error.HTTPError as err:
+                  if err.code!=401: raise AssertionError(path+" refused with unexpected HTTP "+str(err.code))
+                  payload=json.loads(err.read(128000))
+                  if payload!={"error":"Authentication required"}: raise AssertionError(path+" leaked or changed anonymous response")
+              print("PASS: private API denies anonymous access",path,"HTTP 401")
+          content_type,body=fetch("/api/installation-audit/live-task-evidence",5000000)
+          if "application/json" not in content_type: raise AssertionError("Audit API is not JSON")
+          payload=json.loads(body)
           assert payload.get("taskCount")==546, "Task inventory mismatch"
           assert len(payload.get("tasks",{}))==546, "Missing task evidence"
           assert sum(payload.get("counts",{}).values())==546, "Status count mismatch"
           assert payload.get("verifiedCount")==payload["counts"].get("Verified",0), "Verified count mismatch"
-          assert payload.get("automatedAcceptanceCoverage")==0, "Connectivity checks must not certify acceptance"
-          assert set(payload.get("checks",{}))=={"dashboard","scanHealth"}, "Missing runtime checks"
-          for name,check in payload["checks"].items():
-              print("Runtime check:",name,check["status"],check.get("httpStatus"))
-          print("PASS: production pages, API schema, evidence count and runtime check visibility")
+          assert payload.get("automatedAcceptanceCoverage")==0, "Connectivity must not falsely certify acceptance"
+          required={"dashboard","scanHealth","backendDatabase","predictionSafety","scienceReadiness","statisticalConsistency"}
+          checks=payload.get("checks",{})
+          assert isinstance(checks,dict) and required.issubset(checks), "Required live probes missing"
+          for name in sorted(required):
+              check=checks[name]
+              print("Observed health probe:",name,check.get("status"),check.get("httpStatus"))
+          print("PASS: active POOL/Pipeline public routes, privacy controls, and non-certifying legacy evidence API schema")
+          print("NOTE: Anonymous smoke does NOT verify authenticated data rows, scan launches, backend storage restore or independently hosted Streamlit Cloud.")
           PY
