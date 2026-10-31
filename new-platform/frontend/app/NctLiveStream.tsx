@@ -212,6 +212,25 @@ export default function NctLiveStream() {
     <p role="status" aria-live="polite">{notice}</p>
     {run ? <p className="subtle">{run.nct_id} · Run <code>{run.run_id}</code> · Event {run.sequence}{busy ? " · connected or reconnecting" : ""}</p> : null}
     {interrupted && run ? <button type="button" onClick={() => void load(run.nct_id, { nct_id: run.nct_id, run_id: run.run_id })}>Resume saved run</button> : null}
+    <details style={{margin:"12px 0",padding:12,border:"1px solid #b5c7b8",borderRadius:8}}>
+      <summary style={{cursor:"pointer",fontWeight:700}}>50-Level Scientific Analysis — planned depth and readiness</summary>
+      <p className="subtle">50 levels are the approved analysis design target, not 50 verified completed calculations. The live processing graph below currently exposes four dependency levels. No depth score or FDA confidence is inferred from this target.</p>
+      <details><summary>SCIENCE — evidence and scientific assessment</summary>
+        <p>Phase 3 efficacy, endpoint validity, effect sizes, safety, trial design, statistical robustness, subgroups, reproducibility and benefit–risk evidence.</p>
+      </details>
+      <details><summary>OUTCOME — FDA decision risk</summary>
+        <p>Regulatory pathway, application status, FDA correspondence when public, manufacturing and inspection risk, precedents, review timelines and extension signals.</p>
+      </details>
+      <details><summary>MAIN — PASS / CRL / EXTENSION decision</summary>
+        <p>Integrates verified SCIENCE and OUTCOME evidence; reports calibrated confidence only when independently established. Otherwise ABSTAIN / NOT READY with reasons.</p>
+      </details>
+      <details><summary>Missing evidence and decision requirements</summary>
+        <p>Each missing item must identify the exact evidence, source sought, decision impact, verification status and next action. Nonpublic FDA material must be distinguished from documents not yet searched.</p>
+      </details>
+      <details><summary>Implementation and validation status</summary>
+        <p>Target depth: 50. Verified implemented depth: not established. Historical predictive accuracy: not established. No trading authorization.</p>
+      </details>
+    </details>
     {[4, 3, 2, 1].map(level => <details key={level} open={level === 4 || level === 1}>
       <summary>{level === 4 ? "Source checks" : level === 1 ? "MAIN processing state" : "Level " + level + " dependencies"}</summary>
       {nodes.filter(event => event.level === level).map(event => <ProcessingNode key={event.node_id} event={event} />)}
