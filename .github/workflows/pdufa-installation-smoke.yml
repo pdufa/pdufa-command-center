@@ -44,14 +44,15 @@ jobs:
               "/scans":"SCANS",
               "/results":"RESULTS",
               "/restrictions":"RESTRICTIONS",
-              "/predictions":"PREDICTIONS",
+              "/predictions":"Trial prediction",
           }
           def fetch(path, maxbytes=1600000):
               url=base+path
               req=urllib.request.Request(url,headers={"User-Agent":"pdufa-pool-pipeline-smoke/2","Accept":"text/html,application/json"})
               with urllib.request.urlopen(req,timeout=25) as response:
                   dst=urllib.parse.urlsplit(response.geturl())
-                  if dst.scheme!="https" or dst.hostname!=host or dst.path!=urllib.parse.urlsplit(url).path:
+                  expected_path="/prediction-pilot" if path=="/predictions" else urllib.parse.urlsplit(url).path
+              if dst.scheme!="https" or dst.hostname!=host or dst.path!=expected_path:
                       raise AssertionError("Unexpected redirect for "+path)
                   if response.status!=200: raise AssertionError(path+" returned "+str(response.status))
                   body=response.read(maxbytes+1)
