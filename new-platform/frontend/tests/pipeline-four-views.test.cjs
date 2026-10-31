@@ -64,7 +64,8 @@ test("all four options render as real selectable controls and share a single res
  for(const title of ["Advanced Table","Cards + Dossier","Research Workflow","Compare + Analytics"])
   assert.ok(source.includes(title),title);
  assert.ok(source.includes('role="tablist"'));
- assert.ok(source.includes('limit:String(MAX_ROWS)'));
+ assert.ok(source.includes("loadCompleteResearch"));
+ assert.ok(source.includes("FETCH_PAGE_SIZE=200"));
  assert.ok(source.includes('view:"pipeline"'));
  assert.ok(source.includes('"/api/scope-funnel?"'));
  assert.ok(source.includes("PIPELINE_RESEARCH_SECTIONS.map"));
@@ -74,6 +75,8 @@ test("all four options render as real selectable controls and share a single res
  assert.ok(wrapper.includes('<PipelineFourViews />'));
  assert.ok(wrapper.includes('section==="pool"||reviewMode'));
  const api=fs.readFileSync(path.join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
- assert.ok(api.includes('view==="pipeline" && limit==="500"'));
+ assert.ok(api.includes("datasetVersion"));
+ assert.ok(api.includes("createHash"));
  assert.ok(api.includes("hasSession"));
 });
+

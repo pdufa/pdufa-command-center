@@ -1,0 +1,35 @@
+name: PDUFA Pipeline research authorized browser verification
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/verify_pipeline_research.cjs', '.github/workflows/pdufa-pipeline-research-browser.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  production-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated browser verifier
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pipeline-browser" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/pipeline-browser/node_modules/.bin/playwright" install --with-deps chromium webkit
+      - name: Authenticate and verify production views and canonical records
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          NODE_PATH: ${{ runner.temp }}/pipeline-browser/node_modules
+          REGISTRY_RECEIPTS_PATH: ${{ runner.temp }}/pipeline-registry-receipts.json
+        run: node scripts/verify_pipeline_research.cjs
+      - name: Preserve public registry source receipts only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-primary-registry-verification
+          path: ${{ runner.temp }}/pipeline-registry-receipts.json
+          if-no-files-found: ignore
+          retention-days: 30

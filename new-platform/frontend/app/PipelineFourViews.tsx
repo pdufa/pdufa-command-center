@@ -4,17 +4,19 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import styles from "./FunnelWorkspace.module.css";
 import {
-  PIPELINE_RESEARCH_SECTIONS, PIPELINE_RESEARCH_FIELDS, WORKFLOW_COLUMNS,
-  researchFieldResult, verifiedMetricCount, workflowColumn, comparableIndication,
+  PIPELINE_RESEARCH_SECTIONS, PIPELINE_RESEARCH_FIELDS, ALL_RESEARCH_FIELD_DEFINITIONS, WORKFLOW_COLUMNS,
+  researchFieldResult, verifiedMetricCount, workflowColumn, comparableIndication, comparableResearchGroup,
   type PipelineResearchRow, type ResearchFieldId, type WorkflowColumn,
 } from "../lib/pipeline-research-view";
+import { ASSESSMENT_SUPPORT_FIELDS, CLAIM_PROVENANCE_REQUIREMENTS } from "../lib/pipeline-assessment-inputs";
+import { loadCompleteResearch } from "../lib/pipeline-research-pagination";
 import { pacificToday } from "../lib/pipeline-timeline";
 import { RANKED_BENEFIT_ASSESSMENTS, assessmentCoverage, validateComparatorInventory } from "../lib/pipeline-benefit-assessments";
 
 type Mode="table"|"dossier"|"kanban"|"analytics";
 type Payload={view:string;offset:number;limit:number;total:number;rows:PipelineResearchRow[];
  caveat:string;overview:{censusAsOf:string;matchedCompletedRecords:number;qualifiedPrograms:null;poolSourceState:string}};
-const MAX_ROWS=500;
+const FETCH_PAGE_SIZE=200;
 const PAGE_SIZE=25;
 const modeOptions:{id:Mode;name:string;detail:string}[]=[
  {id:"table",name:"1 · Advanced Table",detail:"Sort, scan, expand"},
@@ -22,19 +24,6 @@ const modeOptions:{id:Mode;name:string;detail:string}[]=[
  {id:"kanban",name:"3 · Research Workflow",detail:"Prioritize research gaps"},
  {id:"analytics",name:"4 · Compare + Analytics",detail:"Same-indication comparisons"},
 ];
-function safePayload(value:unknown):value is Payload{
- if(!value || typeof value!=="object")return false;
- const p=value as Partial<Payload>;
- return p.view==="pipeline"&&p.offset===0&&p.limit===MAX_ROWS
-  &&Number.isSafeInteger(p.total)&&p.total!>=0&&p.total!<=MAX_ROWS
-  &&Array.isArray(p.rows)&&p.rows.length===p.total
-  &&p.rows.every(x=>x&&/^NCT\d{8}$/.test(x.nctId)
-    &&typeof x.ticker==="string"&&typeof x.sourceUrl==="string"
-    &&x.poolStatus==="EXACT_MATCH"&&x.postPhase3Evidence==="REGISTRY_COMPLETED"
-    &&Array.isArray(x.reasons))
-  &&new Set(p.rows.map(x=>x.nctId)).size===p.rows.length
-  &&typeof p.caveat==="string"&&!!p.overview;
-}
 function named(row:PipelineResearchRow){return row.drug||"Therapy not verified"}
 function trialDay(row:PipelineResearchRow,id:ResearchFieldId,today:string){
  return researchFieldResult(row,id,today);
@@ -45,6 +34,7 @@ function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClo
    <div className={styles.dossierHeading}>
     <div><h3>{row.nctId} · {row.ticker}</h3>
       <p>{row.company} · {named(row)} · {row.indication||"Indication not verified"}</p>
+      <p>Public Phase 3 release: {row.timeline?.phase3DataRelease?.date||"Not verified"} · Verified PDUFA: {row.timeline?.pdufaTarget?.date||"Not verified"}</p>
       <p className={styles.muted}>20 original assessments · 38 preserved research fields · seven supporting source sections. NCT studies are not necessarily distinct commercial products.</p>
     </div>
     <button type="button" onClick={onClose}>Close trial</button>
@@ -56,7 +46,7 @@ function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClo
    </div>
    <div className={styles.analyticsPanel} aria-label="Twenty ranked patient benefit assessments">
     <h4>Original 20 ranked assessments · exact-program evidence only</h4>
-    <p className={styles.muted}>Twenty primary categories preserve the 38 source fields. Seven assessments require additional dedicated evidence. No source-backed ranking is inferred from a blank input.</p>
+    <p className={styles.muted}>Twenty primary categories preserve the 38 source fields. All twenty assessments have defined inputs; clinical findings still require original evidence. No source-backed ranking is inferred from a blank input.</p>
     {RANKED_BENEFIT_ASSESSMENTS.map(spec=>{
      const c=assessmentCoverage(row,today)[spec.rank-1];
      const inventory=spec.rank===6?validateComparatorInventory(row,row.competitorEvidence||[]):null;
@@ -66,12 +56,15 @@ function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClo
        <p className={styles.muted}>{spec.objective}</p>
        {!spec.fields.length&&<p>Not assessed: dedicated research inputs and primary sources are still required.</p>}
        {spec.fields.map(id=>{
-        const f=PIPELINE_RESEARCH_FIELDS.find(x=>x.id===id);
+        const f=ALL_RESEARCH_FIELD_DEFINITIONS.find(x=>x.id===id);
+        const support=ASSESSMENT_SUPPORT_FIELDS.find(x=>x.id===id);
         const result=researchFieldResult(row,id,today);
         return <details key={id} className={styles.dossierField}>
          <summary><span>{f?.label||id}</span><strong>{result.value}</strong></summary>
          <div className={styles.dossierEvidence}>
           <p>{result.why}</p><p><strong>Evidence required:</strong> {f?.evidence}</p>
+          {support&&<><ul>{support.secondary.map(q=><li key={q}>{q}</li>)}</ul><p><strong>Calculation:</strong> {support.calculation}</p></>}
+          <details><summary>Tertiary evidence and provenance requirements</summary><ul>{CLAIM_PROVENANCE_REQUIREMENTS.map(q=><li key={q}>{q}</li>)}</ul><p>VERIFIED / MODELED / CONFLICTING / NOT ASSESSED / NOT APPLICABLE. Missing values remain unknown.</p></details>
           {result.sourceUrl&&<a href={result.sourceUrl} target="_blank" rel="noopener noreferrer">Open source · {result.sourceDate||"date not recorded"}</a>}
          </div>
         </details>;
@@ -154,14 +147,13 @@ export default function PipelineFourViews(){
  useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return()=>clearInterval(timer)},[]);
  useEffect(()=>{
   const controller=new AbortController();
-  const params=new URLSearchParams({view:"pipeline",offset:"0",limit:String(MAX_ROWS)});
-  void fetch("/api/scope-funnel?"+params.toString(),{cache:"no-store",signal:controller.signal})
-    .then(async response=>{
-     if(!response.ok)throw Error(response.status===401?
-      "Dashboard sign-in is required for the shared Pipeline research inventory.":"Cannot verify published POOL and historical Phase 3 research data.");
-     const raw:unknown=await response.json();
-     if(!safePayload(raw))throw Error("Incomplete or mismatched full Pipeline source. No partial data was shown.");
-     if(!controller.signal.aborted)setData(raw);
+  void loadCompleteResearch(async(offset,limit)=>{
+   const params=new URLSearchParams({view:"pipeline",offset:String(offset),limit:String(limit)});
+   const response=await fetch("/api/scope-funnel?"+params.toString(),{cache:"no-store",signal:controller.signal});
+   if(!response.ok)throw Error(response.status===401?"Dashboard sign-in is required for the shared Pipeline research inventory.":"Cannot verify published POOL and historical Phase 3 research data.");
+   return response.json();
+  },FETCH_PAGE_SIZE).then(raw=>{
+     if(!controller.signal.aborted)setData(raw as unknown as Payload);
     }).catch(e=>{if(!controller.signal.aborted)setFetchError(e instanceof Error?e.message:"Data unavailable")})
     .finally(()=>{if(!controller.signal.aborted)setLoading(false)});
   return()=>controller.abort();
@@ -191,12 +183,12 @@ export default function PipelineFourViews(){
  const indications=useMemo(()=>{
   const counts=new Map<string,{name:string;rows:PipelineResearchRow[]}>();
   for(const row of filtered){
-   const key=comparableIndication(row);
+   const key=comparableResearchGroup(row);
    if(!key)continue;
    const current=counts.get(key)||{name:row.indication!,rows:[]};
    current.rows.push(row);counts.set(key,current);
   }
-  return [...counts.entries()].filter(([,x])=>x.rows.length>=2).sort((a,b)=>b[1].rows.length-a[1].rows.length);
+  return [...counts.entries()].filter(([,x])=>new Set(x.rows.map(r=>r.drug?.trim().toLowerCase())).size>=2).sort((a,b)=>b[1].rows.length-a[1].rows.length);
  },[filtered]);
  const comparable=indications.find(([key])=>key===indication)?.[1].rows||[];
  const chosen=comparable.filter(x=>compareIds.includes(x.nctId)).slice(0,4);
@@ -241,7 +233,7 @@ export default function PipelineFourViews(){
     <h3>Twenty primary assessments · selected trial overview</h3>
     <p className={styles.muted}>All 20 assessments come from the original ranked framework. The rightmost three columns separately identify existing approved therapy evidence, competing pipeline therapy evidence, and comparative advantage. Horizontal scrolling is available.</p>
     <div className={styles.scroll}><table className={styles.table} aria-label="Twenty ranked assessment overview">
-     <thead><tr><th>NCT</th><th>Company</th><th>Proposed therapy / disease</th>
+     <thead><tr><th>NCT</th><th>Company / ticker</th><th>Proposed therapy / disease</th><th>Public Phase 3 release</th><th>Days since release</th><th>Verified PDUFA date</th><th>Days until PDUFA</th>
       {RANKED_BENEFIT_ASSESSMENTS.map(spec=><th key={spec.rank}>#{spec.rank} {spec.title}</th>)}
       <th>Existing Approved Therapies</th><th>Competing Pipeline Therapies</th><th>Comparative Advantage</th></tr></thead>
      <tbody>{visible.map(row=>{
@@ -249,6 +241,7 @@ export default function PipelineFourViews(){
       const inventory=validateComparatorInventory(row,row.competitorEvidence||[]);
       return <tr key={row.nctId}><td>{row.nctId}</td><td>{row.ticker}</td>
        <td>{named(row)}<small>{row.indication||"Not assessed"}</small></td>
+       <td>{row.timeline?.phase3DataRelease?.date||"Not verified"}</td><td>{trialDay(row,"daysSinceReadout",today).value}</td><td>{row.timeline?.pdufaTarget?.date||"Not verified"}</td><td>{trialDay(row,"daysToPdufa",today).value}</td>
        {c.map(item=><td key={item.rank} title={item.summary}>{item.state==="NOT_ASSESSED"?"Not assessed":item.verified+" of "+item.required+" sourced"}</td>)}
        <td>{inventory.accepted.length?inventory.approved+" documented":"Not assessed"}</td>
        <td>{inventory.accepted.length?inventory.pipeline+" documented":"Not assessed"}</td>
@@ -326,7 +319,7 @@ export default function PipelineFourViews(){
     </div>
     <div className={styles.analyticsPanel}>
      <h3>Evidence coverage by original 20 assessments</h3>
-     <p className={styles.muted}>A recorded source is not a score or ranking. The seven new assessments remain unassessed until separately sourced.</p>
+     <p className={styles.muted}>A recorded source is not a score or ranking. Dedicated inputs remain unassessed until separately sourced.</p>
      {RANKED_BENEFIT_ASSESSMENTS.map(spec=>{
       const total=spec.fields.length*filtered.length;
       const verified=spec.fields.reduce((acc,id)=>acc+filtered.filter(row=>researchFieldResult(row,id,today).state==="VERIFIED").length,0);
@@ -351,15 +344,15 @@ export default function PipelineFourViews(){
      })}
     </div>
     <div className={styles.analyticsPanel}>
-     <h3>Compare therapies — recorded indication only</h3>
-     <p className={styles.muted}>Choose up to four exact NCTs with the same recorded indication. A matching label does not prove the same line of treatment or patient population. Missing effects remain unassessed.</p>
+     <h3>Compare therapies — verified comparable scope</h3>
+     <p className={styles.muted}>Choose up to four exact NCTs only when sources establish the same recorded indication, treatment line, population, endpoint and follow-up. A disease label alone cannot enable comparison. Missing effects remain unassessed.</p>
      <label>Recorded indication
       <select value={indication} onChange={e=>{const key=e.target.value;setIndication(key);const group=indications.find(x=>x[0]===key)?.[1].rows||[];setCompareIds(group.slice(0,2).map(x=>x.nctId))}}>
        <option value="">Select same-indication group</option>
        {indications.map(([key,group])=><option value={key} key={key}>{group.name} ({group.rows.length})</option>)}
       </select>
      </label>
-     {!indications.length&&<p>No same-indication groups containing at least two verified exact-linked NCT records exist in the filtered selection.</p>}
+     {!indications.length&&<p>No source-verified comparable group with at least two distinct therapies is available in the filtered selection.</p>}
      {!!indication&&<div className={styles.compareChoices}>
       {comparable.map(row=><label key={row.nctId}>
        <input type="checkbox" checked={compareIds.includes(row.nctId)}
@@ -386,3 +379,4 @@ export default function PipelineFourViews(){
   </div>}
  </section>;
 }
+

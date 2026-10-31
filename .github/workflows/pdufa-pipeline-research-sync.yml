@@ -1,0 +1,52 @@
+name: PDUFA Pipeline research canonical sync
+on:
+  pull_request:
+    paths: ['scripts/sync_pipeline_research.py', 'tests/test_pipeline_research_sync.py', '.github/workflows/pdufa-pipeline-research-sync.yml']
+  push:
+    branches: [main]
+    paths: ['scripts/sync_pipeline_research.py', '.github/workflows/pdufa-pipeline-research-sync.yml']
+  workflow_dispatch:
+  schedule:
+    - cron: '35 5 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: pdufa-pipeline-research-canonical-sync
+  cancel-in-progress: false
+jobs:
+  preserve-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p 'test_pipeline_research_sync.py' -v
+  sync:
+    needs: preserve-and-validate
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install requests google-auth
+      - name: Preflight authorized credential availability
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: |
+          test -n "$DASHBOARD_PASSWORD" || { echo 'Missing DASHBOARD_PASSWORD'; exit 1; }
+          test -n "$GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON" || { echo 'Missing GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON'; exit 1; }
+      - name: Reconcile authenticated canonical source before writes
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/sync_pipeline_research.py --dry-run
+      - name: Upsert managed cells and read back without changing reviewer notes
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/sync_pipeline_research.py

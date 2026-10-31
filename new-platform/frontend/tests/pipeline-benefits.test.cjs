@@ -10,14 +10,14 @@ for(const ext of [".ts",".tsx"])require.extensions[ext]=(mod,file)=>mod._compile
 const ranked=require("../lib/pipeline-benefit-assessments.ts");
 const row={nctId:"NCT12345678",ticker:"EXAM",company:"Example Inc",drug:"Research Therapy",indication:"Disease A",sourceUrl:"https://clinicaltrials.gov/study/NCT12345678",censusStatus:"COMPLETED",capUsd:550000000,capAsOf:"2026-10-01",poolStatus:"EXACT_MATCH",postPhase3Evidence:"REGISTRY_COMPLETED",qualification:"NEEDS_REVIEW",reasons:[],timeline:{phase3DataRelease:null,pdufaTarget:null}};
 const comparator=(patch={})=>({
- programNctId:row.nctId,programTicker:row.ticker,indication:row.indication,id:"cmp-a",kind:"APPROVED",therapy:"Existing A",manufacturer:"Maker A",regulatorOrTrialId:"NDA-12345",approvalOrPhase:"FDA approved",lineOfTherapy:"second line",patientPopulation:"marker positive adults",
+ programNctId:row.nctId,programTicker:row.ticker,programTherapy:row.drug,verificationStatus:"VERIFIED",lastVerified:"2026-10-30",indication:row.indication,id:"cmp-a",kind:"APPROVED",therapy:"Existing A",manufacturer:"Maker A",regulatorOrTrialId:"NDA-12345",approvalOrPhase:"FDA approved",lineOfTherapy:"second line",patientPopulation:"marker positive adults",
  sourceUrl:"https://www.fda.gov/example",sourceDate:"2026-10-20",sourceType:"FDA",
  outcome:"Responder rate",effectSize:"5 percentage points",duration:"12 months",safety:"Not assessed",convenience:"Not assessed",firstYearPrice:"Not assessed",payerAccess:"Not assessed",
  comparisonBasis:"INDIRECT",finding:"INSUFFICIENT_EVIDENCE",reason:"Missing treatment-line matched comparative trial",confidence:"LOW",...patch
 });
 test("original 20 assessment ranking maps each of 38 original research fields exactly once",()=>{
  const a=ranked.auditAssessmentFieldMapping();
- assert.equal(a.rankedAssessments,20);assert.equal(a.originalFields,38);assert.equal(a.assignedFields,29);assert.equal(a.crossCuttingFields,9);
+ assert.equal(a.rankedAssessments,20);assert.equal(a.originalFields,38);assert.equal(a.assignedFields,38);assert.equal(a.crossCuttingFields,9);
  assert.deepEqual(a.duplicates,[]);assert.deepEqual(a.unassigned,[]);assert.deepEqual(a.unknown,[]);
  assert.equal(ranked.RANKED_BENEFIT_ASSESSMENTS[5].title,"Competitive Advantage");
 });
@@ -25,7 +25,7 @@ test("unpopulated assessments abstain and do not create survival, financial or a
  const items=ranked.assessmentCoverage(row,"2026-10-31");
  assert.equal(items.length,20);
  for(const item of items){assert.equal(item.state,"NOT_ASSESSED");assert.equal(item.verified,0)}
- for(const n of [4,14,15,16,18,19,20])assert.equal(items[n-1].required,0);
+ for(const item of items)assert.ok(item.required>0,"Every assessment has real defined inputs");
 });
 test("approved versus pipeline comparator identity is strict and missing competitor data remains unknown",()=>{
  const a=comparator();
@@ -54,4 +54,13 @@ test("20 primary website headings and comparator subcolumns are wired without re
  assert.ok(source.includes("mode===\"kanban\""));
  assert.ok(source.includes("mode===\"table\""));
  assert.ok(source.includes("PIPELINE_RESEARCH_SECTIONS.map"));
+});
+
+
+test("different product, duplicate therapy, unreviewed and indirect superiority claims fail closed",()=>{
+ assert.equal(ranked.validateComparatorInventory(row,[comparator({programTherapy:"Wrong drug"})]).rejected,1);
+ assert.equal(ranked.validateComparatorInventory(row,[comparator({verificationStatus:undefined})]).rejected,1);
+ assert.equal(ranked.validateComparatorInventory(row,[comparator({finding:"BETTER",comparisonBasis:"INDIRECT"})]).rejected,1);
+ assert.equal(ranked.validateComparatorInventory(row,[comparator({finding:"BETTER",comparisonBasis:"DIRECT_HEAD_TO_HEAD"})]).rejected,1);
+ assert.equal(ranked.validateComparatorInventory(row,[comparator(),comparator({id:"another",regulatorOrTrialId:"NDA-99999"})]).accepted.length,1);
 });
