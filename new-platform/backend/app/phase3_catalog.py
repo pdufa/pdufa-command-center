@@ -570,6 +570,11 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             # must not turn javascript:, file:, or private schemes into UI links.
             if not isinstance(url, str) or urlsplit(url).scheme.lower() != "https":
                 source["url"] = None
+            # The stored document is available for later review, but metadata
+            # alone cannot certify protocol or SAP content. Do not expose the
+            # document body or infer a document type from a filename.
+            source["document_review_status"] = "NOT_REVIEWED"
+            source["document_classification"] = "UNCLASSIFIED"
             source["provenance_complete"] = bool(
                 source.get("source_evidence_id") and source.get("url")
                 and source.get("sha256") and source.get("retrieved_at")
