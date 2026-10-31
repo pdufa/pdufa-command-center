@@ -31,8 +31,14 @@ export async function GET(req: NextRequest, context: { params: Promise<{ nct_id:
       });
     }
     if (!(upstream.headers.get("content-type") || "").toLowerCase().includes("application/json")) throw new Error("Unexpected response");
-    const data = await upstream.json();
-    return NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
+    const data: unknown = await upstream.json();
+    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("Invalid prediction response");
+    const record = data as Record<string, unknown>;
+    // Fail closed: no unsupported decision may be displayed without explicit readiness.
+    if (record.scientific_readiness !== "READY" || !["PASS", "CRL", "EXTENSION"].includes(String(record.decision))) {
+      return NextResponse.json({ ...record, decision: "ABSTAIN", status: "NOT_READY" }, { headers: { "Cache-Control": "private, no-store" } });
+    }
+    return NextResponse.json(record, { headers: { "Cache-Control": "private, no-store" } });
   } catch {
     return NextResponse.json({ error: "Prediction backend unavailable", decision: "ABSTAIN", status: "NOT_READY" }, {
       status: 503, headers: { "Cache-Control": "private, no-store" },
