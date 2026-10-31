@@ -1,0 +1,28 @@
+name: PDUFA archive structural integrity
+
+on:
+  push:
+    paths:
+      - data/daily_scan_results.json
+      - scripts/verify_pdufa_archive.py
+      - .github/workflows/pdufa-archive-integrity.yml
+  pull_request:
+    paths:
+      - data/daily_scan_results.json
+      - scripts/verify_pdufa_archive.py
+      - .github/workflows/pdufa-archive-integrity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive-integrity:
+    name: Validate saved RESULTS archive (not source certification)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout commit
+        uses: actions/checkout@v4
+      - name: Check published archive structure
+        run: python3 scripts/verify_pdufa_archive.py
