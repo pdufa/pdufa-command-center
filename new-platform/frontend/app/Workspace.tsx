@@ -1780,6 +1780,15 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <h2>PREDICTION</h2>
       <p>Historical Outcome Prediction (HOP) · Published GEM JR, GEM and W/T lists</p>
       <p role="status"><strong>Research only:</strong> Historical matching and validated approval probabilities are not available yet. Existing PoA values are not HOP predictions.</p>
+      <div className="panel" aria-label="FDA prediction explanation">
+        <h3>WHY THIS PREDICTION?</h3>
+        <p>Choose a trial in the library below to open its saved FDA decision and evidence-based explanation.</p>
+        <details><summary>Decision rationale and remaining requirements</summary>
+          <p>ABSTAIN means a scientifically validated PASS, CRL, or EXTENSION decision is not established.</p>
+          <p>Check SCIENCE readiness, statistical evidence blockers, independent adjudication, and historical calibration in the trial analysis.</p>
+          <p>Saved probabilities and screening scores are not validated FDA predictions.</p>
+        </details>
+      </div>
       <HopReadinessPanel />
       {!snapshot ? <p>Load published candidates to see the source-linked trial inventory. No estimates will be generated.</p> : <>
         <p className="subtle">Published snapshot: {snapshot.asOf} · Membership and W/T labels reflect their respective saved sources.</p>
