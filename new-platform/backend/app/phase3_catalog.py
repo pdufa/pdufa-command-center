@@ -555,7 +555,7 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             "predictions": records,
             "latest_prediction": records[0] if records else None,
             "status": "RECORDED" if records else "NOT_READY",
-            "decision": records[0]["decision"] if records else "ABSTAIN",
+            "decision": records[0]["decision"] if records and records[0]["scientific_readiness"] == "READY" else "ABSTAIN",
             "limitation": "Saved predictions are not necessarily calibrated or validated. No prediction is inferred from trial-processing events.",
         }
 
