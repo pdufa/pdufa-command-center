@@ -18,6 +18,11 @@ on:
         type: choice
         options: [REVERIFY_PARTIAL, RESCAN_ALL]
         default: REVERIFY_PARTIAL
+      night_date_pacific:
+        description: 'Pacific date of 8 PM scan night supplied by guarded scheduler; empty for manual dispatch'
+        type: string
+        required: false
+        default: ''
   # Source changes validate the workflow; only an explicit dispatch runs scans.
   push:
     branches: [main]
@@ -138,6 +143,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           SCAN_RESULT: ${{ needs.result.result }}
+          GUARDED_NIGHT: ${{ inputs.night_date_pacific }}
         run: |
           set -euo pipefail
           STARTED_AT="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" --jq '.run_started_at')"
@@ -150,7 +156,8 @@ jobs:
           python scripts/pdufa_daily_results.py \
             --run-id "$GITHUB_RUN_ID" \
             --started-at "$STARTED_AT" \
-            --conclusion "$CONCLUSION"
+            --conclusion "$CONCLUSION" \
+            --night-date-pacific "$GUARDED_NIGHT"
       - name: Publish date-indexed results for website
         shell: bash
         run: |
