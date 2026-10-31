@@ -2,6 +2,7 @@
  * Historical Phase 3 census entries are research pointers, not qualified programs.
  * No missing competitor, benefit or FDA date is converted to zero or a ranking.
  */
+import { ASSESSMENT_SUPPORT_FIELDS, type AssessmentSupportFieldId } from "./pipeline-assessment-inputs";
 import type { ComparatorEvidence } from "./pipeline-benefit-assessments";
 import { COMPETITIVE_ASSESSMENT_COLUMNS, verifiedCompetitiveFact, type CompetitiveAssessment, type ResearchEvidence } from "./competitive-assessment";
 import { calculateTherapyCosts, type TherapyCostComparison } from "./post-phase3-population";
@@ -18,7 +19,7 @@ export type PipelineResearchRow = {
  therapyCostComparison?:TherapyCostComparison|null;
 };
 type OriginalId=typeof COMPETITIVE_ASSESSMENT_COLUMNS[number]["id"];
-export type ResearchFieldId = OriginalId | "daysSinceReadout" | "daysToPdufa"
+export type ResearchFieldId = OriginalId | AssessmentSupportFieldId | "daysSinceReadout" | "daysToPdufa"
  | "closestCompetitor" | "headToHead" | "magnitude" | "meaningfulBenefit"
  | "durability" | "seriousAes" | "responseRemission" | "timeToResponse"
  | "bestSubgroup" | "treatmentResistantBenefit" | "qualityOfLife" | "discontinuation"
@@ -50,7 +51,8 @@ const extra:ResearchField[]=[
 ];
 const original=COMPETITIVE_ASSESSMENT_COLUMNS.map(x=>({...x} as ResearchField));
 const fields:ResearchField[]=[...original,...extra];
-const byId=new Map<ResearchFieldId,ResearchField>(fields.map(x=>[x.id,x]));
+export const ALL_RESEARCH_FIELD_DEFINITIONS:ResearchField[]=[...fields,...ASSESSMENT_SUPPORT_FIELDS];
+const byId=new Map<ResearchFieldId,ResearchField>(ALL_RESEARCH_FIELD_DEFINITIONS.map(x=>[x.id,x]));
 function section(title:string,ids:ResearchFieldId[]){return {title,fields:ids.map(id=>{const found=byId.get(id);if(!found)throw Error("Research column is missing: "+id);return found;})};}
 export const PIPELINE_RESEARCH_SECTIONS=[
  section("1. Trial Identity & Timeline",["trialId","company","therapy","indication","daysSinceReadout","daysToPdufa"]),
@@ -150,3 +152,4 @@ export function workflowColumn(row:PipelineResearchRow,today:string):WorkflowCol
 export function comparableIndication(row:PipelineResearchRow):string|null {
  return row.indication?.trim().toLocaleLowerCase("en-US")||null;
 }
+

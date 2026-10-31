@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -46,12 +47,13 @@ export async function GET(req:NextRequest) {
   const query=params.get("query")||"";
   if(!["pool","pipeline","readout-review"].includes(view)
      || !/^(0|[1-9]\d{0,7})$/.test(offset)
-     || !(/^(?:[1-9]|[1-4]\\d|50)$/.test(limit) || (view==="pipeline" && limit==="500"))
+     || !(/^(?:[1-9]|[1-4]\d|50)$/.test(limit) || (view==="pipeline" && /^(?:[1-9]\d?|1\d\d|200|500)$/.test(limit)))
      || query.length>100)
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
     const data=await source();
-    return NextResponse.json(funnelPage(data,view as ScopeView,Number(offset),Number(limit),query),
+    const datasetVersion=createHash("sha256").update(JSON.stringify({overview:data.overview,rows:data.reviewRows})).digest("hex");
+    return NextResponse.json({...funnelPage(data,view as ScopeView,Number(offset),Number(limit),query),datasetVersion},
       {headers:{"Cache-Control":"private, no-store"}});
   }catch(cause){
     // Only a finite cause category is returned to the signed-in operator.
@@ -72,3 +74,4 @@ export async function GET(req:NextRequest) {
     },{status:503,headers:{"Cache-Control":"private, no-store"}});
   }
 }
+
