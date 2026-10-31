@@ -2138,6 +2138,8 @@ function PredictionExplanation() {
   const [record, setRecord] = useState<{decision?:string;status?:string;decision_explanation?:{reason?:string;reason_code?:string;scientific_readiness?:string;requires_independent_adjudication?:boolean;requires_outcome_calibration?:boolean}} | null>(null);
   const [error, setError] = useState("");
   const [blockers, setBlockers] = useState<string[] | null>(null);
+  const [comparisonRows, setComparisonRows] = useState<{field:string;status:string;declaration_sources?:string[];reported_field_present?:boolean}[] | null>(null);
+  const [documentCounts, setDocumentCounts] = useState<{PROTOCOL?:number;SAP?:number} | null>(null);
   const [evidenceError, setEvidenceError] = useState("");
   const [evidenceCheckedAt, setEvidenceCheckedAt] = useState("");
   const [busy, setBusy] = useState(false);
@@ -2146,7 +2148,7 @@ function PredictionExplanation() {
     const id = nct.trim().toUpperCase();
     if (!/^NCT[0-9]{8}$/.test(id)) { setRecord(null); setError("Enter an NCT identifier with eight digits."); return; }
     const version = ++requestVersion.current;
-    setBusy(true); setError(""); setRecord(null); setBlockers(null); setEvidenceError(""); setEvidenceCheckedAt("");
+    setBusy(true); setError(""); setRecord(null); setBlockers(null); setComparisonRows(null); setDocumentCounts(null); setEvidenceError(""); setEvidenceCheckedAt("");
     try {
       const response = await fetch("/api/phase3-trials/" + id + "/predictions", {cache:"no-store"});
       if (!response.ok) throw new Error("Prediction service unavailable: " + response.status);
@@ -2157,7 +2159,7 @@ function PredictionExplanation() {
         if (!evidenceResponse.ok) throw new Error("Statistical evidence unavailable (HTTP " + evidenceResponse.status + ")");
         if (evidenceResponse.ok) {
           const evidence = await evidenceResponse.json();
-          if (version === requestVersion.current) { setBlockers(Array.isArray(evidence.readiness_blockers) ? evidence.readiness_blockers.filter((v: unknown): v is string => typeof v === "string") : []); setEvidenceCheckedAt(new Date().toLocaleString()); }
+          if (version === requestVersion.current) { setBlockers(Array.isArray(evidence.readiness_blockers) ? evidence.readiness_blockers.filter((v: unknown): v is string => typeof v === "string") : []); setComparisonRows(Array.isArray(evidence.comparisons) ? evidence.comparisons : []); setDocumentCounts(evidence.integrity_matched_document_counts || {}); setEvidenceCheckedAt(new Date().toLocaleString()); }
         }
       } catch (e) { if (version === requestVersion.current) setEvidenceError(e instanceof Error ? e.message : "Statistical evidence unavailable"); }
     } catch (e) { if (version === requestVersion.current) setError(e instanceof Error ? e.message : "Unable to load prediction"); }
@@ -2166,7 +2168,7 @@ function PredictionExplanation() {
   return <div className="panel" aria-label="FDA prediction explanation">
     <h3>FDA DECISION · WHY THIS PREDICTION?</h3>
     <label htmlFor="prediction-nct">Trial NCT</label>{" "}
-    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setEvidenceError("");setEvidenceCheckedAt("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
+    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setComparisonRows(null);setDocumentCounts(null);setEvidenceError("");setEvidenceCheckedAt("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
     <button type="button" disabled={busy} onClick={()=>void lookup()}>{busy ? "Loading…" : "Get prediction and reasons"}</button>
     {error && <p role="alert">{error}</p>}
     {record && <>
@@ -2181,6 +2183,10 @@ function PredictionExplanation() {
         {evidenceCheckedAt && <p><strong>Evidence checked:</strong> {evidenceCheckedAt} (request time, not FDA source publication time)</p>}
         <p><strong>Statistical evidence gaps:</strong> {blockers === null ? "Not available" : blockers.length + " reported"}</p>
         {blockers && blockers.length > 0 && <ul>{blockers.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul>}
+        {comparisonRows && <details><summary>Protocol / SAP comparison details ({comparisonRows.length})</summary>
+          <p>Integrity-matched protocol documents: {documentCounts?.PROTOCOL ?? 0} · SAP documents: {documentCounts?.SAP ?? 0}</p>
+          {comparisonRows.length ? <ul>{comparisonRows.map(row=><li key={row.field}><strong>{row.field.replaceAll("_"," ")}:</strong> {row.status.replaceAll("_"," ")} · declaration sources: {row.declaration_sources?.join(", ") || "none"} · reported field: {row.reported_field_present ? "present" : "missing"}</li>)}</ul> : <p>No protocol/SAP comparison rows returned.</p>}
+        </details>}
         <p>Saved predictions do not establish validated FDA outcomes or trading suitability.</p>
       </details>
     </>}
