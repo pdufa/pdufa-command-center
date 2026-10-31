@@ -37,6 +37,19 @@ function req(path, options = {}) {
   } });
 }
 
+function auxiliaryTrialResponse(url) {
+  const match = String(url).match(/^\/api\/phase3-trials\/(NCT[0-9]{8})\/(readiness|statistical-consistency|source-inventory|predictions)$/);
+  if (!match) return null;
+  const identity = { nct_id: match[1] };
+  const values = {
+    readiness: { ...identity, decision: 'ABSTAIN', decision_pipeline: [], assessments: [], checks_available: 0, checks_total: 0, missing: ['Synthetic fixture has no adjudicated evidence'] },
+    'statistical-consistency': { ...identity, comparisons: [], comparison_ready: false, integrity_matched_document_counts: { PROTOCOL: 0, SAP: 0 }, readiness_blockers: ['MISSING_DOCUMENTS'] },
+    'source-inventory': { ...identity, sources: [] },
+    predictions: { ...identity, decision: 'ABSTAIN', status: 'NOT_ASSESSED', latest_prediction: null },
+  };
+  return new Response(JSON.stringify(values[match[2]]), { headers: { 'content-type': 'application/json' } });
+}
+
 test('source events retain sequence ordering, pending/loading/verified states and parent dependencies', () => {
   let state = parser.initialRun(run, nct, 'dossier-1');
   for (const e of [event(1), event(2, { status: 'LOADING' }), event(3, { status: 'VERIFIED', value: { name: 'Sponsor A' }, source })]) state = parser.reduceNctEvent(state, e);
@@ -157,6 +170,9 @@ test('client reconnects after incomplete EOF, deduplicates prior events and pers
   global.localStorage = { getItem: k => entries.get(k) || null, setItem: (k, v) => entries.set(k, v), removeItem: k => entries.delete(k) };
   let streams = 0;
   global.fetch = async (url, options = {}) => {
+    const auxiliary = auxiliaryTrialResponse(url);
+    if (auxiliary) return auxiliary;
+    assert.match(url, /^\/api\/nct-stream\//);
     if (options.method === 'POST') return new Response(JSON.stringify({ ...pointer, dossier_id: 'dossier-1', latest_sequence: 1 }), { headers: { 'content-type': 'application/json' } });
     streams += 1;
     if (streams === 1) return new Response(frames([event(1)]), { headers: { 'content-type': 'text/event-stream' } });
@@ -172,7 +188,9 @@ test('client reconnects after incomplete EOF, deduplicates prior events and pers
     const output = JSON.stringify(view.toJSON());
     assert.match(output, /Processing run completed/);
     assert.equal(streams, 2);
-    assert.equal(view.root.findAllByProps({ 'data-node-id': 'sponsor' }).length, 1);
+    const sourceChecks = view.root.findAllByType('details').find(node => node.findAllByType('summary').some(summary => summary.children.includes('Source checks')));
+    assert.ok(sourceChecks, 'source-check section remains available alongside scientific drill-down views');
+    assert.equal(sourceChecks.findAllByProps({ 'data-node-id': 'sponsor' }).length, 1);
     assert.deepEqual(JSON.parse(entries.get('pdufa_nct_processing_run_v1')), pointer);
   } finally {
     if (view) await act(async () => view.unmount());
@@ -186,6 +204,8 @@ test('reload restores a completed persisted snapshot without creating a new run 
   global.localStorage = { getItem: () => JSON.stringify(pointer), setItem() {}, removeItem() {} };
   let calls = 0;
   global.fetch = async (url, options = {}) => {
+    const auxiliary = auxiliaryTrialResponse(url);
+    if (auxiliary) return auxiliary;
     calls += 1;
     assert.equal(options.method, undefined);
     assert.equal(url, '/api/nct-stream/' + nct + '/runs/' + run);
@@ -211,6 +231,9 @@ test('changing NCT aborts the old stream and cannot mix its results into the new
   const nextNct = 'NCT76543210', nextRun = '18c17552-5365-4d3b-a3ed-42a13d8eaeb8';
   let oldSignal;
   global.fetch = async (url, options = {}) => {
+    const auxiliary = auxiliaryTrialResponse(url);
+    if (auxiliary) return auxiliary;
+    assert.match(url, /^\/api\/nct-stream\//);
     const second = url.includes(nextNct);
     if (options.method === 'POST') return new Response(JSON.stringify({ run_id: second ? nextRun : run, nct_id: second ? nextNct : nct, dossier_id: 'dossier-1', latest_sequence: 0 }), { headers: { 'content-type': 'application/json' } });
     if (!second) {

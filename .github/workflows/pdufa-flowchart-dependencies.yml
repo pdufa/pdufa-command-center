@@ -1,0 +1,36 @@
+name: Resolve flowchart dependency lock
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-flowchart-dependencies.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  resolve-public-dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Resolve public Mermaid dependencies in temporary storage
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/pdufa-flowchart-lock"
+          cp new-platform/frontend/package.json "$RUNNER_TEMP/pdufa-flowchart-lock/package.json"
+          cp new-platform/frontend/package-lock.json "$RUNNER_TEMP/pdufa-flowchart-lock/package-lock.json"
+          npm install --prefix "$RUNNER_TEMP/pdufa-flowchart-lock" --package-lock-only --ignore-scripts --no-audit --no-fund --save-exact mermaid@11.12.1
+      - name: Return only public dependency metadata
+        env:
+          LOCK_DIRECTORY: ${{ runner.temp }}/pdufa-flowchart-lock
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const lock = JSON.parse(fs.readFileSync(process.env.LOCK_DIRECTORY + '/package-lock.json', 'utf8'));
+          const encoded = Buffer.from(JSON.stringify(lock)).toString('base64');
+          const size = 12000, total = Math.ceil(encoded.length / size);
+          for (let i = 0; i < total; i++) console.log('PDUFA_PUBLIC_LOCK_CHUNK ' + i + '/' + total + ' ' + encoded.slice(i * size, (i + 1) * size));
+          console.log('PDUFA_PUBLIC_PACKAGE_JSON ' + fs.readFileSync(process.env.LOCK_DIRECTORY + '/package.json', 'utf8').replace(/\s+/g, ' '));
+          NODE

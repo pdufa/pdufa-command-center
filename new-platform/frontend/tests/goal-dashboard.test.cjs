@@ -16,8 +16,12 @@ const {goalSummary,daysUntilReportedDate,default:GoalDashboard}=require("../app/
 
 test("GOAL is the first top tab, immediately before SCANS, and supports deep link",()=>{
   const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
-  assert.match(source,/type TopNav = "GOAL" \| "SCANS" \| "RESULTS"/);
-  assert.ok(source.indexOf('>GOAL</button>')<source.indexOf('>SCANS</button>'));
+  const typeDeclaration=source.match(/type TopNav = ([^;]+);/);
+  assert.ok(typeDeclaration, "top-navigation type is present");
+  for(const name of ["GOAL","SCANS","RESULTS"]) assert.ok(typeDeclaration[1].includes(JSON.stringify(name)));
+  const navigation=source.slice(source.indexOf('<div className="worktop">'));
+  const firstButtons=[...navigation.matchAll(/>([A-Z]+)<\/button>/g)].slice(0,3).map(match=>match[1]);
+  assert.deepEqual(firstButtons,["GOAL","SCANS","RESULTS"],"visible tab order is independent of TypeScript union ordering");
   assert.ok(source.includes('if (requested === "GOAL") { setTop("GOAL"); return; }'));
   assert.ok(source.includes('{top==="GOAL" && <GoalDashboard'));
   assert.ok(source.includes('top!=="GOAL" && <div className="workflow-counts"'));
