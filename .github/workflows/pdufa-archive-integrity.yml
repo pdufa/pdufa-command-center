@@ -6,6 +6,10 @@ on:
       - data/daily_scan_results.json
       - scripts/verify_pdufa_archive.py
       - tests/test_verify_pdufa_archive.py
+      - tests/test_nightly_pacific_sequence.py
+      - scripts/pdufa_daily_results.py
+      - .github/workflows/pdufa-nightly-pacific-start.yml
+      - .github/workflows/pdufa-overnight-sequential.yml
       - new-platform/frontend/tests/master-build-evidence.test.cjs
       - new-platform/frontend/app/installation-audit/master-build-tasks.ts
       - new-platform/frontend/public/installation-audit/task-evidence.json
@@ -17,6 +21,10 @@ on:
       - data/daily_scan_results.json
       - scripts/verify_pdufa_archive.py
       - tests/test_verify_pdufa_archive.py
+      - tests/test_nightly_pacific_sequence.py
+      - scripts/pdufa_daily_results.py
+      - .github/workflows/pdufa-nightly-pacific-start.yml
+      - .github/workflows/pdufa-overnight-sequential.yml
       - new-platform/frontend/tests/master-build-evidence.test.cjs
       - new-platform/frontend/app/installation-audit/master-build-tasks.ts
       - new-platform/frontend/public/installation-audit/task-evidence.json
@@ -40,5 +48,7 @@ jobs:
         run: python3 scripts/verify_pdufa_archive.py
       - name: Test archive negative cases and completeness safeguards
         run: python3 -m unittest discover -s tests -p 'test_verify_pdufa_archive.py' -v
+      - name: Test complete overnight sequence, DST admission and dated archive handoff
+        run: python3 -m unittest discover -s tests -p 'test_nightly_pacific_sequence.py' -v
       - name: Test 546-task inventory and acceptance evidence integrity
         run: node --test new-platform/frontend/tests/master-build-evidence.test.cjs
