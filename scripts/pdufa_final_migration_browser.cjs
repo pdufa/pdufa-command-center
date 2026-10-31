@@ -171,10 +171,18 @@ async function testPool(context, page) {
     await page.waitForFunction(() => [...document.querySelectorAll('[role="status"]')].some(item => /Showing 51/.test(item.textContent)), null, { timeout: 65000 });
     await page.getByRole('button', { name: 'Previous', exact: true }).click();
   }
-  const scope = pool.scopeReconciliation || pool.overview?.scopeReconciliation;
-  if (!scope) return { blocked: true, blocker: 'canonical_archive_scope_catalog_union_not_exposed_legacy_subset_is_not_master_pool' };
+  const scope = await json(context, '/api/archive-scope', 'pool_archive_scope');
+  assert(scope.status === 'VERIFIED' && scope.scopeType === 'SAVED_EXACT_NCT_IDENTITY_PRESERVATION_NOT_FULL_UNIVERSE', 'pool_current_physical_nct_scope_verified_not_scientific_qualification');
   assert(integer(scope.originalScopeRecords) && integer(scope.archivePhysicalRecords) && integer(scope.unionDistinctTrials) && integer(scope.missingPoolTrials), 'pool_canonical_archive_scope_union_counts_present');
-  assert(scope.originalScopeRecords === 11622 && scope.archivePhysicalRecords === 11622 && scope.unionDistinctTrials >= 11622 && scope.missingPoolTrials === 0, 'pool_full_preserved_archive_universe_represented');
+  assert(scope.originalScopeRecords >= 11623 && scope.archivePhysicalRecords === scope.originalScopeRecords
+    && scope.unionDistinctTrials >= scope.originalScopeRecords && scope.missingPoolTrials === 0
+    && scope.missingExpectedArchiveRecords === 0
+    && scope.missingDatedManifestRecords === 0
+    && scope.publishedOutsideArchive === 0, 'pool_full_preserved_current_archive_scope_represents_original_11623_ncts');
+  assert(scope.currentScopeSha256 === scope.physicalArchiveSha256
+    && scope.currentScopeSha256 === scope.publishedPoolSha256, 'pool_current_archived_and_published_id_sets_identical');
+  result.counts.original_scope_ncts = scope.originalScopeRecords;
+  result.counts.dated_manifest_ncts = scope.datedManifestRecords;
 }
 async function testPipeline(context, page) {
   const data = await json(context, '/api/scope-funnel?view=pipeline&limit=50&offset=0', 'pipeline');
@@ -309,11 +317,16 @@ async function preserved(context) {
   assert(hash(after.events.slice(0, saved.latest.events.length)) === hash(saved.latest.events), 'original_saved_events_unchanged');
   assert(proof.unchanged === true && proof.database_sha256 === ORIGINAL, 'original_saved_dossier_unchanged_after_navigation');
   const fresh = await json(context, '/api/scope-funnel?view=pool&limit=50&offset=0', 'pool_preservation');
-  const scope = fresh.scopeReconciliation || fresh.overview?.scopeReconciliation;
-  if (!scope) return { blocked: true, blocker: 'full_original_scope_archive_pool_identity_reconciliation_not_exposed' };
-  assert(['originalScopeRecords', 'archivePhysicalRecords', 'catalogDistinctTrials', 'publishedDistinctTrials', 'unionDistinctTrials', 'missingExpectedArchiveRecords', 'archiveOutsideOriginalScope', 'catalogOutsideArchive', 'publishedOutsideArchive', 'missingPoolTrials'].every(key => integer(scope[key])), 'original_scope_reconciliation_counts_are_actual');
-  for (const key of ['originalScopeRecords', 'archivePhysicalRecords', 'unionDistinctTrials', 'missingExpectedArchiveRecords', 'missingPoolTrials']) result.counts[key] = scope[key];
-  assert(scope.originalScopeRecords === 11622 && scope.archivePhysicalRecords === 11622 && scope.missingExpectedArchiveRecords === 0 && scope.missingPoolTrials === 0 && scope.unionDistinctTrials >= scope.archivePhysicalRecords, 'original_11622_download_scope_preserved_in_pool');
+  const scope = await json(context, '/api/archive-scope', 'saved_archive_scope');
+  assert(scope.status === 'VERIFIED', 'current_archive_and_pool_identity_sets_verified');
+  assert(['originalScopeRecords', 'archivePhysicalRecords', 'catalogDistinctTrials', 'publishedDistinctTrials', 'unionDistinctTrials', 'missingExpectedArchiveRecords', 'archiveOutsideOriginalScope', 'catalogOutsideArchive', 'publishedOutsideArchive', 'missingPoolTrials', 'datedManifestRecords', 'missingDatedManifestRecords'].every(key => integer(scope[key])), 'original_scope_reconciliation_counts_are_actual');
+  for (const key of ['originalScopeRecords', 'archivePhysicalRecords', 'unionDistinctTrials', 'missingExpectedArchiveRecords', 'missingPoolTrials', 'datedManifestRecords']) result.counts[key] = scope[key];
+  assert(scope.originalScopeRecords >= 11623 && scope.archivePhysicalRecords === scope.originalScopeRecords
+    && scope.missingExpectedArchiveRecords === 0 && scope.archiveOutsideOriginalScope === 0
+    && scope.missingPoolTrials === 0 && scope.publishedOutsideArchive === 0
+    && scope.missingDatedManifestRecords === 0, 'all_saved_original_and_current_nct_identities_preserved');
+  assert(scope.currentScopeSha256 === scope.physicalArchiveSha256
+    && scope.currentScopeSha256 === scope.publishedPoolSha256, 'current_scope_physical_and_published_full_sets_reconcile');
 }
 async function mobile(browser, password) {
   const context = await safeContext(browser, { viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
