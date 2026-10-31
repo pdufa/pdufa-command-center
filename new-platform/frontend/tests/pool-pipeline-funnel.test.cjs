@@ -106,6 +106,7 @@ test("navigation links and API views remain independent of historical GEM preset
  assert.match(api,/readFile\(join\(process.cwd\(\),"public","phase3-census-2026-10-26.csv"\)/);
  assert.match(api,/authConfigured\(\)/);
  assert.match(api,/fetchReadOnlyWithWarmRetry/);
+ assert.match(api,/api\\/workspace\\?require_fresh=true/);
  assert.match(api,/signal:AbortSignal\.timeout\(50000\)/);
  assert.match(ui,/reviewMode/);
  assert.match(ui,/Not established/);
