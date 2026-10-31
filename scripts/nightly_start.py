@@ -8,7 +8,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
-RUN_TITLE = "ALL + GEM — PDUFA overnight"
+RUN_TITLE = "POOL + PIPELINE — PDUFA overnight"
 WORKFLOW = ".github/workflows/pdufa-overnight-sequential.yml"
 RECOVERY_CRONS = {f"{minute} {hour} * * *" for hour in (7, 8, 9) for minute in (5, 35)}
 # One spaced-out cron expression provides frequent recovery opportunities.
@@ -28,7 +28,6 @@ def decision(event, cron, runs, *, now=None):
     weekly_full = start.weekday() == 6  # Sunday night in Los Angeles, including after-midnight recovery
     result = {"run": False, "night_date_pacific": start.date().isoformat(),
               "scan_mode": "FULL" if weekly_full else "DELTA",
-              "gem_action": "RESCAN_ALL" if weekly_full else "REVERIFY_PARTIAL",
               "reason": ""}
     in_window = local.hour >= 20 or local.hour < 3
     primary_hour = start.astimezone(timezone.utc).hour
