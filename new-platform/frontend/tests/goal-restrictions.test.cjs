@@ -61,17 +61,15 @@ test("GOAL shows collapsible per-stage restrictions, saved priorities, and opens
       restrictions:groups,onOpen:section=>navigation.push(section)
     }));});
     const pipeline=tree.root.findByProps({"aria-label":"Pipeline saved restriction preview"});
-    const junior=tree.root.findByProps({"aria-label":"GEM JR saved restriction preview"});
-    const senior=tree.root.findByProps({"aria-label":"GEM saved restriction preview"});
     assert.match(pipeline.findByType("summary").children.join(""),/Active restrictions/);
     assert.ok(pipeline.findAllByType("li").length>=4);
     assert.match(JSON.stringify(tree.toJSON()),/\$300M/);
     assert.match(JSON.stringify(tree.toJSON()),/\$10B/);
-    assert.equal(junior.findAllByType("li").length,0);
-    assert.equal(senior.findAllByType("li").length,0);
+    assert.equal(tree.root.findAllByProps({"aria-label":"GEM JR saved restriction preview"}).length,0);
+    assert.equal(tree.root.findAllByProps({"aria-label":"GEM saved restriction preview"}).length,0);
     const buttons=tree.root.findAllByType("button").filter(x=>x.props.children==="Open restriction controls →");
-    assert.equal(buttons.length,3);
-    await act(async()=>{buttons[1].props.onClick();});
+    assert.equal(buttons.length,1);
+    await act(async()=>{buttons[0].props.onClick();});
     assert.deepEqual(navigation,["RESTRICTIONS"]);
   }finally{
     if(tree)await act(async()=>tree.unmount());
