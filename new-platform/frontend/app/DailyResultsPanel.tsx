@@ -21,7 +21,8 @@ type DailyRow = {
   run_started_at_utc?: string;
   scheduled_8pm_pacific_utc?: string;
   start_delay_minutes?: number;
-  scan_night_source?: "GUARDED_SCHEDULER_INPUT" | "ACTUAL_START_DATE_FALLBACK";
+  scan_night_source?: "GUARDED_SCHEDULER_INPUT" | "ACTUAL_START_DATE_FALLBACK" | "HISTORICAL_REPORT_RECONCILIATION";
+  timing_evidence_url?: string;
   sections: Partial<Record<"master"|"pipeline"|"designations"|"gem_jr"|"gem", SectionCounts>>;
   notes?: string[];
 };
@@ -68,7 +69,11 @@ function startLabel(row: DailyRow) {
   const offset = typeof delay==="number" && Number.isSafeInteger(delay)
     ? delay===0 ? "at 8 PM target" : delay>0 ? delay+" min after 8 PM target" : Math.abs(delay)+" min before 8 PM target"
     : "start delay not recorded";
-  const origin = row.scan_night_source==="GUARDED_SCHEDULER_INPUT"?"guarded Pacific scan night":"scheduler origin unverified";
+  const origin = row.scan_night_source==="GUARDED_SCHEDULER_INPUT"
+    ? "guarded Pacific scan night"
+    : row.scan_night_source==="HISTORICAL_REPORT_RECONCILIATION"
+    ? "reconciled from saved nightly report; scheduler punctuality unverified"
+    : "scheduler origin unverified";
   return time+" PT · "+offset+" · "+origin;
 }
 
@@ -134,7 +139,7 @@ export default function DailyResultsPanel() {
         : <>No completed nightly-run evidence registered for this date</>}
       {" · "}Counts are snapshots recorded for the selected Pacific calendar day, not numbers rolled into the next date.
     </p>
-    <p className={styles.source}><strong>Actual workflow start:</strong> {active?startLabel(active):"Unavailable"}. Workflow start timing does not establish that GitHub's scheduled trigger fired on time.</p>
+    <p className={styles.source}><strong>Recorded workflow start:</strong> {active?startLabel(active):"Unavailable"}. {active?.timing_evidence_url?.startsWith("https://github.com/pdufa/pdufa-command-center/blob/") ? <a href={active.timing_evidence_url} target="_blank" rel="noopener noreferrer">Start-time evidence ↗</a> : null} Workflow start timing does not establish that GitHub's scheduled trigger fired on time.</p>
     <div className={styles.cards}>
       {totals.map(({key,label,counts})=><div className={styles.card} key={key}>
         <div className={styles.cardName}>{label}</div>
