@@ -18,7 +18,7 @@ from pathlib import Path
 REPO = "pdufa/pdufa-command-center"
 SCANS = {"2": ("PIPELINE — trial inventory", "all_phase_scan_state.json"),
          "3": ("PIPELINE — clinical enrichment", "phase_pipeline_state.json"),
-         "4": ("GEM JR — Phase 3 readout", "phase3_intake_status.json")}
+         "4": ("PHASE 3 RESULTS — posted readout", "phase3_intake_status.json")}
 MISSING_FAMILIES = [
     "FDA regulatory decision/date verification",
     "SEC financing and dilution verification",
@@ -289,7 +289,7 @@ def gather(run_id, token, prior=None, *, artifacts_dir=None):
         "latest_run_id": int(run_id), "latest_run_url": run.get("html_url"),
         "latest_run_started_at_utc": run.get("run_started_at") or run.get("created_at"),
         "latest_run_conclusion": run.get("conclusion"),
-        "scope": "CLINICAL_PIPELINE_AND_GEM_JR_COLLECTORS_ONLY",
+        "scope": "CLINICAL_POOL_PIPELINE_AND_PHASE3_RESULTS_COLLECTORS_ONLY",
         "status": coverage,
         "verification": {
             "checked_at_utc": now(),
