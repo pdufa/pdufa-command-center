@@ -21,8 +21,8 @@ const segments=[
 type TaskStatus="Verified"|"In Progress"|"Blocked"|"Failed"|"Not Started"|"Unverified";
 type TaskEvidence={status:TaskStatus;checkedAt?:string;evidenceUrl?:string;note?:string};
 type TaskRegistry={updatedAt:string;tasks:Record<string,TaskEvidence>};
-type LiveObservation={taskId:string;requirement:string;probe:string;result:string;checkedAt:string;limitation:string};
-type LiveAudit={checkedAt:string;registryUpdatedAt?:string;tasks:Record<string,TaskEvidence>;checks?:Record<string,{status:string;httpStatus?:number;note:string}>;observations?:LiveObservation[];taskCount?:number};
+type LiveObservation={taskId:string;requirement:string;probe:string;result:string;checkedAt:string;limitation:string;mappingValid?:boolean};
+type LiveAudit={checkedAt:string;registryUpdatedAt?:string;tasks:Record<string,TaskEvidence>;checks?:Record<string,{status:string;httpStatus?:number;note:string}>;observations?:LiveObservation[];observationSummary?:{taskLinksChecked:number;taskLinksValid:number;probesHealthy:number;probesTotal:number};taskCount?:number};
 type Observation={status:string};
 type Snapshot={asOf:string;recordedAt?:string;observations?:Observation[]};
 const source="https://raw.githubusercontent.com/pdufa/pdufa-command-center/main/new-platform/frontend/data/mainDailyEvidenceSnapshots.json";
@@ -36,6 +36,7 @@ export default function MasterBuildProgress(){
  const [liveHealth,setLiveHealth]=useState<string>("Not checked");
  const [liveChecks,setLiveChecks]=useState<Record<string,{status:string;httpStatus?:number;note:string}>>({});
  const [operationalObservations,setOperationalObservations]=useState<LiveObservation[]>([]);
+ const [observationSummary,setObservationSummary]=useState<{taskLinksChecked:number;taskLinksValid:number;probesHealthy:number;probesTotal:number}|null>(null);
  useEffect(()=>{let active=true;async function refresh(){if(active)setLoading(true);try{
  const [snapshotResult,auditResult]=await Promise.allSettled([
   fetch(source+"?t="+Date.now(),{cache:"no-store"}).then(async res=>{if(!res.ok)throw Error("snapshot unavailable");const data=await res.json() as Snapshot[];const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");return latest;}),
@@ -49,6 +50,7 @@ export default function MasterBuildProgress(){
    setLiveHealth(audit.checks?.scanHealth?.status??"Not checked");
    setLiveChecks(audit.checks??{});
    setOperationalObservations(Array.isArray(audit.observations)?audit.observations:[]);
+   setObservationSummary(audit.observationSummary??null);
   }
   setError(snapshotResult.status==="rejected"||auditResult.status==="rejected");
   setChecked(new Date().toLocaleString());setLoading(false);
@@ -85,7 +87,8 @@ export default function MasterBuildProgress(){
  <div aria-label="Live operational connectivity checks" style={{border:"1px solid #94a3b8",padding:12,borderRadius:8,margin:"12px 0"}}><strong>LIVE / NOT LIVE — runtime checks</strong><p>These results show endpoint reachability only. Authentication required means access is protected, not that a scan failed.</p>{Object.keys(liveChecks).length===0?<p>Checks not available yet.</p>:Object.entries(liveChecks).map(([name,check])=><p key={name}><strong>{name}:</strong> {check.status==="reachable"?"LIVE (reachable)":check.status==="authentication_required"?"AUTHENTICATION REQUIRED":check.status==="unreachable"?"NOT REACHABLE":check.status==="http_error"?"HTTP ERROR":check.status==="expected_safety_response"?"EXPECTED SAFETY RESPONSE":check.status==="unexpected_response"?"UNEXPECTED RESPONSE":check.status==="ready"?"BACKEND/STORAGE HEALTHY":check.status==="not_ready"?"BACKEND/STORAGE NOT READY":check.status==="not_configured"?"NOT CONFIGURED":"UNKNOWN"} {check.httpStatus?"("+check.httpStatus+")":""} — {check.note}</p>)}</div>
  <details style={{margin:"12px 0",padding:12,border:"1px solid #94a3b8",borderRadius:8}}><summary style={{cursor:"pointer",fontWeight:700}}>TASK-LINKED LIVE OBSERVATIONS ({operationalObservations.length}) — not acceptance</summary>
  <p>Current connectivity signals are linked to specific task IDs. They may help prioritize verification, but never increase the completed count or replace an acceptance test.</p>
- {operationalObservations.length===0?<p>No task-linked operational probes available.</p>:<ul>{operationalObservations.map(item=><li key={item.taskId} style={{marginBottom:10}}><strong>{item.taskId}: {item.requirement}</strong> · {item.result.replaceAll("_"," ")} · checked {item.checkedAt}<p style={{margin:"3px 0"}}>{item.limitation}</p></li>)}</ul>}
+ {observationSummary && <p><strong>Probe responses:</strong> {observationSummary.probesHealthy}/{observationSummary.probesTotal} returned an expected operational result. <strong>Task mappings:</strong> {observationSummary.taskLinksValid}/{observationSummary.taskLinksChecked} matched the current master inventory. Neither number certifies installation completion.</p>}
+ {operationalObservations.length===0?<p>No task-linked operational probes available.</p>:<ul>{operationalObservations.map(item=><li key={item.taskId} style={{marginBottom:10}}><strong>{item.taskId}: {item.requirement}</strong> · {item.mappingValid===false?"TASK MAPPING ERROR":item.result.replaceAll("_"," ")} · checked {item.checkedAt}<p style={{margin:"3px 0"}}>{item.limitation}</p></li>)}</ul>}
  </details>
  <p><strong>MAIN Core Platform:</strong> {total?verified+" / "+total+" gates verified ("+(100*(verified||0)/total).toFixed(1)+"%)":"Loading verified snapshot…"} · Evidence date: {snap?.asOf||"unknown"}. SCIENCE and OUTCOME: <strong>not independently measured</strong>. Overall completion: <strong>not certified</strong>.</p>
  <p><a href="https://github.com/pdufa/pdufa-command-center/blob/main/docs/MASTER_BUILD_PROGRESS_2026-10-30.md" target="_blank" rel="noopener noreferrer">Full master task document and acceptance rules ↗</a></p>
