@@ -21,6 +21,7 @@ const segments=[
 type TaskStatus="Verified"|"In Progress"|"Blocked"|"Failed"|"Not Started"|"Unverified";
 type TaskEvidence={status:TaskStatus;checkedAt?:string;evidenceUrl?:string;note?:string};
 type TaskRegistry={updatedAt:string;tasks:Record<string,TaskEvidence>};
+type LiveAudit={checkedAt:string;registryUpdatedAt?:string;tasks:Record<string,TaskEvidence>;checks?:Record<string,{status:string;httpStatus?:number;note:string}>;taskCount?:number};
 type Observation={status:string};
 type Snapshot={asOf:string;recordedAt?:string;observations?:Observation[]};
 const source="https://raw.githubusercontent.com/pdufa/pdufa-command-center/main/new-platform/frontend/data/mainDailyEvidenceSnapshots.json";
@@ -33,11 +34,11 @@ export default function MasterBuildProgress(){
  const [loading,setLoading]=useState(false);
  const [liveHealth,setLiveHealth]=useState<string>("Not checked");
  useEffect(()=>{let active=true;async function refresh(){if(active)setLoading(true);try{const res=await fetch(source+"?t="+Date.now(),{cache:"no-store"});if(!res.ok)throw Error("source unavailable");const data=await res.json() as Snapshot[];
- const registryResponse=await fetch("/installation-audit/task-evidence.json?t="+Date.now(),{cache:"no-store"});
+ const registryResponse=await fetch("/api/installation-audit/live-task-evidence?t="+Date.now(),{cache:"no-store"});
  if(!registryResponse.ok)throw Error("task evidence unavailable");
- const registryData=await registryResponse.json() as TaskRegistry;
- const healthResponse=await fetch("/api/main-phase3-nightly-health?t="+Date.now(),{cache:"no-store"}).catch(()=>null);
- const healthState=healthResponse ? (healthResponse.ok ? "Endpoint responded successfully (scan completion not established)" : `Endpoint HTTP ${healthResponse.status}`) : "Endpoint unreachable";
+ const liveAudit=await registryResponse.json() as LiveAudit;
+ const registryData:TaskRegistry={updatedAt:liveAudit.registryUpdatedAt??liveAudit.checkedAt,tasks:liveAudit.tasks};
+ const healthState=liveAudit.checks?.scanHealth?.status??"Not checked";
  if(!registryData.tasks||typeof registryData.tasks!=="object")throw Error("invalid task registry");const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");if(active){setSnap(latest);setRegistry(registryData);setLiveHealth(healthState);setError(false);setChecked(new Date().toLocaleString());setLoading(false);}}catch{if(active){setError(true);setChecked(new Date().toLocaleString());setLoading(false);}}}refresh();const timer=setInterval(refresh,30*60*1000);return()=>{active=false;clearInterval(timer)}},[refreshToken]);
  const allTasks=masterBuildTasks.flatMap((items,i)=>items.map((task,j)=>({id:`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`,task})));
  const taskStatus=(id:string):TaskEvidence=>registry?.tasks[id]??{status:"Unverified"};
@@ -52,7 +53,7 @@ export default function MasterBuildProgress(){
  return <section aria-label="Master build progress" style={{border:"2px solid #334155",borderRadius:12,padding:18,margin:"22px 0",background:"#f8fafc"}}>
  <h2 style={{marginTop:0}}>BUILD PROGRESS · 15 segments</h2>
  <button type="button" onClick={()=>setRefreshToken(x=>x+1)} disabled={loading} style={{padding:"10px 16px",borderRadius:8,background:"#0f766e",color:"white",border:0,fontWeight:700,cursor:loading?"wait":"pointer"}}>{loading?"Checking saved evidence…":"🔄 Update Progress Now"}</button>
- <p><strong>Refresh check:</strong> every 30 minutes while this page is open. This reads the latest committed evidence snapshot; it does not run audits, create new evidence, or automatically update GitHub. A new snapshot is visible only after it is committed. {checked?"Last checked: "+checked+". ":""}{error?"Latest fetch failed; previous results may be stale.":""}</p>
+ <p><strong>Refresh check:</strong> every 30 minutes while this page is open. This reads the latest committed evidence snapshot and performs live connectivity observations; it does not certify task acceptance or automatically update GitHub. A new snapshot is visible only after it is committed. {checked?"Last checked: "+checked+". ":""}{error?"Latest fetch failed; previous results may be stale.":""}</p>
  <p><strong>Master task verification:</strong> {verifiedTasks} / {allTasks.length} verified ({(100*verifiedTasks/allTasks.length).toFixed(1)}%) · {progressTasks} in progress · {blockedTasks} blocked · {failedTasks} failed · {notStartedTasks} not started · {unverifiedTasks} unverified. Evidence registry: {registry?.updatedAt??"loading"}. Unverified does not mean unfinished.</p>
  <p><strong>Live scan-health endpoint:</strong> {liveHealth}. This is a connectivity check, not acceptance evidence or a completed scan.</p>
  <p><strong>MAIN Core Platform:</strong> {total?verified+" / "+total+" gates verified ("+(100*(verified||0)/total).toFixed(1)+"%)":"Loading verified snapshot…"} · Evidence date: {snap?.asOf||"unknown"}. SCIENCE and OUTCOME: <strong>not independently measured</strong>. Overall completion: <strong>not certified</strong>.</p>
