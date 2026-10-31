@@ -17,7 +17,10 @@ export type PoolTrialRecord = {
 export type PoolSnapshot = {
   pipeline:PoolTrialRecord[]; asOf?:string;
   sourceHealth?:{state?:string;clinicalRows?:number;regulatoryRows?:number;
-    pipelineSourceParity?:{exactPrograms?:number}};
+    pipelineSourceParity?:{exactPrograms?:number};
+    // Legacy Render branch still returns this retired *metadata key*; it is not
+    // a GEM/Streamlit membership or an active filtering dependency.
+    streamlitPipelineParity?:{exactPrograms?:number}};
 };
 export type PostPhase3Review = {
   nctId:string; ticker:string; company:string; drug:string|null; indication:string|null;
@@ -51,16 +54,22 @@ function validPool(value:unknown):value is PoolSnapshot {
   const v=value as Partial<PoolSnapshot>;
   const rows=v.pipeline;
   const health=v.sourceHealth;
+  // The independently deployed Render backend may still use the original
+  // source-parity metadata name; check either representation without altering
+  // source records or qualifying anyone for the restricted Pipeline.
+  const parity=health?.pipelineSourceParity||health?.streamlitPipelineParity;
   if(!Array.isArray(rows) || !health
       || typeof health.state!=="string"
       || health.state==="STALE"
-      || !health.pipelineSourceParity
-      || health.pipelineSourceParity.exactPrograms!==rows.length
+      || !parity
+      || parity.exactPrograms!==rows.length
       || !Number.isSafeInteger(health.clinicalRows)
       || !Number.isSafeInteger(health.regulatoryRows)
       || health.clinicalRows! + health.regulatoryRows! !== rows.length
       || rows.some(r=>!r || typeof r.id!=="string" || !r.id
-        || typeof r.ticker!=="string" || !r.ticker)) return false;
+        // Unrestricted POOL must retain unresolved issuer/ticker records.
+        // Missing ticker is a review item, never an eligibility pass.
+        || typeof r.ticker!=="string")) return false;
   return new Set(rows.map(r=>r.id)).size===rows.length;
 }
 export function reconcilePoolPipeline(raw:unknown,csvText:string,sourceInput:unknown):FunnelResult {
