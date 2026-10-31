@@ -33,6 +33,7 @@ import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
+import { detachGemAssociations, poolRuleDefinition } from "../lib/pool-pipeline-restrictions";
 import { catalogStages, catalogStagePriority, catalogDefinition, selectedRestrictionList, insertRestrictionIntoList, removeRestrictionFromList, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
@@ -754,17 +755,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [gemSavedOnly,setGemSavedOnly]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
   // One persisted set of restriction definitions and stage assignments drives
   // the central catalog and both GEM qualification scan checklists.
-  const [masterRestrictions,setMasterRestrictions]=useState<CatalogEntry[]>(defaultCatalogEntries);
+  const [masterRestrictions,setMasterRestrictions]=useState<CatalogEntry[]>(()=>detachGemAssociations(defaultCatalogEntries()));
   const [masterRestrictionsReady,setMasterRestrictionsReady]=useState(false);
   useEffect(()=>{
-    try{const raw=window.localStorage.getItem("pdufa-restriction-catalog-v1");
-      if(raw)setMasterRestrictions(restoreCatalogEntries(JSON.parse(raw)));}
+    try{const raw=window.localStorage.getItem("pdufa-pool-pipeline-catalog-v2") || window.localStorage.getItem("pdufa-restriction-catalog-v1");
+      if(raw)setMasterRestrictions(detachGemAssociations(restoreCatalogEntries(JSON.parse(raw))));}
     catch{/* Keep approved defaults if browser storage is unavailable. */}
     setMasterRestrictionsReady(true);
   },[]);
   useEffect(()=>{
     if(!masterRestrictionsReady)return;
-    try{window.localStorage.setItem("pdufa-restriction-catalog-v1",JSON.stringify(masterRestrictions));}
+    try{window.localStorage.setItem("pdufa-pool-pipeline-catalog-v2",JSON.stringify(detachGemAssociations(masterRestrictions)));}
     catch{/* Editing remains available in memory. */}
   },[masterRestrictions,masterRestrictionsReady]);
   type RestrictionPresetStage = "PIPELINE" | "GEM_JR" | "GEM";
@@ -775,23 +776,23 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [presetsReady,setPresetsReady]=useState(false);
   useEffect(()=>{
     try {
-      const saved=window.localStorage.getItem("pdufa-restriction-presets-v1");
+      const saved=window.localStorage.getItem("pdufa-pool-pipeline-presets-v2") || window.localStorage.getItem("pdufa-restriction-presets-v1");
       if(saved){
         const parsed=JSON.parse(saved);
-        setRestrictionPresets({PIPELINE:Array.isArray(parsed.PIPELINE)?parsed.PIPELINE:[],GEM_JR:Array.isArray(parsed.GEM_JR)?parsed.GEM_JR:[],GEM:Array.isArray(parsed.GEM)?parsed.GEM:[]});
+        setRestrictionPresets({PIPELINE:Array.isArray(parsed.PIPELINE)?parsed.PIPELINE.filter((p:RestrictionPreset)=>p&&typeof p.name==="string"&&Array.isArray(p.entries)).map((p:RestrictionPreset)=>({...p,entries:detachGemAssociations(restoreCatalogEntries(p.entries))})):[],GEM_JR:[],GEM:[]});
       }
     }catch{/* Keep presets usable in memory. */}
     setPresetsReady(true);
   },[]);
   useEffect(()=>{
     if(!presetsReady)return;
-    try{window.localStorage.setItem("pdufa-restriction-presets-v1",JSON.stringify(restrictionPresets));}catch{/* Browser storage unavailable. */}
+    try{window.localStorage.setItem("pdufa-pool-pipeline-presets-v2",JSON.stringify({PIPELINE:restrictionPresets.PIPELINE}));}catch{/* Browser storage unavailable. */}
   },[restrictionPresets,presetsReady]);
   function saveRestrictionPreset(stage:RestrictionPresetStage, overrideName?:string){
     const name=overrideName?.trim()||presetNames[stage].trim()||presetChoices[stage];
     if(!name)return;
     if(restrictionPresets[stage].some(p=>p.name===name)&&!window.confirm("Overwrite saved preset "+name+"?"))return;
-    setRestrictionPresets(old=>({...old,[stage]:[...old[stage].filter(p=>p.name!==name),{name,entries:masterRestrictions.map(e=>({...e,additionalStages:[...(e.additionalStages||[])],stagePriorities:{...e.stagePriorities}}))}]}));
+    setRestrictionPresets(old=>({...old,[stage]:[...old[stage].filter(p=>p.name!==name),{name,entries:detachGemAssociations(masterRestrictions).map(e=>({...e,additionalStages:[...(e.additionalStages||[])],stagePriorities:{...e.stagePriorities}}))}]}));
     setPresetChoices(old=>({...old,[stage]:name}));
     setPresetNames(old=>({...old,[stage]:""}));
   }
@@ -799,7 +800,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     const saved=restrictionPresets[stage].find(p=>p.name===presetChoices[stage]);
     if(!saved||!window.confirm("Load "+saved.name+" for "+stage.replace("_"," ")+"? Current unsaved changes to this list will be replaced."))return;
     const stored=new Map(saved.entries.map(e=>[e.id,e]));
-    setMasterRestrictions(current=>current.map(entry=>{
+    setMasterRestrictions(current=>detachGemAssociations(current.map(entry=>{
       const old=stored.get(entry.id);
       if(!old)return entry;
       const otherStages=catalogStages(entry).filter(s=>s!==stage);
@@ -810,7 +811,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         stagePriorities:priorityByStage,priority:stages.length?priorityByStage[stages[0]]||entry.priority:"",
         enabled:otherStages.length?entry.enabled:(included?old.enabled:false),
         value:otherStages.length?entry.value:old.value,maximum:otherStages.length?entry.maximum:old.maximum};
-    }));
+    })));
   }
   function bottomPresetSave(stage:RestrictionPresetStage){
     return <div style={{borderTop:"1px solid #a2b4a4",marginTop:16,paddingTop:14,display:"grid",gap:8}}>
@@ -825,7 +826,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   function restrictionPresetControls(stage:RestrictionPresetStage){
     return <div style={{border:"1px solid #a2b4a4",borderRadius:10,padding:12,margin:"12px 0",display:"grid",gap:9}}>
       <strong>SAVED RESTRICTION PRESETS — {stage.replace("_"," ")}</strong>
-      <small>Save this list's membership, priority, enabled status and numeric values. Stored in this browser; other lists' membership is preserved on load.</small>
+      <small>Save the Pool/Pipeline membership, priority, enabled status and values in this browser. GEM JR and GEM preset associations are excluded.</small>
       <select aria-label={stage+" saved restriction preset"} style={{width:"100%",maxWidth:440}} value={presetChoices[stage]} onChange={e=>setPresetChoices(old=>({...old,[stage]:e.target.value}))}>
         <option value="">Select a saved preset</option>
         {restrictionPresets[stage].map(p=><option key={p.name} value={p.name}>{p.name}</option>)}
@@ -1944,27 +1945,27 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <div className="panel" style={{padding:12,display:"grid",gap:8}}>
         <strong>SAVED RESTRICTION LISTS</strong>
         <label>View list <select value={restrictionListView} onChange={e=>setRestrictionListView(e.target.value as "PIPELINE"|"GEM_JR"|"GEM")}>
-          <option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option>
+          <option value="PIPELINE">Pipeline</option>
         </select></label>
         <div>{masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).length} saved restrictions</div>
         {masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).map(e=><div key={e.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-          <span>{catalogDefinition(e).title} · {e.enabled?"Enabled":"Disabled"}</span>
+          <span>{poolRuleDefinition(e).title} · {e.enabled?"Enabled":"Disabled"}</span>
           <button type="button" onClick={()=>setMasterRestrictions(old=>removeRestrictionFromList(old,e.id,restrictionListView))}>REMOVE</button>
         </div>)}
       </div>
       <div style={{fontWeight:800}}>RESTRICTION CLASSES — ALL 11 LISTED BELOW</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
-        const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
+        const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>poolRuleDefinition(a).title.localeCompare(poolRuleDefinition(b).title));
         return <details className="panel" key={group.id} style={{margin:"12px 0",padding:12}}>
           <summary style={{fontWeight:700,cursor:"pointer"}}>{group.title} ({entries.length})</summary>
           <p className="subtle">{group.note}</p>
           <div style={{display:"grid",gap:8}}>{entries.map(entry=><div key={entry.id} style={{borderBottom:"1px solid var(--border, #ccc)",padding:"8px 0"}}>
-            <strong>{catalogDefinition(entry).title}</strong>
-            <div className="subtle">{catalogDefinition(entry).help}</div>
+            <strong>{poolRuleDefinition(entry).title}</strong>
+            <div className="subtle">{poolRuleDefinition(entry).help}</div>
             <div className="subtle">Lists: {catalogStages(entry).join(", ")||"None"} · {entry.enabled?"Active":"Inactive"}</div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,marginTop:10}}>
-              <label>Choose restriction list <select aria-label={"Destination list for "+catalogDefinition(entry).title} value={restrictionDestination[entry.id]||"PIPELINE"} onChange={e=>setRestrictionDestination(old=>({...old,[entry.id]:e.target.value as "PIPELINE"|"GEM_JR"|"GEM"}))}>
-                <option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option>
+              <label>Choose restriction list <select aria-label={"Destination list for "+poolRuleDefinition(entry).title} value={restrictionDestination[entry.id]||"PIPELINE"} onChange={e=>setRestrictionDestination(old=>({...old,[entry.id]:"PIPELINE"}))}>
+                <option value="PIPELINE">Pipeline</option>
               </select></label>
               {(()=>{
                 const stage=restrictionDestination[entry.id]||"PIPELINE";
@@ -1975,15 +1976,15 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
             </div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:12,marginTop:8}}>
               <label style={{display:"flex",alignItems:"center",gap:6}}><input type="checkbox" checked={entry.enabled} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,enabled:event.target.checked}:item))}/> Enabled</label>
-              {(catalogDefinition(entry).numeric || entry.value!=="" || entry.maximum!=="") && <>
+              {(poolRuleDefinition(entry).numeric || entry.value!=="" || entry.maximum!=="") && <>
                 <label style={{display:"flex",flexDirection:"column",gap:4}}>Minimum / value
-                  <input aria-label={catalogDefinition(entry).title+" minimum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.value} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,value:event.target.value}:item))}/>
+                  <input aria-label={poolRuleDefinition(entry).title+" minimum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.value} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,value:event.target.value}:item))}/>
                 </label>
-                {(entry.maximum!=="" || catalogDefinition(entry).maximum!==undefined) && <label style={{display:"flex",flexDirection:"column",gap:4}}>Maximum
-                  <input aria-label={catalogDefinition(entry).title+" maximum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.maximum} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,maximum:event.target.value}:item))}/>
+                {(entry.maximum!=="" || poolRuleDefinition(entry).maximum!==undefined) && <label style={{display:"flex",flexDirection:"column",gap:4}}>Maximum
+                  <input aria-label={poolRuleDefinition(entry).title+" maximum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.maximum} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,maximum:event.target.value}:item))}/>
                 </label>}
               </>}
-              {catalogDefinition(entry).unit && <span className="subtle">{catalogDefinition(entry).unit}</span>}
+              {poolRuleDefinition(entry).unit && <span className="subtle">{poolRuleDefinition(entry).unit}</span>}
             </div>
           </div>)}</div>
         </details>;
@@ -1991,18 +1992,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </section>}
     {top==="RESTRICTIONS" && restrictionTab==="PRESET" && <section aria-label="Saved restriction presets" style={{display:"grid",gap:12,width:"100%",minWidth:0}}>
       <h2>PRESET — Saved restriction configurations</h2>
-      <p className="subtle">Choose Pipeline, GEM JR or GEM presets below. Load, rename by saving under a new name, overwrite or delete. Edit restriction values on the RESTRICTIONS tab, then save your changes as a preset at the bottom of that list.</p>
-      {(["PIPELINE","GEM_JR","GEM"] as RestrictionPresetStage[]).map(stage=><div key={stage} className="panel" style={{padding:16}}>
+      <p className="subtle">Only Pipeline presets are active. Previous GEM JR/GEM presets remain in original browser storage and are not imported into this new Pool/Pipeline list.</p>
+      {(["PIPELINE"] as RestrictionPresetStage[]).map(stage=><div key={stage} className="panel" style={{padding:16}}>
         <h3>{stage.replace("_"," ")} PRESETS · {restrictionPresets[stage].length} saved</h3>
         {restrictionPresetControls(stage)}
       </div>)}
     </section>}
-    {snapshot && top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <section aria-label="Three independent restriction lists" style={{display:"flex",flexDirection:"column",gap:12,width:"100%",minWidth:0}}>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
+    {snapshot && top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <section aria-label="Independent Pool and Pipeline restrictions" style={{display:"flex",flexDirection:"column",gap:12,width:"100%",minWidth:0}}>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>POOL → PIPELINE RESTRICTIONS</summary><RestrictionImpact poolPipelineOnly rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
         {bottomPresetSave("PIPELINE")}
       </details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}{bottomPresetSave("GEM_JR")}</details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}{bottomPresetSave("GEM")}</details>
+      <p className="subtle">GEM JR / GEM associations are not part of this independent Pool → Pipeline restriction flow. Historical records remain archived separately.</p>
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
