@@ -6,6 +6,8 @@ import styles from "./FunnelWorkspace.module.css";
 import { calculateTherapyCosts, type TherapyCostComparison } from "../lib/post-phase3-population";
 import { CompetitiveColumnPurposes, CompetitiveAssessmentHeaders, CompetitiveAssessmentCells } from "./CompetitiveAssessmentColumns";
 import type { CompetitiveAssessment } from "../lib/competitive-assessment";
+import { pacificToday, type TimelineDates } from "../lib/pipeline-timeline";
+import { PipelineTimelineHeaders, PipelineTimelineCells } from "./PipelineTimelineColumns";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -15,6 +17,7 @@ type ReviewItem = {
  projectedAdoption12MonthPct?:number|null;
  therapyCostComparison?:TherapyCostComparison|null;
  commercialAssessment?:CompetitiveAssessment|null;
+ timeline?:TimelineDates|null;
 };
 type Overview = {
  poolRecords:number;poolClinicalRecords:number|null;poolRegulatoryRecords:number|null;
@@ -34,6 +37,8 @@ function display(v:string|number|null|undefined) {
 }
 export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
  const [reviewMode,setReviewMode]=useState(false);
+ const [today,setToday]=useState("");
+ useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
  const [queryInput,setQueryInput]=useState("");
  const [query,setQuery]=useState("");
  const [offset,setOffset]=useState(0);
@@ -124,18 +129,19 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
      {!loading && page && <>
        <p className={styles.muted} role="status">Showing {first}–{last} of {page.total.toLocaleString()} records in this view.</p>
        {page.total===0 && <p>No qualifying research rows found in this selected view. A zero row count does not establish zero eligible products.</p>}
-       {section==="pipeline"&&<><p className={styles.muted}>Competitive columns are source-gated. A blank assessment is neither zero nor evidence of failure. Expand each cell for its reason, exact purpose and required verification.</p><CompetitiveColumnPurposes /></>}
+       {section==="pipeline"&&<><p className={styles.muted}>Timeline columns count Pacific calendar days from the verified public Phase 3 readout release to today and to the FDA PDUFA target. Research ends at PDUFA − 3. Unverified dates never become numerical countdowns.</p><p className={styles.muted}>Competitive columns are source-gated. A blank assessment is neither zero nor evidence of failure. Expand each cell for its reason, exact purpose and required verification.</p><CompetitiveColumnPurposes /></>}
        <div className={styles.scroll}><table className={styles.table}>
          <thead><tr>
            {section==="pool"?
              ["Source ID","Ticker","Company","Drug","Indication","Recorded stage","Cap source value","Record type"].map(k=><th key={k}>{k}</th>):
-             <>{["NCT","Ticker","Company","Drug","Indication"].map(k=><th key={k}>{k}</th>)}<CompetitiveAssessmentHeaders />{["Registry status","Cap at census","POOL match","Screening status","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Details"].map(k=><th key={k}>{k}</th>)}</>
+             <>{["NCT","Ticker","Company","Drug","Indication"].map(k=><th key={k}>{k}</th>)}<PipelineTimelineHeaders /><CompetitiveAssessmentHeaders />{["Registry status","Cap at census","POOL match","Screening status","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Details"].map(k=><th key={k}>{k}</th>)}</>
            }
          </tr></thead>
          <tbody>{page.rows.map(r=>isReview(r)?
            <tr key={r.nctId}>
              <td><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
              <td>{r.ticker}</td><td>{r.company}</td><td>{display(r.drug)}</td><td>{display(r.indication)}</td>
+             <PipelineTimelineCells dates={r.timeline} today={today}/>
              <CompetitiveAssessmentCells row={r}/>
              <td>{r.censusStatus}</td><td>${r.capUsd.toLocaleString()}<small>as of {r.capAsOf.slice(0,10)}</small></td>
              <td>{r.poolStatus}</td><td>{r.qualification}</td>
