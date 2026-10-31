@@ -67,7 +67,7 @@ test("MAIN tracker visibly demarcates research census from Pipeline score/member
   const names=[...ui.matchAll(/component: "([^"]+)"/g)].map(x=>x[1]);
   assert.equal(names.length,15);
   assert.equal(names.filter(x=>x==="Pipeline").length,1);
-  assert.match(ui,/Archived stage evidence/);
+  assert.match(ui,/POOL \/ PIPELINE/);
   assert.match(ui,/8 PM Pacific/);
   assert.doesNotMatch(ui,/\bonClick=|\bonSubmit=|\bfetch\(|\buseEffect\(/);
 });
