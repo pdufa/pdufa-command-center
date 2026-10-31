@@ -212,7 +212,7 @@ def test_no_openfda_application_keeps_article_without_reconciling_fda_decision(e
     assert tuple(row) == ("COMPLETE", 0, "APPLICATION_NOT_INDEPENDENTLY_RECONCILED")
 
 
-def test_actual_fda_article_http_404_still_retries(engine, monkeypatch):
+def test_actual_fda_article_http_404_still_retries(engine, monkeypatch, caplog):
     """Only openFDA search zero-results is normalized; a missing source page is not."""
     def missing_page(url):
         assert url == regulatory.INDEX
@@ -228,3 +228,26 @@ def test_actual_fda_article_http_404_still_retries(engine, monkeypatch):
             "SELECT state,last_error_code FROM phase3_regulatory_sources WHERE url=:url"
         ), {"url": regulatory.INDEX}).first()
     assert tuple(row) == ("RETRY", "HTTP_404")
+    assert ("PDUFA_PHASE3_REGULATORY_SOURCE_FAILED code=HTTP_404 "
+            "source_kind=INDEX source_sha256=" + regulatory.digest(regulatory.INDEX)) in caplog.text
+    assert regulatory.INDEX not in caplog.text
+
+
+def test_article_404_diagnostic_uses_kind_and_digest_not_url(engine, monkeypatch, caplog):
+    target = "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-test"
+    with engine.begin() as conn:
+        conn.execute(text(
+            "UPDATE phase3_regulatory_sources SET state='COMPLETE',last_checked_at=:now WHERE kind='INDEX'"
+        ), {"now": regulatory.stamp()})
+        conn.execute(text(
+            "INSERT INTO phase3_regulatory_sources(url,kind,state) VALUES(:url,'ARTICLE','PENDING')"
+        ), {"url": target})
+    def fail(url):
+        assert url == target
+        raise ValueError("HTTP_404")
+    monkeypatch.setattr(regulatory, "fetch", fail)
+    outcome = regulatory.sync(engine, max_pages=1)
+    assert outcome["last_error_code"] == "HTTP_404"
+    assert ("source_kind=ARTICLE source_sha256=" + regulatory.digest(target)) in caplog.text
+    assert target not in caplog.text
+    assert outcome["reconciled_trial_application_links"] == 0
