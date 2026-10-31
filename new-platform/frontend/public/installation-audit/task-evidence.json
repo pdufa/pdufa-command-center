@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-30",
+  "updatedAt": "2026-10-31",
   "statusDefinitions": {
-    "Verified": "Dated task-specific acceptance evidence has passed",
-    "In Progress": "Implementation underway but not accepted",
+    "Verified": "Accepted only after requirement-specific runtime test passes and dated evidence identifies the result, expected behavior and deployed commit.",
+    "In Progress": "Code or deployment evidence exists but complete task-level runtime acceptance remains open",
     "Blocked": "Dependency prevents acceptance",
     "Failed": "Acceptance test failed",
     "Not Started": "Work has not begun",
@@ -11,34 +11,64 @@
   },
   "tasks": {
     "01-002": {
-      "status": "Verified",
+      "status": "In Progress",
       "checkedAt": "2026-10-30",
       "evidenceUrl": "https://vercel.com/pdufa/pdufa-new-dashboard/9toQZteQv8oVuhULv5WxJ3wzbx1y",
-      "note": "Vercel production deployment READY for evidence-registry release; deployment status only."
+      "note": "Vercel production deployment READY for evidence-registry release; deployment status only. Historical implementation/deployment evidence only; task acceptance not demonstrated.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Confirm production alias and exact SHA",
+        "Verify production route response and runtime behavior",
+        "Record dated acceptance test result"
+      ]
     },
     "13-001": {
-      "status": "Verified",
+      "status": "In Progress",
       "checkedAt": "2026-10-30",
       "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/1ae5743adf1722632d98bab370a3b36d2ecb4a34/new-platform/frontend/app/installation-audit/MasterBuildProgress.tsx",
-      "note": "BUILD PROGRESS component deployed to production."
+      "note": "BUILD PROGRESS component deployed to production. Historical implementation/deployment evidence only; task acceptance not demonstrated.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Open live tracker under intended access context",
+        "Confirm current figures match API response",
+        "Capture dated runtime acceptance evidence"
+      ]
     },
     "13-002": {
-      "status": "Verified",
+      "status": "In Progress",
       "checkedAt": "2026-10-30",
       "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/1f93d964591210947284e16e44e52509203990a2/new-platform/frontend/app/installation-audit/master-build-tasks.ts",
-      "note": "15 expandable sections rendered by production component."
+      "note": "15 expandable sections rendered by production component. Historical implementation/deployment evidence only; task acceptance not demonstrated.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Exercise all 15 expandable sections in a browser",
+        "Verify each section renders and remains accessible on mobile",
+        "Capture dated runtime acceptance evidence"
+      ]
     },
     "13-003": {
-      "status": "Verified",
+      "status": "In Progress",
       "checkedAt": "2026-10-30",
       "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/1f93d964591210947284e16e44e52509203990a2/new-platform/frontend/app/installation-audit/master-build-tasks.ts",
-      "note": "Itemized checklist rendered for 15 sections; inventory expanded to 546 tasks in later commit."
+      "note": "Itemized checklist rendered for 15 sections; inventory expanded to 546 tasks in later commit. Historical implementation/deployment evidence only; task acceptance not demonstrated.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Exercise 546 task rows and anchors in live UI",
+        "Confirm task labels and IDs match registry",
+        "Capture dated runtime acceptance evidence"
+      ]
     },
     "13-004": {
-      "status": "Verified",
+      "status": "In Progress",
       "checkedAt": "2026-10-30",
       "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/a14ce8412be4f4499ae2bd28fffc904b013b3ae1/new-platform/frontend/app/installation-audit/MasterBuildProgress.tsx",
-      "note": "Status categories supported in task registry; not an assertion all tasks are verified."
+      "note": "Status categories supported in task registry; not an assertion all tasks are verified. Historical implementation/deployment evidence only; task acceptance not demonstrated.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Exercise all status categories, tally and refresh behavior",
+        "Confirm no code-only task is marked accepted",
+        "Capture dated runtime acceptance evidence"
+      ]
     }
   }
 }
