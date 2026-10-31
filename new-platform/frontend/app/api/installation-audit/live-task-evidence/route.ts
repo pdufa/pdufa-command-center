@@ -33,5 +33,5 @@ export async function GET(request: Request) {
  // Runtime failures do not erase previously dated acceptance evidence. Live checks
  // are observations only; no requirement is auto-certified without a test contract.
  const counts=ids.reduce((acc,id)=>{const status=tasks[id].status;acc[status]=(acc[status]??0)+1;return acc;},{} as Record<string,number>);
- return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,counts,tasks,checks,automatedAcceptanceCoverage:0,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
+ return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,counts,tasks,checks,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:Object.values(checks).filter(check=>check.status==="reachable").length,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
 }
