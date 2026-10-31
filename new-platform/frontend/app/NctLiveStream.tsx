@@ -212,23 +212,28 @@ export default function NctLiveStream() {
     <p role="status" aria-live="polite">{notice}</p>
     {run ? <p className="subtle">{run.nct_id} · Run <code>{run.run_id}</code> · Event {run.sequence}{busy ? " · connected or reconnecting" : ""}</p> : null}
     {interrupted && run ? <button type="button" onClick={() => void load(run.nct_id, { nct_id: run.nct_id, run_id: run.run_id })}>Resume saved run</button> : null}
-    <details style={{margin:"12px 0",padding:12,border:"1px solid #b5c7b8",borderRadius:8}}>
-      <summary style={{cursor:"pointer",fontWeight:700}}>50-Level Scientific Analysis — planned depth and readiness</summary>
-      <p className="subtle">50 levels are the approved analysis design target, not 50 verified completed calculations. The live processing graph below currently exposes four dependency levels. No depth score or FDA confidence is inferred from this target.</p>
-      <details><summary>SCIENCE — evidence and scientific assessment</summary>
-        <p>Phase 3 efficacy, endpoint validity, effect sizes, safety, trial design, statistical robustness, subgroups, reproducibility and benefit–risk evidence.</p>
+    <details open style={{margin:"12px 0",padding:12,border:"1px solid #b5c7b8",borderRadius:8}}>
+      <summary style={{cursor:"pointer",fontWeight:700}}>50-Level Scientific Analysis — evidence and readiness</summary>
+      <p className="subtle">Design target: 50 analytical levels. This section displays actual persisted trial-processing evidence below, not fabricated assessments. The four-level dependency graph is not a 50-level FDA decision model.</p>
+      <p><strong>Trial:</strong> {run?.nct_id || "No trial selected"} · <strong>Evidence checks:</strong> {nodes.filter(n=>n.status==="VERIFIED").length} verified / {nodes.length} received</p>
+      <details open><summary>SCIENCE — collected evidence</summary>
+        {nodes.filter(n=>n.level>=3).length ? nodes.filter(n=>n.level>=3).map(n=><ProcessingNode key={"science-"+n.node_id} event={n}/>) : <p>No scientific source checks received. Start a trial run.</p>}
+        <p className="subtle">Source verification is not a completed efficacy, safety, or statistical scientific assessment.</p>
       </details>
-      <details><summary>OUTCOME — FDA decision risk</summary>
-        <p>Regulatory pathway, application status, FDA correspondence when public, manufacturing and inspection risk, precedents, review timelines and extension signals.</p>
+      <details><summary>OUTCOME — regulatory evidence</summary>
+        {nodes.filter(n=>n.level===2).length ? nodes.filter(n=>n.level===2).map(n=><ProcessingNode key={"outcome-"+n.node_id} event={n}/>) : <p>No regulatory assessment events received.</p>}
+        <p className="subtle">No verified PASS, CRL or EXTENSION probability is available from these processing events.</p>
       </details>
-      <details><summary>MAIN — PASS / CRL / EXTENSION decision</summary>
-        <p>Integrates verified SCIENCE and OUTCOME evidence; reports calibrated confidence only when independently established. Otherwise ABSTAIN / NOT READY with reasons.</p>
+      <details><summary>MAIN — decision and readiness</summary>
+        {nodes.filter(n=>n.level===1).length ? nodes.filter(n=>n.level===1).map(n=><ProcessingNode key={"main-"+n.node_id} event={n}/>) : <p>No MAIN processing event received.</p>}
+        <p><strong>FDA decision prediction: ABSTAIN — NOT READY.</strong> A completed source-processing run alone cannot support a regulatory decision prediction.</p>
       </details>
       <details><summary>Missing evidence and decision requirements</summary>
-        <p>Each missing item must identify the exact evidence, source sought, decision impact, verification status and next action. Nonpublic FDA material must be distinguished from documents not yet searched.</p>
+        {nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").length ? nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").map(n=><ProcessingNode key={"missing-"+n.node_id} event={n}/>) : <p>No failed, insufficient or pending source checks in the received events. This does not establish complete FDA evidence.</p>}
+        <p><strong>CRITICAL:</strong> A validated scientific/regulatory assessment, contemporaneous FDA review evidence where available, and independent calibration are still required before a defensible PASS / CRL / EXTENSION probability can be shown.</p>
       </details>
       <details><summary>Implementation and validation status</summary>
-        <p>Target depth: 50. Verified implemented depth: not established. Historical predictive accuracy: not established. No trading authorization.</p>
+        <p>Target depth: 50. Live evidence-processing dependency depth: 4. Verified operational 50-level analysis: not established. Independently validated historical decision accuracy: not established. No trading authorization.</p>
       </details>
     </details>
     {[4, 3, 2, 1].map(level => <details key={level} open={level === 4 || level === 1}>
