@@ -650,7 +650,7 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             if not trial:
                 raise HTTPException(404, "Trial not in verified catalog")
             docs = c.execute(text("""
-                SELECT e.document, e.sha256 FROM phase3_dossier_versions d
+                SELECT e.document, e.sha256, d.document AS dossier_document, d.sha256 AS dossier_sha256 FROM phase3_dossier_versions d
                 JOIN phase3_evidence e ON e.evidence_id=d.source_evidence_id
                 WHERE d.nct_id=:nct ORDER BY d.created_at DESC LIMIT 100
             """), {"nct": nct_id}).mappings().all()
@@ -662,11 +662,16 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             body = doc["document"]
             if not isinstance(body, str) or hashlib.sha256(body.encode("utf-8")).hexdigest().lower() != str(doc["sha256"]).lower():
                 continue
+            dossier_body = doc["dossier_document"]
+            if not isinstance(dossier_body, str) or hashlib.sha256(dossier_body.encode("utf-8")).hexdigest().lower() != str(doc["dossier_sha256"]).lower():
+                continue
             try:
                 payload = json.loads(body)
             except (ValueError, TypeError):
                 continue
             if not isinstance(payload, dict):
+                continue
+            if payload.get("nct_id") is not None and payload.get("nct_id") != nct_id:
                 continue
             kind = str(payload.get("document_type", "")).strip().upper().replace("-", "_").replace(" ", "_")
             kind = "SAP" if kind == "STATISTICAL_ANALYSIS_PLAN" else kind
