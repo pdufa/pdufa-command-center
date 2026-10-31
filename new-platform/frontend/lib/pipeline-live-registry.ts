@@ -31,7 +31,7 @@ function date(value:unknown):string|null{
  const s=text(value,10);
  if(!s||!/^\d{4}(-\d{2})?(-\d{2})?$/.test(s))return null;
  const iso=/^\d{4}-\d{2}-\d{2}$/.test(s);
- if(iso&&new Date(s+"T00:00:00Z").toISOString().slice(0,10)!==s)return null;
+ if(iso){const ms=Date.parse(s+"T00:00:00Z");if(!Number.isFinite(ms)||new Date(ms).toISOString().slice(0,10)!==s)return null;}
  return s;
 }
 export function normalizeRegistryStudy(raw:unknown,expectedNctId:string,asOf:string):RegistryReview{
