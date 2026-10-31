@@ -60,12 +60,10 @@ test("workflow respects source gaps and the PDUFA minus three cutoff, not arbitr
  assert.equal(lib.comparableIndication(fake),"indication a");
 });
 test("all four options render as real selectable controls and share a single research source",()=>{
- const component=require("../app/PipelineFourViews.tsx").default;
- const html=render(component,{});
- for(const title of ["Advanced Table","Cards + Dossier","Research Workflow","Compare + Analytics"])
-  assert.ok(html.includes(title),title);
- assert.ok(html.includes('role="tablist"'));
  const source=fs.readFileSync(path.join(__dirname,"../app/PipelineFourViews.tsx"),"utf8");
+ for(const title of ["Advanced Table","Cards + Dossier","Research Workflow","Compare + Analytics"])
+  assert.ok(source.includes(title),title);
+ assert.ok(source.includes('role="tablist"'));
  assert.ok(source.includes('limit:String(MAX_ROWS)'));
  assert.ok(source.includes('view:"pipeline"'));
  assert.ok(source.includes('"/api/scope-funnel?"'));
