@@ -14,6 +14,7 @@ import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import PublishedScansPanel from "./PublishedScansPanel";
 import HistoricalFdaReadiness from "./HistoricalFdaReadiness";
+import HistoricalPredictionMetrics from "./HistoricalPredictionMetrics";
 import GoalDashboard, { type GoalSection } from "./GoalDashboard";
 import { goalRestrictionSummaries } from "../lib/goal-restrictions";
 import DailyResultsPanel from "./DailyResultsPanel";
@@ -212,7 +213,7 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "WT" | "TRADING";
-type TopNav = "GOAL" | "SCANS" | "RESULTS" | "BACKUP" | "PDUFA" | "PREDICTION" | "CALENDAR" | "RESTRICTIONS";
+type TopNav = "METRICS" | "GOAL" | "SCANS" | "RESULTS" | "BACKUP" | "PDUFA" | "PREDICTION" | "CALENDAR" | "RESTRICTIONS";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -1768,6 +1769,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" className={top==="BACKUP"?"nav-selected":""} aria-current={top==="BACKUP"?"page":undefined} onClick={()=>{setTop("BACKUP");setMobileNavOpen(false);}}>BACKUP</button>
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="PREDICTION"?"nav-selected":""} aria-current={top==="PREDICTION"?"page":undefined} onClick={()=>{setTop("PREDICTION");setMobileNavOpen(false);}}>PREDICTION</button>
+      <button type="button" className={top==="METRICS"?"nav-selected":""} onClick={()=>{setTop("METRICS");setMobileNavOpen(false);}}>METRICS</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
       
       <button type="button" className={top==="RESTRICTIONS"?"nav-selected":""} aria-current={top==="RESTRICTIONS"?"page":undefined} onClick={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
@@ -2118,6 +2120,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     {top==="RESULTS" && <DailyResultsPanel />}
     {top==="BACKUP" && <BackupStatusPanel />}
     {top==="PDUFA" && nav==="TRADING" && <TradingDashboard tickers={tradingTickers} tagsReady={tagsReady} />}
+    {top==="METRICS" && <HistoricalPredictionMetrics />}
     {top==="SCANS" && <HistoricalFdaReadiness />}
     {top==="SCANS" && <PublishedScansPanel />}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
