@@ -61,6 +61,33 @@ class ArchiveIntegrityTests(unittest.TestCase):
         # A syntactically complete saved record is not independent FDA certification.
         self.assertFalse(summary["full_source_coverage_certified"])
 
+    def test_guarded_scan_start_delay_is_validated_against_original_timestamps(self):
+        def mark(report):
+            latest = report["days"][0]
+            latest.update({
+                "run_started_at_utc": "2026-10-31T03:15:44+00:00",
+                "scheduled_8pm_pacific_utc": "2026-10-31T03:00:00+00:00",
+                "start_delay_minutes": 15,
+                "scan_night_source": "GUARDED_SCHEDULER_INPUT",
+            })
+
+        errors, _ = self.check_mutation(mark)
+        self.assertEqual(errors, [])
+
+        def distort(report):
+            mark(report)
+            report["days"][0]["start_delay_minutes"] = 0
+
+        errors, _ = self.check_mutation(distort)
+        self.assertTrue(any("scan start delay does not match" in value for value in errors))
+
+        def corrupt_target(report):
+            mark(report)
+            report["days"][0]["scheduled_8pm_pacific_utc"] = "2026-10-31T04:00:00+00:00"
+
+        errors, _ = self.check_mutation(corrupt_target)
+        self.assertTrue(any("8 PM Pacific target mismatch" in value for value in errors))
+
     def test_negative_counts_are_invalid(self):
         errors, _ = self.check_mutation(
             lambda report: report["days"][0]["sections"]["gem_jr"].update(total=-1)
