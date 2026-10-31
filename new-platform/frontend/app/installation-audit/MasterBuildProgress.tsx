@@ -33,13 +33,22 @@ export default function MasterBuildProgress(){
  const [refreshToken,setRefreshToken]=useState(0);
  const [loading,setLoading]=useState(false);
  const [liveHealth,setLiveHealth]=useState<string>("Not checked");
- useEffect(()=>{let active=true;async function refresh(){if(active)setLoading(true);try{const res=await fetch(source+"?t="+Date.now(),{cache:"no-store"});if(!res.ok)throw Error("source unavailable");const data=await res.json() as Snapshot[];
- const registryResponse=await fetch("/api/installation-audit/live-task-evidence?t="+Date.now(),{cache:"no-store"});
- if(!registryResponse.ok)throw Error("task evidence unavailable");
- const liveAudit=await registryResponse.json() as LiveAudit;
- const registryData:TaskRegistry={updatedAt:liveAudit.registryUpdatedAt??liveAudit.checkedAt,tasks:liveAudit.tasks};
- const healthState=liveAudit.checks?.scanHealth?.status??"Not checked";
- if(!registryData.tasks||typeof registryData.tasks!=="object")throw Error("invalid task registry");const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");if(active){setSnap(latest);setRegistry(registryData);setLiveHealth(healthState);setError(false);setChecked(new Date().toLocaleString());setLoading(false);}}catch{if(active){setError(true);setChecked(new Date().toLocaleString());setLoading(false);}}}refresh();const timer=setInterval(refresh,30*60*1000);return()=>{active=false;clearInterval(timer)}},[refreshToken]);
+ useEffect(()=>{let active=true;async function refresh(){if(active)setLoading(true);try{
+ const [snapshotResult,auditResult]=await Promise.allSettled([
+  fetch(source+"?t="+Date.now(),{cache:"no-store"}).then(async res=>{if(!res.ok)throw Error("snapshot unavailable");const data=await res.json() as Snapshot[];const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");return latest;}),
+  fetch("/api/installation-audit/live-task-evidence?t="+Date.now(),{cache:"no-store"}).then(async res=>{if(!res.ok)throw Error("task evidence unavailable");return await res.json() as LiveAudit;})
+ ]);
+ if(active){
+  if(snapshotResult.status==="fulfilled")setSnap(snapshotResult.value);
+  if(auditResult.status==="fulfilled"&&auditResult.value.tasks&&typeof auditResult.value.tasks==="object"){
+   const audit=auditResult.value;
+   setRegistry({updatedAt:audit.registryUpdatedAt??audit.checkedAt,tasks:audit.tasks});
+   setLiveHealth(audit.checks?.scanHealth?.status??"Not checked");
+  }
+  setError(snapshotResult.status==="rejected"||auditResult.status==="rejected");
+  setChecked(new Date().toLocaleString());setLoading(false);
+ }
+ }catch{if(active){setError(true);setChecked(new Date().toLocaleString());setLoading(false);}}}refresh();const timer=setInterval(refresh,30*60*1000);return()=>{active=false;clearInterval(timer)}},[refreshToken]);
  const allTasks=masterBuildTasks.flatMap((items,i)=>items.map((task,j)=>({id:`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`,task})));
  const taskStatus=(id:string):TaskEvidence=>registry?.tasks[id]??{status:"Unverified"};
  const verifiedTasks=allTasks.filter(t=>taskStatus(t.id).status==="Verified").length;
