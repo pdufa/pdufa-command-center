@@ -58,7 +58,7 @@ function validPool(value:unknown):value is PoolSnapshot {
       || health.pipelineSourceParity.exactPrograms!==rows.length
       || !Number.isSafeInteger(health.clinicalRows)
       || !Number.isSafeInteger(health.regulatoryRows)
-      || health.clinicalRows!+health.regulatoryRows!==rows.length
+      || health.clinicalRows! + health.regulatoryRows! !== rows.length
       || rows.some(r=>!r || typeof r.id!=="string" || !r.id
         || typeof r.ticker!=="string" || !r.ticker)) return false;
   return new Set(rows.map(r=>r.id)).size===rows.length;
@@ -122,14 +122,16 @@ export function reconcilePoolPipeline(raw:unknown,csvText:string,sourceInput:unk
     },
   };
 }
-export type ScopeView="pool"|"pipeline";
+export type ScopeView="pool"|"pipeline"|"readout-review";
 export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string) {
   const q=query.trim().toLowerCase();
   const matches=(item:PoolTrialRecord|PostPhase3Review)=>[
     item.ticker,item.company,item.drug,item.indication,
     "nctId" in item?item.nctId:null,"id" in item?item.id:null,
   ].some(value=>(value||"").toLowerCase().includes(q));
-  const rows=view==="pool"?funnel.poolRows:funnel.reviewRows;
+  const rows=view==="pool"?funnel.poolRows:view==="pipeline"?
+    funnel.reviewRows.filter(r=>r.postPhase3Evidence==="REGISTRY_COMPLETED"&&r.poolStatus==="EXACT_MATCH"):
+    funnel.reviewRows.filter(r=>r.postPhase3Evidence!=="REGISTRY_COMPLETED"||r.poolStatus!=="EXACT_MATCH");
   const filtered=q?rows.filter(matches):rows;
   return {view,overview:funnel.overview,total:filtered.length,offset,limit,
     rows:filtered.slice(offset,offset+limit),
