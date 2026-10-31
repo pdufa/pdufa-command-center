@@ -19,6 +19,7 @@
 | 19 Phase 3 Census Review | 741 pinned 2026-10-26 source pointers (375 registry completed); historical company and cap links | Never auto-promote a census record to qualified |
 | 20 Registry Evidence Intake | A:X = one reviewed registry evidence CSV; Y = spreadsheet formula identity check | Import an authenticated per-NCT CSV; leave qualification NEEDS_REVIEW; independent reviewer sign-off required |
 | 21 Batch Review Tracker | 30 source-locked 25-NCT batch links (final 16), A:K; imported-NCT counts from tab 20 | Zero imports is NOT zero trials; imported means human-reviewed evidence is still required |
+| 22 Eligibility Gate Matrix | A:F historical 741 NCT source pointers; G:L, N:V, W:Y and AC manually supplied reviewed evidence; M and Z:AB formula gates; AD:AH reviewed registry intake links and historical status drift | Never infer qualified programs from historical cap, registry completion, or formula completeness; exact-source and independent validation required |
 
 ## Semantic rules
 - Treat one issuer–drug–indication regulatory program as commercial unit. Link one or more distinct NCTs and do not sum a drug's patient population once per NCT.
@@ -52,3 +53,12 @@ For a future secure sync job:
 - Import CSV **data rows only** into `20 Registry Evidence Intake` columns A:X, preserving Y's array validation and any existing reviewed NCT rows. Do not copy the CSV header as a new data row, overwrite the formula in column Y, or let a repeated export introduce duplicate NCT rows.
 - Status `IMPORTED — SOURCE REVIEW REQUIRED` indicates only that each NCT appears in the intake. It does not represent independent verification, qualified commercial programs, PASS probability, competitive advantage, a trade decision, FDA approval or fresh stock prices.
 - No automated Google Sheets credential is configured on the website. These links are manual, signed-in exports—not live website-to-Google Sheets synchronization or a background scan.
+
+## 22 Eligibility Gate Matrix audit requirements
+- The matrix preserves all 741 historical NCT IDs without editing historical source fields. It never overwrites the canonical Pool, research master, competitor inventory or original 20 assessments.
+- Evidence gates: (1) currently verified U.S. listing and dated issuer source, (2) current market cap $300M–$10B with sourced value checked within seven days, (3) original public pivotal Phase 3 results release with date and source, (4) exact NCT-to-drug-to-indication match with source, (5) documented commercial rights, (6) independent reviewer approval. FDA PDUFA date is optional and tracked separately for the PDUFA − 3 research cutoff; it is never inferred from registry completion.
+- The **result is documentation readiness, not real-world eligibility certification**. A fully filled, independently reviewed row says `DOCUMENTATION COMPLETE — EXTERNAL SOURCE AUDIT REQUIRED`; the user must verify source accuracy and all original claims separately.
+- The workbook reports disqualifying clues like not US-listed, out-of-band cap, not pivotal, mismatched drug indication and absent commercial rights as **REVIEW** items, not authoritative no-pass decisions without audited source.
+- Columns AD:AH read from the manual registry-intake tab 20, enforce unique-NCT lookup and expose status drift versus dated registry snapshot; manual Sheet edits are not synchronized to website.
+- The Charts Dashboard has an evidence-gate distribution chart and counts for historical NCTs and imported registry rows. A blank source is not counted as an adverse result, zero market cap, absent drug, or zero eligible programs.
+- In the website trial dossier, `Eligibility proof checklist · 7 gates` uses the authenticated research snapshot, NOT the Google Sheet's latest manual reviews. The Sheet link is a handoff, not an active sync or record certification.
