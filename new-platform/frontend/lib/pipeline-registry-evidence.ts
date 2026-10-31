@@ -45,8 +45,19 @@ export function registryEvidenceRow(review:RegistryReview,pinned:PinnedRegistryI
   "NEEDS_REVIEW — NOT QUALIFIED","REVIEW_REQUIRED"
  ];
 }
+export function renderRegistryEvidenceBatchCsv(
+ records:readonly {review:RegistryReview;pinned:PinnedRegistryIdentity}[]
+):string {
+ if(!records.length||records.length>25)throw Error("Batch must contain 1–25 exact-NCT source records");
+ const seen=new Set<string>();
+ const rows=records.map(({review,pinned})=>{
+  if(seen.has(pinned.nctId))throw Error("Duplicate registry NCT in review batch");
+  seen.add(pinned.nctId);
+  return registryEvidenceRow(review,pinned);
+ });
+ if(rows.some(row=>row.length!==REGISTRY_EVIDENCE_HEADERS.length))throw Error("Evidence schema drift");
+ return [REGISTRY_EVIDENCE_HEADERS,...rows].map(row=>row.map(v=>csvCell(String(v))).join(",")).join("\r\n")+"\r\n";
+}
 export function renderRegistryEvidenceCsv(review:RegistryReview,pinned:PinnedRegistryIdentity):string {
- const row=registryEvidenceRow(review,pinned);
- if(row.length!==REGISTRY_EVIDENCE_HEADERS.length)throw Error("Evidence schema drift");
- return [REGISTRY_EVIDENCE_HEADERS,row].map(r=>r.map(v=>csvCell(String(v))).join(",")).join("\r\n")+"\r\n";
+ return renderRegistryEvidenceBatchCsv([{review,pinned}]);
 }
