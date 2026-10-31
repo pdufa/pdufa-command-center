@@ -711,13 +711,16 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         if not reported:
             blockers.append("NO_STRUCTURED_STATISTICAL_RESULTS")
         for item in comparisons:
-            if item["status"] not in {"TEXT_MATCH", "TEXT_MISMATCH"}:
+            # A textual mismatch must not pass the evidence-consistency readiness gate.
+            # Complete comparison coverage and consistent comparison results are distinct.
+            if item["status"] != "TEXT_MATCH":
                 blockers.append(item["field"].upper() + "_" + item["status"])
         return {"nct_id": nct_id, "comparisons": comparisons,
                 "readiness_blockers": blockers, "readiness_blocker_count": len(blockers),
                 "integrity_matched_document_counts": evidence_counts,
                 "comparison_ready": bool(declarations["PROTOCOL"] and declarations["SAP"] and reported and all(
-                    item["status"] in {"TEXT_MATCH", "TEXT_MISMATCH"} for item in comparisons)),
+                    item["status"] == "TEXT_MATCH" for item in comparisons)),
+                "text_mismatch_count": sum(item["status"] == "TEXT_MISMATCH" for item in comparisons),
                 "comparison_complete": bool(comparisons and all(
                     item["status"] in {"TEXT_MATCH", "TEXT_MISMATCH"} for item in comparisons)),
                 "has_conflicting_declarations": any(
