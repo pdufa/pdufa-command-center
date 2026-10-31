@@ -21,7 +21,8 @@ const segments=[
 type TaskStatus="Verified"|"In Progress"|"Blocked"|"Failed"|"Not Started"|"Unverified";
 type TaskEvidence={status:TaskStatus;checkedAt?:string;evidenceUrl?:string;note?:string};
 type TaskRegistry={updatedAt:string;tasks:Record<string,TaskEvidence>};
-type LiveAudit={checkedAt:string;registryUpdatedAt?:string;tasks:Record<string,TaskEvidence>;checks?:Record<string,{status:string;httpStatus?:number;note:string}>;taskCount?:number};
+type LiveObservation={taskId:string;requirement:string;probe:string;result:string;checkedAt:string;limitation:string};
+type LiveAudit={checkedAt:string;registryUpdatedAt?:string;tasks:Record<string,TaskEvidence>;checks?:Record<string,{status:string;httpStatus?:number;note:string}>;observations?:LiveObservation[];taskCount?:number};
 type Observation={status:string};
 type Snapshot={asOf:string;recordedAt?:string;observations?:Observation[]};
 const source="https://raw.githubusercontent.com/pdufa/pdufa-command-center/main/new-platform/frontend/data/mainDailyEvidenceSnapshots.json";
@@ -34,6 +35,7 @@ export default function MasterBuildProgress(){
  const [loading,setLoading]=useState(false);
  const [liveHealth,setLiveHealth]=useState<string>("Not checked");
  const [liveChecks,setLiveChecks]=useState<Record<string,{status:string;httpStatus?:number;note:string}>>({});
+ const [operationalObservations,setOperationalObservations]=useState<LiveObservation[]>([]);
  useEffect(()=>{let active=true;async function refresh(){if(active)setLoading(true);try{
  const [snapshotResult,auditResult]=await Promise.allSettled([
   fetch(source+"?t="+Date.now(),{cache:"no-store"}).then(async res=>{if(!res.ok)throw Error("snapshot unavailable");const data=await res.json() as Snapshot[];const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");return latest;}),
@@ -46,6 +48,7 @@ export default function MasterBuildProgress(){
    setRegistry({updatedAt:audit.registryUpdatedAt??audit.checkedAt,tasks:audit.tasks});
    setLiveHealth(audit.checks?.scanHealth?.status??"Not checked");
    setLiveChecks(audit.checks??{});
+   setOperationalObservations(Array.isArray(audit.observations)?audit.observations:[]);
   }
   setError(snapshotResult.status==="rejected"||auditResult.status==="rejected");
   setChecked(new Date().toLocaleString());setLoading(false);
@@ -80,6 +83,10 @@ export default function MasterBuildProgress(){
  </details>
  <p><strong>Live scan-health endpoint:</strong> {liveHealth}. This is a connectivity check, not acceptance evidence or a completed scan.</p>
  <div aria-label="Live operational connectivity checks" style={{border:"1px solid #94a3b8",padding:12,borderRadius:8,margin:"12px 0"}}><strong>LIVE / NOT LIVE — runtime checks</strong><p>These results show endpoint reachability only. Authentication required means access is protected, not that a scan failed.</p>{Object.keys(liveChecks).length===0?<p>Checks not available yet.</p>:Object.entries(liveChecks).map(([name,check])=><p key={name}><strong>{name}:</strong> {check.status==="reachable"?"LIVE (reachable)":check.status==="authentication_required"?"AUTHENTICATION REQUIRED":check.status==="unreachable"?"NOT REACHABLE":check.status==="http_error"?"HTTP ERROR":"UNKNOWN"} {check.httpStatus?"("+check.httpStatus+")":""} — {check.note}</p>)}</div>
+ <details style={{margin:"12px 0",padding:12,border:"1px solid #94a3b8",borderRadius:8}}><summary style={{cursor:"pointer",fontWeight:700}}>TASK-LINKED LIVE OBSERVATIONS ({operationalObservations.length}) — not acceptance</summary>
+ <p>Current connectivity signals are linked to specific task IDs. They may help prioritize verification, but never increase the completed count or replace an acceptance test.</p>
+ {operationalObservations.length===0?<p>No task-linked operational probes available.</p>:<ul>{operationalObservations.map(item=><li key={item.taskId} style={{marginBottom:10}}><strong>{item.taskId}: {item.requirement}</strong> · {item.result.replaceAll("_"," ")} · checked {item.checkedAt}<p style={{margin:"3px 0"}}>{item.limitation}</p></li>)}</ul>}
+ </details>
  <p><strong>MAIN Core Platform:</strong> {total?verified+" / "+total+" gates verified ("+(100*(verified||0)/total).toFixed(1)+"%)":"Loading verified snapshot…"} · Evidence date: {snap?.asOf||"unknown"}. SCIENCE and OUTCOME: <strong>not independently measured</strong>. Overall completion: <strong>not certified</strong>.</p>
  <p><a href="https://github.com/pdufa/pdufa-command-center/blob/main/docs/MASTER_BUILD_PROGRESS_2026-10-30.md" target="_blank" rel="noopener noreferrer">Full master task document and acceptance rules ↗</a></p>
  {segments.map(([name,detail],i)=><details id={"audit-segment-"+String(i+1).padStart(2,"0")} key={name} style={{padding:"10px 0",borderTop:"1px solid #cbd5e1"}}><summary style={{cursor:"pointer",fontWeight:650}}>{String(i+1).padStart(2,"0")} · {name} — verification open</summary><p>{detail}.</p><p style={{fontSize:13}}><strong>{masterBuildTasks[i]?.length ?? 0} itemized tasks</strong> · {masterBuildTasks[i]?.filter((_,j)=>taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified").length??0} verified. Each task requires dated acceptance evidence. The list is a work inventory, not a claim that every task is running.</p><ol style={{paddingLeft:24}}>{(masterBuildTasks[i] ?? []).map((task,j)=><li key={j} style={{padding:"5px 0"}}><span style={{color:taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified"?"#047857":"#92400e",fontWeight:700}}> {taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified"?"✓":"○"} </span><strong style={{fontSize:11}}>{`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`}</strong> {task} <small style={{color:"#64748b"}}>— {taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status}</small>{taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).evidenceUrl?<a href={taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).evidenceUrl} target="_blank" rel="noopener noreferrer"> Evidence ↗</a>:null}</li>)}</ol><p style={{fontSize:12}}>Completion requires code, production runtime, acceptance test and dated source evidence. Existing historical audits remain in the linked detailed document.</p></details>)}
