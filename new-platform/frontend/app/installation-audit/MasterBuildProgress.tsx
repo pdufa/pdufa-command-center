@@ -71,6 +71,14 @@ export default function MasterBuildProgress(){
   return {section,id,task:masterBuildTasks[i][taskIndex],status:taskStatus(id).status,sectionId:"audit-segment-"+String(i+1).padStart(2,"0")};
  }).filter((item):item is {section:string;id:string;task:string;status:TaskStatus;sectionId:string}=>item!==null);
  const verifiedWithEvidence=allTasks.filter(t=>taskStatus(t.id).status==="Verified"&&Boolean(taskStatus(t.id).evidenceUrl)&&Boolean(taskStatus(t.id).checkedAt)).length;
+ const sectionBreakdown=segments.map(([name],i)=>{
+  const statuses=(masterBuildTasks[i]??[]).map((_,j)=>taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status);
+  const count=(status:TaskStatus)=>statuses.filter(item=>item===status).length;
+  return {name,id:"audit-segment-"+String(i+1).padStart(2,"0"),total:statuses.length,
+   verified:count("Verified"),progress:count("In Progress"),blocked:count("Blocked"),
+   failed:count("Failed"),notStarted:count("Not Started"),unverified:count("Unverified")};
+ });
+
  const verified=snap?.observations?.filter(o=>o.status==="Verified").length;
  const total=snap?.observations?.length;
  return <section aria-label="Master build progress" style={{border:"2px solid #334155",borderRadius:12,padding:18,margin:"22px 0",background:"#f8fafc"}}>
@@ -78,6 +86,13 @@ export default function MasterBuildProgress(){
  <button type="button" onClick={()=>setRefreshToken(x=>x+1)} disabled={loading} style={{padding:"10px 16px",borderRadius:8,background:"#0f766e",color:"white",border:0,fontWeight:700,cursor:loading?"wait":"pointer"}}>{loading?"Checking saved evidence…":"🔄 Update Progress Now"}</button>
  <p><strong>Refresh check:</strong> every 30 minutes while this page is open. This reads the latest committed evidence snapshot and performs live connectivity observations; it does not certify task acceptance or automatically update GitHub. A new snapshot is visible only after it is committed. {checked?"Last checked: "+checked+". ":""}{error?"Latest fetch failed; previous results may be stale.":""}</p>
  <p><strong>Master task verification:</strong> {verifiedTasks} / {allTasks.length} verified ({(100*verifiedTasks/allTasks.length).toFixed(1)}%) · {progressTasks} in progress · {blockedTasks} blocked · {failedTasks} failed · {notStartedTasks} not started · {unverifiedTasks} unverified. Evidence registry: {registry?.updatedAt??"loading"}. Unverified does not mean unfinished.</p>
+ <details style={{margin:"12px 0",padding:12,border:"1px solid #94a3b8",borderRadius:8}}><summary style={{fontWeight:700,cursor:"pointer"}}>15-SECTION COMPLETION BREAKDOWN — verified, pending and unverified</summary>
+ <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+  <thead><tr><th style={{textAlign:"left"}}>Section</th><th>Total</th><th>Verified</th><th>In progress</th><th>Blocked</th><th>Failed</th><th>Not started</th><th>Unverified</th></tr></thead>
+  <tbody>{sectionBreakdown.map(row=><tr key={row.id}><td><a href={"#"+row.id}>{row.name}</a></td>{[row.total,row.verified,row.progress,row.blocked,row.failed,row.notStarted,row.unverified].map((value,j)=><td key={j} style={{textAlign:"center",padding:"5px 7px",borderTop:"1px solid #cbd5e1"}}>{value}</td>)}</tr>)}</tbody>
+ </table></div>
+ <p>Statuses come from the dated evidence registry, not inferred from deployments. Unverified does not mean the item is unfinished.</p>
+ </details>
  <p><strong>Recorded acceptance evidence:</strong> {verifiedWithEvidence} of {verifiedTasks} verified tasks have both a dated check and evidence link. Unverified tasks are not automatically failed or completed.</p>
  <details style={{margin:"12px 0",padding:12,border:"1px solid #94a3b8",borderRadius:8}}><summary style={{fontWeight:700,cursor:"pointer"}}>NEXT VERIFICATION QUEUE — one outstanding task per segment ({nextAuditQueue.length})</summary>
  <p>These are inventory priorities, not evidence that the work is unimplemented. Verify code, operation, acceptance test and dated proof before marking a task complete.</p>
