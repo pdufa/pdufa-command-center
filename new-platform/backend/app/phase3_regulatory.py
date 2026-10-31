@@ -343,7 +343,13 @@ def sync(engine, max_pages=3):
             except Exception as exc:
                 # Keep failure logs visible without source bodies or credentials.
                 code = str(exc) if isinstance(exc, ValueError) and re.fullmatch(r"[A-Z0-9_,]{1,120}", str(exc)) else type(exc).__name__
-                LOG.warning("PDUFA_PHASE3_REGULATORY_SOURCE_FAILED code=%s", code)
+                # Log a stable public-source fingerprint, not raw URLs or query
+                # strings. The persisted source registry retains the full URL.
+                kind = source["kind"] if source["kind"] in {"INDEX", "ARTICLE"} else "UNKNOWN"
+                LOG.warning(
+                    "PDUFA_PHASE3_REGULATORY_SOURCE_FAILED code=%s source_kind=%s source_sha256=%s",
+                    code, kind, digest(source["url"]),
+                )
                 with engine.begin() as c:
                     c.execute(text("""UPDATE phase3_regulatory_sources SET state='RETRY',attempts=attempts+1,
                         last_error_code=:error,next_retry_at=:retry,last_checked_at=:at WHERE url=:url"""),
