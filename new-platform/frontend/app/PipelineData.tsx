@@ -6,6 +6,7 @@ import TrialFields from "./TrialFields";
 import DetailSheet, {type DetailItem} from "./DetailSheet";
 import { TrialDesignationCells, useTrialDesignations } from "./TrialDesignations";
 import { DESIGNATION_COLUMNS } from "../lib/trial-designations";
+import { COMPETITIVE_STRATEGIES } from "../lib/competitive-strategies";
 import CandidateAssessments, { AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSort, type PipelineSortKey, type RegistrySortIndex } from "../lib/pipeline-data";
@@ -13,7 +14,7 @@ import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSo
 const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = [
   { label: "Details" }, { label: "Score trial" }, { label: "#" }, { label: "Program ID", key: "programId" },
   { label: "Ticker / company", key: "ticker", sortLabel: "ticker" },
-  { label: "Drug / study" }, { label: "Indication" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
+  { label: "Drug / study" }, { label: "Indication" }, { label: "Competitive strategies" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
   { label: "NCT ID", key: "nctId" }, { label: "Trial status", key: "status" },
   { label: "Primary completion", key: "primaryCompletion" }, { label: "PDUFA", key: "pdufaDate" },
   ...DESIGNATION_COLUMNS.map(({ label }) => ({ label })),
@@ -29,6 +30,22 @@ type TrialSummary = {
   statistical_analyses?: number; p_value_count?: number; p_value_status?: string;
 };
 type Summaries = { ids: string; records: Record<string, TrialSummary> };
+
+function CompetitiveStrategiesCell({ row }: { row: Candidate }) {
+  const identity = row.drug || row.programId || row.nctId || row.id;
+  return <details className="pipeline-competitive-strategies">
+    <summary aria-label={"View ranked competitive strategies for " + identity}>
+      View ranked 1–10<small>Therapy not yet assessed</small>
+    </summary>
+    <p className="subtle small">General adoption priorities, from highest to lowest default importance. These are NOT verified advantages for this therapy, and the order may change by indication. Clinical efficacy, payer access, and commercial adoption do not establish FDA approval.</p>
+    <ol>{COMPETITIVE_STRATEGIES.map(strategy => <li key={strategy.id}>
+      <strong>{strategy.label}</strong>
+      <p>{strategy.potentialBenefit}</p>
+      <small>Verify: {strategy.evidenceRequired}</small>
+    </li>)}</ol>
+    <p className="subtle small">Trial-specific rank, market-share forecast, and confidence: insufficient verified comparator data. Do not infer a score.</p>
+  </details>;
+}
 
 export default function PipelineData({ rows, filterSummary }: { rows: Candidate[]; filterSummary?: string }) {
   const [detailItem, setDetailItem] = useState<DetailItem|null>(null);
@@ -150,7 +167,8 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
           <td className="pipeline-study-cell"><strong>{nct ?
             <a className="trial-sheet-link" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">{row.drug || saved?.study_title || nct} ↗</a> :
             row.drug || saved?.study_title || "Not reported"}</strong>{saved?.study_title && <small>{saved.study_title}</small>}</td>
-          <td className="pipeline-study-cell">{row.indication || "Not reported"}</td><td>{row.trialFilters?.registeredPhase || "Unknown"}</td><td>{row.stage || "Unknown"}</td>
+          <td className="pipeline-study-cell">{row.indication || "Not reported"}</td>
+          <td><CompetitiveStrategiesCell row={row} /></td><td>{row.trialFilters?.registeredPhase || "Unknown"}</td><td>{row.stage || "Unknown"}</td>
           <td>{nct ? <a className="trial-sheet-link" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">{nct} · Full trial ↗</a> : "No linked trial"}</td>
           <td>{saved?.status?.replaceAll("_", " ") || (nct ? loading ? "Loading…" : "Not available" : "Regulatory program")}</td>
           <td>{saved?.primary_completion_date?.date || "Not reported"}<small>{saved?.primary_completion_date?.type}</small></td>
