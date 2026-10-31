@@ -26,8 +26,8 @@ export async function GET(request: Request) {
  // Check the configured backend directly from the server, without exposing its URL or keys.
  // A successful HTTP response alone is insufficient: require the expected service,
  // healthy application state and an affirmative persistent-storage check.
- const backendBase = process.env.PDUFA_API_BASE_URL?.replace(/\\/$/, "");
- if (!backendBase || !/^https:\\/\\/[^/]+/.test(backendBase)) {
+ const backendBase = process.env.PDUFA_API_BASE_URL?.replace(new RegExp("/$"), "");
+ if (!backendBase || !backendBase.startsWith("https://")) {
   checks.backendDatabase={status:"not_configured",checkedAt,note:"Backend URL is not configured; database readiness cannot be established."};
  } else {
   try {
