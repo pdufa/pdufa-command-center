@@ -11,8 +11,10 @@ const auth = require('../lib/auth.ts');
 const routes = {
   'archive-health': require('../app/api/archive-health/route.ts'),
   'archive-manifest': require('../app/api/archive-manifest/route.ts'),
+  'archive-scope': require('../app/api/archive-scope/route.ts'),
 };
 const health = { status: 'REVIEW_REQUIRED', archived_trials: 2, manifest_verification: 'PASS', verification_overdue: true, checks: { physical_records: 2 } };
+const scope = {status:'VERIFIED',originalScopeRecords:11623,archivePhysicalRecords:11623,missingPoolTrials:0};
 const manifest = { manifest: { records: [{ nct_id: 'NCT00116805', sha256: 'a'.repeat(64) }], expected_nct_ids: ['NCT00116805'] }, manifest_sha256: 'b'.repeat(64), checksum_valid: true };
 function setup() {
   const keys = ['DASHBOARD_PASSWORD', 'SESSION_SIGNING_KEY', 'PDUFA_API_BASE_URL', 'PDUFA_INTERNAL_API_KEY'];
@@ -40,7 +42,7 @@ for (const [resource, route] of Object.entries(routes)) {
     } finally { restore(); }
   });
   test(resource + ': relays only existing GET report and preserves actual evidence status', async () => {
-    const restore = setup(), expected = resource === 'archive-health' ? health : manifest;
+    const restore = setup(), expected = resource === 'archive-health' ? health : resource === 'archive-manifest' ? manifest : scope;
     const calls = [];
     global.fetch = async (url, options) => {
       calls.push({ url, options });

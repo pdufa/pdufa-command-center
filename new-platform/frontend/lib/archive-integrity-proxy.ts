@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authConfigured, COOKIE_NAME, hasSession } from "./auth";
 
-type ArchiveResource = "archive-health" | "archive-manifest";
+type ArchiveResource = "archive-health" | "archive-manifest" | "archive-scope";
 const headers = { "Cache-Control": "private, no-store" };
 
 /** Relay existing read-only reports. This does not initiate an integrity audit. */
