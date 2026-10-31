@@ -88,6 +88,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        <Link href="/pool">Master POOL</Link>
        <Link href="/pipeline">Post–Phase 3 PIPELINE</Link>
        <Link href="/patient-population">#1 Patient Population</Link>
+       {section==="pipeline"&&<a href="/api/scope-funnel?view=census-review&format=csv" download>Export all 741 historical census candidates (CSV)</a>}
      </div>
    </header>
    <section className={styles.notice}>
