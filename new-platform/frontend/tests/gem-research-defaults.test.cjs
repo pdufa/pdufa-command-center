@@ -82,27 +82,17 @@ test("GEM and GEM JR keep original clinical and trading checkboxes",()=>{
  assert.equal(jr.clinical.length,4);
 });
 
-test("Current top workflow totals appear below navigation in Pipeline, GEM JR, GEM, WT order",()=>{
+test("Active workflow totals display only Pipeline, not retired GEM stages",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
- const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
  const nav=src.indexOf('id="pdufa-section-navigation"');
- const counters=src.indexOf('className="workflow-counts"');
- const afterCounts=src.indexOf('className="workspace-update-row"');
- assert.ok(nav>=0 && counters>nav && afterCounts>counters,"totals are directly after navigation and before overview");
- const totals=src.slice(counters,afterCounts);
- const ids=['id:"PIPELINE" as Nav','id:"GEM_JR" as Nav','id:"GEM" as Nav','id:"WT" as Nav'];
- let previous=-1;
- for(const id of ids){ const at=totals.indexOf(id);assert.ok(at>previous,"out-of-order count: "+id);previous=at; }
- assert.match(totals,/publishedCounts/);
- assert.match(totals,/count:snapshot \? verifiedStageCount\("GEM_JR"\) : publishedCounts\?\.gemJr \?\? null/);
- assert.match(totals,/count:snapshot \? verifiedStageCount\("GEM"\) : publishedCounts\?\.gem \?\? null/);
- assert.match(totals,/count:tagsReady \? pageTotals\.WT : null/);
- assert.match(totals,/count:snapshot \? pageTotals\.PIPELINE : publishedCounts\?\.pipeline \?\? null/);
- assert.match(totals,/item\.count===null\?"—":item\.count\.toLocaleString\("en-US"\)/);
- assert.match(css,/\.workflow-counts\s*\{[\s\S]*?grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
- assert.match(css,/@media\(max-width:750px\)\s*\{\s*\.workflow-counts\s*\{\s*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+ const count=src.indexOf('className="workflow-counts"');
+ const after=src.indexOf('className="workspace-update-row"');
+ assert.ok(nav>=0 && count>nav && after>count);
+ const active=src.slice(count,after);
+ assert.ok(active.includes('id:"PIPELINE" as Nav'));
+ for(const stage of ['id:"GEM_JR" as Nav','id:"GEM" as Nav','id:"WT" as Nav']) assert.ok(!active.includes(stage));
+ assert.ok(active.includes('count:snapshot ? pageTotals.PIPELINE : publishedCounts?.pipeline ?? null'));
 });
-
 test("Each top count is exactly the number displayed on its stage page",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  const totals=src.slice(src.indexOf('const pageTotals:'),src.indexOf('function wtButton'));
@@ -117,25 +107,14 @@ test("Each top count is exactly the number displayed on its stage page",()=>{
  assert.match(src,/const gemPageRows = \{ GEM_JR: gemCandidateRows\("GEM_JR"\), GEM: gemCandidateRows\("GEM"\) \}/);
 });
 
-test("Four illustrated top boxes match the reference colors and icons",()=>{
+test("Active top card uses Pipeline while archived icon designs remain available",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
- const iconSource=fs.readFileSync(path.join(__dirname,"../app/WorkflowStageIcon.tsx"),"utf8");
- assert.match(src,/import WorkflowStageIcon from "\.\/WorkflowStageIcon"/);
- assert.match(iconSource,/function WorkflowStageIcon\(\{stage\}/);
- assert.match(src,/workflow-count-icon/);
- assert.match(src,/workflow-count-copy/);
- assert.match(src,/className=\{"workflow-count workflow-count--"\+item\.id\.toLowerCase\(\)/);
- for(const color of ["pipeline","gem_jr","gem","wt"]){
-   assert.ok(css.includes(".migration-workspace .workflow-count--"+color+" {"),"missing color variant: "+color);
- }
- for(const color of ["#eaf3ff","#e6f9ef","#f1e9ff","#fff7e1"]){
-   assert.ok(css.includes(color),"missing reference color "+color);
- }
- assert.match(src,/label:"PIPELINE", count:snapshot \? pageTotals\.PIPELINE : publishedCounts\?\.pipeline \?\? null/);
- assert.match(src,/label:"GEM JR", count:snapshot \? verifiedStageCount\("GEM_JR"\) : publishedCounts\?\.gemJr \?\? null/);
- assert.match(src,/label:"GEM", count:snapshot \? verifiedStageCount\("GEM"\) : publishedCounts\?\.gem \?\? null/);
- assert.match(src,/label:"WT", count:tagsReady \? pageTotals\.WT : null/);
- assert.match(css,/\.workflow-count-icon svg/);
- assert.match(css,/\.workflow-counts\s*\{\s*display:grid;\s*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+ const icons=fs.readFileSync(path.join(__dirname,"../app/WorkflowStageIcon.tsx"),"utf8");
+ assert.ok(src.includes("workflow-count-icon"));
+ assert.ok(src.includes('label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : publishedCounts?.pipeline ?? null'));
+ assert.ok(!src.includes('id:"GEM_JR" as Nav, label:"GEM JR"'));
+ assert.ok(!src.includes('id:"GEM" as Nav, label:"GEM"'));
+ assert.ok(css.includes(".migration-workspace .workflow-count--pipeline"));
+ assert.ok(icons.includes("function WorkflowStageIcon"));
 });
