@@ -2140,6 +2140,7 @@ function PredictionExplanation() {
   const [blockers, setBlockers] = useState<string[] | null>(null);
   const [comparisonRows, setComparisonRows] = useState<{field:string;status:string;declaration_sources?:string[];reported_field_present?:boolean}[] | null>(null);
   const [documentCounts, setDocumentCounts] = useState<{PROTOCOL?:number;SAP?:number} | null>(null);
+  const [readiness, setReadiness] = useState<{checks?:Record<string,boolean>;checks_available?:number;checks_total?:number;missing?:string[];decision_pipeline?:{id:string;status:string;missing?:string[];reason?:string}[];assessments?:{id:string;status:string;reason?:string}[];limitation?:string} | null>(null);
   const [evidenceError, setEvidenceError] = useState("");
   const [evidenceCheckedAt, setEvidenceCheckedAt] = useState("");
   const [busy, setBusy] = useState(false);
@@ -2148,7 +2149,7 @@ function PredictionExplanation() {
     const id = nct.trim().toUpperCase();
     if (!/^NCT[0-9]{8}$/.test(id)) { setRecord(null); setError("Enter an NCT identifier with eight digits."); return; }
     const version = ++requestVersion.current;
-    setBusy(true); setError(""); setRecord(null); setBlockers(null); setComparisonRows(null); setDocumentCounts(null); setEvidenceError(""); setEvidenceCheckedAt("");
+    setBusy(true); setError(""); setRecord(null); setBlockers(null); setComparisonRows(null); setDocumentCounts(null); setReadiness(null); setEvidenceError(""); setEvidenceCheckedAt("");
     try {
       const response = await fetch("/api/phase3-trials/" + id + "/predictions", {cache:"no-store"});
       if (!response.ok) throw new Error("Prediction service unavailable: " + response.status);
@@ -2168,7 +2169,7 @@ function PredictionExplanation() {
   return <div className="panel" aria-label="FDA prediction explanation">
     <h3>FDA DECISION · WHY THIS PREDICTION?</h3>
     <label htmlFor="prediction-nct">Trial NCT</label>{" "}
-    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setComparisonRows(null);setDocumentCounts(null);setEvidenceError("");setEvidenceCheckedAt("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
+    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setComparisonRows(null);setDocumentCounts(null);setReadiness(null);setEvidenceError("");setEvidenceCheckedAt("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
     <button type="button" disabled={busy} onClick={()=>void lookup()}>{busy ? "Loading…" : "Get prediction and reasons"}</button>
     {error && <p role="alert">{error}</p>}
     {record && <>
@@ -2183,7 +2184,7 @@ function PredictionExplanation() {
         {evidenceCheckedAt && <p><strong>Evidence checked:</strong> {evidenceCheckedAt} (request time, not FDA source publication time)</p>}
         <p><strong>Statistical evidence gaps:</strong> {blockers === null ? "Not available" : blockers.length + " reported"}</p>
         {blockers && blockers.length > 0 && <ul>{blockers.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul>}
-        {comparisonRows && <details><summary>Protocol / SAP comparison details ({comparisonRows.length})</summary>
+        {readiness && <details><summary>SCIENCE / OUTCOME / MAIN readiness ({readiness.checks_available ?? 0}/{readiness.checks_total ?? 0} checks)</summary>\n          {readiness.decision_pipeline?.map(stage=><div key={stage.id}><p><strong>{stage.id}:</strong> {stage.status} {stage.reason ? "— " + stage.reason : ""}</p>{stage.missing?.length ? <ul>{stage.missing.map(item=><li key={item}>{item.replaceAll("_"," ")}</li>)}</ul> : null}</div>)}\n          <p><strong>Missing checks:</strong> {readiness.missing?.length ? readiness.missing.map(item=>item.replaceAll("_"," ")).join("; ") : "None reported"}</p>\n          <details><summary>Individual assessment statuses ({readiness.assessments?.length ?? 0})</summary><ul>{readiness.assessments?.map(item=><li key={item.id}><strong>{item.id.replaceAll("_"," ")}:</strong> {item.status}{item.reason ? " — " + item.reason : ""}</li>)}</ul></details>\n          <p>{readiness.limitation}</p>\n        </details>}\n        {comparisonRows && <details><summary>Protocol / SAP comparison details ({comparisonRows.length})</summary>
           <p>Integrity-matched protocol documents: {documentCounts?.PROTOCOL ?? 0} · SAP documents: {documentCounts?.SAP ?? 0}</p>
           {comparisonRows.length ? <ul>{comparisonRows.map(row=><li key={row.field}><strong>{row.field.replaceAll("_"," ")}:</strong> {row.status.replaceAll("_"," ")} · declaration sources: {row.declaration_sources?.join(", ") || "none"} · reported field: {row.reported_field_present ? "present" : "missing"}</li>)}</ul> : <p>No protocol/SAP comparison rows returned.</p>}
         </details>}
