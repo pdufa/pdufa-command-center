@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useState} from "react";
+import {masterBuildTasks} from "./master-build-tasks";
 const segments=[
 ["Infrastructure & deployment","Verify live production SHA, Vercel status, Render service, authentication, recovery"],
 ["Database & ingestion","Verify canonical trial identities, FDA/SEC/financial sources, freshness, backup/restore"],
@@ -35,6 +36,6 @@ export default function MasterBuildProgress(){
  <p><strong>Refresh check:</strong> every 30 minutes while this page is open. This reads the latest committed evidence snapshot; it does not run audits, create new evidence, or automatically update GitHub. A new snapshot is visible only after it is committed. {checked?"Last checked: "+checked+". ":""}{error?"Latest fetch failed; previous results may be stale.":""}</p>
  <p><strong>MAIN Core Platform:</strong> {total?verified+" / "+total+" gates verified ("+(100*(verified||0)/total).toFixed(1)+"%)":"Loading verified snapshot…"} · Evidence date: {snap?.asOf||"unknown"}. SCIENCE and OUTCOME: <strong>not independently measured</strong>. Overall completion: <strong>not certified</strong>.</p>
  <p><a href="https://github.com/pdufa/pdufa-command-center/blob/main/docs/MASTER_BUILD_PROGRESS_2026-10-30.md" target="_blank" rel="noopener noreferrer">Full master task document and acceptance rules ↗</a></p>
- {segments.map(([name,detail],i)=><details key={name} style={{padding:"10px 0",borderTop:"1px solid #cbd5e1"}}><summary style={{cursor:"pointer",fontWeight:650}}>{String(i+1).padStart(2,"0")} · {name} — verification open</summary><p>{detail}.</p><p>Required steps: confirm specification → inspect code → verify production runtime → run acceptance test → attach dated evidence. Until then, completion is not claimed.</p></details>)}
+ {segments.map(([name,detail],i)=><details key={name} style={{padding:"10px 0",borderTop:"1px solid #cbd5e1"}}><summary style={{cursor:"pointer",fontWeight:650}}>{String(i+1).padStart(2,"0")} · {name} — verification open</summary><p>{detail}.</p><p style={{fontSize:13}}><strong>{masterBuildTasks[i]?.length ?? 0} itemized tasks</strong> · Status: awaiting task-specific acceptance evidence. The list is a work inventory, not a claim that every task is running.</p><ol style={{paddingLeft:24}}>{(masterBuildTasks[i] ?? []).map((task,j)=><li key={j} style={{padding:"5px 0"}}><span aria-label="Not individually verified" style={{color:"#92400e",fontWeight:700}}>○ </span>{task} <small style={{color:"#64748b"}}>— verification pending</small></li>)}</ol><p style={{fontSize:12}}>Completion requires code, production runtime, acceptance test and dated source evidence. Existing historical audits remain in the linked detailed document.</p></details>)}
  </section>
 }
