@@ -1,0 +1,122 @@
+"""Read-only structural checks for the published PDUFA daily RESULTS archive.
+
+Passing does not certify source-family completeness, scan punctuality, or FDA evidence.
+"""
+from __future__ import annotations
+
+import json
+import sys
+from datetime import date, datetime
+from pathlib import Path
+from urllib.parse import urlparse
+
+ARCHIVE = Path(__file__).resolve().parents[1] / "data" / "daily_scan_results.json"
+REQUIRED = ("master", "pipeline", "designations", "gem_jr", "gem")
+NUMBERS = ("previous", "new", "updated", "removed", "total")
+
+
+def _timestamp(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return parsed.tzinfo is not None and parsed.utcoffset() is not None
+    except ValueError:
+        return False
+
+
+def check_archive(path: Path = ARCHIVE) -> tuple[list[str], dict]:
+    errors: list[str] = []
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return [f"Unable to load archive: {exc}"], {}
+    if not isinstance(document, dict):
+        return ["Archive must be a JSON object"], {}
+    if document.get("schema_version") != 1:
+        errors.append("Unexpected archive schema version")
+    if not _timestamp(document.get("updated_at_utc")):
+        errors.append("Missing timezone-aware archive updated_at_utc")
+
+    days = document.get("days")
+    if not isinstance(days, list) or not days:
+        return errors + ["days must be a nonempty list"], {}
+    dates: set[str] = set()
+    runs: set[int] = set()
+    last_date: str | None = None
+    counts: dict[str, int] = {}
+    for index, item in enumerate(days):
+        prefix = f"days[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{prefix}: expected object")
+            continue
+        day = item.get("date_pacific")
+        try:
+            if not isinstance(day, str) or date.fromisoformat(day).isoformat() != day:
+                raise ValueError()
+        except ValueError:
+            errors.append(f"{prefix}: invalid Pacific date")
+            day = None
+        if day:
+            if day in dates:
+                errors.append(f"{prefix}: duplicate Pacific date {day}")
+            if last_date and day > last_date:
+                errors.append(f"{prefix}: days are not in descending order")
+            dates.add(day)
+            last_date = day
+        run = item.get("run_id")
+        if type(run) is not int or run <= 0:
+            errors.append(f"{prefix}: missing/invalid run_id")
+        else:
+            if run in runs:
+                errors.append(f"{prefix}: duplicate run_id {run}")
+            runs.add(run)
+            expected_suffix = f"/actions/runs/{run}"
+            url = item.get("run_url")
+            if not isinstance(url, str) or urlparse(url).scheme != "https" or urlparse(url).netloc != "github.com" or not urlparse(url).path.endswith(expected_suffix):
+                errors.append(f"{prefix}: run URL does not match run_id")
+        if not _timestamp(item.get("registered_at_utc")):
+            errors.append(f"{prefix}: registration timestamp missing timezone")
+        status = item.get("status")
+        if not isinstance(status, str) or not status.strip():
+            errors.append(f"{prefix}: status is missing")
+        else:
+            counts[status] = counts.get(status, 0) + 1
+        sections = item.get("sections")
+        if not isinstance(sections, dict):
+            errors.append(f"{prefix}: sections missing")
+            continue
+        for name in REQUIRED:
+            section = sections.get(name)
+            if not isinstance(section, dict):
+                errors.append(f"{prefix}: missing {name} section")
+                continue
+            if not isinstance(section.get("basis"), str) or not section["basis"].strip():
+                errors.append(f"{prefix}: {name} source-basis explanation missing")
+            for key in NUMBERS:
+                value = section.get(key)
+                if value is not None and (type(value) is not int or value < 0):
+                    errors.append(f"{prefix}: {name}.{key} must be null or a nonnegative integer")
+
+    summary = {
+        "archive_date_count": len(days),
+        "unique_dates": len(dates),
+        "unique_run_ids": len(runs),
+        "latest_pacific_date": days[0].get("date_pacific") if isinstance(days[0], dict) else None,
+        "statuses": counts,
+        "full_source_coverage_certified": False,
+        "punctual_8pm_schedule_certified": False,
+    }
+    return errors, summary
+
+
+def main() -> int:
+    target = Path(sys.argv[1]) if len(sys.argv) > 1 else ARCHIVE
+    errors, summary = check_archive(target)
+    print(json.dumps({"structural_integrity": "FAIL" if errors else "PASS", "summary": summary,
+                      "errors": errors, "limitation": "Structural checks only; partial runs and unknown source-family counts remain unverified."}, indent=2))
+    return 1 if errors else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
