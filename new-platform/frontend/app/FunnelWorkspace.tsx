@@ -8,6 +8,7 @@ import { CompetitiveColumnPurposes, CompetitiveAssessmentHeaders, CompetitiveAss
 import type { CompetitiveAssessment } from "../lib/competitive-assessment";
 import { pacificToday, type TimelineDates } from "../lib/pipeline-timeline";
 import { PipelineTimelineHeaders, PipelineTimelineCells } from "./PipelineTimelineColumns";
+import PipelineFourViews from "./PipelineFourViews";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -47,6 +48,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
  const [loading,setLoading]=useState(true);
  const view=section==="pool"?"pool":reviewMode?"readout-review":"pipeline";
  useEffect(()=>{
+   if(section==="pipeline"&&!reviewMode)return;
    const controller=new AbortController();
    let mounted=true;
    setLoading(true);setError("");
@@ -68,7 +70,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        if(mounted && !controller.signal.aborted){setPage(null);setError(err instanceof Error?err.message:"Research data unavailable");}
      }).finally(()=>{if(mounted)setLoading(false)});
    return ()=>{mounted=false;controller.abort()};
- },[view,offset,query]);
+ },[section,reviewMode,view,offset,query]);
  function applySearch(e:FormEvent<HTMLFormElement>) {
    e.preventDefault();setOffset(0);setQuery(queryInput);
  }
@@ -114,7 +116,8 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
      <button type="button" aria-pressed={reviewMode} onClick={()=>changeMode(true)}
        className={reviewMode?styles.selected:undefined}>Unmatched / verify final readout</button>
    </div>}
-   <section className={styles.panel}>
+   {section==="pipeline"&&!reviewMode&&<PipelineFourViews />}
+   {(section==="pool"||reviewMode)&&<section className={styles.panel}>
      <div className={styles.headline}>
        <h2>{section==="pool"?"Preserved published POOL records":reviewMode?"Unresolved census research records":"Post–Phase 3 screening — awaiting qualification"}</h2>
        <form onSubmit={applySearch} className={styles.search}>
@@ -167,7 +170,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
          <button type="button" disabled={page.nextOffset===null||loading} onClick={()=>setOffset(page.nextOffset!)}>Next</button>
        </div>
      </>}
-   </section>
+   </section>}
    <p className={styles.footer}>Research-only scope separation. No source records are deleted, no scans or GEM presets are modified, and this does not certify FDA approval readiness or establish a live qualified-program count.</p>
  </main>;
 }

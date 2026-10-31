@@ -38,6 +38,8 @@ export type CompetitiveAssessment = {
   ticker: string;
   indication: string;
   fields: Partial<Record<Exclude<CompetitiveColumnId, "trialId" | "company" | "therapy" | "indication" | "competitorCount" | "costDifference" | "competitiveStrategy" | "evidence"> | "approvedCompetitors" | "lateStageCompetitors", ResearchEvidence>>;
+  /** Later independent research can attach evidence for the 19 added metrics. */
+  additionalFields?: Record<string, ResearchEvidence>;
 };
 const numericFields = new Set(["eligibleUsPatients", "approvedCompetitors", "lateStageCompetitors", "adoption"]);
 const fullDay = (v: string) => {
@@ -50,11 +52,11 @@ const fullDay = (v: string) => {
 export function verifiedCompetitiveFact(
   dossier: CompetitiveAssessment | null | undefined,
   row: {nctId:string; ticker:string; indication:string|null},
-  key: keyof CompetitiveAssessment["fields"],
+  key: keyof CompetitiveAssessment["fields"] | string,
 ): ResearchEvidence | null {
   if (!dossier || dossier.nctId!==row.nctId || dossier.ticker!==row.ticker
       || !row.indication || dossier.indication!==row.indication) return null;
-  const item=dossier.fields?.[key];
+  const item=dossier.fields?.[key as keyof CompetitiveAssessment["fields"]] || dossier.additionalFields?.[key];
   if (!item || !["VERIFIED","MODELED"].includes(item.status)
       || !/^https:\/\/[^\s]+$/.test(item.sourceUrl) || !fullDay(item.sourceDate)
       || !item.method?.trim() || !item.reason?.trim()
