@@ -215,6 +215,18 @@ export default function NctLiveStream() {
       .catch((error: Error) => { if (active) setReadinessError(error.message); });
     return () => { active = false; };
   }, [run?.nct_id, run?.terminal]);
+  type SourceRecord = { dossier_id:string;source_evidence_id:string;created_at:string;url?:string|null;retrieved_at?:string|null;verification_status?:string|null;sha256?:string|null;publisher_kind?:string|null };
+  const [sourceInventory, setSourceInventory] = useState<SourceRecord[] | null>(null);
+  useEffect(() => {
+    if (!run?.nct_id) { setSourceInventory(null); return; }
+    let active = true;
+    setSourceInventory(null);
+    fetch("/api/phase3-trials/" + encodeURIComponent(run.nct_id) + "/source-inventory", {cache:"no-store"})
+      .then(async response => { if (!response.ok) throw new Error("Source inventory unavailable"); return response.json(); })
+      .then(data => { if (active) setSourceInventory(Array.isArray(data.sources) ? data.sources : []); })
+      .catch(() => { if (active) setSourceInventory(null); });
+    return () => { active = false; };
+  }, [run?.nct_id, run?.terminal]);
   const [savedDecision, setSavedDecision] = useState<{decision:string;status:string;latest_prediction?:{scientific_readiness?:string;uncertainty?:string;created_at?:string}} | null>(null);
   useEffect(() => {
     if (!run?.nct_id) { setSavedDecision(null); return; }
@@ -271,6 +283,14 @@ export default function NctLiveStream() {
             </div> : null}
           </details>)}
         </details>
+      </details>
+      <details><summary>Saved source inventory — {sourceInventory ? sourceInventory.length + " dossier sources" : "unavailable or loading"}</summary>
+        <p className="subtle">Source metadata is not proof of protocol/SAP verification or scientific validity.</p>
+        {sourceInventory?.length ? sourceInventory.map(source => <details key={source.dossier_id}><summary>{source.source_evidence_id} — {source.verification_status || "UNVERIFIED"}</summary>
+          <p>Publisher: {source.publisher_kind || "unknown"} · Retrieved: {source.retrieved_at || "unknown"}</p>
+          <p>SHA-256: <code>{source.sha256 || "not available"}</code></p>
+          {source.url?.startsWith("https://") ? <p><a href={source.url} target="_blank" rel="noopener noreferrer">Open original source</a></p> : null}
+        </details>) : <p>No saved source records available to display.</p>}
       </details>
       <details open><summary>SCIENCE — collected evidence</summary>
         {nodes.filter(n=>n.level>=3).length ? nodes.filter(n=>n.level>=3).map(n=><ProcessingNode key={"science-"+n.node_id} event={n}/>) : <p>No scientific source checks received. Start a trial run.</p>}
