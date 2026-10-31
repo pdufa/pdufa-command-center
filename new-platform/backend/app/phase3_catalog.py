@@ -562,9 +562,23 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                 WHERE d.nct_id=:nct
                 ORDER BY d.created_at DESC LIMIT 100
             """), {"nct": nct_id}).mappings().all()
+        sources = []
+        for row in records:
+            source = dict(row)
+            url = source.get("url")
+            # Only return safe HTTPS source links. A persisted source record
+            # must not turn javascript:, file:, or private schemes into UI links.
+            if not isinstance(url, str) or urlsplit(url).scheme.lower() != "https":
+                source["url"] = None
+            source["provenance_complete"] = bool(
+                source.get("source_evidence_id") and source.get("url")
+                and source.get("sha256") and source.get("retrieved_at")
+                and source.get("verification_status") == "VERIFIED"
+            )
+            sources.append(source)
         return {
             "nct_id": nct_id,
-            "sources": [dict(row) for row in records],
+            "sources": sources,
             "source_count": len(records),
             "protocol_verified": False,
             "sap_verified": False,
