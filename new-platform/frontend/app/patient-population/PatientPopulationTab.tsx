@@ -10,7 +10,7 @@ import {
 import {
   selectPostPhase3PopulationTrials, PATIENT_POPULATION_DETAIL_SECTIONS,
   PATIENT_POPULATION_MARKET_CAP_MIN, PATIENT_POPULATION_MARKET_CAP_MAX,
-  type PostPhase3PopulationTrial,
+  calculateTherapyCosts, type PostPhase3PopulationTrial,
 } from "../../lib/post-phase3-population";
 import type { RegistryResearchRecord } from "../../lib/phase3-live-registry";
 import styles from "./PatientPopulationTab.module.css";
@@ -23,6 +23,9 @@ import {
 
 const PAGE_SIZE = 25;
 /** Unknown uptake must never be displayed as 0% or confused with FDA approval probability. */
+function costLabel(value: number | null): string {
+  return value === null ? "Insufficient data" : value.toLocaleString("en-US", {style:"currency",currency:"USD",maximumFractionDigits:0});
+}
 function adoptionLabel(value: number | null): string {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100
     ? value.toFixed(1) + "%" : "Insufficient data";
@@ -241,6 +244,9 @@ export default function PatientPopulationTab() {
             <th scope="col">Eligible U.S. patients{numberColumn("eligibleUsPatients","Eligible U.S. patients")}</th>
             <th scope="col">Eligible global patients{numberColumn("eligibleGlobalPatients","Eligible global patients")}</th>
             <th scope="col" title="Forecast share of indication-eligible U.S. patients receiving the new therapy 12 months after launch, not FDA approval probability.">Projected patient adoption (12 mo, %){numberColumn("adoption12MonthPct","12-month adoption %")}</th>
+            <th scope="col" title="Source-backed total during the first 12 months per treated U.S. patient.">Current SOC cost ($/12 mo)</th>
+            <th scope="col" title="Proposed first-year drug plus administration and monitoring costs; prelaunch pricing is modeled only.">Proposed therapy cost ($/12 mo)</th>
+            <th scope="col" title="Proposed minus current first-year cost; requires same price basis.">Cost difference ($)</th>
             <th scope="col">Evidence completeness{numberColumn("evidence","Evidence completeness")}</th>
             <th scope="col">Last updated
               <div className={styles.columnFilter}>
@@ -260,6 +266,7 @@ export default function PatientPopulationTab() {
             const nct = row.trial.nctId;
             const state = registry[nct];
             const record = state?.status === "ready" ? state.record : undefined;
+            const costs = calculateTherapyCosts(row.therapyCostComparison);
             return <Fragment key={nct}>
               <tr>
                 <th scope="row"><strong>{row.trial.ticker}</strong><small>{nct}</small><small>{row.trial.company}</small></th>
@@ -269,6 +276,9 @@ export default function PatientPopulationTab() {
                 <td>{researchValue(row.eligibleUsPatients)}</td>
                 <td>{researchValue(row.eligibleGlobalPatients)}</td>
                 <td>{adoptionLabel(row.projectedAdoption12MonthPct)}</td>
+                <td>{costLabel(costs.currentUsd)}</td>
+                <td>{costLabel(costs.proposedUsd)}</td>
+                <td>{costLabel(costs.costDifferenceUsd)}</td>
                 <td>{row.populationEvidenceCompleteness === null ? "Not assessed" : row.populationEvidenceCompleteness + "%"}</td>
                 <td>{researchValue(row.populationLastVerified)}</td>
                 <td><button type="button" className={styles.smallButton}
@@ -278,7 +288,7 @@ export default function PatientPopulationTab() {
                 </button></td>
               </tr>
               {selected === nct && <tr id={"population-detail-" + nct} className={styles.expanded}>
-                <td colSpan={10}>
+                <td colSpan={13}>
                   <div className={styles.detailsHead}>
                     <div><h3>{row.trial.ticker} · {nct}</h3><p>{row.trial.company} · registry status COMPLETED at census date</p></div>
                     <button type="button" onClick={() => void loadRegistry(nct)} disabled={state?.status === "loading"}>
@@ -297,6 +307,32 @@ export default function PatientPopulationTab() {
                     {" · "}Drug/indication mapping remains pending independent issuer and FDA source verification.
                   </p>}
                   <p className={styles.muted}><strong>Projected 12-month therapy adoption:</strong> {adoptionLabel(row.projectedAdoption12MonthPct)} of indication-eligible U.S. patients. Separate from FDA approval probability. Evaluate standard-of-care usage, switching, new starts, access barriers and forecast assumptions. <strong>Confidence:</strong> {row.adoptionConfidence || "Not assessed"}. {row.adoptionEvidenceUrl ? <a href={row.adoptionEvidenceUrl} target="_blank" rel="noopener noreferrer">Adoption forecast evidence ↗</a> : "No verified adoption source yet."}</p>
+                  <div className={styles.accordion}>
+                    <details>
+                      <summary><span>Current vs proposed therapy — dosing regimen and treatment cost</span><span>Compare ▾</span></summary>
+                      <div className={styles.detailContent}>
+                        <p>First 12 months per treated U.S. patient from treatment initiation. Each cost includes drug plus administration/monitoring. The difference is shown only when the costs use a comparable price basis; neither represents a patient copay.</p>
+                        <p><strong>Current standard of care:</strong> {row.therapyCostComparison?.current?.therapy || "Not researched"}.
+                        {" "}<strong>Dose / route / frequency / duration:</strong> {row.therapyCostComparison?.current?.regimen || "Not researched"}.
+                        {" "}<strong>Drug:</strong> {costLabel(row.therapyCostComparison?.current?.drugCostFirst12MonthsUsd ?? null)}.
+                        {" "}<strong>Administration and monitoring:</strong> {costLabel(row.therapyCostComparison?.current?.adminMonitoringFirst12MonthsUsd ?? null)}.
+                        {" "}<strong>Total:</strong> {costLabel(costs.currentUsd)}.</p>
+                        <p><strong>Proposed therapy:</strong> {row.therapyCostComparison?.proposed?.therapy || "Not researched"}.
+                        {" "}<strong>Dose / route / frequency / duration:</strong> {row.therapyCostComparison?.proposed?.regimen || "Not researched"}.
+                        {" "}<strong>Drug:</strong> {costLabel(row.therapyCostComparison?.proposed?.drugCostFirst12MonthsUsd ?? null)}.
+                        {" "}<strong>Administration and monitoring:</strong> {costLabel(row.therapyCostComparison?.proposed?.adminMonitoringFirst12MonthsUsd ?? null)}.
+                        {" "}<strong>Total:</strong> {costLabel(costs.proposedUsd)}.</p>
+                        <p><strong>Incremental cost (proposed − current):</strong> {costLabel(costs.costDifferenceUsd)}.
+                        {" "}Basis: {row.therapyCostComparison?.current?.priceBasis || "Unverified"} vs {row.therapyCostComparison?.proposed?.priceBasis || "Unverified"}.
+                        {" "}Price evidence: current {row.therapyCostComparison?.current?.evidenceStatus || "Unverified"}; proposed {row.therapyCostComparison?.proposed?.evidenceStatus || "Unverified"}.</p>
+                        <p>Use exact FDA/current guideline regimen and source-dated pricing. Document weight-based doses, induction vs maintenance, one-time therapy, course duration, branded/generic comparator, and treatment setting. Unapproved product prices are unknown unless announced; any analog-based pricing stays clearly MODELED. Compare more than one standard-of-care regimen when clinically relevant.</p>
+                        <p><strong>Source links:</strong>
+                          {" "}{row.therapyCostComparison?.current?.sourceUrl?.startsWith("https://") ? <a href={row.therapyCostComparison.current.sourceUrl} target="_blank" rel="noopener noreferrer">Current therapy source ↗</a> : "Current price source unavailable"}.
+                          {" "}{row.therapyCostComparison?.proposed?.sourceUrl?.startsWith("https://") ? <a href={row.therapyCostComparison.proposed.sourceUrl} target="_blank" rel="noopener noreferrer">Proposed therapy source ↗</a> : "Proposed price source unavailable"}.
+                        </p>
+                      </div>
+                    </details>
+                  </div>
                   <h4>12 detailed population assessments — collapsed by default</h4>
                   <div className={styles.accordion}>
                     {PATIENT_POPULATION_DETAIL_SECTIONS.map((section,index) => <details key={section.title}>
