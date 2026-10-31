@@ -6,8 +6,9 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, time, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 from urllib.parse import urlparse
 
 ARCHIVE = Path(__file__).resolve().parents[1] / "data" / "daily_scan_results.json"
@@ -77,6 +78,32 @@ def check_archive(path: Path = ARCHIVE) -> tuple[list[str], dict]:
                 errors.append(f"{prefix}: run URL does not match run_id")
         if not _timestamp(item.get("registered_at_utc")):
             errors.append(f"{prefix}: registration timestamp missing timezone")
+        # New scan reports carry a verifiable start timestamp and 8 PM
+        # Pacific target. Legacy entries predate this feature and remain
+        # readable; partially populated new timing fields are rejected.
+        timing_fields = ("run_started_at_utc", "scheduled_8pm_pacific_utc",
+                         "start_delay_minutes", "scan_night_source")
+        if any(field in item for field in timing_fields):
+            if not all(field in item for field in timing_fields):
+                errors.append(f"{prefix}: incomplete scan timing provenance")
+            elif (not _timestamp(item["run_started_at_utc"]) or
+                  not _timestamp(item["scheduled_8pm_pacific_utc"]) or
+                  type(item["start_delay_minutes"]) is not int or
+                  item["scan_night_source"] not in
+                  ("GUARDED_SCHEDULER_INPUT", "ACTUAL_START_DATE_FALLBACK")):
+                errors.append(f"{prefix}: invalid scan timing provenance")
+            elif day:
+                started = datetime.fromisoformat(item["run_started_at_utc"].replace("Z", "+00:00"))
+                target = datetime.combine(date.fromisoformat(day), time(20), tzinfo=ZoneInfo("America/Los_Angeles"))
+                expected_delay = int((started - target).total_seconds() // 60)
+                if expected_delay != item["start_delay_minutes"]:
+                    errors.append(f"{prefix}: scan start delay does not match source timestamps")
+                expected_target = target.astimezone(timezone.utc)
+                claimed_target = datetime.fromisoformat(item["scheduled_8pm_pacific_utc"].replace("Z", "+00:00"))
+                if expected_target != claimed_target:
+                    errors.append(f"{prefix}: 8 PM Pacific target mismatch")
+                if item["scan_night_source"] == "GUARDED_SCHEDULER_INPUT" and started < target:
+                    errors.append(f"{prefix}: guarded scan starts before 8 PM Pacific")
         status = item.get("status")
         if not isinstance(status, str) or not status.strip():
             errors.append(f"{prefix}: status is missing")
