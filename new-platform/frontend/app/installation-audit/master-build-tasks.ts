@@ -1,0 +1,158 @@
+export const masterBuildTasks: string[][] = [
+  [
+    "Confirm production deployment SHA and environment",
+    "Verify dashboard routes and authenticated access",
+    "Verify frontend/backend connectivity",
+    "Audit Render service and database health",
+    "Check rollback and recovery procedure",
+    "Record dated acceptance evidence"
+  ],
+  [
+    "Confirm canonical trial, drug, issuer and FDA application IDs",
+    "Validate FDA original-source collection",
+    "Validate ClinicalTrials.gov phase and study records",
+    "Validate SEC financing and issuer events",
+    "Validate financial and market-cap feeds",
+    "Check deduplication, freshness and conflicting records",
+    "Test database backup and restore"
+  ],
+  [
+    "Verify scheduled 8 PM Pacific start",
+    "Run Pipeline scan and record input/output counts",
+    "Run Special Designations scan and record findings",
+    "Run GEM JR scan and record membership changes",
+    "Run GEM scan and record membership changes",
+    "Confirm sequential locking and duplicate prevention",
+    "Confirm retries, failures and scan end timestamps",
+    "Publish daily RESULTS old/new/unchanged totals"
+  ],
+  [
+    "Publicly traded issuer requirement",
+    "Market cap $300M–$10B requirement",
+    "Toward/has PDUFA requirement",
+    "FDA US jurisdiction requirement",
+    "Phase 3 or later requirement",
+    "Active program requirement",
+    "Identified drug and indication requirement",
+    "Verifiable original documents requirement",
+    "Confirm disabled runway, 730-day and hold exclusions",
+    "Show filter-by-filter eliminated and remaining counts"
+  ],
+  [
+    "Preserve original GEM JR FS/FA presets",
+    "Verify clinical score threshold and evidence",
+    "Verify data completeness threshold and evidence",
+    "Audit phase and FDA eligibility",
+    "Audit financing, dilution and runway risk",
+    "Verify score calculation and candidate ordering",
+    "Verify add/remove/list actions and scan changes"
+  ],
+  [
+    "Preserve original GEM FS/FA presets",
+    "Verify GEM-specific stricter eligibility gates",
+    "Verify scientific evidence thresholds",
+    "Verify financial/issuer qualification",
+    "Verify score calculation and ranking",
+    "Reconcile transitions from GEM JR",
+    "Verify list controls and saved candidates"
+  ],
+  [
+    "Maintain FDA designation and pathway taxonomy",
+    "Verify original FDA source for each designation",
+    "Capture exact designation grant date",
+    "Separate designation from review/application status",
+    "Display designation icons on trial timeline",
+    "Detect new, revised and withdrawn designations",
+    "Flag missing or conflicting source evidence"
+  ],
+  [
+    "Freeze approved depth-level specification",
+    "Evaluate clinical trial design and protocol",
+    "Evaluate endpoint validity and hierarchy",
+    "Evaluate statistical analysis and multiplicity",
+    "Evaluate efficacy magnitude and consistency",
+    "Evaluate safety and benefit-risk",
+    "Evaluate comparators, subgroups and replication",
+    "Evaluate CMC/manufacturing and inspection risk",
+    "Complete 40 evidence-backed assessment units per trial",
+    "Record uncertainty, counterevidence and missing inputs",
+    "Compute READY and RELUCTANT evidence-readiness grades",
+    "Save trial dossier and source citations"
+  ],
+  [
+    "Reconcile original vs amended PDUFA dates",
+    "Identify exact NDA/BLA and review cycle",
+    "Label FDA approval/PASS outcomes",
+    "Label CRL outcomes",
+    "Label extension/delay outcomes distinctly",
+    "Handle action after target date and unresolved cases",
+    "Validate primary FDA action evidence",
+    "Build point-in-time historical outcome dataset",
+    "Calibrate outcome probabilities and abstention rules"
+  ],
+  [
+    "Verify 31 Core Platform acceptance gates",
+    "Verify 10 technical prerequisites independently",
+    "Integrate SCIENCE outputs and uncertainty",
+    "Integrate OUTCOME labels and probabilities",
+    "Apply evidence sufficiency and no-decision safeguards",
+    "Generate PASS/CRL/EXTENSION with rationale",
+    "Show source conflicts and missing evidence",
+    "Record model version and decision timestamp",
+    "Run authenticated production acceptance tests"
+  ],
+  [
+    "Display search input flowchart at top",
+    "Separate historical/background PDUFA events",
+    "Separate current PDUFA events",
+    "Separate future PDUFA events",
+    "Allow filters and source parameters",
+    "Display resulting candidate list",
+    "Show primary PASS/CRL/EXTENSION decision",
+    "Collapse secondary scientific and financial metrics",
+    "Show decision date, model version and evidence freshness",
+    "Test mobile and iPhone layout"
+  ],
+  [
+    "Audit FDA outcome labels and source dates",
+    "Build point-in-time historical freeze snapshots",
+    "Separate training and held-out validation cohorts",
+    "Prevent future-information leakage",
+    "Calculate class-specific precision and recall",
+    "Calculate Brier score and calibration",
+    "Report uncertainty intervals and sample size",
+    "Compare to baseline models",
+    "Publish failure cases and abstention rate"
+  ],
+  [
+    "Show three top summary panels",
+    "Display source health and last updated time",
+    "Render daily RESULTS history and changes",
+    "Repair missing or invisible charts",
+    "Render Phase 3 to PDUFA timeline",
+    "Display designation icons and trial matrices",
+    "Add expandable evidence and risk sections",
+    "Verify mobile accessibility and responsiveness",
+    "Display verified progress by segment"
+  ],
+  [
+    "Verify scan-start email notification",
+    "Verify scan-complete email notification",
+    "Verify scan-failure email notification",
+    "Verify SMS or Google Voice delivery capability",
+    "Check opt-in and recipient configuration",
+    "Verify delivery retries and duplicate suppression",
+    "Store notification logs and timestamps"
+  ],
+  [
+    "Run authenticated scan-to-dashboard end-to-end test",
+    "Verify data integrity and original-source traceability",
+    "Test production backup and restore",
+    "Test failed scans and recovery",
+    "Verify access control and no secrets exposure",
+    "Validate historical model performance independently",
+    "Run shadow predictions with abstention safeguards",
+    "Sign off each acceptance gate with evidence",
+    "Publish release status and remaining blockers"
+  ]
+];
