@@ -98,6 +98,16 @@ def check_archive(path: Path = ARCHIVE) -> tuple[list[str], dict]:
                 if value is not None and (type(value) is not int or value < 0):
                     errors.append(f"{prefix}: {name}.{key} must be null or a nonnegative integer")
 
+        # A full scan must not be advertised when the mandatory qualified
+        # Pipeline and original FDA-designation counts or source certification
+        # remain unknown. A healthy clinical inventory alone is insufficient.
+        if status == "COMPLETE":
+            if any(not isinstance(sections.get(name), dict) or
+                   sections[name].get("total") is None for name in ("pipeline", "designations")):
+                errors.append(f"{prefix}: COMPLETE requires qualified Pipeline and FDA designation totals")
+            if item.get("full_source_coverage_verified") is not True:
+                errors.append(f"{prefix}: COMPLETE requires explicit same-run source coverage certification")
+
     summary = {
         "archive_date_count": len(days),
         "unique_dates": len(dates),
