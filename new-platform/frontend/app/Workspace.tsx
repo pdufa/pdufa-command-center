@@ -33,7 +33,7 @@ import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
-import { detachGemAssociations } from "../lib/pool-pipeline-restrictions";
+import { detachGemAssociations, poolRuleDefinition } from "../lib/pool-pipeline-restrictions";
 import { catalogStages, catalogStagePriority, catalogDefinition, selectedRestrictionList, insertRestrictionIntoList, removeRestrictionFromList, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
@@ -1949,22 +1949,22 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         </select></label>
         <div>{masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).length} saved restrictions</div>
         {masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).map(e=><div key={e.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-          <span>{catalogDefinition(e).title} · {e.enabled?"Enabled":"Disabled"}</span>
+          <span>{poolRuleDefinition(e).title} · {e.enabled?"Enabled":"Disabled"}</span>
           <button type="button" onClick={()=>setMasterRestrictions(old=>removeRestrictionFromList(old,e.id,restrictionListView))}>REMOVE</button>
         </div>)}
       </div>
       <div style={{fontWeight:800}}>RESTRICTION CLASSES — ALL 11 LISTED BELOW</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
-        const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
+        const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>poolRuleDefinition(a).title.localeCompare(poolRuleDefinition(b).title));
         return <details className="panel" key={group.id} style={{margin:"12px 0",padding:12}}>
           <summary style={{fontWeight:700,cursor:"pointer"}}>{group.title} ({entries.length})</summary>
           <p className="subtle">{group.note}</p>
           <div style={{display:"grid",gap:8}}>{entries.map(entry=><div key={entry.id} style={{borderBottom:"1px solid var(--border, #ccc)",padding:"8px 0"}}>
-            <strong>{catalogDefinition(entry).title}</strong>
-            <div className="subtle">{catalogDefinition(entry).help}</div>
+            <strong>{poolRuleDefinition(entry).title}</strong>
+            <div className="subtle">{poolRuleDefinition(entry).help}</div>
             <div className="subtle">Lists: {catalogStages(entry).join(", ")||"None"} · {entry.enabled?"Active":"Inactive"}</div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,marginTop:10}}>
-              <label>Choose restriction list <select aria-label={"Destination list for "+catalogDefinition(entry).title} value={restrictionDestination[entry.id]||"PIPELINE"} onChange={e=>setRestrictionDestination(old=>({...old,[entry.id]:"PIPELINE"}))}>
+              <label>Choose restriction list <select aria-label={"Destination list for "+poolRuleDefinition(entry).title} value={restrictionDestination[entry.id]||"PIPELINE"} onChange={e=>setRestrictionDestination(old=>({...old,[entry.id]:"PIPELINE"}))}>
                 <option value="PIPELINE">Pipeline</option>
               </select></label>
               {(()=>{
@@ -1976,15 +1976,15 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
             </div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:12,marginTop:8}}>
               <label style={{display:"flex",alignItems:"center",gap:6}}><input type="checkbox" checked={entry.enabled} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,enabled:event.target.checked}:item))}/> Enabled</label>
-              {(catalogDefinition(entry).numeric || entry.value!=="" || entry.maximum!=="") && <>
+              {(poolRuleDefinition(entry).numeric || entry.value!=="" || entry.maximum!=="") && <>
                 <label style={{display:"flex",flexDirection:"column",gap:4}}>Minimum / value
-                  <input aria-label={catalogDefinition(entry).title+" minimum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.value} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,value:event.target.value}:item))}/>
+                  <input aria-label={poolRuleDefinition(entry).title+" minimum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.value} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,value:event.target.value}:item))}/>
                 </label>
-                {(entry.maximum!=="" || catalogDefinition(entry).maximum!==undefined) && <label style={{display:"flex",flexDirection:"column",gap:4}}>Maximum
-                  <input aria-label={catalogDefinition(entry).title+" maximum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.maximum} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,maximum:event.target.value}:item))}/>
+                {(entry.maximum!=="" || poolRuleDefinition(entry).maximum!==undefined) && <label style={{display:"flex",flexDirection:"column",gap:4}}>Maximum
+                  <input aria-label={poolRuleDefinition(entry).title+" maximum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.maximum} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,maximum:event.target.value}:item))}/>
                 </label>}
               </>}
-              {catalogDefinition(entry).unit && <span className="subtle">{catalogDefinition(entry).unit}</span>}
+              {poolRuleDefinition(entry).unit && <span className="subtle">{poolRuleDefinition(entry).unit}</span>}
             </div>
           </div>)}</div>
         </details>;
