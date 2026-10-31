@@ -1,6 +1,7 @@
 'use strict';
 const {chromium,webkit}=require('playwright');
 const fs=require('node:fs');
+const crypto=require('node:crypto');
 const BASE='https://pdufa-new-dashboard.vercel.app';
 const result={started_at:new Date().toISOString(),commit:process.env.GITHUB_SHA,run_id:process.env.GITHUB_RUN_ID,status:'INCOMPLETE',checks:{},counts:{}};
 function check(value,code){result.checks[code]=Boolean(value);if(!value)throw Error(code);}
@@ -36,6 +37,15 @@ async function run(browser,mobile=false){
    if(p.nextOffset===null)break;check(p.nextOffset>offset,'pagination_advances');offset=p.nextOffset;
   }while(true);
   check(seen.size===total,'complete_canonical_retrieval');result.counts={research_trials:total,verified_assessment_inputs:findings,unassessed_assessments:unassessed,documented_competitors:competitors};
+  // Independent public registry receipts, without modifying saved dossiers.
+  const queue=[...seen],receipts=[];let cursor=0;
+  await Promise.all(Array.from({length:3},async()=>{for(;;){const index=cursor++;if(index>=queue.length)break;const nct=queue[index],sourceUrl='https://clinicaltrials.gov/api/v2/studies/'+nct;const receipt={nct_id:nct,source_url:sourceUrl,verified_at:new Date().toISOString(),status:'UNRESOLVED'};
+   try{let response;for(let attempt=0;attempt<3;attempt++){response=await context.request.get(sourceUrl,{timeout:45000});if(![429,500,502,503,504].includes(response.status()))break;await new Promise(r=>setTimeout(r,1000*(attempt+1)));}
+    receipt.http_status=response.status();if(response.status()===200){const bytes=await response.body(),data=JSON.parse(bytes.toString()),protocol=data.protocolSection||{};receipt.representation_sha256=crypto.createHash('sha256').update(bytes).digest('hex');receipt.identity_matches=protocol.identificationModule?.nctId===nct;receipt.phase3_present=(protocol.designModule?.phases||[]).includes('PHASE3');receipt.registry_status=protocol.statusModule?.overallStatus||null;receipt.status=receipt.identity_matches?'REGISTRY_IDENTITY_VERIFIED':'CONFLICTING';}
+   }catch{}receipts.push(receipt);
+  }}));
+  result.registry_audit={checked:receipts.length,identity_verified:receipts.filter(r=>r.status==='REGISTRY_IDENTITY_VERIFIED').length,phase3_present:receipts.filter(r=>r.phase3_present).length,unresolved:receipts.filter(r=>r.status==='UNRESOLVED').length,conflicting:receipts.filter(r=>r.status==='CONFLICTING').length};
+  if(process.env.REGISTRY_RECEIPTS_PATH)fs.writeFileSync(process.env.REGISTRY_RECEIPTS_PATH,JSON.stringify({dataset_version:version,receipts},null,2));
   const pool=await json(context,'/api/scope-funnel?view=pool&limit=50');result.counts.published_pool_records=pool.total;result.counts.qualified_programs=pool.overview.qualifiedPrograms;
   const archive=await json(context,'/api/archive-scope');result.archive_scope={expected_records:archive.expected_records??archive.original_scope_records??null,physical_records:archive.physical_records??archive.archive_records??null,status:archive.status??null};
  }

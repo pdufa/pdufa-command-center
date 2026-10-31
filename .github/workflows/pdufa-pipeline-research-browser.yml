@@ -23,4 +23,13 @@ jobs:
         env:
           DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
           NODE_PATH: ${{ runner.temp }}/pipeline-browser/node_modules
+          REGISTRY_RECEIPTS_PATH: ${{ runner.temp }}/pipeline-registry-receipts.json
         run: node scripts/verify_pipeline_research.cjs
+      - name: Preserve public registry source receipts only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-primary-registry-verification
+          path: ${{ runner.temp }}/pipeline-registry-receipts.json
+          if-no-files-found: ignore
+          retention-days: 30
