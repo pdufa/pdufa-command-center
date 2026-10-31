@@ -1,8 +1,8 @@
 """Record one Pacific calendar day's published PDUFA scan totals without guessing missing values.
 
 Triggered after the complete overnight chain finishes. Each Pacific date is
-updated in place; past dates are retained. Stage counts are taken only from
-the same-day saved membership ledger, not from clinical result records.
+updated in place; past dates (including historical GEM snapshots) are retained.
+New active reports never read retired GEM stage membership ledgers.
 """
 from __future__ import annotations
 
@@ -16,7 +16,6 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parent.parent
 REPORT = ROOT / "data" / "nightly_scan_report.json"
 TRIALS = ROOT / "data" / "all_phase_trials.csv"
-MEMBERSHIP = ROOT / "data" / "gem_stage_membership.json"
 SOURCES = ROOT / "data" / "pdufa_source_report.json"
 ARCHIVE = ROOT / "data" / "daily_scan_results.json"
 PACIFIC = ZoneInfo("America/Los_Angeles")
@@ -186,8 +185,8 @@ def record(run_id: int, started: str, conclusion: str, night_date_pacific: str =
         "master": empty("Same-run inventory evidence unavailable."),
         "pipeline": empty("Full mandatory Pipeline qualification totals are not established by clinical source collection."),
         "designations": empty("FDA special designation grant records and dates require authoritative verification."),
-        "gem_jr": empty("No verified same-day GEM JR membership snapshot."),
-        "gem": empty("No verified same-day GEM membership snapshot."),
+        "gem_jr": empty("Retired: historical GEM JR membership retained only in prior saved dates; no active screen."),
+        "gem": empty("Retired: historical GEM membership retained only in prior saved dates; no active screen."),
     }
     notes = []
     try:
@@ -212,12 +211,9 @@ def record(run_id: int, started: str, conclusion: str, night_date_pacific: str =
         source_note = same_run_source_note(run_id)
         if source_note:
             notes.append(source_note)
-        try:
-            ledger = json.loads(MEMBERSHIP.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            ledger = {}
-        sections["gem_jr"] = stage_total(ledger, "GEM_JR", day)
-        sections["gem"] = stage_total(ledger, "GEM", day)
+        # Historical gem_jr/gem keys remain for old report compatibility, but
+        # today's POOL → PIPELINE execution neither reads nor recalculates
+        # any retired membership ledger. Historical saved reports are untouched.
         notes.append("Clinical collection and the full overnight sequence are different verification standards; full-source certification is not implied.")
         if report.get("status") in ("FAILED", "UNVERIFIED"):
             status = "RUN_FAILED" if conclusion != "success" else "UNVERIFIED"
