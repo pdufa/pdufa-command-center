@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "status": "PRIMARY_DOCUMENT_PILOT_RESEARCH_NOT_INDEPENDENT_ADJUDICATION",
+  "case_key": "HOP_RESEARCH_BLA125514_S12_KEYNOTE024_20161024",
+  "document": {
+    "agency": "FDA",
+    "sponsor": "Merck Sharp & Dohme Corp.",
+    "product": "Keytruda (pembrolizumab)",
+    "primary_application": "BLA125514",
+    "reference_id": "4003165",
+    "official_fda_approval_letter_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2016/125514Orig1s008,125514Orig1s012ltr.pdf",
+    "source_pdf_sha256": null,
+    "primary_document_page_count": 6,
+    "inspected_page_numbers_1_based": [
+      1,
+      3,
+      6
+    ],
+    "electronic_signature_date": "2016-10-24",
+    "actual_public_web_release_date": null,
+    "signed_source_date_not_pdufa_target": true,
+    "pdufa_target_date": null,
+    "independent_reviewer_attestation": null
+  },
+  "supplements": [
+    {
+      "application_id": "BLA125514",
+      "supplement": "S-8",
+      "source_claim_action": "APPROVED",
+      "source_claim_action_date": "2016-10-24",
+      "description": "Modification of prior metastatic NSCLC PD-L1 TPS >=1% indication following platinum chemotherapy and fulfillment of earlier accelerated approval postmarketing requirement",
+      "key_trial": "KEYNOTE-010",
+      "same_letter_document": true,
+      "independently_adjudicated": false
+    },
+    {
+      "application_id": "BLA125514",
+      "supplement": "S-12",
+      "source_claim_action": "APPROVED",
+      "source_claim_action_date": "2016-10-24",
+      "description": "First-line metastatic NSCLC, PD-L1 tumor proportion score >=50%, no EGFR or ALK genomic tumor aberrations",
+      "key_trial": "KEYNOTE-024",
+      "nct_id": "NCT02142738",
+      "same_letter_document": true,
+      "independently_adjudicated": false
+    }
+  ],
+  "trial_predecision_publication_candidate": {
+    "trial": "KEYNOTE-024",
+    "nct_id": "NCT02142738",
+    "pubmed_url": "https://pubmed.ncbi.nlm.nih.gov/27718847/",
+    "peer_review_article_doi": "10.1056/NEJMoa1606774",
+    "ahead_of_print_date": "2016-10-08",
+    "issue_date": "2016-11-10",
+    "first_public_snapshot_independently_archived": false,
+    "point_in_time_feature_set_complete": false,
+    "after_decision_issue_date_must_not_be_used_as_predecision_publication_date": true
+  },
+  "additional_provenance": {
+    "postmarketing_commitment_keynote024_on_original_letter_page_3": true,
+    "keynote042_is_separate_trial_not_s12_training_evidence": true,
+    "simultaneous_supplement_actions_must_not_be_collapsed_into_one_original_bla_decision": true,
+    "all_secondary_postdecision_reviews_excluded_from_predecision_features": true
+  },
+  "review_and_model_gates": {
+    "reviewer_one_identity_verified": false,
+    "reviewer_two_identity_verified": false,
+    "independent_document_page_adjudication_complete": false,
+    "exact_application_supplement_action_adjudicated": false,
+    "source_original_pdf_digest_verified": false,
+    "complete_fda_approval_and_nonapproval_cohort_verified": false,
+    "model_eligible_records": 0,
+    "independently_verified_review_cycle_outcomes": 0,
+    "approval_rate": null,
+    "predicted_probability": null,
+    "model_calibration_validated": false,
+    "trading_signal_allowed": false
+  },
+  "notes": [
+    "One original FDA PDF contains two simultaneous supplemental actions S-8 and S-12. The fact that the letter says approved does not authorize complete-cohort FDA outcome labels.",
+    "This research entry records primary-page observations, not two independent reviewers or a validated training row.",
+    "The electronic signature on 2016-10-24 is an action date; the earlier publication availability of the FDA decision PDF itself was not established.",
+    "The October 8 KEYNOTE-024 electronic publication predates FDA action; the November 10 issue date does not. A contemporaneous archived publication snapshot and feature freeze still require independent checks."
+  ]
+}
