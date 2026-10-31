@@ -201,7 +201,7 @@ export default function NctLiveStream() {
   }, []);
 
   type ReadinessStage = { id: string; status: string; missing?: string[]; reason?: string | null; depends_on?: string[] };
-  type ReadinessReport = { nct_id: string; decision_pipeline?: ReadinessStage[]; checks_available?: number; checks_total?: number; missing?: string[]; assessments?: {id:string;status:string;reason?:string;value?:unknown;source_evidence_id?:string}[]; decision?:string };
+  type ReadinessReport = { nct_id: string; decision_pipeline?: ReadinessStage[]; checks_available?: number; checks_total?: number; missing?: string[]; assessments?: {id:string;status:string;reason?:string;value?:unknown;source_evidence_id?:string;required_fields?:string[];extracted_fields?:Record<string,unknown>;fields_complete?:boolean;adjudication_status?:string}[]; decision?:string };
   const [readiness, setReadiness] = useState<ReadinessReport | null>(null);
   const [readinessError, setReadinessError] = useState<string | null>(null);
   useEffect(() => {
@@ -257,6 +257,14 @@ export default function NctLiveStream() {
             {item.value !== undefined && item.value !== null ? <p>Recorded value: {String(item.value)}</p> : null}
             {item.reason ? <p>{item.reason}</p> : null}
             {item.source_evidence_id ? <p>Evidence ID: {item.source_evidence_id}</p> : null}
+            {item.required_fields?.length ? <div>
+              <p><strong>Quantitative evidence:</strong> {item.fields_complete ? "Fields recorded; independent adjudication still required" : "Incomplete"} · <strong>Adjudication:</strong> {item.adjudication_status || "NOT ADJUDICATED"}</p>
+              <ul>{item.required_fields.map(field => {
+                const value = item.extracted_fields?.[field];
+                const present = value !== null && value !== undefined && String(value).trim() !== "";
+                return <li key={field}>{field.replaceAll("_", " ")}: {present ? String(value) : "MISSING"}</li>;
+              })}</ul>
+            </div> : null}
           </details>)}
         </details>
       </details>
