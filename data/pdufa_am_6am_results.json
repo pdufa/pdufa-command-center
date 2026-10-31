@@ -18,8 +18,8 @@
     "strict_entry_gate_shortlist_count": 0,
     "verified_phase3_tracking": 0
   },
-  "generated_at_pacific": "2026-10-31T10:35:16.015047-07:00",
-  "generated_at_utc": "2026-10-31T17:35:16.015047+00:00",
+  "generated_at_pacific": "2026-10-31T10:42:10.474911-07:00",
+  "generated_at_utc": "2026-10-31T17:42:10.474911+00:00",
   "notice": "Read-only snapshot. SEC-verified individual closings do not prove two independent post-Phase-3 financings. A pending/stale component must not be represented as newly verified.",
   "overnight_scan_window_started_pacific": "2026-10-30T20:00:00-07:00",
   "publication_delayed_after_6am": true,
