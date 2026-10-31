@@ -5,7 +5,9 @@ export const masterBuildTasks: string[][] = [
     "Verify frontend/backend connectivity",
     "Audit Render service and database health",
     "Check rollback and recovery procedure",
-    "Record dated acceptance evidence"
+    "Record dated acceptance evidence",
+    "Monitor production latency and security",
+    "Verify rollback and recovery"
   ],
   [
     "Confirm canonical trial, drug, issuer and FDA application IDs",
@@ -14,7 +16,10 @@ export const masterBuildTasks: string[][] = [
     "Validate SEC financing and issuer events",
     "Validate financial and market-cap feeds",
     "Check deduplication, freshness and conflicting records",
-    "Test database backup and restore"
+    "Test database backup and restore",
+    "Audit source availability and completeness",
+    "Detect missing and conflicting records",
+    "Track freshness and schema changes"
   ],
   [
     "Verify scheduled 8 PM Pacific start",
@@ -63,7 +68,10 @@ export const masterBuildTasks: string[][] = [
     "Separate designation from review/application status",
     "Display designation icons on trial timeline",
     "Detect new, revised and withdrawn designations",
-    "Flag missing or conflicting source evidence"
+    "Flag missing or conflicting source evidence",
+    "Track FDA review amendments",
+    "Audit advisory committee evidence",
+    "Review regulatory precedents"
   ],
   [
     "Freeze approved depth-level specification",
@@ -88,7 +96,10 @@ export const masterBuildTasks: string[][] = [
     "Handle action after target date and unresolved cases",
     "Validate primary FDA action evidence",
     "Build point-in-time historical outcome dataset",
-    "Calibrate outcome probabilities and abstention rules"
+    "Calibrate outcome probabilities and abstention rules",
+    "Compare models on held-out decisions",
+    "Monitor calibration drift",
+    "Document errors and uncertainty"
   ],
   [
     "Verify 31 Core Platform acceptance gates",
@@ -122,7 +133,9 @@ export const masterBuildTasks: string[][] = [
     "Calculate Brier score and calibration",
     "Report uncertainty intervals and sample size",
     "Compare to baseline models",
-    "Publish failure cases and abstention rate"
+    "Publish failure cases and abstention rate",
+    "Separate investment research from regulatory prediction",
+    "Assess financing and liquidity risk"
   ],
   [
     "Show three top summary panels",
@@ -153,6 +166,8 @@ export const masterBuildTasks: string[][] = [
     "Validate historical model performance independently",
     "Run shadow predictions with abstention safeguards",
     "Sign off each acceptance gate with evidence",
-    "Publish release status and remaining blockers"
+    "Publish release status and remaining blockers",
+    "Rehearse disaster recovery",
+    "Review security updates and audit retention"
   ]
 ];
