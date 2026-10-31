@@ -23,6 +23,26 @@ export async function GET(request: Request) {
    checks[name]={status:"unreachable",checkedAt,note:"Request failed or timed out; does not establish root cause."};
   }
  }
+ // Check the configured backend directly from the server, without exposing its URL or keys.
+ // A successful HTTP response alone is insufficient: require the expected service,
+ // healthy application state and an affirmative persistent-storage check.
+ const backendBase = process.env.PDUFA_API_BASE_URL?.replace(/\\/$/, "");
+ if (!backendBase || !/^https:\\/\\/[^/]+/.test(backendBase)) {
+  checks.backendDatabase={status:"not_configured",checkedAt,note:"Backend URL is not configured; database readiness cannot be established."};
+ } else {
+  try {
+   const response=await fetch(backendBase+"/health",{cache:"no-store",signal:AbortSignal.timeout(8000)});
+   if (!response.ok) {
+    checks.backendDatabase={status:"http_error",httpStatus:response.status,checkedAt,note:"Backend health request failed; storage readiness is unverified."};
+   } else {
+    const body=await response.json() as {service?:string;status?:string;storage_ready?:boolean};
+    const ready=body.service==="pdufa-new-backend"&&body.status==="ok"&&body.storage_ready===true;
+    checks.backendDatabase={status:ready?"ready":"not_ready",httpStatus:response.status,checkedAt,note:ready?"Backend health confirms application and persistent storage ready. This is not a database restore or end-to-end acceptance test.":"Backend did not affirm expected service, healthy state and persistent storage readiness."};
+   }
+  } catch {
+   checks.backendDatabase={status:"unreachable",checkedAt,note:"Backend health request failed or timed out; storage readiness unverified."};
+  }
+ }
  // Runtime failures do not erase previously dated acceptance evidence. Live checks
  // are observations only; no requirement is auto-certified without a test contract.
  const counts=ids.reduce((acc,id)=>{const status=tasks[id].status;acc[status]=(acc[status]??0)+1;return acc;},{} as Record<string,number>);
