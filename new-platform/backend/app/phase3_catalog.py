@@ -593,8 +593,28 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             {"id": "CALIBRATED_FDA_OUTCOME_MODEL", "status": "NOT_ASSESSED",
              "value": None, "reason": "No validated outcome calibration exists."},
         ]
+        # Explicit dependency graph for the decision pipeline. These are real readiness
+        # states, not inferred probabilities or a claim of 50 completed analyses.
+        science_missing = [key for key in (
+            "primary_endpoint_record_available", "scientific_efficacy_assessment",
+            "scientific_safety_assessment") if not checks[key]]
+        outcome_missing = [key for key in (
+            "verified_fda_application_link", "independent_prediction_calibration")
+            if not checks[key]]
+        decision_pipeline = [
+            {"id": "SCIENCE", "status": "BLOCKED" if science_missing else "READY",
+             "missing": science_missing, "depends_on": [],
+             "reason": "Clinical efficacy and safety must be independently adjudicated." if science_missing else None},
+            {"id": "OUTCOME", "status": "BLOCKED" if outcome_missing or science_missing else "READY",
+             "missing": outcome_missing, "depends_on": ["SCIENCE"],
+             "reason": "Verified FDA linkage and independent outcome calibration are required." if outcome_missing else None},
+            {"id": "MAIN", "status": "ABSTAIN", "decision": "ABSTAIN",
+             "depends_on": ["SCIENCE", "OUTCOME"],
+             "reason": "No validated, application-specific FDA decision model has been established."},
+        ]
         return {"nct_id": nct_id, "checks": checks, "assessments": assessments,
                 "checks_available": sum(checks.values()), "checks_total": len(checks),
+                "decision_pipeline": decision_pipeline,
                 "missing": [key for key, value in checks.items() if not value],
                 "scientific_readiness": "NOT_READY", "decision": "ABSTAIN",
                 "limitation": "These are evidence-availability checks, not 50 scientific assessments or a calibrated FDA decision."}
