@@ -22,6 +22,11 @@ import {
 } from "../../lib/patient-population-filters";
 
 const PAGE_SIZE = 25;
+/** Unknown uptake must never be displayed as 0% or confused with FDA approval probability. */
+function adoptionLabel(value: number | null): string {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 100
+    ? value.toFixed(1) + "%" : "Insufficient data";
+}
 type RegistryState =
   | { status: "loading" }
   | { status: "error"; message: string }
@@ -44,7 +49,7 @@ function safeResearchRecord(value: unknown, expectedNct: string): RegistryResear
 
 const researchValue = (value: string | number | null) =>
   typeof value === "number" ? value.toLocaleString("en-US") : value || "Not researched";
-type NumberKey = "diseasePopulation" | "eligibleUsPatients" | "eligibleGlobalPatients" | "evidence";
+type NumberKey = "diseasePopulation" | "eligibleUsPatients" | "eligibleGlobalPatients" | "adoption12MonthPct" | "evidence";
 type SourceKey = "drug" | "indication";
 const AVAILABILITY: { value:Availability; label:string }[] = [
   { value:"all", label:"All records" },
@@ -139,7 +144,7 @@ export default function PatientPopulationTab() {
   }
   function numberColumn(field:NumberKey,title:string) {
     const filter=filters[field];
-    const percentage=field==="evidence";
+    const percentage=field==="evidence" || field==="adoption12MonthPct";
     return <div className={styles.columnFilter}>
       {availabilitySelect(filter.status,value=>modifyNumber(field,{status:value}),title+" research status")}
       <div className={styles.rangeInputs}>
@@ -235,6 +240,7 @@ export default function PatientPopulationTab() {
             <th scope="col">Total disease population{numberColumn("diseasePopulation","Total disease population")}</th>
             <th scope="col">Eligible U.S. patients{numberColumn("eligibleUsPatients","Eligible U.S. patients")}</th>
             <th scope="col">Eligible global patients{numberColumn("eligibleGlobalPatients","Eligible global patients")}</th>
+            <th scope="col" title="Forecast share of indication-eligible U.S. patients receiving the new therapy 12 months after launch, not FDA approval probability.">Projected patient adoption (12 mo, %){numberColumn("adoption12MonthPct","12-month adoption %")}</th>
             <th scope="col">Evidence completeness{numberColumn("evidence","Evidence completeness")}</th>
             <th scope="col">Last updated
               <div className={styles.columnFilter}>
@@ -262,6 +268,7 @@ export default function PatientPopulationTab() {
                 <td>{researchValue(row.diseasePopulation)}</td>
                 <td>{researchValue(row.eligibleUsPatients)}</td>
                 <td>{researchValue(row.eligibleGlobalPatients)}</td>
+                <td>{adoptionLabel(row.projectedAdoption12MonthPct)}</td>
                 <td>{row.populationEvidenceCompleteness === null ? "Not assessed" : row.populationEvidenceCompleteness + "%"}</td>
                 <td>{researchValue(row.populationLastVerified)}</td>
                 <td><button type="button" className={styles.smallButton}
@@ -271,7 +278,7 @@ export default function PatientPopulationTab() {
                 </button></td>
               </tr>
               {selected === nct && <tr id={"population-detail-" + nct} className={styles.expanded}>
-                <td colSpan={9}>
+                <td colSpan={10}>
                   <div className={styles.detailsHead}>
                     <div><h3>{row.trial.ticker} · {nct}</h3><p>{row.trial.company} · registry status COMPLETED at census date</p></div>
                     <button type="button" onClick={() => void loadRegistry(nct)} disabled={state?.status === "loading"}>
@@ -289,6 +296,7 @@ export default function PatientPopulationTab() {
                     {!record.phase3CurrentlyReported && " · Current registry Phase 3 phase is not verified; manual reconciliation required."}
                     {" · "}Drug/indication mapping remains pending independent issuer and FDA source verification.
                   </p>}
+                  <p className={styles.muted}><strong>Projected 12-month therapy adoption:</strong> {adoptionLabel(row.projectedAdoption12MonthPct)} of indication-eligible U.S. patients. Separate from FDA approval probability. Evaluate standard-of-care usage, switching, new starts, access barriers and forecast assumptions. <strong>Confidence:</strong> {row.adoptionConfidence || "Not assessed"}. {row.adoptionEvidenceUrl ? <a href={row.adoptionEvidenceUrl} target="_blank" rel="noopener noreferrer">Adoption forecast evidence ↗</a> : "No verified adoption source yet."}</p>
                   <h4>12 detailed population assessments — collapsed by default</h4>
                   <div className={styles.accordion}>
                     {PATIENT_POPULATION_DETAIL_SECTIONS.map((section,index) => <details key={section.title}>
