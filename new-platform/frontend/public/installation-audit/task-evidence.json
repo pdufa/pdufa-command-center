@@ -9,5 +9,36 @@
     "Not Started": "Work has not begun",
     "Unverified": "No sufficient task-specific evidence recorded"
   },
-  "tasks": {}
+  "tasks": {
+    "01-002": {
+      "status": "Verified",
+      "checkedAt": "2026-10-30",
+      "evidenceUrl": "https://vercel.com/pdufa/pdufa-new-dashboard/9toQZteQv8oVuhULv5WxJ3wzbx1y",
+      "note": "Vercel production deployment READY for evidence-registry release; deployment status only."
+    },
+    "13-001": {
+      "status": "Verified",
+      "checkedAt": "2026-10-30",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/1ae5743adf1722632d98bab370a3b36d2ecb4a34/new-platform/frontend/app/installation-audit/MasterBuildProgress.tsx",
+      "note": "BUILD PROGRESS component deployed to production."
+    },
+    "13-002": {
+      "status": "Verified",
+      "checkedAt": "2026-10-30",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/1f93d964591210947284e16e44e52509203990a2/new-platform/frontend/app/installation-audit/master-build-tasks.ts",
+      "note": "15 expandable sections rendered by production component."
+    },
+    "13-003": {
+      "status": "Verified",
+      "checkedAt": "2026-10-30",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/1f93d964591210947284e16e44e52509203990a2/new-platform/frontend/app/installation-audit/master-build-tasks.ts",
+      "note": "Itemized checklist rendered for 15 sections; inventory expanded to 546 tasks in later commit."
+    },
+    "13-004": {
+      "status": "Verified",
+      "checkedAt": "2026-10-30",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/a14ce8412be4f4499ae2bd28fffc904b013b3ae1/new-platform/frontend/app/installation-audit/MasterBuildProgress.tsx",
+      "note": "Status categories supported in task registry; not an assertion all tasks are verified."
+    }
+  }
 }
