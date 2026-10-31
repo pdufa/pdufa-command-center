@@ -645,6 +645,28 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                 assessment["extraction_status"] = "STRUCTURED_FIELDS_PRESENT" if extracted else "NO_VERIFIED_STRUCTURED_FIELDS"
                 assessment["adjudication_status"] = "NOT_ADJUDICATED"
                 assessment["automatic_pass"] = False
+                if assessment["id"] == "ENDPOINT_STATISTICAL_VALIDITY":
+                    # Arithmetic diagnostics are not independent adjudication:
+                    # p-values alone cannot establish prespecification or validity.
+                    raw_p = extracted.get("p_value_or_interval")
+                    raw_alpha = extracted.get("alpha")
+                    try:
+                        p_value = float(raw_p)
+                        alpha = float(raw_alpha)
+                        valid_numbers = (math.isfinite(p_value) and math.isfinite(alpha)
+                                         and 0 <= p_value <= 1 and 0 < alpha < 1)
+                        assessment["numeric_diagnostic"] = {
+                            "p_value": p_value if valid_numbers else None,
+                            "alpha": alpha if valid_numbers else None,
+                            "nominal_p_below_alpha": (p_value < alpha) if valid_numbers else None,
+                            "status": "NOMINAL_ONLY_NOT_ADJUDICATED" if valid_numbers else "INVALID_OR_MISSING_NUMERIC_INPUT",
+                            "warning": "Nominal comparison does not validate multiplicity, endpoint prespecification, missing data or clinical benefit.",
+                        }
+                    except (TypeError, ValueError, OverflowError):
+                        assessment["numeric_diagnostic"] = {
+                            "status": "INVALID_OR_MISSING_NUMERIC_INPUT",
+                            "nominal_p_below_alpha": None,
+                        }
         # Explicit dependency graph for the decision pipeline. These are real readiness
         # states, not inferred probabilities or a claim of 50 completed analyses.
         science_missing = [key for key in (
