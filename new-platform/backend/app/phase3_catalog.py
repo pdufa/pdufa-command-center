@@ -543,6 +543,34 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         except ValueError as exc:
             raise HTTPException(422, "Invalid catalog period, search, filter or pagination") from exc
 
+    @router.get("/{nct_id}/source-inventory")
+    def trial_source_inventory(nct_id: str):
+        """List stored evidence provenance; never claim that a document is a verified SAP."""
+        if not NCT.fullmatch(nct_id):
+            raise HTTPException(422, "Invalid NCT identifier")
+        with engine_provider().connect() as c:
+            exists = c.execute(text("SELECT 1 FROM phase3_trials WHERE nct_id=:nct"),
+                               {"nct": nct_id}).first()
+            if not exists:
+                raise HTTPException(404, "Trial not in verified catalog")
+            records = c.execute(text("""
+                SELECT d.dossier_id, d.source_evidence_id, d.created_at,
+                       e.url, e.retrieved_at, e.verification_status,
+                       e.sha256, e.publisher_kind
+                FROM phase3_dossier_versions d
+                LEFT JOIN phase3_evidence e ON e.evidence_id=d.source_evidence_id
+                WHERE d.nct_id=:nct
+                ORDER BY d.created_at DESC LIMIT 100
+            """), {"nct": nct_id}).mappings().all()
+        return {
+            "nct_id": nct_id,
+            "sources": [dict(row) for row in records],
+            "source_count": len(records),
+            "protocol_verified": False,
+            "sap_verified": False,
+            "limitation": "Dossier source provenance is not protocol/SAP classification or independent statistical review.",
+        }
+
     @router.get("/{nct_id}/readiness")
     def trial_readiness(nct_id: str):
         """Compute evidence availability, not an unsupported FDA probability."""
