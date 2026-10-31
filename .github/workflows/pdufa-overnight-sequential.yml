@@ -1,5 +1,5 @@
 name: PDUFA Overnight Sequential Scans
-run-name: ${{ (github.event_name != 'workflow_dispatch' || inputs.validate_only) && 'VALIDATE — PDUFA overnight' || 'ALL + GEM — PDUFA overnight' }}
+run-name: ${{ (github.event_name != 'workflow_dispatch' || inputs.validate_only) && 'VALIDATE — PDUFA overnight' || 'POOL + PIPELINE — PDUFA overnight' }}
 
 on:
   workflow_dispatch:
@@ -13,11 +13,6 @@ on:
         type: choice
         options: [DELTA, FULL]
         default: DELTA
-      gem_action:
-        description: 'GEM incremental recheck or full registry rescan'
-        type: choice
-        options: [REVERIFY_PARTIAL, RESCAN_ALL]
-        default: REVERIFY_PARTIAL
       night_date_pacific:
         description: 'Pacific date of 8 PM scan night supplied by guarded scheduler; empty for manual dispatch'
         type: string
@@ -64,9 +59,7 @@ jobs:
     uses: ./.github/workflows/pdufa-nightly-clinical.yml
     with:
       scan: ALL
-      include_gem: true
-      gem_action: ${{ inputs.gem_action || 'REVERIFY_PARTIAL' }}
-      scan_mode: ${{ inputs.gem_action == 'RESCAN_ALL' && 'FULL' || inputs.scan_mode || 'DELTA' }}
+      scan_mode: ${{ inputs.scan_mode || 'DELTA' }}
     secrets: inherit
 
   report:
@@ -81,7 +74,7 @@ jobs:
     if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.report.result != 'skipped'
     uses: ./.github/workflows/pdufa-nightly-missing-sources.yml
     with:
-      scan_mode: ${{ inputs.gem_action == 'RESCAN_ALL' && 'FULL' || inputs.scan_mode || 'DELTA' }}
+      scan_mode: ${{ inputs.scan_mode || 'DELTA' }}
     secrets: inherit
 
   shared-data:
