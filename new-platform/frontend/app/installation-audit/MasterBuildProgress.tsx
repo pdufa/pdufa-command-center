@@ -24,11 +24,14 @@ export default function MasterBuildProgress(){
  const [snap,setSnap]=useState<Snapshot|null>(null);
  const [checked,setChecked]=useState("");
  const [error,setError]=useState(false);
- useEffect(()=>{let active=true;async function refresh(){try{const res=await fetch(source+"?t="+Date.now(),{cache:"no-store"});if(!res.ok)throw Error("source unavailable");const data=await res.json() as Snapshot[];const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");if(active){setSnap(latest);setError(false);setChecked(new Date().toLocaleString());}}catch{if(active){setError(true);setChecked(new Date().toLocaleString());}}}refresh();const timer=setInterval(refresh,30*60*1000);return()=>{active=false;clearInterval(timer)}},[]);
+ const [refreshToken,setRefreshToken]=useState(0);
+ const [loading,setLoading]=useState(false);
+ useEffect(()=>{let active=true;async function refresh(){if(active)setLoading(true);try{const res=await fetch(source+"?t="+Date.now(),{cache:"no-store"});if(!res.ok)throw Error("source unavailable");const data=await res.json() as Snapshot[];const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");if(active){setSnap(latest);setError(false);setChecked(new Date().toLocaleString());setLoading(false);}}catch{if(active){setError(true);setChecked(new Date().toLocaleString());setLoading(false);}}}refresh();const timer=setInterval(refresh,30*60*1000);return()=>{active=false;clearInterval(timer)}},[refreshToken]);
  const verified=snap?.observations?.filter(o=>o.status==="Verified").length;
  const total=snap?.observations?.length;
  return <section aria-label="Master build progress" style={{border:"2px solid #334155",borderRadius:12,padding:18,margin:"22px 0",background:"#f8fafc"}}>
  <h2 style={{marginTop:0}}>BUILD PROGRESS · 15 segments</h2>
+ <button type="button" onClick={()=>setRefreshToken(x=>x+1)} disabled={loading} style={{padding:"10px 16px",borderRadius:8,background:"#0f766e",color:"white",border:0,fontWeight:700,cursor:loading?"wait":"pointer"}}>{loading?"Checking saved evidence…":"🔄 Update Progress Now"}</button>
  <p><strong>Refresh check:</strong> every 30 minutes while this page is open. This reads the latest committed evidence snapshot; it does not run audits, create new evidence, or automatically update GitHub. A new snapshot is visible only after it is committed. {checked?"Last checked: "+checked+". ":""}{error?"Latest fetch failed; previous results may be stale.":""}</p>
  <p><strong>MAIN Core Platform:</strong> {total?verified+" / "+total+" gates verified ("+(100*(verified||0)/total).toFixed(1)+"%)":"Loading verified snapshot…"} · Evidence date: {snap?.asOf||"unknown"}. SCIENCE and OUTCOME: <strong>not independently measured</strong>. Overall completion: <strong>not certified</strong>.</p>
  <p><a href="https://github.com/pdufa/pdufa-command-center/blob/main/docs/MASTER_BUILD_PROGRESS_2026-10-30.md" target="_blank" rel="noopener noreferrer">Full master task document and acceptance rules ↗</a></p>
