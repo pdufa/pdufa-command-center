@@ -776,23 +776,23 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [presetsReady,setPresetsReady]=useState(false);
   useEffect(()=>{
     try {
-      const saved=window.localStorage.getItem("pdufa-restriction-presets-v1");
+      const saved=window.localStorage.getItem("pdufa-pool-pipeline-presets-v2") || window.localStorage.getItem("pdufa-restriction-presets-v1");
       if(saved){
         const parsed=JSON.parse(saved);
-        setRestrictionPresets({PIPELINE:Array.isArray(parsed.PIPELINE)?parsed.PIPELINE:[],GEM_JR:Array.isArray(parsed.GEM_JR)?parsed.GEM_JR:[],GEM:Array.isArray(parsed.GEM)?parsed.GEM:[]});
+        setRestrictionPresets({PIPELINE:Array.isArray(parsed.PIPELINE)?parsed.PIPELINE.filter((p:RestrictionPreset)=>p&&typeof p.name==="string"&&Array.isArray(p.entries)).map((p:RestrictionPreset)=>({...p,entries:detachGemAssociations(restoreCatalogEntries(p.entries))})):[],GEM_JR:[],GEM:[]});
       }
     }catch{/* Keep presets usable in memory. */}
     setPresetsReady(true);
   },[]);
   useEffect(()=>{
     if(!presetsReady)return;
-    try{window.localStorage.setItem("pdufa-restriction-presets-v1",JSON.stringify(restrictionPresets));}catch{/* Browser storage unavailable. */}
+    try{window.localStorage.setItem("pdufa-pool-pipeline-presets-v2",JSON.stringify({PIPELINE:restrictionPresets.PIPELINE}));}catch{/* Browser storage unavailable. */}
   },[restrictionPresets,presetsReady]);
   function saveRestrictionPreset(stage:RestrictionPresetStage, overrideName?:string){
     const name=overrideName?.trim()||presetNames[stage].trim()||presetChoices[stage];
     if(!name)return;
     if(restrictionPresets[stage].some(p=>p.name===name)&&!window.confirm("Overwrite saved preset "+name+"?"))return;
-    setRestrictionPresets(old=>({...old,[stage]:[...old[stage].filter(p=>p.name!==name),{name,entries:masterRestrictions.map(e=>({...e,additionalStages:[...(e.additionalStages||[])],stagePriorities:{...e.stagePriorities}}))}]}));
+    setRestrictionPresets(old=>({...old,[stage]:[...old[stage].filter(p=>p.name!==name),{name,entries:detachGemAssociations(masterRestrictions).map(e=>({...e,additionalStages:[...(e.additionalStages||[])],stagePriorities:{...e.stagePriorities}}))}]}));
     setPresetChoices(old=>({...old,[stage]:name}));
     setPresetNames(old=>({...old,[stage]:""}));
   }
@@ -800,7 +800,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     const saved=restrictionPresets[stage].find(p=>p.name===presetChoices[stage]);
     if(!saved||!window.confirm("Load "+saved.name+" for "+stage.replace("_"," ")+"? Current unsaved changes to this list will be replaced."))return;
     const stored=new Map(saved.entries.map(e=>[e.id,e]));
-    setMasterRestrictions(current=>current.map(entry=>{
+    setMasterRestrictions(current=>detachGemAssociations(current.map(entry=>{
       const old=stored.get(entry.id);
       if(!old)return entry;
       const otherStages=catalogStages(entry).filter(s=>s!==stage);
@@ -811,7 +811,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         stagePriorities:priorityByStage,priority:stages.length?priorityByStage[stages[0]]||entry.priority:"",
         enabled:otherStages.length?entry.enabled:(included?old.enabled:false),
         value:otherStages.length?entry.value:old.value,maximum:otherStages.length?entry.maximum:old.maximum};
-    }));
+    })));
   }
   function bottomPresetSave(stage:RestrictionPresetStage){
     return <div style={{borderTop:"1px solid #a2b4a4",marginTop:16,paddingTop:14,display:"grid",gap:8}}>
@@ -826,7 +826,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   function restrictionPresetControls(stage:RestrictionPresetStage){
     return <div style={{border:"1px solid #a2b4a4",borderRadius:10,padding:12,margin:"12px 0",display:"grid",gap:9}}>
       <strong>SAVED RESTRICTION PRESETS — {stage.replace("_"," ")}</strong>
-      <small>Save this list's membership, priority, enabled status and numeric values. Stored in this browser; other lists' membership is preserved on load.</small>
+      <small>Save the Pool/Pipeline membership, priority, enabled status and values in this browser. GEM JR and GEM preset associations are excluded.</small>
       <select aria-label={stage+" saved restriction preset"} style={{width:"100%",maxWidth:440}} value={presetChoices[stage]} onChange={e=>setPresetChoices(old=>({...old,[stage]:e.target.value}))}>
         <option value="">Select a saved preset</option>
         {restrictionPresets[stage].map(p=><option key={p.name} value={p.name}>{p.name}</option>)}
