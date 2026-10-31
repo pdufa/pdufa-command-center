@@ -52,7 +52,8 @@ test("authenticated per-NCT API only looks up pinned census and does not proxy u
  const ui=fs.readFileSync(path.join(__dirname,"../app/PipelineFourViews.tsx"),"utf8");
  assert.ok(source.includes("hasSession(req.cookies.get(COOKIE_NAME)?.value)"));
  assert.ok(source.includes('parsePhase3CensusCsv(csv)'));
- assert.ok(source.includes('corpus.rows.some(r=>r.nctId===nct)'));
+ assert.ok(source.includes('const pinned=corpus.rows.find(r=>r.nctId===nct);'));
+ assert.ok(source.includes('if(corpus.rows.length!==741||!pinned)'));
  assert.ok(source.includes('redirect:"manual"'));
  assert.ok(source.includes('AbortSignal.timeout(13000)'));
  assert.ok(source.includes('Cache-Control":"private, no-store"'));
