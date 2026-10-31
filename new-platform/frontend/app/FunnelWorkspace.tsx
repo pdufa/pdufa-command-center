@@ -9,6 +9,7 @@ import type { CompetitiveAssessment } from "../lib/competitive-assessment";
 import { pacificToday, type TimelineDates } from "../lib/pipeline-timeline";
 import { PipelineTimelineHeaders, PipelineTimelineCells } from "./PipelineTimelineColumns";
 import PipelineFourViews from "./PipelineFourViews";
+import LiveRegistryReview from "./LiveRegistryReview";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -156,7 +157,9 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
                <p>Current: {r.therapyCostComparison?.current?.therapy || "Not researched"} — {r.therapyCostComparison?.current?.regimen || "Regimen unverified"}</p>
                <p>Proposed: {r.therapyCostComparison?.proposed?.therapy || "Not researched"} — {r.therapyCostComparison?.proposed?.regimen || "Regimen unverified"}</p>
                <p>Costs: first 12 months per U.S. treated patient; source and matching price bases required. Prelaunch prices can only be modeled where evidence exists.</p>
-             </details></td>
+             </details>
+             {section==="pipeline"&&<LiveRegistryReview nctId={r.nctId}/>}
+             </td>
            </tr>:
            <tr key={r.id}>
              <td>{r.id}</td><td>{r.ticker}</td><td>{display(r.company)}</td>
