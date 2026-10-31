@@ -23,7 +23,7 @@ async function source():Promise<FunnelResult> {
       readFile(join(process.cwd(),"public","phase3-census-sources-2026-10-26.json"),"utf8"),
       // One bounded retry for a sleeping/restarting Render instance. Share a
       // single deadline; never retry auth errors, invalid data or source drift.
-      fetchReadOnlyWithWarmRetry(base+"/api/workspace",{
+      fetchReadOnlyWithWarmRetry(base+"/api/workspace?require_fresh=true",{
         method:"GET",headers:{"x-pdufa-internal-key":key},
         cache:"no-store",signal:AbortSignal.timeout(50000)
       }),
