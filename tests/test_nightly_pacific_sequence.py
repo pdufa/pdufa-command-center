@@ -318,6 +318,33 @@ class DatedArchiveTests(unittest.TestCase):
         self.assertIn('git push origin HEAD:main', archive)
         self.assertNotIn('dispatches', archive)
 
+    def test_archived_start_delay_uses_guarded_pacific_night_even_after_midnight(self):
+        from scripts import pdufa_daily_results as daily
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            unavailable = Path(directory) / "no-nightly-report.json"
+            with patch.object(daily, "REPORT", unavailable):
+                at_815 = daily.record(
+                    501, "2026-10-31T03:15:44Z", "success", "2026-10-30")
+                self.assertEqual(at_815["date_pacific"], "2026-10-30")
+                self.assertEqual(at_815["start_delay_minutes"], 15)
+                self.assertEqual(at_815["scan_night_source"], "GUARDED_SCHEDULER_INPUT")
+                self.assertEqual(at_815["scheduled_8pm_pacific_utc"],
+                                 "2026-10-31T03:00:00+00:00")
+                late = daily.record(
+                    502, "2026-10-31T09:05:00Z", "success", "2026-10-30")
+                self.assertEqual(late["date_pacific"], "2026-10-30")
+                self.assertEqual(late["start_delay_minutes"], 365)
+                standard_time = daily.record(
+                    503, "2026-11-02T04:15:00Z", "success", "2026-11-01")
+                self.assertEqual(standard_time["start_delay_minutes"], 15)
+                self.assertEqual(standard_time["scheduled_8pm_pacific_utc"],
+                                 "2026-11-02T04:00:00+00:00")
+                with self.assertRaises(ValueError):
+                    daily.record(504, "2026-10-31T03:15:44Z", "success", "2026-10-31")
+                with self.assertRaises(ValueError):
+                    daily.record(505, "2026-10-31T03:15:44Z", "success", "2026-10-28")
+
     def test_same_night_changes_and_saved_membership_not_confused_with_new(self):
         from scripts import pdufa_daily_results as daily
         from unittest.mock import patch
