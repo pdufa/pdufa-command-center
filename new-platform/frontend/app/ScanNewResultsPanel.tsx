@@ -23,9 +23,7 @@ export default function ScanNewResultsPanel({
     : null;
   const primary = [
     {key:"pipeline",label:"PIPELINE",desc:"New master programs",value:summary?.pipelineNewPrograms ?? null},
-    {key:"jr-result",label:"GEM JR",desc:"New posted Phase 3 result records",value:summary?.gemJrNewResultRecords ?? null},
-    {key:"jr-member",label:"GEM JR",desc:"New saved candidates on scan date",value:summary?.gemJrNewMembersOnDate ?? null},
-    {key:"gem-member",label:"GEM",desc:"New saved candidates on scan date",value:summary?.gemNewMembersOnDate ?? null},
+    {key:"phase3-result",label:"PHASE 3 RESULTS",desc:"New posted Phase 3 results (historic source count)",value:summary?.gemJrNewResultRecords ?? null},
   ];
   const known = summary && primary.some(x => x.value !== null);
   return <section className="scans-new-results" aria-label="New from scan — latest published additions">
@@ -59,11 +57,11 @@ export default function ScanNewResultsPanel({
           <h4>What was new?</h4>
           <small>Only published identifiers appear below. No ticker or trial is invented.</small>
         </div>
-        {summary.rows.length ? <div className="scans-new-table-viewport">
+        {summary.rows.filter(row=>row.kind==="NEW_PROGRAM"||row.kind==="NEW_PHASE3_RESULT").length ? <div className="scans-new-table-viewport">
           <table className="scans-new-table">
             <thead><tr><th>Stage</th><th>Status</th><th>Ticker</th><th>Program / drug</th><th>Trial ID</th><th>Evidence</th></tr></thead>
-            <tbody>{summary.rows.map((row, i) => <tr key={row.stage+"|"+row.kind+"|"+(row.trialId || i)}>
-              <td><strong>{row.stage}</strong></td>
+            <tbody>{summary.rows.filter(row=>row.kind==="NEW_PROGRAM"||row.kind==="NEW_PHASE3_RESULT").map((row, i) => <tr key={row.stage+"|"+row.kind+"|"+(row.trialId || i)}>
+              <td><strong>{row.kind==="NEW_PHASE3_RESULT"?"PHASE 3 RESULTS":"POOL"}</strong></td>
               <td><span className={"scans-new-item-badge"+(row.exactRun?"":" scans-new-date-badge")}>{category(row)}</span></td>
               <td>{row.ticker ? <strong>{row.ticker}</strong> : <em>Not published</em>}</td>
               <td>{row.drug || "Identity not published in the scan report"}</td>
@@ -75,7 +73,7 @@ export default function ScanNewResultsPanel({
           <p className="scans-new-unavailable">No individually identified new rows were published for this scan.</p>}
       </>}
     <footer className="scans-new-footer">
-      <strong>Reading these numbers:</strong> PIPELINE programs, GEM JR posted-result records and saved GEM JR/GEM candidates are different measures; they can overlap and must not be added together. The saved-candidate counts come from the <em>same-date membership ledger</em>, not a run-ID-matched admission log.
+      <strong>Reading these numbers:</strong> New master programs and posted Phase 3 results are different measures; they can overlap and must not be added together. Counts are dated source observations and are not proof of eligibility or regulatory success.
       {summary?.warnings?.length ? <ul>{summary.warnings.map(w => <li key={w}>{w}</li>)}</ul> : null}
       <small>Collection success does not establish complete FDA, SEC, financing, market, or clinical-source verification or trading eligibility.</small>
     </footer>

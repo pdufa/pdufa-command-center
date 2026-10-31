@@ -14,8 +14,9 @@ test("active site top navigation and workbench offer no GEM stage links",()=>{
  assert.doesNotMatch(nav,/label:"GEM(?: JR)?"/);
  assert.doesNotMatch(workspace,/\["GEM_JR","GEM JR"\].*\["GEM","GEM"\]/);
  assert.match(workspace,/\(\["PIPELINE"\] as RestrictionPresetStage\[\]\)/);
- assert.match(home,/const stages: Stage\[\] = \["PIPELINE"\]/);
- assert.match(home,/useState<Stage>\("PIPELINE"\)/);
+ assert.doesNotMatch(home,/from "\.\/Workspace"/);
+ assert.match(home,/href:"\/pool"/);
+ assert.match(home,/href:"\/pipeline"/);
 });
 test("live source workspace has no GEM membership ledger, inputs or stage qualifiers",()=>{
  const source=read("new-platform/backend/app/source_workspace.py");
@@ -38,10 +39,10 @@ test("phase3 results scan remains live but GEM qualification and financing are n
  assert.doesNotMatch(starter,/inputs\[gem_action\]/);
  for(const p of [".github/workflows/gem-jr-gem-pre15-rescan.yml",".github/workflows/gem-research-quality.yml",
    ".github/workflows/gem-financing-full-coverage.yml",".github/workflows/reconcile-730-gem.yml",
-   ".github/workflows/phase3-730-unfiltered-gem.yml"]){
-  const text=read(p);
-  assert.doesNotMatch(text,/\n  schedule:\s*\n|\n  push:\s*\n/);
-  assert.doesNotMatch(text,/python scripts\/gem|python scripts\/phase3_730_unfiltered_gem/);
+   ".github/workflows/phase3-730-unfiltered-gem.yml",
+   ".github/workflows/gem-research-diagnostics.yml",".github/workflows/gem-original-qualification-ui.yml",
+   ".github/workflows/gem-potential-live-audit.yml",".github/workflows/live-streamlit-audit.yml"]){
+  assert.equal(fs.existsSync(path.join(root,p)),false,"retired job must not be registered: "+p);
  }
 });
 test("active browser scan endpoints cannot dispatch GEM or create new GEM checklists",()=>{

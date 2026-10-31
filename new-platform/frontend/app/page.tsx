@@ -1,251 +1,68 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
-import Workspace from "./Workspace";
+import {useEffect,useState,type FormEvent} from "react";
+import Link from "next/link";
 import SiteHealthStatus from "./SiteHealthStatus";
 import NctLiveStream from "./NctLiveStream";
 
-type Stage = "PIPELINE" | "GEM_JR" | "GEM";
-type Selections = Record<string, boolean>;
-type Pending = { programId: string; stage: Stage; selections: Selections; notes: string };
-type AuthState = "checking" | "login" | "ready" | "unavailable";
-
-const items = [
-  { id: "cash", label: "Cash runway", goal: "12+ months" },
-  { id: "market_cap", label: "Market capitalization", goal: "$300M–$10B" },
-  { id: "approval", label: "Probability of approval", goal: "75%+ (estimate; verify source)" },
-  { id: "short_interest", label: "Short interest", goal: "15%+ screening preference" },
-  { id: "momentum", label: "30-day price momentum", goal: "Positive" },
-  { id: "volume", label: "Relative trading volume", goal: "1.5x+ (provisional)" },
-  { id: "financing", label: "Financing / warrants", goal: "No imminent dilution" },
-  { id: "phase3", label: "Phase 3 evidence", goal: "Endpoints and p-values verified" },
-  { id: "rsi", label: "RSI", goal: "45–65 (provisional)" },
-  { id: "trend", label: "Trend / chart base", goal: "Confirmed support; compare SMA20/SMA50" },
-  { id: "insiders", label: "Ownership flows", goal: "Review insider and institutional activity" },
-  { id: "sources", label: "Source reconciliation", goal: "FDA + SEC + issuer evidence checked" },
-  { id: "exit", label: "Hard stop and catalyst exit", goal: "Unambiguous exit policy before entry" },
-  { id: "liquidity", label: "Liquidity and float", goal: "Review spreads and tradable float" },
-  { id: "atr", label: "ATR and volatility", goal: "Set risk-based levels" },
-  { id: "catalyst", label: "PDUFA date", goal: "Verify 30–60 / 30–90-day windows" }
+type AuthState="checking"|"login"|"ready"|"unavailable";
+const links=[
+  {href:"/pool",title:"POOL — Master Trial Universe",desc:"The unrestricted published trial and regulatory-record universe. No eligibility gate deletes POOL records."},
+  {href:"/pipeline",title:"PIPELINE — Post–Phase 3 Screening",desc:"Public issuer, $300M–$10B market cap and verified final pivotal Phase 3 evidence. Unverified items remain in review."},
+  {href:"/patient-population",title:"#1 — Patient Population",desc:"Source-linked research and evidence completeness for the first commercial-benefit assessment."},
+  {href:"/goal",title:"GOAL — Research Operations",desc:"Daily source status, upcoming events, and Pipeline-only analysis progress."},
+  {href:"/scans",title:"SCANS — Collection and Verification",desc:"Source audit, scan progress and controls, including Phase 3 posted results."},
+  {href:"/results",title:"RESULTS — Dated Scan Reports",desc:"Saved daily research results and historical scan evidence."},
+  {href:"/restrictions",title:"RESTRICTIONS — Pipeline Eligibility",desc:"Three hard scope gates and status of verification before commercial assessments."},
+  {href:"/predictions",title:"PREDICTIONS — FDA Outcome Research",desc:"Research-only outcome evidence; no unsupported regulatory probability."},
 ];
-
-const stages: Stage[] = ["PIPELINE"];
-const stageName = (stage: Stage) => stage === "GEM_JR" ? "GEM JR" : stage;
-function stateUrl(programId: string, stage: Stage) {
-  return "/api/program-state?programId=" + encodeURIComponent(programId) + "&stage=" + encodeURIComponent(stage);
-}
-
 export default function Home() {
-  const [auth, setAuth] = useState<AuthState>("checking");
-  const [password, setPassword] = useState("");
-  const [authError, setAuthError] = useState("");
-  const [ticker, setTicker] = useState("");
-  const [programId, setProgramId] = useState("");
-  const [stage, setStage] = useState<Stage>("PIPELINE");
-  const [selections, setSelections] = useState<Selections>({});
-  const [notes, setNotes] = useState("");
-  const [loaded, setLoaded] = useState(false);
-  const [status, setStatus] = useState("Connecting…");
-  const pending = useRef<Pending | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const queue = useRef<Promise<void>>(Promise.resolve());
-  const versions = useRef<Record<string, number>>({});
-  const activeKey = useRef("");
-
-  useEffect(() => {
-    fetch("/api/auth", { cache: "no-store" }).then(async response => {
-      if (response.status === 503) { setAuth("unavailable"); return; }
-      if (!response.ok) throw new Error("Unable to check sign-in");
-      setAuth((await response.json()).authenticated ? "ready" : "login");
-    }).catch(() => setAuth("unavailable"));
-  }, []);
-
-  useEffect(() => {
-    if (auth !== "ready" || !programId) return;
-    const key = programId + "|" + stage;
-    activeKey.current = key;
-    const controller = new AbortController();
-    setLoaded(false);
-    setStatus("Loading saved checklist…");
-    fetch(stateUrl(programId, stage), { signal: controller.signal, cache: "no-store" })
-      .then(async response => {
-        if (!response.ok) throw new Error(response.status === 503
-          ? "Persistent storage is not configured on Render. Set DATABASE_URL before using autosave."
-          : "Checklist could not be loaded (" + response.status + ")");
-        return response.json();
-      }).then(data => {
-        if (controller.signal.aborted) return;
-        versions.current[key] = data.version;
-        setSelections(data.selections || {});
-        setNotes(data.notes || "");
-        setLoaded(true);
-        setStatus("Restored saved selections");
-      }).catch(error => {
-        if (!controller.signal.aborted) setStatus(String(error));
-      });
-    return () => controller.abort();
-  }, [auth, stage, programId]);
-
-  useEffect(() => {
-    if (programId) document.getElementById("checklist-workbench")?.scrollIntoView({ behavior: "smooth" });
-  }, [programId, stage]);
-
-  function flushPending(): Promise<void> {
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = null;
-    const change = pending.current;
-    pending.current = null;
-    if (!change) return queue.current;
-    const key = change.programId + "|" + change.stage;
-    queue.current = queue.current.catch(() => {}).then(async () => {
-      if (activeKey.current === key) setStatus("Saving…");
-      const version = versions.current[key] ?? 0;
-      try {
-        const response = await fetch(stateUrl(change.programId, change.stage), {
-          method: "PUT", keepalive: true, headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ version, selections: change.selections, notes: change.notes })
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) {
-          if (activeKey.current === key) setStatus(
-            response.status === 409 ? "Conflict — reload checklist before editing" :
-              "Save failed — check connection; your change is still on screen"
-          );
-          return;
-        }
-        versions.current[key] = data.version;
-        if (activeKey.current === key && !pending.current) setStatus("Saved automatically");
-      } catch {
-        if (activeKey.current === key) setStatus("Save failed — check your connection");
-      }
-    });
-    return queue.current;
-  }
-
-  function queueChange(nextSelections: Selections, nextNotes: string, delay: number) {
-    if (!programId || !loaded) return;
-    pending.current = { programId, stage, selections: nextSelections, notes: nextNotes };
-    setStatus("Unsaved change…");
-    if (timer.current) clearTimeout(timer.current);
-    if (delay === 0) { void flushPending(); }
-    else timer.current = setTimeout(() => { void flushPending(); }, delay);
-  }
-
-  useEffect(() => {
-    // Preserve the last typed note on navigation away, where supported.
-    const flushOnPageHide = () => { void flushPending(); };
-    window.addEventListener("pagehide", flushOnPageHide);
-    return () => window.removeEventListener("pagehide", flushOnPageHide);
-  }, []);
-
-  async function signIn(event: FormEvent) {
-    event.preventDefault();
-    setAuthError("");
-    const response = await fetch("/api/auth", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password })
-    }).catch(() => null);
-    if (response?.ok) { setPassword(""); setAuth("ready"); }
-    else setAuthError("Sign-in failed. Check the setup password.");
-  }
-
-  async function signOut() {
-    await flushPending();
-    await fetch("/api/auth", { method: "DELETE" });
-    setAuth("login");
-    setSelections({});
-    setNotes("");
-    setProgramId("");
-    setTicker("");
-    setLoaded(false);
-  }
-
-  function selectStage(next: Stage) {
-    void flushPending();
-    setLoaded(false);
-    setStage(next);
-  }
-
-  function inspectProgram(nextTicker: string, nextStage: Stage, nextProgramId?: string) {
-    if (!nextProgramId) return;
-    if (nextProgramId === programId && nextStage === stage) {
-      document.getElementById("checklist-workbench")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-    void flushPending();
-    setLoaded(false);
-    setTicker(nextTicker);
-    setStage(nextStage);
-    setProgramId(nextProgramId);
-  }
-
-  const checked = items.filter(item => selections[item.id]).length;
-
-  if (auth === "checking") return <main className="shell"><h1>PDUFA Command Center</h1><p>Checking setup…</p></main>;
-  if (auth === "unavailable") return <main className="shell"><h1>PDUFA Command Center</h1><div className="panel"><h2>Setup required</h2><p>Configure the new platform environment variables before signing in. The existing Streamlit app remains untouched.</p></div></main>;
-  if (auth === "login") return (
-    <main className="shell">
-      <div className="topline">NEW PLATFORM · ISOLATED TEST INSTALL</div>
-      <h1>PDUFA Command Center</h1>
-      <form className="panel login" onSubmit={signIn}>
-        <h2>Sign in to the new platform</h2>
-        <label htmlFor="password">Setup password</label>
-        <input id="password" type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required />
-        <button type="submit">Sign in</button>
-        {authError && <p role="alert" className="error">{authError}</p>}
-        <p className="subtle">This is a separate development installation. Streamlit has not been replaced.</p>
-      </form>
-    </main>
-  );
-
-  return (
-    <main className="shell">
-      <div className="topline" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        <span>PDUFA COMMAND CENTER · PUBLISHED DASHBOARD</span>
-        <SiteHealthStatus />
-      </div>
-      <header className="head">
-        <div><h1>PDUFA Command Center</h1><p className="subtle">POOL → PIPELINE → Scientific, FDA and commercial-benefit assessment</p></div>
-        <button className="secondary" onClick={() => void signOut()}>Sign out</button>
-      </header>
-      <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a></p>
-      <NctLiveStream />
-      <Workspace onInspect={inspectProgram} />
-      {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
-      <div className="panel controls">
-        <label htmlFor="stage">Stage</label>
-        <select id="stage" value={stage} onChange={event => selectStage(event.target.value as Stage)}>
-          {stages.map(s => <option key={s} value={s}>{stageName(s)}</option>)}
-        </select>
-      </div>
-      <div className="layout">
-        <section className="panel">
-          <div className="sectionhead"><div><h2>{ticker} · {stageName(stage)} {programId && <span className="permanent-id">{programId}</span>}</h2><p className="subtle">Illustrative checklist — full scoring rules will migrate later</p></div><span className="counter">{checked}/{items.length}</span></div>
-          <div aria-live="polite" className="saveState">{status}</div>
-          {loaded ? <div className="checklist-criteria-grid">{items.map(item => (
-            <label key={item.id} className="criteria">
-              <input type="checkbox" checked={Boolean(selections[item.id])} onChange={event => {
-                const updated = { ...selections, [item.id]: event.target.checked };
-                setSelections(updated);
-                queueChange(updated, notes, 0);
-              }} />
-              <span className="criterionText"><strong>{item.label}</strong><span className="goal">GOAL · {item.goal}</span></span>
-            </label>
-          ))}</div> : <p role="status">{status}</p>}
-        </section>
-        <aside className="panel notes">
-          <h2>Research notes</h2>
-          <p className="subtle">Typing saves after a short pause. Return to this exact Program ID and stage to restore program-specific notes.</p>
-          <textarea disabled={!loaded} onBlur={() => void flushPending()} rows={13} value={notes} placeholder="Add entry rationale, financing evidence, risks, and next actions…" onChange={event => {
-            const value = event.target.value;
-            setNotes(value);
-            queueChange(selections, value, 650);
-          }} />
-          <div className="subtle small">Database-backed. No cookies are used to store your checklist answers.</div>
-        </aside>
-      </div>
-      </div> : null}
-    </main>
-  );
+ const [auth,setAuth]=useState<AuthState>("checking");
+ const [password,setPassword]=useState("");
+ const [error,setError]=useState("");
+ useEffect(()=>{
+   const controller=new AbortController();
+   void fetch("/api/auth",{cache:"no-store",signal:controller.signal})
+    .then(async response=>{
+      if(response.status===503){setAuth("unavailable");return;}
+      if(!response.ok)throw Error("Auth unavailable");
+      setAuth((await response.json()).authenticated?"ready":"login");
+    }).catch(()=>{if(!controller.signal.aborted)setAuth("unavailable")});
+   return()=>controller.abort();
+ },[]);
+ async function signIn(e:FormEvent<HTMLFormElement>){
+   e.preventDefault();setError("");
+   const response=await fetch("/api/auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password})}).catch(()=>null);
+   if(response?.ok){setPassword("");setAuth("ready")}
+   else setError("Sign-in failed. Check your password.");
+ }
+ async function signOut(){
+   await fetch("/api/auth",{method:"DELETE"}).catch(()=>null);
+   setAuth("login");
+ }
+ return <main className="shell">
+  <div className="topline">PDUFA COMMAND CENTER · POOL → PIPELINE</div>
+  <h1>PDUFA Command Center</h1>
+  {auth==="checking" && <p role="status">Checking account session…</p>}
+  {auth==="unavailable" && <section className="panel"><h2>Setup unavailable</h2><p>Authentication is not configured or the session service could not be reached. Research data is withheld.</p></section>}
+  {auth==="login" && <form className="panel login" onSubmit={signIn}>
+    <h2>Sign in</h2><label htmlFor="password">Password</label>
+    <input id="password" type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} required/>
+    <button type="submit">Sign in</button>{error&&<p role="alert">{error}</p>}
+  </form>}
+  {auth==="ready" && <>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+      <SiteHealthStatus/><button type="button" className="secondary" onClick={()=>void signOut()}>Sign out</button>
+    </div>
+    <p>The active research sequence is <strong>POOL → PIPELINE → scientific, regulatory and commercial-benefit assessments</strong>. Historic research configurations are not eligibility gates.</p>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:13,margin:"18px 0"}}>
+      {links.map(x=><Link key={x.href} href={x.href}
+        style={{display:"block",background:"#fff",border:"1px solid #adc6b1",borderRadius:10,padding:16,textDecoration:"none",color:"#17452f"}}>
+        <strong style={{display:"block",marginBottom:8}}>{x.title}</strong><small style={{lineHeight:1.5,color:"#436454"}}>{x.desc}</small>
+      </Link>)}
+    </div>
+    <NctLiveStream/>
+    <p><a href="https://docs.google.com/spreadsheets/d/1FSRXFXc4u2KTpdyP-vSbWil-Fgtrj3ucELSk2kpQAG0/edit" target="_blank" rel="noopener noreferrer">Patient Population — Recommended Columns spreadsheet</a></p>
+  </>}
+ </main>;
 }
-

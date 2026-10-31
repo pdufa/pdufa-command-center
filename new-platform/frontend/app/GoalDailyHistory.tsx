@@ -21,14 +21,13 @@ export default function GoalDailyHistory({daily,loading,error}:Props) {
       <div className={styles.body}>
         <p className={styles.explainer}>Counts are saved against each Pacific calendar date and its original GitHub run.
           These are historical source snapshots, not a new scan. “Total / new” in stage columns
-          means saved members and newly recorded members, <strong>not</strong> newly qualified trials.
+          are historical reported inventory values, <strong>not</strong> newly qualified trials.
           Changed master records are not new trials.</p>
         {rows.length ? <div className={styles.scroll}><table>
           <thead><tr>
             <th>Date (Pacific)</th><th>Published status</th>
             <th>Tracked trials total</th><th>Tracked changed</th><th>New trials</th>
-            <th>Pipeline total / new</th><th>GEM JR total / new</th>
-            <th>GEM total / new</th><th>FDA designations total / new</th>
+            <th>Pipeline total / new</th><th>FDA designations total / new</th>
             <th>Original run</th>
           </tr></thead>
           <tbody>{rows.map(day=><tr key={day.date}>
@@ -38,8 +37,7 @@ export default function GoalDailyHistory({daily,loading,error}:Props) {
             </span></td>
             <td>{value(day.master.total)}</td><td>{value(day.master.updated)}</td>
             <td>{value(day.master.new)}</td>
-            <td>{stage(day.pipeline)}</td><td>{stage(day.gemJr)}</td>
-            <td>{stage(day.gem)}</td><td>{stage(day.designations)}</td>
+            <td>{stage(day.pipeline)}</td><td>{stage(day.designations)}</td>
             <td><a href={day.runUrl} target="_blank" rel="noopener noreferrer">#{day.runId} ↗</a></td>
           </tr>)}</tbody>
         </table></div> :

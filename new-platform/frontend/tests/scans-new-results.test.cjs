@@ -158,7 +158,7 @@ test("SCANS page places new results summary ahead of job progress and identifies
   assert.ok(page.indexOf("<ScanNewResultsPanel")<page.indexOf("<LiveScansProgress />"));
   assert.ok(panel.includes("NEW FROM SCAN"));
   assert.ok(panel.includes("UPDATED / RECHECKED"));
-  assert.ok(panel.includes("counts come from the"));
+  assert.ok(panel.includes("Counts are dated source observations"));
   assert.ok(api.includes("newFromScan: newFromScanSummary"));
 });
 
@@ -176,18 +176,14 @@ test("Source Verification Ledger is behind a default-closed caret with unresolve
   assert.ok(!fold.includes("<details open"), "Caret should be collapsed by default");
 });
 
-test("SCANS is a top-level tab before RESULTS with no duplicate lower tab", () => {
-  const workspace = fs.readFileSync(require.resolve("../app/Workspace.tsx"), "utf8");
-  const css = fs.readFileSync(require.resolve("../app/globals.css"), "utf8");
-  const topStart = workspace.indexOf('<div className="worktop">');
-  const topEnd = workspace.indexOf('</div>', topStart);
-  assert.ok(topStart >= 0 && topEnd > topStart, "Top-level navigation must exist");
-  const top = workspace.slice(topStart, topEnd);
-  assert.ok(top.includes('>SCANS</button>'), "Top-level SCANS tab must exist");
-  assert.ok(top.indexOf('>SCANS</button>') < top.indexOf('>RESULTS</button>'), "SCANS precedes RESULTS");
-  assert.ok(!workspace.includes('["SCANS","SCANS"]'), "No SCANS tab in the lower PDUFA navigation");
-  assert.ok(workspace.includes('top==="SCANS" && <PublishedScansPanel />'), "Top-level SCANS retains its original content");
-  assert.ok(workspace.includes('requested === "SCANS"'), "Old SCANS deep links still work");
-  assert.ok(workspace.includes('top!=="RESTRICTIONS" && top!=="SCANS"'), "SCANS hides lower navigation");
-  assert.ok(!css.includes('.worktop > button:nth-of-type(3) { grid-column: 1 / -1; }'), "Mobile tabs no longer give the third button an unbalanced full row");
+test("SCANS is a native top-level link before RESULTS with direct source pages",()=>{
+ const nav=fs.readFileSync(require.resolve("../app/GlobalNavigation.tsx"),"utf8");
+ const scans=fs.readFileSync(require.resolve("../app/scans/page.tsx"),"utf8");
+ const results=fs.readFileSync(require.resolve("../app/results/page.tsx"),"utf8");
+ assert.ok(nav.includes('label:"SCANS",href:"/scans"'));
+ assert.ok(nav.includes('label:"RESULTS",href:"/results"'));
+ assert.ok(nav.indexOf('label:"SCANS",href:"/scans"')<nav.indexOf('label:"RESULTS",href:"/results"'));
+ assert.doesNotMatch(nav,/GEM|streamlit/i);
+ assert.match(scans,/PublishedScansPanel/);
+ assert.match(results,/DailyResultsPanel/);
 });

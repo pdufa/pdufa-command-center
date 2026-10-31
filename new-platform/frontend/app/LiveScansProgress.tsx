@@ -18,7 +18,6 @@ type Report = {
 const FEEDS = [
   ["AUTO", "Latest active / recent scan"],
   ["OVERNIGHT", "Full POOL → PIPELINE → Phase 3 results"],
-  ["PIPELINE_GEM_JR", "Clinical POOL / PIPELINE / Phase 3 results"],
   ["SOURCES", "FDA / SEC / Financial / Market / Issuer"],
   ["SCAN_CONTROL", "Manual scan commands"],
   ["GMAIL_AUDIT", "Gmail email audit"],
@@ -40,7 +39,7 @@ function stageForJob(name: string): string | null {
   const n = name.toLowerCase();
   if (/^validate\b/.test(n)) return "validate";
   if (/^clinical\s*\/\s*pipeline\b/.test(n) || /\bpipeline\b/.test(n)) return "pipeline";
-  if (/phase.?3 results|phase3_results|clinical\s*\/\s*gem jr\b/.test(n)) return "phase3";
+  if (/phase.?3 results|phase3_results/.test(n)) return "phase3";
   if (/^report\s*\//.test(n) || /\bpublish\b/.test(n) && !/^sources\s*\//.test(n)) return "publish";
   if (/^sources\s*\//.test(n) || /\b(?:fda|sec|financial|market|issuer)\b/.test(n)) return "sources";
   if (/^scoring-and-repair\s*\//.test(n) || /\bscor(e|ing)\b|\brepair\b/.test(n)) return "score";

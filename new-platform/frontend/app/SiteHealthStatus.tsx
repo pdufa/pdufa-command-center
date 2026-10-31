@@ -11,7 +11,7 @@ function when(value: string | null) {
 const STATES = { good: "Good", warning: "Needs review", failed: "Failed", unknown: "Unverified" };
 const UNVERIFIED_CHECKS: HealthCheck[] = [
   ["website", "Website & sign-in"], ["deployment", "Deployment"], ["backend", "Backend & database"],
-  ["lists", "PIPELINE · GEM JR · GEM"], ["scans", "Clinical scan collection"],
+  ["lists", "POOL source inventory"], ["scans", "Clinical scan collection"],
   ["sources", "Source verification"], ["scoring", "Scoring data"],
   ["controls", "Restrictions, buttons & popups"], ["screens", "iPhone & desktop display"],
   ["email", "PDUFA email count"],

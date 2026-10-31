@@ -54,10 +54,10 @@ export async function GET(req: NextRequest) {
   add("backend", "Backend & database", backendValid && backend.storage_ready === true && backend.status === "ok" ? "good" : "failed",
     !backendConfigured ? "Not configured" : !backendValid ? "Unavailable" : backend.storage_ready === true ? "Connected" : "Database unavailable",
     backendValid ? "Backend responded. Persistent storage " + (backend.storage_ready === true ? "is ready." : "is not ready.") : "The configured backend could not be verified. No save or scan was started.");
-  const listCounts = lists && [lists.pipeline, lists.gemJr, lists.gem].every(count);
-  add("lists", "PIPELINE · GEM JR · GEM", listCounts ? "good" : "unknown",
-    listCounts ? `${Number(lists.pipeline).toLocaleString("en-US")} · ${Number(lists.gemJr).toLocaleString("en-US")} · ${Number(lists.gem).toLocaleString("en-US")}` : "Unverified",
-    "Live backend list counts, in the order shown. Restriction controls require their own UI verification.");
+  const listCounts = lists && count(lists.pipeline);
+  add("lists", "POOL source inventory", listCounts ? "good" : "unknown",
+    listCounts ? Number(lists.pipeline).toLocaleString("en-US") : "Unverified",
+    "Published combined backend records, not the independently qualified post–Phase 3 Pipeline count. No historical stage membership is an eligibility requirement.");
   checks.push(savedCheck("scans", "Clinical scan collection", clinical, now, clinicalHealth));
   checks.push(savedCheck("sources", "Source verification", sources, now, sourceHealth));
   checks.push(savedCheck("scoring", "Scoring data", scoring, now, scoringHealth));

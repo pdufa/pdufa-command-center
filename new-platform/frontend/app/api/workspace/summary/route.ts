@@ -36,12 +36,16 @@ export async function GET(req: NextRequest) {
     const data: unknown = await response.json();
     if (!data || typeof data !== "object") throw new Error("Invalid summary");
     const summary = data as Record<string, unknown>;
-    for (const key of ["pipeline", "gemJr", "gem"]) {
-      if (!Number.isSafeInteger(summary[key]) || (summary[key] as number) < 0) {
-        throw new Error("Invalid count: " + key);
-      }
+    if (!Number.isSafeInteger(summary.pipeline) || (summary.pipeline as number) < 0) {
+      throw new Error("Invalid Pipeline source count");
     }
-    return NextResponse.json(summary, { headers: { "Cache-Control": "private, no-store" } });
+    // The published legacy backend can still expose historical stage counters.
+    // Do not transmit, gate on, or treat those as active site associations.
+    return NextResponse.json({
+      pipeline: summary.pipeline,
+      asOf: typeof summary.asOf === "string" ? summary.asOf : null,
+      sourceState: typeof summary.sourceState === "string" ? summary.sourceState : null
+    }, { headers: { "Cache-Control": "private, no-store" } });
   } catch {
     return NextResponse.json({ error: "Verified summary unavailable" }, { status: 503 });
   }
