@@ -7,6 +7,8 @@ import DetailSheet, {type DetailItem} from "./DetailSheet";
 import { TrialDesignationCells, useTrialDesignations } from "./TrialDesignations";
 import { DESIGNATION_COLUMNS } from "../lib/trial-designations";
 import { COMPETITIVE_STRATEGIES } from "../lib/competitive-strategies";
+import { exactProgramTimeline, pacificToday, type TimelineSourceFields } from "../lib/pipeline-timeline";
+import { PipelineTimelineCells } from "./PipelineTimelineColumns";
 import CandidateAssessments, { AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSort, type PipelineSortKey, type RegistrySortIndex } from "../lib/pipeline-data";
@@ -14,7 +16,9 @@ import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSo
 const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = [
   { label: "Details" }, { label: "Score trial" }, { label: "#" }, { label: "Program ID", key: "programId" },
   { label: "Ticker / company", key: "ticker", sortLabel: "ticker" },
-  { label: "Drug / study" }, { label: "Indication" }, { label: "Competitive strategies" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
+  { label: "Drug / study" }, { label: "Indication" },
+  { label: "Days since Phase 3 data release" }, { label: "Days to PDUFA" },
+  { label: "Competitive strategies" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
   { label: "NCT ID", key: "nctId" }, { label: "Trial status", key: "status" },
   { label: "Primary completion", key: "primaryCompletion" }, { label: "PDUFA", key: "pdufaDate" },
   ...DESIGNATION_COLUMNS.map(({ label }) => ({ label })),
@@ -49,6 +53,8 @@ function CompetitiveStrategiesCell({ row }: { row: Candidate }) {
 
 export default function PipelineData({ rows, filterSummary }: { rows: Candidate[]; filterSummary?: string }) {
   const [detailItem, setDetailItem] = useState<DetailItem|null>(null);
+  const [today,setToday]=useState("");
+  useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return()=>clearInterval(timer);},[]);
   const [detailKind,setDetailKind] = useState<"trial"|"company"|"disease"|"all">("all");
   const showDetails=(row:Candidate,kind:typeof detailKind)=>{setDetailKind(kind);setDetailItem(row as DetailItem)};
   const [page, setPage] = useState(0);
@@ -168,6 +174,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
             <a className="trial-sheet-link" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">{row.drug || saved?.study_title || nct} ↗</a> :
             row.drug || saved?.study_title || "Not reported"}</strong>{saved?.study_title && <small>{saved.study_title}</small>}</td>
           <td className="pipeline-study-cell">{row.indication || "Not reported"}</td>
+          <PipelineTimelineCells today={today} dates={exactProgramTimeline(row as TimelineSourceFields,Boolean(nct))}/>
           <td><CompetitiveStrategiesCell row={row} /></td><td>{row.trialFilters?.registeredPhase || "Unknown"}</td><td>{row.stage || "Unknown"}</td>
           <td>{nct ? <a className="trial-sheet-link" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">{nct} · Full trial ↗</a> : "No linked trial"}</td>
           <td>{saved?.status?.replaceAll("_", " ") || (nct ? loading ? "Loading…" : "Not available" : "Regulatory program")}</td>
