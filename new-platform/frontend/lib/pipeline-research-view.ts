@@ -2,6 +2,7 @@
  * Historical Phase 3 census entries are research pointers, not qualified programs.
  * No missing competitor, benefit or FDA date is converted to zero or a ranking.
  */
+import type { ComparatorEvidence } from "./pipeline-benefit-assessments";
 import { COMPETITIVE_ASSESSMENT_COLUMNS, verifiedCompetitiveFact, type CompetitiveAssessment, type ResearchEvidence } from "./competitive-assessment";
 import { calculateTherapyCosts, type TherapyCostComparison } from "./post-phase3-population";
 import { pipelineDayCounts, type TimelineDates } from "./pipeline-timeline";
@@ -12,6 +13,8 @@ export type PipelineResearchRow = {
  poolStatus:string; postPhase3Evidence:string; qualification:string; reasons:string[];
  timeline?:TimelineDates|null;
  commercialAssessment?:CompetitiveAssessment|null;
+ /** Optional normalized, exact-program source-backed comparators; never inferred from a disease label. */
+ competitorEvidence?:ComparatorEvidence[]|null;
  therapyCostComparison?:TherapyCostComparison|null;
 };
 type OriginalId=typeof COMPETITIVE_ASSESSMENT_COLUMNS[number]["id"];
