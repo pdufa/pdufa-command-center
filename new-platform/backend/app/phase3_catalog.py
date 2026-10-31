@@ -501,7 +501,7 @@ def _prediction_rows(c, nct, actual=None, actual_date=None):
             elif source:
                 evidence.append(_public_evidence(source))
         correctness = row["decision"] == expected[actual] if timely and row["decision"] != "ABSTAIN" else None
-        result.append({"prediction_id": row["prediction_id"], "application_id": row["application_id"], "decision": row["decision"], "created_at": row["created_at"], "evidence_cutoff": row["evidence_cutoff"], "actual_decision": actual, "actual_decision_date": actual_date, "scientific_readiness": row["scientific_readiness"], "confidence": row["confidence"], "uncertainty": row["uncertainty"], "evidence": evidence, "correctness": correctness, "prospective_eligible": timely})
+        result.append({"prediction_id": row["prediction_id"], "nct_id": nct, "application_id": row["application_id"], "decision": row["decision"], "created_at": row["created_at"], "evidence_cutoff": row["evidence_cutoff"], "actual_decision": actual, "actual_decision_date": actual_date, "scientific_readiness": row["scientific_readiness"], "confidence": row["confidence"], "uncertainty": row["uncertainty"], "evidence": evidence, "correctness": correctness, "prospective_eligible": timely})
     return result
 
 
@@ -524,7 +524,14 @@ def historical_validation(engine):
     for decision in ("PASS", "CRL", "EXTENSION"):
         subset = [p for p in evaluated if p["decision"] == decision]
         categories[decision] = {"evaluated": len(subset), "correct": sum(p["correctness"] for p in subset), "accuracy": sum(p["correctness"] for p in subset) / len(subset) if len(subset) >= 10 and len(evaluated) >= 30 else None}
-    return {"status": "NOT_VALIDATED" if not evaluated else "REVIEW_REQUIRED", "total_applications": applications, "eligible_applications": len(first_by_app),
+    cases = [{"id": p["prediction_id"], "nct_id": p.get("nct_id"),
+              "predicted_decision": p["decision"], "actual_decision": p["actual_decision"],
+              "confidence": p["confidence"], "status": "SCORED" if p["correctness"] is not None else "ABSTAIN_OR_UNRESOLVED",
+              "science": "Not separately verified", "outcome": {"application_id": p["application_id"], "actual_decision_date": p["actual_decision_date"]},
+              "missing_evidence": p["uncertainty"]} for p in selected]
+    counts = {"correct_predictions": sum(p["correctness"] is True for p in evaluated),
+              "scored_predictions": len(evaluated), "abstentions": sum(p["decision"] == "ABSTAIN" for p in selected)}
+    return {"counts": counts, "cases": cases, "status": "NOT_VALIDATED" if not evaluated else "REVIEW_REQUIRED", "total_applications": applications, "eligible_applications": len(first_by_app),
             "number_evaluated": len(evaluated), "number_abstained": sum(p["decision"] == "ABSTAIN" for p in selected),
             "number_with_known_outcomes": known, "prediction_records": len(predictions), "temporally_eligible_predictions": len(eligible),
             "excluded_for_lookahead_or_missing_outcome": len(predictions) - len(eligible), "accuracy_by_decision": categories,
