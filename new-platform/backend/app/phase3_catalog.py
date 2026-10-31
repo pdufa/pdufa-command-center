@@ -602,6 +602,27 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             {"id": "CALIBRATED_FDA_OUTCOME_MODEL", "status": "NOT_ASSESSED",
              "value": None, "reason": "No validated outcome calibration exists."},
         ]
+        # Machine-readable extraction contract. Do not infer numerical values
+        # from free-text endpoint summaries or mark an assessment as passed.
+        quantitative_requirements = {
+            "ENDPOINT_EFFECT_SIZE": ["endpoint_name", "treatment_arm", "comparator_arm",
+                                     "effect_measure", "effect_estimate", "confidence_interval",
+                                     "unit", "analysis_population", "source_evidence_id"],
+            "ENDPOINT_STATISTICAL_VALIDITY": ["prespecified_endpoint", "alpha",
+                                              "multiplicity_strategy", "p_value_or_interval",
+                                              "missing_data_method", "source_evidence_id"],
+            "ENDPOINT_CLINICAL_RELEVANCE": ["disease_context", "clinical_benefit_threshold",
+                                            "observed_benefit", "benefit_risk_rationale",
+                                            "source_evidence_id"],
+        }
+        for assessment in assessments:
+            required = quantitative_requirements.get(assessment["id"])
+            if required:
+                assessment["required_fields"] = required
+                assessment["extracted_fields"] = {}
+                assessment["fields_complete"] = False
+                assessment["adjudication_status"] = "NOT_ADJUDICATED"
+                assessment["automatic_pass"] = False
         # Explicit dependency graph for the decision pipeline. These are real readiness
         # states, not inferred probabilities or a claim of 50 completed analyses.
         science_missing = [key for key in (
