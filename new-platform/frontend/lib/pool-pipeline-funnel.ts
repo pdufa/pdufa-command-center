@@ -8,8 +8,9 @@
  */
 import { parsePhase3CensusCsv, type Phase3CensusRows, type Phase3CensusTrial } from "./phase3-census-rows";
 import { parsePhase3CensusSourceDirectory, sourcesForPhase3Trial, type Phase3CensusSourceDirectory } from "./phase3-census-sources";
+import { exactProgramTimeline, type TimelineDates, type TimelineSourceFields } from "./pipeline-timeline";
 
-export type PoolTrialRecord = {
+export type PoolTrialRecord = TimelineSourceFields & {
   id:string; ticker:string; company?:string; drug?:string; indication?:string;
   nctId?:string; stage?:string; marketCap?:number|null; capInRange?:boolean;
   capChecked?:string; capSource?:string; phase3Date?:string; phase3Source?:string;
@@ -29,6 +30,7 @@ export type PostPhase3Review = {
   postPhase3Evidence:"REGISTRY_COMPLETED"|"FINAL_READOUT_NEEDS_PROOF";
   qualification:"NEEDS_REVIEW";
   reasons:string[];
+  timeline:TimelineDates;
 };
 export type FunnelResult = {
   poolRows:PoolTrialRecord[];
@@ -109,6 +111,7 @@ export function reconcilePoolPipeline(raw:unknown,csvText:string,sourceInput:unk
       sourceUrl:trial.sourceUrl,censusStatus:trial.status,
       capUsd:sponsor.marketCapUsd,capAsOf:sponsor.marketCapCheckedAt,
       poolStatus,
+      timeline:exactProgramTimeline(pool,poolStatus==="EXACT_MATCH"),
       postPhase3Evidence:isCompleted?"REGISTRY_COMPLETED":"FINAL_READOUT_NEEDS_PROOF",
       qualification:"NEEDS_REVIEW",reasons,
     };
