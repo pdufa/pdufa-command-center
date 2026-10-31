@@ -18,7 +18,7 @@ export type AuditItem = {
 
 export const AUDIT_GROUPS = [
   { name: "Core Platform", components: [
-    "Core Platform", "Pipeline", "POOL / PIPELINE", "Evidence Verification",
+    "Core Platform", "Pipeline", "GEM JR / GEM / WT", "Evidence Verification",
     "Regulatory Intelligence", "Investment Analysis", "Results & Reporting",
     "Final Acceptance",
   ] },
