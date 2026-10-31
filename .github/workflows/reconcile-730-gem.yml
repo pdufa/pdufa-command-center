@@ -1,28 +1,13 @@
-name: Reconcile 730 trials with GEM stages
+name: ARCHIVED — 730 GEM stage overlap reconciliation
+# Prior GEM stage ledgers are retained in Git history and source data.
+# Never assign a candidate to GEM or GEM JR from active POOL processing.
 on:
-  push:
-    paths:
-      - 'scripts/reconcile_730_gem.py'
-      - '.github/workflows/reconcile-730-gem.yml'
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
-  reconcile:
+  archived:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python scripts/reconcile_730_gem.py
-      - run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/phase3_730_existing_gem_reconciliation.csv data/phase3_730_existing_gem_reconciliation_status.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Publish 730 GEM stage overlap"
-          git pull --rebase origin main
-          git push origin HEAD:main
+      - name: Explain archived reconciliation
+        run: echo "Legacy GEM stage overlap reconciliation is inactive and does not mutate memberships."
