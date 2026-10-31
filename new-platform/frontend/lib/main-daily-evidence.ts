@@ -89,7 +89,7 @@ export function auditMainDailyEvidence(inventoryInput: unknown, snapshotsInput: 
         }
         observations.push({id:expected.id,status:observation.status,evidenceUri:observation.evidenceUri as string,note:observation.note});
       }
-      const acceptedSections = [...new Set(gateIds.map(gate=>g.component))].filter(component => gateIds
+      const acceptedSections = [...new Set(gateIds.map(gate=>gate.component))].filter(component => gateIds
         .filter(gate => gate.component === component)
         .every(gate => observations.find(o => o.id === gate.id)?.status === "Verified")).length;
       const snapshotEvidenceUri = observations.find(o => o.status === "Verified")?.evidenceUri ?? source;
