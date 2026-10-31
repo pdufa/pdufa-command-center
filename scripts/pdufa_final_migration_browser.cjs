@@ -50,7 +50,17 @@ async function gate(id, code, work) {
   result.gates.push(row);
 }
 async function json(context, pathname, code, expected = 200) {
-  const response = await context.request.get(BASE + pathname, { timeout: 65000, maxRedirects: 0 });
+  // A research-source freshness 503 remains a failure if persistent. Retry
+  // the protected, read-only workspace twice after a cold-start/deploy,
+  // without ever retrying writes, authentication failures or corrupt data.
+  const scopeRead = expected === 200 && pathname.startsWith('/api/scope-funnel?');
+  let response;
+  for (let attempt = 0; attempt < (scopeRead ? 3 : 1); attempt++) {
+    response = await context.request.get(BASE + pathname, { timeout: 65000, maxRedirects: 0 });
+    if (!(scopeRead && response.status() === 503 && attempt < 2)) break;
+    console.log('PDUFA_SCOPE_RETRY ' + JSON.stringify({code, attempt:attempt+1, httpStatus:503}));
+    await new Promise(resolve => setTimeout(resolve, 4000));
+  }
   if (response.status() !== expected) {
     // Never log clinical data or arbitrary server errors. Only permit finite
     // diagnostic enums from the authenticated, protected scope endpoint.
