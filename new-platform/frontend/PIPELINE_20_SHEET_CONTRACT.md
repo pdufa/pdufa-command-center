@@ -16,13 +16,15 @@
 | 17 Assessment Evidence | A:T = one parent NCT + assessment rank + source per row | E assessment rank 1–20, M evidence state, N URL, T exact identity check |
 | 18 Mapping and Sync | A:K = 20 original assessments and 38 field-to-assessment mapping | Documents 29 directly assigned research fields + 9 standalone identification/evidence fields |
 | 14 Charts Dashboard | Five chart objects including the original 20-assessment mapping structure | Counts are structural or verified-source counts; blank/non-entry = no numeric conclusion |
+| 19 Phase 3 Census Review | 741 pinned 2026-10-26 source pointers (375 registry completed); historical company and cap links | Never auto-promote a census record to qualified |
+| 20 Registry Evidence Intake | A:X = one reviewed registry evidence CSV; Y = spreadsheet formula identity check | Import an authenticated per-NCT CSV; leave qualification NEEDS_REVIEW; independent reviewer sign-off required |
 
 ## Semantic rules
 - Treat one issuer–drug–indication regulatory program as commercial unit. Link one or more distinct NCTs and do not sum a drug's patient population once per NCT.
 - Competitor inventory is normalized one-to-many; approved treatment identities use FDA application and label; pipeline treatments use exact NCTs and sourced phase. Do not silently label a pending candidate approved.
 - Require owner NCT + ticker + indication + treatment line + eligible population before comparing, and explicit direct vs indirect basis. Duplicates are rejected; conflicting source evidence requires independent review.
 - Do not infer numerical clinical superiority from p-values alone or rank therapies on cross-indication outcomes. For no confirmed comparable peer group, ABSTAIN.
-- Nine primary assessment headings currently have no uniquely assigned original research field: #4, #11, #13, #14, #15, #16, #18, #19 and #20. That is distinct from the prior high-level count of seven wholly missing assessment topics, because two partially covered topics have relevant fields mapped to adjacent headings. Each zero-field heading needs its own additional research evidence. **Authoritative check:** read `18 Mapping and Sync!A5:F24`; every zero field remains NOT ASSESSED. Never infer complete coverage merely from creating a heading.
+- All 20 assessment headings have defined inputs: 29 of the original 38 research fields are assigned to assessment topics, nine original fields remain separate identity/timeline/evidence controls, and nine additional research definitions address previously missing topics (47 definitions total). This defines what to research but DOES NOT populate real findings. **Authoritative check:** read `18 Mapping and Sync!A5:F24` and `12 Field Catalog!A5:I51`; missing evidence stays NOT ASSESSED.
 - Sources are primary FDA, ClinicalTrials.gov, peer-reviewed results, SEC and dated sponsor disclosures. Preserve source dates, denominators and uncertainty, and distinguish modeled from VERIFIED.
 
 ## Sync boundary
@@ -34,3 +36,10 @@ For a future secure sync job:
 3. Upsert `07` master by canonical program/NCT key, `13` evidence by program/field/source, `16` competitors by exact canonical comparator key, and `17` assessments by program/rank/source, without clearing manual review.
 4. Read back every changed range and reconcile source counts, duplicates, scope and source-version timestamps. Fail closed instead of silently publishing partial records.
 5. Never advertise live sync until that exact procedure is implemented, authenticated, scheduled and verified.
+
+## On-demand current registry evidence intake
+1. On the signed-in Pipeline, open an exact NCT trial in a dossier or unresolved research table, expand Current ClinicalTrials.gov registry check, and click Check official registry now.
+2. After the check succeeds, choose Download this trial’s registry evidence for Google Sheets review. The download re-fetches the fixed ClinicalTrials.gov API host and returns precisely 24 source-backed CSV columns A:X; it does NOT modify the workbook automatically.
+3. Import/paste that CSV data row beneath the headings in `20 Registry Evidence Intake`, without overwriting Y's integrity spill formula. Do not replace prior reviewed NCT rows without reconciling version/source changes. The import contains original registry facts and pinned issuer/ticker references, but drug/indication and commercial rights are NOT independently confirmed.
+4. Inspect the final Y column. It must reconcile the NCT + historical issuer with tab 19 and source link; a `REVIEW_REQUIRED` row remains pending. Human approval of registry facts is never equivalent to pivotal success, FDA approval, qualified Pipeline membership, price or current-market-cap validation.
+5. Live website ↔ Google Sheets automatic sync remains NOT INSTALLED without secure Google auth and audited readback; this manual per-trial export is an interim review pipeline.
