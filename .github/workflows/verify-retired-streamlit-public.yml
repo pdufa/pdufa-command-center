@@ -14,14 +14,14 @@ jobs:
       - name: Probe old Streamlit address and current PDUFA site (read-only)
         run: |
           python3 - <<'PY'
-          import urllib.request,urllib.error,socket,re
+          import urllib.request,urllib.error,urllib.parse,socket,re
           urls=[
             ("legacy_streamlit","https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"),
             ("legacy_streamlit_health","https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/_stcore/health"),
             ("new_dashboard","https://pdufa-new-dashboard.vercel.app/"),
           ]
           for name,url in urls:
-              host=urllib.request.urlparse(url).hostname
+              host=urllib.parse.urlparse(url).hostname
               try:
                   addresses=socket.getaddrinfo(host,443,type=socket.SOCK_STREAM)
                   print(name,"DNS_RESOLVED",bool(addresses))
