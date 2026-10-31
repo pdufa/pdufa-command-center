@@ -191,8 +191,8 @@ export default function PublishedScansPanel() {
             <option value="RESCAN_ALL">Rescan all — full collection</option>
           </select>
         </label>
-        <label>Stage
-          <select value={target} onChange={e => setTarget(e.target.value as ScanTarget)}>
+        <label htmlFor="pdufa-scan-target">Stage
+          <select id="pdufa-scan-target" value={target} onChange={e => setTarget(e.target.value as ScanTarget)}>
             <option value="ALL">ALL — POOL, PIPELINE, Phase 3 results</option>
             <option value="PIPELINE">PIPELINE only</option>
             <option value="PHASE3_RESULTS">Phase 3 results only</option>
