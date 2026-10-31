@@ -8,7 +8,7 @@ on:
         description: "Run only the selected clinical section"
         type: choice
         required: true
-        options: [PIPELINE, GEM_JR]
+        options: [PIPELINE, PHASE3_RESULTS]
       scan_mode:
         description: "DELTA changed trials or FULL entire tracked section"
         type: choice
@@ -59,7 +59,7 @@ jobs:
           mkdir -p reports/scan_notifications
           case "$SECTION" in
             PIPELINE) scans="2 3" ;;
-            GEM_JR) scans="4" ;;
+            PHASE3_RESULTS) scans="4" ;;
             *) echo "::error::Unknown clinical section"; exit 2 ;;
           esac
           for scan in $scans; do
