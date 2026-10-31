@@ -11,7 +11,7 @@ function checkAuth(req: NextRequest) {
 function upstreamUrl(req: NextRequest): string | null {
   const programId = req.nextUrl.searchParams.get("programId") || "";
   const stage = (req.nextUrl.searchParams.get("stage") || "").toUpperCase();
-  if (!/^PDUFA-[0-9]{6,}$/.test(programId) || !["PIPELINE","GEM_JR","GEM"].includes(stage)) return null;
+  if (!/^PDUFA-[0-9]{6,}$/.test(programId) || stage !== "PIPELINE") return null;
   const base = process.env.PDUFA_API_BASE_URL;
   if (!base || !base.startsWith("http://backend:") && !base.startsWith("http://localhost:") && !base.startsWith("https://")) return null;
   return base.replace(/\/$/, "") + "/api/program-checklists/" + encodeURIComponent(programId) + "/" + stage;
