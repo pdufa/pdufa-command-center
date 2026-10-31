@@ -27,7 +27,7 @@ export function detachGemAssociations(entries: readonly CatalogEntry[]): PoolPip
       ? (typeof savedPipelinePriority === "string" ? savedPipelinePriority :
         entry.stage === "PIPELINE" ? (entry.priority || "") : "")
       : "";
-    const rank = /^[1-9]\\d{0,3}$/.test(priority) ? priority : "";
+    const rank = /^[1-9]\d{0,3}$/.test(priority) ? priority : "";
     return {
       ...entry,
       // There is one active list only. Unassigned rules remain available in POOL.
@@ -47,7 +47,7 @@ export function poolRuleDefinition(entry: CatalogEntry): CatalogDefinition {
     ...original,
     associations: [],
     category: entry.stage === "PIPELINE" ? "Pipeline restriction" : "Pool: available restriction",
-    help: original.help.replace(/GEM JR\\s*\\/\\s*GEM|GEM JR|GEM|FS\\s*\\/\\s*FA/g, "prior screening"),
+    help: original.help.replace(/GEM JR\s*\/\s*GEM|GEM JR|GEM|FS\s*\/\s*FA/g, "prior screening"),
   };
 }
 
