@@ -53,8 +53,22 @@ export async function GET(req:NextRequest) {
     const data=await source();
     return NextResponse.json(funnelPage(data,view as ScopeView,Number(offset),Number(limit),query),
       {headers:{"Cache-Control":"private, no-store"}});
-  }catch{
-    return NextResponse.json({error:"Cannot verify master POOL and historical Phase 3 source reconciliation; no qualified Pipeline count is available"},
-      {status:503,headers:{"Cache-Control":"private, no-store"}});
+  }catch(cause){
+    // Only a finite cause category is returned to the signed-in operator.
+    // Never expose backend URLs, credentials, clinical rows or private trace text.
+    let reasonCode="SOURCE_RECONCILIATION_FAILED";
+    if(cause instanceof Error){
+      if(cause.message==="Backend not configured")reasonCode="BACKEND_NOT_CONFIGURED";
+      else if(cause.message==="Published source POOL unavailable")reasonCode="BACKEND_SOURCE_HTTP_ERROR";
+      else if(cause.message.includes("integrity or freshness"))reasonCode="POOL_SOURCE_INTEGRITY_OR_STALE";
+      else if(cause.message.startsWith("Research inventory unavailable"))reasonCode="PINNED_CENSUS_CSV_INVALID";
+      else if(cause.message.startsWith("Census research sources blocked"))reasonCode="PINNED_CENSUS_SOURCES_INVALID";
+      else if(cause.message.includes("ENOENT"))reasonCode="PINNED_SERVERLESS_ASSET_MISSING";
+      else if(cause.name==="TimeoutError"||cause.name==="AbortError")reasonCode="BACKEND_TIMEOUT";
+    }
+    return NextResponse.json({
+      error:"Cannot verify master POOL and historical Phase 3 source reconciliation; no qualified Pipeline count is available",
+      reasonCode
+    },{status:503,headers:{"Cache-Control":"private, no-store"}});
   }
 }
