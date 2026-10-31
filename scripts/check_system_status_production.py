@@ -22,7 +22,7 @@ REQUIRED_TEXT = (
     "System installation & evidence tracker",
     "Core Platform",
     "Pipeline",
-    "GEM JR / GEM / WT",
+    "POOL / PIPELINE",
     "Scientific Assessment",
     "Historical Trial Database",
     "Prediction Engine",
