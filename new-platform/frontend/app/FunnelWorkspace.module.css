@@ -32,3 +32,66 @@
 .footer{margin-top:17px}
 @media(max-width:1040px){.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:580px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metrics strong{font-size:17px}.root{padding:15px 10px 55px}.panel{padding:10px}.search input{min-width:170px}}
+
+/* Four synchronized views: fit dense research on desktop and mobile. */
+.fourViews{margin:22px 0;border:1px solid #b5d4c5;border-radius:16px;padding:16px;background:#f7faf9;color:#143628}
+.fourIntro{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+.fourIntro h2{margin:0;font-size:20px;color:#102f26}
+.fourIntro p{margin:7px 0;font-size:13px;line-height:1.5}
+.sharedCount{background:#e6f3ed;border:1px solid #bdd9c9;color:#154b32;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:750}
+.viewPicker{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:17px 0}
+.viewPicker button{display:flex;flex-direction:column;text-align:left;gap:5px;padding:13px 12px;border:1px solid #b7d1c0;border-radius:9px;background:#fff;color:#173c2b;cursor:pointer}
+.viewPicker button strong{font-size:13px}.viewPicker button small{font-size:11px;color:#567466}
+.viewPicker .viewActive{background:#155f4d;color:#fff;border-color:#155f4d;box-shadow:0 0 0 2px #8bd4b8}
+.viewPicker .viewActive small{color:#dcf5e9}
+.sharedFilters{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin:12px 0 8px}
+.sharedFilters label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700;flex:1;min-width:185px}
+.sharedFilters input,.sharedFilters select{width:100%;border:1px solid #9bb7a8;border-radius:7px;padding:10px;background:#fff;color:#18372b}
+.sharedFilters button{padding:10px 13px}
+.dossier{border:1px solid #b4ccbe;background:#fff;border-radius:12px;margin:12px 0;padding:15px;box-shadow:0 3px 9px #112f1920}
+.dossierHeading{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.dossierHeading h3{margin:0 0 5px;color:#184c3a;font-size:18px}
+.dossierHeading p{margin:4px 0;font-size:12px;line-height:1.5}
+.dossierHeading button{align-self:flex-start}
+.dossierTools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.dossierTools button,.dossierTools a{padding:7px 10px;border:1px solid #adc8b9;border-radius:7px;font-size:12px;background:#f1f8f4;color:#1a5540}
+.dossierSection{border:1px solid #cadbd0;border-radius:8px;margin:7px 0;background:#f9fcfa}
+.dossierSection>summary{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 14px;cursor:pointer;font-size:14px;list-style-position:inside}
+.dossierSection>summary span{color:#537362;font-size:12px}
+.dossierSection[open]>summary{border-bottom:1px solid #cadbd0;background:#eaf5ed}
+.dossierFields{padding:8px 12px}
+.dossierField{border-bottom:1px solid #e2e9e5}
+.dossierField:last-child{border-bottom:0}
+.dossierField>summary{display:flex;justify-content:space-between;gap:16px;cursor:pointer;padding:10px 5px;font-size:13px}
+.dossierField>summary span{font-weight:700;min-width:0}
+.dossierField>summary strong{text-align:right;max-width:50%;color:#255b46;font-size:12px;overflow-wrap:anywhere}
+.dossierEvidence{background:#fff;border-left:3px solid #87bbaa;padding:10px 14px;margin:0 0 10px 6px;font-size:12px;line-height:1.6}
+.dossierEvidence p{margin:4px 0}
+.dossierFoot{background:#f4f8f5;border:1px solid #d7e4dc;border-radius:8px;padding:11px;font-size:12px;line-height:1.5;margin-top:12px}
+.dossierFoot ul{margin:7px 0;padding-left:20px}
+.cardGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:14px 0}
+.researchCard{display:flex;align-items:flex-start;gap:7px;flex-direction:column;text-align:left;border:1px solid #c0d7c9;background:#fff;color:#164630;border-radius:11px;padding:15px;min-height:195px;cursor:pointer}
+.researchCard:hover,.researchCard[aria-pressed="true"]{border-color:#288b65;box-shadow:0 0 0 2px #c9e9d6}
+.researchCard strong{font-size:13px}.researchCard span{font-size:12px}.researchCard b{font-size:14px}.researchCard small{font-size:11px;color:#4e6f5d}
+.boardScroll{overflow-x:auto;max-width:100%;margin:12px 0}
+.boardGrid{display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:10px;min-width:1100px}
+.boardColumn{background:#eaf2ed;border:1px solid #c4d7c9;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;align-self:start;min-height:170px}
+.boardHeader{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:4px 2px 9px;font-size:12px;border-bottom:1px solid #b8d3be}
+.boardHeader span{background:#fff;padding:4px 8px;border-radius:7px;font-weight:700}
+.trialMini{display:flex;flex-direction:column;gap:5px;background:#fff;border:1px solid #ccded1;border-radius:8px;padding:11px;min-height:112px;text-align:left;color:#143e30;cursor:pointer}
+.trialMini strong{font-size:12px}.trialMini span{font-size:11px}.trialMini small{font-size:11px;color:#587160}
+.analyticsGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:14px 0}
+.statCard{border:1px solid #bdd7c6;background:white;border-radius:10px;padding:13px;display:flex;flex-direction:column;gap:8px}
+.statCard small{font-size:11px;color:#526a5b}.statCard strong{font-size:25px;color:#10563f}
+.analyticsPanel{margin:14px 0;background:#fff;border:1px solid #d0dfd4;padding:15px;border-radius:10px}
+.analyticsPanel h3{margin:0 0 8px;font-size:17px}
+.analyticsPanel label{font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:7px;max-width:550px}
+.analyticsPanel select{padding:9px;border-radius:7px;border:1px solid #a9c4b3;background:#fff}
+.coverageRow{display:grid;grid-template-columns:minmax(160px,260px) minmax(100px,1fr) 50px;gap:14px;align-items:center;margin:10px 0;font-size:12px}
+.coverageRow progress{width:100%;height:13px;accent-color:#197c55}
+.compareChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0;max-height:200px;overflow-y:auto}
+.compareChoices label{display:flex;flex-direction:row;align-items:center;max-width:none;gap:9px;font-weight:500}
+.compareActions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.compareActions button{padding:8px;font-size:12px}
+@media(max-width:1050px){.viewPicker{grid-template-columns:repeat(2,minmax(0,1fr))}.cardGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.analyticsGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.fourViews{padding:10px}.viewPicker{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.viewPicker button{padding:10px 8px}.viewPicker button strong{font-size:11px}.cardGrid{grid-template-columns:1fr}.analyticsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.coverageRow{grid-template-columns:1fr 70px;gap:6px}.coverageRow progress{grid-column:1/3;grid-row:2}.compareChoices{grid-template-columns:1fr}.dossierField>summary strong{max-width:43%}}
