@@ -2140,6 +2140,7 @@ function PredictionExplanation() {
   const [blockers, setBlockers] = useState<string[] | null>(null);
   const [comparisonRows, setComparisonRows] = useState<{field:string;status:string;declaration_sources?:string[];reported_field_present?:boolean}[] | null>(null);
   const [documentCounts, setDocumentCounts] = useState<{PROTOCOL?:number;SAP?:number} | null>(null);
+  const [statisticalReady, setStatisticalReady] = useState<boolean | null>(null);
   const [readiness, setReadiness] = useState<{checks?:Record<string,boolean>;checks_available?:number;checks_total?:number;missing?:string[];decision_pipeline?:{id:string;status:string;missing?:string[];reason?:string}[];assessments?:{id:string;status:string;reason?:string}[];limitation?:string} | null>(null);
   const [evidenceError, setEvidenceError] = useState("");
   const [evidenceCheckedAt, setEvidenceCheckedAt] = useState("");
@@ -2149,18 +2150,26 @@ function PredictionExplanation() {
     const id = nct.trim().toUpperCase();
     if (!/^NCT[0-9]{8}$/.test(id)) { setRecord(null); setError("Enter an NCT identifier with eight digits."); return; }
     const version = ++requestVersion.current;
-    setBusy(true); setError(""); setRecord(null); setBlockers(null); setComparisonRows(null); setDocumentCounts(null); setReadiness(null); setEvidenceError(""); setEvidenceCheckedAt("");
+    setBusy(true); setError(""); setRecord(null); setBlockers(null); setComparisonRows(null); setDocumentCounts(null); setStatisticalReady(null); setReadiness(null); setEvidenceError(""); setEvidenceCheckedAt("");
     try {
       const response = await fetch("/api/phase3-trials/" + id + "/predictions", {cache:"no-store"});
       if (!response.ok) throw new Error("Prediction service unavailable: " + response.status);
       const payload = await response.json();
       if (version === requestVersion.current) setRecord(payload);
       try {
+        const readinessResponse = await fetch("/api/phase3-trials/" + id + "/readiness", {cache:"no-store"});
+        if (!readinessResponse.ok) throw new Error("Readiness checks unavailable (HTTP " + readinessResponse.status + ")");
+        const readinessPayload = await readinessResponse.json();
+        if (version === requestVersion.current) setReadiness(readinessPayload);
+      } catch (e) {
+        if (version === requestVersion.current) setEvidenceError(e instanceof Error ? e.message : "Readiness checks unavailable");
+      }
+      try {
         const evidenceResponse = await fetch("/api/phase3-trials/" + id + "/statistical-consistency", {cache:"no-store"});
         if (!evidenceResponse.ok) throw new Error("Statistical evidence unavailable (HTTP " + evidenceResponse.status + ")");
         if (evidenceResponse.ok) {
           const evidence = await evidenceResponse.json();
-          if (version === requestVersion.current) { setBlockers(Array.isArray(evidence.readiness_blockers) ? evidence.readiness_blockers.filter((v: unknown): v is string => typeof v === "string") : []); setComparisonRows(Array.isArray(evidence.comparisons) ? evidence.comparisons : []); setDocumentCounts(evidence.integrity_matched_document_counts || {}); setEvidenceCheckedAt(new Date().toLocaleString()); }
+          if (version === requestVersion.current) { setBlockers(Array.isArray(evidence.readiness_blockers) ? evidence.readiness_blockers.filter((v: unknown): v is string => typeof v === "string") : []); setComparisonRows(Array.isArray(evidence.comparisons) ? evidence.comparisons : []); setDocumentCounts(evidence.integrity_matched_document_counts || {}); setStatisticalReady(evidence.comparison_ready === true); setEvidenceCheckedAt(new Date().toLocaleString()); }
         }
       } catch (e) { if (version === requestVersion.current) setEvidenceError(e instanceof Error ? e.message : "Statistical evidence unavailable"); }
     } catch (e) { if (version === requestVersion.current) setError(e instanceof Error ? e.message : "Unable to load prediction"); }
@@ -2169,7 +2178,7 @@ function PredictionExplanation() {
   return <div className="panel" aria-label="FDA prediction explanation">
     <h3>FDA DECISION · WHY THIS PREDICTION?</h3>
     <label htmlFor="prediction-nct">Trial NCT</label>{" "}
-    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setComparisonRows(null);setDocumentCounts(null);setReadiness(null);setEvidenceError("");setEvidenceCheckedAt("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
+    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setComparisonRows(null);setDocumentCounts(null);setStatisticalReady(null);setReadiness(null);setEvidenceError("");setEvidenceCheckedAt("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
     <button type="button" disabled={busy} onClick={()=>void lookup()}>{busy ? "Loading…" : "Get prediction and reasons"}</button>
     {error && <p role="alert">{error}</p>}
     {record && <>
@@ -2182,6 +2191,7 @@ function PredictionExplanation() {
         <p><strong>Historical calibration:</strong> {record.decision_explanation?.requires_outcome_calibration ? "Required" : "Not verified"}</p>
         {evidenceError && <p role="status"><strong>Evidence diagnostic:</strong> {evidenceError}</p>}
         {evidenceCheckedAt && <p><strong>Evidence checked:</strong> {evidenceCheckedAt} (request time, not FDA source publication time)</p>}
+        <p><strong>Statistical comparison consistency:</strong> {statisticalReady === null ? "Unavailable" : statisticalReady ? "TEXT MATCHES REPORTED — scientific adjudication still required" : "NOT READY — missing or mismatched comparisons"}</p>
         <p><strong>Statistical evidence gaps:</strong> {blockers === null ? "Not available" : blockers.length + " reported"}</p>
         {blockers && blockers.length > 0 && <ul>{blockers.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul>}
         {readiness && <details><summary>SCIENCE / OUTCOME / MAIN readiness ({readiness.checks_available ?? 0}/{readiness.checks_total ?? 0} checks)</summary>
