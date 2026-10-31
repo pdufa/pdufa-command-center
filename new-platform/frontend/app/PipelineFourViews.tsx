@@ -12,6 +12,7 @@ import { ASSESSMENT_SUPPORT_FIELDS, CLAIM_PROVENANCE_REQUIREMENTS } from "../lib
 import { loadCompleteResearch } from "../lib/pipeline-research-pagination";
 import { pacificToday } from "../lib/pipeline-timeline";
 import { RANKED_BENEFIT_ASSESSMENTS, assessmentCoverage, validateComparatorInventory } from "../lib/pipeline-benefit-assessments";
+import LiveRegistryReview from "./LiveRegistryReview";
 
 type Mode="table"|"dossier"|"kanban"|"analytics";
 type Payload={view:string;offset:number;limit:number;total:number;rows:PipelineResearchRow[];
@@ -44,6 +45,7 @@ function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClo
     <button type="button" onClick={()=>setOpened("none")}>Collapse sections</button>
     <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov source ↗</a>
    </div>
+   <LiveRegistryReview nctId={row.nctId}/>
    <div className={styles.analyticsPanel} aria-label="Twenty ranked patient benefit assessments">
     <h4>Original 20 ranked assessments · exact-program evidence only</h4>
     <p className={styles.muted}>Twenty primary categories preserve the 38 source fields. All twenty assessments have defined inputs; clinical findings still require original evidence. No source-backed ranking is inferred from a blank input.</p>
