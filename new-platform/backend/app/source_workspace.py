@@ -28,7 +28,6 @@ SOURCES = (
     "drug_metadata.csv", "second_financing_status.csv",
     "phase_pipeline_market_caps.csv",
     "overnight_scan_status.json", "step7_market_status.csv",
-    "gem_two_close_recheck.csv", "gem_runway_evidence.json",
 )
 STAGES = (
     "Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3",
@@ -252,9 +251,10 @@ def gather(today: date | None = None) -> dict:
     caps = unique(records["phase_pipeline_market_caps.csv"], "ticker")
     funding = unique(records["second_financing_status.csv"], "event_key")
     market = unique(records["step7_market_status.csv"], "ticker")
-    sec_recheck = unique(records["gem_two_close_recheck.csv"], "event_key")
-    from .gem_research_adapter import parse_runway
-    runway = parse_runway(sources["gem_runway_evidence.json"])
+    # Archived GEM-specific financing rechecks are not active Pipeline gates.
+    sec_recheck = {}
+    # Legacy GEM cash-runway evidence is archived, not part of POOL qualification.
+    runway = {}
     # Source identity is exact event key; duplicate matches are quarantined.
     primary = unique(records["pdufa_candidates.csv"], "event_key")
     fda = unique(records["fda_review_engine.csv"], "event_key")
