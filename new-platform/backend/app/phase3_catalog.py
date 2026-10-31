@@ -681,6 +681,9 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         reported = results.get("ENDPOINT_STATISTICAL_VALIDITY", {})
         if not isinstance(reported, dict):
             reported = {}
+        # A comparison without any integrity-matched protocol or SAP
+        # must remain explicitly unavailable rather than appear validated.
+        evidence_counts = {kind: len(items) for kind, items in declarations.items()}
         comparisons = []
         for field in ("analysis_population", "multiplicity_strategy", "missing_data_method"):
             declared = [(kind, d[field].strip()) for kind, docs_for_kind in declarations.items()
@@ -696,6 +699,8 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                                 "declaration_sources": sorted({k for k, _ in declared}),
                                 "reported_field_present": bool(actual)})
         return {"nct_id": nct_id, "comparisons": comparisons,
+                "integrity_matched_document_counts": evidence_counts,
+                "comparison_ready": bool(declarations["PROTOCOL"] and declarations["SAP"] and reported),
                 "adjudication_status": "NOT_ADJUDICATED", "decision": "ABSTAIN",
                 "limitation": "Text comparison only; does not validate statistical methods or FDA outcome."}
 
