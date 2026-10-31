@@ -245,7 +245,7 @@ export default function NctLiveStream() {
       .catch(() => { if (active) setSourceInventory(null); });
     return () => { active = false; };
   }, [run?.nct_id, run?.terminal]);
-  const [savedDecision, setSavedDecision] = useState<{decision:string;status:string;latest_prediction?:{scientific_readiness?:string;uncertainty?:string;created_at?:string}} | null>(null);
+  const [savedDecision, setSavedDecision] = useState<{decision:string;status:string;decision_explanation?:{reason_code?:string;reason?:string;scientific_readiness?:string;requires_independent_adjudication?:boolean;requires_outcome_calibration?:boolean};latest_prediction?:{scientific_readiness?:string;uncertainty?:string;created_at?:string}} | null>(null);
   useEffect(() => {
     if (!run?.nct_id) { setSavedDecision(null); return; }
     let active = true;
@@ -272,11 +272,12 @@ export default function NctLiveStream() {
       <p><strong>FDA prediction: {savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? savedDecision.decision + " (UNVALIDATED SAVED RECORD)" : "ABSTAIN"}</strong> · Trial: {run?.nct_id || "Select a trial"}</p>
       <details>
         <summary style={{cursor:"pointer",fontWeight:700}}>WHY THIS PREDICTION? — explanation and evidence gaps</summary>
-        <p><strong>Primary reason:</strong> {savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? "A saved prediction exists, but its scientific and regulatory justification has not been independently validated." : "Verified scientific and regulatory evidence is insufficient for a defensible PASS, CRL, or EXTENSION prediction."}</p>
+        <p><strong>Primary reason:</strong> {savedDecision?.decision_explanation?.reason || (savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? "Saved decision not independently validated." : "Insufficient verified evidence for a defensible PASS, CRL, or EXTENSION prediction.")}</p>
         <p><strong>Scientific readiness:</strong> {savedDecision?.latest_prediction?.scientific_readiness || "Not verified"} · <strong>Evidence checks:</strong> {readiness ? (readiness.checks_available ?? 0) + " / " + (readiness.checks_total ?? 0) : "Not available"}</p>
         <p><strong>Unresolved statistical inputs:</strong> {comparisonCoverage ? comparisonCoverage.blockers.length : "Not yet checked"}</p>
         {comparisonCoverage?.blockers.length ? <ul>{comparisonCoverage.blockers.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul> : <p>{comparisonCoverage ? "No structured-input blockers reported; independent adjudication is still required." : "Run or refresh statistical readiness to retrieve itemized blockers."}</p>}
         {(readiness?.decision_pipeline || []).filter(stage => stage.missing?.length).map(stage => <details key={stage.id}><summary>{stage.id} — {stage.missing?.length} missing requirement(s)</summary><ul>{stage.missing?.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul></details>)}
+        {savedDecision?.decision_explanation && <p><strong>Backend reason code:</strong> {savedDecision.decision_explanation.reason_code?.replaceAll("_", " ") || "Unspecified"} · Independent adjudication: {savedDecision.decision_explanation.requires_independent_adjudication ? "required" : "not indicated"} · Historical calibration: {savedDecision.decision_explanation.requires_outcome_calibration ? "required" : "not indicated"}</p>}
         <p><strong>What could change the decision:</strong> Complete the missing evidence checks, independently review protocol/SAP and results, and validate outcome calibration. These steps do not guarantee a non-ABSTAIN prediction.</p>
         <p><strong>Confidence:</strong> Not calibrated · <strong>FDA adjudication:</strong> Not completed.</p>
       </details>
