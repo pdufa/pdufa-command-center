@@ -2138,13 +2138,14 @@ function PredictionExplanation() {
   const [record, setRecord] = useState<{decision?:string;status?:string;decision_explanation?:{reason?:string;reason_code?:string;scientific_readiness?:string;requires_independent_adjudication?:boolean;requires_outcome_calibration?:boolean}} | null>(null);
   const [error, setError] = useState("");
   const [blockers, setBlockers] = useState<string[] | null>(null);
+  const [evidenceError, setEvidenceError] = useState("");
   const [busy, setBusy] = useState(false);
   const requestVersion = useRef(0);
   async function lookup() {
     const id = nct.trim().toUpperCase();
     if (!/^NCT[0-9]{8}$/.test(id)) { setRecord(null); setError("Enter an NCT identifier with eight digits."); return; }
     const version = ++requestVersion.current;
-    setBusy(true); setError(""); setRecord(null); setBlockers(null);
+    setBusy(true); setError(""); setRecord(null); setBlockers(null); setEvidenceError("");
     try {
       const response = await fetch("/api/phase3-trials/" + id + "/predictions", {cache:"no-store"});
       if (!response.ok) throw new Error("Prediction service unavailable: " + response.status);
@@ -2152,18 +2153,19 @@ function PredictionExplanation() {
       if (version === requestVersion.current) setRecord(payload);
       try {
         const evidenceResponse = await fetch("/api/phase3-trials/" + id + "/statistical-consistency", {cache:"no-store"});
+        if (!evidenceResponse.ok) throw new Error("Statistical evidence unavailable (HTTP " + evidenceResponse.status + ")");
         if (evidenceResponse.ok) {
           const evidence = await evidenceResponse.json();
           if (version === requestVersion.current) setBlockers(Array.isArray(evidence.readiness_blockers) ? evidence.readiness_blockers.filter((v: unknown): v is string => typeof v === "string") : []);
         }
-      } catch { /* Prediction record remains visible when evidence diagnostics are unavailable. */ }
+      } catch (e) { if (version === requestVersion.current) setEvidenceError(e instanceof Error ? e.message : "Statistical evidence unavailable"); }
     } catch (e) { if (version === requestVersion.current) setError(e instanceof Error ? e.message : "Unable to load prediction"); }
     finally { if (version === requestVersion.current) setBusy(false); }
   }
   return <div className="panel" aria-label="FDA prediction explanation">
     <h3>FDA DECISION · WHY THIS PREDICTION?</h3>
     <label htmlFor="prediction-nct">Trial NCT</label>{" "}
-    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
+    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setEvidenceError("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
     <button type="button" disabled={busy} onClick={()=>void lookup()}>{busy ? "Loading…" : "Get prediction and reasons"}</button>
     {error && <p role="alert">{error}</p>}
     {record && <>
@@ -2174,6 +2176,7 @@ function PredictionExplanation() {
         <p><strong>Scientific readiness:</strong> {record.decision_explanation?.scientific_readiness || "Not established"}</p>
         <p><strong>Independent adjudication:</strong> {record.decision_explanation?.requires_independent_adjudication ? "Required" : "Not verified"}</p>
         <p><strong>Historical calibration:</strong> {record.decision_explanation?.requires_outcome_calibration ? "Required" : "Not verified"}</p>
+        {evidenceError && <p role="status"><strong>Evidence diagnostic:</strong> {evidenceError}</p>}
         <p><strong>Statistical evidence gaps:</strong> {blockers === null ? "Not available" : blockers.length + " reported"}</p>
         {blockers && blockers.length > 0 && <ul>{blockers.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul>}
         <p>Saved predictions do not establish validated FDA outcomes or trading suitability.</p>
