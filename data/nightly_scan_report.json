@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-31T03:25:38.898867+00:00",
+  "updated_at_utc": "2026-10-31T15:44:42.664732+00:00",
   "latest_run_id": 41163598594,
   "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41163598594",
   "latest_run_started_at_utc": "2026-10-31T03:15:44Z",
-  "latest_run_conclusion": null,
-  "scope": "CLINICAL_PIPELINE_AND_GEM_JR_COLLECTORS_ONLY",
+  "latest_run_conclusion": "success",
+  "scope": "CLINICAL_POOL_PIPELINE_AND_PHASE3_RESULTS_COLLECTORS_ONLY",
   "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-10-31T03:25:38.898887+00:00",
+    "checked_at_utc": "2026-10-31T15:44:42.664758+00:00",
     "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
@@ -62,7 +62,7 @@
     },
     {
       "scan": "4",
-      "label": "GEM JR \u2014 Phase 3 readout",
+      "label": "PHASE 3 RESULTS \u2014 posted readout",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
       "run_id": 41163598594,
@@ -100,7 +100,7 @@
       "run_id": 41163598594,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41163598594",
       "started_at_utc": "2026-10-31T03:15:44Z",
-      "run_conclusion": null,
+      "run_conclusion": "success",
       "status": "PARTIAL",
       "new_records": null,
       "changed_trials": null,
