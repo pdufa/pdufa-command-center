@@ -655,6 +655,24 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                         "missing_data_robustness": "NOT_VERIFIED",
                         "protocol_and_sap_source": "NOT_VERIFIED",
                     }
+                    # Source provenance is necessary but never sufficient for a
+                    # verified statistical finding. Require independently reviewed
+                    # protocol/SAP documents before any gate may change state.
+                    protocol_fields = {
+                        "endpoint_prespecified": ("protocol_endpoint", "protocol_source_evidence_id"),
+                        "multiplicity_control": ("multiplicity_strategy", "sap_source_evidence_id"),
+                        "analysis_population_consistent": ("analysis_population", "sap_source_evidence_id"),
+                        "missing_data_robustness": ("missing_data_method", "sap_source_evidence_id"),
+                        "protocol_and_sap_source": ("protocol_source_evidence_id", "sap_source_evidence_id"),
+                    }
+                    assessment["statistical_evidence_requirements"] = {
+                        gate: list(fields) for gate, fields in protocol_fields.items()
+                    }
+                    assessment["statistical_evidence_supplied"] = {
+                        gate: {field: extracted.get(field) for field in fields
+                               if field in extracted}
+                        for gate, fields in protocol_fields.items()
+                    }
                     assessment["statistical_review"] = statistical_review
                     assessment["statistical_review_complete"] = False
                 if assessment["id"] == "ENDPOINT_STATISTICAL_VALIDITY":
