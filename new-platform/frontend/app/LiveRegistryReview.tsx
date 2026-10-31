@@ -38,6 +38,8 @@ export default function LiveRegistryReview({nctId}:{nctId:string}){
     <p><strong>Primary completion:</strong> {value.primaryCompletionDate||"Not recorded"} · <strong>Last update posted:</strong> {value.lastUpdatePosted||"Not recorded"}</p>
     <p><strong>Enrollment:</strong> {value.enrollment===null?"Not recorded":value.enrollment} · <strong>Registry results posted:</strong> {value.resultsPosted?"Yes":"Not confirmed"}</p>
     <p><strong>Checked:</strong> {value.verifiedAt} · <a href={value.sourceUrl} target="_blank" rel="noopener noreferrer">View original study on ClinicalTrials.gov</a></p>
+    <p><a href={"/api/phase3-trial?nct="+encodeURIComponent(nctId)+"&format=csv"} download={"pdufa-registry-evidence-"+nctId+".csv"}>Download this trial’s registry evidence for Google Sheets review</a></p>
+    <p className={styles.muted}>The CSV makes a fresh official registry request. Import into tab 20 Registry Evidence Intake; it does not verify the proposed drug, pivotal results, PDUFA, or market cap. Reviewer approval is required.</p>
     <details><summary>What must still be verified?</summary><ul>{value.remainingChecks.map(x=><li key={x}>{x}</li>)}</ul></details>
    </div>}
   </div>
