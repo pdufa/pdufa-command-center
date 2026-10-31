@@ -550,6 +550,22 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         except ValueError as exc:
             raise HTTPException(422, "Invalid catalog period, search, filter or pagination") from exc
 
+    @router.get("/{nct_id}/predictions")
+    def trial_predictions(nct_id: str):
+        """Read-only, application-scoped saved predictions; never infer a decision."""
+        if not NCT.fullmatch(nct_id):
+            raise HTTPException(422, "Invalid NCT identifier")
+        with engine_provider().connect() as connection:
+            records = _prediction_rows(connection, nct_id)
+        return {
+            "nct_id": nct_id,
+            "predictions": records,
+            "latest_prediction": records[0] if records else None,
+            "status": "RECORDED" if records else "NOT_READY",
+            "decision": records[0]["decision"] if records else "ABSTAIN",
+            "limitation": "Saved predictions are not necessarily calibrated or validated. No prediction is inferred from trial-processing events.",
+        }
+
     @router.get("/validation")
     def validation():
         return historical_validation(engine_provider())
