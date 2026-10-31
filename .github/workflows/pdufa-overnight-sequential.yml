@@ -51,7 +51,10 @@ jobs:
         with:
           python-version: '3.12'
       - name: Validate clock, source lineage, and dated RESULTS publication
-        run: python -m unittest discover -s tests -p 'test_nightly_pacific_sequence.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_nightly_pacific_sequence.py' -v
+          python -m unittest discover -s tests -p 'test_nightly_dispatch_shell.py' -v
+          python -m unittest discover -s tests -p 'test_retired_workflow_dependencies.py' -v
 
   clinical:
     needs: validate

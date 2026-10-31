@@ -1,12 +1,14 @@
 /** DST-aware admission gate for independent Vercel Cron that uses the guarded GitHub scheduler. */
 export const SCAN_WORKFLOW = "pdufa-overnight-sequential.yml";
 export const SCAN_REPO = "pdufa/pdufa-command-center";
-export const SCAN_TITLE = "ALL + GEM — PDUFA overnight";
+export const SCAN_TITLE = "POOL + PIPELINE — PDUFA overnight";
+// Legacy titles are read only to prevent overlap with historical full chains.
+const FULL_CHAIN_TITLES = new Set([SCAN_TITLE,"ALL + GEM — PDUFA overnight"]);
 const ACTIVE = new Set(["queued","in_progress","waiting","requested","pending"]);
 export type Decision =
   | { action:"skip"; night:string; reason:string; runId?:number }
   | { action:"error"; night:string; reason:string }
-  | { action:"dispatch"; night:string; reason:string; scanMode:"FULL"|"DELTA"; gemAction:"RESCAN_ALL"|"REVERIFY_PARTIAL" };
+  | { action:"dispatch"; night:string; reason:string; scanMode:"FULL"|"DELTA" };
 export function pacificTime(date:Date) {
   if (!Number.isFinite(date.getTime())) throw Error("Invalid date");
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -26,7 +28,7 @@ export function backupDecision(history:unknown,now:Date):Decision {
     if (!row||typeof row!=="object")return {action:"error",night,reason:"Malformed GitHub history"};
     const r=row as Record<string,unknown>;
     if(r.event!=="workflow_dispatch"||r.head_branch!=="main"||
-       r.path!==".github/workflows/"+SCAN_WORKFLOW||r.display_title!==SCAN_TITLE)continue;
+       r.path!==".github/workflows/"+SCAN_WORKFLOW||!FULL_CHAIN_TITLES.has(String(r.display_title)))continue;
     if(typeof r.created_at!=="string"||!Number.isFinite(Date.parse(r.created_at))||
        typeof r.status!=="string"||typeof r.id!=="number"||!Number.isSafeInteger(r.id))
       return {action:"error",night,reason:"Malformed existing full scan"};
@@ -42,5 +44,5 @@ export function backupDecision(history:unknown,now:Date):Decision {
   }
   const full=weekday==="Sun";
   return {action:"dispatch",night,reason:full?"Missing Sunday full sequence":"Missing weekday delta sequence",
-          scanMode:full?"FULL":"DELTA",gemAction:full?"RESCAN_ALL":"REVERIFY_PARTIAL"};
+          scanMode:full?"FULL":"DELTA"};
 }

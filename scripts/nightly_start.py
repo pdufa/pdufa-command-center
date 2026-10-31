@@ -9,6 +9,8 @@ from zoneinfo import ZoneInfo
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 RUN_TITLE = "POOL + PIPELINE — PDUFA overnight"
+# Prior completed chains still suppress duplicates; this never dispatches retired stages.
+FULL_CHAIN_TITLES = frozenset({RUN_TITLE, "ALL + GEM — PDUFA overnight"})
 WORKFLOW = ".github/workflows/pdufa-overnight-sequential.yml"
 RECOVERY_CRONS = {f"{minute} {hour} * * *" for hour in (7, 8, 9) for minute in (5, 35)}
 # One spaced-out cron expression provides frequent recovery opportunities.
@@ -56,7 +58,7 @@ def decision(event, cron, runs, *, now=None):
         if (run.get("path", "").split("@", 1)[0] != WORKFLOW or
                 run.get("head_branch") != "main" or
                 run.get("event") != "workflow_dispatch" or
-                run.get("display_title") != RUN_TITLE):
+                run.get("display_title") not in FULL_CHAIN_TITLES):
             continue
         try:
             created = datetime.fromisoformat(run["created_at"].replace("Z", "+00:00"))
@@ -74,7 +76,7 @@ def decision(event, cron, runs, *, now=None):
     if scheduled_late_recovery:
         scan_description = ("RECOVERY of missed " + start.date().isoformat() +
                             " Pacific 8 PM start; " + scan_description)
-    result.update(run=True, reason=scan_description + "; start awaited chain including GEM")
+    result.update(run=True, reason=scan_description + "; start awaited POOL, Pipeline and source verification chain")
     return result
 
 

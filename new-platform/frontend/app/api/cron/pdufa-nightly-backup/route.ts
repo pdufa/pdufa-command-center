@@ -59,7 +59,7 @@ export async function GET(request:NextRequest){
     }
     console.info("PDUFA independent clock requested guarded nightly admission",decision.night,decision.scanMode);
     return response({ok:true,action:"scheduler_requested",night:decision.night,
-      scanMode:decision.scanMode,gemAction:decision.gemAction,
+      scanMode:decision.scanMode,
       note:"GitHub accepted the scheduler request; the scheduler independently confirms if a full scan should start.",
       workflowUrl:"https://github.com/"+SCAN_REPO+"/actions/workflows/"+GUARDED_SCHEDULER},202);
   } catch {

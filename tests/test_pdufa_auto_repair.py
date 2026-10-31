@@ -9,7 +9,7 @@ from pdufa_auto_repair import decide
 
 NOW = datetime(2026, 10, 12, 20, tzinfo=timezone.utc)
 SHA = "f" * 40
-RUN = {"name": "Streamlit setup and dashboard tests", "event": "push",
+RUN = {"name": "PDUFA Command Center CI", "event": "push",
        "head_branch": "main", "head_sha": SHA, "run_attempt": 1,
        "conclusion": "failure", "status": "completed", "id": 123}
 FAILED = [{"name": "validate", "conclusion": "failure"}]
@@ -47,12 +47,12 @@ class AutoRepairTests(unittest.TestCase):
                 self.assertEqual(self.check(logs=log), "skip")
         self.assertEqual(self.check(logs="AssertionError and ConnectionResetError"), "skip")
 
-    def test_pre3_only_recovers_expired_cache(self):
+    def test_retired_browser_workflows_cannot_trigger_cache_refresh(self):
         p3 = {**RUN, "name": "PRE PHASE 3 Live Acceptance"}
         error = "Source integration failed. Error type: ValueError"
         old = {"generated_at_utc": "2026-10-11T16:00:00+00:00"}
         fresh = {"generated_at_utc": "2026-10-12T16:00:00+00:00"}
-        self.assertEqual(self.check(error, p3, manifest=old), "refresh_pre3")
+        self.assertEqual(self.check(error, p3, manifest=old), "skip")
         self.assertEqual(self.check(error, p3, manifest=fresh), "skip")
         self.assertEqual(self.check(error, manifest=old), "skip")
 

@@ -11,10 +11,6 @@ from zoneinfo import ZoneInfo
 PACIFIC = ZoneInfo("America/Los_Angeles")
 RERUN_ALLOWLIST = frozenset({
     "PDUFA Command Center CI",
-    "Streamlit setup and dashboard tests",
-    "Live Streamlit Cloud Browser Audit",
-    "PRE PHASE 3 Live Acceptance",
-    "PIPELINE Early Clinical Live Acceptance",
     "Unified Dashboard Smoke Check",
     "PDUFA Nightly Report Checks",
     "PDUFA Extended Source Scan Tests",

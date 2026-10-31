@@ -1,0 +1,105 @@
+name: PDUFA Ad Hoc Gmail + GitHub Error Check
+
+# Safe on-demand audit; never starts scans, sends mail, or changes source evidence.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-adhoc-error-check.yml'
+      - 'scripts/adhoc_alert_check.py'
+      - 'tests/test_adhoc_alert_check.py'
+      - 'tests/test_adhoc_dispatch.py'
+      - 'nightly_scan_dashboard.py'
+      - 'scripts/adhoc_button_live_acceptance.cjs'
+  # Nightly checks now run only AFTER scoring in the post-scan orchestrator.
+  # Manual dashboard workflow_dispatch and push-time tests remain available.
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: pdufa-adhoc-error-check-${{ github.event.workflow_run.id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.head_repository.full_name == github.repository &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test alert classification without network access
+        run: python -m unittest discover -s tests -p 'test_adhoc_alert_check.py' -v
+      - name: Audit latest GitHub workflows and Gmail scan alert headers
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run'
+        env:
+          PDUFA_SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+          PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+        run: python scripts/adhoc_alert_check.py
+      - name: Archive ad hoc report without altering saved scanner data
+        if: always() && (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run')
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-adhoc-alert-check-${{ github.run_id }}
+          path: reports/adhoc_alert_check.json
+          retention-days: 14
+          if-no-files-found: warn
+
+  dispatch-contract:
+    name: Ad hoc PIN and GitHub request contract
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dashboard test imports only
+        run: python -m pip install streamlit pandas
+      - name: Test server-side PIN gate and GitHub POST with synthetic credentials
+        run: python -m unittest discover -s tests -p 'test_adhoc_dispatch.py' -v
+
+  live-button:
+    name: Live SCANS button and PIN-gate acceptance
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser library
+        run: npm install --no-save playwright-core
+      - name: Find Chrome
+        shell: bash
+        run: |
+          if [ -x /usr/bin/google-chrome ]; then
+            echo "CHROME_PATH=/usr/bin/google-chrome" >> "$GITHUB_ENV"
+          elif [ -x /usr/bin/google-chrome-stable ]; then
+            echo "CHROME_PATH=/usr/bin/google-chrome-stable" >> "$GITHUB_ENV"
+          else
+            echo "::error::Chrome unavailable on runner"
+            exit 1
+          fi
+      - name: Verify live button, PIN requirement, and GitHub result link
+        run: node scripts/adhoc_button_live_acceptance.cjs
+      - name: Archive visual proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-adhoc-button-live-proof
+          path: adhoc-button-audit/
+          retention-days: 14
+          if-no-files-found: warn

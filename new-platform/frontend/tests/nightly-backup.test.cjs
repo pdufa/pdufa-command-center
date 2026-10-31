@@ -6,7 +6,7 @@ const {pacificTime,backupDecision}=require("../lib/nightly-backup.ts");
 const RUN={
  id:123,event:"workflow_dispatch",head_branch:"main",
  path:".github/workflows/pdufa-overnight-sequential.yml",
- display_title:"ALL + GEM — PDUFA overnight",
+ display_title:"POOL + PIPELINE — PDUFA overnight",
  created_at:"2026-10-19T04:20:00Z",status:"in_progress",conclusion:null
 };
 const at=s=>new Date(s);
@@ -18,10 +18,10 @@ test("DST-safe local night and full Sunday versus weekday delta",()=>{
  const sunday=backupDecision([],at("2026-10-19T05:40:00Z"));
  assert.equal(sunday.action,"dispatch");
  assert.equal(sunday.scanMode,"FULL");
- assert.equal(sunday.gemAction,"RESCAN_ALL");
+ assert.equal("gemAction" in sunday,false);
  const monday=backupDecision([],at("2026-10-20T05:40:00Z"));
  assert.equal(monday.scanMode,"DELTA");
- assert.equal(monday.gemAction,"REVERIFY_PARTIAL");
+ assert.equal("gemAction" in monday,false);
 });
 test("Any active or already dispatched scan prevents duplicate",()=>{
  const date=at("2026-10-19T05:40:00Z");
@@ -88,4 +88,13 @@ test("Backup only admits 8 PM-or-later Pacific; any 8 PM scan blocks duplicates"
  const decision=backupDecision([existing],summer);
  assert.equal(decision.action,"skip");
  assert.equal(decision.runId,123);
+});
+
+test("Current and historical full-chain titles both prevent duplicate collection",()=>{
+ const now=at("2026-10-19T05:40:00Z");
+ for(const display_title of ["POOL + PIPELINE — PDUFA overnight","ALL + GEM — PDUFA overnight"]){
+  for(const status of ["in_progress","completed"]){
+   assert.equal(backupDecision([{...RUN,display_title,status,conclusion:"success"}],now).action,"skip");
+  }
+ }
 });

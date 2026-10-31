@@ -24,18 +24,12 @@ WORKFLOWS = (
     "pdufa-nightly-missing-sources.yml",
     "pdufa-nightly-report.yml",
     "ci.yml",
-    "streamlit-validation.yml",
-    "live-streamlit-audit.yml",
-    "prephase3-acceptance.yml",
     "step7-live-feed.yml",
     "pdufa-nightly-report-checks.yml",
     "pdufa-overnight-sequential.yml",
     "pdufa-nightly-pacific-start.yml",
     "pdufa-morning-6am-results.yml",
     "pdufa-nightly-scoring-then-repair.yml",
-    "gem-research-quality.yml",
-    "gem-financing-full-coverage.yml",
-    "gem-potential-live-audit.yml",
 )
 SCAN_WORKFLOWS = frozenset(WORKFLOWS[:3] + ("step7-live-feed.yml", "pdufa-overnight-sequential.yml"))
 GMAIL_FOLDERS = ("INBOX", '"[Gmail]/Sent Mail"', '"PDUFA"',
