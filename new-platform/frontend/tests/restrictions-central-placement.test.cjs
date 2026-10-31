@@ -46,9 +46,9 @@ test("every original Pipeline filter appears only beneath the existing central R
   assert.equal((ws.match(/<RestrictionImpact /g)||[]).length,1);
   assert.equal((ws.match(/<GemQualificationChecklist /g)||[]).length,1);
   const central=ws.slice(ws.indexOf('aria-label="Original Pipeline filters"'),ws.indexOf('top==="PDUFA" && (nav==="GEM_JR"'));
-  assert.match(central,/pipelineMovedFilters[\s\S]*?RestrictionImpact[\s\S]*?gemBlock\("GEM_JR"\)[\s\S]*?gemBlock\("GEM"\)/);
+  assert.match(central,/pipelineMovedFilters[\s\S]*?RestrictionImpact poolPipelineOnly/);
   assert.match(ws,/if \(top==="RESTRICTIONS"\) return <details/);
-  assert.match(central,/aria-label="Three independent restriction lists"/);
+  assert.match(central,/aria-label="Independent Pool and Pipeline restrictions"/);
   assert.ok(!restrictionContent.includes("setTags("));
 });
 
@@ -73,11 +73,12 @@ test("Pipeline, GEM JR and GEM FS/FA selections keep their original state and sc
   assert.ok(ws.includes('onScan={result=>{'));
 });
 
-test("Restrictions page mounts all four filter groups once, with GEM JR/GEM FS/FA",async()=>{
+test("Restrictions page mounts original Pipeline filters and independent Pool-only catalog",async()=>{
   global.IS_REACT_ACT_ENVIRONMENT=true;
   const Workspace=require("../app/Workspace.tsx").default;
   const OriginalFilter=require("../app/TrialQualificationFilters.tsx").default;
   const OriginalGem=require("../app/GemQualificationChecklist.tsx").default;
+  const ActiveRestriction=require("../app/RestrictionImpact.tsx").default;
   const prior={fetch:global.fetch,window:global.window,localStorage:global.localStorage,self:global.self};
   const storage={getItem:()=>null,setItem(){},removeItem(){}};
   global.localStorage=storage;
@@ -117,19 +118,13 @@ test("Restrictions page mounts all four filter groups once, with GEM JR/GEM FS/F
     assert.equal(findButtons("OPEN RESTRICTIONS — EDIT FILTERS").length,1);
     await act(async()=>{tree.root.findAllByType("button").find(x=>x.children.join("")==="RESTRICTIONS").props.onClick();await tick();});
     assert.equal(tree.root.findAllByType(OriginalFilter).length,1,"Exactly one original Pipeline filter group");
-    assert.equal(tree.root.findAllByType(OriginalGem).length,2,"Both separate GEM checklists mounted");
+    assert.equal(tree.root.findAllByType(OriginalGem).length,0,"No GEM JR/GEM checklist in active restrictions");
+    assert.equal(tree.root.findAllByType(ActiveRestriction).length,1);
+    assert.equal(tree.root.findByType(ActiveRestriction).props.poolPipelineOnly,true);
     assert.equal(tree.root.findAllByProps({"aria-label":"Original Pipeline filters"}).length,1);
-    // The existing GEM controls correctly begin collapsed. Open both as a
-    // real user would, then ensure each stage has its own FS and FA button.
-    for(const stage of ["GEM_JR","GEM"]){
-      const checklist=tree.root.findAllByType(OriginalGem).find(x=>x.props.stage===stage);
-      const trigger=checklist.findAllByType("button").find(x=>x.props["aria-expanded"]===false);
-      assert.ok(trigger,"Initially collapsed "+stage+" must have an expandable checklist");
-      await act(async()=>{trigger.props.onClick();await tick();});
-    }
-    assert.equal(tree.root.findAllByProps({"aria-label":"FS: toggle suggested criteria checkboxes"}).length,2);
-    assert.equal(tree.root.findAllByProps({"aria-label":"FA: toggle Gem Jr Trials input"}).length,1);
-    assert.equal(tree.root.findAllByProps({"aria-label":"FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"}).length,1);
+    assert.equal(tree.root.findAllByProps({"aria-label":"FS: toggle suggested criteria checkboxes"}).length,0);
+    assert.equal(tree.root.findAllByProps({"aria-label":"FA: toggle Gem Jr Trials input"}).length,0);
+    assert.equal(tree.root.findAllByProps({"aria-label":"FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"}).length,0);
     const cap=tree.root.findAllByType("input").find(x=>x.props.type==="checkbox"&&x.props.checked===false&&x.parent?.props?.className==="cap-filter");
     assert.ok(cap,"Optional market-cap restriction now present on central page");
     const display=tree.root.findAllByType("button").find(x=>typeof x.props.onClick==="function"&&x.children.join("").startsWith("DISPLAY TRIALS"));
