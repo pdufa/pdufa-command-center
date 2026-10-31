@@ -215,7 +215,7 @@ export default function NctLiveStream() {
       .catch((error: Error) => { if (active) setReadinessError(error.message); });
     return () => { active = false; };
   }, [run?.nct_id, run?.terminal]);
-  type SourceRecord = { dossier_id:string;source_evidence_id:string;created_at:string;url?:string|null;retrieved_at?:string|null;verification_status?:string|null;sha256?:string|null;publisher_kind?:string|null;provenance_complete?:boolean };
+  type SourceRecord = { dossier_id:string;source_evidence_id:string;created_at:string;url?:string|null;retrieved_at?:string|null;verification_status?:string|null;sha256?:string|null;publisher_kind?:string|null;provenance_complete?:boolean;stored_document_integrity?:string;document_review_status?:string;document_classification?:string };
   const [sourceInventory, setSourceInventory] = useState<SourceRecord[] | null>(null);
   useEffect(() => {
     if (!run?.nct_id) { setSourceInventory(null); return; }
@@ -287,7 +287,8 @@ export default function NctLiveStream() {
       <details><summary>Saved source inventory — {sourceInventory ? sourceInventory.length + " dossier sources" : "unavailable or loading"}</summary>
         <p className="subtle">Source metadata is not proof of protocol/SAP verification or scientific validity.</p>
         {sourceInventory?.length ? sourceInventory.map(source => <details key={source.dossier_id}><summary>{source.source_evidence_id} — {source.verification_status || "UNVERIFIED"}</summary>
-          <p><strong>Provenance metadata:</strong> {source.provenance_complete ? "COMPLETE" : "INCOMPLETE"} · <strong>Scientific content review:</strong> NOT VERIFIED</p>
+          <p><strong>Provenance metadata:</strong> {source.provenance_complete ? "COMPLETE" : "INCOMPLETE"} · <strong>Document integrity:</strong> {source.stored_document_integrity || "NOT CHECKED"}</p>
+          <p><strong>Document type:</strong> {source.document_classification || "UNCLASSIFIED"} · <strong>Scientific review:</strong> {source.document_review_status || "NOT REVIEWED"}</p>
           <p>Publisher: {source.publisher_kind || "unknown"} · Retrieved: {source.retrieved_at || "unknown"}</p>
           <p>SHA-256: <code>{source.sha256 || "not available"}</code></p>
           {source.url?.startsWith("https://") ? <p><a href={source.url} target="_blank" rel="noopener noreferrer">Open original source</a></p> : null}
