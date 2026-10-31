@@ -69,6 +69,78 @@
         "Confirm no code-only task is marked accepted",
         "Capture dated runtime acceptance evidence"
       ]
+    },
+    "03-017": {
+      "status": "In Progress",
+      "checkedAt": "2026-10-31",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/scripts/pdufa_daily_results.py",
+      "note": "Run-start time is captured from GitHub Actions metadata; explicit Pacific scan-night and delay fields implemented. Await a new full run with preserved timing fields and acceptance test.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Observe a new archived run_started_at_utc in published RESULTS",
+        "Cross-check reported workflow start against authoritative GitHub run timestamp",
+        "Record task-specific runtime acceptance evidence"
+      ]
+    },
+    "03-021": {
+      "status": "In Progress",
+      "checkedAt": "2026-10-31",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/data/daily_scan_results.json",
+      "note": "Ten dated RESULTS rows exist for Oct 21-30, 2026; all are PARTIAL. Saved publication exists, full source-complete publication not accepted.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Demonstrate complete and authoritative required source-family coverage",
+        "Verify source-to-dashboard publication end to end",
+        "Record passing acceptance test"
+      ]
+    },
+    "03-022": {
+      "status": "In Progress",
+      "checkedAt": "2026-10-31",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/data/daily_scan_results.json",
+      "note": "Confirmed ten distinct Pacific dates and run IDs with no structural inconsistencies; historical preservation and restore acceptance not yet demonstrated.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Verify retention and recovery of historical records after publication retries",
+        "Confirm archive integrity workflow pass",
+        "Record dated runtime acceptance proof"
+      ]
+    },
+    "03-025": {
+      "status": "Blocked",
+      "checkedAt": "2026-10-31",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/41163598594",
+      "note": "8:00 PM Pacific target is configured; Oct 30 run's earliest validation job log begins around 8:15 PM PDT. GitHub Actions schedules are best-effort; exact-time start unverified.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Identify a scheduler capable of meeting the required start-time SLA",
+        "Verify actual Pacific start times across multiple scheduled runs",
+        "Demonstrate duplicate-safe fallback and document failures"
+      ]
+    },
+    "03-032": {
+      "status": "In Progress",
+      "checkedAt": "2026-10-31",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/data/daily_scan_results.json",
+      "note": "Date-indexed old/new/updated counters exist, but unknown qualified Pipeline and special-designation totals are intentionally null. Requirement is not fully verified.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Verify qualified Pipeline and special-designation denominators",
+        "Prove same-run old/new/unchanged classifications",
+        "Test complete published day with dated source evidence"
+      ]
+    },
+    "10-021": {
+      "status": "In Progress",
+      "checkedAt": "2026-10-31",
+      "evidenceUrl": "https://github.com/pdufa/pdufa-command-center/blob/new-platform-bootstrap/new-platform/backend/app/phase3_catalog.py",
+      "note": "Backend prediction endpoint implements a fail-closed ABSTAIN response for unvalidated stored research decisions; live request contract and calibration acceptance not yet independently tested.",
+      "acceptance": "NOT_ACCEPTED",
+      "acceptanceMissing": [
+        "Run authenticated production API test across saved READY and NOT_READY records",
+        "Confirm ABSTAIN and validated_decision_available false in live output",
+        "Preserve separate scientific review and independent historical calibration requirements"
+      ]
     }
   }
 }
