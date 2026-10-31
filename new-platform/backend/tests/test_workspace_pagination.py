@@ -80,6 +80,8 @@ def test_page_rejects_unverified_pipeline(monkeypatch):
             })
             assert response.status_code == 503
             assert response.json()["detail"] == "Verified workspace page unavailable"
+            assert response.headers["retry-after"] == "30"
+            assert response.headers["cache-control"] == "no-store"
     finally:
         app.dependency_overrides.pop(require_storage, None)
 
@@ -123,3 +125,41 @@ def test_page_reuses_verified_snapshot_and_refreshes_on_source_change(monkeypatc
     finally:
         app.dependency_overrides.pop(require_storage, None)
         main._PAGE_CACHE.update(source=None, snapshot=None, version=None)
+
+
+def test_source_refresh_page_has_redacted_diagnostic_and_no_verified_version(monkeypatch, caplog):
+    """Stale refresh data never receives a page version or a successful status."""
+    from app import main, workspace_response
+    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-secret")
+    app.dependency_overrides[require_storage] = lambda: None
+    stale = {
+        "mode": "STALE_PREVIOUS_FETCH",
+        "pipeline": [{"id": "TRIAL|NCT00000001", "ticker": "TEST"}],
+        "members": {"GEM_JR": {"rows": []}, "GEM": {"rows": []}},
+        "sourceHealth": {
+            "state": "STALE", "refreshInProgress": True,
+            "streamlitPipelineParity": {"exactPrograms": 1},
+        },
+    }
+    monkeypatch.setattr(source_workspace, "workspace", lambda: stale)
+    monkeypatch.setattr(program_registry, "number_workspace", lambda value: value)
+    monkeypatch.setattr(workspace_response, "_CACHE", {
+        "source": None, "snapshot": None, "raw": None, "gzip": None,
+    })
+    monkeypatch.setattr(main, "_PAGE_CACHE", {
+        "source": None, "snapshot": None, "version": None,
+    })
+    try:
+        with TestClient(app) as client:
+            response = client.get("/api/workspace/page", headers={
+                "X-PDUFA-Internal-Key": "test-only-secret",
+            })
+            assert response.status_code == 503
+            assert response.json()["detail"] == "Verified workspace page unavailable"
+            assert response.headers["retry-after"] == "30"
+            assert response.headers["cache-control"] == "no-store"
+            assert "workspaceVersion" not in response.text
+            assert "NCT00000001" not in response.text
+            assert "PDUFA_WORKSPACE_PAGE_UNVERIFIED reason=SOURCE_REFRESH_IN_PROGRESS" in caplog.text
+    finally:
+        app.dependency_overrides.pop(require_storage, None)
