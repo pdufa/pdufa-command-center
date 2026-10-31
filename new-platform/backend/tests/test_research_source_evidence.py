@@ -115,7 +115,14 @@ def test_http_readiness_adds_source_facts_without_clearing_missing_reviews_or_mo
           patch("app.program_market_enrichment.enrich_program_market", return_value={"marketEvidenceReview": market})):
         result = review_program_decision_readiness(PID)
     assert result["sourceEvidence"]["programId"] == PID
-    assert result["sourceEvidence"]["clinical"]["facts"]
+    # A saved 2026-10-23 registry receipt is stale beyond its 7-day window.
+    # The live endpoint must withhold clinical facts rather than call them verified.
+    clinical = result["sourceEvidence"]["clinical"]
+    assert clinical["status"] in {"STALE", "OBSERVED"}
+    if clinical["status"] == "STALE":
+        assert clinical["facts"] == []
+    else:
+        assert clinical["facts"]
     assert result["decisionReadiness"]["status"] == "NOT_READY"
     assert not result["riskEvidenceReview"]["financingRiskReviewed"]
     assert record == before
