@@ -2135,12 +2135,12 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
 
 function PredictionExplanation() {
   const [nct, setNct] = useState("");
-  const [record, setRecord] = useState<any>(null);
+  const [record, setRecord] = useState<{decision?:string;status?:string;decision_explanation?:{reason?:string;reason_code?:string;scientific_readiness?:string;requires_independent_adjudication?:boolean;requires_outcome_calibration?:boolean}} | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   async function lookup() {
     const id = nct.trim().toUpperCase();
-    if (!/^NCT[0-9]{8}$/.test(id)) { setError("Enter an NCT identifier with eight digits."); return; }
+    if (!/^NCT[0-9]{8}$/.test(id)) { setRecord(null); setError("Enter an NCT identifier with eight digits."); return; }
     setBusy(true); setError(""); setRecord(null);
     try {
       const response = await fetch("/api/phase3-trials/" + id + "/predictions", {cache:"no-store"});
@@ -2152,7 +2152,7 @@ function PredictionExplanation() {
   return <div className="panel" aria-label="FDA prediction explanation">
     <h3>FDA DECISION · WHY THIS PREDICTION?</h3>
     <label htmlFor="prediction-nct">Trial NCT</label>{" "}
-    <input id="prediction-nct" value={nct} onChange={e=>setNct(e.target.value.toUpperCase())} placeholder="NCT01234567" maxLength={11} />{" "}
+    <input id="prediction-nct" value={nct} onChange={e=>{setNct(e.target.value.toUpperCase());setRecord(null);setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
     <button type="button" disabled={busy} onClick={()=>void lookup()}>{busy ? "Loading…" : "Get prediction and reasons"}</button>
     {error && <p role="alert">{error}</p>}
     {record && <>
