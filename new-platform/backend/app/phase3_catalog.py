@@ -673,6 +673,10 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                                if field in extracted}
                         for gate, fields in protocol_fields.items()
                     }
+                    assessment["statistical_evidence_missing"] = {
+                        gate: list(fields) for gate, fields in protocol_fields.items()
+                    }
+                    assessment["statistical_source_status"] = "UNVERIFIED_PROTOCOL_AND_SAP"
                     assessment["statistical_review"] = statistical_review
                     assessment["statistical_review_complete"] = False
                 if assessment["id"] == "ENDPOINT_STATISTICAL_VALIDITY":
