@@ -1,0 +1,84 @@
+name: Verify original POOL trial identities in production
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/pdufa-pool-archive-preservation-audit.yml]
+permissions:
+  contents: read
+jobs:
+  preserve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Compare immutable baseline, current clinical source, and signed-in production POOL
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          ORIGINAL_RELEASE: a015bd0e8eb05d8ad752ce9e191f705c00bc407e
+        run: |
+          python3 - <<'PY'
+          import csv,gzip,hashlib,http.cookiejar,io,json,os,re,subprocess,time,urllib.request,urllib.error
+          def trials(text):
+              reader=csv.DictReader(io.StringIO(text))
+              if 'nct_id' not in (reader.fieldnames or []): raise AssertionError('Missing nct_id header')
+              rows=list(reader)
+              ids={r['nct_id'].strip() for r in rows if r.get('nct_id') and re.fullmatch(r'NCT\d{8}',r['nct_id'].strip())}
+              if not ids: raise AssertionError('Empty NCT inventory')
+              return ids,len(rows)
+          original,original_rows=trials(subprocess.check_output(['git','show',os.environ['ORIGINAL_RELEASE']+':data/all_phase_trials.csv'],text=True))
+          current,current_rows=trials(open('data/all_phase_trials.csv',encoding='utf-8-sig').read())
+          print('IMMUTABLE_BASELINE unique_NCT',len(original),'rows',original_rows)
+          print('CURRENT_SOURCE unique_NCT',len(current),'rows',current_rows)
+          print('SOURCE_ORIGINAL_MISSING',len(original-current))
+          if original-current: raise SystemExit('FAIL: original clinical NCT IDs absent in current source')
+          password=os.environ.get('DASHBOARD_PASSWORD')
+          if not password: raise SystemExit('BLOCKED: existing dashboard password secret missing')
+          base='https://pdufa-new-dashboard.vercel.app'
+          jar=http.cookiejar.CookieJar()
+          opener=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+          def request(path,post=None):
+              headers={'Accept':'application/json','Accept-Encoding':'gzip','User-Agent':'pdufa-immutable-readonly-audit/1'}
+              if post is not None: headers.update({'Origin':base,'Content-Type':'application/json'})
+              req=urllib.request.Request(base+path,method='POST' if post is not None else 'GET',data=json.dumps(post).encode() if post is not None else None,headers=headers)
+              with opener.open(req,timeout=60) as response:
+                  raw=response.read(40000001)
+                  if len(raw)>40000000: raise AssertionError('Bounded audit response size exceeded')
+                  if response.headers.get('Content-Encoding','').lower()=='gzip': raw=gzip.decompress(raw)
+                  return json.loads(raw)
+          if request('/api/auth',{'password':password})!={'authenticated':True}:raise AssertionError('Login rejected')
+          if request('/api/auth')!={'authenticated':True}:raise AssertionError('Authenticated session missing')
+          snapshot=None
+          for attempt in range(3):
+              try:
+                  snapshot=request('/api/workspace')
+                  break
+              except urllib.error.HTTPError as err:
+                  print('WORKSPACE_HTTP_STATUS',err.code,'attempt',attempt+1)
+                  if err.code not in (502,503) or attempt==2:raise
+                  time.sleep(5)
+          rows=snapshot.get('pipeline')
+          health=snapshot.get('sourceHealth') or {}
+          if not isinstance(rows,list) or health.get('state')=='STALE': raise AssertionError('Source missing or stale')
+          parity=health.get('pipelineSourceParity') or health.get('streamlitPipelineParity') or {}
+          if parity.get('exactPrograms')!=len(rows): raise AssertionError('Source parity mismatch')
+          ncts=set()
+          for row in rows:
+              key=row.get('id','')
+              val=row.get('nctId') or (key.split('|')[1] if key.startswith(('TRIAL|','RESULT|')) and len(key.split('|'))>1 else '')
+              if isinstance(val,str) and re.fullmatch(r'NCT\d{8}',val):ncts.add(val)
+          def digest(values):
+              return hashlib.md5(','.join(sorted(values)).encode('utf-8')).hexdigest()
+          print('IMMUTABLE_NCT_SORTED_MD5',digest(original))
+          print('CURRENT_NCT_SORTED_MD5',digest(current))
+          print('PRODUCTION_NCT_SORTED_MD5',digest(ncts))
+          print('PRODUCTION_SOURCE_RECORDS',len(rows),'PRODUCTION_DISTINCT_NCTS',len(ncts))
+          print('BASELINE_MISSING_FROM_PRODUCTION',len(original-ncts))
+          print('CURRENT_MISSING_FROM_PRODUCTION',len(current-ncts))
+          if original-ncts or current-ncts: raise SystemExit('FAIL: live POOL does not cover original/current clinical source IDs')
+          print('PASS: original and current clinical trial identities retained in signed-in live POOL')
+          print('NOTE: This does not certify fully current FDA, SEC, market coverage, eligibility or database restore.')
+          PY
