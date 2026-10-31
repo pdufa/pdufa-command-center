@@ -703,7 +703,18 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             comparisons.append({"field": field, "status": status,
                                 "declaration_sources": sorted({k for k, _ in declared}),
                                 "reported_field_present": bool(actual)})
+        blockers = []
+        if not declarations["PROTOCOL"]:
+            blockers.append("NO_INTEGRITY_MATCHED_PROTOCOL")
+        if not declarations["SAP"]:
+            blockers.append("NO_INTEGRITY_MATCHED_SAP")
+        if not reported:
+            blockers.append("NO_STRUCTURED_STATISTICAL_RESULTS")
+        for item in comparisons:
+            if item["status"] not in {"TEXT_MATCH", "TEXT_MISMATCH"}:
+                blockers.append(item["field"].upper() + "_" + item["status"])
         return {"nct_id": nct_id, "comparisons": comparisons,
+                "readiness_blockers": blockers, "readiness_blocker_count": len(blockers),
                 "integrity_matched_document_counts": evidence_counts,
                 "comparison_ready": bool(declarations["PROTOCOL"] and declarations["SAP"] and reported and all(
                     item["status"] in {"TEXT_MATCH", "TEXT_MISMATCH"} for item in comparisons)),
