@@ -639,6 +639,66 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             "limitation": "Dossier source provenance is not protocol/SAP classification or independent statistical review.",
         }
 
+    @router.get("/{nct_id}/statistical-consistency")
+    def trial_statistical_consistency(nct_id: str):
+        """Compare explicit protocol/SAP declarations to structured trial results."""
+        if not NCT.fullmatch(nct_id):
+            raise HTTPException(422, "Invalid NCT identifier")
+        with engine_provider().connect() as c:
+            trial = c.execute(text("SELECT 1 FROM phase3_trials WHERE nct_id=:nct"),
+                              {"nct": nct_id}).first()
+            if not trial:
+                raise HTTPException(404, "Trial not in verified catalog")
+            docs = c.execute(text("""
+                SELECT e.document, e.sha256 FROM phase3_dossier_versions d
+                JOIN phase3_evidence e ON e.evidence_id=d.source_evidence_id
+                WHERE d.nct_id=:nct ORDER BY d.created_at DESC LIMIT 100
+            """), {"nct": nct_id}).mappings().all()
+            result = c.execute(text(
+                "SELECT primary_results FROM phase3_results WHERE nct_id=:nct"
+            ), {"nct": nct_id}).first()
+        declarations = {"PROTOCOL": [], "SAP": []}
+        for doc in docs:
+            body = doc["document"]
+            if not isinstance(body, str) or hashlib.sha256(body.encode("utf-8")).hexdigest().lower() != str(doc["sha256"]).lower():
+                continue
+            try:
+                payload = json.loads(body)
+            except (ValueError, TypeError):
+                continue
+            if not isinstance(payload, dict):
+                continue
+            kind = str(payload.get("document_type", "")).strip().upper().replace("-", "_").replace(" ", "_")
+            kind = "SAP" if kind == "STATISTICAL_ANALYSIS_PLAN" else kind
+            if kind in declarations:
+                declarations[kind].append(payload)
+        try:
+            results = json.loads(result[0]) if result and result[0] else {}
+        except (ValueError, TypeError):
+            results = {}
+        if not isinstance(results, dict):
+            results = {}
+        reported = results.get("ENDPOINT_STATISTICAL_VALIDITY", {})
+        if not isinstance(reported, dict):
+            reported = {}
+        comparisons = []
+        for field in ("analysis_population", "multiplicity_strategy", "missing_data_method"):
+            declared = [(kind, d[field].strip()) for kind, docs_for_kind in declarations.items()
+                        for d in docs_for_kind if isinstance(d.get(field), str) and d[field].strip()]
+            actual = reported.get(field)
+            actual = actual.strip() if isinstance(actual, str) else None
+            unique = {v.casefold() for _, v in declared}
+            status = ("MISSING_DECLARATION" if not declared else
+                      "CONFLICTING_DECLARATIONS" if len(unique) > 1 else
+                      "MISSING_REPORTED_FIELD" if not actual else
+                      "TEXT_MATCH" if actual.casefold() in unique else "TEXT_MISMATCH")
+            comparisons.append({"field": field, "status": status,
+                                "declaration_sources": sorted({k for k, _ in declared}),
+                                "reported_field_present": bool(actual)})
+        return {"nct_id": nct_id, "comparisons": comparisons,
+                "adjudication_status": "NOT_ADJUDICATED", "decision": "ABSTAIN",
+                "limitation": "Text comparison only; does not validate statistical methods or FDA outcome."}
+
     @router.get("/{nct_id}/readiness")
     def trial_readiness(nct_id: str):
         """Compute evidence availability, not an unsupported FDA probability."""
