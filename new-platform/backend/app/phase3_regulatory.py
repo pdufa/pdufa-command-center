@@ -202,7 +202,15 @@ def _lookup_application(drug, article, trial):
     # name this exact trial, and the company/indication checks below must pass.
     query = 'products.active_ingredients.name:"' + drug.replace('"', '') + '"'
     url = FDA_API + "?" + urlencode({"search": query, "limit": 100})
-    body, response = fetch(url, json_response=True)
+    try:
+        body, response = fetch(url, json_response=True)
+    except ValueError as exc:
+        if str(exc) != "HTTP_404":
+            raise
+        # openFDA returns HTTP 404 for a query with zero matching applications.
+        # No response is evidence of a verified FDA application or decision;
+        # do not discard the entire article or retry it indefinitely for this.
+        return None, None
     candidates = []
     for application in response["results"]:
         number, sponsor = application.get("application_number"), application.get("sponsor_name")
