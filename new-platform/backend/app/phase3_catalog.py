@@ -557,8 +557,8 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                 WHERE l.nct_id=:nct AND l.verification_status='VERIFIED'"""), {"nct": nct_id}).scalar_one()
             evidence_count = c.execute(text("""SELECT COUNT(*) FROM phase3_dossier_versions
                 WHERE nct_id=:nct"""), {"nct": nct_id}).scalar_one()
-        endpoint_record = c.execute(text("""SELECT primary_results,results_available,evidence_id
-            FROM phase3_results WHERE nct_id=:nct"""), {"nct": nct_id}).mappings().first()
+            endpoint_record = c.execute(text("""SELECT primary_results,results_available,evidence_id
+                FROM phase3_results WHERE nct_id=:nct"""), {"nct": nct_id}).mappings().first()
         endpoint_available = bool(endpoint_record and endpoint_record["results_available"]
                                   and endpoint_record["evidence_id"]
                                   and endpoint_record["primary_results"]
