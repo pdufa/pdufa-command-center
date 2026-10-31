@@ -1,0 +1,37 @@
+"use client";
+import {useEffect,useState} from "react";
+const segments=[
+["Infrastructure & deployment","Verify live production SHA, Vercel status, Render service, authentication, recovery"],
+["Database & ingestion","Verify canonical trial identities, FDA/SEC/financial sources, freshness, backup/restore"],
+["Automated scans","Verify 8 PM Pacific schedule, sequential runs, duplicate guard, RESULTS and retries"],
+["Pipeline","Audit $300M–$10B, public, US FDA, Phase 3, active program, documented filters and counts"],
+["GEM JR","Audit independent ranking, evidence and original FS/FA preset associations"],
+["GEM","Audit independent stricter ranking, evidence and original FS/FA preset associations"],
+["Special designations","Verify FDA designation types, original grant dates, citations and icons"],
+["SCIENCE","Audit 8 layers, 40 assessments, uncertainty, readiness and complete trial evidence"],
+["OUTCOME","Verify review-cycle labels, PASS/CRL/EXTENSION, dates and calibrated validation"],
+["MAIN","Audit 31 Core Platform gates, 10 technical prerequisites and decision integration"],
+["Predictions page","Build input flowchart, historical/current/future lanes, candidates and collapsed details"],
+["Historical validation","Held-out FDA decisions, leakage prevention, accuracy and uncertainty"],
+["Dashboard & charts","Verify mobile layout, source health, timeline, matrices and chart rendering"],
+["Notifications","Verify scan start/end email and SMS delivery with failure handling"],
+["Final acceptance","Authenticated end-to-end acceptance, backup restore and release signoff"]
+];
+type Observation={status:string};
+type Snapshot={asOf:string;recordedAt?:string;observations?:Observation[]};
+const source="https://raw.githubusercontent.com/pdufa/pdufa-command-center/main/new-platform/frontend/data/mainDailyEvidenceSnapshots.json";
+export default function MasterBuildProgress(){
+ const [snap,setSnap]=useState<Snapshot|null>(null);
+ const [checked,setChecked]=useState("");
+ const [error,setError]=useState(false);
+ useEffect(()=>{let active=true;async function refresh(){try{const res=await fetch(source+"?t="+Date.now(),{cache:"no-store"});if(!res.ok)throw Error("source unavailable");const data=await res.json() as Snapshot[];const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");if(active){setSnap(latest);setError(false);setChecked(new Date().toLocaleString());}}catch{if(active){setError(true);setChecked(new Date().toLocaleString());}}}refresh();const timer=setInterval(refresh,30*60*1000);return()=>{active=false;clearInterval(timer)}},[]);
+ const verified=snap?.observations?.filter(o=>o.status==="Verified").length;
+ const total=snap?.observations?.length;
+ return <section aria-label="Master build progress" style={{border:"2px solid #334155",borderRadius:12,padding:18,margin:"22px 0",background:"#f8fafc"}}>
+ <h2 style={{marginTop:0}}>BUILD PROGRESS · 15 segments</h2>
+ <p><strong>Refresh check:</strong> every 30 minutes while this page is open. This reads the latest committed evidence snapshot; it does not run audits, create new evidence, or automatically update GitHub. A new snapshot is visible only after it is committed. {checked?"Last checked: "+checked+". ":""}{error?"Latest fetch failed; previous results may be stale.":""}</p>
+ <p><strong>MAIN Core Platform:</strong> {total?verified+" / "+total+" gates verified ("+(100*(verified||0)/total).toFixed(1)+"%)":"Loading verified snapshot…"} · Evidence date: {snap?.asOf||"unknown"}. SCIENCE and OUTCOME: <strong>not independently measured</strong>. Overall completion: <strong>not certified</strong>.</p>
+ <p><a href="https://github.com/pdufa/pdufa-command-center/blob/main/docs/MASTER_BUILD_PROGRESS_2026-10-30.md" target="_blank" rel="noopener noreferrer">Full master task document and acceptance rules ↗</a></p>
+ {segments.map(([name,detail],i)=><details key={name} style={{padding:"10px 0",borderTop:"1px solid #cbd5e1"}}><summary style={{cursor:"pointer",fontWeight:650}}>{String(i+1).padStart(2,"0")} · {name} — verification open</summary><p>{detail}.</p><p>Required steps: confirm specification → inspect code → verify production runtime → run acceptance test → attach dated evidence. Until then, completion is not claimed.</p></details>)}
+ </section>
+}
