@@ -85,14 +85,14 @@ test("FDA-verified Priority Review alert is preserved and unsafe or lookalike so
   assert.equal(conflict.priority_review.status,"CONFLICT");
 });
 
-test("Pipeline renders 31 columns including Details, with each designation once and one cell per header",()=>{
+test("Pipeline renders 34 columns including Details, with each designation once and one cell per header",()=>{
   const React=require("react"),{renderToStaticMarkup}=require("react-dom/server");
   const Component=require("../app/PipelineData.tsx").default;
   const html=renderToStaticMarkup(React.createElement(Component,{rows:[candidate]}));
   const head=html.match(/<thead>([\s\S]*?)<\/thead>/)[1];
   const body=html.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
-  assert.equal((head.match(/<th(?:\s[^>]*)?>/g)||[]).length,31);
-  assert.equal((body.match(/<td(?:\s[^>]*)?>/g)||[]).length,31);
+  assert.equal((head.match(/<th(?:\s[^>]*)?>/g)||[]).length,34);
+  assert.equal((body.match(/<td(?:\s[^>]*)?>/g)||[]).length,34);
   assert.equal(head.split('>Details<').length-1,1);
   for(const {label}of lib.DESIGNATION_COLUMNS)assert.equal(head.split('>'+label+'<').length-1,1);
 });
