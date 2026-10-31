@@ -2138,21 +2138,24 @@ function PredictionExplanation() {
   const [record, setRecord] = useState<{decision?:string;status?:string;decision_explanation?:{reason?:string;reason_code?:string;scientific_readiness?:string;requires_independent_adjudication?:boolean;requires_outcome_calibration?:boolean}} | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const requestVersion = useRef(0);
   async function lookup() {
     const id = nct.trim().toUpperCase();
     if (!/^NCT[0-9]{8}$/.test(id)) { setRecord(null); setError("Enter an NCT identifier with eight digits."); return; }
+    const version = ++requestVersion.current;
     setBusy(true); setError(""); setRecord(null);
     try {
       const response = await fetch("/api/phase3-trials/" + id + "/predictions", {cache:"no-store"});
       if (!response.ok) throw new Error("Prediction service unavailable: " + response.status);
-      setRecord(await response.json());
-    } catch (e) { setError(e instanceof Error ? e.message : "Unable to load prediction"); }
-    finally { setBusy(false); }
+      const payload = await response.json();
+      if (version === requestVersion.current) setRecord(payload);
+    } catch (e) { if (version === requestVersion.current) setError(e instanceof Error ? e.message : "Unable to load prediction"); }
+    finally { if (version === requestVersion.current) setBusy(false); }
   }
   return <div className="panel" aria-label="FDA prediction explanation">
     <h3>FDA DECISION · WHY THIS PREDICTION?</h3>
     <label htmlFor="prediction-nct">Trial NCT</label>{" "}
-    <input id="prediction-nct" value={nct} onChange={e=>{setNct(e.target.value.toUpperCase());setRecord(null);setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
+    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
     <button type="button" disabled={busy} onClick={()=>void lookup()}>{busy ? "Loading…" : "Get prediction and reasons"}</button>
     {error && <p role="alert">{error}</p>}
     {record && <>
