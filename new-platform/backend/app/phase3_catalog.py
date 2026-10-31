@@ -564,7 +564,7 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                                   and endpoint_record["primary_results"]
                                   and endpoint_record["primary_results"].strip().upper() not in ("UNKNOWN", "PENDING", "NOT AVAILABLE"))
         checks = {
-            "trial_identity": True,
+            "trial_identity": bool(trial["nct_id"] == nct_id),
             "drug_identified": bool(trial["drug"]),
             "indication_identified": bool(trial["indication"]),
             "sponsor_identified": bool(trial["company"]),
