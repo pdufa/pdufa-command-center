@@ -1,7 +1,6 @@
 import Link from "next/link";
 import ScientificOutcomeLive from "./ScientificOutcomeLive";
 import DailySystemProgress from "./DailySystemProgress";
-import MasterBuildProgress from "./MasterBuildProgress";
 import InstallationProgressChart from "./InstallationProgressChart";
 import { PHASE3_CENSUS_SNAPSHOT, auditPhase3CensusSnapshot } from "../../lib/phase3-census-snapshot";
 import { isAccepted, summarizeInstallationAudit, mainTechnicalAcceptance } from "../../lib/installation-audit-summary";
