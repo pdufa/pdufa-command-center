@@ -81,7 +81,7 @@ test("successful research cannot hide an unverified technical component or a mis
   const researchReady = items.map(item=>research.has(item.component) ? {...item,code:"Verified",deployment:"Verified",runtime:"Verified",evidence:"Verified"} : item);
   assert.equal(mainTechnicalAcceptance(researchReady).ready,false);
   assert.equal(mainTechnicalAcceptance(researchReady).accepted,0);
-  for (const component of ["Pipeline","POOL / PIPELINE","Backup & Recovery","Nightly Scanning"]) {
+  for (const component of ["Pipeline","GEM JR / GEM / WT","Backup & Recovery","Nightly Scanning"]) {
     const inputs=items.map(item=>({...item,code:"Verified",deployment:"Verified",runtime:item.component===component ? "Not verified" : "Verified",evidence:"Verified"}));
     assert.deepEqual(mainTechnicalAcceptance(inputs).open,[component]);
   }
