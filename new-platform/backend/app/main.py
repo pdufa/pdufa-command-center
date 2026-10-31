@@ -617,6 +617,16 @@ def candidate_assessment_detail(identity: str):
     return exact_detail(identity)
 
 
+@app.get("/api/archive-scope", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def archive_scope():
+    """Protected, read-only current physical archive vs original NCT identity sets."""
+    from .archive_scope_reconciliation import report
+    try:
+        return report()
+    except (ValueError, TypeError, RuntimeError):
+        raise HTTPException(status_code=503, detail="Archive scope verification unavailable") from None
+
+
 @app.get("/api/pipeline-full-records", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def full_trial_status():
     from .full_trial_archive import archive_status
