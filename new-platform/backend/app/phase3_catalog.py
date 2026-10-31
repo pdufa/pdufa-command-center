@@ -598,6 +598,13 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                 except (ValueError, TypeError):
                     pass
             source["candidate_document_type"] = candidate_kind
+            # Candidate presence is not a verified scientific finding.
+            # Preserve a reviewable trail without exposing raw source text.
+            source["candidate_classification_basis"] = (
+                "INTEGRITY_MATCHED_EXPLICIT_DOCUMENT_TYPE"
+                if candidate_kind else "NO_TRUSTED_EXPLICIT_TYPE"
+            )
+
             source["document_review_status"] = "NOT_REVIEWED"
             source["document_classification"] = "UNCLASSIFIED"
             source["provenance_complete"] = bool(
