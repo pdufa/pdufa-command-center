@@ -28,18 +28,17 @@ test("Top cards are above research body and use real corresponding page totals",
  assert.doesNotMatch(ws,/id:"GEM" as Nav, label:"GEM"/);
 });
 
-test("Standalone trial sheets receive identical four-box UI with synced page counts",()=>{
+test("Standalone trial sheets use Pipeline-only source count and navigation",()=>{
  const page=read("trial/[nctId]/page.tsx");
  const trial=read("TrialWorkflowCounts.tsx");
- const icons=read("WorkflowStageIcon.tsx");
  assert.match(page,/<TrialWorkflowCounts \/>/);
  assert.match(trial,/className="workflow-counts"/);
  assert.match(trial,/import WorkflowStageIcon/);
- assert.match(icons,/export default function WorkflowStageIcon/);
  assert.match(trial,/fetch\("\/api\/workspace\/summary"/);
- assert.match(trial,/fetch\("\/api\/program-watch-trade"/);
- assert.match(trial,/saved\.asOf===data\.asOf/);
- assert.match(trial,/href=\{"\/\?section="\+id\}/);
+ assert.match(trial,/saved\?\.asOf===data\.asOf/);
+ assert.match(trial,/href="\/pipeline"/);
+ assert.doesNotMatch(trial,/label:"GEM JR"|label:"GEM"|label:"WT"/);
+ assert.doesNotMatch(trial,/fetch\("\/api\/program-watch-trade"/);
  assert.match(read("Workspace.tsx"),/new URLSearchParams\(window\.location\.search\)\.get\("section"\)/);
 });
 
