@@ -226,7 +226,7 @@ export default function NctLiveStream() {
       </details>
       <details><summary>MAIN — decision and readiness</summary>
         {nodes.filter(n=>n.level===1).length ? nodes.filter(n=>n.level===1).map(n=><ProcessingNode key={"main-"+n.node_id} event={n}/>) : <p>No MAIN processing event received.</p>}
-        <p><strong>FDA decision prediction: ABSTAIN — NOT READY.</strong> A completed source-processing run alone cannot support a regulatory decision prediction.</p>
+        <p role="status" aria-live="polite"><strong>FDA decision prediction: ABSTAIN — NOT READY.</strong> {busy ? "Evidence collection is running; the scientific decision engine has not been validated." : "A completed source-processing run alone cannot support a regulatory decision prediction."}</p>
       </details>
       <details><summary>Missing evidence and decision requirements</summary>
         {nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").length ? nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").map(n=><ProcessingNode key={"missing-"+n.node_id} event={n}/>) : <p>No failed, insufficient or pending source checks in the received events. This does not establish complete FDA evidence.</p>}
