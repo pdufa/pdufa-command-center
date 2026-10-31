@@ -1008,7 +1008,7 @@ def read_workspace(accept_encoding: str = Header(default=""), require_fresh: boo
     from .workspace_response import encoded
     started = time.perf_counter()
     try:
-        body, compressed = encoded(workspace(require_fresh=require_fresh), accept_encoding)
+        body, compressed = encoded(workspace(require_fresh=True) if require_fresh else workspace(), accept_encoding)
         headers = {
             "Cache-Control": "private, no-store",
             "Vary": "Accept-Encoding",
