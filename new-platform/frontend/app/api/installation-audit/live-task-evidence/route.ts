@@ -25,7 +25,7 @@ export async function GET(request: Request) {
  for(const [name,path] of [["dashboard","/installation-audit"],["scanHealth","/api/main-phase3-nightly-health"]]) {
   try {
    const response=await fetch(origin+path,{method:"GET",cache:"no-store",signal:AbortSignal.timeout(6000)});
-   checks[name]={status:response.ok?"reachable":"http_error",httpStatus:response.status,checkedAt,note:"Connectivity only; not acceptance or scan completion."};
+   checks[name]={status:response.ok?"reachable":"http_error",httpStatus:response.status,checkedAt,note:response.status===401||response.status===403?"Endpoint is protected; anonymous health cannot be verified.":"Connectivity only; not acceptance or scan completion."};
   } catch {
    checks[name]={status:"unreachable",checkedAt,note:"Request failed or timed out; does not establish root cause."};
   }
