@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-30",
+  "statusDefinitions": {
+    "Verified": "Dated task-specific acceptance evidence has passed",
+    "In Progress": "Implementation underway but not accepted",
+    "Blocked": "Dependency prevents acceptance",
+    "Failed": "Acceptance test failed",
+    "Not Started": "Work has not begun",
+    "Unverified": "No sufficient task-specific evidence recorded"
+  },
+  "tasks": {}
+}
