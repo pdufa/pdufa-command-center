@@ -212,7 +212,7 @@ function GoalRuleDetails({
           ? "Pending records are cumulative UNKNOWN survivors after this rule, not necessarily newly made pending by it. This is not a list of clinical failures."
           : "Exclusions use the original restriction evaluation on published saved evidence, not a new scoring model."} Check the source and complete record in RESTRICTIONS before making decisions.</p>
       </section>}
-      <p className={styles.ruleNote}>Sequential, within this stage only. UNKNOWN records are retained; these figures are not GEM qualifications, approval probabilities, or trade recommendations.</p>
+      <p className={styles.ruleNote}>Sequential, within this stage only. UNKNOWN records are retained; these figures are not FDA approval probabilities or trade recommendations.</p>
     </div>}
     <button type="button" className={styles.manageRules} onClick={() => onOpen("RESTRICTIONS")}>
       Open restriction controls →
@@ -403,9 +403,9 @@ export default function GoalDashboard({
           </a>
         </div>
         <p className={styles.footnote}>{scanView.note} New programs and changed clinical records are separate quantities and must not be added together.</p>
-        {scanView.rows.length ? <div className={styles.tableScroll}>
+        {scanView.rows.filter(row=>!/^(GEM|GEM_JR|WT)$/i.test(row.stage) && row.kind!=="NEW_STAGE_MEMBER").length ? <div className={styles.tableScroll}>
           <table><thead><tr><th>Stage</th><th>New finding</th><th>Ticker</th><th>Drug / program</th><th>Clinical trial</th><th>Evidence</th></tr></thead>
-            <tbody>{scanView.rows.map((row, index) =>
+            <tbody>{scanView.rows.filter(row=>!/^(GEM|GEM_JR|WT)$/i.test(row.stage) && row.kind!=="NEW_STAGE_MEMBER").map((row, index) =>
               <tr key={row.stage + "|" + row.kind + "|" + (row.trialId || index)}>
                 <td>{row.stage}</td>
                 <td>{row.kind === "NEW_STAGE_MEMBER" ? "New saved member" :
@@ -430,7 +430,7 @@ export default function GoalDashboard({
     <section className={styles.impactIntro} aria-label="GOAL restriction before and after comparison">
       <div className={styles.sectionHeader}>
         <div><h3>Restriction impact · before → after</h3>
-          <p>Active rule sequence: Pipeline only, screened from the preserved master POOL; original GEM configurations are historical archives.</p>
+          <p>Active rule sequence: Pipeline only, screened from the preserved master POOL; historical classifications do not qualify candidates.</p>
         </div>
         <button type="button" onClick={calculateSavedImpact}
           disabled={impactLoading || !impactRows?.length || !impactEntries || !sourceAsOf}>
