@@ -96,7 +96,21 @@ async function login(page, password, prefix) {
   assert(await page.locator('#password').count() === 0, prefix + '_login_form_removed');
 }
 function watch(page) {
-  page.on('pageerror', () => { runtime.pageErrors += 1; });
+  page.on('pageerror', error => {
+    runtime.pageErrors += 1;
+    // Only finite diagnostic categories and the current same-site page path:
+    // never leak exception text, URLs with query strings, cookies or source rows.
+    const name = error?.name === 'TypeError' ? 'TypeError'
+      : error?.name === 'ReferenceError' ? 'ReferenceError'
+      : error?.name === 'SyntaxError' ? 'SyntaxError' : 'Other';
+    const message = typeof error?.message === 'string' ? error.message : '';
+    const category = /hydrat/i.test(message) ? 'HYDRATION'
+      : /chunk|loading css|dynamically imported module/i.test(message) ? 'CHUNK_LOADING'
+      : /network|fetch|load failed/i.test(message) ? 'NETWORK'
+      : /undefined|null|not a function/i.test(message) ? 'APPLICATION_STATE' : 'UNCLASSIFIED';
+    const pathname = (() => { try { const u = new URL(page.url()); return u.origin === BASE ? u.pathname : 'OTHER_ORIGIN'; } catch { return 'UNKNOWN'; } })();
+    console.error('PDUFA_BROWSER_PAGEERROR ' + JSON.stringify({name, category, pathname}));
+  });
   page.on('request', request => {
     try { if (/(^|\.)(?:streamlit\.app|streamlit\.io)$/.test(new URL(request.url()).hostname)) runtime.streamlitRequests += 1; } catch {}
   });
