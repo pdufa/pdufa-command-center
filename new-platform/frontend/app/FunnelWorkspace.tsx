@@ -9,6 +9,7 @@ type ReviewItem = {
  nctId:string;ticker:string;company:string;drug:string|null;indication:string|null;
  sourceUrl:string;censusStatus:string;capUsd:number;capAsOf:string;
  poolStatus:string;postPhase3Evidence:string;qualification:string;reasons:string[];
+ projectedAdoption12MonthPct?:number|null;
 };
 type Overview = {
  poolRecords:number;poolClinicalRecords:number|null;poolRegulatoryRecords:number|null;
@@ -121,7 +122,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
          <thead><tr>
            {section==="pool"?
              ["Source ID","Ticker","Company","Drug","Indication","Recorded stage","Cap source value","Record type"].map(k=><th key={k}>{k}</th>):
-             ["NCT","Ticker","Company","Drug","Indication","Registry status","Cap at census","POOL match","Screening status","Details"].map(k=><th key={k}>{k}</th>)
+             ["NCT","Ticker","Company","Drug","Indication","Registry status","Cap at census","POOL match","Screening status","Projected patient adoption (12 mo, %)","Details"].map(k=><th key={k}>{k}</th>)
            }
          </tr></thead>
          <tbody>{page.rows.map(r=>isReview(r)?
@@ -130,6 +131,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
              <td>{r.ticker}</td><td>{r.company}</td><td>{display(r.drug)}</td><td>{display(r.indication)}</td>
              <td>{r.censusStatus}</td><td>${r.capUsd.toLocaleString()}<small>as of {r.capAsOf.slice(0,10)}</small></td>
              <td>{r.poolStatus}</td><td>{r.qualification}</td>
+             <td title="Source-backed 12-month adoption forecast among eligible U.S. patients; not FDA approval probability.">{typeof r.projectedAdoption12MonthPct==="number" && Number.isFinite(r.projectedAdoption12MonthPct) && r.projectedAdoption12MonthPct>=0 && r.projectedAdoption12MonthPct<=100 ? r.projectedAdoption12MonthPct.toFixed(1)+"%" : "Insufficient data"}</td>
              <td><details><summary>Why?</summary><ul>{r.reasons.map(s=><li key={s}>{s}</li>)}</ul></details></td>
            </tr>:
            <tr key={r.id}>
