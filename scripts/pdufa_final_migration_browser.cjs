@@ -377,6 +377,13 @@ async function mobile(browser, password) {
     const nav = page.getByRole('navigation', { name: 'Site navigation', exact: true });
     assert(await nav.isVisible(), 'webkit_native_navigation_persists');
     assert(await page.locator('h1').first().isVisible(), 'webkit_route_heading_visible');
+    // Mobile WebKit must finish source-driven POOL/Pipeline hydration before
+    // navigating away. This strengthens verification and avoids aborting an
+    // in-flight research load while inspecting the next route.
+    if (pathname === '/pool' || pathname === '/pipeline') {
+      await waitRows(page, 'webkit_' + pathname.slice(1));
+      assert(await page.locator('tbody tr').count() > 0, 'webkit_' + pathname.slice(1) + '_rows_visible');
+    }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 3);
     assert(overflow, 'webkit_' + pathname.slice(1).replaceAll('-', '_') + '_no_document_horizontal_overflow');
   }
