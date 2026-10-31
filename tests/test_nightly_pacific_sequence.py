@@ -344,6 +344,9 @@ class DatedArchiveTests(unittest.TestCase):
                     daily.record(504, "2026-10-31T03:15:44Z", "success", "2026-10-31")
                 with self.assertRaises(ValueError):
                     daily.record(505, "2026-10-31T03:15:44Z", "success", "2026-10-28")
+                with self.assertRaises(ValueError):
+                    daily.record(506, "2026-10-30T20:15:44", "success", "2026-10-30")
+
 
     def test_same_night_changes_and_saved_membership_not_confused_with_new(self):
         from scripts import pdufa_daily_results as daily
