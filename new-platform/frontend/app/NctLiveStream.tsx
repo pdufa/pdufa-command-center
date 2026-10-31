@@ -201,7 +201,7 @@ export default function NctLiveStream() {
   }, []);
 
   type ReadinessStage = { id: string; status: string; missing?: string[]; reason?: string | null; depends_on?: string[] };
-  type ReadinessReport = { nct_id: string; decision_pipeline?: ReadinessStage[]; checks_available?: number; checks_total?: number; missing?: string[]; assessments?: {id:string;status:string;reason?:string;value?:unknown;source_evidence_id?:string;required_fields?:string[];extracted_fields?:Record<string,unknown>;fields_complete?:boolean;adjudication_status?:string}[]; decision?:string };
+  type ReadinessReport = { nct_id: string; decision_pipeline?: ReadinessStage[]; checks_available?: number; checks_total?: number; missing?: string[]; assessments?: {id:string;status:string;reason?:string;value?:unknown;source_evidence_id?:string;required_fields?:string[];extracted_fields?:Record<string,unknown>;fields_complete?:boolean;adjudication_status?:string;statistical_review?:Record<string,string>;statistical_review_complete?:boolean;numeric_diagnostic?:{status?:string;nominal_p_below_alpha?:boolean|null;warning?:string}}[]; decision?:string };
   const [readiness, setReadiness] = useState<ReadinessReport | null>(null);
   const [readinessError, setReadinessError] = useState<string | null>(null);
   useEffect(() => {
@@ -257,6 +257,10 @@ export default function NctLiveStream() {
             {item.value !== undefined && item.value !== null ? <p>Recorded value: {String(item.value)}</p> : null}
             {item.reason ? <p>{item.reason}</p> : null}
             {item.source_evidence_id ? <p>Evidence ID: {item.source_evidence_id}</p> : null}
+            {item.numeric_diagnostic ? <p><strong>Nominal p versus alpha:</strong> {item.numeric_diagnostic.nominal_p_below_alpha === true ? "p < alpha (nominal only)" : item.numeric_diagnostic.nominal_p_below_alpha === false ? "p is not below alpha" : "Not calculable"}. {item.numeric_diagnostic.warning || "This is not independent statistical adjudication."}</p> : null}
+            {item.statistical_review ? <details><summary>Statistical review requirements — {item.statistical_review_complete ? "COMPLETE" : "INCOMPLETE"}</summary>
+              <ul>{Object.entries(item.statistical_review).map(([key,value]) => <li key={key}>{key.replaceAll("_", " ")}: {value}</li>)}</ul>
+            </details> : null}
             {item.required_fields?.length ? <div>
               <p><strong>Quantitative evidence:</strong> {item.fields_complete ? "Fields recorded; independent adjudication still required" : "Incomplete"} · <strong>Adjudication:</strong> {item.adjudication_status || "NOT ADJUDICATED"}</p>
               <ul>{item.required_fields.map(field => {
