@@ -646,6 +646,18 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                 assessment["adjudication_status"] = "NOT_ADJUDICATED"
                 assessment["automatic_pass"] = False
                 if assessment["id"] == "ENDPOINT_STATISTICAL_VALIDITY":
+                    # Explicitly record which independent statistical review
+                    # requirements remain open even when nominal p < alpha.
+                    statistical_review = {
+                        "endpoint_prespecified": "NOT_VERIFIED",
+                        "multiplicity_control": "NOT_VERIFIED",
+                        "analysis_population_consistent": "NOT_VERIFIED",
+                        "missing_data_robustness": "NOT_VERIFIED",
+                        "protocol_and_sap_source": "NOT_VERIFIED",
+                    }
+                    assessment["statistical_review"] = statistical_review
+                    assessment["statistical_review_complete"] = False
+                if assessment["id"] == "ENDPOINT_STATISTICAL_VALIDITY":
                     # Arithmetic diagnostics are not independent adjudication:
                     # p-values alone cannot establish prespecification or validity.
                     raw_p = extracted.get("p_value_or_interval")
