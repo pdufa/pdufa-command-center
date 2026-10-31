@@ -200,6 +200,21 @@ export default function NctLiveStream() {
     return () => window.removeEventListener("pdufa:analyze-nct", handler);
   }, []);
 
+  type ReadinessStage = { id: string; status: string; missing?: string[]; reason?: string | null; depends_on?: string[] };
+  type ReadinessReport = { nct_id: string; decision_pipeline?: ReadinessStage[]; checks_available?: number; checks_total?: number; missing?: string[]; assessments?: {id:string;status:string;reason?:string;value?:unknown;source_evidence_id?:string}[]; decision?:string };
+  const [readiness, setReadiness] = useState<ReadinessReport | null>(null);
+  const [readinessError, setReadinessError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!run?.nct_id) { setReadiness(null); setReadinessError(null); return; }
+    let active = true;
+    setReadiness(null);
+    setReadinessError(null);
+    fetch("/api/phase3-trials/" + encodeURIComponent(run.nct_id) + "/readiness", {cache:"no-store"})
+      .then(async response => { if (!response.ok) throw new Error("Scientific readiness unavailable (" + response.status + ")"); return response.json(); })
+      .then((data: ReadinessReport) => { if (active) setReadiness(data); })
+      .catch((error: Error) => { if (active) setReadinessError(error.message); });
+    return () => { active = false; };
+  }, [run?.nct_id, run?.terminal]);
   const [savedDecision, setSavedDecision] = useState<{decision:string;status:string;latest_prediction?:{scientific_readiness?:string;uncertainty?:string;created_at?:string}} | null>(null);
   useEffect(() => {
     if (!run?.nct_id) { setSavedDecision(null); return; }
@@ -227,6 +242,24 @@ export default function NctLiveStream() {
       <summary style={{cursor:"pointer",fontWeight:700}}>50-Level Scientific Analysis — evidence and readiness</summary>
       <p className="subtle">Design target: 50 analytical levels. This section displays actual persisted trial-processing evidence below, not fabricated assessments. The four-level dependency graph is not a 50-level FDA decision model.</p>
       <p><strong>Trial:</strong> {run?.nct_id || "No trial selected"} · <strong>Evidence checks:</strong> {nodes.filter(n=>n.status==="VERIFIED").length} verified / {nodes.length} received</p>
+      <details open><summary>SCIENCE → OUTCOME → MAIN — decision requirements</summary>
+        {readinessError ? <p role="status">Readiness service: {readinessError}. FDA decision remains ABSTAIN.</p> : null}
+        {!readiness && !readinessError ? <p role="status">Checking scientific readiness…</p> : null}
+        {readiness ? <p><strong>Readiness checks:</strong> {readiness.checks_available ?? 0} / {readiness.checks_total ?? 0} available · <strong>FDA decision: ABSTAIN</strong></p> : null}
+        {(readiness?.decision_pipeline || []).map(stage => <details key={stage.id}>
+          <summary><strong>{stage.id} — {stage.status}</strong></summary>
+          <p>{stage.reason || "Evidence requirements recorded."}</p>
+          {stage.depends_on?.length ? <p>Depends on: {stage.depends_on.join(", ")}</p> : null}
+          {stage.missing?.length ? <ul>{stage.missing.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul> : <p>No missing requirements listed for this stage.</p>}
+        </details>)}
+        <details><summary>Individual evidence and assessment statuses</summary>
+          {(readiness?.assessments || []).map(item => <details key={item.id}><summary>{item.id.replaceAll("_", " ")} — {item.status}</summary>
+            {item.value !== undefined && item.value !== null ? <p>Recorded value: {String(item.value)}</p> : null}
+            {item.reason ? <p>{item.reason}</p> : null}
+            {item.source_evidence_id ? <p>Evidence ID: {item.source_evidence_id}</p> : null}
+          </details>)}
+        </details>
+      </details>
       <details open><summary>SCIENCE — collected evidence</summary>
         {nodes.filter(n=>n.level>=3).length ? nodes.filter(n=>n.level>=3).map(n=><ProcessingNode key={"science-"+n.node_id} event={n}/>) : <p>No scientific source checks received. Start a trial run.</p>}
         <p className="subtle">Source verification is not a completed efficacy, safety, or statistical scientific assessment.</p>
