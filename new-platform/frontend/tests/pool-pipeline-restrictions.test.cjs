@@ -53,6 +53,6 @@ test("Remove every GEM JR and GEM stage association even from mixed and saved se
 test("GEM/FS/FA descriptor associations do not leak into active Pool definitions", () => {
   const active = detachGemAssociations(defaultCatalogEntries());
   assert.ok(active.every(entry => poolRuleDefinition(entry).associations.length === 0));
-  assert.ok(active.every(entry => !/(GEM JR|GEM|FS\\s*\\/\\s*FA)/i.test(poolRuleDefinition(entry).help)));
+  assert.ok(active.every(entry => !/(GEM JR|GEM|FS\s*\/\s*FA)/i.test(poolRuleDefinition(entry).help)));
   assert.ok(active.every(entry => ["Pipeline restriction","Pool: available restriction"].includes(poolRuleDefinition(entry).category)));
 });
