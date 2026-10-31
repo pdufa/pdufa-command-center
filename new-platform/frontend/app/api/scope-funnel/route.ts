@@ -40,7 +40,7 @@ export async function GET(req:NextRequest) {
   const view=params.get("view")||"pool";
   const offset=params.get("offset")||"0",limit=params.get("limit")||"50";
   const query=params.get("query")||"";
-  if(!["pool","pipeline"].includes(view)
+  if(!["pool","pipeline","readout-review"].includes(view)
      || !/^(0|[1-9]\d{0,7})$/.test(offset)
      || !/^(?:[1-9]|[1-4]\d|50)$/.test(limit)
      || query.length>100)
