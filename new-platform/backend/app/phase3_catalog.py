@@ -922,6 +922,14 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             "latest_prediction": records[0] if records else None,
             "status": "RECORDED" if records else "NOT_READY",
             "decision": records[0]["decision"] if records and records[0]["scientific_readiness"] == "READY" else "ABSTAIN",
+            "decision_explanation": {
+                "reason_code": "SAVED_RECORD_UNVALIDATED" if records and records[0]["scientific_readiness"] == "READY" else "SCIENTIFIC_READINESS_NOT_ESTABLISHED",
+                "reason": "A saved prediction record exists, but independent outcome calibration and scientific adjudication are not established." if records and records[0]["scientific_readiness"] == "READY" else "No scientifically ready saved prediction is available to justify PASS, CRL, or EXTENSION.",
+                "scientific_readiness": records[0]["scientific_readiness"] if records else "NOT_READY",
+                "validated_confidence_available": False,
+                "requires_independent_adjudication": True,
+                "requires_outcome_calibration": True,
+            },
             "limitation": "Saved predictions are not necessarily calibrated or validated. No prediction is inferred from trial-processing events.",
         }
 
