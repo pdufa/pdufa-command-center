@@ -43,13 +43,46 @@ export async function GET(request: Request) {
    checks.backendDatabase={status:"unreachable",checkedAt,note:"Backend health request failed or timed out; storage readiness unverified."};
   }
  }
+ // Non-mutating, bounded sample checks for the protected PDUFA research API.
+ // Never interpret HTTP 200 as a completed scientific assessment or a validated FDA forecast.
+ const internalKey=process.env.PDUFA_INTERNAL_API_KEY;
+ if (backendBase?.startsWith("https://") && internalKey) {
+  const nct="NCT00116805";
+  const sampleEndpoints=[
+   {name:"predictionSafety",path:"/api/phase3-trials/"+nct+"/predictions"},
+   {name:"scienceReadiness",path:"/api/phase3-trials/"+nct+"/readiness"},
+   {name:"statisticalConsistency",path:"/api/phase3-trials/"+nct+"/statistical-consistency"}
+  ];
+  await Promise.all(sampleEndpoints.map(async probe=>{
+   try {
+    const response=await fetch(backendBase+probe.path,{headers:{"X-Pdufa-Internal-Key":internalKey,Accept:"application/json"},cache:"no-store",signal:AbortSignal.timeout(6500)});
+    if(!response.ok){checks[probe.name]={status:"http_error",httpStatus:response.status,checkedAt,note:"Protected sample request failed; no acceptance implied."};return;}
+    const body=await response.json() as Record<string,unknown>;
+    const identity=body.nct_id===nct;
+    const shape=probe.name==="predictionSafety"
+     ? body.decision==="ABSTAIN"&&body.validated_decision_available===false
+     : probe.name==="scienceReadiness"
+     ? body.decision==="ABSTAIN"&&Array.isArray(body.decision_pipeline)&&typeof body.checks==="object"
+     : body.decision==="ABSTAIN"&&body.adjudication_status==="NOT_ADJUDICATED"&&Array.isArray(body.readiness_blockers);
+    checks[probe.name]={status:identity&&shape?"expected_safety_response":"unexpected_response",httpStatus:response.status,checkedAt,note:identity&&shape?"Sample API returned expected abstention/readiness shape; no scientific validation or full workflow acceptance.":"Unexpected response contract; investigate before acceptance."};
+   } catch {
+    checks[probe.name]={status:"unreachable",checkedAt,note:"Sample API request failed, returned non-JSON, or timed out; full workflow unverified."};
+   }
+  }));
+ } else {
+  for(const name of ["predictionSafety","scienceReadiness","statisticalConsistency"])
+   checks[name]={status:"not_configured",checkedAt,note:"Protected API credentials unavailable for the audit; no acceptance established."};
+ }
  // Map live probes to specific task identifiers as observations ONLY.
  // These do not alter the saved registry or claim that acceptance tests passed.
  const observations:{taskId:string;requirement:string;probe:string;result:string;checkedAt:string;limitation:string}[]=[
   {taskId:"01-003",requirement:"Verify Render backend services",probe:"backendDatabase",result:checks.backendDatabase?.status??"unknown",checkedAt,limitation:"Application and storage health only; deploy/rollback acceptance still unverified."},
   {taskId:"01-004",requirement:"Verify PostgreSQL connectivity",probe:"backendDatabase",result:checks.backendDatabase?.status??"unknown",checkedAt,limitation:"Backend-reported storage readiness; direct database write/restore not tested."},
   {taskId:"01-015",requirement:"Verify dashboard routes and authenticated access",probe:"dashboard",result:checks.dashboard?.status??"unknown",checkedAt,limitation:"One audit route checked; login/session workflow and other routes not exercised."},
-  {taskId:"03-001",requirement:"Verify nightly scan schedule",probe:"scanHealth",result:checks.scanHealth?.status??"unknown",checkedAt,limitation:"Health endpoint connectivity only; 8 PM schedule execution not verified."}
+  {taskId:"03-001",requirement:"Verify nightly scan schedule",probe:"scanHealth",result:checks.scanHealth?.status??"unknown",checkedAt,limitation:"Health endpoint connectivity only; 8 PM schedule execution not verified."},
+  {taskId:"10-018",requirement:"Prevent unsupported definitive predictions",probe:"predictionSafety",result:checks.predictionSafety?.status??"unknown",checkedAt,limitation:"A single abstention sample; no historical model validation or production acceptance."},
+  {taskId:"08-001",requirement:"Evaluate clinical trial design and protocol",probe:"scienceReadiness",result:checks.scienceReadiness?.status??"unknown",checkedAt,limitation:"Readiness response contract only; no full scientific investigation or evidence adjudication."},
+  {taskId:"08-003",requirement:"Evaluate statistical analysis and multiplicity",probe:"statisticalConsistency",result:checks.statisticalConsistency?.status??"unknown",checkedAt,limitation:"Textual comparison endpoint only; mismatch logic and underlying statistical validity not independently tested."}
  ];
  // Runtime failures do not erase previously dated acceptance evidence. Live checks
  // are observations only; no requirement is auto-certified without a test contract.
