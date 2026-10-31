@@ -112,7 +112,13 @@ def test_http_readiness_adds_source_facts_without_clearing_missing_reviews_or_mo
     with (patch.dict("os.environ", {"PDUFA_ALPACA_REVIEW_SMOKE": "1"}),
           patch("app.main.Session", return_value=session),
           patch("app.assessment_service.exact_detail", return_value=record),
-          patch("app.program_market_enrichment.enrich_program_market", return_value={"marketEvidenceReview": market})):
+          patch("app.program_market_enrichment.enrich_program_market", return_value={"marketEvidenceReview": market}),
+          # This fixture is explicitly as-of October 23. Keep the HTTP-readiness
+          # integration test independent of the actual wall clock; production
+          # source_evidence() still applies its seven-day freshness gate.
+          patch("app.research_source_evidence.source_evidence",
+                side_effect=lambda pid, key, ticker, **kwargs: source_evidence(
+                    pid, key, ticker, today=TODAY, **kwargs))):
         result = review_program_decision_readiness(PID)
     assert result["sourceEvidence"]["programId"] == PID
     assert result["sourceEvidence"]["clinical"]["facts"]
