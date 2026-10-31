@@ -140,7 +140,6 @@ jobs:
           set -euo pipefail
           gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" \
             -f ref=main -f "inputs[scan_mode]=${{ steps.manual_recovery.outputs.run == 'true' && 'FULL' || steps.validation_recovery.outputs.run == 'true' && 'DELTA' || steps.pacific.outputs.scan_mode }}" \
-
             -f "inputs[night_date_pacific]=${{ steps.pacific.outputs.night_date_pacific }}"
           echo "Requested POOL, Pipeline, Phase 3 results, source, scoring, error-check and repair stages in ONE awaited workflow."
           echo "Dispatch acceptance is not completion; inspect PDUFA Overnight Sequential Scans."
@@ -169,3 +168,4 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 # Operator-requested guarded kickoff of missed 2026-10-21 Pacific 8 PM scan; duplicate gate remains authoritative.
 # Operator-requested guarded kickoff of missing 2026-10-22 Pacific 8 PM scan; preserve existing no-duplicate admission.
+
