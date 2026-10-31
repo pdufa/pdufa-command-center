@@ -51,6 +51,12 @@ async function gate(id, code, work) {
 }
 async function json(context, pathname, code, expected = 200) {
   const response = await context.request.get(BASE + pathname, { timeout: 65000, maxRedirects: 0 });
+  if (response.status() !== expected) {
+    // Record only the endpoint class and status, never authenticated payloads,
+    // authorization headers, cookies or source records.
+    console.error('PDUFA_ACCEPTANCE_HTTP_MISMATCH ' +
+      JSON.stringify({check:code, expectedStatus:expected, actualStatus:response.status()}));
+  }
   assert(response.status() === expected, code + '_http_' + expected);
   if (expected !== 200) return null;
   assert((response.headers()['content-type'] || '').includes('application/json'), code + '_json');
