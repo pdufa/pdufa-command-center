@@ -570,7 +570,21 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             "scientific_safety_assessment": False,
             "independent_prediction_calibration": False,
         }
-        return {"nct_id": nct_id, "checks": checks,
+        assessments = [
+            {"id": "TRIAL_IDENTITY", "status": "VERIFIED", "value": nct_id,
+             "source": "phase3_trials.nct_id"},
+            {"id": "PRIMARY_ENDPOINT_RESULT", "status": "NOT_ASSESSED",
+             "value": None, "reason": "Endpoint result and statistical significance require source-level adjudication."},
+            {"id": "EFFICACY_REPLICATION", "status": "INSUFFICIENT_EVIDENCE",
+             "value": None, "reason": "No independently adjudicated replication evidence."},
+            {"id": "SAFETY_SIGNAL", "status": "NOT_ASSESSED",
+             "value": None, "reason": "Adverse event and exposure data have not been evaluated."},
+            {"id": "FDA_APPLICATION_LINK", "status": "VERIFIED" if verified_links else "INSUFFICIENT_EVIDENCE",
+             "value": int(verified_links), "source": "phase3_trial_applications + phase3_fda_applications"},
+            {"id": "CALIBRATED_FDA_OUTCOME_MODEL", "status": "NOT_ASSESSED",
+             "value": None, "reason": "No validated outcome calibration exists."},
+        ]
+        return {"nct_id": nct_id, "checks": checks, "assessments": assessments,
                 "checks_available": sum(checks.values()), "checks_total": len(checks),
                 "missing": [key for key, value in checks.items() if not value],
                 "scientific_readiness": "NOT_READY", "decision": "ABSTAIN",
