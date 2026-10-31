@@ -90,7 +90,8 @@ def check_archive(path: Path = ARCHIVE) -> tuple[list[str], dict]:
                   not _timestamp(item["scheduled_8pm_pacific_utc"]) or
                   type(item["start_delay_minutes"]) is not int or
                   item["scan_night_source"] not in
-                  ("GUARDED_SCHEDULER_INPUT", "ACTUAL_START_DATE_FALLBACK")):
+                  ("GUARDED_SCHEDULER_INPUT", "ACTUAL_START_DATE_FALLBACK",
+                   "HISTORICAL_REPORT_RECONCILIATION")):
                 errors.append(f"{prefix}: invalid scan timing provenance")
             elif day:
                 started = datetime.fromisoformat(item["run_started_at_utc"].replace("Z", "+00:00"))
@@ -104,6 +105,19 @@ def check_archive(path: Path = ARCHIVE) -> tuple[list[str], dict]:
                     errors.append(f"{prefix}: 8 PM Pacific target mismatch")
                 if item["scan_night_source"] == "GUARDED_SCHEDULER_INPUT" and started < target:
                     errors.append(f"{prefix}: guarded scan starts before 8 PM Pacific")
+                if item["scan_night_source"] == "HISTORICAL_REPORT_RECONCILIATION":
+                    url = item.get("timing_evidence_url")
+                    parts = urlparse(url) if isinstance(url, str) else None
+                    path = parts.path.split("/") if parts else []
+                    valid_evidence = bool(
+                        parts and parts.scheme == "https" and parts.netloc == "github.com"
+                        and len(path) == 7 and path[1:4] == ["pdufa", "pdufa-command-center", "blob"]
+                        and len(path[4]) == 40 and all(c in "0123456789abcdef" for c in path[4])
+                        and path[5:] == ["data", "nightly_scan_report.json"]
+                    )
+                    if not valid_evidence:
+                        errors.append(f"{prefix}: historical scan timing requires immutable source provenance")
+
         status = item.get("status")
         if not isinstance(status, str) or not status.strip():
             errors.append(f"{prefix}: status is missing")
