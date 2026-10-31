@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import styles from "./FunnelWorkspace.module.css";
+import { calculateTherapyCosts, type TherapyCostComparison } from "../lib/post-phase3-population";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -10,6 +11,7 @@ type ReviewItem = {
  sourceUrl:string;censusStatus:string;capUsd:number;capAsOf:string;
  poolStatus:string;postPhase3Evidence:string;qualification:string;reasons:string[];
  projectedAdoption12MonthPct?:number|null;
+ therapyCostComparison?:TherapyCostComparison|null;
 };
 type Overview = {
  poolRecords:number;poolClinicalRecords:number|null;poolRegulatoryRecords:number|null;
@@ -23,6 +25,7 @@ type Page = {
 };
 const LIMIT=50;
 const isReview=(r:PoolItem|ReviewItem):r is ReviewItem => "poolStatus" in r;
+function formatCost(v:number|null){return v===null?"Insufficient data":v.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});}
 function display(v:string|number|null|undefined) {
  return v===null||v===undefined||v===""?"Not verified":String(v);
 }
@@ -122,7 +125,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
          <thead><tr>
            {section==="pool"?
              ["Source ID","Ticker","Company","Drug","Indication","Recorded stage","Cap source value","Record type"].map(k=><th key={k}>{k}</th>):
-             ["NCT","Ticker","Company","Drug","Indication","Registry status","Cap at census","POOL match","Screening status","Projected patient adoption (12 mo, %)","Details"].map(k=><th key={k}>{k}</th>)
+             ["NCT","Ticker","Company","Drug","Indication","Registry status","Cap at census","POOL match","Screening status","Projected patient adoption (12 mo, %)","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Cost difference ($)","Details"].map(k=><th key={k}>{k}</th>)
            }
          </tr></thead>
          <tbody>{page.rows.map(r=>isReview(r)?
@@ -132,7 +135,15 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
              <td>{r.censusStatus}</td><td>${r.capUsd.toLocaleString()}<small>as of {r.capAsOf.slice(0,10)}</small></td>
              <td>{r.poolStatus}</td><td>{r.qualification}</td>
              <td title="Source-backed 12-month adoption forecast among eligible U.S. patients; not FDA approval probability.">{typeof r.projectedAdoption12MonthPct==="number" && Number.isFinite(r.projectedAdoption12MonthPct) && r.projectedAdoption12MonthPct>=0 && r.projectedAdoption12MonthPct<=100 ? r.projectedAdoption12MonthPct.toFixed(1)+"%" : "Insufficient data"}</td>
-             <td><details><summary>Why?</summary><ul>{r.reasons.map(s=><li key={s}>{s}</li>)}</ul></details></td>
+             <td>{formatCost(calculateTherapyCosts(r.therapyCostComparison).currentUsd)}</td>
+             <td>{formatCost(calculateTherapyCosts(r.therapyCostComparison).proposedUsd)}</td>
+             <td>{formatCost(calculateTherapyCosts(r.therapyCostComparison).costDifferenceUsd)}</td>
+             <td><details><summary>Why?</summary><ul>{r.reasons.map(s=><li key={s}>{s}</li>)}</ul></details>
+             <details><summary>Regimen and pricing evidence</summary>
+               <p>Current: {r.therapyCostComparison?.current?.therapy || "Not researched"} — {r.therapyCostComparison?.current?.regimen || "Regimen unverified"}</p>
+               <p>Proposed: {r.therapyCostComparison?.proposed?.therapy || "Not researched"} — {r.therapyCostComparison?.proposed?.regimen || "Regimen unverified"}</p>
+               <p>Costs: first 12 months per U.S. treated patient; source and matching price bases required. Prelaunch prices can only be modeled where evidence exists.</p>
+             </details></td>
            </tr>:
            <tr key={r.id}>
              <td>{r.id}</td><td>{r.ticker}</td><td>{display(r.company)}</td>

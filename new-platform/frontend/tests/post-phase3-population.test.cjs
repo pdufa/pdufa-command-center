@@ -14,7 +14,7 @@ require.extensions[".ts"] = (mod, file) => mod._compile(
 const { parsePhase3CensusCsv } = require("../lib/phase3-census-rows.ts");
 const { parsePhase3CensusSourceDirectory } = require("../lib/phase3-census-sources.ts");
 const {
-  selectPostPhase3PopulationTrials, PATIENT_POPULATION_DETAIL_SECTIONS,
+  selectPostPhase3PopulationTrials, PATIENT_POPULATION_DETAIL_SECTIONS, calculateTherapyCosts,
   PATIENT_POPULATION_MARKET_CAP_MIN, PATIENT_POPULATION_MARKET_CAP_MAX,
   PATIENT_POPULATION_BASELINE_TRIALS, PATIENT_POPULATION_BASELINE_COMPANIES,
 } = require("../lib/post-phase3-population.ts");
@@ -44,6 +44,7 @@ test("#1 post-Phase 3 scope is completed exact-NCT research records only, listed
     assert.equal(row.projectedAdoption12MonthPct,null);
     assert.equal(row.adoptionEvidenceUrl,null);
     assert.equal(row.adoptionConfidence,null);
+    assert.equal(row.therapyCostComparison,null);
     assert.equal(row.populationEvidenceCompleteness,null);
     assert.equal(row.populationLastVerified,null);
     assert.equal(row.trial.pipelineQualification,null);
@@ -51,6 +52,22 @@ test("#1 post-Phase 3 scope is completed exact-NCT research records only, listed
   assert.equal(PATIENT_POPULATION_DETAIL_SECTIONS.length,12);
 });
 
+test("therapy regimen totals and deltas require dated evidence and compatible cost bases",()=>{
+  const mk=(drug,admin,priceBasis="NET")=>({
+    therapy:"Therapy X",regimen:"10 mg oral daily for 12 months",
+    drugCostFirst12MonthsUsd:drug,adminMonitoringFirst12MonthsUsd:admin,
+    priceBasis,evidenceStatus:"MODELED",sourceUrl:"https://example.org/price",sourceDate:"2026-10-31",
+  });
+  const current=mk(9000,1000),proposed=mk(14000,2000);
+  assert.deepEqual(calculateTherapyCosts({current,proposed}),{
+    currentUsd:10000,proposedUsd:16000,costDifferenceUsd:6000,
+  });
+  assert.equal(calculateTherapyCosts({current,proposed:{...proposed,priceBasis:"WAC"}}).costDifferenceUsd,null);
+  assert.equal(calculateTherapyCosts({current,proposed:{...proposed,sourceUrl:null}}).proposedUsd,null);
+  assert.equal(calculateTherapyCosts({current,proposed:{...proposed,sourceDate:""}}).proposedUsd,null);
+  assert.equal(calculateTherapyCosts({current,proposed:mk(-1,100)}).proposedUsd,null);
+  assert.deepEqual(calculateTherapyCosts(null),{currentUsd:null,proposedUsd:null,costDifferenceUsd:null});
+});
 test("fail closed when sponsor cap or completed status is substituted", () => {
   const changed=structuredClone(sources);
   const first=rows[0].trial.ticker;
@@ -73,7 +90,7 @@ test("global #1 link and dedicated page retain source and unknown-estimate safeg
   assert.match(page,/parsePhase3CensusSourceDirectory/);
   assert.match(page,/PATIENT_POPULATION_DETAIL_SECTIONS\.map/);
   assert.match(page,/<details key=\{section.title\}>/);
-  for(const column of ["Ticker / study","Drug","Indication","Total disease population","Eligible U.S. patients","Eligible global patients","Projected patient adoption (12 mo, %)","Evidence completeness","Last updated","Details"]){
+  for(const column of ["Ticker / study","Drug","Indication","Total disease population","Eligible U.S. patients","Eligible global patients","Projected patient adoption (12 mo, %)","Current SOC cost ($/12 mo)","Proposed therapy cost ($/12 mo)","Cost difference ($)","Evidence completeness","Last updated","Details"]){
     assert.ok(page.includes(column), column);
   }
   assert.match(page,/Not assessed/);

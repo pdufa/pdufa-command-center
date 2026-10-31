@@ -18,6 +18,42 @@ export const PATIENT_POPULATION_MARKET_CAP_MAX = 10_000_000_000;
 export const PATIENT_POPULATION_BASELINE_TRIALS = 375;
 export const PATIENT_POPULATION_BASELINE_COMPANIES = 76;
 
+/** Per treated U.S. patient, first 12 months after treatment initiation. */
+export type TherapyCostPriceBasis = "WAC" | "ASP" | "NADAC" | "LIST" | "NET";
+export type TherapyCostRegimen = {
+  therapy: string | null;
+  regimen: string | null;
+  drugCostFirst12MonthsUsd: number | null;
+  adminMonitoringFirst12MonthsUsd: number | null;
+  priceBasis: TherapyCostPriceBasis | null;
+  evidenceStatus: "VERIFIED" | "MODELED" | null;
+  sourceUrl: string | null;
+  sourceDate: string | null;
+};
+export type TherapyCostComparison = {
+  current: TherapyCostRegimen | null;
+  proposed: TherapyCostRegimen | null;
+};
+/** Fail closed on absent source, regimen, price type or numeric evidence. */
+function totalFirst12Months(record: TherapyCostRegimen | null | undefined): number | null {
+  if (!record || !record.therapy?.trim() || !record.regimen?.trim()
+      || !record.priceBasis || !record.evidenceStatus
+      || !record.sourceUrl?.startsWith("https://")
+      || !/^\d{4}-\d{2}-\d{2}$/.test(record.sourceDate || "")) return null;
+  const {drugCostFirst12MonthsUsd:drug,adminMonitoringFirst12MonthsUsd:admin} = record;
+  if (typeof drug !== "number" || !Number.isFinite(drug) || drug < 0
+      || typeof admin !== "number" || !Number.isFinite(admin) || admin < 0) return null;
+  return drug + admin;
+}
+export function calculateTherapyCosts(value: TherapyCostComparison | null | undefined) {
+  const currentUsd = totalFirst12Months(value?.current);
+  const proposedUsd = totalFirst12Months(value?.proposed);
+  const costDifferenceUsd = currentUsd !== null && proposedUsd !== null
+    && value?.current?.priceBasis === value?.proposed?.priceBasis
+      ? proposedUsd - currentUsd : null;
+  return {currentUsd,proposedUsd,costDifferenceUsd};
+}
+
 export type PostPhase3PopulationTrial = {
   trial: Phase3CensusTrial;
   companySources: Phase3CompanySources;
@@ -28,6 +64,7 @@ export type PostPhase3PopulationTrial = {
   projectedAdoption12MonthPct: number | null;
   adoptionEvidenceUrl: string | null;
   adoptionConfidence: "High" | "Moderate" | "Low" | null;
+  therapyCostComparison: TherapyCostComparison | null;
   populationEvidenceCompleteness: number | null;
   populationLastVerified: null;
 };
@@ -75,7 +112,8 @@ export function selectPostPhase3PopulationTrials(
       trial, companySources,
       diseasePopulation: null, eligibleUsPatients: null,
       eligibleGlobalPatients: null, projectedAdoption12MonthPct: null,
-      adoptionEvidenceUrl: null, adoptionConfidence: null, populationEvidenceCompleteness: null,
+      adoptionEvidenceUrl: null, adoptionConfidence: null, therapyCostComparison: null,
+      populationEvidenceCompleteness: null,
       populationLastVerified: null,
     });
   }
