@@ -31,7 +31,7 @@ type Report = {
 };
 
 type ScanAction = "VERIFY_ALL" | "REVERIFY_PARTIAL" | "RESCAN_ALL";
-type ScanTarget = "ALL" | "PIPELINE" | "GEM_JR" | "GEM";
+type ScanTarget = "ALL" | "PIPELINE" | "PHASE3_RESULTS";
 type ActionRun = { id: number; status: string; conclusion: string | null; created_at: string; html_url: string };
 type ControlStatus = { dispatchEnabled: boolean; manual?: ActionRun[]; overnight?: ActionRun[]; gmail?: ActionRun[]; gmailRepair?: ActionRun[]; error?: string };
 
@@ -193,10 +193,9 @@ export default function PublishedScansPanel() {
         </label>
         <label>Stage
           <select value={target} onChange={e => setTarget(e.target.value as ScanTarget)}>
-            <option value="ALL">ALL — sequential including GEM</option>
+            <option value="ALL">ALL — POOL, PIPELINE, Phase 3 results</option>
             <option value="PIPELINE">PIPELINE only</option>
-            <option value="GEM_JR">GEM JR only</option>
-            <option value="GEM">GEM only</option>
+            <option value="PHASE3_RESULTS">Phase 3 results only</option>
           </select>
         </label>
         <button type="button"
@@ -218,7 +217,7 @@ export default function PublishedScansPanel() {
       <h3>GMAIL AUDIT — BY SECTION OR ALL EMAILS</h3>
       <p className="subtle">CHECK audits in read-only 100-message batches. FIX &amp; TRASH first inventories every section, validates exact GitHub run IDs, then processes the entire queue from most important to least. Critical items receive the limited repair attempts first.</p>
       <div className="gmail-priority-grid" aria-label="Gmail repair priorities">
-        <div><strong>P1</strong><span>Overnight / PIPELINE / GEM JR / GEM</span></div>
+        <div><strong>P1</strong><span>Overnight / POOL / PIPELINE / Phase 3</span></div>
         <div><strong>P2</strong><span>FDA / SEC / financial / source evidence</span></div>
         <div><strong>P3</strong><span>Gmail authentication and notifications</span></div>
         <div><strong>P4</strong><span>Dashboard / API / CI</span></div>
@@ -264,7 +263,7 @@ export default function PublishedScansPanel() {
       {(record.clinical?.scans || []).map(scan => {
         const m = scan.metrics || {};
         const pipeline = scan.scan === "2";
-        const code = scan.scan === "2" ? "PIPELINE — inventory" : scan.scan === "3" ? "PIPELINE — enrichment" : "GEM JR";
+        const code = scan.scan === "2" ? "PIPELINE — inventory" : scan.scan === "3" ? "PIPELINE — enrichment" : "PHASE3_RESULTS — posted outcomes";
         const pct = pipeline ? score(m.tracked_trials_total, m.tracked_trials_checked) : null;
         return <details key={scan.scan} className="nested-expander">
           <summary>{code} · {pct == null ? "Score N/A — no validated denominator" : pct.toFixed(1)+"% tracked ID coverage"} · {value(scan.collector_status)}</summary>
@@ -272,12 +271,6 @@ export default function PublishedScansPanel() {
           <p className="subtle">Why not 100% full verification? Clinical collector completeness does not certify SEC financing, FDA, market, or issuer claims. For non-inventory stages, no complete qualifying denominator has been published.</p>
         </details>;
       })}
-      {record.gem && <details className="nested-expander">
-        <summary>GEM · Qualification score N/A — baseline incomplete · {value(record.gem.status)}</summary>
-        <p>Phase 3 research rows: {value(record.gem.observed_phase3_rows)} · Potential two-benchmark candidates: {value(record.gem.two_benchmark_candidate_count)} · Cleared strict entry gate: {value(record.gem.strict_entry_gate_shortlist_count)}</p>
-        <p>Why not 100%? Unverified financing and readouts plus source limitations prevent a defensible scan-coverage denominator. Entry candidates passing the strict gate are not a scan-success percentage.</p>
-        {(record.gem.blocking_or_review_flags || []).map(flag=><p key={flag}>{flag}</p>)}
-      </details>}
       {(sources?.sources || []).map(s => {
         const pct = score(s.findings_due, s.findings_verified, s.findings_not_applicable);
         const missing = s.findings_due === undefined || s.findings_verified === undefined ? null : Math.max(0,s.findings_due - s.findings_verified - (s.findings_not_applicable || 0));
