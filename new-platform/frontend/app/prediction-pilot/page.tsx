@@ -40,19 +40,18 @@ export default function PeakPredictionPilot() {
       <a href="/trial/NCT05208047">Complete clinical trial sheet</a>
     </nav>
     <header style={{marginBottom:18}}>
-      <div className="topline">PDUFA COMMAND CENTER · GEM REAL-TRIAL RESEARCH PILOT</div>
+      <div className="topline">PDUFA COMMAND CENTER · PHASE 3 TRIAL RESEARCH PILOT</div>
       <h1>COGT · Bezuclastinib + sunitinib</h1>
       <p><strong>PEAK Phase 3 · NCT05208047</strong> · GIST after prior imatinib · PDUFA target <strong>November 30, 2026</strong></p>
       <div style={{display:"flex",gap:8,flexWrap:"wrap",margin:"12px 0"}}>
-        <span style={pill}>GEM saved member · Oct 25</span>
+        <span style={pill}>Historical research case · Oct 25</span>
         <span style={pill}>Research cutoff · Oct 26, 2026</span>
         <span style={pill}>Real reported trial results</span>
       </div>
       <p style={subtle}>
         This is a <strong>frozen, manual, source-linked demonstration</strong>, not a live analytical job.
         Clinical data are sponsor-reported and published at ASCO; FDA review materials have not independently
-        adjudicated efficacy/safety for this pilot. The qualified GEM membership is from the saved snapshot,
-        not proof of current trading eligibility. <Source item="membership"/>.
+        adjudicated efficacy/safety for this pilot. Prior historical classification is not an active Pipeline gate, nor proof of current trading eligibility.
       </p>
     </header>
 
