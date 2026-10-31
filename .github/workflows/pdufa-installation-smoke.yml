@@ -1,0 +1,47 @@
+name: PDUFA Installation Production Smoke
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/app/api/installation-audit/**'
+      - 'new-platform/frontend/app/installation-audit/**'
+      - 'new-platform/frontend/public/installation-audit/**'
+      - '.github/workflows/pdufa-installation-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check production deployment and installation API
+        env:
+          SITE: https://pdufa-new-dashboard.vercel.app
+        run: |
+          python3 - <<'PY'
+          import json,os,time,urllib.request,urllib.error
+          base=os.environ["SITE"]
+          for path in ("/", "/installation-audit", "/prediction-pilot"):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(base+path,headers={"User-Agent":"pdufa-installation-smoke/1"}),timeout=15) as response:
+                      print(path, response.status)
+                      assert response.status==200, f"{path} not ready"
+              except Exception as e:
+                  raise SystemExit(f"FAIL: {path}: {e}")
+          url=base+"/api/installation-audit/live-task-evidence"
+          with urllib.request.urlopen(urllib.request.Request(url,headers={"User-Agent":"pdufa-installation-smoke/1"}),timeout=30) as response:
+              assert response.status==200, f"Audit API returned {response.status}"
+              payload=json.load(response)
+          assert payload.get("taskCount")==546, "Task inventory mismatch"
+          assert len(payload.get("tasks",{}))==546, "Missing task evidence"
+          assert sum(payload.get("counts",{}).values())==546, "Status count mismatch"
+          assert payload.get("verifiedCount")==payload["counts"].get("Verified",0), "Verified count mismatch"
+          assert payload.get("automatedAcceptanceCoverage")==0, "Connectivity checks must not certify acceptance"
+          assert set(payload.get("checks",{}))=={"dashboard","scanHealth"}, "Missing runtime checks"
+          for name,check in payload["checks"].items():
+              print("Runtime check:",name,check["status"],check.get("httpStatus"))
+          print("PASS: production pages, API schema, evidence count and runtime check visibility")
+          PY
