@@ -18,6 +18,7 @@
 | 14 Charts Dashboard | Five chart objects including the original 20-assessment mapping structure | Counts are structural or verified-source counts; blank/non-entry = no numeric conclusion |
 | 19 Phase 3 Census Review | 741 pinned 2026-10-26 source pointers (375 registry completed); historical company and cap links | Never auto-promote a census record to qualified |
 | 20 Registry Evidence Intake | A:X = one reviewed registry evidence CSV; Y = spreadsheet formula identity check | Import an authenticated per-NCT CSV; leave qualification NEEDS_REVIEW; independent reviewer sign-off required |
+| 21 Batch Review Tracker | 30 source-locked 25-NCT batch links (final 16), A:K; imported-NCT counts from tab 20 | Zero imports is NOT zero trials; imported means human-reviewed evidence is still required |
 
 ## Semantic rules
 - Treat one issuer–drug–indication regulatory program as commercial unit. Link one or more distinct NCTs and do not sum a drug's patient population once per NCT.
@@ -43,3 +44,11 @@ For a future secure sync job:
 3. Import/paste that CSV data row beneath the headings in `20 Registry Evidence Intake`, without overwriting Y's integrity spill formula. Do not replace prior reviewed NCT rows without reconciling version/source changes. The import contains original registry facts and pinned issuer/ticker references, but drug/indication and commercial rights are NOT independently confirmed.
 4. Inspect the final Y column. It must reconcile the NCT + historical issuer with tab 19 and source link; a `REVIEW_REQUIRED` row remains pending. Human approval of registry facts is never equivalent to pivotal success, FDA approval, qualified Pipeline membership, price or current-market-cap validation.
 5. Live website ↔ Google Sheets automatic sync remains NOT INSTALLED without secure Google auth and audited readback; this manual per-trial export is an interim review pipeline.
+
+## Source-locked on-demand multi-trial registry batches
+- In signed-in Pipeline, the "Current official registry · batch evidence export" area allows 5, 10, or 25 pinned NCT IDs per download; the offset advances by that batch size and never accepts user-supplied arbitrary NCTs.
+- The server queries `https://clinicaltrials.gov/api/v2/studies` with `filter.ids` from the pinned 741-record October 26 census, validates *every* requested NCT and requires an exact full response. Missing IDs, redirects, duplicates, pagination or an API error cause HTTP 503 with **no partial CSV**.
+- A batch is at most 25 records, with one 24-column A:X CSV header. Tab `21 Batch Review Tracker` has 30 convenient links for the 25-record workflow; the last covers 16.
+- Import CSV **data rows only** into `20 Registry Evidence Intake` columns A:X, preserving Y's array validation and any existing reviewed NCT rows. Do not copy the CSV header as a new data row, overwrite the formula in column Y, or let a repeated export introduce duplicate NCT rows.
+- Status `IMPORTED — SOURCE REVIEW REQUIRED` indicates only that each NCT appears in the intake. It does not represent independent verification, qualified commercial programs, PASS probability, competitive advantage, a trade decision, FDA approval or fresh stock prices.
+- No automated Google Sheets credential is configured on the website. These links are manual, signed-in exports—not live website-to-Google Sheets synchronization or a background scan.
