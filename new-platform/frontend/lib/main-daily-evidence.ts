@@ -10,9 +10,10 @@ const policySource = "https://github.com/pdufa/pdufa-command-center/blob/44c2b45
 const stages = ["code", "deployment", "runtime", "evidence"] as const;
 const states = new Set(["Verified", "Code present", "Preview READY", "Partial", "Not verified", "Not audited"]);
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const gateIds = AUDIT_GROUPS[0].components.flatMap(component => stages
-  .filter(stage => component !== "Core Platform" || stage !== "evidence")
-  .map(stage => ({id:slug(component)+"."+stage,component,stage})));
+// The dated gate inventory is immutable historical evidence. The active
+// POOL/Pipeline installation criteria have changed, so never silently
+// reinterpret older gate IDs as newly established qualifications.
+const gateIds = inventory.gates.map(gate => ({id:gate.id,component:gate.component,stage:gate.stage}));
 const record = (v: unknown): Record<string, unknown> => {
   if (!v || typeof v !== "object" || Array.isArray(v)) throw new Error("Malformed evidence record");
   return v as Record<string, unknown>;
@@ -88,12 +89,12 @@ export function auditMainDailyEvidence(inventoryInput: unknown, snapshotsInput: 
         }
         observations.push({id:expected.id,status:observation.status,evidenceUri:observation.evidenceUri as string,note:observation.note});
       }
-      const acceptedSections = AUDIT_GROUPS[0].components.filter(component => gateIds
+      const acceptedSections = [...new Set(gateIds.map(gate=>g.component))].filter(component => gateIds
         .filter(gate => gate.component === component)
         .every(gate => observations.find(o => o.id === gate.id)?.status === "Verified")).length;
       const snapshotEvidenceUri = observations.find(o => o.status === "Verified")?.evidenceUri ?? source;
       history.push({asOf:row.asOf,systems:{SCIENCE:null,OUTCOME:null,MAIN:{completed:verified,total:gateIds.length,scope,evidenceUri:snapshotEvidenceUri}}});
-      result = {valid:true,reason:"Dated MAIN gate baseline; deployment metadata verifies one gate only.",history,verified,signals,partial,unverified,total:gateIds.length,acceptedSections,sections:AUDIT_GROUPS[0].components.length,observations};
+      result = {valid:true,reason:"Dated MAIN gate baseline; deployment metadata verifies one gate only.",history,verified,signals,partial,unverified,total:gateIds.length,acceptedSections,sections:new Set(gateIds.map(gate=>gate.component)).size,observations};
       previousDay = row.asOf;
     }
     return result;
