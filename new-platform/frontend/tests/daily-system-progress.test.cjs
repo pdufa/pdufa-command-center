@@ -79,7 +79,9 @@ test("recorded daily gate states reconcile with the actual acceptance table",()=
   const page=fs.readFileSync(require("node:path").join(__dirname,"../app/installation-audit/page.tsx"),"utf8");
   const rows=page.split("\n").filter(x=>x.startsWith('  { component: "'));
   for (const gate of inventory.gates) {
-    const row=rows.find(x=>x.includes('component: "'+gate.component+'"'));
+    const activeComponent=gate.component==="GEM JR / GEM / WT"?"POOL / PIPELINE":gate.component;
+    const row=rows.find(x=>x.includes('component: "'+activeComponent+'"'));
+    assert.ok(row,"Missing active audit mapping for "+gate.component);
     const state=row.match(new RegExp(gate.stage+': "([^"]+)"'))[1];
     assert.equal(MAIN_DAILY_EVIDENCE.observations.find(x=>x.id===gate.id).status,state,gate.id);
   }
