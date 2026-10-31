@@ -45,6 +45,42 @@ def test_refresh_in_progress_is_pending_without_scores_or_database(monkeypatch):
     assert cached == original
 
 
+
+def test_protected_pool_waits_for_in_flight_refresh_to_finish(monkeypatch):
+    """Fresh interactive reads wait; ordinary research reads still fail closed."""
+    import time
+    lock = threading.Lock()
+    lock.acquire()
+    previous = {"pipeline": [{"id": "TRIAL|NCT00000001"}],
+                "sourceHealth": {"state": "PARTIAL", "issues": []}}
+    fresh = {"pipeline": [{"id": "TRIAL|NCT00000001"}, {"id": "TRIAL|NCT00000002"}],
+             "sourceHealth": {"state": "PARTIAL", "issues": []}}
+    state = {"payload": previous, "as_time": -1000}
+    monkeypatch.setattr(source_workspace, "_REFRESH_LOCK", lock)
+    monkeypatch.setattr(source_workspace, "_CACHE", state)
+    monkeypatch.setattr(source_workspace, "gather",
+                        lambda: (_ for _ in ()).throw(AssertionError("Duplicate fetch")))
+    def complete_refresh():
+        time.sleep(0.035)
+        state.update(payload=fresh, as_time=time.monotonic())
+        lock.release()
+    worker = threading.Thread(target=complete_refresh)
+    worker.start()
+    try:
+        assert source_workspace.workspace(require_fresh=True) is fresh
+        assert source_workspace.workspace() is fresh
+        assert fresh["sourceHealth"]["state"] == "PARTIAL"
+    finally:
+        worker.join(timeout=2)
+    assert not worker.is_alive()
+
+
+def test_fast_api_declares_private_freshness_opt_in():
+    import inspect
+    params = inspect.signature(main.read_workspace).parameters
+    assert "require_fresh" in params
+    assert params["require_fresh"].default is False
+
 def test_failed_refresh_still_rejects_stale_source(monkeypatch):
     cached = {"pipeline": [{"id": "TRIAL|NCT00000001"}], "sourceHealth": {"state": "PARTIAL", "issues": []}}
     stale = source_workspace._stale_snapshot(cached, "Published-source refresh failed")
