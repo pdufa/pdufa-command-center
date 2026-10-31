@@ -41,6 +41,9 @@ test("#1 post-Phase 3 scope is completed exact-NCT research records only, listed
     assert.equal(row.diseasePopulation,null);
     assert.equal(row.eligibleUsPatients,null);
     assert.equal(row.eligibleGlobalPatients,null);
+    assert.equal(row.projectedAdoption12MonthPct,null);
+    assert.equal(row.adoptionEvidenceUrl,null);
+    assert.equal(row.adoptionConfidence,null);
     assert.equal(row.populationEvidenceCompleteness,null);
     assert.equal(row.populationLastVerified,null);
     assert.equal(row.trial.pipelineQualification,null);
@@ -70,7 +73,7 @@ test("global #1 link and dedicated page retain source and unknown-estimate safeg
   assert.match(page,/parsePhase3CensusSourceDirectory/);
   assert.match(page,/PATIENT_POPULATION_DETAIL_SECTIONS\.map/);
   assert.match(page,/<details key=\{section.title\}>/);
-  for(const column of ["Ticker / study","Drug","Indication","Total disease population","Eligible U.S. patients","Eligible global patients","Evidence completeness","Last updated","Details"]){
+  for(const column of ["Ticker / study","Drug","Indication","Total disease population","Eligible U.S. patients","Eligible global patients","Projected patient adoption (12 mo, %)","Evidence completeness","Last updated","Details"]){
     assert.ok(page.includes(column), column);
   }
   assert.match(page,/Not assessed/);
