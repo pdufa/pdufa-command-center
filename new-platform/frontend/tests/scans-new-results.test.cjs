@@ -158,7 +158,7 @@ test("SCANS page places new results summary ahead of job progress and identifies
   assert.ok(page.indexOf("<ScanNewResultsPanel")<page.indexOf("<LiveScansProgress />"));
   assert.ok(panel.includes("NEW FROM SCAN"));
   assert.ok(panel.includes("UPDATED / RECHECKED"));
-  assert.ok(panel.includes("counts come from the"));
+  assert.ok(panel.includes("Counts are dated source observations"));
   assert.ok(api.includes("newFromScan: newFromScanSummary"));
 });
 
