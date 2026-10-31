@@ -47,7 +47,8 @@ test('Authenticated health aggregates independent evidence and exposes exact saf
   assert.equal(data.checks.length,10);
   const get=id=>data.checks.find(c=>c.id===id);
   assert.equal(get('backend').state,'good');
-  assert.match(get('lists').summary,/11,775 · 11 · 6/);
+  assert.equal(get('lists').summary,'11,775');
+  assert.equal(get('lists').label,'POOL source inventory');
   assert.equal(get('scans').state,'good');
   assert.equal(get('sources').state,'warning');
   assert.equal(get('scoring').state,'warning');
