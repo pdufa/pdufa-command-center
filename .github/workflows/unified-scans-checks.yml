@@ -48,7 +48,7 @@ jobs:
                         '--scan "$SOURCE" --mode "$notify_mode"',
                         '--source "$SOURCE" --mode "$SCAN_MODE"',
                         'data/individual_source_scans']),
-              (clinical, ['workflow_dispatch:', 'options: [PIPELINE, GEM_JR]',
+              (clinical, ['workflow_dispatch:', 'options: [PIPELINE, PHASE3_RESULTS]',
                           '--scan "$scan" --mode "$notify_mode"',
                           '--scan "$scan" --mode "$SCAN_MODE"',
                           'data/individual_clinical_scans']),
