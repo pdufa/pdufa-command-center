@@ -120,3 +120,67 @@ jobs:
                   print("Backend waking or unavailable, retrying attempt",attempt+1,type(err).__name__)
                   time.sleep(15)
           PY
+
+      - name: Verify signed-in POOL Pipeline reconciliation
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          SITE: https://pdufa-new-dashboard.vercel.app
+        run: |
+          python3 - <<'PY'
+          import http.cookiejar,json,os,time,urllib.error,urllib.request
+          base=os.environ["SITE"].rstrip("/")
+          password=os.environ.get("DASHBOARD_PASSWORD")
+          if not password:
+              raise SystemExit("BLOCKED: authorized dashboard password Actions secret missing; do not mark auth acceptance.")
+          jar=http.cookiejar.CookieJar()
+          opener=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+          def request(path,method="GET",payload=None,timeout=65):
+              headers={"Accept":"application/json","User-Agent":"pdufa-private-scope-smoke/1"}
+              body=None
+              if payload is not None:
+                  headers["Origin"]=base
+                  headers["Content-Type"]="application/json"
+                  body=json.dumps(payload).encode()
+              req=urllib.request.Request(base+path,data=body,headers=headers,method=method)
+              try:
+                  with opener.open(req,timeout=timeout) as response:
+                      status=response.status
+                      content_type=response.headers.get("Content-Type","")
+                      raw=response.read(3_000_001)
+              except urllib.error.HTTPError as exc:
+                  status=exc.code
+                  content_type=exc.headers.get("Content-Type","")
+                  raw=b""
+              if len(raw)>3_000_000:
+                  raise AssertionError("Scope response size exceeded")
+              if status!=200 or "application/json" not in content_type:
+                  raise AssertionError(path.split("?")[0]+" returned status="+str(status)+" expected=200")
+              return json.loads(raw)
+          session=request("/api/auth","POST",{"password":password},30)
+          assert session=={"authenticated":True},"Password login did not create an authenticated session"
+          assert request("/api/auth")=={"authenticated":True},"Auth cookie not retained"
+          print("PASS: normal production login and authenticated session")
+          pages={}
+          for view in ("pool","pipeline","readout-review"):
+              uri="/api/scope-funnel?view="+view+"&offset=0&limit=10"
+              for attempt in range(1,4):
+                  try:
+                      data=request(uri)
+                      break
+                  except AssertionError:
+                      if attempt==3: raise
+                      print("Retrying signed-in",view,"after transient status; no source rows logged",attempt)
+                      time.sleep(6)
+              assert data.get("view")==view and isinstance(data.get("total"),int) and data["total"]>=0
+              assert isinstance(data.get("rows"),list) and len(data["rows"])<=10
+              assert data.get("qualifiedProgramCount") is None and data.get("overview",{}).get("qualifiedPrograms") is None
+              pages[view]=data
+              print("PASS:",view,"authenticated rows available; candidate qualification remains unverified")
+          assert pages["pool"]["total"]>0,"Master POOL returned no records"
+          assert (pages["pipeline"]["total"]+pages["readout-review"]["total"]
+                  ==pages["pool"]["overview"]["historicalPhase3Records"]),"Phase 3 research queue totals differ"
+          assert all(x.get("qualification")=="NEEDS_REVIEW" and x.get("poolStatus")=="EXACT_MATCH"
+                     and x.get("censusStatus")=="COMPLETED" for x in pages["pipeline"]["rows"])
+          print("PASS: signed-in POOL and Phase 3 research queue integrity; no invented qualified count")
+          print("NOTE: This is a read-only data API check, not browser controls, current cap verification, scan execution, Streamlit Cloud deletion, or validated FDA predictions.")
+          PY
