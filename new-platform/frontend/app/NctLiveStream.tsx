@@ -268,6 +268,19 @@ export default function NctLiveStream() {
     <p role="status" aria-live="polite">{notice}</p>
     {run ? <p className="subtle">{run.nct_id} · Run <code>{run.run_id}</code> · Event {run.sequence}{busy ? " · connected or reconnecting" : ""}</p> : null}
     {interrupted && run ? <button type="button" onClick={() => void load(run.nct_id, { nct_id: run.nct_id, run_id: run.run_id })}>Resume saved run</button> : null}
+    <div style={{margin:"12px 0",padding:12,border:"1px solid #b5c7b8",borderRadius:8}}>
+      <p><strong>FDA prediction: {savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? savedDecision.decision + " (UNVALIDATED SAVED RECORD)" : "ABSTAIN"}</strong> · Trial: {run?.nct_id || "Select a trial"}</p>
+      <details>
+        <summary style={{cursor:"pointer",fontWeight:700}}>WHY THIS PREDICTION? — explanation and evidence gaps</summary>
+        <p><strong>Primary reason:</strong> {savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? "A saved prediction exists, but its scientific and regulatory justification has not been independently validated." : "Verified scientific and regulatory evidence is insufficient for a defensible PASS, CRL, or EXTENSION prediction."}</p>
+        <p><strong>Scientific readiness:</strong> {savedDecision?.latest_prediction?.scientific_readiness || "Not verified"} · <strong>Evidence checks:</strong> {readiness ? (readiness.checks_available ?? 0) + " / " + (readiness.checks_total ?? 0) : "Not available"}</p>
+        <p><strong>Unresolved statistical inputs:</strong> {comparisonCoverage ? comparisonCoverage.blockers.length : "Not yet checked"}</p>
+        {comparisonCoverage?.blockers.length ? <ul>{comparisonCoverage.blockers.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul> : <p>{comparisonCoverage ? "No structured-input blockers reported; independent adjudication is still required." : "Run or refresh statistical readiness to retrieve itemized blockers."}</p>}
+        {(readiness?.decision_pipeline || []).filter(stage => stage.missing?.length).map(stage => <details key={stage.id}><summary>{stage.id} — {stage.missing?.length} missing requirement(s)</summary><ul>{stage.missing?.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul></details>)}
+        <p><strong>What could change the decision:</strong> Complete the missing evidence checks, independently review protocol/SAP and results, and validate outcome calibration. These steps do not guarantee a non-ABSTAIN prediction.</p>
+        <p><strong>Confidence:</strong> Not calibrated · <strong>FDA adjudication:</strong> Not completed.</p>
+      </details>
+    </div>
     <details style={{margin:"12px 0",padding:12,border:"1px solid #b5c7b8",borderRadius:8}}>
       <summary style={{cursor:"pointer",fontWeight:700}}>50-Level Scientific Analysis — evidence and readiness</summary>
       <p className="subtle">Design target: 50 analytical levels. This section displays actual persisted trial-processing evidence below, not fabricated assessments. The four-level dependency graph is not a 50-level FDA decision model.</p>
