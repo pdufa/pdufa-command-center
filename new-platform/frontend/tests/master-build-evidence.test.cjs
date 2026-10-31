@@ -41,6 +41,22 @@ test("Verified registry entries have a dated, source-linked evidence record", ()
   }
 });
 
+test("Code or deployment notes cannot be treated as completed acceptance", () => {
+  const previous = ["01-002", "13-001", "13-002", "13-003", "13-004"];
+  for (const id of previous) {
+    const row = registry.tasks?.[id];
+    assert.ok(row, "Expected original evidence " + id + " to be preserved");
+    assert.equal(row.status, "In Progress");
+    assert.equal(row.acceptance, "NOT_ACCEPTED");
+    assert.ok(Array.isArray(row.acceptanceMissing) && row.acceptanceMissing.length > 0);
+    assert.match(row.evidenceUrl, /^https:\/\//);
+  }
+  assert.equal(Object.values(registry.tasks || {}).filter(row => row.status === "Verified").length, 0);
+  assert.match(auditText, /function hasTaskAcceptance/);
+  assert.match(auditText, /candidate\?\.status==="Verified" && !hasTaskAcceptance\(candidate\)/);
+  assert.match(progressText, /Outstanding acceptance checks/);
+});
+
 test("Live connectivity and prediction safety observations cannot silently certify tasks", () => {
   assert.match(auditText, /automatedAcceptanceCoverage:0/);
   assert.match(auditText, /body\.decision==="ABSTAIN"/);
