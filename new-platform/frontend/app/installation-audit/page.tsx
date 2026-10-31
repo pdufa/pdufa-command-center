@@ -67,7 +67,6 @@ export default function InstallationAudit() {
   return <main style={{maxWidth:1420,margin:"0 auto",padding:"28px 18px",fontFamily:"system-ui,sans-serif",color:"#17212b"}}>
     <p><Link href="/">← Dashboard</Link></p>
     <h1>System installation & evidence tracker</h1>
-    <MasterBuildProgress />
     <p><strong>15-section audit · snapshot as of October 25, 2026.</strong> This is a dated read-only checklist with separate, on-demand protected SCIENCE/OUTCOME evidence checks below. A green build establishes neither scientific accuracy nor complete runtime operation.</p>
     <p><strong>Release:</strong> GitHub change #332 merged; Vercel production READY and user access reported on October 25, 2026. Deployment of the dashboard does not mean its scientific or prediction checks are complete. Implementation-stage counts are reported separately from verified acceptance; they are not an estimate of development-hours completion.</p>
     <p><strong>Main technical installation:</strong> No mandatory human reviewer enrollment, reviewer keys or reviewer handoff is required to install or operate POOL, Pipeline, scanning, reporting and backups. Scientific evidence and prediction validation remain a separate research requirement; this policy change does not certify a trial or authorize trades.</p>
