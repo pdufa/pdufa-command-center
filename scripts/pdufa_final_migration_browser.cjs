@@ -111,7 +111,12 @@ async function checkNavigation(page, prefix) {
 async function waitRows(page, code) {
   await page.waitForFunction(() => document.querySelector('tbody tr') !== null, null, { timeout: 65000 });
   assert(await page.locator('tbody tr').count() > 0, code + '_rows_render');
-  assert(await page.getByRole('alert').count() === 0, code + '_no_visible_alert');
+  const alerts = page.getByRole('alert');
+  if (await alerts.count() > 0) {
+    const contexts = await alerts.evaluateAll(nodes => nodes.map(n => n.closest('[aria-label]')?.getAttribute('aria-label') || n.parentElement?.tagName || 'unknown'));
+    console.log('PDUFA_ACCEPTANCE_ALERT_CONTEXT ' + JSON.stringify({code, count:contexts.length, contexts:contexts.slice(0,4)}));
+  }
+  assert(await alerts.count() === 0, code + '_no_visible_alert');
 }
 async function testPool(context, page) {
   pool = await json(context, '/api/scope-funnel?view=pool&limit=50&offset=0', 'pool');
@@ -203,6 +208,7 @@ async function testScans(context, page) {
   await published.click();
   const stage = page.getByLabel('Stage', { exact: true });
   const options = await stage.locator('option').evaluateAll(items => items.map(item => item.value));
+  console.log('PDUFA_ACCEPTANCE_SCAN_OPTIONS ' + JSON.stringify(options.slice(0,20)));
   assert(options.includes('PIPELINE') && options.includes('PHASE3_RESULTS') && !options.some(v => /GEM|WT/.test(v)), 'scan_targets_native_pool_pipeline_only');
   await stage.selectOption('PIPELINE');
   await stage.selectOption('ALL');
@@ -224,6 +230,12 @@ async function testResults(context, page) {
   await goto(page, '/results', 'results_ui');
   const dates = page.getByLabel('Report date (Pacific)', { exact: true });
   await dates.waitFor();
+  // Wait for the asynchronous published-scan fetch before checking the calendar.
+  // Merely finding the select isn't evidence that its saved dates have loaded.
+  await page.waitForFunction(count => {
+    const control = document.querySelector('select#daily-results-day');
+    return control instanceof HTMLSelectElement && control.options.length >= count;
+  }, days.length, { timeout: 65000 });
   const options = await dates.locator('option').evaluateAll(items => items.map(item => item.value));
   assert(options.length >= days.length, 'results_all_saved_dates_visible');
   await dates.selectOption(days[days.length - 1].date_pacific);
