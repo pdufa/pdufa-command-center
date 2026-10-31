@@ -556,7 +556,7 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             records = c.execute(text("""
                 SELECT d.dossier_id, d.source_evidence_id, d.created_at,
                        e.url, e.retrieved_at, e.verification_status,
-                       e.sha256, e.publisher_kind
+                       e.sha256, e.publisher_kind, e.document
                 FROM phase3_dossier_versions d
                 LEFT JOIN phase3_evidence e ON e.evidence_id=d.source_evidence_id
                 WHERE d.nct_id=:nct
@@ -570,6 +570,16 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             # must not turn javascript:, file:, or private schemes into UI links.
             if not isinstance(url, str) or urlsplit(url).scheme.lower() != "https":
                 source["url"] = None
+            # Validate the stored document against its recorded SHA-256.
+            # This is integrity checking, not authentication of the publisher
+            # or scientific adjudication. Do not return document contents.
+            document = source.pop("document", None)
+            digest = source.get("sha256")
+            source["stored_document_integrity"] = (
+                "MATCH" if isinstance(document, str) and isinstance(digest, str)
+                and hashlib.sha256(document.encode("utf-8")).hexdigest().lower() == digest.lower()
+                else "MISMATCH_OR_UNAVAILABLE"
+            )
             # The stored document is available for later review, but metadata
             # alone cannot certify protocol or SAP content. Do not expose the
             # document body or infer a document type from a filename.
