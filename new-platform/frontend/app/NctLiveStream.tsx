@@ -216,19 +216,24 @@ export default function NctLiveStream() {
     return () => { active = false; };
   }, [run?.nct_id, run?.terminal]);
   type SourceRecord = { dossier_id:string;source_evidence_id:string;created_at:string;url?:string|null;retrieved_at?:string|null;verification_status?:string|null;sha256?:string|null;publisher_kind?:string|null;provenance_complete?:boolean;stored_document_integrity?:string;document_review_status?:string;document_classification?:string };
+  const [comparisonRefresh, setComparisonRefresh] = useState(0);
+  const [comparisonError, setComparisonError] = useState<string | null>(null);
+  const [comparisonCheckedAt, setComparisonCheckedAt] = useState<string | null>(null);
   const [comparisonCoverage, setComparisonCoverage] = useState<{PROTOCOL:number;SAP:number;ready:boolean;blockers:string[]} | null>(null);
   const [statisticalComparisons, setStatisticalComparisons] = useState<{field:string;status:string;declaration_sources:string[];reported_field_present:boolean}[] | null>(null);
   useEffect(() => {
-    if (!run?.nct_id) { setStatisticalComparisons(null); setComparisonCoverage(null); return; }
+    if (!run?.nct_id) { setStatisticalComparisons(null); setComparisonCoverage(null); setComparisonError(null); setComparisonCheckedAt(null); return; }
     let active = true;
     setStatisticalComparisons(null);
     setComparisonCoverage(null);
+    setComparisonError(null);
+    setComparisonCheckedAt(null);
     fetch("/api/phase3-trials/" + encodeURIComponent(run.nct_id) + "/statistical-consistency", {cache:"no-store"})
       .then(async response => { if (!response.ok) throw new Error("Comparison unavailable"); return response.json(); })
-      .then(data => { if (active) { setStatisticalComparisons(Array.isArray(data.comparisons) ? data.comparisons : []); setComparisonCoverage({PROTOCOL: Number(data.integrity_matched_document_counts?.PROTOCOL || 0), SAP: Number(data.integrity_matched_document_counts?.SAP || 0), ready: data.comparison_ready === true, blockers: Array.isArray(data.readiness_blockers) ? data.readiness_blockers.filter((v: unknown): v is string => typeof v === "string") : []}); } })
-      .catch(() => { if (active) setStatisticalComparisons(null); });
+      .then(data => { if (active) { setComparisonCheckedAt(new Date().toLocaleString()); setStatisticalComparisons(Array.isArray(data.comparisons) ? data.comparisons : []); setComparisonCoverage({PROTOCOL: Number(data.integrity_matched_document_counts?.PROTOCOL || 0), SAP: Number(data.integrity_matched_document_counts?.SAP || 0), ready: data.comparison_ready === true, blockers: Array.isArray(data.readiness_blockers) ? data.readiness_blockers.filter((v: unknown): v is string => typeof v === "string") : []}); } })
+      .catch(() => { if (active) { setStatisticalComparisons(null); setComparisonError("Statistical comparison request failed; no readiness result verified."); } });
     return () => { active = false; };
-  }, [run?.nct_id, run?.terminal]);
+  }, [run?.nct_id, run?.terminal, comparisonRefresh]);
   const [sourceInventory, setSourceInventory] = useState<SourceRecord[] | null>(null);
   useEffect(() => {
     if (!run?.nct_id) { setSourceInventory(null); return; }
@@ -309,6 +314,8 @@ export default function NctLiveStream() {
       </details>
       <details><summary>SCIENCE — protocol/SAP versus results consistency</summary>
         <p className="subtle">Textual consistency screen only; scientific adjudication NOT COMPLETED. FDA decision ABSTAIN.</p>
+        <p><button type="button" onClick={() => setComparisonRefresh(value => value + 1)}>Refresh statistical readiness</button> · Last checked: {comparisonCheckedAt ?? "Not yet verified"}</p>
+        {comparisonError && <p role="alert">{comparisonError}</p>}
         <p><strong>Comparison readiness:</strong> {comparisonCoverage ? (comparisonCoverage.ready ? "INPUTS PRESENT" : "INSUFFICIENT INPUTS") : "NOT AVAILABLE"} · Integrity-matched protocol: {comparisonCoverage?.PROTOCOL ?? "—"} · SAP: {comparisonCoverage?.SAP ?? "—"}</p>
         {comparisonCoverage && <details><summary>Readiness blockers ({comparisonCoverage.blockers.length})</summary>{comparisonCoverage.blockers.length ? <ul>{comparisonCoverage.blockers.map(blocker => <li key={blocker}>{blocker.replaceAll("_", " ")}</li>)}</ul> : <p>No structured-input blockers reported; independent scientific adjudication remains outstanding.</p>}</details>}
         {statisticalComparisons?.length ? statisticalComparisons.map(item => <p key={item.field}>
