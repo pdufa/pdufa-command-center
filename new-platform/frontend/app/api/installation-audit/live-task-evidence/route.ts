@@ -5,7 +5,16 @@ import evidenceRegistry from "../../../../public/installation-audit/task-evidenc
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 type Status = "Verified"|"In Progress"|"Blocked"|"Failed"|"Not Started"|"Unverified";
-type Evidence = {status:Status;checkedAt?:string;evidenceUrl?:string;note?:string};
+type AcceptanceProof = {result:"PASS"|"FAIL";testId:string;passedAt:string;runtimeEvidenceUrl:string;deployedCommit:string};
+type Evidence = {status:Status;checkedAt?:string;evidenceUrl?:string;note?:string;acceptance?:string;acceptanceMissing?:string[];acceptanceProof?:AcceptanceProof};
+function hasTaskAcceptance(row:Evidence):boolean {
+ const proof=row.acceptanceProof;
+ if (!proof || proof.result!=="PASS" || !proof.testId?.trim()) return false;
+ if (!Number.isFinite(Date.parse(proof.passedAt))) return false;
+ if (!/^https:\/\//.test(proof.runtimeEvidenceUrl)) return false;
+ if (!/^[a-f0-9]{40}$/.test(proof.deployedCommit)) return false;
+ return true;
+}
 const ids = masterBuildTasks.flatMap((section,i)=>section.map((_,j)=>
   String(i+1).padStart(2,"0")+"-"+String(j+1).padStart(3,"0")));
 export async function GET(request: Request) {
@@ -13,7 +22,18 @@ export async function GET(request: Request) {
  const origin = new URL(request.url).origin;
  const saved = evidenceRegistry as {tasks?:Record<string,Evidence>;updatedAt?:string};
  const tasks:Record<string,Evidence>={};
- for(const id of ids) tasks[id]=saved.tasks?.[id]??{status:"Unverified"};
+ const rejectedVerified:string[]=[];
+ for(const id of ids) {
+  const candidate=saved.tasks?.[id];
+  if (candidate?.status==="Verified" && !hasTaskAcceptance(candidate)) {
+   // Historical implementation evidence remains visible but is not certification.
+   rejectedVerified.push(id);
+   tasks[id]={...candidate,status:"In Progress",acceptance:"NOT_ACCEPTED",
+    acceptanceMissing:candidate.acceptanceMissing?.length?candidate.acceptanceMissing:["Provide dated, task-specific production acceptance proof"]};
+  } else {
+   tasks[id]=candidate??{status:"Unverified"};
+  }
+ }
  const checks:Record<string,{status:string;httpStatus?:number;checkedAt:string;note:string}>={};
  for(const [name,path] of [["dashboard","/installation-audit"],["scanHealth","/api/main-phase3-nightly-health"]]) {
   try {
@@ -102,5 +122,5 @@ export async function GET(request: Request) {
  // Runtime failures do not erase previously dated acceptance evidence. Live checks
  // are observations only; no requirement is auto-certified without a test contract.
  const counts=ids.reduce((acc,id)=>{const status=tasks[id].status;acc[status]=(acc[status]??0)+1;return acc;},{} as Record<string,number>);
- return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
+ return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,rejectedVerified,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
 }
