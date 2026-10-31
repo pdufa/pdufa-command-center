@@ -84,8 +84,23 @@ export async function GET(request: Request) {
   {taskId:"08-060",requirement:"Evaluate clinical trial design and protocol",probe:"scienceReadiness",result:checks.scienceReadiness?.status??"unknown",checkedAt,limitation:"Readiness response contract only; no full scientific investigation or evidence adjudication."},
   {taskId:"08-062",requirement:"Evaluate statistical analysis and multiplicity",probe:"statisticalConsistency",result:checks.statisticalConsistency?.status??"unknown",checkedAt,limitation:"Textual comparison endpoint only; mismatch logic and underlying statistical validity not independently tested."}
  ];
+ // Validate every task link against the CURRENT master list. A renamed or moved
+ // requirement must not inherit observations from a different task.
+ const mappedObservations=observations.map(item=>{
+  const [sectionNumber,taskNumber]=item.taskId.split("-").map(Number);
+  const masterLabel=masterBuildTasks[sectionNumber-1]?.[taskNumber-1];
+  return masterLabel===item.requirement ? {...item,mappingValid:true}
+   : {...item,mappingValid:false,result:"mapping_error",limitation:"Task identifier does not match current master inventory; observation must be remapped and must not be accepted."};
+ });
+ const healthyStatuses=new Set(["reachable","ready","expected_safety_response"]);
+ const observationSummary={
+  taskLinksChecked:mappedObservations.length,
+  taskLinksValid:mappedObservations.filter(item=>item.mappingValid).length,
+  probesHealthy:Object.values(checks).filter(check=>healthyStatuses.has(check.status)).length,
+  probesTotal:Object.keys(checks).length
+ };
  // Runtime failures do not erase previously dated acceptance evidence. Live checks
  // are observations only; no requirement is auto-certified without a test contract.
  const counts=ids.reduce((acc,id)=>{const status=tasks[id].status;acc[status]=(acc[status]??0)+1;return acc;},{} as Record<string,number>);
- return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,counts,tasks,checks,observations,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:Object.values(checks).filter(check=>check.status==="reachable").length,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
+ return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
 }
