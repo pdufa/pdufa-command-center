@@ -903,7 +903,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     if (requested === "RESULTS") { setTop("RESULTS"); return; }
     if (requested === "BACKUP") { setTop("BACKUP"); return; }
     if (requested === "RESTRICTIONS" || requested === "PRESET") { setTop("RESTRICTIONS"); if(requested==="PRESET")setRestrictionTab("PRESET"); return; }
-    if (requested && (["PIPELINE","GEM_JR","GEM","WT","TRADING"] as const).some(section => section === requested)) {
+    if (requested && (["PIPELINE","TRADING"] as const).some(section => section === requested)) {
       setTop("PDUFA");
       setNav(requested as Nav);
     }
@@ -1054,7 +1054,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     // Never loop on a failing backend; preserve the previous verified snapshot.
     async function loadPublishedSources() {
       setRefreshing(true);
-      setFetchError("Connecting to published PIPELINE, GEM JR and GEM data…");
+      setFetchError("Connecting to published POOL and PIPELINE research data…");
       try {
         // Incremental refresh is safe only against a snapshot verified in this session.
         // Cached IndexedDB snapshots remain display-only until a full verification.
@@ -1778,16 +1778,13 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </div>
     {top==="PREDICTION" && <section className="panel" aria-label="PREDICTION — HOP">
       <h2>PREDICTION</h2>
-      <p>Historical Outcome Prediction (HOP) · Published GEM JR, GEM and W/T lists</p>
+      <p>Historical Outcome Prediction (HOP) · Pipeline trial research</p>
       <p role="status"><strong>Research only:</strong> Historical matching and validated approval probabilities are not available yet. Existing PoA values are not HOP predictions.</p>
       <PredictionExplanation />
       <HopReadinessPanel />
       {!snapshot ? <p>Load published candidates to see the source-linked trial inventory. No estimates will be generated.</p> : <>
-        <p className="subtle">Published snapshot: {snapshot.asOf} · Membership and W/T labels reflect their respective saved sources.</p>
-        {([
-          ["GEM JR", snapshot.members.GEM_JR.rows],
-          ["GEM", snapshot.members.GEM.rows],
-          ["WT", [...snapshot.members.GEM_JR.rows, ...snapshot.members.GEM.rows].filter(row => tags.watch.includes(row.programId || row.id) || tags.trade.includes(row.programId || row.id))]
+        <p className="subtle">Published snapshot: {snapshot.asOf} · Pipeline research only; no legacy stage qualification.</p>
+        {([["PIPELINE", snapshot.pipeline]
         ] as [string, Candidate[]][]).map(([group, rows]) => <details key={group} className="priority-panel" open={group==="GEM JR"}>
           <summary>{group} · {rows.length} published candidates {group==="WT"?"(saved W/T labels)":""}</summary>
           <div className="table-scroll"><table><thead><tr><th>Ticker</th><th>Program ID</th><th>Drug</th><th>Indication</th><th>PDUFA</th><th>Historical comparators</th><th>HOP prediction</th></tr></thead>
@@ -1799,7 +1796,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         window.dispatchEvent(new CustomEvent("pdufa:analyze-nct", { detail: { nct_id: nct, run_id: runId } }));
         document.getElementById("nct-live-processing")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }} />
-      <p>Source data is read-only. Pipeline, GEM JR, GEM, WT and FS/FA presets remain unchanged.</p>
+      <p>Source data is read-only. Active research uses POOL and PIPELINE only; historical GEM configuration remains archived.</p>
     </section>}
     {top==="RESTRICTIONS" && <div aria-label="Restriction sub-tabs" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"12px 0"}}>
       <button type="button" aria-current={restrictionTab==="RESTRICTIONS"?"page":undefined} className={restrictionTab==="RESTRICTIONS"?"nav-selected":""} onClick={()=>{setRestrictionTab("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
@@ -1808,24 +1805,21 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <div aria-label="Disease and company tools" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"8px 0 14px"}}><button type="button" className={restrictionFocus==="DISEASE"?"nav-selected":""} aria-pressed={restrictionFocus==="DISEASE"} onClick={()=>setRestrictionFocus("DISEASE")}>DISEASE · 5,168</button><button type="button" className={restrictionFocus==="COMPANY"?"nav-selected":""} aria-pressed={restrictionFocus==="COMPANY"} onClick={()=>setRestrictionFocus("COMPANY")}>COMPANY ↔ DISEASE</button></div>}
     {top!=="GOAL" && top!=="RESTRICTIONS" && top!=="SCANS" && top!=="PREDICTION" && <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
-        <strong>Section: {top==="RESULTS"?"RESULTS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
+        <strong>Section: {top==="RESULTS"?"RESULTS":top==="CALENDAR"?"PDUFA Calendar":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
           onClick={()=>setMobileNavOpen(current=>!current)}>
           {mobileNavOpen ? "Close menu ×" : "☰ Browse sections"}
         </button>
       </div>
       <nav id="pdufa-section-navigation" className="worknav" aria-label="PDUFA sections" data-open={mobileNavOpen?"true":"false"}>
-        {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["WT","WT"],["TRADING","TRADING"]] as [Nav,string][]).map(([key,label])=>
+        {([["PIPELINE","PIPELINE"],["MASTER","GOLD MASTER CHART"],["TRADING","TRADING"]] as [Nav,string][]).map(([key,label])=>
           <button type="button" key={key} className={top==="PDUFA"&&nav===key?"nav-selected":""} aria-current={top==="PDUFA"&&nav===key?"page":undefined}
             onClick={()=>{setTop("PDUFA");setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
       </nav>
     </div>}
-    {top!=="GOAL" && <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
+    {top!=="GOAL" && <div className="workflow-counts" role="group" aria-label="Active Pipeline research totals">
       {([
         {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : publishedCounts?.pipeline ?? null, detail:"Total candidates"},
-        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? verifiedStageCount("GEM_JR") : publishedCounts?.gemJr ?? null, detail:stageCountDetail("GEM_JR")},
-        {id:"GEM" as Nav, label:"GEM", count:snapshot ? verifiedStageCount("GEM") : publishedCounts?.gem ?? null, detail:stageCountDetail("GEM")},
-        {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Tracked watch / trade"},
       ]).map(item=><button type="button" key={item.id}
         className={"workflow-count workflow-count--"+item.id.toLowerCase()+(top==="PDUFA"&&nav===item.id?" workflow-count-selected":"")}
         aria-current={top==="PDUFA"&&nav===item.id?"page":undefined}
@@ -1934,7 +1928,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </div>
     </section>}
     {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && restrictionFocus==="DISEASE" && <DiseaseRestriction />}
-    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && restrictionFocus==="COMPANY" && (snapshot ? <CompanyDiseaseLinks rows={[...snapshot.pipeline,...snapshot.members.GEM_JR.rows,...snapshot.members.GEM.rows]} pipelineRows={snapshot.pipeline} gemJrRows={snapshot.members.GEM_JR.rows} gemRows={snapshot.members.GEM.rows} /> : <section className="panel"><h3>COMPANY ↔ DISEASE</h3><p>Loading published scanner records…</p></section>)}
+    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && restrictionFocus==="COMPANY" && (snapshot ? <CompanyDiseaseLinks rows={snapshot.pipeline} pipelineRows={snapshot.pipeline} gemJrRows={snapshot.members.GEM_JR.rows} gemRows={snapshot.members.GEM.rows} /> : <section className="panel"><h3>COMPANY ↔ DISEASE</h3><p>Loading published scanner records…</p></section>)}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Original Pipeline filters" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
@@ -1944,7 +1938,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <div className="panel" style={{padding:12,display:"grid",gap:8}}>
         <strong>SAVED RESTRICTION LISTS</strong>
         <label>View list <select value={restrictionListView} onChange={e=>setRestrictionListView(e.target.value as "PIPELINE"|"GEM_JR"|"GEM")}>
-          <option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option>
+          <option value="PIPELINE">Pipeline</option>
         </select></label>
         <div>{masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).length} saved restrictions</div>
         {masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).map(e=><div key={e.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
@@ -1961,17 +1955,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <div style={{display:"grid",gap:8}}>{entries.map(entry=><div key={entry.id} style={{borderBottom:"1px solid var(--border, #ccc)",padding:"8px 0"}}>
             <strong>{catalogDefinition(entry).title}</strong>
             <div className="subtle">{catalogDefinition(entry).help}</div>
-            <div className="subtle">Lists: {catalogStages(entry).join(", ")||"None"} · {entry.enabled?"Active":"Inactive"}</div>
+            <div className="subtle">Active list: {catalogStages(entry).includes("PIPELINE")?"PIPELINE":"Archived / None"} · {entry.enabled?"Active":"Inactive"}</div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,marginTop:10}}>
               <label>Choose restriction list <select aria-label={"Destination list for "+catalogDefinition(entry).title} value={restrictionDestination[entry.id]||"PIPELINE"} onChange={e=>setRestrictionDestination(old=>({...old,[entry.id]:e.target.value as "PIPELINE"|"GEM_JR"|"GEM"}))}>
-                <option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option>
+                <option value="PIPELINE">Pipeline</option>
               </select></label>
               {(()=>{
                 const stage=restrictionDestination[entry.id]||"PIPELINE";
                 const assigned=catalogStages(entry).includes(stage);
                 return <button type="button" onClick={()=>setMasterRestrictions(old=>assigned?removeRestrictionFromList(old,entry.id,stage):insertRestrictionIntoList(old,entry.id,stage,selectedRestrictionList(old,stage).length))}>{assigned?"REMOVE FROM LIST":"SAVE TO LIST"}</button>;
               })()}
-              <small>Saved in: {catalogStages(entry).map(stage=>stage.replace("_"," ")).join(", ")||"None"}</small>
+              <small>Active in: {catalogStages(entry).includes("PIPELINE")?"PIPELINE":"None"}</small>
             </div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:12,marginTop:8}}>
               <label style={{display:"flex",alignItems:"center",gap:6}}><input type="checkbox" checked={entry.enabled} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,enabled:event.target.checked}:item))}/> Enabled</label>
@@ -1991,8 +1985,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </section>}
     {top==="RESTRICTIONS" && restrictionTab==="PRESET" && <section aria-label="Saved restriction presets" style={{display:"grid",gap:12,width:"100%",minWidth:0}}>
       <h2>PRESET — Saved restriction configurations</h2>
-      <p className="subtle">Choose Pipeline, GEM JR or GEM presets below. Load, rename by saving under a new name, overwrite or delete. Edit restriction values on the RESTRICTIONS tab, then save your changes as a preset at the bottom of that list.</p>
-      {(["PIPELINE","GEM_JR","GEM"] as RestrictionPresetStage[]).map(stage=><div key={stage} className="panel" style={{padding:16}}>
+      <p className="subtle">Only PIPELINE presets are active. Historical GEM JR/GEM FS/FA selections remain archived and unchanged.</p>
+      {(["PIPELINE"] as RestrictionPresetStage[]).map(stage=><div key={stage} className="panel" style={{padding:16}}>
         <h3>{stage.replace("_"," ")} PRESETS · {restrictionPresets[stage].length} saved</h3>
         {restrictionPresetControls(stage)}
       </div>)}
@@ -2001,15 +1995,13 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
         {bottomPresetSave("PIPELINE")}
       </details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}{bottomPresetSave("GEM_JR")}</details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}{bottomPresetSave("GEM")}</details>
     </section>}
-    {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
+    {false && snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
       <div className="gems-two-blocks">{gemBlock(nav==="GEM_JR"?"GEM_JR":"GEM")}</div>
     </div>}
-    {snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
+    {false && snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
       <div className="sectionhead wt-page-header"><h2>WT — Permanent Program ID Watchlist &amp; Trading Research</h2><span className="counter">{tagsReady ? pageTotals.WT.toLocaleString("en-US") : "—"} total W/T programs</span></div>
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
@@ -2111,7 +2103,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       cached={Boolean(cachedAsOf || fetchError || snapshot?.mode !== "LIVE_READ_ONLY_GITHUB_SOURCE")}
       onOpen={(section:GoalSection)=>{
         if(section==="PIPELINE" || section==="GEM_JR" || section==="GEM"){
-          setTop("PDUFA");setNav(section);
+          setTop("PDUFA");setNav("PIPELINE");
         } else {
           setTop(section);
         }
