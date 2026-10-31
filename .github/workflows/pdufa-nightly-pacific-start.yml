@@ -140,7 +140,8 @@ jobs:
           set -euo pipefail
           gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" \
             -f ref=main -f "inputs[scan_mode]=${{ steps.manual_recovery.outputs.run == 'true' && 'FULL' || steps.validation_recovery.outputs.run == 'true' && 'DELTA' || steps.pacific.outputs.scan_mode }}" \
-            -f "inputs[gem_action]=${{ steps.manual_recovery.outputs.run == 'true' && 'RESCAN_ALL' || steps.validation_recovery.outputs.run == 'true' && 'REVERIFY_PARTIAL' || steps.pacific.outputs.gem_action }}"
+            -f "inputs[gem_action]=${{ steps.manual_recovery.outputs.run == 'true' && 'RESCAN_ALL' || steps.validation_recovery.outputs.run == 'true' && 'REVERIFY_PARTIAL' || steps.pacific.outputs.gem_action }}" \
+            -f "inputs[night_date_pacific]=${{ steps.pacific.outputs.night_date_pacific }}"
           echo "Requested ALL clinical, GEM, source, scoring, error-check and repair stages in ONE awaited workflow."
           echo "Dispatch acceptance is not completion; inspect PDUFA Overnight Sequential Scans."
 # Operator-requested guarded start: 2026-10-19 21:23 America/Los_Angeles (Monday DELTA including GEM).
