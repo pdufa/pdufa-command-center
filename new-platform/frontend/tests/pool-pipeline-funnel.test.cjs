@@ -68,6 +68,33 @@ test("fail-closed on incomplete, stale or duplicate source inventory",()=>{
  const inconsistent=source(input);inconsistent.sourceHealth.pipelineSourceParity.exactPrograms=12;
  assert.throws(()=>reconcilePoolPipeline(inconsistent,csv,sources),/integrity|freshness/);
 });
+
+test("read-only legacy Render source-parity metadata is accepted without GEM gate membership",()=>{
+ const legacy=source(input);
+ legacy.sourceHealth.streamlitPipelineParity=legacy.sourceHealth.pipelineSourceParity;
+ delete legacy.sourceHealth.pipelineSourceParity;
+ const result=reconcilePoolPipeline(legacy,csv,sources);
+ assert.equal(result.overview.poolRecords,741);
+ assert.equal(result.overview.matchedCompletedRecords,375);
+ assert.equal(result.overview.qualifiedPrograms,null);
+ assert.ok(result.reviewRows.every(row=>row.qualification==="NEEDS_REVIEW"));
+});
+test("POOL retains unmatched original records with blank issuer tickers without promoting them",()=>{
+ const unresolved={id:"TRIAL|NCT99999999",ticker:"",stage:"Unknown",company:"Unresolved issuer"};
+ const rows=[...input,unresolved];
+ const result=reconcilePoolPipeline(source(rows),csv,sources);
+ assert.equal(result.overview.poolRecords,742);
+ assert.equal(funnelPage(result,"pool",0,100,"").total,742);
+ assert.equal(funnelPage(result,"pipeline",0,50,"").total,375);
+ assert.equal(funnelPage(result,"pool",0,50,"Unresolved issuer").rows[0].ticker,"");
+ assert.equal(result.overview.qualifiedPrograms,null);
+});
+test("mismatched legacy source parity still fails closed",()=>{
+ const broken=source(input);
+ delete broken.sourceHealth.pipelineSourceParity;
+ broken.sourceHealth.streamlitPipelineParity={exactPrograms:12};
+ assert.throws(()=>reconcilePoolPipeline(broken,csv,sources),/integrity|freshness/);
+});
 test("navigation links and API views remain independent of historical GEM presets",()=>{
  const read=p=>fs.readFileSync(path.join(__dirname,"../",p),"utf8");
  const nav=read("app/GlobalNavigation.tsx");
