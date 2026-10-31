@@ -268,11 +268,11 @@ export default function NctLiveStream() {
     <p role="status" aria-live="polite">{notice}</p>
     {run ? <p className="subtle">{run.nct_id} · Run <code>{run.run_id}</code> · Event {run.sequence}{busy ? " · connected or reconnecting" : ""}</p> : null}
     {interrupted && run ? <button type="button" onClick={() => void load(run.nct_id, { nct_id: run.nct_id, run_id: run.run_id })}>Resume saved run</button> : null}
-    <details open style={{margin:"12px 0",padding:12,border:"1px solid #b5c7b8",borderRadius:8}}>
+    <details style={{margin:"12px 0",padding:12,border:"1px solid #b5c7b8",borderRadius:8}}>
       <summary style={{cursor:"pointer",fontWeight:700}}>50-Level Scientific Analysis — evidence and readiness</summary>
       <p className="subtle">Design target: 50 analytical levels. This section displays actual persisted trial-processing evidence below, not fabricated assessments. The four-level dependency graph is not a 50-level FDA decision model.</p>
       <p><strong>Trial:</strong> {run?.nct_id || "No trial selected"} · <strong>Evidence checks:</strong> {nodes.filter(n=>n.status==="VERIFIED").length} verified / {nodes.length} received</p>
-      <details open><summary>SCIENCE → OUTCOME → MAIN — decision requirements</summary>
+      <details><summary>SCIENCE → OUTCOME → MAIN — decision requirements</summary>
         {readinessError ? <p role="status">Readiness service: {readinessError}. FDA decision remains ABSTAIN.</p> : null}
         {!readiness && !readinessError ? <p role="status">Checking scientific readiness…</p> : null}
         {readiness ? <p><strong>Readiness checks:</strong> {readiness.checks_available ?? 0} / {readiness.checks_total ?? 0} available · <strong>FDA decision: ABSTAIN</strong></p> : null}
@@ -324,7 +324,7 @@ export default function NctLiveStream() {
           {" · "}Reported: {item.reported_field_present ? "present" : "missing"}
         </p>) : <p>Comparisons unavailable or not yet loaded.</p>}
       </details>
-      <details open><summary>SCIENCE — collected evidence</summary>
+      <details><summary>SCIENCE — collected evidence</summary>
         {nodes.filter(n=>n.level>=3).length ? nodes.filter(n=>n.level>=3).map(n=><ProcessingNode key={"science-"+n.node_id} event={n}/>) : <p>No scientific source checks received. Start a trial run.</p>}
         <p className="subtle">Source verification is not a completed efficacy, safety, or statistical scientific assessment.</p>
       </details>
@@ -359,7 +359,7 @@ export default function NctLiveStream() {
         <p>Target depth: 50. Live evidence-processing dependency depth: 4. Verified operational 50-level analysis: not established. Independently validated historical decision accuracy: not established. No trading authorization.</p>
       </details>
     </details>
-    {[4, 3, 2, 1].map(level => <details key={level} open={level === 4 || level === 1}>
+    {[4, 3, 2, 1].map(level => <details key={level}>
       <summary>{level === 4 ? "Source checks" : level === 1 ? "MAIN processing state" : "Level " + level + " dependencies"}</summary>
       {nodes.filter(event => event.level === level).map(event => <ProcessingNode key={event.node_id} event={event} />)}
     </details>)}
