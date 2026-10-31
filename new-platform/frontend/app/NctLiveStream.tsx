@@ -232,6 +232,21 @@ export default function NctLiveStream() {
         {nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").length ? nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").map(n=><ProcessingNode key={"missing-"+n.node_id} event={n}/>) : <p>No failed, insufficient or pending source checks in the received events. This does not establish complete FDA evidence.</p>}
         <p><strong>CRITICAL:</strong> A validated scientific/regulatory assessment, contemporaneous FDA review evidence where available, and independent calibration are still required before a defensible PASS / CRL / EXTENSION probability can be shown.</p>
       </details>
+      <details><summary>50 assessment requirements — evidence gates</summary>
+        <p className="subtle">Each requirement is independently tracked as NOT ASSESSED until an evidence-backed assessment is implemented. Verified source fields alone never count as a passed scientific test.</p>
+        {([
+          ["Trial identity and provenance",["NCT identity","Sponsor identity","Drug identity","Indication identity","Phase 3 status","Source freshness"]],
+          ["Efficacy",["Primary endpoint definition","Primary endpoint outcome","Effect size","Confidence interval","Statistical significance","Clinical relevance","Multiplicity handling"]],
+          ["Trial integrity",["Randomization","Blinding","Comparator validity","Sample size and power","Protocol amendments","Missing data","Intention-to-treat analysis"]],
+          ["Safety",["Adverse events","Serious adverse events","Discontinuations","Deaths","Exposure duration","Safety subgroup consistency"]],
+          ["Regulatory",["Application type and number","Submission acceptance","PDUFA target verification","FDA meeting evidence","Advisory committee evidence","Labeling considerations","Regulatory precedent"]],
+          ["Manufacturing",["CMC readiness","Facility inspection status","Manufacturing consistency","Supply-chain risk","Quality-system findings"]],
+          ["External validity",["Population representativeness","Subgroup robustness","Cross-trial consistency","Standard-of-care comparison","Independent replication"]],
+          ["Decision calibration",["Evidence cutoff date","Data leakage check","Historical cohort selection","Prospective prediction lock","Outcome adjudication","Calibration and uncertainty","PASS/CRL/EXTENSION decision gate"]],
+        ] as const).map(([group, requirements]) => <details key={group}><summary>{group} · {requirements.length} requirements · NOT ASSESSED</summary>
+          <ol>{requirements.map(item=><li key={item}><strong>{item}</strong> — NOT ASSESSED; evidence-backed analysis required.</li>)}</ol>
+        </details>)}
+      </details>
       <details><summary>Implementation and validation status</summary>
         <p>Target depth: 50. Live evidence-processing dependency depth: 4. Verified operational 50-level analysis: not established. Independently validated historical decision accuracy: not established. No trading authorization.</p>
       </details>
