@@ -5,7 +5,7 @@ const path = require("node:path");
 
 const tracker = fs.readFileSync(path.join(__dirname, "..", "app", "installation-audit", "page.tsx"), "utf8");
 const required = [
-  "Core Platform", "Pipeline", "GEM JR / GEM / WT", "Scientific Assessment",
+  "Core Platform", "Pipeline", "POOL / PIPELINE", "Scientific Assessment",
   "Historical Trial Database", "Prediction Engine", "Evidence Verification",
   "Regulatory Intelligence", "Investment Analysis", "Nightly Scanning",
   "Results & Reporting", "Automation", "Backup & Recovery",
