@@ -5,7 +5,7 @@ const path = require("node:path");
 
 const tracker = fs.readFileSync(path.join(__dirname, "..", "app", "installation-audit", "page.tsx"), "utf8");
 const required = [
-  "Core Platform", "Pipeline", "GEM JR / GEM / WT", "Scientific Assessment",
+  "Core Platform", "Pipeline", "POOL / PIPELINE", "Scientific Assessment",
   "Historical Trial Database", "Prediction Engine", "Evidence Verification",
   "Regulatory Intelligence", "Investment Analysis", "Nightly Scanning",
   "Results & Reporting", "Automation", "Backup & Recovery",
@@ -30,7 +30,7 @@ test("installation checks retain independent code, deployment, runtime and evide
   }
   const core = rows.find(row => row.includes('component: "Core Platform"'));
   assert.match(core, /runtime: "Partial"/);
-  assert.equal(rows.filter(row => /runtime: "Partial"/.test(row)).length, 3);
+  assert.equal(rows.filter(row => /runtime: "Partial"/.test(row)).length, 4);
 });
 
 test("dated, incomplete source audit is not misrepresented as qualified Pipeline or full scientific readiness", () => {
@@ -118,6 +118,6 @@ test("outdated public ticker identities are visibly held with dated Nasdaq corpo
   assert.match(tracker,/ECA2026-668/);
   assert.match(tracker,/before qualification/);
   assert.match(tracker,/current ticker validity and public-company eligibility remain unverified/);
-  assert.match(tracker,/FS\/FA presets are unchanged/);
+  assert.match(tracker,/does not alter research restrictions or historical records/);
   assert.doesNotMatch(tracker,/No new listing, trade approval or source verification is inferred\.\s*\{false\}/);
 });
