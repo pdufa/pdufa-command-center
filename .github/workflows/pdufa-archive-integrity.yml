@@ -5,11 +5,23 @@ on:
     paths:
       - data/daily_scan_results.json
       - scripts/verify_pdufa_archive.py
+      - tests/test_verify_pdufa_archive.py
+      - new-platform/frontend/tests/master-build-evidence.test.cjs
+      - new-platform/frontend/app/installation-audit/master-build-tasks.ts
+      - new-platform/frontend/public/installation-audit/task-evidence.json
+      - new-platform/frontend/app/api/installation-audit/live-task-evidence/route.ts
+      - new-platform/frontend/app/installation-audit/MasterBuildProgress.tsx
       - .github/workflows/pdufa-archive-integrity.yml
   pull_request:
     paths:
       - data/daily_scan_results.json
       - scripts/verify_pdufa_archive.py
+      - tests/test_verify_pdufa_archive.py
+      - new-platform/frontend/tests/master-build-evidence.test.cjs
+      - new-platform/frontend/app/installation-audit/master-build-tasks.ts
+      - new-platform/frontend/public/installation-audit/task-evidence.json
+      - new-platform/frontend/app/api/installation-audit/live-task-evidence/route.ts
+      - new-platform/frontend/app/installation-audit/MasterBuildProgress.tsx
       - .github/workflows/pdufa-archive-integrity.yml
   workflow_dispatch:
 
@@ -26,3 +38,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Check published archive structure
         run: python3 scripts/verify_pdufa_archive.py
+      - name: Test archive negative cases and completeness safeguards
+        run: python3 -m unittest discover -s tests -p 'test_verify_pdufa_archive.py' -v
+      - name: Test 546-task inventory and acceptance evidence integrity
+        run: node --test new-platform/frontend/tests/master-build-evidence.test.cjs
