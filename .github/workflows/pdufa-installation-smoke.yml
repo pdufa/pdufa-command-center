@@ -52,7 +52,7 @@ jobs:
               with urllib.request.urlopen(req,timeout=25) as response:
                   dst=urllib.parse.urlsplit(response.geturl())
                   expected_path="/prediction-pilot" if path=="/predictions" else urllib.parse.urlsplit(url).path
-              if dst.scheme!="https" or dst.hostname!=host or dst.path!=expected_path:
+                  if dst.scheme!="https" or dst.hostname!=host or dst.path!=expected_path:
                       raise AssertionError("Unexpected redirect for "+path)
                   if response.status!=200: raise AssertionError(path+" returned "+str(response.status))
                   body=response.read(maxbytes+1)
