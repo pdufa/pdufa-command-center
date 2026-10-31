@@ -46,7 +46,7 @@ export async function GET(req:NextRequest) {
   const query=params.get("query")||"";
   if(!["pool","pipeline","readout-review"].includes(view)
      || !/^(0|[1-9]\d{0,7})$/.test(offset)
-     || !/^(?:[1-9]|[1-4]\d|50)$/.test(limit)
+     || !(/^(?:[1-9]|[1-4]\\d|50)$/.test(limit) || (view==="pipeline" && limit==="500"))
      || query.length>100)
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
