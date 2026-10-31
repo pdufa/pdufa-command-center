@@ -77,7 +77,7 @@ test("Quick view shows the third page, stays bounded and searches records outsid
  }
 });
 
-test("Standalone count cards use published memberships without a full candidate download",async()=>{
+test("Standalone count cards use published Pipeline summary without GEM memberships or trade list",async()=>{
  global.IS_REACT_ACT_ENVIRONMENT=true;
  const Counts=require("../app/TrialWorkflowCounts.tsx").default;
  const prior={fetch:global.fetch,localStorage:global.localStorage,self:global.self};
@@ -94,8 +94,8 @@ test("Standalone count cards use published memberships without a full candidate 
  try{
   await act(async()=>{root=create(React.createElement(Counts));await new Promise(resolve=>setImmediate(resolve));});
   const numbers=root.root.findAllByProps({className:"workflow-count-number"}).map(x=>x.children.join(""));
-  assert.deepEqual(numbers,["11,775","11","6","2"]);
-  assert.deepEqual(requests,["/api/workspace/summary","/api/program-watch-trade"]);
+  assert.deepEqual(numbers,["11,775"]);
+  assert.deepEqual(requests,["/api/workspace/summary"]);
  }finally{
   if(root)await act(async()=>root.unmount());
   Object.assign(global,prior);
