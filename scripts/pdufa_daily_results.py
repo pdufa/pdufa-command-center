@@ -23,7 +23,10 @@ PACIFIC = ZoneInfo("America/Los_Angeles")
 
 
 def parse_date(value: str) -> datetime:
-    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ValueError("Scan timestamp must contain an explicit UTC offset")
+    return parsed.astimezone(timezone.utc)
 
 
 def empty(reason: str) -> dict:
