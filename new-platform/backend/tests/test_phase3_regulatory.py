@@ -161,3 +161,70 @@ def test_sqlite_verification_never_starts_background_network_workers(engine, mon
     regulatory.start(engine)
     with pytest.raises(ValueError):
         regulatory.sync(engine, max_pages=0)
+
+
+def test_empty_openfda_search_is_unverified_not_a_fake_fda_application(monkeypatch):
+    """The openFDA API's no-results 404 must never become an approval."""
+    def empty_search(url, *, json_response=False):
+        assert url.startswith(regulatory.FDA_API)
+        assert json_response
+        raise ValueError("HTTP_404")
+
+    monkeypatch.setattr(regulatory, "fetch", empty_search)
+    assert regulatory._lookup_application(
+        "Fixturemab", article(), {"company": "Fixture Corp"},
+    ) == (None, None)
+
+
+def test_no_openfda_application_keeps_article_without_reconciling_fda_decision(engine, monkeypatch):
+    """A verified index page can be checked while application evidence is missing."""
+    from app import phase3_catalog
+    document = article()
+    target = "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-fixture"
+    with engine.begin() as conn:
+        conn.execute(text(
+            "UPDATE phase3_regulatory_sources SET state='COMPLETE',last_checked_at=:now WHERE kind='INDEX'"
+        ), {"now": regulatory.stamp()})
+        conn.execute(text(
+            "INSERT INTO phase3_regulatory_sources(url,kind,state) VALUES(:url,'ARTICLE','PENDING')"
+        ), {"url": target})
+
+    def source_response(url, *, json_response=False):
+        if json_response:
+            assert url.startswith(regulatory.FDA_API)
+            raise ValueError("HTTP_404")
+        assert url == target
+        return "document fixture", document
+
+    monkeypatch.setattr(regulatory, "fetch", source_response)
+    monkeypatch.setattr(regulatory, "_catalog_trial", lambda *_: {
+        "nct_id": "NCT00000001", "company": "Fixture Corp",
+        "drugs": ["Fixturemab"], "indication": "lung cancer",
+    })
+    monkeypatch.setattr(phase3_catalog, "record_regulatory_evidence",
+                        lambda *args, **kwargs: pytest.fail("Unverified application must not be recorded"))
+    result = regulatory.sync(engine, max_pages=1)
+    assert result["reconciled_trial_application_links"] == 0
+    with engine.connect() as conn:
+        row = conn.execute(text(
+            "SELECT state,reconciled,last_error_code FROM phase3_regulatory_sources WHERE url=:url"
+        ), {"url": target}).first()
+    assert tuple(row) == ("COMPLETE", 0, "APPLICATION_NOT_INDEPENDENTLY_RECONCILED")
+
+
+def test_actual_fda_article_http_404_still_retries(engine, monkeypatch):
+    """Only openFDA search zero-results is normalized; a missing source page is not."""
+    def missing_page(url):
+        assert url == regulatory.INDEX
+        raise ValueError("HTTP_404")
+
+    monkeypatch.setattr(regulatory, "fetch", missing_page)
+    result = regulatory.sync(engine, max_pages=1)
+    assert result["status"] == "ERROR"
+    assert result["last_error_code"] == "HTTP_404"
+    assert result["reconciled_trial_application_links"] == 0
+    with engine.connect() as conn:
+        row = conn.execute(text(
+            "SELECT state,last_error_code FROM phase3_regulatory_sources WHERE url=:url"
+        ), {"url": regulatory.INDEX}).first()
+    assert tuple(row) == ("RETRY", "HTTP_404")
