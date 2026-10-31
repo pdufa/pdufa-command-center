@@ -14,6 +14,7 @@ for (const extension of [".ts", ".tsx"]) require.extensions[extension] = (loaded
 };
 
 const { filterPipelineRows, pipelineAvailability, pageRows, trialId, registrySections, reportedAnalyses, sortPipelineRows } = require(moduleFile);
+const { COMPETITIVE_STRATEGIES } = require("../lib/competitive-strategies.ts");
 
 const records = [
   { id: "TRIAL|NCT00000001", programId: "PDUFA-000001", ticker: "AAA", drug: "Drug A", stage: "Phase 1", capInRange: true, band: "NO PDUFA YET" },
@@ -60,6 +61,17 @@ test("checking or clearing phases and dates never zeros their available counts",
   assert.equal(pipelineAvailability(records, { query: "AAA" }, band, stages, bands).rows.length, 2);
 });
 
+test("competitive-strategy priorities are complete, uniquely ranked, and clearly evidence-gated", () => {
+  assert.equal(COMPETITIVE_STRATEGIES.length, 10);
+  assert.deepEqual(COMPETITIVE_STRATEGIES.map(strategy => strategy.rank), [1,2,3,4,5,6,7,8,9,10]);
+  assert.equal(new Set(COMPETITIVE_STRATEGIES.map(strategy => strategy.id)).size, 10);
+  for (const strategy of COMPETITIVE_STRATEGIES) {
+    assert.ok(strategy.label && strategy.potentialBenefit && strategy.evidenceRequired);
+  }
+  assert.equal(COMPETITIVE_STRATEGIES[0].id, "efficacy");
+  assert.equal(COMPETITIVE_STRATEGIES.at(-1).id, "differentiation");
+});
+
 test("pagination covers every filtered record once and clamps an old page after filters change", () => {
   const all = Array.from({ length: 107 }, (_, index) => ({ id: index }));
   const paged = [0, 1, 2].flatMap(page => pageRows(all, page, 50).rows);
@@ -104,6 +116,11 @@ test("the rendered data area lists only selected-phase rows and preserves an emp
   assert.match(html, /Drug A/);
   assert.doesNotMatch(html, /Drug B|Drug C/);
   assert.match(html, /All data/);
+  assert.match(html, /Competitive strategies/);
+  assert.match(html, /View ranked 1–10/);
+  assert.match(html, /Therapy not yet assessed/);
+  assert.match(html, /NOT verified advantages for this therapy/);
+  assert.ok(html.indexOf("Superior clinical efficacy") < html.indexOf("Market differentiation and exclusivity"));
   assert.match(html, /aria-sort="ascending"/);
   assert.match(html, /Sort by market cap/);
   assert.doesNotMatch(html, /Sort by indication|Sort by drug/);
