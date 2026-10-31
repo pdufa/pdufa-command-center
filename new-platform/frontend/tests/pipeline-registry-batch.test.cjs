@@ -53,6 +53,6 @@ test("Pipeline has explicit user-triggered, bounded batch controls; no auto-Shee
  assert.ok(ui.includes('type BatchSize=5|10|25'));
  assert.ok(ui.includes('"/api/phase3-batch?offset="'));
  assert.ok(ui.includes('download'));
- assert.ok(ui.includes("automatic website-to-Sheets synchronization remains unconfigured"));
+ assert.ok(ui.includes("Automatic website-to-Sheets synchronization remains unconfigured"));
  assert.ok(page.includes('{section==="pipeline"&&<BatchRegistryExport/>}'));
 });
