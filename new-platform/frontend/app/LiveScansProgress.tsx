@@ -17,9 +17,8 @@ type Report = {
 };
 const FEEDS = [
   ["AUTO", "Latest active / recent scan"],
-  ["OVERNIGHT", "Full PIPELINE → GEM JR → GEM"],
-  ["PIPELINE_GEM_JR", "Clinical PIPELINE / GEM JR"],
-  ["GEM", "GEM research"],
+  ["OVERNIGHT", "Full POOL → PIPELINE → Phase 3 results"],
+  ["PIPELINE_GEM_JR", "Clinical POOL / PIPELINE / Phase 3 results"],
   ["SOURCES", "FDA / SEC / Financial / Market / Issuer"],
   ["SCAN_CONTROL", "Manual scan commands"],
   ["GMAIL_AUDIT", "Gmail email audit"],
@@ -30,8 +29,7 @@ const TERMINAL = new Set<RunState>(["success", "failure", "cancelled", "skipped"
 const WAIT = new Set<RunState>(["queued", "unknown"]);
 const STAGES = [
   { key: "pipeline", label: "PIPELINE", mini: "Trial inventory" },
-  { key: "gemjr", label: "GEM JR", mini: "Phase 3 evidence" },
-  { key: "gem", label: "GEM", mini: "Research & financing" },
+  { key: "phase3", label: "PHASE 3 RESULTS", mini: "Posted trial evidence" },
   { key: "publish", label: "REPORT", mini: "Published results" },
   { key: "sources", label: "SOURCES", mini: "FDA · SEC · Financial · Market · Issuer" },
   { key: "score", label: "SCORE / REPAIR", mini: "Scoring · Gmail · repair" },
@@ -42,8 +40,7 @@ function stageForJob(name: string): string | null {
   const n = name.toLowerCase();
   if (/^validate\b/.test(n)) return "validate";
   if (/^clinical\s*\/\s*pipeline\b/.test(n) || /\bpipeline\b/.test(n)) return "pipeline";
-  if (/^clinical\s*\/\s*gem jr\b/.test(n) || /\bgem jr\b/.test(n)) return "gemjr";
-  if (/^clinical\s*\/\s*gem\b/.test(n) || /\bgem\b/.test(n)) return "gem";
+  if (/phase.?3 results|phase3_results|clinical\s*\/\s*gem jr\b/.test(n)) return "phase3";
   if (/^report\s*\//.test(n) || /\bpublish\b/.test(n) && !/^sources\s*\//.test(n)) return "publish";
   if (/^sources\s*\//.test(n) || /\b(?:fda|sec|financial|market|issuer)\b/.test(n)) return "sources";
   if (/^scoring-and-repair\s*\//.test(n) || /\bscor(e|ing)\b|\brepair\b/.test(n)) return "score";
@@ -243,7 +240,7 @@ export default function LiveScansProgress() {
       </div>
       {overnight ? <>
         <h4 className="pdufa-progress-subheading">LIVE STAGE FLOW</h4>
-        <div className="pdufa-stage-flow" aria-label="Pipeline, GEM JR, GEM, report, source, scoring and final stages">
+        <div className="pdufa-stage-flow" aria-label="POOL, Pipeline, Phase 3 results, report, sources, scoring and final stages">
           {stageRows.map((row, i) => <div className="pdufa-stage-cell" key={row.key}>
             <div className={"pdufa-stage-card pdufa-stage-" + row.status}>
               <span className="pdufa-stage-icon">{iconFor(row.status)}</span>
@@ -256,7 +253,7 @@ export default function LiveScansProgress() {
             {i < stageRows.length - 1 && <span className="pdufa-stage-arrow" aria-hidden="true">›</span>}
           </div>)}
         </div>
-      </> : <p className="pdufa-progress-note">Workflow-specific jobs are listed below. PIPELINE → GEM JR → GEM flow appears for clinical and full overnight runs.</p>}
+      </> : <p className="pdufa-progress-note">Workflow-specific jobs are listed below. POOL → PIPELINE → Phase 3 results flow appears for current clinical and overnight runs.</p>}
       <div className="pdufa-progress-footline">
         <span>Last fetched: {when(observed)}</span>
         <span>Job/step state: GitHub Actions</span>
