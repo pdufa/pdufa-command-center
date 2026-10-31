@@ -315,6 +315,10 @@ class DatedArchiveTests(unittest.TestCase):
         self.assertIn('always()', archive)
         self.assertIn("github.event_name == 'workflow_dispatch'", archive)
         self.assertIn('scripts/pdufa_daily_results.py', archive)
+        self.assertIn('night_date_pacific:', sequence)
+        self.assertIn('GUARDED_NIGHT:', archive)
+        self.assertIn('--night-date-pacific "$GUARDED_NIGHT"', archive)
+        self.assertIn('inputs[night_date_pacific]', read('pdufa-nightly-pacific-start.yml'))
         self.assertIn('git push origin HEAD:main', archive)
         self.assertNotIn('dispatches', archive)
 
