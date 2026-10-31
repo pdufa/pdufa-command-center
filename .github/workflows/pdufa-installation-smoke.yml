@@ -150,7 +150,15 @@ jobs:
               except urllib.error.HTTPError as exc:
                   status=exc.code
                   content_type=exc.headers.get("Content-Type","")
-                  raw=b""
+                  raw=exc.read(32_000)
+                  if path.startswith("/api/scope-funnel") and status==503:
+                      try:
+                          category=json.loads(raw).get("reasonCode","NOT_AVAILABLE")
+                          if not isinstance(category,str) or not category.isupper() or len(category)>64:
+                              category="UNCLASSIFIED"
+                      except (ValueError,UnicodeDecodeError):
+                          category="UNCLASSIFIED"
+                      print("OBSERVED: signed-in POOL/Pipeline 503 category",category)
               if len(raw)>3_000_000:
                   raise AssertionError("Scope response size exceeded")
               if status!=200 or "application/json" not in content_type:
@@ -162,7 +170,7 @@ jobs:
           print("PASS: normal production login and authenticated session")
           pages={}
           for view in ("pool","pipeline","readout-review"):
-              uri="/api/scope-funnel?view="+view+"&offset=0&limit=10"
+              uri="/api/scope-funnel?view="+view+"&offset=0&limit=50"
               for attempt in range(1,4):
                   try:
                       data=request(uri)
@@ -172,7 +180,7 @@ jobs:
                       print("Retrying signed-in",view,"after transient status; no source rows logged",attempt)
                       time.sleep(6)
               assert data.get("view")==view and isinstance(data.get("total"),int) and data["total"]>=0
-              assert isinstance(data.get("rows"),list) and len(data["rows"])<=10
+              assert isinstance(data.get("rows"),list) and len(data["rows"])<=50
               assert data.get("qualifiedProgramCount") is None and data.get("overview",{}).get("qualifiedPrograms") is None
               pages[view]=data
               print("PASS:",view,"authenticated rows available; candidate qualification remains unverified")
