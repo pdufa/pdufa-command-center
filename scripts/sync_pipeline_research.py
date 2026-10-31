@@ -73,9 +73,11 @@ def owned_change(cell, value, record_id):
 
 def request(session, method, url, **kwargs):
     # GETs and absolute cell upserts are idempotent; no retryable append operation.
-    for attempt in range(4):
+    structural=any("appendDimension" in r for r in kwargs.get("json",{}).get("requests",[]))
+    attempts=1 if structural else 4
+    for attempt in range(attempts):
         response = session.request(method, url, timeout=60, **kwargs)
-        if response.status_code not in (429, 500, 502, 503, 504) or attempt == 3:
+        if response.status_code not in (429, 500, 502, 503, 504) or attempt == attempts-1:
             if response.status_code in (401, 403):
                 raise RuntimeError("GOOGLE_EDITOR_ACCESS_REQUIRED" if "googleapis.com" in url else "DASHBOARD_AUTHORIZATION_FAILED")
             response.raise_for_status()
@@ -245,7 +247,7 @@ def main():
     for name, values, keycols, columns in (
       ("13 Exact Trial Evidence",source_rows,(0,4,12),"R"),
       ("17 Assessment Evidence",assessment_rows,(0,),"T"),
-      ("16 Competitor Inventory",competitor_rows,(0,),"AA")):
+      ("16 Competitor Inventory",competitor_rows,(0,1),"AA")):
         rp=properties[name]; rg=read_grid(name,rp["gridProperties"]["rowCount"],columns)
         updates,expected=plan_register(rp["sheetId"],rg,values,keycols)
         extent=max([rp["gridProperties"]["rowCount"],*[r+1 for r,_,_ in expected]])

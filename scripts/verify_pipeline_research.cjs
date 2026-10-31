@@ -47,7 +47,7 @@ async function run(browser,mobile=false){
   result.registry_audit={checked:receipts.length,identity_verified:receipts.filter(r=>r.status==='REGISTRY_IDENTITY_VERIFIED').length,phase3_present:receipts.filter(r=>r.phase3_present).length,unresolved:receipts.filter(r=>r.status==='UNRESOLVED').length,conflicting:receipts.filter(r=>r.status==='CONFLICTING').length};
   if(process.env.REGISTRY_RECEIPTS_PATH)fs.writeFileSync(process.env.REGISTRY_RECEIPTS_PATH,JSON.stringify({dataset_version:version,receipts},null,2));
   const pool=await json(context,'/api/scope-funnel?view=pool&limit=50');result.counts.published_pool_records=pool.total;result.counts.qualified_programs=pool.overview.qualifiedPrograms;
-  const archive=await json(context,'/api/archive-scope');result.archive_scope={expected_records:archive.expected_records??archive.original_scope_records??null,physical_records:archive.physical_records??archive.archive_records??null,status:archive.status??null};
+  const archive=await json(context,'/api/archive-scope');result.archive_scope={original_scope_records:archive.originalScopeRecords,physical_records:archive.archivePhysicalRecords,published_distinct_trials:archive.publishedDistinctTrials,union_distinct_trials:archive.unionDistinctTrials,catalog_distinct_trials:archive.catalogDistinctTrials,missing_expected_archive_records:archive.missingExpectedArchiveRecords,missing_pool_trials:archive.missingPoolTrials,status:archive.status};
  }
  check(errors===0,label+'_no_page_exceptions');check(mutations===0,label+'_no_production_mutations');await context.close();
 }
