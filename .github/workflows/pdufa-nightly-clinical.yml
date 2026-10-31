@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       scan:
-        description: 'Clinical stage to collect (PIPELINE, GEM JR, or full chain)'
+        description: 'Clinical source stage (POOL, Pipeline or posted Phase 3 results)'
         type: choice
         options: ['ALL', 'PIPELINE', 'PHASE3_RESULTS']
         default: 'ALL'
