@@ -924,7 +924,9 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             "predictions": records,
             "latest_prediction": records[0] if records else None,
             "status": "RECORDED" if records else "NOT_READY",
-            # Readiness in a stored record is not independent clinical adjudication or calibrated FDA prediction.\n            "decision": "ABSTAIN",\n            "validated_decision_available": False,
+            # Readiness in a stored record is not independent clinical adjudication or calibrated FDA prediction.
+            "decision": "ABSTAIN",
+            "validated_decision_available": False,
             "decision_explanation": {
                 "reason_code": "UNVALIDATED_SAVED_RECORD" if records else "NO_VALIDATED_PREDICTION",
                 "reason": "A historical saved prediction exists, but scientific adjudication and independent outcome calibration have not been demonstrated. FDA decision remains ABSTAIN." if records else "No scientifically validated and calibrated trial-specific PASS, CRL, or EXTENSION prediction exists.",
