@@ -1,0 +1,43 @@
+name: Verify retired Streamlit public endpoint
+on:
+  push:
+    branches: [audit/streamlit-cloud-verification-20261031]
+    paths: [.github/workflows/verify-retired-streamlit-public.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-reachability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe old Streamlit address and current PDUFA site (read-only)
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.error,socket,re
+          urls=[
+            ("legacy_streamlit","https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"),
+            ("legacy_streamlit_health","https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/_stcore/health"),
+            ("new_dashboard","https://pdufa-new-dashboard.vercel.app/"),
+          ]
+          for name,url in urls:
+              host=urllib.request.urlparse(url).hostname
+              try:
+                  addresses=socket.getaddrinfo(host,443,type=socket.SOCK_STREAM)
+                  print(name,"DNS_RESOLVED",bool(addresses))
+              except Exception as err:
+                  print(name,"DNS_ERROR",type(err).__name__,str(err)[:150])
+              request=urllib.request.Request(url,headers={"User-Agent":"PDUFA-independent-public-reachability/1","Accept":"text/html,application/json,text/plain"})
+              status="not_received"; body=b""; end=url
+              try:
+                  with urllib.request.urlopen(request,timeout=28) as response:
+                      status=response.status;end=response.geturl();body=response.read(160000)
+              except urllib.error.HTTPError as err:
+                  status=err.code;end=err.geturl();body=err.read(160000)
+              except Exception as err:
+                  print(name,"HTTP_ERROR",type(err).__name__,str(err)[:180]);continue
+              title=re.search(rb"<title[^>]*>(.*?)</title>",body,re.I|re.S)
+              title=re.sub(rb"\s+",b" ",title.group(1))[:120].decode("utf-8","replace") if title else "(none)"
+              markers={s: s.lower().encode() in body.lower() for s in ["app does not exist","app not found","app has gone to sleep","this app has gone to sleep","login","Streamlit","PDUFA Command Center"]}
+              print(name,"HTTP_STATUS",status,"FINAL",end,"TITLE",title,"BYTES",len(body),"MARKERS",markers)
+          PY
