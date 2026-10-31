@@ -557,6 +557,12 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                 WHERE l.nct_id=:nct AND l.verification_status='VERIFIED'"""), {"nct": nct_id}).scalar_one()
             evidence_count = c.execute(text("""SELECT COUNT(*) FROM phase3_dossier_versions
                 WHERE nct_id=:nct"""), {"nct": nct_id}).scalar_one()
+        endpoint_record = c.execute(text("""SELECT primary_results,results_available,evidence_id
+            FROM phase3_results WHERE nct_id=:nct"""), {"nct": nct_id}).mappings().first()
+        endpoint_available = bool(endpoint_record and endpoint_record["results_available"]
+                                  and endpoint_record["evidence_id"]
+                                  and endpoint_record["primary_results"]
+                                  and endpoint_record["primary_results"].strip().upper() not in ("UNKNOWN", "PENDING", "NOT AVAILABLE"))
         checks = {
             "trial_identity": True,
             "drug_identified": bool(trial["drug"]),
@@ -566,6 +572,7 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             "pdufa_date_identified": bool(trial["pdufa_date"]),
             "verified_fda_application_link": verified_links > 0,
             "persisted_dossier": evidence_count > 0,
+            "primary_endpoint_record_available": endpoint_available,
             "scientific_efficacy_assessment": False,
             "scientific_safety_assessment": False,
             "independent_prediction_calibration": False,
@@ -573,8 +580,10 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         assessments = [
             {"id": "TRIAL_IDENTITY", "status": "VERIFIED", "value": nct_id,
              "source": "phase3_trials.nct_id"},
-            {"id": "PRIMARY_ENDPOINT_RESULT", "status": "NOT_ASSESSED",
-             "value": None, "reason": "Endpoint result and statistical significance require source-level adjudication."},
+            {"id": "PRIMARY_ENDPOINT_RESULT", "status": "EVIDENCE_AVAILABLE" if endpoint_available else "INSUFFICIENT_EVIDENCE",
+             "value": endpoint_record["primary_results"] if endpoint_available else None,
+             "source_evidence_id": endpoint_record["evidence_id"] if endpoint_available else None,
+             "reason": "Recorded endpoint text is not independently adjudicated for effect size, significance, or clinical relevance."},
             {"id": "EFFICACY_REPLICATION", "status": "INSUFFICIENT_EVIDENCE",
              "value": None, "reason": "No independently adjudicated replication evidence."},
             {"id": "SAFETY_SIGNAL", "status": "NOT_ASSESSED",
