@@ -931,12 +931,12 @@ def read_workspace_page(response: Response, offset: int = 0, limit: int = 50, ve
 
 
 @app.get("/api/workspace", dependencies=[Depends(require_internal_key), Depends(require_storage)])
-def read_workspace(accept_encoding: str = Header(default="")):
+def read_workspace(accept_encoding: str = Header(default=""), require_fresh: bool = False):
     from .source_workspace import workspace
     from .workspace_response import encoded
     started = time.perf_counter()
     try:
-        body, compressed = encoded(workspace(), accept_encoding)
+        body, compressed = encoded(workspace(require_fresh=True) if require_fresh else workspace(), accept_encoding)
         headers = {
             "Cache-Control": "private, no-store",
             "Vary": "Accept-Encoding",
