@@ -80,5 +80,6 @@ test("navigation links and API views remain independent of historical GEM preset
  assert.match(api,/authConfigured\(\)/);
  assert.match(ui,/reviewMode/);
  assert.match(ui,/Not established/);
- assert.match(ui,/needs review|NEEDS_REVIEW/i);
+ assert.match(ui,/r\.qualification/);
+ assert.match(read("lib/pool-pipeline-funnel.ts"),/qualification:"NEEDS_REVIEW"/);
 });
