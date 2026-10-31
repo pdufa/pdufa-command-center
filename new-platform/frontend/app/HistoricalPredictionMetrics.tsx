@@ -17,8 +17,8 @@ export default function HistoricalPredictionMetrics(){
  <p><strong>Validation:</strong> {data?.status||"NOT VALIDATED"}{error?" — "+error:""}</p>
  <p><strong>Correct / scored:</strong> {shown(counts.correct_predictions)} / {shown(counts.scored_predictions)} · <strong>Abstentions:</strong> {shown(counts.abstentions)}</p>
  <p><strong>Calibration:</strong> {data?.calibration_metrics?"Reported by validation endpoint":"Not established"}</p>
- <details><summary style={{cursor:"pointer"}}>Individual historical predictions ({cases.length} verified records available)</summary>
- {cases.length===0?<p>No individual historical predictions returned by the validation endpoint yet. No scores are inferred.</p>:cases.map((c,i)=><details key={c.id||c.nct_id||i} style={{margin:"8px 0",padding:"8px",border:"1px solid #aaa",borderRadius:6}}>
+ <details><summary style={{cursor:"pointer"}}>Individual eligible historical prediction records ({cases.length} available)</summary>
+ {cases.length===0?<p>No eligible historical prediction records returned by the validation endpoint yet. No scores are inferred.</p>:cases.map((c,i)=><details key={c.id||c.nct_id||i} style={{margin:"8px 0",padding:"8px",border:"1px solid #aaa",borderRadius:6}}>
  <summary style={{cursor:"pointer"}}>Case {String(i+1).padStart(2,"0")} — {shown(c.company)} / {shown(c.drug)} / {shown(c.indication)}</summary>
  <p><strong>NCT:</strong> {shown(c.nct_id)} · <strong>Prediction:</strong> {shown(c.predicted_decision)} · <strong>Actual FDA decision:</strong> {shown(c.actual_decision)}</p>
  <p><strong>Confidence:</strong> {shown(c.confidence)} · <strong>Validation status:</strong> {shown(c.status)}</p>
