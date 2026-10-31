@@ -134,14 +134,14 @@ export function reconcilePoolPipeline(raw:unknown,csvText:string,sourceInput:unk
     },
   };
 }
-export type ScopeView="pool"|"pipeline"|"readout-review";
+export type ScopeView="pool"|"pipeline"|"readout-review"|"census-review";
 export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string) {
   const q=query.trim().toLowerCase();
   const matches=(item:PoolTrialRecord|PostPhase3Review)=>[
     item.ticker,item.company,item.drug,item.indication,
     "nctId" in item?item.nctId:null,"id" in item?item.id:null,
   ].some(value=>(value||"").toLowerCase().includes(q));
-  const rows=view==="pool"?funnel.poolRows:view==="pipeline"?
+  const rows=view==="pool"?funnel.poolRows:view==="census-review"?funnel.reviewRows:view==="pipeline"?
     funnel.reviewRows.filter(r=>r.postPhase3Evidence==="REGISTRY_COMPLETED"&&r.poolStatus==="EXACT_MATCH"):
     funnel.reviewRows.filter(r=>r.postPhase3Evidence!=="REGISTRY_COMPLETED"||r.poolStatus!=="EXACT_MATCH");
   const filtered=q?rows.filter(matches):rows;
