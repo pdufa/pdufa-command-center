@@ -10,6 +10,7 @@ import { pacificToday, type TimelineDates } from "../lib/pipeline-timeline";
 import { PipelineTimelineHeaders, PipelineTimelineCells } from "./PipelineTimelineColumns";
 import PipelineFourViews from "./PipelineFourViews";
 import LiveRegistryReview from "./LiveRegistryReview";
+import BatchRegistryExport from "./BatchRegistryExport";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -92,6 +93,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        {section==="pipeline"&&<a href="/api/scope-funnel?view=census-review&format=csv" download>Export all 741 historical census candidates (CSV)</a>}
      </div>
    </header>
+   {section==="pipeline"&&<BatchRegistryExport/>}
    <section className={styles.notice}>
      <strong>Qualification rules:</strong> U.S.-listed publicly traded issuer; current sourced market capitalization $300 million–$10 billion inclusive;
      completed pivotal Phase 3 <em>or</em> independently verified final pivotal readout of the exact drug–indication program.
