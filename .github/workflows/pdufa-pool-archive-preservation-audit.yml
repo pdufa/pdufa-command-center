@@ -20,7 +20,7 @@ jobs:
           ORIGINAL_RELEASE: a015bd0e8eb05d8ad752ce9e191f705c00bc407e
         run: |
           python3 - <<'PY'
-          import csv,gzip,http.cookiejar,io,json,os,re,subprocess,time,urllib.request,urllib.error
+          import csv,gzip,hashlib,http.cookiejar,io,json,os,re,subprocess,time,urllib.request,urllib.error
           def trials(text):
               reader=csv.DictReader(io.StringIO(text))
               if 'nct_id' not in (reader.fieldnames or []): raise AssertionError('Missing nct_id header')
@@ -69,6 +69,11 @@ jobs:
               key=row.get('id','')
               val=row.get('nctId') or (key.split('|')[1] if key.startswith(('TRIAL|','RESULT|')) and len(key.split('|'))>1 else '')
               if isinstance(val,str) and re.fullmatch(r'NCT\d{8}',val):ncts.add(val)
+          def digest(values):
+              return hashlib.md5(','.join(sorted(values)).encode('utf-8')).hexdigest()
+          print('IMMUTABLE_NCT_SORTED_MD5',digest(original))
+          print('CURRENT_NCT_SORTED_MD5',digest(current))
+          print('PRODUCTION_NCT_SORTED_MD5',digest(ncts))
           print('PRODUCTION_SOURCE_RECORDS',len(rows),'PRODUCTION_DISTINCT_NCTS',len(ncts))
           print('BASELINE_MISSING_FROM_PRODUCTION',len(original-ncts))
           print('CURRENT_MISSING_FROM_PRODUCTION',len(current-ncts))
