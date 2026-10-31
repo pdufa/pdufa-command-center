@@ -18,6 +18,10 @@ type DailyRow = {
   run_url: string | null;
   status: string;
   registered_at_utc: string | null;
+  run_started_at_utc?: string;
+  scheduled_8pm_pacific_utc?: string;
+  start_delay_minutes?: number;
+  scan_night_source?: "GUARDED_SCHEDULER_INPUT" | "ACTUAL_START_DATE_FALLBACK";
   sections: Partial<Record<"master"|"pipeline"|"designations"|"gem_jr"|"gem", SectionCounts>>;
   notes?: string[];
 };
@@ -49,10 +53,23 @@ function dateLabel(day:string) {
     : day;
 }
 function statusLabel(status: string) {
-  if (status==="COMPLETE") return "Verified complete";
+  if (status==="COMPLETE") return "Reported complete — inspect source evidence";
   if (status==="PARTIAL") return "Partial evidence";
   if (status==="RUN_FAILED") return "Scan failed";
   return "Not yet verified";
+}
+
+function startLabel(row: DailyRow) {
+  if (!row.run_started_at_utc || !Number.isFinite(Date.parse(row.run_started_at_utc))) return "Start time not recorded";
+  const time = new Intl.DateTimeFormat("en-US",{
+    timeZone:"America/Los_Angeles",hour:"numeric",minute:"2-digit",hour12:true
+  }).format(new Date(row.run_started_at_utc));
+  const delay = row.start_delay_minutes;
+  const offset = typeof delay==="number" && Number.isSafeInteger(delay)
+    ? delay===0 ? "at 8 PM target" : delay>0 ? delay+" min after 8 PM target" : Math.abs(delay)+" min before 8 PM target"
+    : "start delay not recorded";
+  const origin = row.scan_night_source==="GUARDED_SCHEDULER_INPUT"?"guarded Pacific scan night":"scheduler origin unverified";
+  return time+" PT · "+offset+" · "+origin;
 }
 
 export default function DailyResultsPanel() {
@@ -117,6 +134,7 @@ export default function DailyResultsPanel() {
         : <>No completed nightly-run evidence registered for this date</>}
       {" · "}Counts are snapshots recorded for the selected Pacific calendar day, not numbers rolled into the next date.
     </p>
+    <p className={styles.source}><strong>Actual workflow start:</strong> {active?startLabel(active):"Unavailable"}. Workflow start timing does not establish that GitHub's scheduled trigger fired on time.</p>
     <div className={styles.cards}>
       {totals.map(({key,label,counts})=><div className={styles.card} key={key}>
         <div className={styles.cardName}>{label}</div>
@@ -152,11 +170,12 @@ export default function DailyResultsPanel() {
       <p className={styles.muted}>Each evening creates or updates its own dated record. Older days are retained for comparison; failed or incomplete scans are marked, never silently counted as zero.</p>
       <div className="table-scroll">
         <table className={styles.table}>
-          <thead><tr><th>Pacific date</th><th>Master</th><th>Pipeline</th><th>Designations</th><th>GEM JR</th><th>GEM</th><th>Evidence status</th></tr></thead>
+          <thead><tr><th>Pacific date</th><th>Master</th><th>Pipeline</th><th>Designations</th><th>GEM JR</th><th>GEM</th><th>Evidence status</th><th>Recorded workflow start</th></tr></thead>
           <tbody>{rows.map(r=><tr key={r.date_pacific}>
             <th scope="row"><button type="button" className={styles.dayButton} onClick={()=>setSelected(r.date_pacific)}>{r.date_pacific}</button></th>
             {(["master","pipeline","designations","gem_jr","gem"] as const).map(k=><td key={k}>{number(r.sections?.[k]?.total)}</td>)}
             <td>{statusLabel(r.status)}</td>
+            <td>{startLabel(r)}</td>
           </tr>)}</tbody>
         </table>
       </div>
