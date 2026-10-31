@@ -109,7 +109,22 @@ function watch(page) {
       : /network|fetch|load failed/i.test(message) ? 'NETWORK'
       : /undefined|null|not a function/i.test(message) ? 'APPLICATION_STATE' : 'UNCLASSIFIED';
     const pathname = (() => { try { const u = new URL(page.url()); return u.origin === BASE ? u.pathname : 'OTHER_ORIGIN'; } catch { return 'UNKNOWN'; } })();
-    console.error('PDUFA_BROWSER_PAGEERROR ' + JSON.stringify({name, category, pathname}));
+    const safeWords = (message.toLowerCase().match(/[a-z]+/g) || [])
+      .filter(word => new Set(['error','react','minified','hydration','render','rendering','undefined','null',
+        'fetch','request','network','abort','cancel','cancelled','load','loading','chunk',
+        'server','client','component','route','page','navigation','promise','unhandled',
+        'next','state','invariant','script','failed','exception','runtime','object','window']).has(word))
+      .slice(0,12);
+    const reactCode = /react\s+error\s*#(\d{1,4})/i.exec(message)?.[1] || null;
+    const stack = typeof error?.stack === 'string' ? error.stack : '';
+    const matchedChunk = /\/_next\/static\/chunks\/([^\s:)]+)(?::(\d+))?/.exec(stack);
+    const sourceChunk = matchedChunk ? matchedChunk[1].replace(/[^a-zA-Z0-9._/-]/g,'').slice(0,100) : null;
+    console.error('PDUFA_BROWSER_PAGEERROR ' + JSON.stringify({
+      name, category, pathname, reactCode, safeWords,
+      messageLength:message.length,
+      messageSha256:crypto.createHash('sha256').update(message).digest('hex').slice(0,16),
+      sourceChunk
+    }));
   });
   page.on('request', request => {
     try { if (/(^|\.)(?:streamlit\.app|streamlit\.io)$/.test(new URL(request.url()).hostname)) runtime.streamlitRequests += 1; } catch {}
