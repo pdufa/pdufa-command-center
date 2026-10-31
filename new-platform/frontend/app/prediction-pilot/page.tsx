@@ -173,7 +173,7 @@ export default function PeakPredictionPilot() {
         and immature overall survival prevent a fully adjudicated regulatory outlook.</p>
       <details style={{border:"1px solid #cbd5e1",borderRadius:10,padding:12}}>
         <summary style={{cursor:"pointer",fontWeight:700}}>View all source references · {Object.keys(PEAK_SOURCES).length} records</summary>
-        <ul>{Object.entries(PEAK_SOURCES).map(([id,source])=><li key={id} style={{margin:"7px 0"}}>
+        <ul>{Object.entries(PEAK_SOURCES).filter(([id])=>id!=="membership").map(([id,source])=><li key={id} style={{margin:"7px 0"}}>
           <a href={source.url} target="_blank" rel="noopener noreferrer">{source.name}</a>
         </li>)}</ul>
       </details>
