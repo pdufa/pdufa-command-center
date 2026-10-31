@@ -19,10 +19,10 @@ const segments=[
 ["Final acceptance","Authenticated end-to-end acceptance, backup restore and release signoff"]
 ];
 type TaskStatus="Verified"|"In Progress"|"Blocked"|"Failed"|"Not Started"|"Unverified";
-type TaskEvidence={status:TaskStatus;checkedAt?:string;evidenceUrl?:string;note?:string};
+type TaskEvidence={status:TaskStatus;checkedAt?:string;evidenceUrl?:string;note?:string;acceptance?:string;acceptanceMissing?:string[]};
 type TaskRegistry={updatedAt:string;tasks:Record<string,TaskEvidence>};
 type LiveObservation={taskId:string;requirement:string;probe:string;result:string;checkedAt:string;limitation:string;mappingValid?:boolean};
-type LiveAudit={checkedAt:string;registryUpdatedAt?:string;tasks:Record<string,TaskEvidence>;checks?:Record<string,{status:string;httpStatus?:number;note:string}>;observations?:LiveObservation[];observationSummary?:{taskLinksChecked:number;taskLinksValid:number;probesHealthy:number;probesTotal:number};taskCount?:number};
+type LiveAudit={checkedAt:string;registryUpdatedAt?:string;tasks:Record<string,TaskEvidence>;checks?:Record<string,{status:string;httpStatus?:number;note:string}>;observations?:LiveObservation[];observationSummary?:{taskLinksChecked:number;taskLinksValid:number;probesHealthy:number;probesTotal:number};taskCount?:number;rejectedVerified?:string[]};
 type Observation={status:string};
 type Snapshot={asOf:string;recordedAt?:string;observations?:Observation[]};
 const source="https://raw.githubusercontent.com/pdufa/pdufa-command-center/main/new-platform/frontend/data/mainDailyEvidenceSnapshots.json";
@@ -37,6 +37,7 @@ export default function MasterBuildProgress(){
  const [liveChecks,setLiveChecks]=useState<Record<string,{status:string;httpStatus?:number;note:string}>>({});
  const [operationalObservations,setOperationalObservations]=useState<LiveObservation[]>([]);
  const [observationSummary,setObservationSummary]=useState<{taskLinksChecked:number;taskLinksValid:number;probesHealthy:number;probesTotal:number}|null>(null);
+ const [rejectedVerified,setRejectedVerified]=useState<string[]>([]);
  useEffect(()=>{let active=true;async function refresh(){if(active)setLoading(true);try{
  const [snapshotResult,auditResult]=await Promise.allSettled([
   fetch(source+"?t="+Date.now(),{cache:"no-store"}).then(async res=>{if(!res.ok)throw Error("snapshot unavailable");const data=await res.json() as Snapshot[];const latest=data.at(-1);if(!latest||!Array.isArray(latest.observations))throw Error("invalid snapshot");return latest;}),
@@ -51,6 +52,7 @@ export default function MasterBuildProgress(){
    setLiveChecks(audit.checks??{});
    setOperationalObservations(Array.isArray(audit.observations)?audit.observations:[]);
    setObservationSummary(audit.observationSummary??null);
+   setRejectedVerified(Array.isArray(audit.rejectedVerified)?audit.rejectedVerified:[]);
   }
   setError(snapshotResult.status==="rejected"||auditResult.status==="rejected");
   setChecked(new Date().toLocaleString());setLoading(false);
@@ -93,6 +95,7 @@ export default function MasterBuildProgress(){
  </table></div>
  <p>Statuses come from the dated evidence registry, not inferred from deployments. Unverified does not mean the item is unfinished.</p>
  </details>
+ <p><strong>Acceptance enforcement:</strong> Verified requires a passing task-specific runtime acceptance record, test identifier, dated proof and deployed commit. Code, links and READY deployments alone do not qualify. {rejectedVerified.length>0?"Rejected unsupported Verified entries: "+rejectedVerified.join(", ")+".":""}</p>
  <p><strong>Recorded acceptance evidence:</strong> {verifiedWithEvidence} of {verifiedTasks} verified tasks have both a dated check and evidence link. Unverified tasks are not automatically failed or completed.</p>
  <details style={{margin:"12px 0",padding:12,border:"1px solid #94a3b8",borderRadius:8}}><summary style={{fontWeight:700,cursor:"pointer"}}>NEXT VERIFICATION QUEUE — one outstanding task per segment ({nextAuditQueue.length})</summary>
  <p>These are inventory priorities, not evidence that the work is unimplemented. Verify code, operation, acceptance test and dated proof before marking a task complete.</p>
@@ -107,6 +110,6 @@ export default function MasterBuildProgress(){
  </details>
  <p><strong>MAIN Core Platform:</strong> {total?verified+" / "+total+" gates verified ("+(100*(verified||0)/total).toFixed(1)+"%)":"Loading verified snapshot…"} · Evidence date: {snap?.asOf||"unknown"}. SCIENCE and OUTCOME: <strong>not independently measured</strong>. Overall completion: <strong>not certified</strong>.</p>
  <p><a href="https://github.com/pdufa/pdufa-command-center/blob/main/docs/MASTER_BUILD_PROGRESS_2026-10-30.md" target="_blank" rel="noopener noreferrer">Full master task document and acceptance rules ↗</a></p>
- {segments.map(([name,detail],i)=><details id={"audit-segment-"+String(i+1).padStart(2,"0")} key={name} style={{padding:"10px 0",borderTop:"1px solid #cbd5e1"}}><summary style={{cursor:"pointer",fontWeight:650}}>{String(i+1).padStart(2,"0")} · {name} — verification open</summary><p>{detail}.</p><p style={{fontSize:13}}><strong>{masterBuildTasks[i]?.length ?? 0} itemized tasks</strong> · {masterBuildTasks[i]?.filter((_,j)=>taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified").length??0} verified. Each task requires dated acceptance evidence. The list is a work inventory, not a claim that every task is running.</p><ol style={{paddingLeft:24}}>{(masterBuildTasks[i] ?? []).map((task,j)=><li key={j} style={{padding:"5px 0"}}><span style={{color:taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified"?"#047857":"#92400e",fontWeight:700}}> {taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified"?"✓":"○"} </span><strong style={{fontSize:11}}>{`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`}</strong> {task} <small style={{color:"#64748b"}}>— {taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status}</small>{taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).evidenceUrl?<a href={taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).evidenceUrl} target="_blank" rel="noopener noreferrer"> Evidence ↗</a>:null}</li>)}</ol><p style={{fontSize:12}}>Completion requires code, production runtime, acceptance test and dated source evidence. Existing historical audits remain in the linked detailed document.</p></details>)}
+ {segments.map(([name,detail],i)=><details id={"audit-segment-"+String(i+1).padStart(2,"0")} key={name} style={{padding:"10px 0",borderTop:"1px solid #cbd5e1"}}><summary style={{cursor:"pointer",fontWeight:650}}>{String(i+1).padStart(2,"0")} · {name} — verification open</summary><p>{detail}.</p><p style={{fontSize:13}}><strong>{masterBuildTasks[i]?.length ?? 0} itemized tasks</strong> · {masterBuildTasks[i]?.filter((_,j)=>taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified").length??0} verified. Each task requires dated acceptance evidence. The list is a work inventory, not a claim that every task is running.</p><ol style={{paddingLeft:24}}>{(masterBuildTasks[i] ?? []).map((task,j)=><li key={j} style={{padding:"5px 0"}}><span style={{color:taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified"?"#047857":"#92400e",fontWeight:700}}> {taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status==="Verified"?"✓":"○"} </span><strong style={{fontSize:11}}>{`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`}</strong> {task} <small style={{color:"#64748b"}}>— {taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).status}</small>{taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).evidenceUrl?<a href={taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).evidenceUrl} target="_blank" rel="noopener noreferrer"> Historical evidence ↗</a>:null}{(taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).acceptanceMissing?.length??0)>0?<details style={{margin:"4px 0 6px 18px"}}><summary>Outstanding acceptance checks ({taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).acceptanceMissing?.length})</summary><ul>{taskStatus(`${String(i+1).padStart(2,"0")}-${String(j+1).padStart(3,"0")}`).acceptanceMissing?.map(gap=><li key={gap}>{gap}</li>)}</ul></details>:null}</li>)}</ol><p style={{fontSize:12}}>Completion requires code, production runtime, acceptance test and dated source evidence. Existing historical audits remain in the linked detailed document.</p></details>)}
  </section>
 }
