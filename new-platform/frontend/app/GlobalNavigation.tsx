@@ -10,7 +10,7 @@ const links=[
  {label:"GOAL",href:"/goal"},
  {label:"RESTRICTIONS",href:"/restrictions"},
  {label:"PREDICTIONS",href:"/predictions"},
- {label:"#1 POPULATION",href:"/patient-population"},
+ {label:"#1",href:"/patient-population"},
  {label:"SYSTEM STATUS",href:"/installation-audit"}
 ];
 export default function GlobalNavigation(){
