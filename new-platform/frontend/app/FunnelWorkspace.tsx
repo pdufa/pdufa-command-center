@@ -90,6 +90,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        <Link href="/pool">Master POOL</Link>
        <Link href="/pipeline">Post–Phase 3 PIPELINE</Link>
        <Link href="/patient-population">#1 Patient Population</Link>
+       {section==="pipeline"&&<a href="https://docs.google.com/spreadsheets/d/1FSRXFXc4u2KTpdyP-vSbWil-Fgtrj3ucELSk2kpQAG0/edit#gid=1138168786" target="_blank" rel="noopener noreferrer">Eligibility Gate Matrix (Google Sheets)</a>}
        {section==="pipeline"&&<a href="/api/scope-funnel?view=census-review&format=csv" download>Export all 741 historical census candidates (CSV)</a>}
      </div>
    </header>
