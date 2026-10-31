@@ -5,7 +5,7 @@ import Link from "next/link";
 import styles from "./FunnelWorkspace.module.css";
 import {
   PIPELINE_RESEARCH_SECTIONS, PIPELINE_RESEARCH_FIELDS, ALL_RESEARCH_FIELD_DEFINITIONS, WORKFLOW_COLUMNS,
-  researchFieldResult, verifiedMetricCount, workflowColumn, comparableIndication,
+  researchFieldResult, verifiedMetricCount, workflowColumn, comparableIndication, comparableResearchGroup,
   type PipelineResearchRow, type ResearchFieldId, type WorkflowColumn,
 } from "../lib/pipeline-research-view";
 import { ASSESSMENT_SUPPORT_FIELDS, CLAIM_PROVENANCE_REQUIREMENTS } from "../lib/pipeline-assessment-inputs";
@@ -183,12 +183,12 @@ export default function PipelineFourViews(){
  const indications=useMemo(()=>{
   const counts=new Map<string,{name:string;rows:PipelineResearchRow[]}>();
   for(const row of filtered){
-   const key=comparableIndication(row);
+   const key=comparableResearchGroup(row);
    if(!key)continue;
    const current=counts.get(key)||{name:row.indication!,rows:[]};
    current.rows.push(row);counts.set(key,current);
   }
-  return [...counts.entries()].filter(([,x])=>x.rows.length>=2).sort((a,b)=>b[1].rows.length-a[1].rows.length);
+  return [...counts.entries()].filter(([,x])=>new Set(x.rows.map(r=>r.drug?.trim().toLowerCase())).size>=2).sort((a,b)=>b[1].rows.length-a[1].rows.length);
  },[filtered]);
  const comparable=indications.find(([key])=>key===indication)?.[1].rows||[];
  const chosen=comparable.filter(x=>compareIds.includes(x.nctId)).slice(0,4);
@@ -344,15 +344,15 @@ export default function PipelineFourViews(){
      })}
     </div>
     <div className={styles.analyticsPanel}>
-     <h3>Compare therapies — recorded indication only</h3>
-     <p className={styles.muted}>Choose up to four exact NCTs with the same recorded indication. A matching label does not prove the same line of treatment or patient population. Missing effects remain unassessed.</p>
+     <h3>Compare therapies — verified comparable scope</h3>
+     <p className={styles.muted}>Choose up to four exact NCTs only when sources establish the same recorded indication, treatment line, population, endpoint and follow-up. A disease label alone cannot enable comparison. Missing effects remain unassessed.</p>
      <label>Recorded indication
       <select value={indication} onChange={e=>{const key=e.target.value;setIndication(key);const group=indications.find(x=>x[0]===key)?.[1].rows||[];setCompareIds(group.slice(0,2).map(x=>x.nctId))}}>
        <option value="">Select same-indication group</option>
        {indications.map(([key,group])=><option value={key} key={key}>{group.name} ({group.rows.length})</option>)}
       </select>
      </label>
-     {!indications.length&&<p>No same-indication groups containing at least two verified exact-linked NCT records exist in the filtered selection.</p>}
+     {!indications.length&&<p>No source-verified comparable group with at least two distinct therapies is available in the filtered selection.</p>}
      {!!indication&&<div className={styles.compareChoices}>
       {comparable.map(row=><label key={row.nctId}>
        <input type="checkbox" checked={compareIds.includes(row.nctId)}

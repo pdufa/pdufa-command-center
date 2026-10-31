@@ -43,4 +43,12 @@ class SyncTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             sync.validate_pages([])
 
+    def test_registers_preserve_one_to_many_keys_and_never_pad_missing_evidence(self):
+        self.assertEqual(sync.register_rows([{"recordId":"one","nctId":"NCT00116805","fields":[],"assessments":[],"competitors":[]}]), ([],[],[]))
+        values = [["NCT00116805","TEST","A","B","first"],["NCT00116805","TEST","A","B","second"]]
+        changes,writes = sync.plan_register(7,[{}]*4,values,(0,4))
+        self.assertEqual({r for r,_,_ in writes},{4,5})
+        self.assertEqual([v["stringValue"] for _,c,v in writes if c==0],["NCT00116805","NCT00116805"])
+        self.assertTrue(all(r["updateCells"]["start"]["columnIndex"]>=0 for r in changes))
+
 if __name__ == "__main__": unittest.main()

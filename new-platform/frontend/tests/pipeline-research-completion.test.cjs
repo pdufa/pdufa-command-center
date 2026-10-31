@@ -16,3 +16,12 @@ const fact=value=>({value,identity,status:'VERIFIED',sourceUrl:'https://example.
 const evidence=()=>({listing:fact({public:true,exchangeCountry:'US'}),marketCap:fact({usd:300000000}),identity:fact({reconciled:true}),pivotal:fact({phase:3,pivotal:true,completed:true,finalReadout:true,publicResultsRelease:'2026-10-01'}),fda:fact({relevant:true,pdufaDate:'2026-11-20'})});
 test('approved capbounds inclusive withUSlisting, source identity and prospective window',()=>{for(const usd of [300000000,10000000000]){const e=evidence();e.marketCap=fact({usd});assert.equal(programEligibility(identity,e,'2026-10-31').status,'QUALIFIED');}for(const usd of [299999999,10000000001]){const e=evidence();e.marketCap=fact({usd});assert.equal(programEligibility(identity,e,'2026-10-31').status,'REJECTED');}});
 test('missing, mismatched, stale, foreign listing and cutoff cannotqualify',()=>{assert.equal(programEligibility(identity,undefined,'2026-10-31').status,'NEEDS_REVIEW');let e=evidence();e.listing=fact({public:true,exchangeCountry:'GB'});assert.equal(programEligibility(identity,e,'2026-10-31').status,'REJECTED');e=evidence();e.identity.identity={...identity,drug:'wrong'};assert.equal(programEligibility(identity,e,'2026-10-31').status,'NEEDS_REVIEW');e=evidence();e.marketCap.validUntil='2026-10-29T00:00:00Z';assert.equal(programEligibility(identity,e,'2026-10-31').status,'NEEDS_REVIEW');e=evidence();e.fda=fact({relevant:true,pdufaDate:'2026-11-03'});assert.equal(programEligibility(identity,e,'2026-10-31').researchWindow,'CUTOFF_REACHED');});
+
+ test('disease-only and unmatched treatment lines cannotenable clinicalcompare',()=>{
+ const {comparableResearchGroup}=require('../lib/pipeline-research-view.ts');
+ assert.equal(comparableResearchGroup(make(1)),null);
+ const comparisonScope={status:'VERIFIED',lineOfTherapy:'second line',patientPopulation:'adult marker positive',endpoint:'OS',followUpMonths:24,sourceUrl:'https://example.org/isolated-source',verifiedAt:'2026-10-30'};
+ const a={...make(1),comparisonScope};
+ assert.ok(comparableResearchGroup(a));
+ assert.notEqual(comparableResearchGroup(a),comparableResearchGroup({...a,comparisonScope:{...comparisonScope,lineOfTherapy:'first line'}}));
+ });

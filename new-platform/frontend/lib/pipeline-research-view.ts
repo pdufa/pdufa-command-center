@@ -16,6 +16,7 @@ export type PipelineResearchRow = {
  commercialAssessment?:CompetitiveAssessment|null;
  /** Optional normalized, exact-program source-backed comparators; never inferred from a disease label. */
  competitorEvidence?:ComparatorEvidence[]|null;
+ comparisonScope?:{status:"VERIFIED";lineOfTherapy:string;patientPopulation:string;endpoint:string;followUpMonths:number;sourceUrl:string;verifiedAt:string};
  therapyCostComparison?:TherapyCostComparison|null;
 };
 type OriginalId=typeof COMPETITIVE_ASSESSMENT_COLUMNS[number]["id"];
@@ -153,3 +154,13 @@ export function comparableIndication(row:PipelineResearchRow):string|null {
  return row.indication?.trim().toLocaleLowerCase("en-US")||null;
 }
 
+
+/** Same disease text alone is insufficient to open a clinical comparison. */
+export function comparableResearchGroup(row:PipelineResearchRow):string|null {
+ const scope=row.comparisonScope;
+ if(!comparableIndication(row)||!row.drug?.trim()||!scope||scope.status!=="VERIFIED"
+  ||![scope.lineOfTherapy,scope.patientPopulation,scope.endpoint].every(x=>typeof x==="string"&&x.trim())
+  ||!Number.isFinite(scope.followUpMonths)||scope.followUpMonths<=0||!/^https:\/\//.test(scope.sourceUrl)
+  ||!Number.isFinite(Date.parse(scope.verifiedAt))||Date.parse(scope.verifiedAt)>Date.now())return null;
+ return JSON.stringify([comparableIndication(row),scope.lineOfTherapy.trim().toLowerCase(),scope.patientPopulation.trim().toLowerCase(),scope.endpoint.trim().toLowerCase(),scope.followUpMonths]);
+}

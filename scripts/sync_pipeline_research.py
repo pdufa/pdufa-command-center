@@ -5,7 +5,7 @@ Only blank cells or unchanged cells explicitly owned by this synchronizer update
 """
 from __future__ import annotations
 import argparse
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import hashlib
 import json
 import os
@@ -109,7 +109,7 @@ def master_values(record):
         values.append("Not assessed" if field["state"] == "MISSING" else field["value"])
     timeline = record.get("timeline") or {}
     release, action = timeline.get("phase3DataRelease"), timeline.get("pdufaTarget")
-    values += [(release or {}).get("date", ""), (action or {}).get("date", ""),
+    values += [(date.fromisoformat(release["date"])-date(1899,12,30)).days if release else "", (date.fromisoformat(action["date"])-date(1899,12,30)).days if action else "",
                (release or {}).get("sourceUrl", ""), (action or {}).get("sourceUrl", ""),
                "Yes" if release else "No", "Yes" if action else "No", record["workflow"]]
     return values
@@ -160,6 +160,48 @@ def plan_cells(sheet_id, grid, records, values_for, key_column=0, start=4):
     return merged, writes
 
 
+def register_rows(records):
+    """Only sourced observations; never generate an evidence row for a blank."""
+    evidence, assessments, competitors = [], [], []
+    for record in records:
+        for field in record["fields"]:
+            if field["state"] not in ("VERIFIED", "MODELED") or not field.get("sourceUrl"):
+                continue
+            evidence.append([record["nctId"], record["ticker"], record.get("drug") or "", record.get("indication") or "", field["id"], field["label"], field["value"], "", "", field["state"], field["why"], field.get("method") or "", field["sourceUrl"], field.get("sourceDate") or "", field.get("confidence") or "UNASSESSED", "SOURCE OBSERVATION; independent review required", ""])
+        for assessment in record["assessments"]:
+            for field in assessment["inputs"]:
+                if field["state"] not in ("VERIFIED", "MODELED") or not field.get("sourceUrl"):
+                    continue
+                eid = digest([record["recordId"], field["id"], field["sourceUrl"]])
+                assessments.append([eid, record["nctId"], record["ticker"], record.get("indication") or "", assessment["rank"], assessment["title"], field["value"], "Evidence recorded; not adjudicated", "", "", "", "", field["state"], field["sourceUrl"], field.get("sourceDate") or "", "PRIMARY SOURCE OBSERVATION", field.get("method") or "", field.get("confidence") or "UNASSESSED", field["why"]])
+        for c in record["competitors"]:
+            competitors.append([c["id"], record["nctId"], record["ticker"], record.get("indication") or "", c["kind"], c["therapy"], c["manufacturer"], c["regulatorOrTrialId"], c["approvalOrPhase"], c["lineOfTherapy"], c["patientPopulation"], c["comparisonBasis"], c["finding"], c["effectSize"], c["safety"], c["convenience"], c["firstYearPrice"], c["payerAccess"], "", "", c["sourceUrl"], c["sourceDate"], "VERIFIED", c["confidence"], c["reason"], "Review exact comparison and denominators"])
+    return evidence, assessments, competitors
+
+
+def plan_register(sheet_id, grid, values, key_columns):
+    """Reuse the preserving cell planner with composite, one-to-many keys."""
+    def key(row):
+        return json.dumps([str(row[i]) if i < len(row) else "" for i in key_columns], separators=(",", ":"))
+    adapted = []
+    for row in grid:
+        cells = row.get("values", [])
+        plain = [c.get("userEnteredValue", {}).get("stringValue", c.get("userEnteredValue", {}).get("numberValue", "")) for c in cells]
+        adapted.append({"values": [{"userEnteredValue": {"stringValue": key(plain)}}] + cells} if any(plain) and all(i < len(plain) and str(plain[i]).strip() for i in key_columns) else {"values": [{}] + cells})
+    records = [{"nctId": key(row), "recordId": digest(key(row)), "values": row} for row in values]
+    changes, writes = plan_cells(sheet_id, adapted, records, lambda r: [r["nctId"], *r["values"]])
+    # The synthetic key column is local only and is never written to the Sheet.
+    cleaned = []
+    for item in changes:
+        c = item["updateCells"]; col = c["start"]["columnIndex"]
+        vals = c["rows"][0]["values"]
+        if col == 0:
+            vals = vals[1:]; col = 1
+        if vals:
+            cleaned.append({"updateCells": {**c, "start": {**c["start"], "columnIndex": col - 1}, "rows": [{"values": vals}]}})
+    return cleaned, [(row, col - 1, val) for row, col, val in writes if col > 0]
+
+
 def main():
     parser = argparse.ArgumentParser(); parser.add_argument("--dry-run", action="store_true"); args = parser.parse_args()
     import requests
@@ -198,6 +240,24 @@ def main():
         for row, col, value in writes:
             if after[row]["values"][col].get("userEnteredValue") != value:
                 raise RuntimeError("SHEET_READBACK_RECONCILIATION_FAILED")
+    source_rows, assessment_rows, competitor_rows=register_rows(records)
+    register_stats={}
+    for name, values, keycols, columns in (
+      ("13 Exact Trial Evidence",source_rows,(0,4,12),"R"),
+      ("17 Assessment Evidence",assessment_rows,(0,),"T"),
+      ("16 Competitor Inventory",competitor_rows,(0,),"AA")):
+        rp=properties[name]; rg=read_grid(name,rp["gridProperties"]["rowCount"],columns)
+        updates,expected=plan_register(rp["sheetId"],rg,values,keycols)
+        extent=max([rp["gridProperties"]["rowCount"],*[r+1 for r,_,_ in expected]])
+        if not args.dry_run:
+            if extent>rp["gridProperties"]["rowCount"]:
+                request(session,"POST",base+":batchUpdate",json={"requests":[{"appendDimension":{"sheetId":rp["sheetId"],"dimension":"ROWS","length":extent-rp["gridProperties"]["rowCount"]}}]})
+            for start in range(0,len(updates),400):request(session,"POST",base+":batchUpdate",json={"requests":updates[start:start+400]})
+            if expected:
+                verified=read_grid(name,extent,columns)
+                for r,c,v in expected:
+                    if verified[r]["values"][c].get("userEnteredValue")!=v:raise RuntimeError("SHEET_READBACK_RECONCILIATION_FAILED")
+        register_stats[name]={"source_records":len(values),"managed_updates":len(expected)}
     # Preserve all existing ranked formulas while extending their exact master ranges.
     ranked=properties["15 Ranked 20 Assessments"]
     ranked_grid=read_grid("15 Ranked 20 Assessments",5,"AC")
@@ -216,10 +276,49 @@ def main():
         for change in formula_updates:
             col=change["updateCells"]["start"]["columnIndex"]
             if ranked_after[4]["values"][col].get("userEnteredValue")!=change["updateCells"]["rows"][0]["values"][0]["userEnteredValue"]:raise RuntimeError("SHEET_READBACK_RECONCILIATION_FAILED")
-    report = {"status": "DRY_RUN" if args.dry_run else "MASTER_SYNC_VERIFIED", "dataset_version": version,
+    # Charts and saved views keep their formulas, with the complete master extent.
+    chart_updates=[]
+    for name in ("14 Charts Dashboard","11 Compare Analytics","10 Research Board","08 Advanced Table","09 Trial Dossier"):
+        prop_view=properties.get(name)
+        if not prop_view:continue
+        vgrid=read_grid(name,prop_view["gridProperties"]["rowCount"],"J" if name=="09 Trial Dossier" else "L")
+        for r,row in enumerate(vgrid):
+            for c,cell in enumerate(row.get("values",[])):
+                formula=cell.get("userEnteredValue",{}).get("formulaValue","")
+                if "'07 Competitive Master'!" not in formula or cell.get("note"):continue
+                changed=formula.replace("$304","$"+str(end))
+                if changed!=formula:chart_updates.append({"updateCells":{"start":{"sheetId":prop_view["sheetId"],"rowIndex":r,"columnIndex":c},"rows":[{"values":[{"userEnteredValue":{"formulaValue":changed}}]}],"fields":"userEnteredValue"}})
+    if chart_updates and not args.dry_run:
+        request(session,"POST",base+":batchUpdate",json={"requests":chart_updates})
+        for name in ("14 Charts Dashboard","11 Compare Analytics","10 Research Board","08 Advanced Table","09 Trial Dossier"):
+            prop_view=properties.get(name)
+            if not prop_view:continue
+            relevant=[u["updateCells"] for u in chart_updates if u["updateCells"]["start"]["sheetId"]==prop_view["sheetId"]]
+            if not relevant:continue
+            verified=read_grid(name,prop_view["gridProperties"]["rowCount"],"J" if name=="09 Trial Dossier" else "L")
+            for item in relevant:
+                r,c=item["start"]["rowIndex"],item["start"]["columnIndex"]
+                if verified[r]["values"][c].get("userEnteredValue")!=item["rows"][0]["values"][0]["userEnteredValue"]:raise RuntimeError("SHEET_READBACK_RECONCILIATION_FAILED")
+    mapping=properties["18 Mapping and Sync"]
+    mapping_grid=read_grid("18 Mapping and Sync",24,"K")
+    mapping_updates=[]
+    state="SYNCED "+version+" | "+datetime.now(timezone.utc).isoformat()+" | independently qualified programs not established"
+    for r in range(4,24):
+        cells=mapping_grid[r].get("values",[]) if r<len(mapping_grid) else []
+        cell=cells[10] if len(cells)>10 else {}
+        bootstrap=cell.get("userEnteredValue",{}).get("stringValue")=="NOT INSTALLED · website / Google Sheet live sync" and not cell.get("note")
+        change=owned_change({} if bootstrap else cell,state,"sync-status")
+        if change:mapping_updates.append({"updateCells":{"start":{"sheetId":mapping["sheetId"],"rowIndex":r,"columnIndex":10},"rows":[{"values":[change]}],"fields":"userEnteredValue,note"}})
+    if mapping_updates and not args.dry_run:
+        request(session,"POST",base+":batchUpdate",json={"requests":mapping_updates})
+        verified=read_grid("18 Mapping and Sync",24,"K")
+        for item in mapping_updates:
+            r=item["updateCells"]["start"]["rowIndex"]
+            if verified[r]["values"][10].get("userEnteredValue")!={"stringValue":state}:raise RuntimeError("SHEET_READBACK_RECONCILIATION_FAILED")
+    report = {"status": "DRY_RUN" if args.dry_run else "DATA_SYNC_VERIFIED", "dataset_version": version,
         "records": len(records), "cell_updates": len(writes), "original_fields": 38, "assessments_defined": 20,
         "verified_eligible_programs": first["verifiedEligiblePrograms"], "manual_cells_preserved": True,
-        "register_sync": "PENDING", "ranked_formula_expansion": "DRY_RUN" if args.dry_run else "VERIFIED", "charts_runtime": "NOT_VERIFIED",
+        "register_sync": register_stats, "ranked_formula_expansion": "DRY_RUN" if args.dry_run else "VERIFIED", "chart_formula_ranges_updated":len(chart_updates), "charts_runtime": "VISUAL_VERIFICATION_PENDING",
         "verified_at": datetime.now(timezone.utc).isoformat()}
     print("PDUFA_PIPELINE_RESEARCH_SYNC " + json.dumps(report, sort_keys=True))
 
