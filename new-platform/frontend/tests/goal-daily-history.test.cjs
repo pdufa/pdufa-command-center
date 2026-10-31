@@ -79,8 +79,8 @@ test("Collapsed GOAL history shows valid run links and never invents unknown val
     assert.match(rendered,/published days/);
     assert.match(rendered,/11,598/);
     assert.match(rendered,/11,594/);
-    assert.match(rendered,/11 \/ 0/);
-    assert.match(rendered,/6 \/ 0/);
+    assert.doesNotMatch(rendered,/11 \/ 0/);
+    assert.doesNotMatch(rendered,/6 \/ 0/);
     assert.match(rendered,/not new trials/);
     assert.match(rendered,/—/);
     const links=view.root.findAllByType("a");
