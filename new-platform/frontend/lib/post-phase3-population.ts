@@ -21,10 +21,10 @@ export const PATIENT_POPULATION_BASELINE_COMPANIES = 76;
 export type PostPhase3PopulationTrial = {
   trial: Phase3CensusTrial;
   companySources: Phase3CompanySources;
-  diseasePopulation: null;
-  eligibleUsPatients: null;
-  eligibleGlobalPatients: null;
-  populationEvidenceCompleteness: null;
+  diseasePopulation: number | null;
+  eligibleUsPatients: number | null;
+  eligibleGlobalPatients: number | null;
+  populationEvidenceCompleteness: number | null;
   populationLastVerified: null;
 };
 
