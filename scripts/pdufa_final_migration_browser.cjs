@@ -144,8 +144,18 @@ async function testPool(context, page) {
   const response = page.waitForResponse(r => new URL(r.url()).pathname === '/api/scope-funnel' && new URL(r.url()).searchParams.get('query') === query, { timeout: 65000 });
   await page.getByRole('button', { name: 'Search', exact: true }).click();
   assert((await response).status() === 200, 'pool_search_ui_reaches_real_api');
+  const resetResponse = page.waitForResponse(r => {
+    const u = new URL(r.url());
+    return u.pathname === '/api/scope-funnel' && u.searchParams.get('view') === 'pool'
+      && !u.searchParams.has('query') && u.searchParams.get('offset') === '0';
+  }, { timeout: 65000 });
   await page.getByRole('button', { name: 'Clear', exact: true }).click();
-  await page.waitForFunction(() => [...document.querySelectorAll('[role="status"]')].some(item => /Showing 1/.test(item.textContent)), null, { timeout: 65000 });
+  assert((await resetResponse).status() === 200, 'pool_clear_search_fetches_first_unfiltered_page');
+  await page.waitForFunction(total => {
+    const main = document.querySelector('main');
+    const states = main ? [...main.querySelectorAll('[role="status"]')] : [];
+    return states.some(item => item.textContent.includes('Showing 1') && item.textContent.includes('of ' + total.toLocaleString()));
+  }, pool.total, { timeout: 65000 });
   const next = page.getByRole('button', { name: 'Next', exact: true });
   if (pool.total > 50) {
     assert(await next.isEnabled(), 'pool_next_page_enabled');
@@ -220,7 +230,15 @@ async function testScans(context, page) {
   result.counts.source_findings_verified = integer(reports.sources.findings_verified) ? reports.sources.findings_verified : null;
   result.counts.source_findings_unresolved = integer(reports.sources.required_findings_unresolved) ? reports.sources.required_findings_unresolved : null;
   assert(typeof reports.sources.status === 'string', 'scans_actual_source_status_is_present');
-  if (reports.sources.required_findings_unresolved > 0) assert((await page.locator('main').innerText()).includes('unresolved'), 'scans_unresolved_sources_remain_explicit');
+  if (reports.sources.required_findings_unresolved > 0) {
+    // SCANS fetches published reports on the client. Ensure the source evidence
+    // has rendered before inspecting its unresolved findings, not just the page shell.
+    await page.waitForFunction(count => {
+      const main = document.querySelector('main');
+      return main && main.textContent.includes(String(count) + ' required findings');
+    }, reports.sources.required_findings_unresolved, { timeout: 65000 });
+    assert((await page.locator('main').innerText()).includes('unresolved'), 'scans_unresolved_sources_remain_explicit');
+  }
 }
 async function testResults(context, page) {
   reports = reports || await json(context, '/api/published-scans', 'results_report');
