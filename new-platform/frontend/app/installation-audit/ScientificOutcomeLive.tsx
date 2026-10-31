@@ -59,7 +59,7 @@ export default function ScientificOutcomeLive() {
           <p><strong>Existing score coverage (not SCIENCE-40):</strong></p>
           <table style={{width:"100%",borderCollapse:"collapse"}}>
             <thead><tr><th scope="col" style={{textAlign:"left"}}>Model</th><th scope="col">Complete</th><th scope="col">Partial</th><th scope="col">Missing</th></tr></thead>
-            <tbody>{(["PIPELINE","GEM_JR","GEM"] as const).map(stage => <tr key={stage}><th scope="row" style={{textAlign:"left"}}>{stage.replaceAll("_"," ")}</th><td style={{textAlign:"center"}}>{display(science.data!.scores[stage].complete)}</td><td style={{textAlign:"center"}}>{display(science.data!.scores[stage].partial)}</td><td style={{textAlign:"center"}}>{display(science.data!.scores[stage].missing)}</td></tr>)}</tbody>
+            <tbody>{(["PIPELINE"] as const).map(stage => <tr key={stage}><th scope="row" style={{textAlign:"left"}}>{stage.replaceAll("_"," ")}</th><td style={{textAlign:"center"}}>{display(science.data!.scores[stage].complete)}</td><td style={{textAlign:"center"}}>{display(science.data!.scores[stage].partial)}</td><td style={{textAlign:"center"}}>{display(science.data!.scores[stage].missing)}</td></tr>)}</tbody>
           </table>
           <p><small>Snapshot: {science.data.asOf}; computed {science.data.computedAt}. Analyst-review source: {science.data.reviewSource}. Counts are score coverage, not verified trial outcomes.</small></p>
         </>}
