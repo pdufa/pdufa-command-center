@@ -43,8 +43,16 @@ export async function GET(request: Request) {
    checks.backendDatabase={status:"unreachable",checkedAt,note:"Backend health request failed or timed out; storage readiness unverified."};
   }
  }
+ // Map live probes to specific task identifiers as observations ONLY.
+ // These do not alter the saved registry or claim that acceptance tests passed.
+ const observations:{taskId:string;requirement:string;probe:string;result:string;checkedAt:string;limitation:string}[]=[
+  {taskId:"01-003",requirement:"Verify Render backend services",probe:"backendDatabase",result:checks.backendDatabase?.status??"unknown",checkedAt,limitation:"Application and storage health only; deploy/rollback acceptance still unverified."},
+  {taskId:"01-004",requirement:"Verify PostgreSQL connectivity",probe:"backendDatabase",result:checks.backendDatabase?.status??"unknown",checkedAt,limitation:"Backend-reported storage readiness; direct database write/restore not tested."},
+  {taskId:"01-015",requirement:"Verify dashboard routes and authenticated access",probe:"dashboard",result:checks.dashboard?.status??"unknown",checkedAt,limitation:"One audit route checked; login/session workflow and other routes not exercised."},
+  {taskId:"03-001",requirement:"Verify nightly scan schedule",probe:"scanHealth",result:checks.scanHealth?.status??"unknown",checkedAt,limitation:"Health endpoint connectivity only; 8 PM schedule execution not verified."}
+ ];
  // Runtime failures do not erase previously dated acceptance evidence. Live checks
  // are observations only; no requirement is auto-certified without a test contract.
  const counts=ids.reduce((acc,id)=>{const status=tasks[id].status;acc[status]=(acc[status]??0)+1;return acc;},{} as Record<string,number>);
- return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,counts,tasks,checks,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:Object.values(checks).filter(check=>check.status==="reachable").length,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
+ return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,counts,tasks,checks,observations,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:Object.values(checks).filter(check=>check.status==="reachable").length,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
 }
