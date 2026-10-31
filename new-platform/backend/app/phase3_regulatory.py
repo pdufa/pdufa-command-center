@@ -124,9 +124,20 @@ def fetch(url, *, json_response=False):
     if not url.startswith("https://") or host not in ("www.fda.gov", "api.fda.gov", "www.accessdata.fda.gov"):
         raise ValueError("REGULATORY_SOURCE_HOST_NOT_ALLOWED")
     last = "SOURCE_UNAVAILABLE"
+    # FDA's public oncology index has returned 404 to the service's library
+    # user agent while its official page remains accessible independently.
+    # Retry that exact allowlisted page once with normal browser negotiation;
+    # never use a third-party source or interpret a failed fetch as evidence.
+    index_browser_retry = False
     for attempt in range(3):
         try:
-            request = Request(url, headers={"User-Agent": "PDUFA-Phase3-Library/1.0", "Accept": "application/json" if json_response else "text/html"})
+            headers = {"User-Agent": "PDUFA-Phase3-Library/1.0",
+                       "Accept": "application/json" if json_response else "text/html"}
+            if index_browser_retry:
+                headers = {"User-Agent": "Mozilla/5.0 (compatible; PDUFA-Research/1.0)",
+                           "Accept": "text/html,application/xhtml+xml;q=0.9",
+                           "Accept-Language": "en-US,en;q=0.8"}
+            request = Request(url, headers=headers)
             with urlopen(request, timeout=20) as response:
                 final_host = urlsplit(response.geturl()).hostname or ""
                 if final_host not in ("www.fda.gov", "api.fda.gov", "www.accessdata.fda.gov"):
@@ -144,9 +155,15 @@ def fetch(url, *, json_response=False):
                 return body, document
             if "<html" not in body.lower() and "<body" not in body.lower():
                 raise ValueError("SOURCE_NOT_HTML")
-            return body, _document(body, url)
+            document = _document(body, url)
+            if url == INDEX and "approval notifications" not in document["body"].casefold():
+                raise ValueError("REGULATORY_INDEX_CONTENT_MISMATCH")
+            return body, document
         except HTTPError as exc:
             last = "HTTP_" + str(exc.code)
+            if exc.code == 404 and url == INDEX and not json_response and not index_browser_retry:
+                index_browser_retry = True
+                continue
             if exc.code in (400, 401, 403, 404):
                 break
         except (URLError, TimeoutError, OSError, UnicodeError):
