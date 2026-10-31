@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
 import { reconcilePoolPipeline, funnelPage, type FunnelResult, type ScopeView } from "../../../lib/pool-pipeline-funnel";
 import { fetchReadOnlyWithWarmRetry } from "../../../lib/read-only-warm-retry";
+import { renderPhase3CensusCsv } from "../../../lib/pipeline-census-csv";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -45,14 +46,25 @@ export async function GET(req:NextRequest) {
   const view=params.get("view")||"pool";
   const offset=params.get("offset")||"0",limit=params.get("limit")||"50";
   const query=params.get("query")||"";
-  if(!["pool","pipeline","readout-review"].includes(view)
+  const format=params.get("format")||"json";
+  if(!["pool","pipeline","readout-review","census-review"].includes(view)
      || !/^(0|[1-9]\d{0,7})$/.test(offset)
      || !(/^(?:[1-9]|[1-4]\d|50)$/.test(limit) || (view==="pipeline" && /^(?:[1-9]\d?|1\d\d|200|500)$/.test(limit)))
-     || query.length>100)
+     || query.length>100 || !["json","csv"].includes(format) || (format==="csv" && view!=="census-review"))
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
     const data=await source();
     const datasetVersion=createHash("sha256").update(JSON.stringify({overview:data.overview,rows:data.reviewRows})).digest("hex");
+    if(view==="census-review" && format==="csv"){
+      if(query.trim()||offset!=="0")return NextResponse.json({error:"CSV is a full, unfiltered source snapshot"},{status:422});
+      const csv=renderPhase3CensusCsv(data);
+      return new NextResponse(csv,{headers:{
+        "Content-Type":"text/csv; charset=utf-8",
+        "Content-Disposition":"attachment; filename=\"pdufa-phase3-historical-review-2026-10-26.csv\"",
+        "Cache-Control":"private, no-store",
+        "X-PDUFA-Source-Version":datasetVersion,
+      }});
+    }
     return NextResponse.json({...funnelPage(data,view as ScopeView,Number(offset),Number(limit),query),datasetVersion},
       {headers:{"Cache-Control":"private, no-store"}});
   }catch(cause){
