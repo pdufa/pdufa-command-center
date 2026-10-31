@@ -543,6 +543,39 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         except ValueError as exc:
             raise HTTPException(422, "Invalid catalog period, search, filter or pagination") from exc
 
+    @router.get("/{nct_id}/readiness")
+    def trial_readiness(nct_id: str):
+        """Compute evidence availability, not an unsupported FDA probability."""
+        if not NCT.fullmatch(nct_id):
+            raise HTTPException(422, "Invalid NCT identifier")
+        with engine_provider().connect() as c:
+            trial = c.execute(text("SELECT nct_id,drug,indication,company,phase3_status,pdufa_date FROM phase3_trials WHERE nct_id=:nct"), {"nct": nct_id}).mappings().first()
+            if trial is None:
+                raise HTTPException(404, "Trial not in verified catalog")
+            verified_links = c.execute(text("""SELECT COUNT(DISTINCT l.application_id) FROM phase3_trial_applications l
+                JOIN phase3_fda_applications a ON a.application_id=l.application_id
+                WHERE l.nct_id=:nct AND l.verification_status='VERIFIED'"""), {"nct": nct_id}).scalar_one()
+            evidence_count = c.execute(text("""SELECT COUNT(*) FROM phase3_dossier_versions
+                WHERE nct_id=:nct"""), {"nct": nct_id}).scalar_one()
+        checks = {
+            "trial_identity": True,
+            "drug_identified": bool(trial["drug"]),
+            "indication_identified": bool(trial["indication"]),
+            "sponsor_identified": bool(trial["company"]),
+            "phase3_status_identified": bool(trial["phase3_status"]),
+            "pdufa_date_identified": bool(trial["pdufa_date"]),
+            "verified_fda_application_link": verified_links > 0,
+            "persisted_dossier": evidence_count > 0,
+            "scientific_efficacy_assessment": False,
+            "scientific_safety_assessment": False,
+            "independent_prediction_calibration": False,
+        }
+        return {"nct_id": nct_id, "checks": checks,
+                "checks_available": sum(checks.values()), "checks_total": len(checks),
+                "missing": [key for key, value in checks.items() if not value],
+                "scientific_readiness": "NOT_READY", "decision": "ABSTAIN",
+                "limitation": "These are evidence-availability checks, not 50 scientific assessments or a calibrated FDA decision."}
+
     @router.get("/{nct_id}/predictions")
     def trial_predictions(nct_id: str):
         """Read-only, application-scoped saved predictions; never infer a decision."""
