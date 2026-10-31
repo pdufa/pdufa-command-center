@@ -1,0 +1,139 @@
+/**
+ * Read-only POOL → post-Phase 3 PIPELINE reconciliation.
+ *
+ * The POOL is the existing published workspace inventory and is NEVER reduced
+ * by PIPELINE restrictions. A historical Phase 3 source row is only matched
+ * to the POOL by exact NCT AND ticker; company cap pointers are dated, not live.
+ * Pending checks must NOT be represented as eligible, approved or trade-ready.
+ */
+import { parsePhase3CensusCsv, type Phase3CensusRows, type Phase3CensusTrial } from "./phase3-census-rows";
+import { parsePhase3CensusSourceDirectory, sourcesForPhase3Trial, type Phase3CensusSourceDirectory } from "./phase3-census-sources";
+
+export type PoolTrialRecord = {
+  id:string; ticker:string; company?:string; drug?:string; indication?:string;
+  nctId?:string; stage?:string; marketCap?:number|null; capInRange?:boolean;
+  capChecked?:string; capSource?:string; phase3Date?:string; phase3Source?:string;
+};
+export type PoolSnapshot = {
+  pipeline:PoolTrialRecord[]; asOf?:string;
+  sourceHealth?:{state?:string;clinicalRows?:number;regulatoryRows?:number;
+    pipelineSourceParity?:{exactPrograms?:number}};
+};
+export type PostPhase3Review = {
+  nctId:string; ticker:string; company:string; drug:string|null; indication:string|null;
+  sourceUrl:string; censusStatus:string; capUsd:number; capAsOf:string;
+  poolStatus:"EXACT_MATCH"|"UNLINKED"|"TICKER_CONFLICT";
+  postPhase3Evidence:"REGISTRY_COMPLETED"|"FINAL_READOUT_NEEDS_PROOF";
+  qualification:"NEEDS_REVIEW";
+  reasons:string[];
+};
+export type FunnelResult = {
+  poolRows:PoolTrialRecord[];
+  reviewRows:PostPhase3Review[];
+  overview:{
+    poolRecords:number; poolClinicalRecords:number|null; poolRegulatoryRecords:number|null;
+    poolAsOf:string|null; poolSourceState:string;
+    historicalPhase3Records:741; historicalCompletedRecords:375;
+    matchedPhase3Records:number; matchedCompletedRecords:number;
+    missingOrConflicted:number; noncompletedReadoutReview:number;
+    qualifiedPrograms:null; censusAsOf:string;
+    definition:"POOL_SOURCE_RECORDS_VS_PHASE3_HISTORICAL_RESEARCH";
+  };
+};
+
+const NCT=/^NCT\d{8}$/;
+const exactNct=(row:PoolTrialRecord):string|null=>{
+  const nct=row.nctId || (row.id.startsWith("TRIAL|")?row.id.slice(6):"");
+  return NCT.test(nct)?nct:null;
+};
+function validPool(value:unknown):value is PoolSnapshot {
+  if(!value || typeof value!=="object")return false;
+  const v=value as Partial<PoolSnapshot>;
+  const rows=v.pipeline;
+  const health=v.sourceHealth;
+  if(!Array.isArray(rows) || !health
+      || typeof health.state!=="string"
+      || health.state==="STALE"
+      || !health.pipelineSourceParity
+      || health.pipelineSourceParity.exactPrograms!==rows.length
+      || !Number.isSafeInteger(health.clinicalRows)
+      || !Number.isSafeInteger(health.regulatoryRows)
+      || health.clinicalRows!+health.regulatoryRows!==rows.length
+      || rows.some(r=>!r || typeof r.id!=="string" || !r.id
+        || typeof r.ticker!=="string" || !r.ticker)) return false;
+  return new Set(rows.map(r=>r.id)).size===rows.length;
+}
+export function reconcilePoolPipeline(raw:unknown,csvText:string,sourceInput:unknown):FunnelResult {
+  if(!validPool(raw)) throw new Error("Published master POOL integrity or freshness unavailable");
+  const snapshot=raw as PoolSnapshot;
+  const census:Phase3CensusRows=parsePhase3CensusCsv(csvText);
+  const directory:Phase3CensusSourceDirectory=parsePhase3CensusSourceDirectory(sourceInput,census);
+  const exact=new Map<string,PoolTrialRecord>();
+  const conflicts=new Set<string>();
+  for(const row of snapshot.pipeline){
+    const nct=exactNct(row);
+    if(!nct)continue;
+    if(row.id!=="TRIAL|"+nct)continue;
+    if(exact.has(nct)){conflicts.add(nct);continue;}
+    exact.set(nct,row);
+  }
+  let completed=0,matched=0,matchedCompleted=0,missing=0;
+  const reviewRows=census.rows.map((trial:Phase3CensusTrial):PostPhase3Review=>{
+    const sponsor=sourcesForPhase3Trial(trial,directory);
+    const pool=exact.get(trial.nctId);
+    const poolStatus:PostPhase3Review["poolStatus"]=
+      !pool?"UNLINKED":pool.ticker!==trial.ticker||conflicts.has(trial.nctId)?"TICKER_CONFLICT":"EXACT_MATCH";
+    const isCompleted=trial.status==="COMPLETED";
+    if(isCompleted)completed++;
+    if(poolStatus==="EXACT_MATCH"){matched++;if(isCompleted)matchedCompleted++;}
+    else missing++;
+    const reasons:string[]=[];
+    if(poolStatus!=="EXACT_MATCH")reasons.push("Exact NCT / ticker reconciliation with master POOL not established");
+    if(!isCompleted)reasons.push("Not registry completed; verify a final pivotal Phase 3 readout before eligibility");
+    reasons.push("Recheck current public listing and market capitalization; the $300M–$10B census is dated");
+    reasons.push("Verify sponsor commercial rights and canonical drug–indication program");
+    reasons.push("Do not infer efficacy success, NDA/BLA acceptance or a PDUFA date");
+    return {
+      nctId:trial.nctId,ticker:trial.ticker,company:trial.company,
+      drug:poolStatus==="EXACT_MATCH"?(pool?.drug||null):null,
+      indication:poolStatus==="EXACT_MATCH"?(pool?.indication||null):null,
+      sourceUrl:trial.sourceUrl,censusStatus:trial.status,
+      capUsd:sponsor.marketCapUsd,capAsOf:sponsor.marketCapCheckedAt,
+      poolStatus,
+      postPhase3Evidence:isCompleted?"REGISTRY_COMPLETED":"FINAL_READOUT_NEEDS_PROOF",
+      qualification:"NEEDS_REVIEW",reasons,
+    };
+  });
+  if(completed!==375)throw new Error("Historical completed trial count drifted");
+  return {
+    poolRows:snapshot.pipeline,
+    reviewRows,
+    overview:{
+      poolRecords:snapshot.pipeline.length,
+      poolClinicalRecords:snapshot.sourceHealth?.clinicalRows??null,
+      poolRegulatoryRecords:snapshot.sourceHealth?.regulatoryRows??null,
+      poolAsOf:snapshot.asOf||null,
+      poolSourceState:snapshot.sourceHealth?.state||"UNKNOWN",
+      historicalPhase3Records:741,historicalCompletedRecords:375,
+      matchedPhase3Records:matched,matchedCompletedRecords:matchedCompleted,
+      missingOrConflicted:missing,noncompletedReadoutReview:741-375,
+      qualifiedPrograms:null,censusAsOf:directory.censusAsOf,
+      definition:"POOL_SOURCE_RECORDS_VS_PHASE3_HISTORICAL_RESEARCH",
+    },
+  };
+}
+export type ScopeView="pool"|"pipeline";
+export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string) {
+  const q=query.trim().toLowerCase();
+  const matches=(item:PoolTrialRecord|PostPhase3Review)=>[
+    item.ticker,item.company,item.drug,item.indication,
+    "nctId" in item?item.nctId:null,"id" in item?item.id:null,
+  ].some(value=>(value||"").toLowerCase().includes(q));
+  const rows=view==="pool"?funnel.poolRows:funnel.reviewRows;
+  const filtered=q?rows.filter(matches):rows;
+  return {view,overview:funnel.overview,total:filtered.length,offset,limit,
+    rows:filtered.slice(offset,offset+limit),
+    nextOffset:offset+limit<filtered.length?offset+limit:null,
+    qualifiedProgramCount:null,
+    caveat:"Research reconciliation only; no independently verified current $300M–$10B post-Phase 3 program count. All historical candidates remain NEEDS REVIEW."};
+}
