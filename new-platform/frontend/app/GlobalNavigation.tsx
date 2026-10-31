@@ -3,16 +3,15 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 const links=[
  {label:"DASHBOARD",href:"/"},
- {label:"GOAL",href:"/?section=GOAL"},
- {label:"SCANS",href:"/?section=SCANS"},
- {label:"RESULTS",href:"/?section=RESULTS"},
  {label:"POOL",href:"/pool"},
  {label:"PIPELINE",href:"/pipeline"},
- {label:"#1",href:"/patient-population"},
- {label:"RESTRICTIONS",href:"/?section=RESTRICTIONS"},
- {label:"PREDICTIONS",href:"/?section=PREDICTION"},
- {label:"SYSTEM STATUS",href:"/installation-audit"},
- {label:"PREDICTION PILOT",href:"/prediction-pilot"}
+ {label:"SCANS",href:"/scans"},
+ {label:"RESULTS",href:"/results"},
+ {label:"GOAL",href:"/goal"},
+ {label:"RESTRICTIONS",href:"/restrictions"},
+ {label:"PREDICTIONS",href:"/predictions"},
+ {label:"#1 POPULATION",href:"/patient-population"},
+ {label:"SYSTEM STATUS",href:"/installation-audit"}
 ];
 export default function GlobalNavigation(){
  const pathname=usePathname();
