@@ -1,0 +1,61 @@
+name: PDUFA final migration authorized browser verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/pdufa_final_migration_browser.cjs'
+      - '.github/workflows/pdufa-final-migration-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-final-migration-authorized-browser
+  cancel-in-progress: false
+
+jobs:
+  production-read-only-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Require existing authorized dashboard credential
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: |
+          if [ -z "${DASHBOARD_PASSWORD:-}" ]; then
+            echo 'INCOMPLETE: configure the existing production DASHBOARD_PASSWORD repository Actions secret.' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check verifier syntax
+        run: node --check scripts/pdufa_final_migration_browser.cjs
+
+      - name: Install pinned Chromium and WebKit verifier
+        run: |
+          npm install --prefix "$RUNNER_TEMP/pdufa-final-migration-browser" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/pdufa-final-migration-browser/node_modules/.bin/playwright" install --with-deps chromium webkit
+
+      - name: Normal form login and real read-only desktop and iPhone checks
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          NODE_PATH: ${{ runner.temp }}/pdufa-final-migration-browser/node_modules
+          MIGRATION_RESULT_PATH: ${{ runner.temp }}/pdufa-final-migration-evidence/result.json
+          MIGRATION_ARTIFACT_DIR: ${{ runner.temp }}/pdufa-final-migration-evidence
+        run: node scripts/pdufa_final_migration_browser.cjs
+
+      - name: Preserve sanitized counts and native navigation evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-final-migration-sanitized-evidence
+          path: ${{ runner.temp }}/pdufa-final-migration-evidence
+          if-no-files-found: ignore
+          retention-days: 14
+
