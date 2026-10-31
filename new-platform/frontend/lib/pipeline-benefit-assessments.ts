@@ -63,7 +63,7 @@ export type ComparatorEvidence={
 };
 export type ComparatorInventoryResult={accepted:ComparatorEvidence[];rejected:number;approved:number;pipeline:number;rankingAllowed:boolean;issues:string[]};
 function validDate(date:string):boolean{
- if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date))return false;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return false;
  const parsed=new Date(date+"T00:00:00Z");
  return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===date&&parsed.getTime()<=Date.now();
 }
@@ -76,10 +76,10 @@ export function validateComparatorInventory(row:PipelineResearchRow,records:read
     !!row.indication&&c.indication.trim().toLowerCase()===row.indication.trim().toLowerCase();
   const validMeta=!!c.id?.trim()&&!!c.therapy?.trim()&&!!c.manufacturer?.trim()&&
    !!c.lineOfTherapy?.trim()&&!!c.patientPopulation?.trim()&&
-   /^https:\/\/[^\\s]+$/.test(c.sourceUrl||"")&&validDate(c.sourceDate||"")&&
+   /^https:\/\/[^\s]+$/.test(c.sourceUrl||"")&&validDate(c.sourceDate||"")&&
    ["FDA","CLINICAL_TRIALS","PUBLICATION","SEC","SPONSOR"].includes(c.sourceType);
   const validKind=c.kind==="APPROVED"?!!c.regulatorOrTrialId?.trim()&&!!c.approvalOrPhase?.trim():
-   c.kind==="PIPELINE"&&/^NCT\\d{8}$/.test(c.regulatorOrTrialId||"")&&!!c.approvalOrPhase?.trim();
+   c.kind==="PIPELINE"&&/^NCT\d{8}$/.test(c.regulatorOrTrialId||"")&&!!c.approvalOrPhase?.trim();
   const validComparison=["DIRECT_HEAD_TO_HEAD","INDIRECT","NOT_COMPARABLE"].includes(c.comparisonBasis)&&
    ["BETTER","SIMILAR","WORSE","MIXED","INSUFFICIENT_EVIDENCE"].includes(c.finding);
   // A directional comparative claim needs comparator-specific outcome, method, rationale.
