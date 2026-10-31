@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
 import { reconcilePoolPipeline, funnelPage, type FunnelResult, type ScopeView } from "../../../lib/pool-pipeline-funnel";
+import { fetchReadOnlyWithWarmRetry } from "../../../lib/read-only-warm-retry";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -20,8 +21,11 @@ async function source():Promise<FunnelResult> {
     const [csv,json,response]=await Promise.all([
       readFile(join(process.cwd(),"public","phase3-census-2026-10-26.csv"),"utf8"),
       readFile(join(process.cwd(),"public","phase3-census-sources-2026-10-26.json"),"utf8"),
-      fetch(base+"/api/workspace",{
-        headers:{"x-pdufa-internal-key":key},cache:"no-store",signal:AbortSignal.timeout(45000)
+      // One bounded retry for a sleeping/restarting Render instance. Share a
+      // single deadline; never retry auth errors, invalid data or source drift.
+      fetchReadOnlyWithWarmRetry(base+"/api/workspace",{
+        method:"GET",headers:{"x-pdufa-internal-key":key},
+        cache:"no-store",signal:AbortSignal.timeout(50000)
       }),
     ]);
     if(!response.ok)throw new Error("Published source POOL unavailable");
