@@ -402,7 +402,7 @@ export default function GoalDashboard({
             Open original scan #{scanView.runId} ↗
           </a>
         </div>
-        <p className={styles.footnote}>{scanView.note} New programs, changed clinical records, and GEM memberships are different quantities; they cannot be summed.</p>
+        <p className={styles.footnote}>{scanView.note} New programs and changed clinical records are separate quantities and must not be added together.</p>
         {scanView.rows.length ? <div className={styles.tableScroll}>
           <table><thead><tr><th>Stage</th><th>New finding</th><th>Ticker</th><th>Drug / program</th><th>Clinical trial</th><th>Evidence</th></tr></thead>
             <tbody>{scanView.rows.map((row, index) =>
@@ -430,7 +430,7 @@ export default function GoalDashboard({
     <section className={styles.impactIntro} aria-label="GOAL restriction before and after comparison">
       <div className={styles.sectionHeader}>
         <div><h3>Restriction impact · before → after</h3>
-          <p>Independent rule sequences for Pipeline, GEM JR and GEM, each starting with the same complete saved Pipeline universe.</p>
+          <p>Active rule sequence: Pipeline only, screened from the preserved master POOL; original GEM configurations are historical archives.</p>
         </div>
         <button type="button" onClick={calculateSavedImpact}
           disabled={impactLoading || !impactRows?.length || !impactEntries || !sourceAsOf}>
@@ -455,21 +455,13 @@ export default function GoalDashboard({
         <strong>{number(pipelineCount)}</strong><span>Saved Pipeline candidates</span>
         <p>Market-cap, public-company and Phase 3 criteria remain governed by the RESTRICTIONS page.</p>
         <GoalRuleDetails stage="PIPELINE" entries={restrictions?.PIPELINE ?? null} impact={impact?.stages.PIPELINE ?? null} report={impact} onOpen={onOpen}/></section>
-      <section><div className={styles.stageHeader}><h3>◇ GEM JR</h3><button type="button" onClick={() => onOpen("GEM_JR")}>View all →</button></div>
-        <strong>{number(gemJrCount)}</strong><span>Saved stage members</span>
-        <p>Existing GEM JR restrictions and independent FS/FA selections are preserved.</p>
-        <GoalRuleDetails stage="GEM_JR" entries={restrictions?.GEM_JR ?? null} impact={impact?.stages.GEM_JR ?? null} report={impact} onOpen={onOpen}/></section>
-      <section><div className={styles.stageHeader}><h3>◆ GEM</h3><button type="button" onClick={() => onOpen("GEM")}>View all →</button></div>
-        <strong>{number(gemCount)}</strong><span>Saved stage members</span>
-        <p>Existing GEM restrictions, scores and independent FS/FA selections are preserved.</p>
-        <GoalRuleDetails stage="GEM" entries={restrictions?.GEM ?? null} impact={impact?.stages.GEM ?? null} report={impact} onOpen={onOpen}/></section>
     </div>
     <GoalOperationsPanel scan={scanView} scoring={scoringReport} loading={scanLoading}
       onOpenScans={()=>onOpen("SCANS")}/>
     <section className={styles.next} aria-label="GOAL dashboard build milestones">
       <h3>Building this screen toward the reference image</h3>
       <div className={styles.milestones}>
-        <div><strong>In place</strong><span>GOAL tab, desktop/mobile layout, live source-backed cards, Pipeline and GEM links</span></div>
+        <div><strong>In place</strong><span>GOAL tab, desktop/mobile layout, live source-backed cards, and POOL → PIPELINE navigation</span></div>
         <div><strong>Next integration</strong><span>Verified FDA designations, end-to-end provider tests, and expanded scan-result detail</span></div>
         <div><strong>Still pending</strong><span>Recurring Google Drive data backup, end-to-end notification delivery, staging Alpaca repair, and signed-in phone visual review</span></div>
       </div>

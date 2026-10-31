@@ -26,9 +26,8 @@ SOURCES = (
     "phase_pipeline.csv", "all_phase_trials.csv", "phase3_announcements.csv",
     "pdufa_candidates.csv", "fda_review_engine.csv", "prediction_engine_history.csv",
     "drug_metadata.csv", "second_financing_status.csv",
-    "phase_pipeline_market_caps.csv", "gem_stage_membership.json",
+    "phase_pipeline_market_caps.csv",
     "overnight_scan_status.json", "step7_market_status.csv",
-    "gem_two_close_recheck.csv", "gem_runway_evidence.json",
 )
 STAGES = (
     "Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3",
@@ -242,8 +241,7 @@ def gather(today: date | None = None) -> dict:
         "phase3_announcements.csv", "pdufa_candidates.csv",
         "fda_review_engine.csv", "prediction_engine_history.csv",
     )
-    if (not sources["gem_stage_membership.json"] or
-            any(not sources[name] for name in required_pipeline_sources)):
+    if any(not sources[name] for name in required_pipeline_sources):
         # Never publish an artificially low Pipeline total when the original
         # Streamlit feeds are temporarily unavailable. workspace() may reuse
         # its previous snapshot marked STALE, rather than losing trials.
@@ -253,9 +251,10 @@ def gather(today: date | None = None) -> dict:
     caps = unique(records["phase_pipeline_market_caps.csv"], "ticker")
     funding = unique(records["second_financing_status.csv"], "event_key")
     market = unique(records["step7_market_status.csv"], "ticker")
-    sec_recheck = unique(records["gem_two_close_recheck.csv"], "event_key")
-    from .gem_research_adapter import analyze_member, parse_runway
-    runway = parse_runway(sources["gem_runway_evidence.json"])
+    # Archived GEM-specific financing rechecks are not active Pipeline gates.
+    sec_recheck = {}
+    # Legacy GEM cash-runway evidence is archived, not part of POOL qualification.
+    runway = {}
     # Source identity is exact event key; duplicate matches are quarantined.
     primary = unique(records["pdufa_candidates.csv"], "event_key")
     fda = unique(records["fda_review_engine.csv"], "event_key")
@@ -293,10 +292,10 @@ def gather(today: date | None = None) -> dict:
         candidates.append(value)
     trial_count = sum(r["id"].startswith(("TRIAL|", "RESULT|")) for r in candidates)
 
-    by_id = {r["id"]: r for r in candidates}
-    ledger = json.loads(sources["gem_stage_membership.json"])
-    if ledger.get("schema_version") != 1:
-        raise ValueError("Unsupported GEM membership source schema")
+    # Active POOL and PIPELINE no longer consume legacy GEM JR/GEM ledgers.
+    # Historical ledger files, presets and migration history remain archived
+    # in the repository; they are not active qualification or scan inputs.
+    ledger: dict = {}
 
     status = {}
     if sources["overnight_scan_status.json"]:
@@ -308,74 +307,12 @@ def gather(today: date | None = None) -> dict:
         except (ValueError, TypeError):
             problems.append("overnight_scan_status.json: invalid JSON")
 
-    members: dict = {}
-    for stage in ("GEM_JR", "GEM"):
-        detail = ledger.get("stages", {}).get(stage, {})
-        rows = []
-        for exact_id, entry in detail.get("entries", {}).items():
-            if (entry.get("status") != "ACTIVE" or exact_id != entry.get("pipeline_id")
-                    or not exact_id.startswith(("APPLICATION|", "TRIAL|"))):
-                continue
-            ticker = first(entry, "ticker").upper()
-            if not TICKER.fullmatch(ticker):
-                continue
-            source = by_id.get(exact_id, {})
-            if source and source["ticker"] != ticker:
-                source = {}
-            event_key = first(source, "eventKey")
-            event = primary.get(event_key, {}) if event_key else {}
-            row_id = {**source, "id": exact_id, "ticker": ticker,
-                      "nctId": first(entry, "nct_id") or source.get("nctId", "")}
-            try:
-                technical = analyze_member(
-                    row_id, event, funding.get(event_key, {}),
-                    sec_recheck.get(event_key, {}), market, runway.get(ticker),
-                    status, now,
-                )
-            except (ValueError, TypeError, KeyError, OverflowError):
-                technical = {
-                    "entry": None, "exitRisk": None,
-                    "entryStatus": "UNAVAILABLE — SAVED EVIDENCE INVALID",
-                    "exitStatus": "UNAVAILABLE — SAVED EVIDENCE INVALID",
-                    "riskAlerts": ["Original-source calculation could not be verified"],
-                    "researchOnly": True,
-                }
-            rows.append({
-                **source,
-                "id": exact_id, "ticker": ticker, "technical": technical,
-                "drug": first(entry, "drug") or source.get("drug", ""),
-                "nctId": first(entry, "nct_id") or source.get("nctId", ""),
-                "pdufaDate": first(entry, "pdufa_date") or source.get("pdufaDate", ""),
-                "firstFound": first(entry, "first_found"),
-                "lastSeen": first(entry, "last_seen"),
-                "membershipStatus": "ACTIVE IN PUBLISHED STAGE LEDGER",
-                "candidateLinked": bool(source),
-            })
-        # Preserve exact observed stage transitions from the published ledger,
-        # never infer GEM qualification, promotion or exit from a filing date.
-        transitions = []
-        for exact_id, entry in detail.get("entries", {}).items():
-            if exact_id != entry.get("pipeline_id"):
-                continue
-            for cycle, period in enumerate(entry.get("periods", []) or [], start=1):
-                if not isinstance(period, dict):
-                    continue
-                transitions.append({
-                    "id": exact_id,
-                    "ticker": first(entry, "ticker").upper(),
-                    "drug": first(entry, "drug"),
-                    "enteredOn": first(period, "found"),
-                    "leftOn": first(period, "left"),
-                    "reason": first(period, "reason") or first(entry, "left_reason"),
-                    "status": ("DEPARTED" if period.get("left") else
-                               "ACTIVE" if entry.get("status") == "ACTIVE" else "UNRESOLVED"),
-                    "cycle": cycle,
-                })
-        members[stage] = {
-            "asOf": first(detail, "last_complete_snapshot"),
-            "rows": sorted(rows, key=lambda v: (v["ticker"], v["id"])),
-            "history": sorted(transitions, key=lambda v: (v["ticker"], v["enteredOn"], v["cycle"])),
-        }
+    # Empty compatibility keys preserve old read-only schema without linking
+    # GEM stage membership, promotions, historical signals or FS/FA to POOL.
+    members = {
+        "GEM_JR": {"asOf": "", "rows": [], "history": []},
+        "GEM": {"asOf": "", "rows": [], "history": []},
+    }
     from .trial_qualification import attach_trial_filter_facts
     attach_trial_filter_facts(candidates, original, funding, sec_recheck, runway, ledger, now)
     missing_trial_feeds = [

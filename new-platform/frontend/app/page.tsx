@@ -29,7 +29,7 @@ const items = [
   { id: "catalyst", label: "PDUFA date", goal: "Verify 30–60 / 30–90-day windows" }
 ];
 
-const stages: Stage[] = ["PIPELINE", "GEM_JR", "GEM"];
+const stages: Stage[] = ["PIPELINE"];
 const stageName = (stage: Stage) => stage === "GEM_JR" ? "GEM JR" : stage;
 function stateUrl(programId: string, stage: Stage) {
   return "/api/program-state?programId=" + encodeURIComponent(programId) + "&stage=" + encodeURIComponent(stage);
@@ -41,7 +41,7 @@ export default function Home() {
   const [authError, setAuthError] = useState("");
   const [ticker, setTicker] = useState("");
   const [programId, setProgramId] = useState("");
-  const [stage, setStage] = useState<Stage>("GEM_JR");
+  const [stage, setStage] = useState<Stage>("PIPELINE");
   const [selections, setSelections] = useState<Selections>({});
   const [notes, setNotes] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -205,7 +205,7 @@ export default function Home() {
         <SiteHealthStatus />
       </div>
       <header className="head">
-        <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT → TRADING · Trial counts directly below navigation</p></div>
+        <div><h1>PDUFA Command Center</h1><p className="subtle">POOL → PIPELINE → Scientific, FDA and commercial-benefit assessment</p></div>
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
       <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a></p>

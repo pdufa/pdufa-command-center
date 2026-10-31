@@ -94,7 +94,7 @@ class NightlyScanAuditTests(unittest.TestCase):
             extract_test_archive(location)
             with patch.object(audit, "api", side_effect=mocked_api):
                 result = audit.gather(8, "fake", artifacts_dir=folder)
-        self.assertEqual(result["scope"], "CLINICAL_PIPELINE_AND_GEM_JR_COLLECTORS_ONLY")
+        self.assertEqual(result["scope"], "CLINICAL_POOL_PIPELINE_AND_PHASE3_RESULTS_COLLECTORS_ONLY")
         self.assertEqual(result["verification"]["all_source_coverage"], "NOT_VERIFIED")
         self.assertNotEqual(result["status"], "COMPLETE")
         self.assertEqual(len(result["scans"]), 3)

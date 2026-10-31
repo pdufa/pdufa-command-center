@@ -244,37 +244,33 @@ class AwaitedWorkflowTests(unittest.TestCase):
             self.assertIn(previous, dependencies)
             self.assertIn('uses: ./.github/workflows/', part)
             if current != 'clinical': self.assertIn('always()', part)
-        self.assertIn('include_gem: true', job(sequence, 'clinical'))
+        self.assertNotIn('include_gem:', job(sequence, 'clinical'))
         self.assertNotIn('/dispatches', sequence)
         final = job(sequence, 'result')
         for stage in stages: self.assertIn(stage, final)
         self.assertIn("item['result'] != 'success'", final)
 
-    def test_clinical_pipeline_gemjr_and_gem_jobs_are_sequential(self):
+    def test_clinical_pool_pipeline_and_phase3_results_without_gem_jobs(self):
         clinical = read('pdufa-nightly-clinical.yml')
         self.assertNotIn('  scan3:', clinical)
         self.assertNotIn('  scan4:', clinical)
-        self.assertIn("options: ['ALL', 'PIPELINE', 'GEM_JR']", clinical)
+        self.assertIn("options: ['ALL', 'PIPELINE', 'PHASE3_RESULTS']", clinical)
         pipeline = job(clinical, 'pipeline')
-        junior = job(clinical, 'gem_jr')
-        gem = job(clinical, 'gem_block')
-        financing = job(clinical, 'gem_financing')
+        phase3 = job(clinical, 'phase3_results')
         self.assertIn('ref: main', pipeline)
-        self.assertIn('ref: main', junior)
+        self.assertIn('ref: main', phase3)
         for scan in ('2', '3'):
             self.assertIn('validate_clinical_snapshot.py --scan ' + scan, pipeline)
             self.assertIn('nightly-clinical-' + scan, pipeline)
         self.assertLess(pipeline.index('--scan 2'), pipeline.index('--scan 3'))
-        self.assertIn('needs: pipeline', junior)
-        self.assertIn("needs.pipeline.result == 'success'", junior)
-        self.assertIn('validate_clinical_snapshot.py --scan 4', junior)
-        self.assertIn('needs: gem_jr', gem)
-        self.assertIn("needs.gem_jr.result == 'success'", gem)
-        self.assertIn('needs: gem_block', financing)
-        self.assertIn("needs.gem_block.result == 'success'", financing)
+        self.assertIn('needs: pipeline', phase3)
+        self.assertIn("needs.pipeline.result == 'success'", phase3)
+        self.assertIn('validate_clinical_snapshot.py --scan 4', phase3)
+        self.assertNotIn('  gem_block:', clinical)
+        self.assertNotIn('  gem_financing:', clinical)
+        self.assertNotIn('gem_stage_membership', clinical)
         for name in ('pdufa-nightly-clinical.yml','pdufa-nightly-report.yml',
-                     'pdufa-nightly-missing-sources.yml','pdufa-nightly-scoring-then-repair.yml',
-                     'gem-research-quality.yml','gem-financing-full-coverage.yml'):
+                     'pdufa-nightly-missing-sources.yml','pdufa-nightly-scoring-then-repair.yml'):
             self.assertIn('\n  workflow_call:', read(name))
             self.assertNotIn('\n  schedule:', read(name))
 
@@ -297,10 +293,12 @@ class AwaitedWorkflowTests(unittest.TestCase):
         self.assertIn('needs: scoring', job(scoring,'error-check'))
         self.assertIn('needs: [scoring, error-check]', job(scoring,'safe-repair'))
 
-    def test_all_control_uses_same_sequence_instead_of_parallel_gem_dispatch(self):
+    def test_all_control_uses_same_sequence_without_gem_dispatch(self):
         control=read('pdufa-scan-control.yml')
         self.assertIn('"pdufa-overnight-sequential.yml" if scan == "ALL"',control)
-        self.assertIn("inputs.scan == 'ALL' && inputs.action == 'VERIFY_ALL'",control)
+        self.assertIn("options: [ALL, PIPELINE, PHASE3_RESULTS]", control)
+        self.assertNotIn("gem-research-quality.yml/dispatches", control)
+        self.assertNotIn("GEM_JR", control)
         scheduler=read('pdufa-nightly-pacific-start.yml')
         self.assertIn('actions/workflows/pdufa-overnight-sequential.yml/runs?',scheduler)
         self.assertIn('pdufa-overnight-sequential.yml/dispatches',scheduler)

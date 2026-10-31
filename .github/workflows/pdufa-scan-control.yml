@@ -19,7 +19,7 @@ on:
         description: "Source scan for targeted recheck"
         required: true
         type: choice
-        options: [ALL, PIPELINE, GEM_JR, GEM]
+        options: [ALL, PIPELINE, PHASE3_RESULTS]
         default: ALL
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Request collector scan for rescan or partial recheck
-        if: ${{ (inputs.action == 'RESCAN_ALL' || inputs.action == 'REVERIFY_PARTIAL') && inputs.scan != 'GEM' }}
+        if: ${{ (inputs.action == 'RESCAN_ALL' || inputs.action == 'REVERIFY_PARTIAL')  }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
           CONTROL_ACTION: ${{ inputs.action }}
@@ -56,7 +56,7 @@ jobs:
           scan = os.environ["CONTROL_SCAN"]  # target one block or ALL without remapping
           workflow = ("pdufa-overnight-sequential.yml" if scan == "ALL"
                       else "pdufa-nightly-clinical.yml")
-          inputs = ({"gem_action": action, "scan_mode": "FULL" if action == "RESCAN_ALL" else "DELTA"}
+          inputs = ({"scan_mode": "FULL" if action == "RESCAN_ALL" else "DELTA"}
                     if scan == "ALL" else {"scan": scan, "scan_mode": "FULL" if action == "RESCAN_ALL" else "DELTA"})
           url = ("https://api.github.com/repos/" + os.environ["GITHUB_REPOSITORY"]
                  + "/actions/workflows/" + workflow + "/dispatches")
@@ -74,38 +74,8 @@ jobs:
           print("Accepted: " + action + " for clinical scan " + scan)
           print("Newly completed collectors publish a refreshed verified report.")
           PY
-      - name: Dispatch GEMS fourth-block verification, delta check or baseline rescan
-        if: ${{ inputs.scan == 'GEM' || (inputs.scan == 'ALL' && inputs.action == 'VERIFY_ALL') }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          CONTROL_ACTION: ${{ inputs.action }}
-        run: |
-          python - <<'PY'
-          import json
-          import os
-          import urllib.request
-          from urllib.parse import quote
-          action = os.environ["CONTROL_ACTION"]
-          if action not in ("VERIFY_ALL", "REVERIFY_PARTIAL", "RESCAN_ALL"):
-              raise SystemExit("Unrecognized GEM control action")
-          url = ("https://api.github.com/repos/" + os.environ["GITHUB_REPOSITORY"]
-                 + "/actions/workflows/gem-research-quality.yml/dispatches")
-          data = json.dumps({"ref": "main", "inputs": {"action": action}}).encode()
-          req = urllib.request.Request(url, data=data, method="POST", headers={
-              "Authorization": "Bearer " + os.environ["GITHUB_TOKEN"],
-              "Accept": "application/vnd.github+json",
-              "X-GitHub-Api-Version": "2022-11-28",
-              "Content-Type": "application/json",
-              "User-Agent": "pdufa-scan-report-control",
-          })
-          with urllib.request.urlopen(req, timeout=30) as result:
-              if result.status != 204:
-                  raise RuntimeError("GEMS fourth-block dispatch not accepted")
-          print(f"GEMS fourth scan block: {action} accepted, NOT yet completed.")
-          PY
-
       - name: Reverify all archived clinical scan reports
-        if: ${{ (inputs.action == 'VERIFY_ALL' && inputs.scan != 'GEM') || github.event_name == 'push' }}
+        if: ${{ (inputs.action == 'VERIFY_ALL') || github.event_name == 'push' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
@@ -123,7 +93,7 @@ jobs:
                           "--verify-only"], check=True)
           PY
       - name: Publish reverified audit
-        if: ${{ (inputs.action == 'VERIFY_ALL' && inputs.scan != 'GEM') || github.event_name == 'push' }}
+        if: ${{ (inputs.action == 'VERIFY_ALL') || github.event_name == 'push' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

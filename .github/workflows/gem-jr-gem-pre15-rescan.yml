@@ -1,60 +1,15 @@
-name: GEM JR then GEM — pre-Oct-15 admission rescan
-run-name: GEM JR → GEM — full research rescan (restored admission)
-# Operator-initiated Oct 17 research reconciliation; push path is self-only.
-# Eligibility and trading-entry gates in the existing called workflows remain unchanged.
+name: ARCHIVED — GEM JR and GEM historical rescan
+# Retired from active research. Historical data, commits and FS/FA presets stay intact.
+# This workflow no longer executes GEM stage scans or calls source collectors.
 on:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/gem-jr-gem-pre15-rescan.yml']
   workflow_dispatch:
-
 permissions:
-  contents: write
-  actions: read
-
-concurrency:
-  group: gem-jr-gem-pre15-rescan
-  cancel-in-progress: false
-
+  contents: read
 jobs:
-  gem_jr:
-    name: GEM JR — full clinical research rescan
-    uses: ./.github/workflows/pdufa-nightly-clinical.yml
-    with:
-      scan: GEM_JR
-      scan_mode: FULL
-      include_gem: false
-    secrets: inherit
-
-  gem:
-    name: GEM — full research rescan after GEM JR
-    needs: gem_jr
-    if: ${{ needs.gem_jr.result == 'success' }}
-    uses: ./.github/workflows/gem-research-quality.yml
-    with:
-      action: RESCAN_ALL
-    secrets: inherit
-
-  financing:
-    name: GEM — full financing evidence recheck
-    needs: gem
-    if: ${{ needs.gem.result == 'success' }}
-    uses: ./.github/workflows/gem-financing-full-coverage.yml
-    with:
-      scan_mode: FULL
-    secrets: inherit
-
-  outcome:
-    name: Summarize GEM JR and GEM
-    needs: [gem_jr, gem, financing]
-    if: always()
+  archived:
     runs-on: ubuntu-latest
     steps:
-      - name: Report source-scan execution status
-        env:
-          JR_RESULT: ${{ needs.gem_jr.result }}
-          GEM_RESULT: ${{ needs.gem.result }}
-          FINANCE_RESULT: ${{ needs.financing.result }}
+      - name: Explain retired GEM-only workflow
         run: |
-          printf 'GEM JR: %s\nGEM: %s\nGEM financing: %s\n' "$JR_RESULT" "$GEM_RESULT" "$FINANCE_RESULT" >> "$GITHUB_STEP_SUMMARY"
-          test "$JR_RESULT" = success && test "$GEM_RESULT" = success && test "$FINANCE_RESULT" = success
+          echo "GEM JR and GEM stage qualifications were retired from active POOL to PIPELINE screening."
+          echo "Historical ledgers and original source configurations remain archived; this job performs no scans or stage changes."

@@ -8,21 +8,15 @@ on:
       scan:
         type: string
         default: ALL
-      include_gem:
-        type: boolean
-        default: false
-      gem_action:
-        type: string
-        default: REVERIFY_PARTIAL
       scan_mode:
         type: string
         default: DELTA
   workflow_dispatch:
     inputs:
       scan:
-        description: 'Clinical stage to collect (PIPELINE, GEM JR, or full chain)'
+        description: 'Clinical source stage (POOL, Pipeline or posted Phase 3 results)'
         type: choice
-        options: ['ALL', 'PIPELINE', 'GEM_JR']
+        options: ['ALL', 'PIPELINE', 'PHASE3_RESULTS']
         default: 'ALL'
         required: true
       scan_mode:
@@ -30,11 +24,6 @@ on:
         type: choice
         options: [DELTA, FULL]
         default: DELTA
-      include_gem:
-        description: 'Include fourth GEMS block in the nightly ALL sequence'
-        type: boolean
-        default: false
-        required: false
 
 permissions:
   contents: write
@@ -188,12 +177,12 @@ jobs:
             data/phase_pipeline_market_caps.csv
             data/phase3_announcements.csv
 
-  gem_jr:
-    name: 'GEM JR — Phase 3 results and qualification research'
+  phase3_results:
+    name: 'Post–Phase 3 — registry results collector'
     needs: pipeline
-    # GEM_JR-only dispatch skips PIPELINE by design. always() prevents the
+    # PHASE3_RESULTS-only dispatch skips PIPELINE by design. always() prevents the
     # implicit needs-success guard from skipping this independently requested job.
-    if: ${{ always() && (inputs.scan == 'GEM_JR' || (inputs.scan == 'ALL' && needs.pipeline.result == 'success')) }}
+    if: ${{ always() && (inputs.scan == 'PHASE3_RESULTS' || (inputs.scan == 'ALL' && needs.pipeline.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 125
     env:
@@ -280,25 +269,3 @@ jobs:
             data/phase_pipeline_market_caps.csv
             data/phase3_announcements.csv
 
-  gem_block:
-    name: 'GEM — research after GEM JR'
-    needs: gem_jr
-    if: ${{ inputs.scan == 'ALL' && inputs.include_gem && needs.gem_jr.result == 'success' }}
-    permissions:
-      contents: write
-      actions: read
-    uses: ./.github/workflows/gem-research-quality.yml
-    with:
-      action: ${{ inputs.gem_action || 'REVERIFY_PARTIAL' }}
-    secrets: inherit
-
-  gem_financing:
-    name: 'GEM financing full coverage — wait after GEM research'
-    needs: gem_block
-    if: ${{ inputs.scan == 'ALL' && inputs.include_gem && needs.gem_block.result == 'success' }}
-    permissions:
-      contents: read
-    uses: ./.github/workflows/gem-financing-full-coverage.yml
-    with:
-      scan_mode: ${{ inputs.scan_mode || 'DELTA' }}
-    secrets: inherit

@@ -32,9 +32,7 @@ type ApiReport = { daily?: DailyLedger | null };
 const groups: {key: keyof DailyRow["sections"]; label: string; note: string}[] = [
   {key:"master",label:"Old + New — Master Trials",note:"Published NCT trial inventory; not Pipeline-qualified"},
   {key:"pipeline",label:"Pipeline",note:"Mandatory publicly traded, Phase 3 and market-cap restrictions"},
-  {key:"designations",label:"FDA Special Designations",note:"Only independently verified FDA designation evidence"},
-  {key:"gem_jr",label:"GEM JR",note:"Saved qualified members, not newly posted Phase 3 results"},
-  {key:"gem",label:"GEM",note:"Saved qualified members; FS and FA unchanged"}
+  {key:"designations",label:"FDA Special Designations",note:"Only independently verified FDA designation evidence"}
 ];
 const empty: SectionCounts = {previous:null,new:null,updated:null,removed:null,total:null};
 function number(value: Count | undefined) {
@@ -118,7 +116,7 @@ export default function DailyResultsPanel() {
       <div>
         <div className={styles.eyebrow}>PDUFA COMMAND CENTER · RESULTS</div>
         <h2>Overnight Scan Results</h2>
-        <p>Daily saved totals · old + new, Pipeline, FDA special designations, GEM JR and GEM</p>
+        <p>Daily saved totals · old + new, Pipeline and FDA special designations</p>
       </div>
       <button type="button" className="secondary" onClick={()=>setReload(x=>x+1)} disabled={loading}>
         {loading?"Checking…":"Refresh reports"}
@@ -175,10 +173,10 @@ export default function DailyResultsPanel() {
       <p className={styles.muted}>Each evening creates or updates its own dated record. Older days are retained for comparison; failed or incomplete scans are marked, never silently counted as zero.</p>
       <div className="table-scroll">
         <table className={styles.table}>
-          <thead><tr><th>Pacific date</th><th>Master</th><th>Pipeline</th><th>Designations</th><th>GEM JR</th><th>GEM</th><th>Evidence status</th><th>Recorded workflow start</th></tr></thead>
+          <thead><tr><th>Pacific date</th><th>Master</th><th>Pipeline</th><th>Designations</th><th>Evidence status</th><th>Recorded workflow start</th></tr></thead>
           <tbody>{rows.map(r=><tr key={r.date_pacific}>
             <th scope="row"><button type="button" className={styles.dayButton} onClick={()=>setSelected(r.date_pacific)}>{r.date_pacific}</button></th>
-            {(["master","pipeline","designations","gem_jr","gem"] as const).map(k=><td key={k}>{number(r.sections?.[k]?.total)}</td>)}
+            {(["master","pipeline","designations"] as const).map(k=><td key={k}>{number(r.sections?.[k]?.total)}</td>)}
             <td>{statusLabel(r.status)}</td>
             <td>{startLabel(r)}</td>
           </tr>)}</tbody>
@@ -186,6 +184,6 @@ export default function DailyResultsPanel() {
       </div>
     </div>
     {problem && <p className="risk-line" role="alert">{problem}</p>}
-    <p className={styles.muted}>A dash (—) means evidence is missing or unverified, not zero. Master inventory counts do not imply Phase 3 eligibility. GEM JR and GEM remain independent and their FS/FA preset settings are never changed by this report.</p>
+    <p className={styles.muted}>A dash (—) means evidence is missing or unverified, not zero. Master inventory counts do not imply Phase 3 eligibility. Archived GEM stage totals remain in original historical source files, outside the active dashboard.</p>
   </section>;
 }

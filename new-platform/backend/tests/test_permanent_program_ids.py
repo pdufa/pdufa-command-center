@@ -104,19 +104,26 @@ def test_stale_wt_version_conflicts(isolated_db):
 
 
 
-def test_program_checklist_distinguishes_two_drugs_and_stages(isolated_db):
+def test_program_checklist_distinguishes_drugs_in_active_pipeline_and_preserves_gem_archives(isolated_db):
     payload = program_registry.number_workspace(snapshot())
     one, two = [row["programId"] for row in payload["pipeline"] if row["ticker"] == "AAA"]
     first = main.save_program_checklist(
-        one,"GEM_JR",main.ChecklistPayload(notes="Drug one evidence",selections={"phase3":True},version=0)
+        one,"PIPELINE",main.ChecklistPayload(notes="Drug one evidence",selections={"phase3":True},version=0)
     )
     second = main.save_program_checklist(
-        two,"GEM_JR",main.ChecklistPayload(notes="Different drug",selections={},version=0)
+        two,"PIPELINE",main.ChecklistPayload(notes="Different drug",selections={},version=0)
     )
     assert first["version"] == second["version"] == 1
-    assert main.read_program_checklist(one,"GEM_JR")["notes"] == "Drug one evidence"
-    assert main.read_program_checklist(two,"GEM_JR")["notes"] == "Different drug"
+    assert main.read_program_checklist(one,"PIPELINE")["notes"] == "Drug one evidence"
+    assert main.read_program_checklist(two,"PIPELINE")["notes"] == "Different drug"
+    assert main.read_program_checklist(one,"GEM_JR")["notes"] == ""
     assert main.read_program_checklist(one,"GEM")["notes"] == ""
+    for stage in ("GEM_JR","GEM"):
+        with pytest.raises(HTTPException) as exc:
+            main.save_program_checklist(
+                one,stage,main.ChecklistPayload(notes="Must not create new stage",version=0)
+            )
+        assert exc.value.status_code == 410
 
 
 def test_program_notes_do_not_overwrite_legacy_ticker_checklist(isolated_db):

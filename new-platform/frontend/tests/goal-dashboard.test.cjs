@@ -94,8 +94,9 @@ test("GOAL keeps live saved totals and buttons for existing sections",async()=>{
     assert.match(output,/11,795/);
     assert.match(output,/Confirmed complete/);
     assert.match(output,/Test drug/);
-    assert.match(output,/Saved stage members/);
-    assert.match(output,/Existing GEM JR restrictions/);
+    assert.doesNotMatch(output,/Saved stage members/);
+    assert.doesNotMatch(output,/Existing GEM JR restrictions/);
+    assert.match(output,/Pipeline/);
     const buttons=renderer.root.findAllByType("button");
     const stage=buttons.find(b=>b.props.children==="View all →");
     assert.ok(stage);

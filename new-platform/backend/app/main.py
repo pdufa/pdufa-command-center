@@ -652,6 +652,8 @@ def read_checklist(ticker: str, stage: str):
 @app.put("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled)])
 def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
     ticker, stage = validate_location(ticker, stage)
+    if stage != "PIPELINE":
+        raise HTTPException(status_code=410, detail="Legacy GEM JR/GEM stage writes are archived; active research uses PIPELINE")
     payload.validate_size()
     now = datetime.now(timezone.utc)
     with Session(ENGINE) as session:
@@ -1145,6 +1147,8 @@ def read_program_checklist(program_id: str, stage: str):
     Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled),
 ])
 def save_program_checklist(program_id: str, stage: str, payload: ChecklistPayload):
+    if stage.upper() != "PIPELINE":
+        raise HTTPException(status_code=410, detail="Legacy GEM JR/GEM program checklists are archived; active research uses PIPELINE")
     payload.validate_size()
     now = datetime.now(timezone.utc)
     with Session(ENGINE) as session:
