@@ -245,14 +245,14 @@ export default function NctLiveStream() {
       .catch(() => { if (active) setSourceInventory(null); });
     return () => { active = false; };
   }, [run?.nct_id, run?.terminal]);
-  const [savedDecision, setSavedDecision] = useState<{decision:string;status:string;decision_explanation?:{reason_code?:string;reason?:string;scientific_readiness?:string;requires_independent_adjudication?:boolean;requires_outcome_calibration?:boolean};latest_prediction?:{scientific_readiness?:string;uncertainty?:string;created_at?:string}} | null>(null);
+  const [savedDecision, setSavedDecision] = useState<{decision:string;status:string;decision_explanation?:{reason_code?:string;reason?:string;scientific_readiness?:string;requires_independent_adjudication?:boolean;requires_outcome_calibration?:boolean};latest_prediction?:{decision?:string;scientific_readiness?:string;uncertainty?:string;created_at?:string}} | null>(null);
   useEffect(() => {
     if (!run?.nct_id) { setSavedDecision(null); return; }
     let active = true;
     setSavedDecision(null);
     fetch("/api/phase3-trials/" + encodeURIComponent(run.nct_id) + "/predictions", {cache:"no-store"})
       .then(async response => { if (!response.ok) throw new Error("Prediction records unavailable"); return response.json(); })
-      .then(result => { if (active && result && typeof result.decision === "string") setSavedDecision(result); })
+      .then(result => { if (active && result && result.nct_id === run.nct_id && typeof result.decision === "string") setSavedDecision(result); })
       .catch(() => { if (active) setSavedDecision(null); });
     return () => { active = false; };
   }, [run?.nct_id, run?.terminal]);
@@ -269,11 +269,11 @@ export default function NctLiveStream() {
     {run ? <p className="subtle">{run.nct_id} · Run <code>{run.run_id}</code> · Event {run.sequence}{busy ? " · connected or reconnecting" : ""}</p> : null}
     {interrupted && run ? <button type="button" onClick={() => void load(run.nct_id, { nct_id: run.nct_id, run_id: run.run_id })}>Resume saved run</button> : null}
     <div style={{margin:"12px 0",padding:12,border:"1px solid #b5c7b8",borderRadius:8}}>
-      <p><strong>FDA prediction: {savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? savedDecision.decision + " (UNVALIDATED SAVED RECORD)" : "ABSTAIN"}</strong> · Trial: {run?.nct_id || "Select a trial"}</p>
+      <p data-operational-decision="ABSTAIN"><strong>FDA prediction: ABSTAIN</strong> · Trial: {run?.nct_id || "Select a trial"}</p>
       <details>
         <summary style={{cursor:"pointer",fontWeight:700}}>WHY THIS PREDICTION? — explanation and evidence gaps</summary>
         <p><strong>Primary reason:</strong> {savedDecision?.decision_explanation?.reason || (savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? "Saved decision not independently validated." : "Insufficient verified evidence for a defensible PASS, CRL, or EXTENSION prediction.")}</p>
-        <p><strong>Scientific readiness:</strong> {savedDecision?.latest_prediction?.scientific_readiness || "Not verified"} · <strong>Evidence checks:</strong> {readiness ? (readiness.checks_available ?? 0) + " / " + (readiness.checks_total ?? 0) : "Not available"}</p>
+        <p><strong>Scientific adjudication:</strong> Not completed · <strong>Historical calibration:</strong> Not validated · <strong>Evidence checks:</strong> {readiness ? (readiness.checks_available ?? 0) + " / " + (readiness.checks_total ?? 0) : "Not available"}</p>
         <p><strong>Unresolved statistical inputs:</strong> {comparisonCoverage ? comparisonCoverage.blockers.length : "Not yet checked"}</p>
         {comparisonCoverage?.blockers.length ? <ul>{comparisonCoverage.blockers.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul> : <p>{comparisonCoverage ? "No structured-input blockers reported; independent adjudication is still required." : "Run or refresh statistical readiness to retrieve itemized blockers."}</p>}
         {(readiness?.decision_pipeline || []).filter(stage => stage.missing?.length).map(stage => <details key={stage.id}><summary>{stage.id} — {stage.missing?.length} missing requirement(s)</summary><ul>{stage.missing?.map(item => <li key={item}>{item.replaceAll("_", " ")}</li>)}</ul></details>)}
@@ -348,7 +348,13 @@ export default function NctLiveStream() {
       </details>
       <details><summary>MAIN — decision and readiness</summary>
         {nodes.filter(n=>n.level===1).length ? nodes.filter(n=>n.level===1).map(n=><ProcessingNode key={"main-"+n.node_id} event={n}/>) : <p>No MAIN processing event received.</p>}
-        <p role="status" aria-live="polite"><strong>FDA decision prediction: {savedDecision?.decision && savedDecision.decision !== "ABSTAIN" ? savedDecision.decision + " — SAVED RECORD (NOT VALIDATED)" : "ABSTAIN — NOT READY"}.</strong> {savedDecision?.latest_prediction ? " Readiness: " + (savedDecision.latest_prediction.scientific_readiness || "unverified") + ". " + (savedDecision.latest_prediction.uncertainty || "") : busy ? "Evidence collection is running; the scientific decision engine has not been validated." : "No verified decision prediction available from this processing run."}</p>
+        <p role="status" aria-live="polite"><strong>FDA decision prediction: ABSTAIN — NOT READY.</strong> {busy ? "Evidence collection is running; independent scientific adjudication and outcome calibration have not been established." : "No independently adjudicated and calibrated FDA decision is available from this processing run."}</p>
+        {savedDecision?.latest_prediction ? <details data-unvalidated-prediction-record="true">
+          <summary>Saved research prediction · unvalidated historical record</summary>
+          <p>Recorded class: {savedDecision.latest_prediction.decision || "Not available"} · Created: {savedDecision.latest_prediction.created_at || "Not recorded"}</p>
+          <p>Recorded evidence readiness: {savedDecision.latest_prediction.scientific_readiness || "Not verified"}. {savedDecision.latest_prediction.uncertainty || ""}</p>
+          <p>This retained record is not an operational forecast. The operational decision remains ABSTAIN.</p>
+        </details> : null}
       </details>
       <details><summary>Missing evidence and decision requirements</summary>
         {nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").length ? nodes.filter(n=>n.status==="FAILED"||n.status==="INSUFFICIENT_EVIDENCE"||n.status==="PENDING").map(n=><ProcessingNode key={"missing-"+n.node_id} event={n}/>) : <p>No failed, insufficient or pending source checks in the received events. This does not establish complete FDA evidence.</p>}
@@ -381,3 +387,4 @@ export default function NctLiveStream() {
     <style>{`.nct-processing-spinner{display:inline-block;width:12px;height:12px;margin-right:8px;border:2px solid #b9c6ba;border-top-color:#214e2c;border-radius:50%;animation:nct-processing-rotate .8s linear infinite}@keyframes nct-processing-rotate{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.nct-processing-spinner{animation:none;border-style:dotted}}`}</style>
   </section>;
 }
+

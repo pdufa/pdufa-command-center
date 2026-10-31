@@ -34,17 +34,17 @@ export async function GET(req: NextRequest, context: { params: Promise<{ nct_id:
     const data: unknown = await upstream.json();
     if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("Invalid prediction response");
     const record = data as Record<string, unknown>;
-    // Fail closed: no unsupported decision may be displayed without explicit readiness.
-    const latest = record.latest_prediction;
-    const latestReady = latest !== null && typeof latest === "object" && !Array.isArray(latest) &&
-      (latest as Record<string, unknown>).scientific_readiness === "READY";
-    if (!latestReady || !["PASS", "CRL", "EXTENSION"].includes(String(record.decision))) {
-      return NextResponse.json({ ...record, decision: "ABSTAIN", status: "NOT_READY" }, { headers: { "Cache-Control": "private, no-store" } });
-    }
-    return NextResponse.json(record, { headers: { "Cache-Control": "private, no-store" } });
+    if (record.nct_id !== nct_id) throw new Error("Prediction identity mismatch");
+    // READY describes evidence availability. It does not establish independent
+    // scientific adjudication or held-out outcome calibration. Preserve saved
+    // records verbatim as research history; the operational decision abstains.
+    return NextResponse.json({ ...record, decision: "ABSTAIN", status: "NOT_READY",
+      validated_decision_available: false,
+    }, { headers: { "Cache-Control": "private, no-store" } });
   } catch {
     return NextResponse.json({ error: "Prediction backend unavailable", decision: "ABSTAIN", status: "NOT_READY" }, {
       status: 503, headers: { "Cache-Control": "private, no-store" },
     });
   }
 }
+

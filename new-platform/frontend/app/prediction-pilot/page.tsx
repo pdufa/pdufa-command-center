@@ -39,6 +39,14 @@ export default function PeakPredictionPilot() {
       <a href="/installation-audit">Installation audit</a>
       <a href="/trial/NCT05208047">Complete clinical trial sheet</a>
     </nav>
+    <section className="panel" aria-label="Operational prediction safeguard" data-operational-decision="ABSTAIN" style={{marginBottom:18}}>
+      <h2>Current operational decision</h2>
+      <p><strong style={{fontSize:28}}>ABSTAIN</strong> · Insufficient independently adjudicated evidence</p>
+      <p>Scientific readiness: NOT ADJUDICATED · Regulatory readiness: NOT ADJUDICATED</p>
+      <p style={subtle}>Independent scientific adjudication and historical outcome calibration have not been established.
+        No validated FDA probability or trading authorization is available. The frozen research case below
+        preserves its original reported observations and is separate from the current operational decision.</p>
+    </section>
     <header style={{marginBottom:18}}>
       <div className="topline">PDUFA COMMAND CENTER · PHASE 3 TRIAL RESEARCH PILOT</div>
       <h1>COGT · Bezuclastinib + sunitinib</h1>
@@ -56,7 +64,7 @@ export default function PeakPredictionPilot() {
     </header>
 
     <section className="panel" aria-label="Pilot outcome preview" style={{marginBottom:16}}>
-      <h2>Trial prediction · preliminary scientific outlook</h2>
+      <h2>Frozen research observations · preliminary scientific outlook</h2>
       <div style={{...gap,gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,240px),1fr))",marginBottom:12}}>
         <FactCard label="FDA approval probability" value="—%" detail="NOT VALIDATED · No independent calibrated model"/>
         <FactCard label="Observed efficacy direction" value="Favorable" detail="PFS primary endpoint positive in the published Phase 3 analysis"/>
@@ -186,3 +194,4 @@ export default function PeakPredictionPilot() {
     </section>
   </main>;
 }
+
