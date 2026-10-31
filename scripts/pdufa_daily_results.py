@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -158,8 +158,25 @@ def stage_total(ledger: dict, stage: str, day: str) -> dict:
     return result
 
 
-def record(run_id: int, started: str, conclusion: str) -> dict:
-    day = parse_date(started).astimezone(PACIFIC).date().isoformat()
+def record(run_id: int, started: str, conclusion: str, night_date_pacific: str = "") -> dict:
+    started_at = parse_date(started)
+    actual_pacific_date = started_at.astimezone(PACIFIC).date()
+    if night_date_pacific:
+        try:
+            night_date = date.fromisoformat(night_date_pacific)
+        except ValueError as exc:
+            raise ValueError("Invalid guarded Pacific scan night") from exc
+        if (actual_pacific_date - night_date).days not in (0, 1):
+            raise ValueError("Guarded scan night is inconsistent with run start")
+    else:
+        night_date = actual_pacific_date
+    # GitHub run_started_at is the observable workflow start, NOT proof
+    # that GitHub's 8 PM cron triggered punctually.
+    scheduled_target = datetime.combine(night_date, time(20, 0), tzinfo=PACIFIC).astimezone(timezone.utc)
+    delay_minutes = int((started_at - scheduled_target).total_seconds() // 60)
+    if night_date_pacific and delay_minutes < 0:
+        raise ValueError("Guarded scan night begins after actual workflow start")
+    day = night_date.isoformat()
     now = datetime.now(timezone.utc).isoformat()
     run_url = "https://github.com/pdufa/pdufa-command-center/actions/runs/" + str(run_id)
     sections = {
@@ -177,7 +194,7 @@ def record(run_id: int, started: str, conclusion: str) -> dict:
     same_run = (
         report.get("latest_run_id") == run_id
         and isinstance(report.get("latest_run_started_at_utc"), str)
-        and parse_date(report["latest_run_started_at_utc"]).astimezone(PACIFIC).date().isoformat() == day
+        and parse_date(report["latest_run_started_at_utc"]) == started_at
     )
     status = "RUN_FAILED" if conclusion != "success" else "UNVERIFIED"
     if same_run:
@@ -209,14 +226,18 @@ def record(run_id: int, started: str, conclusion: str) -> dict:
         notes.append("Nightly workflow conclusion: " + conclusion + ".")
     return {
         "date_pacific": day, "run_id": run_id, "run_url": run_url, "status": status,
+        "run_started_at_utc": started_at.isoformat(),
+        "scheduled_8pm_pacific_utc": scheduled_target.isoformat(),
+        "start_delay_minutes": delay_minutes,
+        "scan_night_source": "GUARDED_SCHEDULER_INPUT" if night_date_pacific else "ACTUAL_START_DATE_FALLBACK",
         "registered_at_utc": now, "sections": sections, "notes": notes,
     }
 
 
-def publish(run_id: int, started: str, conclusion: str) -> None:
+def publish(run_id: int, started: str, conclusion: str, night_date_pacific: str = "") -> None:
     if run_id < 1 or conclusion not in ("success", "failure", "cancelled", "timed_out"):
         raise ValueError("Invalid GitHub run metadata")
-    entry = record(run_id, started, conclusion)
+    entry = record(run_id, started, conclusion, night_date_pacific)
     try:
         previous = json.loads(ARCHIVE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -261,5 +282,6 @@ if __name__ == "__main__":
     parser.add_argument("--run-id", required=True, type=int)
     parser.add_argument("--started-at", required=True)
     parser.add_argument("--conclusion", required=True)
+    parser.add_argument("--night-date-pacific", default="")
     args = parser.parse_args()
-    publish(args.run_id, args.started_at, args.conclusion)
+    publish(args.run_id, args.started_at, args.conclusion, args.night_date_pacific)
