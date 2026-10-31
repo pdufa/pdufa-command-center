@@ -4,6 +4,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import styles from "./FunnelWorkspace.module.css";
 import { calculateTherapyCosts, type TherapyCostComparison } from "../lib/post-phase3-population";
+import { CompetitiveColumnPurposes, CompetitiveAssessmentHeaders, CompetitiveAssessmentCells } from "./CompetitiveAssessmentColumns";
+import type { CompetitiveAssessment } from "../lib/competitive-assessment";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -12,6 +14,7 @@ type ReviewItem = {
  poolStatus:string;postPhase3Evidence:string;qualification:string;reasons:string[];
  projectedAdoption12MonthPct?:number|null;
  therapyCostComparison?:TherapyCostComparison|null;
+ commercialAssessment?:CompetitiveAssessment|null;
 };
 type Overview = {
  poolRecords:number;poolClinicalRecords:number|null;poolRegulatoryRecords:number|null;
@@ -121,23 +124,23 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
      {!loading && page && <>
        <p className={styles.muted} role="status">Showing {first}–{last} of {page.total.toLocaleString()} records in this view.</p>
        {page.total===0 && <p>No qualifying research rows found in this selected view. A zero row count does not establish zero eligible products.</p>}
+       {section==="pipeline"&&<><p className={styles.muted}>Competitive columns are source-gated. A blank assessment is neither zero nor evidence of failure. Expand each cell for its reason, exact purpose and required verification.</p><CompetitiveColumnPurposes /></>}
        <div className={styles.scroll}><table className={styles.table}>
          <thead><tr>
            {section==="pool"?
              ["Source ID","Ticker","Company","Drug","Indication","Recorded stage","Cap source value","Record type"].map(k=><th key={k}>{k}</th>):
-             ["NCT","Ticker","Company","Drug","Indication","Registry status","Cap at census","POOL match","Screening status","Projected patient adoption (12 mo, %)","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Cost difference ($)","Details"].map(k=><th key={k}>{k}</th>)
+             <>{["NCT","Ticker","Company","Drug","Indication"].map(k=><th key={k}>{k}</th>)}<CompetitiveAssessmentHeaders />{["Registry status","Cap at census","POOL match","Screening status","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Details"].map(k=><th key={k}>{k}</th>)}</>
            }
          </tr></thead>
          <tbody>{page.rows.map(r=>isReview(r)?
            <tr key={r.nctId}>
              <td><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
              <td>{r.ticker}</td><td>{r.company}</td><td>{display(r.drug)}</td><td>{display(r.indication)}</td>
+             <CompetitiveAssessmentCells row={r}/>
              <td>{r.censusStatus}</td><td>${r.capUsd.toLocaleString()}<small>as of {r.capAsOf.slice(0,10)}</small></td>
              <td>{r.poolStatus}</td><td>{r.qualification}</td>
-             <td title="Source-backed 12-month adoption forecast among eligible U.S. patients; not FDA approval probability.">{typeof r.projectedAdoption12MonthPct==="number" && Number.isFinite(r.projectedAdoption12MonthPct) && r.projectedAdoption12MonthPct>=0 && r.projectedAdoption12MonthPct<=100 ? r.projectedAdoption12MonthPct.toFixed(1)+"%" : "Insufficient data"}</td>
              <td>{formatCost(calculateTherapyCosts(r.therapyCostComparison).currentUsd)}</td>
              <td>{formatCost(calculateTherapyCosts(r.therapyCostComparison).proposedUsd)}</td>
-             <td>{formatCost(calculateTherapyCosts(r.therapyCostComparison).costDifferenceUsd)}</td>
              <td><details><summary>Why?</summary><ul>{r.reasons.map(s=><li key={s}>{s}</li>)}</ul></details>
              <details><summary>Regimen and pricing evidence</summary>
                <p>Current: {r.therapyCostComparison?.current?.therapy || "Not researched"} — {r.therapyCostComparison?.current?.regimen || "Regimen unverified"}</p>
