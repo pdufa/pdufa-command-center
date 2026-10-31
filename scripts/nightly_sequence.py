@@ -3,7 +3,7 @@ from __future__ import annotations
 
 WORKFLOW_NAME = "PDUFA Overnight Sequential Scans"
 WORKFLOW_PATH = ".github/workflows/pdufa-overnight-sequential.yml"
-RUN_TITLE = "ALL + GEM — PDUFA overnight"
+RUN_TITLE = "POOL + PIPELINE — PDUFA overnight"
 SOURCE_JOBS = tuple(f"Live PDUFA {family} source check" for family in
                     ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER"))
 SOURCE_TAILS = ("Combined coverage / missing source audit",
