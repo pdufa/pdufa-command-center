@@ -615,12 +615,34 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
                                             "observed_benefit", "benefit_risk_rationale",
                                             "source_evidence_id"],
         }
+        # Extract only explicitly structured, provenance-linked endpoint fields.
+        # Unstructured prose is never converted into invented quantitative values.
+        structured_results = {}
+        if endpoint_available:
+            try:
+                parsed_results = json.loads(endpoint_record["primary_results"])
+                if isinstance(parsed_results, dict):
+                    structured_results = parsed_results
+            except (ValueError, TypeError):
+                pass
         for assessment in assessments:
             required = quantitative_requirements.get(assessment["id"])
             if required:
                 assessment["required_fields"] = required
-                assessment["extracted_fields"] = {}
-                assessment["fields_complete"] = False
+                candidate = structured_results.get(assessment["id"], {})
+                if not isinstance(candidate, dict):
+                    candidate = {}
+                # Evidence ID must match the verified endpoint record, not merely
+                # be supplied by arbitrary embedded JSON.
+                matching_source = (candidate.get("source_evidence_id") == endpoint_record["evidence_id"]) if endpoint_available else False
+                extracted = {key: candidate[key] for key in required
+                             if matching_source and key in candidate
+                             and isinstance(candidate[key], (str, int, float))
+                             and not isinstance(candidate[key], bool)
+                             and str(candidate[key]).strip()}
+                assessment["extracted_fields"] = extracted
+                assessment["fields_complete"] = all(key in extracted for key in required)
+                assessment["extraction_status"] = "STRUCTURED_FIELDS_PRESENT" if extracted else "NO_VERIFIED_STRUCTURED_FIELDS"
                 assessment["adjudication_status"] = "NOT_ADJUDICATED"
                 assessment["automatic_pass"] = False
         # Explicit dependency graph for the decision pipeline. These are real readiness
