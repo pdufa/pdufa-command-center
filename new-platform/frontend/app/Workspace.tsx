@@ -2143,6 +2143,7 @@ function PredictionExplanation() {
   const [statisticalReady, setStatisticalReady] = useState<boolean | null>(null);
   const [readiness, setReadiness] = useState<{checks?:Record<string,boolean>;checks_available?:number;checks_total?:number;missing?:string[];decision_pipeline?:{id:string;status:string;missing?:string[];reason?:string}[];assessments?:{id:string;status:string;reason?:string}[];limitation?:string} | null>(null);
   const [evidenceError, setEvidenceError] = useState("");
+  const [readinessError, setReadinessError] = useState("");
   const [evidenceCheckedAt, setEvidenceCheckedAt] = useState("");
   const [busy, setBusy] = useState(false);
   const requestVersion = useRef(0);
@@ -2150,7 +2151,7 @@ function PredictionExplanation() {
     const id = nct.trim().toUpperCase();
     if (!/^NCT[0-9]{8}$/.test(id)) { setRecord(null); setError("Enter an NCT identifier with eight digits."); return; }
     const version = ++requestVersion.current;
-    setBusy(true); setError(""); setRecord(null); setBlockers(null); setComparisonRows(null); setDocumentCounts(null); setStatisticalReady(null); setReadiness(null); setEvidenceError(""); setEvidenceCheckedAt("");
+    setBusy(true); setError(""); setRecord(null); setBlockers(null); setComparisonRows(null); setDocumentCounts(null); setStatisticalReady(null); setReadiness(null); setEvidenceError(""); setReadinessError(""); setEvidenceCheckedAt("");
     try {
       const response = await fetch("/api/phase3-trials/" + id + "/predictions", {cache:"no-store"});
       if (!response.ok) throw new Error("Prediction service unavailable: " + response.status);
@@ -2162,7 +2163,7 @@ function PredictionExplanation() {
         const readinessPayload = await readinessResponse.json();
         if (version === requestVersion.current) setReadiness(readinessPayload);
       } catch (e) {
-        if (version === requestVersion.current) setEvidenceError(e instanceof Error ? e.message : "Readiness checks unavailable");
+        if (version === requestVersion.current) setReadinessError(e instanceof Error ? e.message : "Readiness checks unavailable");
       }
       try {
         const evidenceResponse = await fetch("/api/phase3-trials/" + id + "/statistical-consistency", {cache:"no-store"});
@@ -2178,18 +2179,19 @@ function PredictionExplanation() {
   return <div className="panel" aria-label="FDA prediction explanation">
     <h3>FDA DECISION · WHY THIS PREDICTION?</h3>
     <label htmlFor="prediction-nct">Trial NCT</label>{" "}
-    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setComparisonRows(null);setDocumentCounts(null);setStatisticalReady(null);setReadiness(null);setEvidenceError("");setEvidenceCheckedAt("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
+    <input id="prediction-nct" value={nct} onChange={e=>{requestVersion.current++;setBusy(false);setNct(e.target.value.toUpperCase());setRecord(null);setBlockers(null);setComparisonRows(null);setDocumentCounts(null);setStatisticalReady(null);setReadiness(null);setEvidenceError("");setReadinessError("");setEvidenceCheckedAt("");setError("");}} placeholder="NCT01234567" maxLength={11} />{" "}
     <button type="button" disabled={busy} onClick={()=>void lookup()}>{busy ? "Loading…" : "Get prediction and reasons"}</button>
     {error && <p role="alert">{error}</p>}
     {record && <>
-      <p role="status"><strong>FDA decision: {record.decision || "ABSTAIN"}</strong> · {record.status || "Not ready"}</p>
+      <p role="status"><strong>Research-stage FDA decision: {record.decision || "ABSTAIN"}</strong> · {record.status === "RECORDED" ? "Saved research record exists — NOT validated" : "No validated prediction"}</p>
       <details><summary>WHY THIS PREDICTION? — evidence and outstanding requirements</summary>
         <p><strong>Primary reason:</strong> {record.decision_explanation?.reason || "No verified reason available."}</p>
         <p><strong>Reason code:</strong> {record.decision_explanation?.reason_code?.replaceAll("_", " ") || "Unavailable"}</p>
         <p><strong>Scientific readiness:</strong> {record.decision_explanation?.scientific_readiness || "Not established"}</p>
         <p><strong>Independent adjudication:</strong> {record.decision_explanation?.requires_independent_adjudication ? "Required" : "Not verified"}</p>
         <p><strong>Historical calibration:</strong> {record.decision_explanation?.requires_outcome_calibration ? "Required" : "Not verified"}</p>
-        {evidenceError && <p role="status"><strong>Evidence diagnostic:</strong> {evidenceError}</p>}
+        {readinessError && <p role="status"><strong>Readiness diagnostic:</strong> {readinessError}</p>}
+        {evidenceError && <p role="status"><strong>Statistical evidence diagnostic:</strong> {evidenceError}</p>}
         {evidenceCheckedAt && <p><strong>Evidence checked:</strong> {evidenceCheckedAt} (request time, not FDA source publication time)</p>}
         <p><strong>Statistical comparison consistency:</strong> {statisticalReady === null ? "Unavailable" : statisticalReady ? "TEXT MATCHES REPORTED — scientific adjudication still required" : "NOT READY — missing or mismatched comparisons"}</p>
         <p><strong>Statistical evidence gaps:</strong> {blockers === null ? "Not available" : blockers.length + " reported"}</p>
