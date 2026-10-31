@@ -14,6 +14,12 @@ import {
 } from "../../lib/post-phase3-population";
 import type { RegistryResearchRecord } from "../../lib/phase3-live-registry";
 import styles from "./PatientPopulationTab.module.css";
+import {
+  EMPTY_PATIENT_POPULATION_FILTERS,
+  filterPatientPopulationRows,
+  type Availability, type PatientPopulationFilters,
+  type NumberColumnFilter, type SourceTextFilter, type PopulationSourceFields,
+} from "../../lib/patient-population-filters";
 
 const PAGE_SIZE = 25;
 type RegistryState =
@@ -36,7 +42,15 @@ function safeResearchRecord(value: unknown, expectedNct: string): RegistryResear
   return record as RegistryResearchRecord;
 }
 
-const researchValue = (value: string | null) => value || "Not researched";
+const researchValue = (value: string | number | null) =>
+  typeof value === "number" ? value.toLocaleString("en-US") : value || "Not researched";
+type NumberKey = "diseasePopulation" | "eligibleUsPatients" | "eligibleGlobalPatients" | "evidence";
+type SourceKey = "drug" | "indication";
+const AVAILABILITY: { value:Availability; label:string }[] = [
+  { value:"all", label:"All records" },
+  { value:"available", label:"With research" },
+  { value:"missing", label:"Not researched" },
+];
 function registryDrugs(record?: RegistryResearchRecord) {
   if (!record) return null;
   const values = record.interventions.filter(x =>
@@ -52,6 +66,7 @@ export default function PatientPopulationTab() {
   const [data, setData] = useState<PostPhase3PopulationTrial[] | null>(null);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState<PatientPopulationFilters>(EMPTY_PATIENT_POPULATION_FILTERS);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [registry, setRegistry] = useState<Record<string, RegistryState>>({});
@@ -77,16 +92,66 @@ export default function PatientPopulationTab() {
     return () => { active = false; };
   }, []);
 
-  const matches = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return (data || []).filter(row => {
-      const source = registry[row.trial.nctId];
-      return !needle || [row.trial.nctId, row.trial.ticker, row.trial.company,
-        source?.status === "ready" ? registryConditions(source.record) : "",
-        source?.status === "ready" ? registryDrugs(source.record) : "",
-      ].join(" ").toLowerCase().includes(needle);
-    });
-  }, [data, query, registry]);
+  const resolvedSources = useMemo<Record<string,PopulationSourceFields>>(() => {
+    const result: Record<string,PopulationSourceFields> = {};
+    for (const [nct,source] of Object.entries(registry)) {
+      if(source.status === "ready") result[nct] = {
+        drug:registryDrugs(source.record),indication:registryConditions(source.record),
+      };
+    }
+    return result;
+  }, [registry]);
+  const matches = useMemo(() =>
+    filterPatientPopulationRows(data || [],{...filters,all:query},resolvedSources),
+    [data,filters,query,resolvedSources]);
+
+  function modifyFilter(field: SourceKey,patch:Partial<SourceTextFilter>) {
+    setFilters(prev => ({...prev,[field]:{...prev[field],...patch}}));
+    setPage(0);setSelected(null);
+  }
+  function modifyNumber(field:NumberKey,patch:Partial<NumberColumnFilter>) {
+    setFilters(prev => ({...prev,[field]:{...prev[field],...patch}}));
+    setPage(0);setSelected(null);
+  }
+  function modifyDate(patch:Partial<PatientPopulationFilters["lastUpdated"]>) {
+    setFilters(prev => ({...prev,lastUpdated:{...prev.lastUpdated,...patch}}));
+    setPage(0);setSelected(null);
+  }
+  function resetFilters() {
+    setFilters(EMPTY_PATIENT_POPULATION_FILTERS);
+    setQuery("");setPage(0);setSelected(null);
+  }
+  function availabilitySelect(
+    value:Availability,onChange:(value:Availability)=>void,label:string
+  ) {
+    return <select aria-label={label} value={value}
+      onChange={e=>onChange(e.target.value as Availability)} className={styles.columnSelect}>
+      {AVAILABILITY.map(o=><option value={o.value} key={o.value}>{o.label}</option>)}
+    </select>;
+  }
+  function textColumn(field:SourceKey,title:string) {
+    return <div className={styles.columnFilter}>
+      <input type="search" aria-label={"Filter "+title} placeholder={"Find "+title.toLowerCase()}
+        value={filters[field].search}
+        onChange={e=>modifyFilter(field,{search:e.target.value})} />
+      {availabilitySelect(filters[field].status,value=>modifyFilter(field,{status:value}),title+" research status")}
+    </div>;
+  }
+  function numberColumn(field:NumberKey,title:string) {
+    const filter=filters[field];
+    const percentage=field==="evidence";
+    return <div className={styles.columnFilter}>
+      {availabilitySelect(filter.status,value=>modifyNumber(field,{status:value}),title+" research status")}
+      <div className={styles.rangeInputs}>
+        <input type="number" min={0} max={percentage?100:undefined}
+          aria-label={"Minimum "+title} placeholder={percentage?"Min %":"Min"}
+          value={filter.minimum} onChange={e=>modifyNumber(field,{minimum:e.target.value})} />
+        <input type="number" min={0} max={percentage?100:undefined}
+          aria-label={"Maximum "+title} placeholder={percentage?"Max %":"Max"}
+          value={filter.maximum} onChange={e=>modifyNumber(field,{maximum:e.target.value})} />
+      </div>
+    </div>;
+  }
 
   const pageCount = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
@@ -143,16 +208,47 @@ export default function PatientPopulationTab() {
         <input type="search" value={query} onChange={e => { setQuery(e.target.value); setPage(0); setSelected(null); }}
           placeholder="Example: ABVX or NCT05507203" />
       </label>
+      <div className={styles.filterToolbar}>
+        <span>Use independent column filters beneath the headings. Drug and indication can be filtered once their exact NCT sources have been loaded.</span>
+        <button type="button" className={styles.resetButton} onClick={resetFilters}>Clear all filters</button>
+      </div>
       {error && <p role="alert" className={styles.error}>{error}</p>}
       {!data && !error && <p role="status">Validating complete dated census and market-cap source links…</p>}
       {data && <p className={styles.muted} role="status">{matches.length} matching completed trial records ·
         showing {matches.length ? currentPage * PAGE_SIZE + 1 : 0}–{Math.min((currentPage + 1) * PAGE_SIZE, matches.length)}.
       </p>}
+      {data && !matches.length && <p role="status" className={styles.emptyResults}>
+        No trial records match these filters. Clear filters or choose Not researched to inspect missing data.
+      </p>}
       {data && <div className={styles.scroll}>
         <table className={styles.table}>
           <thead><tr>
-            {["Ticker / study","Drug","Indication","Total disease population","Eligible U.S. patients","Eligible global patients","Evidence completeness","Last updated","Details"].map(label =>
-              <th key={label} scope="col">{label}</th>)}
+            <th scope="col">Ticker / study
+              <div className={styles.columnFilter}>
+                <input type="search" aria-label="Filter ticker, study or company"
+                  placeholder="Ticker / NCT / company" value={filters.ticker}
+                  onChange={e=>{setFilters(v=>({...v,ticker:e.target.value}));setPage(0);setSelected(null)}} />
+              </div>
+            </th>
+            <th scope="col">Drug{textColumn("drug","Drug")}</th>
+            <th scope="col">Indication{textColumn("indication","Indication")}</th>
+            <th scope="col">Total disease population{numberColumn("diseasePopulation","Total disease population")}</th>
+            <th scope="col">Eligible U.S. patients{numberColumn("eligibleUsPatients","Eligible U.S. patients")}</th>
+            <th scope="col">Eligible global patients{numberColumn("eligibleGlobalPatients","Eligible global patients")}</th>
+            <th scope="col">Evidence completeness{numberColumn("evidence","Evidence completeness")}</th>
+            <th scope="col">Last updated
+              <div className={styles.columnFilter}>
+                {availabilitySelect(filters.lastUpdated.status,
+                  status=>modifyDate({status}),"Last updated verification status")}
+                <div className={styles.rangeInputs}>
+                  <input type="date" aria-label="Last updated from" value={filters.lastUpdated.from}
+                    onChange={e=>modifyDate({from:e.target.value})} />
+                  <input type="date" aria-label="Last updated through" value={filters.lastUpdated.to}
+                    onChange={e=>modifyDate({to:e.target.value})} />
+                </div>
+              </div>
+            </th>
+            <th scope="col">Details</th>
           </tr></thead>
           <tbody>{visible.map(row => {
             const nct = row.trial.nctId;
