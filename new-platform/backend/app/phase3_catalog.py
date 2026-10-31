@@ -701,8 +701,10 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         return {"nct_id": nct_id, "comparisons": comparisons,
                 "integrity_matched_document_counts": evidence_counts,
                 "comparison_ready": bool(declarations["PROTOCOL"] and declarations["SAP"] and reported and all(
-                    item["status"] in {"TEXT_MATCH", "TEXT_MISMATCH"} for item in comparisons)),\n                "comparison_complete": bool(comparisons and all(
-                    item["status"] in {"TEXT_MATCH", "TEXT_MISMATCH"} for item in comparisons)),\n                "has_conflicting_declarations": any(
+                    item["status"] in {"TEXT_MATCH", "TEXT_MISMATCH"} for item in comparisons)),
+                "comparison_complete": bool(comparisons and all(
+                    item["status"] in {"TEXT_MATCH", "TEXT_MISMATCH"} for item in comparisons)),
+                "has_conflicting_declarations": any(
                     item["status"] == "CONFLICTING_DECLARATIONS" for item in comparisons),
                 "adjudication_status": "NOT_ADJUDICATED", "decision": "ABSTAIN",
                 "limitation": "Text comparison only; does not validate statistical methods or FDA outcome."}
