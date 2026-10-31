@@ -374,6 +374,14 @@ async function mobile(browser, password) {
   await checkNavigation(page, 'webkit_mobile');
   for (const pathname of ['/pool', '/pipeline', '/patient-population', '/goal', '/scans', '/results', '/restrictions', '/predictions']) {
     await goto(page, pathname, 'webkit_' + pathname.slice(1).replaceAll('-', '_'));
+    // A real mobile reader waits for the source-backed page to hydrate and
+    // display its rows before moving to the next route. Navigating away during
+    // an in-flight WebKit fetch can generate artificial pageerror events.
+    if (pathname === '/pool' || pathname === '/pipeline') {
+      await page.locator('tbody tr').first().waitFor({ state: 'visible', timeout: 65000 });
+      assert(await page.locator('main [role="alert"]').count() === 0,
+        'webkit_' + pathname.slice(1) + '_source_reconciled_without_alert');
+    }
     const nav = page.getByRole('navigation', { name: 'Site navigation', exact: true });
     assert(await nav.isVisible(), 'webkit_native_navigation_persists');
     assert(await page.locator('h1').first().isVisible(), 'webkit_route_heading_visible');
