@@ -33,6 +33,7 @@ import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
+import { detachGemAssociations } from "../lib/pool-pipeline-restrictions";
 import { catalogStages, catalogStagePriority, catalogDefinition, selectedRestrictionList, insertRestrictionIntoList, removeRestrictionFromList, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
@@ -754,17 +755,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [gemSavedOnly,setGemSavedOnly]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
   // One persisted set of restriction definitions and stage assignments drives
   // the central catalog and both GEM qualification scan checklists.
-  const [masterRestrictions,setMasterRestrictions]=useState<CatalogEntry[]>(defaultCatalogEntries);
+  const [masterRestrictions,setMasterRestrictions]=useState<CatalogEntry[]>(()=>detachGemAssociations(defaultCatalogEntries()));
   const [masterRestrictionsReady,setMasterRestrictionsReady]=useState(false);
   useEffect(()=>{
-    try{const raw=window.localStorage.getItem("pdufa-restriction-catalog-v1");
-      if(raw)setMasterRestrictions(restoreCatalogEntries(JSON.parse(raw)));}
+    try{const raw=window.localStorage.getItem("pdufa-pool-pipeline-catalog-v2") || window.localStorage.getItem("pdufa-restriction-catalog-v1");
+      if(raw)setMasterRestrictions(detachGemAssociations(restoreCatalogEntries(JSON.parse(raw))));}
     catch{/* Keep approved defaults if browser storage is unavailable. */}
     setMasterRestrictionsReady(true);
   },[]);
   useEffect(()=>{
     if(!masterRestrictionsReady)return;
-    try{window.localStorage.setItem("pdufa-restriction-catalog-v1",JSON.stringify(masterRestrictions));}
+    try{window.localStorage.setItem("pdufa-pool-pipeline-catalog-v2",JSON.stringify(detachGemAssociations(masterRestrictions)));}
     catch{/* Editing remains available in memory. */}
   },[masterRestrictions,masterRestrictionsReady]);
   type RestrictionPresetStage = "PIPELINE" | "GEM_JR" | "GEM";
@@ -1944,7 +1945,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <div className="panel" style={{padding:12,display:"grid",gap:8}}>
         <strong>SAVED RESTRICTION LISTS</strong>
         <label>View list <select value={restrictionListView} onChange={e=>setRestrictionListView(e.target.value as "PIPELINE"|"GEM_JR"|"GEM")}>
-          <option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option>
+          <option value="PIPELINE">Pipeline</option>
         </select></label>
         <div>{masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).length} saved restrictions</div>
         {masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).map(e=><div key={e.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
@@ -1963,8 +1964,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
             <div className="subtle">{catalogDefinition(entry).help}</div>
             <div className="subtle">Lists: {catalogStages(entry).join(", ")||"None"} · {entry.enabled?"Active":"Inactive"}</div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,marginTop:10}}>
-              <label>Choose restriction list <select aria-label={"Destination list for "+catalogDefinition(entry).title} value={restrictionDestination[entry.id]||"PIPELINE"} onChange={e=>setRestrictionDestination(old=>({...old,[entry.id]:e.target.value as "PIPELINE"|"GEM_JR"|"GEM"}))}>
-                <option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option>
+              <label>Choose restriction list <select aria-label={"Destination list for "+catalogDefinition(entry).title} value={restrictionDestination[entry.id]||"PIPELINE"} onChange={e=>setRestrictionDestination(old=>({...old,[entry.id]:"PIPELINE"}))}>
+                <option value="PIPELINE">Pipeline</option>
               </select></label>
               {(()=>{
                 const stage=restrictionDestination[entry.id]||"PIPELINE";
@@ -1991,18 +1992,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </section>}
     {top==="RESTRICTIONS" && restrictionTab==="PRESET" && <section aria-label="Saved restriction presets" style={{display:"grid",gap:12,width:"100%",minWidth:0}}>
       <h2>PRESET — Saved restriction configurations</h2>
-      <p className="subtle">Choose Pipeline, GEM JR or GEM presets below. Load, rename by saving under a new name, overwrite or delete. Edit restriction values on the RESTRICTIONS tab, then save your changes as a preset at the bottom of that list.</p>
-      {(["PIPELINE","GEM_JR","GEM"] as RestrictionPresetStage[]).map(stage=><div key={stage} className="panel" style={{padding:16}}>
+      <p className="subtle">Only Pipeline presets are active. Previous GEM JR/GEM presets remain in original browser storage and are not imported into this new Pool/Pipeline list.</p>
+      {(["PIPELINE"] as RestrictionPresetStage[]).map(stage=><div key={stage} className="panel" style={{padding:16}}>
         <h3>{stage.replace("_"," ")} PRESETS · {restrictionPresets[stage].length} saved</h3>
         {restrictionPresetControls(stage)}
       </div>)}
     </section>}
-    {snapshot && top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <section aria-label="Three independent restriction lists" style={{display:"flex",flexDirection:"column",gap:12,width:"100%",minWidth:0}}>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
+    {snapshot && top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <section aria-label="Independent Pool and Pipeline restrictions" style={{display:"flex",flexDirection:"column",gap:12,width:"100%",minWidth:0}}>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>POOL → PIPELINE RESTRICTIONS</summary><RestrictionImpact poolPipelineOnly rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
         {bottomPresetSave("PIPELINE")}
       </details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}{bottomPresetSave("GEM_JR")}</details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}{bottomPresetSave("GEM")}</details>
+      <p className="subtle">GEM JR / GEM associations are not part of this independent Pool → Pipeline restriction flow. Historical records remain archived separately.</p>
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
