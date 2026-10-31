@@ -583,6 +583,21 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             # The stored document is available for later review, but metadata
             # alone cannot certify protocol or SAP content. Do not expose the
             # document body or infer a document type from a filename.
+            # Classify only explicitly labeled document types in structured
+            # stored evidence. This is a candidate classification, not review.
+            candidate_kind = None
+            if source["stored_document_integrity"] == "MATCH" and isinstance(document, str):
+                try:
+                    payload = json.loads(document)
+                    if isinstance(payload, dict):
+                        label = payload.get("document_type")
+                        if isinstance(label, str):
+                            normalized = label.strip().upper().replace("-", "_").replace(" ", "_")
+                            if normalized in {"PROTOCOL", "STATISTICAL_ANALYSIS_PLAN", "SAP"}:
+                                candidate_kind = "SAP" if normalized == "STATISTICAL_ANALYSIS_PLAN" else normalized
+                except (ValueError, TypeError):
+                    pass
+            source["candidate_document_type"] = candidate_kind
             source["document_review_status"] = "NOT_REVIEWED"
             source["document_classification"] = "UNCLASSIFIED"
             source["provenance_complete"] = bool(
