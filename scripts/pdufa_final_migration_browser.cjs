@@ -111,7 +111,8 @@ async function checkNavigation(page, prefix) {
 async function waitRows(page, code) {
   await page.waitForFunction(() => document.querySelector('tbody tr') !== null, null, { timeout: 65000 });
   assert(await page.locator('tbody tr').count() > 0, code + '_rows_render');
-  const alerts = page.getByRole('alert');
+  // Next.js' route announcer uses role=alert outside <main>; only inspect actual application errors.
+  const alerts = page.locator('main [role="alert"]');
   if (await alerts.count() > 0) {
     const contexts = await alerts.evaluateAll(nodes => nodes.map(n => n.closest('[aria-label]')?.getAttribute('aria-label') || n.parentElement?.tagName || 'unknown'));
     console.log('PDUFA_ACCEPTANCE_ALERT_CONTEXT ' + JSON.stringify({code, count:contexts.length, contexts:contexts.slice(0,4)}));
@@ -206,7 +207,10 @@ async function testScans(context, page) {
   const published = page.getByRole('button', { name: 'REFRESH PUBLISHED SCAN STATUS', exact: true });
   await published.waitFor({ state: 'visible', timeout: 30000 });
   await published.click();
-  const stage = page.getByLabel('Stage', { exact: true });
+  // Select the actual scan control. Accessible-name "Stage" can match a
+  // screen-reader/summary element that is not a <select> and has no options.
+  const stage = page.locator('.scans-actions-grid label').filter({ hasText: /^Stage/ }).locator('select').first();
+  await stage.waitFor({ state: 'visible', timeout: 30000 });
   const options = await stage.locator('option').evaluateAll(items => items.map(item => item.value));
   console.log('PDUFA_ACCEPTANCE_SCAN_OPTIONS ' + JSON.stringify(options.slice(0,20)));
   assert(options.includes('PIPELINE') && options.includes('PHASE3_RESULTS') && !options.some(v => /GEM|WT/.test(v)), 'scan_targets_native_pool_pipeline_only');
