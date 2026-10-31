@@ -1780,15 +1780,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <h2>PREDICTION</h2>
       <p>Historical Outcome Prediction (HOP) · Published GEM JR, GEM and W/T lists</p>
       <p role="status"><strong>Research only:</strong> Historical matching and validated approval probabilities are not available yet. Existing PoA values are not HOP predictions.</p>
-      <div className="panel" aria-label="FDA prediction explanation">
-        <h3>WHY THIS PREDICTION?</h3>
-        <p>Choose a trial in the library below to open its saved FDA decision and evidence-based explanation.</p>
-        <details><summary>Decision rationale and remaining requirements</summary>
-          <p>ABSTAIN means a scientifically validated PASS, CRL, or EXTENSION decision is not established.</p>
-          <p>Check SCIENCE readiness, statistical evidence blockers, independent adjudication, and historical calibration in the trial analysis.</p>
-          <p>Saved probabilities and screening scores are not validated FDA predictions.</p>
-        </details>
-      </div>
+      <PredictionExplanation />
       <HopReadinessPanel />
       {!snapshot ? <p>Load published candidates to see the source-linked trial inventory. No estimates will be generated.</p> : <>
         <p className="subtle">Published snapshot: {snapshot.asOf} · Membership and W/T labels reflect their respective saved sources.</p>
@@ -2137,6 +2129,43 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <div className="table-scroll"><table><thead><tr><th>PDUFA</th><th>Program ID</th><th>Ticker</th><th>Drug</th><th>Program</th><th>Days away</th><th>FDA/source</th></tr></thead>
         <tbody>{pipeline.filter(r=>daysAway(r.pdufaDate)!==null && (daysAway(r.pdufaDate)||0)>=0).sort((a,b)=>(daysAway(a.pdufaDate)||0)-(daysAway(b.pdufaDate)||0)).map(r=><tr key={r.id}><td>{r.pdufaDate}</td><td className="permanent-id">{stated(r.programId)}</td><td>{r.ticker}</td><td>{r.drug}</td><td>{r.id}</td><td>{daysAway(r.pdufaDate)}</td><td>{stated(r.checkStatus)}</td></tr>)}</tbody>
       </table></div></section>}
+  </div>;
+}
+
+
+function PredictionExplanation() {
+  const [nct, setNct] = useState("");
+  const [record, setRecord] = useState<any>(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function lookup() {
+    const id = nct.trim().toUpperCase();
+    if (!/^NCT[0-9]{8}$/.test(id)) { setError("Enter an NCT identifier with eight digits."); return; }
+    setBusy(true); setError(""); setRecord(null);
+    try {
+      const response = await fetch("/api/phase3-trials/" + id + "/predictions", {cache:"no-store"});
+      if (!response.ok) throw new Error("Prediction service unavailable: " + response.status);
+      setRecord(await response.json());
+    } catch (e) { setError(e instanceof Error ? e.message : "Unable to load prediction"); }
+    finally { setBusy(false); }
+  }
+  return <div className="panel" aria-label="FDA prediction explanation">
+    <h3>FDA DECISION · WHY THIS PREDICTION?</h3>
+    <label htmlFor="prediction-nct">Trial NCT</label>{" "}
+    <input id="prediction-nct" value={nct} onChange={e=>setNct(e.target.value.toUpperCase())} placeholder="NCT01234567" maxLength={11} />{" "}
+    <button type="button" disabled={busy} onClick={()=>void lookup()}>{busy ? "Loading…" : "Get prediction and reasons"}</button>
+    {error && <p role="alert">{error}</p>}
+    {record && <>
+      <p role="status"><strong>FDA decision: {record.decision || "ABSTAIN"}</strong> · {record.status || "Not ready"}</p>
+      <details><summary>WHY THIS PREDICTION? — evidence and outstanding requirements</summary>
+        <p><strong>Primary reason:</strong> {record.decision_explanation?.reason || "No verified reason available."}</p>
+        <p><strong>Reason code:</strong> {record.decision_explanation?.reason_code?.replaceAll("_", " ") || "Unavailable"}</p>
+        <p><strong>Scientific readiness:</strong> {record.decision_explanation?.scientific_readiness || "Not established"}</p>
+        <p><strong>Independent adjudication:</strong> {record.decision_explanation?.requires_independent_adjudication ? "Required" : "Not verified"}</p>
+        <p><strong>Historical calibration:</strong> {record.decision_explanation?.requires_outcome_calibration ? "Required" : "Not verified"}</p>
+        <p>Saved predictions do not establish validated FDA outcomes or trading suitability.</p>
+      </details>
+    </>}
   </div>;
 }
 
