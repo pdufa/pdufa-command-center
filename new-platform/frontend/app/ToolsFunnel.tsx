@@ -7,6 +7,8 @@ type Props={
   selectedTrials:number|null;
   selectedStages:number;
   totalStages:number;
+  selectedStageLabels:string[];
+  selectedDesignationLabels:string[];
   selectedDesignations:number;
   designationUniqueTrials:number|null;
   designationCoverage:{sourcePrograms:number;unlinkedPrograms:number;linkedNcts:number;noVerifiedNctLinks:boolean}|null;
@@ -23,7 +25,7 @@ const num=(value:number)=>value.toLocaleString("en-US");
  * stage-filtered POOL matches with verified post-Phase-3 PIPELINE eligibility.
  */
 export default function ToolsFunnel({
-  poolNcts,selectedTrials,selectedStages,totalStages,selectedDesignations,
+  poolNcts,selectedTrials,selectedStages,totalStages,selectedStageLabels,selectedDesignationLabels,selectedDesignations,
   designationUniqueTrials,designationCoverage,loading,error,searchActive,sourceDate,sourceState
 }:Props){
   const filterActive=selectedStages>0||selectedDesignations>0;
@@ -35,6 +37,8 @@ export default function ToolsFunnel({
   const parity=shouldCompare&&designationUniqueTrials!==null&&selectedTrials!==null
     ?designationUniqueTrials===selectedTrials:null;
   const date=sourceDate&&sourceDate!=="Not recorded"?sourceDate:"Date not available";
+  const stagesLabel=selectedStages===totalStages?"All "+totalStages+" stages":selectedStages<=3?selectedStageLabels.join(", "):selectedStages+" stages";
+  const designationsLabel=selectedDesignationLabels.length<=2?selectedDesignationLabels.join(", "):selectedDesignationLabels.length+" FDA categories";
 
   return <section className={styles.toolsFunnel} aria-label="POOL to PIPELINE to TRIALS filter flow">
     <div className={styles.toolsFunnelHeading}>
@@ -44,6 +48,12 @@ export default function ToolsFunnel({
       </div>
       <span className={styles.toolsFunnelDate}>POOL source: {date}</span>
     </div>
+    {filterActive&&<div className={styles.toolsFunnelActiveFilters} aria-label="Currently checked TOOLS filters">
+      <strong>SELECTED FILTERS</strong>
+      {selectedDesignations>0&&<span>FDA: {designationsLabel}</span>}
+      {selectedStages>0&&<span>Stages: {stagesLabel}</span>}
+      {searchActive&&<span>Text search active</span>}
+    </div>}
     <div className={styles.toolsFunnelSteps}>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelPool}>
         <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">▤</span><h3>POOL</h3></div>
@@ -61,17 +71,29 @@ export default function ToolsFunnel({
       <span className={styles.toolsFunnelArrow} aria-hidden="true">→</span>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelTrials}>
         <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">◎</span><h3>TRIALS</h3></div>
-        <div className={styles.toolsFunnelValue} role="status" aria-live="polite" aria-atomic="true">{trialStatus}</div>
-        <p>{noNctLink?"Trial count unknown":selectedDesignations>0?"Documented linked NCT matches":"Selected POOL trial matches"}</p>
-        <small>{noNctLink
-          ?num(designationCoverage!.sourcePrograms)+" FDA program records lack verified NCT links; cannot count trials"
-          :filterActive?selectedDesignations>0?"Partial FDA-to-NCT evidence; not comprehensive":"Calculated from selected clinical stages":"0 filters checked"}</small>
+        {noNctLink&&!loading&&!error
+          ?<div className={styles.toolsFunnelUnlinkedResult} role="status" aria-live="polite" aria-atomic="true">
+            <div className={styles.toolsFunnelNctUnknown}>
+              <span>UNIQUE NCT TRIAL COUNT</span>
+              <strong>{trialStatus}</strong>
+              <small>Trial IDs and phases have not been verified</small>
+            </div>
+            <div className={styles.toolsFunnelProgramBand}>
+              <span>FDA APPLICATION / PROGRAM RECORDS</span>
+              <strong>{num(designationCoverage!.sourcePrograms)}</strong>
+              <small>Documented programs — NOT {num(designationCoverage!.sourcePrograms)} distinct trials</small>
+            </div>
+          </div>
+          :<>
+            <div className={styles.toolsFunnelValue} role="status" aria-live="polite" aria-atomic="true">{trialStatus}</div>
+            <p>{selectedDesignations>0?"Documented linked NCT matches":"Selected POOL trial matches"}</p>
+            <small>{filterActive?selectedDesignations>0?"Partial FDA-to-NCT evidence; not comprehensive":"Calculated from selected clinical stages":"0 filters checked"}</small>
+          </>}
       </div>
     </div>
     <p className={styles.toolsFunnelIntegrity}>
-      <strong>Scope:</strong> The TRIALS figure currently filters the full POOL, <strong>not a verified PIPELINE-qualified subset</strong>.
-      The PIPELINE number cannot be calculated until every eligibility restriction has verified source data.
-      {sourceState==="PARTIAL"?" The published POOL source is marked PARTIAL.":""}
+      TRIALS uses the full POOL. <strong>PIPELINE eligibility is not yet verified.</strong>
+      {sourceState==="PARTIAL"?" POOL source coverage: PARTIAL.":""}
     </p>
     <details className={styles.toolsFunnelRestrictions}>
       <summary>Required PIPELINE restrictions — awaiting full verification</summary>
@@ -84,11 +106,13 @@ export default function ToolsFunnel({
       </ul>
       <p>These are required eligibility checks, not five automatically passed or applied restrictions.</p>
     </details>
-    {noNctLink&&!loading&&!error&&<p className={styles.toolsFunnelParityWarning} role="status">
-      {num(designationCoverage!.sourcePrograms)} FDA application/program records are documented, but their NCT trial links are not verified.
-      {allStages?" Selecting all stages cannot establish the number of clinical trials for these programs.":""}
-      Program-record counts must not be presented as verified trial counts.
-    </p>}
+    {noNctLink&&!loading&&!error&&<details className={styles.toolsFunnelRestrictions}>
+      <summary>Why are the FDA program count and trial count different?</summary>
+      <p>{num(designationCoverage!.sourcePrograms)} FDA application/program records are documented, but their NCT trial links are not verified.
+        {allStages?" Selecting all stages cannot establish the number of clinical trials for these programs.":""}
+        Program-record counts must not be presented as verified trial counts.</p>
+      <p>See the FDA source-program spreadsheet below for each regulatory record and its evidence link.</p>
+    </details>}
     {shouldCompare&&<p className={parity===true?styles.toolsFunnelParityPass:styles.toolsFunnelParityWarning} role="status">
       {parity===true
         ?"All-stage check passed: "+num(selectedTrials!)+" matched trials = "+num(designationUniqueTrials!)+" linked designation trials."
