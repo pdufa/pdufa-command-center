@@ -75,3 +75,31 @@ test("source endpoint protects sign-in, pinned IDs, strict origin and bounded re
  assert.match(viewer,/benefitRank!==null/);
  assert.match(viewer,/No FDA decision/);
 });
+
+test("research refresh job covers exactly 375 historical completed NCTs and never changes evidence grades",()=>{
+ const script=fs.readFileSync(path.join(__dirname,"../scripts/refresh-registry-benefit-research.cjs"),"utf8");
+ const workflow=fs.readFileSync(path.join(__dirname,"../../../.github/workflows/nightly-registry-benefit-research.yml"),"utf8");
+ const route=fs.readFileSync(path.join(__dirname,"../app/api/registry-benefit-research/route.ts"),"utf8");
+ assert.match(script,/eligible\.length!==375/);
+ assert.match(script,/parseRegistryBenefitResearch/);
+ assert.match(script,/REGISTRY_REFRESH_NO_PRIMARY_SOURCE_SUCCESS/);
+ assert.match(script,/MAX_KEEP_MS=72\*3600000/);
+ assert.match(script,/length>8_000_000/);
+ assert.match(workflow,/schedule:/);
+ assert.match(workflow,/refresh-registry-benefit-research\.cjs/);
+ assert.match(workflow,/contents: write/);
+ assert.match(route,/archivedEvidence\(nct\)/);
+ assert.match(route,/age<48\*3600000/);
+ assert.match(route,/fromArchive/);
+ assert.doesNotMatch(script,/benefitRank\s*=\s*\d|comparisonVerified\s*=\s*true|fdaDecisionVerified\s*=\s*true/);
+});
+test("large outcome source tables are bounded and marked incomplete, never misread as zero",()=>{
+ const raw=study();
+ raw.resultsSection.adverseEventsModule.seriousEvents=Array.from({length:95},(_,i)=>({
+   term:"Event "+i,stats:[{groupId:"EG1",numAffected:0,numAtRisk:100}]
+ }));
+ const out=parseRegistryBenefitResearch(raw,id,now);
+ assert.equal(out.truncatedEvidence.seriousEvents,true);
+ assert.equal(out.seriousAdverseEvents.length,80);
+ assert.equal(out.comparisonVerified,false);
+});
