@@ -164,7 +164,7 @@ export default function ToolsResultsSpreadsheet({
               target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
             <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:295}}>
               <strong>{display(row.ticker)}</strong>
-              <TrialTimelineSummary timeline={row.timeline} today={today} compact/>
+              <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/>
             </div></td>
             <td>{display(row.company)}</td>
             <td>{display(row.drug)}</td>
