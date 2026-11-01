@@ -197,11 +197,15 @@ try{
     assert.equal(await fdaCounts.first().evaluate(el=>getComputedStyle(el).textAlign),"right");
     for(const [i,key] of categories.entries()){
       const scoped=contextualPhaseCounts?.[key]??null;
-      const expected=scoped===null?"?":String(scoped.matchingTrials);
       const label=await fdaCounts.nth(i).innerText();
       if(openingDesignationTotals[key]===null)assert.match(label,/Not tracked/);
-      else assert.equal(label.split("\n")[0].replaceAll(",",""),expected,
-        "FDA "+key+" badge must equal Phase-2 resultant NCT matches, not all-Phase POOL source links");
+      else {
+        assert.equal(label.split("\n")[0],"?","Unverified full category totals must never appear as exact counts");
+        assert.match(label,/FDA trial total unknown/);
+        if(scoped)assert.ok(label.includes(scoped.matchingTrials.toLocaleString("en-US")+" verified NCT matches"),
+          "FDA "+key+" documented Phase-2 NCT match count must equal the API");
+        else assert.match(label,/NCT coverage unavailable/);
+      }
     }
     for(const c of await fdaCounts.all()){
       assert.match(await c.innerText(),/verified NCT matches|trial total unknown|Not tracked/,
@@ -228,11 +232,11 @@ try{
         .find(el=>el.textContent?.includes("Orphan Drug Designation"));
       const count=row?.querySelector('strong[class*="toolsFdaRowCount"]');
       if(!count)return false;
-      return expected===null?count.textContent?.includes("trial total unknown")
-        :count.textContent?.includes(expected.toLocaleString("en-US"));
+      return expected===null?count.textContent?.includes("NCT coverage unavailable")
+        :count.textContent?.includes(expected.toLocaleString("en-US")+" verified NCT matches");
     },contextual?.matchingTrials??null,{timeout:45000});
     assert.match(await orphanCount.innerText(),
-      contextual===null?/trial total unknown/:/verified NCT matches/,
+      contextual===null?/NCT coverage unavailable/:/verified NCT matches/,
       "FDA badge must display the exact Phase/search-faceted trial count returned by the result API");
     if(contextual)assert.equal(contextual.nctIds.length,Math.min(40,contextual.matchingTrials));
     assert.match(await designation.innerText(),/1 selected/);
