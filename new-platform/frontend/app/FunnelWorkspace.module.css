@@ -95,3 +95,33 @@
 .compareActions button{padding:8px;font-size:12px}
 @media(max-width:1050px){.viewPicker{grid-template-columns:repeat(2,minmax(0,1fr))}.cardGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.analyticsGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.fourViews{padding:10px}.viewPicker{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.viewPicker button{padding:10px 8px}.viewPicker button strong{font-size:11px}.cardGrid{grid-template-columns:1fr}.analyticsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.coverageRow{grid-template-columns:1fr 70px;gap:6px}.coverageRow progress{grid-column:1/3;grid-row:2}.compareChoices{grid-template-columns:1fr}.dossierField>summary strong{max-width:43%}}
+
+
+/* Side-by-side POOL stage and FDA designation disclosure lists. */
+.stageDesignationColumns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0;align-items:start}
+.stageDesignationPane{min-width:0;border:1px solid #b8d2c2;background:#fff;border-radius:11px;overflow:hidden}
+.stageDesignationSummary{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:15px;font-weight:750;line-height:1.4;padding:14px;background:#e9f4ed;color:#164733;list-style:none}
+.stageDesignationSummary::-webkit-details-marker{display:none}
+.stageDesignationSummary:before{content:"▸";font-size:17px;line-height:1;color:#286b4d}
+.stageDesignationPane[open]>.stageDesignationSummary:before{content:"▾"}
+.stageDesignationSummary span{flex:1;min-width:0}
+.stageDesignationSummary strong{font-size:12px;white-space:nowrap;background:#fff;border:1px solid #c3d7c9;border-radius:7px;padding:5px 7px}
+.stageDesignationBody{padding:12px}
+.stageDesignationBody .muted{margin:5px 0 12px}
+.stageDesignationList{max-height:475px;overflow-y:auto;overscroll-behavior:contain;border:1px solid #d0e0d3;border-radius:9px}
+.stageDesignationRow,.stageDesignationGroup{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;text-align:left;color:#194533;cursor:pointer;background:#fff;border:0;border-bottom:1px solid #edf1ee;padding:10px 12px;font-size:13px;line-height:1.35}
+.stageDesignationGroup{background:#f1f7f2;font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.02em}
+.stageDesignationGroup:not(:first-child){border-top:1px solid #cedfd0}
+.stageDesignationRow span,.stageDesignationGroup span{flex:1;min-width:0}
+.stageDesignationRow strong,.stageDesignationGroup strong{min-width:40px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stageDesignationRow:hover,.stageDesignationGroup:hover{background:#e8f4ec}
+.stageDesignationRow[aria-pressed="true"],.stageDesignationGroup[aria-pressed="true"]{background:#d9ecdf;color:#10432c;box-shadow:inset 3px 0 #267b53}
+.stageDesignationRow:focus-visible,.stageDesignationGroup:focus-visible,.stageDesignationSummary:focus-visible{outline:3px solid #197b52;outline-offset:-3px}
+.designationSelection{margin-top:13px;background:#f9fcfa;border:1px solid #d1e1d6;border-radius:9px;padding:12px;line-height:1.55;font-size:12px}
+.designationSelection h3{font-size:14px;margin:0 0 5px}
+.designationSelection p{margin:8px 0}
+.designationResults{padding-left:20px;max-height:300px;overflow-y:auto}
+.designationResults li{margin:9px 0;border-bottom:1px solid #dfe9e2;padding-bottom:7px;overflow-wrap:anywhere}
+.designationResults small{display:block;color:#506f5b;font-size:11px}
+.designationResults a{font-size:12px}
+@media(max-width:760px){.stageDesignationColumns{grid-template-columns:minmax(0,1fr)}.stageDesignationList{max-height:340px}.stageDesignationSummary{font-size:14px}}
