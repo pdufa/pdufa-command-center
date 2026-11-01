@@ -81,6 +81,56 @@ export function filterToolTrials(
   });
 }
 
+export type ToolsDesignationProgramRow={
+  eventKey:string;ticker:string;drug:string;indication:string;
+  designations:{key:DesignationKey;label:string;source:string}[];
+  linkedNcts:string[];
+};
+
+/** Regulatory program events and trial IDs are different units.
+ * Report both, and never infer a stage for a program missing an NCT crosswalk. */
+export function designationSourceCoverage(
+  poolRows:readonly PoolTrialRecord[],index:DesignationIndex,
+  selected:readonly DesignationKey[]
+):{
+  sourcePrograms:number;linkedPrograms:number;unlinkedPrograms:number;
+  linkedNcts:number;noVerifiedNctLinks:boolean;
+  programRows:ToolsDesignationProgramRow[];
+}{
+  const positives=new Map<string,ToolsDesignationProgramRow>();
+  for(const program of Object.values(index.programs)){
+    const designations=selected.flatMap(key=>{
+      const claim=program.designations[key];
+      if(claim?.status!=="GRANTED"||claim.verification==="UNVERIFIED"||!claim.source)return [];
+      return [{key,label:SPECIAL_DESIGNATION_CATEGORIES.find(c=>c.key===key)?.label||key,source:claim.source}];
+    });
+    if(designations.length)positives.set(program.eventKey,{
+      eventKey:program.eventKey,ticker:program.ticker,drug:program.drug,
+      indication:program.indication,designations,linkedNcts:[]
+    });
+  }
+  const linkedTrialIds=new Set<string>();
+  for(const row of poolRows){
+    if(!isPoolTrial(row))continue;
+    const nct=row.id.slice(6);
+    for(const key of index.trialEvents[nct]||[]){
+      const p=positives.get(key);
+      if(!p||p.ticker!==row.ticker.toUpperCase())continue;
+      if(!p.linkedNcts.includes(nct))p.linkedNcts.push(nct);
+      linkedTrialIds.add(nct);
+    }
+  }
+  const programRows=[...positives.values()].sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.eventKey.localeCompare(b.eventKey));
+  const linkedPrograms=programRows.filter(r=>r.linkedNcts.length>0).length;
+  return {
+    sourcePrograms:programRows.length,linkedPrograms,
+    unlinkedPrograms:programRows.length-linkedPrograms,
+    linkedNcts:linkedTrialIds.size,
+    noVerifiedNctLinks:programRows.length>0 && linkedTrialIds.size===0,
+    programRows
+  };
+}
+
 export function buildToolsResults(
   snapshot:ReturnType<typeof verifiedToolPool>,
   index:DesignationIndex|null,
@@ -90,6 +140,8 @@ export function buildToolsResults(
 ){
   const {poolRows,stageStats,sourceAsOf,sourceState}=snapshot;
   const matchingIds=index?selectToolTrialIds(poolRows,index,selectedDesignations):null;
+  const designationCoverage=index&&selectedDesignations.length>0
+    ?designationSourceCoverage(poolRows,index,selectedDesignations):null;
   const filtered=filterToolTrials(poolRows,selectedStages,matchingIds,query);
   const stageSelectors=selectedStages.map(label=>({
     label,trials:stageStats.stages[label]?.trials??0
@@ -103,6 +155,7 @@ export function buildToolsResults(
     view:"pool",offset,limit,total:filtered.length,
     nextOffset:offset+limit<filtered.length?offset+limit:null,
     rows,stageStats,
+    designationCoverage,
     overview:{
       poolRecords:stageStats.total,poolClinicalRecords:stageStats.trials,
       poolRegulatoryRecords:stageStats.regulatoryEvents+stageStats.standaloneResults,
@@ -117,6 +170,9 @@ export function buildToolsResults(
       designationCountSum:designationSelectors.reduce((sum,v)=>sum+v.linkedTrials,0),
       designationUniqueTrials:matchingIds?.size??null,
       matchingUniqueTrials:filtered.length,
+      sourceProgramRecords:designationCoverage?.sourcePrograms??0,
+      unlinkedSourceProgramRecords:designationCoverage?.unlinkedPrograms??0,
+      noVerifiedNctLinks:designationCoverage?.noVerifiedNctLinks??false,
       stageSelectors,designationSelectors
     },
     designationLinkage:index?{basis:"EXACT_NCT_AND_TICKER",sourceLinkedTrials:matchingIds?.size??0}:null,
