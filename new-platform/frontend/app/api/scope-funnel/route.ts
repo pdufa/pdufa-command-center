@@ -12,6 +12,7 @@ import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-s
 import {buildToolPdufaIndex,type ToolPdufaIndex} from "../../../lib/tools-pdufa-links";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
 import {verifiedToolPool,buildToolsResults,buildToolsOpeningInventory,filterToolTrials,selectToolTrialIds,toolsDesignationTotals,toolsContextualDesignationCounts,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
+import {restrictedToolsSnapshot} from "../../../lib/tools-restricted-scope";
 import {isToolsSnapshotFresh,parseToolsSnapshotTimestamp} from "../../../lib/tools-snapshot-freshness";
 import type {TimelineDates} from "../../../lib/pipeline-timeline";
 
@@ -191,18 +192,33 @@ export async function GET(req:NextRequest) {
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
     if(toolMode){
-      // TOOLS must not fail just because the independent 741-row Phase 3 census
-      // or its market-cap research directory cannot be reconciled.
-      const [inventory,index]=await Promise.all([
+      // The selected Phase and FDA facets MUST have one common $300M–$10B
+      // completed-Phase-3 research subset. If the pinned census is unavailable,
+      // fail closed instead of silently reverting to 11,623 unrestricted trials.
+      const [fullInventory,index,csv,sourceJson]=await Promise.all([
         toolsPoolSource(),
-        // Always reconcile count labels against this exact POOL, including the
-        // unfiltered first screen. FDA evidence is optional for a Phase-only
-        // request but mandatory when a designation filter is checked.
         designationEvidence().catch(error=>{
           if(selectedDesignations.length)throw error;
           return null;
-        })
+        }),
+        readFile(join(process.cwd(),"public","phase3-census-2026-10-26.csv"),"utf8"),
+        readFile(join(process.cwd(),"public","phase3-census-sources-2026-10-26.json"),"utf8")
       ]);
+      const research=reconcilePoolPipeline({
+        pipeline:fullInventory.poolRows,asOf:fullInventory.sourceAsOf,
+        sourceHealth:{
+          state:fullInventory.sourceState,
+          clinicalRows:fullInventory.stageStats.trials,
+          regulatoryRows:fullInventory.stageStats.standaloneResults+fullInventory.stageStats.regulatoryEvents,
+          pipelineSourceParity:{exactPrograms:fullInventory.poolRows.length}
+        }
+      },csv,JSON.parse(sourceJson));
+      const {snapshot:inventory,scope:restrictedScope}=restrictedToolsSnapshot(
+        fullInventory,research.reviewRows,research.overview.censusAsOf);
+      const scopedNcts=new Set(inventory.poolRows.map(row=>row.id));
+      const trialTimelines=new Map<string,TimelineDates>(research.reviewRows
+        .filter(row=>scopedNcts.has("TRIAL|"+row.nctId)&&row.poolStatus==="EXACT_MATCH")
+        .map(row=>[row.nctId+"|"+row.ticker.toUpperCase(),row.timeline]));
       const designationTotals=index?toolsDesignationTotals(inventory.poolRows,index):null;
       const contextualDesignationCounts=toolsContextualDesignationCounts(
         inventory.poolRows,index,selectedStages,query);
@@ -213,54 +229,17 @@ export async function GET(req:NextRequest) {
           reasonCode:"DESIGNATION_FIELD_NOT_TRACKED"
         },{status:422,headers:{"Cache-Control":"private, no-store"}});
       }
-      // Designation records without a reviewed NCT crosswalk are still returned
-      // as regulatory PROGRAM RECORDS. They cannot be counted as clinical trials.
-      // Do not block the full POOL stage selector or conceal source-program rows.
-      // An optional, independent dated research screen; never gates full POOL results.
-      // Reconcile the pinned $300M–$10B Phase 3 census to THIS exact POOL.
-      // If this independent census cannot be validated, withhold ONLY its count.
-      let pipelineResearchNcts:Set<string>|null=null;
-      let trialTimelines=new Map<string,TimelineDates>();
-      try{
-        const [csv,sourceJson]=await Promise.all([
-          readFile(join(process.cwd(),"public","phase3-census-2026-10-26.csv"),"utf8"),
-          readFile(join(process.cwd(),"public","phase3-census-sources-2026-10-26.json"),"utf8")
-        ]);
-        const research=reconcilePoolPipeline({
-          pipeline:inventory.poolRows,asOf:inventory.sourceAsOf,
-          sourceHealth:{
-            state:inventory.sourceState,
-            clinicalRows:inventory.stageStats.trials,
-            regulatoryRows:inventory.stageStats.standaloneResults+inventory.stageStats.regulatoryEvents,
-            pipelineSourceParity:{exactPrograms:inventory.poolRows.length}
-          }
-        },csv,JSON.parse(sourceJson));
-        pipelineResearchNcts=new Set(research.reviewRows
-          .filter(row=>row.poolStatus==="EXACT_MATCH" &&
-            row.postPhase3Evidence==="REGISTRY_COMPLETED")
-          .map(row=>"TRIAL|"+row.nctId));
-        trialTimelines=new Map<string,TimelineDates>(research.reviewRows
-          .filter(row=>row.poolStatus==="EXACT_MATCH" &&
-            row.postPhase3Evidence==="REGISTRY_COMPLETED")
-          .map(row=>[row.nctId+"|"+row.ticker.toUpperCase(),row.timeline]));
-      }catch{
-        // Never silently substitute full POOL or the historical 375 baseline
-        // for a failed exact-NCT reconciliation.
-      }
-      // The independent dated Pipeline census is for the PIPELINE information
-      // card and optional verified date evidence ONLY. It does not narrow
-      // TOOLS selectors, which must operate on every published POOL trial.
+      // A registry-completed and dated market-cap research pointer is NOT
+      // final PIPELINE qualification. Listing, current cap, pivotal readout,
+      // commercial rights and upcoming PDUFA must still be verified.
       const result=openingInventory
         ?buildToolsOpeningInventory(inventory,Number(offset),Number(limit))
         :buildToolsResults(inventory,index,selectedStages,selectedDesignations,
           query,Number(offset),Number(limit));
-      const pipelineResearch=pipelineResearchNcts===null?null:{
-        screenedTrials:pipelineResearchNcts.size,
-        screenDate:"2026-10-26",
-        qualification:"NOT_VERIFIED" as const
-      };
+      const pipelineResearch={screenedTrials:restrictedScope.screenedTrials,
+        screenDate:restrictedScope.censusAsOf.slice(0,10),qualification:"NOT_VERIFIED" as const};
       const datasetVersion=createHash("sha256")
-        .update(JSON.stringify({asOf:inventory.sourceAsOf,recordCount:inventory.poolRows.length}))
+        .update(JSON.stringify({asOf:inventory.sourceAsOf,scope:restrictedScope.scope,censusAsOf:restrictedScope.censusAsOf,recordCount:inventory.poolRows.length}))
         .digest("hex");
       if(format==="csv"){
         if(result.designationCoverage?.noVerifiedNctLinks){
@@ -291,7 +270,7 @@ export async function GET(req:NextRequest) {
         const row=toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index,index?.pdufaLinks??null);
         return {...row,timeline:trialTimelines.get(row.nctId+"|"+row.ticker.toUpperCase())||null};
       });
-      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,designationTotals,contextualDesignationCounts,regulatorySourcesAvailable:!!index,datasetVersion},
+      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,contextualDesignationCounts,regulatorySourcesAvailable:!!index,datasetVersion},
         {headers:{"Cache-Control":"private, no-store"}});
     }
     // Stage counts always come from the full POOL. Designation selection is
