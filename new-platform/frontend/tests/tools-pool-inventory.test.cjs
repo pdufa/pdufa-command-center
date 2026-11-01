@@ -243,6 +243,17 @@ test("Accelerated Approval CSV exports all 16 FDA program events, not an empty N
 });
 
 
+test("all FDA selections keep program records visible even when linked NCT match is zero or one",()=>{
+  const path=require("node:path");
+  const funnel=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
+  assert.match(funnel,/selectedDesignations>0&&designationCoverage&&!loading&&!error/);
+  assert.match(funnel,/num\(designationCoverage!\.sourcePrograms\)/);
+  assert.match(funnel,/num\(designationCoverage!\.linkedNcts\)/);
+  assert.match(funnel,/UNIQUE NCT TRIAL COUNT AFTER SCREEN/);
+  assert.match(funnel,/unrestricted POOL before applying the dated PIPELINE screen/);
+  assert.match(funnel,/incomplete FDA-to-NCT evidence/);
+});
+
 test("unlinked FDA source count is clearly visible in the TRIALS card but never labeled 16 trials",()=>{
   const path=require("node:path");
   const funnel=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
