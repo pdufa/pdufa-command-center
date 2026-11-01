@@ -85,7 +85,8 @@ export default function ToolsResultsSpreadsheet({
       <a className={styles.toolsSheetExport} href={hasSelection&&!loading&&!error?downloadUrl:undefined}
         aria-disabled={!hasSelection||loading||!!error}
         onClick={e=>{if(!hasSelection||loading||!!error)e.preventDefault()}}
-        download="pdufa-tools-selected-trials.csv">Export all matches (CSV)</a>
+        download={trialCountUnverified?"pdufa-tools-fda-program-records-unlinked.csv":"pdufa-tools-selected-trials.csv"}>
+        {trialCountUnverified?"Export FDA program records (CSV)":"Export all matches (CSV)"}</a>
     </div>
     <div className={styles.toolsSheetMetrics} aria-live="polite">
       <div><span>Selectors clicked</span><strong>{selectedCount}</strong><small>{stages.length} stages + {designations.length} FDA categories</small></div>
@@ -215,6 +216,8 @@ export default function ToolsResultsSpreadsheet({
       </div>
       <p className={styles.muted}>These rows are source-backed FDA program findings. They are not proven to match the selected clinical stages, and they must not be counted as distinct NCT trials.</p>
     </section>}
-    <p className={styles.muted}>This is a read-only web spreadsheet. CSV export includes all documented matching rows (not just this page) and opens in Excel or Google Sheets. FDA designation-to-trial coverage remains incomplete; missing evidence is not a denial or proof of no designation.</p>
+    <p className={styles.muted}>{trialCountUnverified
+      ?"CSV export contains the FDA program records shown above, labeled as regulatory programs rather than clinical trials. Their trial IDs and phase assignments have not been established."
+      :"This is a read-only web spreadsheet. CSV export includes all documented matching rows (not just this page) and opens in Excel or Google Sheets. FDA designation-to-trial coverage remains incomplete; missing evidence is not a denial or proof of no designation."}</p>
   </section>;
 }
