@@ -275,7 +275,7 @@ export default function PoolStageExplorer(){
         onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       />
     </div>
-      <details className={styles.toolsAdvanced}>
+      <details id="tools-advanced-research" className={styles.toolsAdvanced}>
         <summary>Additional filters, detailed trial comparisons, rankings and CSV export</summary>
     <details className={styles.toolsAdvanced}>
       <summary>Quick filters and shortcuts</summary>
