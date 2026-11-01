@@ -4,6 +4,7 @@ import styles from "./FunnelWorkspace.module.css";
 
 type Props={
   poolNcts:number|null;
+  pipelineResearch:{screenedTrials:number;screenDate:string;qualification:"NOT_VERIFIED"}|null;
   selectedTrials:number|null;
   selectedStages:number;
   totalStages:number;
@@ -25,15 +26,15 @@ const num=(value:number)=>value.toLocaleString("en-US");
  * stage-filtered POOL matches with verified post-Phase-3 PIPELINE eligibility.
  */
 export default function ToolsFunnel({
-  poolNcts,selectedTrials,selectedStages,totalStages,selectedStageLabels,selectedDesignationLabels,selectedDesignations,
+  poolNcts,pipelineResearch,selectedTrials,selectedStages,totalStages,selectedStageLabels,selectedDesignationLabels,selectedDesignations,
   designationUniqueTrials,designationCoverage,loading,error,searchActive,sourceDate,sourceState
 }:Props){
   const filterActive=selectedStages>0||selectedDesignations>0;
   const noNctLink=selectedDesignations>0&&designationCoverage?.noVerifiedNctLinks===true;
   const trialStatus=!filterActive?"0":loading?"…":error?"Unavailable":
-    noNctLink?"Not established":selectedTrials===null?"Unavailable":num(selectedTrials);
+    noNctLink?"Not established":!pipelineResearch?"Not verified":selectedTrials===null?"Unavailable":num(selectedTrials);
   const allStages=selectedStages===totalStages;
-  const shouldCompare=selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error&&!noNctLink;
+  const shouldCompare=selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error&&!noNctLink&&!!pipelineResearch;
   const parity=shouldCompare&&designationUniqueTrials!==null&&selectedTrials!==null
     ?designationUniqueTrials===selectedTrials:null;
   const date=sourceDate&&sourceDate!=="Not recorded"?sourceDate:"Date not available";
@@ -64,9 +65,14 @@ export default function ToolsFunnel({
       <span className={styles.toolsFunnelArrow} aria-hidden="true">→</span>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelPipeline}>
         <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">▽</span><h3>PIPELINE</h3></div>
-        <div className={styles.toolsFunnelValueUnverified}>Not verified</div>
-        <p>Restricted qualified trials</p>
-        <small>Listing, market cap and post–Phase 3 gates still need current verification</small>
+        <div className={pipelineResearch?styles.toolsFunnelValue:styles.toolsFunnelValueUnverified}>
+          {pipelineResearch?num(pipelineResearch.screenedTrials):"Not verified"}
+        </div>
+        <p>{pipelineResearch?"Completed Phase 3 NCTs · dated research screen":"Restricted Pipeline count unavailable"}</p>
+        <small>{pipelineResearch
+          ?"$300M–$10B census dated "+pipelineResearch.screenDate+
+            ". Exact NCT/ticker matches only. Full original restrictions: NOT VERIFIED."
+          :"Original listing, cap, final-readout and rights checks are not fully reconciled."}</small>
       </div>
       <span className={styles.toolsFunnelArrow} aria-hidden="true">→</span>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelTrials}>
@@ -86,13 +92,22 @@ export default function ToolsFunnel({
           </div>
           :<>
             <div className={styles.toolsFunnelValue} role="status" aria-live="polite" aria-atomic="true">{trialStatus}</div>
-            <p>{selectedDesignations>0?"Documented linked NCT matches":"Selected POOL trial matches"}</p>
-            <small>{filterActive?selectedDesignations>0?"Partial FDA-to-NCT evidence; not comprehensive":"Calculated from selected clinical stages":"0 filters checked"}</small>
+            <p>{selectedDesignations>0?"Documented linked NCT matches":"Selected clinical trial matches"}</p>
+            <small>{!pipelineResearch
+              ?"Dated Pipeline screen unavailable; POOL-only detail below is NOT a qualified count"
+              :filterActive
+                ?selectedDesignations>0
+                  ?"After the same dated Phase 3 screen; FDA-to-NCT evidence is partial"
+                  :"After the same dated Phase 3 screen and selected stages"
+                :"0 filters checked"}</small>
           </>}
       </div>
     </div>
     <p className={styles.toolsFunnelIntegrity}>
-      TRIALS uses the full POOL. <strong>PIPELINE eligibility is not yet verified.</strong>
+      {pipelineResearch
+        ?"TRIALS intersects the dated screened NCT subset with your selected stages and FDA categories. "
+        :"TRIALS cannot show an after-restrictions count until the dated census reconciles. "}
+      <strong>Current full PIPELINE eligibility is not yet verified.</strong>
       {sourceState==="PARTIAL"?" POOL source coverage: PARTIAL.":""}
     </p>
     <details className={styles.toolsFunnelRestrictions}>

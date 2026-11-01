@@ -187,8 +187,39 @@ export async function GET(req:NextRequest) {
           reasonCode:"DESIGNATION_NCT_LINKAGE_UNAVAILABLE"
         },{status:422,headers:{"Cache-Control":"private, no-store"}});
       }
+      // A dated research screen, not certification of all live Pipeline restrictions.
+      // Reconcile the pinned $300M–$10B Phase 3 census to THIS exact POOL.
+      // If this independent census cannot be validated, withhold its count.
+      let pipelineResearchNcts:Set<string>|null=null;
+      try{
+        const [csv,sourceJson]=await Promise.all([
+          readFile(join(process.cwd(),"public","phase3-census-2026-10-26.csv"),"utf8"),
+          readFile(join(process.cwd(),"public","phase3-census-sources-2026-10-26.json"),"utf8")
+        ]);
+        const research=reconcilePoolPipeline({
+          pipeline:inventory.poolRows,asOf:inventory.sourceAsOf,
+          sourceHealth:{
+            state:inventory.sourceState,
+            clinicalRows:inventory.stageStats.trials,
+            regulatoryRows:inventory.stageStats.standaloneResults+inventory.stageStats.regulatoryEvents,
+            pipelineSourceParity:{exactPrograms:inventory.poolRows.length}
+          }
+        },csv,JSON.parse(sourceJson));
+        pipelineResearchNcts=new Set(research.reviewRows
+          .filter(row=>row.poolStatus==="EXACT_MATCH" &&
+            row.postPhase3Evidence==="REGISTRY_COMPLETED")
+          .map(row=>"TRIAL|"+row.nctId));
+      }catch{
+        // Never silently substitute full POOL or the historical 375 baseline
+        // for a failed exact-NCT reconciliation.
+      }
       const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,
-        query,Number(offset),Number(limit));
+        query,Number(offset),Number(limit),pipelineResearchNcts);
+      const pipelineResearch=pipelineResearchNcts===null?null:{
+        screenedTrials:pipelineResearchNcts.size,
+        screenDate:"2026-10-26",
+        qualification:"NOT_VERIFIED" as const
+      };
       const datasetVersion=createHash("sha256")
         .update(JSON.stringify({asOf:inventory.sourceAsOf,recordCount:inventory.poolRows.length}))
         .digest("hex");
@@ -204,7 +235,11 @@ export async function GET(req:NextRequest) {
           }});
         }
         const matches=index?selectToolTrialIds(inventory.poolRows,index,selectedDesignations):null;
-        const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query);
+        if(pipelineResearchNcts===null)return NextResponse.json({
+          error:"The dated Pipeline screening source cannot be reconciled; restricted trial export is unavailable."
+        },{status:503,headers:{"Cache-Control":"private, no-store"}});
+        const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query)
+          .filter(row=>pipelineResearchNcts.has(row.id));
         if(rows.length>25000)return NextResponse.json({error:"Selection exceeds export row limit"},{status:413});
         const csv=renderToolsSpreadsheetCsv(rows,selectedStages,selectedDesignations,index,inventory.sourceAsOf);
         return new NextResponse(csv,{headers:{
@@ -214,7 +249,8 @@ export async function GET(req:NextRequest) {
           "X-PDUFA-Source-Version":datasetVersion
         }});
       }
-      return NextResponse.json({...result,datasetVersion},{headers:{"Cache-Control":"private, no-store"}});
+      return NextResponse.json({...result,pipelineResearch,datasetVersion},
+        {headers:{"Cache-Control":"private, no-store"}});
     }
     // Stage counts always come from the full POOL. Designation selection is
     // intersected with those records server-side BEFORE pagination.

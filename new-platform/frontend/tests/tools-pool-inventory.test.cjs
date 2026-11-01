@@ -99,6 +99,27 @@ test("TOOLS shows three bordered funnel cards without fabricating PIPELINE quali
   assert.match(page,/<div className=\{styles\.stageDropdownLabel\}>Clinical development stages<\/div>/);
 });
 
+test("screened Pipeline candidate IDs intersect stage and designation selections, including all stages",()=>{
+  const {POOL_STAGES}=require("../lib/pool-pipeline-funnel.ts");
+  const snapshot=verifiedToolPool(raw());
+  const research=new Set(["TRIAL|NCT00000001","TRIAL|NCT00000003"]);
+  const early=buildToolsResults(snapshot,null,["Phase 1"],[],"",0,50,research);
+  assert.equal(early.total,1);
+  const designationOnly=buildToolsResults(snapshot,index,[],["fast_track"],"",0,50,research);
+  const allStages=buildToolsResults(snapshot,index,POOL_STAGES,["fast_track"],"",0,50,research);
+  assert.equal(designationOnly.total,1);
+  assert.equal(allStages.total,designationOnly.total);
+  assert.equal(allStages.selectionSummary.designationUniqueTrials,designationOnly.total);
+  const outsideResearch=buildToolsResults(snapshot,index,[],["fast_track"],"",0,50,
+    new Set(["TRIAL|NCT00000003"]));
+  assert.equal(outsideResearch.total,0);
+  assert.equal(outsideResearch.selectionSummary.designationUniqueTrials,0);
+  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
+  assert.match(route,/reconcilePoolPipeline\(/);
+  assert.match(route,/pipelineResearchNcts/);
+  assert.match(route,/pipelineResearch/);
+});
+
 test("when FDA program evidence lacks an exact NCT crosswalk, TOOLS reports unavailable, not zero",()=>{
   const root=require("node:path").join(__dirname,"..");
   const route=fs.readFileSync(require("node:path").join(root,"app/api/scope-funnel/route.ts"),"utf8");

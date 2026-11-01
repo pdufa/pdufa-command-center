@@ -30,6 +30,7 @@ type PoolResponse={
   designationCoverage?:ProgramCoverage|null;
   spreadsheetRows?:ToolsSpreadsheetRow[];
   selectionSummary?:SelectedFiltersSummary|null;
+  pipelineResearch?:{screenedTrials:number;screenDate:string;qualification:"NOT_VERIFIED"}|null;
 };
 const groups=[
   {label:"Early clinical",stages:["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3"]},
@@ -121,6 +122,7 @@ export default function PoolStageExplorer(){
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
     <ToolsFunnel
       poolNcts={stats?.trials??null}
+      pipelineResearch={page?.pipelineResearch??null}
       selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
       selectedStages={selectedStages.length}
       totalStages={stages.length}

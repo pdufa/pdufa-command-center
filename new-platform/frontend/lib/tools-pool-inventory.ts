@@ -136,13 +136,18 @@ export function buildToolsResults(
   index:DesignationIndex|null,
   selectedStages:readonly string[],
   selectedDesignations:readonly DesignationKey[],
-  query:string,offset:number,limit:number
+  query:string,offset:number,limit:number,
+  pipelineResearchNcts:ReadonlySet<string>|null=null
 ){
   const {poolRows,stageStats,sourceAsOf,sourceState}=snapshot;
   const matchingIds=index?selectToolTrialIds(poolRows,index,selectedDesignations):null;
   const designationCoverage=index&&selectedDesignations.length>0
     ?designationSourceCoverage(poolRows,index,selectedDesignations):null;
-  const filtered=filterToolTrials(poolRows,selectedStages,matchingIds,query);
+  const poolMatches=filterToolTrials(poolRows,selectedStages,matchingIds,query);
+  const filtered=pipelineResearchNcts===null?poolMatches:
+    poolMatches.filter(row=>pipelineResearchNcts.has(row.id));
+  const scopedDesignationMatches=matchingIds===null?null:pipelineResearchNcts===null?matchingIds:
+    new Set([...matchingIds].filter(id=>pipelineResearchNcts.has(id)));
   const stageSelectors=selectedStages.map(label=>({
     label,trials:stageStats.stages[label]?.trials??0
   }));
@@ -168,7 +173,7 @@ export function buildToolsResults(
       designationSelectedCount:selectedDesignations.length,
       stageTotal:stageSelectors.reduce((sum,v)=>sum+v.trials,0),
       designationCountSum:designationSelectors.reduce((sum,v)=>sum+v.linkedTrials,0),
-      designationUniqueTrials:matchingIds?.size??null,
+      designationUniqueTrials:scopedDesignationMatches?.size??null,
       matchingUniqueTrials:filtered.length,
       sourceProgramRecords:designationCoverage?.sourcePrograms??0,
       unlinkedSourceProgramRecords:designationCoverage?.unlinkedPrograms??0,
