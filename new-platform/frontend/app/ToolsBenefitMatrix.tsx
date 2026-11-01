@@ -116,6 +116,19 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
         </select>
       </div>
     </div>
+    <details className={css.fullAssessmentList} id="tools-step4-all20">
+      <summary>All 20 assessments · optional full numbered list</summary>
+      <div className={css.fullAssessmentGrid} role="group" aria-label="Complete separate Step 4 assessment list 1 through 20">
+        {BENEFIT_GROUPS.map(g=><button type="button" key={g.number}
+          className={active===g.number?css.fullAssessmentSelected:css.fullAssessmentItem}
+          aria-pressed={active===g.number}
+          aria-label={"Assessment "+g.number+" of 20 — "+g.name}
+          onClick={event=>{setActive(g.number);event.currentTarget.closest("details")?.removeAttribute("open");}}>
+          <span className={css.fullAssessmentNumber}>{g.number}</span>
+          <span>4a{g.number} · {g.name}</span>
+        </button>)}
+      </div>
+    </details>
     <details className={css.researchDisclosure} id="tools-step4-analysis">
       <summary>View analysis · 4a{active} — {current.name}</summary>
     <div className={css.notice}>
