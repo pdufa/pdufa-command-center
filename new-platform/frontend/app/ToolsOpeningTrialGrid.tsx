@@ -1,5 +1,6 @@
 "use client";
-import {useMemo,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
+import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
 import css from "./ToolsOpeningTrialGrid.module.css";
@@ -14,26 +15,46 @@ const format=(n:number)=>n.toLocaleString("en-US");
 const safe=(v:string)=>v?.trim()||"Not recorded";
 const designationNames=new Map(SPECIAL_DESIGNATION_CATEGORIES.map(({key,label})=>[key,label]));
 const extraColumns=3;
-const columnsCount=7+extraColumns;
-type Field="nctId"|"ticker"|"company"|"drug"|"indication"|"stage";
-const columns:{key:Field;label:string}[]=[
+const NO_DATES:TimelineDates={phase3DataRelease:null,pdufaTarget:null};
+type Field="nctId"|"ticker"|"company"|"s"|"d"|"drug"|"indication"|"stage";
+const columns:{key:Field;label:string;hint?:string}[]=[
   {key:"nctId",label:"NCT Trial ID"},
   {key:"ticker",label:"Ticker"},
   {key:"company",label:"Company"},
+  {key:"s",label:"S",hint:"Days since Phase 3 data release"},
+  {key:"d",label:"D",hint:"Days to PDUFA"},
   {key:"drug",label:"Drug / therapy"},
   {key:"indication",label:"Disease / indication"},
   {key:"stage",label:"Recorded stage"}
 ];
+const columnsCount=1+columns.length+extraColumns;
+function DayCell({count,date,url,description}:{count:number|null;date?:string;url?:string;description:string}){
+  if(count===null)return <span className={css.dateUnknown} title={description+" date not source-verified"}>Not verified</span>;
+  return <a href={url} target="_blank" rel="noopener noreferrer"
+    title={description+" · verified date "+date+" · calculated in Pacific calendar days"}
+    aria-label={description+": "+count+" days; source date "+date}>{count.toLocaleString("en-US")}</a>;
+}
 export default function ToolsOpeningTrialGrid({
   rows,total,offset,nextOffset,inventoryMode,loading,error,
   selectedStages,selectedDesignations,noVerifiedNctLinks,sourceDate,sourceState,regulatorySourcesAvailable,onPrevious,onNext
 }:Props){
   const [sortKey,setSortKey]=useState<Field>("nctId");
   const [desc,setDesc]=useState(false);
+  const [today,setToday]=useState("");
+  useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
   const ordered=useMemo(()=>[...rows].sort((a,b)=>{
+    if(sortKey==="s"||sortKey==="d"){
+      const field=sortKey==="s"?"daysSincePhase3Release":"daysToPdufa";
+      const x=pipelineDayCounts(a.timeline||NO_DATES,today)[field];
+      const y=pipelineDayCounts(b.timeline||NO_DATES,today)[field];
+      // Missing source dates stay below known numbers, even when sort reverses.
+      if(x===null)return y===null?0:1;
+      if(y===null)return -1;
+      return desc?y-x:x-y;
+    }
     const n=(a[sortKey]||"").localeCompare(b[sortKey]||"",undefined,{numeric:true,sensitivity:"base"});
     return desc?-n:n;
-  }),[rows,sortKey,desc]);
+  }),[rows,sortKey,desc,today]);
   const hasSelection=selectedStages+selectedDesignations>0;
   // FDA and PDUFA attributes belong to each NCT row; neither creates a second trial.
   const countUnverified=hasSelection&&selectedDesignations>0&&noVerifiedNctLinks&&!loading&&!error;
@@ -50,11 +71,13 @@ export default function ToolsOpeningTrialGrid({
     <div className={css.scroll} role="region" aria-label="Scrollable clinical trial spreadsheet" tabIndex={0}>
       <table>
         <thead><tr><th className={css.rowNum}>#</th>
-          {columns.map(col=><th key={col.key}>
-            <button type="button" aria-label={"Sort visible trials by "+col.label}
+          {columns.map(col=><th key={col.key} className={col.key==="s"||col.key==="d"?css.dayHeading:undefined}
+            title={col.hint||col.label}>
+            <button type="button" aria-label={"Sort visible trials by "+(col.hint||col.label)}
               onClick={()=>{if(sortKey===col.key)setDesc(v=>!v);else{setSortKey(col.key);setDesc(false);}}}>
               {col.label}{sortKey===col.key?(desc?" ↓":" ↑"):" ↕"}
             </button>
+            {col.hint&&<small>{col.hint}</small>}
           </th>)}
           <th>FDA designations <small>Documented subset</small></th>
           <th>PDUFA applications <small>Saved targets, not trial deadlines</small></th>
@@ -69,11 +92,17 @@ export default function ToolsOpeningTrialGrid({
               :hasSelection?"No documented trials match these selected criteria. Try a different Phase or FDA category."
               :"No trial records are available from the published source."}
           </td></tr>
-          :ordered.map((row,i)=><tr key={row.id}>
+          :ordered.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);return <tr key={row.id}>
             <td className={css.rowNum}>{offset+i+1}</td>
             <td><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
             <td>{safe(row.ticker)}</td>
             <td>{safe(row.company)}</td>
+            <td className={css.dayCell}><DayCell count={days.daysSincePhase3Release}
+              date={row.timeline?.phase3DataRelease?.date} url={row.timeline?.phase3DataRelease?.sourceUrl}
+              description="S · Days since verified Phase 3 data release"/></td>
+            <td className={css.dayCell}><DayCell count={days.daysToPdufa}
+              date={row.timeline?.pdufaTarget?.date} url={row.timeline?.pdufaTarget?.sourceUrl}
+              description="D · Days to verified PDUFA target"/></td>
             <td>{safe(row.drug)}</td>
             <td>{safe(row.indication)}</td>
             <td>{safe(row.stage)}</td>
@@ -101,7 +130,7 @@ export default function ToolsOpeningTrialGrid({
               </div>)}
             </details>:<span>{regulatorySourcesAvailable?"No exact linked application recorded":"PDUFA source unavailable"}</span>}</td>
             <td>Not established</td>
-          </tr>)}
+          </tr>;})}
         </tbody>
       </table>
     </div>
@@ -112,7 +141,7 @@ export default function ToolsOpeningTrialGrid({
         <button type="button" disabled={!hasSelection||loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
       </div>
     </div>
-    <p className={css.source}>{!regulatorySourcesAvailable?"FDA/PDUFA enrichment source unavailable for this request; absence of a link is not established. ":""}FDA designation and PDUFA application coverage is incomplete. A PDUFA target is application-level; the linked NCT is not automatically pivotal. Published source: {sourceDate||"Not recorded"} · State: {sourceState||"Unverified"}.
+    <p className={css.source}><strong>S</strong> = whole days since a source-verified public Phase 3 data release; <strong>D</strong> = whole days until a source-verified FDA PDUFA target (negative means the target date passed). Dates are Pacific-calendar-based; Not verified is not zero. Linked applications alone do not establish an exact trial's PDUFA date. {!regulatorySourcesAvailable?"FDA/PDUFA enrichment source unavailable for this request; absence of a link is not established. ":""}FDA designation and PDUFA application coverage is incomplete. A PDUFA target is application-level; the linked NCT is not automatically pivotal. Published source: {sourceDate||"Not recorded"} · State: {sourceState||"Unverified"}.
       {inventoryMode?" This inventory is the restricted dated research subset, not the unrestricted published POOL or a verified trade-ready Pipeline.":""}
       {hasSelection&&selectedDesignations>0?" FDA program records lacking NCT links cannot be treated as zero trials.":""}
     </p>
