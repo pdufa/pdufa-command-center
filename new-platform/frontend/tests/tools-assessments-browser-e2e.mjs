@@ -50,9 +50,9 @@ try {
     "TOOLS must retrieve the reconciled Pipeline research feed rather than an empty or failing stub");
   const benefitFeed=await researchResponse.json();
   assert.equal(benefitFeed.schemaVersion,1);
-  assert.match(benefitFeed.sourceAsOf,/^\\d{4}-\\d{2}-\\d{2}$/);
+  assert.match(benefitFeed.sourceAsOf,/^\d{4}-\d{2}-\d{2}$/);
   assert.ok(Array.isArray(benefitFeed.records),"Source-backed benefit research records missing");
-  assert.ok(benefitFeed.records.every(r=>/^NCT\\d{8}$/.test(r.nctId)&&r.ticker&&r.drug&&r.indication),
+  assert.ok(benefitFeed.records.every(r=>/^NCT\d{8}$/.test(r.nctId)&&r.ticker&&r.drug&&r.indication),
     "Benefit research cannot contain orphaned NCT identities");
   const groupSelect=page.locator("#benefit-group-picker");
   assert.equal(await groupSelect.locator("option").count(),20);
