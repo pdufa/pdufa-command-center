@@ -112,17 +112,17 @@ export default function ToolsResultsSpreadsheet({
         ?loading||error?"—":designationCoverage?fmt(designationCoverage.sourcePrograms):"—"
         :summary?fmt(summary.designationCountSum):hasSelection?"—":"0"}</strong>
         <small>{designations.length?"Source-backed applications/program events; these are NOT trial counts":"Only reviewed FDA-to-NCT links; categories may overlap"}</small></div>
-      <div><span>{designations.length?"Matching NCT trial count":"Final matching trials"}</span>
+      <div><span>{designations.length?"Verified NCT matches (incomplete)":"Final matching trials"}</span>
         <strong>{hasSelection?(loading||error?"—":trialCountUnverified?"Not established":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
-        <small>{trialCountUnverified?"No source-verified trial IDs for these programs; zero must not be inferred":designations.length?"Partial FDA-to-trial coverage":"Unique NCT records after selected clinical-stage filters"}</small></div>
+        <small>{trialCountUnverified?"No source-verified trial IDs for these programs; zero must not be inferred":designations.length?"FDA designation full trial total unknown; verified matches only":"Unique NCT records after selected clinical-stage filters"}</small></div>
     </div>
     <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error} benefitFeed={benefitFeed} benefitError={benefitError}/>
     <div className={styles.toolsSheetTotals}>
-      <h3>Selected selectors &amp; individual trial totals</h3>
+      <h3>Selected selectors &amp; documented trial matches</h3>
       {selectedCount===0?<p className={styles.muted}>No selectors selected. Choose a stage or FDA designation above to populate this spreadsheet.</p>:<>
         <div className={styles.toolsSheetTableScroll}>
           <table className={styles.toolsSheetSummaryTable}>
-            <thead><tr><th>Type</th><th>Clicked selector</th><th>Unique NCTs in source</th><th>Interpretation</th></tr></thead>
+            <thead><tr><th>Type</th><th>Clicked selector</th><th>Recorded NCT matches</th><th>Interpretation</th></tr></thead>
             <tbody>
               {stages.map(stage=>{
                 const entry=summary?.stageSelectors.find(item=>item.label===stage);
@@ -137,7 +137,7 @@ export default function ToolsResultsSpreadsheet({
             </tbody>
             <tfoot>
               <tr><th colSpan={2}>TOTAL CLICKED SELECTORS</th><th>{selectedCount}</th><th>Number of checkboxes checked, not number of unique trials</th></tr>
-              <tr><th colSpan={2}>UNIQUE TRIALS MATCHING COMBINED FILTERS</th><th>{trialCountUnverified?"Not established":summary?fmt(summary.matchingUniqueTrials):"—"}</th><th>OR within each list; AND across the two lists. Counts require verified NCT links.</th></tr>
+              <tr><th colSpan={2}>{designations.length?"DOCUMENTED NCT MATCHES — TOTAL UNKNOWN":"UNIQUE TRIALS MATCHING COMBINED FILTERS"}</th><th>{trialCountUnverified?"Not established":summary?fmt(summary.matchingUniqueTrials):"—"}</th><th>OR within each list; AND across the two lists. FDA matches are incomplete and require verified NCT links.</th></tr>
             </tfoot>
           </table>
         </div>
@@ -205,7 +205,7 @@ export default function ToolsResultsSpreadsheet({
         </tbody>
         {hasSelection&&!loading&&!error&&<tfoot><tr>
           <th colSpan={7+stages.length+designations.length}>
-            {trialCountUnverified?"Matching unique NCT trials: not established":"Total matching unique NCT trials: "+fmt(total)} · Selected filters: {selectedCount}
+            {trialCountUnverified?"Matching unique NCT trials: not established":(designations.length?"Verified NCT matches (partial): ":"Total matching unique NCT trials: ")+fmt(total)} · Selected filters: {selectedCount}
           </th>
         </tr></tfoot>}
       </table>
