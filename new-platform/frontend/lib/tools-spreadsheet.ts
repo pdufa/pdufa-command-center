@@ -1,4 +1,5 @@
 import {normalizePoolStage, type PoolTrialRecord} from "./pool-pipeline-funnel";
+import {exactProgramTimeline,pacificToday,pipelineDayCounts,type TimelineDates} from "./pipeline-timeline";
 import {matchedToolPdufaApplications,type ToolPdufaApplication,type ToolPdufaIndex} from "./tools-pdufa-links";
 import {
   SPECIAL_DESIGNATION_CATEGORIES,
@@ -14,6 +15,7 @@ export type ToolSourceEvidence={
 export type ToolSpreadsheetRow={
   id:string;nctId:string;ticker:string;company:string;drug:string;indication:string;
   stage:string;selectedStage:string;
+  timeline:TimelineDates;
   designationMatches:Partial<Record<DesignationKey,ToolSourceEvidence[]>>;
   pdufaApplications:ToolPdufaApplication[];
   studyRole:"NOT_ESTABLISHED";
@@ -28,6 +30,13 @@ export function toolSpreadsheetRow(
 ):ToolSpreadsheetRow {
   const nctId=trial.id.startsWith("TRIAL|")?trial.id.slice(6):"";
   const stage=normalizePoolStage(trial.stage);
+  // A source-verified date must belong to this same NCT, issuer and reported
+  // therapy/indication. Registry completion and ticker-only FDA applications
+  // cannot establish either timeline event.
+  const hasExactIdentity=/^NCT\d{8}$/.test(nctId)&&!!trial.ticker?.trim()&&
+    !!trial.drug?.trim()&&!!trial.indication?.trim()&&
+    (!trial.nctId||trial.nctId===nctId);
+  const timeline=exactProgramTimeline(trial,hasExactIdentity);
   const designationMatches:ToolSpreadsheetRow["designationMatches"]={};
   if(index && /^NCT\d{8}$/.test(nctId)){
     const linked=(index.trialEvents[nctId]||[])
@@ -51,7 +60,7 @@ export function toolSpreadsheetRow(
   return {
     id:trial.id,nctId,ticker:trial.ticker||"",company:trial.company||"",
     drug:trial.drug||"",indication:trial.indication||"",stage,
-    selectedStage:stages.includes(stage)?stage:"",
+    selectedStage:stages.includes(stage)?stage:"",timeline,
     pdufaApplications:matchedToolPdufaApplications(trial,pdufaIndex),
     studyRole:"NOT_ESTABLISHED",
     designationMatches
@@ -73,8 +82,9 @@ export function renderToolsSpreadsheetCsv(
   pdufaIndex:ToolPdufaIndex|null=null
 ):string {
   const labels=new Map(SPECIAL_DESIGNATION_CATEGORIES.map(item=>[item.key,item.label]));
+  const today=pacificToday();
   const headers=[
-    "NCT ID","Ticker","Company","Drug / therapy","Disease / indication","Recorded development stage",
+    "NCT ID","Ticker","Company","S - Days since verified Phase 3 data release","D - Days to verified PDUFA target","Drug / therapy","Disease / indication","Recorded development stage",
     "Documented FDA special designations (partial)",
     "Saved PDUFA target dates (application-level, not trial-level)",
     "PDUFA candidate source status","PDUFA application event keys","PDUFA record evidence links",
@@ -89,10 +99,14 @@ export function renderToolsSpreadsheetCsv(
   const rows=[headers.map(safeCell).join(",")];
   for(const trial of trials){
     const item=toolSpreadsheetRow(trial,stages,designations,index,pdufaIndex);
+    const days=pipelineDayCounts(item.timeline,today);
     const documented=Object.entries(item.designationMatches)
       .filter(([,evidence])=>!!evidence?.length).map(([key])=>labels.get(key as DesignationKey)||key);
     const values=[
-      item.nctId,item.ticker,item.company,item.drug,item.indication,item.stage,
+      item.nctId,item.ticker,item.company,
+      days.daysSincePhase3Release===null?"":String(days.daysSincePhase3Release),
+      days.daysToPdufa===null?"":String(days.daysToPdufa),
+      item.drug,item.indication,item.stage,
       documented.join(" | "),
       item.pdufaApplications.map(a=>a.targetDate).filter(Boolean).join(" | "),
       item.pdufaApplications.map(a=>a.targetConfirmation+(a.savedOutcome?"; saved outcome: "+a.savedOutcome:"")).join(" | "),
@@ -106,7 +120,9 @@ export function renderToolsSpreadsheetCsv(
       ...designations.map(key=>[...new Set((item.designationMatches[key]||[]).map(v=>v.verification))].join(" | ")),
       sourceAsOf
     ];
-    rows.push(values.map(safeCell).join(","));
+    // Calendar-day integers are generated, not untrusted user strings, so a
+    // negative D can stay numeric in Excel/Google Sheets instead of text.
+    rows.push(values.map((value,i)=>i===3||i===4?(value===""?safeCell(""):String(Number(value))):safeCell(value)).join(","));
   }
   return "\uFEFF"+rows.join("\r\n")+"\r\n";
 }
