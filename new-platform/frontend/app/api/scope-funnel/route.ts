@@ -50,6 +50,8 @@ export async function GET(req:NextRequest) {
   const stageGroup=params.get("stageGroup")||"all";
   const stage=params.get("stage")||"";
   const recordKind=params.get("recordKind")||"all";
+  const stagesParam=params.get("stages")||"";
+  const selectedStages=stagesParam?stagesParam.split(","):[];
   if(!["pool","pipeline","readout-review","census-review"].includes(view)
      || !/^(0|[1-9]\d{0,7})$/.test(offset)
      || !(/^(?:[1-9]|[1-4]\d|50)$/.test(limit) || (view==="pipeline" && /^(?:[1-9]\d?|1\d\d|200|500)$/.test(limit)))
@@ -57,7 +59,11 @@ export async function GET(req:NextRequest) {
      || !["all",...Object.keys(POOL_STAGE_GROUPS)].includes(stageGroup)
      || (stage && !(POOL_STAGES as readonly string[]).includes(stage))
      || !["all","trials","other"].includes(recordKind)
-     || (view!=="pool" && (stageGroup!=="all" || stage || recordKind!=="all")))
+     || selectedStages.length>POOL_STAGES.length
+     || new Set(selectedStages).size!==selectedStages.length
+     || selectedStages.some(selected=>!(POOL_STAGES as readonly string[]).includes(selected))
+     || (selectedStages.length>0 && (stageGroup!=="all" || stage!==""))
+     || (view!=="pool" && (stageGroup!=="all" || stage || recordKind!=="all" || selectedStages.length>0)))
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
     const data=await source();
@@ -72,7 +78,7 @@ export async function GET(req:NextRequest) {
         "X-PDUFA-Source-Version":datasetVersion,
       }});
     }
-    return NextResponse.json({...funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,stageGroup as PoolStageGroup,stage,recordKind as PoolRecordKind),datasetVersion},
+    return NextResponse.json({...funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,stageGroup as PoolStageGroup,stage,recordKind as PoolRecordKind,selectedStages),datasetVersion},
       {headers:{"Cache-Control":"private, no-store"}});
   }catch(cause){
     // Only a finite cause category is returned to the signed-in operator.
