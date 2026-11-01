@@ -101,6 +101,35 @@ export function toolsDesignationTotals(
   })) as ToolsDesignationTotals;
 }
 
+/**
+ * Faceted FDA trial counts in the exact resultant Phase/search scope.
+ * Each choice is evaluated independently, because FDA choices are ORed.
+ * Counts are from the full verified POOL, NEVER the 50-row visible page,
+ * and use the same exact NCT+ticker cited-GRANTED matching as result filtering.
+ * null means no count is established, rather than an invented zero.
+ */
+export type ToolsContextualDesignationCount={
+  matchingTrials:number;
+  nctIds:string[];
+};
+export type ToolsContextualDesignationCounts=Record<DesignationKey,ToolsContextualDesignationCount|null>;
+export function toolsContextualDesignationCounts(
+  poolRows:readonly PoolTrialRecord[],index:DesignationIndex|null,
+  stages:readonly string[],query:string
+):ToolsContextualDesignationCounts{
+  return Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})=>{
+    if(!index?.availableKeys?.[key])return [key,null];
+    const ids=selectToolTrialIds(poolRows,index,[key]);
+    // A source with no exact-NCT positives has incomplete coverage:
+    // 'unknown', not 'zero trials'. When a known designation has links
+    // outside the chosen phase, an observed intersection of 0 IS valid.
+    if(ids.size===0)return [key,null];
+    const filtered=filterToolTrials(poolRows,stages,ids,query);
+    return [key,{matchingTrials:filtered.length,
+      nctIds:filtered.slice(0,40).map(row=>row.id.slice("TRIAL|".length))}];
+  })) as ToolsContextualDesignationCounts;
+}
+
 export function filterToolTrials(
   pool:readonly PoolTrialRecord[],stages:readonly string[],
   designationMatches:ReadonlySet<string>|null,query:string
