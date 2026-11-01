@@ -10,7 +10,7 @@ import {buildDesignationIndex, applyReviewedDesignationLinks, SPECIAL_DESIGNATIO
 import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
-import {verifiedToolPool,buildToolsResults,filterToolTrials,selectToolTrialIds} from "../../../lib/tools-pool-inventory";
+import {verifiedToolPool,buildToolsResults,filterToolTrials,selectToolTrialIds,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -193,6 +193,16 @@ export async function GET(req:NextRequest) {
         .update(JSON.stringify({asOf:inventory.sourceAsOf,recordCount:inventory.poolRows.length}))
         .digest("hex");
       if(format==="csv"){
+        if(result.designationCoverage?.noVerifiedNctLinks){
+          const csv=renderUnlinkedFdaProgramCsv(result.designationCoverage,inventory.sourceAsOf);
+          return new NextResponse(csv,{headers:{
+            "Content-Type":"text/csv; charset=utf-8",
+            "Content-Disposition":'attachment; filename="pdufa-tools-fda-program-records-unlinked.csv"',
+            "Cache-Control":"private, no-store",
+            "X-PDUFA-Record-Type":"FDA_PROGRAM_EVENT_NOT_NCT",
+            "X-PDUFA-Source-Version":datasetVersion
+          }});
+        }
         const matches=index?selectToolTrialIds(inventory.poolRows,index,selectedDesignations):null;
         const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query);
         if(rows.length>25000)return NextResponse.json({error:"Selection exceeds export row limit"},{status:413});
