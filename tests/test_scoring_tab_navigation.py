@@ -15,6 +15,7 @@ def test_active_navigation_links_pipeline_tools_scan_and_predictions_without_gem
     expected = {
         "PIPELINE": "/pipeline",
         "TOOLS": "/tools",
+        "COMPARE TRIALS": "/compare-trials",
         "SCAN": "/scans",
         "PREDICTIONS": "/predictions",
         "#1": "/patient-population",
