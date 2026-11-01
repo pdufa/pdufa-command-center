@@ -58,6 +58,12 @@ try{
     await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("3,269"),null,{timeout:100000});
     const selected=await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).isChecked();
     assert.equal(selected,true);
+    const green=page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]')
+      .getByRole("heading",{name:"TRIALS",exact:true}).locator("../..");
+    assert.match(await green.innerText(),/3,269[\s\S]*Trials in selected POOL phase/,
+      "The green TRIALS box must show selected phase counts from the unrestricted POOL");
+    assert.match(await green.innerText(),/After PIPELINE screen: 0/,
+      "The narrower post–Phase 3 screen must remain separately labeled");
     await screenshot("02-stage-Phase-2");
     return {selected};
   });
