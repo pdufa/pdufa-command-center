@@ -13,7 +13,7 @@ import ToolsOptionNumber from "./ToolsOptionNumber";
 type PositiveRecord={program:DesignationProgram;linkedNcts:string[]};
 type DesignationSummary={available:boolean;records:PositiveRecord[];linkedTrials:number};
 
-export default function PoolDesignationSelector({selected,onChange,poolTrialCount}:{selected:DesignationKey[];onChange:(next:DesignationKey[])=>void;poolTrialCount:number|null}){
+export default function PoolDesignationSelector({selected,onChange,poolTrialCount,guided=false}:{selected:DesignationKey[];onChange:(next:DesignationKey[])=>void;poolTrialCount:number|null;guided?:boolean}){
   const {index,loading,error,retry}=useTrialDesignations();
   const entries=useMemo(()=>{
     const trialLinks=new Map<string,Set<string>>();
@@ -66,6 +66,58 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
   function toggle(key:DesignationKey){
     onChange(selected.includes(key)?selected.filter(item=>item!==key):[...selected,key]);
   }
+  if(guided)return <div className={styles.toolsGuidedDesignation}>
+    <p className={styles.muted}>Check one or more source-supported FDA categories below. An option reveals its documented programs and linked trial evidence.</p>
+    {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
+    {error&&<p role="alert" className={styles.error}>FDA source unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
+    <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
+      {SPECIAL_DESIGNATION_CATEGORIES.map((category,categoryIndex)=>{
+        const d=entries[category.key],checked=selected.includes(category.key);
+        return <div key={category.key} className={styles.toolsCascadeFdaItem}>
+          <label className={styles.stageCheckboxRow}
+            title={index&&!d.available?"No source field available for this category":undefined}>
+            <input type="checkbox" checked={checked} disabled={!index||!d.available}
+              onChange={()=>toggle(category.key)}/>
+            <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
+            <span>{category.label}</span>
+            {index&&!d.available&&<small>Not tracked</small>}
+          </label>
+          {checked&&index&&<div className={styles.toolsCascadeFdaEvidence}
+              aria-label={category.label+" source evidence"} role="group">
+            <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
+              <small>FDA programs, not distinct clinical trials</small></div>
+            <div><strong>{d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}</strong>
+              <small>Reviewed exact NCT links only</small></div>
+          </div>}
+        </div>;
+      })}
+    </div>
+    <div className={styles.stageDropdownActions}>
+      <button type="button" disabled={!index||supported.length===0}
+        onClick={()=>onChange(supported.map(item=>item.key))}>Select all available</button>
+      <button type="button" onClick={()=>onChange([])}>Clear FDA selections</button>
+    </div>
+    {selected.length>0&&index&&<details className={styles.designationSelection}>
+      <summary>View {combined.length.toLocaleString("en-US")} source-linked application/program records</summary>
+      {combined.length===0?<p>No source-linked positive records in selected categories. Missing evidence is not denial.</p>:
+        <ol className={styles.designationResults}>
+          {combined.slice(0,50).map(({row,labels,sources})=><li key={row.program.eventKey}>
+            <strong>{row.program.ticker}</strong> · {row.program.drug||row.program.eventKey}
+            {row.program.indication&&<span> · {row.program.indication}</span>}
+            <small>{labels.join(" · ")} · {row.linkedNcts.length?row.linkedNcts.join(", "):"No exact NCT link recorded"}</small>
+            {sources.map(source=><a key={source} href={source} target="_blank" rel="noopener noreferrer">Source ↗</a>)}
+          </li>)}
+        </ol>}
+      {combined.length>50&&<p className={styles.muted}>Showing first 50 source programs.</p>}
+    </details>}
+    <details className={styles.designationCoverageWarning}>
+      <summary>FDA evidence coverage and limitations</summary>
+      <p>{index?supported.length+" of 13 FDA categories have a tracked source field":"Source availability not established"}.
+        {index?" Reviewed exact linked NCTs: "+auditedNcts.toLocaleString("en-US"):""}
+        {poolTrialCount!==null?" of "+poolTrialCount.toLocaleString("en-US")+" in POOL":""}.</p>
+      <p>Program counts are not the number of distinct clinical trials. Unlinked evidence remains unknown, not zero.</p>
+    </details>
+  </div>;
   return <div className={styles.stageDropdownColumn}>
     <label className={styles.stageDropdownLabel}>Saved FDA source coverage</label>
     <p className={styles.stageDropdownSubline}>
