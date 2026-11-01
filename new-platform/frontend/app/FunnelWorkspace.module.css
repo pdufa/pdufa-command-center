@@ -310,3 +310,35 @@
  .stageCheckboxRow>span[aria-hidden="true"],
  .toolsCascadeGroup>span[aria-hidden="true"]{flex-basis:34px!important;width:34px;min-width:34px}
 }
+
+
+/* TOOLS begins with one unmistakable choice: 1a/2 Phase or 1b/2 Special Designation. */
+.toolsStart{border:1px solid #9fbda9;border-radius:12px;padding:15px;background:#fff;max-width:100%;margin:0 0 14px}
+.toolsStart>h2{font-size:18px;font-weight:800;color:#173f2a;margin:0 0 5px}
+.toolsStart>p{font-size:12px;line-height:1.5;color:#4a6253;margin:0 0 12px}
+.toolsStartChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
+.toolsStartChoice{box-sizing:border-box;width:100%;border:2px solid #a8c7b0;border-radius:10px;background:#f8fbf9;color:#163d2a;min-height:66px;padding:10px 12px;display:flex;align-items:center;gap:9px;text-align:left;font:750 14px/1.3 Arial,Helvetica,sans-serif;cursor:pointer;touch-action:manipulation}
+.toolsStartChoice>span:nth-child(2){flex:1;min-width:0;overflow-wrap:anywhere}
+.toolsStartChoice small{display:block;color:#5a7263;font-size:11px;font-weight:500;margin-top:3px}
+.toolsStartChoice[aria-expanded="true"]{border-color:#28724b;background:#e5f4e9;box-shadow:inset 0 -2px #28724b}
+.toolsStartChoice:focus-visible{outline:3px solid #2778c4;outline-offset:2px}
+.toolsStartPanel{border:1px solid #bed2c4;border-radius:10px;margin-top:12px;padding:11px;background:#fff;max-width:100%}
+.toolsStartPanel>h3{font-size:14px;color:#164633;margin:0 0 5px}
+.toolsStartPanel>.muted{margin:0 0 10px}
+.toolsStartPanel .stageDesignationPane{border:0}
+.toolsStartPanel .stageDesignationBody{padding:0}
+.toolsStartPanel .stageDesignationList{max-height:465px}
+.toolsStartSelected{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:11px;padding:10px 12px;border:1px solid #bed9c7;border-radius:9px;background:#f2f9f4;font-size:12px;color:#24533b;flex-wrap:wrap}
+.toolsStartSelected button{padding:7px 9px;border:1px solid #a0bea9;border-radius:7px;background:#fff;color:#21533b;font-weight:700;cursor:pointer}
+.toolsAdvanced{margin:12px 0;border:1px solid #ccdcd0;border-radius:9px;padding:8px 12px}
+.toolsAdvanced>summary{cursor:pointer;font-size:12px;font-weight:700;color:#42624b}
+.toolsGuidedDesignation .stageDesignationList{margin:10px 0 12px}
+.toolsGuidedDesignation .stageDropdownActions{justify-content:flex-start;flex-wrap:wrap}
+.toolsGuidedDesignation .designationCoverageWarning{margin:12px 0 0}
+@media(max-width:600px){
+ .toolsStart{padding:9px}
+ .toolsStartChoices{gap:7px}
+ .toolsStartChoice{min-height:68px;padding:8px 6px;gap:5px;font-size:12px}
+ .toolsStartChoice small{font-size:10px}
+ .toolsStartPanel{padding:8px}
+}
