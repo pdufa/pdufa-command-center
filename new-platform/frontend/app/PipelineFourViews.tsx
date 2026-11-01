@@ -13,6 +13,7 @@ import { loadCompleteResearch } from "../lib/pipeline-research-pagination";
 import { pacificToday } from "../lib/pipeline-timeline";
 import { RANKED_BENEFIT_ASSESSMENTS, assessmentCoverage, validateComparatorInventory } from "../lib/pipeline-benefit-assessments";
 import LiveRegistryReview from "./LiveRegistryReview";
+import TrialTimelineSummary from "./TrialTimelineSummary";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import PipelineEligibilityChecklist from "./PipelineEligibilityChecklist";
 
@@ -42,6 +43,7 @@ function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClo
     </div>
     <button type="button" onClick={onClose}>Close trial</button>
    </div>
+   <TrialTimelineSummary timeline={row.timeline} today={today}/>
    <div className={styles.dossierTools}>
     <button type="button" onClick={()=>setOpened("all")}>Expand seven sections</button>
     <button type="button" onClick={()=>setOpened("none")}>Collapse sections</button>
