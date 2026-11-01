@@ -42,10 +42,10 @@ const sampleTotals=Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})
   key,key==="fast_track"?{linkedNcts:1,nctIds:["NCT00000001"],programNctIds:{"ABC|ONE":["NCT00000001"]}}:null
 ]));
 const sampleContext=Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})=>[
- key,key==="fast_track"?{matchingTrials:1,nctIds:["NCT00000001"]}:null
+ key,key==="fast_track"?{matchingTrials:1,nctIds:["NCT00000001"]}:key==="orphan_drug"?{matchingTrials:0,nctIds:[]}:null
 ]));
 const selectedPhaseContext=Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})=>[
- key,key==="fast_track"?{matchingTrials:0,nctIds:[]}:null
+ key,["fast_track","orphan_drug"].includes(key)?{matchingTrials:0,nctIds:[]}:null
 ]));
 const PoolDesignationSelector=loadWithMocks("PoolDesignationSelector.tsx",{
  "./TrialDesignations":{useTrialDesignations:()=>({index:sampleIndex,loading:false,error:"",retry:()=>{}})}
@@ -128,27 +128,27 @@ test("checking FDA category reveals program and linked-trial counts without chan
   const first=root.root.findAllByType("label").find(x=>textOf(x).includes("Fast Track Designation"));
   assert.ok(first);
   assert.match(textOf(first),/2a\/13/);
-  assert.match(textOf(first),/\?FDA trial total unknown1 verified NCT matches/,"Complete category total must be unknown while verified NCT matches remain inspectable");
-  assert.doesNotMatch(textOf(first),/2 verified NCT matches/,"Raw source program totals must not inflate verified NCT matches");
+  assert.match(textOf(first),/1documented NCT matches · partialFull FDA total unknown/,"The prominent count must show documented NCT matches with partial scope");
+  assert.doesNotMatch(textOf(first),/2documented NCT matches/,"Raw program records must not inflate the documented NCT count");
   assert.equal(first.findAllByProps({className:"toolsFdaRowCount"}).length,1);
   assert.equal(root.root.findAllByProps({className:"toolsFdaRowCount"}).length,13,
     "Every FDA category must display an aligned trial-count status as Phase does");
   const orphan=root.root.findAllByType("label").find(x=>textOf(x).includes("Orphan Drug Designation"));
-  assert.match(textOf(orphan),/\?FDA trial total unknownNCT coverage unavailable/,"Missing NCT coverage must not be displayed as zero");
+  assert.match(textOf(orphan),/0documented NCT matches · partialFull FDA total unknown/,"Tracked orphan category has zero documented matches, with unknown complete coverage");
   assert.ok(!root.root.findAllByProps({className:"toolsCascadeFdaEvidence"}).length);
   await act(async()=>first.findByType("input").props.onChange());
   const evidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"});
   assert.equal(evidence.length,1);
   assert.match(textOf(evidence[0]),/1 source programs/);
-  assert.match(textOf(evidence[0]),/1 matching NCTs/);
+  assert.match(textOf(evidence[0]),/1 verified NCT matches/);
   const linked=evidence[0].findAllByType("a").filter(x=>textOf(x)==="NCT00000001");
   assert.equal(linked.length,1,"Expanded FDA category must list the actual NCT study link");
   assert.equal(linked[0].props.href,"https://clinicaltrials.gov/study/NCT00000001");
   await act(async()=>root.root.findAllByType("button").find(x=>textOf(x)==="Change Phase scope").props.onClick());
   const phaseRow=root.root.findAllByType("label").find(x=>textOf(x).includes("Fast Track Designation"));
-  assert.match(textOf(phaseRow),/\?FDA trial total unknown0 verified NCT matches/,"Zero documented Phase matches cannot be mistaken for complete FDA trial total");
+  assert.match(textOf(phaseRow),/0documented NCT matches · partialFull FDA total unknown/,"No Phase-scoped documented matches is not zero full FDA designations");
   const phaseEvidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"})[0];
-  assert.match(textOf(phaseEvidence),/0 matching NCTs/);
+  assert.match(textOf(phaseEvidence),/0 verified NCT matches/);
   assert.equal(phaseEvidence.findAllByType("a").length,0);
   await act(async()=>first.findByType("input").props.onChange());
   assert.equal(root.root.findAllByProps({className:"toolsCascadeFdaEvidence"}).length,0);
