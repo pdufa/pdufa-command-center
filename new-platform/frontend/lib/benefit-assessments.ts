@@ -1,33 +1,18 @@
 /** Shared, ordered benefit-assessment catalog. Each numbered heading owns its subcolumns.
  * Research fields and advantages are separate source-backed records; missing is NOT zero.
  */
+import {RANKED_BENEFIT_ASSESSMENTS} from "./pipeline-benefit-assessments";
+import {ALL_RESEARCH_FIELD_DEFINITIONS} from "./pipeline-research-view";
 export type BenefitField = {id:string;label:string};
 export type BenefitGroup = {number:number;name:string;fields:readonly BenefitField[]};
-const group=(number:number,name:string,items:readonly [string,string][]):BenefitGroup=>({
-  number,name,fields:items.map(([id,label])=>({id,label}))
-});
-export const BENEFIT_GROUPS:readonly BenefitGroup[]=[
-  group(1,"Potential Patient Population",[["diseasePopulation","Disease population"],["eligibleUs","Eligible U.S. patients"],["eligibleGlobal","Eligible global patients"],["populationEvidence","Eligibility evidence"]]),
-  group(2,"Unmet Medical Need",[["standardOptions","Current treatment options"],["untreatedPatients","Underserved patients"],["treatmentGap","Unmet need"],["diseaseBurden","Disease burden"]]),
-  group(3,"Clinical Benefit",[["primaryEndpoint","Primary endpoint"],["effectSize","Effect size"],["clinicalSignificance","Clinical significance"],["durability","Duration of benefit"]]),
-  group(4,"Survival Benefit",[["overallSurvival","Overall survival"],["progressionFreeSurvival","Progression-free survival"],["hazardRatio","Hazard ratio"],["survivalMaturity","Data maturity"]]),
-  group(5,"Quality-of-Life Improvement",[["patientReported","Patient-reported outcomes"],["symptoms","Symptom relief"],["dailyFunction","Daily functioning"],["qolDurability","Benefit durability"]]),
-  group(6,"Competitive Advantage",[["approvedComparators","Approved competitors"],["lateComparators","Late-stage competitors"],["efficacyDifference","Relative efficacy"],["overallDifferentiation","Differentiation"]]),
-  group(7,"Treatment Convenience",[["administration","Administration route"],["frequency","Dosing frequency"],["visits","Required visits"],["monitoring","Monitoring burden"]]),
-  group(8,"Safety Advantage",[["seriousAdverseEvents","Serious adverse events"],["discontinuations","Discontinuations"],["warnings","Warnings"],["comparatorSafety","Comparator safety"]]),
-  group(9,"Healthcare Cost Savings",[["currentCareCosts","Current care costs"],["newCareCosts","Proposed care costs"],["avoidedCosts","Potential cost offsets"],["netSavings","Net savings"]]),
-  group(10,"Insurance Coverage Potential",[["payerAccess","Payer access"],["formulary","Formulary position"],["priorAuthorization","Prior authorization"],["reimbursement","Reimbursement evidence"]]),
-  group(11,"Expected Treatment Price",[["listPrice","Proposed list price"],["netPrice","Projected net price"],["treatmentCourseCost","Cost per course"],["priceComparator","Comparator price"]]),
-  group(12,"Market Penetration",[["marketShare","Expected share"],["adoption","Treatment adoption"],["treatedPatients","Patients treated"],["peakAdoption","Peak adoption timing"]]),
-  group(13,"International Patient Population",[["euPopulation","Eligible EU patients"],["japanPopulation","Eligible Japan patients"],["otherMarkets","Other markets"],["marketAccess","International access"]]),
-  group(14,"Additional Indications",[["newIndications","Other indications"],["developmentStage","Development status"],["additionalPatients","Incremental patients"],["programEvidence","Expansion evidence"]]),
-  group(15,"Peak Annual Sales",[["salesLow","Low scenario"],["salesBase","Base scenario"],["salesHigh","High scenario"],["salesYear","Peak sales year"]]),
-  group(16,"Revenue Growth Potential",[["year1Revenue","Year 1 revenue"],["year3Revenue","Year 3 revenue"],["year5Revenue","Year 5 revenue"],["growthAssumptions","Growth assumptions"]]),
-  group(17,"Patent and Exclusivity Value",[["patentExpiry","Patent expiry"],["exclusivity","Market exclusivity"],["patentChallenges","Patent risks"],["genericRisk","Competitor entry"]]),
-  group(18,"Licensing and Partnership Value",[["partners","Commercial partners"],["territories","Licensed territories"],["royalties","Royalties"],["milestones","Milestones"]]),
-  group(19,"Company Valuation Impact",[["riskAdjustedNpv","Risk-adjusted NPV"],["enterpriseValue","Enterprise value"],["valuationContribution","Asset contribution"],["valuationAssumptions","Valuation assumptions"]]),
-  group(20,"Shareholder Upside and Risk",[["bearCase","Bear scenario"],["baseCase","Base scenario"],["bullCase","Bull scenario"],["financingRisk","Financing risk"]]),
-];
+/** Reuse the canonical 20 original assessment groups and the mapped 38+ research fields.
+ * Never fork the assessment taxonomy between PIPELINE and TOOLS.
+ */
+export const BENEFIT_GROUPS:readonly BenefitGroup[]=RANKED_BENEFIT_ASSESSMENTS.map(spec=>({
+  number:spec.rank,
+  name:spec.title,
+  fields:spec.fields.map(id=>({id,label:ALL_RESEARCH_FIELD_DEFINITIONS.find(f=>f.id===id)?.label||id}))
+}));
 export type BenefitFact={
   value:string|number;
   status:"VERIFIED"|"MODELED";
