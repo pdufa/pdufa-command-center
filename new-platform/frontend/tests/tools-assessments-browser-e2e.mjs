@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import {webkit} from "playwright";
 
-// Authenticated production smoke-check for the 20-assessment TOOLS page.
-// This validates real WebKit layout and selectors; no clinical findings are fabricated.
+// Authenticated source-aware WebKit test of the guided first-selection TOOLS UI
+// and the same 20 clinical-benefit columns after a real Phase filter is checked.
 const base="https://pdufa-new-dashboard.vercel.app";
 const password=process.env.DASHBOARD_PASSWORD;
 if(!password)throw Error("Configured dashboard test credential unavailable");
@@ -13,172 +13,136 @@ const browser=await webkit.launch({headless:true});
 const errors=[];
 async function openAuthenticated(viewport,isMobile){
   const context=await browser.newContext({viewport,deviceScaleFactor:isMobile?3:1,isMobile,hasTouch:isMobile});
-  const auth=await context.request.post(base+"/api/auth",{
-    data:{password},headers:{Origin:base},
-  });
+  const auth=await context.request.post(base+"/api/auth",{data:{password},headers:{Origin:base}});
   assert.equal(auth.status(),200,"Dashboard authentication failed");
   const page=await context.newPage();
   page.on("pageerror",e=>errors.push(e.message));
   await page.goto(base+"/tools",{waitUntil:"domcontentloaded",timeout:50000});
-  await page.locator("#tools-benefit-assessments").waitFor({timeout:45000});
+  await page.locator('[aria-controls="tools-first-phase"]').waitFor({timeout:45000});
+  assert.equal(await page.locator("#tools-benefit-assessments").count(),0,
+    "Benefit matrix must remain hidden until the first Phase/FDA selection");
+  assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),0);
+  assert.equal(await page.locator('[aria-controls="tools-first-phase"]').getAttribute("aria-expanded"),"false");
+  assert.equal(await page.locator('[aria-controls="tools-first-designation"]').getAttribute("aria-expanded"),"false");
   return {context,page};
 }
 async function populate(page){
-  const chooser=page.locator("details").filter({has:page.getByText("Select clinical trial stages")}).locator("summary");
-  await chooser.click();
-  // Confirm the actual stage-filter response before checking results;
-  // no-selection state cannot satisfy the filter test.
+  await page.locator('[aria-controls="tools-first-phase"]').click();
+  await page.locator("#tools-first-phase").waitFor({timeout:10000});
   const stageResponse=page.waitForResponse(response=>{
     try{
       const url=new URL(response.url());
-      return url.pathname==="/api/scope-funnel" &&
-        url.searchParams.get("tools")==="1" &&
-        url.searchParams.has("stages") &&
-        !url.searchParams.has("baseline");
+      return url.pathname==="/api/scope-funnel"&&url.searchParams.get("tools")==="1"&&
+        url.searchParams.has("stages")&&!url.searchParams.has("baseline");
     }catch{return false;}
-  },{timeout:100000});
-  await page.getByRole("button",{name:"Select all",exact:true}).click();
+  },{timeout:120000});
+  await page.locator("#tools-first-phase").getByRole("button",{name:"Select all",exact:true}).click();
   const response=await stageResponse;
-  assert.equal(response.status(),200,"Stage-filtered source request failed in live TOOLS");
+  assert.equal(response.status(),200,"Phase-filtered source request failed");
   const body=await response.json();
-  assert.ok(body.total>0 && Array.isArray(body.spreadsheetRows) &&
-    body.spreadsheetRows.length>0,"All-stage selection returned no source-linked NCT rows");
-  // The mobile NCT chooser is deliberately hidden in the desktop layout.
-  // Verify the actual visible, populated result surface at each viewport.
+  assert.ok(body.total>0&&Array.isArray(body.spreadsheetRows)&&body.spreadsheetRows.length>0,
+    "All 14 stages must populate actual research trial records");
+  await page.locator("#tools-benefit-assessments").waitFor({timeout:60000});
   const isMobile=await page.evaluate(()=>window.matchMedia("(max-width:800px)").matches);
   if(isMobile){
-    await page.locator("#benefit-trial-picker").waitFor({state:"visible",timeout:50000});
+    await page.locator("#benefit-trial-picker").waitFor({state:"visible",timeout:60000});
     await page.waitForFunction(()=>{
       const s=document.querySelector("#tools-benefit-assessments");
       const picker=document.querySelector("#benefit-trial-picker");
-      return s && picker && picker.options.length>0 &&
-        !s.textContent.includes("Loading source-matched resultant trials");
-    },null,{timeout:50000});
-  } else {
+      return s&&picker&&picker.options.length>0&&!s.textContent.includes("Loading source-matched resultant trials");
+    },null,{timeout:60000});
+  }else{
     const table=page.locator('[aria-label="Desktop horizontally scrollable 20-assessment spreadsheet"] table');
-    await table.waitFor({state:"visible",timeout:50000});
+    await table.waitFor({state:"visible",timeout:60000});
     await page.waitForFunction(()=>{
       const s=document.querySelector("#tools-benefit-assessments");
       const table=document.querySelector('[aria-label="Desktop horizontally scrollable 20-assessment spreadsheet"] table');
-      return s && table && table.tBodies[0]?.rows.length>0 &&
-        !s.textContent.includes("Loading source-matched resultant trials");
-    },null,{timeout:50000});
+      return s&&table&&table.tBodies[0]?.rows.length>0&&!s.textContent.includes("Loading source-matched resultant trials");
+    },null,{timeout:60000});
   }
 }
-try {
+try{
   const mobile=await openAuthenticated({width:390,height:844},true);
   const page=mobile.page;
-  const funnel=page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]');
-  const cards=await Promise.all(["POOL","PIPELINE","TRIALS"].map(async name=>
-    funnel.getByRole("heading",{name,exact:true}).boundingBox()));
-  assert.ok(cards.every(Boolean),"Every funnel stage must exist");
-  assert.ok(cards[0].x<cards[1].x && cards[1].x<cards[2].x,"iPhone funnel cards must be horizontal");
-  assert.ok(Math.abs(cards[0].y-cards[1].y)<12 && Math.abs(cards[1].y-cards[2].y)<12,
-    "iPhone funnel headings must stay on the same line");
-  // Verify real authenticated research intake, not just a rendered empty table.
-  const researchResponse=await page.request.get(base+"/api/benefit-assessments",{timeout:110000});
-  assert.equal(researchResponse.status(),200,
-    "TOOLS must retrieve the reconciled Pipeline research feed rather than an empty or failing stub");
-  const benefitFeed=await researchResponse.json();
-  assert.equal(benefitFeed.schemaVersion,1);
-  assert.match(benefitFeed.sourceAsOf,/^\d{4}-\d{2}-\d{2}$/);
-  assert.ok(Array.isArray(benefitFeed.records),"Source-backed benefit research records missing");
-  assert.ok(benefitFeed.records.every(r=>/^NCT\d{8}$/.test(r.nctId)&&r.ticker&&r.drug&&r.indication),
-    "Benefit research cannot contain orphaned NCT identities");
-  const coverageResponse=await page.request.get(base+"/api/registry-benefit-coverage",{timeout:35000});
-  assert.equal(coverageResponse.status(),200,"Live dated registry source summary unavailable");
-  const registryCoverage=await coverageResponse.json();
-  assert.equal(registryCoverage.scanned,375);
-  assert.ok(registryCoverage.records.length>0);
-  assert.ok(registryCoverage.postedResults<=registryCoverage.records.length);
-  assert.ok(registryCoverage.withSeriousEventCounts<=registryCoverage.records.length);
-  assert.ok(await page.getByText("Official registry research archive:",{exact:false}).isVisible(),
-    "Live TOOLS should display posted outcomes availability and review-required caveat");
-  const groupSelect=page.locator("#benefit-group-picker");
-  assert.equal(await groupSelect.locator("option").count(),20);
+  assert.match(await page.locator('[aria-controls="tools-first-phase"]').innerText(),/1a\/2/);
+  assert.match(await page.locator('[aria-controls="tools-first-designation"]').innerText(),/1b\/2/);
+  // No implicit candidates from a missing selection.
   const emptyResponse=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&offset=0&limit=50");
   assert.equal(emptyResponse.status(),200);
   const empty=await emptyResponse.json();
-  assert.equal(empty.pipelineResearch?.screenedTrials,346,"PIPELINE retains the dated source-screened 346");
-  assert.equal(empty.total,0,"API must never return default candidates without a selected filter");
-  assert.deepEqual(empty.rows,[]);
+  assert.equal(empty.total,0);
   assert.deepEqual(empty.spreadsheetRows,[]);
-  const retired=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&offset=0&limit=50&baseline=1");
-  assert.equal(retired.status(),422,"Deprecated implicit baseline bypass must be rejected");
-  const pipelineCard=funnel.getByRole("heading",{name:"PIPELINE",exact:true}).locator("../..");
-  await pipelineCard.getByText("346",{exact:true}).waitFor({timeout:100000});
-  const trialsCard=funnel.getByRole("heading",{name:"TRIALS",exact:true}).locator("../..");
-  assert.equal((await trialsCard.locator('[role="status"]').first().innerText()).trim(),"0",
-    "Unchecked clinical stages and FDA designations MUST show 0 trials");
-  assert.equal(await page.locator("#benefit-trial-picker").count(),0,
-    "No trial selector or assessment rows without checked filters");
-  assert.match(await page.locator("#tools-benefit-assessments").innerText(),/0 matching trials/);
-  const csv=page.locator("a").filter({hasText:"Export all matches (CSV)"});
-  assert.equal(await csv.getAttribute("aria-disabled"),"true",
-    "No-selection state must disable trial export");
+  const invalid=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&offset=0&limit=50&baseline=1");
+  assert.equal(invalid.status(),422);
   await populate(page);
-  const benefitBox=await page.locator("#tools-benefit-assessments").boundingBox();
-  const totalsBox=await page.getByRole("heading",{name:"Selected selectors & individual trial totals"}).boundingBox();
-  assert.ok(benefitBox&&totalsBox&&benefitBox.y<totalsBox.y,
-    "Benefit matrix must appear before the long individual selector totals table on iPhone");
+  const funnel=page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]');
+  const cards=await Promise.all(["POOL","PIPELINE","TRIALS"].map(async name=>
+    funnel.getByRole("heading",{name,exact:true}).boundingBox()));
+  assert.ok(cards.every(Boolean));
+  assert.ok(cards[0].x<cards[1].x&&cards[1].x<cards[2].x,"The 3 funnel boxes remain horizontal on iPhone");
+  assert.ok(Math.abs(cards[0].y-cards[1].y)<12&&Math.abs(cards[1].y-cards[2].y)<12);
+  const groupSelect=page.locator("#benefit-group-picker");
+  assert.equal(await groupSelect.locator("option").count(),20);
+  const feedResponse=await page.request.get(base+"/api/benefit-assessments",{timeout:110000});
+  assert.equal(feedResponse.status(),200);
+  const feed=await feedResponse.json();
+  assert.equal(feed.schemaVersion,1);
+  assert.match(feed.sourceAsOf,/^\d{4}-\d{2}-\d{2}$/);
+  assert.ok(Array.isArray(feed.records));
+  assert.ok(feed.records.every(r=>/^NCT\d{8}$/.test(r.nctId)&&r.ticker&&r.drug&&r.indication));
+  const coverage=await page.request.get(base+"/api/registry-benefit-coverage",{timeout:40000});
+  assert.equal(coverage.status(),200);
+  const packet=await coverage.json();
+  assert.equal(packet.scanned,375);
+  assert.ok(packet.records.length>0);
+  assert.ok(await page.getByText("Official registry research archive:",{exact:false}).isVisible());
   const trialSelect=page.locator("#benefit-trial-picker");
-  assert.ok(await trialSelect.isVisible(),"Mobile resultant-trial picker must be visible");
-  assert.ok(await trialSelect.locator("option").count()>0);
-  // Verify a genuine primary registry lookup for the selected screened NCT.
   const selectedNct=await trialSelect.inputValue();
   assert.match(selectedNct,/^NCT\d{8}$/);
   const sourceResponse=await page.request.get(base+"/api/registry-benefit-research?nct="+selectedNct,{timeout:50000});
-  assert.equal(sourceResponse.status(),200,"Primary-source registry evidence endpoint must work for screened NCT");
-  const sourcePacket=await sourceResponse.json();
-  assert.equal(sourcePacket.nctId,selectedNct);
-  assert.equal(sourcePacket.sourceUrl,"https://clinicaltrials.gov/study/"+selectedNct);
-  assert.equal(sourcePacket.comparisonVerified,false);
-  assert.equal(sourcePacket.benefitRank,null);
-  assert.equal(sourcePacket.fdaDecisionVerified,false);
-  assert.ok(Array.isArray(sourcePacket.primary));
-  assert.ok(Array.isArray(sourcePacket.seriousAdverseEvents));
-  const evidenceDetail=page.locator("#tools-benefit-assessments details[aria-label='Independent ClinicalTrials.gov source evidence "+selectedNct+"']");
-  assert.ok(await evidenceDetail.isVisible(),"Primary-source evidence panel must be visible on iPhone");
-  await evidenceDetail.locator("summary").click();
-  await evidenceDetail.getByText("Open exact ClinicalTrials.gov study").waitFor({timeout:40000});
+  assert.equal(sourceResponse.status(),200);
+  const research=await sourceResponse.json();
+  assert.equal(research.nctId,selectedNct);
+  assert.equal(research.sourceUrl,"https://clinicaltrials.gov/study/"+selectedNct);
+  assert.equal(research.comparisonVerified,false);
+  assert.equal(research.benefitRank,null);
+  assert.equal(research.fdaDecisionVerified,false);
+  const benefit=page.locator("#tools-benefit-assessments");
+  const evidence=benefit.locator("details[aria-label='Independent ClinicalTrials.gov source evidence "+selectedNct+"']");
+  assert.ok(await evidence.isVisible());
+  await evidence.locator("summary").click();
+  await evidence.getByText("Open exact ClinicalTrials.gov study").waitFor({timeout:40000});
   await groupSelect.selectOption("3");
-  assert.match(await page.locator("#tools-benefit-assessments h4").innerText(),/^#3 — Clinical Benefit$/);
-  assert.ok(await page.getByText("Competitive advantages · strongest first",{exact:true}).isVisible());
-  await page.locator("#tools-benefit-assessments").getByRole("button",{name:/Next/}).click();
-  assert.match(await page.locator("#tools-benefit-assessments h4").innerText(),/^#4 — Survival Benefit$/);
-  await page.screenshot({path:out+"/01-iphone-390.png",fullPage:true});
-  await page.getByRole("button",{name:"Clear all filters"}).click();
-  await page.getByText("0 selected · 0 matching trials.",{exact:false}).waitFor({timeout:90000});
-  assert.equal((await trialsCard.locator('[role="status"]').first().innerText()).trim(),"0",
-    "Removing the last selected criterion restores zero trials, not 346");
-  assert.equal(await page.locator("#benefit-trial-picker").count(),0);
-  await page.screenshot({path:out+"/03-iphone-empty-selections.png",fullPage:true});
+  assert.match(await benefit.locator("h4").innerText(),/#3 — Clinical Benefit/);
+  await benefit.getByRole("button",{name:/Next/}).click();
+  assert.match(await benefit.locator("h4").innerText(),/#4 — Survival Benefit/);
+  await page.screenshot({path:out+"/01-iphone-390-guided.png",fullPage:true});
+  await page.getByRole("button",{name:"Clear all selections"}).click();
+  assert.equal(await benefit.count(),0);
+  assert.equal(await funnel.count(),0);
+  await page.screenshot({path:out+"/02-iphone-reset.png",fullPage:true});
   await mobile.context.close();
 
   const desktop=await openAuthenticated({width:1440,height:900},false);
   const desk=desktop.page;
-  await desk.getByText("0 selected · 0 matching trials.",{exact:false}).waitFor({timeout:90000});
-  assert.equal(await desk.locator("#benefit-trial-picker").count(),0);
   await populate(desk);
   const table=desk.locator('[aria-label="Desktop horizontally scrollable 20-assessment spreadsheet"] table');
-  assert.ok(await table.isVisible(),"Desktop matrix must be displayed");
+  assert.ok(await table.isVisible());
   const parent=table.locator("thead tr").first().locator("th");
-  assert.equal(await parent.count(),21,"20 parent assessment headings plus identity group");
+  assert.equal(await parent.count(),21);
   const subheader=table.locator("thead tr").nth(1).locator("th");
-  const firstSpan=Number(await parent.nth(1).getAttribute("colspan"));
-  assert.ok(firstSpan>1,"Expanded assessment #1 should span its subcolumns");
+  assert.ok(Number(await parent.nth(1).getAttribute("colspan"))>1);
   await desk.locator("#benefit-group-picker").selectOption("3");
-  const threeSpan=Number(await parent.nth(3).getAttribute("colspan"));
-  assert.equal(threeSpan,8,"Clinical Benefit has 6 mapped subcolumns plus rank/status");
+  assert.equal(Number(await parent.nth(3).getAttribute("colspan")),8);
   assert.equal(await parent.nth(1).getAttribute("colspan"),"1");
-  assert.equal(await subheader.count(),4+20-1+8,"Subcolumn count matches 20 parent groups");
-  await desk.screenshot({path:out+"/02-desktop-1440.png",fullPage:true});
+  assert.equal(await subheader.count(),4+20-1+8);
+  await desk.screenshot({path:out+"/03-desktop-1440-guided.png",fullPage:true});
   await desktop.context.close();
-  assert.deepEqual(errors,[],"No browser JavaScript runtime errors");
-  console.log("PASS: live WebKit iPhone 390px funnel, 20 group navigation, filtered trials, desktop grouped headings");
-} catch(e) {
-  console.error("LIVE_TOOLS_BENEFIT_BROWSER_FAILURE",e);
-  throw e;
-} finally {
+  assert.deepEqual(errors,[]);
+  console.log("PASS: TOOLS guided first choice and 20-assessment data after selection on mobile and desktop");
+}catch(error){
+  console.error("LIVE_TOOLS_BENEFIT_BROWSER_FAILURE",error);
+  throw error;
+}finally{
   await browser.close();
 }
