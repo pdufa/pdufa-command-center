@@ -26,6 +26,7 @@ type ProgramCoverage={
   }[];
 };
 type PoolResponse={
+  regulatorySourcesAvailable?:boolean;
   view:string;total:number;limit:number;offset:number;nextOffset:number|null;
   inventoryMode?:boolean;
   stageStats:StageStats;rows:PoolRow[];
@@ -290,6 +291,7 @@ export default function PoolStageExplorer(){
         error={error}
         sourceDate={sourceDate}
         sourceState={sourceState}
+        regulatorySourcesAvailable={!!page?.regulatorySourcesAvailable}
         onPrevious={()=>setOffset(Math.max(0,offset-50))}
         onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       />
