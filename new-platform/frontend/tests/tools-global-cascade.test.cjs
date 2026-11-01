@@ -66,6 +66,15 @@ test("stage category click reveals choices, checkbox still sets exact API stage 
  };
  try{
   await act(async()=>{root=create(React.createElement(PoolStageExplorer));});
+  const firstChoices=root.root.findAllByType("button")
+   .filter(x=>["tools-first-phase","tools-first-designation"].includes(x.props["aria-controls"]));
+  assert.equal(firstChoices.length,2,"Initial TOOLS view must show only two first-step filter choices");
+  assert.match(textOf(firstChoices[0]),/1a\/2[\s\S]*Phase/);
+  assert.match(textOf(firstChoices[1]),/1b\/2[\s\S]*Special Designation/);
+  assert.equal(root.root.findAllByProps({id:"tools-first-phase"}).length,0);
+  assert.equal(root.root.findAllByProps({id:"tools-first-designation"}).length,0);
+  await act(async()=>firstChoices[0].props.onClick());
+  assert.equal(root.root.findAllByProps({id:"tools-first-phase"}).length,1);
   const button=()=>root.root.findAllByType("button")
    .find(x=>x.props["aria-controls"]==="tools-stage-group-0");
   assert.ok(button());
@@ -80,6 +89,15 @@ test("stage category click reveals choices, checkbox still sets exact API stage 
   assert.ok(textOf(children).includes("3e/5"));
   await act(async()=>phase.findByType("input").props.onChange());
   assert.ok(queried.some(x=>x.includes("stages=Phase+2")),"stage selection must still update exact existing API query");
+  const phaseChoice=()=>root.root.findAllByType("button").find(x=>x.props["aria-controls"]==="tools-first-phase");
+  assert.match(textOf(phaseChoice()),/1 selected/);
+  assert.equal(root.root.findAllByProps({className:"toolsStartSelected"}).length,1);
+  const designationChoice=()=>root.root.findAllByType("button").find(x=>x.props["aria-controls"]==="tools-first-designation");
+  await act(async()=>designationChoice().props.onClick());
+  assert.equal(root.root.findAllByProps({id:"tools-first-phase"}).length,0);
+  assert.equal(root.root.findAllByProps({id:"tools-first-designation"}).length,1);
+  assert.match(textOf(phaseChoice()),/1 selected/);
+  await act(async()=>phaseChoice().props.onClick());
   assert.equal(button().props["aria-expanded"],true);
   await act(async()=>button().props.onClick());
   assert.equal(root.root.findAllByProps({id:"tools-stage-group-0"}).length,0);
