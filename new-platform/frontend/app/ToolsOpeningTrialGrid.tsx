@@ -40,7 +40,7 @@ export default function ToolsOpeningTrialGrid({
   return <section className={css.root} aria-label="Live trial inventory spreadsheet">
     <div className={css.heading}>
       <div>
-        <h2>{inventoryMode?"RESTRICTED RESEARCH SUBSET — trial spreadsheet":"Restricted trial matches — spreadsheet"}</h2>
+        <h2>Step 5 · {inventoryMode?"Final Trials Spreadsheet — restricted research subset":"Final Trials Spreadsheet — filtered trial matches"}</h2>
         <p>{inventoryMode
           ?"All recorded phases among NCT studies with $300M–$10B issuers from saved verified cap evidence. FDA designations and saved application records appear on the same NCT rows."
           :"One NCT per row from the $300M–$10B issuer-cap subset, across all recorded phases. Phase and FDA options filter this same universe; FDA/PDUFA coverage remains partial."}</p>
