@@ -9,6 +9,7 @@ import { renderPhase3CensusCsv } from "../../../lib/pipeline-census-csv";
 import {buildDesignationIndex, applyReviewedDesignationLinks, SPECIAL_DESIGNATION_CATEGORIES, type DesignationIndex, type DesignationKey} from "../../../lib/trial-designations";
 import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
+import {buildToolPdufaIndex,type ToolPdufaIndex} from "../../../lib/tools-pdufa-links";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
 import {verifiedToolPool,buildToolsResults,buildToolsOpeningInventory,filterToolTrials,selectToolTrialIds,toolsDesignationTotals,toolsContextualDesignationCounts,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
 import {isToolsSnapshotFresh,parseToolsSnapshotTimestamp} from "../../../lib/tools-snapshot-freshness";
@@ -47,7 +48,7 @@ async function source():Promise<FunnelResult> {
 }
 
 const DESIGNATION_SOURCE="https://raw.githubusercontent.com/pdufa/pdufa-command-center/main/data/";
-async function designationEvidence():Promise<DesignationIndex>{
+async function designationEvidence():Promise<DesignationIndex & {pdufaLinks:ToolPdufaIndex}>{
   // Reuse the same saved source files and exact-linking policy as /api/trial-designations.
   const [evidence,applications,reviewedCrosswalk]=await Promise.all(
     ["prediction_engine_designations.csv","pdufa_candidates.csv","fda_designation_nct_evidence.csv"].map(async file=>{
@@ -60,7 +61,12 @@ async function designationEvidence():Promise<DesignationIndex>{
       return csv;
     })
   );
-  return applyReviewedDesignationLinks(buildDesignationIndex(evidence,applications,new Date().toISOString()),reviewedCrosswalk);
+  // Reuse the SAME saved applications CSV already needed for FDA evidence.
+  // Trial rows are joined on exact NCT + issuer; unlinked programs stay separate.
+  return Object.assign(
+    applyReviewedDesignationLinks(buildDesignationIndex(evidence,applications,new Date().toISOString()),reviewedCrosswalk),
+    {pdufaLinks:buildToolPdufaIndex(applications)}
+  );
 }
 function linkedDesignationTrialIds(data:FunnelResult,index:DesignationIndex,selected:readonly DesignationKey[]):Set<string>{
   const matched=new Set<string>();
@@ -271,7 +277,7 @@ export async function GET(req:NextRequest) {
           ?selectToolTrialIds(inventory.poolRows,index,selectedDesignations):null;
         const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query);
         if(rows.length>25000)return NextResponse.json({error:"Selection exceeds export row limit"},{status:413});
-        const csv=renderToolsSpreadsheetCsv(rows,selectedStages,selectedDesignations,index,inventory.sourceAsOf);
+        const csv=renderToolsSpreadsheetCsv(rows,selectedStages,selectedDesignations,index,inventory.sourceAsOf,index?.pdufaLinks??null);
         return new NextResponse(csv,{headers:{
           "Content-Type":"text/csv; charset=utf-8",
           "Content-Disposition":'attachment; filename="pdufa-tools-selected-trials.csv"',
@@ -279,9 +285,12 @@ export async function GET(req:NextRequest) {
           "X-PDUFA-Source-Version":datasetVersion
         }});
       }
-      const spreadsheetRows=result.spreadsheetRows.map(row=>({
-        ...row,timeline:trialTimelines.get(row.nctId+"|"+row.ticker.toUpperCase())||null
-      }));
+      // One row per published NCT. FDA and PDUFA sources enrich those same
+      // rows, never add candidate applications to the clinical POOL.
+      const spreadsheetRows=result.rows.map(trial=>{
+        const row=toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index,index?.pdufaLinks??null);
+        return {...row,timeline:trialTimelines.get(row.nctId+"|"+row.ticker.toUpperCase())||null};
+      });
       return NextResponse.json({...result,spreadsheetRows,pipelineResearch,designationTotals,contextualDesignationCounts,datasetVersion},
         {headers:{"Cache-Control":"private, no-store"}});
     }
