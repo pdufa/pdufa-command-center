@@ -11,7 +11,7 @@ type Counts={
  matchedCompletedRecords:number;missingOrConflicted:number;
  qualifiedPrograms:null;
 };
-export default function GoalPage(){
+export default function GoalPage({embedded=false}:{embedded?:boolean}){
  const [counts,setCounts]=useState<Counts|null>(null);
  const [error,setError]=useState("");
  useEffect(()=>{
@@ -32,7 +32,8 @@ export default function GoalPage(){
     <strong style={{fontSize:24}}>{value}</strong>
     <p style={{fontSize:12,lineHeight:1.5,color:"#4b6658"}}>{description}</p>
   </section>;
- return <main className="shell">
+ const Root=embedded?"section":"main";
+ return <Root className={embedded?"":"shell"} aria-label="Research operations and readiness">
   <div className="topline">GOAL · POOL → PIPELINE</div><h1>Research Operations</h1>
   <p>Track the full master inventory and Phase 3 screening separately. Nothing in this view establishes FDA approval, a trade, or an independently verified qualified Pipeline count.</p>
   <SiteHealthStatus/>
@@ -51,7 +52,6 @@ export default function GoalPage(){
   </div>
   {counts&&<p>Source state: <strong>{counts.poolSourceState}</strong> · POOL as of {counts.poolAsOf||"Not verified"} · Unlinked historical NCTs: {counts.missingOrConflicted.toLocaleString()}.</p>}
   <p><Link href="/pool">Open full POOL</Link> · <Link href="/pipeline">Review Phase 3 screening</Link> · <Link href="/scans">Inspect scans</Link> · <Link href="/restrictions">Eligibility rules</Link></p>
-  <h2>Dated research results</h2>
-  <DailyResultsPanel/>
- </main>;
+  {!embedded&&<><h2>Dated research results</h2><DailyResultsPanel/></>}
+ </Root>;
 }
