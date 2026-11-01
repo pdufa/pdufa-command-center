@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import TrialFields from "../../TrialFields";
 import TrialWorkflowCounts from "../../TrialWorkflowCounts";
+import FullTrialTimeline from "../../FullTrialTimeline";
 import type { Candidate } from "../../Workspace";
 
 export default function FullTrialSheet() {
@@ -29,6 +30,7 @@ export default function FullTrialSheet() {
         <Link style={{color:"#17644c"}} href="/">← Dashboard</Link>
       </nav>
     </header>
+    {valid&&<FullTrialTimeline nctId={nct}/>}
     <TrialWorkflowCounts />
     {!valid ?
       <div className="panel" role="alert">Invalid trial identifier. Open a full trial sheet from a linked NCT record in POOL or PIPELINE.</div> :
