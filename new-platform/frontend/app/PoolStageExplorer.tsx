@@ -73,7 +73,7 @@ export default function PoolStageExplorer(){
   return <section className={styles.panel} aria-label="POOL trial stages with selectors" style={{margin:"20px 0"}}>
     <div className={styles.headline}>
       <div>
-        <h2>POOL — All Development Stages</h2>
+        <h2>POOL — Trial Stages &amp; FDA Designations</h2>
         <p className={styles.muted}>Browse the complete preserved POOL by recorded stage. GEM JR and GEM are not part of this view. This is a stage inventory, not a Pipeline eligibility decision.</p>
       </div>
       <strong style={{fontSize:20}}>{totalForKind===null?"—":count(totalForKind)} {kind==="trials"?"NCT trials":"records"}</strong>
@@ -96,7 +96,7 @@ export default function PoolStageExplorer(){
       </form>
     </div>
     <div className={styles.stageDesignationColumns}>
-      <details className={styles.stageDesignationPane} open>
+      <details className={styles.stageDesignationPane}>
         <summary className={styles.stageDesignationSummary}>
           <span>Clinical Development Stages</span>
           <strong>{totalForKind===null?"—":count(totalForKind)} {kind==="trials"?"trials":"records"}</strong>
