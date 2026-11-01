@@ -291,7 +291,7 @@ export async function GET(req:NextRequest) {
         const row=toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index,index?.pdufaLinks??null);
         return {...row,timeline:trialTimelines.get(row.nctId+"|"+row.ticker.toUpperCase())||null};
       });
-      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,designationTotals,contextualDesignationCounts,datasetVersion},
+      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,designationTotals,contextualDesignationCounts,regulatorySourcesAvailable:!!index,datasetVersion},
         {headers:{"Cache-Control":"private, no-store"}});
     }
     // Stage counts always come from the full POOL. Designation selection is
