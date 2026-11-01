@@ -142,7 +142,10 @@ try{
     assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),0);
     assert.equal(await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').count(),0);
     const restoredGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
-    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Published POOL"),null,{timeout:60000});
+    await page.waitForFunction(()=>{
+      const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
+      return grid?.textContent?.includes("Published POOL")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+    },null,{timeout:60000});
     assert.match(await restoredGrid.locator("tbody").innerText(),/NCT\d{8}/);
     await capture("04-cleared-to-start");
   });
