@@ -242,16 +242,8 @@ export async function GET(req:NextRequest) {
         .update(JSON.stringify({asOf:inventory.sourceAsOf,scope:restrictedScope.scope,censusAsOf:restrictedScope.censusAsOf,recordCount:inventory.poolRows.length}))
         .digest("hex");
       if(format==="csv"){
-        if(result.designationCoverage?.noVerifiedNctLinks){
-          const csv=renderUnlinkedFdaProgramCsv(result.designationCoverage,inventory.sourceAsOf);
-          return new NextResponse(csv,{headers:{
-            "Content-Type":"text/csv; charset=utf-8",
-            "Content-Disposition":'attachment; filename="pdufa-tools-fda-program-records-unlinked.csv"',
-            "Cache-Control":"private, no-store",
-            "X-PDUFA-Record-Type":"FDA_PROGRAM_EVENT_NOT_NCT",
-            "X-PDUFA-Source-Version":datasetVersion
-          }});
-        }
+        // Every TOOLS export uses the same restricted NCT set as both selectors.
+        // Do not substitute unscoped FDA program events when there are zero matches.
         const matches=selectedDesignations.length>0&&index
           ?selectToolTrialIds(inventory.poolRows,index,selectedDesignations):null;
         const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query);
