@@ -55,3 +55,15 @@ test("green-bordered date boxes are visible directly next to tickers across tria
  assert.ok(comparison.indexOf("<h3 style={{fontSize:18,margin:0}}>{t.row.ticker}</h3>")<
            comparison.indexOf("<TrialTimelineSummary timeline={t.row.timeline} compact"));
 });
+
+test("TOOLS trial listing and 20-assessment table show the green counters after ticker",()=>{
+ const sheet=read("ToolsResultsSpreadsheet.tsx");
+ const matrix=read("ToolsBenefitMatrix.tsx");
+ const route=read("api/scope-funnel/route.ts");
+ assert.ok(sheet.includes("<strong>{display(row.ticker)}</strong>"));
+ assert.ok(sheet.includes("<TrialTimelineSummary timeline={row.timeline} today={today} compact/>"));
+ assert.ok(matrix.includes("<strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/>"));
+ assert.ok(matrix.includes("<TrialTimelineSummary timeline={selected.timeline} today={today} compact/>"));
+ assert.ok(route.includes("trialTimelines=new Map<string,TimelineDates>"));
+ assert.ok(route.includes("timeline:trialTimelines.get(row.nctId+"));
+});
