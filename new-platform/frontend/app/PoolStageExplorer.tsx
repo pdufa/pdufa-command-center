@@ -5,6 +5,7 @@ import type {DesignationKey} from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
 import PoolDesignationSelector from "./PoolDesignationSelector";
 import ToolsResultsSpreadsheet, {type ToolsSpreadsheetRow,type SelectedFiltersSummary} from "./ToolsResultsSpreadsheet";
+import ToolsFunnel from "./ToolsFunnel";
 
 type StageCount={trials:number;standaloneResults:number;regulatoryEvents:number;total:number};
 type StageStats={
@@ -86,7 +87,6 @@ export default function PoolStageExplorer(){
     return ()=>controller.abort();
   },[params]);
   const stats=page?.stageStats||lastStats;
-  const matchingTrialLabel=!hasSelections?"0 matching trials":loading?"Calculating matching trials…":error?"Trial count unavailable":page?(selectedDesignations.length>0?count(page.total)+" documented linked trial matches (partial)":count(page.total)+" matching trials"):"Trial count unavailable";
   function toggleStage(stage:string){
     setSelectedStages(old=>old.includes(stage)?old.filter(item=>item!==stage):[...old,stage]);
     setOffset(0);
@@ -109,13 +109,19 @@ export default function PoolStageExplorer(){
   }
   function submitSearch(event:FormEvent<HTMLFormElement>){event.preventDefault();setQuery(queryInput);setOffset(0);}
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
-    <div className={styles.headline}>
-      <div>
-        <h2>POOL</h2>
-        <p className={styles.stageTrialMatchCount} role="status" aria-live="polite" aria-atomic="true">{matchingTrialLabel}</p>
-        <p className={styles.muted}>Choose stages and FDA designations independently or together. Both dropdowns start at <strong>0 selected</strong>; the number above counts unique trials matching your selected filters{query?" and search term":""}. {selectedDesignations.length>0&&"FDA-filtered results include only source-linked trial records; this dataset is incomplete."}</p>
-      </div>
-    </div>
+    <ToolsFunnel
+      poolNcts={stats?.trials??null}
+      selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
+      selectedStages={selectedStages.length}
+      totalStages={stages.length}
+      selectedDesignations={selectedDesignations.length}
+      designationUniqueTrials={page?.selectionSummary?.designationUniqueTrials??null}
+      loading={hasSelections&&loading}
+      error={hasSelections?error:""}
+      searchActive={Boolean(query.trim())}
+      sourceDate={sourceDate}
+      sourceState={sourceState}
+    />
     <div className={styles.toolsQuickFilter}>
       <button type="button" onClick={findPhase3OrphanTrials} aria-label="Select Phase 3 and Orphan Drug Designation together">
         Find Phase 3 + Orphan Drug trials
