@@ -78,8 +78,8 @@ export default function ToolsResultsSpreadsheet({
     <div className={styles.toolsSheetMetrics} aria-live="polite">
       <div><span>Selectors clicked</span><strong>{selectedCount}</strong><small>{stages.length} stages + {designations.length} FDA categories</small></div>
       <div><span>Selected stage totals</span><strong>{summary?fmt(summary.stageTotal):hasSelection?"—":"0"}</strong><small>Distinct NCTs within selected stage categories</small></div>
-      <div><span>Selected designation counts</span><strong>{summary?fmt(summary.designationCountSum):hasSelection?"—":"0"}</strong><small>Sum of per-designation linked NCT counts; may overlap</small></div>
-      <div><span>Final matching trials</span><strong>{hasSelection?(loading||error?"—":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong><small>Unique NCT records after ALL selected filters</small></div>
+      <div><span>Verified linked NCT counts</span><strong>{summary?fmt(summary.designationCountSum):hasSelection?"—":"0"}</strong><small>Only reviewed FDA-to-NCT links; coverage incomplete and categories overlap</small></div>
+      <div><span>{designations.length?"Documented linked matches":"Final matching trials"}</span><strong>{hasSelection?(loading||error?"—":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong><small>{designations.length?"Partial FDA coverage: not an exhaustive qualifying-trial count":"Unique NCT records after selected clinical-stage filters"}</small></div>
     </div>
     <div className={styles.toolsSheetTotals}>
       <h3>Selected selectors &amp; individual trial totals</h3>
@@ -105,12 +105,12 @@ export default function ToolsResultsSpreadsheet({
             </tfoot>
           </table>
         </div>
-        <p className={styles.muted}>Designation categories may refer to the same trial. Their per-category counts are not added to the final unique-trial total.</p>
+        <p className={styles.muted}>Designation categories may refer to the same trial. Their per-category counts are not added to the final unique-trial total. FDA-selected totals cover only the documented NCT links, not the entire 11,623-trial POOL.</p>
       </>}
     </div>
     <div className={styles.toolsSheetTableHeading}>
       <h3>Matching trial records</h3>
-      <span>{hasSelection&&!loading&&!error?fmt(total)+" matching NCT trials":hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
+      <span>{hasSelection&&!loading&&!error?fmt(total)+(designations.length?" documented linked trial matches (partial)":" matching NCT trials"):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
     </div>
     <div className={styles.toolsSheetTableScroll} role="region" aria-label="Scrollable spreadsheet containing selected trial matches" tabIndex={0}>
       <table className={styles.toolsSheetGrid}>
@@ -129,7 +129,7 @@ export default function ToolsResultsSpreadsheet({
           {!hasSelection?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Select a clinical stage or FDA designation to populate rows.</td></tr>:
           loading?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Loading matching trial rows…</td></tr>:
           error?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Trial evidence could not be verified. No result total is asserted.</td></tr>:
-          ordered.length===0?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>No source-linked NCT trials match the selected filters.</td></tr>:
+          ordered.length===0?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>No documented NCT links match the selected filters. FDA evidence coverage is incomplete; other qualifying trials may exist.</td></tr>:
           ordered.map((row,i)=><tr key={row.id}>
             <td className={styles.toolsSheetRowNumber}>{offset+i+1}</td>
             <td><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)}
@@ -171,6 +171,6 @@ export default function ToolsResultsSpreadsheet({
       <span>Showing {pageFirst}–{pageLast} of {hasSelection&&!error?fmt(total):"0"} · sorting affects the visible page only</span>
       <button type="button" disabled={loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
     </div>
-    <p className={styles.muted}>This is a read-only, automatically populated web spreadsheet. CSV export includes all matching rows (not just the current page) and opens in Excel or Google Sheets. Missing evidence is not treated as a denial.</p>
+    <p className={styles.muted}>This is a read-only web spreadsheet. CSV export includes all documented matching rows (not just this page) and opens in Excel or Google Sheets. FDA designation-to-trial coverage remains incomplete; missing evidence is not a denial or proof of no designation.</p>
   </section>;
 }
