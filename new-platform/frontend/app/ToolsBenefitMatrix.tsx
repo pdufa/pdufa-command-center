@@ -4,6 +4,7 @@ import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,rankAdvantages,type Bene
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import css from "./ToolsBenefitMatrix.module.css";
 import RegistryBenefitEvidence from "./RegistryBenefitEvidence";
+import {sourceReviewHint,type RegistryCoverage} from "../lib/registry-benefit-coverage";
 type Props={
   rows:ToolsSpreadsheetRow[];
   hasSelection:boolean;
@@ -49,6 +50,8 @@ function GroupAdvantage({record,group}:{record:BenefitRecord|null;group:BenefitG
 export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loading,error,onShowBaseline,baselineMode}:Props){
   const [feed,setFeed]=useState<BenefitFeed|null>(null);
   const [feedError,setFeedError]=useState("");
+  const [registryCoverage,setRegistryCoverage]=useState<RegistryCoverage|null>(null);
+  const [registryError,setRegistryError]=useState(false);
   const [active,setActive]=useState(1);
   const [chosen,setChosen]=useState("");
   const scrollRegion=useRef<HTMLDivElement|null>(null);
@@ -70,10 +73,25 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
       .catch(()=>{if(!controller.signal.aborted)setFeedError("Research evidence could not be verified. Assessment conclusions are withheld.");});
     return ()=>controller.abort();
   },[]);
+  useEffect(()=>{
+    const controller=new AbortController();
+    void fetch("/api/registry-benefit-coverage",{cache:"no-store",signal:controller.signal})
+      .then(async response=>{
+        if(!response.ok)throw Error("Source archive not current");
+        const raw=await response.json() as RegistryCoverage;
+        if(raw.schemaVersion!==1||raw.scanned!==375||!Array.isArray(raw.records))
+          throw Error("Source coverage shape invalid");
+        return raw;
+      }).then(data=>{if(!controller.signal.aborted)setRegistryCoverage(data);})
+      .catch(()=>{if(!controller.signal.aborted)setRegistryError(true);});
+    return ()=>controller.abort();
+  },[]);
+  const sourceIndex=useMemo(()=>new Map(registryCoverage?.records.map(x=>[x.nctId,x])||[]),[registryCoverage]);
   const current=BENEFIT_GROUPS[active-1];
   const selected=rows.find(r=>r.nctId===chosen)||rows[0]||null;
   const evidence=selected?benefitForTrial(feed,selected):null;
   const overall=rankAdvantages(evidence);
+  const selectedSourceHint=selected?sourceReviewHint(sourceIndex.get(selected.nctId),active):null;
   const studied=(record:BenefitRecord|null,group:BenefitGroup)=>
     !!record&&(group.fields.some(f=>record.facts[f.id])||record.advantages.some(a=>a.assessment===group.number));
   const researched=useMemo(()=>rows.filter(r=>benefitForTrial(feed,r)).length,[feed,rows]);
@@ -88,6 +106,8 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
     <div className={css.notice}>
       <strong>Source integrity:</strong> {baselineMode?"Baseline loads automatically from the historical $300M–$10B, completed Phase 3 census. ":""}These are NCT study records, not yet reconciled distinct drug–indication programs. A Phase 3 screening match is not final Pipeline qualification. Source facts populate when available; research not completed remains <strong>Not assessed</strong>. Unverified superiority is never ranked as proven.
       {feedError&&<p role="alert">{feedError}</p>}
+      {registryCoverage&&<p role="status"><strong>Official registry research archive:</strong> {registryCoverage.scanned} historical completed NCTs checked · {registryCoverage.postedResults} with posted results · {registryCoverage.withPrimaryMeasurements} with primary outcome measurements · {registryCoverage.withSeriousEventCounts} with serious-event counts. Last collected {registryCoverage.sourceAsOf.slice(0,10)}. These are source availability counts, not verified clinical advantages.</p>}
+      {registryError&&<p role="status">Dated registry source coverage is unavailable or expired. No benefit conclusions are inferred.</p>}
       {feed&&!feedError&&<p>Evidence-backed assessments attached to current page: {researched} of {rows.length} NCT records. Missing evidence does not mean the drug has no advantage.</p>}
     </div>
     <div className={css.actions}>
@@ -133,8 +153,8 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
                 {BENEFIT_GROUPS.map(g=>active===g.number
                   ?[...g.fields.map(f=><td key={f.id}><FieldValue record={record} id={f.id}/></td>),
                     <td key={"rank"+g.number}><GroupAdvantage record={record} group={g}/></td>,
-                    <td key={"status"+g.number}>{studied(record,g)?"Partial evidence":"Not assessed"}</td>]
-                  :<td key={"closed"+g.number}><button type="button" className={css.statusButton} onClick={()=>setActive(g.number)}>{studied(record,g)?"Evidence available":"Not assessed"} ▾</button></td>)}
+                    <td key={"status"+g.number}>{studied(record,g)?"Assessment evidence recorded":sourceReviewHint(sourceIndex.get(row.nctId),g.number)||"Not assessed"}</td>]
+                  :<td key={"closed"+g.number}><button type="button" className={css.statusButton} onClick={()=>setActive(g.number)}>{studied(record,g)?"Assessment evidence available":sourceReviewHint(sourceIndex.get(row.nctId),g.number)?"Registry data · review required":"Not assessed"} ▾</button></td>)}
               </tr>;
             })}
           </tbody>
@@ -158,6 +178,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
           <div className={css.mobileGroupTitle}>
             <small>ASSESSMENT {active} OF 20</small><h4>#{active} — {current.name}</h4>
           </div>
+          {selectedSourceHint&&<p className={css.sourceHint}><strong>Official registry source:</strong> {selectedSourceHint}. See the expandable original-source evidence section below. Assessment conclusions remain Not assessed until reviewed.</p>}
           <div className={css.fieldScroll} role="region" aria-label={"Assessment "+active+" subcolumns"} tabIndex={0}>
             <table className={css.mobileTable}>
               <thead><tr>{current.fields.map(f=><th key={f.id}>{f.label}</th>)}</tr></thead>
