@@ -86,7 +86,7 @@ export default function PoolStageExplorer(){
     return ()=>controller.abort();
   },[params]);
   const stats=page?.stageStats||lastStats;
-  const matchingTrialLabel=!hasSelections?"0 matching trials":loading?"Calculating matching trials…":error?"Trial count unavailable":page?count(page.total)+" matching trials":"Trial count unavailable";
+  const matchingTrialLabel=!hasSelections?"0 matching trials":loading?"Calculating matching trials…":error?"Trial count unavailable":page?(selectedDesignations.length>0?count(page.total)+" documented linked trial matches (partial)":count(page.total)+" matching trials"):"Trial count unavailable";
   function toggleStage(stage:string){
     setSelectedStages(old=>old.includes(stage)?old.filter(item=>item!==stage):[...old,stage]);
     setOffset(0);
@@ -99,7 +99,7 @@ export default function PoolStageExplorer(){
       <div>
         <h2>POOL</h2>
         <p className={styles.stageTrialMatchCount} role="status" aria-live="polite" aria-atomic="true">{matchingTrialLabel}</p>
-        <p className={styles.muted}>Choose stages and FDA designations independently or together. Both dropdowns start at <strong>0 selected</strong>; the number above counts unique trials matching your selected filters{query?" and search term":""}.</p>
+        <p className={styles.muted}>Choose stages and FDA designations independently or together. Both dropdowns start at <strong>0 selected</strong>; the number above counts unique trials matching your selected filters{query?" and search term":""}. {selectedDesignations.length>0&&"FDA-filtered results include only source-linked trial records; this dataset is incomplete."}</p>
       </div>
     </div>
     <div className={styles.stageDesignationColumns}>
@@ -136,7 +136,7 @@ export default function PoolStageExplorer(){
           </div>
         </details>
       </div>
-      <PoolDesignationSelector selected={selectedDesignations} onChange={changeDesignations}/>
+      <PoolDesignationSelector selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}/>
     </div>
     <form onSubmit={submitSearch} className={styles.search} style={{margin:"16px 0"}}>
       <input aria-label="Search trial NCT, ticker, company, drug or disease" type="search"
