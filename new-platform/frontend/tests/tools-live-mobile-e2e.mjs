@@ -204,8 +204,8 @@ try{
         "FDA "+key+" badge must equal Phase-2 resultant NCT matches, not all-Phase POOL source links");
     }
     for(const c of await fdaCounts.all()){
-      assert.match(await c.innerText(),/trial matches|NCTs unknown|Not tracked/,
-        "Never show source-program counts as NCT counts or turn missing evidence into zero");
+      assert.match(await c.innerText(),/verified NCT matches|trial total unknown|Not tracked/,
+        "Label documented NCT matches as partial and keep full designation total unknown");
     }
     const orphanOnly=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&designations=orphan_drug&offset=0&limit=50",{timeout:120000});
     assert.equal(orphanOnly.status(),200);
@@ -228,17 +228,17 @@ try{
         .find(el=>el.textContent?.includes("Orphan Drug Designation"));
       const count=row?.querySelector('strong[class*="toolsFdaRowCount"]');
       if(!count)return false;
-      return expected===null?count.textContent?.includes("NCTs unknown")
+      return expected===null?count.textContent?.includes("trial total unknown")
         :count.textContent?.includes(expected.toLocaleString("en-US"));
     },contextual?.matchingTrials??null,{timeout:45000});
     assert.match(await orphanCount.innerText(),
-      contextual===null?/NCTs unknown/:/trial matches/,
+      contextual===null?/trial total unknown/:/verified NCT matches/,
       "FDA badge must display the exact Phase/search-faceted trial count returned by the result API");
     if(contextual)assert.equal(contextual.nctIds.length,Math.min(40,contextual.matchingTrials));
     assert.match(await designation.innerText(),/1 selected/);
     assert.match(await phase.innerText(),/1 selected/);
     await fda.getByText(/source programs/).first().waitFor({timeout:20000});
-    assert.match(await fda.innerText(),/matching NCTs|NCT count unknown/);
+    assert.match(await fda.innerText(),/verified NCT matches|NCT count unknown/);
     const clearFda=fda.getByRole("button",{name:"Clear This Section"});
     assert.equal(await clearFda.count(),1);
     await clearFda.click();
