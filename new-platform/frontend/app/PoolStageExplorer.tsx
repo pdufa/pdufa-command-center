@@ -47,6 +47,7 @@ const stageCount=(stat:StageCount|undefined)=>stat?.trials??0;
 export default function PoolStageExplorer(){
   const [selectedStages,setSelectedStages]=useState<string[]>([]);
   const [expandedStageGroup,setExpandedStageGroup]=useState<string|null>(null);
+  const [activeFilter,setActiveFilter]=useState<"phase"|"designation"|null>(null);
   const [selectedDesignations,setSelectedDesignations]=useState<DesignationKey[]>([]);
   const [queryInput,setQueryInput]=useState("");
   const [query,setQuery]=useState("");
@@ -117,6 +118,7 @@ export default function PoolStageExplorer(){
     setQueryInput("");
   }
   function clearAllTrialSelectors(){
+    setActiveFilter(null);
     setSelectedStages([]);
     setExpandedStageGroup(null);
     setSelectedDesignations([]);
@@ -134,48 +136,27 @@ export default function PoolStageExplorer(){
   }
   function submitSearch(event:FormEvent<HTMLFormElement>){event.preventDefault();setQuery(queryInput);setOffset(0);}
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
-    <ToolsFunnel
-      poolNcts={stats?.trials??null}
-      pipelineResearch={page?.pipelineResearch??null}
-      selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
-      selectedPhasePoolTrials={selectedStages.length&&stats?selectedStages.reduce((sum,stage)=>sum+stageCount(stats.stages[stage]),0):null}
-      selectedStages={selectedStages.length}
-      totalStages={stages.length}
-      selectedStageLabels={selectedStages}
-      selectedDesignationLabels={selectedDesignations.map(key=>SPECIAL_DESIGNATION_CATEGORIES.find(item=>item.key===key)?.label||key)}
-      selectedDesignations={selectedDesignations.length}
-      designationUniqueTrials={page?.selectionSummary?.designationUniqueTrials??null}
-      designationCoverage={page?.designationCoverage??null}
-      loading={loading}
-      error={error}
-      searchActive={Boolean(query.trim())}
-      sourceDate={sourceDate}
-      sourceState={sourceState}
-    />
-    <div className={styles.toolsQuickFilter}>
-      <button type="button" onClick={selectPhase3Trials} aria-label="Select Phase 3 clinical stage to display screened trial matches">
-        Select Phase 3 trials
-      </button>
-      <button type="button" onClick={findPhase3OrphanTrials} aria-label="Select Phase 3 and Orphan Drug Designation together">
-        Find Phase 3 + Orphan Drug trials
-      </button>
-      <button type="button" className={styles.toolsQuickClear} onClick={clearAllTrialSelectors}
-        disabled={!hasSelections&&!query&&!queryInput}>Clear all filters</button>
-      <small>TRIALS shows 0 until a clinical stage or FDA designation is selected. PIPELINE retains its separate historical screened candidate total.</small>
-    </div>
-    <div className={styles.stageDesignationColumns}>
-      <div className={styles.stageDropdownColumn}>
-        <div className={styles.stageDropdownLabel}>Clinical development stages</div>
-        <p className={styles.stageDropdownSubline}>
-          Select one or more stages below. Counts beside each stage describe the full POOL.
-          {stats?" Full POOL: "+count(stats.trials)+" NCT trials.":loading?" Loading source stage totals…":error?" Stage totals currently unavailable.":""}
-        </p>
-        <details className={styles.stageDesignationPane}>
-          <summary className={styles.stageDesignationSummary}>
-            <ToolsOptionNumber level={1} index={0} total={2}/>
-            <span>{selectedStages.length===0?"Select clinical trial stages":selectedStages.length+" stages selected"}</span>
-            <strong>{selectedStages.length} selected</strong>
-          </summary>
+    <div className={styles.toolsStart} aria-label="Step 1 — choose a filter">
+      <h2>Step 1 · What would you like to select?</h2>
+      <p>Choose Phase or Special Designation. Only that choice opens its next options.</p>
+      <div className={styles.toolsStartChoices}>
+        <button type="button" className={styles.toolsStartChoice} aria-expanded={activeFilter==="phase"}
+          aria-controls="tools-first-phase" onClick={()=>setActiveFilter(open=>open==="phase"?null:"phase")}>
+          <ToolsOptionNumber level={1} index={0} total={2}/>
+          <span>Phase<small>{selectedStages.length?selectedStages.length+" selected":"Select clinical stages"}</small></span>
+          <span aria-hidden="true">{activeFilter==="phase"?"▴":"▾"}</span>
+        </button>
+        <button type="button" className={styles.toolsStartChoice} aria-expanded={activeFilter==="designation"}
+          aria-controls="tools-first-designation" onClick={()=>setActiveFilter(open=>open==="designation"?null:"designation")}>
+          <ToolsOptionNumber level={1} index={1} total={2}/>
+          <span>Special Designation<small>{selectedDesignations.length?selectedDesignations.length+" selected":"Select FDA categories"}</small></span>
+          <span aria-hidden="true">{activeFilter==="designation"?"▴":"▾"}</span>
+        </button>
+      </div>
+      {activeFilter==="phase"&&<div id="tools-first-phase" className={styles.toolsStartPanel}>
+        <h3>Step 2 · Choose a phase category</h3>
+        <p className={styles.muted}>Tap a numbered category to reveal its Phase options. Check one or more phases to show matching trials.</p>
+        <div className={styles.stageDesignationPane}>
           <div className={styles.stageDesignationBody}>
             <div className={styles.stageDropdownActions}>
               <button type="button" onClick={()=>changeStages([...stages])}>Select all</button>
@@ -206,10 +187,53 @@ export default function PoolStageExplorer(){
             </div>
             <p className={styles.muted}>Unchecked stages have no active selection. Counts alongside stage names describe the complete POOL, not the current combined matches.</p>
           </div>
-        </details>
-      </div>
-      <PoolDesignationSelector selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}/>
+
+        </div>
+      </div>}
+      {activeFilter==="designation"&&<div id="tools-first-designation" className={styles.toolsStartPanel}>
+        <h3>Step 2 · Choose an FDA special designation</h3>
+        <PoolDesignationSelector guided selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}/>
+      </div>}
+      {hasSelections&&<div className={styles.toolsStartSelected} role="status">
+        <strong>{selectedStages.length} Phase selected · {selectedDesignations.length} Special Designation selected</strong>
+        <button type="button" onClick={clearAllTrialSelectors}>Clear all selections</button>
+      </div>}
     </div>
+    {hasSelections&&<>
+    <ToolsFunnel
+      poolNcts={stats?.trials??null}
+      pipelineResearch={page?.pipelineResearch??null}
+      selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
+      selectedPhasePoolTrials={selectedStages.length&&stats?selectedStages.reduce((sum,stage)=>sum+stageCount(stats.stages[stage]),0):null}
+      selectedStages={selectedStages.length}
+      totalStages={stages.length}
+      selectedStageLabels={selectedStages}
+      selectedDesignationLabels={selectedDesignations.map(key=>SPECIAL_DESIGNATION_CATEGORIES.find(item=>item.key===key)?.label||key)}
+      selectedDesignations={selectedDesignations.length}
+      designationUniqueTrials={page?.selectionSummary?.designationUniqueTrials??null}
+      designationCoverage={page?.designationCoverage??null}
+      loading={loading}
+      error={error}
+      searchActive={Boolean(query.trim())}
+      sourceDate={sourceDate}
+      sourceState={sourceState}
+    />
+
+    <details className={styles.toolsAdvanced}>
+      <summary>Quick filters and shortcuts</summary>
+    <div className={styles.toolsQuickFilter}>
+      <button type="button" onClick={selectPhase3Trials} aria-label="Select Phase 3 clinical stage to display screened trial matches">
+        Select Phase 3 trials
+      </button>
+      <button type="button" onClick={findPhase3OrphanTrials} aria-label="Select Phase 3 and Orphan Drug Designation together">
+        Find Phase 3 + Orphan Drug trials
+      </button>
+      <button type="button" className={styles.toolsQuickClear} onClick={clearAllTrialSelectors}
+        disabled={!hasSelections&&!query&&!queryInput}>Clear all filters</button>
+      <small>TRIALS shows 0 until a clinical stage or FDA designation is selected. PIPELINE retains its separate historical screened candidate total.</small>
+    </div>
+
+    </details>
     <form onSubmit={submitSearch} className={styles.search} style={{margin:"16px 0"}}>
       <input aria-label="Search trial NCT, ticker, company, drug or disease" type="search"
         value={queryInput} onChange={e=>setQueryInput(e.target.value)} maxLength={100}
@@ -240,5 +264,6 @@ export default function PoolStageExplorer(){
       onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       nextOffset={page?.nextOffset??null}
     />
+    </>}
   </section>;
 }
