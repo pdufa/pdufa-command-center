@@ -85,7 +85,11 @@ try{
     assert.ok(published.total>=10000,"Opening trials must come from the published full NCT POOL");
     assert.ok(published.spreadsheetRows.length>0);
     assert.match(published.spreadsheetRows[0].nctId,/^NCT\d{8}$/);
-    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Published POOL"),null,{timeout:60000});
+    await page.waitForFunction(()=>{
+      const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
+      return !!grid&&grid.textContent?.includes("Published POOL")&&
+        /NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+    },null,{timeout:60000});
     const spreadsheet=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     assert.ok(await spreadsheet.isVisible());
     assert.match(await spreadsheet.locator("tbody").innerText(),/NCT\d{8}/);
