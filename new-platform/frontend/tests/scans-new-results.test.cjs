@@ -176,14 +176,15 @@ test("Source Verification Ledger is behind a default-closed caret with unresolve
   assert.ok(!fold.includes("<details open"), "Caret should be collapsed by default");
 });
 
-test("SCANS is a native top-level link before RESULTS with direct source pages",()=>{
+test("SCAN combines scan controls, RESULTS and GOAL while preserving source routes",()=>{
  const nav=fs.readFileSync(require.resolve("../app/GlobalNavigation.tsx"),"utf8");
  const scans=fs.readFileSync(require.resolve("../app/scans/page.tsx"),"utf8");
  const results=fs.readFileSync(require.resolve("../app/results/page.tsx"),"utf8");
- assert.ok(nav.includes('label:"SCANS",href:"/scans"'));
- assert.ok(nav.includes('label:"RESULTS",href:"/results"'));
- assert.ok(nav.indexOf('label:"SCANS",href:"/scans"')<nav.indexOf('label:"RESULTS",href:"/results"'));
+ assert.ok(nav.includes('label:"SCAN",href:"/scans"'));
+ assert.doesNotMatch(nav,/label:"RESULTS"|label:"GOAL"/);
  assert.doesNotMatch(nav,/GEM|streamlit/i);
  assert.match(scans,/PublishedScansPanel/);
+ assert.match(scans,/DailyResultsPanel/);
+ assert.match(scans,/GoalPage/);
  assert.match(results,/DailyResultsPanel/);
 });
