@@ -80,7 +80,7 @@ export default function ToolsResultsSpreadsheet({
     <div className={styles.toolsSheetHeading}>
       <div>
         <h2>SELECTED TRIALS — SPREADSHEET</h2>
-        <p className={styles.muted}>Every checked selector appears in the selection totals and as a column in the table below. The sheet refreshes when you change either dropdown.</p>
+        <p className={styles.muted}>Resultant trials update with your selected restrictions. Inspect the 20 benefit assessments first, then review individual selector totals and the source trial spreadsheet below.</p>
       </div>
       <a className={styles.toolsSheetExport} href={hasSelection&&!loading&&!error?downloadUrl:undefined}
         aria-disabled={!hasSelection||loading||!!error}
@@ -99,6 +99,7 @@ export default function ToolsResultsSpreadsheet({
         <strong>{hasSelection?(loading||error?"—":trialCountUnverified?"Not established":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
         <small>{trialCountUnverified?"No source-verified trial IDs for these programs; zero must not be inferred":designations.length?"Partial FDA-to-trial coverage":"Unique NCT records after selected clinical-stage filters"}</small></div>
     </div>
+    <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error}/>
     <div className={styles.toolsSheetTotals}>
       <h3>Selected selectors &amp; individual trial totals</h3>
       {selectedCount===0?<p className={styles.muted}>No selectors selected. Choose a stage or FDA designation above to populate this spreadsheet.</p>:<>
@@ -126,7 +127,6 @@ export default function ToolsResultsSpreadsheet({
         <p className={styles.muted}>Designation categories may refer to the same trial. Their per-category counts are not added to the final unique-trial total. FDA-selected totals cover only the documented NCT links, not the entire 11,623-trial POOL.</p>
       </>}
     </div>
-    <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error}/>
     <div className={styles.toolsSheetTableHeading}>
       <h3>Matching trial records</h3>
       <span>{hasSelection&&!loading&&!error?(trialCountUnverified?"NCT count not established":fmt(total)+(designations.length?" documented linked trial matches (partial)":" matching NCT trials")):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
