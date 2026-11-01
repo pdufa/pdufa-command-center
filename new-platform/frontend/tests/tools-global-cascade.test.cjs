@@ -69,7 +69,7 @@ test("Phase 1a/2 exposes all fourteen 2a/14–2n/14 checkboxes immediately, just
   queried.push(String(url));
   return {ok:true,json:async()=>({
    view:"pool",total:0,rows:[],spreadsheetRows:[],nextOffset:null,selectionSummary:{},
-   restrictedScope:{scope:"DATED_300M_10B_COMPLETED_PHASE3_RESEARCH_SCREEN",qualification:"NOT_VERIFIED",screenedTrials:0,originalPoolTrials:100,censusAsOf:"2026-10-26T12:21:15Z",outstanding:[]},
+   restrictedScope:{scope:"DATED_300M_10B_ISSUER_MARKET_CAP_SCREEN",qualification:"NOT_VERIFIED",screenedTrials:0,originalPoolTrials:100,capAsOf:"2026-11-01T03:21:15Z",unverifiedCapTrials:20,outsideCapTrials:25,excludedIssuerTrials:10,eligibleIssuers:5,outstanding:[]},
    stageStats:{trials:100,standaloneResults:0,regulatoryEvents:0,stages:{
     "Phase 2":{trials:12,standaloneResults:0,regulatoryEvents:0,total:12}}}
   })};
