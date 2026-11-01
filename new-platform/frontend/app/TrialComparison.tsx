@@ -170,9 +170,11 @@ export default function TrialComparison(){
           <p style={{fontWeight:700}}>{caveat}</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12}}>
             {present.map(t=><div key={t.key} style={{border:"1px solid #c6d3e0",borderRadius:8,padding:12}}>
-              <h3 style={{fontSize:16,marginTop:0}}>{t.row.ticker} — {t.row.drug}</h3>
-              <p style={muted}>{t.row.indication}</p>
-              <TrialTimelineSummary timeline={t.row.timeline} caption="Verified Phase 3 → PDUFA timeline"/>
+              <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:10}}>
+                <h3 style={{fontSize:18,margin:0}}>{t.row.ticker}</h3>
+                <TrialTimelineSummary timeline={t.row.timeline} compact/>
+              </div>
+              <p style={muted}>{t.row.drug} · {t.row.indication}</p>
               <p><strong>{t.evidence.verified}</strong> source-verified fields of {t.evidence.required}
                 {" "}· {t.evidence.modeled} modeled</p>
               <p style={muted}>{t.evidence.readiness==="PARTIAL_EVIDENCE"

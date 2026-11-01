@@ -37,3 +37,33 @@ test("trial detail and comparison headers show date counters before assessment f
  assert.ok(compare.includes("<TrialTimelineSummary timeline={t.row.timeline}"));
  assert.ok(dossier.includes("<TrialTimelineSummary timeline={row.timeline} today={today}"));
 });
+
+test("green-bordered date boxes are visible directly next to tickers across trial views",()=>{
+ const metric=read("TrialTimelineSummary.tsx");
+ const full=read("FullTrialTimeline.tsx");
+ const page=read("trial/[nctId]/page.tsx");
+ const dossier=read("PipelineFourViews.tsx");
+ const comparison=read("TrialComparison.tsx");
+ assert.match(metric,/border:"3px solid #0b9348"/);
+ assert.match(metric,/DAYS SINCE PHASE 3/);
+ assert.match(metric,/DAYS TO PDUFA/);
+ assert.ok(full.includes("Ticker: {ticker||"));
+ assert.ok(full.indexOf("Ticker: {ticker||")<full.indexOf("<TrialTimelineSummary timeline={timeline} compact"));
+ assert.ok(page.indexOf("<FullTrialTimeline")<page.indexOf("<TrialWorkflowCounts"));
+ assert.ok(dossier.indexOf("<h3 style={{margin:0}}>{row.nctId} · {row.ticker}</h3>")<
+           dossier.indexOf("<TrialTimelineSummary timeline={row.timeline} today={today} compact"));
+ assert.ok(comparison.indexOf("<h3 style={{fontSize:18,margin:0}}>{t.row.ticker}</h3>")<
+           comparison.indexOf("<TrialTimelineSummary timeline={t.row.timeline} compact"));
+});
+
+test("TOOLS trial listing and 20-assessment table show the green counters after ticker",()=>{
+ const sheet=read("ToolsResultsSpreadsheet.tsx");
+ const matrix=read("ToolsBenefitMatrix.tsx");
+ const route=read("api/scope-funnel/route.ts");
+ assert.ok(sheet.includes("<strong>{display(row.ticker)}</strong>"));
+ assert.ok(sheet.includes("<TrialTimelineSummary timeline={row.timeline} today={today} compact/>"));
+ assert.ok(matrix.includes("<strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/>"));
+ assert.ok(matrix.includes("<TrialTimelineSummary timeline={selected.timeline} today={today} compact/>"));
+ assert.ok(route.includes("trialTimelines=new Map<string,TimelineDates>"));
+ assert.ok(route.includes("timeline:trialTimelines.get(row.nctId+"));
+});

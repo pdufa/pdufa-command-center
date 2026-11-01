@@ -24,13 +24,13 @@ export default function FullTrialSheet() {
       <div>
         <span className="topline">PDUFA COMMAND CENTER · FULL CLINICAL TRIAL SHEET</span>
         <h1>{valid ? nct : "Invalid trial ID"}</h1>
+        {valid&&<FullTrialTimeline nctId={nct}/>}
         <p className="subtle">One exact ClinicalTrials.gov trial · full saved registry record · original evidence preserved</p>
       </div>
       <nav aria-label="Trial sheet navigation">
         <Link style={{color:"#17644c"}} href="/">← Dashboard</Link>
       </nav>
     </header>
-    {valid&&<FullTrialTimeline nctId={nct}/>}
     <TrialWorkflowCounts />
     {!valid ?
       <div className="panel" role="alert">Invalid trial identifier. Open a full trial sheet from a linked NCT record in POOL or PIPELINE.</div> :

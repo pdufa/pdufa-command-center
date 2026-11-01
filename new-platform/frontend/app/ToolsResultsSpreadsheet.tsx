@@ -1,6 +1,8 @@
 "use client";
 
-import {useMemo,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
+import {pacificToday,type TimelineDates} from "../lib/pipeline-timeline";
+import TrialTimelineSummary from "./TrialTimelineSummary";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
 import ToolsBenefitMatrix from "./ToolsBenefitMatrix";
@@ -12,6 +14,7 @@ export type ToolSourceEvidence={
 export type ToolsSpreadsheetRow={
   id:string;nctId:string;ticker:string;company:string;drug:string;indication:string;
   stage:string;selectedStage:string;
+  timeline?:TimelineDates|null;
   designationMatches:Partial<Record<DesignationKey,ToolSourceEvidence[]>>;
 };
 export type SelectedFiltersSummary={
@@ -63,6 +66,8 @@ export default function ToolsResultsSpreadsheet({
 }:Props){
   const [sortKey,setSortKey]=useState<SortField>("nctId");
   const [descending,setDescending]=useState(false);
+  const [today,setToday]=useState("");
+  useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
   const ordered=useMemo(()=>[...rows].sort((a,b)=>{
     const result=(a[sortKey]||"").localeCompare(b[sortKey]||"",undefined,{numeric:true,sensitivity:"base"});
     return descending?-result:result;
@@ -157,7 +162,10 @@ export default function ToolsResultsSpreadsheet({
             <td className={styles.toolsSheetRowNumber}>{offset+i+1}</td>
             <td><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)}
               target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
-            <td>{display(row.ticker)}</td>
+            <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:295}}>
+              <strong>{display(row.ticker)}</strong>
+              <TrialTimelineSummary timeline={row.timeline} today={today} compact/>
+            </div></td>
             <td>{display(row.company)}</td>
             <td>{display(row.drug)}</td>
             <td>{display(row.indication)}</td>

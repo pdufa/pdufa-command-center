@@ -3,11 +3,11 @@
 import {useEffect,useState,type CSSProperties} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 
-const grid:CSSProperties={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:10};
-const panel:CSSProperties={border:"1px solid #cbd7e3",background:"#f5f8fc",borderRadius:9,padding:"12px 14px",minWidth:0};
+const grid:CSSProperties={display:"flex",flexWrap:"wrap",alignItems:"stretch",gap:8};
+const panel:CSSProperties={border:"3px solid #0b9348",background:"#e9fff2",borderRadius:10,padding:"9px 12px",minWidth:135,flex:"1 1 175px",boxShadow:"0 0 0 1px #a6eac4"};
 const note:CSSProperties={display:"block",fontSize:12,color:"#526477",lineHeight:1.5,marginTop:6};
-const label:CSSProperties={fontSize:12,fontWeight:700,letterSpacing:".02em",color:"#425a70"};
-const value:CSSProperties={fontSize:23,fontWeight:800,color:"#153c5c",lineHeight:1.5};
+const label:CSSProperties={fontSize:11,fontWeight:800,letterSpacing:".02em",color:"#066637"};
+const value:CSSProperties={fontSize:23,fontWeight:900,color:"#065f35",lineHeight:1.4};
 
 export function timelineDisplay(dates:TimelineDates|null|undefined,today:string){
   const d=dates||{phase3DataRelease:null,pdufaTarget:null};
@@ -25,11 +25,12 @@ export function timelineDisplay(dates:TimelineDates|null|undefined,today:string)
 
 /** Date source is exact-program evidence; never substitute registry completion for a Phase 3 readout. */
 export default function TrialTimelineSummary({
-  timeline,today,caption
+  timeline,today,caption,compact=false
 }:{
   timeline?:TimelineDates|null;
   today?:string;
   caption?:string;
+  compact?:boolean;
 }){
   const [localToday,setLocalToday]=useState("");
   useEffect(()=>{
@@ -41,25 +42,25 @@ export default function TrialTimelineSummary({
   },[today]);
   const current=today||localToday;
   const metric=timelineDisplay(timeline,current);
-  return <section aria-label="Trial Phase 3 and PDUFA date counters" style={{margin:"12px 0"}}>
+  return <section aria-label="Trial Phase 3 and PDUFA date counters" style={{margin:compact?"0":"12px 0",minWidth:0,flex:compact?"1 1 390px":undefined}}>
     {caption&&<p style={{...note,marginBottom:8}}>{caption}</p>}
-    <div style={grid}>
-      <div style={panel}>
-        <div style={label}>DAYS SINCE PHASE 3 READOUT</div>
-        <div style={value}>{metric.since}</div>
+    <div style={{...grid,flexWrap:"wrap"}}>
+      <div style={{...panel,padding:compact?"6px 9px":panel.padding,minWidth:compact?112:135,flex:compact?"1 1 140px":panel.flex}}>
+        <div style={label}>DAYS SINCE PHASE 3</div>
+        <div style={{...value,fontSize:compact?18:23}}>{metric.since}</div>
         {metric.release
           ?<small style={note}>Public results released {metric.release.date}
             {" · "}<a target="_blank" rel="noopener noreferrer" href={metric.release.sourceUrl}>Verified source</a></small>
-          :<small style={note}>Public pivotal results-release date not verified. Trial completion is not a readout.</small>}
+          :<small style={note}>{compact?"Date not verified":"Public pivotal results-release date not verified. Trial completion is not a readout."}</small>}
       </div>
-      <div style={panel}>
-        <div style={label}>DAYS UNTIL FDA PDUFA</div>
-        <div style={value}>{metric.until}</div>
+      <div style={{...panel,padding:compact?"6px 9px":panel.padding,minWidth:compact?112:135,flex:compact?"1 1 140px":panel.flex}}>
+        <div style={label}>DAYS TO PDUFA</div>
+        <div style={{...value,fontSize:compact?18:23}}>{metric.until}</div>
         {metric.pdufa
           ?<small style={note}>FDA target {metric.pdufa.date}
             {" · "}<a target="_blank" rel="noopener noreferrer" href={metric.pdufa.sourceUrl}>Verified source</a></small>
-          :<small style={note}>No source-verified FDA PDUFA target for this exact program.</small>}
-        {metric.pdufa&&current&&<small style={note}>This is a target-date countdown, not an FDA decision outcome.</small>}
+          :<small style={note}>{compact?"Date not verified":"No source-verified FDA PDUFA target for this exact program."}</small>}
+        {metric.pdufa&&current&&!compact&&<small style={note}>This is a target-date countdown, not an FDA decision outcome.</small>}
       </div>
     </div>
   </section>;
