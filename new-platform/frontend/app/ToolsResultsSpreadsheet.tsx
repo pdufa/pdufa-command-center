@@ -73,7 +73,6 @@ export default function ToolsResultsSpreadsheet({
   const hasSelection=stages.length+designations.length>0;
   const selectedCount=stages.length+designations.length;
   const trialCountUnverified=!!designationCoverage?.noVerifiedNctLinks&&designations.length>0&&!loading&&!error;
-  const displayTrialCount=trialCountUnverified?"Not established":fmt(total);
   const pageFirst=total>0?offset+1:0;
   const pageLast=Math.min(offset+rows.length,total);
   return <section className={styles.toolsSheet} aria-label="Selected filters and matching clinical trials spreadsheet">
