@@ -87,8 +87,10 @@ test("independent left and right cards are collapsed, side-by-side on iPhone and
   tools.indexOf("<ToolsRankingChecklists/>"));
  assert.ok(tools.indexOf("<ToolsRankingChecklists/>")<
   tools.indexOf("Scrollable spreadsheet containing selected trial matches"));
- // The Phase/FDA source filter rows, benefits matrix, pagination and export remain.
- assert.match(tools,/ToolsBenefitMatrix/);
+ // The Phase/FDA source filter rows, pagination and export remain here.
+ // Step 4 original 20-benefit matrix is now a separate module above Step 5.
+ const assessment=fs.readFileSync(path.join(__dirname,"../app/ToolsAssessmentSection.tsx"),"utf8");
+ assert.match(assessment,/ToolsBenefitMatrix/);
  assert.match(tools,/designationCoverage/);
  assert.match(tools,/Export restricted trial matches \(CSV\)/);
  assert.match(tools,/Previous 50/);
