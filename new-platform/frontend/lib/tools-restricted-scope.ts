@@ -40,6 +40,10 @@ export function restrictedToolsSnapshot(
     isPoolTrial(row)&&["Phase 3","Phase 3 Results"].includes(normalizePoolStage(row.stage))&&
     eligibleIds.has(row.id+"|"+row.ticker.toUpperCase()));
   const stageStats=poolStageStatistics(poolRows);
+  // If the historical census and current published POOL cannot produce even
+  // one exact completed Phase 3 match, this is a source-reconciliation failure,
+  // not proof the investable research universe has zero trials.
+  if(stageStats.trials===0)throw Error("RESTRICTED_PIPELINE_EXACT_MATCH_UNAVAILABLE");
   const scope:RestrictedToolsScope={
     scope:"DATED_300M_10B_COMPLETED_PHASE3_RESEARCH_SCREEN",
     qualification:"NOT_VERIFIED",
