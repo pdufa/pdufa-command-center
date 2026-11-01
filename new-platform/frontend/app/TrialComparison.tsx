@@ -3,6 +3,7 @@
 import {useEffect,useMemo,useState,type CSSProperties} from "react";
 import {parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
 import type {PipelineResearchRow} from "../lib/pipeline-research-view";
+import TrialTimelineSummary from "./TrialTimelineSummary";
 import {
   screenComparisonCandidates,trialComparisonKey,comparisonSnapshot,comparisonCaveat
 } from "../lib/trial-comparison";
@@ -171,6 +172,7 @@ export default function TrialComparison(){
             {present.map(t=><div key={t.key} style={{border:"1px solid #c6d3e0",borderRadius:8,padding:12}}>
               <h3 style={{fontSize:16,marginTop:0}}>{t.row.ticker} — {t.row.drug}</h3>
               <p style={muted}>{t.row.indication}</p>
+              <TrialTimelineSummary timeline={t.row.timeline} caption="Verified Phase 3 → PDUFA timeline"/>
               <p><strong>{t.evidence.verified}</strong> source-verified fields of {t.evidence.required}
                 {" "}· {t.evidence.modeled} modeled</p>
               <p style={muted}>{t.evidence.readiness==="PARTIAL_EVIDENCE"
