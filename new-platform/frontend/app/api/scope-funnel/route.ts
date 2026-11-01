@@ -14,7 +14,6 @@ import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeli
 import {verifiedToolPool,buildToolsResults,buildToolsOpeningInventory,filterToolTrials,selectToolTrialIds,toolsDesignationTotals,toolsContextualDesignationCounts,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
 import {restrictedToolsSnapshot} from "../../../lib/tools-restricted-scope";
 import {isToolsSnapshotFresh,parseToolsSnapshotTimestamp} from "../../../lib/tools-snapshot-freshness";
-import type {TimelineDates} from "../../../lib/pipeline-timeline";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -219,7 +218,6 @@ export async function GET(req:NextRequest) {
       ]);
       const {snapshot:inventory,scope:restrictedScope}=restrictedToolsSnapshot(
         fullInventory,marketCapSources.capsCsv,marketCapSources.registryCsv);
-      const trialTimelines=new Map<string,TimelineDates>();
       const designationTotals=index?toolsDesignationTotals(inventory.poolRows,index):null;
       // Both Step 1 button totals are measured over the entire cap-screened
       // NCT subset, irrespective of downstream Phase/FDA checkbox selections.
@@ -268,10 +266,10 @@ export async function GET(req:NextRequest) {
       }
       // One row per published NCT. FDA and PDUFA sources enrich those same
       // rows, never add candidate applications to the clinical POOL.
-      const spreadsheetRows=result.rows.map(trial=>{
-        const row=toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index,index?.pdufaLinks??null);
-        return {...row,timeline:trialTimelines.get(row.nctId+"|"+row.ticker.toUpperCase())||null};
-      });
+      // The row builder retains source-verified exact-program readout and FDA
+      // target dates. Unverified dates stay null instead of zero or estimates.
+      const spreadsheetRows=result.rows.map(trial=>
+        toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index,index?.pdufaLinks??null));
       return NextResponse.json({...result,spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,designationScopeSummary,contextualDesignationCounts,regulatorySourcesAvailable:!!index,datasetVersion},
         {headers:{"Cache-Control":"private, no-store"}});
     }
