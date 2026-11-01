@@ -338,7 +338,7 @@ test("optional Pipeline readout data cannot suppress or fabricate TOOLS POOL res
   const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
   assert.doesNotMatch(route,/PIPELINE_SCREEN_UNAVAILABLE/);
   assert.doesNotMatch(route,/\.filter\(row=>pipelineResearchNcts\.has\(row\.id\)\)/);
-  assert.match(route,/const result=buildToolsResults\(inventory,index,selectedStages,selectedDesignations,/);
+  assert.match(route,/buildToolsResults\(inventory,index,selectedStages,selectedDesignations,/);
   assert.match(route,/const rows=filterToolTrials\(inventory\.poolRows,selectedStages,matches,query\);/);
   assert.match(route,/timeline:trialTimelines\.get/);
   assert.match(route,/pdufa-tools-selected-trials\.csv/);
