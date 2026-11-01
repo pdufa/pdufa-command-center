@@ -93,6 +93,20 @@ export default function PoolStageExplorer(){
   }
   function changeStages(next:string[]){setSelectedStages(next);setOffset(0);}
   function changeDesignations(next:DesignationKey[]){setSelectedDesignations(next);setOffset(0);}
+  function findPhase3OrphanTrials(){
+    setSelectedStages(["Phase 3"]);
+    setSelectedDesignations(["orphan_drug"]);
+    setOffset(0);
+    setQuery("");
+    setQueryInput("");
+  }
+  function clearAllTrialSelectors(){
+    setSelectedStages([]);
+    setSelectedDesignations([]);
+    setOffset(0);
+    setQuery("");
+    setQueryInput("");
+  }
   function submitSearch(event:FormEvent<HTMLFormElement>){event.preventDefault();setQuery(queryInput);setOffset(0);}
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
     <div className={styles.headline}>
@@ -102,12 +116,20 @@ export default function PoolStageExplorer(){
         <p className={styles.muted}>Choose stages and FDA designations independently or together. Both dropdowns start at <strong>0 selected</strong>; the number above counts unique trials matching your selected filters{query?" and search term":""}. {selectedDesignations.length>0&&"FDA-filtered results include only source-linked trial records; this dataset is incomplete."}</p>
       </div>
     </div>
+    <div className={styles.toolsQuickFilter}>
+      <button type="button" onClick={findPhase3OrphanTrials} aria-label="Select Phase 3 and Orphan Drug Designation together">
+        Find Phase 3 + Orphan Drug trials
+      </button>
+      <button type="button" className={styles.toolsQuickClear} onClick={clearAllTrialSelectors}
+        disabled={!hasSelections&&!query&&!queryInput}>Clear all filters</button>
+      <small>One tap selects both checkboxes using AND. FDA evidence coverage is partial.</small>
+    </div>
     <div className={styles.stageDesignationColumns}>
       <div className={styles.stageDropdownColumn}>
         <div className={styles.stageDropdownLabel}>Clinical development stages</div>
         <p className={styles.stageDropdownSubline}>
           Select one or more stages below. Counts beside each stage describe the full POOL.
-          {stats?" Full POOL: "+count(stats.trials)+" NCT trials.":""}
+          {stats?" Full POOL: "+count(stats.trials)+" NCT trials.":loading?" Loading source stage totals…":error?" Stage totals currently unavailable.":""}
         </p>
         <details className={styles.stageDesignationPane}>
           <summary className={styles.stageDesignationSummary}>
@@ -147,9 +169,9 @@ export default function PoolStageExplorer(){
     </form>
     <p className={styles.muted}><strong>Filter logic:</strong> Selected stages are OR; selected designations are OR; choosing from both applies AND. A designation-only selection covers any recorded stage. A stage-only selection does not require a known designation. All counts are read-only.</p>
     {stats&&<p className={styles.muted}>Published POOL: {count(stats.trials)} unique NCT trials, plus {count(stats.standaloneResults+stats.regulatoryEvents)} separate source/event records. Source state: {value(sourceState)} · as of {value(sourceDate)}.</p>}
-    {loading&&<p role="status">Calculating matching trial records from saved sources…</p>}
-    {error&&<p className={styles.error} role="alert">Results unavailable: {error} (not a verified zero).</p>}
-    {!loading&&!error&&!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials.</strong> Check a stage or FDA designation to begin.</p>}
+    {hasSelections&&loading&&<p role="status">Calculating matching trial records from saved sources…</p>}
+    {hasSelections&&error&&<p className={styles.error} role="alert">Results unavailable: {error} (not a verified zero).</p>}
+    {!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials.</strong> Check a stage or FDA designation, or use the Phase 3 + Orphan Drug quick filter above.</p>}
     {hasSelections&&page&&!loading&&selectedDesignations.length>0&&<p className={styles.muted}>
       FDA evidence is linked by exact NCT and ticker. {count(page.designationLinkage?.sourceLinkedTrials??0)} unique NCT trials match the selected designation categories before stage filtering.
     </p>}
@@ -160,8 +182,8 @@ export default function PoolStageExplorer(){
       designations={selectedDesignations}
       total={page?.total||0}
       offset={offset}
-      loading={loading}
-      error={error}
+      loading={hasSelections&&loading}
+      error={hasSelections?error:""}
       downloadUrl={downloadUrl}
       onPrevious={()=>setOffset(Math.max(0,offset-50))}
       onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
