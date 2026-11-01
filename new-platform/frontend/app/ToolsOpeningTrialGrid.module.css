@@ -47,3 +47,40 @@
 .ratingHelp button{background:#fff;border:1px solid #97b9a2;border-radius:6px;padding:6px 9px;color:#174b31;font-weight:750;cursor:pointer}
 .ratingHelp button:hover,.ratingHelp button:focus-visible{outline:2px solid #397457;outline-offset:2px}
 @media(max-width:600px){.scroll th.ratingCell,.scroll td.ratingCell{min-width:58px;padding:6px 4px}.ratingHelp{padding:8px}.scroll th.ratingCell button{font-size:13px}}
+
+/* Competitive Strategy sits immediately after S and D. Expanding it inserts
+   six readable columns on the right without compressing other trial columns. */
+.scroll th.competitionCell,.scroll td.competitionCell{
+  min-width:126px;max-width:none;padding:9px 10px;vertical-align:middle;
+  white-space:normal;overflow-wrap:anywhere;text-align:left
+}
+.scroll th.competitionCell{background:#e8f1f8;color:#15445f}
+.scroll th.competitionCell button{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 8px;
+  border:1px solid #6697b8;border-radius:6px;background:#fff;
+  font-weight:850;color:#164863;min-height:34px
+}
+.scroll th.competitionCell small{display:block;margin-top:5px;line-height:1.35;font-size:11px}
+.scroll th.competitionOpen,.scroll td.competitionOpen{background:#f2f8fd}
+.scroll th.competitionOpen{border-top:2px solid #2d6388}
+.scroll th.competitionStart,.scroll td.competitionStart{border-left:2px solid #2d6388}
+.scroll th.competitionEnd,.scroll td.competitionEnd{border-right:2px solid #2d6388}
+.scroll tbody tr:last-child td.competitionOpen{border-bottom:2px solid #2d6388}
+.scroll th[data-competition-topic]{min-width:184px;max-width:220px}
+.scroll td[data-competition-value]{min-width:184px;max-width:220px}
+.scroll td.competitionStart{min-width:126px}
+.competitionEvidence summary{font-size:11px;color:#194c70;cursor:pointer;font-weight:750}
+.competitionEvidence p{margin:7px 0;white-space:normal;font-size:11px;line-height:1.45}
+.competitionEvidence a{display:block;overflow-wrap:anywhere}
+.competitionHelp{padding:10px 12px;background:#edf5fc;color:#284f67;font-size:11px;line-height:1.55;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.competitionHelp button{border:1px solid #8db5ca;border-radius:6px;background:#fff;color:#1a4b6a;padding:7px 10px;font-weight:750;cursor:pointer}
+.competitionHelp details{width:100%}
+.competitionHelp details summary{font-weight:750;cursor:pointer}
+.competitionHelp ol{margin:8px 0;padding-left:20px}
+.competitionHelp li{margin:5px 0}
+.competitionHelp p{margin:8px 0 0}
+@media(max-width:600px){
+  .scroll th.competitionCell,.scroll td.competitionCell{min-width:118px;padding:7px}
+  .scroll th[data-competition-topic],.scroll td[data-competition-value]{min-width:180px}
+  .competitionHelp{padding:8px}
+}
