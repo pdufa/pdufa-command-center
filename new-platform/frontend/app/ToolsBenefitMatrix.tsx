@@ -103,6 +103,22 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
       {registryError&&<p role="status">Dated registry source coverage is unavailable or expired. No benefit conclusions are inferred.</p>}
       {feed&&!feedError&&<p>Evidence-backed assessments attached to current page: {researched} of {rows.length} NCT records. Missing evidence does not mean the drug has no advantage.</p>}
     </div>
+    <div className={css.step4Row} aria-label="Step 4 — 20 numbered trial assessments">
+      <div className={css.step4RowHeading}>
+        <strong>Step 4 · Assessment choices</strong>
+        <span>4a1–4a20 · Swipe horizontally to see all twenty</span>
+      </div>
+      <div className={css.step4Choices} role="group" aria-label="Step 4 numbered assessments 4a1 through 4a20">
+        {BENEFIT_GROUPS.map(g=><button type="button" key={g.number}
+          className={active===g.number?css.step4Active:css.step4Choice}
+          aria-pressed={active===g.number}
+          aria-label={"4a"+g.number+" — "+g.name}
+          title={"Assessment #"+g.number+" — "+g.name}
+          onClick={()=>setActive(g.number)}>
+          <strong>{"4a"+g.number}</strong><span>{g.name}</span>
+        </button>)}
+      </div>
+    </div>
     <div className={css.actions}>
       <label htmlFor="benefit-group-picker">Choose assessment (20 options)</label>
       <ToolsOptionNumber level={1} index={active-1} total={BENEFIT_GROUPS.length}/>
