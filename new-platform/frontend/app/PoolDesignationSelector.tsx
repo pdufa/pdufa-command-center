@@ -43,6 +43,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
   for(const category of SPECIAL_DESIGNATION_CATEGORIES)
     for(const record of entries[category.key].records)positiveProgramIds.add(record.program.eventKey);
   const auditedNcts=index?.linkageCoverage?.verifiedNctCount??Object.keys(index?.trialEvents||{}).length;
+  const scopedIntersection=scopeStages.length>0||!!scopeQuery.trim();
 
   const combined=useMemo(()=>{
     const m=new Map<string,{row:PositiveRecord;labels:string[];sources:string[]}>();
@@ -63,8 +64,8 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     onChange(selected.includes(key)?selected.filter(item=>item!==key):[...selected,key]);
   }
   if(guided)return <div className={styles.toolsGuidedDesignation}>
-    <p className={styles.muted}><strong>FDA trial totals are not established.</strong> The source has verified FDA-to-NCT links for only {index?auditedNcts.toLocaleString("en-US"):"an unknown number of"} distinct NCTs{poolTrialCount!==null?" versus "+poolTrialCount.toLocaleString("en-US")+" restricted-screen NCT trials":""}. Numbers below are <strong>documented matching NCTs, not complete designation totals</strong>. Each category is counted within the current Phase/search filters; a 0 means zero documented matches, not proof of no designated trials. FDA program records are shown separately.</p>
-    <p className={styles.muted}><strong>Count scope:</strong> $300M–$10B issuer-cap subset (all phases unless selected) · {scopeStages.length?scopeStages.join(", "):"All recorded stages in restricted subset"}{scopeQuery.trim()?" · Search: "+scopeQuery.trim():""} · Individual FDA categories evaluated separately. Not a verified upcoming-PDUFA screen.</p>
+    <p className={styles.muted}><strong>FDA trial totals are not established.</strong> The source has verified FDA-to-NCT links for only {index?auditedNcts.toLocaleString("en-US"):"an unknown number of"} distinct NCTs{poolTrialCount!==null?" versus "+poolTrialCount.toLocaleString("en-US")+" restricted-screen NCT trials":""}. Numbers below are <strong>documented matching NCTs, not complete designation totals</strong>. The primary count per category covers all market-cap-screened phases; a 0 means zero documented matches, not proof of no designated trials. FDA program records are shown separately.</p>
+    <p className={styles.muted}><strong>Step 2 FDA breakdown:</strong> Primary counts are independent and cover all phases in the $300M–$10B issuer-cap subset. {scopedIntersection?"A second line shows the intersection with your selected Phase/search.":"Selecting any FDA category filters the matching clinical trial rows."} Unlinked FDA programs are not trial counts.</p>
     {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
     {error&&<p role="alert" className={styles.error}>FDA source unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
     <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
@@ -79,11 +80,14 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
             <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
             <span>{category.label}</span>
             <strong className={styles.toolsFdaRowCount}
-              title={index&&d.available&&!scopeLoading&&!scopeError&&contextual
-                ?contextual.matchingTrials+" documented NCT trial matches in current Phase/search; full FDA designation total unknown"
+              title={index&&d.available&&total
+                ?total.linkedNcts+" documented NCT matches across all market-cap-screened phases; complete FDA total unknown"
                 :"Documented NCT count unavailable or FDA category not source-tracked"}>
-              {index&&d.available?(scopeLoading?"…":scopeError||!contextual?"—":contextual.matchingTrials.toLocaleString("en-US")):"—"}
-              <small>{index&&d.available?(scopeLoading?"updating":scopeError||!contextual?"count unavailable":"documented NCT matches · partial"):index?"Not tracked":"Source unavailable"}</small>
+              {index&&d.available?(scopeLoading?"…":scopeError||!total?"—":total.linkedNcts.toLocaleString("en-US")):"—"}
+              <small>{index&&d.available?(scopeLoading?"updating":scopeError||!total?"count unavailable":"all phases · documented NCTs · partial"):index?"Not tracked":"Source unavailable"}</small>
+              {scopedIntersection&&index&&d.available&&<small>
+                Within selected Phase/search: {scopeLoading?"…":scopeError||!contextual?"—":contextual.matchingTrials.toLocaleString("en-US")}
+              </small>}
               {index&&d.available&&!scopeLoading&&<small>Full FDA total unknown · {d.records.length.toLocaleString("en-US")} programs in unscoped source catalog</small>}
             </strong>
           </label>
@@ -91,8 +95,10 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
               aria-label={category.label+" source evidence"} role="group">
             <div><strong>{d.records.length.toLocaleString("en-US")} unscoped source programs</strong>
               <small>Unscoped source catalog; NOT restricted NCT matches</small></div>
-            <div><strong>{scopeLoading?"Updating…":contextual?contextual.matchingTrials.toLocaleString("en-US")+" verified NCT matches":"NCT count unknown"}</strong>
-              <small>Documented subset within Phase/search, before pagination; full total unknown</small></div>
+            <div><strong>{scopeLoading?"Updating…":total?total.linkedNcts.toLocaleString("en-US")+" documented NCT matches":"NCT count unavailable"}</strong>
+              <small>All phases in the $300M–$10B issuer-cap subset; full FDA total unknown</small></div>
+            {scopedIntersection&&<div><strong>{scopeLoading?"Updating…":contextual?contextual.matchingTrials.toLocaleString("en-US")+" documented matches":"NCT count unavailable"}</strong>
+              <small>Within selected Phase/search; baseline category count above stays independent</small></div>
             {contextual&&contextual.matchingTrials>0&&<details className={styles.toolsFdaLinkedTrials}>
               <summary>View {contextual.matchingTrials.toLocaleString("en-US")} documented matching trial IDs in selected scope</summary>
               <ul>{contextual.nctIds.map(nct=>
