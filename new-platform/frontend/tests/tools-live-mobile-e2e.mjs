@@ -36,6 +36,27 @@ function scopeResponse({stage,designation}={}){
     }catch{return false;}
   },{timeout:120000});
 }
+async function assertInvertedContrast(locator,label){
+ const result=await locator.evaluate(el=>{
+  const style=getComputedStyle(el);
+  const parse=c=>(c.match(/[\d.]+/g)||[]).slice(0,3).map(Number);
+  const light=c=>parse(c).map(v=>{
+    const x=v/255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4;
+  }).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);
+  const bg=style.backgroundColor,fg=style.color,l1=light(bg),l2=light(fg);
+  const ratio=(Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);
+  const small=el.querySelector("small");
+  const sub=small?getComputedStyle(small).color:fg;
+  const l3=light(sub);
+  const subRatio=(Math.max(l1,l3)+.05)/(Math.min(l1,l3)+.05);
+  return {bg,fg,ratio,subRatio};
+ });
+ assert.ok(result.ratio>=4.5,
+   label+" text must remain readable against selected background: "+JSON.stringify(result));
+ assert.ok(result.subRatio>=4.5,
+   label+" secondary text must remain readable: "+JSON.stringify(result));
+}
+
 const phase=page.locator('[aria-controls="tools-first-phase"]');
 const designation=page.locator('[aria-controls="tools-first-designation"]');
 try{
@@ -81,6 +102,7 @@ try{
   await check("phase-cascade",async()=>{
     await phase.click();
     assert.equal(await phase.getAttribute("aria-expanded"),"true");
+    await assertInvertedContrast(phase,"Selected Phase button");
     assert.equal(await page.locator("#tools-first-phase").count(),1);
     assert.equal(await page.locator("#tools-first-designation").count(),0);
     assert.ok((await page.locator('section[aria-label="Live trial inventory spreadsheet"]').boundingBox()).y >
@@ -96,6 +118,7 @@ try{
     assert.ok(await phase2.isVisible(),"Individual Phase 2 checkbox is directly visible");
     const response=scopeResponse({stage:"Phase 2"});
     await phase2.check();
+    await assertInvertedContrast(phase2.locator("xpath=.."),"Checked Phase option");
     const filtered=await response;
     assert.equal(filtered.status(),200,"Selected Phase 2 must produce a successful existing filtered API response");
     const selectedGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
@@ -122,6 +145,7 @@ try{
   await check("designation-cascade-and-independent-phase",async()=>{
     await designation.click();
     assert.equal(await designation.getAttribute("aria-expanded"),"true");
+    await assertInvertedContrast(designation,"Selected Special Designation button");
     assert.equal(await phase.getAttribute("aria-expanded"),"false");
     assert.equal(await page.locator("#tools-first-phase").count(),0);
     const fda=page.locator("#tools-first-designation");
@@ -133,6 +157,7 @@ try{
     await orphan.waitFor({timeout:45000});
     const response=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
     await orphan.check({timeout:45000});
+    await assertInvertedContrast(orphan.locator("xpath=.."),"Checked FDA option");
     assert.equal(await orphan.isDisabled(),false);
     const filtered=await response;
     assert.equal(filtered.status(),200,"Phase AND FDA selection must retain prior filter when switching branches");
@@ -170,6 +195,7 @@ try{
     await ranking.click();
     const rankGroup=page.locator("#tools-rank-trials-body").getByRole("checkbox",{name:/Patient Health & Clinical Benefit/});
     await rankGroup.check();
+    await assertInvertedContrast(rankGroup.locator("xpath=.."),"Checked ranking option");
     await page.waitForFunction(()=>{
       try{return JSON.parse(localStorage.getItem("pdufa-tools-ranking-checklists-v1")||"{}").groupIds?.includes(1);}catch{return false;}
     },null,{timeout:15000});
