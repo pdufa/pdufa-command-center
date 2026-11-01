@@ -41,6 +41,12 @@ const sampleIndex={
 const sampleTotals=Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})=>[
   key,key==="fast_track"?{linkedNcts:1,nctIds:["NCT00000001"],programNctIds:{"ABC|ONE":["NCT00000001"]}}:null
 ]));
+const sampleContext=Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})=>[
+ key,key==="fast_track"?{matchingTrials:1,nctIds:["NCT00000001"]}:null
+]));
+const selectedPhaseContext=Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})=>[
+ key,key==="fast_track"?{matchingTrials:0,nctIds:[]}:null
+]));
 const PoolDesignationSelector=loadWithMocks("PoolDesignationSelector.tsx",{
  "./TrialDesignations":{useTrialDesignations:()=>({index:sampleIndex,loading:false,error:"",retry:()=>{}})}
 });
@@ -111,15 +117,19 @@ test("checking FDA category reveals program and linked-trial counts without chan
  let root;
  function Wrapper(){
   const [selected,setSelected]=React.useState([]);
-  return React.createElement(PoolDesignationSelector,{selected,onChange:setSelected,poolTrialCount:100,poolTotals:sampleTotals,guided:true});
+  const [phaseScope,setPhaseScope]=React.useState(false);
+  return React.createElement("div",null,
+    React.createElement("button",{onClick:()=>setPhaseScope(x=>!x)},"Change Phase scope"),
+    React.createElement(PoolDesignationSelector,{selected,onChange:setSelected,poolTrialCount:100,poolTotals:sampleTotals,
+      contextCounts:phaseScope?selectedPhaseContext:sampleContext,scopeStages:phaseScope?["Phase 3"]:[],guided:true}));
  }
  try{
   await act(async()=>{root=create(React.createElement(Wrapper));});
   const first=root.root.findAllByType("label").find(x=>textOf(x).includes("Fast Track Designation"));
   assert.ok(first);
   assert.match(textOf(first),/2a\/13/);
-  assert.match(textOf(first),/1linked NCTs/,"The exact reconciled POOL count appears at right");
-  assert.doesNotMatch(textOf(first),/2linked NCTs/,"NCT present only in raw designation index must not inflate count");
+  assert.match(textOf(first),/1trial matches/,"Count must reflect exact resultant Phase/search scope");
+  assert.doesNotMatch(textOf(first),/2trial matches/,"Raw source index totals must not inflate resultant count");
   assert.equal(first.findAllByProps({className:"toolsFdaRowCount"}).length,1);
   assert.equal(root.root.findAllByProps({className:"toolsFdaRowCount"}).length,13,
     "Every FDA category must display an aligned trial-count status as Phase does");
@@ -130,10 +140,16 @@ test("checking FDA category reveals program and linked-trial counts without chan
   const evidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"});
   assert.equal(evidence.length,1);
   assert.match(textOf(evidence[0]),/1 source programs/);
-  assert.match(textOf(evidence[0]),/1 linked NCTs/);
+  assert.match(textOf(evidence[0]),/1 matching NCTs/);
   const linked=evidence[0].findAllByType("a").filter(x=>textOf(x)==="NCT00000001");
   assert.equal(linked.length,1,"Expanded FDA category must list the actual NCT study link");
   assert.equal(linked[0].props.href,"https://clinicaltrials.gov/study/NCT00000001");
+  await act(async()=>root.root.findAllByType("button").find(x=>textOf(x)==="Change Phase scope").props.onClick());
+  const phaseRow=root.root.findAllByType("label").find(x=>textOf(x).includes("Fast Track Designation"));
+  assert.match(textOf(phaseRow),/0trial matches/,"Selected Phase excluding all linked Fast Track trials must show zero matching results, not full POOL count");
+  const phaseEvidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"})[0];
+  assert.match(textOf(phaseEvidence),/0 matching NCTs/);
+  assert.equal(phaseEvidence.findAllByType("a").length,0);
   await act(async()=>first.findByType("input").props.onChange());
   assert.equal(root.root.findAllByProps({className:"toolsCascadeFdaEvidence"}).length,0);
   const last=root.root.findAllByType("label").find(x=>textOf(x).includes("Animal Rule"));
@@ -154,5 +170,5 @@ test("20-assessment selector stays sequential and evidence UI follows active ass
  assert.match(designation,/checked&&index&&<div className=\{styles.toolsCascadeFdaEvidence\}/);
  assert.match(designation,/className=\{styles.toolsFdaRowCount\}/);
  assert.match(designation,/poolTotals\?\.\[category.key\]/);
- assert.match(designation,/source-linked trial IDs/);
+ assert.match(designation,/matching trial IDs in selected scope/);
 });
