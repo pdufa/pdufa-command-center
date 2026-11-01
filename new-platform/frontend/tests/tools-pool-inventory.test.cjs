@@ -116,3 +116,24 @@ test("FDA selector discloses program source count and incomplete NCT crosswalk s
   assert.match(sheet,/Partial FDA coverage/);
   assert.match(sheet,/No documented NCT links match the selected filters/);
 });
+
+test("zero filters show zero immediately and do not show a misleading loading spinner",()=>{
+  const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  assert.match(ui,/\{hasSelections&&loading&&<p role="status">Calculating matching trial records/);
+  assert.match(ui,/\{!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials/);
+  assert.match(ui,/loading=\{hasSelections&&loading\}/);
+  assert.match(ui,/error=\{hasSelections\?error:""\}/);
+});
+test("one tap chooses Phase 3 AND Orphan Drug, clears search and resets offset",()=>{
+  const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  assert.match(ui,/function findPhase3OrphanTrials\(\)\{/);
+  assert.match(ui,/setSelectedStages\(\["Phase 3"\]\)/);
+  assert.match(ui,/setSelectedDesignations\(\["orphan_drug"\]\)/);
+  assert.match(ui,/setOffset\(0\)/);
+  assert.match(ui,/onClick=\{findPhase3OrphanTrials\}/);
+  assert.match(ui,/Find Phase 3 \+ Orphan Drug trials/);
+  assert.match(ui,/onClick=\{clearAllTrialSelectors\}/);
+  const fda=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolDesignationSelector.tsx"),"utf8");
+  assert.match(fda,/<details className=\{styles\.designationCoverageWarning\}>/);
+  assert.match(fda,/FDA coverage limited:/);
+});
