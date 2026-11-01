@@ -104,6 +104,15 @@ try{
     assert.ok(await funnelAtTop.isVisible());
     assert.ok((await funnelAtTop.boundingBox()).y < (await phase.boundingBox()).y,
       "The funnel must be physically above Step 3 Phase/FDA selectors");
+    // The page fetches POOL source counts asynchronously; let it reconcile
+    // with the separately fetched published inventory before asserting parity.
+    await page.waitForFunction(expected=>{
+      const value=document.querySelector('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]')?.textContent||"";
+      return value.includes(expected.pool)&&value.includes(expected.screened);
+    },{
+      pool:published.restrictedScope.originalPoolTrials.toLocaleString("en-US"),
+      screened:published.restrictedScope.screenedTrials.toLocaleString("en-US")
+    },{timeout:60000});
     const openingFunnelText=await funnelAtTop.innerText();
     assert.match(openingFunnelText,new RegExp(published.restrictedScope.originalPoolTrials.toLocaleString("en-US").replaceAll(",","[,]")));
     assert.match(openingFunnelText,new RegExp(published.restrictedScope.screenedTrials.toLocaleString("en-US").replaceAll(",","[,]")));
