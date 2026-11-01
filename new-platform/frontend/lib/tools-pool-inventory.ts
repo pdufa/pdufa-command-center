@@ -217,7 +217,8 @@ export function buildToolsResults(
   }));
   const designationSelectors=selectedDesignations.map(key=>({
     key,label:SPECIAL_DESIGNATION_CATEGORIES.find(v=>v.key===key)?.label||key,
-    linkedTrials:index?selectToolTrialIds(poolRows,index,[key]).size:0
+    linkedTrials:index?filterToolTrials(poolRows,selectedStages,
+      selectToolTrialIds(poolRows,index,[key]),query).length:0
   }));
   const rows=filtered.slice(offset,offset+limit);
   return {
