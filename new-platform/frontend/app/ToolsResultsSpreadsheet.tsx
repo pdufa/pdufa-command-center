@@ -7,6 +7,7 @@ import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
 import ToolsBenefitMatrix from "./ToolsBenefitMatrix";
+import ToolsRankingChecklists from "./ToolsRankingChecklists";
 
 export type ToolSourceEvidence={
   eventKey:string;source:string;designationDate:string;checkedAt:string;
@@ -147,6 +148,7 @@ export default function ToolsResultsSpreadsheet({
       <h3>Matching trial records</h3>
       <span>{hasSelection&&!loading&&!error?(trialCountUnverified?"NCT count not established":fmt(total)+(designations.length?" documented linked trial matches (partial)":" matching NCT trials")):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
     </div>
+    <ToolsRankingChecklists/>
     <div className={styles.toolsSheetTableScroll} role="region" aria-label="Scrollable spreadsheet containing selected trial matches" tabIndex={0}>
       <table className={styles.toolsSheetGrid}>
         <thead><tr>
