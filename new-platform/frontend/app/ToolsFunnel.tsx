@@ -77,17 +77,20 @@ export default function ToolsFunnel({
       <span className={styles.toolsFunnelArrow} aria-hidden="true">→</span>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelTrials}>
         <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">◎</span><h3>TRIALS</h3></div>
-        {noNctLink&&!loading&&!error
+        {selectedDesignations>0&&designationCoverage&&!loading&&!error
           ?<div className={styles.toolsFunnelUnlinkedResult} role="status" aria-live="polite" aria-atomic="true">
             <div className={styles.toolsFunnelNctUnknown} role="group" aria-label="Unique NCT clinical trial count">
-              <span>UNIQUE NCT TRIAL COUNT</span>
+              <span>UNIQUE NCT TRIAL COUNT AFTER SCREEN</span>
               <strong>{trialStatus}</strong>
-              <small>Trial IDs and phases have not been verified</small>
+              <small>{noNctLink
+                ?"Exact trial IDs and clinical stages are not established for these FDA programs."
+                :"Documented matches after the dated PIPELINE screen and selected clinical stages; incomplete FDA-to-NCT evidence, not an exhaustive trial census."}</small>
             </div>
             <div className={styles.toolsFunnelProgramBand} role="group" aria-label="FDA program record count, not clinical trials">
               <span>FDA APPLICATION / PROGRAM RECORDS</span>
               <strong>{num(designationCoverage!.sourcePrograms)}</strong>
-              <small>Documented programs — NOT {num(designationCoverage!.sourcePrograms)} distinct trials</small>
+              <small>Documented programs — NOT {num(designationCoverage!.sourcePrograms)} distinct trials.
+                {" "}{num(designationCoverage!.linkedNcts)} crosswalk-linked NCTs in the unrestricted POOL before applying the dated PIPELINE screen.</small>
             </div>
           </div>
           :<>
