@@ -100,7 +100,7 @@ export default function ToolsResultsSpreadsheet({
     <div className={styles.toolsSheetHeading}>
       <div>
         <h2>SELECTED TRIALS — SPREADSHEET</h2>
-        <p className={styles.muted}>One NCT per trial in the dated $300M–$10B completed Phase 3 research subset. Both Phase and FDA selectors use this same restricted pool. Documented designations and PDUFA application records attach to these same rows. Phase selections OR, FDA selections OR, and both groups combine AND. PDUFA dates belong to applications; a linked study is not automatically pivotal.</p>
+        <p className={styles.muted}>One NCT per trial in the dated $300M–$10B issuer-cap subset across all recorded phases. Both Phase and FDA selectors use this same restricted pool. Documented designations and PDUFA application records attach to these same rows. Phase selections OR, FDA selections OR, and both groups combine AND. PDUFA dates belong to applications; a linked study is not automatically pivotal.</p>
       </div>
       <a className={styles.toolsSheetExport} href={hasSelection&&!loading&&!error?downloadUrl:undefined}
         aria-disabled={!hasSelection||loading||!!error}
@@ -110,14 +110,14 @@ export default function ToolsResultsSpreadsheet({
     </div>
     <div className={styles.toolsSheetMetrics} aria-live="polite">
       <div><span>Selectors clicked</span><strong>{selectedCount}</strong><small>{stages.length} stages + {designations.length} FDA categories</small></div>
-      <div><span>Selected restricted stage totals</span><strong>{summary?fmt(summary.stageTotal):hasSelection?"—":"0"}</strong><small>Distinct NCTs within the restricted Phase 3 research scope</small></div>
+      <div><span>Selected restricted stage totals</span><strong>{summary?fmt(summary.stageTotal):hasSelection?"—":"0"}</strong><small>Distinct NCTs within the $300M–$10B issuer-cap subset</small></div>
       <div><span>{designations.length?"FDA source program records":"Verified linked NCT counts"}</span><strong>{designations.length
         ?loading||error?"—":designationCoverage?fmt(designationCoverage.sourcePrograms):"—"
         :summary?fmt(summary.designationCountSum):hasSelection?"—":"0"}</strong>
         <small>{designations.length?"Unscoped source-catalog program records, NOT counts within the restricted trial screen":"Only reviewed FDA-to-NCT links; categories may overlap"}</small></div>
       <div><span>{designations.length?"Verified NCT matches (incomplete)":"Final matching trials"}</span>
         <strong>{hasSelection?(loading||error?"—":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
-        <small>{trialCountUnverified?"Zero documented NCT matches in the restricted subset; full FDA population remains unknown":designations.length?"Documented FDA-linked subset only; full designation total unknown":"Unique NCT records from restricted Phase 3 research screen"}</small></div>
+        <small>{trialCountUnverified?"Zero documented NCT matches in the restricted subset; full FDA population remains unknown":designations.length?"Documented FDA-linked subset only; full designation total unknown":"Unique NCT records from restricted issuer-cap screen"}</small></div>
     </div>
     <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error} benefitFeed={benefitFeed} benefitError={benefitError}/>
     <div className={styles.toolsSheetTotals}>
