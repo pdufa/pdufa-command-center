@@ -70,16 +70,18 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     <p className={styles.stageDropdownSubline}>
       {index?supported.length+" of 13 FDA categories have a tracked source field":"Checking saved evidence…"}
     </p>
-    {index && <div className={styles.designationCoverageWarning} role="note">
-      <strong>Incomplete FDA-to-trial coverage</strong>
-      <p>Only <strong>{auditedNcts.toLocaleString("en-US")} reviewed NCT links</strong> are recorded
+    {index && <details className={styles.designationCoverageWarning}>
+      <summary><strong>FDA coverage limited:</strong> {auditedNcts.toLocaleString("en-US")} linked NCT trials
+        {poolTrialCount!==null?" of "+poolTrialCount.toLocaleString("en-US")+" in POOL":""}
+        <span> · Details</span></summary>
+      <p><strong>Incomplete FDA-to-trial coverage.</strong> Only <strong>{auditedNcts.toLocaleString("en-US")} reviewed NCT links</strong> are recorded
         {poolTrialCount!==null?" against "+poolTrialCount.toLocaleString("en-US")+" trials in the POOL":""}.
         The FDA source contains <strong>{positiveProgramIds.size.toLocaleString("en-US")} source-linked positive application/program records</strong>,
         many without any verified trial ID link.</p>
       <p>Counts beside FDA choices distinguish source programs from linked trial IDs.
         Combining FDA designations with clinical stages searches <strong>documented matches only</strong>, not every eligible trial.
         An unlinked result is unknown, not a negative finding.</p>
-    </div>}
+    </details>}
     {index && Object.keys(index.trialEvents).length===0&&<p className={styles.error} role="status">
       No reviewed trial-to-designation links are available. Combined trial counts cannot be verified yet.
     </p>}
