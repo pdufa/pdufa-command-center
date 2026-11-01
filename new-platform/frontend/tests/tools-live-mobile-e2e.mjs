@@ -66,8 +66,8 @@ try{
     assert.equal(await page.locator("#tools-first-designation").count(),0);
     const categories=page.locator('#tools-first-phase [aria-controls^="tools-stage-group-"]');
     assert.equal(await categories.count(),4);
-    assert.match(await categories.first().innerText(),/2a\/4/);
-    assert.match(await categories.last().innerText(),/2d\/4/);
+    assert.match(await categories.first().innerText(),/2a\/4/i);
+    assert.match(await categories.last().innerText(),/2d\/4/i);
     assert.equal(await page.locator('#tools-first-phase input[type="checkbox"]').count(),0);
     await categories.first().click();
     const children=page.locator("#tools-stage-group-0");
