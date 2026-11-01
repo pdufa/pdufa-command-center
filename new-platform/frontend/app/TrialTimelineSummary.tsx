@@ -79,6 +79,7 @@ export default function TrialTimelineSummary({
           <strong style={{...goldValue,fontSize:compact?15:19}}>{edge.label}</strong>
         </div>
         <small style={{...note,color:"#745921"}}>{edge.assessment?"#"+edge.assessment+" "+edge.assessmentTitle+" · ":""}{edge.comparator?"versus "+edge.comparator:"Overall superiority not established"}</small>
+        <p style={{...note,color:"#664700",fontWeight:750,margin:"6px 0 4px",display:"-webkit-box",WebkitLineClamp:compact?2:3,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{edge.reason}</p>
         <details style={{marginTop:5,fontSize:12,color:"#523d15"}}>
           <summary style={{cursor:"pointer",fontWeight:700}}>Why? · Evidence and limitations</summary>
           <p style={{lineHeight:1.5}}>{edge.reason}</p>
