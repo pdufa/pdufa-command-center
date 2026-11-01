@@ -8,6 +8,8 @@ import { fetchReadOnlyWithWarmRetry } from "../../../lib/read-only-warm-retry";
 import { renderPhase3CensusCsv } from "../../../lib/pipeline-census-csv";
 import {buildDesignationIndex, SPECIAL_DESIGNATION_CATEGORIES, type DesignationIndex, type DesignationKey} from "../../../lib/trial-designations";
 import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
+import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
+import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -95,7 +97,7 @@ export async function GET(req:NextRequest) {
   if(!["pool","pipeline","readout-review","census-review"].includes(view)
      || !/^(0|[1-9]\d{0,7})$/.test(offset)
      || !(/^(?:[1-9]|[1-4]\d|50)$/.test(limit) || (view==="pipeline" && /^(?:[1-9]\d?|1\d\d|200|500)$/.test(limit)))
-     || query.length>100 || !["json","csv"].includes(format) || (format==="csv" && view!=="census-review")
+     || query.length>100 || !["json","csv"].includes(format) || (format==="csv" && view!=="census-review" && !(view==="pool" && toolMode))
      || !["all",...Object.keys(POOL_STAGE_GROUPS)].includes(stageGroup)
      || (stage && !(POOL_STAGES as readonly string[]).includes(stage))
      || !["all","trials","other"].includes(recordKind)
@@ -109,6 +111,7 @@ export async function GET(req:NextRequest) {
      || selectedDesignations.some(key=>!SPECIAL_DESIGNATION_CATEGORIES.some(item=>item.key===key))
      || (selectedDesignations.length>0 && (!toolMode || recordKind!=="trials"))
      || (toolMode && (view!=="pool" || recordKind!=="trials" || stageGroup!=="all" || !!stage))
+     || (format==="csv" && toolMode && (offset!=="0" || (selectedStages.length===0 && selectedDesignations.length===0)))
      || (view!=="pool" && (stageGroup!=="all" || stage || recordKind!=="all" || selectedStages.length>0)))
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
@@ -134,7 +137,44 @@ export async function GET(req:NextRequest) {
         "X-PDUFA-Source-Version":datasetVersion,
       }});
     }
-    return NextResponse.json({...funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,stageGroup as PoolStageGroup,stage,recordKind as PoolRecordKind,selectedStages,designationMatches,toolMode),
+    const page=funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,
+      stageGroup as PoolStageGroup,stage,recordKind as PoolRecordKind,selectedStages,designationMatches,toolMode);
+    const stageSelectors=toolMode?selectedStages.map(label=>({
+      label,trials:data.poolRows.filter(row=>isPoolTrial(row)&&normalizePoolStage(row.stage)===label).length
+    })):[];
+    const designationSelectors=toolMode?selectedDesignations.map(key=>({
+      key,label:SPECIAL_DESIGNATION_CATEGORIES.find(category=>category.key===key)!.label,
+      linkedTrials:designationIndex?linkedDesignationTrialIds(data,designationIndex,[key]).size:0
+    })):[];
+    const selectionSummary=toolMode?{
+      selectedCount:selectedStages.length+selectedDesignations.length,
+      stageSelectedCount:selectedStages.length,
+      designationSelectedCount:selectedDesignations.length,
+      stageTotal:stageSelectors.reduce((sum,item)=>sum+item.trials,0),
+      // Each designation's NCT matches may overlap another designation.
+      designationCountSum:designationSelectors.reduce((sum,item)=>sum+item.linkedTrials,0),
+      designationUniqueTrials:designationMatches?.size??null,
+      matchingUniqueTrials:page.total,
+      stageSelectors,designationSelectors
+    }:null;
+    if(toolMode && format==="csv"){
+      // Export exactly the current filtered result set, not merely the visible 50-row page.
+      const all=funnelPage(data,"pool",0,data.poolRows.length,query,"all","","trials",
+        selectedStages,designationMatches,true);
+      if(all.rows.length>25000)return NextResponse.json({error:"Selection exceeds the export row limit"},{status:413});
+      const csv=renderToolsSpreadsheetCsv(all.rows as PoolTrialRecord[],selectedStages,
+        selectedDesignations,designationIndex,data.overview.poolAsOf||"");
+      return new NextResponse(csv,{headers:{
+        "Content-Type":"text/csv; charset=utf-8",
+        "Content-Disposition":"attachment; filename=\\"pdufa-tools-selected-trials.csv\\"",
+        "Cache-Control":"private, no-store",
+        "X-PDUFA-Source-Version":datasetVersion
+      }});
+    }
+    return NextResponse.json({...page,
+      spreadsheetRows:toolMode?page.rows.map(row=>toolSpreadsheetRow(
+        row as PoolTrialRecord,selectedStages,selectedDesignations,designationIndex)):undefined,
+      selectionSummary,
       designationLinkage:designationIndex?{basis:"EXACT_NCT_AND_TICKER",sourceLinkedTrials:designationMatches?.size??0}:null,
       datasetVersion},
       {headers:{"Cache-Control":"private, no-store"}});
