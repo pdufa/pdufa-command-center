@@ -135,7 +135,7 @@ test("checking FDA category reveals program and linked-trial counts without chan
   assert.equal(root.root.findAllByProps({className:"toolsFdaRowCount"}).length,13,
     "Every FDA category must display an aligned trial-count status as Phase does");
   const orphan=root.root.findAllByType("label").find(x=>textOf(x).includes("Orphan Drug Designation"));
-  assert.match(textOf(orphan),/0all phases · documented NCTs · partialFull FDA total unknown/,"Tracked orphan category has zero documented matches, with unknown complete coverage");
+  assert.match(textOf(orphan),/—count unavailableFull FDA total unknown/,"Tracked orphan category has zero documented matches, with unknown complete coverage");
   assert.ok(!root.root.findAllByProps({className:"toolsCascadeFdaEvidence"}).length);
   await act(async()=>first.findByType("input").props.onChange());
   const evidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"});
