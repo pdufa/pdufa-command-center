@@ -506,8 +506,9 @@ test("final live spreadsheet stays below every TOOLS selection and analysis sect
   const final=source.indexOf('id="tools-final-trial-spreadsheet"');
   const closing=source.lastIndexOf('</section>');
   assert.ok([head,stage,fda,funnel,research,final,closing].every(n=>n>=0));
-  assert.ok(head<stage&&stage<fda&&fda<funnel&&funnel<research&&research<final&&final<closing,
-    "All selections, the trial funnel and research spreadsheet must precede the final live grid");
+  const filterGate=source.indexOf('{hasSelections&&<>');
+  assert.ok(funnel<head&&head<stage&&stage<fda&&fda<filterGate&&filterGate<research&&research<final&&final<closing,
+    "POOL → PIPELINE → TRIALS must lead the page above Step 3 selectors even without selections; assessments must precede Step 5");
   assert.equal((source.match(/<ToolsOpeningTrialGrid\b/g)||[]).length,1,
     "Never render duplicate copies of the final live POOL spreadsheet");
   assert.match(source.slice(final),/rows=\{page\?\.spreadsheetRows\|\|\[\]\}/);
