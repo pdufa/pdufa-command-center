@@ -86,6 +86,31 @@ try{
     assert.match(await sameCount.innerText(),/4 documented linked trial matches/);
     await screenshot("03b-all-phases-orphan-parity");
   });
+  await check("accelerated-approval-16-programs-not-false-zero-trials",async()=>{
+    await page.getByRole("button",{name:"Clear all filters"}).click();
+    const accelerated=page.getByRole("checkbox",{name:/^Accelerated Approval/});
+    await accelerated.check();
+    await page.waitForFunction(()=>{
+      const sheet=document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']");
+      return sheet?.textContent?.includes("16 source-backed FDA program records") &&
+        sheet?.textContent?.includes("NCT count not established");
+    },null,{timeout:60000});
+    assert.equal(await accelerated.isChecked(),true);
+    assert.match(await page.locator("section[aria-label='POOL to PIPELINE to TRIALS filter flow']").innerText(),/Not established/);
+    const before=await page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']").innerText();
+    assert.match(before,/16 source-backed FDA program records/);
+    assert.match(before,/NCT link not established/);
+    await page.getByRole("button",{name:"Select all",exact:true}).click();
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='POOL to PIPELINE to TRIALS filter flow']")?.textContent?.includes("Selecting all stages cannot establish the number of clinical trials"),null,{timeout:60000});
+    const allStages=page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox",{checked:true});
+    assert.equal(await allStages.count(),14);
+    const after=await page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']").innerText();
+    assert.match(after,/16 source-backed FDA program records/);
+    assert.match(after,/NCT count not established/);
+    assert.doesNotMatch(after,/UNIQUE TRIALS MATCHING COMBINED FILTERS\s+0/);
+    await screenshot("03c-accelerated-approval-all-stages-unverified");
+    await page.getByRole("button",{name:"Clear all filters"}).click();
+  });
   await check("one-tap-combined",async()=>{
     await page.getByText("Find Phase 3 + Orphan Drug trials",{exact:true}).click();
     await page.getByRole("checkbox",{name:/^Phase 3(?! Results)/}).waitFor();
