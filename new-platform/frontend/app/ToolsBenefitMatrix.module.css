@@ -95,3 +95,19 @@
 
 .sourceHint{background:#f0f6fb;border-left:3px solid #3481a6;padding:10px 12px;color:#274b63;font-size:11px;line-height:1.5;margin:0}
 .sourceHint strong{font-weight:800}
+
+
+/* The chosen benefit assessment is inverse-contrast, unlike inactive headings. */
+.matrixTable thead th.activeHeading,
+.matrixTable thead th.activeHeading:hover{
+  background:#124e36!important;
+  color:#fff!important;
+}
+.matrixTable thead th.activeHeading button{
+  color:#fff!important;
+}
+.matrixTable thead th.activeHeading button span[aria-hidden="true"]{
+  background:#fff;
+  border-color:#fff;
+  color:#124e36;
+}
