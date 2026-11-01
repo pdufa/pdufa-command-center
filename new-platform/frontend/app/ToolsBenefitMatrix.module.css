@@ -154,3 +154,14 @@
  .intro h3{font-size:15px}
  .researchDisclosure{margin-top:6px}
 }
+
+/* Optional complete assessment index: collapsed by default so Step 5 remains nearby. */
+.fullAssessmentList{margin-top:6px;border:1px solid #c9dcd3;border-radius:7px;background:#fff;min-width:0}
+.fullAssessmentList>summary{cursor:pointer;font-size:12px;font-weight:700;color:#17523c;min-height:36px;padding:8px 11px}
+.fullAssessmentList[open]>summary{border-bottom:1px solid #dae7e1;background:#f1f8f4}
+.fullAssessmentGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:8px}
+.fullAssessmentItem,.fullAssessmentSelected{display:flex;align-items:center;gap:8px;min-width:0;border:1px solid #d7e5de;border-radius:6px;background:#fff;color:#244d3f;padding:7px 8px;font-size:12px;text-align:left;cursor:pointer;line-height:1.35}
+.fullAssessmentSelected,.fullAssessmentSelected:hover{background:#13543d;color:#fff;border-color:#13543d}
+.fullAssessmentItem:focus-visible,.fullAssessmentSelected:focus-visible{outline:3px solid #368bb4;outline-offset:1px}
+.fullAssessmentNumber{display:flex;align-items:center;justify-content:center;flex:0 0 25px;height:25px;font-size:12px;font-weight:800;border-radius:6px;border:1px solid currentColor}
+@media(max-width:800px){.fullAssessmentGrid{grid-template-columns:minmax(0,1fr)}.fullAssessmentItem,.fullAssessmentSelected{min-height:38px}}
