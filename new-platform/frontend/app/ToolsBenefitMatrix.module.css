@@ -12,6 +12,9 @@
 .actions label,.mobilePicker label{font-size:12px;font-weight:750;color:#274e40}
 .actions select,.mobilePicker select{min-width:min(100%,290px);max-width:100%;border-radius:8px;border:1px solid #95bbae;padding:10px;background:#fff;color:#1b3f33;font-size:13px}
 .empty{padding:20px 12px;background:#fff;border:1px dashed #9cb6aa;border-radius:9px;font-size:13px;color:#52675d}
+.empty p{margin:0 0 10px;line-height:1.45}
+.restoreButton{width:100%;min-height:44px;background:#1d614d;color:#fff;border:1px solid #16513f;border-radius:8px;padding:11px 13px;cursor:pointer;font-size:13px;font-weight:750;white-space:normal}
+.restoreButton:hover{background:#164d3b}
 .desktop{overflow:auto;max-width:100%;max-height:610px;border-radius:9px;border:1px solid #c7d8e2;scrollbar-color:#8facbd #f0f6f9}
 .matrixTable{border-collapse:separate;border-spacing:0;font-size:12px;table-layout:fixed;width:max-content;min-width:100%}
 .matrixTable th,.matrixTable td{border-bottom:1px solid #dbe7ed;border-right:1px solid #deebef;padding:9px 10px;text-align:left;vertical-align:top;min-width:136px;max-width:220px;overflow-wrap:anywhere;background:#fff}
