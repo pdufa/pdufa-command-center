@@ -112,8 +112,14 @@ try{
       "Opening inventory spreadsheet must be under the Phase / FDA first row");
     const invalidMix=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&inventory=1&stages=Phase%203&offset=0&limit=50");
     assert.equal(invalidMix.status(),422,"Inventory cannot misrepresent filtered matching records");
-    assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),0,
-      "The initial screen must not be crowded by the funnel");
+    const funnelAtTop=page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]');
+    assert.equal(await funnelAtTop.count(),1,"The POOL → PIPELINE → TRIALS funnel must be visible on the opening screen");
+    assert.ok(await funnelAtTop.isVisible());
+    assert.ok((await funnelAtTop.boundingBox()).y < (await phase.boundingBox()).y,
+      "The funnel must be physically above Step 3 Phase/FDA selectors");
+    const openingFunnelText=await funnelAtTop.innerText();
+    assert.match(openingFunnelText,new RegExp(published.restrictedScope.originalPoolTrials.toLocaleString("en-US").replaceAll(",","[,]")));
+    assert.match(openingFunnelText,new RegExp(published.restrictedScope.screenedTrials.toLocaleString("en-US").replaceAll(",","[,]")));
     assert.equal(await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').count(),0,
       "The initial screen must not show trial tables");
     for(const choice of [phase,designation]){
@@ -306,7 +312,8 @@ try{
     assert.equal(await page.locator("#tools-first-phase").count(),0);
     assert.equal(await phase.getAttribute("aria-expanded"),"false");
     assert.equal(await designation.getAttribute("aria-expanded"),"false");
-    assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),0);
+    assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),1,
+      "The top-of-page funnel remains visible even after Clear All Selections");
     assert.equal(await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').count(),0);
     const restoredGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     await page.waitForFunction(()=>{
