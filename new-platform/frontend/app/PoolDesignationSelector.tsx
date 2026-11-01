@@ -109,9 +109,9 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
                   disabled={!index||!d.available} onChange={()=>toggle(category.key)}/>
                 <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
                 <span>{category.label}</span>
-                {!d.available&&<small>Not tracked</small>}
+                {index&&!d.available&&<small>Not tracked</small>}
               </label>
-              {checked&&<div className={styles.toolsCascadeFdaEvidence} role="group"
+              {checked&&index&&<div className={styles.toolsCascadeFdaEvidence} role="group"
                 aria-label={category.label+" source evidence"}>
                 <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
                   <small>FDA applications/program events, not distinct trials</small></div>
