@@ -15,11 +15,11 @@
 .desktop{overflow:auto;max-width:100%;max-height:610px;border-radius:9px;border:1px solid #c7d8e2;scrollbar-color:#8facbd #f0f6f9}
 .matrixTable{border-collapse:separate;border-spacing:0;font-size:12px;table-layout:fixed;width:max-content;min-width:100%}
 .matrixTable th,.matrixTable td{border-bottom:1px solid #dbe7ed;border-right:1px solid #deebef;padding:9px 10px;text-align:left;vertical-align:top;min-width:136px;max-width:220px;overflow-wrap:anywhere;background:#fff}
-.matrixTable thead tr:first-child th{position:sticky;top:0;z-index:3;background:#e6eef8;color:#123f63;white-space:normal;text-align:center;border-bottom:2px solid #b7cadf;height:62px}
+.matrixTable thead tr:first-child th{position:sticky;top:0;z-index:3;background:#e6eef8;color:#123f63;white-space:normal;text-align:left;border-bottom:2px solid #b7cadf;height:62px}
 .matrixTable thead tr:nth-child(2) th{position:sticky;top:62px;z-index:2;background:#e8f4eb;color:#214936;font-size:11px}
 .matrixTable thead th.activeHeading{background:#c3def5!important}
 .matrixTable thead th.identityHeading{background:#d2e8dc!important;text-align:left!important;position:sticky;left:0;z-index:7}
-.groupHeading button,.activeHeading button{font-size:11px;line-height:1.4;min-width:125px;max-width:178px;background:transparent;border:0;padding:5px 2px;cursor:pointer;color:inherit;text-align:left;font-weight:800}
+.groupHeading button,.activeHeading button{font-size:11px;line-height:1.4;min-width:125px;max-width:178px;background:transparent;border:0;padding:5px 2px;cursor:pointer;color:inherit;text-align:left;display:block;font-weight:800}
 .activeHeading button{font-size:12px;color:#0c426b}
 .matrixTable tbody tr:nth-child(even) td{background:#f7fbfd}
 .matrixTable tbody tr:hover td{background:#edf5fb}
