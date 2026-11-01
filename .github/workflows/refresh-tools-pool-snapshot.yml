@@ -1,0 +1,38 @@
+name: Refresh verified TOOLS POOL snapshot
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 08 * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-tools-pool-snapshot.yml'
+permissions:
+  contents: write
+concurrency:
+  group: verified-tools-pool-snapshot
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Read authenticated, source-verified production POOL and create fast snapshot
+        run: python3 .github/scripts/build_tools_pool_snapshot.py
+      - name: Publish only the bounded public-source POOL inventory
+        run: |
+          git config user.name 'pdufa-tools-source-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add new-platform/frontend/data/tools-pool-snapshot.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'No POOL snapshot changes'
+          else
+            git commit -m 'Refresh verified TOOLS POOL snapshot from signed-in production source'
+            git push origin HEAD:main
+          fi
