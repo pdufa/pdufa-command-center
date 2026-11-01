@@ -129,6 +129,17 @@ export default function PoolStageExplorer(){
     setQuery("");
     setQueryInput("");
   }
+  function clearAllToolsSelections(){
+    // Clear both filter branches and the locally saved research-ranking checklists,
+    // including those unmounted while the full POOL inventory is visible.
+    clearAllTrialSelectors();
+    try{window.localStorage.removeItem("pdufa-tools-ranking-checklists-v1");}catch{/* Optional storage. */}
+    window.dispatchEvent(new Event("pdufa-tools-clear-all-selections"));
+  }
+  function clearPhaseSection(){
+    changeStages([]);
+    setExpandedStageGroup(null);
+  }
   function selectPhase3Trials(){
     setSelectedStages(["Phase 3"]);
     setExpandedStageGroup("Phase 3 and results");
@@ -140,7 +151,11 @@ export default function PoolStageExplorer(){
   function submitSearch(event:FormEvent<HTMLFormElement>){event.preventDefault();setQuery(queryInput);setOffset(0);}
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
     <div className={styles.toolsStart} aria-label="Step 1 — choose a filter">
-      <h2>Step 1 · What would you like to select?</h2>
+      <div className={styles.toolsStepHeader}>
+        <h2>Step 1 · What would you like to select?</h2>
+        <button type="button" className={styles.toolsClearAll} onClick={clearAllToolsSelections}
+          aria-label="Clear all selections throughout TOOLS">Clear All Selections</button>
+      </div>
       <p>Choose Phase or Special Designation. Only that choice opens its next options.</p>
       <div className={styles.toolsStartChoices}>
         <button type="button" className={styles.toolsStartChoice} aria-expanded={activeFilter==="phase"}
@@ -157,13 +172,16 @@ export default function PoolStageExplorer(){
         </button>
       </div>
       {activeFilter==="phase"&&<div id="tools-first-phase" className={styles.toolsStartPanel}>
-        <h3>Step 2 · Choose a phase category</h3>
+        <div className={styles.toolsStepHeader}>
+          <h3>Step 2 · Choose a phase category</h3>
+          <button type="button" className={styles.toolsClearSection} onClick={clearPhaseSection}
+            disabled={selectedStages.length===0}>Clear This Section</button>
+        </div>
         <p className={styles.muted}>Tap a numbered category to reveal its Phase options. Check one or more phases to show matching trials.</p>
         <div className={styles.stageDesignationPane}>
           <div className={styles.stageDesignationBody}>
             <div className={styles.stageDropdownActions}>
               <button type="button" onClick={()=>changeStages([...stages])}>Select all</button>
-              <button type="button" onClick={()=>changeStages([])}>Clear</button>
             </div>
             <div className={styles.stageDesignationList} role="group" aria-label="Clinical development stages">
               {groups.map((group,groupIndex)=>{
@@ -194,7 +212,13 @@ export default function PoolStageExplorer(){
         </div>
       </div>}
       {activeFilter==="designation"&&<div id="tools-first-designation" className={styles.toolsStartPanel}>
-        <h3>Step 2 · Choose an FDA special designation</h3>
+        <div className={styles.toolsStepHeader}>
+          <h3>Step 2 · Choose an FDA special designation</h3>
+          <button type="button" className={styles.toolsClearSection}
+            onClick={()=>changeDesignations([])} disabled={selectedDesignations.length===0}>
+            Clear This Section
+          </button>
+        </div>
         <PoolDesignationSelector guided selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}/>
       </div>}
       <ToolsOpeningTrialGrid
@@ -215,7 +239,6 @@ export default function PoolStageExplorer(){
       />
       {hasSelections&&<div className={styles.toolsStartSelected} role="status">
         <strong>{selectedStages.length} Phase selected · {selectedDesignations.length} Special Designation selected</strong>
-        <button type="button" onClick={clearAllTrialSelectors}>Clear all selections</button>
       </div>}
     </div>
     {hasSelections&&<>
@@ -247,8 +270,6 @@ export default function PoolStageExplorer(){
       <button type="button" onClick={findPhase3OrphanTrials} aria-label="Select Phase 3 and Orphan Drug Designation together">
         Find Phase 3 + Orphan Drug trials
       </button>
-      <button type="button" className={styles.toolsQuickClear} onClick={clearAllTrialSelectors}
-        disabled={!hasSelections&&!query&&!queryInput}>Clear all filters</button>
       <small>TRIALS shows 0 until a clinical stage or FDA designation is selected. PIPELINE retains its separate historical screened candidate total.</small>
     </div>
 
