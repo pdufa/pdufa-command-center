@@ -59,6 +59,10 @@ async function assertInvertedContrast(locator,label){
 
 const phase=page.locator('[aria-controls="tools-first-phase"]');
 const designation=page.locator('[aria-controls="tools-first-designation"]');
+let openingDesignationTotals=null;
+const categories=["fast_track","breakthrough_therapy","priority_review","accelerated_approval",
+  "orphan_drug","rmat","qidp","rare_pediatric_disease","tropical_disease_prv",
+  "rare_pediatric_disease_prv","material_threat_mcm_prv","lpad","animal_rule"];
 try{
   await check("initial-two-choices",async()=>{
     await page.goto(base+"/tools",{waitUntil:"domcontentloaded",timeout:45000});
@@ -76,6 +80,8 @@ try{
     assert.equal(initialInventory.status(),200,"Authenticated opening POOL inventory must load");
     const published=await initialInventory.json();
     assert.equal(published.inventoryMode,true);
+    assert.ok(published.designationTotals,"Opening source must include cross-reconciled FDA totals");
+    openingDesignationTotals=published.designationTotals;
     assert.ok(published.total>=10000,"Opening trials must come from the published full NCT POOL");
     assert.ok(published.spreadsheetRows.length>0);
     assert.match(published.spreadsheetRows[0].nctId,/^NCT\d{8}$/);
@@ -171,10 +177,23 @@ try{
     assert.equal(await fdaCounts.count(),13,"All 13 FDA choices must have trial-count labels like the Phase rows");
     assert.ok(await fdaCounts.first().isVisible());
     assert.equal(await fdaCounts.first().evaluate(el=>getComputedStyle(el).textAlign),"right");
+    for(const [i,key] of categories.entries()){
+      const total=openingDesignationTotals[key];
+      const expected=total&&total.linkedNcts>0?String(total.linkedNcts):"?";
+      const label=await fdaCounts.nth(i).innerText();
+      if(total===null)assert.match(label,/Not tracked/);
+      else assert.equal(label.split("\n")[0].replaceAll(",",""),expected,
+        "FDA "+key+" row count must exactly equal source-verified POOL NCT matching count");
+    }
     for(const c of await fdaCounts.all()){
       assert.match(await c.innerText(),/linked NCTs|NCTs unknown|Not tracked/,
         "Never show source-program counts as NCT counts or turn missing evidence into zero");
     }
+    const orphanOnly=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&designations=orphan_drug&offset=0&limit=50",{timeout:120000});
+    assert.equal(orphanOnly.status(),200);
+    const orphanData=await orphanOnly.json();
+    assert.equal(orphanData.selectionSummary.designationUniqueTrials,openingDesignationTotals.orphan_drug.linkedNcts,
+      "FDA row count must equal the exact same filter's distinct NCT trial count");
     const orphan=all.getByRole("checkbox",{name:/Orphan Drug Designation/});
     await orphan.waitFor({timeout:45000});
     const response=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});

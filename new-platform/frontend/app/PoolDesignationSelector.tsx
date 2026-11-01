@@ -9,39 +9,34 @@ import {
 } from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
 import ToolsOptionNumber from "./ToolsOptionNumber";
+import type {ToolsDesignationTotals} from "../lib/tools-pool-inventory";
 
 type PositiveRecord={program:DesignationProgram;linkedNcts:string[]};
-type DesignationSummary={available:boolean;records:PositiveRecord[];linkedTrials:number};
+type DesignationSummary={available:boolean;records:PositiveRecord[]};
 
-export default function PoolDesignationSelector({selected,onChange,poolTrialCount,guided=false}:{selected:DesignationKey[];onChange:(next:DesignationKey[])=>void;poolTrialCount:number|null;guided?:boolean}){
+export default function PoolDesignationSelector({selected,onChange,poolTrialCount,poolTotals=null,guided=false}:{
+  selected:DesignationKey[];onChange:(next:DesignationKey[])=>void;
+  poolTrialCount:number|null;poolTotals?:ToolsDesignationTotals|null;guided?:boolean
+}){
   const {index,loading,error,retry}=useTrialDesignations();
   const entries=useMemo(()=>{
-    const trialLinks=new Map<string,Set<string>>();
-    if(index)for(const [nct,keys] of Object.entries(index.trialEvents)){
-      if(!/^NCT\d{8}$/.test(nct))continue;
-      for(const key of keys){
-        if(!trialLinks.has(key))trialLinks.set(key,new Set());
-        trialLinks.get(key)!.add(nct);
-      }
-    }
     const result={} as Record<DesignationKey,DesignationSummary>;
     for(const category of SPECIAL_DESIGNATION_CATEGORIES){
       const records:PositiveRecord[]=[];
       if(index)for(const program of Object.values(index.programs)){
         const evidence=program.designations[category.key];
         if(evidence?.status==="GRANTED" && evidence.verification!=="UNVERIFIED" && evidence.source){
-          records.push({program,linkedNcts:[...(trialLinks.get(program.eventKey)||[])]});
+          records.push({program,linkedNcts:poolTotals?.[category.key]?.programNctIds?.[program.eventKey]||[]});
         }
       }
       records.sort((a,b)=>a.program.ticker.localeCompare(b.program.ticker));
       result[category.key]={
         available:!!index?.availableKeys?.[category.key],
-        records,
-        linkedTrials:new Set(records.flatMap(record=>record.linkedNcts)).size
+        records
       };
     }
     return result;
-  },[index]);
+  },[index,poolTotals]);
   const supported=SPECIAL_DESIGNATION_CATEGORIES.filter(category=>entries[category.key].available);
   const positiveProgramIds=new Set<string>();
   for(const category of SPECIAL_DESIGNATION_CATEGORIES)
@@ -67,12 +62,12 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     onChange(selected.includes(key)?selected.filter(item=>item!==key):[...selected,key]);
   }
   if(guided)return <div className={styles.toolsGuidedDesignation}>
-    <p className={styles.muted}>Check one or more source-supported FDA categories below. An option reveals its documented programs and linked trial evidence.</p>
+    <p className={styles.muted}>Counts at right show distinct, documented NCT matches in the published POOL across all phases, before any Phase or text filters. They are not FDA program totals. A ? means the full trial count is unknown.</p>
     {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
     {error&&<p role="alert" className={styles.error}>FDA source unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
     <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
       {SPECIAL_DESIGNATION_CATEGORIES.map((category,categoryIndex)=>{
-        const d=entries[category.key],checked=selected.includes(category.key);
+        const d=entries[category.key],checked=selected.includes(category.key),total=poolTotals?.[category.key]??null;
         return <div key={category.key} className={styles.toolsCascadeFdaItem}>
           <label className={styles.stageCheckboxRow}
             title={index&&!d.available?"No source field available for this category":undefined}>
@@ -81,23 +76,23 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
             <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
             <span>{category.label}</span>
             <strong className={styles.toolsFdaRowCount}
-              title={index&&d.available?d.linkedTrials+" source-linked NCT trial IDs (partial coverage)": "FDA category not source-tracked"}>
-              {index&&d.available?(d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US"):"?"):"—"}
-              <small>{index&&d.available?(d.linkedTrials>0?"linked NCTs":"NCTs unknown"):"Not tracked"}</small>
+              title={index&&d.available&&total?total.linkedNcts+" POOL-matched NCT trial IDs (partial FDA coverage)": "FDA category not source-tracked"}>
+              {index&&d.available?(total?.linkedNcts?total.linkedNcts.toLocaleString("en-US"):"?"):"—"}
+              <small>{index&&d.available?(total?.linkedNcts?"linked NCTs":"NCTs unknown"):"Not tracked"}</small>
             </strong>
           </label>
           {checked&&index&&<div className={styles.toolsCascadeFdaEvidence}
               aria-label={category.label+" source evidence"} role="group">
             <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
               <small>FDA programs, not distinct clinical trials</small></div>
-            <div><strong>{d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}</strong>
-              <small>Exact NCT source links only (partial coverage)</small></div>
-            {d.linkedTrials>0&&<details className={styles.toolsFdaLinkedTrials}>
-              <summary>View {d.linkedTrials.toLocaleString("en-US")} source-linked trial IDs</summary>
-              <ul>{[...new Set(d.records.flatMap(record=>record.linkedNcts))].sort().slice(0,40).map(nct=>
+            <div><strong>{total?.linkedNcts?total.linkedNcts.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}</strong>
+              <small>Exact POOL-matched NCT links only (partial coverage)</small></div>
+            {!!total?.linkedNcts&&<details className={styles.toolsFdaLinkedTrials}>
+              <summary>View {total!.linkedNcts.toLocaleString("en-US")} source-linked trial IDs</summary>
+              <ul>{total!.nctIds.map(nct=>
                 <li key={nct}><a href={"https://clinicaltrials.gov/study/"+nct}
                   target="_blank" rel="noopener noreferrer">{nct}</a></li>)}</ul>
-              {d.linkedTrials>40&&<p>Showing the first 40 source-linked NCT IDs.</p>}
+              {total!.linkedNcts>40&&<p>Showing the first 40 source-linked NCT IDs.</p>}
               <p>These are documented program-to-trial links, not a complete FDA designation census.</p>
             </details>}
           </div>}
@@ -115,7 +110,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
           {combined.slice(0,50).map(({row,labels,sources})=><li key={row.program.eventKey}>
             <strong>{row.program.ticker}</strong> · {row.program.drug||row.program.eventKey}
             {row.program.indication&&<span> · {row.program.indication}</span>}
-            <small>{labels.join(" · ")} · {row.linkedNcts.length?row.linkedNcts.join(", "):"No exact NCT link recorded"}</small>
+            <small>{labels.join(" · ")} · {row.linkedNcts.length?row.linkedNcts.join(", "):"No matching NCT link in published POOL"}</small>
             {sources.map(source=><a key={source} href={source} target="_blank" rel="noopener noreferrer">Source ↗</a>)}
           </li>)}
         </ol>}
@@ -124,9 +119,9 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     <details className={styles.designationCoverageWarning}>
       <summary>FDA evidence coverage and limitations</summary>
       <p>{index?supported.length+" of 13 FDA categories have a tracked source field":"Source availability not established"}.
-        {index?" Reviewed exact linked NCTs: "+auditedNcts.toLocaleString("en-US"):""}
+        {index?" Source-index NCT crosswalk coverage (not matched POOL): "+auditedNcts.toLocaleString("en-US"):""}
         {poolTrialCount!==null?" of "+poolTrialCount.toLocaleString("en-US")+" in POOL":""}.</p>
-      <p>Program counts are not the number of distinct clinical trials. Unlinked evidence remains unknown, not zero.</p>
+      <p>FDA program counts are not distinct clinical-trial counts. The NCT figures use the same POOL, NCT-ID and ticker match as the trial spreadsheet. FDA-to-trial coverage is partial; missing evidence is unknown, not zero.</p>
     </details>
   </div>;
   return <div className={styles.stageDropdownColumn}>
@@ -163,7 +158,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
         </div>
         <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
           {SPECIAL_DESIGNATION_CATEGORIES.map((category,categoryIndex)=>{
-            const d=entries[category.key];
+            const d=entries[category.key],total=poolTotals?.[category.key]??null;
             const checked=selected.includes(category.key);
             return <div key={category.key} className={styles.toolsCascadeFdaItem}>
               <label className={styles.stageCheckboxRow}
@@ -173,17 +168,17 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
                 <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
                 <span>{category.label}</span>
                 <strong className={styles.toolsFdaRowCount}
-                title={index&&d.available?d.linkedTrials+" source-linked NCT trial IDs (partial coverage)": "FDA category not source-tracked"}>
-                {index&&d.available?(d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US"):"?"):"—"}
-                <small>{index&&d.available?(d.linkedTrials>0?"linked NCTs":"NCTs unknown"):"Not tracked"}</small>
+                title={index&&d.available&&total?total.linkedNcts+" POOL-matched NCT trial IDs (partial FDA coverage)": "FDA category not source-tracked"}>
+                {index&&d.available?(total?.linkedNcts?total.linkedNcts.toLocaleString("en-US"):"?"):"—"}
+                <small>{index&&d.available?(total?.linkedNcts?"linked NCTs":"NCTs unknown"):"Not tracked"}</small>
             </strong>
               </label>
               {checked&&index&&<div className={styles.toolsCascadeFdaEvidence} role="group"
                 aria-label={category.label+" source evidence"}>
                 <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
                   <small>FDA applications/program events, not distinct trials</small></div>
-                <div><strong>{d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}</strong>
-                  <small>Verified exact trial links only</small></div>
+                <div><strong>{total?.linkedNcts?total.linkedNcts.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}</strong>
+                  <small>Exact POOL-matched trial links only</small></div>
               </div>}
             </div>;
           })}
@@ -204,7 +199,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
             {combined.slice(0,50).map(({row,labels,sources})=><li key={row.program.eventKey}>
               <strong>{row.program.ticker}</strong> · {row.program.drug||row.program.eventKey}
               {row.program.indication&&<span> · {row.program.indication}</span>}
-              <small>{labels.join(" · ")} · {row.linkedNcts.length?row.linkedNcts.join(", "):"No exact NCT link recorded"}</small>
+              <small>{labels.join(" · ")} · {row.linkedNcts.length?row.linkedNcts.join(", "):"No matching NCT link in published POOL"}</small>
               {sources.map(source=><a key={source} href={source} target="_blank" rel="noopener noreferrer"
                 style={{marginRight:10}}>Source ↗</a>)}
             </li>)}

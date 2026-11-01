@@ -10,7 +10,7 @@ import {buildDesignationIndex, applyReviewedDesignationLinks, SPECIAL_DESIGNATIO
 import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
-import {verifiedToolPool,buildToolsResults,buildToolsOpeningInventory,filterToolTrials,selectToolTrialIds,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
+import {verifiedToolPool,buildToolsResults,buildToolsOpeningInventory,filterToolTrials,selectToolTrialIds,toolsDesignationTotals,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
 import {isToolsSnapshotFresh,parseToolsSnapshotTimestamp} from "../../../lib/tools-snapshot-freshness";
 import type {TimelineDates} from "../../../lib/pipeline-timeline";
 
@@ -189,8 +189,15 @@ export async function GET(req:NextRequest) {
       // or its market-cap research directory cannot be reconciled.
       const [inventory,index]=await Promise.all([
         toolsPoolSource(),
-        selectedDesignations.length>0?designationEvidence():Promise.resolve(null)
+        // Always reconcile count labels against this exact POOL, including the
+        // unfiltered first screen. FDA evidence is optional for a Phase-only
+        // request but mandatory when a designation filter is checked.
+        designationEvidence().catch(error=>{
+          if(selectedDesignations.length)throw error;
+          return null;
+        })
       ]);
+      const designationTotals=index?toolsDesignationTotals(inventory.poolRows,index):null;
       if(index && selectedDesignations.some(key=>!index.availableKeys?.[key])){
         return NextResponse.json({
           error:"Selected FDA category has no tracked saved source field",
@@ -272,7 +279,7 @@ export async function GET(req:NextRequest) {
       const spreadsheetRows=result.spreadsheetRows.map(row=>({
         ...row,timeline:trialTimelines.get(row.nctId+"|"+row.ticker.toUpperCase())||null
       }));
-      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,datasetVersion},
+      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,designationTotals,datasetVersion},
         {headers:{"Cache-Control":"private, no-store"}});
     }
     // Stage counts always come from the full POOL. Designation selection is
