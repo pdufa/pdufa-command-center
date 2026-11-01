@@ -21,6 +21,8 @@ async function archivedEvidence(nct:string):Promise<RegistryBenefitResearch|null
       ||packet.comparisonVerified!==false||packet.benefitRank!==null
       ||packet.fdaDecisionVerified!==false||!Array.isArray(packet.primary)
       ||!Array.isArray(packet.secondary)||!Array.isArray(packet.seriousAdverseEvents)
+      ||!packet.truncatedEvidence||typeof packet.truncatedEvidence.outcomes!=="boolean"
+      ||typeof packet.truncatedEvidence.seriousEvents!=="boolean"
       ||typeof packet.resultsPosted!=="boolean")return null;
     const age=Date.now()-Date.parse(packet.retrievedAt);
     return Number.isFinite(age)&&age>=0&&age<48*3600000?packet:null;
