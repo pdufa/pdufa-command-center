@@ -12,6 +12,7 @@ import PipelineFourViews from "./PipelineFourViews";
 import LiveRegistryReview from "./LiveRegistryReview";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import BatchRegistryExport from "./BatchRegistryExport";
+import PoolStageExplorer from "./PoolStageExplorer";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -95,6 +96,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        {section==="pipeline"&&<a href="/api/scope-funnel?view=census-review&format=csv" download>Export all 741 historical census candidates (CSV)</a>}
      </div>
    </header>
+   {section==="pipeline"&&<PoolStageExplorer/>}
    {section==="pipeline"&&<BatchRegistryExport/>}
    <section className={styles.notice}>
      <strong>Qualification rules:</strong> U.S.-listed publicly traded issuer; current sourced market capitalization $300 million–$10 billion inclusive;
