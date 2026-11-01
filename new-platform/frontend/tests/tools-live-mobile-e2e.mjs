@@ -141,15 +141,25 @@ try{
     await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Step 5 · Final Trials Spreadsheet"),null,{timeout:45000});
     assert.match(await selectedGrid.innerText(),/Step 5 · Final Trials Spreadsheet — filtered trial matches/);
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
-    await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').waitFor();
+    const assessments=page.locator('section[id="tools-benefit-assessments"]');
+    await assessments.waitFor();
+    const step4Choices=page.getByRole("group",{name:"Step 4 numbered assessments 4a1 through 4a20"});
+    assert.equal(await step4Choices.getByRole("button").count(),20,
+      "Checking Step 3 must populate the full 4a1–4a20 assessment row");
+    assert.ok(await step4Choices.getByRole("button",{name:/^4a1 —/}).isVisible());
+    await step4Choices.getByRole("button",{name:/^4a20 —/}).click();
+    assert.match(await assessments.innerText(),/ASSESSMENT 20 OF 20/,
+      "4a20 must open its real original #20 assessment, not a decorative button");
+    await step4Choices.getByRole("button",{name:/^4a1 —/}).click();
     const bottomGrid=page.locator("#tools-final-trial-spreadsheet");
     assert.ok(await bottomGrid.evaluate(el=>{
-      const analysis=document.querySelector('section[aria-label="Selected filters and matching clinical trials spreadsheet"]');
+      const analysis=document.querySelector('section[id="tools-benefit-assessments"]');
       return !!analysis&&!!(analysis.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING);
-    }),"The live trial spreadsheet must follow the results and ranking analysis");
-    assert.ok((await bottomGrid.boundingBox()).y >
-      (await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').boundingBox()).y,
-      "Final live spreadsheet should be vertically below upstream analysis");
+    }),"The final trial spreadsheet must follow Step 4 without an intervening audit table");
+    assert.ok((await bottomGrid.boundingBox()).y > (await assessments.boundingBox()).y,
+      "Step 5 trial grid must be physically below the Step 4 assessment matrix");
+    assert.equal(await page.locator("#tools-advanced-research").count(),1,
+      "Secondary rankings and source audit must remain behind the advanced disclosure");
     assert.match(await phase.innerText(),/1 selected/);
     const phasePanel=page.locator("#tools-first-phase");
     const clearPhase=phasePanel.getByRole("button",{name:"Clear This Section"});
@@ -288,7 +298,8 @@ try{
     const phaseAgain=scopeResponse({stage:"Phase 3",designation:"orphan_drug"});
     await row.check();
     assert.equal((await phaseAgain).status(),200);
-    // Ranking selections are locally persisted even if their section becomes unmounted.
+    // Secondary rankings are available in the separate disclosure below Step 5.
+    await page.locator("#tools-advanced-research > summary").click();
     const ranking=page.locator('[aria-controls="tools-rank-trials-body"]');
     await ranking.waitFor();
     await ranking.click();
