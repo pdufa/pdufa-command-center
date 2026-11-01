@@ -47,6 +47,7 @@ export default function ToolsRankingChecklists(){
   },[hydrated,value]);
 
   useEffect(()=>{
+    if(typeof window==="undefined")return;
     const reset=()=>{
       setValue({...BLANK,groupCriteria:{},priorityCriteria:{}});
       setRankPanelOpen(false);
