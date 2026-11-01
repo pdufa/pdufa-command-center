@@ -4,6 +4,7 @@ import {useEffect,useMemo,useState,type FormEvent} from "react";
 import type {DesignationKey} from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
 import PoolDesignationSelector from "./PoolDesignationSelector";
+import ToolsResultsSpreadsheet, {type ToolsSpreadsheetRow,type SelectedFiltersSummary} from "./ToolsResultsSpreadsheet";
 
 type StageCount={trials:number;standaloneResults:number;regulatoryEvents:number;total:number};
 type StageStats={
@@ -16,6 +17,8 @@ type PoolResponse={
   stageStats:StageStats;rows:PoolRow[];
   overview?:{poolAsOf:string|null;poolSourceState:string};
   designationLinkage?:{basis:string;sourceLinkedTrials:number}|null;
+  spreadsheetRows?:ToolsSpreadsheetRow[];
+  selectionSummary?:SelectedFiltersSummary|null;
 };
 const groups=[
   {label:"Early clinical",stages:["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3"]},
@@ -48,6 +51,12 @@ export default function PoolStageExplorer(){
     if(query.trim())p.set("query",query.trim());
     return p.toString();
   },[selectedStages,selectedDesignations,offset,query]);
+  const downloadUrl=useMemo(()=>{
+    const p=new URLSearchParams(params);
+    p.set("format","csv");
+    p.set("offset","0");
+    return "/api/scope-funnel?"+p.toString();
+  },[params]);
   useEffect(()=>{
     const controller=new AbortController();
     setPage(null);
@@ -64,7 +73,9 @@ export default function PoolStageExplorer(){
         if(controller.signal.aborted)return;
         if(result.view!=="pool"||!result.stageStats||!Array.isArray(result.rows)||
           !Number.isSafeInteger(result.total)||!Number.isSafeInteger(result.stageStats.trials)||
-          !result.stageStats.stages||result.rows.length>50)throw Error("Stage totals could not be validated.");
+          !result.stageStats.stages||result.rows.length>50||
+          !Array.isArray(result.spreadsheetRows)||result.spreadsheetRows.length!==result.rows.length||
+          !result.selectionSummary)throw Error("Filtered spreadsheet data could not be validated.");
         setLastStats(result.stageStats);
         setSourceState(result.overview?.poolSourceState||"Unknown");
         setSourceDate(result.overview?.poolAsOf||"Not recorded");
@@ -136,29 +147,22 @@ export default function PoolStageExplorer(){
     {loading&&<p role="status">Calculating matching trial records from saved sources…</p>}
     {error&&<p className={styles.error} role="alert">Results unavailable: {error} (not a verified zero).</p>}
     {!loading&&!error&&!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials.</strong> Check a stage or FDA designation to begin.</p>}
-    {!loading&&page&&hasSelections&&<>
-      <p className={styles.muted} role="status">
-        <strong>{count(page.total)} matching NCT trial records</strong> · {selectedStages.length} stages, {selectedDesignations.length} designations selected · Showing {page.total?offset+1:0}–{Math.min(offset+page.rows.length,page.total)}.
-      </p>
-      {selectedDesignations.length>0&&<p className={styles.muted}>
-        FDA evidence matched by exact NCT and ticker only. {count(page.designationLinkage?.sourceLinkedTrials??0)} source-linked trials match the selected designations before stage and search filtering. Unlinked or missing designation evidence is not a denial.
-      </p>}
-      <div className={styles.scroll}>
-        <table className={styles.table} style={{minWidth:750}}>
-          <thead><tr><th>NCT trial ID</th><th>Ticker</th><th>Company</th><th>Drug</th><th>Disease / indication</th><th>Development stage</th></tr></thead>
-          <tbody>{page.rows.map(row=><tr key={row.id}>
-            <td>{row.id.replace(/^TRIAL\|/,"")}</td>
-            <td>{value(row.ticker)}</td><td>{value(row.company)}</td>
-            <td>{value(row.drug)}</td><td>{value(row.indication)}</td><td>{value(row.stage)}</td>
-          </tr>)}</tbody>
-        </table>
-      </div>
-      {page.total===0&&<p>No source-linked trials match these selections. This does not establish that no such trials or FDA designations exist; only documented exact links are counted.</p>}
-      <div className={styles.pagination}>
-        <button type="button" disabled={offset===0} onClick={()=>setOffset(Math.max(0,offset-50))}>Previous</button>
-        <span>Page {Math.floor(offset/50)+1} of {Math.max(1,Math.ceil(page.total/50))}</span>
-        <button type="button" disabled={page.nextOffset===null} onClick={()=>setOffset(page.nextOffset!)}>Next</button>
-      </div>
-    </>}
+    {hasSelections&&page&&!loading&&selectedDesignations.length>0&&<p className={styles.muted}>
+      FDA evidence is linked by exact NCT and ticker. {count(page.designationLinkage?.sourceLinkedTrials??0)} unique NCT trials match the selected designation categories before stage filtering.
+    </p>}
+    <ToolsResultsSpreadsheet
+      rows={page?.spreadsheetRows||[]}
+      summary={page?.selectionSummary||null}
+      stages={selectedStages}
+      designations={selectedDesignations}
+      total={page?.total||0}
+      offset={offset}
+      loading={loading}
+      error={error}
+      downloadUrl={downloadUrl}
+      onPrevious={()=>setOffset(Math.max(0,offset-50))}
+      onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
+      nextOffset={page?.nextOffset??null}
+    />
   </section>;
 }
