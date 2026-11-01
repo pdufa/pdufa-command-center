@@ -152,12 +152,12 @@ try{
     await step4Groups.getByRole("button",{name:"4E Stock"}).click();
     const metricPicker=page.getByRole("combobox",{name:"Step 4 assessment 4a1 through 4a20"});
     await metricPicker.selectOption("20");
-    assert.match(await detail.locator("summary").innerText(),/4a20 — Shareholder Upside and Risk/,
+    assert.match(await detail.locator(":scope > summary").innerText(),/4a20 — Shareholder Upside and Risk/,
       "4a20 must select the real assessment #20");
-    await detail.locator("summary").click();
+    await detail.locator(":scope > summary").click();
     assert.match(await assessments.innerText(),/ASSESSMENT 20 OF 20/,
       "Opening the disclosure must reveal the original assessment evidence");
-    await detail.locator("summary").click();
+    await detail.locator(":scope > summary").click();
     await step4Groups.getByRole("button",{name:"4A Patients"}).click();
     assert.equal(await metricPicker.inputValue(),"1",
       "Changing groups must choose the group's first original numbered assessment");
