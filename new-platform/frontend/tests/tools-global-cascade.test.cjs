@@ -160,8 +160,9 @@ test("checking FDA category reveals program and linked-trial counts without chan
 });
 test("20-assessment selector stays sequential and evidence UI follows active assessment",()=>{
  const matrix=fs.readFileSync(require.resolve("../app/ToolsBenefitMatrix.tsx"),"utf8");
- assert.match(matrix,/toolsOptionCode\(1,g.number-1,BENEFIT_GROUPS.length\)/);
- assert.match(matrix,/<ToolsOptionNumber level=\{1\} index=\{active-1\} total=\{BENEFIT_GROUPS.length\}/);
+ assert.match(matrix,/STEP4_SECTIONS\.map/);
+ assert.match(matrix,/4a\{g\.number\} — \{g\.name\}/);
+ assert.match(matrix,/id="tools-step4-analysis"/);
  const ranking=fs.readFileSync(require.resolve("../app/ToolsRankingChecklists.tsx"),"utf8");
  assert.match(ranking,/data-cascade-for=\{"assessment-"\+id\}/);
  const explorer=fs.readFileSync(require.resolve("../app/PoolStageExplorer.tsx"),"utf8");
