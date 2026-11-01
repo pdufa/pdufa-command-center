@@ -83,15 +83,20 @@ test("CSV exports all filtered rows and prevents spreadsheet formula execution",
   assert.match(csv,/NCT00000001/);
 });
 
-test("POOL heading shows exactly one selector-calculated trial count and clinical stage list has no duplicate",()=>{
-  const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
-  assert.match(ui,/<h2>POOL<\/h2>\s*<p className=\{styles\.stageTrialMatchCount\}/);
-  assert.equal((ui.match(/className=\{styles\.stageTrialMatchCount\}/g)||[]).length,1);
-  assert.match(ui,/const matchingTrialLabel=!hasSelections\?"0 matching trials"/);
-  assert.match(ui,/selectedDesignations\.length>0\?count\(page\.total\)\+" documented linked trial matches \(partial\)"/);
-  assert.match(ui,/error\?"Trial count unavailable"/);
-  assert.match(ui,/<div className=\{styles\.stageDropdownLabel\}>Clinical development stages<\/div>/);
-  assert.match(ui,/Counts beside each stage describe the full POOL/);
+test("TOOLS shows three bordered funnel cards without fabricating PIPELINE qualification",()=>{
+  const path=require("node:path");
+  const page=fs.readFileSync(path.join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  const card=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
+  const css=fs.readFileSync(path.join(__dirname,"../app/FunnelWorkspace.module.css"),"utf8");
+  assert.match(page,/<ToolsFunnel/);
+  assert.match(card,/<h3>POOL<\/h3>/);
+  assert.match(card,/<h3>PIPELINE<\/h3>/);
+  assert.match(card,/<h3>TRIALS<\/h3>/);
+  assert.match(card,/Not verified/);
+  assert.match(card,/not a verified PIPELINE-qualified subset/);
+  assert.match(card,/selectedTrials/);
+  assert.match(css,/\.toolsFunnelCard\{border:3px solid/);
+  assert.match(page,/<div className=\{styles\.stageDropdownLabel\}>Clinical development stages<\/div>/);
 });
 
 test("when FDA program evidence lacks an exact NCT crosswalk, TOOLS reports unavailable, not zero",()=>{
@@ -136,4 +141,28 @@ test("one tap chooses Phase 3 AND Orphan Drug, clears search and resets offset",
   const fda=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolDesignationSelector.tsx"),"utf8");
   assert.match(fda,/<details className=\{styles\.designationCoverageWarning\}>/);
   assert.match(fda,/FDA coverage limited:/);
+});
+
+
+test("selecting all 14 stages preserves designation-only unique NCT count",()=>{
+  const {POOL_STAGES}=require("../lib/pool-pipeline-funnel.ts");
+  assert.equal(POOL_STAGES.length,14);
+  const snapshot=verifiedToolPool(raw());
+  for(const selected of [["fast_track"],["orphan_drug"],["fast_track","orphan_drug"]]){
+    const designationOnly=buildToolsResults(snapshot,index,[],selected,"",0,50);
+    const allStages=buildToolsResults(snapshot,index,POOL_STAGES,selected,"",0,50);
+    assert.equal(designationOnly.total,allStages.total,
+      "The selected designation count must survive selection of every stage");
+    assert.equal(allStages.total,allStages.selectionSummary.designationUniqueTrials);
+    assert.equal(allStages.selectionSummary.stageTotal,snapshot.stageStats.trials);
+    assert.equal(allStages.selectionSummary.stageSelectedCount,14);
+  }
+});
+test("parity banner is shown only for all selected stages without active text search",()=>{
+  const file=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
+  assert.match(file,/selectedStages===totalStages/);
+  assert.match(file,/selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error/);
+  assert.match(file,/designationUniqueTrials===selectedTrials/);
+  assert.match(file,/All-stage check passed:/);
+  assert.match(file,/Count mismatch: selecting every clinical stage/);
 });
