@@ -7,6 +7,7 @@ import PoolDesignationSelector from "./PoolDesignationSelector";
 import ToolsResultsSpreadsheet, {type ToolsSpreadsheetRow,type SelectedFiltersSummary} from "./ToolsResultsSpreadsheet";
 import ToolsFunnel from "./ToolsFunnel";
 import ToolsOptionNumber from "./ToolsOptionNumber";
+import ToolsOpeningTrialGrid from "./ToolsOpeningTrialGrid";
 
 type StageCount={trials:number;standaloneResults:number;regulatoryEvents:number;total:number};
 type StageStats={
@@ -25,6 +26,7 @@ type ProgramCoverage={
 };
 type PoolResponse={
   view:string;total:number;limit:number;offset:number;nextOffset:number|null;
+  inventoryMode?:boolean;
   stageStats:StageStats;rows:PoolRow[];
   overview?:{poolAsOf:string|null;poolSourceState:string};
   designationLinkage?:{basis:string;sourceLinkedTrials:number}|null;
@@ -64,6 +66,7 @@ export default function PoolStageExplorer(){
     if(selectedStages.length)p.set("stages",selectedStages.join(","));
     if(selectedDesignations.length)p.set("designations",selectedDesignations.join(","));
     if(query.trim())p.set("query",query.trim());
+    if(!selectedStages.length&&!selectedDesignations.length)p.set("inventory","1");
     return p.toString();
   },[selectedStages,selectedDesignations,offset,query]);
   const downloadUrl=useMemo(()=>{
@@ -194,6 +197,22 @@ export default function PoolStageExplorer(){
         <h3>Step 2 · Choose an FDA special designation</h3>
         <PoolDesignationSelector guided selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}/>
       </div>}
+      <ToolsOpeningTrialGrid
+        rows={page?.spreadsheetRows||[]}
+        total={page?.total??0}
+        offset={offset}
+        nextOffset={page?.nextOffset??null}
+        inventoryMode={!hasSelections}
+        selectedStages={selectedStages.length}
+        selectedDesignations={selectedDesignations.length}
+        noVerifiedNctLinks={!!page?.designationCoverage?.noVerifiedNctLinks}
+        loading={loading}
+        error={error}
+        sourceDate={sourceDate}
+        sourceState={sourceState}
+        onPrevious={()=>setOffset(Math.max(0,offset-50))}
+        onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
+      />
       {hasSelections&&<div className={styles.toolsStartSelected} role="status">
         <strong>{selectedStages.length} Phase selected · {selectedDesignations.length} Special Designation selected</strong>
         <button type="button" onClick={clearAllTrialSelectors}>Clear all selections</button>
