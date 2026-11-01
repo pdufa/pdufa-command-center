@@ -117,7 +117,7 @@ export default function ToolsResultsSpreadsheet({
         <small>{designations.length?"Unscoped source-catalog program records, NOT counts within the restricted trial screen":"Only reviewed FDA-to-NCT links; categories may overlap"}</small></div>
       <div><span>{designations.length?"Verified NCT matches (incomplete)":"Final matching trials"}</span>
         <strong>{hasSelection?(loading||error?"—":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
-        <small>{trialCountUnverified?"No source-verified trial IDs for these programs; zero must not be inferred":designations.length?"FDA designation full trial total unknown; verified matches only":"Unique NCT records after selected clinical-stage filters"}</small></div>
+        <small>{trialCountUnverified?"Zero documented NCT matches in the restricted subset; full FDA population remains unknown":designations.length?"Documented FDA-linked subset only; full designation total unknown":"Unique NCT records from restricted Phase 3 research screen"}</small></div>
     </div>
     <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error} benefitFeed={benefitFeed} benefitError={benefitError}/>
     <div className={styles.toolsSheetTotals}>
@@ -130,12 +130,12 @@ export default function ToolsResultsSpreadsheet({
               {stages.map(stage=>{
                 const entry=summary?.stageSelectors.find(item=>item.label===stage);
                 return <tr key={"stage:"+stage}><td>Stage</td><td>{stage}</td>
-                  <td>{entry?fmt(entry.trials):"—"}</td><td>Recorded POOL stage</td></tr>;
+                  <td>{entry?fmt(entry.trials):"—"}</td><td>Recorded restricted research stage</td></tr>;
               })}
               {designations.map(key=>{
                 const entry=summary?.designationSelectors.find(item=>item.key===key);
                 return <tr key={"designation:"+key}><td>FDA program</td><td>{names.get(key)||key}</td>
-                  <td>{entry?fmt(entry.linkedTrials):"—"}</td><td>{entry&&trialCountUnverified?"Source program records exist; no verified NCT linkage": "Exact NCT + ticker and source-linked positive evidence"}</td></tr>;
+                  <td>{entry?fmt(entry.linkedTrials):"—"}</td><td>Exact NCT + ticker source-linked positive evidence within restricted subset; full FDA coverage unknown</td></tr>;
               })}
             </tbody>
             <tfoot>
@@ -149,7 +149,7 @@ export default function ToolsResultsSpreadsheet({
     </div>
     <div className={styles.toolsSheetTableHeading}>
       <h3>Matching trial records</h3>
-      <span>{hasSelection&&!loading&&!error?(trialCountUnverified?"NCT count not established":fmt(total)+(designations.length?" documented linked trial matches (partial)":" matching NCT trials")):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
+      <span>{hasSelection&&!loading&&!error?fmt(total)+(designations.length?" documented FDA-linked matches in restricted subset (partial coverage)":" restricted trial matches"):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
     </div>
     <ToolsRankingChecklists/>
     <div className={styles.toolsSheetTableScroll} role="region" aria-label="Scrollable spreadsheet containing selected trial matches" tabIndex={0}>
