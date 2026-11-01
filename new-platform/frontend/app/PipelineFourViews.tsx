@@ -13,6 +13,7 @@ import { loadCompleteResearch } from "../lib/pipeline-research-pagination";
 import { pacificToday } from "../lib/pipeline-timeline";
 import { RANKED_BENEFIT_ASSESSMENTS, assessmentCoverage, validateComparatorInventory } from "../lib/pipeline-benefit-assessments";
 import LiveRegistryReview from "./LiveRegistryReview";
+import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import PipelineEligibilityChecklist from "./PipelineEligibilityChecklist";
 
 type Mode="table"|"dossier"|"kanban"|"analytics";
@@ -47,6 +48,7 @@ function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClo
     <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov source ↗</a>
    </div>
    <LiveRegistryReview nctId={row.nctId}/>
+   <PipelineSponsorReadout nctId={row.nctId} ticker={row.ticker}/>
    <PipelineEligibilityChecklist row={row} today={today}/>
    <div className={styles.analyticsPanel} aria-label="Twenty ranked patient benefit assessments">
     <h4>Original 20 ranked assessments · exact-program evidence only</h4>
