@@ -40,7 +40,7 @@ try{
     await page.goto(base+"/tools",{waitUntil:"domcontentloaded",timeout:45000});
     assert.match(await page.title(),/TOOLS/);
     await page.getByRole("heading",{name:"POOL",exact:true}).waitFor({timeout:15000});
-    await page.getByRole("button",{name:/Find Phase 3 \+ Orphan Drug trials/}).waitFor();
+    await page.getByText("Find Phase 3 + Orphan Drug trials",{exact:true}).waitFor();
     assert.match(await page.locator("body").innerText(),/0 matching trials/);
     assert.doesNotMatch(await page.locator("body").innerText(),/Calculating matching trial records from saved sources/);
     await screenshot("01-no-selections");
@@ -48,12 +48,11 @@ try{
   await check("stage-only",async()=>{
     await page.locator("details").filter({has:page.getByText("Select clinical trial stages")}).locator("summary").click();
     await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).check();
-    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("3,269"),{timeout:100000});
-    const count=await page.locator(".nonexistent").count();
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("3,269"),null,{timeout:100000});
     const selected=await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).isChecked();
     assert.equal(selected,true);
     await screenshot("02-stage-Phase-2");
-    return {selected,count};
+    return {selected};
   });
   await check("clear-all",async()=>{
     await page.getByRole("button",{name:"Clear all filters"}).click();
@@ -64,17 +63,17 @@ try{
   await check("designation-only",async()=>{
     await page.locator("details").filter({has:page.getByText("Select FDA designations")}).locator("summary").click();
     await page.getByRole("checkbox",{name:/^Orphan Drug Designation/}).check();
-    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("4 documented linked trial matches"),{timeout:100000});
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("4 documented linked trial matches"),null,{timeout:100000});
     assert.equal(await page.getByRole("checkbox",{name:/^Orphan Drug Designation/}).isChecked(),true);
     await screenshot("03-orphan-only");
   });
   await check("one-tap-combined",async()=>{
-    await page.getByRole("button",{name:"Find Phase 3 + Orphan Drug trials"}).click();
+    await page.getByText("Find Phase 3 + Orphan Drug trials",{exact:true}).click();
     await page.getByRole("checkbox",{name:/^Phase 3(?! Results)/}).waitFor();
     assert.equal(await page.getByRole("checkbox",{name:/^Phase 3(?! Results)/}).isChecked(),true);
     assert.equal(await page.getByRole("checkbox",{name:/^Orphan Drug Designation/}).isChecked(),true);
     await page.waitForFunction(()=>!document.body.innerText.includes("Calculating matching trial records from saved sources") &&
-      !document.body.innerText.includes("Calculating matching trials…"),{timeout:100000});
+      !document.body.innerText.includes("Calculating matching trials…"),null,{timeout:100000});
     assert.doesNotMatch(await page.locator("body").innerText(),/Results unavailable:/);
     await screenshot("04-phase-3-and-orphan");
   });
@@ -89,12 +88,12 @@ try{
     assert.match(await page.locator("body").innerText(),/0 matching trials/);
   });
   await check("mixed-known-positive",async()=>{
-    await page.getByRole("button",{name:"Find Phase 3 + Orphan Drug trials"}).click();
+    await page.getByText("Find Phase 3 + Orphan Drug trials",{exact:true}).click();
     await page.getByRole("checkbox",{name:/^Phase 3(?! Results)/}).uncheck();
     await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).check();
     await page.getByRole("checkbox",{name:/^Orphan Drug Designation/}).uncheck();
     await page.getByRole("checkbox",{name:/^Priority Review/}).check();
-    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("1 documented linked trial matches"),{timeout:100000});
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("1 documented linked trial matches"),null,{timeout:100000});
     const summary=await page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']").innerText();
     assert.match(summary,/NCT\d{8}/);
     await screenshot("05-phase-2-and-priority");
