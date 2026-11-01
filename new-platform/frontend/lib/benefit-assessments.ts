@@ -33,9 +33,11 @@ export type BenefitRecord={
   overallAdvantages?:BenefitAdvantage[];
 };
 export type BenefitFeed={schemaVersion:1;sourceAsOf:string|null;records:BenefitRecord[]};
-const validDate=(v:unknown):v is string=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v)
-  &&new Date(v+"T00:00:00Z").toISOString().slice(0,10)===v
-  &&Date.parse(v+"T00:00:00Z")<=Date.now();
+const validDate=(v:unknown):v is string=>{
+  if(typeof v!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(v))return false;
+  const time=Date.parse(v+"T00:00:00Z");
+  return Number.isFinite(time)&&new Date(time).toISOString().slice(0,10)===v&&time<=Date.now();
+};
 const validUrl=(v:unknown):v is string=>typeof v==="string"&&v.length<=1500&&/^https:\/\/[^\s/]+\/\S*/.test(v);
 const validText=(v:unknown,max=1000):v is string=>typeof v==="string"&&v.trim().length>0&&v.length<=max;
 const confidence=(v:unknown)=>v==="HIGH"||v==="MODERATE"||v==="LOW";
