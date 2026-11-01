@@ -408,3 +408,35 @@
 /* Final live NCT spreadsheet is the last TOOLS section, after all selectors and analysis. */
 .toolsFinalSpreadsheet{clear:both;margin:22px 0 10px;padding-top:16px;border-top:2px solid #90b9a2;max-width:100%;min-width:0}
 .toolsFinalSpreadsheet > section{margin-top:0}
+
+
+/* FDA choices now use the same aligned right-hand trial counts as Phase.
+   A question mark means NCT coverage is unknown, never zero. */
+.stageCheckboxRow > .toolsFdaRowCount{
+  flex:0 0 88px;
+  min-width:0;
+  text-align:right;
+  font-size:16px;
+  line-height:1.2;
+  font-variant-numeric:tabular-nums;
+  color:#255440;
+}
+.toolsFdaRowCount small{
+  display:block;
+  white-space:normal;
+  font-size:10px;
+  line-height:1.3;
+  font-weight:650;
+  color:#50725e;
+}
+.stageCheckboxRow:has(input:checked) > .toolsFdaRowCount,
+.stageCheckboxRow:has(input:checked) > .toolsFdaRowCount small{color:#fff}
+.toolsFdaLinkedTrials{grid-column:1/-1;border-top:1px solid #c0dfcd;padding-top:8px;min-width:0}
+.toolsFdaLinkedTrials summary{cursor:pointer;font-size:12px;font-weight:750;color:#15533a}
+.toolsFdaLinkedTrials ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:6px;margin:8px 0;padding-left:20px;font-size:12px}
+.toolsFdaLinkedTrials a{color:#146d4c;text-decoration:underline}
+.toolsFdaLinkedTrials p{font-size:11px;line-height:1.4;margin:5px 0;color:#4d6857}
+@media(max-width:600px){
+  .stageCheckboxRow > .toolsFdaRowCount{flex-basis:70px;font-size:14px}
+  .toolsFdaRowCount small{font-size:9px}
+}
