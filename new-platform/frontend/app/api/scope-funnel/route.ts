@@ -10,7 +10,7 @@ import {buildDesignationIndex, applyReviewedDesignationLinks, SPECIAL_DESIGNATIO
 import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
-import {verifiedToolPool,buildToolsResults,filterToolTrials,selectToolTrialIds,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
+import {verifiedToolPool,buildToolsResults,buildToolsOpeningInventory,filterToolTrials,selectToolTrialIds,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
 import {isToolsSnapshotFresh,parseToolsSnapshotTimestamp} from "../../../lib/tools-snapshot-freshness";
 import type {TimelineDates} from "../../../lib/pipeline-timeline";
 
@@ -156,6 +156,8 @@ export async function GET(req:NextRequest) {
   const selectedStages=stagesParam?stagesParam.split(","):[];
   const toolsParam=params.get("tools")||"";
   const toolMode=toolsParam==="1";
+  const inventoryParam=params.get("inventory")||"";
+  const openingInventory=inventoryParam==="1";
   const designationsParam=params.get("designations")||"";
   const selectedDesignations=designationsParam?designationsParam.split(",") as DesignationKey[]:[];
   if(!["pool","pipeline","readout-review","census-review"].includes(view)
@@ -170,6 +172,8 @@ export async function GET(req:NextRequest) {
      || selectedStages.some(selected=>!(POOL_STAGES as readonly string[]).includes(selected))
      || (selectedStages.length>0 && (stageGroup!=="all" || stage!==""))
      || !["","1"].includes(toolsParam)
+     || !["","1"].includes(inventoryParam)
+     || (openingInventory && (!toolMode || selectedStages.length>0 || selectedDesignations.length>0 || !!query.trim() || format!=="json"))
      || params.has("baseline") // Retired: no stage / FDA designation must always mean zero TRIALS.
      || selectedDesignations.length>SPECIAL_DESIGNATION_CATEGORIES.length
      || new Set(selectedDesignations).size!==selectedDesignations.length
@@ -230,8 +234,10 @@ export async function GET(req:NextRequest) {
       // The independent dated Pipeline census is for the PIPELINE information
       // card and optional verified date evidence ONLY. It does not narrow
       // TOOLS selectors, which must operate on every published POOL trial.
-      const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,
-        query,Number(offset),Number(limit));
+      const result=openingInventory
+        ?buildToolsOpeningInventory(inventory,Number(offset),Number(limit))
+        :buildToolsResults(inventory,index,selectedStages,selectedDesignations,
+          query,Number(offset),Number(limit));
       const pipelineResearch=pipelineResearchNcts===null?null:{
         screenedTrials:pipelineResearchNcts.size,
         screenDate:"2026-10-26",
