@@ -6,7 +6,7 @@ import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
 import { reconcilePoolPipeline, funnelPage, type FunnelResult, type ScopeView, POOL_STAGE_GROUPS, POOL_STAGES, type PoolStageGroup, type PoolRecordKind } from "../../../lib/pool-pipeline-funnel";
 import { fetchReadOnlyWithWarmRetry } from "../../../lib/read-only-warm-retry";
 import { renderPhase3CensusCsv } from "../../../lib/pipeline-census-csv";
-import {buildDesignationIndex, SPECIAL_DESIGNATION_CATEGORIES, type DesignationIndex, type DesignationKey} from "../../../lib/trial-designations";
+import {buildDesignationIndex, applyReviewedDesignationLinks, SPECIAL_DESIGNATION_CATEGORIES, type DesignationIndex, type DesignationKey} from "../../../lib/trial-designations";
 import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
@@ -47,8 +47,8 @@ async function source():Promise<FunnelResult> {
 const DESIGNATION_SOURCE="https://raw.githubusercontent.com/pdufa/pdufa-command-center/main/data/";
 async function designationEvidence():Promise<DesignationIndex>{
   // Reuse the same saved source files and exact-linking policy as /api/trial-designations.
-  const [evidence,applications]=await Promise.all(
-    ["prediction_engine_designations.csv","pdufa_candidates.csv"].map(async file=>{
+  const [evidence,applications,reviewedCrosswalk]=await Promise.all(
+    ["prediction_engine_designations.csv","pdufa_candidates.csv","fda_designation_nct_evidence.csv"].map(async file=>{
       const response=await fetch(DESIGNATION_SOURCE+file,{
         next:{revalidate:300},signal:AbortSignal.timeout(20000)
       });
@@ -58,7 +58,7 @@ async function designationEvidence():Promise<DesignationIndex>{
       return csv;
     })
   );
-  return buildDesignationIndex(evidence,applications,new Date().toISOString());
+  return applyReviewedDesignationLinks(buildDesignationIndex(evidence,applications,new Date().toISOString()),reviewedCrosswalk);
 }
 function linkedDesignationTrialIds(data:FunnelResult,index:DesignationIndex,selected:readonly DesignationKey[]):Set<string>{
   const matched=new Set<string>();
