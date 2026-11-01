@@ -1,43 +1,45 @@
 .root{margin:12px 0 18px;max-width:100%;font-family:inherit;color:#18372b}
-.columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
-.panel,.results{border:1px solid #b5ccb9;border-radius:9px;background:#fff;min-width:0;max-width:100%;overflow:hidden}
-.panelHeader{display:flex;align-items:center;justify-content:space-between;gap:5px;width:100%;border:0;background:#fff;text-align:left;appearance:none;cursor:pointer;padding:10px 10px;font-family:inherit;font-size:13px;font-weight:800;color:#164633;line-height:1.35;overflow-wrap:anywhere;touch-action:manipulation;min-height:44px}
+.columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch}
+.panel,.results,.cascadeBody{border:1px solid #b5ccb9;border-radius:10px;background:#fff;min-width:0;max-width:100%;overflow:hidden}
+.panelHeader{display:flex;align-items:center;justify-content:space-between;gap:7px;width:100%;min-height:44px;border:0;background:#fff;text-align:left;appearance:none;cursor:pointer;padding:10px 12px;font-family:inherit;font-size:13px;font-weight:800;color:#164633;line-height:1.35;overflow-wrap:anywhere;touch-action:manipulation}
 .panelHeader[aria-expanded="true"]{background:#eaf4ed}
-.panelHeader:focus-visible{outline:3px solid #3679b6;outline-offset:-3px}
-.panelBody{padding:8px 9px 11px;min-width:0}
-.hint{font-size:11px;color:#566c62;line-height:1.45;margin:0 0 9px}
-.list{display:flex;flex-direction:column;gap:6px;max-height:370px;overflow-y:auto;overscroll-behavior:contain}
-.group,.priorityItem{padding:6px;border:1px solid #d7e4d9;border-radius:7px;min-width:0}
-.choice{display:flex;align-items:flex-start;gap:6px;min-width:0;font-size:12px;line-height:1.35;cursor:pointer;color:#223b30;overflow-wrap:anywhere}
-.choice>span{min-width:0;flex:1}
-.choice input{width:15px;height:15px;min-width:15px;flex:none;margin:1px 0 0;accent-color:#236b4e}
-.children{margin:8px 0 2px 7px;padding-left:7px;border-left:2px solid #b1d2bf;display:flex;flex-direction:column;gap:7px}
-.assessment{min-width:0}
-.fields{margin:6px 0 0 7px;padding-left:7px;border-left:2px solid #e1e8dd;display:flex;flex-direction:column;gap:6px}
-.fields .choice{font-size:11px}
-.priorityControl{font-size:11px;color:#52685d;display:flex;align-items:center;gap:6px;margin:7px 0 0 21px}
-.priorityControl select{font-size:12px;border:1px solid #b7cabe;border-radius:5px;padding:4px 6px;max-width:74px;min-width:56px;color:#18372b;background:#fff}
-.clear{margin-top:10px;padding:6px 9px;border:1px solid #b3c8b8;border-radius:7px;background:#f6faf7;color:#20543d;font-size:11px;font-weight:700;cursor:pointer;white-space:normal;text-align:left}
-.clear:focus-visible{outline:2px solid #3679b6}
+.panelHeader:focus-visible,.clear:focus-visible{outline:3px solid #3679b6;outline-offset:-3px}
+.panelBody{padding:12px;min-width:0}
+.cascadeBody{margin-top:8px;padding:13px;max-width:100%}
+.hint{font-size:12px;color:#566c62;line-height:1.45;margin:0 0 12px}
+.list{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.group,.priorityItem,.assessment,.activeItem{padding:7px 8px;border:1px solid #d7e4d9;border-radius:8px;min-width:0;background:#fff}
+.activeItem{background:#f5faf6;border-color:#94c7a7}
+.choice{display:flex;align-items:center;gap:9px;min-width:0;font-size:13px;line-height:1.4;cursor:pointer;color:#223b30;overflow-wrap:anywhere;min-height:38px}
+.choice>span:last-child{min-width:0;flex:1}
+.choice input{width:18px;height:18px;min-width:18px;flex:none;margin:0;accent-color:#236b4e}
+.numberCircle{display:inline-flex;align-items:center;justify-content:center;flex:none;width:38px;height:38px;min-width:38px;min-height:38px;border:1px solid #89b39c;background:#e7f3eb;border-radius:50%;font-size:10px;line-height:1;font-weight:800;letter-spacing:-.04em;color:#135238;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stepHeading{display:flex;align-items:center;gap:9px;font-size:12px;color:#164633;margin:2px 0 8px;line-height:1.4}
+.stepHeading .numberCircle{background:#1e6547;color:#fff;border-color:#1e6547}
+.children{margin:9px 0 1px 17px;padding:7px 0 0 11px;border-left:3px solid #9dcab1;display:flex;flex-direction:column;gap:7px;min-width:0}
+.fields{display:flex;flex-direction:column;gap:5px}
+.fields .choice{font-size:12px}
+.stepRow{display:flex;gap:9px;align-items:center}
+.priorityControl{display:flex;align-items:center;gap:10px;font-size:12px;color:#405f50;font-weight:700;min-height:38px}
+.priorityControl select{font-size:13px;border:1px solid #b7cabe;border-radius:6px;padding:7px 10px;max-width:100px;min-width:72px;color:#18372b;background:#fff}
+.clear{margin-top:12px;padding:9px 12px;border:1px solid #b3c8b8;border-radius:8px;background:#f6faf7;color:#20543d;font-size:12px;font-weight:700;cursor:pointer;text-align:left}
 .results{margin-top:10px}
 .count{font-weight:600;color:#4d715b}
-.summarySection{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;font-size:12px;line-height:1.5}
+.summarySection{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;font-size:12px;line-height:1.5}
 .summarySection>strong{font-size:13px;color:#124834}
 .summaryIndent{padding-left:12px}
 @media(max-width:480px){
  .columns{gap:7px}
- .panelHeader{font-size:11px;padding:9px 7px;line-height:1.3}
- .panelBody{padding:7px 5px 9px}
- .hint{font-size:10px}
- .group,.priorityItem{padding:5px}
- .choice{font-size:11px;gap:5px}
- .fields .choice{font-size:10px}
- .choice input{width:14px;height:14px;min-width:14px}
- .children{margin-left:4px;padding-left:5px}
- .priorityControl{margin-left:18px;flex-wrap:wrap}
- .clear{font-size:10px}
+ .panelHeader{font-size:11px;padding:9px 8px;line-height:1.3}
+ .cascadeBody{padding:9px}
+ .panelBody{padding:10px}
+ .hint{font-size:11px}
+ .list{max-height:490px;gap:6px}
+ .group,.priorityItem,.assessment,.activeItem{padding:6px}
+ .choice{font-size:12px;gap:6px}
+ .fields .choice{font-size:11px}
+ .choice input{width:17px;height:17px;min-width:17px}
+ .numberCircle{width:35px;height:35px;min-width:35px;min-height:35px;font-size:9px}
+ .children{margin-left:10px;padding-left:8px}
+ .priorityControl{flex-wrap:wrap;gap:7px}
 }
-
-.priorityFields{margin:8px 0 0 19px;font-size:11px;color:#496454}
-.priorityFields>summary{cursor:pointer;font-weight:700;line-height:1.5;overflow-wrap:anywhere}
-.priorityFields .fields{margin-top:6px;margin-left:1px}
