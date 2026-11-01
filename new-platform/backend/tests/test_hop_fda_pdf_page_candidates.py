@@ -155,7 +155,7 @@ def test_untrusted_url_and_duplicate_hash_are_blocked_before_fetch():
 
 
 def test_blank_pdf_is_not_ocr_or_outcome_adjudication():
-    pypdf = pytest.importorskip("pypdf")
+    import pypdf
     writer = pypdf.PdfWriter()
     writer.add_blank_page(width=612, height=792)
     stream = io.BytesIO()

@@ -504,7 +504,7 @@ def evaluate_phase3_research_batch(payload: Phase3ResearchBatchRequest):
 def peak_research_register():
     """Read server-maintained research; no workspace refresh, DB or sheet writes."""
     from zoneinfo import ZoneInfo
-    from .peak_research import KEY, research_register, outcome_readiness
+    from .peak_research import KEY, research_register, outcome_readiness, main_readiness
     from .science_40_dossier import evaluate_science_40
     cutoff = datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
     science = evaluate_science_40(exact_key=KEY, evidence={}, as_of=cutoff)
@@ -512,6 +512,7 @@ def peak_research_register():
     return {"schemaVersion": "peak-research-view-v1", "exactKey": KEY, "asOf": cutoff,
             "science40": science, "researchRegister": register,
             "outcome": outcome_readiness(science, register),
+            "main": main_readiness(science, register),
             "sheetWritesEnabled": False, "productionSchedulingEnabled": False,
             "tradeAuthorized": False}
 
@@ -972,12 +973,34 @@ def read_workspace_page(response: Response, offset: int = 0, limit: int = 50, ve
         raise HTTPException(status_code=422, detail="Search query too long")
     from .source_workspace import workspace
     started = time.perf_counter()
+    source = None
     try:
-        snapshot, current_version = _verified_page_snapshot(workspace())
+        source = workspace()
+        snapshot, current_version = _verified_page_snapshot(source)
         rows = snapshot.get("pipeline") or []
         total = len(rows)
-    except Exception:
-        raise HTTPException(status_code=503, detail="Verified workspace page unavailable") from None
+    except Exception as exc:
+        # Diagnose a rejected page without exposing candidate rows, exception
+        # contents, internal keys, or an unverified version.
+        health = source.get("sourceHealth") or {} if isinstance(source, dict) else {}
+        if health.get("state") == "STALE":
+            reason = ("SOURCE_REFRESH_IN_PROGRESS"
+                      if health.get("refreshInProgress") else "SOURCE_STALE")
+        elif isinstance(exc, ValueError) and str(exc) == "Pipeline source parity mismatch":
+            reason = "PIPELINE_PARITY_MISMATCH"
+        elif isinstance(exc, ValueError) and str(exc) == "Stale source cannot be paginated":
+            reason = "SOURCE_UNVERSIONED"
+        else:
+            reason = "SNAPSHOT_VERIFICATION_FAILED"
+        import logging
+        logging.getLogger(__name__).warning(
+            "PDUFA_WORKSPACE_PAGE_UNVERIFIED reason=%s error_type=%s",
+            reason, type(exc).__name__,
+        )
+        raise HTTPException(
+            status_code=503, detail="Verified workspace page unavailable",
+            headers={"Retry-After": "30", "Cache-Control": "no-store"},
+        ) from None
     if version and version != current_version:
         raise HTTPException(status_code=409, detail="Workspace version changed; restart pagination")
     # Filter only after validating the COMPLETE source. The version continues
