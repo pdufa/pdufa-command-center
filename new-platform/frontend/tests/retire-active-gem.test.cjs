@@ -9,8 +9,8 @@ test("active site top navigation and workbench offer no GEM stage links",()=>{
  const nav=read("new-platform/frontend/app/GlobalNavigation.tsx");
  const workspace=read("new-platform/frontend/app/Workspace.tsx");
  const home=read("new-platform/frontend/app/page.tsx");
- assert.doesNotMatch(nav,/label:"POOL",href:"\\/pool"/);
- assert.match(nav,/label:"TOOLS",href:"\\/tools"/);
+ assert.doesNotMatch(nav,/label:"POOL",href:"\/pool"/);
+ assert.match(nav,/label:"TOOLS",href:"\/tools"/);
  assert.match(nav,/label:"PIPELINE",href:"\/pipeline"/);
  assert.doesNotMatch(nav,/label:"GEM(?: JR)?"/);
  assert.doesNotMatch(workspace,/\["GEM_JR","GEM JR"\].*\["GEM","GEM"\]/);
