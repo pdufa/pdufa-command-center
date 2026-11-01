@@ -45,6 +45,7 @@ export type BenefitRecord={
   nctId:string;ticker:string;drug:string;indication:string;
   facts:Record<string,BenefitFact>;
   advantages:BenefitAdvantage[];
+  overallAdvantages?:BenefitAdvantage[];
 };
 export type BenefitFeed={schemaVersion:1;sourceAsOf:string|null;records:BenefitRecord[]};
 const validDate=(v:unknown):v is string=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v)
@@ -81,7 +82,8 @@ export function parseBenefitFeed(raw:unknown):BenefitFeed{
     if(!record||!/^NCT\d{8}$/.test(record.nctId)||!validText(record.ticker,24)
       ||!validText(record.drug,250)||!validText(record.indication,250)
       ||!record.facts||typeof record.facts!=="object"||Array.isArray(record.facts)
-      ||!Array.isArray(record.advantages)||record.advantages.length>200)throw Error("BENEFIT_RECORD_INVALID");
+      ||!Array.isArray(record.advantages)||record.advantages.length>200
+      ||(record.overallAdvantages!==undefined&&(!Array.isArray(record.overallAdvantages)||record.overallAdvantages.length>30)))throw Error("BENEFIT_RECORD_INVALID");
     const identity=[record.nctId,record.ticker,record.drug,record.indication].join("|").toLowerCase();
     if(ids.has(identity))throw Error("BENEFIT_RECORD_DUPLICATED");
     ids.add(identity);
@@ -94,6 +96,12 @@ export function parseBenefitFeed(raw:unknown):BenefitFeed{
       const rankKey=item.assessment+":"+item.rank;
       if(ranks.has(rankKey)||unique.has(item.id))throw Error("BENEFIT_RANK_DUPLICATED");
       ranks.add(rankKey);unique.add(item.id);
+    }
+    const overallRanks=new Set<number>();
+    for(const item of record.overallAdvantages||[]){
+      if(!validAdvantage(item)||overallRanks.has(item.rank)||!record.advantages.some(a=>a.id===item.id))
+        throw Error("BENEFIT_OVERALL_RANK_INVALID");
+      overallRanks.add(item.rank);
     }
   }
   return feed as BenefitFeed;
@@ -109,6 +117,6 @@ export function benefitForTrial(
     &&same(r.drug,trial.drug)&&same(r.indication,trial.indication))||null;
 }
 export function rankAdvantages(record:BenefitRecord|null,assessment?:number):BenefitAdvantage[]{
-  return (record?.advantages||[]).filter(x=>assessment===undefined||x.assessment===assessment)
+  return (assessment===undefined?(record?.overallAdvantages||[]):record?.advantages.filter(x=>x.assessment===assessment)||[])
     .sort((a,b)=>a.rank-b.rank||a.id.localeCompare(b.id));
 }
