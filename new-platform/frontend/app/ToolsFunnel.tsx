@@ -6,6 +6,7 @@ type Props={
   poolNcts:number|null;
   pipelineResearch:{screenedTrials:number;screenDate:string;qualification:"NOT_VERIFIED"}|null;
   selectedTrials:number|null;
+  selectedPhasePoolTrials:number|null;
   selectedStages:number;
   totalStages:number;
   selectedStageLabels:string[];
@@ -26,10 +27,11 @@ const num=(value:number)=>value.toLocaleString("en-US");
  * stage-filtered POOL matches with verified post-Phase-3 PIPELINE eligibility.
  */
 export default function ToolsFunnel({
-  poolNcts,pipelineResearch,selectedTrials,selectedStages,totalStages,selectedStageLabels,selectedDesignationLabels,selectedDesignations,
+  poolNcts,pipelineResearch,selectedTrials,selectedPhasePoolTrials,selectedStages,totalStages,selectedStageLabels,selectedDesignationLabels,selectedDesignations,
   designationUniqueTrials,designationCoverage,loading,error,searchActive,sourceDate,sourceState
 }:Props){
   const filterActive=selectedStages>0||selectedDesignations>0;
+  const phaseOnly=selectedStages>0&&selectedDesignations===0;
   const noNctLink=selectedDesignations>0&&designationCoverage?.noVerifiedNctLinks===true;
   const trialStatus=!filterActive?"0":loading?"…":error?"Unavailable":
     noNctLink?"Not established":!pipelineResearch?"Not verified":selectedTrials===null?"Unavailable":num(selectedTrials);
@@ -91,6 +93,15 @@ export default function ToolsFunnel({
               <strong>{num(designationCoverage!.sourcePrograms)}</strong>
               <small>Documented programs — NOT {num(designationCoverage!.sourcePrograms)} distinct trials.
                 {" "}{num(designationCoverage!.linkedNcts)} crosswalk-linked NCTs in the unrestricted POOL before applying the dated PIPELINE screen.</small>
+            </div>
+          </div>
+          :phaseOnly?<div role="status" aria-live="polite" aria-atomic="true">
+            <div className={styles.toolsFunnelValue}>{selectedPhasePoolTrials===null?"—":num(selectedPhasePoolTrials)}</div>
+            <p>Trials in selected POOL phase(s)</p>
+            <small>Before PIPELINE restrictions; not verified post–Phase 3 candidates.</small>
+            <div className={styles.toolsFunnelPhaseScreen}>
+              <strong>After PIPELINE screen: {trialStatus}</strong>
+              <small>Dated $300M–$10B completed Phase 3 subset. The results spreadsheet below shows screened matches.</small>
             </div>
           </div>
           :<>
