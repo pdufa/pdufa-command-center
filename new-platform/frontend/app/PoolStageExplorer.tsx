@@ -115,6 +115,7 @@ export default function PoolStageExplorer(){
     return ()=>controller.abort();
   },[params]);
   const stats=page?.stageStats||lastStats;
+  const selectedPhaseTrials=selectedStages.reduce((sum,stage)=>sum+stageCount(stats?.stages[stage]),0);
   function toggleStage(stage:string){
     const next=selectedStages.includes(stage)?selectedStages.filter(item=>item!==stage):[...selectedStages,stage];
     setSelectedStages(next);
@@ -185,7 +186,8 @@ export default function PoolStageExplorer(){
           <button type="button" className={styles.toolsClearSection} onClick={clearPhaseSection}
             disabled={selectedStages.length===0}>Clear This Section</button>
         </div>
-        <p className={styles.muted}>Check any of the 14 numbered stage choices below. This works just like the FDA designation selector.</p>
+        <p className={styles.muted}><strong>Step 2 Phase breakdown:</strong> {stats?count(stats.trials):"—"} NCT trials across 14 mutually exclusive recorded stages, all inside the $300M–$10B market-cap screen. The counts below do not change when FDA categories are checked.</p>
+        {selectedStages.length>0&&<p role="status" className={styles.muted}>{selectedStages.length} stage choices selected · {count(selectedPhaseTrials)} NCT trials across those stages, before any FDA or text-search intersection.</p>}
         <div className={styles.stageDesignationPane}>
           <div className={styles.stageDesignationBody}>
             <div className={styles.stageDropdownActions}>
@@ -197,7 +199,7 @@ export default function PoolStageExplorer(){
                   onChange={()=>toggleStage(stage)}/>
                 <ToolsOptionNumber level={2} index={stageIndex} total={stages.length}/>
                 <span>{stage}</span>
-                <strong>{stats?count(stageCount(stats.stages[stage])):"—"}</strong>
+                <strong title="NCT trials in this stage, within the $300M–$10B issuer-cap screen">{stats?count(stageCount(stats.stages[stage])):"—"}</strong>
               </label>)}
             </div>
             <p className={styles.muted}>All phases are measured independently within the $300M–$10B issuer-cap subset. No phase is preselected; selecting an FDA designation additionally filters the trial results.</p>
@@ -213,6 +215,7 @@ export default function PoolStageExplorer(){
             Clear This Section
           </button>
         </div>
+        <p className={styles.muted}><strong>Step 2 designation totals:</strong> {page?.designationScopeSummary?count(page.designationScopeSummary.documentedCategoryLinks)+" documented FDA category links across "+count(page.designationScopeSummary.documentedUniqueTrials)+" distinct NCTs":"FDA evidence being checked"} in the same $300M–$10B restricted trial pool. Counts are partial, not a complete FDA census.</p>
         <PoolDesignationSelector guided selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}
           poolTotals={page?.designationTotals??null}
           contextCounts={page?.contextualDesignationCounts??null}
@@ -227,7 +230,7 @@ export default function PoolStageExplorer(){
       poolNcts={page?.restrictedScope?.originalPoolTrials??null}
       pipelineResearch={page?.pipelineResearch??null}
       selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
-      selectedPhasePoolTrials={selectedStages.length&&stats?selectedStages.reduce((sum,stage)=>sum+stageCount(stats.stages[stage]),0):null}
+      selectedPhasePoolTrials={selectedStages.length&&stats?selectedPhaseTrials:null}
       selectedStages={selectedStages.length}
       totalStages={stages.length}
       selectedStageLabels={selectedStages}
