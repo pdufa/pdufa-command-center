@@ -54,6 +54,15 @@ try {
   assert.ok(Array.isArray(benefitFeed.records),"Source-backed benefit research records missing");
   assert.ok(benefitFeed.records.every(r=>/^NCT\d{8}$/.test(r.nctId)&&r.ticker&&r.drug&&r.indication),
     "Benefit research cannot contain orphaned NCT identities");
+  const coverageResponse=await page.request.get(base+"/api/registry-benefit-coverage",{timeout:35000});
+  assert.equal(coverageResponse.status(),200,"Live dated registry source summary unavailable");
+  const registryCoverage=await coverageResponse.json();
+  assert.equal(registryCoverage.scanned,375);
+  assert.ok(registryCoverage.records.length>0);
+  assert.ok(registryCoverage.postedResults<=registryCoverage.records.length);
+  assert.ok(registryCoverage.withSeriousEventCounts<=registryCoverage.records.length);
+  assert.ok(await page.getByText("Official registry research archive:",{exact:false}).isVisible(),
+    "Live TOOLS should display posted outcomes availability and review-required caveat");
   const groupSelect=page.locator("#benefit-group-picker");
   assert.equal(await groupSelect.locator("option").count(),20);
   await page.waitForFunction(()=>{

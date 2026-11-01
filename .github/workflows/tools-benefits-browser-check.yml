@@ -14,6 +14,9 @@ on:
       - 'new-platform/frontend/lib/benefit-assessments.ts'
       - 'new-platform/frontend/lib/benefit-research-source.ts'
       - 'new-platform/frontend/app/api/benefit-assessments/route.ts'
+      - 'new-platform/frontend/app/api/registry-benefit-coverage/route.ts'
+      - 'new-platform/frontend/lib/registry-benefit-coverage.ts'
+      - 'new-platform/frontend/data/registry-benefit-research-snapshot.json'
       - 'new-platform/frontend/data/benefit-assessment-research.json'
       - '.github/workflows/tools-benefits-browser-check.yml'
   workflow_dispatch:

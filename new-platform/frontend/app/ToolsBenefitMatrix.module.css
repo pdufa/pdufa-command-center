@@ -92,3 +92,6 @@
 .registryOutcome{background:#f5f8fc;border:1px solid #dde6ed;border-radius:7px;padding:11px}
 .registryOutcome strong{font-size:12px}
 .registryWarning{border-left:3px solid #b77f2d;background:#f9f3e8;padding:9px;font-weight:700}
+
+.sourceHint{background:#f0f6fb;border-left:3px solid #3481a6;padding:10px 12px;color:#274b63;font-size:11px;line-height:1.5;margin:0}
+.sourceHint strong{font-weight:800}
