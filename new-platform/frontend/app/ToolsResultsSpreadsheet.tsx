@@ -119,7 +119,6 @@ export default function ToolsResultsSpreadsheet({
         <strong>{hasSelection?(loading||error?"—":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
         <small>{trialCountUnverified?"Zero documented NCT matches in the restricted subset; full FDA population remains unknown":designations.length?"Documented FDA-linked subset only; full designation total unknown":"Unique NCT records from restricted issuer-cap screen"}</small></div>
     </div>
-    <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error} benefitFeed={benefitFeed} benefitError={benefitError}/>
     <div className={styles.toolsSheetTotals}>
       <h3>Selected selectors &amp; documented trial matches</h3>
       {selectedCount===0?<p className={styles.muted}>No selectors selected. Choose a stage or FDA designation above to populate this spreadsheet.</p>:<>
@@ -270,5 +269,6 @@ export default function ToolsResultsSpreadsheet({
     <p className={styles.muted}>{trialCountUnverified
       ?"CSV exports only documented NCT matches within the restricted research screen. Unscoped FDA program records appear separately below and are never exported as eligible trials."
       :"This is a read-only web spreadsheet. CSV export includes all documented matching rows (not just this page) and opens in Excel or Google Sheets. FDA designation-to-trial coverage remains incomplete; missing evidence is not a denial or proof of no designation."}</p>
+    <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error} benefitFeed={benefitFeed} benefitError={benefitError}/>
   </section>;
 }
