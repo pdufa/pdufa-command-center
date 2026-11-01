@@ -143,14 +143,24 @@ try{
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
     const assessments=page.locator('section[id="tools-benefit-assessments"]');
     await assessments.waitFor();
-    const step4Choices=page.getByRole("group",{name:"Step 4 numbered assessments 4a1 through 4a20"});
-    assert.equal(await step4Choices.getByRole("button").count(),20,
-      "Checking Step 3 must populate the full 4a1–4a20 assessment row");
-    assert.ok(await step4Choices.getByRole("button",{name:/^4a1 —/}).isVisible());
-    await step4Choices.getByRole("button",{name:/^4a20 —/}).click();
+    const step4Groups=page.getByRole("group",{name:"Step 4 five assessment groups"});
+    assert.equal(await step4Groups.getByRole("button").count(),5,
+      "All twenty original assessments must remain organized into five compact categories");
+    const detail=page.locator("#tools-step4-analysis");
+    assert.equal(await detail.getAttribute("open"),null,
+      "The large clinical assessment details must be collapsed by default");
+    await step4Groups.getByRole("button",{name:"4E Stock"}).click();
+    const metricPicker=page.getByRole("combobox",{name:"Step 4 assessment 4a1 through 4a20"});
+    await metricPicker.selectOption("20");
+    assert.match(await detail.locator("summary").innerText(),/4a20 — Shareholder Upside and Risk/,
+      "4a20 must select the real assessment #20");
+    await detail.locator("summary").click();
     assert.match(await assessments.innerText(),/ASSESSMENT 20 OF 20/,
-      "4a20 must open its real original #20 assessment, not a decorative button");
-    await step4Choices.getByRole("button",{name:/^4a1 —/}).click();
+      "Opening the disclosure must reveal the original assessment evidence");
+    await detail.locator("summary").click();
+    await step4Groups.getByRole("button",{name:"4A Patients"}).click();
+    assert.equal(await metricPicker.inputValue(),"1",
+      "Changing groups must choose the group's first original numbered assessment");
     const bottomGrid=page.locator("#tools-final-trial-spreadsheet");
     assert.ok(await bottomGrid.evaluate(el=>{
       const analysis=document.querySelector('section[id="tools-benefit-assessments"]');
