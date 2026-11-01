@@ -8,7 +8,7 @@ import {
 import css from "./ToolsRankingChecklists.module.css";
 
 const STORAGE_KEY="pdufa-tools-ranking-checklists-v1";
-const BLANK:RankingChecklistSelection={groupIds:[],groupAssessments:[],groupCriteria:{},priorities:[]};
+const BLANK:RankingChecklistSelection={groupIds:[],groupAssessments:[],groupCriteria:{},priorities:[],priorityCriteria:{}};
 const byId=new Map(BENEFIT_GROUPS.map(g=>[g.number,g]));
 const name=(id:number)=>byId.get(id)?.name||"Unknown assessment";
 const fieldName=(id:number,key:string)=>byId.get(id)?.fields.find(f=>f.id===key)?.label||key;
@@ -33,7 +33,8 @@ export default function ToolsRankingChecklists(){
     try{window.localStorage.setItem(STORAGE_KEY,JSON.stringify(value));}catch{/* Saving is optional. */}
   },[hydrated,value]);
   const selectedCount=value.groupIds.length+value.groupAssessments.length+
-    Object.values(value.groupCriteria).reduce((n,keys)=>n+keys.length,0)+value.priorities.length;
+    Object.values(value.groupCriteria).reduce((n,keys)=>n+keys.length,0)+value.priorities.length+
+    Object.values(value.priorityCriteria).reduce((n,keys)=>n+keys.length,0);
   const prioritySet=useMemo(()=>new Set(value.priorities),[value.priorities]);
   const assessmentList=useMemo(()=>
     [...value.priorities,...BENEFIT_GROUPS.filter(g=>!prioritySet.has(g.number)).map(g=>g.number)],
@@ -53,6 +54,12 @@ export default function ToolsRankingChecklists(){
   const setPriority=(id:number,checked:boolean)=>setValue(prev=>normalizeRankingSelection({
     ...prev,priorities:checked?[...prev.priorities,id]:prev.priorities.filter(x=>x!==id)
   }));
+  const setPriorityCriterion=(id:number,field:string,checked:boolean)=>setValue(prev=>{
+    const old=prev.priorityCriteria[String(id)]||[];
+    return normalizeRankingSelection({...prev,priorityCriteria:{
+      ...prev.priorityCriteria,[String(id)]:checked?[...old,field]:old.filter(x=>x!==field)
+    }});
+  });
   const move=(id:number,rank:number)=>setValue(prev=>({
     ...prev,priorities:movePriority(prev.priorities,id,rank)
   }));
@@ -101,7 +108,7 @@ export default function ToolsRankingChecklists(){
       <details className={css.panel}>
         <summary className={css.panelHeader}>Rank 20 Assessments</summary>
         <div className={css.panelBody}>
-          <p className={css.hint}>Check any original assessment. Its unique priority can then be changed.</p>
+          <p className={css.hint}>Check an assessment, set its priority, then select the research fields to emphasize.</p>
           <div className={css.list}>
             {assessmentList.map(id=>{
               const rank=value.priorities.indexOf(id)+1;
@@ -111,17 +118,29 @@ export default function ToolsRankingChecklists(){
                     onChange={e=>setPriority(id,e.target.checked)}/>
                   <span><strong>#{id}</strong> — {name(id)}</span>
                 </label>
-                {rank>0&&<label className={css.priorityControl}>
-                  Priority
-                  <select value={rank} onChange={e=>move(id,Number(e.target.value))}
-                    aria-label={"Priority of original assessment #"+id}>
-                    {value.priorities.map((_,i)=><option key={i} value={i+1}>#{i+1}</option>)}
-                  </select>
-                </label>}
+                {rank>0&&<>
+                  <label className={css.priorityControl}>
+                    Priority
+                    <select value={rank} onChange={e=>move(id,Number(e.target.value))}
+                      aria-label={"Priority of original assessment #"+id}>
+                      {value.priorities.map((_,i)=><option key={i} value={i+1}>#{i+1}</option>)}
+                    </select>
+                  </label>
+                  <details className={css.priorityFields}>
+                    <summary>Choose research fields ({(value.priorityCriteria[String(id)]||[]).length})</summary>
+                    <div className={css.fields}>
+                      {byId.get(id)!.fields.map(field=><label key={field.id} className={css.choice}>
+                        <input type="checkbox" checked={(value.priorityCriteria[String(id)]||[]).includes(field.id)}
+                          onChange={e=>setPriorityCriterion(id,field.id,e.target.checked)}/>
+                        <span>{field.label}</span>
+                      </label>)}
+                    </div>
+                  </details>
+                </>}
               </div>;
             })}
           </div>
-          <button type="button" className={css.clear} onClick={()=>setValue(prev=>({...prev,priorities:[]}))}>Clear assessment priorities</button>
+          <button type="button" className={css.clear} onClick={()=>setValue(prev=>({...prev,priorities:[],priorityCriteria:{}}))}>Clear assessment priorities</button>
         </div>
       </details>
     </div>
@@ -147,6 +166,9 @@ export default function ToolsRankingChecklists(){
             <strong>Rank 20 Assessments</strong>
             {value.priorities.map((id,i)=><div key={id}>
               <span>Priority #{i+1}:</span> Original #{id} — {name(id)}
+              {(value.priorityCriteria[String(id)]||[]).map(field=><div className={css.summaryIndent} key={field}>
+                ✓ {fieldName(id,field)}
+              </div>)}
             </div>)}
           </div>}
           <p className={css.hint}>Selections are saved on this device. These are research priorities, not calculated trial superiority or FDA approval predictions. The existing MATCHING TRIAL RECORDS remain unchanged.</p>
