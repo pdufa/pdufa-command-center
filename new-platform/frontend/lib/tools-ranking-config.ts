@@ -31,7 +31,7 @@ export function rankingTaxonomyAudit(){
   };
 }
 export function selectedAssessmentIds(groupIds:readonly number[]){
-  const allowed=new Set(TOOLS_RANKING_GROUPS.filter(g=>groupIds.includes(g.id)).flatMap(g=>[...g.assessmentIds]));
+  const allowed=new Set<number>(TOOLS_RANKING_GROUPS.filter(g=>groupIds.includes(g.id)).flatMap(g=>[...g.assessmentIds]));
   return BENEFIT_GROUPS.map(g=>g.number).filter(id=>allowed.has(id));
 }
 export function movePriority(current:readonly number[],id:number,position:number):number[]{
