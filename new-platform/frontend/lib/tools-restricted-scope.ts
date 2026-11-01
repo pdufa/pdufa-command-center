@@ -6,7 +6,7 @@
  * cap screen and registry-completed Phase 3 identity, NOT current/complete
  * PIPELINE qualification, FDA rights or a verified upcoming PDUFA date.
  */
-import {isPoolTrial,poolStageStatistics,type PostPhase3Review} from "./pool-pipeline-funnel";
+import {isPoolTrial,normalizePoolStage,poolStageStatistics,type PostPhase3Review} from "./pool-pipeline-funnel";
 import type {verifiedToolPool} from "./tools-pool-inventory";
 
 type Snapshot=ReturnType<typeof verifiedToolPool>;
@@ -37,7 +37,8 @@ export function restrictedToolsSnapshot(
     eligibleIds.add("TRIAL|"+row.nctId+"|"+row.ticker.toUpperCase());
   }
   const poolRows=snapshot.poolRows.filter(row=>
-    isPoolTrial(row)&&eligibleIds.has(row.id+"|"+row.ticker.toUpperCase()));
+    isPoolTrial(row)&&["Phase 3","Phase 3 Results"].includes(normalizePoolStage(row.stage))&&
+    eligibleIds.has(row.id+"|"+row.ticker.toUpperCase()));
   const stageStats=poolStageStatistics(poolRows);
   const scope:RestrictedToolsScope={
     scope:"DATED_300M_10B_COMPLETED_PHASE3_RESEARCH_SCREEN",
