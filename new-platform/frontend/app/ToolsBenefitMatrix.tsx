@@ -3,6 +3,7 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,rankAdvantages,type BenefitFeed,type BenefitRecord,type BenefitAdvantage,type BenefitGroup} from "../lib/benefit-assessments";
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import css from "./ToolsBenefitMatrix.module.css";
+import RegistryBenefitEvidence from "./RegistryBenefitEvidence";
 type Props={
   rows:ToolsSpreadsheetRow[];
   hasSelection:boolean;
@@ -194,7 +195,8 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
           <RankedList list={overall} empty="No evidence-reviewed overall ranking has been established for this exact trial and drug–indication identity."/>
         </details>
       </div>
+      {selected&&<RegistryBenefitEvidence nctId={selected.nctId} assessment={active}/>}
     </>}
-    <p className={css.footer}>Automatic: filter-matched NCT identities, drug/indication where recorded, study links, and available vetted assessment evidence. Not yet automatic: independent research of every competitor and all 20 benefit categories. Assessment gaps remain explicitly unverified until source-backed records are supplied.</p>
+    <p className={css.footer}>Automatic: filter-matched NCT identities, available vetted assessment fields, and official registry outcome/safety source packets for the selected trial. A scheduled collection job refreshes the historical completed-study source archive. These records are research inputs, not verified competitive superiority. Independent evidence for all 20 assessment categories and overall drug rankings remains incomplete; unsupported entries continue to show Not assessed.</p>
   </section>;
 }
