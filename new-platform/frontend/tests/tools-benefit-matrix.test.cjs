@@ -59,6 +59,9 @@ test("TOOLS mounts assessment matrix before source trial audit, and has mobile/d
   const matrix=fs.readFileSync(path.join(__dirname,"../app/ToolsBenefitMatrix.tsx"),"utf8");
   const css=fs.readFileSync(path.join(__dirname,"../app/ToolsBenefitMatrix.module.css"),"utf8");
   assert.ok(page.indexOf("<ToolsBenefitMatrix")<page.indexOf("Matching trial records"));
+  assert.ok(page.indexOf('<div className={styles.toolsSheetMetrics}')<page.indexOf("<ToolsBenefitMatrix"));
+  assert.ok(page.indexOf("<ToolsBenefitMatrix")<page.indexOf("Selected selectors &amp; individual trial totals"),
+    "Keep benefit matrix ahead of lengthy selector breakdown, especially on iPhone");
   assert.match(matrix,/BENEFIT_GROUPS\.map/);
   assert.match(matrix,/colSpan=\{active===g\.number\?g\.fields\.length\+2:1\}/);
   assert.match(matrix,/id="benefit-group-picker"/);
