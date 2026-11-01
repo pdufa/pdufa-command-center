@@ -11,7 +11,6 @@ export default function ToolsPage(){
     <header className={styles.header}>
       <p className={styles.eyebrow}>PDUFA · RESEARCH TOOLS</p>
       <h1>TOOLS</h1>
-      <p>Step 3: Choose Phase (3a/2) or Special Designation (3b/2). The next choices open only after you tap one.</p>
     </header>
     <PoolStageExplorer/>
   </main>;
