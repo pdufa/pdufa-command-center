@@ -85,7 +85,7 @@ export default function ToolsResultsSpreadsheet({
     <div className={styles.toolsSheetHeading}>
       <div>
         <h2>SELECTED TRIALS — SPREADSHEET</h2>
-        <p className={styles.muted}>Resultant trials update with your selected restrictions. Inspect the 20 benefit assessments first, then review individual selector totals and the source trial spreadsheet below.</p>
+        <p className={styles.muted}>Selections search the entire published POOL. Within phases and within FDA designations: OR; across both groups: AND. Pipeline eligibility is reviewed separately. Inspect the 20 assessments and trial rows below.</p>
       </div>
       <a className={styles.toolsSheetExport} href={hasSelection&&!loading&&!error?downloadUrl:undefined}
         aria-disabled={!hasSelection||loading||!!error}
@@ -156,7 +156,7 @@ export default function ToolsResultsSpreadsheet({
           ordered.length===0?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>
             {trialCountUnverified
               ?"These FDA program records have no verified NCT clinical-trial links. Trial count and development stages cannot yet be determined; no zero-trial conclusion is justified."
-              :"No documented NCT links match the selected filters. FDA evidence coverage is incomplete; other qualifying trials may exist."}
+              :designations.length>0?"No documented NCT-linked POOL trials match both the chosen phases and FDA categories. Unlinked FDA programs remain visible separately below.":"No recorded POOL trials match the selected phases or text search. Clear the text search or choose other phases."}
           </td></tr>:
           ordered.map((row,i)=><tr key={row.id}>
             <td className={styles.toolsSheetRowNumber}>{offset+i+1}</td>
