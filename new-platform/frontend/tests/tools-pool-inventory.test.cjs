@@ -118,7 +118,7 @@ test("FDA selector discloses program source count and incomplete NCT crosswalk s
   assert.match(source,/d\.records\.length\.toLocaleString/);
   assert.match(source,/d\.linkedTrials>0/);
   assert.match(source,/NCT count unknown/);
-  assert.match(sheet,/Partial FDA coverage/);
+  assert.match(sheet,/FDA source program records — not clinical trial counts/);
   assert.match(sheet,/No documented NCT links match the selected filters/);
 });
 
