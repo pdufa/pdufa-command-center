@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
-import { reconcilePoolPipeline, funnelPage, type FunnelResult, type ScopeView, POOL_STAGE_GROUPS, POOL_STAGES, type PoolStageGroup } from "../../../lib/pool-pipeline-funnel";
+import { reconcilePoolPipeline, funnelPage, type FunnelResult, type ScopeView, POOL_STAGE_GROUPS, POOL_STAGES, type PoolStageGroup, type PoolRecordKind } from "../../../lib/pool-pipeline-funnel";
 import { fetchReadOnlyWithWarmRetry } from "../../../lib/read-only-warm-retry";
 import { renderPhase3CensusCsv } from "../../../lib/pipeline-census-csv";
 
@@ -49,13 +49,15 @@ export async function GET(req:NextRequest) {
   const format=params.get("format")||"json";
   const stageGroup=params.get("stageGroup")||"all";
   const stage=params.get("stage")||"";
+  const recordKind=params.get("recordKind")||"all";
   if(!["pool","pipeline","readout-review","census-review"].includes(view)
      || !/^(0|[1-9]\d{0,7})$/.test(offset)
      || !(/^(?:[1-9]|[1-4]\d|50)$/.test(limit) || (view==="pipeline" && /^(?:[1-9]\d?|1\d\d|200|500)$/.test(limit)))
      || query.length>100 || !["json","csv"].includes(format) || (format==="csv" && view!=="census-review")
      || !["all",...Object.keys(POOL_STAGE_GROUPS)].includes(stageGroup)
      || (stage && !(POOL_STAGES as readonly string[]).includes(stage))
-     || (view!=="pool" && (stageGroup!=="all" || stage)))
+     || !["all","trials","other"].includes(recordKind)
+     || (view!=="pool" && (stageGroup!=="all" || stage || recordKind!=="all")))
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
     const data=await source();
@@ -70,7 +72,7 @@ export async function GET(req:NextRequest) {
         "X-PDUFA-Source-Version":datasetVersion,
       }});
     }
-    return NextResponse.json({...funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,stageGroup as PoolStageGroup,stage),datasetVersion},
+    return NextResponse.json({...funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,stageGroup as PoolStageGroup,stage,recordKind as PoolRecordKind),datasetVersion},
       {headers:{"Cache-Control":"private, no-store"}});
   }catch(cause){
     // Only a finite cause category is returned to the signed-in operator.
