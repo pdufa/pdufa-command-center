@@ -83,11 +83,13 @@ test("CSV exports all filtered rows and prevents spreadsheet formula execution",
   assert.match(csv,/NCT00000001/);
 });
 
-test("stage selector displays live computed trial matches under heading, not the entire POOL",()=>{
+test("POOL heading shows exactly one selector-calculated trial count and clinical stage list has no duplicate",()=>{
   const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
-  assert.match(ui,/Clinical development stages<\/div>\s*<p className=\{styles\.stageTrialMatchCount\}/);
-  assert.match(ui,/!hasSelections\?"0 matching trials"/);
+  assert.match(ui,/<h2>POOL<\/h2>\s*<p className=\{styles\.stageTrialMatchCount\}/);
+  assert.equal((ui.match(/className=\{styles\.stageTrialMatchCount\}/g)||[]).length,1);
+  assert.match(ui,/const matchingTrialLabel=!hasSelections\?"0 matching trials"/);
   assert.match(ui,/page\?count\(page\.total\)\+" matching trials"/);
   assert.match(ui,/error\?"Trial count unavailable"/);
-  assert.match(ui,/Calculated from selected stages and FDA designations/);
+  assert.match(ui,/<div className=\{styles\.stageDropdownLabel\}>Clinical development stages<\/div>/);
+  assert.match(ui,/Counts beside each stage describe the full POOL/);
 });
