@@ -150,7 +150,8 @@ test("TOOLS automatically loads source-screened Pipeline candidates with no opti
   assert.match(ui,/p\.set\("baseline","1"\)/);
   assert.match(ui,/hasResultsScope&&loading/);
   assert.match(ui,/onShowBaseline=\{clearAllTrialSelectors\}/);
-  assert.match(route,/screenedBaseline && pipelineResearchNcts===null/);
+  assert.match(route,/if\(pipelineResearchNcts===null\)\{/);
+  assert.doesNotMatch(route,/if\(screenedBaseline && pipelineResearchNcts===null\)/);
   assert.match(route,/buildToolsResults\(inventory,index,selectedStages,selectedDesignations,[\s\S]*?pipelineResearchNcts,screenedBaseline\)/);
 });
 test("screened baseline populates only the exact-NCT reconciled screen; legacy zero-selection helper remains strict",()=>{
@@ -283,4 +284,32 @@ test("unlinked FDA source count is clearly visible in the TRIALS card but never 
   assert.match(funnel,/FDA: \{designationsLabel\}/);
   assert.match(selector,/selectedDesignationLabels=\{selectedDesignations\.map/);
   assert.match(css,/\.toolsFunnelProgramBand\{display:flex/);
+});
+
+test("optional FDA/stage requests cannot fall back to unscreened POOL when Pipeline screen fails",()=>{
+  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
+  const guard=route.indexOf("if(pipelineResearchNcts===null){");
+  const filtered=route.indexOf("const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,");
+  assert.ok(guard>0&&filtered>guard,"unconditional missing-screen guard must precede all result building");
+  assert.match(route.slice(guard,filtered),/status:503/);
+  assert.match(route.slice(guard,filtered),/PIPELINE_SCREEN_UNAVAILABLE/);
+  assert.doesNotMatch(route,/if\(screenedBaseline && pipelineResearchNcts===null\)/);
+});
+test("published TOOLS snapshot freshness is reevaluated after caching, not frozen on first read",()=>{
+  const {isToolsSnapshotFresh,parseToolsSnapshotTimestamp,TOOLS_SNAPSHOT_MAX_AGE_MS}=
+    require("../lib/tools-snapshot-freshness.ts");
+  const now=Date.UTC(2026,10,1,3,0,0);
+  const produced=now-2*3600000;
+  assert.equal(isToolsSnapshotFresh(produced,now),true);
+  assert.equal(isToolsSnapshotFresh(produced,now+35*3600000),false,
+    "a valid cache must expire even if the serverless process never restarts");
+  assert.equal(isToolsSnapshotFresh(now-TOOLS_SNAPSHOT_MAX_AGE_MS,now),true);
+  assert.equal(isToolsSnapshotFresh(now-TOOLS_SNAPSHOT_MAX_AGE_MS-1,now),false);
+  assert.equal(isToolsSnapshotFresh(now+300001,now),false);
+  assert.equal(isToolsSnapshotFresh(NaN,now),false);
+  assert.ok(Number.isNaN(parseToolsSnapshotTimestamp("not a timestamp")));
+  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
+  assert.match(route,/if\(isToolsSnapshotFresh\(publishedToolSnapshot.generatedAt,now\)\)/);
+  assert.match(route,/publishedToolRetryAfter=now\+PUBLISHED_TOOL_RETRY_MS/);
+  assert.doesNotMatch(route,/publishedToolSnapshotChecked/);
 });
