@@ -180,4 +180,33 @@ export function buildToolsResults(
     caveat:"Published POOL inventory only; source may be partial. No FDA approval or Pipeline qualification inferred."
   };
 }
+
+/** Program records without verified NCT joins must never be exported as clinical trials. */
+export function renderUnlinkedFdaProgramCsv(
+  coverage:ReturnType<typeof designationSourceCoverage>,sourceAsOf:string
+):string{
+  const cell=(value:string)=>{
+    const clean=value.replace(/[\r\n\t]+/g," ").trim();
+    const safe=/^[=+\-@]/.test(clean)?"'"+clean:clean;
+    return '"'+safe.replace(/"/g,'""')+'"';
+  };
+  const header=[
+    "Record type","FDA program event key","Ticker","Drug / therapy",
+    "Disease / indication","Selected FDA source categories","Linked NCT ID",
+    "Clinical stage","Evidence source URL","POOL source as of"
+  ];
+  const rows=[header.map(cell).join(",")];
+  for(const program of coverage.programRows){
+    rows.push([
+      "FDA PROGRAM EVENT — NOT A CLINICAL TRIAL",program.eventKey,program.ticker,
+      program.drug,program.indication,program.designations.map(d=>d.label).join(" | "),
+      program.linkedNcts.join(" | "),
+      program.linkedNcts.length?"Check source NCT separately":"NOT ESTABLISHED",
+      [...new Set(program.designations.map(d=>d.source))].join(" | "),
+      sourceAsOf
+    ].map(cell).join(","));
+  }
+  return "\uFEFF"+rows.join("\r\n")+"\r\n";
+}
+
 export {renderToolsSpreadsheetCsv};
