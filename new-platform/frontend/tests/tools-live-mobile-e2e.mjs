@@ -37,7 +37,14 @@ assert.deepEqual(await checkSession.json(),{authenticated:true});
 console.log("AUTHENTICATED_BROWSER_SESSION_READY");
 try{
   await check("mobile-load",async()=>{
+    const initialResponse=page.waitForResponse(r=>r.url().includes("/api/scope-funnel")&&r.url().includes("tools=1"),{timeout:90000});
+    const firstStarted=Date.now();
     await page.goto(base+"/tools",{waitUntil:"domcontentloaded",timeout:45000});
+    const loaded=await initialResponse;
+    const firstPoolMs=Date.now()-firstStarted;
+    console.log("INITIAL_AUTHENTICATED_POOL_LOAD_MS",firstPoolMs,"HTTP",loaded.status());
+    assert.equal(loaded.status(),200,"Initial protected POOL request must succeed");
+    assert.ok(firstPoolMs<12000,"Initial verified POOL query took "+firstPoolMs+" ms; stale 22-second backend path remains");
     assert.match(await page.title(),/TOOLS/);
     await page.getByRole("heading",{name:"POOL",exact:true}).waitFor({timeout:15000});
     await page.getByText("Find Phase 3 + Orphan Drug trials",{exact:true}).waitFor();
@@ -97,6 +104,41 @@ try{
     const summary=await page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']").innerText();
     assert.match(summary,/NCT\d{8}/);
     await screenshot("05-phase-2-and-priority");
+  });
+  await check("all-14-clinical-stage-checkboxes",async()=>{
+    const allStages=page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox");
+    assert.equal(await allStages.count(),14);
+    await page.getByRole("button",{name:"Clear all filters"}).click();
+    await page.getByRole("button",{name:"Select all",exact:true}).click();
+    assert.equal(await page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox",{checked:true}).count(),14);
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("11,623"),null,{timeout:45000});
+    await page.getByRole("button",{name:"Clear all filters"}).click();
+    assert.equal(await page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox",{checked:true}).count(),0);
+  });
+  await check("all-13-FDA-checkboxes-available-and-unavailable",async()=>{
+    const fda=page.getByRole("group",{name:"FDA special designations and pathways"});
+    assert.equal(await fda.getByRole("checkbox").count(),13);
+    assert.equal(await fda.locator("input[type=checkbox]:disabled").count(),5);
+    await page.getByRole("button",{name:"Select all available"}).click();
+    assert.equal(await fda.getByRole("checkbox",{checked:true}).count(),8);
+    await page.getByRole("button",{name:"Clear all filters"}).click();
+    assert.equal(await fda.getByRole("checkbox",{checked:true}).count(),0);
+  });
+  await check("search-and-pagination",async()=>{
+    await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).check();
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("3,269"),null,{timeout:45000});
+    await page.getByRole("button",{name:"Next 50"}).click();
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("Showing 51–100"),null,{timeout:45000});
+    await page.getByRole("button",{name:"Previous 50"}).click();
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("Showing 1–50"),null,{timeout:45000});
+    const search=page.getByRole("searchbox",{name:/Search trial NCT/});
+    await search.fill("NO_MATCH_XYZ_2026");
+    await page.getByRole("button",{name:"Search results"}).click();
+    await page.waitForFunction(()=>document.body.textContent?.includes("No documented NCT links match the selected filters") ||
+      document.body.textContent?.includes("No source-linked NCT trials match the selected filters"),null,{timeout:45000});
+    await page.getByRole("button",{name:"Clear search"}).click();
+    await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("Showing 1–50"),null,{timeout:45000});
+    await page.getByRole("button",{name:"Clear all filters"}).click();
   });
   await check("csv-export",async()=>{
     const csvPath="/api/scope-funnel?view=pool&recordKind=trials&tools=1&limit=50&offset=0&format=csv&stages=Phase%202&designations=priority_review";
