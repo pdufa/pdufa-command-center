@@ -152,18 +152,30 @@ export function poolStageBucket(raw?:string):keyof typeof POOL_STAGE_GROUPS {
   }
   return "other";
 }
+export type PoolRecordKind="trials"|"all"|"other";
+export function isPoolTrial(row:PoolTrialRecord):boolean {
+  return /^TRIAL\\|NCT\\d{8}$/.test(row.id);
+}
 export function poolStageStatistics(rows:PoolTrialRecord[]){
   const groups:{early:number;phase3:number;regulatory:number;other:number}={early:0,phase3:0,regulatory:0,other:0};
-  const stages:Record<string,number>={};
+  const stages:Record<string,{trials:number;standaloneResults:number;regulatoryEvents:number;total:number}>={};
+  for(const name of POOL_STAGES)stages[name]={trials:0,standaloneResults:0,regulatoryEvents:0,total:0};
+  let trials=0,standaloneResults=0,regulatoryEvents=0;
   for(const row of rows){
     const stage=normalizePoolStage(row.stage);
-    stages[stage]=(stages[stage]||0)+1;
-    groups[poolStageBucket(stage)]++;
+    const bucket=poolStageBucket(stage);
+    const kind=isPoolTrial(row)?"trials":row.id.startsWith("RESULT|")?"standaloneResults":"regulatoryEvents";
+    if(kind==="trials")trials++;
+    else if(kind==="standaloneResults")standaloneResults++;
+    else regulatoryEvents++;
+    stages[stage][kind]++;
+    stages[stage].total++;
+    groups[bucket]++;
   }
-  return {total:rows.length,groups,stages};
+  return {total:rows.length,trials,standaloneResults,regulatoryEvents,groups,stages};
 }
 export type ScopeView="pool"|"pipeline"|"readout-review"|"census-review";
-export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="") {
+export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="",recordKind:PoolRecordKind="all") {
   const q=query.trim().toLowerCase();
   const matches=(item:PoolTrialRecord|PostPhase3Review)=>[
     item.ticker,item.company,item.drug,item.indication,
@@ -177,11 +189,13 @@ export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limi
   const stageFiltered=view==="pool"
     ? searched.filter(row=>{
         const pool=row as PoolTrialRecord;
+        if(recordKind==="trials" && !isPoolTrial(pool))return false;
+        if(recordKind==="other" && isPoolTrial(pool))return false;
         if(stageGroup!=="all" && poolStageBucket(pool.stage)!==stageGroup)return false;
         return !stageFilter || normalizePoolStage(pool.stage)===stageFilter;
       })
     :searched;
-  return {view,overview:funnel.overview,stageStats,stageGroup,stageFilter,total:stageFiltered.length,offset,limit,
+  return {view,overview:funnel.overview,stageStats,stageGroup,stageFilter,recordKind,total:stageFiltered.length,offset,limit,
     rows:stageFiltered.slice(offset,offset+limit),
     nextOffset:offset+limit<stageFiltered.length?offset+limit:null,
     qualifiedProgramCount:null,
