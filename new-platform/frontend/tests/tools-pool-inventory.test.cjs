@@ -89,6 +89,24 @@ test("selected stages use OR; selected designations use OR; together they use AN
   const noMatch=buildToolsResults(snapshot,index,["Phase 3"],["fast_track"],"",0,50);
   assert.equal(noMatch.total,0);
 });
+test("Phase-only filtering is independent of a loaded FDA designation index",()=>{
+  const snapshot=verifiedToolPool(raw());
+  const phase2=buildToolsResults(snapshot,index,["Phase 2"],[],"",0,50);
+  assert.equal(phase2.total,1,"A loaded FDA source must not turn a Phase-only filter into an empty designation intersection");
+  assert.deepEqual(phase2.rows.map(row=>row.id),["TRIAL|NCT00000002"]);
+  assert.equal(phase2.selectionSummary.designationSelectedCount,0);
+  assert.equal(phase2.selectionSummary.designationUniqueTrials,null);
+  assert.equal(phase2.selectionSummary.matchingUniqueTrials,1);
+  const phaseOneAndThree=buildToolsResults(snapshot,index,["Phase 1","Phase 3"],[],"",0,50);
+  assert.deepEqual(phaseOneAndThree.rows.map(row=>row.id),
+    ["TRIAL|NCT00000001","TRIAL|NCT00000003"],"Multiple selected phases are OR combined");
+  const searched=buildToolsResults(snapshot,index,["Phase 1","Phase 3"],[],"NCT00000003",0,50);
+  assert.deepEqual(searched.rows.map(row=>row.id),["TRIAL|NCT00000003"]);
+  const cleared=buildToolsResults(snapshot,index,[],[],"",0,50);
+  assert.equal(cleared.total,0,"No checked filters stays zero independently of loaded FDA evidence");
+  assert.equal(buildToolsResults(snapshot,null,["Phase 2"],[],"",0,50).total,phase2.total,
+    "Phase-only result must not depend on whether FDA evidence is reachable");
+});
 test("designation-only selection counts exact NCT plus issuer, never ticker alone",()=>{
   const snapshot=verifiedToolPool(raw());
   const data=buildToolsResults(snapshot,index,[],["fast_track"],"",0,50);
