@@ -48,6 +48,9 @@ try{
     assert.match(await designation.innerText(),/1b\/2[\s\S]*Special Designation/);
     assert.equal(await page.locator("#tools-first-phase").count(),0);
     assert.equal(await page.locator("#tools-first-designation").count(),0);
+    const globalClear=page.getByRole("button",{name:"Clear all selections throughout TOOLS"});
+    assert.equal(await globalClear.count(),1,"Exactly one reset button must be visible at top");
+    assert.ok(await globalClear.isVisible());
     const initialInventory=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&inventory=1&offset=0&limit=50");
     assert.equal(initialInventory.status(),200,"Authenticated opening POOL inventory must load");
     const published=await initialInventory.json();
@@ -103,6 +106,19 @@ try{
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
     await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').waitFor();
     assert.match(await phase.innerText(),/1 selected/);
+    const phasePanel=page.locator("#tools-first-phase");
+    const clearPhase=phasePanel.getByRole("button",{name:"Clear This Section"});
+    assert.equal(await clearPhase.count(),1);
+    await clearPhase.click();
+    assert.match(await phase.innerText(),/Select clinical stages/);
+    await page.waitForFunction(()=>{
+      const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
+      return grid?.textContent?.includes("Published POOL")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+    },null,{timeout:60000});
+    await categories.first().click();
+    const phase2Again=scopeResponse({stage:"Phase 2"});
+    await page.locator("#tools-stage-group-0").getByRole("checkbox",{name:/Phase 2(?!\/)/}).check();
+    assert.equal((await phase2Again).status(),200);
     await capture("02-phase-selected");
   });
   await check("designation-cascade-and-independent-phase",async()=>{
@@ -126,6 +142,14 @@ try{
     assert.match(await phase.innerText(),/1 selected/);
     await fda.getByText(/source programs/).first().waitFor({timeout:20000});
     assert.match(await fda.innerText(),/linked NCTs|NCT count unknown/);
+    const clearFda=fda.getByRole("button",{name:"Clear This Section"});
+    assert.equal(await clearFda.count(),1);
+    await clearFda.click();
+    assert.match(await designation.innerText(),/Select FDA categories/);
+    assert.match(await phase.innerText(),/1 selected/,"Clearing FDA must preserve Phase criteria");
+    const secondResponse=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
+    await orphan.check({timeout:45000});
+    assert.equal((await secondResponse).status(),200);
     await capture("03-phase-plus-fda");
   });
   await check("switch-back-and-clear",async()=>{
@@ -135,7 +159,27 @@ try{
     const row=page.locator("#tools-stage-group-0").getByRole("checkbox",{name:/Phase 2(?!\/)/});
     await row.waitFor({timeout:15000});
     assert.equal(await row.isChecked(),true);
-    await page.getByRole("button",{name:"Clear all selections"}).click();
+    const sectionClear=page.locator("#tools-first-phase").getByRole("button",{name:"Clear This Section"});
+    await sectionClear.click();
+    assert.match(await phase.innerText(),/Select clinical stages/);
+    assert.match(await designation.innerText(),/1 selected/,"Clearing Phase must preserve FDA choices");
+    await page.locator('#tools-first-phase [aria-controls="tools-stage-group-0"]').click();
+    const phaseAgain=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
+    await page.locator("#tools-stage-group-0").getByRole("checkbox",{name:/Phase 2(?!\/)/}).check();
+    assert.equal((await phaseAgain).status(),200);
+    // Ranking selections are locally persisted even if their section becomes unmounted.
+    const ranking=page.locator('[aria-controls="tools-rank-trials-body"]');
+    await ranking.waitFor();
+    await ranking.click();
+    const rankGroup=page.locator("#tools-rank-trials-body").getByRole("checkbox",{name:/Patient Health & Clinical Benefit/});
+    await rankGroup.check();
+    await page.waitForFunction(()=>{
+      try{return JSON.parse(localStorage.getItem("pdufa-tools-ranking-checklists-v1")||"{}").groupIds?.includes(1);}catch{return false;}
+    },null,{timeout:15000});
+    await page.getByRole("button",{name:"Clear all selections throughout TOOLS"}).click();
+    await page.waitForFunction(()=>{
+      try{return !JSON.parse(localStorage.getItem("pdufa-tools-ranking-checklists-v1")||"{}").groupIds?.length;}catch{return false;}
+    },null,{timeout:15000});
     assert.equal(await page.locator("#tools-first-phase").count(),0);
     assert.equal(await phase.getAttribute("aria-expanded"),"false");
     assert.equal(await designation.getAttribute("aria-expanded"),"false");

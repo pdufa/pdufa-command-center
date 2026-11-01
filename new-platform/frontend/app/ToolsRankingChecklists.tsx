@@ -46,6 +46,18 @@ export default function ToolsRankingChecklists(){
     try{window.localStorage.setItem(STORAGE_KEY,JSON.stringify(value));}catch{/* Saving is optional. */}
   },[hydrated,value]);
 
+  useEffect(()=>{
+    if(typeof window==="undefined")return;
+    const reset=()=>{
+      setValue({...BLANK,groupCriteria:{},priorityCriteria:{}});
+      setRankPanelOpen(false);
+      setPriorityPanelOpen(false);
+      setSummaryPanelOpen(false);
+    };
+    window.addEventListener("pdufa-tools-clear-all-selections",reset);
+    return ()=>window.removeEventListener("pdufa-tools-clear-all-selections",reset);
+  },[]);
+
   const selectedCount=value.groupIds.length+value.groupAssessments.length+
     Object.values(value.groupCriteria).reduce((n,fields)=>n+fields.length,0)+value.priorities.length+
     Object.values(value.priorityCriteria).reduce((n,fields)=>n+fields.length,0);
@@ -101,7 +113,11 @@ export default function ToolsRankingChecklists(){
       </div>
     </div>
     {rankPanelOpen&&<div id="tools-rank-trials-body" className={css.cascadeBody}>
-      <p className={css.hint}>Choose a group. Its assessments appear immediately; checking an assessment opens its research fields.</p>
+      <div className={css.sectionTools}>
+        <p className={css.hint}>Choose a group. Its assessments appear immediately; checking an assessment opens its research fields.</p>
+        <button type="button" className={css.clear} disabled={value.groupIds.length===0}
+          onClick={()=>setValue(prev=>({...prev,groupIds:[],groupAssessments:[],groupCriteria:{}}))}>Clear This Section</button>
+      </div>
       <StepHeading number="1">Choose group(s)</StepHeading>
       <div className={css.list}>
         {TOOLS_RANKING_GROUPS.map((group,groupIndex)=>{
@@ -141,12 +157,14 @@ export default function ToolsRankingChecklists(){
           </div>;
         })}
       </div>
-      <button type="button" className={css.clear} onClick={()=>setValue(prev=>({
-        ...prev,groupIds:[],groupAssessments:[],groupCriteria:{}
-      }))}>Clear Rank Trials By</button>
+
     </div>}
     {priorityPanelOpen&&<div id="tools-rank-priorities-body" className={css.cascadeBody}>
-      <p className={css.hint}>Choose any original assessment. It immediately reveals two next steps: priority and optional research fields.</p>
+      <div className={css.sectionTools}>
+        <p className={css.hint}>Choose any original assessment. It immediately reveals two next steps: priority and optional research fields.</p>
+        <button type="button" className={css.clear} disabled={value.priorities.length===0}
+          onClick={()=>setValue(prev=>({...prev,priorities:[],priorityCriteria:{}}))}>Clear This Section</button>
+      </div>
       <StepHeading number="1">Choose original assessment(s) #1–#20</StepHeading>
       <div className={css.list}>
         {assessmentList.map(id=>{
@@ -184,9 +202,7 @@ export default function ToolsRankingChecklists(){
           </div>;
         })}
       </div>
-      <button type="button" className={css.clear} onClick={()=>setValue(prev=>({
-        ...prev,priorities:[],priorityCriteria:{}
-      }))}>Clear Rank 20 Assessments</button>
+
     </div>}
     <div className={css.results}>
       <button type="button" className={css.panelHeader} aria-expanded={summaryPanelOpen}

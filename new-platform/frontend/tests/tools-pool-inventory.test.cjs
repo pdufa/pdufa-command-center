@@ -220,7 +220,10 @@ test("one tap chooses Phase 3 AND Orphan Drug, clears search and resets offset",
   assert.match(ui,/setOffset\(0\)/);
   assert.match(ui,/onClick=\{findPhase3OrphanTrials\}/);
   assert.match(ui,/Find Phase 3 \+ Orphan Drug trials/);
-  assert.match(ui,/onClick=\{clearAllTrialSelectors\}/);
+  assert.match(ui,/onClick=\{clearAllToolsSelections\}/);
+  assert.match(ui,/onClick=\{clearPhaseSection\}/);
+  assert.match(ui,/Clear This Section/);
+  assert.match(ui,/pdufa-tools-clear-all-selections/);
   const fda=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolDesignationSelector.tsx"),"utf8");
   assert.match(fda,/<details className=\{styles\.designationCoverageWarning\}>/);
   assert.match(fda,/FDA coverage limited:/);

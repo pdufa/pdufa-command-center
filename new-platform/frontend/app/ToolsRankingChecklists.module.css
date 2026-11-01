@@ -43,3 +43,9 @@
  .children{margin-left:10px;padding-left:8px}
  .priorityControl{flex-wrap:wrap;gap:7px}
 }
+
+
+.sectionTools{display:flex;align-items:flex-start;justify-content:space-between;gap:9px;flex-wrap:wrap;margin:0 0 8px}
+.sectionTools .hint{flex:1;min-width:150px;margin:0}
+.sectionTools .clear{margin:0;flex-shrink:0;min-height:40px}
+.clear:disabled{opacity:.45;cursor:not-allowed}

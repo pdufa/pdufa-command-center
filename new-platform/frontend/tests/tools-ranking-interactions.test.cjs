@@ -127,3 +127,44 @@ test("switching left to right preserves both independent checklists and selected
   assert.ok(body(root,leftId).findAllByProps({"data-cascade-for":"group-1"}).length===1);
  }finally{if(root)await act(async()=>root.unmount());}
 });
+
+
+test("Clear This Section preserves the other ranking list, while TOOLS global reset clears both",async()=>{
+ const oldWindow=global.window;
+ const fakeWindow=new EventTarget();
+ const values=new Map();
+ fakeWindow.localStorage={
+  getItem:key=>values.get(key)||null,
+  setItem:(key,value)=>values.set(key,value),
+  removeItem:key=>values.delete(key)
+ };
+ global.window=fakeWindow;
+ let root;
+ try{
+  await act(async()=>{root=create(React.createElement(Component));});
+  await click(root,"tools-rank-trials-body");
+  await check(label(body(root,"tools-rank-trials-body"),"Patient Health & Clinical Benefit"),true);
+  await click(root,"tools-rank-priorities-body");
+  await check(label(body(root,"tools-rank-priorities-body"),"Original #3 — Clinical Benefit"),true);
+  await click(root,"tools-rank-trials-body");
+  const left=body(root,"tools-rank-trials-body");
+  const clearLeft=left.findAllByType("button").find(el=>textOf(el)==="Clear This Section");
+  assert.ok(clearLeft);
+  await act(async()=>clearLeft.props.onClick());
+  await click(root,"tools-selected-ranking-body");
+  assert.doesNotMatch(textOf(body(root,"tools-selected-ranking-body")),/Group #1/);
+  assert.match(textOf(body(root,"tools-selected-ranking-body")),/Priority #1:\s*Original #3/,
+    "Scoped clearing must not erase the right ranking");
+  await act(async()=>fakeWindow.dispatchEvent(new Event("pdufa-tools-clear-all-selections")));
+  assert.match(textOf(body(root,"tools-selected-ranking-body")||""),/^$/,
+    "Global clearing should collapse the ranking summary");
+  await click(root,"tools-selected-ranking-body");
+  assert.match(textOf(body(root,"tools-selected-ranking-body")),/No ranking criteria selected/);
+  const stored=JSON.parse(values.get("pdufa-tools-ranking-checklists-v1"));
+  assert.deepEqual(stored.groupIds,[]);
+  assert.deepEqual(stored.priorities,[]);
+ }finally{
+  if(root)await act(async()=>root.unmount());
+  global.window=oldWindow;
+ }
+});

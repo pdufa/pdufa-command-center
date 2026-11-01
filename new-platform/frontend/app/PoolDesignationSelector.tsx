@@ -95,7 +95,6 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     <div className={styles.stageDropdownActions}>
       <button type="button" disabled={!index||supported.length===0}
         onClick={()=>onChange(supported.map(item=>item.key))}>Select all available</button>
-      <button type="button" onClick={()=>onChange([])}>Clear FDA selections</button>
     </div>
     {selected.length>0&&index&&<details className={styles.designationSelection}>
       <summary>View {combined.length.toLocaleString("en-US")} source-linked application/program records</summary>
