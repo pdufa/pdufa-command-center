@@ -110,7 +110,7 @@ export default function ToolsResultsSpreadsheet({
     </div>
     <div className={styles.toolsSheetMetrics} aria-live="polite">
       <div><span>Selectors clicked</span><strong>{selectedCount}</strong><small>{stages.length} stages + {designations.length} FDA categories</small></div>
-      <div><span>Selected stage totals</span><strong>{summary?fmt(summary.stageTotal):hasSelection?"—":"0"}</strong><small>Distinct NCTs within selected stage categories</small></div>
+      <div><span>Selected restricted stage totals</span><strong>{summary?fmt(summary.stageTotal):hasSelection?"—":"0"}</strong><small>Distinct NCTs within the restricted Phase 3 research scope</small></div>
       <div><span>{designations.length?"FDA source program records":"Verified linked NCT counts"}</span><strong>{designations.length
         ?loading||error?"—":designationCoverage?fmt(designationCoverage.sourcePrograms):"—"
         :summary?fmt(summary.designationCountSum):hasSelection?"—":"0"}</strong>
@@ -144,7 +144,7 @@ export default function ToolsResultsSpreadsheet({
             </tfoot>
           </table>
         </div>
-        <p className={styles.muted}>Designation categories may refer to the same trial. Their per-category counts are not added to the final unique-trial total. FDA-selected totals cover only the documented NCT links, not the entire 11,623-trial POOL.</p>
+        <p className={styles.muted}>Designation categories may refer to the same trial. Their per-category counts are not added to the final unique-trial total. FDA-selected totals cover only the documented NCT links, not the entire unrestricted source POOL.</p>
       </>}
     </div>
     <div className={styles.toolsSheetTableHeading}>
@@ -175,7 +175,7 @@ export default function ToolsResultsSpreadsheet({
           ordered.length===0?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>
             {trialCountUnverified
               ?"These FDA program records have no verified NCT clinical-trial links. Trial count and development stages cannot yet be determined; no zero-trial conclusion is justified."
-              :designations.length>0?"No documented NCT-linked POOL trials match both the chosen phases and FDA categories. Unlinked FDA programs remain visible separately below.":"No recorded POOL trials match the selected phases or text search. Clear the text search or choose other phases."}
+              :designations.length>0?"No documented NCT-linked POOL trials match both the chosen phases and FDA categories. Unlinked FDA programs remain visible separately below.":"No restricted-screen NCT trials match the selected phases or text search. Clear the text search or choose other phases."}
           </td></tr>:
           ordered.map((row,i)=><tr key={row.id}>
             <td className={styles.toolsSheetRowNumber}>{offset+i+1}</td>
