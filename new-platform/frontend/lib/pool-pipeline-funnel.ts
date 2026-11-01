@@ -175,7 +175,7 @@ export function poolStageStatistics(rows:PoolTrialRecord[]){
   return {total:rows.length,trials,standaloneResults,regulatoryEvents,groups,stages};
 }
 export type ScopeView="pool"|"pipeline"|"readout-review"|"census-review";
-export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="",recordKind:PoolRecordKind="all") {
+export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="",recordKind:PoolRecordKind="all",selectedStages:readonly string[]=[]){
   const q=query.trim().toLowerCase();
   const matches=(item:PoolTrialRecord|PostPhase3Review)=>[
     item.ticker,item.company,item.drug,item.indication,
@@ -192,7 +192,9 @@ export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limi
         if(recordKind==="trials" && !isPoolTrial(pool))return false;
         if(recordKind==="other" && isPoolTrial(pool))return false;
         if(stageGroup!=="all" && poolStageBucket(pool.stage)!==stageGroup)return false;
-        return !stageFilter || normalizePoolStage(pool.stage)===stageFilter;
+        const normalizedStage=normalizePoolStage(pool.stage);
+        if(selectedStages.length && !selectedStages.includes(normalizedStage))return false;
+        return !stageFilter || normalizedStage===stageFilter;
       })
     :searched;
   return {view,overview:funnel.overview,stageStats,stageGroup,stageFilter,recordKind,total:stageFiltered.length,offset,limit,
