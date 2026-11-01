@@ -46,7 +46,7 @@ export default function PoolDesignationSelector(){
   const chosen=selected?entries[selected]:null;
   const category=SPECIAL_DESIGNATION_CATEGORIES.find(item=>item.key===selected);
   const availableCount=index?SPECIAL_DESIGNATION_CATEGORIES.filter(item=>entries[item.key].available).length:null;
-  return <details className={styles.stageDesignationPane} open>
+  return <details className={styles.stageDesignationPane}>
     <summary className={styles.stageDesignationSummary}>
       <span>FDA Special Designations &amp; Pathways</span>
       <strong>13 categories</strong>
