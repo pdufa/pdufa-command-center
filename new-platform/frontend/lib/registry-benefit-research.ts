@@ -17,6 +17,7 @@ export type RegistryBenefitResearch={
   interventions:string[];sponsor:string|null;conditionNames:string[];
   evidenceClassification:"REGISTRY_POSTED_RESULTS"|"REGISTRY_PROTOCOL_ONLY";
   comparisonVerified:false;benefitRank:null;fdaDecisionVerified:false;
+  truncatedEvidence:{outcomes:boolean;seriousEvents:boolean};
 };
 type Obj=Record<string,unknown>;
 const obj=(v:unknown):Obj=>v!==null&&typeof v==="object"&&!Array.isArray(v)?v as Obj:{};
@@ -24,8 +25,8 @@ const clean=(v:unknown,max=300):string|null=>
   typeof v==="string"&&v.trim().length>0&&v.length<=max&&!/[\u0000-\u001f\u007f<>]/u.test(v)?v.trim():null;
 const array=(v:unknown,max=40):unknown[]=>{
   if(v===undefined||v===null)return [];
-  if(!Array.isArray(v)||v.length>max)throw Error("REGISTRY_UNBOUNDED_ARRAY");
-  return v;
+  if(!Array.isArray(v))throw Error("REGISTRY_UNBOUNDED_ARRAY");
+  return v.slice(0,max);
 };
 const validDate=(v:unknown):string|null=>{
   const s=clean(v,10);
@@ -103,5 +104,12 @@ export function parseRegistryBenefitResearch(raw:unknown,nctId:string,retrievedA
     interventions,sponsor:clean(obj(obj(p.sponsorCollaboratorsModule).leadSponsor).name,220),
     conditionNames:names(obj(p.conditionsModule).conditions,25),
     evidenceClassification:hasResults?"REGISTRY_POSTED_RESULTS":"REGISTRY_PROTOCOL_ONLY",
-    comparisonVerified:false,benefitRank:null,fdaDecisionVerified:false};
+    comparisonVerified:false,benefitRank:null,fdaDecisionVerified:false,
+    truncatedEvidence:{
+      outcomes:Array.isArray(obj(results.outcomeMeasuresModule).outcomeMeasures)&&
+        (results.outcomeMeasuresModule as Obj).outcomeMeasures instanceof Array&&
+        (results.outcomeMeasuresModule as {outcomeMeasures:unknown[]}).outcomeMeasures.length>LIMIT,
+      seriousEvents:Array.isArray(obj(results.adverseEventsModule).seriousEvents)&&
+        (results.adverseEventsModule as {seriousEvents:unknown[]}).seriousEvents.length>80
+    }};
 }
