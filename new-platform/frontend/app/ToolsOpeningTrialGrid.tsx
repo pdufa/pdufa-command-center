@@ -62,8 +62,8 @@ export default function ToolsOpeningTrialGrid({
         </tr></thead>
         <tbody>
           {loading?<tr><td colSpan={columnsCount} className={css.empty}>Loading published trial records…</td></tr>
-          :error?<tr><td colSpan={7} className={css.empty}>Cannot verify the trial inventory: {error}. No zero count assumed.</td></tr>
-          :ordered.length===0?<tr><td colSpan={7} className={css.empty}>
+          :error?<tr><td colSpan={columnsCount} className={css.empty}>Cannot verify the trial inventory: {error}. No zero count assumed.</td></tr>
+          :ordered.length===0?<tr><td colSpan={columnsCount} className={css.empty}>
             {countUnverified?"No documented NCT matches within the restricted research subset. Full FDA trial coverage remains unknown."
               :hasSelection?"No documented trials match these selected criteria. Try a different Phase or FDA category."
               :"No trial records are available from the published source."}
