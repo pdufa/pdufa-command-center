@@ -8,6 +8,7 @@ const panel:CSSProperties={border:"3px solid #0b9348",background:"#e9fff2",borde
 const note:CSSProperties={display:"block",fontSize:12,color:"#526477",lineHeight:1.5,marginTop:6};
 const label:CSSProperties={fontSize:11,fontWeight:800,letterSpacing:".02em",color:"#066637"};
 const value:CSSProperties={fontSize:23,fontWeight:900,color:"#065f35",lineHeight:1.4};
+const letter:CSSProperties={display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:900,minWidth:33,height:33,borderRadius:7,background:"#087b3f",color:"#fff",flexShrink:0};
 
 export function timelineDisplay(dates:TimelineDates|null|undefined,today:string){
   const d=dates||{phase3DataRelease:null,pdufaTarget:null};
@@ -47,7 +48,7 @@ export default function TrialTimelineSummary({
     <div style={{...grid,flexWrap:"wrap"}}>
       <div style={{...panel,padding:compact?"6px 9px":panel.padding,minWidth:compact?112:135,flex:compact?"1 1 140px":panel.flex}}>
         <div style={label}>DAYS SINCE PHASE 3</div>
-        <div style={{...value,fontSize:compact?18:23}}>{metric.since}</div>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginTop:3}}><span style={letter} aria-label="A: days since Phase 3 readout">A</span><strong style={{...value,fontSize:compact?18:23}}>{metric.since}</strong></div>
         {metric.release
           ?<small style={note}>Public results released {metric.release.date}
             {" · "}<a target="_blank" rel="noopener noreferrer" href={metric.release.sourceUrl}>Verified source</a></small>
@@ -55,7 +56,7 @@ export default function TrialTimelineSummary({
       </div>
       <div style={{...panel,padding:compact?"6px 9px":panel.padding,minWidth:compact?112:135,flex:compact?"1 1 140px":panel.flex}}>
         <div style={label}>DAYS TO PDUFA</div>
-        <div style={{...value,fontSize:compact?18:23}}>{metric.until}</div>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginTop:3}}><span style={letter} aria-label="P: days to PDUFA">P</span><strong style={{...value,fontSize:compact?18:23}}>{metric.until}</strong></div>
         {metric.pdufa
           ?<small style={note}>FDA target {metric.pdufa.date}
             {" · "}<a target="_blank" rel="noopener noreferrer" href={metric.pdufa.sourceUrl}>Verified source</a></small>
