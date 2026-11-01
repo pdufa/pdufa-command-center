@@ -169,13 +169,13 @@ export default function PoolStageExplorer(){
         <button type="button" className={styles.toolsStartChoice} aria-expanded={activeFilter==="phase"}
           aria-controls="tools-first-phase" onClick={()=>setActiveFilter(open=>open==="phase"?null:"phase")}>
           <ToolsOptionNumber level={1} index={0} total={2}/>
-          <span>Phase ({page?.restrictedScope?count(page.restrictedScope.screenedTrials):"—"})<small>{selectedStages.length?selectedStages.length+" selected":"All cap-screened NCT trials"}</small></span>
+          <span>Phase ({page?.restrictedScope?count(page.restrictedScope.screenedTrials):"—"})<small>{selectedStages.length?selectedStages.length+" selected":"Select clinical stages"}</small></span>
           <span aria-hidden="true">{activeFilter==="phase"?"▴":"▾"}</span>
         </button>
         <button type="button" className={styles.toolsStartChoice} aria-expanded={activeFilter==="designation"}
           aria-controls="tools-first-designation" onClick={()=>setActiveFilter(open=>open==="designation"?null:"designation")}>
           <ToolsOptionNumber level={1} index={1} total={2}/>
-          <span>Special Designation ({page?.designationScopeSummary?count(page.designationScopeSummary.documentedCategoryLinks):"—"})<small>{page?.designationScopeSummary?count(page.designationScopeSummary.documentedUniqueTrials)+" documented trials · partial":page&&page.regulatorySourcesAvailable===false?"FDA source unavailable":"Documented category links · partial"}{selectedDesignations.length?" · "+selectedDesignations.length+" selected":""}</small></span>
+          <span>Special Designation ({page?.designationScopeSummary?count(page.designationScopeSummary.documentedCategoryLinks):"—"})<small>{page?.designationScopeSummary?count(page.designationScopeSummary.documentedUniqueTrials)+" documented trials · partial":page&&page.regulatorySourcesAvailable===false?"FDA source unavailable":"Documented category links · partial"}{selectedDesignations.length?" · "+selectedDesignations.length+" selected":" · Select FDA categories"}</small></span>
           <span aria-hidden="true">{activeFilter==="designation"?"▴":"▾"}</span>
         </button>
       </div>
