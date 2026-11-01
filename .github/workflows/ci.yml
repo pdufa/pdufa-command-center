@@ -16,6 +16,7 @@ on:
       - 'score_input_audit.py'
       - 'tests/test_score_input_audit.py'
       - 'tests/test_nightly_scoring_audit.py'
+      - 'tests/test_scoring_tab_navigation.py'
       - 'tests/test_new_scan_result_identities.py'
       - 'data/pdufa_candidates.csv'
       - 'data/second_financing_status.csv'
@@ -37,6 +38,7 @@ on:
       - 'score_input_audit.py'
       - 'tests/test_score_input_audit.py'
       - 'tests/test_nightly_scoring_audit.py'
+      - 'tests/test_scoring_tab_navigation.py'
       - 'tests/test_new_scan_result_identities.py'
       - 'data/pdufa_candidates.csv'
       - 'data/second_financing_status.csv'
@@ -79,7 +81,7 @@ jobs:
       - name: Source-safe saved score coverage regressions
         run: |
           python -m pip install pytest
-          python -m pytest -q tests/test_score_input_audit.py tests/test_nightly_scoring_audit.py
+          python -m pytest -q tests/test_score_input_audit.py tests/test_nightly_scoring_audit.py tests/test_scoring_tab_navigation.py
 
   backup-archive-integrity:
     name: Offline ZIP backup integrity regressions
