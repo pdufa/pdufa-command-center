@@ -5,6 +5,7 @@ import {pacificToday,type TimelineDates} from "../lib/pipeline-timeline";
 import TrialTimelineSummary from "./TrialTimelineSummary";
 import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
+import type {ToolPdufaApplication} from "../lib/tools-pdufa-links";
 import styles from "./FunnelWorkspace.module.css";
 import ToolsBenefitMatrix from "./ToolsBenefitMatrix";
 import ToolsRankingChecklists from "./ToolsRankingChecklists";
@@ -18,6 +19,8 @@ export type ToolsSpreadsheetRow={
   stage:string;selectedStage:string;
   timeline?:TimelineDates|null;
   designationMatches:Partial<Record<DesignationKey,ToolSourceEvidence[]>>;
+  pdufaApplications?:ToolPdufaApplication[];
+  studyRole?:"NOT_ESTABLISHED";
 };
 export type SelectedFiltersSummary={
   selectedCount:number;stageSelectedCount:number;designationSelectedCount:number;
@@ -97,7 +100,7 @@ export default function ToolsResultsSpreadsheet({
     <div className={styles.toolsSheetHeading}>
       <div>
         <h2>SELECTED TRIALS — SPREADSHEET</h2>
-        <p className={styles.muted}>Selections search the entire published POOL. Within phases and within FDA designations: OR; across both groups: AND. Pipeline eligibility is reviewed separately. Inspect the 20 assessments and trial rows below.</p>
+        <p className={styles.muted}>One NCT per trial. Documented FDA designations and saved PDUFA application records are attached to the same POOL rows. Phase selections OR, FDA selections OR, and both groups combine AND. PDUFA dates belong to applications; a linked study is not automatically pivotal.</p>
       </div>
       <a className={styles.toolsSheetExport} href={hasSelection&&!loading&&!error?downloadUrl:undefined}
         aria-disabled={!hasSelection||loading||!!error}
@@ -159,11 +162,14 @@ export default function ToolsResultsSpreadsheet({
               {item.label}{sortKey===item.key?(descending?" ↓":" ↑"):" ↕"}
             </button>
           </th>)}
+          <th>FDA links <small>Source-recorded, partial</small></th>
+          <th>PDUFA application <small>Linked program, not a trial deadline</small></th>
+          <th>Study role <small>Pivotal status</small></th>
           {stages.map(stage=><th key={"stage:"+stage} title="Selected stage criterion">{stage}<small>Selected stage</small></th>)}
           {designations.map(key=><th key={"designation:"+key} title="Selected FDA designation category">{names.get(key)||key}<small>FDA designation evidence</small></th>)}
         </tr></thead>
         <tbody>
-          {!hasSelection?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Select a clinical stage or FDA designation to populate rows.</td></tr>:
+          {!hasSelection?<tr><td colSpan={10+stages.length+designations.length} className={styles.toolsSheetEmpty}>Select a clinical stage or FDA designation to populate rows.</td></tr>:
           loading?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Loading matching trial rows…</td></tr>:
           error?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Trial evidence could not be verified. No result total is asserted.</td></tr>:
           ordered.length===0?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>
@@ -183,6 +189,26 @@ export default function ToolsResultsSpreadsheet({
             <td>{display(row.drug)}</td>
             <td>{display(row.indication)}</td>
             <td>{display(row.stage)}</td>
+            <td>{(()=>{
+              const linked=Object.entries(row.designationMatches||{}).filter(([,claims])=>!!claims?.length);
+              return linked.length?<details className={styles.toolsSheetEvidence}>
+                <summary>{linked.length} documented</summary>
+                {linked.map(([key,claims])=><div key={key}>
+                  {names.get(key as DesignationKey)||key}
+                  {claims?.[0]?.source?<a href={claims[0].source} target="_blank" rel="noopener noreferrer"> · Evidence</a>:null}
+                </div>)}
+              </details>:<span className={styles.toolsSheetNoMatch}>Not documented</span>;
+            })()}</td>
+            <td>{row.pdufaApplications?.length?<details className={styles.toolsSheetEvidence}>
+              <summary>{row.pdufaApplications.length} saved application{row.pdufaApplications.length===1?"":"s"}</summary>
+              {row.pdufaApplications.map(application=><div key={application.eventKey}>
+                <strong>{application.targetDate||"Target not recorded"}</strong>
+                {" · "}{application.targetConfirmation||"Unverified"}
+                {application.savedCheckStatus?" · Status: "+application.savedCheckStatus:""}
+                {application.evidenceUrl?<a href={application.evidenceUrl} target="_blank" rel="noopener noreferrer"> · Evidence</a>:null}
+              </div>)}
+            </details>:<span className={styles.toolsSheetNoMatch}>None source-linked</span>}</td>
+            <td>Not established</td>
             {stages.map(stage=><td key={"stage:"+stage}>
               <span className={row.stage===stage?styles.toolsSheetMatch:styles.toolsSheetNoMatch}>
                 {row.stage===stage?"✓ MATCH":"—"}
