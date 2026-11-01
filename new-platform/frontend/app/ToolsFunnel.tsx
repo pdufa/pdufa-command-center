@@ -73,12 +73,12 @@ export default function ToolsFunnel({
         <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">◎</span><h3>TRIALS</h3></div>
         {noNctLink&&!loading&&!error
           ?<div className={styles.toolsFunnelUnlinkedResult} role="status" aria-live="polite" aria-atomic="true">
-            <div className={styles.toolsFunnelNctUnknown}>
+            <div className={styles.toolsFunnelNctUnknown} role="group" aria-label="Unique NCT clinical trial count">
               <span>UNIQUE NCT TRIAL COUNT</span>
               <strong>{trialStatus}</strong>
               <small>Trial IDs and phases have not been verified</small>
             </div>
-            <div className={styles.toolsFunnelProgramBand}>
+            <div className={styles.toolsFunnelProgramBand} role="group" aria-label="FDA program record count, not clinical trials">
               <span>FDA APPLICATION / PROGRAM RECORDS</span>
               <strong>{num(designationCoverage!.sourcePrograms)}</strong>
               <small>Documented programs — NOT {num(designationCoverage!.sourcePrograms)} distinct trials</small>
