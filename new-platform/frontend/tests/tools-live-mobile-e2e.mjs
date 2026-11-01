@@ -84,6 +84,12 @@ try{
     assert.ok(await spreadsheet.isVisible());
     assert.match(await spreadsheet.locator("tbody").innerText(),/NCT\d{8}/);
     assert.equal(await spreadsheet.locator("tbody tr").count(),Math.min(50,published.total));
+    assert.equal(await page.locator("#tools-final-trial-spreadsheet").count(),1);
+    assert.equal(await page.locator('section[aria-label="Live trial inventory spreadsheet"]').count(),1,
+      "There must be only one continuously updating final trial spreadsheet");
+    assert.equal(await page.locator("#tools-final-trial-spreadsheet").evaluate(el=>el.nextElementSibling),null,
+      "The live spreadsheet must be the final direct TOOLS section");
+
     assert.ok((await spreadsheet.boundingBox()).y>(await designation.boundingBox()).y,
       "Opening inventory spreadsheet must be under the Phase / FDA first row");
     const invalidMix=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&inventory=1&stages=Phase%202&offset=0&limit=50");
@@ -126,6 +132,14 @@ try{
     assert.match(await selectedGrid.innerText(),/Filtered trials/);
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
     await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').waitFor();
+    const bottomGrid=page.locator("#tools-final-trial-spreadsheet");
+    assert.ok(await bottomGrid.evaluate(el=>{
+      const analysis=document.querySelector('section[aria-label="Selected filters and matching clinical trials spreadsheet"]');
+      return !!analysis&&!!(analysis.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING);
+    }),"The live trial spreadsheet must follow the results and ranking analysis");
+    assert.ok((await bottomGrid.boundingBox()).y >
+      (await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').boundingBox()).y,
+      "Final live spreadsheet should be vertically below upstream analysis");
     assert.match(await phase.innerText(),/1 selected/);
     const phasePanel=page.locator("#tools-first-phase");
     const clearPhase=phasePanel.getByRole("button",{name:"Clear This Section"});
