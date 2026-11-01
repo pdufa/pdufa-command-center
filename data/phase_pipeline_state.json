@@ -1,27 +1,16 @@
 {
-  "started_at": "2026-10-31T03:20:35.820668+00:00",
+  "started_at": "2026-11-01T03:20:56.429346+00:00",
   "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-10-31",
+  "scope": "Industry Phase 2/3 records updated since 2024-11-01",
   "source_max_age_days": 180,
-  "studies_scanned": 15578,
+  "studies_scanned": 15539,
   "matched_trials": 3706,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [
-    {
-      "ticker": "IRD",
-      "drug": "Phentolamine Ophthalmic Solution 0.75%",
-      "nct_id": "NCT04620213"
-    },
-    {
-      "ticker": "IRD",
-      "drug": "Phentolamine Ophthalmic Solution 0.75%",
-      "nct_id": "NCT04638660"
-    }
-  ],
-  "finished_at": "2026-10-31T03:21:13.449046+00:00",
+  "new_master_programs": [],
+  "finished_at": "2026-11-01T03:21:31.714629+00:00",
   "stored_trials": 7398,
   "phase2_programs": 1048,
   "master_programs": 133,
