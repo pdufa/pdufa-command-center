@@ -89,7 +89,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
           </label>
           {checked&&index&&<div className={styles.toolsCascadeFdaEvidence}
               aria-label={category.label+" source evidence"} role="group">
-            <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
+            <div><strong>{d.records.length.toLocaleString("en-US")} unscoped source programs</strong>
               <small>Unscoped source catalog; NOT restricted NCT matches</small></div>
             <div><strong>{scopeLoading?"Updating…":contextual?contextual.matchingTrials.toLocaleString("en-US")+" verified NCT matches":"NCT count unknown"}</strong>
               <small>Documented subset within Phase/search, before pagination; full total unknown</small></div>
