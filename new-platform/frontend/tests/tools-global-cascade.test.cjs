@@ -27,9 +27,9 @@ function loadWithMocks(filename,mocks){
 }
 const Stub=()=>null;
 const PoolStageExplorer=loadWithMocks("PoolStageExplorer.tsx",{
- "./PoolDesignationSelector":{default:Stub},
- "./ToolsResultsSpreadsheet":{default:Stub},
- "./ToolsFunnel":{default:Stub}
+ "./PoolDesignationSelector":{__esModule:true,default:Stub},
+ "./ToolsResultsSpreadsheet":{__esModule:true,default:Stub},
+ "./ToolsFunnel":{__esModule:true,default:Stub}
 });
 const sampleIndex={
  availableKeys:{fast_track:true,orphan_drug:true},
