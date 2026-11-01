@@ -205,7 +205,10 @@ export function buildToolsResults(
 ){
   const {poolRows,stageStats,sourceAsOf,sourceState}=snapshot;
   if(selectedDesignations.length>0&&!index)throw Error("FDA_DESIGNATION_EVIDENCE_UNAVAILABLE");
-  const matchingIds=index?selectToolTrialIds(poolRows,index,selectedDesignations):null;
+  // No FDA selection must mean no FDA restriction, even when its source index loaded.
+  // An empty Set here would silently erase every Phase-only match.
+  const matchingIds=index&&selectedDesignations.length>0
+    ?selectToolTrialIds(poolRows,index,selectedDesignations):null;
   const designationCoverage=index&&selectedDesignations.length>0
     ?designationSourceCoverage(poolRows,index,selectedDesignations):null;
   // TOOLS selects from the complete published clinical POOL. The independent
