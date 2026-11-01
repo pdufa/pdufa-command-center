@@ -65,7 +65,7 @@ export default function PoolStageExplorer(){
     const p=new URLSearchParams({view:"pool",recordKind:"trials",tools:"1",offset:String(offset),limit:"50"});
     if(selectedStages.length)p.set("stages",selectedStages.join(","));
     if(selectedDesignations.length)p.set("designations",selectedDesignations.join(","));
-    if(query.trim())p.set("query",query.trim());
+    if(query.trim()&&(selectedStages.length||selectedDesignations.length))p.set("query",query.trim());
     if(!selectedStages.length&&!selectedDesignations.length)p.set("inventory","1");
     return p.toString();
   },[selectedStages,selectedDesignations,offset,query]);
