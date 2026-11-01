@@ -101,7 +101,13 @@ try{
     assert.match(before,/16 source-backed FDA program records/);
     assert.match(before,/NCT link not established/);
     await page.getByRole("button",{name:"Select all",exact:true}).click();
-    await page.waitForFunction(()=>document.querySelector("section[aria-label='POOL to PIPELINE to TRIALS filter flow']")?.textContent?.includes("Selecting all stages cannot establish the number of clinical trials"),null,{timeout:60000});
+    await page.waitForFunction(()=>{
+      const funnel=document.querySelector("section[aria-label='POOL to PIPELINE to TRIALS filter flow']");
+      const sheet=document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']");
+      return funnel?.textContent?.includes("Selecting all stages cannot establish the number of clinical trials")
+        && sheet?.textContent?.includes("16 source-backed FDA program records")
+        && !document.body.textContent?.includes("Calculating matching trial records from saved sources");
+    },null,{timeout:60000});
     const allStages=page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox",{checked:true});
     assert.equal(await allStages.count(),14);
     const after=await page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']").innerText();
