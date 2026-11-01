@@ -205,6 +205,9 @@ export default function ToolsResultsSpreadsheet({
                 <strong>{application.targetDate||"Target not recorded"}</strong>
                 {" · "}{application.targetConfirmation||"Unverified"}
                 {application.savedCheckStatus?" · Status: "+application.savedCheckStatus:""}
+                {application.savedOutcome?" · Recorded outcome: "+application.savedOutcome:""}
+                {application.decisionDate?" · Recorded decision: "+application.decisionDate:""}
+                {application.checkedAt?" · Source checked: "+application.checkedAt.slice(0,10):""}
                 {application.evidenceUrl?<a href={application.evidenceUrl} target="_blank" rel="noopener noreferrer"> · Evidence</a>:null}
               </div>)}
             </details>:<span className={styles.toolsSheetNoMatch}>None source-linked</span>}</td>
