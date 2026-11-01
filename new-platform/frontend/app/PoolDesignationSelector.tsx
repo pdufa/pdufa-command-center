@@ -1,6 +1,6 @@
 "use client";
 
-import {useMemo,useState} from "react";
+import {useMemo} from "react";
 import {useTrialDesignations} from "./TrialDesignations";
 import {
   SPECIAL_DESIGNATION_CATEGORIES,
@@ -12,9 +12,8 @@ import styles from "./FunnelWorkspace.module.css";
 type PositiveRecord={program:DesignationProgram;linkedNcts:string[]};
 type DesignationSummary={available:boolean;records:PositiveRecord[];linkedTrials:number};
 
-export default function PoolDesignationSelector(){
+export default function PoolDesignationSelector({selected,onChange}:{selected:DesignationKey[];onChange:(next:DesignationKey[])=>void}){
   const {index,loading,error,retry}=useTrialDesignations();
-  const [selected,setSelected]=useState<DesignationKey[]>([]);
   const entries=useMemo(()=>{
     const trialLinks=new Map<string,Set<string>>();
     if(index)for(const [nct,keys] of Object.entries(index.trialEvents)){
@@ -59,7 +58,7 @@ export default function PoolDesignationSelector(){
     return [...m.values()].sort((a,b)=>a.row.program.ticker.localeCompare(b.row.program.ticker));
   },[entries,selected]);
   function toggle(key:DesignationKey){
-    setSelected(old=>old.includes(key)?old.filter(item=>item!==key):[...old,key]);
+    onChange(selected.includes(key)?selected.filter(item=>item!==key):[...selected,key]);
   }
   return <div className={styles.stageDropdownColumn}>
     <label className={styles.stageDropdownLabel}>Saved FDA source coverage</label>
@@ -67,13 +66,13 @@ export default function PoolDesignationSelector(){
     <details className={styles.stageDesignationPane}>
       <summary className={styles.stageDesignationSummary}>
         <span>{selected.length===0?"Select FDA designations":selected.length+" designations selected"}</span>
-        <strong>13</strong>
+        <strong>{selected.length} selected</strong>
       </summary>
       <div className={styles.stageDesignationBody}>
         <div className={styles.stageDropdownActions}>
           <button type="button" disabled={!index||supported.length===0}
-            onClick={()=>setSelected(supported.map(item=>item.key))}>Select all available</button>
-          <button type="button" onClick={()=>setSelected([])}>Clear</button>
+            onClick={()=>onChange(supported.map(item=>item.key))}>Select all available</button>
+          <button type="button" onClick={()=>onChange([])}>Clear</button>
         </div>
         <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
           {SPECIAL_DESIGNATION_CATEGORIES.map(category=>{
@@ -96,7 +95,7 @@ export default function PoolDesignationSelector(){
     {error&&<p role="alert" className={styles.error}>FDA source unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
     {selected.length>0&&index&&<details className={styles.designationSelection}>
       <summary style={{cursor:"pointer",fontWeight:700}}>
-        View {combined.length.toLocaleString("en-US")} matching application/program records
+        View {combined.length.toLocaleString("en-US")} source-linked application/program records (all stages)
       </summary>
       {combined.length===0?<p>No verified positive source-linked records in these categories; missing evidence is not a denial.</p>:
         <>
@@ -114,6 +113,6 @@ export default function PoolDesignationSelector(){
         </>
       }
     </details>}
-    <p className={styles.muted}>The FDA categories are saved source findings; not all 13 are formal statutory designations. No selection changes underlying POOL or Pipeline eligibility.</p>
+    <p className={styles.muted}>The FDA categories are saved source findings; not all 13 are formal statutory designations. This list shows application/program evidence; combined trial matches appear below both dropdowns, with exact NCT and ticker linkage.</p>
   </div>;
 }
