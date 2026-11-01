@@ -42,8 +42,8 @@ export default function ToolsOpeningTrialGrid({
       <div>
         <h2>{inventoryMode?"RESTRICTED RESEARCH SUBSET — trial spreadsheet":"Restricted trial matches — spreadsheet"}</h2>
         <p>{inventoryMode
-          ?"Dated $300M–$10B completed Phase 3 research subset. FDA designations and saved application links appear on the same NCT rows. Current listing, cap and PDUFA eligibility remain unverified."
-          :"One NCT per row, already restricted to the dated $300M–$10B completed Phase 3 research subset. Phase and FDA filters use this same pool; PDUFA eligibility is unverified."}</p>
+          ?"All recorded phases among NCT studies with $300M–$10B issuers from saved verified cap evidence. FDA designations and saved application records appear on the same NCT rows."
+          :"One NCT per row from the $300M–$10B issuer-cap subset, across all recorded phases. Phase and FDA options filter this same universe; FDA/PDUFA coverage remains partial."}</p>
       </div>
       <strong className={css.count} role="status">{loading?"Loading…":error?"Unavailable":format(total)+" restricted NCT matches"}</strong>
     </div>
