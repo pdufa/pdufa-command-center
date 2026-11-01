@@ -5,6 +5,8 @@ import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import css from "./ToolsBenefitMatrix.module.css";
 import RegistryBenefitEvidence from "./RegistryBenefitEvidence";
 import TrialTimelineSummary from "./TrialTimelineSummary";
+import ToolsOptionNumber from "./ToolsOptionNumber";
+import {toolsOptionCode} from "../lib/tools-option-code";
 import {pacificToday} from "../lib/pipeline-timeline";
 import {sourceReviewHint,type RegistryCoverage} from "../lib/registry-benefit-coverage";
 type Props={
@@ -102,9 +104,10 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
       {feed&&!feedError&&<p>Evidence-backed assessments attached to current page: {researched} of {rows.length} NCT records. Missing evidence does not mean the drug has no advantage.</p>}
     </div>
     <div className={css.actions}>
-      <label htmlFor="benefit-group-picker">Jump to assessment #1–#20</label>
+      <label htmlFor="benefit-group-picker">Choose assessment (20 options)</label>
+      <ToolsOptionNumber level={1} index={active-1} total={BENEFIT_GROUPS.length}/>
       <select id="benefit-group-picker" value={active} onChange={e=>setActive(Number(e.target.value))}>
-        {BENEFIT_GROUPS.map(g=><option value={g.number} key={g.number}>#{g.number} — {g.name}</option>)}
+        {BENEFIT_GROUPS.map(g=><option value={g.number} key={g.number}>{toolsOptionCode(1,g.number-1,BENEFIT_GROUPS.length)} · #{g.number} — {g.name}</option>)}
       </select>
     </div>
     {!hasSelection?<div className={css.empty} role="status">0 matching trials. Select at least one clinical stage or FDA designation above to populate the assessment spreadsheet.</div>:
@@ -119,7 +122,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
             <tr><th className={css.identityHeading} colSpan={4} scope="colgroup">PROGRAM / NCT IDENTIFICATION</th>
               {BENEFIT_GROUPS.map(g=><th key={g.number} ref={node=>{groupHeaders.current[g.number]=node;}} colSpan={active===g.number?g.fields.length+2:1}
                 className={active===g.number?css.activeHeading:css.groupHeading} scope="colgroup">
-                <button type="button" aria-pressed={active===g.number} onClick={()=>setActive(g.number)}>#{g.number} — {g.name} {active===g.number?"▴":"▾"}</button>
+                <button type="button" aria-pressed={active===g.number} onClick={()=>setActive(g.number)}><ToolsOptionNumber level={1} index={g.number-1} total={BENEFIT_GROUPS.length}/> #{g.number} — {g.name} {active===g.number?"▴":"▾"}</button>
               </th>)}
             </tr>
             <tr>
@@ -170,7 +173,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
         </details>
         <div className={css.groupMobile}>
           <div className={css.mobileGroupTitle}>
-            <small>ASSESSMENT {active} OF 20</small><h4>#{active} — {current.name}</h4>
+            <small>ASSESSMENT {active} OF 20</small><h4><ToolsOptionNumber level={1} index={active-1} total={BENEFIT_GROUPS.length}/> #{active} — {current.name}</h4>
           </div>
           {selectedSourceHint&&<p className={css.sourceHint}><strong>Official registry source:</strong> {selectedSourceHint}. See the expandable original-source evidence section below. Assessment conclusions remain Not assessed until reviewed.</p>}
           <div className={css.fieldScroll} role="region" aria-label={"Assessment "+active+" subcolumns"} tabIndex={0}>
