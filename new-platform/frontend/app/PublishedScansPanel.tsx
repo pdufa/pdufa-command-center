@@ -213,8 +213,8 @@ export default function PublishedScansPanel() {
       {runs?.manual?.[0] && <p className="subtle">Last manual control: <a href={runs.manual[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.manual[0].id}</a> — {runs.manual[0].status} / {runs.manual[0].conclusion || "not concluded"}.</p>}
       {runs?.overnight?.[0] && <p className="subtle">Last full overnight chain: <a href={runs.overnight[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.overnight[0].id}</a> — {runs.overnight[0].status} / {runs.overnight[0].conclusion || "not concluded"}.</p>}
     </div>
-    <section className="source-health" aria-label="Gmail per-section and all-email checks">
-      <h3>GMAIL AUDIT — BY SECTION OR ALL EMAILS</h3>
+    <details className="source-health nested-expander" aria-label="Gmail per-section and all-email checks">
+      <summary>GMAIL AUDIT — BY SECTION OR ALL EMAILS</summary>
       <p className="subtle">CHECK audits in read-only 100-message batches. FIX &amp; TRASH first inventories every section, validates exact GitHub run IDs, then processes the entire queue from most important to least. Critical items receive the limited repair attempts first.</p>
       <div className="gmail-priority-grid" aria-label="Gmail repair priorities">
         <div><strong>P1</strong><span>Overnight / POOL / PIPELINE / Phase 3</span></div>
@@ -249,7 +249,7 @@ export default function PublishedScansPanel() {
       {runs?.gmailRepair?.[0] && <p className="subtle">Latest FIX &amp; TRASH action: <a href={runs.gmailRepair[0].html_url} target="_blank" rel="noopener noreferrer">GitHub run #{runs.gmailRepair[0].id}</a> — {runs.gmailRepair[0].status} / {runs.gmailRepair[0].conclusion || "not concluded"}. Inspect the run summary to see how many were retried, confirmed resolved, or moved to Trash.</p>}
       {runs?.gmail?.[0] && <p className="subtle">Latest Gmail audit: <a href={runs.gmail[0].html_url} target="_blank" rel="noopener noreferrer">GitHub run #{runs.gmail[0].id}</a> — {runs.gmail[0].status} / {runs.gmail[0].conclusion || "not concluded"}. Open the run summary for counts or its audit artifact.</p>}
       <p><a href={GMAIL_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN READ-ONLY AUDIT HISTORY ↗</a> · <a href={GMAIL_REPAIR_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN FIX &amp; TRASH HISTORY ↗</a></p>
-    </section>
+    </details>
     </div>
     {error && <p className="risk-line">{error}</p>}
     {!record && !error && <p className="subtle">Loading original published scan reports…</p>}
