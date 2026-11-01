@@ -126,3 +126,31 @@
 .step4Active,.step4Active:hover{background:#13543d;border-color:#13543d;color:#fff;box-shadow:0 0 0 2px #94d3b5}
 .step4Choice:focus-visible,.step4Active:focus-visible{outline:3px solid #2a82b3;outline-offset:2px}
 @media(max-width:800px){.step4Choice,.step4Active{flex-basis:115px;min-height:72px;padding:9px}.step4Choices{gap:6px}}
+
+/* Compressed 5-group + 20-assessment Step 4 bar. Research stays behind
+   an accessible caret so Step 5 immediately follows the compact controls. */
+.root{margin:10px 0 5px;padding:10px 12px}
+.intro h3{font-size:16px;margin:0;color:#164f75}
+.inlineCount{font-size:11px;color:#476f68;font-weight:600;white-space:normal}
+.step4Compact{margin-top:8px;display:flex;align-items:center;flex-wrap:wrap;gap:7px;min-width:0}
+.step4GroupButtons{display:flex;flex:1 1 460px;gap:4px;overflow-x:auto;max-width:100%;scrollbar-width:thin;padding:1px 1px 4px}
+.step4GroupButton,.step4GroupActive{flex:1 0 auto;min-height:38px;border:1px solid #acc5bc;border-radius:6px;background:#fff;color:#265644;font-size:11px;font-weight:750;cursor:pointer;padding:5px 8px;white-space:nowrap}
+.step4GroupActive,.step4GroupActive:hover{color:#fff;background:#13543d;border-color:#13543d}
+.step4GroupButton:focus-visible,.step4GroupActive:focus-visible{outline:3px solid #368bb4;outline-offset:1px}
+.step4MetricPicker{flex:1 1 260px;min-width:0;display:flex;align-items:center;gap:7px}
+.step4MetricPicker label{font-weight:750;font-size:11px;white-space:nowrap}
+.step4MetricPicker select{min-width:0;flex:1;height:38px;border:1px solid #abc4b9;border-radius:6px;background:white;color:#194c38;font-size:12px;padding:5px}
+.researchDisclosure{margin-top:7px;border:1px solid #c9dcd3;border-radius:7px;background:#fff;min-width:0}
+.researchDisclosure>summary{cursor:pointer;font-size:12px;font-weight:700;color:#17523c;min-height:36px;padding:8px 11px}
+.researchDisclosure[open]>summary{border-bottom:1px solid #dae7e1;background:#f1f8f4}
+.researchDisclosure>.notice,.researchDisclosure>.desktop,.researchDisclosure>.mobile,.researchDisclosure>.overallDesktop,.researchDisclosure>.empty,.researchDisclosure>.footer{margin:10px}
+@media(max-width:800px){
+ .root{margin:8px 0 4px;padding:9px}
+ .step4Compact{gap:5px}
+ .step4GroupButtons{flex-basis:100%;padding-bottom:5px}
+ .step4GroupButton,.step4GroupActive{flex:0 0 auto;min-height:36px;font-size:11px}
+ .step4MetricPicker{flex-basis:100%}
+ .step4MetricPicker select{height:36px}
+ .intro h3{font-size:15px}
+ .researchDisclosure{margin-top:6px}
+}
