@@ -9,6 +9,7 @@ import ToolsResultsSpreadsheet, {type ToolsSpreadsheetRow,type SelectedFiltersSu
 import ToolsFunnel from "./ToolsFunnel";
 import ToolsOptionNumber from "./ToolsOptionNumber";
 import ToolsOpeningTrialGrid from "./ToolsOpeningTrialGrid";
+import ToolsAssessmentSection from "./ToolsAssessmentSection";
 
 type StageCount={trials:number;standaloneResults:number;regulatoryEvents:number;total:number};
 type StageStats={
@@ -246,7 +247,36 @@ export default function PoolStageExplorer(){
         <strong>{selectedStages.length} Phase selected · {selectedDesignations.length} Special Designation selected</strong>
       </div>}
     </div>
+    {/* Step 3 selections reveal all twenty Step 4 assessments, then Step 5 immediately below. */}
     {hasSelections&&<>
+      <ToolsAssessmentSection
+        rows={page?.spreadsheetRows||[]}
+        total={page?.total??0}
+        offset={offset}
+        loading={loading}
+        error={error}
+      />
+<div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
+      <ToolsOpeningTrialGrid
+        rows={hasSelections?page?.spreadsheetRows||[]:[]}
+        total={hasSelections?page?.total??0:0}
+        offset={hasSelections?offset:0}
+        nextOffset={hasSelections?page?.nextOffset??null:null}
+        inventoryMode={!hasSelections}
+        selectedStages={selectedStages.length}
+        selectedDesignations={selectedDesignations.length}
+        noVerifiedNctLinks={!!page?.designationCoverage?.noVerifiedNctLinks}
+        loading={hasSelections&&loading}
+        error={hasSelections?error:""}
+        sourceDate={sourceDate}
+        sourceState={sourceState}
+        regulatorySourcesAvailable={!!page?.regulatorySourcesAvailable}
+        onPrevious={()=>setOffset(Math.max(0,offset-50))}
+        onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
+      />
+    </div>
+      <details className={styles.toolsAdvanced}>
+        <summary>Additional filters, detailed trial comparisons, rankings and CSV export</summary>
     <details className={styles.toolsAdvanced}>
       <summary>Quick filters and shortcuts</summary>
     <div className={styles.toolsQuickFilter}>
@@ -290,26 +320,7 @@ export default function PoolStageExplorer(){
       onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       nextOffset={page?.nextOffset??null}
     />
+      </details>
     </>}
-    {/* Step 5 is not rendered until at least one Step 3 checkbox is selected. */}
-    {hasSelections&&<div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
-      <ToolsOpeningTrialGrid
-        rows={hasSelections?page?.spreadsheetRows||[]:[]}
-        total={hasSelections?page?.total??0:0}
-        offset={hasSelections?offset:0}
-        nextOffset={hasSelections?page?.nextOffset??null:null}
-        inventoryMode={!hasSelections}
-        selectedStages={selectedStages.length}
-        selectedDesignations={selectedDesignations.length}
-        noVerifiedNctLinks={!!page?.designationCoverage?.noVerifiedNctLinks}
-        loading={hasSelections&&loading}
-        error={hasSelections?error:""}
-        sourceDate={sourceDate}
-        sourceState={sourceState}
-        regulatorySourcesAvailable={!!page?.regulatorySourcesAvailable}
-        onPrevious={()=>setOffset(Math.max(0,offset-50))}
-        onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
-      />
-    </div>}
   </section>;
 }
