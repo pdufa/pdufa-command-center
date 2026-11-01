@@ -7,7 +7,7 @@ type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
   inventoryMode:boolean;loading:boolean;error:string;
   selectedStages:number;selectedDesignations:number;noVerifiedNctLinks:boolean;
-  sourceDate:string;sourceState:string;
+  sourceDate:string;sourceState:string;regulatorySourcesAvailable:boolean;
   onPrevious:()=>void;onNext:()=>void;
 };
 const format=(n:number)=>n.toLocaleString("en-US");
@@ -26,7 +26,7 @@ const columns:{key:Field;label:string}[]=[
 ];
 export default function ToolsOpeningTrialGrid({
   rows,total,offset,nextOffset,inventoryMode,loading,error,
-  selectedStages,selectedDesignations,noVerifiedNctLinks,sourceDate,sourceState,onPrevious,onNext
+  selectedStages,selectedDesignations,noVerifiedNctLinks,sourceDate,sourceState,regulatorySourcesAvailable,onPrevious,onNext
 }:Props){
   const [sortKey,setSortKey]=useState<Field>("nctId");
   const [desc,setDesc]=useState(false);
@@ -85,7 +85,7 @@ export default function ToolsOpeningTrialGrid({
                   {" · "}{items?.[0]?.source
                     ?<a href={items[0].source} target="_blank" rel="noopener noreferrer">Evidence</a>:"Source not available"}
                 </div>)}
-              </details>:<span>Not documented</span>;
+              </details>:<span>{regulatorySourcesAvailable?"Not documented":"FDA source unavailable"}</span>;
             })()}</td>
             <td>{row.pdufaApplications?.length?<details>
               <summary>{row.pdufaApplications.length} saved application{row.pdufaApplications.length===1?"":"s"}</summary>
@@ -98,7 +98,7 @@ export default function ToolsOpeningTrialGrid({
                 {application.checkedAt?" · Source checked: "+application.checkedAt.slice(0,10):""}
                 {application.evidenceUrl?<a href={application.evidenceUrl} target="_blank" rel="noopener noreferrer"> · Source</a>:null}
               </div>)}
-            </details>:<span>No exact linked application recorded</span>}</td>
+            </details>:<span>{regulatorySourcesAvailable?"No exact linked application recorded":"PDUFA source unavailable"}</span>}</td>
             <td>Not established</td>
           </tr>)}
         </tbody>
@@ -111,7 +111,7 @@ export default function ToolsOpeningTrialGrid({
         <button type="button" disabled={loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
       </div>
     </div>
-    <p className={css.source}>FDA designation and PDUFA application coverage is incomplete. A PDUFA target is application-level; the linked NCT is not automatically pivotal. Published source: {sourceDate||"Not recorded"} · State: {sourceState||"Unverified"}.
+    <p className={css.source}>{!regulatorySourcesAvailable?"FDA/PDUFA enrichment source unavailable for this request; absence of a link is not established. ":""}FDA designation and PDUFA application coverage is incomplete. A PDUFA target is application-level; the linked NCT is not automatically pivotal. Published source: {sourceDate||"Not recorded"} · State: {sourceState||"Unverified"}.
       {inventoryMode?" This is the full clinical POOL inventory, not a Pipeline qualification or an FDA designation match.":""}
       {hasSelection&&selectedDesignations>0?" FDA program records lacking NCT links cannot be treated as zero trials.":""}
     </p>
