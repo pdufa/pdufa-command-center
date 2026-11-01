@@ -93,7 +93,7 @@ test("TOOLS shows three bordered funnel cards without fabricating PIPELINE quali
   assert.match(card,/<h3>PIPELINE<\/h3>/);
   assert.match(card,/<h3>TRIALS<\/h3>/);
   assert.match(card,/Not verified/);
-  assert.match(card,/not a verified PIPELINE-qualified subset/);
+  assert.match(card,/PIPELINE eligibility is not yet verified/);
   assert.match(card,/selectedTrials/);
   assert.match(css,/\.toolsFunnelCard\{border:3px solid/);
   assert.match(page,/<div className=\{styles\.stageDropdownLabel\}>Clinical development stages<\/div>/);
