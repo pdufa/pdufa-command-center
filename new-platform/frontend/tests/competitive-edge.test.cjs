@@ -104,5 +104,5 @@ test("gold bordered reason appears directly AFTER both green A and P cards in sh
  assert.match(summary,/Limitations:/);
  assert.match(summary,/<details style=\{\{marginTop:8/);
  assert.doesNotMatch(summary,/<details[^>]+ open=\{true\}/);
- assert.match(summary,/overall clinical superiority/);
+ assert.match(summary,/not a verified overall winner/);
 });
