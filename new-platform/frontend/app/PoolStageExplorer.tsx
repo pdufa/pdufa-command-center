@@ -86,7 +86,7 @@ export default function PoolStageExplorer(){
     return ()=>controller.abort();
   },[params]);
   const stats=page?.stageStats||lastStats;
-  const matchCount=!hasSelections?0:!loading&&page?page.total:null;
+  const matchingTrialLabel=!hasSelections?"0 matching trials":loading?"Calculating matching trials…":error?"Trial count unavailable":page?count(page.total)+" matching trials":"Trial count unavailable";
   function toggleStage(stage:string){
     setSelectedStages(old=>old.includes(stage)?old.filter(item=>item!==stage):[...old,stage]);
     setOffset(0);
@@ -97,19 +97,16 @@ export default function PoolStageExplorer(){
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
     <div className={styles.headline}>
       <div>
-        <h2>POOL Stages &amp; FDA Designation Filters</h2>
-        <p className={styles.muted}>Choose stages and FDA designations independently or together. Both dropdowns start at <strong>0 selected</strong>; no matching trials are shown until you select at least one filter.</p>
+        <h2>POOL</h2>
+        <p className={styles.stageTrialMatchCount} role="status" aria-live="polite" aria-atomic="true">{matchingTrialLabel}</p>
+        <p className={styles.muted}>Choose stages and FDA designations independently or together. Both dropdowns start at <strong>0 selected</strong>; the number above counts unique trials matching your selected filters{query?" and search term":""}.</p>
       </div>
-      <strong style={{fontSize:19,whiteSpace:"nowrap"}} aria-live="polite">{matchCount===null?"—":count(matchCount)} matching trials</strong>
     </div>
     <div className={styles.stageDesignationColumns}>
       <div className={styles.stageDropdownColumn}>
         <div className={styles.stageDropdownLabel}>Clinical development stages</div>
-        <p className={styles.stageTrialMatchCount} role="status" aria-live="polite" aria-atomic="true">
-          {!hasSelections?"0 matching trials":loading?"Calculating matching trials…":error?"Trial count unavailable":page?count(page.total)+" matching trials":"Trial count unavailable"}
-        </p>
         <p className={styles.stageDropdownSubline}>
-          Calculated from selected stages and FDA designations{query?", including the search term":""}.
+          Select one or more stages below. Counts beside each stage describe the full POOL.
           {stats?" Full POOL: "+count(stats.trials)+" NCT trials.":""}
         </p>
         <details className={styles.stageDesignationPane}>
