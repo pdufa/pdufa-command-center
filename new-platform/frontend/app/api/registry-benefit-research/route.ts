@@ -3,13 +3,29 @@ import {readFile} from "node:fs/promises";
 import {join} from "node:path";
 import {authConfigured,COOKIE_NAME,hasSession} from "../../../lib/auth";
 import {parsePhase3CensusCsv} from "../../../lib/phase3-census-rows";
-import {parseRegistryBenefitResearch} from "../../../lib/registry-benefit-research";
+import {parseRegistryBenefitResearch,type RegistryBenefitResearch} from "../../../lib/registry-benefit-research";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 export const maxDuration=30;
 const origin="https://clinicaltrials.gov/api/v2/studies/";
 const headers={"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"};
+const snapshotPath=join(process.cwd(),"data","registry-benefit-research-snapshot.json");
+async function archivedEvidence(nct:string):Promise<RegistryBenefitResearch|null>{
+  try{
+    const raw=JSON.parse(await readFile(snapshotPath,"utf8")) as Record<string,unknown>;
+    if(raw.schemaVersion!==1||!Array.isArray(raw.records)||raw.records.length>375)return null;
+    const packet=raw.records.find((r:unknown)=>!!r&&typeof r==="object"&&
+      (r as Record<string,unknown>).nctId===nct) as RegistryBenefitResearch|undefined;
+    if(!packet||packet.sourceUrl!=="https://clinicaltrials.gov/study/"+nct
+      ||packet.comparisonVerified!==false||packet.benefitRank!==null
+      ||packet.fdaDecisionVerified!==false||!Array.isArray(packet.primary)
+      ||!Array.isArray(packet.secondary)||!Array.isArray(packet.seriousAdverseEvents)
+      ||typeof packet.resultsPosted!=="boolean")return null;
+    const age=Date.now()-Date.parse(packet.retrievedAt);
+    return Number.isFinite(age)&&age>=0&&age<48*3600000?packet:null;
+  }catch{return null;}
+}
 /** Per-study independent evidence retrieval. No arbitrary URLs and no
  * unsupported sponsor/source claims are promoted into assessments.
  */
@@ -26,6 +42,8 @@ export async function GET(req:NextRequest){
     const pinned=parsePhase3CensusCsv(file);
     if(pinned.rows.length!==741||!pinned.rows.some(row=>row.nctId===nct))
       return NextResponse.json({error:"Not a pinned historical Phase 3 research NCT"},{status:404,headers});
+    const fromArchive=await archivedEvidence(nct);
+    if(fromArchive)return NextResponse.json(fromArchive,{headers:{...headers,"X-PDUFA-Evidence-Origin":"dated-primary-source-archive"}});
     const response=await fetch(origin+nct,{
       method:"GET",cache:"no-store",redirect:"error",
       headers:{Accept:"application/json"},signal:AbortSignal.timeout(15000)
