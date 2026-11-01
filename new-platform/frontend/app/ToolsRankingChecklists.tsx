@@ -20,6 +20,9 @@ const fieldName=(id:number,key:string)=>byId.get(id)?.fields.find(f=>f.id===key)
  */
 export default function ToolsRankingChecklists(){
   const [value,setValue]=useState<RankingChecklistSelection>(BLANK);
+  const [rankPanelOpen,setRankPanelOpen]=useState(false);
+  const [priorityPanelOpen,setPriorityPanelOpen]=useState(false);
+  const [summaryPanelOpen,setSummaryPanelOpen]=useState(false);
   const [hydrated,setHydrated]=useState(false);
   useEffect(()=>{
     try {
@@ -65,9 +68,12 @@ export default function ToolsRankingChecklists(){
   }));
   return <section className={css.root} aria-label="Independent cascading ranking checklists">
     <div className={css.columns}>
-      <details className={css.panel}>
-        <summary className={css.panelHeader}>Rank Trials By</summary>
-        <div className={css.panelBody}>
+      <div className={css.panel}>
+        <button type="button" className={css.panelHeader} aria-expanded={rankPanelOpen}
+          aria-controls="tools-rank-trials-body" onClick={()=>setRankPanelOpen(open=>!open)}>
+          <span>Rank Trials By</span><span aria-hidden="true">{rankPanelOpen?"⌃":"⌄"}</span>
+        </button>
+        {rankPanelOpen&&<div id="tools-rank-trials-body" className={css.panelBody}>
           <p className={css.hint}>Check a group, then its assessments, then the exact research fields.</p>
           <div className={css.list}>
             {TOOLS_RANKING_GROUPS.map(group=>{
@@ -103,11 +109,14 @@ export default function ToolsRankingChecklists(){
           <button type="button" className={css.clear} onClick={()=>setValue(prev=>({
             ...prev,groupIds:[],groupAssessments:[],groupCriteria:{}
           }))}>Clear trial ranking selections</button>
-        </div>
-      </details>
-      <details className={css.panel}>
-        <summary className={css.panelHeader}>Rank 20 Assessments</summary>
-        <div className={css.panelBody}>
+        </div>}
+      </div>
+      <div className={css.panel}>
+        <button type="button" className={css.panelHeader} aria-expanded={priorityPanelOpen}
+          aria-controls="tools-rank-priorities-body" onClick={()=>setPriorityPanelOpen(open=>!open)}>
+          <span>Rank 20 Assessments</span><span aria-hidden="true">{priorityPanelOpen?"⌃":"⌄"}</span>
+        </button>
+        {priorityPanelOpen&&<div id="tools-rank-priorities-body" className={css.panelBody}>
           <p className={css.hint}>Check an assessment, set its priority, then select the research fields to emphasize.</p>
           <div className={css.list}>
             {assessmentList.map(id=>{
@@ -141,14 +150,16 @@ export default function ToolsRankingChecklists(){
             })}
           </div>
           <button type="button" className={css.clear} onClick={()=>setValue(prev=>({...prev,priorities:[],priorityCriteria:{}}))}>Clear assessment priorities</button>
-        </div>
-      </details>
+        </div>}
+      </div>
     </div>
-    <details className={css.results}>
-      <summary className={css.panelHeader}>
-        Selected Ranking Criteria <span className={css.count}>({selectedCount})</span>
-      </summary>
-      <div className={css.panelBody} aria-live="polite">
+    <div className={css.results}>
+      <button type="button" className={css.panelHeader} aria-expanded={summaryPanelOpen}
+        aria-controls="tools-selected-ranking-body" onClick={()=>setSummaryPanelOpen(open=>!open)}>
+        <span>Selected Ranking Criteria <span className={css.count}>({selectedCount})</span></span>
+        <span aria-hidden="true">{summaryPanelOpen?"⌃":"⌄"}</span>
+      </button>
+      {summaryPanelOpen&&<div id="tools-selected-ranking-body" className={css.panelBody} aria-live="polite">
         {selectedCount===0?<p className={css.hint}>No ranking criteria selected. Check items in either list or both.</p>:<>
           {value.groupIds.length>0&&<div className={css.summarySection}>
             <strong>Rank Trials By</strong>
@@ -173,7 +184,7 @@ export default function ToolsRankingChecklists(){
           </div>}
           <p className={css.hint}>Selections are saved on this device. These are research priorities, not calculated trial superiority or FDA approval predictions. The existing MATCHING TRIAL RECORDS remain unchanged.</p>
         </>}
-      </div>
-    </details>
+      </div>}
+    </div>
   </section>;
 }
