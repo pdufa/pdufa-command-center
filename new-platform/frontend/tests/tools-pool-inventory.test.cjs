@@ -76,9 +76,9 @@ test("source parity failure and stale POOL never produce invented trial totals",
   assert.throws(()=>verifiedToolPool({...raw(),sourceHealth:{...raw().sourceHealth,regulatoryRows:2}}),/POOL_SOURCE_PARITY_FAILED/);
 });
 test("CSV exports all filtered rows and prevents spreadsheet formula execution",()=>{
-  const sample=[{...trials[0],company:"=HYPERLINK(\\"https://evil\\")"}];
+  const sample=[{...trials[0],company:'=HYPERLINK("https://evil")'}];
   const csv=renderToolsSpreadsheetCsv(sample,["Phase 1"],[],null,"2026-10-31");
-  assert.match(csv,/^\\uFEFF/);
+  assert.equal(csv.charCodeAt(0),0xFEFF);
   assert.match(csv,/'=HYPERLINK/);
   assert.match(csv,/NCT00000001/);
 });
