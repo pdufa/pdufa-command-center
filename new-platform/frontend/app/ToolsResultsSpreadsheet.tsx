@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect,useMemo,useState} from "react";
-import {pacificToday,type TimelineDates} from "../lib/pipeline-timeline";
+import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 import TrialTimelineSummary from "./TrialTimelineSummary";
 import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
@@ -55,11 +55,14 @@ type Props={
 const names=new Map(SPECIAL_DESIGNATION_CATEGORIES.map(category=>[category.key,category.label]));
 const fmt=(number:number)=>number.toLocaleString("en-US");
 const display=(text:string)=>text?.trim()||"Not recorded";
-type SortField="nctId"|"ticker"|"company"|"drug"|"indication"|"stage";
-const sortFields:{key:SortField;label:string}[]=[
+const NO_DATES:TimelineDates={phase3DataRelease:null,pdufaTarget:null};
+type SortField="nctId"|"ticker"|"company"|"s"|"d"|"drug"|"indication"|"stage";
+const sortFields:{key:SortField;label:string;hint?:string}[]=[
   {key:"nctId",label:"NCT / Trial ID"},
   {key:"ticker",label:"Ticker"},
   {key:"company",label:"Company"},
+  {key:"s",label:"S",hint:"Days since Phase 3 data release"},
+  {key:"d",label:"D",hint:"Days to PDUFA"},
   {key:"drug",label:"Drug / therapy"},
   {key:"indication",label:"Disease / indication"},
   {key:"stage",label:"Recorded stage"},
@@ -83,9 +86,17 @@ export default function ToolsResultsSpreadsheet({
   const [today,setToday]=useState("");
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
   const ordered=useMemo(()=>[...rows].sort((a,b)=>{
+    if(sortKey==="s"||sortKey==="d"){
+      const key=sortKey==="s"?"daysSincePhase3Release":"daysToPdufa";
+      const x=pipelineDayCounts(a.timeline||NO_DATES,today)[key];
+      const y=pipelineDayCounts(b.timeline||NO_DATES,today)[key];
+      if(x===null)return y===null?0:1;
+      if(y===null)return -1;
+      return descending?y-x:x-y;
+    }
     const result=(a[sortKey]||"").localeCompare(b[sortKey]||"",undefined,{numeric:true,sensitivity:"base"});
     return descending?-result:result;
-  }),[rows,sortKey,descending]);
+  }),[rows,sortKey,descending,today]);
   function sort(key:SortField){
     if(sortKey===key)setDescending(prev=>!prev);
     else {setSortKey(key);setDescending(false);}
@@ -149,16 +160,18 @@ export default function ToolsResultsSpreadsheet({
       <h3>Matching trial records</h3>
       <span>{hasSelection&&!loading&&!error?fmt(total)+(designations.length?" documented FDA-linked matches in restricted subset (partial coverage)":" restricted trial matches"):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
     </div>
+    <p className={styles.muted}><strong>S</strong> is days since verified public Phase 3 data release; <strong>D</strong> is days to the verified PDUFA target (negative after the target date). Missing source evidence stays Not verified, never zero.</p>
     <ToolsRankingChecklists/>
     <div className={styles.toolsSheetTableScroll} role="region" aria-label="Scrollable spreadsheet containing selected trial matches" tabIndex={0}>
       <table className={styles.toolsSheetGrid}>
         <thead><tr>
           <th className={styles.toolsSheetRowNumber}>#</th>
-          {sortFields.map(item=><th key={item.key}>
+          {sortFields.map(item=><th key={item.key} title={item.hint||item.label}>
             <button type="button" className={styles.toolsSheetSort} onClick={()=>sort(item.key)}
-              aria-label={"Sort visible page by "+item.label}>
+              aria-label={"Sort visible page by "+(item.hint||item.label)}>
               {item.label}{sortKey===item.key?(descending?" ↓":" ↑"):" ↕"}
             </button>
+            {item.hint&&<small>{item.hint}</small>}
           </th>)}
           <th>FDA links <small>Source-recorded, partial</small></th>
           <th>PDUFA application <small>Linked program, not a trial deadline</small></th>
@@ -167,15 +180,15 @@ export default function ToolsResultsSpreadsheet({
           {designations.map(key=><th key={"designation:"+key} title="Selected FDA designation category">{names.get(key)||key}<small>FDA designation evidence</small></th>)}
         </tr></thead>
         <tbody>
-          {!hasSelection?<tr><td colSpan={10+stages.length+designations.length} className={styles.toolsSheetEmpty}>Select a clinical stage or FDA designation to populate rows.</td></tr>:
-          loading?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Loading matching trial rows…</td></tr>:
-          error?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Trial evidence could not be verified. No result total is asserted.</td></tr>:
-          ordered.length===0?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>
+          {!hasSelection?<tr><td colSpan={12+stages.length+designations.length} className={styles.toolsSheetEmpty}>Select a clinical stage or FDA designation to populate rows.</td></tr>:
+          loading?<tr><td colSpan={12+stages.length+designations.length} className={styles.toolsSheetEmpty}>Loading matching trial rows…</td></tr>:
+          error?<tr><td colSpan={12+stages.length+designations.length} className={styles.toolsSheetEmpty}>Trial evidence could not be verified. No result total is asserted.</td></tr>:
+          ordered.length===0?<tr><td colSpan={12+stages.length+designations.length} className={styles.toolsSheetEmpty}>
             {trialCountUnverified
               ?"No documented FDA-linked NCT matched in this dated restricted research screen. Other source programs remain unlinked; comprehensive trial counts are not established."
               :designations.length>0?"No documented NCT-linked POOL trials match both the chosen phases and FDA categories. Unlinked FDA programs remain visible separately below.":"No restricted-screen NCT trials match the selected phases or text search. Clear the text search or choose other phases."}
           </td></tr>:
-          ordered.map((row,i)=><tr key={row.id}>
+          ordered.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);return <tr key={row.id}>
             <td className={styles.toolsSheetRowNumber}>{offset+i+1}</td>
             <td><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)}
               target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
@@ -184,6 +197,16 @@ export default function ToolsResultsSpreadsheet({
               <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/>
             </div></td>
             <td>{display(row.company)}</td>
+            <td className={styles.toolsSheetDateValue} title="S: Days since source-verified public Phase 3 results release">
+              {days.daysSincePhase3Release===null?<span title="Phase 3 data release not source-verified">Not verified</span>:
+                <a href={row.timeline?.phase3DataRelease?.sourceUrl} target="_blank" rel="noopener noreferrer"
+                  title={"Verified Phase 3 release: "+row.timeline?.phase3DataRelease?.date}>{days.daysSincePhase3Release.toLocaleString("en-US")}</a>}
+            </td>
+            <td className={styles.toolsSheetDateValue} title="D: Days to source-verified PDUFA target; negative means target date passed">
+              {days.daysToPdufa===null?<span title="PDUFA target date not source-verified">Not verified</span>:
+                <a href={row.timeline?.pdufaTarget?.sourceUrl} target="_blank" rel="noopener noreferrer"
+                  title={"Verified FDA PDUFA target: "+row.timeline?.pdufaTarget?.date}>{days.daysToPdufa.toLocaleString("en-US")}</a>}
+            </td>
             <td>{display(row.drug)}</td>
             <td>{display(row.indication)}</td>
             <td>{display(row.stage)}</td>
@@ -228,10 +251,10 @@ export default function ToolsResultsSpreadsheet({
                 </details>:<span className={styles.toolsSheetNoMatch}>—</span>}
               </td>;
             })}
-          </tr>)}
+          </tr>;})}
         </tbody>
         {hasSelection&&!loading&&!error&&<tfoot><tr>
-          <th colSpan={7+stages.length+designations.length}>
+          <th colSpan={12+stages.length+designations.length}>
             {(designations.length?"Documented FDA-linked NCT matches within restricted subset: ":"Matching restricted NCT trials: ")+fmt(total)} · Selected filters: {selectedCount}
           </th>
         </tr></tfoot>}
