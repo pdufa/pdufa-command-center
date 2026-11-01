@@ -124,7 +124,7 @@ test("FDA row totals equal the exact NCT+issuer trial filter, never raw index li
  const bad=toolsDesignationTotals(snapshot.poolRows,tickerMismatch);
  assert.equal(bad.fast_track.linkedNcts,0);
  assert.deepEqual(bad.fast_track.nctIds,[]);
- assert.deepEqual(bad.fast_track.programNctIds,{},
+ assert.deepEqual(Object.keys(bad.fast_track.programNctIds),[],
    "Not a matching issuer means no displayed NCT attribution to that FDA program");
  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
  assert.match(route,/designationTotals=index\?toolsDesignationTotals\(inventory.poolRows,index\):null/);
