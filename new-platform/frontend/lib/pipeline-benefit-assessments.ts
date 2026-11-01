@@ -71,7 +71,7 @@ function validDate(date:string):boolean{
  return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===date&&parsed.getTime()<=Date.now();
 }
 /** Fail closed: matching disease alone or a name-only comparator never establishes comparability. */
-export function validateComparatorInventory(row:PipelineResearchRow,records:readonly ComparatorEvidence[]):ComparatorInventoryResult{
+export function validateComparatorInventory(row:Pick<PipelineResearchRow,"nctId"|"ticker"|"drug"|"indication">,records:readonly ComparatorEvidence[]):ComparatorInventoryResult{
  const accepted:ComparatorEvidence[]=[];const issues:string[]=[];const seen=new Set<string>();
  let rejected=0;
  for(const c of records){
