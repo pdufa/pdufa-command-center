@@ -201,3 +201,22 @@ test("all-stage parity must not claim success for programs without any NCT links
   assert.match(sheet,/NCT link not established/);
   assert.match(sheet,/programRows\.map\(/);
 });
+
+
+test("Accelerated Approval CSV exports all 16 FDA program events, not an empty NCT spreadsheet",()=>{
+  const path=require("node:path");
+  const {buildDesignationIndex}=require("../lib/trial-designations.ts");
+  const {designationSourceCoverage,renderUnlinkedFdaProgramCsv}=require("../lib/tools-pool-inventory.ts");
+  const csv=fs.readFileSync(path.join(__dirname,"../../../data/prediction_engine_designations.csv"),"utf8");
+  const index=buildDesignationIndex(csv,null,"2026-10-31");
+  const coverage=designationSourceCoverage(verifiedToolPool(raw()).poolRows,index,["accelerated_approval"]);
+  assert.equal(coverage.sourcePrograms,16);
+  const rendered=renderUnlinkedFdaProgramCsv(coverage,"2026-10-31");
+  assert.equal(rendered.charCodeAt(0),0xfeff);
+  assert.match(rendered,/FDA PROGRAM EVENT — NOT A CLINICAL TRIAL/);
+  assert.match(rendered,/NOT ESTABLISHED/);
+  assert.equal(rendered.trim().split(/\r?\n/).length,17);
+  const route=fs.readFileSync(path.join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
+  assert.match(route,/result\.designationCoverage\?\.noVerifiedNctLinks/);
+  assert.match(route,/pdufa-tools-fda-program-records-unlinked\.csv/);
+});
