@@ -101,5 +101,5 @@ test("when FDA program evidence lacks an exact NCT crosswalk, TOOLS reports unav
   assert.match(route,/Object\.keys\(index\.trialEvents\)\.length===0/);
   assert.match(route,/DESIGNATION_NCT_LINKAGE_UNAVAILABLE/);
   assert.match(route,/status:422/);
-  assert.match(designations,/No exact NCT-to-designation links/);
+  assert.match(designations,/No reviewed trial-to-designation links/);
 });
