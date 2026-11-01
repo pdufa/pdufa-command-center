@@ -105,8 +105,8 @@ export default function ToolsResultsSpreadsheet({
       <a className={styles.toolsSheetExport} href={hasSelection&&!loading&&!error?downloadUrl:undefined}
         aria-disabled={!hasSelection||loading||!!error}
         onClick={e=>{if(!hasSelection||loading||!!error)e.preventDefault()}}
-        download={trialCountUnverified?"pdufa-tools-fda-program-records-unlinked.csv":"pdufa-tools-selected-trials.csv"}>
-        {trialCountUnverified?"Export FDA program records (CSV)":"Export all matches (CSV)"}</a>
+        download="pdufa-tools-restricted-trials.csv">
+        Export restricted trial matches (CSV)</a>
     </div>
     <div className={styles.toolsSheetMetrics} aria-live="polite">
       <div><span>Selectors clicked</span><strong>{selectedCount}</strong><small>{stages.length} stages + {designations.length} FDA categories</small></div>
@@ -116,7 +116,7 @@ export default function ToolsResultsSpreadsheet({
         :summary?fmt(summary.designationCountSum):hasSelection?"—":"0"}</strong>
         <small>{designations.length?"Unscoped source-catalog program records, NOT counts within the restricted trial screen":"Only reviewed FDA-to-NCT links; categories may overlap"}</small></div>
       <div><span>{designations.length?"Verified NCT matches (incomplete)":"Final matching trials"}</span>
-        <strong>{hasSelection?(loading||error?"—":trialCountUnverified?"Not established":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
+        <strong>{hasSelection?(loading||error?"—":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
         <small>{trialCountUnverified?"No source-verified trial IDs for these programs; zero must not be inferred":designations.length?"FDA designation full trial total unknown; verified matches only":"Unique NCT records after selected clinical-stage filters"}</small></div>
     </div>
     <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error} benefitFeed={benefitFeed} benefitError={benefitError}/>
@@ -135,12 +135,12 @@ export default function ToolsResultsSpreadsheet({
               {designations.map(key=>{
                 const entry=summary?.designationSelectors.find(item=>item.key===key);
                 return <tr key={"designation:"+key}><td>FDA program</td><td>{names.get(key)||key}</td>
-                  <td>{entry?trialCountUnverified?"Not established":fmt(entry.linkedTrials):"—"}</td><td>{entry&&trialCountUnverified?"Source program records exist; no verified NCT linkage": "Exact NCT + ticker and source-linked positive evidence"}</td></tr>;
+                  <td>{entry?fmt(entry.linkedTrials):"—"}</td><td>{entry&&trialCountUnverified?"Source program records exist; no verified NCT linkage": "Exact NCT + ticker and source-linked positive evidence"}</td></tr>;
               })}
             </tbody>
             <tfoot>
               <tr><th colSpan={2}>TOTAL CLICKED SELECTORS</th><th>{selectedCount}</th><th>Number of checkboxes checked, not number of unique trials</th></tr>
-              <tr><th colSpan={2}>{designations.length?"DOCUMENTED NCT MATCHES — TOTAL UNKNOWN":"UNIQUE TRIALS MATCHING COMBINED FILTERS"}</th><th>{trialCountUnverified?"Not established":summary?fmt(summary.matchingUniqueTrials):"—"}</th><th>OR within each list; AND across the two lists. FDA matches are incomplete and require verified NCT links.</th></tr>
+              <tr><th colSpan={2}>{designations.length?"DOCUMENTED NCT MATCHES — TOTAL UNKNOWN":"UNIQUE TRIALS MATCHING COMBINED FILTERS"}</th><th>{summary?fmt(summary.matchingUniqueTrials):"—"}</th><th>OR within each list; AND across the two lists. FDA matches are incomplete and require verified NCT links.</th></tr>
             </tfoot>
           </table>
         </div>
@@ -234,14 +234,14 @@ export default function ToolsResultsSpreadsheet({
         </tbody>
         {hasSelection&&!loading&&!error&&<tfoot><tr>
           <th colSpan={7+stages.length+designations.length}>
-            {trialCountUnverified?"Matching unique NCT trials: not established":(designations.length?"Verified NCT matches (partial): ":"Total matching unique NCT trials: ")+fmt(total)} · Selected filters: {selectedCount}
+            {(designations.length?"Documented FDA-linked NCT matches within restricted subset: ":"Matching restricted NCT trials: ")+fmt(total)} · Selected filters: {selectedCount}
           </th>
         </tr></tfoot>}
       </table>
     </div>
     <div className={styles.pagination}>
       <button type="button" disabled={loading||!!error||offset===0} onClick={onPrevious}>Previous 50</button>
-      <span>{trialCountUnverified?"NCT record count unavailable — "+fmt(designationCoverage!.sourcePrograms)+" source programs documented":"Showing "+pageFirst+"–"+pageLast+" of "+(hasSelection&&!error?fmt(total):"0")+" · sorting affects the visible page only"}</span>
+      <span>{"Showing "+pageFirst+"–"+pageLast+" of "+(hasSelection&&!error?fmt(total):"0")+" restricted NCT matches · sorting affects the visible page only"}</span>
       <button type="button" disabled={loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
     </div>
     {designations.length>0&&designationCoverage&&designationCoverage.programRows.length>0&&<section className={styles.toolsSheetTotals} aria-label="FDA source programs not yet assigned to clinical trial stages">
@@ -268,7 +268,7 @@ export default function ToolsResultsSpreadsheet({
       <p className={styles.muted}>These rows are source-backed FDA program findings. They are not proven to match the selected clinical stages, and they must not be counted as distinct NCT trials.</p>
     </section>}
     <p className={styles.muted}>{trialCountUnverified
-      ?"CSV export contains the FDA program records shown above, labeled as regulatory programs rather than clinical trials. Their trial IDs and phase assignments have not been established."
+      ?"CSV exports only documented NCT matches within the restricted research screen. Unscoped FDA program records appear separately below and are never exported as eligible trials."
       :"This is a read-only web spreadsheet. CSV export includes all documented matching rows (not just this page) and opens in Excel or Google Sheets. FDA designation-to-trial coverage remains incomplete; missing evidence is not a denial or proof of no designation."}</p>
   </section>;
 }
