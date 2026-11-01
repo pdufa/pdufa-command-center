@@ -1,6 +1,6 @@
 "use client";
 
-import {useMemo, useState} from "react";
+import {useMemo,useState} from "react";
 import {useTrialDesignations} from "./TrialDesignations";
 import {
   SPECIAL_DESIGNATION_CATEGORIES,
@@ -14,79 +14,106 @@ type DesignationSummary={available:boolean;records:PositiveRecord[];linkedTrials
 
 export default function PoolDesignationSelector(){
   const {index,loading,error,retry}=useTrialDesignations();
-  const [selected,setSelected]=useState<DesignationKey|null>(null);
+  const [selected,setSelected]=useState<DesignationKey[]>([]);
   const entries=useMemo(()=>{
-    const links=new Map<string,Set<string>>();
+    const trialLinks=new Map<string,Set<string>>();
     if(index)for(const [nct,keys] of Object.entries(index.trialEvents)){
       if(!/^NCT\d{8}$/.test(nct))continue;
       for(const key of keys){
-        if(!links.has(key))links.set(key,new Set());
-        links.get(key)!.add(nct);
+        if(!trialLinks.has(key))trialLinks.set(key,new Set());
+        trialLinks.get(key)!.add(nct);
       }
     }
     const result={} as Record<DesignationKey,DesignationSummary>;
-    for(const item of SPECIAL_DESIGNATION_CATEGORIES){
+    for(const category of SPECIAL_DESIGNATION_CATEGORIES){
       const records:PositiveRecord[]=[];
       if(index)for(const program of Object.values(index.programs)){
-        const evidence=program.designations[item.key];
+        const evidence=program.designations[category.key];
         if(evidence?.status==="GRANTED" && evidence.verification!=="UNVERIFIED" && evidence.source){
-          records.push({program,linkedNcts:[...(links.get(program.eventKey)||[])]});
+          records.push({program,linkedNcts:[...(trialLinks.get(program.eventKey)||[])]});
         }
       }
       records.sort((a,b)=>a.program.ticker.localeCompare(b.program.ticker));
-      const linkedTrials=new Set(records.flatMap(r=>r.linkedNcts)).size;
-      result[item.key]={
-        available:!!index?.availableKeys?.[item.key],
+      result[category.key]={
+        available:!!index?.availableKeys?.[category.key],
         records,
-        linkedTrials,
+        linkedTrials:new Set(records.flatMap(record=>record.linkedNcts)).size
       };
     }
     return result;
   },[index]);
-  const chosen=selected?entries[selected]:null;
-  const category=SPECIAL_DESIGNATION_CATEGORIES.find(item=>item.key===selected);
-  const availableCount=index?SPECIAL_DESIGNATION_CATEGORIES.filter(item=>entries[item.key].available).length:null;
-  return <details className={styles.stageDesignationPane}>
-    <summary className={styles.stageDesignationSummary}>
-      <span>FDA Special Designations &amp; Pathways</span>
-      <strong>13 categories</strong>
-    </summary>
-    <div className={styles.stageDesignationBody}>
-      <p className={styles.muted}>Select a category to inspect source-linked records. Numbers count saved application/program records, <strong>not</strong> all POOL trials. Categories with no usable source field show —.</p>
-      <div className={styles.stageDesignationList} role="group" aria-label="FDA designation choices">
-        {SPECIAL_DESIGNATION_CATEGORIES.map(item=>{
-          const d=entries[item.key];
-          const active=selected===item.key;
-          return <button type="button" key={item.key} className={styles.stageDesignationRow}
-            aria-pressed={active} onClick={()=>setSelected(active?null:item.key)}>
-            <span>{item.label}</span>
-            <strong title="Saved positive, source-linked application/program records">{!index?"—":d.available?d.records.length.toLocaleString("en-US"):"—"}</strong>
-          </button>;
-        })}
+  const supported=SPECIAL_DESIGNATION_CATEGORIES.filter(category=>entries[category.key].available);
+  const combined=useMemo(()=>{
+    const m=new Map<string,{row:PositiveRecord;labels:string[];sources:string[]}>();
+    for(const category of SPECIAL_DESIGNATION_CATEGORIES){
+      if(!selected.includes(category.key))continue;
+      for(const record of entries[category.key].records){
+        const key=record.program.eventKey;
+        if(!m.has(key))m.set(key,{row:record,labels:[],sources:[]});
+        const v=m.get(key)!;
+        v.labels.push(category.label);
+        const source=record.program.designations[category.key].source;
+        if(source&&!v.sources.includes(source))v.sources.push(source);
+      }
+    }
+    return [...m.values()].sort((a,b)=>a.row.program.ticker.localeCompare(b.row.program.ticker));
+  },[entries,selected]);
+  function toggle(key:DesignationKey){
+    setSelected(old=>old.includes(key)?old.filter(item=>item!==key):[...old,key]);
+  }
+  return <div className={styles.stageDropdownColumn}>
+    <label className={styles.stageDropdownLabel}>Saved FDA source coverage</label>
+    <p className={styles.stageDropdownSubline}>{index?supported.length+" of 13 categories have a tracked source field":"Checking saved evidence…"}</p>
+    <details className={styles.stageDesignationPane}>
+      <summary className={styles.stageDesignationSummary}>
+        <span>{selected.length===0?"Select FDA designations":selected.length+" designations selected"}</span>
+        <strong>13</strong>
+      </summary>
+      <div className={styles.stageDesignationBody}>
+        <div className={styles.stageDropdownActions}>
+          <button type="button" disabled={!index||supported.length===0}
+            onClick={()=>setSelected(supported.map(item=>item.key))}>Select all available</button>
+          <button type="button" onClick={()=>setSelected([])}>Clear</button>
+        </div>
+        <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
+          {SPECIAL_DESIGNATION_CATEGORIES.map(category=>{
+            const d=entries[category.key];
+            return <label className={styles.stageCheckboxRow} key={category.key}
+              title={index&&!d.available?"No source field available for this category":undefined}>
+              <input type="checkbox" checked={selected.includes(category.key)}
+                disabled={!index||!d.available} onChange={()=>toggle(category.key)}/>
+              <span>{category.label}</span>
+              <strong title="Source-linked application/program records">
+                {index&&d.available?d.records.length.toLocaleString("en-US"):"—"}
+              </strong>
+            </label>;
+          })}
+        </div>
+        <p className={styles.muted}>Choose multiple categories (OR). A dash means not tracked, not zero grants. Counts represent source-linked application/program records.</p>
       </div>
-      {loading&&<p role="status" className={styles.muted}>Loading saved designation evidence…</p>}
-      {error&&<p role="alert" className={styles.muted}>Saved designation evidence unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
-      {availableCount!==null&&<p className={styles.muted}>Saved source fields available for {availableCount} of 13 categories. — indicates unavailable coverage, not zero granted.</p>}
-      {selected&&chosen&&<div className={styles.designationSelection}>
-        <h3>{category?.label}</h3>
-        {!index?<p>Designation evidence not loaded.</p>:
-        !chosen.available?<p>No tracked source field for this category. A count cannot be established.</p>:
-        chosen.records.length===0?<p>No linked positive application records in the saved source. This does not imply the designation was denied.</p>:
+    </details>
+    {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
+    {error&&<p role="alert" className={styles.error}>FDA source unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
+    {selected.length>0&&index&&<details className={styles.designationSelection}>
+      <summary style={{cursor:"pointer",fontWeight:700}}>
+        View {combined.length.toLocaleString("en-US")} matching application/program records
+      </summary>
+      {combined.length===0?<p>No verified positive source-linked records in these categories; missing evidence is not a denial.</p>:
         <>
-          <p>{chosen.records.length.toLocaleString("en-US")} source-linked programs · {chosen.linkedTrials.toLocaleString("en-US")} explicitly linked NCT trial IDs. Programs may share trials or have no NCT link.</p>
-          <ol className={styles.designationResults}>{chosen.records.slice(0,50).map(({program,linkedNcts})=>{
-            const evidence=program.designations[selected];
-            return <li key={program.eventKey}>
-              <strong>{program.ticker}</strong> · {program.drug||program.eventKey}
-              {program.indication&&<span> · {program.indication}</span>}
-              <small>{evidence.verification==="FDA_VERIFIED"?"FDA-verified source":"Saved source report"}{evidence.designationDate?" · "+evidence.designationDate:""} · {linkedNcts.length?linkedNcts.join(", "):"No exact NCT linkage"}</small>
-              <a href={evidence.source} target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
-            </li>;
-          })}</ol>
-          {chosen.records.length>50&&<p className={styles.muted}>Showing first 50 application records.</p>}
-        </>}
-      </div>}
-      <p className={styles.muted}>Fast Track, Orphan Drug and related labels refer to FDA programs or pathways; not all 13 are statutory designations. An evidence record is not proof of current candidate eligibility.</p>
-    </div>
-  </details>;
+          <p>{selected.length} categories selected. A program counted in several categories appears once in this list. These are not unique POOL trial counts.</p>
+          <ol className={styles.designationResults}>
+            {combined.slice(0,50).map(({row,labels,sources})=><li key={row.program.eventKey}>
+              <strong>{row.program.ticker}</strong> · {row.program.drug||row.program.eventKey}
+              {row.program.indication&&<span> · {row.program.indication}</span>}
+              <small>{labels.join(" · ")} · {row.linkedNcts.length?row.linkedNcts.join(", "):"No exact NCT link recorded"}</small>
+              {sources.map(source=><a key={source} href={source} target="_blank" rel="noopener noreferrer"
+                style={{marginRight:10}}>Source ↗</a>)}
+            </li>)}
+          </ol>
+          {combined.length>50&&<p className={styles.muted}>Showing first 50 matching records.</p>}
+        </>
+      }
+    </details>}
+    <p className={styles.muted}>The FDA categories are saved source findings; not all 13 are formal statutory designations. No selection changes underlying POOL or Pipeline eligibility.</p>
+  </div>;
 }
