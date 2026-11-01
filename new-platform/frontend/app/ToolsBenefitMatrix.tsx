@@ -8,6 +8,8 @@ import TrialTimelineSummary from "./TrialTimelineSummary";
 import ToolsOptionNumber from "./ToolsOptionNumber";
 import {pacificToday} from "../lib/pipeline-timeline";
 import {sourceReviewHint,type RegistryCoverage} from "../lib/registry-benefit-coverage";
+import {TOOLS_CLEAR_EVENT,TOOLS_STEP4_STORAGE_KEY,readToolsPreference,saveToolsPreference}
+  from "../lib/tools-selection-persistence";
 type Props={
   rows:ToolsSpreadsheetRow[];
   hasSelection:boolean;
@@ -72,7 +74,33 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
   const [active,setActive]=useState(1);
   const [mode,setMode]=useState<AssessmentMode>("category");
   const [chosen,setChosen]=useState("");
+  const [selectionsRestored,setSelectionsRestored]=useState(false);
   const [today,setToday]=useState("");
+  useEffect(()=>{
+    const raw=readToolsPreference(TOOLS_STEP4_STORAGE_KEY);
+    if(raw&&typeof raw==="object"&&!Array.isArray(raw)){
+      const saved=raw as Record<string,unknown>;
+      const nextMode:AssessmentMode=saved.mode==="category"||saved.mode==="priority"||
+        saved.mode==="clinical"||saved.mode==="all"?saved.mode:"category";
+      let nextActive=typeof saved.active==="number"&&Number.isInteger(saved.active)&&
+        saved.active>=1&&saved.active<=20?saved.active:1;
+      if(nextMode==="priority"&&!PRIORITY_RESEARCH.some(n=>n===nextActive))nextActive=PRIORITY_RESEARCH[0];
+      if(nextMode==="clinical"&&(nextActive<3||nextActive>8))nextActive=3;
+      setMode(nextMode);
+      setActive(nextActive);
+      if(typeof saved.chosen==="string"&&/^NCT\d{8}$/.test(saved.chosen))setChosen(saved.chosen);
+    }
+    setSelectionsRestored(true);
+  },[]);
+  useEffect(()=>{
+    if(!selectionsRestored)return;
+    saveToolsPreference(TOOLS_STEP4_STORAGE_KEY,{mode,active,chosen});
+  },[mode,active,chosen,selectionsRestored]);
+  useEffect(()=>{
+    const clear=()=>{setMode("category");setActive(1);setChosen("");};
+    window.addEventListener(TOOLS_CLEAR_EVENT,clear);
+    return ()=>window.removeEventListener(TOOLS_CLEAR_EVENT,clear);
+  },[]);
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
   const scrollRegion=useRef<HTMLDivElement|null>(null);
   const groupHeaders=useRef<Record<number,HTMLTableCellElement|null>>({});
