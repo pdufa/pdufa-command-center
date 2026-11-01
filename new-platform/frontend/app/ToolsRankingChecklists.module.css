@@ -37,3 +37,7 @@
  .priorityControl{margin-left:18px;flex-wrap:wrap}
  .clear{font-size:10px}
 }
+
+.priorityFields{margin:8px 0 0 19px;font-size:11px;color:#496454}
+.priorityFields>summary{cursor:pointer;font-weight:700;line-height:1.5;overflow-wrap:anywhere}
+.priorityFields .fields{margin-top:6px;margin-left:1px}
