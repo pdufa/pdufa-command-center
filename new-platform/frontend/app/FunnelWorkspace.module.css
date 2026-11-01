@@ -214,3 +214,17 @@
 .designationCountPair strong{font-size:12px;min-width:0;white-space:normal}
 .designationCountPair small{font-size:10px;font-weight:650;line-height:1.25;color:#6d5930;white-space:normal}
 @media(max-width:600px){.designationCountPair{flex-basis:102px;min-width:90px}.designationCountPair strong{font-size:11px}.designationCountPair small{font-size:10px}}
+
+/* Single-tap paired search for the Phase 3 orphan-drug question. */
+.toolsQuickFilter{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0 14px}
+.toolsQuickFilter button{border:1px solid #176144;border-radius:9px;background:#185d41;color:#fff;font-size:13px;line-height:1.3;font-weight:750;cursor:pointer;padding:11px 13px;min-height:43px}
+.toolsQuickFilter button:hover{background:#0f4730}
+.toolsQuickFilter .toolsQuickClear{background:#fff;color:#1c543c;border-color:#a2c3af}
+.toolsQuickFilter .toolsQuickClear:disabled{cursor:not-allowed;opacity:.45}
+.toolsQuickFilter small{font-size:11px;line-height:1.4;color:#52695c;flex-basis:100%}
+.designationCoverageWarning>summary{cursor:pointer;font-size:12px;line-height:1.4;color:#715019}
+.designationCoverageWarning>summary strong{font-size:12px}
+.designationCoverageWarning>summary span{font-weight:650}
+.designationCoverageWarning:not([open]){padding:9px 12px}
+.designationCoverageWarning[open]>summary{margin-bottom:6px}
+@media(max-width:600px){.toolsQuickFilter{gap:7px}.toolsQuickFilter button{font-size:12px;padding:9px 11px}.toolsQuickFilter button:first-child{flex:1 1 205px}}
