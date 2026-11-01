@@ -206,6 +206,21 @@ try{
     assert.equal(await orphan.isDisabled(),false);
     const filtered=await response;
     assert.equal(filtered.status(),200,"Phase AND FDA selection must retain prior filter when switching branches");
+    const filteredData=await filtered.json();
+    const contextual=filteredData.contextualDesignationCounts?.orphan_drug;
+    const orphanCount=orphan.locator("xpath=..").locator("strong[class*='toolsFdaRowCount']");
+    await page.waitForFunction(expected=>{
+      const row=[...document.querySelectorAll('section[aria-label="POOL stage and FDA designation tools"] label')]
+        .find(el=>el.textContent?.includes("Orphan Drug Designation"));
+      const count=row?.querySelector('strong[class*="toolsFdaRowCount"]');
+      if(!count)return false;
+      return expected===null?count.textContent?.includes("NCTs unknown")
+        :count.textContent?.includes(expected.toLocaleString("en-US"));
+    },contextual?.matchingTrials??null,{timeout:45000});
+    assert.match(await orphanCount.innerText(),
+      contextual===null?/NCTs unknown/:/trial matches/,
+      "FDA badge must display the exact Phase/search-faceted trial count returned by the result API");
+    if(contextual)assert.equal(contextual.nctIds.length,Math.min(40,contextual.matchingTrials));
     assert.match(await designation.innerText(),/1 selected/);
     assert.match(await phase.innerText(),/1 selected/);
     await fda.getByText(/source programs/).first().waitFor({timeout:20000});
@@ -231,6 +246,19 @@ try{
     await sectionClear.click();
     assert.match(await phase.innerText(),/Select clinical stages/);
     assert.match(await designation.innerText(),/1 selected/,"Clearing Phase must preserve FDA choices");
+    const noPhaseResponse=page.waitForResponse(response=>{
+      try{const url=new URL(response.url());
+        return url.pathname==="/api/scope-funnel" &&
+          url.searchParams.get("tools")==="1" &&
+          url.searchParams.get("designations")==="orphan_drug" &&
+          !url.searchParams.has("stages");
+      }catch{return false;}
+    },{timeout:60000});
+    // The Phase removal must recompute FDA counts for the broader trial scope.
+    const withoutPhase=await noPhaseResponse;
+    const withoutPhaseData=await withoutPhase.json();
+    const previewAfterClear=withoutPhaseData.contextualDesignationCounts?.orphan_drug;
+    assert.ok(previewAfterClear===null||previewAfterClear.matchingTrials>=0);
     const phaseAgain=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
     await row.check();
     assert.equal((await phaseAgain).status(),200);
