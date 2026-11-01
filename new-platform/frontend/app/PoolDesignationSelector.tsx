@@ -62,9 +62,12 @@ export default function PoolDesignationSelector({selected,onChange}:{selected:De
   }
   return <div className={styles.stageDropdownColumn}>
     <label className={styles.stageDropdownLabel}>Saved FDA source coverage</label>
-    <p className={styles.stageDropdownSubline}>{index?supported.length+" of 13 categories have a tracked source field":"Checking saved evidence…"}</p>
+    <p className={styles.stageDropdownSubline}>
+      {index?supported.length+" of 13 categories have a tracked source field":"Checking saved evidence…"}
+      {index?.linkageCoverage?" · "+index.linkageCoverage.verifiedNctCount+" rigorously linked NCT trials in initial crosswalk":""}
+    </p>
     {index && Object.keys(index.trialEvents).length===0&&<p className={styles.error} role="status">
-      No exact NCT-to-designation links are in the saved source. Designation program counts are visible, but a combined trial count cannot yet be verified. No matches are not equivalent to no designations.
+      No reviewed trial-to-designation links are available. Combined trial counts cannot be verified yet.
     </p>}
     <details className={styles.stageDesignationPane}>
       <summary className={styles.stageDesignationSummary}>
@@ -85,13 +88,13 @@ export default function PoolDesignationSelector({selected,onChange}:{selected:De
               <input type="checkbox" checked={selected.includes(category.key)}
                 disabled={!index||!d.available} onChange={()=>toggle(category.key)}/>
               <span>{category.label}</span>
-              <strong title="Source-linked application/program records">
-                {index&&d.available?d.records.length.toLocaleString("en-US"):"—"}
+              <strong title="Unique trial IDs with reviewed, exact NCT-to-designation links">
+                {index&&d.available?d.linkedTrials.toLocaleString("en-US"):"—"}
               </strong>
             </label>;
           })}
         </div>
-        <p className={styles.muted}>Choose multiple categories (OR). A dash means not tracked, not zero grants. Counts represent source-linked application/program records.</p>
+        <p className={styles.muted}>Choose multiple categories (OR). Right-hand counts are unique NCT IDs with documented drug/indication links, not all programs that have received designations. A dash means source coverage unavailable, not zero grants.</p>
       </div>
     </details>
     {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
@@ -116,6 +119,6 @@ export default function PoolDesignationSelector({selected,onChange}:{selected:De
         </>
       }
     </details>}
-    <p className={styles.muted}>The FDA categories are saved source findings; not all 13 are formal statutory designations. This list shows application/program evidence; combined trial matches appear below both dropdowns, with exact NCT and ticker linkage.</p>
+    <p className={styles.muted}>Partial coverage: the crosswalk contains researched therapy/indication-to-NCT links, not a complete FDA designation inventory. No verified linked trial for a category does not prove the designation was absent. Some categories are regulatory pathways rather than statutory designations.</p>
   </div>;
 }
