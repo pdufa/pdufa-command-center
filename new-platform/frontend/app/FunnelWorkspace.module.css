@@ -299,3 +299,14 @@
  .toolsCascadeFdaEvidence{margin-left:20px}
  .stageDesignationSummary{gap:6px}
 }
+
+
+/* Older generic span selectors must not stretch the 37px option circles. */
+.stageDesignationSummary>span[aria-hidden="true"],
+.stageCheckboxRow>span[aria-hidden="true"],
+.toolsCascadeGroup>span[aria-hidden="true"]{flex:0 0 37px!important;width:37px;min-width:37px}
+@media(max-width:600px){
+ .stageDesignationSummary>span[aria-hidden="true"],
+ .stageCheckboxRow>span[aria-hidden="true"],
+ .toolsCascadeGroup>span[aria-hidden="true"]{flex-basis:34px!important;width:34px;min-width:34px}
+}
