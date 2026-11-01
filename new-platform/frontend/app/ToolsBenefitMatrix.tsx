@@ -10,6 +10,8 @@ type Props={
   offset:number;
   loading:boolean;
   error:string;
+  onShowBaseline:()=>void;
+  baselineMode:boolean;
 };
 const missing="Not assessed";
 const short=(value?:string)=>value?.trim()||"Not recorded";
@@ -43,7 +45,7 @@ function GroupAdvantage({record,group}:{record:BenefitRecord|null;group:BenefitG
     <RankedList list={ranked} empty="No comparator-specific, verified competitive advantage ranking is available for this assessment."/>
   </details>;
 }
-export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loading,error}:Props){
+export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loading,error,onShowBaseline,baselineMode}:Props){
   const [feed,setFeed]=useState<BenefitFeed|null>(null);
   const [feedError,setFeedError]=useState("");
   const [active,setActive]=useState(1);
@@ -80,10 +82,10 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
         <h3>20 Benefit Assessments</h3>
         <p>Filtered trials populate automatically from your selections. Every numbered heading sits above its own subcolumns. Open any group to see source-backed findings and strongest-to-weakest comparator advantages.</p>
       </div>
-      <div className={css.count}><strong>{hasSelection?(loading||error?"—":total.toLocaleString("en-US")):"0"}</strong><span>selected NCT trial records</span></div>
+      <div className={css.count}><strong>{hasSelection?(loading||error?"—":total.toLocaleString("en-US")):"0"}</strong><span>{baselineMode?"screened Phase 3 NCT candidates":"selected NCT trial records"}</span></div>
     </div>
     <div className={css.notice}>
-      <strong>Source integrity:</strong> These are NCT study records, not yet reconciled distinct drug–indication programs. A Phase 3 screening match is not final Pipeline qualification. Source facts populate when available; research not completed remains <strong>Not assessed</strong>. Unverified superiority is never ranked as proven.
+      <strong>Source integrity:</strong> {baselineMode?"Baseline loads automatically from the historical $300M–$10B, completed Phase 3 census. ":""}These are NCT study records, not yet reconciled distinct drug–indication programs. A Phase 3 screening match is not final Pipeline qualification. Source facts populate when available; research not completed remains <strong>Not assessed</strong>. Unverified superiority is never ranked as proven.
       {feedError&&<p role="alert">{feedError}</p>}
       {feed&&!feedError&&<p>Evidence-backed assessments attached to current page: {researched} of {rows.length} NCT records. Missing evidence does not mean the drug has no advantage.</p>}
     </div>
@@ -93,10 +95,13 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
         {BENEFIT_GROUPS.map(g=><option value={g.number} key={g.number}>#{g.number} — {g.name}</option>)}
       </select>
     </div>
-    {!hasSelection?<div className={css.empty} role="status">Select a clinical development stage or FDA designation above to populate the resultant trial rows. The 20 group headings are ready to inspect.</div>:
+    {!hasSelection?<div className={css.empty} role="status">Choose a stage / FDA filter, or load the screened baseline. <button type="button" className={css.restoreButton} onClick={onShowBaseline}>Show screened Pipeline trials</button></div>:
       loading?<div className={css.empty} role="status">Loading source-matched resultant trials…</div>:
       error?<div className={css.empty} role="alert">Trial evidence unavailable. Assessment rows have not been asserted.</div>:
-      rows.length===0?<div className={css.empty} role="status">{total?"No records on this page. Use spreadsheet pagination below.":"No source-linked NCT trial records match these filters. This does not prove there are no eligible therapies."}</div>:<>
+      rows.length===0?<div className={css.empty} role="status">
+        <p>{total?"No records on this page. Use spreadsheet pagination below.":baselineMode?"Screened Phase 3 source returned no NCT records. Check source reconciliation.":"No source-linked NCT trial records match these filters. This does not prove there are no eligible therapies."}</p>
+        {!baselineMode&&<button type="button" className={css.restoreButton} onClick={onShowBaseline}>Show screened Pipeline trials without optional filters</button>}
+      </div>:<>
       <div className={css.desktop} ref={scrollRegion} role="region" aria-label="Desktop horizontally scrollable 20-assessment spreadsheet" tabIndex={0}>
         <table className={css.matrixTable}>
           <thead>
