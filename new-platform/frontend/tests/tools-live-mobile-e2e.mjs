@@ -48,6 +48,22 @@ try{
     assert.match(await designation.innerText(),/1b\/2[\s\S]*Special Designation/);
     assert.equal(await page.locator("#tools-first-phase").count(),0);
     assert.equal(await page.locator("#tools-first-designation").count(),0);
+    const initialInventory=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&inventory=1&offset=0&limit=50");
+    assert.equal(initialInventory.status(),200,"Authenticated opening POOL inventory must load");
+    const published=await initialInventory.json();
+    assert.equal(published.inventoryMode,true);
+    assert.ok(published.total>=10000,"Opening trials must come from the published full NCT POOL");
+    assert.ok(published.spreadsheetRows.length>0);
+    assert.match(published.spreadsheetRows[0].nctId,/^NCT\\d{8}$/);
+    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Published POOL"),null,{timeout:60000});
+    const spreadsheet=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
+    assert.ok(await spreadsheet.isVisible());
+    assert.match(await spreadsheet.locator("tbody").innerText(),/NCT\\d{8}/);
+    assert.equal(await spreadsheet.locator("tbody tr").count(),Math.min(50,published.total));
+    assert.ok((await spreadsheet.boundingBox()).y>(await designation.boundingBox()).y,
+      "Opening inventory spreadsheet must be under the Phase / FDA first row");
+    const invalidMix=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&inventory=1&stages=Phase%202&offset=0&limit=50");
+    assert.equal(invalidMix.status(),422,"Inventory cannot misrepresent filtered matching records");
     assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),0,
       "The initial screen must not be crowded by the funnel");
     assert.equal(await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').count(),0,
@@ -69,7 +85,10 @@ try{
     assert.match(await categories.first().innerText(),/2a\/4/i);
     assert.match(await categories.last().innerText(),/2d\/4/i);
     assert.equal(await page.locator('#tools-first-phase input[type="checkbox"]').count(),0);
+    const beforeCategory=await page.locator('section[aria-label="Live trial inventory spreadsheet"]').boundingBox();
     await categories.first().click();
+    const afterCategory=await page.locator('section[aria-label="Live trial inventory spreadsheet"]').boundingBox();
+    assert.ok(afterCategory.y>beforeCategory.y+20,"Expanding a stage group must push existing spreadsheet lower");
     const children=page.locator("#tools-stage-group-0");
     assert.equal(await children.getByRole("checkbox").count(),5);
     assert.match(await children.innerText(),/3a\/5/);
@@ -78,6 +97,9 @@ try{
     await children.getByRole("checkbox",{name:/Phase 2(?!\/)/}).check();
     const filtered=await response;
     assert.equal(filtered.status(),200,"Selected Phase 2 must produce a successful existing filtered API response");
+    const selectedGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
+    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Filtered trials"),null,{timeout:45000});
+    assert.match(await selectedGrid.innerText(),/Filtered trials/);
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
     await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').waitFor();
     assert.match(await phase.innerText(),/1 selected/);
@@ -119,6 +141,9 @@ try{
     assert.equal(await designation.getAttribute("aria-expanded"),"false");
     assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),0);
     assert.equal(await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').count(),0);
+    const restoredGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
+    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Published POOL"),null,{timeout:60000});
+    assert.match(await restoredGrid.locator("tbody").innerText(),/NCT\\d{8}/);
     await capture("04-cleared-to-start");
   });
   assert.deepEqual(pageErrors,[],"The mobile guided selection flow must not throw browser errors");
