@@ -71,6 +71,7 @@ export default function RegistryBenefitEvidence({nctId,assessment}:{nctId:string
           <p>ClinicalTrials.gov does not independently establish this assessment's economic, market, regulatory or comparative conclusion. Relevant source collection and analyst review remain required.</p>
           <p>Registered conditions: {data.conditionNames.join("; ")||"Not recorded"} · Lead sponsor: {data.sponsor||"Not recorded"}</p>
         </>}
+        {(data.truncatedEvidence.outcomes||data.truncatedEvidence.seriousEvents)&&<p className={css.registryWarning}>Some large registry results tables were truncated for safe display. Open the original source for the complete outcome and adverse-event listings.</p>}
         <p className={css.registryWarning}>Source evidence only. No FDA decision, investment conclusion, clinically meaningful advantage or top-to-bottom ranking has been established by this automatic lookup.</p>
       </>}
     </div>
