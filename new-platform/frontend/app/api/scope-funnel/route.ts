@@ -11,6 +11,7 @@ import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
 import {verifiedToolPool,buildToolsResults,filterToolTrials,selectToolTrialIds,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
+import {isToolsSnapshotFresh,parseToolsSnapshotTimestamp} from "../../../lib/tools-snapshot-freshness";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -83,15 +84,13 @@ function linkedDesignationTrialIds(data:FunnelResult,index:DesignationIndex,sele
 // Never serve a stale, unverified, corrupt or mismatched snapshot.
 // A checked-once flag is unsafe: a snapshot can expire while a serverless
 // instance stays warm, and an invalid snapshot should be rechecked periodically.
-const PUBLISHED_TOOL_SNAPSHOT_MAX_AGE_MS=36*3600000;
 const PUBLISHED_TOOL_RETRY_MS=60000;
 let publishedToolSnapshot:{generatedAt:number;value:ReturnType<typeof verifiedToolPool>}|null=null;
 let publishedToolRetryAfter=0;
 async function publishedPoolSource():Promise<ReturnType<typeof verifiedToolPool>|null>{
   const now=Date.now();
   if(publishedToolSnapshot){
-    if(publishedToolSnapshot.generatedAt<=now+300000 &&
-       now-publishedToolSnapshot.generatedAt<=PUBLISHED_TOOL_SNAPSHOT_MAX_AGE_MS)
+    if(isToolsSnapshotFresh(publishedToolSnapshot.generatedAt,now))
       return publishedToolSnapshot.value;
     // Never serve an already-cached snapshot after it crosses the age limit.
     publishedToolSnapshot=null;
@@ -100,8 +99,8 @@ async function publishedPoolSource():Promise<ReturnType<typeof verifiedToolPool>
   try{
     const file=join(process.cwd(),"data","tools-pool-snapshot.json");
     const raw=JSON.parse(await readFile(file,"utf8")) as Record<string,unknown>;
-    const timestamp=typeof raw.snapshotGeneratedAt==="string"?Date.parse(raw.snapshotGeneratedAt):NaN;
-    if(!Number.isFinite(timestamp)||timestamp>now+300000||now-timestamp>PUBLISHED_TOOL_SNAPSHOT_MAX_AGE_MS)
+    const timestamp=parseToolsSnapshotTimestamp(raw.snapshotGeneratedAt);
+    if(!isToolsSnapshotFresh(timestamp,now))
       throw Error("Published static POOL snapshot expired");
     if(raw.schemaVersion!==1)throw Error("Published static POOL schema mismatch");
     const verified=verifiedToolPool(raw);
