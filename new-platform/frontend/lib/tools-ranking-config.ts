@@ -15,6 +15,7 @@ export type RankingChecklistSelection={
   groupAssessments:number[];
   groupCriteria:Record<string,string[]>;
   priorities:number[];
+  priorityCriteria:Record<string,string[]>;
 };
 
 /** All 20 canonical groups remain present once, independent of user priority order. */
@@ -40,7 +41,7 @@ export function movePriority(current:readonly number[],id:number,position:number
   return without;
 }
 export function normalizeRankingSelection(raw:unknown):RankingChecklistSelection{
-  const empty=()=>({groupIds:[],groupAssessments:[],groupCriteria:{},priorities:[]} as RankingChecklistSelection);
+  const empty=()=>({groupIds:[],groupAssessments:[],groupCriteria:{},priorities:[],priorityCriteria:{}} as RankingChecklistSelection);
   if(!raw||typeof raw!=="object"||Array.isArray(raw))return empty();
   const value=raw as Record<string,unknown>;
   const uniqueNumbers=(input:unknown,allow:Set<number>)=>
@@ -59,5 +60,15 @@ export function normalizeRankingSelection(raw:unknown):RankingChecklistSelection
     groupCriteria[String(assessment.number)]=Array.isArray(chosen)
       ?[...new Set(chosen.filter((id):id is string=>typeof id==="string"&&permitted.has(id)))]:[];
   }
-  return {groupIds,groupAssessments,groupCriteria,priorities};
+  const rawPriorityCriteria=value.priorityCriteria&&typeof value.priorityCriteria==="object"&&!Array.isArray(value.priorityCriteria)
+    ?value.priorityCriteria as Record<string,unknown>:{};
+  const priorityCriteria:Record<string,string[]>={};
+  for(const assessment of BENEFIT_GROUPS){
+    if(!priorities.includes(assessment.number))continue;
+    const permitted=new Set(assessment.fields.map(f=>f.id));
+    const chosen=rawPriorityCriteria[String(assessment.number)];
+    priorityCriteria[String(assessment.number)]=Array.isArray(chosen)
+      ?[...new Set(chosen.filter((id):id is string=>typeof id==="string"&&permitted.has(id)))]:[];
+  }
+  return {groupIds,groupAssessments,groupCriteria,priorities,priorityCriteria};
 }
