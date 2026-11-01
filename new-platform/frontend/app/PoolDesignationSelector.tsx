@@ -80,12 +80,11 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
             <span>{category.label}</span>
             <strong className={styles.toolsFdaRowCount}
               title={index&&d.available&&!scopeLoading&&!scopeError&&contextual
-                ?contextual.matchingTrials+" verified NCT matches in current Phase/search; comprehensive FDA designation trial total unknown"
-                :"Comprehensive FDA designation trial total unknown or source not tracked"}>
-              {index&&d.available?(scopeLoading?"…":"?"):"—"}
-              <small>{index&&d.available?(scopeLoading?"updating":"FDA trial total unknown"):"Not tracked"}</small>
-              {index&&d.available&&!scopeLoading&&<small>{contextual?contextual.matchingTrials.toLocaleString("en-US")+" verified NCT matches":"NCT coverage unavailable"}</small>}
-              {index&&d.available&&!scopeLoading&&<small>{d.records.length.toLocaleString("en-US")} source programs</small>}
+                ?contextual.matchingTrials+" documented NCT trial matches in current Phase/search; full FDA designation total unknown"
+                :"Documented NCT count unavailable or FDA category not source-tracked"}>
+              {index&&d.available?(scopeLoading?"…":scopeError||!contextual?"—":contextual.matchingTrials.toLocaleString("en-US")):"—"}
+              <small>{index&&d.available?(scopeLoading?"updating":scopeError||!contextual?"count unavailable":"documented NCT matches · partial"):index?"Not tracked":"Source unavailable"}</small>
+              {index&&d.available&&!scopeLoading&&<small>Full FDA total unknown · {d.records.length.toLocaleString("en-US")} source programs</small>}
             </strong>
           </label>
           {checked&&index&&<div className={styles.toolsCascadeFdaEvidence}
