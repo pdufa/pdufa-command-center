@@ -82,7 +82,7 @@ export default function ToolsFunnel({
         {selectedDesignations>0&&designationCoverage&&!loading&&!error
           ?<div className={styles.toolsFunnelUnlinkedResult} role="status" aria-live="polite" aria-atomic="true">
             <div className={styles.toolsFunnelNctUnknown} role="group" aria-label="Unique NCT clinical trial count">
-              <span>UNIQUE NCT TRIAL COUNT FROM SELECTED POOL</span>
+              <span>{selectedDesignations>0?"VERIFIED NCT MATCHES — FDA TOTAL UNKNOWN":"UNIQUE NCT TRIAL COUNT FROM SELECTED POOL"}</span>
               <strong>{trialStatus}</strong>
               <small>{noNctLink
                 ?"Exact trial IDs and clinical stages are not established for these FDA programs."
