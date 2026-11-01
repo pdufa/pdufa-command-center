@@ -110,6 +110,31 @@ jobs:
           idx=request('/api/trial-designations')
           coverage=idx.get('linkageCoverage') or {}
           assert coverage.get('verifiedNctCount',0)>=4,'Reviewed evidence index was not loaded'
+          # Verify every tracked FDA category independently against explicit
+          # NCT, ticker and source grant evidence in the deployed index.
+          trial_by_nct={r['id'].split('|',1)[1]:r for r in unique_trials}
+          for designation in ['fast_track','breakthrough_therapy','priority_review',
+                              'accelerated_approval','orphan_drug','rmat','qidp',
+                              'rare_pediatric_disease']:
+              expected=set()
+              for nct,events in (idx.get('trialEvents') or {}).items():
+                  trial=trial_by_nct.get(nct)
+                  if not trial: continue
+                  for event in events:
+                      program=(idx.get('programs') or {}).get(event) or {}
+                      grant=((program.get('designations') or {}).get(designation) or {})
+                      if program.get('ticker')==trial.get('ticker','').upper() and \
+                         grant.get('status')=='GRANTED' and \
+                         grant.get('verification')!='UNVERIFIED' and grant.get('source'):
+                          expected.add(nct)
+              result=request(tools_path+'&designations='+designation)
+              assert result['total']==len(expected),('FDA selector discrepancy',designation,result['total'],len(expected))
+              assert all(item.get('nctId') in expected and
+                         (item.get('designationMatches') or {}).get(designation)
+                         for item in result.get('spreadsheetRows',[])),('FDA spreadsheet evidence mismatch',designation)
+              print('AUDITED_FDA_SELECTOR',designation,
+                    'known_NCT_matches',result['total'],'source_linkage_PARTIAL')
+          print('PASS: all eight tracked FDA selector counts match actual linked POOL trial records')
           priority=request(tools_path+'&designations=priority_review')
           assert priority['total']>0,'No audited priority-review NCT links found in POOL'
           first=priority.get('spreadsheetRows',[None])[0]
