@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "censusAsOf": "2026-10-26",
+  "scanStartedAt": null,
+  "scanned": 0,
+  "successful": 0,
+  "failed": 0,
+  "reusedWithin72Hours": 0,
+  "records": []
+}
