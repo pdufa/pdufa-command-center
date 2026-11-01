@@ -80,12 +80,20 @@ export default function TrialTimelineSummary({
         </div>
         <small style={{...note,color:"#745921"}}>{edge.assessment?"#"+edge.assessment+" "+edge.assessmentTitle+" · ":""}{edge.comparator?"versus "+edge.comparator:"Overall superiority not established"}</small>
         <p style={{...note,color:"#664700",fontWeight:750,margin:"6px 0 4px",display:"-webkit-box",WebkitLineClamp:compact?2:3,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{edge.reason}</p>
-        <details style={{marginTop:5,fontSize:12,color:"#523d15"}}>
-          <summary style={{cursor:"pointer",fontWeight:700}}>Why? · Evidence and limitations</summary>
-          <p style={{lineHeight:1.5}}>{edge.reason}</p>
-          {edge.method&&<p><strong>Method:</strong> {edge.method}</p>}
-          {edge.sourceUrl&&<p><a href={edge.sourceUrl} rel="noopener noreferrer" target="_blank">Verified research source</a>{edge.sourceDate?" · "+edge.sourceDate:""}</p>}
-          <p>One reported advantage does not establish overall clinical superiority, FDA approval, commercial value or investment return. The 20 categories require comparable evidence and an independently validated ranking model.</p>
+        <details style={{marginTop:8,fontSize:12,color:"#523d15",border:"1px solid #d3a94f",borderRadius:7,background:"#fffdf6",padding:8}}>
+          <summary style={{cursor:"pointer",fontWeight:800,fontSize:13,color:"#6b4700",padding:"5px 3px",minHeight:24}}>
+            Why this competitive assessment? · Expand explanation
+          </summary>
+          <div style={{padding:"4px 4px 2px",lineHeight:1.5}}>
+            <p><strong>Assessment result:</strong> {edge.status==="SOURCED_FACTOR"?"A source-reviewed competitive factor is recorded. This is not an overall trial winner.":edge.status==="NOT_COMPARABLE"?"The selected trials cannot be directly compared with the available clinical context.":"No verified comparative advantage has been established for this trial."}</p>
+            <p><strong>Reason:</strong> {edge.reason}</p>
+            {edge.assessment&&<p><strong>Relevant category:</strong> #{edge.assessment} — {edge.assessmentTitle} (of 20 assessments)</p>}
+            {edge.comparator&&<p><strong>Compared with:</strong> {edge.comparator}</p>}
+            {edge.method&&<p><strong>How it was assessed:</strong> {edge.method}</p>}
+            {edge.sourceUrl&&<p><strong>Supporting evidence:</strong> <a href={edge.sourceUrl} rel="noopener noreferrer" target="_blank">Open verified source</a>{edge.sourceDate?" · source dated "+edge.sourceDate:""}</p>}
+            <p><strong>What would establish stronger evidence:</strong> Match the same indication, treatment line and patient population; examine comparable clinical endpoints, effect sizes with uncertainty, follow-up, and serious adverse events. Review relevant commercial and company-risk assessments separately.</p>
+            <p><strong>Limitations:</strong> This is a sourced factor or research gap, not a verified overall winner, FDA PASS prediction, commercial valuation, or investment recommendation. The 20 categories do not yet form a validated superiority score.</p>
+          </div>
         </details>
       </div>}
     </div>
