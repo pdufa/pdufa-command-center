@@ -509,6 +509,8 @@ test("final live spreadsheet stays below every TOOLS selection and analysis sect
   const filterGate=source.indexOf('{hasSelections&&<>');
   assert.ok(funnel<head&&head<stage&&stage<fda&&fda<filterGate&&filterGate<research&&research<final&&final<closing,
     "POOL → PIPELINE → TRIALS must lead the page above Step 3 selectors even without selections; assessments must precede Step 5");
+  assert.match(source.slice(filterGate),/\{hasSelections&&<div className=\{styles\.toolsFinalSpreadsheet\} id="tools-final-trial-spreadsheet">/,
+    "Step 5 must remain fully unmounted until a Step 3 checkbox is checked");
   assert.equal((source.match(/<ToolsOpeningTrialGrid\b/g)||[]).length,1,
     "Never render duplicate copies of the final live POOL spreadsheet");
   assert.match(source.slice(final),/rows=\{hasSelections\?page\?\.spreadsheetRows\|\|\[\]:\[\]\}/,"No trial data in Step 5 until Phase or FDA is checked");
@@ -517,7 +519,7 @@ test("final live spreadsheet stays below every TOOLS selection and analysis sect
   assert.match(source.slice(final),/loading=\{hasSelections&&loading\}/);
 });
 
-test("Step 5 clears all clinical rows when neither Phase nor FDA has been selected",()=>{
+test("Step 5 is hidden until a Phase/FDA checkbox is checked, and resets when cleared",()=>{
   const grid=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsOpeningTrialGrid.tsx"),"utf8");
   const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
   assert.match(ui,/total=\{hasSelections\?page\?\.total\?\?0:0\}/);
