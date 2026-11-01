@@ -3,8 +3,7 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 const links=[
  {label:"PIPELINE",href:"/pipeline"},
- {label:"SCANS",href:"/scans"},
- {label:"RESULTS",href:"/results"},
+ {label:"SCANS & RESULTS",href:"/scans"},
  {label:"GOAL",href:"/goal"},
  {label:"RESTRICTIONS",href:"/restrictions"},
  {label:"PREDICTIONS",href:"/predictions"},
