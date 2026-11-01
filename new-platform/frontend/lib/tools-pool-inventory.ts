@@ -185,6 +185,39 @@ export function buildToolsResults(
   };
 }
 
+/**
+ * Opening TOOLS inventory is an explicit read-only view of the published POOL.
+ * It is NOT a filter result: legacy calls with no checked filters still return
+ * zero. Preserve source identities and never attach unreviewed FDA designations.
+ */
+export function buildToolsOpeningInventory(
+  snapshot:ReturnType<typeof verifiedToolPool>,offset:number,limit:number
+){
+  const all=snapshot.poolRows.filter(isPoolTrial);
+  const rows=all.slice(offset,offset+limit);
+  return {
+    view:"pool",inventoryMode:true,offset,limit,total:all.length,
+    nextOffset:offset+limit<all.length?offset+limit:null,
+    rows,stageStats:snapshot.stageStats,
+    designationCoverage:null,
+    overview:{
+      poolRecords:snapshot.stageStats.total,
+      poolClinicalRecords:snapshot.stageStats.trials,
+      poolRegulatoryRecords:snapshot.stageStats.regulatoryEvents+snapshot.stageStats.standaloneResults,
+      poolSourceState:snapshot.sourceState,poolAsOf:snapshot.sourceAsOf
+    },
+    spreadsheetRows:rows.map(row=>toolSpreadsheetRow(row,[],[],null)),
+    selectionSummary:{
+      selectedCount:0,stageSelectedCount:0,designationSelectedCount:0,
+      stageTotal:0,designationCountSum:0,designationUniqueTrials:null,
+      matchingUniqueTrials:all.length,sourceProgramRecords:0,unlinkedSourceProgramRecords:0,
+      noVerifiedNctLinks:false,stageSelectors:[],designationSelectors:[]
+    },
+    designationLinkage:null,sourceIntegrity:"PARITY_VERIFIED",
+    caveat:"Unfiltered published NCT inventory only; not a checked filter result, FDA-designation match or Pipeline qualification."
+  };
+}
+
 /** Program records without verified NCT joins must never be exported as clinical trials. */
 export function renderUnlinkedFdaProgramCsv(
   coverage:ReturnType<typeof designationSourceCoverage>,sourceAsOf:string

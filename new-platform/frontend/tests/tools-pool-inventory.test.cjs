@@ -7,7 +7,7 @@ for(const ext of [".ts",".tsx"])require.extensions[ext]=(mod,file)=>
     compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}
   }).outputText,file);
 const {
-  verifiedToolPool,selectToolTrialIds,filterToolTrials,buildToolsResults,renderToolsSpreadsheetCsv
+  verifiedToolPool,selectToolTrialIds,filterToolTrials,buildToolsResults,buildToolsOpeningInventory,renderToolsSpreadsheetCsv
 }=require("../lib/tools-pool-inventory.ts");
 const trial=(nct,stage,ticker="ACME")=>({id:"TRIAL|"+nct,ticker,company:"Company",drug:"Drug",indication:"Disease",stage});
 const trials=[
@@ -48,6 +48,32 @@ test("zero selected always returns zero rows without changing POOL stage totals"
   assert.equal(result.stageStats.trials,3);
   assert.equal(result.selectionSummary.selectedCount,0);
 });
+test("opening inventory returns genuine paginated unique NCT trials without claiming filters",()=>{
+  const snapshot=verifiedToolPool(raw());
+  const opening=buildToolsOpeningInventory(snapshot,0,2);
+  assert.equal(opening.inventoryMode,true);
+  assert.equal(opening.total,3);
+  assert.equal(opening.rows.length,2);
+  assert.equal(opening.nextOffset,2);
+  assert.deepEqual(opening.rows.map(row=>row.id),["TRIAL|NCT00000001","TRIAL|NCT00000002"]);
+  assert.deepEqual(opening.spreadsheetRows.map(row=>row.nctId),["NCT00000001","NCT00000002"]);
+  assert.equal(opening.selectionSummary.selectedCount,0);
+  assert.equal(opening.selectionSummary.matchingUniqueTrials,3);
+  assert.equal(opening.designationCoverage,null);
+  assert.deepEqual(opening.spreadsheetRows[0].designationMatches,{});
+  assert.equal(opening.spreadsheetRows[0].selectedStage,"");
+  const second=buildToolsOpeningInventory(snapshot,2,2);
+  assert.equal(second.rows.length,1);
+  assert.equal(second.nextOffset,null);
+  assert.equal(second.rows[0].id,"TRIAL|NCT00000003");
+  // The actual filtered API's no-checkbox contract must remain zero.
+  assert.equal(buildToolsResults(snapshot,null,[],[],"",0,50).total,0);
+  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
+  assert.match(route,/openingInventory=inventoryParam==="1"/);
+  assert.match(route,/openingInventory && \(!toolMode \|\| selectedStages.length>0 \|\| selectedDesignations.length>0/);
+  assert.match(route,/buildToolsOpeningInventory\(inventory,Number\(offset\),Number\(limit\)\)/);
+});
+
 test("selected stages use OR; selected designations use OR; together they use AND",()=>{
   const snapshot=verifiedToolPool(raw());
   const matched=selectToolTrialIds(snapshot.poolRows,index,["fast_track","orphan_drug"]);
@@ -312,7 +338,7 @@ test("optional Pipeline readout data cannot suppress or fabricate TOOLS POOL res
   const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
   assert.doesNotMatch(route,/PIPELINE_SCREEN_UNAVAILABLE/);
   assert.doesNotMatch(route,/\.filter\(row=>pipelineResearchNcts\.has\(row\.id\)\)/);
-  assert.match(route,/const result=buildToolsResults\(inventory,index,selectedStages,selectedDesignations,/);
+  assert.match(route,/buildToolsResults\(inventory,index,selectedStages,selectedDesignations,/);
   assert.match(route,/const rows=filterToolTrials\(inventory\.poolRows,selectedStages,matches,query\);/);
   assert.match(route,/timeline:trialTimelines\.get/);
   assert.match(route,/pdufa-tools-selected-trials\.csv/);
