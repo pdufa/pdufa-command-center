@@ -154,7 +154,7 @@ export function poolStageBucket(raw?:string):keyof typeof POOL_STAGE_GROUPS {
 }
 export type PoolRecordKind="trials"|"all"|"other";
 export function isPoolTrial(row:PoolTrialRecord):boolean {
-  return /^TRIAL\\|NCT\\d{8}$/.test(row.id);
+  return /^TRIAL\|NCT\d{8}$/.test(row.id);
 }
 export function poolStageStatistics(rows:PoolTrialRecord[]){
   const groups:{early:number;phase3:number;regulatory:number;other:number}={early:0,phase3:0,regulatory:0,other:0};
