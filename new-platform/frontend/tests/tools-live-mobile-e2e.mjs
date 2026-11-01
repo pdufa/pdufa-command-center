@@ -83,12 +83,15 @@ try{
     assert.equal(published.inventoryMode,true);
     assert.ok(published.designationTotals,"Opening source must include cross-reconciled FDA totals");
     openingDesignationTotals=published.designationTotals;
-    assert.ok(published.total>=10000,"Opening trials must come from the published full NCT POOL");
+    assert.ok(published.restrictedScope?.originalPoolTrials>=10000,"The original published POOL count stays recorded separately");
+    assert.equal(published.restrictedScope?.qualification,"NOT_VERIFIED");
+    assert.equal(published.total,published.restrictedScope.screenedTrials,"Opening grid must be the same restricted research subset as Phase and FDA facets");
+    assert.ok(published.total>0,"The dated completed Phase 3 screen must include genuine matched NCTs");
     assert.ok(published.spreadsheetRows.length>0);
     assert.match(published.spreadsheetRows[0].nctId,/^NCT\d{8}$/);
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return !!grid&&grid.textContent?.includes("Published POOL")&&
+      return !!grid&&grid.textContent?.includes("RESTRICTED RESEARCH SUBSET")&&
         /NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
     },null,{timeout:60000});
     const spreadsheet=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
@@ -103,7 +106,7 @@ try{
 
     assert.ok((await spreadsheet.boundingBox()).y>(await designation.boundingBox()).y,
       "Opening inventory spreadsheet must be under the Phase / FDA first row");
-    const invalidMix=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&inventory=1&stages=Phase%202&offset=0&limit=50");
+    const invalidMix=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&inventory=1&stages=Phase%203&offset=0&limit=50");
     assert.equal(invalidMix.status(),422,"Inventory cannot misrepresent filtered matching records");
     assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),0,
       "The initial screen must not be crowded by the funnel");
@@ -131,16 +134,16 @@ try{
     assert.match(await directStages.innerText(),/2a\/14/);
     assert.match(await directStages.innerText(),/2n\/14/);
     assert.equal(await page.locator('#tools-first-phase [aria-controls^="tools-stage-group-"]').count(),0);
-    const phase2=directStages.getByRole("checkbox",{name:/^Phase 2(?!\/)/});
-    assert.ok(await phase2.isVisible(),"Individual Phase 2 checkbox is directly visible");
-    const response=scopeResponse({stage:"Phase 2"});
-    await phase2.check();
-    await assertInvertedContrast(phase2.locator("xpath=.."),"Checked Phase option");
+    const phase3=directStages.getByRole("checkbox",{name:/^Phase 3(?!\/)/});
+    assert.ok(await phase3.isVisible(),"Individual Phase 3 checkbox is directly visible");
+    const response=scopeResponse({stage:"Phase 3"});
+    await phase3.check();
+    await assertInvertedContrast(phase3.locator("xpath=.."),"Checked Phase option");
     const filtered=await response;
-    assert.equal(filtered.status(),200,"Selected Phase 2 must produce a successful existing filtered API response");
+    assert.equal(filtered.status(),200,"Restricted Phase 3 must produce a successful filtered API response");
     const selectedGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
-    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Filtered trials"),null,{timeout:45000});
-    assert.match(await selectedGrid.innerText(),/Filtered trials/);
+    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Restricted trial matches"),null,{timeout:45000});
+    assert.match(await selectedGrid.innerText(),/Restricted trial matches/);
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
     await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').waitFor();
     const bottomGrid=page.locator("#tools-final-trial-spreadsheet");
@@ -159,12 +162,12 @@ try{
     assert.match(await phase.innerText(),/Select clinical stages/);
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return grid?.textContent?.includes("Published POOL")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+      return grid?.textContent?.includes("RESTRICTED RESEARCH SUBSET")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
     },null,{timeout:60000});
     assert.equal(await directStages.getByRole("checkbox").count(),14);
-    const phase2Again=scopeResponse({stage:"Phase 2"});
-    await phase2.check();
-    assert.equal((await phase2Again).status(),200);
+    const phase3Again=scopeResponse({stage:"Phase 3"});
+    await phase3.check();
+    assert.equal((await phase3Again).status(),200);
     await capture("02-phase-selected");
   });
   await check("designation-cascade-and-independent-phase",async()=>{
@@ -178,7 +181,7 @@ try{
     assert.equal(await all.getByRole("checkbox").count(),13);
     assert.match(await all.innerText(),/2a\/13/);
     assert.match(await all.innerText(),/2m\/13/);
-    const phaseOnly=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&stages=Phase%202&offset=0&limit=50",{timeout:120000});
+    const phaseOnly=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&stages=Phase%203&offset=0&limit=50",{timeout:120000});
     assert.equal(phaseOnly.status(),200);
     const phaseOnlyData=await phaseOnly.json();
     const contextualPhaseCounts=phaseOnlyData.contextualDesignationCounts;
@@ -202,7 +205,7 @@ try{
       else {
         assert.equal(label.split("\n")[0].replaceAll(",",""),
           scoped===null?"—":String(scoped.matchingTrials),
-          "FDA "+key+" must prominently show the documented Phase-2 NCT match count");
+          "FDA "+key+" must prominently show the restricted Phase-3 NCT match count");
         if(scoped)assert.match(label,/documented NCT matches · partial/);
         else assert.match(label,/count unavailable/);
         assert.match(label,/Full FDA total unknown/);
@@ -219,7 +222,7 @@ try{
       "FDA row count must equal the exact same filter's distinct NCT trial count");
     const orphan=all.getByRole("checkbox",{name:/Orphan Drug Designation/});
     await orphan.waitFor({timeout:45000});
-    const response=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
+    const response=scopeResponse({stage:"Phase 3",designation:"orphan_drug"});
     await orphan.check({timeout:45000});
     await assertInvertedContrast(orphan.locator("xpath=.."),"Checked FDA option");
     assert.equal(await orphan.isDisabled(),false);
@@ -249,7 +252,7 @@ try{
     await clearFda.click();
     assert.match(await designation.innerText(),/Select FDA categories/);
     assert.match(await phase.innerText(),/1 selected/,"Clearing FDA must preserve Phase criteria");
-    const secondResponse=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
+    const secondResponse=scopeResponse({stage:"Phase 3",designation:"orphan_drug"});
     await orphan.check({timeout:45000});
     assert.equal((await secondResponse).status(),200);
     await capture("03-phase-plus-fda");
@@ -258,7 +261,7 @@ try{
     await phase.click();
     assert.equal(await page.locator("#tools-first-designation").count(),0);
     assert.equal(await page.locator("#tools-first-phase").count(),1);
-    const row=page.locator("#tools-first-phase").getByRole("checkbox",{name:/^Phase 2(?!\/)/});
+    const row=page.locator("#tools-first-phase").getByRole("checkbox",{name:/^Phase 3(?!\/)/});
     await row.waitFor({timeout:15000});
     assert.equal(await row.isChecked(),true);
     const sectionClear=page.locator("#tools-first-phase").getByRole("button",{name:"Clear This Section"});
@@ -279,7 +282,7 @@ try{
     const previousScopeCount=phaseOnlyContextCounts?.orphan_drug??null;
     if(previewAfterClear&&previousScopeCount)
       assert.ok(previewAfterClear.matchingTrials>=previousScopeCount.matchingTrials);
-    const phaseAgain=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
+    const phaseAgain=scopeResponse({stage:"Phase 3",designation:"orphan_drug"});
     await row.check();
     assert.equal((await phaseAgain).status(),200);
     // Ranking selections are locally persisted even if their section becomes unmounted.
@@ -304,7 +307,7 @@ try{
     const restoredGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return grid?.textContent?.includes("Published POOL")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+      return grid?.textContent?.includes("RESTRICTED RESEARCH SUBSET")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
     },null,{timeout:60000});
     assert.match(await restoredGrid.locator("tbody").innerText(),/NCT\d{8}/);
     await capture("04-cleared-to-start");
