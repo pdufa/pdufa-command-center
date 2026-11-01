@@ -221,6 +221,16 @@ export async function GET(req:NextRequest) {
         fullInventory,marketCapSources.capsCsv,marketCapSources.registryCsv);
       const trialTimelines=new Map<string,TimelineDates>();
       const designationTotals=index?toolsDesignationTotals(inventory.poolRows,index):null;
+      // Both Step 1 button totals are measured over the entire cap-screened
+      // NCT subset, irrespective of downstream Phase/FDA checkbox selections.
+      // Category links overlap: show their sum AND distinct source-linked trials.
+      const designationScopeSummary=index&&designationTotals?{
+        documentedCategoryLinks:Object.values(designationTotals)
+          .reduce((sum,entry)=>sum+(entry?.linkedNcts??0),0),
+        documentedUniqueTrials:selectToolTrialIds(
+          inventory.poolRows,index,SPECIAL_DESIGNATION_CATEGORIES.map(item=>item.key)).size,
+        coverage:"PARTIAL" as const
+      }:null;
       const contextualDesignationCounts=toolsContextualDesignationCounts(
         inventory.poolRows,index,selectedStages,query);
 
@@ -262,7 +272,7 @@ export async function GET(req:NextRequest) {
         const row=toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index,index?.pdufaLinks??null);
         return {...row,timeline:trialTimelines.get(row.nctId+"|"+row.ticker.toUpperCase())||null};
       });
-      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,contextualDesignationCounts,regulatorySourcesAvailable:!!index,datasetVersion},
+      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,designationScopeSummary,contextualDesignationCounts,regulatorySourcesAvailable:!!index,datasetVersion},
         {headers:{"Cache-Control":"private, no-store"}});
     }
     // Stage counts always come from the full POOL. Designation selection is
