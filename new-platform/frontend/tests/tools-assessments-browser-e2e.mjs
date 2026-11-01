@@ -56,15 +56,17 @@ try {
     "Benefit research cannot contain orphaned NCT identities");
   const groupSelect=page.locator("#benefit-group-picker");
   assert.equal(await groupSelect.locator("option").count(),20);
-  await page.waitForFunction(()=>{
-    const section=document.querySelector("#tools-benefit-assessments");
-    const picker=document.querySelector("#benefit-trial-picker");
-    return section && picker && picker.options.length>0 &&
-      !section.textContent.includes("Loading source-matched resultant trials");
-  },null,{timeout:100000});
-  assert.ok(await page.locator("#benefit-trial-picker").isVisible(),
-    "Source-screened Pipeline trials must populate automatically without manual selectors");
-  assert.ok(await page.locator("#benefit-trial-picker option").count()>0);
+  const pipelineCard=funnel.getByRole("heading",{name:"PIPELINE",exact:true}).locator("../..");
+  await pipelineCard.getByText("346",{exact:true}).waitFor({timeout:100000});
+  const trialsCard=funnel.getByRole("heading",{name:"TRIALS",exact:true}).locator("../..");
+  assert.equal((await trialsCard.locator('[role="status"]').first().innerText()).trim(),"0",
+    "Unchecked clinical stages and FDA designations MUST show 0 trials");
+  assert.equal(await page.locator("#benefit-trial-picker").count(),0,
+    "No trial selector or assessment rows without checked filters");
+  assert.match(await page.locator("#tools-benefit-assessments").innerText(),/0 matching trials/);
+  const csv=page.getByRole("link",{name:/Export all matches/});
+  assert.equal(await csv.getAttribute("aria-disabled"),"true",
+    "No-selection state must disable trial export");
   await populate(page);
   const benefitBox=await page.locator("#tools-benefit-assessments").boundingBox();
   const totalsBox=await page.getByRole("heading",{name:"Selected selectors & individual trial totals"}).boundingBox();
@@ -100,6 +102,8 @@ try {
 
   const desktop=await openAuthenticated({width:1440,height:900},false);
   const desk=desktop.page;
+  await desk.getByText("0 selected · 0 matching trials.",{exact:false}).waitFor({timeout:90000});
+  assert.equal(await desk.locator("#benefit-trial-picker").count(),0);
   await populate(desk);
   const table=desk.locator('[aria-label="Desktop horizontally scrollable 20-assessment spreadsheet"] table');
   assert.ok(await table.isVisible(),"Desktop matrix must be displayed");
