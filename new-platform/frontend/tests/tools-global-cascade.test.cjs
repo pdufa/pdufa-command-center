@@ -33,11 +33,14 @@ const PoolStageExplorer=loadWithMocks("PoolStageExplorer.tsx",{
 });
 const sampleIndex={
  availableKeys:{fast_track:true,orphan_drug:true},
- trialEvents:{"NCT00000001":["ABC|ONE"]},
+ trialEvents:{"NCT00000001":["ABC|ONE"],"NCT99999999":["ABC|ONE"]},
  programs:{"ABC|ONE":{eventKey:"ABC|ONE",ticker:"ABC",drug:"Drug",indication:"Disease",
   designations:{fast_track:{status:"GRANTED",verification:"FDA_VERIFIED",source:"https://www.fda.gov/example"}}}},
  linkageCoverage:{verifiedNctCount:1}
 };
+const sampleTotals=Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})=>[
+  key,key==="fast_track"?{linkedNcts:1,nctIds:["NCT00000001"],programNctIds:{"ABC|ONE":["NCT00000001"]}}:null
+]));
 const PoolDesignationSelector=loadWithMocks("PoolDesignationSelector.tsx",{
  "./TrialDesignations":{useTrialDesignations:()=>({index:sampleIndex,loading:false,error:"",retry:()=>{}})}
 });
@@ -108,14 +111,15 @@ test("checking FDA category reveals program and linked-trial counts without chan
  let root;
  function Wrapper(){
   const [selected,setSelected]=React.useState([]);
-  return React.createElement(PoolDesignationSelector,{selected,onChange:setSelected,poolTrialCount:100,guided:true});
+  return React.createElement(PoolDesignationSelector,{selected,onChange:setSelected,poolTrialCount:100,poolTotals:sampleTotals,guided:true});
  }
  try{
   await act(async()=>{root=create(React.createElement(Wrapper));});
   const first=root.root.findAllByType("label").find(x=>textOf(x).includes("Fast Track Designation"));
   assert.ok(first);
   assert.match(textOf(first),/2a\/13/);
-  assert.match(textOf(first),/1linked NCTs/,"Known source-linked NCT count appears at right before checking");
+  assert.match(textOf(first),/1linked NCTs/,"The exact reconciled POOL count appears at right");
+  assert.doesNotMatch(textOf(first),/2linked NCTs/,"NCT present only in raw designation index must not inflate count");
   assert.equal(first.findAllByProps({className:"toolsFdaRowCount"}).length,1);
   assert.equal(root.root.findAllByProps({className:"toolsFdaRowCount"}).length,13,
     "Every FDA category must display an aligned trial-count status as Phase does");
@@ -149,5 +153,6 @@ test("20-assessment selector stays sequential and evidence UI follows active ass
  const designation=fs.readFileSync(require.resolve("../app/PoolDesignationSelector.tsx"),"utf8");
  assert.match(designation,/checked&&index&&<div className=\{styles.toolsCascadeFdaEvidence\}/);
  assert.match(designation,/className=\{styles.toolsFdaRowCount\}/);
+ assert.match(designation,/poolTotals\?\.\[category.key\]/);
  assert.match(designation,/source-linked trial IDs/);
 });
