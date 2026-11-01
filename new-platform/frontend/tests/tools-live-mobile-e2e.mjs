@@ -70,8 +70,8 @@ try{
     await phase.waitFor({timeout:45000});
     assert.equal(await phase.getAttribute("aria-expanded"),"false");
     assert.equal(await designation.getAttribute("aria-expanded"),"false");
-    assert.match(await phase.innerText(),/1a\/2[\s\S]*Phase/);
-    assert.match(await designation.innerText(),/1b\/2[\s\S]*Special Designation/);
+    assert.match(await phase.innerText(),/3a\/2[\s\S]*Phase/);
+    assert.match(await designation.innerText(),/3b\/2[\s\S]*Special Designation/);
     assert.equal(await page.locator("#tools-first-phase").count(),0);
     assert.equal(await page.locator("#tools-first-designation").count(),0);
     const globalClear=page.getByRole("button",{name:"Clear all selections throughout TOOLS"});
@@ -95,7 +95,7 @@ try{
     assert.match(published.spreadsheetRows[0].nctId,/^NCT\d{8}$/);
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return !!grid&&grid.textContent?.includes("RESTRICTED RESEARCH SUBSET")&&
+      return !!grid&&grid.textContent?.includes("Step 5 · Final Trials Spreadsheet")&&
         /NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
     },null,{timeout:60000});
     const spreadsheet=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
@@ -146,7 +146,7 @@ try{
     const filtered=await response;
     assert.equal(filtered.status(),200,"Restricted Phase 3 must produce a successful filtered API response");
     const selectedGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
-    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Restricted trial matches"),null,{timeout:45000});
+    await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Step 5 · Final Trials Spreadsheet"),null,{timeout:45000});
     assert.match(await selectedGrid.innerText(),/Restricted trial matches/);
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
     await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').waitFor();
@@ -166,7 +166,7 @@ try{
     assert.match(await phase.innerText(),/Select clinical stages/);
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return grid?.textContent?.includes("RESTRICTED RESEARCH SUBSET")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+      return grid?.textContent?.includes("Step 5 · Final Trials Spreadsheet")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
     },null,{timeout:60000});
     assert.equal(await directStages.getByRole("checkbox").count(),14);
     const phase3Again=scopeResponse({stage:"Phase 3"});
@@ -311,7 +311,7 @@ try{
     const restoredGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return grid?.textContent?.includes("RESTRICTED RESEARCH SUBSET")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+      return grid?.textContent?.includes("Step 5 · Final Trials Spreadsheet")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
     },null,{timeout:60000});
     assert.match(await restoredGrid.locator("tbody").innerText(),/NCT\d{8}/);
     await capture("04-cleared-to-start");
