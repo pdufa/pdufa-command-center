@@ -45,7 +45,7 @@ export default function ToolsOpeningTrialGrid({
           ?"Dated $300M–$10B completed Phase 3 research subset. FDA designations and saved application links appear on the same NCT rows. Current listing, cap and PDUFA eligibility remain unverified."
           :"One NCT per row, already restricted to the dated $300M–$10B completed Phase 3 research subset. Phase and FDA filters use this same pool; PDUFA eligibility is unverified."}</p>
       </div>
-      <strong className={css.count} role="status">{loading?"Loading…":error?"Unavailable":countUnverified?"NCT count not established":format(total)+" trials"}</strong>
+      <strong className={css.count} role="status">{loading?"Loading…":error?"Unavailable":format(total)+" restricted NCT matches"}</strong>
     </div>
     <div className={css.scroll} role="region" aria-label="Scrollable clinical trial spreadsheet" tabIndex={0}>
       <table>
@@ -64,7 +64,7 @@ export default function ToolsOpeningTrialGrid({
           {loading?<tr><td colSpan={columnsCount} className={css.empty}>Loading published trial records…</td></tr>
           :error?<tr><td colSpan={7} className={css.empty}>Cannot verify the trial inventory: {error}. No zero count assumed.</td></tr>
           :ordered.length===0?<tr><td colSpan={7} className={css.empty}>
-            {countUnverified?"Selected FDA programs have no verified NCT links; a clinical-trial count cannot be established."
+            {countUnverified?"No documented NCT matches within the restricted research subset. Full FDA trial coverage remains unknown."
               :hasSelection?"No documented trials match these selected criteria. Try a different Phase or FDA category."
               :"No trial records are available from the published source."}
           </td></tr>
@@ -105,7 +105,7 @@ export default function ToolsOpeningTrialGrid({
       </table>
     </div>
     <div className={css.footer}>
-      <span>{!loading&&!error?countUnverified?"No verified NCT trial count":("Showing "+(total?offset+1:0)+"–"+Math.min(offset+rows.length,total)+" of "+format(total)):"Awaiting published records"} · Page sort only</span>
+      <span>{!loading&&!error?("Showing "+(total?offset+1:0)+"–"+Math.min(offset+rows.length,total)+" of "+format(total)):"Awaiting published records"} · Page sort only</span>
       <div className={css.pager}>
         <button type="button" disabled={loading||!!error||offset===0} onClick={onPrevious}>Previous 50</button>
         <button type="button" disabled={loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
