@@ -9,14 +9,14 @@ test("production home uses native active POOL and Pipeline without legacy workbe
  assert.doesNotMatch(home,/from "\.\/Workspace"|\bGemQualificationChecklist\b|streamlit\.app/i);
  assert.match(home,/href:"\/pool"/);
  assert.match(home,/href:"\/pipeline"/);
- assert.match(nav,/label:"SCANS",href:"\/scans"/);
- assert.match(nav,/label:"RESULTS",href:"\/results"/);
- assert.match(nav,/label:"GOAL",href:"\/goal"/);
- assert.match(nav,/label:"RESTRICTIONS",href:"\/restrictions"/);
+ assert.match(nav,/label:"TOOLS",href:"\\/tools"/);
+ assert.match(nav,/label:"SCAN",href:"\\/scans"/);
+ for(const retired of ["POOL","RESULTS","GOAL","RESTRICTIONS"])
+  assert.ok(!nav.includes('label:"'+retired+'"'),retired+" should not be a top navigation link");
  assert.doesNotMatch(nav,/\bGEM[_ ]JR\b|\bGEM\b|streamlit/i);
 });
 test("every active site section has a native page",()=>{
- for(const file of ["pool/page.tsx","pipeline/page.tsx","scans/page.tsx",
+ for(const file of ["pool/page.tsx","pipeline/page.tsx","tools/page.tsx","scans/page.tsx",
     "results/page.tsx","goal/page.tsx","restrictions/page.tsx",
     "predictions/page.tsx","patient-population/page.tsx"]){
   assert.ok(read(file).length>0,file);
