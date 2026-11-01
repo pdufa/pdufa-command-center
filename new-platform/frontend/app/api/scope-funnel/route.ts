@@ -11,6 +11,7 @@ import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
 import {verifiedToolPool,buildToolsResults,filterToolTrials,selectToolTrialIds,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
+import {isToolsSnapshotFresh,parseToolsSnapshotTimestamp} from "../../../lib/tools-snapshot-freshness";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -81,22 +82,35 @@ function linkedDesignationTrialIds(data:FunnelResult,index:DesignationIndex,sele
 // Immutable at build time: the same verified published-source NCT inventory
 // is refreshed by the scheduled, authenticated GitHub source snapshot audit.
 // Never serve a stale, unverified, corrupt or mismatched snapshot.
-let publishedToolSnapshot:ReturnType<typeof verifiedToolPool>|null=null;
-let publishedToolSnapshotChecked=false;
+// A checked-once flag is unsafe: a snapshot can expire while a serverless
+// instance stays warm, and an invalid snapshot should be rechecked periodically.
+const PUBLISHED_TOOL_RETRY_MS=60000;
+let publishedToolSnapshot:{generatedAt:number;value:ReturnType<typeof verifiedToolPool>}|null=null;
+let publishedToolRetryAfter=0;
 async function publishedPoolSource():Promise<ReturnType<typeof verifiedToolPool>|null>{
-  if(publishedToolSnapshotChecked)return publishedToolSnapshot;
-  publishedToolSnapshotChecked=true;
+  const now=Date.now();
+  if(publishedToolSnapshot){
+    if(isToolsSnapshotFresh(publishedToolSnapshot.generatedAt,now))
+      return publishedToolSnapshot.value;
+    // Never serve an already-cached snapshot after it crosses the age limit.
+    publishedToolSnapshot=null;
+  }
+  if(now<publishedToolRetryAfter)return null;
   try{
     const file=join(process.cwd(),"data","tools-pool-snapshot.json");
     const raw=JSON.parse(await readFile(file,"utf8")) as Record<string,unknown>;
-    const timestamp=typeof raw.snapshotGeneratedAt==="string"?Date.parse(raw.snapshotGeneratedAt):NaN;
-    if(!Number.isFinite(timestamp)||timestamp>Date.now()+300000||Date.now()-timestamp>36*3600000)
+    const timestamp=parseToolsSnapshotTimestamp(raw.snapshotGeneratedAt);
+    if(!isToolsSnapshotFresh(timestamp,now))
       throw Error("Published static POOL snapshot expired");
     if(raw.schemaVersion!==1)throw Error("Published static POOL schema mismatch");
-    publishedToolSnapshot=verifiedToolPool(raw);
-    return publishedToolSnapshot;
+    const verified=verifiedToolPool(raw);
+    publishedToolSnapshot={generatedAt:timestamp,value:verified};
+    publishedToolRetryAfter=0;
+    return verified;
   }catch{
-    // Freshness/parity errors fall back to the authenticated live backend.
+    // Retry the static snapshot after a bounded interval. In the meantime,
+    // use only an independently verified authenticated backend source.
+    publishedToolRetryAfter=now+PUBLISHED_TOOL_RETRY_MS;
     return null;
   }
 }
@@ -217,10 +231,13 @@ export async function GET(req:NextRequest) {
         // Never silently substitute full POOL or the historical 375 baseline
         // for a failed exact-NCT reconciliation.
       }
-      if(screenedBaseline && pipelineResearchNcts===null){
+      // Every TOOLS result is restricted to the same dated, exact-NCT
+      // Pipeline screening set. Optional stage/FDA filters must NEVER bypass
+      // this boundary when the screening data cannot be validated.
+      if(pipelineResearchNcts===null){
         return NextResponse.json({
-          error:"Screened Pipeline source cannot be reconciled. Baseline rows are withheld rather than showing unrelated POOL trials.",
-          reasonCode:"PIPELINE_BASELINE_UNAVAILABLE"
+          error:"Screened Pipeline source cannot be reconciled. All filtered trial rows and counts are withheld rather than showing unscreened POOL records.",
+          reasonCode:"PIPELINE_SCREEN_UNAVAILABLE"
         },{status:503,headers:{"Cache-Control":"private, no-store"}});
       }
       const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,
