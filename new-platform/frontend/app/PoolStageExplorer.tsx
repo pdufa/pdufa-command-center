@@ -103,12 +103,13 @@ export default function PoolStageExplorer(){
   },[params]);
   const stats=page?.stageStats||lastStats;
   function toggleStage(stage:string){
-    setBaselineMode(false);
-    setSelectedStages(old=>old.includes(stage)?old.filter(item=>item!==stage):[...old,stage]);
+    const next=selectedStages.includes(stage)?selectedStages.filter(item=>item!==stage):[...selectedStages,stage];
+    setSelectedStages(next);
+    setBaselineMode(next.length===0&&selectedDesignations.length===0);
     setOffset(0);
   }
-  function changeStages(next:string[]){setBaselineMode(false);setSelectedStages(next);setOffset(0);}
-  function changeDesignations(next:DesignationKey[]){setBaselineMode(false);setSelectedDesignations(next);setOffset(0);}
+  function changeStages(next:string[]){setBaselineMode(next.length===0&&selectedDesignations.length===0);setSelectedStages(next);setOffset(0);}
+  function changeDesignations(next:DesignationKey[]){setBaselineMode(next.length===0&&selectedStages.length===0);setSelectedDesignations(next);setOffset(0);}
   function findPhase3OrphanTrials(){
     setBaselineMode(false);
     setSelectedStages(["Phase 3"]);
