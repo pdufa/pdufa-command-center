@@ -40,10 +40,10 @@ export default function ToolsOpeningTrialGrid({
   return <section className={css.root} aria-label="Live trial inventory spreadsheet">
     <div className={css.heading}>
       <div>
-        <h2>{inventoryMode?"Published POOL — trial spreadsheet":"Filtered trials — spreadsheet"}</h2>
+        <h2>{inventoryMode?"RESTRICTED RESEARCH SUBSET — trial spreadsheet":"Restricted trial matches — spreadsheet"}</h2>
         <p>{inventoryMode
-          ?"One master NCT POOL with documented FDA designations and saved PDUFA application links on the same trial rows. Phase/FDA selections narrow this table."
-          :"One NCT per row. Phase and FDA filters use documented exact matches; linked PDUFA targets are application records, not a separate set of trials."}</p>
+          ?"Dated $300M–$10B completed Phase 3 research subset. FDA designations and saved application links appear on the same NCT rows. Current listing, cap and PDUFA eligibility remain unverified."
+          :"One NCT per row, already restricted to the dated $300M–$10B completed Phase 3 research subset. Phase and FDA filters use this same pool; PDUFA eligibility is unverified."}</p>
       </div>
       <strong className={css.count} role="status">{loading?"Loading…":error?"Unavailable":countUnverified?"NCT count not established":format(total)+" trials"}</strong>
     </div>
@@ -112,7 +112,7 @@ export default function ToolsOpeningTrialGrid({
       </div>
     </div>
     <p className={css.source}>{!regulatorySourcesAvailable?"FDA/PDUFA enrichment source unavailable for this request; absence of a link is not established. ":""}FDA designation and PDUFA application coverage is incomplete. A PDUFA target is application-level; the linked NCT is not automatically pivotal. Published source: {sourceDate||"Not recorded"} · State: {sourceState||"Unverified"}.
-      {inventoryMode?" This is the full clinical POOL inventory, not a Pipeline qualification or an FDA designation match.":""}
+      {inventoryMode?" This inventory is the restricted dated research subset, not the unrestricted published POOL or a verified trade-ready Pipeline.":""}
       {hasSelection&&selectedDesignations>0?" FDA program records lacking NCT links cannot be treated as zero trials.":""}
     </p>
   </section>;
