@@ -120,10 +120,11 @@ export function toolsContextualDesignationCounts(
   return Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key})=>{
     if(!index?.availableKeys?.[key])return [key,null];
     const ids=selectToolTrialIds(poolRows,index,[key]);
-    // A source with no exact-NCT positives has incomplete coverage:
-    // 'unknown', not 'zero trials'. When a known designation has links
-    // outside the chosen phase, an observed intersection of 0 IS valid.
-    if(ids.size===0)return [key,null];
+    // This is a count of DOCUMENTED exact-NCT matches, not the complete FDA
+    // designation population. A tracked category with no matched NCT links
+    // has zero documented matches; that is NOT evidence of zero designations.
+    // Null is reserved for missing/untracked source evidence.
+    if(ids.size===0)return [key,{matchingTrials:0,nctIds:[]}];
     const filtered=filterToolTrials(poolRows,stages,ids,query);
     return [key,{matchingTrials:filtered.length,
       nctIds:filtered.slice(0,40).map(row=>row.id.slice("TRIAL|".length))}];
