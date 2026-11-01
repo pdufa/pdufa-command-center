@@ -63,7 +63,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     onChange(selected.includes(key)?selected.filter(item=>item!==key):[...selected,key]);
   }
   if(guided)return <div className={styles.toolsGuidedDesignation}>
-    <p className={styles.muted}>Counts at right show distinct NCT trials matching each FDA category <strong>within your current Phase and search filters</strong>. They use the same exact NCT/ticker evidence and full trial set as the resultant spreadsheet, not FDA program totals or just the visible 50 rows. Multiple FDA categories are OR combined, so their counts can overlap. ? means source-linked trial coverage is unknown.</p>
+    <p className={styles.muted}><strong>FDA trial totals are not established.</strong> The source has verified FDA-to-NCT links for only {index?auditedNcts.toLocaleString("en-US"):"an unknown number of"} distinct NCTs{poolTrialCount!==null?" versus "+poolTrialCount.toLocaleString("en-US")+" published POOL trials":""}. Numbers below are <strong>documented matching NCTs, not complete designation totals</strong>. Each category is counted within the current Phase/search filters; a 0 means zero documented matches, not proof of no designated trials. FDA program records are shown separately.</p>
     <p className={styles.muted}><strong>Count scope:</strong> {scopeStages.length?scopeStages.join(", "):"All recorded phases"}{scopeQuery.trim()?" · Search: "+scopeQuery.trim():""} · Individual FDA categories evaluated separately.</p>
     {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
     {error&&<p role="alert" className={styles.error}>FDA source unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
@@ -80,20 +80,21 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
             <span>{category.label}</span>
             <strong className={styles.toolsFdaRowCount}
               title={index&&d.available&&!scopeLoading&&!scopeError&&contextual
-                ?contextual.matchingTrials+" exact-NCT matches with current Phase/search; FDA categories OR together"
-                :"Current resultant trial count not established"}>
+                ?contextual.matchingTrials+" documented NCT matches in the current Phase/search; complete designation total unknown"
+                :"Complete designation trial total unknown or source not tracked"}>
               {index&&d.available?(scopeLoading?"…":contextual?contextual.matchingTrials.toLocaleString("en-US"):"?"):"—"}
-              <small>{index&&d.available?(scopeLoading?"updating":contextual?"trial matches":"NCTs unknown"):"Not tracked"}</small>
+              <small>{index&&d.available?(scopeLoading?"updating":contextual?"verified NCT matches · partial":"trial total unknown"):"Not tracked"}</small>
+              {index&&d.available&&!scopeLoading&&<small>{d.records.length.toLocaleString("en-US")} source programs · full total unknown</small>}
             </strong>
           </label>
           {checked&&index&&<div className={styles.toolsCascadeFdaEvidence}
               aria-label={category.label+" source evidence"} role="group">
             <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
               <small>Across source evidence, not filtered clinical trials</small></div>
-            <div><strong>{scopeLoading?"Updating…":contextual?contextual.matchingTrials.toLocaleString("en-US")+" matching NCTs":"NCT count unknown"}</strong>
-              <small>Within selected Phase/search, before pagination; exact links only</small></div>
+            <div><strong>{scopeLoading?"Updating…":contextual?contextual.matchingTrials.toLocaleString("en-US")+" verified NCT matches":"NCT count unknown"}</strong>
+              <small>Documented subset within Phase/search, before pagination; full total unknown</small></div>
             {contextual&&contextual.matchingTrials>0&&<details className={styles.toolsFdaLinkedTrials}>
-              <summary>View {contextual.matchingTrials.toLocaleString("en-US")} matching trial IDs in selected scope</summary>
+              <summary>View {contextual.matchingTrials.toLocaleString("en-US")} documented matching trial IDs in selected scope</summary>
               <ul>{contextual.nctIds.map(nct=>
                 <li key={nct}><a href={"https://clinicaltrials.gov/study/"+nct}
                   target="_blank" rel="noopener noreferrer">{nct}</a></li>)}</ul>
