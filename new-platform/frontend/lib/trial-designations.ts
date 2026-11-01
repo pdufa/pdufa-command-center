@@ -42,6 +42,8 @@ export type DesignationIndex = {
   /** False means the saved scanner has no field for this category: counts must show unavailable, not zero. */
   availableKeys?: Partial<Record<DesignationKey, boolean>>;
   programs: Record<string, DesignationProgram>; trialEvents: Record<string, string[]>;
+  /** Limited, manually reviewed exact-NCT crosswalk, never a complete FDA designation census. */
+  linkageCoverage?: {verifiedNctCount:number;verifiedClaimCount:number;scope:"REVIEWED_EXACT_NCT_DRUG_INDICATION"};
 };
 
 export function designationSource(value: string | undefined): string {
@@ -130,6 +132,69 @@ export function buildDesignationIndex(csv: string, applicationsCsv: string | nul
     } catch { /* Keep exact application records available when trial links are unavailable. */ }
   }
   return { schemaVersion: 1, fetchedAt, linkageAvailable, availableKeys, programs, trialEvents };
+}
+
+/**
+ * Attach claims only when a reviewed dual-source record identifies the precise NCT,
+ * intervention, indication, sponsor and a named FDA/SEC/issuer designation source.
+ * This does not infer that a regulatory designation was awarded to the trial itself:
+ * it connects a documented drug/indication program to its corresponding trial.
+ * Ticker-only and date-only joins are forbidden.
+ */
+export function applyReviewedDesignationLinks(index: DesignationIndex, evidenceCsv: string): DesignationIndex {
+  const rows=parseEvidenceCsv(evidenceCsv);
+  const required=["event_key","ticker","nct_id","drug","indication","trial_source_url",
+    "designation_key","designation_source_url","designation_date","evidence_scope","reviewed_at"];
+  if(!rows.length||rows.length>5000||required.some(k=>!(k in rows[0])))
+    throw Error("Invalid trial-to-FDA designation crosswalk");
+  const supported=new Set<string>(SPECIAL_DESIGNATION_CATEGORIES.map(x=>x.key));
+  const unique=new Set<string>();
+  const programIdentities=new Map<string,string>();
+  let accepted=0;
+  for(const row of rows){
+    const event=row.event_key?.trim(),ticker=row.ticker?.trim().toUpperCase();
+    const nct=row.nct_id?.trim().toUpperCase();
+    const key=row.designation_key?.trim() as DesignationKey;
+    const program=index.programs[event];
+    const source=designationSource(row.designation_source_url);
+    const trialSource=designationSource(row.trial_source_url);
+    const grantHost=source?new URL(source).hostname:"";
+    const ctUrl="https://clinicaltrials.gov/study/"+nct;
+    const scope=row.evidence_scope?.trim(),drug=row.drug?.trim(),indication=row.indication?.trim();
+    if(!program||!ticker||program.ticker!==ticker||!/^NCT\d{8}$/.test(nct||"")||
+      !supported.has(key)||!source||!trialSource||trialSource!==ctUrl||
+      !scope||scope.length>600||!drug||!indication||
+      !sourceDate(row.reviewed_at)||
+      !(/(^|\.)sec\.gov$|(^|\.)fda\.gov$|^investors\.dyne-tx\.com$/).test(grantHost))
+      throw Error("Unverifiable trial-to-designation row: "+String(event).slice(0,90));
+    const linkKey=[event,nct,key].join("|");
+    if(unique.has(linkKey))throw Error("Duplicate reviewed designation claim "+linkKey);
+    unique.add(linkKey);
+    const identity=drug.toLowerCase()+"|"+indication.toLowerCase();
+    if(programIdentities.has(event)&&programIdentities.get(event)!==identity)
+      throw Error("Conflicting drug/indication for reviewed event "+event);
+    programIdentities.set(event,identity);
+    // A known denial/withdrawal cannot be silently replaced by another source.
+    const current=program.designations[key];
+    if(["NOT_GRANTED","WITHDRAWN","CONFLICT"].includes(current.status))
+      throw Error("Conflicting designation claim requires manual review: "+linkKey);
+    program.drug=drug;program.indication=indication;
+    program.designations[key]={
+      status:"GRANTED",verification:grantHost==="www.accessdata.fda.gov"?"FDA_VERIFIED":"SOURCE_RECORDED",
+      source,designationDate:sourceDate(row.designation_date),checkedAt:sourceDate(row.reviewed_at),
+      note:"Reviewed drug/indication program link to "+nct+"; trial source: "+trialSource+
+        ". Scope: "+scope+". This regulatory status belongs to the drug/program, not the trial itself."
+    };
+    index.trialEvents[nct]=[...new Set([...(index.trialEvents[nct]||[]),event])];
+    if(index.availableKeys)index.availableKeys[key]=true;
+    accepted++;
+  }
+  index.linkageAvailable=accepted>0;
+  index.linkageCoverage={
+    verifiedNctCount:new Set(rows.map(r=>r.nct_id.toUpperCase())).size,
+    verifiedClaimCount:accepted,scope:"REVIEWED_EXACT_NCT_DRUG_INDICATION"
+  };
+  return index;
 }
 
 export function resolveTrialDesignations(row: Candidate, index?: DesignationIndex | null): TrialDesignations {
