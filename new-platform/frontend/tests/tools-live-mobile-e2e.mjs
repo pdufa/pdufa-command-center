@@ -182,7 +182,7 @@ try{
       const expected=total&&total.linkedNcts>0?String(total.linkedNcts):"?";
       const label=await fdaCounts.nth(i).innerText();
       if(total===null)assert.match(label,/Not tracked/);
-      else assert.equal(label.split("\\n")[0].replaceAll(",",""),expected,
+      else assert.equal(label.split("\n")[0].replaceAll(",",""),expected,
         "FDA "+key+" row count must exactly equal source-verified POOL NCT matching count");
     }
     for(const c of await fdaCounts.all()){
