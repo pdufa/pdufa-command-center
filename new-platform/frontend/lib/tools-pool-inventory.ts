@@ -136,18 +136,16 @@ export function buildToolsResults(
   index:DesignationIndex|null,
   selectedStages:readonly string[],
   selectedDesignations:readonly DesignationKey[],
-  query:string,offset:number,limit:number,
-  pipelineResearchNcts:ReadonlySet<string>|null=null
+  query:string,offset:number,limit:number
 ){
   const {poolRows,stageStats,sourceAsOf,sourceState}=snapshot;
   const matchingIds=index?selectToolTrialIds(poolRows,index,selectedDesignations):null;
   const designationCoverage=index&&selectedDesignations.length>0
     ?designationSourceCoverage(poolRows,index,selectedDesignations):null;
-  const poolMatches=filterToolTrials(poolRows,selectedStages,matchingIds,query);
-  const filtered=pipelineResearchNcts===null?poolMatches:
-    poolMatches.filter(row=>pipelineResearchNcts.has(row.id));
-  const scopedDesignationMatches=matchingIds===null?null:pipelineResearchNcts===null?matchingIds:
-    new Set([...matchingIds].filter(id=>pipelineResearchNcts.has(id)));
+  // TOOLS selects from the complete published clinical POOL. The independent
+  // $300M–$10B post–Phase 3 Pipeline screen is informational, NEVER a filter.
+  // AND applies between stage and documented NCT-linked designation criteria.
+  const filtered=filterToolTrials(poolRows,selectedStages,matchingIds,query);
   const stageSelectors=selectedStages.map(label=>({
     label,trials:stageStats.stages[label]?.trials??0
   }));
@@ -173,7 +171,7 @@ export function buildToolsResults(
       designationSelectedCount:selectedDesignations.length,
       stageTotal:stageSelectors.reduce((sum,v)=>sum+v.trials,0),
       designationCountSum:designationSelectors.reduce((sum,v)=>sum+v.linkedTrials,0),
-      designationUniqueTrials:scopedDesignationMatches?.size??null,
+      designationUniqueTrials:matchingIds?.size??null,
       matchingUniqueTrials:filtered.length,
       sourceProgramRecords:designationCoverage?.sourcePrograms??0,
       unlinkedSourceProgramRecords:designationCoverage?.unlinkedPrograms??0,
