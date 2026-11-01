@@ -26,13 +26,30 @@ async function openAuthenticated(viewport,isMobile){
 async function populate(page){
   const chooser=page.locator("details").filter({has:page.getByText("Select clinical trial stages")}).locator("summary");
   await chooser.click();
+  // Confirm the actual stage-filter response before checking results;
+  // no-selection state cannot satisfy the filter test.
+  const stageResponse=page.waitForResponse(response=>{
+    try{
+      const url=new URL(response.url());
+      return url.pathname==="/api/scope-funnel" &&
+        url.searchParams.get("tools")==="1" &&
+        url.searchParams.has("stages") &&
+        !url.searchParams.has("baseline");
+    }catch{return false;}
+  },{timeout:100000});
   await page.getByRole("button",{name:"Select all",exact:true}).click();
+  const response=await stageResponse;
+  assert.equal(response.status(),200,"Stage-filtered source request failed in live TOOLS");
+  const body=await response.json();
+  assert.ok(body.total>0 && Array.isArray(body.spreadsheetRows) &&
+    body.spreadsheetRows.length>0,"All-stage selection returned no source-linked NCT rows");
+  await page.locator("#benefit-trial-picker").waitFor({state:"visible",timeout:50000});
   await page.waitForFunction(()=>{
     const s=document.querySelector("#tools-benefit-assessments");
     const picker=document.querySelector("#benefit-trial-picker");
     return s && picker && picker.options.length>0 &&
       !s.textContent.includes("Loading source-matched resultant trials");
-  },null,{timeout:100000});
+  },null,{timeout:50000});
 }
 try {
   const mobile=await openAuthenticated({width:390,height:844},true);
