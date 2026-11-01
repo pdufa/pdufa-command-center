@@ -403,3 +403,8 @@
   border-color:#0b3927;
   color:#fff;
 }
+
+
+/* Final live NCT spreadsheet is the last TOOLS section, after all selectors and analysis. */
+.toolsFinalSpreadsheet{clear:both;margin:22px 0 10px;padding-top:16px;border-top:2px solid #90b9a2;max-width:100%;min-width:0}
+.toolsFinalSpreadsheet > section{margin-top:0}
