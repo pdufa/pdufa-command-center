@@ -89,9 +89,9 @@ export default function ToolsFunnel({
                 :"Documented NCT-linked matches within the restricted research scope; FDA-to-NCT coverage is incomplete."}</small>
             </div>
             <div className={styles.toolsFunnelProgramBand} role="group" aria-label="FDA program record count, not clinical trials">
-              <span>FDA APPLICATION / PROGRAM RECORDS</span>
+              <span>FDA PROGRAM RECORDS — UNSCOPED CATALOG</span>
               <strong>{num(designationCoverage!.sourcePrograms)}</strong>
-              <small>Documented programs — NOT {num(designationCoverage!.sourcePrograms)} distinct trials.
+              <small>Unrestricted source-catalog program records — NOT {num(designationCoverage!.sourcePrograms)} screened trials.
                 {" "}{num(designationCoverage!.linkedNcts)} crosswalk-linked NCTs in the restricted research scope.</small>
             </div>
           </div>
