@@ -182,6 +182,14 @@ try{
     const phaseOnlyData=await phaseOnly.json();
     const contextualPhaseCounts=phaseOnlyData.contextualDesignationCounts;
     const fdaCounts=fda.locator("strong[class*='toolsFdaRowCount']");
+    // FDA source index loads independently of the POOL trial query. Wait for it
+    // before asserting badge counts; initial placeholders are not finalized counts.
+    await page.waitForFunction(()=>{
+      const first=[...document.querySelectorAll('#tools-first-designation label')]
+        .find(el=>el.textContent?.includes("Fast Track Designation"));
+      const check=first?.querySelector('input[type="checkbox"]');
+      return !!check&&!check.disabled;
+    },null,{timeout:45000});
     assert.equal(await fdaCounts.count(),13,"All 13 FDA choices must have trial-count labels like the Phase rows");
     assert.ok(await fdaCounts.first().isVisible());
     assert.equal(await fdaCounts.first().evaluate(el=>getComputedStyle(el).textAlign),"right");
