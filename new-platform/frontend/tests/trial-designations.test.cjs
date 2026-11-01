@@ -122,7 +122,17 @@ test("authenticated designation endpoint reads saved evidence and discloses a so
   const old={fetch:global.fetch,password:process.env.DASHBOARD_PASSWORD,key:process.env.SESSION_SIGNING_KEY};
   process.env.DASHBOARD_PASSWORD="designation-test-password";process.env.SESSION_SIGNING_KEY="designation-test-signing-key-for-unit-tests-only";
   let reads=0;
-  global.fetch=async url=>{reads++;return new Response(String(url).endsWith("prediction_engine_designations.csv")?csv([source]):"event_key,ticker,nct_id\n",{status:200});};
+  global.fetch=async url=>{
+    reads++;
+    const file=String(url);
+    if(file.endsWith("prediction_engine_designations.csv"))return new Response(csv([source]),{status:200});
+    if(file.endsWith("fda_designation_nct_evidence.csv"))return new Response(
+      "event_key,ticker,nct_id,drug,indication,trial_source_url,designation_key,designation_source_url,designation_date,evidence_scope,reviewed_at\n"+
+      event+",TEST,NCT00000001,Drug A,Disease A,https://clinicaltrials.gov/study/NCT00000001,fast_track,https://www.fda.gov/drugs/example-drug-a,,Test case,2026-10-31\n",
+      {status:200}
+    );
+    return new Response("event_key,ticker,nct_id\n",{status:200});
+  };
   const req=()=>new NextRequest("https://local.test/api/trial-designations",{headers:{cookie:auth.COOKIE_NAME+"="+auth.makeSession()}});
   try{
     assert.equal((await GET(new NextRequest("https://local.test/api/trial-designations"))).status,401);assert.equal(reads,0);
