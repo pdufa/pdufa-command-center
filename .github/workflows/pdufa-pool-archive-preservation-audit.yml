@@ -81,4 +81,37 @@ jobs:
           if original-ncts or current-ncts: raise SystemExit('FAIL: live POOL does not cover original/current clinical source IDs')
           print('PASS: original and current clinical trial identities retained in signed-in live POOL')
           print('NOTE: This does not certify fully current FDA, SEC, market coverage, eligibility or database restore.')
+          # Verify the live TOOLS counts against this same signed-in published POOL.
+          from collections import Counter
+          from urllib.parse import quote
+          stage_labels=['Early Phase 1','Phase 1','Phase 1/2','Phase 2','Phase 2/3',
+                        'Phase 3','Phase 3 Results','NDA/BLA Submission','FDA Acceptance',
+                        'PDUFA Decision','Post-Decision','Phase 4','Not Applicable','Unknown']
+          unique_trials=[r for r in rows if re.fullmatch(r'TRIAL\\|NCT\\d{8}',r.get('id',''))]
+          stages=Counter(r.get('stage') if r.get('stage') in stage_labels else 'Unknown' for r in unique_trials)
+          tools_path='/api/scope-funnel?view=pool&recordKind=trials&tools=1&limit=50&offset=0'
+          tools=request(tools_path)
+          totals=tools.get('stageStats') or {}
+          stage_counts=totals.get('stages') or {}
+          assert totals.get('trials')==len(unique_trials),'TOOLS NCT count differs from published workspace POOL'
+          assert sum((stage_counts.get(s) or {}).get('trials',-1) for s in stage_labels)==len(unique_trials),'TOOLS stage totals do not add up'
+          for label in stage_labels:
+              assert (stage_counts.get(label) or {}).get('trials')==stages[label],f'TOOLS wrong stage count for {label}'
+          assert tools.get('total')==0 and not tools.get('rows'),'TOOLS zero-selection state is not zero'
+          assert (tools.get('selectionSummary') or {}).get('selectedCount')==0,'TOOLS initial checked selector count incorrect'
+          stage=max(stage_labels,key=lambda label:stages[label])
+          stage_request=tools_path+'&stages='+quote(stage,safe='')
+          stage_selected=request(stage_request)
+          assert stage_selected.get('total')==stages[stage],'Selected stage does not return its own verified NCT count'
+          assert all(r.get('stage')==stage for r in stage_selected.get('spreadsheetRows',[])),'Wrong stage in spreadsheet'
+          combined=request(stage_request+'&designations=fast_track')
+          assert isinstance(combined.get('total'),int) and 0<=combined['total']<=stage_selected['total'],'Combined filter count invalid'
+          assert all(r.get('stage')==stage and (r.get('designationMatches') or {}).get('fast_track')
+                     for r in combined.get('spreadsheetRows',[])),'Combined selector evidence mismatch'
+          assert (combined.get('selectionSummary') or {}).get('selectedCount')==2,'Combined clicked-selector total incorrect'
+          print('PASS: signed-in TOOLS stage counts match published POOL NCT records')
+          print('VERIFIED_LIVE_TOOLS_TRIALS',len(unique_trials))
+          print('VERIFIED_LIVE_TOOLS_STAGE_SAMPLE',stage,'count',stages[stage])
+          print('VERIFIED_LIVE_TOOLS_COMBINED_SAMPLE',combined['total'])
+          print('NOTE: Only source-linked FDA designations are counted; this is not an FDA approval assessment.')
           PY
