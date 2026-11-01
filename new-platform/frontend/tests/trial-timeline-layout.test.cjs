@@ -67,3 +67,16 @@ test("TOOLS trial listing and 20-assessment table show the green counters after 
  assert.ok(route.includes("trialTimelines=new Map<string,TimelineDates>"));
  assert.ok(route.includes("timeline:trialTimelines.get(row.nctId+"));
 });
+
+test("prominent A and P labels preserve descriptions and verified values",()=>{
+ const summary=read("TrialTimelineSummary.tsx");
+ assert.ok(summary.includes('aria-label="A: days since Phase 3 readout">A</span>'));
+ assert.ok(summary.includes('aria-label="P: days to PDUFA">P</span>'));
+ assert.ok(summary.includes('DAYS SINCE PHASE 3'));
+ assert.ok(summary.includes('DAYS TO PDUFA'));
+ assert.ok(summary.includes('{metric.since}</strong>'));
+ assert.ok(summary.includes('{metric.until}</strong>'));
+ const missing=timelineDisplay(null,"2026-11-01");
+ assert.equal(missing.since,"Not verified");
+ assert.equal(missing.until,"Not verified");
+});
