@@ -259,3 +259,19 @@
 .toolsFunnelParityPass{color:#165135;border:1px solid #acd9b8;background:#f4fbf6}
 .toolsFunnelParityWarning{color:#815019;border:1px solid #ebca8c;background:#fff8eb}
 @media(max-width:760px){.toolsFunnel{padding:10px}.toolsFunnelHeading h2{font-size:17px}.toolsFunnelSteps{grid-template-columns:minmax(0,1fr);gap:5px}.toolsFunnelCard{min-height:0;border-width:2px}.toolsFunnelCardHead{font-size:15px;min-height:39px;padding:6px}.toolsFunnelCardHead span{font-size:19px}.toolsFunnelValue{font-size:28px;padding:7px 5px 1px}.toolsFunnelValueUnverified{font-size:20px;padding:11px 5px 1px}.toolsFunnelCard p{font-size:12px}.toolsFunnelCard small{font-size:10px;margin:0 9px 9px}.toolsFunnelArrow{font-size:21px;transform:rotate(90deg);height:22px}.toolsFunnelDate{font-size:10px}}
+
+
+/* Keep regulatory program counts visually separate from verified NCT trial totals. */
+.toolsFunnelActiveFilters{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 12px;padding:9px;border:1px solid #b8d1c9;background:#f0f7f4;border-radius:9px}
+.toolsFunnelActiveFilters>strong{font-size:11px;color:#3c6456;letter-spacing:.03em}
+.toolsFunnelActiveFilters>span{font-size:12px;font-weight:700;border:1px solid #b6d6ca;border-radius:999px;background:#fff;color:#24563f;padding:5px 9px;overflow-wrap:anywhere}
+.toolsFunnelUnlinkedResult{display:flex;flex-direction:column;gap:9px;padding:11px 12px 13px;width:100%;box-sizing:border-box}
+.toolsFunnelNctUnknown{display:flex;flex-direction:column;gap:4px;align-items:center;border-bottom:1px dashed #b4cfc0;padding-bottom:11px}
+.toolsFunnelNctUnknown>span,.toolsFunnelProgramBand>span{font-size:11px;font-weight:800;line-height:1.3;letter-spacing:.045em;color:#365c4b}
+.toolsFunnelNctUnknown>strong{font-size:clamp(18px,2.6vw,25px);font-weight:850;line-height:1.2;color:#116b3e}
+.toolsFunnelNctUnknown>small{font-size:11px;font-weight:500;color:#526c5f}
+.toolsFunnelProgramBand{display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff8e6;border:2px solid #e1c487;border-radius:10px;padding:10px 9px}
+.toolsFunnelProgramBand>span{color:#80521a}
+.toolsFunnelProgramBand>strong{font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;color:#80501b}
+.toolsFunnelProgramBand>small{font-size:11px;font-weight:750;line-height:1.35;color:#74521f}
+@media(max-width:760px){.toolsFunnelActiveFilters{margin:8px 0}.toolsFunnelUnlinkedResult{padding:10px}.toolsFunnelNctUnknown>strong{font-size:21px}.toolsFunnelProgramBand>strong{font-size:39px}}
