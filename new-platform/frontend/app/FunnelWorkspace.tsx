@@ -10,6 +10,7 @@ import { pacificToday, type TimelineDates } from "../lib/pipeline-timeline";
 import { PipelineTimelineHeaders, PipelineTimelineCells } from "./PipelineTimelineColumns";
 import PipelineFourViews from "./PipelineFourViews";
 import LiveRegistryReview from "./LiveRegistryReview";
+import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import BatchRegistryExport from "./BatchRegistryExport";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
@@ -162,6 +163,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
                <p>Costs: first 12 months per U.S. treated patient; source and matching price bases required. Prelaunch prices can only be modeled where evidence exists.</p>
              </details>
              {section==="pipeline"&&<LiveRegistryReview nctId={r.nctId}/>}
+             {section==="pipeline"&&<PipelineSponsorReadout nctId={r.nctId} ticker={r.ticker}/>}
              </td>
            </tr>:
            <tr key={r.id}>
