@@ -96,7 +96,12 @@ try{
         sheet?.textContent?.includes("NCT count not established");
     },null,{timeout:60000});
     assert.equal(await accelerated.isChecked(),true);
-    assert.match(await page.locator("section[aria-label='POOL to PIPELINE to TRIALS filter flow']").innerText(),/Not established/);
+    const funnel=page.locator("section[aria-label='POOL to PIPELINE to TRIALS filter flow']");
+    const nct=page.getByRole("group",{name:"Unique NCT clinical trial count"});
+    const programs=page.getByRole("group",{name:"FDA program record count, not clinical trials"});
+    assert.match(await nct.innerText(),/UNIQUE NCT TRIAL COUNT[\s\S]*Not established/);
+    assert.match(await programs.innerText(),/FDA APPLICATION \/ PROGRAM RECORDS[\s\S]*16[\s\S]*NOT 16 distinct trials/);
+    assert.match(await funnel.innerText(),/FDA: Accelerated Approval/);
     const before=await page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']").innerText();
     assert.match(before,/16 source-backed FDA program records/);
     assert.match(before,/NCT link not established/);
@@ -110,6 +115,9 @@ try{
     },null,{timeout:60000});
     const allStages=page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox",{checked:true});
     assert.equal(await allStages.count(),14);
+    assert.match(await funnel.innerText(),/Stages: All 14 stages/);
+    assert.match(await programs.innerText(),/FDA APPLICATION \/ PROGRAM RECORDS[\s\S]*16/);
+    assert.match(await nct.innerText(),/Not established/);
     const after=await page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']").innerText();
     assert.match(after,/16 source-backed FDA program records/);
     assert.match(after,/NCT count not established/);
