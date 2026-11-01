@@ -366,3 +366,24 @@ test("published TOOLS snapshot freshness is reevaluated after caching, not froze
   assert.match(route,/publishedToolRetryAfter=now\+PUBLISHED_TOOL_RETRY_MS/);
   assert.doesNotMatch(route,/publishedToolSnapshotChecked/);
 });
+
+
+test("final live spreadsheet stays below every TOOLS selection and analysis section",()=>{
+  const source=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  const head=source.indexOf('aria-label="Step 1 — choose a filter"');
+  const stage=source.indexOf('id="tools-first-phase"');
+  const fda=source.indexOf('id="tools-first-designation"');
+  const funnel=source.indexOf('<ToolsFunnel');
+  const research=source.indexOf('<ToolsResultsSpreadsheet');
+  const final=source.indexOf('id="tools-final-trial-spreadsheet"');
+  const closing=source.lastIndexOf('</section>');
+  assert.ok([head,stage,fda,funnel,research,final,closing].every(n=>n>=0));
+  assert.ok(head<stage&&stage<fda&&fda<funnel&&funnel<research&&research<final&&final<closing,
+    "All selections, the trial funnel and research spreadsheet must precede the final live grid");
+  assert.equal((source.match(/<ToolsOpeningTrialGrid\b/g)||[]).length,1,
+    "Never render duplicate copies of the final live POOL spreadsheet");
+  assert.match(source.slice(final),/rows=\{page\?\.spreadsheetRows\|\|\[\]\}/);
+  assert.match(source.slice(final),/inventoryMode=\{!hasSelections\}/);
+  assert.match(source.slice(final),/onNext=\{\(\)=>\{/);
+  assert.match(source.slice(final),/loading=\{loading\}/);
+});
