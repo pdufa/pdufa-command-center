@@ -1,0 +1,38 @@
+name: TOOLS authenticated mobile browser E2E
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/tests/tools-live-mobile-e2e.mjs'
+      - '.github/workflows/tools-live-mobile-e2e.yml'
+permissions:
+  contents: read
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install mobile WebKit browser runner
+        run: |
+          npm install --no-audit --no-fund --no-save playwright@1.56.1
+          npx playwright install --with-deps webkit
+      - name: Click every live selector and verify spreadsheet results
+        run: node tests/tools-live-mobile-e2e.mjs
+      - name: Preserve mobile screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-tools-mobile-failure
+          path: new-platform/frontend/test-results/tools-mobile/
+          if-no-files-found: ignore
+          retention-days: 3
