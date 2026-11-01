@@ -9,8 +9,8 @@ test("production home uses native active POOL and Pipeline without legacy workbe
  assert.doesNotMatch(home,/from "\.\/Workspace"|\bGemQualificationChecklist\b|streamlit\.app/i);
  assert.match(home,/href:"\/pool"/);
  assert.match(home,/href:"\/pipeline"/);
- assert.match(nav,/label:"TOOLS",href:"\\/tools"/);
- assert.match(nav,/label:"SCAN",href:"\\/scans"/);
+ assert.match(nav,/label:"TOOLS",href:"\/tools"/);
+ assert.match(nav,/label:"SCAN",href:"\/scans"/);
  for(const retired of ["POOL","RESULTS","GOAL","RESTRICTIONS"])
   assert.ok(!nav.includes('label:"'+retired+'"'),retired+" should not be a top navigation link");
  assert.doesNotMatch(nav,/\bGEM[_ ]JR\b|\bGEM\b|streamlit/i);
