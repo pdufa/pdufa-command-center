@@ -7,7 +7,7 @@ for(const ext of [".ts",".tsx"])require.extensions[ext]=(mod,file)=>
     compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}
   }).outputText,file);
 const {
-  verifiedToolPool,selectToolTrialIds,filterToolTrials,buildToolsResults,buildToolsOpeningInventory,renderToolsSpreadsheetCsv
+  verifiedToolPool,selectToolTrialIds,toolsDesignationTotals,filterToolTrials,buildToolsResults,buildToolsOpeningInventory,renderToolsSpreadsheetCsv
 }=require("../lib/tools-pool-inventory.ts");
 const trial=(nct,stage,ticker="ACME")=>({id:"TRIAL|"+nct,ticker,company:"Company",drug:"Drug",indication:"Disease",stage});
 const trials=[
@@ -97,6 +97,40 @@ test("designation-only selection counts exact NCT plus issuer, never ticker alon
   const badIndex={...index,programs:{"ACME|one":{...index.programs["ACME|one"],ticker:"OTHER"}}};
   assert.equal(selectToolTrialIds(snapshot.poolRows,badIndex,["fast_track"]).size,0);
 });
+test("FDA row totals equal the exact NCT+issuer trial filter, never raw index links or program counts",()=>{
+ const snapshot=verifiedToolPool(raw());
+ const expandedIndex={...index,
+   trialEvents:{...index.trialEvents,
+     NCT99999999:["ACME|one"], // referenced in designation source, absent from published POOL
+     NCT00000003:["ACME|one"], // same ticker; legitimately part of POOL
+     NCT00000002:["OTHER|unmatched"]
+   },
+   availableKeys:{...index.availableKeys,priority_review:false}
+ };
+ const totals=toolsDesignationTotals(snapshot.poolRows,expandedIndex);
+ for(const key of ["fast_track","orphan_drug"]){
+   const matching=selectToolTrialIds(snapshot.poolRows,expandedIndex,[key]);
+   assert.equal(totals[key].linkedNcts,matching.size);
+   assert.equal(totals[key].linkedNcts,2);
+   assert.deepEqual(totals[key].nctIds,["NCT00000001","NCT00000003"]);
+   assert.deepEqual(totals[key].programNctIds["ACME|one"],["NCT00000001","NCT00000003"]);
+   assert.ok(!totals[key].nctIds.includes("NCT99999999"),
+     "A raw designation index NCT not in published POOL cannot inflate a displayed trial count");
+ }
+ assert.equal(totals.priority_review,null,"Untracked FDA categories must never report zero");
+ const tickerMismatch={...expandedIndex,programs:{
+   "ACME|one":{...expandedIndex.programs["ACME|one"],ticker:"OTHER"}
+ }};
+ const bad=toolsDesignationTotals(snapshot.poolRows,tickerMismatch);
+ assert.equal(bad.fast_track.linkedNcts,0);
+ assert.deepEqual(bad.fast_track.nctIds,[]);
+ assert.deepEqual(bad.fast_track.programNctIds,{},
+   "Not a matching issuer means no displayed NCT attribution to that FDA program");
+ const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
+ assert.match(route,/designationTotals=index\?toolsDesignationTotals\(inventory.poolRows,index\):null/);
+ assert.match(route,/spreadsheetRows,pipelineResearch,designationTotals,datasetVersion/);
+});
+
 test("source parity failure and stale POOL never produce invented trial totals",()=>{
   assert.throws(()=>verifiedToolPool({...raw(),sourceHealth:{...raw().sourceHealth,state:"STALE"}}),/POOL_SOURCE_STALE/);
   assert.throws(()=>verifiedToolPool({...raw(),sourceHealth:{...raw().sourceHealth,regulatoryRows:2}}),/POOL_SOURCE_PARITY_FAILED/);
@@ -175,7 +209,8 @@ test("FDA selector discloses program source count and incomplete NCT crosswalk s
   assert.match(source,/Incomplete FDA-to-trial coverage/);
   assert.match(source,/positiveProgramIds\.size/);
   assert.match(source,/d\.records\.length\.toLocaleString/);
-  assert.match(source,/d\.linkedTrials>0/);
+  assert.match(source,/total\?\.linkedNcts/);
+  assert.doesNotMatch(source,/d\.linkedTrials/);
   assert.match(source,/NCT count unknown/);
   assert.match(sheet,/FDA source program records — not clinical trial counts/);
   assert.match(sheet,/No documented NCT-linked POOL trials match both the chosen phases/);
