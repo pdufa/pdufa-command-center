@@ -9,14 +9,15 @@ import {
 } from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
 import ToolsOptionNumber from "./ToolsOptionNumber";
-import type {ToolsDesignationTotals} from "../lib/tools-pool-inventory";
+import type {ToolsDesignationTotals,ToolsContextualDesignationCounts} from "../lib/tools-pool-inventory";
 
 type PositiveRecord={program:DesignationProgram;linkedNcts:string[]};
 type DesignationSummary={available:boolean;records:PositiveRecord[]};
 
-export default function PoolDesignationSelector({selected,onChange,poolTrialCount,poolTotals=null,guided=false}:{
+export default function PoolDesignationSelector({selected,onChange,poolTrialCount,poolTotals=null,contextCounts=null,scopeStages=[],scopeQuery="",scopeLoading=false,scopeError="",guided=false}:{
   selected:DesignationKey[];onChange:(next:DesignationKey[])=>void;
-  poolTrialCount:number|null;poolTotals?:ToolsDesignationTotals|null;guided?:boolean
+  poolTrialCount:number|null;poolTotals?:ToolsDesignationTotals|null;contextCounts?:ToolsContextualDesignationCounts|null;
+  scopeStages?:readonly string[];scopeQuery?:string;scopeLoading?:boolean;scopeError?:string;guided?:boolean
 }){
   const {index,loading,error,retry}=useTrialDesignations();
   const entries=useMemo(()=>{
@@ -62,12 +63,14 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     onChange(selected.includes(key)?selected.filter(item=>item!==key):[...selected,key]);
   }
   if(guided)return <div className={styles.toolsGuidedDesignation}>
-    <p className={styles.muted}>Counts at right show distinct, documented NCT matches in the published POOL across all phases, before any Phase or text filters. They are not FDA program totals. A ? means the full trial count is unknown.</p>
+    <p className={styles.muted}>Counts at right show distinct NCT trials matching each FDA category <strong>within your current Phase and search filters</strong>. They use the same exact NCT/ticker evidence and full trial set as the resultant spreadsheet, not FDA program totals or just the visible 50 rows. Multiple FDA categories are OR combined, so their counts can overlap. ? means source-linked trial coverage is unknown.</p>
+    <p className={styles.muted}><strong>Count scope:</strong> {scopeStages.length?scopeStages.join(", "):"All recorded phases"}{scopeQuery.trim()?" · Search: "+scopeQuery.trim():""} · Individual FDA categories evaluated separately.</p>
     {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
     {error&&<p role="alert" className={styles.error}>FDA source unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
     <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
       {SPECIAL_DESIGNATION_CATEGORIES.map((category,categoryIndex)=>{
-        const d=entries[category.key],checked=selected.includes(category.key),total=poolTotals?.[category.key]??null;
+        const d=entries[category.key],checked=selected.includes(category.key),total=poolTotals?.[category.key]??null,
+          contextual=contextCounts?.[category.key]??null;
         return <div key={category.key} className={styles.toolsCascadeFdaItem}>
           <label className={styles.stageCheckboxRow}
             title={index&&!d.available?"No source field available for this category":undefined}>
@@ -76,24 +79,26 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
             <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
             <span>{category.label}</span>
             <strong className={styles.toolsFdaRowCount}
-              title={index&&d.available&&total?total.linkedNcts+" POOL-matched NCT trial IDs (partial FDA coverage)": "FDA category not source-tracked"}>
-              {index&&d.available?(total?.linkedNcts?total.linkedNcts.toLocaleString("en-US"):"?"):"—"}
-              <small>{index&&d.available?(total?.linkedNcts?"linked NCTs":"NCTs unknown"):"Not tracked"}</small>
+              title={index&&d.available&&!scopeLoading&&!scopeError&&contextual
+                ?contextual.matchingTrials+" exact-NCT matches with current Phase/search; FDA categories OR together"
+                :"Current resultant trial count not established"}>
+              {index&&d.available?(scopeLoading?"…":contextual?contextual.matchingTrials.toLocaleString("en-US"):"?"):"—"}
+              <small>{index&&d.available?(scopeLoading?"updating":contextual?"trial matches":"NCTs unknown"):"Not tracked"}</small>
             </strong>
           </label>
           {checked&&index&&<div className={styles.toolsCascadeFdaEvidence}
               aria-label={category.label+" source evidence"} role="group">
             <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
-              <small>FDA programs, not distinct clinical trials</small></div>
-            <div><strong>{total?.linkedNcts?total.linkedNcts.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}</strong>
-              <small>Exact POOL-matched NCT links only (partial coverage)</small></div>
-            {!!total?.linkedNcts&&<details className={styles.toolsFdaLinkedTrials}>
-              <summary>View {total!.linkedNcts.toLocaleString("en-US")} source-linked trial IDs</summary>
-              <ul>{total!.nctIds.map(nct=>
+              <small>Across source evidence, not filtered clinical trials</small></div>
+            <div><strong>{scopeLoading?"Updating…":contextual?contextual.matchingTrials.toLocaleString("en-US")+" matching NCTs":"NCT count unknown"}</strong>
+              <small>Within selected Phase/search, before pagination; exact links only</small></div>
+            {contextual&&contextual.matchingTrials>0&&<details className={styles.toolsFdaLinkedTrials}>
+              <summary>View {contextual.matchingTrials.toLocaleString("en-US")} matching trial IDs in selected scope</summary>
+              <ul>{contextual.nctIds.map(nct=>
                 <li key={nct}><a href={"https://clinicaltrials.gov/study/"+nct}
                   target="_blank" rel="noopener noreferrer">{nct}</a></li>)}</ul>
-              {total!.linkedNcts>40&&<p>Showing the first 40 source-linked NCT IDs.</p>}
-              <p>These are documented program-to-trial links, not a complete FDA designation census.</p>
+              {contextual.matchingTrials>40&&<p>Showing the first 40 matching NCT IDs.</p>}
+              <p>Matches use current Phase/search filters. FDA program evidence is incomplete, so missing links do not prove absence.</p>
             </details>}
           </div>}
         </div>;

@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useState,type FormEvent} from "react";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
-import type {ToolsDesignationTotals} from "../lib/tools-pool-inventory";
+import type {ToolsDesignationTotals,ToolsContextualDesignationCounts} from "../lib/tools-pool-inventory";
 import styles from "./FunnelWorkspace.module.css";
 import PoolDesignationSelector from "./PoolDesignationSelector";
 import ToolsResultsSpreadsheet, {type ToolsSpreadsheetRow,type SelectedFiltersSummary} from "./ToolsResultsSpreadsheet";
@@ -32,6 +32,7 @@ type PoolResponse={
   overview?:{poolAsOf:string|null;poolSourceState:string};
   designationLinkage?:{basis:string;sourceLinkedTrials:number}|null;
   designationTotals?:ToolsDesignationTotals|null;
+  contextualDesignationCounts?:ToolsContextualDesignationCounts|null;
   designationCoverage?:ProgramCoverage|null;
   spreadsheetRows?:ToolsSpreadsheetRow[];
   selectionSummary?:SelectedFiltersSummary|null;
@@ -202,7 +203,9 @@ export default function PoolStageExplorer(){
           </button>
         </div>
         <PoolDesignationSelector guided selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}
-          poolTotals={page?.designationTotals??null}/>
+          poolTotals={page?.designationTotals??null}
+          contextCounts={page?.contextualDesignationCounts??null}
+          scopeStages={selectedStages} scopeQuery={hasSelections?query:""} scopeLoading={loading} scopeError={error}/>
       </div>}
       {hasSelections&&<div className={styles.toolsStartSelected} role="status">
         <strong>{selectedStages.length} Phase selected · {selectedDesignations.length} Special Designation selected</strong>
