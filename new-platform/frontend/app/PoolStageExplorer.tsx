@@ -27,6 +27,11 @@ type ProgramCoverage={
 };
 type PoolResponse={
   regulatorySourcesAvailable?:boolean;
+  restrictedScope?:{
+    scope:"DATED_300M_10B_COMPLETED_PHASE3_RESEARCH_SCREEN";
+    qualification:"NOT_VERIFIED";censusAsOf:string;
+    originalPoolTrials:number;screenedTrials:number;outstanding:string[];
+  };
   view:string;total:number;limit:number;offset:number;nextOffset:number|null;
   inventoryMode?:boolean;
   stageStats:StageStats;rows:PoolRow[];
@@ -92,7 +97,9 @@ export default function PoolStageExplorer(){
       })
       .then(result=>{
         if(controller.signal.aborted)return;
-        if(result.view!=="pool"||!result.stageStats||!Array.isArray(result.rows)||
+        if(result.view!=="pool"||!result.restrictedScope||
+          result.restrictedScope.scope!=="DATED_300M_10B_COMPLETED_PHASE3_RESEARCH_SCREEN"||
+          !result.stageStats||!Array.isArray(result.rows)||
           !Number.isSafeInteger(result.total)||!Number.isSafeInteger(result.stageStats.trials)||
           !result.stageStats.stages||result.rows.length>50||
           !Array.isArray(result.spreadsheetRows)||result.spreadsheetRows.length!==result.rows.length||
@@ -154,7 +161,8 @@ export default function PoolStageExplorer(){
         <button type="button" className={styles.toolsClearAll} onClick={clearAllToolsSelections}
           aria-label="Clear all selections throughout TOOLS">Clear All Selections</button>
       </div>
-      <p>Choose Phase or Special Designation. Only that choice opens its next options.</p>
+      <p><strong>Restricted research subset:</strong> $300M–$10B sponsors, exact NCT/ticker matches, and registry-completed Phase 3 studies from the dated October 26 census. Both Phase and FDA counts use this same subset. This is NOT a currently qualified PDUFA pipeline.</p>
+      {page?.restrictedScope&&<p className={styles.muted}>Scope: {count(page.restrictedScope.screenedTrials)} screened NCT trials from {count(page.restrictedScope.originalPoolTrials)} published POOL NCTs · census {page.restrictedScope.censusAsOf.slice(0,10)} · current market cap, sponsor rights and upcoming PDUFA <strong>not yet verified</strong>.</p>}
       <div className={styles.toolsStartChoices}>
         <button type="button" className={styles.toolsStartChoice} aria-expanded={activeFilter==="phase"}
           aria-controls="tools-first-phase" onClick={()=>setActiveFilter(open=>open==="phase"?null:"phase")}>
@@ -190,7 +198,7 @@ export default function PoolStageExplorer(){
                 <strong>{stats?count(stageCount(stats.stages[stage])):"—"}</strong>
               </label>)}
             </div>
-            <p className={styles.muted}>Counts beside stages are from the complete published POOL, not combined Phase + FDA matches. You may select multiple stages.</p>
+            <p className={styles.muted}>Each stage count comes only from the $300M–$10B registry-completed Phase 3 research subset. FDA selection intersects this same subset; counts are not from the unrestricted published POOL.</p>
           </div>
 
         </div>
@@ -214,7 +222,7 @@ export default function PoolStageExplorer(){
     </div>
     {hasSelections&&<>
     <ToolsFunnel
-      poolNcts={stats?.trials??null}
+      poolNcts={page?.restrictedScope?.originalPoolTrials??null}
       pipelineResearch={page?.pipelineResearch??null}
       selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
       selectedPhasePoolTrials={selectedStages.length&&stats?selectedStages.reduce((sum,stage)=>sum+stageCount(stats.stages[stage]),0):null}
@@ -241,7 +249,7 @@ export default function PoolStageExplorer(){
       <button type="button" onClick={findPhase3OrphanTrials} aria-label="Select Phase 3 and Orphan Drug Designation together">
         Find Phase 3 + Orphan Drug trials
       </button>
-      <small>TRIALS shows 0 until a clinical stage or FDA designation is selected. PIPELINE retains its separate historical screened candidate total.</small>
+      <small>Both selectors operate within the dated $300M–$10B post–Phase 3 research screen. Current listing, cap and PDUFA eligibility remain unverified.</small>
     </div>
 
     </details>
@@ -252,8 +260,8 @@ export default function PoolStageExplorer(){
       <button type="submit">Search results</button>
       <button type="button" onClick={()=>{setQueryInput("");setQuery("");setOffset(0)}}>Clear search</button>
     </form>
-    <p className={styles.muted}><strong>Filter logic:</strong> Selected stages are OR; selected designations are OR; choosing from both applies AND. A designation-only selection covers any recorded stage. A stage-only selection does not require a known designation. All counts are read-only.</p>
-    {stats&&<p className={styles.muted}>Published POOL: {count(stats.trials)} unique NCT trials, plus {count(stats.standaloneResults+stats.regulatoryEvents)} separate source/event records. Source state: {value(sourceState)} · as of {value(sourceDate)}.</p>}
+    <p className={styles.muted}><strong>Filter logic:</strong> First restrict to the dated $300M–$10B completed Phase 3 research screen; then stages OR, designations OR, and Phase + FDA AND. These are provisional research matches, not final PDUFA-eligible investments.</p>
+    {page?.restrictedScope&&<p className={styles.muted}>Full published POOL: {count(page.restrictedScope.originalPoolTrials)} NCTs · restricted research subset: {count(page.restrictedScope.screenedTrials)} NCTs · source state {value(sourceState)} · as of {value(sourceDate)}. Only the restricted subset feeds both selectors.</p>}
     {hasSelections&&loading&&<p role="status">Calculating matching trial records from saved sources…</p>}
     {error&&<p className={styles.error} role="alert">Results unavailable: {error} (not a verified zero).</p>}
     {!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials.</strong> Choose at least one stage or FDA designation above to populate TRIALS.</p>}
