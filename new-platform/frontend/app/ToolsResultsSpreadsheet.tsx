@@ -3,6 +3,7 @@
 import {useMemo,useState} from "react";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
+import ToolsBenefitMatrix from "./ToolsBenefitMatrix";
 
 export type ToolSourceEvidence={
   eventKey:string;source:string;designationDate:string;checkedAt:string;
@@ -125,6 +126,7 @@ export default function ToolsResultsSpreadsheet({
         <p className={styles.muted}>Designation categories may refer to the same trial. Their per-category counts are not added to the final unique-trial total. FDA-selected totals cover only the documented NCT links, not the entire 11,623-trial POOL.</p>
       </>}
     </div>
+    <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error}/>
     <div className={styles.toolsSheetTableHeading}>
       <h3>Matching trial records</h3>
       <span>{hasSelection&&!loading&&!error?(trialCountUnverified?"NCT count not established":fmt(total)+(designations.length?" documented linked trial matches (partial)":" matching NCT trials")):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
