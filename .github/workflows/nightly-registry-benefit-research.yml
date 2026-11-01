@@ -1,0 +1,49 @@
+name: Nightly primary-source Phase 3 benefit research
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/scripts/refresh-registry-benefit-research.cjs'
+      - 'new-platform/frontend/lib/registry-benefit-research.ts'
+      - '.github/workflows/nightly-registry-benefit-research.yml'
+  schedule:
+    - cron: '20 11 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: nightly-primary-source-research
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install pinned dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Refresh only officially recorded trial evidence
+        run: node scripts/refresh-registry-benefit-research.cjs
+      - name: Publish validated research snapshot
+        run: |
+          git config user.name "pdufa-source-research-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add new-platform/frontend/data/registry-benefit-research-snapshot.json
+          if git diff --cached --quiet; then
+            echo "No source changes to publish"
+            exit 0
+          fi
+          git commit -m "Refresh source-recorded Phase 3 clinical research evidence"
+          git pull --rebase origin main
+          git push origin HEAD:main
