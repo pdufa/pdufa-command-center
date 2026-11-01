@@ -44,21 +44,21 @@ export default function ToolsFunnel({
     </div>
     <div className={styles.toolsFunnelSteps}>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelPool}>
-        <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">▤</span><strong>POOL</strong></div>
+        <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">▤</span><h3>POOL</h3></div>
         <div className={styles.toolsFunnelValue}>{poolNcts===null?"—":num(poolNcts)}</div>
         <p>Unique NCT studies</p>
         <small>Unrestricted clinical-trial inventory</small>
       </div>
       <span className={styles.toolsFunnelArrow} aria-hidden="true">→</span>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelPipeline}>
-        <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">▽</span><strong>PIPELINE</strong></div>
+        <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">▽</span><h3>PIPELINE</h3></div>
         <div className={styles.toolsFunnelValueUnverified}>Not verified</div>
         <p>Restricted qualified trials</p>
         <small>Listing, market cap and post–Phase 3 gates still need current verification</small>
       </div>
       <span className={styles.toolsFunnelArrow} aria-hidden="true">→</span>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelTrials}>
-        <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">◎</span><strong>TRIALS</strong></div>
+        <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">◎</span><h3>TRIALS</h3></div>
         <div className={styles.toolsFunnelValue} role="status" aria-live="polite" aria-atomic="true">{trialStatus}</div>
         <p>{selectedDesignations>0?"Documented linked NCT matches":"Selected POOL trial matches"}</p>
         <small>{filterActive
