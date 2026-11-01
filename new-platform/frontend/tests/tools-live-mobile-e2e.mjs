@@ -167,6 +167,14 @@ try{
     assert.equal(await all.getByRole("checkbox").count(),13);
     assert.match(await all.innerText(),/2a\/13/);
     assert.match(await all.innerText(),/2m\/13/);
+    const fdaCounts=fda.locator("strong[class*='toolsFdaRowCount']");
+    assert.equal(await fdaCounts.count(),13,"All 13 FDA choices must have trial-count labels like the Phase rows");
+    assert.ok(await fdaCounts.first().isVisible());
+    assert.equal(await fdaCounts.first().evaluate(el=>getComputedStyle(el).textAlign),"right");
+    for(const c of await fdaCounts.all()){
+      assert.match(await c.innerText(),/linked NCTs|NCTs unknown|Not tracked/,
+        "Never show source-program counts as NCT counts or turn missing evidence into zero");
+    }
     const orphan=all.getByRole("checkbox",{name:/Orphan Drug Designation/});
     await orphan.waitFor({timeout:45000});
     const response=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
