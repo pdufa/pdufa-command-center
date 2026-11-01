@@ -97,6 +97,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
     saveToolsPreference(TOOLS_STEP4_STORAGE_KEY,{mode,active,chosen});
   },[mode,active,chosen,selectionsRestored]);
   useEffect(()=>{
+    if(typeof window==="undefined")return;
     const clear=()=>{setMode("category");setActive(1);setChosen("");};
     window.addEventListener(TOOLS_CLEAR_EVENT,clear);
     return ()=>window.removeEventListener(TOOLS_CLEAR_EVENT,clear);
