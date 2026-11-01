@@ -44,6 +44,16 @@ try {
   assert.ok(cards[0].x<cards[1].x && cards[1].x<cards[2].x,"iPhone funnel cards must be horizontal");
   assert.ok(Math.abs(cards[0].y-cards[1].y)<12 && Math.abs(cards[1].y-cards[2].y)<12,
     "iPhone funnel headings must stay on the same line");
+  // Verify real authenticated research intake, not just a rendered empty table.
+  const researchResponse=await page.request.get(base+"/api/benefit-assessments",{timeout:110000});
+  assert.equal(researchResponse.status(),200,
+    "TOOLS must retrieve the reconciled Pipeline research feed rather than an empty or failing stub");
+  const benefitFeed=await researchResponse.json();
+  assert.equal(benefitFeed.schemaVersion,1);
+  assert.match(benefitFeed.sourceAsOf,/^\\d{4}-\\d{2}-\\d{2}$/);
+  assert.ok(Array.isArray(benefitFeed.records),"Source-backed benefit research records missing");
+  assert.ok(benefitFeed.records.every(r=>/^NCT\\d{8}$/.test(r.nctId)&&r.ticker&&r.drug&&r.indication),
+    "Benefit research cannot contain orphaned NCT identities");
   const groupSelect=page.locator("#benefit-group-picker");
   assert.equal(await groupSelect.locator("option").count(),20);
   await page.waitForFunction(()=>{
