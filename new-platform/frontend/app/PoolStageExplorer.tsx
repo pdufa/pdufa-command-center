@@ -104,8 +104,14 @@ export default function PoolStageExplorer(){
     </div>
     <div className={styles.stageDesignationColumns}>
       <div className={styles.stageDropdownColumn}>
-        <div className={styles.stageDropdownLabel}>Clinical development stages · {stats?count(stats.trials)+" NCTs in POOL":"Checking source…"}</div>
-        <p className={styles.stageDropdownSubline}>Any selected stage qualifies within this list (OR).</p>
+        <div className={styles.stageDropdownLabel}>Clinical development stages</div>
+        <p className={styles.stageTrialMatchCount} role="status" aria-live="polite" aria-atomic="true">
+          {!hasSelections?"0 matching trials":loading?"Calculating matching trials…":error?"Trial count unavailable":page?count(page.total)+" matching trials":"Trial count unavailable"}
+        </p>
+        <p className={styles.stageDropdownSubline}>
+          Calculated from selected stages and FDA designations{query?", including the search term":""}.
+          {stats?" Full POOL: "+count(stats.trials)+" NCT trials.":""}
+        </p>
         <details className={styles.stageDesignationPane}>
           <summary className={styles.stageDesignationSummary}>
             <span>{selectedStages.length===0?"Select clinical trial stages":selectedStages.length+" stages selected"}</span>
