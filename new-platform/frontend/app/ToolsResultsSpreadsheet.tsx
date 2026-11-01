@@ -100,7 +100,7 @@ export default function ToolsResultsSpreadsheet({
     <div className={styles.toolsSheetHeading}>
       <div>
         <h2>SELECTED TRIALS — SPREADSHEET</h2>
-        <p className={styles.muted}>One NCT per trial. Documented FDA designations and saved PDUFA application records are attached to the same POOL rows. Phase selections OR, FDA selections OR, and both groups combine AND. PDUFA dates belong to applications; a linked study is not automatically pivotal.</p>
+        <p className={styles.muted}>One NCT per trial in the dated $300M–$10B completed Phase 3 research subset. Both Phase and FDA selectors use this same restricted pool. Documented designations and PDUFA application records attach to these same rows. Phase selections OR, FDA selections OR, and both groups combine AND. PDUFA dates belong to applications; a linked study is not automatically pivotal.</p>
       </div>
       <a className={styles.toolsSheetExport} href={hasSelection&&!loading&&!error?downloadUrl:undefined}
         aria-disabled={!hasSelection||loading||!!error}
@@ -114,7 +114,7 @@ export default function ToolsResultsSpreadsheet({
       <div><span>{designations.length?"FDA source program records":"Verified linked NCT counts"}</span><strong>{designations.length
         ?loading||error?"—":designationCoverage?fmt(designationCoverage.sourcePrograms):"—"
         :summary?fmt(summary.designationCountSum):hasSelection?"—":"0"}</strong>
-        <small>{designations.length?"Source-backed applications/program events; these are NOT trial counts":"Only reviewed FDA-to-NCT links; categories may overlap"}</small></div>
+        <small>{designations.length?"Unscoped source-catalog program records, NOT counts within the restricted trial screen":"Only reviewed FDA-to-NCT links; categories may overlap"}</small></div>
       <div><span>{designations.length?"Verified NCT matches (incomplete)":"Final matching trials"}</span>
         <strong>{hasSelection?(loading||error?"—":trialCountUnverified?"Not established":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
         <small>{trialCountUnverified?"No source-verified trial IDs for these programs; zero must not be inferred":designations.length?"FDA designation full trial total unknown; verified matches only":"Unique NCT records after selected clinical-stage filters"}</small></div>
@@ -174,7 +174,7 @@ export default function ToolsResultsSpreadsheet({
           error?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>Trial evidence could not be verified. No result total is asserted.</td></tr>:
           ordered.length===0?<tr><td colSpan={7+stages.length+designations.length} className={styles.toolsSheetEmpty}>
             {trialCountUnverified
-              ?"These FDA program records have no verified NCT clinical-trial links. Trial count and development stages cannot yet be determined; no zero-trial conclusion is justified."
+              ?"No documented FDA-linked NCT matched in this dated restricted research screen. Other source programs remain unlinked; comprehensive trial counts are not established."
               :designations.length>0?"No documented NCT-linked POOL trials match both the chosen phases and FDA categories. Unlinked FDA programs remain visible separately below.":"No restricted-screen NCT trials match the selected phases or text search. Clear the text search or choose other phases."}
           </td></tr>:
           ordered.map((row,i)=><tr key={row.id}>
@@ -247,7 +247,7 @@ export default function ToolsResultsSpreadsheet({
     {designations.length>0&&designationCoverage&&designationCoverage.programRows.length>0&&<section className={styles.toolsSheetTotals} aria-label="FDA source programs not yet assigned to clinical trial stages">
       <h3>FDA source program records — not clinical trial counts</h3>
       <p className={styles.muted}>
-        <strong>{fmt(designationCoverage.sourcePrograms)} source-backed FDA program records</strong> match the selected FDA categories.
+        <strong>{fmt(designationCoverage.sourcePrograms)} FDA program records in the separate, UNRESTRICTED source catalog</strong> match these FDA categories.
         Of these, <strong>{fmt(designationCoverage.unlinkedPrograms)} program records</strong> have no verified NCT link in this POOL.
         Selecting all stages cannot classify those records. Program records are shown below so no known FDA source disappears from the results.
       </p>
