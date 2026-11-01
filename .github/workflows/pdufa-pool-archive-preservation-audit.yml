@@ -104,23 +104,28 @@ jobs:
           stage_selected=request(stage_request)
           assert stage_selected.get('total')==stages[stage],'Selected stage does not return its own verified NCT count'
           assert all(r.get('stage')==stage for r in stage_selected.get('spreadsheetRows',[])),'Wrong stage in spreadsheet'
-          combined=None
-          try:
-              combined=request(stage_request+'&designations=fast_track')
-          except urllib.error.HTTPError as err:
-              if err.code!=422: raise
-              reason=json.loads(err.read()).get('reasonCode')
-              assert reason=='DESIGNATION_NCT_LINKAGE_UNAVAILABLE',('Unexpected designation error',reason)
-              print('PASS: missing exact NCT-to-FDA designation crosswalk is explicitly unavailable, not a false zero')
-          if combined is not None:
-              assert isinstance(combined.get('total'),int) and 0<=combined['total']<=stage_selected['total'],'Combined filter count invalid'
-              assert all(r.get('stage')==stage and (r.get('designationMatches') or {}).get('fast_track')
-                         for r in combined.get('spreadsheetRows',[])),'Combined selector evidence mismatch'
-              assert (combined.get('selectionSummary') or {}).get('selectedCount')==2,'Combined clicked-selector total incorrect'
-              print('PASS: exact NCT-linked designation AND stage filtering')
+          # Require a real positive designation-only match from the curated
+          # drug/indication-to-NCT crosswalk, then verify the corresponding
+          # intersection by recorded stage. Never accept a fabricated zero.
+          idx=request('/api/trial-designations')
+          coverage=idx.get('linkageCoverage') or {}
+          assert coverage.get('verifiedNctCount',0)>=4,'Reviewed evidence index was not loaded'
+          priority=request(tools_path+'&designations=priority_review')
+          assert priority['total']>0,'No audited priority-review NCT links found in POOL'
+          first=priority.get('spreadsheetRows',[None])[0]
+          assert first and first.get('designationMatches',{}).get('priority_review'),'Missing source-backed priority evidence'
+          matched_stage=first['stage']
+          combined=request(tools_path+'&stages='+quote(matched_stage,safe='')+'&designations=priority_review')
+          assert combined['total']>0 and combined['total']<=priority['total'],'Stage+designation intersection invalid'
+          assert all(r.get('stage')==matched_stage and (r.get('designationMatches') or {}).get('priority_review')
+                     for r in combined.get('spreadsheetRows',[])),'Combined selector evidence mismatch'
+          assert (combined.get('selectionSummary') or {}).get('selectedCount')==2,'Combined clicked-selector total incorrect'
+          print('PASS: exact NCT/therapy/indication-linked FDA designation AND stage filtering')
+          print('LIVE_AUDITED_DESIGNATION_MATCHES',priority['total'],'priority_review')
+          print('LIVE_AUDITED_STAGE_AND_DESIGNATION',matched_stage,combined['total'])
           print('PASS: signed-in TOOLS stage counts match published POOL NCT records')
           print('VERIFIED_LIVE_TOOLS_TRIALS',len(unique_trials))
           print('VERIFIED_LIVE_TOOLS_STAGE_SAMPLE',stage,'count',stages[stage])
-          print('VERIFIED_LIVE_TOOLS_COMBINED_SAMPLE',combined['total'] if combined is not None else 'UNAVAILABLE_EXACT_NCT_LINKAGE')
+          print('VERIFIED_LIVE_TOOLS_COMBINED_SAMPLE',combined['total'])
           print('NOTE: Only source-linked FDA designations are counted; this is not an FDA approval assessment.')
           PY
