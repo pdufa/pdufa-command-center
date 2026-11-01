@@ -93,6 +93,9 @@ export default function ToolsOpeningTrialGrid({
                 <strong>{application.targetDate||"Target not recorded"}</strong>
                 {" · "}{application.targetConfirmation||"Unverified target"}
                 {application.savedCheckStatus?" · Saved status: "+application.savedCheckStatus:""}
+                {application.savedOutcome?" · Recorded outcome: "+application.savedOutcome:""}
+                {application.decisionDate?" · Recorded decision: "+application.decisionDate:""}
+                {application.checkedAt?" · Source checked: "+application.checkedAt.slice(0,10):""}
                 {application.evidenceUrl?<a href={application.evidenceUrl} target="_blank" rel="noopener noreferrer"> · Source</a>:null}
               </div>)}
             </details>:<span>No exact linked application recorded</span>}</td>
