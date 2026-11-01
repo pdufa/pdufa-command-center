@@ -85,8 +85,12 @@ try{
     openingDesignationTotals=published.designationTotals;
     assert.ok(published.restrictedScope?.originalPoolTrials>=10000,"The original published POOL count stays recorded separately");
     assert.equal(published.restrictedScope?.qualification,"NOT_VERIFIED");
+    assert.equal(published.restrictedScope?.scope,"DATED_300M_10B_ISSUER_MARKET_CAP_SCREEN");
+    assert.ok(published.restrictedScope?.capAsOf,"Saved cap evidence must be date-stamped");
+    assert.equal(published.stageStats.trials,published.total,"The restricted opening grid and stage breakdown share one NCT pool");
+    assert.equal(Object.values(published.stageStats.stages).reduce((n,entry)=>n+entry.trials,0),published.total,"All phase buckets must partition the cap-screen trials exactly once");
     assert.equal(published.total,published.restrictedScope.screenedTrials,"Opening grid must be the same restricted research subset as Phase and FDA facets");
-    assert.ok(published.total>0,"The dated completed Phase 3 screen must include genuine matched NCTs");
+    assert.ok(published.total>0,"Issuer $300M–$10B cap screen must include matched NCTs from the full POOL");
     assert.ok(published.spreadsheetRows.length>0);
     assert.match(published.spreadsheetRows[0].nctId,/^NCT\d{8}$/);
     await page.waitForFunction(()=>{
