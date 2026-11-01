@@ -61,7 +61,7 @@ test("stable circle codes cover every option, reject nonexistent indexes",()=>{
  assert.throws(()=>toolsOptionCode(2,20,13),/TOOLS_OPTION_INDEX_INVALID/);
  assert.equal(SPECIAL_DESIGNATION_CATEGORIES.length,13);
 });
-test("Phase 1a/2 exposes all fourteen 2a/14–2n/14 checkboxes immediately, just like FDA",async()=>{
+test("Step 3 Phase 3a/2 exposes all fourteen 2a/14–2n/14 checkboxes immediately, just like FDA",async()=>{
  let root;
  const oldFetch=global.fetch;
  const queried=[];
@@ -79,8 +79,8 @@ test("Phase 1a/2 exposes all fourteen 2a/14–2n/14 checkboxes immediately, just
   const buttons=root.root.findAllByType("button");
   const top=buttons.filter(x=>["tools-first-phase","tools-first-designation"].includes(x.props["aria-controls"]));
   assert.equal(top.length,2);
-  assert.match(textOf(top[0]),/1a\/2[\s\S]*Phase/);
-  assert.match(textOf(top[1]),/1b\/2[\s\S]*Special Designation/);
+  assert.match(textOf(top[0]),/3a\/2[\s\S]*Phase/);
+  assert.match(textOf(top[1]),/3b\/2[\s\S]*Special Designation/);
   assert.equal(root.root.findAllByProps({id:"tools-first-phase"}).length,0);
   await act(async()=>top[0].props.onClick());
   const panel=()=>root.root.findAllByProps({id:"tools-first-phase"})[0];
