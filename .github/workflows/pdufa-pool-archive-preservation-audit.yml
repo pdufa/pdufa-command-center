@@ -148,6 +148,19 @@ jobs:
           print('PASS: exact NCT/therapy/indication-linked FDA designation AND stage filtering')
           print('LIVE_AUDITED_DESIGNATION_MATCHES',priority['total'],'priority_review')
           print('LIVE_AUDITED_STAGE_AND_DESIGNATION',matched_stage,combined['total'])
+          phase3_priority=request(tools_path+'&stages='+quote('Phase 3',safe='')+'&designations=priority_review')
+          expected_phase3=[r for r in priority.get('spreadsheetRows',[]) if r.get('stage')=='Phase 3']
+          assert phase3_priority['total']==len(expected_phase3),'Stage 3 Priority Review count mismatch'
+          assert len(phase3_priority.get('spreadsheetRows',[]))==phase3_priority['total'],'Missing paginated detail rows'
+          print('QUERY_RESULT_PHASE3_PRIORITY_REVIEW_UNIQUE_NCTS',phase3_priority['total'])
+          print('QUERY_RESULT_PHASE3_PRIORITY_REVIEW_NCT_DETAILS',json.dumps([
+              {'nctId':r['nctId'],'ticker':r['ticker'],'company':r['company'],'drug':r['drug'],
+               'indication':r['indication'],'stage':r['stage']}
+              for r in phase3_priority.get('spreadsheetRows',[])
+          ],sort_keys=True))
+          print('QUERY_RESULT_ALL_PRIORITY_REVIEW_UNIQUE_NCTS',priority['total'])
+          print('QUERY_RESULT_ALL_PHASE3_UNIQUE_NCTS',stages['Phase 3'])
+
           print('PASS: signed-in TOOLS stage counts match published POOL NCT records')
           print('VERIFIED_LIVE_TOOLS_TRIALS',len(unique_trials))
           print('VERIFIED_LIVE_TOOLS_STAGE_SAMPLE',stage,'count',stages[stage])
