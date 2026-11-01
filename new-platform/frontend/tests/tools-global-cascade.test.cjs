@@ -108,19 +108,28 @@ test("checking FDA category reveals program and linked-trial counts without chan
  let root;
  function Wrapper(){
   const [selected,setSelected]=React.useState([]);
-  return React.createElement(PoolDesignationSelector,{selected,onChange:setSelected,poolTrialCount:100});
+  return React.createElement(PoolDesignationSelector,{selected,onChange:setSelected,poolTrialCount:100,guided:true});
  }
  try{
   await act(async()=>{root=create(React.createElement(Wrapper));});
   const first=root.root.findAllByType("label").find(x=>textOf(x).includes("Fast Track Designation"));
   assert.ok(first);
   assert.match(textOf(first),/2a\/13/);
+  assert.match(textOf(first),/1linked NCTs/,"Known source-linked NCT count appears at right before checking");
+  assert.equal(first.findAllByProps({className:"toolsFdaRowCount"}).length,1);
+  assert.equal(root.root.findAllByProps({className:"toolsFdaRowCount"}).length,13,
+    "Every FDA category must display an aligned trial-count status as Phase does");
+  const orphan=root.root.findAllByType("label").find(x=>textOf(x).includes("Orphan Drug Designation"));
+  assert.match(textOf(orphan),/\?NCTs unknown/,"Missing NCT coverage must not be displayed as zero");
   assert.ok(!root.root.findAllByProps({className:"toolsCascadeFdaEvidence"}).length);
   await act(async()=>first.findByType("input").props.onChange());
   const evidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"});
   assert.equal(evidence.length,1);
   assert.match(textOf(evidence[0]),/1 source programs/);
   assert.match(textOf(evidence[0]),/1 linked NCTs/);
+  const linked=evidence[0].findAllByType("a").filter(x=>textOf(x)==="NCT00000001");
+  assert.equal(linked.length,1,"Expanded FDA category must list the actual NCT study link");
+  assert.equal(linked[0].props.href,"https://clinicaltrials.gov/study/NCT00000001");
   await act(async()=>first.findByType("input").props.onChange());
   assert.equal(root.root.findAllByProps({className:"toolsCascadeFdaEvidence"}).length,0);
   const last=root.root.findAllByType("label").find(x=>textOf(x).includes("Animal Rule"));
@@ -139,4 +148,6 @@ test("20-assessment selector stays sequential and evidence UI follows active ass
  assert.match(explorer,/total=\{stages.length\}/);
  const designation=fs.readFileSync(require.resolve("../app/PoolDesignationSelector.tsx"),"utf8");
  assert.match(designation,/checked&&index&&<div className=\{styles.toolsCascadeFdaEvidence\}/);
+ assert.match(designation,/className=\{styles.toolsFdaRowCount\}/);
+ assert.match(designation,/source-linked trial IDs/);
 });
