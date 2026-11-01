@@ -148,6 +148,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
       <strong>4a{active} · {current.name}</strong> · {loading?"Loading matching trials":error?"Trial evidence unavailable"
         :!selected?"No matching NCT on this page"
         :feedError?"Assessment source unavailable"
+        :!feed?"Assessment source loading"
         :sourceVerified+" / "+current.fields.length+" research fields source-verified"+(scenarioModeled?" · "+scenarioModeled+" modeled":"")}
     </p>
     <details className={css.fullAssessmentList} id="tools-step4-all20">
