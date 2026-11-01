@@ -93,3 +93,13 @@ test("POOL heading shows exactly one selector-calculated trial count and clinica
   assert.match(ui,/<div className=\{styles\.stageDropdownLabel\}>Clinical development stages<\/div>/);
   assert.match(ui,/Counts beside each stage describe the full POOL/);
 });
+
+test("when FDA program evidence lacks an exact NCT crosswalk, TOOLS reports unavailable, not zero",()=>{
+  const root=require("node:path").join(__dirname,"..");
+  const route=fs.readFileSync(require("node:path").join(root,"app/api/scope-funnel/route.ts"),"utf8");
+  const designations=fs.readFileSync(require("node:path").join(root,"app/PoolDesignationSelector.tsx"),"utf8");
+  assert.match(route,/Object\.keys\(index\.trialEvents\)\.length===0/);
+  assert.match(route,/DESIGNATION_NCT_LINKAGE_UNAVAILABLE/);
+  assert.match(route,/status:422/);
+  assert.match(designations,/No exact NCT-to-designation links/);
+});
