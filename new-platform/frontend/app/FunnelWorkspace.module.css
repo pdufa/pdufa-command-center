@@ -440,3 +440,8 @@
   .stageCheckboxRow > .toolsFdaRowCount{flex-basis:70px;font-size:14px}
   .toolsFdaRowCount small{font-size:9px}
 }
+
+/* TOOLS Advanced Research: the S/D verified-date columns follow Company. */
+.toolsSheetDateValue{text-align:center!important;min-width:89px;max-width:130px;font-size:12px;font-variant-numeric:tabular-nums;white-space:normal!important;font-weight:750}
+.toolsSheetDateValue a{color:#14633e;text-decoration:underline}
+.toolsSheetDateValue span{font-size:10px;font-weight:600;color:#637b68}
