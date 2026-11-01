@@ -62,7 +62,7 @@ export default function ToolsFunnel({
         <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">▤</span><h3>POOL</h3></div>
         <div className={styles.toolsFunnelValue}>{poolNcts===null?"—":num(poolNcts)}</div>
         <p>Unique NCT studies</p>
-        <small>Unrestricted clinical-trial inventory</small>
+        <small>Unrestricted source POOL · not directly used by either selector</small>
       </div>
       <span className={styles.toolsFunnelArrow} aria-hidden="true">→</span>
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelPipeline}>
@@ -86,29 +86,29 @@ export default function ToolsFunnel({
               <strong>{trialStatus}</strong>
               <small>{noNctLink
                 ?"Exact trial IDs and clinical stages are not established for these FDA programs."
-                :"Documented NCT-linked matches in the POOL after selected stages; FDA-to-NCT coverage may be incomplete."}</small>
+                :"Documented NCT-linked matches within the restricted research scope; FDA-to-NCT coverage is incomplete."}</small>
             </div>
             <div className={styles.toolsFunnelProgramBand} role="group" aria-label="FDA program record count, not clinical trials">
               <span>FDA APPLICATION / PROGRAM RECORDS</span>
               <strong>{num(designationCoverage!.sourcePrograms)}</strong>
               <small>Documented programs — NOT {num(designationCoverage!.sourcePrograms)} distinct trials.
-                {" "}{num(designationCoverage!.linkedNcts)} crosswalk-linked NCTs in the unrestricted POOL.</small>
+                {" "}{num(designationCoverage!.linkedNcts)} crosswalk-linked NCTs in the restricted research scope.</small>
             </div>
           </div>
           :phaseOnly?<div role="status" aria-live="polite" aria-atomic="true">
             <div className={styles.toolsFunnelValue}>{trialStatus}</div>
-            <p>Matching trials from selected POOL phase(s)</p>
-            <small>Across the full published POOL; not restricted to post–Phase 3 PIPELINE eligibility.</small>
+            <p>Matching trials from restricted post–Phase 3 research subset</p>
+            <small>Only the $300M–$10B registry-completed Phase 3 research subset; full Pipeline eligibility unverified.</small>
             <div className={styles.toolsFunnelPhaseScreen}>
               <strong>All selected phase records: {selectedPhasePoolTrials===null?"—":num(selectedPhasePoolTrials)}</strong>
-              <small>Unrestricted stage count before optional text search; matching trial records appear below.</small>
+              <small>Restricted subset stage count before optional text search; matching trial records appear below.</small>
             </div>
           </div>
           :<>
             <div className={styles.toolsFunnelValue} role="status" aria-live="polite" aria-atomic="true">{trialStatus}</div>
             <p>{selectedDesignations>0?"Documented linked NCT matches":"Selected clinical trial matches"}</p>
             <small>{selectedDesignations>0
-              ?"Documented NCT-linked POOL matches; FDA-to-NCT evidence is partial"
+              ?"Documented NCT-linked restricted-screen matches; FDA-to-NCT evidence is partial"
               :filterActive?"Only restricted research-screen NCTs matching selected stages":"0 filters checked"}</small>
           </>}
       </div>
