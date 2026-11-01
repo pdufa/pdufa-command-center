@@ -87,7 +87,7 @@ jobs:
           stage_labels=['Early Phase 1','Phase 1','Phase 1/2','Phase 2','Phase 2/3',
                         'Phase 3','Phase 3 Results','NDA/BLA Submission','FDA Acceptance',
                         'PDUFA Decision','Post-Decision','Phase 4','Not Applicable','Unknown']
-          unique_trials=[r for r in rows if re.fullmatch(r'TRIAL\\|NCT\\d{8}',r.get('id',''))]
+          unique_trials=[r for r in rows if re.fullmatch(r'TRIAL\|NCT\d{8}',r.get('id',''))]
           stages=Counter(r.get('stage') if r.get('stage') in stage_labels else 'Unknown' for r in unique_trials)
           tools_path='/api/scope-funnel?view=pool&recordKind=trials&tools=1&limit=50&offset=0'
           tools=request(tools_path)
