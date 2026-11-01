@@ -2,7 +2,7 @@
  * It is NOT a multi-assessment score, overall trial winner, FDA outcome, or trade call.
  * Never use evidence completeness, market cap, ticker, or shared disease as superiority.
  */
-import {benefitForTrial,type BenefitFeed,type BenefitAdvantage} from "./benefit-assessments";
+import {benefitForTrial,type BenefitFeed} from "./benefit-assessments";
 import {validateComparatorInventory,type ComparatorEvidence} from "./pipeline-benefit-assessments";
 import {RANKED_BENEFIT_ASSESSMENTS} from "./pipeline-benefit-assessments";
 import type {PipelineResearchRow} from "./pipeline-research-view";
@@ -54,8 +54,7 @@ export function competitiveEdge(
   if(!trial.drug?.trim()||!trial.indication?.trim()||!/^NCT\d{8}$/.test(trial.nctId))
     return missing("Drug, indication, and exact NCT identity must be verified before comparing.");
   const compareTo=(name:string,nct?:string)=>
-    !qualifiedPeers.length||qualifiedPeers.some(p=>(!!nct&&p.nctId===nct&&same(p.drug,name))||
-      same(p.drug,name));
+    !qualifiedPeers.length||qualifiedPeers.some(p=>same(p.drug,name)&&(!nct||p.nctId===nct));
   const reviewed=benefitForTrial(feed,{
     nctId:trial.nctId,ticker:trial.ticker,drug:trial.drug,indication:trial.indication
   });
