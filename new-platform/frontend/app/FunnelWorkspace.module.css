@@ -228,3 +228,33 @@
 .designationCoverageWarning:not([open]){padding:9px 12px}
 .designationCoverageWarning[open]>summary{margin-bottom:6px}
 @media(max-width:600px){.toolsQuickFilter{gap:7px}.toolsQuickFilter button{font-size:12px;padding:9px 11px}.toolsQuickFilter button:first-child{flex:1 1 205px}}
+
+
+/* Source-grounded POOL → PIPELINE → TRIALS diagram (PIPELINE is not yet qualified). */
+.toolsFunnel{border:1px solid #b9cfd0;border-radius:14px;padding:14px;background:#f9fcfb;box-shadow:0 2px 9px #173c2b12;min-width:0}
+.toolsFunnelHeading{display:flex;justify-content:space-between;align-items:start;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+.toolsFunnelHeading h2{font-size:19px;font-weight:800;margin:0 0 5px;color:#142f40}
+.toolsFunnelHeading h2 span{color:#2c5870}
+.toolsFunnelHeading p{font-size:12px;line-height:1.5;color:#456358;margin:0}
+.toolsFunnelDate{border:1px solid #d2dfe0;padding:6px 9px;border-radius:7px;font-size:11px;color:#4d6366;background:white;max-width:270px}
+.toolsFunnelSteps{display:grid;grid-template-columns:minmax(0,1fr) 25px minmax(0,1fr) 25px minmax(0,1fr);align-items:center;gap:7px}
+.toolsFunnelCard{border:3px solid var(--funnel-stroke);border-radius:12px;overflow:hidden;text-align:center;min-width:0;background:#fff;min-height:177px;display:flex;flex-direction:column}
+.toolsFunnelPool{--funnel-stroke:#11529e;--funnel-shade:#104b97}
+.toolsFunnelPipeline{--funnel-stroke:#6933a3;--funnel-shade:#5d2a91}
+.toolsFunnelTrials{--funnel-stroke:#116b3e;--funnel-shade:#10673e}
+.toolsFunnelCardHead{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--funnel-shade);color:#fff;padding:10px 8px;font-size:18px;font-weight:800;letter-spacing:.02em;min-height:49px}
+.toolsFunnelCardHead span{font-size:24px;line-height:1;color:#fff}
+.toolsFunnelValue{font-variant-numeric:tabular-nums;color:var(--funnel-shade);font-size:clamp(22px,3.5vw,36px);font-weight:850;line-height:1.25;padding:12px 5px 2px;overflow-wrap:anywhere}
+.toolsFunnelValueUnverified{font-size:clamp(17px,2.2vw,23px);color:#59317d;font-weight:800;line-height:1.3;padding:17px 4px 5px}
+.toolsFunnelCard p{font-size:13px;font-weight:750;color:#17352d;margin:1px 6px 5px}
+.toolsFunnelCard small{font-size:11px;color:#597264;line-height:1.35;margin:0 10px 12px}
+.toolsFunnelArrow{font-size:34px;font-weight:800;color:#173858;text-align:center;line-height:1}
+.toolsFunnelIntegrity{font-size:12px;line-height:1.5;color:#4d635b;margin:11px 1px 8px}
+.toolsFunnelRestrictions{border:1px solid #d4dfe4;border-radius:9px;padding:10px 12px;background:#fff;margin-top:7px}
+.toolsFunnelRestrictions>summary{font-weight:750;color:#29435e;cursor:pointer;font-size:13px}
+.toolsFunnelRestrictions ul{margin:11px 0 5px;padding-left:21px;line-height:1.75;font-size:12px;color:#264d39}
+.toolsFunnelRestrictions p{font-size:11px;line-height:1.5;color:#586c5e;margin:8px 0 0}
+.toolsFunnelParityPass,.toolsFunnelParityWarning{font-weight:700;font-size:12px;line-height:1.5;margin:11px 0 0;padding:9px 11px;border-radius:8px}
+.toolsFunnelParityPass{color:#165135;border:1px solid #acd9b8;background:#f4fbf6}
+.toolsFunnelParityWarning{color:#815019;border:1px solid #ebca8c;background:#fff8eb}
+@media(max-width:760px){.toolsFunnel{padding:10px}.toolsFunnelHeading h2{font-size:17px}.toolsFunnelSteps{grid-template-columns:minmax(0,1fr);gap:5px}.toolsFunnelCard{min-height:0;border-width:2px}.toolsFunnelCardHead{font-size:15px;min-height:39px;padding:6px}.toolsFunnelCardHead span{font-size:19px}.toolsFunnelValue{font-size:28px;padding:7px 5px 1px}.toolsFunnelValueUnverified{font-size:20px;padding:11px 5px 1px}.toolsFunnelCard p{font-size:12px}.toolsFunnelCard small{font-size:10px;margin:0 9px 9px}.toolsFunnelArrow{font-size:21px;transform:rotate(90deg);height:22px}.toolsFunnelDate{font-size:10px}}
