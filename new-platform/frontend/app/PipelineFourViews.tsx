@@ -14,6 +14,7 @@ import { pacificToday } from "../lib/pipeline-timeline";
 import { RANKED_BENEFIT_ASSESSMENTS, assessmentCoverage, validateComparatorInventory } from "../lib/pipeline-benefit-assessments";
 import LiveRegistryReview from "./LiveRegistryReview";
 import TrialTimelineSummary from "./TrialTimelineSummary";
+import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import PipelineEligibilityChecklist from "./PipelineEligibilityChecklist";
 
@@ -32,13 +33,13 @@ function named(row:PipelineResearchRow){return row.drug||"Therapy not verified"}
 function trialDay(row:PipelineResearchRow,id:ResearchFieldId,today:string){
  return researchFieldResult(row,id,today);
 }
-function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClose:()=>void}){
+function Dossier({row,today,onClose,benefitFeed}:{row:PipelineResearchRow;today:string;onClose:()=>void;benefitFeed:BenefitFeed|null}){
  const [opened,setOpened]=useState<"all"|"none">("none");
  return <section className={styles.dossier} aria-label={"Detailed trial dossier "+row.nctId}>
    <div className={styles.dossierHeading}>
     <div><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:10}}>
       <h3 style={{margin:0}}>{row.nctId} · {row.ticker}</h3>
-      <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/>
+      <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/>
       </div>
       <p>{row.company} · {named(row)} · {row.indication||"Indication not verified"}</p>
       <p>Public Phase 3 release: {row.timeline?.phase3DataRelease?.date||"Not verified"} · Verified PDUFA: {row.timeline?.pdufaTarget?.date||"Not verified"}</p>
@@ -142,6 +143,7 @@ function TrialMini({row,today,onOpen}:{row:PipelineResearchRow;today:string;onOp
 export default function PipelineFourViews(){
  const [data,setData]=useState<Payload|null>(null);
  const [fetchError,setFetchError]=useState("");
+ const [benefitFeed,setBenefitFeed]=useState<BenefitFeed|null>(null);
  const [loading,setLoading]=useState(true);
  const [mode,setMode]=useState<Mode>("table");
  const [query,setQuery]=useState("");
@@ -167,6 +169,14 @@ export default function PipelineFourViews(){
     }).catch(e=>{if(!controller.signal.aborted)setFetchError(e instanceof Error?e.message:"Data unavailable")})
     .finally(()=>{if(!controller.signal.aborted)setLoading(false)});
   return()=>controller.abort();
+ },[]);
+ useEffect(()=>{
+  const controller=new AbortController();
+  void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
+   .then(async response=>{if(!response.ok)throw Error("BENEFIT_FEED_UNAVAILABLE");return parseBenefitFeed(await response.json());})
+   .then(result=>{if(!controller.signal.aborted)setBenefitFeed(result);})
+   .catch(()=>{if(!controller.signal.aborted)setBenefitFeed(null);});
+  return ()=>controller.abort();
  },[]);
  const all=data?.rows||[];
  const filtered=useMemo(()=>{
@@ -249,7 +259,7 @@ export default function PipelineFourViews(){
      <tbody>{visible.map(row=>{
       const c=assessmentCoverage(row,today);
       const inventory=validateComparatorInventory(row,row.competitorEvidence||[]);
-      return <tr key={row.nctId}><td>{row.nctId}</td><td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/></div></td>
+      return <tr key={row.nctId}><td>{row.nctId}</td><td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/></div></td>
        <td>{named(row)}<small>{row.indication||"Not assessed"}</small></td>
        <td>{row.timeline?.phase3DataRelease?.date||"Not verified"}</td><td>{trialDay(row,"daysSinceReadout",today).value}</td><td>{row.timeline?.pdufaTarget?.date||"Not verified"}</td><td>{trialDay(row,"daysToPdufa",today).value}</td>
        {c.map(item=><td key={item.rank} title={item.summary}>{item.state==="NOT_ASSESSED"?"Not assessed":item.verified+" of "+item.required+" sourced"}</td>)}
@@ -266,7 +276,7 @@ export default function PipelineFourViews(){
       <tr>
        <td><button type="button" aria-expanded={selected===row.nctId} onClick={()=>setSelected(selected===row.nctId?null:row.nctId)}>{selected===row.nctId?"Close":"Expand"}</button></td>
        <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId} ↗</a></td>
-       <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/></div><small>{row.company}</small></td>
+       <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/></div><small>{row.company}</small></td>
        <td>{named(row)}<small>{row.indication||"Indication not verified"}</small></td>
        <td>{trialDay(row,"daysSinceReadout",today).value}</td>
        <td>{trialDay(row,"daysToPdufa",today).value}</td>
@@ -275,7 +285,7 @@ export default function PipelineFourViews(){
        <td>{verifiedMetricCount(row,today)} sourced</td>
        <td>{trialDay(row,"verdict",today).value}</td>
       </tr>
-      {selected===row.nctId&&<tr><td colSpan={10}><Dossier row={row} today={today} onClose={()=>setSelected(null)}/></td></tr>}
+      {selected===row.nctId&&<tr><td colSpan={10}><Dossier row={row} today={today} benefitFeed={benefitFeed} onClose={()=>setSelected(null)}/></td></tr>}
      </Fragment>)}</tbody>
     </table></div>
     <div className={styles.pagination}>
@@ -295,7 +305,7 @@ export default function PipelineFourViews(){
        <small>{verifiedMetricCount(row,today)} sourced fields · Open full 38-field dossier</small>
       </button>)}
     </div>
-    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} onClose={()=>setSelected(null)}/>}
+    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} benefitFeed={benefitFeed} onClose={()=>setSelected(null)}/>}
     <div className={styles.pagination}>
      <button type="button" disabled={activePage===0} onClick={()=>{setPage(activePage-1);setSelected(null)}}>Previous</button>
      <span>Page {activePage+1} of {totalPages}</span>
@@ -313,7 +323,7 @@ export default function PipelineFourViews(){
       {!buckets[bucket.id].length&&<p className={styles.muted}>No matched trials in this category.</p>}
      </section>)}
     </div></div>
-    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} onClose={()=>setSelected(null)}/>}
+    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} benefitFeed={benefitFeed} onClose={()=>setSelected(null)}/>}
    </>}
    {mode==="analytics"&&<>
     <div className={styles.analyticsGrid}>
@@ -383,7 +393,7 @@ export default function PipelineFourViews(){
       {chosen.map(row=><button key={row.nctId} type="button" onClick={()=>openTrial(row)}>Open {row.nctId} dossier</button>)}
      </div>}
     </div>
-    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} onClose={()=>setSelected(null)}/>}
+    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} benefitFeed={benefitFeed} onClose={()=>setSelected(null)}/>}
    </>}
    <p className={styles.muted}>Research assessment period: public pivotal Phase 3 results announcement → PDUFA − 3 calendar days. Restricted Pipeline eligibility ($300M–$10B, U.S.-listed, verified pivotal Phase 3 and commercial rights) requires independent current checks. No probability-of-approval-based competitive ranking.</p>
   </div>}
