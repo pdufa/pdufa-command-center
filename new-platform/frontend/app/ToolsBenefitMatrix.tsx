@@ -149,7 +149,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
               const record=benefitForTrial(feed,row);
               return <tr key={row.id}>
                 <td className={css.pin1}>{offset+i+1}</td>
-                <td className={css.pin2}><strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
+                <td className={css.pin2}><strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={feed}/><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
                 <td className={css.pin3}>{short(row.drug)}</td><td className={css.pin4}>{short(row.indication)}</td>
                 {BENEFIT_GROUPS.map(g=>active===g.number
                   ?[...g.fields.map(f=><td key={f.id}><FieldValue record={record} id={f.id}/></td>),
@@ -169,7 +169,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
           </select>
           {selected&&<div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8}}>
             <strong>{short(selected.ticker)}</strong>
-            <TrialTimelineSummary timeline={selected.timeline} today={today} compact/>
+            <TrialTimelineSummary timeline={selected.timeline} today={today} compact trial={selected} benefitFeed={feed}/>
           </div>}
           <p className={css.subline}>{selected?short(selected.drug)+" · "+short(selected.indication):""}</p>
         </div>
