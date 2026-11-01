@@ -40,12 +40,12 @@ export default function ToolsOpeningTrialGrid({
   return <section className={css.root} aria-label="Live trial inventory spreadsheet">
     <div className={css.heading}>
       <div>
-        <h2>Step 5 · {inventoryMode?"Final Trials Spreadsheet — restricted research subset":"Final Trials Spreadsheet — filtered trial matches"}</h2>
+        <h2>Step 5 · {inventoryMode?"Final Trials Spreadsheet — awaiting selection":"Final Trials Spreadsheet — filtered trial matches"}</h2>
         <p>{inventoryMode
-          ?"All recorded phases among NCT studies with $300M–$10B issuers from saved verified cap evidence. FDA designations and saved application records appear on the same NCT rows."
+          ?"No trial rows are displayed until you select at least one Phase or Special Designation in Step 3. The restricted POOL and PIPELINE counts remain available above."
           :"One NCT per row from the $300M–$10B issuer-cap subset, across all recorded phases. Phase and FDA options filter this same universe; FDA/PDUFA coverage remains partial."}</p>
       </div>
-      <strong className={css.count} role="status">{loading?"Loading…":error?"Unavailable":format(total)+" restricted NCT matches"}</strong>
+      <strong className={css.count} role="status">{!hasSelection?"0 trials shown · no selections":loading?"Loading…":error?"Unavailable":format(total)+" restricted NCT matches"}</strong>
     </div>
     <div className={css.scroll} role="region" aria-label="Scrollable clinical trial spreadsheet" tabIndex={0}>
       <table>
@@ -61,7 +61,8 @@ export default function ToolsOpeningTrialGrid({
           <th>Study role</th>
         </tr></thead>
         <tbody>
-          {loading?<tr><td colSpan={columnsCount} className={css.empty}>Loading published trial records…</td></tr>
+          {!hasSelection?<tr><td colSpan={columnsCount} className={css.empty}>Select at least one Phase or Special Designation in Step 3 to populate this spreadsheet.</td></tr>
+          :loading?<tr><td colSpan={columnsCount} className={css.empty}>Loading matching trial records…</td></tr>
           :error?<tr><td colSpan={columnsCount} className={css.empty}>Cannot verify the trial inventory: {error}. No zero count assumed.</td></tr>
           :ordered.length===0?<tr><td colSpan={columnsCount} className={css.empty}>
             {countUnverified?"No documented NCT matches within the restricted research subset. Full FDA trial coverage remains unknown."
@@ -105,10 +106,10 @@ export default function ToolsOpeningTrialGrid({
       </table>
     </div>
     <div className={css.footer}>
-      <span>{!loading&&!error?("Showing "+(total?offset+1:0)+"–"+Math.min(offset+rows.length,total)+" of "+format(total)):"Awaiting published records"} · Page sort only</span>
+      <span>{!hasSelection?"Showing 0 of 0 · No trial filters selected":!loading&&!error?("Showing "+(total?offset+1:0)+"–"+Math.min(offset+rows.length,total)+" of "+format(total)):"Awaiting matching records"} · Page sort only</span>
       <div className={css.pager}>
-        <button type="button" disabled={loading||!!error||offset===0} onClick={onPrevious}>Previous 50</button>
-        <button type="button" disabled={loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
+        <button type="button" disabled={!hasSelection||loading||!!error||offset===0} onClick={onPrevious}>Previous 50</button>
+        <button type="button" disabled={!hasSelection||loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
       </div>
     </div>
     <p className={css.source}>{!regulatorySourcesAvailable?"FDA/PDUFA enrichment source unavailable for this request; absence of a link is not established. ":""}FDA designation and PDUFA application coverage is incomplete. A PDUFA target is application-level; the linked NCT is not automatically pivotal. Published source: {sourceDate||"Not recorded"} · State: {sourceState||"Unverified"}.
