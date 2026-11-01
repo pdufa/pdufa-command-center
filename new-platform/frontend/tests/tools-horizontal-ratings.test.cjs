@@ -55,3 +55,33 @@ test("M–E headings expand ingredients immediately to the right and keep one co
     "unscored values must not be fabricated");
  }finally{if(r)await act(async()=>r.unmount());}
 });
+
+test("Competitive Strategy is after S and D, expands six source-gated subtopics without misaligning trial cells",async()=>{
+ let r;
+ try{
+  await act(async()=>{r=create(React.createElement(Component,props));});
+  const headers=()=>r.root.findAllByType("th");
+  const labels=()=>headers().map(h=>textOf(h));
+  const main=headers().findIndex(h=>h.props["data-competition-group"]==="CS");
+  assert.ok(main>0,"Competitive Strategy is a top-level spreadsheet column");
+  assert.equal(labels()[main-1].startsWith("D"),true,"CS must follow D immediately");
+  assert.match(labels()[main+1],/Drug \/ therapy/,"Drug and the other original columns follow CS");
+  const cells=()=>r.root.findAllByType("tbody")[0].findAllByType("td");
+  assert.equal(cells().length,headers().length,"One trial row must align with every header");
+  const button=headers()[main].findByType("button");
+  assert.equal(button.props["aria-expanded"],false);
+  await act(async()=>button.props.onClick());
+  assert.equal(headers().find(h=>h.props["data-competition-group"]==="CS").findByType("button").props["aria-expanded"],true);
+  assert.deepEqual(headers().filter(h=>h.props["data-competition-topic"]).map(h=>h.props["data-competition-topic"]),
+    ["SOC","MED","PIPE","COMM","MOAT","STOCK"]);
+  assert.equal(cells().length,headers().length,"Expanded trial row stays aligned");
+  assert.equal(cells().filter(td=>td.props["data-competition-value"]).length,6);
+  assert.ok(cells().filter(td=>td.props["data-competition-value"]).every(td=>/Not assessed|Evidence unavailable/.test(textOf(td))),
+    "Missing comparator evidence cannot be converted into unsupported rankings");
+  const title=headers().find(h=>h.props["data-competition-topic"]==="MED").props.title;
+  assert.match(title,/directly comparable benefit/i);
+  await act(async()=>headers().find(h=>h.props["data-competition-group"]==="CS").findByType("button").props.onClick());
+  assert.equal(headers().filter(h=>h.props["data-competition-topic"]).length,0);
+  assert.equal(cells().length,headers().length);
+ }finally{if(r)await act(async()=>r.unmount());}
+});
