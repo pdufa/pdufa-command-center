@@ -1,0 +1,187 @@
+"use client";
+import {useEffect,useMemo,useState} from "react";
+import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,rankAdvantages,type BenefitFeed,type BenefitRecord,type BenefitAdvantage,type BenefitGroup} from "../lib/benefit-assessments";
+import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
+import css from "./ToolsBenefitMatrix.module.css";
+type Props={
+  rows:ToolsSpreadsheetRow[];
+  hasSelection:boolean;
+  total:number;
+  offset:number;
+  loading:boolean;
+  error:string;
+};
+const missing="Not assessed";
+const short=(value?:string)=>value?.trim()||"Not recorded";
+function FieldValue({record,id}:{record:BenefitRecord|null;id:string}){
+  const fact=record?.facts[id];
+  if(!fact)return <span className={css.pending}>{missing}</span>;
+  return <details className={css.fieldDetail}>
+    <summary>{String(fact.value)}{fact.status==="MODELED"?" (modeled)":""}</summary>
+    <p><strong>Evidence status:</strong> {fact.status==="VERIFIED"?"Source-verified":"Modeled scenario"} · Confidence: {fact.confidence}</p>
+    <p><strong>Method:</strong> {fact.method}</p>
+    <p><strong>Source date:</strong> {fact.sourceDate} · <a href={fact.sourceUrl} target="_blank" rel="noopener noreferrer">Open evidence</a></p>
+  </details>;
+}
+function RankedList({list,empty}:{list:BenefitAdvantage[];empty:string}){
+  if(!list.length)return <p className={css.pending}>{empty}</p>;
+  return <ol className={css.advList}>{list.map(a=><li key={a.id}>
+    <strong>{a.title}</strong>
+    <p><strong>Compared with:</strong> {a.comparator}</p>
+    <p><strong>Measured difference:</strong> {a.comparison}</p>
+    <p><strong>Evidence:</strong> {a.status==="VERIFIED"?"Source-verified":"Modeled"} · {a.confidence} confidence</p>
+    <details><summary>Method &amp; source</summary>
+      <p>{a.method}</p>
+      <p>{a.sourceDate} · <a href={a.sourceUrl} target="_blank" rel="noopener noreferrer">Supporting source</a></p>
+    </details>
+  </li>)}</ol>;
+}
+function GroupAdvantage({record,group}:{record:BenefitRecord|null;group:BenefitGroup}){
+  const ranked=rankAdvantages(record,group.number);
+  return <details className={css.advDetail}>
+    <summary>{ranked.length?ranked.length+" ranked advantage"+(ranked.length===1?"":"s"):"Not assessed"}</summary>
+    <RankedList list={ranked} empty="No comparator-specific, verified competitive advantage ranking is available for this assessment."/>
+  </details>;
+}
+export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loading,error}:Props){
+  const [feed,setFeed]=useState<BenefitFeed|null>(null);
+  const [feedError,setFeedError]=useState("");
+  const [active,setActive]=useState(1);
+  const [chosen,setChosen]=useState("");
+  useEffect(()=>{
+    const controller=new AbortController();
+    void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
+      .then(async response=>{
+        if(!response.ok)throw Error("Verified benefit research feed unavailable");
+        return parseBenefitFeed(await response.json());
+      })
+      .then(result=>{if(!controller.signal.aborted)setFeed(result);})
+      .catch(()=>{if(!controller.signal.aborted)setFeedError("Research evidence could not be verified. Assessment conclusions are withheld.");});
+    return ()=>controller.abort();
+  },[]);
+  const current=BENEFIT_GROUPS[active-1];
+  const selected=rows.find(r=>r.nctId===chosen)||rows[0]||null;
+  const evidence=selected?benefitForTrial(feed,selected):null;
+  const overall=rankAdvantages(evidence);
+  const studied=(record:BenefitRecord|null,group:BenefitGroup)=>
+    !!record&&(group.fields.some(f=>record.facts[f.id])||record.advantages.some(a=>a.assessment===group.number));
+  const researched=useMemo(()=>rows.filter(r=>benefitForTrial(feed,r)).length,[feed,rows]);
+  return <section className={css.root} id="tools-benefit-assessments" aria-label="Resultant Trials — 20 competitive benefit assessments">
+    <div className={css.intro}>
+      <div><p className={css.eyebrow}>RESULTANT TRIALS · COMPETITIVE RESEARCH</p>
+        <h3>20 Benefit Assessments</h3>
+        <p>Filtered trials populate automatically from your selections. Every numbered heading sits above its own subcolumns. Open any group to see source-backed findings and strongest-to-weakest comparator advantages.</p>
+      </div>
+      <div className={css.count}><strong>{hasSelection?(loading||error?"—":total.toLocaleString("en-US")):"0"}</strong><span>selected NCT trial records</span></div>
+    </div>
+    <div className={css.notice}>
+      <strong>Source integrity:</strong> These are NCT study records, not yet reconciled distinct drug–indication programs. A Phase 3 screening match is not final Pipeline qualification. Source facts populate when available; research not completed remains <strong>Not assessed</strong>. Unverified superiority is never ranked as proven.
+      {feedError&&<p role="alert">{feedError}</p>}
+      {feed&&!feedError&&<p>Evidence-backed assessments attached to current page: {researched} of {rows.length} NCT records. Missing evidence does not mean the drug has no advantage.</p>}
+    </div>
+    <div className={css.actions}>
+      <label htmlFor="benefit-group-picker">Jump to assessment #1–#20</label>
+      <select id="benefit-group-picker" value={active} onChange={e=>setActive(Number(e.target.value))}>
+        {BENEFIT_GROUPS.map(g=><option value={g.number} key={g.number}>#{g.number} — {g.name}</option>)}
+      </select>
+    </div>
+    {!hasSelection?<div className={css.empty} role="status">Select a clinical development stage or FDA designation above to populate the resultant trial rows. The 20 group headings are ready to inspect.</div>:
+      loading?<div className={css.empty} role="status">Loading source-matched resultant trials…</div>:
+      error?<div className={css.empty} role="alert">Trial evidence unavailable. Assessment rows have not been asserted.</div>:
+      rows.length===0?<div className={css.empty} role="status">{total?"No records on this page. Use spreadsheet pagination below.":"No source-linked NCT trial records match these filters. This does not prove there are no eligible therapies."}</div>:<>
+      <div className={css.desktop} role="region" aria-label="Desktop horizontally scrollable 20-assessment spreadsheet" tabIndex={0}>
+        <table className={css.matrixTable}>
+          <thead>
+            <tr><th className={css.identityHeading} colSpan={4} scope="colgroup">PROGRAM / NCT IDENTIFICATION</th>
+              {BENEFIT_GROUPS.map(g=><th key={g.number} colSpan={active===g.number?6:1}
+                className={active===g.number?css.activeHeading:css.groupHeading} scope="colgroup">
+                <button type="button" aria-pressed={active===g.number} onClick={()=>setActive(g.number)}>#{g.number} — {g.name} {active===g.number?"▴":"▾"}</button>
+              </th>)}
+            </tr>
+            <tr>
+              <th className={css.pin1}>#</th><th className={css.pin2}>Ticker / NCT</th>
+              <th className={css.pin3}>Drug / therapy</th><th className={css.pin4}>Indication</th>
+              {BENEFIT_GROUPS.map(g=>active===g.number
+                ?g.fields.map(f=><th key={f.id}>{f.label}</th>).concat([
+                  <th key={"rank"+g.number}>Ranked advantages</th>,
+                  <th key={"status"+g.number}>Evidence status</th>
+                ])
+                :<th key={"closed"+g.number}>Assessment status</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row,i)=>{
+              const record=benefitForTrial(feed,row);
+              return <tr key={row.id}>
+                <td className={css.pin1}>{offset+i+1}</td>
+                <td className={css.pin2}><strong>{short(row.ticker)}</strong><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
+                <td className={css.pin3}>{short(row.drug)}</td><td className={css.pin4}>{short(row.indication)}</td>
+                {BENEFIT_GROUPS.map(g=>active===g.number
+                  ?[...g.fields.map(f=><td key={f.id}><FieldValue record={record} id={f.id}/></td>),
+                    <td key={"rank"+g.number}><GroupAdvantage record={record} group={g}/></td>,
+                    <td key={"status"+g.number}>{studied(record,g)?"Partial evidence":"Not assessed"}</td>]
+                  :<td key={"closed"+g.number}><button type="button" className={css.statusButton} onClick={()=>setActive(g.number)}>{studied(record,g)?"Evidence available":"Not assessed"} ▾</button></td>)}
+              </tr>;
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className={css.mobile}>
+        <div className={css.mobilePicker}>
+          <label htmlFor="benefit-trial-picker">Select a resultant trial</label>
+          <select id="benefit-trial-picker" value={selected?.nctId||""} onChange={e=>setChosen(e.target.value)}>
+            {rows.map(row=><option key={row.id} value={row.nctId}>{short(row.ticker)} · {row.nctId} · {short(row.drug)}</option>)}
+          </select>
+          <p className={css.subline}>{selected?short(selected.drug)+" · "+short(selected.indication):""}</p>
+        </div>
+        <details className={css.overall} open={undefined}>
+          <summary>Overall drug competitive ranking</summary>
+          <div className={css.detailBody}>
+            <RankedList list={overall} empty="No evidence-reviewed overall drug ranking has been established for this exact drug–indication / NCT identity."/>
+          </div>
+        </details>
+        <div className={css.groupMobile}>
+          <div className={css.mobileGroupTitle}>
+            <small>ASSESSMENT {active} OF 20</small><h4>#{active} — {current.name}</h4>
+          </div>
+          <div className={css.fieldScroll} role="region" aria-label={"Assessment "+active+" subcolumns"} tabIndex={0}>
+            <table className={css.mobileTable}>
+              <thead><tr>{current.fields.map(f=><th key={f.id}>{f.label}</th>)}</tr></thead>
+              <tbody><tr>{current.fields.map(f=><td key={f.id}><FieldValue record={evidence} id={f.id}/></td>)}</tr></tbody>
+            </table>
+          </div>
+          <details className={css.mobileAdv}>
+            <summary>Competitive advantages · strongest first</summary>
+            <div className={css.detailBody}><RankedList list={rankAdvantages(evidence,active)} empty="Not assessed. A comparator-specific, evidence-reviewed advantage ranking is not yet available."/></div>
+          </details>
+          <details className={css.mobileAdv}>
+            <summary>Trial identity &amp; source</summary>
+            <div className={css.detailBody}>
+              <p>Source NCT: <a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(selected!.nctId)} target="_blank" rel="noopener noreferrer">{selected!.nctId}</a></p>
+              <p>Company: {short(selected!.company)} · Recorded stage: {short(selected!.stage)}</p>
+              <p>Drug–indication identity is source-reported and requires program-level verification before combining multiple NCTs.</p>
+            </div>
+          </details>
+        </div>
+        <div className={css.next}>
+          <button type="button" disabled={active===1} onClick={()=>setActive(v=>v-1)}>← Previous</button>
+          <span>{active} / 20</span>
+          <button type="button" disabled={active===20} onClick={()=>setActive(v=>v+1)}>Next →</button>
+        </div>
+        <p className={css.subline}>Showing records {offset+1}–{offset+rows.length} of {total}. Use the existing results pagination below to browse more trials.</p>
+      </div>
+      <div className={css.overallDesktop}>
+        <details><summary>Overall drug advantage rankings (selected trial)</summary>
+          <div className={css.mobilePicker}>
+            <label htmlFor="benefit-desktop-trial">Study</label>
+            <select id="benefit-desktop-trial" value={selected?.nctId||""} onChange={e=>setChosen(e.target.value)}>
+              {rows.map(row=><option key={row.id} value={row.nctId}>{short(row.ticker)} · {row.nctId} · {short(row.drug)} · {short(row.indication)}</option>)}
+            </select>
+          </div>
+          <RankedList list={overall} empty="No evidence-reviewed overall ranking has been established for this exact trial and drug–indication identity."/>
+        </details>
+      </div>
+    </>}
+    <p className={css.footer}>Automatic: filter-matched NCT identities, drug/indication where recorded, study links, and available vetted assessment evidence. Not yet automatic: independent research of every competitor and all 20 benefit categories. Assessment gaps remain explicitly unverified until source-backed records are supplied.</p>
+  </section>;
+}
