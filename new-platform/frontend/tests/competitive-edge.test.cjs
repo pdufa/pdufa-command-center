@@ -94,6 +94,8 @@ test("gold bordered reason appears directly AFTER both green A and P cards in sh
   summary.indexOf('aria-label="P: days to PDUFA"'));
  assert.ok(summary.indexOf('aria-label="P: days to PDUFA"')<
   summary.indexOf('aria-label="Gold competitive advantage evidence"'));
+ assert.ok(summary.indexOf("{edge.reason}</p>")>summary.indexOf('aria-label="Gold competitive advantage evidence"'));
+ assert.ok(summary.indexOf("{edge.reason}</p>")<summary.indexOf("Why? · Evidence and limitations"));
  assert.match(summary,/Why\? · Evidence and limitations/);
  assert.match(summary,/overall clinical superiority/);
 });
