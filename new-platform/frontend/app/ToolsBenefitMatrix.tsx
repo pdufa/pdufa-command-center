@@ -91,7 +91,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
   return <section className={css.root} id="tools-benefit-assessments" aria-label="Resultant Trials — 20 competitive benefit assessments">
     <div className={css.intro}>
       <div><p className={css.eyebrow}>RESULTANT TRIALS · COMPETITIVE RESEARCH</p>
-        <h3>20 Benefit Assessments</h3>
+        <h3>Step 4 · #1–20 Trial Assessment</h3>
         <p>Filtered trials populate automatically from your selections. Every numbered heading sits above its own subcolumns. Open any group to see source-backed findings and strongest-to-weakest comparator advantages.</p>
       </div>
       <div className={css.count}><strong>{hasSelection?(loading||error?"—":total.toLocaleString("en-US")):"0"}</strong><span>selected NCT trial records</span></div>
