@@ -200,16 +200,17 @@ try{
       const label=await fdaCounts.nth(i).innerText();
       if(openingDesignationTotals[key]===null)assert.match(label,/Not tracked/);
       else {
-        assert.equal(label.split("\n")[0],"?","Unverified full category totals must never appear as exact counts");
-        assert.match(label,/FDA trial total unknown/);
-        if(scoped)assert.ok(label.includes(scoped.matchingTrials.toLocaleString("en-US")+" verified NCT matches"),
-          "FDA "+key+" documented Phase-2 NCT match count must equal the API");
-        else assert.match(label,/NCT coverage unavailable/);
+        assert.equal(label.split("\n")[0].replaceAll(",",""),
+          scoped===null?"—":String(scoped.matchingTrials),
+          "FDA "+key+" must prominently show the documented Phase-2 NCT match count");
+        if(scoped)assert.match(label,/documented NCT matches · partial/);
+        else assert.match(label,/count unavailable/);
+        assert.match(label,/Full FDA total unknown/);
       }
     }
     for(const c of await fdaCounts.all()){
-      assert.match(await c.innerText(),/verified NCT matches|trial total unknown|Not tracked/,
-        "Label documented NCT matches as partial and keep full designation total unknown");
+      assert.match(await c.innerText(),/documented NCT matches|count unavailable|Not tracked/,
+        "Show documented NCT matching count as prominent figure and disclose incomplete full FDA totals");
     }
     const orphanOnly=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&designations=orphan_drug&offset=0&limit=50",{timeout:120000});
     assert.equal(orphanOnly.status(),200);
@@ -232,11 +233,11 @@ try{
         .find(el=>el.textContent?.includes("Orphan Drug Designation"));
       const count=row?.querySelector('strong[class*="toolsFdaRowCount"]');
       if(!count)return false;
-      return expected===null?count.textContent?.includes("NCT coverage unavailable")
-        :count.textContent?.includes(expected.toLocaleString("en-US")+" verified NCT matches");
+      return expected===null?count.textContent?.includes("count unavailable")
+        :count.textContent?.includes(expected.toLocaleString("en-US")+"documented NCT matches");
     },contextual?.matchingTrials??null,{timeout:45000});
     assert.match(await orphanCount.innerText(),
-      contextual===null?/NCT coverage unavailable/:/verified NCT matches/,
+      contextual===null?/count unavailable/:/documented NCT matches/,
       "FDA badge must display the exact Phase/search-faceted trial count returned by the result API");
     if(contextual)assert.equal(contextual.nctIds.length,Math.min(40,contextual.matchingTrials));
     assert.match(await designation.innerText(),/1 selected/);
