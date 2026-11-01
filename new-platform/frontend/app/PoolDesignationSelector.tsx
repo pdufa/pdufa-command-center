@@ -80,14 +80,26 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
               onChange={()=>toggle(category.key)}/>
             <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
             <span>{category.label}</span>
-            {index&&!d.available&&<small>Not tracked</small>}
+            <strong className={styles.toolsFdaRowCount}
+              title={index&&d.available?d.linkedTrials+" source-linked NCT trial IDs (partial coverage)": "FDA category not source-tracked"}>
+              {index&&d.available?(d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US"):"?"):"—"}
+              <small>{index&&d.available?(d.linkedTrials>0?"linked NCTs":"NCTs unknown"):"Not tracked"}</small>
+            </strong>
           </label>
           {checked&&index&&<div className={styles.toolsCascadeFdaEvidence}
               aria-label={category.label+" source evidence"} role="group">
             <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
               <small>FDA programs, not distinct clinical trials</small></div>
             <div><strong>{d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}</strong>
-              <small>Reviewed exact NCT links only</small></div>
+              <small>Exact NCT source links only (partial coverage)</small></div>
+            {d.linkedTrials>0&&<details className={styles.toolsFdaLinkedTrials}>
+              <summary>View {d.linkedTrials.toLocaleString("en-US")} source-linked trial IDs</summary>
+              <ul>{[...new Set(d.records.flatMap(record=>record.linkedNcts))].sort().slice(0,40).map(nct=>
+                <li key={nct}><a href={"https://clinicaltrials.gov/study/"+nct}
+                  target="_blank" rel="noopener noreferrer">{nct}</a></li>)}</ul>
+              {d.linkedTrials>40&&<p>Showing the first 40 source-linked NCT IDs.</p>}
+              <p>These are documented program-to-trial links, not a complete FDA designation census.</p>
+            </details>}
           </div>}
         </div>;
       })}
@@ -160,7 +172,11 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
                   disabled={!index||!d.available} onChange={()=>toggle(category.key)}/>
                 <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
                 <span>{category.label}</span>
-                {index&&!d.available&&<small>Not tracked</small>}
+                <strong className={styles.toolsFdaRowCount}
+                title={index&&d.available?d.linkedTrials+" source-linked NCT trial IDs (partial coverage)": "FDA category not source-tracked"}>
+                {index&&d.available?(d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US"):"?"):"—"}
+                <small>{index&&d.available?(d.linkedTrials>0?"linked NCTs":"NCTs unknown"):"Not tracked"}</small>
+            </strong>
               </label>
               {checked&&index&&<div className={styles.toolsCascadeFdaEvidence} role="group"
                 aria-label={category.label+" source evidence"}>
