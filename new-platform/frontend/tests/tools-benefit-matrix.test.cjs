@@ -16,7 +16,7 @@ const advantage=(id,assessment,rank)=>({
   id,assessment,rank,title:"Better endpoint",comparator:"Standard drug",comparison:"Absolute difference 5 pp",
   sourceUrl:"https://example.org/study",sourceDate:"2026-10-20",method:"Direct endpoint comparison",confidence:"MODERATE",status:"VERIFIED"
 });
-const good=()=>({schemaVersion:1,sourceAsOf:"2026-10-20",records:[{...identity,facts:{eligibleUsPatients:fact},advantages:[advantage("a",1,1),advantage("b",1,2)],overallAdvantages:[advantage("b",1,1),advantage("a",1,2)]}]});
+const good=()=>({schemaVersion:1,sourceAsOf:"2026-10-20",records:[{...identity,facts:{eligibleUsPatients:{...fact}},advantages:[advantage("a",1,1),advantage("b",1,2)],overallAdvantages:[advantage("b",1,1),advantage("a",1,2)]}]});
 test("canonical 20 headings map original assessment source fields, without duplicate groups",()=>{
   const other=require("../lib/pipeline-benefit-assessments.ts").RANKED_BENEFIT_ASSESSMENTS;
   assert.equal(BENEFIT_GROUPS.length,20);
