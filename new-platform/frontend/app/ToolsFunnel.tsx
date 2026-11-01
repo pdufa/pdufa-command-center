@@ -70,9 +70,9 @@ export default function ToolsFunnel({
         <div className={pipelineResearch?styles.toolsFunnelValue:styles.toolsFunnelValueUnverified}>
           {pipelineResearch?num(pipelineResearch.screenedTrials):"Not verified"}
         </div>
-        <p>{pipelineResearch?"Dated $300M–$10B registry-completed Phase 3 research screen":"Restricted Pipeline count unavailable"}</p>
+        <p>{pipelineResearch?"Dated $300M–$10B issuer-cap screened trials (all phases)":"Restricted Pipeline count unavailable"}</p>
         <small>{pipelineResearch
-          ?"$300M–$10B census dated "+pipelineResearch.screenDate+
+          ?"$300M–$10B issuer cap source checked "+pipelineResearch.screenDate+
             ". Exact NCT/ticker matches only. Full original restrictions: NOT VERIFIED."
           :"Original listing, cap, final-readout and rights checks are not fully reconciled."}</small>
       </div>
@@ -97,8 +97,8 @@ export default function ToolsFunnel({
           </div>
           :phaseOnly?<div role="status" aria-live="polite" aria-atomic="true">
             <div className={styles.toolsFunnelValue}>{trialStatus}</div>
-            <p>Matching trials from restricted post–Phase 3 research subset</p>
-            <small>Only the $300M–$10B registry-completed Phase 3 research subset; full Pipeline eligibility unverified.</small>
+            <p>Matching trials from $300M–$10B issuer-cap subset</p>
+            <small>All recorded phases in the $300M–$10B cap subset; no Phase 3 prescreen.</small>
             <div className={styles.toolsFunnelPhaseScreen}>
               <strong>All selected phase records: {selectedPhasePoolTrials===null?"—":num(selectedPhasePoolTrials)}</strong>
               <small>Restricted subset stage count before optional text search; matching trial records appear below.</small>
@@ -114,7 +114,7 @@ export default function ToolsFunnel({
       </div>
     </div>
     <p className={styles.toolsFunnelIntegrity}>
-      { "TRIALS uses the dated $300M–$10B registry-completed Phase 3 research screen BEFORE either Phase or FDA selection. The full published POOL is displayed only as the source count. "}
+      { "TRIALS first restricts the full published POOL by saved verified issuer market cap $300M–$10B, then calculates Phase and FDA breakdowns separately. Phase 3 is NOT imposed in advance. "}
       <strong>Current full PIPELINE eligibility is not yet verified.</strong>
       {sourceState==="PARTIAL"?" POOL source coverage: PARTIAL.":""}
     </p>
