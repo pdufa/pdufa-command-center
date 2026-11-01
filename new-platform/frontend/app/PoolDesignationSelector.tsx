@@ -12,7 +12,7 @@ import styles from "./FunnelWorkspace.module.css";
 type PositiveRecord={program:DesignationProgram;linkedNcts:string[]};
 type DesignationSummary={available:boolean;records:PositiveRecord[];linkedTrials:number};
 
-export default function PoolDesignationSelector({selected,onChange}:{selected:DesignationKey[];onChange:(next:DesignationKey[])=>void}){
+export default function PoolDesignationSelector({selected,onChange,poolTrialCount}:{selected:DesignationKey[];onChange:(next:DesignationKey[])=>void;poolTrialCount:number|null}){
   const {index,loading,error,retry}=useTrialDesignations();
   const entries=useMemo(()=>{
     const trialLinks=new Map<string,Set<string>>();
@@ -42,6 +42,11 @@ export default function PoolDesignationSelector({selected,onChange}:{selected:De
     return result;
   },[index]);
   const supported=SPECIAL_DESIGNATION_CATEGORIES.filter(category=>entries[category.key].available);
+  const positiveProgramIds=new Set<string>();
+  for(const category of SPECIAL_DESIGNATION_CATEGORIES)
+    for(const record of entries[category.key].records)positiveProgramIds.add(record.program.eventKey);
+  const auditedNcts=index?.linkageCoverage?.verifiedNctCount??Object.keys(index?.trialEvents||{}).length;
+
   const combined=useMemo(()=>{
     const m=new Map<string,{row:PositiveRecord;labels:string[];sources:string[]}>();
     for(const category of SPECIAL_DESIGNATION_CATEGORIES){
@@ -63,9 +68,18 @@ export default function PoolDesignationSelector({selected,onChange}:{selected:De
   return <div className={styles.stageDropdownColumn}>
     <label className={styles.stageDropdownLabel}>Saved FDA source coverage</label>
     <p className={styles.stageDropdownSubline}>
-      {index?supported.length+" of 13 categories have a tracked source field":"Checking saved evidence…"}
-      {index?.linkageCoverage?" · "+index.linkageCoverage.verifiedNctCount+" rigorously linked NCT trials in initial crosswalk":""}
+      {index?supported.length+" of 13 FDA categories have a tracked source field":"Checking saved evidence…"}
     </p>
+    {index && <div className={styles.designationCoverageWarning} role="note">
+      <strong>Incomplete FDA-to-trial coverage</strong>
+      <p>Only <strong>{auditedNcts.toLocaleString("en-US")} reviewed NCT links</strong> are recorded
+        {poolTrialCount!==null?" against "+poolTrialCount.toLocaleString("en-US")+" trials in the POOL":""}.
+        The FDA source contains <strong>{positiveProgramIds.size.toLocaleString("en-US")} source-linked positive application/program records</strong>,
+        many without any verified trial ID link.</p>
+      <p>Counts beside FDA choices distinguish source programs from linked trial IDs.
+        Combining FDA designations with clinical stages searches <strong>documented matches only</strong>, not every eligible trial.
+        An unlinked result is unknown, not a negative finding.</p>
+    </div>}
     {index && Object.keys(index.trialEvents).length===0&&<p className={styles.error} role="status">
       No reviewed trial-to-designation links are available. Combined trial counts cannot be verified yet.
     </p>}
@@ -88,13 +102,18 @@ export default function PoolDesignationSelector({selected,onChange}:{selected:De
               <input type="checkbox" checked={selected.includes(category.key)}
                 disabled={!index||!d.available} onChange={()=>toggle(category.key)}/>
               <span>{category.label}</span>
-              <strong title="Unique trial IDs with reviewed, exact NCT-to-designation links">
-                {index&&d.available?d.linkedTrials.toLocaleString("en-US"):"—"}
-              </strong>
+              <div className={styles.designationCountPair}>
+                {index&&d.available?<>
+                  <strong title="Saved, source-linked positive application/program records">{d.records.length.toLocaleString("en-US")} programs</strong>
+                  <small title="Exact reviewed NCT-to-therapy/indication links">
+                    {d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}
+                  </small>
+                </>:<strong title="Source category not tracked">Not tracked</strong>}
+              </div>
             </label>;
           })}
         </div>
-        <p className={styles.muted}>Choose multiple categories (OR). Right-hand counts are unique NCT IDs with documented drug/indication links, not all programs that have received designations. A dash means source coverage unavailable, not zero grants.</p>
+        <p className={styles.muted}>The top number counts positive source programs; the smaller number counts the few trial IDs matched to them. They are not interchangeable. “NCT count unknown” means research is incomplete, not zero trials.</p>
       </div>
     </details>
     {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
