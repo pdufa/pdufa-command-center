@@ -47,12 +47,11 @@ export function competitiveEdge(
   peers:readonly EdgeTrial[]=[]
 ):CompetitiveEdge{
   const qualifiedPeers=peers.filter(p=>p.nctId!==trial.nctId);
-  if(qualifiedPeers.length && (!trial.drug||!trial.indication||
-    qualifiedPeers.some(p=>!same(trial.indication,p.indication))))
-    return missing("Different or missing indications: outcomes cannot be ranked across unmatched diseases.",
-      "NOT_COMPARABLE");
   if(!trial.drug?.trim()||!trial.indication?.trim()||!/^NCT\d{8}$/.test(trial.nctId))
     return missing("Drug, indication, and exact NCT identity must be verified before comparing.");
+  if(qualifiedPeers.length && qualifiedPeers.some(p=>!same(trial.indication,p.indication)))
+    return missing("Different or missing indications: outcomes cannot be ranked across unmatched diseases.",
+      "NOT_COMPARABLE");
   const compareTo=(name:string,nct?:string)=>
     !qualifiedPeers.length||qualifiedPeers.some(p=>same(p.drug,name)&&(!nct||p.nctId===nct));
   const reviewed=benefitForTrial(feed,{
