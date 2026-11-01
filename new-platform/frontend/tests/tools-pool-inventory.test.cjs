@@ -283,7 +283,9 @@ test("FDA programs without verified NCT links remain visible as programs, not em
   const designations=fs.readFileSync(require("node:path").join(root,"app/PoolDesignationSelector.tsx"),"utf8");
   assert.doesNotMatch(route,/DESIGNATION_NCT_LINKAGE_UNAVAILABLE/);
   assert.match(route,/renderUnlinkedFdaProgramCsv/);
-  assert.match(route,/trialTimelines/);
+  assert.match(route,/toolSpreadsheetRow\(trial,selectedStages,selectedDesignations,index/);
+  const rowBuilder=fs.readFileSync(require("node:path").join(root,"lib/tools-spreadsheet.ts"),"utf8");
+  assert.match(rowBuilder,/const timeline=exactProgramTimeline\(trial,hasExactIdentity\)/);
   assert.match(designations,/No reviewed trial-to-designation links/);
   const snapshot=verifiedToolPool(raw());
   const missingIndex={...index,trialEvents:{}};
@@ -471,7 +473,9 @@ test("restricted research screen is mandatory before TOOLS Phase and FDA facet c
   assert.match(route,/const \{snapshot:inventory,scope:restrictedScope\}=restrictedToolsSnapshot/);
   assert.match(route,/buildToolsResults\(inventory,index,selectedStages,selectedDesignations,/);
   assert.match(route,/const rows=filterToolTrials\(inventory\.poolRows,selectedStages,matches,query\);/);
-  assert.match(route,/timeline:trialTimelines\.get/);
+  assert.match(route,/toolSpreadsheetRow\(trial,selectedStages,selectedDesignations,index/);
+  const rowBuilder=fs.readFileSync(require("node:path").join(__dirname,"../lib/tools-spreadsheet.ts"),"utf8");
+  assert.match(rowBuilder,/const timeline=exactProgramTimeline\(trial,hasExactIdentity\)/);
   assert.match(route,/pdufa-tools-selected-trials\.csv/);
   const funnel=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
   assert.match(funnel,/TRIALS first restricts the full published POOL by saved verified issuer market cap \$300M–\$10B/);
