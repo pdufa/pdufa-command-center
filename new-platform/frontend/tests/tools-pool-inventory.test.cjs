@@ -179,7 +179,9 @@ test("FDA counts recalculate from exact resultant Phase and search scope, not en
  const missing=toolsContextualDesignationCounts(snapshot.poolRows,{
   ...expandedIndex,trialEvents:{}
  },["Phase 1"],"");
- assert.equal(missing.fast_track,null,"No documented NCT crosswalk is unknown, not a proven zero");
+ assert.equal(missing.fast_track.matchingTrials,0,
+   "A tracked category with no NCT links has zero documented matches, not a claim of zero designations");
+ assert.deepEqual(missing.fast_track.nctIds,[]);
  assert.equal(toolsContextualDesignationCounts(snapshot.poolRows,null,["Phase 1"],"").fast_track,null);
  const phaseResults=buildToolsResults(snapshot,expandedIndex,["Phase 1"],["fast_track","orphan_drug"],"",0,1);
  assert.equal(phaseResults.total,1,"OR designation matches overlap and must not be added to total");
