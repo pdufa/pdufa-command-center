@@ -12,6 +12,7 @@ import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-s
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
 import {verifiedToolPool,buildToolsResults,filterToolTrials,selectToolTrialIds,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
 import {isToolsSnapshotFresh,parseToolsSnapshotTimestamp} from "../../../lib/tools-snapshot-freshness";
+import type {TimelineDates} from "../../../lib/pipeline-timeline";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -206,6 +207,7 @@ export async function GET(req:NextRequest) {
       // Reconcile the pinned $300M–$10B Phase 3 census to THIS exact POOL.
       // If this independent census cannot be validated, withhold its count.
       let pipelineResearchNcts:Set<string>|null=null;
+      let trialTimelines=new Map<string,TimelineDates>();
       try{
         const [csv,sourceJson]=await Promise.all([
           readFile(join(process.cwd(),"public","phase3-census-2026-10-26.csv"),"utf8"),
@@ -224,6 +226,10 @@ export async function GET(req:NextRequest) {
           .filter(row=>row.poolStatus==="EXACT_MATCH" &&
             row.postPhase3Evidence==="REGISTRY_COMPLETED")
           .map(row=>"TRIAL|"+row.nctId));
+        trialTimelines=new Map(research.reviewRows
+          .filter(row=>row.poolStatus==="EXACT_MATCH" &&
+            row.postPhase3Evidence==="REGISTRY_COMPLETED")
+          .map(row=>[row.nctId+"|"+row.ticker.toUpperCase(),row.timeline]));
       }catch{
         // Never silently substitute full POOL or the historical 375 baseline
         // for a failed exact-NCT reconciliation.
@@ -273,7 +279,10 @@ export async function GET(req:NextRequest) {
           "X-PDUFA-Source-Version":datasetVersion
         }});
       }
-      return NextResponse.json({...result,pipelineResearch,datasetVersion},
+      const spreadsheetRows=result.spreadsheetRows.map(row=>({
+        ...row,timeline:trialTimelines.get(row.nctId+"|"+row.ticker.toUpperCase())||null
+      }));
+      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,datasetVersion},
         {headers:{"Cache-Control":"private, no-store"}});
     }
     // Stage counts always come from the full POOL. Designation selection is
