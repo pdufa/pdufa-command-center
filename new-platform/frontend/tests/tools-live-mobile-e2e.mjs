@@ -54,6 +54,7 @@ try{
   });
   await check("stage-only",async()=>{
     await page.locator("details").filter({has:page.getByText("Select clinical trial stages")}).locator("summary").click();
+    await page.getByRole("button",{name:/Early clinical/}).click();
     await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).check();
     await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("3,269"),null,{timeout:100000});
     const selected=await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).isChecked();
@@ -84,9 +85,7 @@ try{
     // "Select all phases" is mathematically the same as an unrestricted stage
     // selection, so the exact-NCT designation count cannot decrease.
     await page.getByRole("button",{name:"Select all",exact:true}).click();
-    const checked=page.getByRole("group",{name:"Clinical development stages"})
-      .getByRole("checkbox",{checked:true});
-    assert.equal(await checked.count(),14);
+    assert.match(await page.locator("details").filter({has:page.getByText("14 stages selected")}).locator("summary").innerText(),/14 stages selected/);
     await page.getByText(/All-stage check passed: 4 matched trials = 4 linked designation trials/).waitFor({timeout:45000});
     const sameCount=page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']");
     assert.match(await sameCount.innerText(),/4 documented linked trial matches/);
@@ -119,8 +118,7 @@ try{
         && sheet?.textContent?.includes("16 source-backed FDA program records")
         && !document.body.textContent?.includes("Calculating matching trial records from saved sources");
     },null,{timeout:60000});
-    const allStages=page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox",{checked:true});
-    assert.equal(await allStages.count(),14);
+    assert.match(await page.locator("details").filter({has:page.getByText("14 stages selected")}).locator("summary").innerText(),/14 stages selected/);
     assert.match(await funnel.innerText(),/Stages: All 14 stages/);
     assert.match(await programCountCard.innerText(),/FDA APPLICATION \/ PROGRAM RECORDS[\s\S]*16/);
     assert.match(await nct.innerText(),/Not established/);
@@ -165,6 +163,7 @@ try{
   await check("mixed-known-positive",async()=>{
     await page.getByText("Find Phase 3 + Orphan Drug trials",{exact:true}).click();
     await page.getByRole("checkbox",{name:/^Phase 3(?! Results)/}).uncheck();
+    await page.getByRole("button",{name:/Early clinical/}).click();
     await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).check();
     await page.getByRole("checkbox",{name:/^Orphan Drug Designation/}).uncheck();
     await page.getByRole("checkbox",{name:/^Priority Review/}).check();
@@ -174,11 +173,16 @@ try{
     await screenshot("05-phase-2-and-priority");
   });
   await check("all-14-clinical-stage-checkboxes",async()=>{
-    const allStages=page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox");
-    assert.equal(await allStages.count(),14);
+    let totalStageOptions=0;
+    for(let i=0;i<4;i++){
+      const group=page.locator('[aria-controls="tools-stage-group-'+i+'"]');
+      if(await group.getAttribute("aria-expanded")==="false")await group.click();
+      totalStageOptions+=await page.locator("#tools-stage-group-"+i).getByRole("checkbox").count();
+    }
+    assert.equal(totalStageOptions,14);
     await page.getByRole("button",{name:"Clear all filters"}).click();
     await page.getByRole("button",{name:"Select all",exact:true}).click();
-    assert.equal(await page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox",{checked:true}).count(),14);
+    assert.match(await page.locator("details").filter({has:page.getByText("14 stages selected")}).locator("summary").innerText(),/14 stages selected/);
     await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("11,623"),null,{timeout:45000});
     await page.getByRole("button",{name:"Clear all filters"}).click();
     assert.equal(await page.getByRole("group",{name:"Clinical development stages"}).getByRole("checkbox",{checked:true}).count(),0);
@@ -193,6 +197,7 @@ try{
     assert.equal(await fda.getByRole("checkbox",{checked:true}).count(),0);
   });
   await check("search-and-pagination",async()=>{
+    await page.getByRole("button",{name:/Early clinical/}).click();
     await page.getByRole("checkbox",{name:/^Phase 2(?!\/)/}).check();
     await page.waitForFunction(()=>document.querySelector("section[aria-label='Selected filters and matching clinical trials spreadsheet']")?.textContent?.includes("3,269"),null,{timeout:45000});
     await page.getByRole("button",{name:"Next 50"}).click();

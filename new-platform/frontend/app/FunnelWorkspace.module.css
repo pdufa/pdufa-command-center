@@ -279,3 +279,34 @@
 .toolsFunnelProgramBand>strong{font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;color:#80501b}
 .toolsFunnelProgramBand>small{font-size:11px;font-weight:750;line-height:1.35;color:#74521f}
 @media(max-width:760px){.toolsFunnelActiveFilters{margin:8px 0}.toolsFunnelUnlinkedResult{padding:7px 3px;gap:5px}.toolsFunnelNctUnknown>span,.toolsFunnelProgramBand>span{font-size:9px;overflow-wrap:anywhere}.toolsFunnelNctUnknown>strong{font-size:20px}.toolsFunnelNctUnknown>small,.toolsFunnelProgramBand>small{font-size:9px;overflow-wrap:anywhere}.toolsFunnelProgramBand{padding:7px 3px}.toolsFunnelProgramBand>strong{font-size:25px}}
+
+
+/* Guided TOOLS-wide cascade: circles mark choices, counts remain source readouts. */
+.toolsCascadeGroup{width:100%;font-family:inherit;min-height:48px;touch-action:manipulation}
+.toolsCascadeGroup[aria-expanded="true"]{background:#e4f2e9;border-left:3px solid #28764b}
+.toolsCascadeChildren{margin-left:13px;padding-left:11px;border-left:3px solid #b8d7c4}
+.toolsCascadeFdaItem{border-bottom:1px solid #e8eee9}
+.toolsCascadeFdaItem:last-child{border-bottom:0}
+.toolsCascadeFdaItem>.stageCheckboxRow{border-bottom:0;min-height:48px}
+.toolsCascadeFdaEvidence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0 10px 10px 43px;padding:9px;background:#f2f9f3;border-left:3px solid #8bc6a2;border-radius:6px}
+.toolsCascadeFdaEvidence>div{min-width:0}
+.toolsCascadeFdaEvidence strong{font-size:12px;display:block;color:#185238;overflow-wrap:anywhere}
+.toolsCascadeFdaEvidence small{display:block;font-size:10px;color:#52695c;line-height:1.4;margin-top:4px}
+.stageDesignationSummary>span:not(:first-child){flex:1}
+.stageCheckboxRow input~span:not(:last-child){min-width:0}
+@media(max-width:760px){
+ .toolsCascadeChildren{margin-left:6px;padding-left:6px}
+ .toolsCascadeFdaEvidence{margin-left:20px}
+ .stageDesignationSummary{gap:6px}
+}
+
+
+/* Older generic span selectors must not stretch the 37px option circles. */
+.stageDesignationSummary>span[aria-hidden="true"],
+.stageCheckboxRow>span[aria-hidden="true"],
+.toolsCascadeGroup>span[aria-hidden="true"]{flex:0 0 37px!important;width:37px;min-width:37px}
+@media(max-width:600px){
+ .stageDesignationSummary>span[aria-hidden="true"],
+ .stageCheckboxRow>span[aria-hidden="true"],
+ .toolsCascadeGroup>span[aria-hidden="true"]{flex-basis:34px!important;width:34px;min-width:34px}
+}
