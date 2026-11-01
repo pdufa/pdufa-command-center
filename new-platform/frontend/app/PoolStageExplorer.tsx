@@ -157,6 +157,27 @@ export default function PoolStageExplorer(){
   }
   function submitSearch(event:FormEvent<HTMLFormElement>){event.preventDefault();setQuery(queryInput);setOffset(0);}
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
+    {/* Always-visible source-backed POOL → PIPELINE → TRIALS flow. Show it first,
+        before Step 3 controls, and keep it live as selections change. */}
+    <ToolsFunnel
+      poolNcts={page?.restrictedScope?.originalPoolTrials??null}
+      pipelineResearch={page?.pipelineResearch??null}
+      selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
+      selectedPhasePoolTrials={selectedStages.length&&stats?selectedPhaseTrials:null}
+      selectedStages={selectedStages.length}
+      totalStages={stages.length}
+      selectedStageLabels={selectedStages}
+      selectedDesignationLabels={selectedDesignations.map(key=>SPECIAL_DESIGNATION_CATEGORIES.find(item=>item.key===key)?.label||key)}
+      selectedDesignations={selectedDesignations.length}
+      designationUniqueTrials={page?.selectionSummary?.designationUniqueTrials??null}
+      designationCoverage={page?.designationCoverage??null}
+      loading={loading}
+      error={error}
+      searchActive={Boolean(query.trim())}
+      sourceDate={sourceDate}
+      sourceState={sourceState}
+    />
+
     <div className={styles.toolsStart} aria-label="Step 3 — filter by phase or FDA designation">
       <div className={styles.toolsStepHeader}>
         <h2>Step 3 · What would you like to select?</h2>
@@ -226,25 +247,6 @@ export default function PoolStageExplorer(){
       </div>}
     </div>
     {hasSelections&&<>
-    <ToolsFunnel
-      poolNcts={page?.restrictedScope?.originalPoolTrials??null}
-      pipelineResearch={page?.pipelineResearch??null}
-      selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
-      selectedPhasePoolTrials={selectedStages.length&&stats?selectedPhaseTrials:null}
-      selectedStages={selectedStages.length}
-      totalStages={stages.length}
-      selectedStageLabels={selectedStages}
-      selectedDesignationLabels={selectedDesignations.map(key=>SPECIAL_DESIGNATION_CATEGORIES.find(item=>item.key===key)?.label||key)}
-      selectedDesignations={selectedDesignations.length}
-      designationUniqueTrials={page?.selectionSummary?.designationUniqueTrials??null}
-      designationCoverage={page?.designationCoverage??null}
-      loading={loading}
-      error={error}
-      searchActive={Boolean(query.trim())}
-      sourceDate={sourceDate}
-      sourceState={sourceState}
-    />
-
     <details className={styles.toolsAdvanced}>
       <summary>Quick filters and shortcuts</summary>
     <div className={styles.toolsQuickFilter}>
