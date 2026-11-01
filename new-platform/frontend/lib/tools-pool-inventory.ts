@@ -139,6 +139,7 @@ export function buildToolsResults(
   query:string,offset:number,limit:number
 ){
   const {poolRows,stageStats,sourceAsOf,sourceState}=snapshot;
+  if(selectedDesignations.length>0&&!index)throw Error("FDA_DESIGNATION_EVIDENCE_UNAVAILABLE");
   const matchingIds=index?selectToolTrialIds(poolRows,index,selectedDesignations):null;
   const designationCoverage=index&&selectedDesignations.length>0
     ?designationSourceCoverage(poolRows,index,selectedDesignations):null;
