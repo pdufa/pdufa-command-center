@@ -99,7 +99,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
           <button type="button" onClick={()=>onChange([])}>Clear</button>
         </div>
         <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
-          {SPECIAL_DESIGNATION_CATEGORIES.map((category,index)=>{
+          {SPECIAL_DESIGNATION_CATEGORIES.map((category,categoryIndex)=>{
             const d=entries[category.key];
             const checked=selected.includes(category.key);
             return <div key={category.key} className={styles.toolsCascadeFdaItem}>
@@ -107,7 +107,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
                 title={!d.available?"No source field available for this category":undefined}>
                 <input type="checkbox" checked={checked}
                   disabled={!index||!d.available} onChange={()=>toggle(category.key)}/>
-                <ToolsOptionNumber level={2} index={index} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
+                <ToolsOptionNumber level={2} index={categoryIndex} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
                 <span>{category.label}</span>
                 {!d.available&&<small>Not tracked</small>}
               </label>
