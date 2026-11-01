@@ -37,3 +37,21 @@ test("trial detail and comparison headers show date counters before assessment f
  assert.ok(compare.includes("<TrialTimelineSummary timeline={t.row.timeline}"));
  assert.ok(dossier.includes("<TrialTimelineSummary timeline={row.timeline} today={today}"));
 });
+
+test("green-bordered date boxes are visible directly next to tickers across trial views",()=>{
+ const metric=read("TrialTimelineSummary.tsx");
+ const full=read("FullTrialTimeline.tsx");
+ const page=read("trial/[nctId]/page.tsx");
+ const dossier=read("PipelineFourViews.tsx");
+ const comparison=read("TrialComparison.tsx");
+ assert.match(metric,/border:"3px solid #0b9348"/);
+ assert.match(metric,/DAYS SINCE PHASE 3/);
+ assert.match(metric,/DAYS TO PDUFA/);
+ assert.ok(full.includes("Ticker: {ticker||"));
+ assert.ok(full.indexOf("Ticker: {ticker||")<full.indexOf("<TrialTimelineSummary timeline={timeline} compact"));
+ assert.ok(page.indexOf("<FullTrialTimeline")<page.indexOf("<TrialWorkflowCounts"));
+ assert.ok(dossier.indexOf("<h3 style={{margin:0}}>{row.nctId} · {row.ticker}</h3>")<
+           dossier.indexOf("<TrialTimelineSummary timeline={row.timeline} today={today} compact"));
+ assert.ok(comparison.indexOf("<h3 style={{fontSize:18,margin:0}}>{t.row.ticker}</h3>")<
+           comparison.indexOf("<TrialTimelineSummary timeline={t.row.timeline} compact"));
+});
