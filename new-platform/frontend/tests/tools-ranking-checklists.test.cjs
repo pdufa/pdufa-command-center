@@ -90,6 +90,6 @@ test("independent left and right cards are collapsed, side-by-side on iPhone and
  // The Phase/FDA source filter rows, benefits matrix, pagination and export remain.
  assert.match(tools,/ToolsBenefitMatrix/);
  assert.match(tools,/designationCoverage/);
- assert.match(tools,/Export all matches \(CSV\)/);
+ assert.match(tools,/Export restricted trial matches \(CSV\)/);
  assert.match(tools,/Previous 50/);
 });
