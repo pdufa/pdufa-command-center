@@ -1,0 +1,2 @@
+.circle{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;flex:none;white-space:nowrap;width:37px;height:37px;min-width:37px;min-height:37px;border-radius:50%;border:1px solid #91baa2;background:#e8f4ec;color:#164d32;font:800 10px/1 Arial,Helvetica,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+@media(max-width:600px){.circle{width:34px;height:34px;min-width:34px;min-height:34px;font-size:9px}}
