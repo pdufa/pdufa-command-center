@@ -407,10 +407,10 @@ test("all-stage parity must not claim success for programs without any NCT links
   const path=require("node:path");
   const funnel=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
   const sheet=fs.readFileSync(path.join(__dirname,"../app/ToolsResultsSpreadsheet.tsx"),"utf8");
-  assert.match(funnel,/noNctLink\?"Not established"/);
+  assert.match(funnel,/0 documented NCT matches within this restricted research screen/);
   assert.match(funnel,/Program-record counts must not be presented as verified trial counts/);
   assert.match(sheet,/FDA source program records — not clinical trial counts/);
-  assert.match(sheet,/trialCountUnverified\?"Not established"/);
+  assert.match(sheet,/Zero documented NCT matches in the restricted subset/);
   assert.match(sheet,/NCT link not established/);
   assert.match(sheet,/programRows\.map\(/);
 });
