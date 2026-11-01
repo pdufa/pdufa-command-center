@@ -132,6 +132,7 @@ export default function PoolStageExplorer(){
       poolNcts={stats?.trials??null}
       pipelineResearch={page?.pipelineResearch??null}
       selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
+      selectedPhasePoolTrials={selectedStages.length&&stats?selectedStages.reduce((sum,stage)=>sum+stageCount(stats.stages[stage]),0):null}
       selectedStages={selectedStages.length}
       totalStages={stages.length}
       selectedStageLabels={selectedStages}
