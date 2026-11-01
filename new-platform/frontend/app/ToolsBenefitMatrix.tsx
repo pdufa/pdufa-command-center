@@ -6,7 +6,6 @@ import css from "./ToolsBenefitMatrix.module.css";
 import RegistryBenefitEvidence from "./RegistryBenefitEvidence";
 import TrialTimelineSummary from "./TrialTimelineSummary";
 import ToolsOptionNumber from "./ToolsOptionNumber";
-import {toolsOptionCode} from "../lib/tools-option-code";
 import {pacificToday} from "../lib/pipeline-timeline";
 import {sourceReviewHint,type RegistryCoverage} from "../lib/registry-benefit-coverage";
 type Props={
@@ -19,6 +18,13 @@ type Props={
   benefitFeed:BenefitFeed|null;
   benefitError:string;
 };
+const STEP4_SECTIONS=[
+  {code:"4A",short:"Patients",label:"Patient opportunity",start:1,end:2},
+  {code:"4B",short:"Clinical",label:"Clinical and competitive benefits",start:3,end:8},
+  {code:"4C",short:"Access",label:"Access and commercial opportunity",start:9,end:14},
+  {code:"4D",short:"Revenue",label:"Revenue and long-term value",start:15,end:18},
+  {code:"4E",short:"Stock",label:"Stock appreciation and risk",start:19,end:20},
+] as const;
 const missing="Not assessed";
 const short=(value?:string)=>value?.trim()||"Not recorded";
 function FieldValue({record,id}:{record:BenefitRecord|null;id:string}){
@@ -81,6 +87,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
   },[]);
   const sourceIndex=useMemo(()=>new Map(registryCoverage?.records.map(x=>[x.nctId,x])||[]),[registryCoverage]);
   const current=BENEFIT_GROUPS[active-1];
+  const selectedSection=STEP4_SECTIONS.find(section=>active>=section.start&&active<=section.end)!;
   const selected=rows.find(r=>r.nctId===chosen)||rows[0]||null;
   const evidence=selected?benefitForTrial(feed,selected):null;
   const overall=rankAdvantages(evidence);
@@ -90,41 +97,33 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
   const researched=useMemo(()=>rows.filter(r=>benefitForTrial(feed,r)).length,[feed,rows]);
   return <section className={css.root} id="tools-benefit-assessments" aria-label="Resultant Trials — 20 competitive benefit assessments">
     <div className={css.intro}>
-      <div><p className={css.eyebrow}>RESULTANT TRIALS · COMPETITIVE RESEARCH</p>
-        <h3>Step 4 · #1–20 Trial Assessment</h3>
-        <p>Filtered trials populate automatically from your selections. Every numbered heading sits above its own subcolumns. Open any group to see source-backed findings and strongest-to-weakest comparator advantages.</p>
-      </div>
-      <div className={css.count}><strong>{hasSelection?(loading||error?"—":total.toLocaleString("en-US")):"0"}</strong><span>selected NCT trial records</span></div>
+      <h3>Step 4 · Trial Assessments <span className={css.inlineCount}>20 metrics · {loading?"Loading":error?"Evidence unavailable":total.toLocaleString("en-US")+" matching trials"}</span></h3>
     </div>
+    <div className={css.step4Compact} aria-label="Step 4 compact assessment controls">
+      <div className={css.step4GroupButtons} role="group" aria-label="Step 4 five assessment groups">
+        {STEP4_SECTIONS.map(section=><button type="button" key={section.code}
+          className={selectedSection.code===section.code?css.step4GroupActive:css.step4GroupButton}
+          aria-pressed={selectedSection.code===section.code}
+          title={section.label+" · 4a"+section.start+"–4a"+section.end}
+          onClick={()=>setActive(section.start)}>{section.code} {section.short}</button>)}
+      </div>
+      <div className={css.step4MetricPicker}>
+        <label htmlFor="benefit-group-picker">Assessment</label>
+        <select id="benefit-group-picker" aria-label="Step 4 assessment 4a1 through 4a20"
+          value={active} onChange={e=>setActive(Number(e.target.value))}>
+          {BENEFIT_GROUPS.filter(g=>g.number>=selectedSection.start&&g.number<=selectedSection.end)
+            .map(g=><option value={g.number} key={g.number}>4a{g.number} — {g.name}</option>)}
+        </select>
+      </div>
+    </div>
+    <details className={css.researchDisclosure} id="tools-step4-analysis">
+      <summary>View analysis · 4a{active} — {current.name}</summary>
     <div className={css.notice}>
       <strong>Source integrity:</strong> Trials appear only after selecting a clinical stage or FDA designation. These are NCT study records, not yet reconciled distinct drug–indication programs. A Phase 3 screening match is not final Pipeline qualification. Source facts populate when available; research not completed remains <strong>Not assessed</strong>. Unverified superiority is never ranked as proven.
       {feedError&&<p role="alert">{feedError}</p>}
       {registryCoverage&&<p role="status"><strong>Official registry research archive:</strong> {registryCoverage.scanned} historical completed NCTs checked · {registryCoverage.postedResults} with posted results · {registryCoverage.withPrimaryMeasurements} with primary outcome measurements · {registryCoverage.withSeriousEventCounts} with serious-event counts. Last collected {registryCoverage.sourceAsOf.slice(0,10)}. These are source availability counts, not verified clinical advantages.</p>}
       {registryError&&<p role="status">Dated registry source coverage is unavailable or expired. No benefit conclusions are inferred.</p>}
       {feed&&!feedError&&<p>Evidence-backed assessments attached to current page: {researched} of {rows.length} NCT records. Missing evidence does not mean the drug has no advantage.</p>}
-    </div>
-    <div className={css.step4Row} aria-label="Step 4 — 20 numbered trial assessments">
-      <div className={css.step4RowHeading}>
-        <strong>Step 4 · Assessment choices</strong>
-        <span>4a1–4a20 · Swipe horizontally to see all twenty</span>
-      </div>
-      <div className={css.step4Choices} role="group" aria-label="Step 4 numbered assessments 4a1 through 4a20">
-        {BENEFIT_GROUPS.map(g=><button type="button" key={g.number}
-          className={active===g.number?css.step4Active:css.step4Choice}
-          aria-pressed={active===g.number}
-          aria-label={"4a"+g.number+" — "+g.name}
-          title={"Assessment #"+g.number+" — "+g.name}
-          onClick={()=>setActive(g.number)}>
-          <strong>{"4a"+g.number}</strong><span>{g.name}</span>
-        </button>)}
-      </div>
-    </div>
-    <div className={css.actions}>
-      <label htmlFor="benefit-group-picker">Choose assessment (20 options)</label>
-      <ToolsOptionNumber level={1} index={active-1} total={BENEFIT_GROUPS.length}/>
-      <select id="benefit-group-picker" value={active} onChange={e=>setActive(Number(e.target.value))}>
-        {BENEFIT_GROUPS.map(g=><option value={g.number} key={g.number}>{toolsOptionCode(1,g.number-1,BENEFIT_GROUPS.length)} · #{g.number} — {g.name}</option>)}
-      </select>
     </div>
     {!hasSelection?<div className={css.empty} role="status">0 matching trials. Select at least one clinical stage or FDA designation above to populate the assessment spreadsheet.</div>:
       loading?<div className={css.empty} role="status">Loading source-matched resultant trials…</div>:
@@ -232,5 +231,6 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
       {selected&&<RegistryBenefitEvidence nctId={selected.nctId} assessment={active}/>}
     </>}
     <p className={css.footer}>Automatic: filter-matched NCT identities, available vetted assessment fields, and official registry outcome/safety source packets for the selected trial. A scheduled collection job refreshes the historical completed-study source archive. These records are research inputs, not verified competitive superiority. Independent evidence for all 20 assessment categories and overall drug rankings remains incomplete; unsupported entries continue to show Not assessed.</p>
+    </details>
   </section>;
 }
