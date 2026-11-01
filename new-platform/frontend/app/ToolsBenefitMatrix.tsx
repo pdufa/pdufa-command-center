@@ -25,6 +25,15 @@ const STEP4_SECTIONS=[
   {code:"4D",short:"Revenue",label:"Revenue and long-term value",start:15,end:18},
   {code:"4E",short:"Stock",label:"Stock appreciation and risk",start:19,end:20},
 ] as const;
+type AssessmentMode="category"|"priority"|"clinical"|"all";
+const PRIORITY_RESEARCH=[3,6,8,1,2,12,15,19,20] as const;
+/** Navigation emphasis only: not a trained stock-appreciation ranking or investment score. */
+const MODE_LABELS:{key:AssessmentMode;label:string}[]=[
+  {key:"category",label:"Categories"},
+  {key:"priority",label:"Investment focus"},
+  {key:"clinical",label:"Medical benefits"},
+  {key:"all",label:"All 20"},
+];
 const missing="Not assessed";
 const short=(value?:string)=>value?.trim()||"Not recorded";
 function FieldValue({record,id}:{record:BenefitRecord|null;id:string}){
@@ -61,6 +70,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
   const [registryCoverage,setRegistryCoverage]=useState<RegistryCoverage|null>(null);
   const [registryError,setRegistryError]=useState(false);
   const [active,setActive]=useState(1);
+  const [mode,setMode]=useState<AssessmentMode>("category");
   const [chosen,setChosen]=useState("");
   const [today,setToday]=useState("");
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
@@ -88,8 +98,20 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
   const sourceIndex=useMemo(()=>new Map(registryCoverage?.records.map(x=>[x.nctId,x])||[]),[registryCoverage]);
   const current=BENEFIT_GROUPS[active-1];
   const selectedSection=STEP4_SECTIONS.find(section=>active>=section.start&&active<=section.end)!;
+  const modeChoices=mode==="category"
+    ?BENEFIT_GROUPS.filter(g=>g.number>=selectedSection.start&&g.number<=selectedSection.end)
+    :mode==="clinical"?BENEFIT_GROUPS.filter(g=>g.number>=3&&g.number<=8)
+    :mode==="priority"?PRIORITY_RESEARCH.map(n=>BENEFIT_GROUPS[n-1])
+    :BENEFIT_GROUPS;
+  function changeMode(next:AssessmentMode){
+    setMode(next);
+    if(next==="priority")setActive(PRIORITY_RESEARCH[0]);
+    else if(next==="clinical")setActive(3);
+  }
   const selected=rows.find(r=>r.nctId===chosen)||rows[0]||null;
   const evidence=selected?benefitForTrial(feed,selected):null;
+  const sourceVerified=current.fields.filter(f=>evidence?.facts[f.id]?.status==="VERIFIED").length;
+  const scenarioModeled=current.fields.filter(f=>evidence?.facts[f.id]?.status==="MODELED").length;
   const overall=rankAdvantages(evidence);
   const selectedSourceHint=selected?sourceReviewHint(sourceIndex.get(selected.nctId),active):null;
   const studied=(record:BenefitRecord|null,group:BenefitGroup)=>
@@ -99,23 +121,35 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
     <div className={css.intro}>
       <h3>Step 4 · Trial Assessments <span className={css.inlineCount}>20 metrics · {loading?"Loading":error?"Evidence unavailable":total.toLocaleString("en-US")+" matching trials"}</span></h3>
     </div>
+    <div className={css.modeBar} role="group" aria-label="Step 4 organization mode">
+      {MODE_LABELS.map(item=><button key={item.key} type="button"
+        className={mode===item.key?css.modeActive:css.modeButton}
+        aria-pressed={mode===item.key}
+        onClick={()=>changeMode(item.key)}>{item.label}</button>)}
+    </div>
     <div className={css.step4Compact} aria-label="Step 4 compact assessment controls">
-      <div className={css.step4GroupButtons} role="group" aria-label="Step 4 five assessment groups">
+      {mode==="category"&&<div className={css.step4GroupButtons} role="group" aria-label="Step 4 five assessment groups">
         {STEP4_SECTIONS.map(section=><button type="button" key={section.code}
           className={selectedSection.code===section.code?css.step4GroupActive:css.step4GroupButton}
           aria-pressed={selectedSection.code===section.code}
           title={section.label+" · 4a"+section.start+"–4a"+section.end}
           onClick={()=>setActive(section.start)}>{section.code} {section.short}</button>)}
-      </div>
+      </div>}
       <div className={css.step4MetricPicker}>
         <label htmlFor="benefit-group-picker">Assessment</label>
         <select id="benefit-group-picker" aria-label="Step 4 assessment 4a1 through 4a20"
           value={active} onChange={e=>setActive(Number(e.target.value))}>
-          {BENEFIT_GROUPS.filter(g=>g.number>=selectedSection.start&&g.number<=selectedSection.end)
-            .map(g=><option value={g.number} key={g.number}>4a{g.number} — {g.name}</option>)}
+          {modeChoices.map(g=><option value={g.number} key={g.number}>4a{g.number} — {g.name}</option>)}
         </select>
       </div>
     </div>
+    {mode==="priority"&&<p className={css.modeHint}>Research-first shortlist only; order is not a proven return forecast or a stock buy ranking.</p>}
+    <p className={css.evidenceSummary} aria-live="polite">
+      <strong>4a{active} · {current.name}</strong> · {loading?"Loading matching trials":error?"Trial evidence unavailable"
+        :!selected?"No matching NCT on this page"
+        :feedError?"Assessment source unavailable"
+        :sourceVerified+" / "+current.fields.length+" research fields source-verified"+(scenarioModeled?" · "+scenarioModeled+" modeled":"")}
+    </p>
     <details className={css.fullAssessmentList} id="tools-step4-all20">
       <summary>All 20 assessments · optional full numbered list</summary>
       <div className={css.fullAssessmentGrid} role="group" aria-label="Complete separate Step 4 assessment list 1 through 20">
@@ -123,7 +157,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
           className={active===g.number?css.fullAssessmentSelected:css.fullAssessmentItem}
           aria-pressed={active===g.number}
           aria-label={"Assessment "+g.number+" of 20 — "+g.name}
-          onClick={event=>{setActive(g.number);event.currentTarget.closest("details")?.removeAttribute("open");}}>
+          onClick={event=>{setActive(g.number);setMode("all");event.currentTarget.closest("details")?.removeAttribute("open");}}>
           <span className={css.fullAssessmentNumber}>{g.number}</span>
           <span>4a{g.number} · {g.name}</span>
         </button>)}
