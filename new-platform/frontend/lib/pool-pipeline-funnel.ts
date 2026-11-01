@@ -134,8 +134,36 @@ export function reconcilePoolPipeline(raw:unknown,csvText:string,sourceInput:unk
     },
   };
 }
+export const POOL_STAGE_GROUPS = {
+  early:["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3"],
+  phase3:["Phase 3","Phase 3 Results"],
+  regulatory:["NDA/BLA Submission","FDA Acceptance","PDUFA Decision","Post-Decision","Phase 4"],
+  other:["Not Applicable","Unknown"],
+} as const;
+export type PoolStageGroup="all"|keyof typeof POOL_STAGE_GROUPS;
+export const POOL_STAGES=Object.values(POOL_STAGE_GROUPS).flat();
+export function normalizePoolStage(raw?:string):string {
+  return POOL_STAGES.includes(raw as typeof POOL_STAGES[number]) ? raw! : "Unknown";
+}
+export function poolStageBucket(raw?:string):keyof typeof POOL_STAGE_GROUPS {
+  const stage=normalizePoolStage(raw);
+  for(const group of Object.keys(POOL_STAGE_GROUPS) as Array<keyof typeof POOL_STAGE_GROUPS>){
+    if((POOL_STAGE_GROUPS[group] as readonly string[]).includes(stage))return group;
+  }
+  return "other";
+}
+export function poolStageStatistics(rows:PoolTrialRecord[]){
+  const groups:{early:number;phase3:number;regulatory:number;other:number}={early:0,phase3:0,regulatory:0,other:0};
+  const stages:Record<string,number>={};
+  for(const row of rows){
+    const stage=normalizePoolStage(row.stage);
+    stages[stage]=(stages[stage]||0)+1;
+    groups[poolStageBucket(stage)]++;
+  }
+  return {total:rows.length,groups,stages};
+}
 export type ScopeView="pool"|"pipeline"|"readout-review"|"census-review";
-export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string) {
+export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="") {
   const q=query.trim().toLowerCase();
   const matches=(item:PoolTrialRecord|PostPhase3Review)=>[
     item.ticker,item.company,item.drug,item.indication,
@@ -144,10 +172,18 @@ export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limi
   const rows=view==="pool"?funnel.poolRows:view==="census-review"?funnel.reviewRows:view==="pipeline"?
     funnel.reviewRows.filter(r=>r.postPhase3Evidence==="REGISTRY_COMPLETED"&&r.poolStatus==="EXACT_MATCH"):
     funnel.reviewRows.filter(r=>r.postPhase3Evidence!=="REGISTRY_COMPLETED"||r.poolStatus!=="EXACT_MATCH");
-  const filtered=q?rows.filter(matches):rows;
-  return {view,overview:funnel.overview,total:filtered.length,offset,limit,
-    rows:filtered.slice(offset,offset+limit),
-    nextOffset:offset+limit<filtered.length?offset+limit:null,
+  const searched=q?rows.filter(matches):rows;
+  const stageStats=view==="pool"?poolStageStatistics(funnel.poolRows):undefined;
+  const stageFiltered=view==="pool"
+    ? searched.filter(row=>{
+        const pool=row as PoolTrialRecord;
+        if(stageGroup!=="all" && poolStageBucket(pool.stage)!==stageGroup)return false;
+        return !stageFilter || normalizePoolStage(pool.stage)===stageFilter;
+      })
+    :searched;
+  return {view,overview:funnel.overview,stageStats,stageGroup,stageFilter,total:stageFiltered.length,offset,limit,
+    rows:stageFiltered.slice(offset,offset+limit),
+    nextOffset:offset+limit<stageFiltered.length?offset+limit:null,
     qualifiedProgramCount:null,
     caveat:"Research reconciliation only; no independently verified current $300M–$10B post-Phase 3 program count. All historical candidates remain NEEDS REVIEW."};
 }
