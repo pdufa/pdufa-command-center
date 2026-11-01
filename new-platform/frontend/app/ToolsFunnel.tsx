@@ -34,7 +34,7 @@ export default function ToolsFunnel({
   const phaseOnly=selectedStages>0&&selectedDesignations===0;
   const noNctLink=selectedDesignations>0&&designationCoverage?.noVerifiedNctLinks===true;
   const trialStatus=!filterActive?"0":loading?"…":error?"Unavailable":
-    noNctLink?"Not established":selectedTrials===null?"Unavailable":num(selectedTrials);
+    selectedTrials===null?"Unavailable":num(selectedTrials);
   const allStages=selectedStages===totalStages;
   const shouldCompare=selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error&&!noNctLink;
   const parity=shouldCompare&&designationUniqueTrials!==null&&selectedTrials!==null
@@ -85,7 +85,7 @@ export default function ToolsFunnel({
               <span>{selectedDesignations>0?"VERIFIED NCT MATCHES — FDA TOTAL UNKNOWN":"UNIQUE NCT TRIAL COUNT FROM SELECTED POOL"}</span>
               <strong>{trialStatus}</strong>
               <small>{noNctLink
-                ?"Exact trial IDs and clinical stages are not established for these FDA programs."
+                ?"0 documented NCT matches within this restricted research screen. Complete FDA designation coverage is unknown."
                 :"Documented NCT-linked matches within the restricted research scope; FDA-to-NCT coverage is incomplete."}</small>
             </div>
             <div className={styles.toolsFunnelProgramBand} role="group" aria-label="FDA program record count, not clinical trials">
