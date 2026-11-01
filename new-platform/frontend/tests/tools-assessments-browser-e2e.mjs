@@ -46,8 +46,15 @@ try {
     "iPhone funnel headings must stay on the same line");
   const groupSelect=page.locator("#benefit-group-picker");
   assert.equal(await groupSelect.locator("option").count(),20);
-  assert.equal(await page.locator("#benefit-trial-picker").isVisible(),false,
-    "Trial picker is hidden before a filter selection");
+  await page.waitForFunction(()=>{
+    const section=document.querySelector("#tools-benefit-assessments");
+    const picker=document.querySelector("#benefit-trial-picker");
+    return section && picker && picker.options.length>0 &&
+      !section.textContent.includes("Loading source-matched resultant trials");
+  },null,{timeout:100000});
+  assert.ok(await page.locator("#benefit-trial-picker").isVisible(),
+    "Source-screened Pipeline trials must populate automatically without manual selectors");
+  assert.ok(await page.locator("#benefit-trial-picker option").count()>0);
   await populate(page);
   const benefitBox=await page.locator("#tools-benefit-assessments").boundingBox();
   const totalsBox=await page.getByRole("heading",{name:"Selected selectors & individual trial totals"}).boundingBox();
