@@ -4,26 +4,25 @@ import {useEffect,useMemo,useState,type FormEvent} from "react";
 import styles from "./FunnelWorkspace.module.css";
 import PoolDesignationSelector from "./PoolDesignationSelector";
 
-type GroupKey="all"|"early"|"phase3"|"regulatory"|"other";
 type RecordKind="trials"|"all"|"other";
 type StageCount={trials:number;standaloneResults:number;regulatoryEvents:number;total:number};
 type StageStats={
   total:number;trials:number;standaloneResults:number;regulatoryEvents:number;
   stages:Record<string,StageCount>;
 };
-type PoolRow={id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null};
+type PoolRow={id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string};
 type PoolResponse={
   view:string;total:number;limit:number;offset:number;nextOffset:number|null;
-  stageStats:StageStats;rows:PoolRow[];datasetVersion?:string;
+  stageStats:StageStats;rows:PoolRow[];
   overview?:{poolAsOf:string|null;poolSourceState:string};
 };
-const groups:{id:GroupKey;name:string;description:string;stages:readonly string[]}[]=[
-  {id:"early",name:"Early clinical",description:"Early Phase 1 to Phase 2/3",stages:["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3"]},
-  {id:"phase3",name:"Phase 3 & results",description:"Pivotal development and reported results",stages:["Phase 3","Phase 3 Results"]},
-  {id:"regulatory",name:"FDA & later",description:"Application, decision and follow-up",stages:["NDA/BLA Submission","FDA Acceptance","PDUFA Decision","Post-Decision","Phase 4"]},
-  {id:"other",name:"Unknown / N.A.",description:"No trustworthy development-stage label",stages:["Not Applicable","Unknown"]},
-];
-const stages=groups.flatMap(group=>group.stages);
+const groups=[
+  {label:"Early clinical",stages:["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3"]},
+  {label:"Phase 3 and results",stages:["Phase 3","Phase 3 Results"]},
+  {label:"FDA regulatory and later",stages:["NDA/BLA Submission","FDA Acceptance","PDUFA Decision","Post-Decision","Phase 4"]},
+  {label:"Unknown / N.A.",stages:["Not Applicable","Unknown"]},
+] as const;
+const stages=groups.flatMap(group=>[...group.stages]);
 const count=(n:number)=>n.toLocaleString("en-US");
 const value=(v?:string)=>v?.trim()||"Not recorded";
 const summaryCount=(stat:StageCount|undefined,kind:RecordKind)=>
@@ -31,8 +30,7 @@ const summaryCount=(stat:StageCount|undefined,kind:RecordKind)=>
 
 export default function PoolStageExplorer(){
   const [kind,setKind]=useState<RecordKind>("trials");
-  const [group,setGroup]=useState<GroupKey>("all");
-  const [stage,setStage]=useState("");
+  const [selectedStages,setSelectedStages]=useState<string[]>([]);
   const [queryInput,setQueryInput]=useState("");
   const [query,setQuery]=useState("");
   const [offset,setOffset]=useState(0);
@@ -40,119 +38,113 @@ export default function PoolStageExplorer(){
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
   const params=useMemo(()=>{
-    const p=new URLSearchParams({view:"pool",recordKind:kind,stageGroup:group,offset:String(offset),limit:"50"});
-    if(stage)p.set("stage",stage);
+    const p=new URLSearchParams({view:"pool",recordKind:kind,offset:String(offset),limit:"50"});
+    if(selectedStages.length)p.set("stages",selectedStages.join(","));
     if(query.trim())p.set("query",query.trim());
     return p.toString();
-  },[kind,group,stage,offset,query]);
+  },[kind,selectedStages,offset,query]);
   useEffect(()=>{
     const controller=new AbortController();
     setLoading(true);setError("");
     void fetch("/api/scope-funnel?"+params,{cache:"no-store",signal:controller.signal})
       .then(async response=>{
-        if(!response.ok)throw Error(response.status===401?"Sign in to view the published POOL inventory.":"POOL stages are unavailable until source reconciliation succeeds (HTTP "+response.status+").");
+        if(!response.ok)throw Error(response.status===401?"Sign in to view the preserved POOL.":"POOL stages unavailable until source reconciliation succeeds (HTTP "+response.status+").");
         return response.json() as Promise<PoolResponse>;
       })
       .then(result=>{
         if(controller.signal.aborted)return;
         if(result.view!=="pool"||!result.stageStats||!Array.isArray(result.rows)||
           !Number.isSafeInteger(result.total)||!Number.isSafeInteger(result.stageStats.trials)||
-          !Array.isArray(stages)||!result.stageStats.stages ||
-          result.rows.length>50)throw Error("Stage data did not pass validation.");
+          !result.stageStats.stages||result.rows.length>50)throw Error("Stage totals could not be validated.");
         setPage(result);
       })
-      .catch(e=>{if(!controller.signal.aborted){setPage(null);setError(e instanceof Error?e.message:"Unable to load POOL stages");}})
+      .catch(reason=>{if(!controller.signal.aborted){setPage(null);setError(reason instanceof Error?reason.message:"Unable to load POOL stage data");}})
       .finally(()=>{if(!controller.signal.aborted)setLoading(false);});
     return ()=>controller.abort();
   },[params]);
   const stats=page?.stageStats;
   const totalForKind=stats?(kind==="trials"?stats.trials:kind==="other"?stats.standaloneResults+stats.regulatoryEvents:stats.total):null;
-  function selectGroup(next:GroupKey){setGroup(next);setStage("");setOffset(0);}
-  function selectStage(next:string){setStage(next);setGroup("all");setOffset(0);}
+  function toggleStage(stage:string){
+    setSelectedStages(old=>old.includes(stage)?old.filter(item=>item!==stage):[...old,stage]);
+    setOffset(0);
+  }
+  function setStageSelection(next:string[]){setSelectedStages(next);setOffset(0);}
   function submitSearch(event:FormEvent<HTMLFormElement>){event.preventDefault();setQuery(queryInput);setOffset(0);}
-  return <section className={styles.panel} aria-label="POOL trial stages with selectors" style={{margin:"20px 0"}}>
+  return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
     <div className={styles.headline}>
       <div>
-        <h2>POOL — Trial Stages &amp; FDA Designations</h2>
-        <p className={styles.muted}>Browse the complete preserved POOL by recorded stage. GEM JR and GEM are not part of this view. This is a stage inventory, not a Pipeline eligibility decision.</p>
+        <h2>POOL Stage &amp; FDA Designation Selectors</h2>
+        <p className={styles.muted}>Choose multiple items from scrollable checklists, as in a filter menu. These tools inspect the preserved POOL; they do not restore GEM JR/GEM or change Pipeline screening rules.</p>
       </div>
-      <strong style={{fontSize:20}}>{totalForKind===null?"—":count(totalForKind)} {kind==="trials"?"NCT trials":"records"}</strong>
-    </div>
-    <div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"end",margin:"14px 0"}}>
-      <label style={{display:"flex",flexDirection:"column",gap:5,fontSize:13,fontWeight:700}}>
-        Record type
-        <select value={kind} onChange={e=>{setKind(e.target.value as RecordKind);setOffset(0)}} style={{padding:9,borderRadius:7}}>
-          <option value="trials">Clinical trials (unique NCT records)</option>
-          <option value="all">All POOL records (trials + events)</option>
-          <option value="other">Standalone results + regulatory records</option>
-        </select>
-      </label>
-      <form className={styles.search} onSubmit={submitSearch}>
-        <input aria-label="Search POOL trials by ticker, NCT, company, drug or indication" type="search"
-          value={queryInput} onChange={e=>setQueryInput(e.target.value)} maxLength={100}
-          placeholder="NCT, ticker, drug, disease"/>
-        <button type="submit">Search</button>
-        <button type="button" onClick={()=>{setQueryInput("");setQuery("");setOffset(0)}}>Clear</button>
-      </form>
+      <strong style={{fontSize:19,whiteSpace:"nowrap"}}>{totalForKind===null?"—":count(totalForKind)} {kind==="trials"?"NCT trials":"records"}</strong>
     </div>
     <div className={styles.stageDesignationColumns}>
-      <details className={styles.stageDesignationPane}>
-        <summary className={styles.stageDesignationSummary}>
-          <span>Clinical Development Stages</span>
-          <strong>{totalForKind===null?"—":count(totalForKind)} {kind==="trials"?"trials":"records"}</strong>
-        </summary>
-        <div className={styles.stageDesignationBody}>
-          <p className={styles.muted}>Select any stage to display its trials below. Counts are drawn from the preserved POOL, using one source record per NCT.</p>
-          <button type="button" className={styles.stageDesignationRow}
-            aria-pressed={group==="all"&&!stage} onClick={()=>selectGroup("all")}>
-            <span><strong>All stages</strong></span>
+      <div className={styles.stageDropdownColumn}>
+        <label className={styles.stageDropdownLabel} htmlFor="pool-record-kind">Count records by</label>
+        <select id="pool-record-kind" className={styles.stageKindSelect} value={kind}
+          onChange={e=>{setKind(e.target.value as RecordKind);setOffset(0)}}>
+          <option value="trials">Unique NCT clinical trials</option>
+          <option value="all">All POOL source records</option>
+          <option value="other">Result + regulatory event records</option>
+        </select>
+        <details className={styles.stageDesignationPane}>
+          <summary className={styles.stageDesignationSummary}>
+            <span>{selectedStages.length===0?"Select clinical trial stages":selectedStages.length+" stages selected"}</span>
             <strong>{totalForKind===null?"—":count(totalForKind)}</strong>
-          </button>
-          <div className={styles.stageDesignationList} role="group" aria-label="Select a POOL trial stage">
-            {groups.map(g=>{
-              const subtotal=stats?g.stages.reduce((sum,name)=>sum+summaryCount(stats.stages[name],kind),0):null;
-              return <div key={g.id}>
-                <button type="button" className={styles.stageDesignationGroup}
-                  aria-pressed={group===g.id&&!stage} onClick={()=>selectGroup(g.id)}>
-                  <span>{g.name}</span><strong>{subtotal===null?"—":count(subtotal)}</strong>
-                </button>
-                {g.stages.map(name=><button type="button" key={name}
-                  className={styles.stageDesignationRow}
-                  aria-pressed={stage===name} onClick={()=>selectStage(name)}>
-                  <span>{name}</span>
-                  <strong>{stats?count(summaryCount(stats.stages[name],kind)):"—"}</strong>
-                </button>)}
-              </div>;
-            })}
+          </summary>
+          <div className={styles.stageDesignationBody}>
+            <div className={styles.stageDropdownActions}>
+              <button type="button" onClick={()=>setStageSelection([...stages])}>Select all</button>
+              <button type="button" onClick={()=>setStageSelection([])}>Clear</button>
+            </div>
+            <div className={styles.stageDesignationList} role="group" aria-label="Clinical development stages">
+              {groups.map(group=><div key={group.label}>
+                <div className={styles.stageDesignationGroup}>
+                  <span>{group.label}</span>
+                  <strong>{stats?count(group.stages.reduce((sum,name)=>sum+summaryCount(stats.stages[name],kind),0)):"—"}</strong>
+                </div>
+                {group.stages.map(stage=><label key={stage} className={styles.stageCheckboxRow}>
+                  <input type="checkbox" checked={selectedStages.includes(stage)}
+                    onChange={()=>toggleStage(stage)}/>
+                  <span>{stage}</span>
+                  <strong>{stats?count(summaryCount(stats.stages[stage],kind)):"—"}</strong>
+                </label>)}
+              </div>)}
+            </div>
+            <p className={styles.muted}>Select multiple stages to show all matching records (OR). With nothing checked, all stages are included.</p>
           </div>
-          <p className={styles.muted}>A recorded stage does not certify a successful trial or FDA approval.</p>
-        </div>
-      </details>
+        </details>
+      </div>
       <PoolDesignationSelector/>
     </div>
-    <p className={styles.muted}>Unique NCT counts use one preserved TRIAL|NCT identifier per trial. Standalone result announcements and FDA application/event records are shown separately; their totals must not be added to unique trial counts. Recorded stages are source classifications, not proof of FDA acceptance or approval.</p>
-    {stats&&<p className={styles.muted}>Inventory composition: {count(stats.trials)} unique NCT trial records · {count(stats.standaloneResults)} standalone result records · {count(stats.regulatoryEvents)} regulatory/other records. Source: {value(page?.overview?.poolSourceState)}; snapshot {value(page?.overview?.poolAsOf||undefined)}.</p>}
-    {loading&&<p role="status">Checking the published POOL and stage counts…</p>}
-    {error&&<p role="alert" className={styles.error}>{error}</p>}
+    <form onSubmit={submitSearch} className={styles.search} style={{margin:"16px 0"}}>
+      <input aria-label="Search trial NCT, ticker, company, drug or disease" type="search"
+        value={queryInput} onChange={e=>setQueryInput(e.target.value)} maxLength={100}
+        placeholder="Find NCT, ticker, drug or disease"/>
+      <button type="submit">Search records</button>
+      <button type="button" onClick={()=>{setQueryInput("");setQuery("");setOffset(0)}}>Clear search</button>
+    </form>
+    <p className={styles.muted}>Left-side counts are unique NCT trial records by recorded stage. The FDA list counts source-linked application/program records separately; it does not automatically intersect with selected POOL stages. Missing data is not counted as a verified designation.</p>
+    {stats&&<p className={styles.muted}>Source: {value(page?.overview?.poolSourceState)} · snapshot {value(page?.overview?.poolAsOf||undefined)} · {count(stats.trials)} unique NCT records · {count(stats.standaloneResults+stats.regulatoryEvents)} other source records.</p>}
+    {loading&&<p role="status">Loading source-linked stage totals…</p>}
+    {error&&<p className={styles.error} role="alert">{error}</p>}
     {page&&!loading&&<>
-      <p className={styles.muted} role="status">
-        Selected: <strong>{stage||groups.find(g=>g.id===group)?.name||"All stages"}</strong> · Showing {page.total?offset+1:0}–{Math.min(offset+page.rows.length,page.total)} of {count(page.total)} matching source records.
-      </p>
+      <p className={styles.muted} role="status">Selected {selectedStages.length?selectedStages.length+" stages":"all stages"} · Showing {page.total?offset+1:0}–{Math.min(offset+page.rows.length,page.total)} of {count(page.total)} records.</p>
       <div className={styles.scroll}>
-        <table className={styles.table} style={{minWidth:820}}>
-          <thead><tr><th>Source ID</th><th>Ticker</th><th>Company</th><th>Drug</th><th>Indication / disease</th><th>Recorded stage</th><th>Record type</th></tr></thead>
+        <table className={styles.table} style={{minWidth:800}}>
+          <thead><tr><th>Source ID</th><th>Ticker</th><th>Company</th><th>Drug</th><th>Disease / indication</th><th>Development stage</th><th>Record type</th></tr></thead>
           <tbody>{page.rows.map(row=><tr key={row.id}>
             <td>{row.id}</td><td>{value(row.ticker)}</td><td>{value(row.company)}</td>
             <td>{value(row.drug)}</td><td>{value(row.indication)}</td><td>{value(row.stage)}</td>
-            <td>{row.id.startsWith("TRIAL|")?"Unique NCT trial":row.id.startsWith("RESULT|")?"Result announcement":"Regulatory / other"}</td>
+            <td>{row.id.startsWith("TRIAL|")?"Unique NCT trial":row.id.startsWith("RESULT|")?"Result record":"Regulatory/other record"}</td>
           </tr>)}</tbody>
         </table>
       </div>
-      {page.total===0&&<p>No matching records for this selection; this is not proof that no drug candidates qualify for PIPELINE.</p>}
+      {page.total===0&&<p>No saved records match the current selections. That is not evidence of no eligible candidates.</p>}
       <div className={styles.pagination}>
-        <button type="button" disabled={loading||offset===0} onClick={()=>setOffset(Math.max(0,offset-50))}>Previous</button>
+        <button type="button" disabled={offset===0} onClick={()=>setOffset(Math.max(0,offset-50))}>Previous</button>
         <span>Page {Math.floor(offset/50)+1} of {Math.max(1,Math.ceil(page.total/50))}</span>
-        <button type="button" disabled={loading||page.nextOffset===null} onClick={()=>setOffset(page.nextOffset!)}>Next</button>
+        <button type="button" disabled={page.nextOffset===null} onClick={()=>setOffset(page.nextOffset!)}>Next</button>
       </div>
     </>}
   </section>;
