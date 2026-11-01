@@ -352,8 +352,8 @@ test("one tap chooses Phase 3 AND Orphan Drug, clears search and resets offset",
   assert.match(ui,/onClick=\{clearAllToolsSelections\}/);
   assert.match(ui,/onClick=\{clearPhaseSection\}/);
   assert.match(ui,/Clear This Section/);
-  assert.match(ui,/clearToolsPreferences\\(\\)/);
-  assert.match(ui,/window\\.dispatchEvent\\(new Event\\(TOOLS_CLEAR_EVENT\\)\\)/);
+  assert.match(ui,/clearToolsPreferences\(\)/);
+  assert.match(ui,/window\.dispatchEvent\(new Event\(TOOLS_CLEAR_EVENT\)\)/);
   const persisted=fs.readFileSync(require("node:path").join(__dirname,"../lib/tools-selection-persistence.ts"),"utf8");
   assert.match(persisted,/pdufa-tools-clear-all-selections/);
   const fda=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolDesignationSelector.tsx"),"utf8");
