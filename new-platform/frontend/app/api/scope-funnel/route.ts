@@ -10,6 +10,7 @@ import {buildDesignationIndex, SPECIAL_DESIGNATION_CATEGORIES, type DesignationI
 import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
+import {verifiedToolPool,buildToolsResults,filterToolTrials,selectToolTrialIds} from "../../../lib/tools-pool-inventory";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -77,6 +78,28 @@ function linkedDesignationTrialIds(data:FunnelResult,index:DesignationIndex,sele
   return matched;
 }
 
+let toolsCache:{at:number;value:ReturnType<typeof verifiedToolPool>}|null=null;
+let toolsActive:Promise<ReturnType<typeof verifiedToolPool>>|null=null;
+async function toolsPoolSource():Promise<ReturnType<typeof verifiedToolPool>>{
+  if(toolsCache && Date.now()-toolsCache.at<60000)return toolsCache.value;
+  if(toolsActive)return toolsActive;
+  toolsActive=(async()=>{
+    const base=process.env.PDUFA_API_BASE_URL?.replace(/\\/$/,"");
+    const key=process.env.PDUFA_INTERNAL_API_KEY;
+    if(!base||!/^https:\\/\\//.test(base)||!key)throw Error("Backend not configured");
+    const response=await fetchReadOnlyWithWarmRetry(base+"/api/workspace?require_fresh=true",{
+      method:"GET",headers:{"x-pdufa-internal-key":key},cache:"no-store",
+      signal:AbortSignal.timeout(50000)
+    });
+    if(!response.ok)throw Error("Published source POOL unavailable");
+    const raw:unknown=await response.json();
+    const verified=verifiedToolPool(raw);
+    toolsCache={at:Date.now(),value:verified};
+    return verified;
+  })();
+  try{return await toolsActive}finally{toolsActive=null}
+}
+
 export async function GET(req:NextRequest) {
   if(!authConfigured()||!hasSession(req.cookies.get(COOKIE_NAME)?.value))
     return NextResponse.json({error:"Authentication required"},{status:401});
@@ -115,6 +138,38 @@ export async function GET(req:NextRequest) {
      || (view!=="pool" && (stageGroup!=="all" || stage || recordKind!=="all" || selectedStages.length>0)))
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
+    if(toolMode){
+      // TOOLS must not fail just because the independent 741-row Phase 3 census
+      // or its market-cap research directory cannot be reconciled.
+      const [inventory,index]=await Promise.all([
+        toolsPoolSource(),
+        selectedDesignations.length>0?designationEvidence():Promise.resolve(null)
+      ]);
+      if(index && selectedDesignations.some(key=>!index.availableKeys?.[key])){
+        return NextResponse.json({
+          error:"Selected FDA category has no tracked saved source field",
+          reasonCode:"DESIGNATION_FIELD_NOT_TRACKED"
+        },{status:422,headers:{"Cache-Control":"private, no-store"}});
+      }
+      const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,
+        query,Number(offset),Number(limit));
+      const datasetVersion=createHash("sha256")
+        .update(JSON.stringify({asOf:inventory.sourceAsOf,recordCount:inventory.poolRows.length}))
+        .digest("hex");
+      if(format==="csv"){
+        const matches=index?selectToolTrialIds(inventory.poolRows,index,selectedDesignations):null;
+        const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query);
+        if(rows.length>25000)return NextResponse.json({error:"Selection exceeds export row limit"},{status:413});
+        const csv=renderToolsSpreadsheetCsv(rows,selectedStages,selectedDesignations,index,inventory.sourceAsOf);
+        return new NextResponse(csv,{headers:{
+          "Content-Type":"text/csv; charset=utf-8",
+          "Content-Disposition":'attachment; filename="pdufa-tools-selected-trials.csv"',
+          "Cache-Control":"private, no-store",
+          "X-PDUFA-Source-Version":datasetVersion
+        }});
+      }
+      return NextResponse.json({...result,datasetVersion},{headers:{"Cache-Control":"private, no-store"}});
+    }
     // Stage counts always come from the full POOL. Designation selection is
     // intersected with those records server-side BEFORE pagination.
     const [data,designationIndex]=await Promise.all([
@@ -183,7 +238,10 @@ export async function GET(req:NextRequest) {
     // Never expose backend URLs, credentials, clinical rows or private trace text.
     let reasonCode="SOURCE_RECONCILIATION_FAILED";
     if(cause instanceof Error){
-      if(cause.message==="DESIGNATION_SOURCE_UNAVAILABLE")reasonCode="DESIGNATION_SOURCE_UNAVAILABLE";
+      if(cause.message==="POOL_SOURCE_STALE")reasonCode="POOL_SOURCE_STALE";
+      else if(cause.message==="POOL_SOURCE_PARITY_FAILED")reasonCode="POOL_SOURCE_PARITY_FAILED";
+      else if(cause.message==="POOL_INVALID_RESPONSE")reasonCode="POOL_INVALID_RESPONSE";
+      else if(cause.message==="DESIGNATION_SOURCE_UNAVAILABLE")reasonCode="DESIGNATION_SOURCE_UNAVAILABLE";
       else if(cause.message==="Backend not configured")reasonCode="BACKEND_NOT_CONFIGURED";
       else if(cause.message==="Published source POOL unavailable")reasonCode="BACKEND_SOURCE_HTTP_ERROR";
       else if(cause.message.includes("integrity or freshness"))reasonCode="POOL_SOURCE_INTEGRITY_OR_STALE";
@@ -193,7 +251,10 @@ export async function GET(req:NextRequest) {
       else if(cause.name==="TimeoutError"||cause.name==="AbortError")reasonCode="BACKEND_TIMEOUT";
     }
     return NextResponse.json({
-      error:reasonCode==="DESIGNATION_SOURCE_UNAVAILABLE"
+      error:reasonCode==="POOL_SOURCE_STALE"?"The published POOL is temporarily stale; stage counts are withheld until refresh completes":
+        reasonCode==="POOL_SOURCE_PARITY_FAILED"?"The published POOL trial count disagrees with its source metadata; counts are withheld":
+        reasonCode==="POOL_INVALID_RESPONSE"?"The published POOL response is missing required inventory data":
+        reasonCode==="DESIGNATION_SOURCE_UNAVAILABLE"
         ?"FDA designation evidence unavailable; combined trial matches cannot be calculated"
         :"Cannot verify master POOL and historical Phase 3 source reconciliation; no qualified Pipeline count is available",
       reasonCode
