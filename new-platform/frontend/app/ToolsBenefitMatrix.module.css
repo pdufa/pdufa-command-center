@@ -1,0 +1,78 @@
+.root{margin:24px 0 18px;border:2px solid #8db8d6;background:#f9fcfe;color:#183b36;border-radius:14px;padding:15px;min-width:0}
+.intro{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.intro h3{font-size:21px;margin:2px 0 5px;color:#164f75}
+.intro p{font-size:12px;line-height:1.5;margin:0;max-width:870px}
+.eyebrow{font-weight:800;letter-spacing:.08em;font-size:10px!important;color:#2a678e}
+.count{background:#e9f4fb;display:flex;flex-direction:column;border:1px solid #b8d7eb;border-radius:10px;padding:12px;min-width:135px;text-align:center}
+.count strong{font-size:25px;color:#16547d;line-height:1.2}
+.count span{font-size:11px;color:#385f74}
+.notice{margin:12px 0;padding:10px 12px;border:1px solid #c6dcd1;border-radius:9px;background:#f1f8f4;font-size:12px;line-height:1.55}
+.notice p{margin:7px 0 0}
+.actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:13px 0}
+.actions label,.mobilePicker label{font-size:12px;font-weight:750;color:#274e40}
+.actions select,.mobilePicker select{min-width:min(100%,290px);max-width:100%;border-radius:8px;border:1px solid #95bbae;padding:10px;background:#fff;color:#1b3f33;font-size:13px}
+.empty{padding:20px 12px;background:#fff;border:1px dashed #9cb6aa;border-radius:9px;font-size:13px;color:#52675d}
+.desktop{overflow:auto;max-width:100%;max-height:610px;border-radius:9px;border:1px solid #c7d8e2;scrollbar-color:#8facbd #f0f6f9}
+.matrixTable{border-collapse:separate;border-spacing:0;font-size:12px;table-layout:fixed;width:max-content;min-width:100%}
+.matrixTable th,.matrixTable td{border-bottom:1px solid #dbe7ed;border-right:1px solid #deebef;padding:9px 10px;text-align:left;vertical-align:top;min-width:136px;max-width:220px;overflow-wrap:anywhere;background:#fff}
+.matrixTable thead tr:first-child th{position:sticky;top:0;z-index:3;background:#e6eef8;color:#123f63;white-space:normal;text-align:center;border-bottom:2px solid #b7cadf;min-height:58px}
+.matrixTable thead tr:nth-child(2) th{position:sticky;top:49px;z-index:2;background:#e8f4eb;color:#214936;font-size:11px}
+.matrixTable thead th.activeHeading{background:#c3def5!important}
+.matrixTable thead th.identityHeading{background:#d2e8dc!important;text-align:left!important;position:sticky;left:0;z-index:7}
+.groupHeading button,.activeHeading button{font-size:11px;line-height:1.4;min-width:125px;max-width:178px;background:transparent;border:0;padding:5px 2px;cursor:pointer;color:inherit;text-align:left;font-weight:800}
+.activeHeading button{font-size:12px;color:#0c426b}
+.matrixTable tbody tr:nth-child(even) td{background:#f7fbfd}
+.matrixTable tbody tr:hover td{background:#edf5fb}
+.matrixTable tbody td a{display:block;color:#185d9a;margin-top:5px;text-decoration:underline}
+.matrixTable tbody td a:hover{text-decoration:none}
+.matrixTable tbody td.pin1,.matrixTable tbody td.pin2,.matrixTable tbody td.pin3,.matrixTable tbody td.pin4{background:#f0f7f2;box-shadow:2px 0 2px #0d27170d}
+.matrixTable .pin1{position:sticky;left:0;width:50px;min-width:50px;max-width:50px;z-index:4}
+.matrixTable .pin2{position:sticky;left:50px;width:152px;min-width:152px;max-width:152px;z-index:4}
+.matrixTable .pin3{position:sticky;left:202px;width:175px;min-width:175px;max-width:175px;z-index:4}
+.matrixTable .pin4{position:sticky;left:377px;width:175px;min-width:175px;max-width:175px;z-index:4}
+.matrixTable thead tr:nth-child(2) .pin1,.matrixTable thead tr:nth-child(2) .pin2,.matrixTable thead tr:nth-child(2) .pin3,.matrixTable thead tr:nth-child(2) .pin4{z-index:6;background:#d9ebdf}
+.pending{color:#72807b;font-size:11px;font-weight:600}
+.fieldDetail summary,.advDetail summary{color:#185c43;cursor:pointer;font-weight:750}
+.fieldDetail p,.advDetail p{font-size:11px;line-height:1.5}
+.statusButton{font-size:11px;border:1px solid #bdd5cb;background:#f7faf8;color:#315846;cursor:pointer;border-radius:5px;padding:7px;white-space:normal;text-align:left}
+.mobile{display:none}
+.advList{margin:8px 0;padding-left:21px}
+.advList li{margin:0 0 12px;padding:7px 0;border-bottom:1px solid #d7e4df;font-size:12px;line-height:1.5}
+.advList p{margin:4px 0}
+.advList a{color:#1b5d91}
+.advList summary{cursor:pointer}
+.overallDesktop{margin-top:11px;background:#fff;border:1px solid #cbded5;padding:10px 12px;border-radius:8px}
+.overallDesktop summary{cursor:pointer;font-size:13px;font-weight:750;color:#195c46}
+.overallDesktop .mobilePicker{margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.footer{color:#536c61;font-size:11px;line-height:1.55;margin:12px 2px 0}
+@media(max-width:800px){
+  .root{padding:11px 9px;margin:20px 0}
+  .intro{align-items:stretch}
+  .intro h3{font-size:18px}
+  .count{min-width:78px;padding:7px 5px}
+  .count strong{font-size:21px}
+  .count span{font-size:9px}
+  .desktop,.overallDesktop{display:none}
+  .mobile{display:block}
+  .actions{display:flex;flex-direction:column;align-items:stretch;gap:5px}
+  .actions select{width:100%}
+  .mobilePicker{background:#fff;border:1px solid #ccded2;border-radius:9px;padding:11px;display:flex;flex-direction:column;align-items:stretch;gap:6px}
+  .mobilePicker select{width:100%}
+  .subline{font-size:11px;color:#526b5b;line-height:1.4;margin:2px 0}
+  .overall{margin-top:10px;background:#f2f8f4;border:1px solid #c4d8cc;border-radius:9px}
+  .overall>summary,.mobileAdv>summary{font-size:13px;font-weight:750;cursor:pointer;padding:12px;color:#17523c}
+  .detailBody{padding:0 12px 12px;font-size:12px;line-height:1.6}
+  .groupMobile{margin-top:12px;background:#fff;border:1px solid #b8d1e0;border-radius:10px;overflow:hidden}
+  .mobileGroupTitle{background:#e8f3fb;padding:11px;color:#164c70}
+  .mobileGroupTitle small{font-size:10px;letter-spacing:.08em}
+  .mobileGroupTitle h4{margin:5px 0 0;font-size:16px}
+  .fieldScroll{overflow-x:auto;max-width:100%;scrollbar-color:#85a9bd #ebf2f7}
+  .mobileTable{border-collapse:collapse;width:100%;min-width:600px;font-size:12px}
+  .mobileTable th,.mobileTable td{padding:12px;border-bottom:1px solid #e1e8e9;border-right:1px solid #e1e8e9;text-align:left;min-width:145px;max-width:210px;vertical-align:top}
+  .mobileTable th{background:#f6f9fa}
+  .mobileAdv{border-top:1px solid #d3e1da;background:#fff}
+  .next{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:13px 0}
+  .next button{font-size:12px;min-height:41px;border:1px solid #9cbaa8;background:#e8f4ea;color:#1d5439;font-weight:750;padding:8px 11px;border-radius:8px}
+  .next button:disabled{opacity:.45}
+  .next span{font-size:12px;font-variant-numeric:tabular-nums}
+}
