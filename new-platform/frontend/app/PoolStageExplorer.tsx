@@ -291,8 +291,8 @@ export default function PoolStageExplorer(){
       nextOffset={page?.nextOffset??null}
     />
     </>}
-    {/* The live inventory/results table always follows every filter, summary and research control. */}
-    <div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
+    {/* Step 5 is not rendered until at least one Step 3 checkbox is selected. */}
+    {hasSelections&&<div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
       <ToolsOpeningTrialGrid
         rows={hasSelections?page?.spreadsheetRows||[]:[]}
         total={hasSelections?page?.total??0:0}
@@ -310,6 +310,6 @@ export default function PoolStageExplorer(){
         onPrevious={()=>setOffset(Math.max(0,offset-50))}
         onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       />
-    </div>
+    </div>}
   </section>;
 }
