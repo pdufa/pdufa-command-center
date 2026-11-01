@@ -58,11 +58,17 @@ test("TOOLS mounts assessment matrix before source trial audit, and has mobile/d
   const page=fs.readFileSync(path.join(__dirname,"../app/ToolsResultsSpreadsheet.tsx"),"utf8");
   const matrix=fs.readFileSync(path.join(__dirname,"../app/ToolsBenefitMatrix.tsx"),"utf8");
   const css=fs.readFileSync(path.join(__dirname,"../app/ToolsBenefitMatrix.module.css"),"utf8");
-  assert.ok(page.indexOf("<ToolsBenefitMatrix")<page.indexOf("Matching trial records"));
+  assert.ok(page.indexOf("Matching trial records")<page.indexOf("<ToolsBenefitMatrix"),
+    "Keep the Step 4 assessment matrix immediately before the separate Step 5 final live spreadsheet");
   assert.ok(page.indexOf('<div className={styles.toolsSheetMetrics}')<page.indexOf("<ToolsBenefitMatrix"));
-  assert.ok(page.indexOf("<ToolsBenefitMatrix")<page.indexOf("Selected selectors &amp; documented trial matches"),
-    "Keep benefit matrix ahead of lengthy selector breakdown, especially on iPhone");
+  assert.ok(page.indexOf("Selected selectors &amp; documented trial matches")<page.indexOf("<ToolsBenefitMatrix"),
+    "Move Step 4 numbered assessment choices and matrix next to the final Step 5 spreadsheet");
   assert.match(matrix,/BENEFIT_GROUPS\.map/);
+  assert.match(matrix,/aria-label="Step 4 numbered assessments 4a1 through 4a20"/);
+  assert.match(matrix,/\{"4a"\+g\.number\}/);
+  assert.match(matrix,/onClick=\{\(\)=>setActive\(g\.number\)\}/);
+  assert.match(css,/\.step4Choices\{display:flex/);
+  assert.match(css,/\.step4Active/);
   assert.match(matrix,/colSpan=\{active===g\.number\?g\.fields\.length\+2:1\}/);
   assert.match(matrix,/id="benefit-group-picker"/);
   assert.match(matrix,/id="benefit-trial-picker"/);
