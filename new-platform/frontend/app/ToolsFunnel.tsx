@@ -70,7 +70,7 @@ export default function ToolsFunnel({
         <div className={pipelineResearch?styles.toolsFunnelValue:styles.toolsFunnelValueUnverified}>
           {pipelineResearch?num(pipelineResearch.screenedTrials):"Not verified"}
         </div>
-        <p>{pipelineResearch?"Completed Phase 3 NCTs · dated research screen":"Restricted Pipeline count unavailable"}</p>
+        <p>{pipelineResearch?"Dated $300M–$10B registry-completed Phase 3 research screen":"Restricted Pipeline count unavailable"}</p>
         <small>{pipelineResearch
           ?"$300M–$10B census dated "+pipelineResearch.screenDate+
             ". Exact NCT/ticker matches only. Full original restrictions: NOT VERIFIED."
@@ -109,12 +109,12 @@ export default function ToolsFunnel({
             <p>{selectedDesignations>0?"Documented linked NCT matches":"Selected clinical trial matches"}</p>
             <small>{selectedDesignations>0
               ?"Documented NCT-linked POOL matches; FDA-to-NCT evidence is partial"
-              :filterActive?"All recorded POOL trials matching selected phases":"0 filters checked"}</small>
+              :filterActive?"Only restricted research-screen NCTs matching selected stages":"0 filters checked"}</small>
           </>}
       </div>
     </div>
     <p className={styles.toolsFunnelIntegrity}>
-      {"TRIALS uses the published unrestricted POOL and requires at least one clinical stage or FDA designation. The dated PIPELINE screen is a separate research subset and does not filter these results. "}
+      { "TRIALS uses the dated $300M–$10B registry-completed Phase 3 research screen BEFORE either Phase or FDA selection. The full published POOL is displayed only as the source count. "}
       <strong>Current full PIPELINE eligibility is not yet verified.</strong>
       {sourceState==="PARTIAL"?" POOL source coverage: PARTIAL.":""}
     </p>
