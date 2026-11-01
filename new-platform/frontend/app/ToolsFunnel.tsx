@@ -9,6 +9,7 @@ type Props={
   totalStages:number;
   selectedDesignations:number;
   designationUniqueTrials:number|null;
+  designationCoverage:{sourcePrograms:number;unlinkedPrograms:number;linkedNcts:number;noVerifiedNctLinks:boolean}|null;
   loading:boolean;
   error:string;
   searchActive:boolean;
@@ -23,13 +24,14 @@ const num=(value:number)=>value.toLocaleString("en-US");
  */
 export default function ToolsFunnel({
   poolNcts,selectedTrials,selectedStages,totalStages,selectedDesignations,
-  designationUniqueTrials,loading,error,searchActive,sourceDate,sourceState
+  designationUniqueTrials,designationCoverage,loading,error,searchActive,sourceDate,sourceState
 }:Props){
   const filterActive=selectedStages>0||selectedDesignations>0;
+  const noNctLink=selectedDesignations>0&&designationCoverage?.noVerifiedNctLinks===true;
   const trialStatus=!filterActive?"0":loading?"…":error?"Unavailable":
-    selectedTrials===null?"Unavailable":num(selectedTrials);
+    noNctLink?"Not established":selectedTrials===null?"Unavailable":num(selectedTrials);
   const allStages=selectedStages===totalStages;
-  const shouldCompare=selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error;
+  const shouldCompare=selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error&&!noNctLink;
   const parity=shouldCompare&&designationUniqueTrials!==null&&selectedTrials!==null
     ?designationUniqueTrials===selectedTrials:null;
   const date=sourceDate&&sourceDate!=="Not recorded"?sourceDate:"Date not available";
@@ -60,10 +62,10 @@ export default function ToolsFunnel({
       <div className={styles.toolsFunnelCard+" "+styles.toolsFunnelTrials}>
         <div className={styles.toolsFunnelCardHead}><span aria-hidden="true">◎</span><h3>TRIALS</h3></div>
         <div className={styles.toolsFunnelValue} role="status" aria-live="polite" aria-atomic="true">{trialStatus}</div>
-        <p>{selectedDesignations>0?"Documented linked NCT matches":"Selected POOL trial matches"}</p>
-        <small>{filterActive
-          ?selectedDesignations>0?"Partial FDA-to-NCT evidence; not comprehensive": "Calculated from selected clinical stages"
-          :"0 filters checked"}</small>
+        <p>{noNctLink?"Trial count unknown":selectedDesignations>0?"Documented linked NCT matches":"Selected POOL trial matches"}</p>
+        <small>{noNctLink
+          ?num(designationCoverage!.sourcePrograms)+" FDA program records lack verified NCT links; cannot count trials"
+          :filterActive?selectedDesignations>0?"Partial FDA-to-NCT evidence; not comprehensive":"Calculated from selected clinical stages":"0 filters checked"}</small>
       </div>
     </div>
     <p className={styles.toolsFunnelIntegrity}>
@@ -82,6 +84,11 @@ export default function ToolsFunnel({
       </ul>
       <p>These are required eligibility checks, not five automatically passed or applied restrictions.</p>
     </details>
+    {noNctLink&&!loading&&!error&&<p className={styles.toolsFunnelParityWarning} role="status">
+      {num(designationCoverage!.sourcePrograms)} FDA application/program records are documented, but their NCT trial links are not verified.
+      {allStages?" Selecting all stages cannot establish the number of clinical trials for these programs.":""}
+      Program-record counts must not be presented as verified trial counts.
+    </p>}
     {shouldCompare&&<p className={parity===true?styles.toolsFunnelParityPass:styles.toolsFunnelParityWarning} role="status">
       {parity===true
         ?"All-stage check passed: "+num(selectedTrials!)+" matched trials = "+num(designationUniqueTrials!)+" linked designation trials."
