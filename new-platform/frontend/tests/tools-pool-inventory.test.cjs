@@ -416,7 +416,7 @@ test("all-stage parity must not claim success for programs without any NCT links
 });
 
 
-test("Accelerated Approval CSV exports all 16 FDA program events, not an empty NCT spreadsheet",()=>{
+test("Unscoped FDA program source records stay separate from restricted NCT CSV export",()=>{
   const path=require("node:path");
   const {buildDesignationIndex}=require("../lib/trial-designations.ts");
   const {designationSourceCoverage,renderUnlinkedFdaProgramCsv}=require("../lib/tools-pool-inventory.ts");
@@ -430,8 +430,9 @@ test("Accelerated Approval CSV exports all 16 FDA program events, not an empty N
   assert.match(rendered,/NOT ESTABLISHED/);
   assert.equal(rendered.trim().split(/\r?\n/).length,17);
   const route=fs.readFileSync(path.join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
-  assert.match(route,/result\.designationCoverage\?\.noVerifiedNctLinks/);
-  assert.match(route,/pdufa-tools-fda-program-records-unlinked\.csv/);
+  assert.doesNotMatch(route,/result\.designationCoverage\?\.noVerifiedNctLinks/);
+  assert.doesNotMatch(route,/pdufa-tools-fda-program-records-unlinked\.csv/);
+  assert.match(route,/const rows=filterToolTrials\(inventory\.poolRows,selectedStages,matches,query\)/);
 });
 
 
@@ -444,17 +445,17 @@ test("all FDA selections retain separate program counts and exact linked NCT cou
   assert.match(funnel,/num\(designationCoverage!\.linkedNcts\)/);
   assert.match(funnel,/UNIQUE NCT TRIAL COUNT FROM SELECTED POOL/);
   assert.match(funnel,/crosswalk-linked NCTs in the restricted research scope/);
-  assert.match(funnel,/FDA-to-NCT coverage may be incomplete/);
+  assert.match(funnel,/FDA-to-NCT coverage is incomplete/);
 });
 test("unlinked FDA source count is clearly visible in the TRIALS card but never labeled 16 trials",()=>{
   const path=require("node:path");
   const funnel=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
   const selector=fs.readFileSync(path.join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
   const css=fs.readFileSync(path.join(__dirname,"../app/FunnelWorkspace.module.css"),"utf8");
-  assert.match(funnel,/FDA APPLICATION \/ PROGRAM RECORDS/);
+  assert.match(funnel,/FDA PROGRAM RECORDS — UNSCOPED CATALOG/);
   assert.match(funnel,/UNIQUE NCT TRIAL COUNT/);
   assert.match(funnel,/num\(designationCoverage!\.sourcePrograms\)/);
-  assert.match(funnel,/NOT \{num\(designationCoverage!\.sourcePrograms\)\} distinct trials/);
+  assert.match(funnel,/NOT \{num\(designationCoverage!\.sourcePrograms\)\} screened trials/);
   assert.match(funnel,/role="group" aria-label="FDA program record count, not clinical trials"/);
   assert.match(funnel,/SELECTED FILTERS/);
   assert.match(funnel,/Stages: \{stagesLabel\}/);
@@ -473,7 +474,7 @@ test("restricted research screen is mandatory before TOOLS Phase and FDA facet c
   assert.match(route,/timeline:trialTimelines\.get/);
   assert.match(route,/pdufa-tools-selected-trials\.csv/);
   const funnel=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
-  assert.match(funnel,/The dated PIPELINE screen is a separate research subset and does not filter these results/);
+  assert.match(funnel,/TRIALS uses the dated \$300M–\$10B registry-completed Phase 3 research screen BEFORE either Phase or FDA selection/);
 });
 test("published TOOLS snapshot freshness is reevaluated after caching, not frozen on first read",()=>{
   const {isToolsSnapshotFresh,parseToolsSnapshotTimestamp,TOOLS_SNAPSHOT_MAX_AGE_MS}=
