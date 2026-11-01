@@ -84,9 +84,10 @@ async function toolsPoolSource():Promise<ReturnType<typeof verifiedToolPool>>{
   if(toolsCache && Date.now()-toolsCache.at<60000)return toolsCache.value;
   if(toolsActive)return toolsActive;
   toolsActive=(async()=>{
-    const base=process.env.PDUFA_API_BASE_URL?.replace(/\\/$/,"");
+    const rawBase=process.env.PDUFA_API_BASE_URL||"";
+    const base=rawBase.endsWith("/")?rawBase.slice(0,-1):rawBase;
     const key=process.env.PDUFA_INTERNAL_API_KEY;
-    if(!base||!/^https:\\/\\//.test(base)||!key)throw Error("Backend not configured");
+    if(!base.startsWith("https://")||!key)throw Error("Backend not configured");
     const response=await fetchReadOnlyWithWarmRetry(base+"/api/workspace?require_fresh=true",{
       method:"GET",headers:{"x-pdufa-internal-key":key},cache:"no-store",
       signal:AbortSignal.timeout(50000)
