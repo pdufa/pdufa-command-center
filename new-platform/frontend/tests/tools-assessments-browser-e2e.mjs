@@ -56,6 +56,15 @@ try {
     "Benefit research cannot contain orphaned NCT identities");
   const groupSelect=page.locator("#benefit-group-picker");
   assert.equal(await groupSelect.locator("option").count(),20);
+  const emptyResponse=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&offset=0&limit=50");
+  assert.equal(emptyResponse.status(),200);
+  const empty=await emptyResponse.json();
+  assert.equal(empty.pipelineResearch?.screenedTrials,346,"PIPELINE retains the dated source-screened 346");
+  assert.equal(empty.total,0,"API must never return default candidates without a selected filter");
+  assert.deepEqual(empty.rows,[]);
+  assert.deepEqual(empty.spreadsheetRows,[]);
+  const retired=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&offset=0&limit=50&baseline=1");
+  assert.equal(retired.status(),422,"Deprecated implicit baseline bypass must be rejected");
   const pipelineCard=funnel.getByRole("heading",{name:"PIPELINE",exact:true}).locator("../..");
   await pipelineCard.getByText("346",{exact:true}).waitFor({timeout:100000});
   const trialsCard=funnel.getByRole("heading",{name:"TRIALS",exact:true}).locator("../..");
@@ -98,6 +107,12 @@ try {
   await page.locator("#tools-benefit-assessments").getByRole("button",{name:/Next/}).click();
   assert.match(await page.locator("#tools-benefit-assessments h4").innerText(),/^#4 — Survival Benefit$/);
   await page.screenshot({path:out+"/01-iphone-390.png",fullPage:true});
+  await page.getByRole("button",{name:"Clear all filters"}).click();
+  await page.getByText("0 selected · 0 matching trials.",{exact:false}).waitFor({timeout:90000});
+  assert.equal((await trialsCard.locator('[role="status"]').first().innerText()).trim(),"0",
+    "Removing the last selected criterion restores zero trials, not 346");
+  assert.equal(await page.locator("#benefit-trial-picker").count(),0);
+  await page.screenshot({path:out+"/03-iphone-empty-selections.png",fullPage:true});
   await mobile.context.close();
 
   const desktop=await openAuthenticated({width:1440,height:900},false);
