@@ -155,8 +155,6 @@ export async function GET(req:NextRequest) {
   const selectedStages=stagesParam?stagesParam.split(","):[];
   const toolsParam=params.get("tools")||"";
   const toolMode=toolsParam==="1";
-  const baselineParam=params.get("baseline")||"";
-  const screenedBaseline=baselineParam==="1";
   const designationsParam=params.get("designations")||"";
   const selectedDesignations=designationsParam?designationsParam.split(",") as DesignationKey[]:[];
   if(!["pool","pipeline","readout-review","census-review"].includes(view)
@@ -171,14 +169,13 @@ export async function GET(req:NextRequest) {
      || selectedStages.some(selected=>!(POOL_STAGES as readonly string[]).includes(selected))
      || (selectedStages.length>0 && (stageGroup!=="all" || stage!==""))
      || !["","1"].includes(toolsParam)
-     || !["","1"].includes(baselineParam)
-     || (screenedBaseline && (!toolMode || selectedStages.length>0 || selectedDesignations.length>0))
+     || params.has("baseline") // Retired: no stage / FDA designation must always mean zero TRIALS.
      || selectedDesignations.length>SPECIAL_DESIGNATION_CATEGORIES.length
      || new Set(selectedDesignations).size!==selectedDesignations.length
      || selectedDesignations.some(key=>!SPECIAL_DESIGNATION_CATEGORIES.some(item=>item.key===key))
      || (selectedDesignations.length>0 && (!toolMode || recordKind!=="trials"))
      || (toolMode && (view!=="pool" || recordKind!=="trials" || stageGroup!=="all" || !!stage))
-     || (format==="csv" && toolMode && (offset!=="0" || (selectedStages.length===0 && selectedDesignations.length===0 && !screenedBaseline)))
+     || (format==="csv" && toolMode && (offset!=="0" || (selectedStages.length===0 && selectedDesignations.length===0)))
      || (view!=="pool" && (stageGroup!=="all" || stage || recordKind!=="all" || selectedStages.length>0)))
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
@@ -241,7 +238,7 @@ export async function GET(req:NextRequest) {
         },{status:503,headers:{"Cache-Control":"private, no-store"}});
       }
       const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,
-        query,Number(offset),Number(limit),pipelineResearchNcts,screenedBaseline);
+        query,Number(offset),Number(limit),pipelineResearchNcts);
       const pipelineResearch=pipelineResearchNcts===null?null:{
         screenedTrials:pipelineResearchNcts.size,
         screenDate:"2026-10-26",
@@ -265,7 +262,7 @@ export async function GET(req:NextRequest) {
         if(pipelineResearchNcts===null)return NextResponse.json({
           error:"The dated Pipeline screening source cannot be reconciled; restricted trial export is unavailable."
         },{status:503,headers:{"Cache-Control":"private, no-store"}});
-        const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query,screenedBaseline)
+        const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query)
           .filter(row=>pipelineResearchNcts.has(row.id));
         if(rows.length>25000)return NextResponse.json({error:"Selection exceeds export row limit"},{status:413});
         const csv=renderToolsSpreadsheetCsv(rows,selectedStages,selectedDesignations,index,inventory.sourceAsOf);
