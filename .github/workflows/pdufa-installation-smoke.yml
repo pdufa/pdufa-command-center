@@ -190,5 +190,48 @@ jobs:
           assert all(x.get("qualification")=="NEEDS_REVIEW" and x.get("poolStatus")=="EXACT_MATCH"
                      and x.get("censusStatus")=="COMPLETED" for x in pages["pipeline"]["rows"])
           print("PASS: signed-in POOL and Phase 3 research queue integrity; no invented qualified count")
-          print("NOTE: This is a read-only data API check, not browser controls, current cap verification, scan execution, Streamlit Cloud deletion, or validated FDA predictions.")
+
+          # The TOOLS cards must use ONE reconciled, post–Phase-3 research
+          # population. FDA program records remain separate from NCT trials.
+          from urllib.parse import urlencode
+          def tools(stages=None,designation=None):
+              params={"view":"pool","recordKind":"trials","tools":"1","offset":"0","limit":"50"}
+              if stages: params["stages"]=",".join(stages)
+              if designation: params["designations"]=designation
+              uri="/api/scope-funnel?"+urlencode(params)
+              for attempt in range(1,4):
+                  try: return request(uri)
+                  except AssertionError:
+                      if attempt==3: raise
+                      time.sleep(6)
+
+          zero=tools()
+          screen=zero.get("pipelineResearch")
+          assert isinstance(screen,dict) and isinstance(screen.get("screenedTrials"),int), "Purple dated Pipeline screen not established"
+          assert 0<screen["screenedTrials"]<=375, "Screened research subset outside dated completed-census bounds"
+          assert screen.get("qualification")=="NOT_VERIFIED", "Screened count must not be called qualified"
+          assert zero.get("total")==0, "Zero checked filters should yield zero trial matches"
+          assert zero.get("stageStats",{}).get("trials")>0, "POOL source trial count missing"
+          print("PASS: Purple Pipeline card has",screen["screenedTrials"],"exact matched completed Phase 3 research NCTs; not fully qualified")
+
+          every_stage=["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3",
+                       "Phase 3","Phase 3 Results","NDA/BLA Submission","FDA Acceptance",
+                       "PDUFA Decision","Post-Decision","Phase 4","Not Applicable","Unknown"]
+          for designation in ("accelerated_approval","orphan_drug","priority_review"):
+              only=tools(designation=designation)
+              all_stages=tools(stages=every_stage,designation=designation)
+              for result in (only,all_stages):
+                  assert result.get("pipelineResearch")==screen, "Pipeline source changed between selected views"
+                  assert result.get("selectionSummary",{}).get("designationUniqueTrials")==result.get("total"), "Incorrect after-restriction unique NCT count"
+                  assert 0<=result["total"]<=screen["screenedTrials"], "Green count exceeds purple research cohort"
+              assert only.get("total")==all_stages.get("total"), "All clinical stages changed designation-only count"
+              coverage=only.get("designationCoverage") or {}
+              assert isinstance(coverage.get("sourcePrograms"),int), "FDA program record count missing"
+              assert coverage.get("sourcePrograms")==all_stages.get("designationCoverage",{}).get("sourcePrograms"), "FDA program count changed on selecting all stages"
+              if coverage.get("noVerifiedNctLinks"):
+                  assert only["total"]==0, "No crosswalk but claimed NCT matches"
+              print("PASS: green",designation,"trial matches",only["total"],
+                    "agree with all stages; source program records",coverage["sourcePrograms"],"separately labeled")
+
+          print("NOTE: This validates live, signed-in source API counts and intersection, not visual browser rendering, current issuer-cap/rights qualification, or FDA predictions.")
           PY
