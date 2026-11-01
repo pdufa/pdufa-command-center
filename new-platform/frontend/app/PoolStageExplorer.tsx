@@ -201,22 +201,6 @@ export default function PoolStageExplorer(){
         </div>
         <PoolDesignationSelector guided selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}/>
       </div>}
-      <ToolsOpeningTrialGrid
-        rows={page?.spreadsheetRows||[]}
-        total={page?.total??0}
-        offset={offset}
-        nextOffset={page?.nextOffset??null}
-        inventoryMode={!hasSelections}
-        selectedStages={selectedStages.length}
-        selectedDesignations={selectedDesignations.length}
-        noVerifiedNctLinks={!!page?.designationCoverage?.noVerifiedNctLinks}
-        loading={loading}
-        error={error}
-        sourceDate={sourceDate}
-        sourceState={sourceState}
-        onPrevious={()=>setOffset(Math.max(0,offset-50))}
-        onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
-      />
       {hasSelections&&<div className={styles.toolsStartSelected} role="status">
         <strong>{selectedStages.length} Phase selected · {selectedDesignations.length} Special Designation selected</strong>
       </div>}
@@ -285,5 +269,24 @@ export default function PoolStageExplorer(){
       nextOffset={page?.nextOffset??null}
     />
     </>}
+    {/* The live inventory/results table always follows every filter, summary and research control. */}
+    <div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
+      <ToolsOpeningTrialGrid
+        rows={page?.spreadsheetRows||[]}
+        total={page?.total??0}
+        offset={offset}
+        nextOffset={page?.nextOffset??null}
+        inventoryMode={!hasSelections}
+        selectedStages={selectedStages.length}
+        selectedDesignations={selectedDesignations.length}
+        noVerifiedNctLinks={!!page?.designationCoverage?.noVerifiedNctLinks}
+        loading={loading}
+        error={error}
+        sourceDate={sourceDate}
+        sourceState={sourceState}
+        onPrevious={()=>setOffset(Math.max(0,offset-50))}
+        onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
+      />
+    </div>
   </section>;
 }
