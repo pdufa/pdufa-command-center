@@ -67,6 +67,7 @@ export default function ToolsOpeningTrialGrid({
     saveToolsPreference(TOOLS_RATINGS_STORAGE_KEY,expandedRatings);
   },[expandedRatings,selectionsRestored]);
   useEffect(()=>{
+    if(typeof window==="undefined")return;
     const clear=()=>setExpandedRatings([]);
     window.addEventListener(TOOLS_CLEAR_EVENT,clear);
     return ()=>window.removeEventListener(TOOLS_CLEAR_EVENT,clear);
