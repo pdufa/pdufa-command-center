@@ -149,6 +149,19 @@ try{
     const detail=page.locator("#tools-step4-analysis");
     assert.equal(await detail.getAttribute("open"),null,
       "The large clinical assessment details must be collapsed by default");
+    const all20=page.locator("#tools-step4-all20");
+    assert.equal(await all20.getAttribute("open"),null,
+      "The optional complete 1–20 list must be hidden by default");
+    await all20.locator(":scope > summary").click();
+    const all20Options=page.getByRole("group",{name:"Complete separate Step 4 assessment list 1 through 20"});
+    assert.equal(await all20Options.getByRole("button").count(),20,
+      "The optional expanded list must contain all twenty original assessments");
+    await all20Options.getByRole("button",{name:/^Assessment 20 of 20 —/}).click();
+    assert.equal(await all20.getAttribute("open"),null,
+      "The optional full list closes after choosing an assessment");
+    assert.equal(await step4Groups.getByRole("button",{name:"4E Stock"}).getAttribute("aria-pressed"),"true",
+      "The complete list and five-group selector must share selection state");
+    assert.match(await detail.locator(":scope > summary").innerText(),/4a20 — Shareholder Upside and Risk/);
     await step4Groups.getByRole("button",{name:"4E Stock"}).click();
     const metricPicker=page.getByRole("combobox",{name:"Step 4 assessment 4a1 through 4a20"});
     await metricPicker.selectOption("20");
