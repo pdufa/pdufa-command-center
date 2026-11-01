@@ -67,3 +67,10 @@ test("TOOLS trial listing and 20-assessment table show the green counters after 
  assert.ok(route.includes("trialTimelines=new Map<string,TimelineDates>"));
  assert.ok(route.includes("timeline:trialTimelines.get(row.nctId+"));
 });
+
+test("A and P labels distinguish the two green bordered date counters",()=>{
+ const metric=read("TrialTimelineSummary.tsx");
+ assert.match(metric,/<span style={letter}>A<\/span><span>DAYS SINCE PHASE 3<\/span>/);
+ assert.match(metric,/<span style={letter}>P<\/span><span>DAYS TO PDUFA<\/span>/);
+ assert.match(metric,/background:"#08763f"/);
+});
