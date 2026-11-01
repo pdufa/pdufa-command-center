@@ -148,7 +148,7 @@ test("FDA selector discloses program source count and incomplete NCT crosswalk s
   assert.match(source,/d\.linkedTrials>0/);
   assert.match(source,/NCT count unknown/);
   assert.match(sheet,/FDA source program records — not clinical trial counts/);
-  assert.match(sheet,/No documented NCT links match the selected filters/);
+  assert.match(sheet,/No documented NCT-linked POOL trials match both the chosen phases/);
 });
 
 test("TOOLS shows zero TRIALS and an empty spreadsheet when no phase or FDA designation is selected",()=>{
@@ -284,7 +284,7 @@ test("all FDA selections retain separate program counts and exact linked NCT cou
   assert.match(funnel,/num\(designationCoverage!\.linkedNcts\)/);
   assert.match(funnel,/UNIQUE NCT TRIAL COUNT FROM SELECTED POOL/);
   assert.match(funnel,/crosswalk-linked NCTs in the unrestricted POOL/);
-  assert.match(funnel,/FDA-to-NCT evidence may be incomplete/);
+  assert.match(funnel,/FDA-to-NCT coverage may be incomplete/);
 });
 test("unlinked FDA source count is clearly visible in the TRIALS card but never labeled 16 trials",()=>{
   const path=require("node:path");
