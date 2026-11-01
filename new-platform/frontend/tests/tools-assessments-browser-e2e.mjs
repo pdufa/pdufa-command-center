@@ -43,13 +43,27 @@ async function populate(page){
   const body=await response.json();
   assert.ok(body.total>0 && Array.isArray(body.spreadsheetRows) &&
     body.spreadsheetRows.length>0,"All-stage selection returned no source-linked NCT rows");
-  await page.locator("#benefit-trial-picker").waitFor({state:"visible",timeout:50000});
-  await page.waitForFunction(()=>{
-    const s=document.querySelector("#tools-benefit-assessments");
-    const picker=document.querySelector("#benefit-trial-picker");
-    return s && picker && picker.options.length>0 &&
-      !s.textContent.includes("Loading source-matched resultant trials");
-  },null,{timeout:50000});
+  // The mobile NCT chooser is deliberately hidden in the desktop layout.
+  // Verify the actual visible, populated result surface at each viewport.
+  const isMobile=await page.evaluate(()=>window.matchMedia("(max-width:800px)").matches);
+  if(isMobile){
+    await page.locator("#benefit-trial-picker").waitFor({state:"visible",timeout:50000});
+    await page.waitForFunction(()=>{
+      const s=document.querySelector("#tools-benefit-assessments");
+      const picker=document.querySelector("#benefit-trial-picker");
+      return s && picker && picker.options.length>0 &&
+        !s.textContent.includes("Loading source-matched resultant trials");
+    },null,{timeout:50000});
+  } else {
+    const table=page.locator('[aria-label="Desktop horizontally scrollable 20-assessment spreadsheet"] table');
+    await table.waitFor({state:"visible",timeout:50000});
+    await page.waitForFunction(()=>{
+      const s=document.querySelector("#tools-benefit-assessments");
+      const table=document.querySelector('[aria-label="Desktop horizontally scrollable 20-assessment spreadsheet"] table');
+      return s && table && table.tBodies[0]?.rows.length>0 &&
+        !s.textContent.includes("Loading source-matched resultant trials");
+    },null,{timeout:50000});
+  }
 }
 try {
   const mobile=await openAuthenticated({width:390,height:844},true);
