@@ -4,6 +4,7 @@ import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "./trial-design
 export const TOOLS_FILTERS_STORAGE_KEY="pdufa-tools-filter-selections-v1";
 export const TOOLS_STEP4_STORAGE_KEY="pdufa-tools-step4-selections-v1";
 export const TOOLS_RATINGS_STORAGE_KEY="pdufa-tools-rating-expansions-v1";
+export const TOOLS_COMPETITION_STORAGE_KEY="pdufa-tools-competitive-strategy-open-v1";
 export const TOOLS_RANKING_STORAGE_KEY="pdufa-tools-ranking-checklists-v1";
 export const TOOLS_CLEAR_EVENT="pdufa-tools-clear-all-selections";
 
@@ -49,7 +50,7 @@ export function saveToolsPreference(key:string,value:unknown):void{
 export function clearToolsPreferences():void{
   if(typeof window==="undefined")return;
   for(const key of [TOOLS_FILTERS_STORAGE_KEY,TOOLS_STEP4_STORAGE_KEY,
-    TOOLS_RATINGS_STORAGE_KEY,TOOLS_RANKING_STORAGE_KEY]){
+    TOOLS_RATINGS_STORAGE_KEY,TOOLS_COMPETITION_STORAGE_KEY,TOOLS_RANKING_STORAGE_KEY]){
     try{window.localStorage.removeItem(key);}catch{/* Storage may be disabled. */}
   }
 }
