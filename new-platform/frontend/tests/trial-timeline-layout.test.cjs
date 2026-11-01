@@ -64,8 +64,11 @@ test("TOOLS trial listing and 20-assessment table show the green counters after 
  assert.ok(sheet.includes("<TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/>"));
  assert.ok(matrix.includes("<strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={feed}/>"));
  assert.ok(matrix.includes("<TrialTimelineSummary timeline={selected.timeline} today={today} compact trial={selected} benefitFeed={feed}/>"));
- assert.ok(route.includes("trialTimelines=new Map<string,TimelineDates>"));
- assert.ok(route.includes("timeline:trialTimelines.get(row.nctId+"));
+ const toolRow=fs.readFileSync(path.join(__dirname,"../lib/tools-spreadsheet.ts"),"utf8");
+ assert.ok(route.includes("toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index"));
+ assert.ok(toolRow.includes("const timeline=exactProgramTimeline(trial,hasExactIdentity)"));
+ assert.ok(toolRow.includes("timeline,"));
+ assert.ok(toolRow.includes("matchedToolPdufaApplications(trial,pdufaIndex)"));
 });
 
 test("prominent A and P labels preserve descriptions and verified values",()=>{
