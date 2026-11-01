@@ -49,6 +49,10 @@ try {
   assert.equal(await page.locator("#benefit-trial-picker").isVisible(),false,
     "Trial picker is hidden before a filter selection");
   await populate(page);
+  const benefitBox=await page.locator("#tools-benefit-assessments").boundingBox();
+  const totalsBox=await page.getByRole("heading",{name:"Selected selectors & individual trial totals"}).boundingBox();
+  assert.ok(benefitBox&&totalsBox&&benefitBox.y<totalsBox.y,
+    "Benefit matrix must appear before the long individual selector totals table on iPhone");
   const trialSelect=page.locator("#benefit-trial-picker");
   assert.ok(await trialSelect.isVisible(),"Mobile resultant-trial picker must be visible");
   assert.ok(await trialSelect.locator("option").count()>0);
