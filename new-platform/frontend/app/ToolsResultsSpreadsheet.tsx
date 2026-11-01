@@ -7,7 +7,6 @@ import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
 import type {ToolPdufaApplication} from "../lib/tools-pdufa-links";
 import styles from "./FunnelWorkspace.module.css";
-import ToolsBenefitMatrix from "./ToolsBenefitMatrix";
 import ToolsRankingChecklists from "./ToolsRankingChecklists";
 
 export type ToolSourceEvidence={
@@ -269,6 +268,5 @@ export default function ToolsResultsSpreadsheet({
     <p className={styles.muted}>{trialCountUnverified
       ?"CSV exports only documented NCT matches within the restricted research screen. Unscoped FDA program records appear separately below and are never exported as eligible trials."
       :"This is a read-only web spreadsheet. CSV export includes all documented matching rows (not just this page) and opens in Excel or Google Sheets. FDA designation-to-trial coverage remains incomplete; missing evidence is not a denial or proof of no designation."}</p>
-    <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error} benefitFeed={benefitFeed} benefitError={benefitError}/>
   </section>;
 }
