@@ -128,13 +128,13 @@ test("checking FDA category reveals program and linked-trial counts without chan
   const first=root.root.findAllByType("label").find(x=>textOf(x).includes("Fast Track Designation"));
   assert.ok(first);
   assert.match(textOf(first),/2a\/13/);
-  assert.match(textOf(first),/1verified NCT matches/,"Only documented NCT matches may be counted; full category total stays unknown");
-  assert.doesNotMatch(textOf(first),/2verified NCT matches/,"Raw source program totals must not inflate verified NCT matches");
+  assert.match(textOf(first),/\?FDA trial total unknown1 verified NCT matches/,"Complete category total must be unknown while verified NCT matches remain inspectable");
+  assert.doesNotMatch(textOf(first),/2 verified NCT matches/,"Raw source program totals must not inflate verified NCT matches");
   assert.equal(first.findAllByProps({className:"toolsFdaRowCount"}).length,1);
   assert.equal(root.root.findAllByProps({className:"toolsFdaRowCount"}).length,13,
     "Every FDA category must display an aligned trial-count status as Phase does");
   const orphan=root.root.findAllByType("label").find(x=>textOf(x).includes("Orphan Drug Designation"));
-  assert.match(textOf(orphan),/\?trial total unknown/,"Missing NCT coverage must not be displayed as zero");
+  assert.match(textOf(orphan),/\?FDA trial total unknownNCT coverage unavailable/,"Missing NCT coverage must not be displayed as zero");
   assert.ok(!root.root.findAllByProps({className:"toolsCascadeFdaEvidence"}).length);
   await act(async()=>first.findByType("input").props.onChange());
   const evidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"});
@@ -146,7 +146,7 @@ test("checking FDA category reveals program and linked-trial counts without chan
   assert.equal(linked[0].props.href,"https://clinicaltrials.gov/study/NCT00000001");
   await act(async()=>root.root.findAllByType("button").find(x=>textOf(x)==="Change Phase scope").props.onClick());
   const phaseRow=root.root.findAllByType("label").find(x=>textOf(x).includes("Fast Track Designation"));
-  assert.match(textOf(phaseRow),/0verified NCT matches/,"Zero documented matches within Phase must not be misrepresented as complete FDA trial total");
+  assert.match(textOf(phaseRow),/\?FDA trial total unknown0 verified NCT matches/,"Zero documented Phase matches cannot be mistaken for complete FDA trial total");
   const phaseEvidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"})[0];
   assert.match(textOf(phaseEvidence),/0 matching NCTs/);
   assert.equal(phaseEvidence.findAllByType("a").length,0);
