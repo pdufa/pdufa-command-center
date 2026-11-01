@@ -511,8 +511,19 @@ test("final live spreadsheet stays below every TOOLS selection and analysis sect
     "POOL → PIPELINE → TRIALS must lead the page above Step 3 selectors even without selections; assessments must precede Step 5");
   assert.equal((source.match(/<ToolsOpeningTrialGrid\b/g)||[]).length,1,
     "Never render duplicate copies of the final live POOL spreadsheet");
-  assert.match(source.slice(final),/rows=\{page\?\.spreadsheetRows\|\|\[\]\}/);
+  assert.match(source.slice(final),/rows=\{hasSelections\?page\?\.spreadsheetRows\|\|\[\]:\[\]\}/,"No trial data in Step 5 until Phase or FDA is checked");
   assert.match(source.slice(final),/inventoryMode=\{!hasSelections\}/);
   assert.match(source.slice(final),/onNext=\{\(\)=>\{/);
-  assert.match(source.slice(final),/loading=\{loading\}/);
+  assert.match(source.slice(final),/loading=\{hasSelections&&loading\}/);
+});
+
+test("Step 5 clears all clinical rows when neither Phase nor FDA has been selected",()=>{
+  const grid=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsOpeningTrialGrid.tsx"),"utf8");
+  const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  assert.match(ui,/total=\{hasSelections\?page\?\.total\?\?0:0\}/);
+  assert.match(ui,/nextOffset=\{hasSelections\?page\?\.nextOffset\?\?null:null\}/);
+  assert.match(grid,/!hasSelection\?<tr><td colSpan=\{columnsCount\}/);
+  assert.match(grid,/Select at least one Phase or Special Designation in Step 3/);
+  assert.match(grid,/0 trials shown · no selections/);
+  assert.match(grid,/disabled=\{!hasSelection\|\|loading\|\|!!error\|\|nextOffset===null\}/);
 });
