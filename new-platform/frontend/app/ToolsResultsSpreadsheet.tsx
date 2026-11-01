@@ -38,8 +38,6 @@ type Props={
   designations:DesignationKey[];
   total:number;
   offset:number;
-  baselineMode:boolean;
-  onShowBaseline:()=>void;
   loading:boolean;
   error:string;
   downloadUrl:string;
@@ -60,7 +58,7 @@ const sortFields:{key:SortField;label:string}[]=[
   {key:"stage",label:"Recorded stage"},
 ];
 export default function ToolsResultsSpreadsheet({
-  rows,summary,designationCoverage,stages,designations,total,offset,baselineMode,onShowBaseline,loading,error,downloadUrl,
+  rows,summary,designationCoverage,stages,designations,total,offset,loading,error,downloadUrl,
   onPrevious,onNext,nextOffset
 }:Props){
   const [sortKey,setSortKey]=useState<SortField>("nctId");
@@ -73,7 +71,7 @@ export default function ToolsResultsSpreadsheet({
     if(sortKey===key)setDescending(prev=>!prev);
     else {setSortKey(key);setDescending(false);}
   }
-  const hasSelection=baselineMode||stages.length+designations.length>0;
+  const hasSelection=stages.length+designations.length>0;
   const selectedCount=stages.length+designations.length;
   const trialCountUnverified=!!designationCoverage?.noVerifiedNctLinks&&designations.length>0&&!loading&&!error;
   const pageFirst=total>0?offset+1:0;
@@ -91,7 +89,7 @@ export default function ToolsResultsSpreadsheet({
         {trialCountUnverified?"Export FDA program records (CSV)":"Export all matches (CSV)"}</a>
     </div>
     <div className={styles.toolsSheetMetrics} aria-live="polite">
-      <div><span>{baselineMode?"Results mode":"Selectors clicked"}</span><strong>{baselineMode?"Baseline":selectedCount}</strong><small>{baselineMode?"Historical completed Phase 3 screen; extra filters not needed":stages.length+" stages + "+designations.length+" FDA categories"}</small></div>
+      <div><span>Selectors clicked</span><strong>{selectedCount}</strong><small>{stages.length} stages + {designations.length} FDA categories</small></div>
       <div><span>Selected stage totals</span><strong>{summary?fmt(summary.stageTotal):hasSelection?"—":"0"}</strong><small>Distinct NCTs within selected stage categories</small></div>
       <div><span>{designations.length?"FDA source program records":"Verified linked NCT counts"}</span><strong>{designations.length
         ?loading||error?"—":designationCoverage?fmt(designationCoverage.sourcePrograms):"—"
@@ -101,10 +99,10 @@ export default function ToolsResultsSpreadsheet({
         <strong>{hasSelection?(loading||error?"—":trialCountUnverified?"Not established":summary?fmt(summary.matchingUniqueTrials):"—"):"0"}</strong>
         <small>{trialCountUnverified?"No source-verified trial IDs for these programs; zero must not be inferred":designations.length?"Partial FDA-to-trial coverage":"Unique NCT records after selected clinical-stage filters"}</small></div>
     </div>
-    <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error} onShowBaseline={onShowBaseline} baselineMode={baselineMode}/>
+    <ToolsBenefitMatrix rows={ordered} hasSelection={hasSelection} total={total} offset={offset} loading={loading} error={error}/>
     <div className={styles.toolsSheetTotals}>
       <h3>Selected selectors &amp; individual trial totals</h3>
-      {selectedCount===0?<p className={styles.muted}>{baselineMode?"No additional selectors: showing the historically screened Pipeline NCT baseline above.":"No selectors selected. Choose a stage or FDA designation above to populate this spreadsheet."}</p>:<>
+      {selectedCount===0?<p className={styles.muted}>No selectors selected. Choose a stage or FDA designation above to populate this spreadsheet.</p>:<>
         <div className={styles.toolsSheetTableScroll}>
           <table className={styles.toolsSheetSummaryTable}>
             <thead><tr><th>Type</th><th>Clicked selector</th><th>Unique NCTs in source</th><th>Interpretation</th></tr></thead>

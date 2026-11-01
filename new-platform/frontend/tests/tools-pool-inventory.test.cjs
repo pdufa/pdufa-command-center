@@ -143,27 +143,36 @@ test("FDA selector discloses program source count and incomplete NCT crosswalk s
   assert.match(sheet,/No documented NCT links match the selected filters/);
 });
 
-test("TOOLS automatically loads source-screened Pipeline candidates with no optional filters",()=>{
+test("TOOLS shows zero TRIALS and an empty spreadsheet when no phase or FDA designation is selected",()=>{
   const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  const funnel=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
+  const sheet=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsResultsSpreadsheet.tsx"),"utf8");
+  const matrix=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsBenefitMatrix.tsx"),"utf8");
   const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
-  assert.match(ui,/const \[baselineMode,setBaselineMode\]=useState\(true\)/);
-  assert.match(ui,/p\.set\("baseline","1"\)/);
-  assert.match(ui,/hasResultsScope&&loading/);
-  assert.match(ui,/onShowBaseline=\{clearAllTrialSelectors\}/);
-  assert.match(route,/if\(pipelineResearchNcts===null\)\{/);
-  assert.doesNotMatch(route,/if\(screenedBaseline && pipelineResearchNcts===null\)/);
-  assert.match(route,/buildToolsResults\(inventory,index,selectedStages,selectedDesignations,[\s\S]*?pipelineResearchNcts,screenedBaseline\)/);
+  assert.match(ui,/const hasSelections=selectedStages.length>0\|\|selectedDesignations.length>0/);
+  assert.match(ui,/selectedTrials=\{!hasSelections\?0:/);
+  assert.match(ui,/Select Phase 3 trials/);
+  assert.match(ui,/setSelectedStages\(\["Phase 3"\]\)/);
+  assert.match(funnel,/const trialStatus=!filterActive\?"0"/);
+  assert.match(funnel,/pipelineResearch\?num\(pipelineResearch.screenedTrials\)/);
+  assert.match(sheet,/const hasSelection=stages.length\+designations.length>0/);
+  assert.match(sheet,/!hasSelection\?<tr><td/);
+  assert.match(matrix,/!hasSelection\?<div/);
+  assert.match(route,/params.has\("baseline"\)/);
+  assert.doesNotMatch(ui+funnel+sheet+matrix+route,/baselineMode|screenedBaseline|allowScreenedBaseline/);
 });
-test("screened baseline populates only the exact-NCT reconciled screen; legacy zero-selection helper remains strict",()=>{
+test("zero selection is zero even with 346 exact-NCT screened Pipeline records and an active text search",()=>{
   const snapshot=verifiedToolPool(raw());
-  const base=new Set(["TRIAL|NCT00000003"]);
-  assert.equal(buildToolsResults(snapshot,null,[],[],"",0,50,base).total,0);
-  const result=buildToolsResults(snapshot,null,[],[],"",0,50,base,true);
-  assert.equal(result.total,1);
-  assert.equal(result.spreadsheetRows[0].nctId,"NCT00000003");
-  assert.equal(result.selectionSummary.selectedCount,0);
-  assert.equal(result.pipelineResearch,undefined);
-  assert.equal(buildToolsResults(snapshot,null,[],[],"irrelevant",0,50,base,true).total,0);
+  const pipelineIds=new Set(snapshot.poolRows.map(r=>r.id));
+  const none=buildToolsResults(snapshot,null,[],[],"",0,50,pipelineIds);
+  assert.equal(none.total,0);
+  assert.deepEqual(none.rows,[]);
+  assert.deepEqual(none.spreadsheetRows,[]);
+  assert.equal(none.selectionSummary.selectedCount,0);
+  assert.equal(buildToolsResults(snapshot,null,[],[],"NCT00000003",0,50,pipelineIds).total,0);
+  const withStage=buildToolsResults(snapshot,null,["Phase 3"],[],"",0,50,pipelineIds);
+  assert.ok(withStage.total>0,"Selecting Phase 3 permits recorded, screened trial matches");
+  assert.equal(buildToolsResults(snapshot,null,[],[], "",0,50,new Set()).total,0);
 });
 test("one tap chooses Phase 3 AND Orphan Drug, clears search and resets offset",()=>{
   const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");

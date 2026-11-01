@@ -67,13 +67,12 @@ export function selectToolTrialIds(
 
 export function filterToolTrials(
   pool:readonly PoolTrialRecord[],stages:readonly string[],
-  designationMatches:ReadonlySet<string>|null,query:string,
-  allowScreenedBaseline=false
+  designationMatches:ReadonlySet<string>|null,query:string
 ):PoolTrialRecord[]{
   const q=query.trim().toLowerCase();
   return pool.filter(row=>{
     if(!isPoolTrial(row))return false;
-    if(!allowScreenedBaseline&&!stages.length && designationMatches===null)return false;
+    if(!stages.length && designationMatches===null)return false;
     if(stages.length&&!stages.includes(normalizePoolStage(row.stage)))return false;
     if(designationMatches!==null&&!designationMatches.has(row.id))return false;
     if(q && ![row.id,row.ticker,row.company,row.drug,row.indication]
@@ -138,14 +137,13 @@ export function buildToolsResults(
   selectedStages:readonly string[],
   selectedDesignations:readonly DesignationKey[],
   query:string,offset:number,limit:number,
-  pipelineResearchNcts:ReadonlySet<string>|null=null,
-  allowScreenedBaseline=false
+  pipelineResearchNcts:ReadonlySet<string>|null=null
 ){
   const {poolRows,stageStats,sourceAsOf,sourceState}=snapshot;
   const matchingIds=index?selectToolTrialIds(poolRows,index,selectedDesignations):null;
   const designationCoverage=index&&selectedDesignations.length>0
     ?designationSourceCoverage(poolRows,index,selectedDesignations):null;
-  const poolMatches=filterToolTrials(poolRows,selectedStages,matchingIds,query,allowScreenedBaseline);
+  const poolMatches=filterToolTrials(poolRows,selectedStages,matchingIds,query);
   const filtered=pipelineResearchNcts===null?poolMatches:
     poolMatches.filter(row=>pipelineResearchNcts.has(row.id));
   const scopedDesignationMatches=matchingIds===null?null:pipelineResearchNcts===null?matchingIds:
@@ -184,9 +182,7 @@ export function buildToolsResults(
     },
     designationLinkage:index?{basis:"EXACT_NCT_AND_TICKER",sourceLinkedTrials:matchingIds?.size??0}:null,
     sourceIntegrity:"PARITY_VERIFIED",
-    caveat:allowScreenedBaseline
-      ?"Unfiltered baseline of exact-linked historical completed Phase 3 NCT screening records. Not independently qualified commercial programs or current market caps."
-      :"Published POOL inventory only; source may be partial. No FDA approval or Pipeline qualification inferred."
+    caveat:"Published POOL inventory only; source may be partial. No FDA approval or Pipeline qualification inferred."
   };
 }
 
