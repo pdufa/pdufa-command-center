@@ -10,6 +10,8 @@ import ToolsFunnel from "./ToolsFunnel";
 import ToolsOptionNumber from "./ToolsOptionNumber";
 import ToolsOpeningTrialGrid from "./ToolsOpeningTrialGrid";
 import ToolsAssessmentSection from "./ToolsAssessmentSection";
+import {TOOLS_CLEAR_EVENT,TOOLS_FILTERS_STORAGE_KEY,readToolsPreference,saveToolsPreference,
+  parseToolsFilterSelections,clearToolsPreferences} from "../lib/tools-selection-persistence";
 
 type StageCount={trials:number;standaloneResults:number;regulatoryEvents:number;total:number};
 type StageStats={
@@ -70,6 +72,27 @@ export default function PoolStageExplorer(){
   const [sourceDate,setSourceDate]=useState("");
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
+  const [selectionsRestored,setSelectionsRestored]=useState(false);
+  // Read saved checkboxes and search before the first filtered API request. Do not
+  // persist initial empty React defaults over the saved selections on hydration.
+  useEffect(()=>{
+    const saved=parseToolsFilterSelections(readToolsPreference(TOOLS_FILTERS_STORAGE_KEY),stages);
+    if(saved){
+      setSelectedStages(saved.selectedStages);
+      setSelectedDesignations(saved.selectedDesignations);
+      setActiveFilter(saved.activeFilter);
+      setQuery(saved.query);
+      setQueryInput(saved.queryInput);
+      setOffset(saved.offset);
+    }
+    setSelectionsRestored(true);
+  },[]);
+  useEffect(()=>{
+    if(!selectionsRestored)return;
+    saveToolsPreference(TOOLS_FILTERS_STORAGE_KEY,{
+      selectedStages,selectedDesignations,activeFilter,query,queryInput,offset
+    });
+  },[selectionsRestored,selectedStages,selectedDesignations,activeFilter,query,queryInput,offset]);
   const hasSelections=selectedStages.length>0||selectedDesignations.length>0;
   const params=useMemo(()=>{
     const p=new URLSearchParams({view:"pool",recordKind:"trials",tools:"1",offset:String(offset),limit:"50"});
@@ -86,6 +109,7 @@ export default function PoolStageExplorer(){
     return "/api/scope-funnel?"+p.toString();
   },[params]);
   useEffect(()=>{
+    if(!selectionsRestored)return;
     const controller=new AbortController();
     setPage(null);
     setLoading(true);setError("");
@@ -114,7 +138,7 @@ export default function PoolStageExplorer(){
       .catch(reason=>{if(!controller.signal.aborted){setPage(null);setError(reason instanceof Error?reason.message:"Unable to load POOL stage data");}})
       .finally(()=>{if(!controller.signal.aborted)setLoading(false);});
     return ()=>controller.abort();
-  },[params]);
+  },[params,selectionsRestored]);
   const stats=page?.stageStats||lastStats;
   const selectedPhaseTrials=selectedStages.reduce((sum,stage)=>sum+stageCount(stats?.stages[stage]),0);
   function toggleStage(stage:string){
@@ -143,8 +167,10 @@ export default function PoolStageExplorer(){
     // Clear both filter branches and the locally saved research-ranking checklists,
     // including those unmounted while the full POOL inventory is visible.
     clearAllTrialSelectors();
-    try{window.localStorage.removeItem("pdufa-tools-ranking-checklists-v1");}catch{/* Optional storage. */}
-    window.dispatchEvent(new Event("pdufa-tools-clear-all-selections"));
+    // Explicit global clear is the only action that forgets selections in all
+    // TOOLS sections. Individual "Clear This Section" buttons remain scoped.
+    clearToolsPreferences();
+    window.dispatchEvent(new Event(TOOLS_CLEAR_EVENT));
   }
   function clearPhaseSection(){
     changeStages([]);
