@@ -93,26 +93,10 @@ try{
     assert.ok(published.total>0,"Issuer $300M–$10B cap screen must include matched NCTs from the full POOL");
     assert.ok(published.spreadsheetRows.length>0);
     assert.match(published.spreadsheetRows[0].nctId,/^NCT\d{8}$/);
-    await page.waitForFunction(()=>{
-      const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return !!grid&&grid.textContent?.includes("Step 5 · Final Trials Spreadsheet — awaiting selection")&&
-        grid.querySelector("tbody")?.textContent?.includes("Select at least one Phase or Special Designation");
-    },null,{timeout:60000});
-    const spreadsheet=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
-    assert.ok(await spreadsheet.isVisible());
-    assert.match(await spreadsheet.locator("tbody").innerText(),/Select at least one Phase or Special Designation/);
-    assert.doesNotMatch(await spreadsheet.locator("tbody").innerText(),/NCT\d{8}/);
-    assert.equal(await spreadsheet.locator("tbody tr").count(),1,"No NCT rows must appear before a selection");
-    assert.match(await spreadsheet.innerText(),/0 trials shown · no selections/);
-    assert.equal(await spreadsheet.getByRole("button",{name:"Next 50"}).isDisabled(),true);
-    assert.equal(await page.locator("#tools-final-trial-spreadsheet").count(),1);
-    assert.equal(await page.locator('section[aria-label="Live trial inventory spreadsheet"]').count(),1,
-      "There must be only one continuously updating final trial spreadsheet");
-    assert.equal(await page.locator("#tools-final-trial-spreadsheet").evaluate(el=>el.nextElementSibling),null,
-      "The live spreadsheet must be the final direct TOOLS section");
-
-    assert.ok((await spreadsheet.boundingBox()).y>(await designation.boundingBox()).y,
-      "Opening inventory spreadsheet must be under the Phase / FDA first row");
+    assert.equal(await page.locator("#tools-final-trial-spreadsheet").count(),0,
+      "Step 5 must be fully hidden before any Step 3 item is checked");
+    assert.equal(await page.locator('section[aria-label="Live trial inventory spreadsheet"]').count(),0,
+      "The hidden Step 5 cannot contain a heading or an empty table");
     const invalidMix=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&inventory=1&stages=Phase%203&offset=0&limit=50");
     assert.equal(invalidMix.status(),422,"Inventory cannot misrepresent filtered matching records");
     const funnelAtTop=page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]');
@@ -138,9 +122,8 @@ try{
     await assertInvertedContrast(phase,"Selected Phase button");
     assert.equal(await page.locator("#tools-first-phase").count(),1);
     assert.equal(await page.locator("#tools-first-designation").count(),0);
-    assert.ok((await page.locator('section[aria-label="Live trial inventory spreadsheet"]').boundingBox()).y >
-      (await page.locator("#tools-first-phase").boundingBox()).y,
-      "The same trial table must move below the instantly revealed Phase choices");
+    assert.equal(await page.locator("#tools-final-trial-spreadsheet").count(),0,
+      "Opening the Step 3 Phase panel does not yet reveal Step 5");
     const directStages=page.locator("#tools-first-phase").getByRole("group",{name:"Clinical development stages"});
     const phaseBoxes=directStages.getByRole("checkbox");
     assert.equal(await phaseBoxes.count(),14,"Phase should reveal 14 choices immediately like FDA");
@@ -173,12 +156,8 @@ try{
     assert.equal(await clearPhase.count(),1);
     await clearPhase.click();
     assert.match(await phase.innerText(),/Select clinical stages/);
-    await page.waitForFunction(()=>{
-      const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return grid?.textContent?.includes("awaiting selection")&&
-        grid.querySelector("tbody")?.textContent?.includes("Select at least one Phase or Special Designation");
-    },null,{timeout:60000});
-    assert.doesNotMatch(await selectedGrid.locator("tbody").innerText(),/NCT\d{8}/,"Clearing the last checked Phase must immediately empty Step 5");
+    assert.equal(await page.locator("#tools-final-trial-spreadsheet").count(),0,
+      "Clearing the last checked Phase must hide Step 5 completely");
     assert.equal(await directStages.getByRole("checkbox").count(),14);
     const phase3Again=scopeResponse({stage:"Phase 3"});
     await phase3.check();
@@ -329,15 +308,9 @@ try{
     assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),1,
       "The top-of-page funnel remains visible even after Clear All Selections");
     assert.equal(await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').count(),0);
-    const restoredGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
-    await page.waitForFunction(()=>{
-      const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return grid?.textContent?.includes("awaiting selection")&&
-        grid.querySelector("tbody")?.textContent?.includes("Select at least one Phase or Special Designation");
-    },null,{timeout:60000});
-    assert.doesNotMatch(await restoredGrid.locator("tbody").innerText(),/NCT\d{8}/);
-    assert.match(await restoredGrid.innerText(),/0 trials shown · no selections/);
-    assert.equal(await restoredGrid.getByRole("button",{name:"Next 50"}).isDisabled(),true);
+    assert.equal(await page.locator("#tools-final-trial-spreadsheet").count(),0);
+    assert.equal(await page.locator('section[aria-label="Live trial inventory spreadsheet"]').count(),0,
+      "Clear All Selections must completely hide Step 5");
     await capture("04-cleared-to-start");
   });
   assert.deepEqual(pageErrors,[],"The mobile guided selection flow must not throw browser errors");
