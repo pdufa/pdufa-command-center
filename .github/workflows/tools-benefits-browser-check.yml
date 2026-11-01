@@ -4,6 +4,11 @@ on:
     branches: [main]
     paths:
       - 'new-platform/frontend/tests/tools-assessments-browser-e2e.mjs'
+      - 'new-platform/frontend/app/ToolsBenefitMatrix.tsx'
+      - 'new-platform/frontend/app/ToolsBenefitMatrix.module.css'
+      - 'new-platform/frontend/app/ToolsResultsSpreadsheet.tsx'
+      - 'new-platform/frontend/lib/benefit-assessments.ts'
+      - 'new-platform/frontend/data/benefit-assessment-research.json'
       - '.github/workflows/tools-benefits-browser-check.yml'
   workflow_dispatch:
 permissions:
