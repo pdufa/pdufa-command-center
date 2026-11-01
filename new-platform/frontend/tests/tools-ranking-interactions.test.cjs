@@ -9,7 +9,7 @@ for(const ext of [".ts",".tsx"])require.extensions[ext]=(mod,file)=>mod._compile
  ts.transpileModule(fs.readFileSync(file,"utf8"),{compilerOptions:{
  module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true
  }}).outputText,file);
-require.extensions[".css"]=mod=>{mod.exports=new Proxy({}, {get:(_,key)=>String(key)});};
+require.extensions[".css"]=mod=>{mod.exports=new Proxy({}, {get:(_,key)=>key==="__esModule"?false:String(key)});};
 const Component=require("../app/ToolsRankingChecklists.tsx").default;
 const {BENEFIT_GROUPS}=require("../lib/benefit-assessments.ts");
 global.IS_REACT_ACT_ENVIRONMENT=true;
