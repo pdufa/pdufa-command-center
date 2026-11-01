@@ -294,16 +294,16 @@ export default function PoolStageExplorer(){
     {/* The live inventory/results table always follows every filter, summary and research control. */}
     <div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
       <ToolsOpeningTrialGrid
-        rows={page?.spreadsheetRows||[]}
-        total={page?.total??0}
-        offset={offset}
-        nextOffset={page?.nextOffset??null}
+        rows={hasSelections?page?.spreadsheetRows||[]:[]}
+        total={hasSelections?page?.total??0:0}
+        offset={hasSelections?offset:0}
+        nextOffset={hasSelections?page?.nextOffset??null:null}
         inventoryMode={!hasSelections}
         selectedStages={selectedStages.length}
         selectedDesignations={selectedDesignations.length}
         noVerifiedNctLinks={!!page?.designationCoverage?.noVerifiedNctLinks}
-        loading={loading}
-        error={error}
+        loading={hasSelections&&loading}
+        error={hasSelections?error:""}
         sourceDate={sourceDate}
         sourceState={sourceState}
         regulatorySourcesAvailable={!!page?.regulatorySourcesAvailable}
