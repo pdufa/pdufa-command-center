@@ -147,3 +147,41 @@ test("the checked-in designation source parses without assigning historical issu
     assert.ok(keys.every(key=>values[key].status==="UNKNOWN"));
   }
 });
+
+
+test("reviewed 2026 crosswalk links drug- and indication-specific FDA programs to exact NCT trials",()=>{
+  const designationCsv=fs.readFileSync(path.join(__dirname,"../../../data/prediction_engine_designations.csv"),"utf8");
+  const candidateCsv=fs.readFileSync(path.join(__dirname,"../../../data/pdufa_candidates.csv"),"utf8");
+  const crosswalkCsv=fs.readFileSync(path.join(__dirname,"../../../data/fda_designation_nct_evidence.csv"),"utf8");
+  const i=lib.applyReviewedDesignationLinks(lib.buildDesignationIndex(designationCsv,candidateCsv,"2026-10-31T19:00:00Z"),crosswalkCsv);
+  assert.equal(i.linkageCoverage.verifiedNctCount,4);
+  assert.equal(i.linkageCoverage.verifiedClaimCount,14);
+  assert.ok(i.linkageAvailable);
+  assert.equal(i.availableKeys.rare_pediatric_disease,true);
+  const capr={id:"TRIAL|NCT03406780",nctId:"NCT03406780",ticker:"CAPR"};
+  const cort={id:"TRIAL|NCT04308590",nctId:"NCT04308590",ticker:"CORT"};
+  const srrk={id:"TRIAL|NCT05156320",nctId:"NCT05156320",ticker:"SRRK"};
+  const dyn={id:"TRIAL|NCT07608432",nctId:"NCT07608432",ticker:"DYN"};
+  for(const k of ["orphan_drug","priority_review","rmat","rare_pediatric_disease"])
+    assert.equal(lib.resolveTrialDesignations(capr,i)[k].status,"GRANTED",k);
+  assert.equal(lib.resolveTrialDesignations(cort,i).orphan_drug.verification,"FDA_VERIFIED");
+  for(const k of ["fast_track","orphan_drug","priority_review","rare_pediatric_disease"])
+    assert.equal(lib.resolveTrialDesignations(srrk,i)[k].status,"GRANTED",k);
+  for(const k of ["fast_track","breakthrough_therapy","orphan_drug","priority_review","rare_pediatric_disease"])
+    assert.equal(lib.resolveTrialDesignations(dyn,i)[k].status,"GRANTED",k);
+  assert.equal(lib.resolveTrialDesignations(dyn,i).accelerated_approval.status,"UNKNOWN",
+    "A requested accelerated approval pathway must not become granted approval");
+  assert.equal(lib.resolveTrialDesignations({...dyn,ticker:"WRONG"},i).priority_review.status,"UNKNOWN");
+  assert.equal(lib.resolveTrialDesignations({id:"TRIAL|NCT04610866",ticker:"AGIO"},i).orphan_drug.status,"UNKNOWN",
+    "Earlier same-company orphan designation for another indication must not propagate to sickle cell");
+});
+test("the reviewed crosswalk is fail-closed for missing files, fabricated trials and duplicate claims",()=>{
+  const designationCsv=fs.readFileSync(path.join(__dirname,"../../../data/prediction_engine_designations.csv"),"utf8");
+  const crosswalkCsv=fs.readFileSync(path.join(__dirname,"../../../data/fda_designation_nct_evidence.csv"),"utf8");
+  const make=()=>lib.buildDesignationIndex(designationCsv,null,"2026-10-31T19:00:00Z");
+  assert.throws(()=>lib.applyReviewedDesignationLinks(make(),""),/Invalid trial/);
+  assert.throws(()=>lib.applyReviewedDesignationLinks(make(),crosswalkCsv+"\n"+crosswalkCsv.split("\n")[1]),
+    /Duplicate reviewed designation claim/);
+  assert.throws(()=>lib.applyReviewedDesignationLinks(make(),crosswalkCsv.replace("https://clinicaltrials.gov/study/NCT03406780","https://clinicaltrials.gov/study/NCT99999999")),
+    /Unverifiable trial-to-designation row/);
+});
