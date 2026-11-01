@@ -73,6 +73,23 @@ try {
   const trialSelect=page.locator("#benefit-trial-picker");
   assert.ok(await trialSelect.isVisible(),"Mobile resultant-trial picker must be visible");
   assert.ok(await trialSelect.locator("option").count()>0);
+  // Verify a genuine primary registry lookup for the selected screened NCT.
+  const selectedNct=await trialSelect.inputValue();
+  assert.match(selectedNct,/^NCT\d{8}$/);
+  const sourceResponse=await page.request.get(base+"/api/registry-benefit-research?nct="+selectedNct,{timeout:50000});
+  assert.equal(sourceResponse.status(),200,"Primary-source registry evidence endpoint must work for screened NCT");
+  const sourcePacket=await sourceResponse.json();
+  assert.equal(sourcePacket.nctId,selectedNct);
+  assert.equal(sourcePacket.sourceUrl,"https://clinicaltrials.gov/study/"+selectedNct);
+  assert.equal(sourcePacket.comparisonVerified,false);
+  assert.equal(sourcePacket.benefitRank,null);
+  assert.equal(sourcePacket.fdaDecisionVerified,false);
+  assert.ok(Array.isArray(sourcePacket.primary));
+  assert.ok(Array.isArray(sourcePacket.seriousAdverseEvents));
+  const evidenceDetail=page.locator("#tools-benefit-assessments details[aria-label='Independent ClinicalTrials.gov source evidence "+selectedNct+"']");
+  assert.ok(await evidenceDetail.isVisible(),"Primary-source evidence panel must be visible on iPhone");
+  await evidenceDetail.locator("summary").click();
+  await evidenceDetail.getByText("Open exact ClinicalTrials.gov study").waitFor({timeout:40000});
   await groupSelect.selectOption("3");
   assert.match(await page.locator("#tools-benefit-assessments h4").innerText(),/^#3 — Clinical Benefit$/);
   assert.ok(await page.getByText("Competitive advantages · strongest first",{exact:true}).isVisible());
