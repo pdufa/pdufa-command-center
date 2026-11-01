@@ -11,7 +11,7 @@ export default function ToolsPage(){
     <header className={styles.header}>
       <p className={styles.eyebrow}>PDUFA · RESEARCH TOOLS</p>
       <h1>TOOLS</h1>
-      <p>Explore recorded clinical development stages and FDA special-designation evidence with two independent multi-select checklists. Counts load from saved source data, not estimates.</p>
+      <p>Start with Phase (1a/2) or Special Designation (1b/2). The next choices open only after you tap one.</p>
     </header>
     <PoolStageExplorer/>
   </main>;
