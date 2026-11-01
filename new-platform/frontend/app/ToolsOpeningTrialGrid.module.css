@@ -7,7 +7,7 @@
 .scroll table{border-collapse:collapse;font-size:12px;width:100%;min-width:830px}
 .scroll thead{position:sticky;top:0;z-index:1;background:#e9f2ed}
 .scroll th,.scroll td{padding:8px 10px;border-bottom:1px solid #e7eee9;text-align:left;vertical-align:top;white-space:nowrap}
-.scroll td:nth-child(4),.scroll td:nth-child(5),.scroll td:nth-child(6){min-width:135px;max-width:280px;white-space:normal}
+.scroll td:nth-child(4),.scroll td:nth-child(7),.scroll td:nth-child(8){min-width:135px;max-width:280px;white-space:normal}
 .scroll th button{border:0;padding:0;background:transparent;color:#174b31;font:750 12px Arial,Helvetica,sans-serif;cursor:pointer;text-align:left}
 .scroll tr:nth-child(even){background:#f9fcfa}
 .scroll a{color:#17674a}
@@ -19,3 +19,11 @@
 .pager button:disabled{opacity:.45;cursor:not-allowed}
 .source{margin:0;padding:0 12px 12px;font-size:10px;line-height:1.45;color:#546959}
 @media(max-width:600px){.heading{padding:8px}.heading h2{font-size:14px}.scroll{max-height:320px}.footer{padding:8px}.count{font-size:12px}.source{padding:0 8px 8px}}
+
+/* Source-verified calendar-day S/D cells next to Company; compact on iPhone. */
+.scroll th.dayHeading{min-width:86px;max-width:115px;white-space:normal;text-align:center}
+.scroll th.dayHeading small{display:block;font-size:10px;font-weight:600;line-height:1.25;margin-top:3px;color:#40684f}
+.scroll td.dayCell{min-width:88px;max-width:108px;text-align:center;font-variant-numeric:tabular-nums;font-weight:800;white-space:normal}
+.scroll td.dayCell a{color:#125c3e;text-decoration:underline}
+.dateUnknown{font-size:10px;font-weight:600;color:#64786a}
+@media(max-width:600px){.scroll th.dayHeading{min-width:72px}.scroll td.dayCell{min-width:72px}.scroll th.dayHeading small{font-size:9px}}
