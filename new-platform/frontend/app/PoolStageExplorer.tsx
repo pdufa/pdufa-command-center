@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect,useMemo,useState,type FormEvent} from "react";
-import type {DesignationKey} from "../lib/trial-designations";
+import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
 import PoolDesignationSelector from "./PoolDesignationSelector";
 import ToolsResultsSpreadsheet, {type ToolsSpreadsheetRow,type SelectedFiltersSummary} from "./ToolsResultsSpreadsheet";
@@ -124,6 +124,8 @@ export default function PoolStageExplorer(){
       selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
       selectedStages={selectedStages.length}
       totalStages={stages.length}
+      selectedStageLabels={selectedStages}
+      selectedDesignationLabels={selectedDesignations.map(key=>SPECIAL_DESIGNATION_CATEGORIES.find(item=>item.key===key)?.label||key)}
       selectedDesignations={selectedDesignations.length}
       designationUniqueTrials={page?.selectionSummary?.designationUniqueTrials??null}
       designationCoverage={page?.designationCoverage??null}
@@ -189,11 +191,8 @@ export default function PoolStageExplorer(){
     {hasSelections&&loading&&<p role="status">Calculating matching trial records from saved sources…</p>}
     {hasSelections&&error&&<p className={styles.error} role="alert">Results unavailable: {error} (not a verified zero).</p>}
     {!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials.</strong> Check a stage or FDA designation, or use the Phase 3 + Orphan Drug quick filter above.</p>}
-    {hasSelections&&page&&!loading&&selectedDesignations.length>0&&<p className={styles.muted}>
-      {page.designationCoverage?.noVerifiedNctLinks
-        ?count(page.designationCoverage.sourcePrograms)+" documented FDA application/program records have no verified NCT links. The trial count is not established, even with all phases selected."
-        :"FDA evidence is linked by exact NCT and ticker. "+count(page.designationLinkage?.sourceLinkedTrials??0)+" documented linked NCT trials match the selected designation categories before stage filtering (partial coverage)."
-      }
+    {hasSelections&&page&&!loading&&selectedDesignations.length>0&&!page.designationCoverage?.noVerifiedNctLinks&&<p className={styles.muted}>
+      FDA-filtered results: {count(page.designationLinkage?.sourceLinkedTrials??0)} documented linked NCT trials before stage filtering (partial evidence coverage).
     </p>}
     <ToolsResultsSpreadsheet
       rows={page?.spreadsheetRows||[]}
