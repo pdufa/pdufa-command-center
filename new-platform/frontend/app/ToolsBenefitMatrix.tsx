@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useMemo,useRef,useState} from "react";
-import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,rankAdvantages,type BenefitFeed,type BenefitRecord,type BenefitAdvantage,type BenefitGroup} from "../lib/benefit-assessments";
+import {BENEFIT_GROUPS,benefitForTrial,rankAdvantages,type BenefitFeed,type BenefitRecord,type BenefitAdvantage,type BenefitGroup} from "../lib/benefit-assessments";
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import css from "./ToolsBenefitMatrix.module.css";
 import RegistryBenefitEvidence from "./RegistryBenefitEvidence";
@@ -14,6 +14,8 @@ type Props={
   offset:number;
   loading:boolean;
   error:string;
+  benefitFeed:BenefitFeed|null;
+  benefitError:string;
 };
 const missing="Not assessed";
 const short=(value?:string)=>value?.trim()||"Not recorded";
@@ -47,9 +49,7 @@ function GroupAdvantage({record,group}:{record:BenefitRecord|null;group:BenefitG
     <RankedList list={ranked} empty="No comparator-specific, verified competitive advantage ranking is available for this assessment."/>
   </details>;
 }
-export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loading,error}:Props){
-  const [feed,setFeed]=useState<BenefitFeed|null>(null);
-  const [feedError,setFeedError]=useState("");
+export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loading,error,benefitFeed:feed,benefitError:feedError}:Props){
   const [registryCoverage,setRegistryCoverage]=useState<RegistryCoverage|null>(null);
   const [registryError,setRegistryError]=useState(false);
   const [active,setActive]=useState(1);
@@ -64,17 +64,6 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
     const left=header.offsetLeft-region.clientWidth/3;
     region.scrollTo({left:Math.max(0,left),behavior:"smooth"});
   },[active]);
-  useEffect(()=>{
-    const controller=new AbortController();
-    void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
-      .then(async response=>{
-        if(!response.ok)throw Error("Verified benefit research feed unavailable");
-        return parseBenefitFeed(await response.json());
-      })
-      .then(result=>{if(!controller.signal.aborted)setFeed(result);})
-      .catch(()=>{if(!controller.signal.aborted)setFeedError("Research evidence could not be verified. Assessment conclusions are withheld.");});
-    return ()=>controller.abort();
-  },[]);
   useEffect(()=>{
     const controller=new AbortController();
     void fetch("/api/registry-benefit-coverage",{cache:"no-store",signal:controller.signal})
@@ -149,7 +138,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
               const record=benefitForTrial(feed,row);
               return <tr key={row.id}>
                 <td className={css.pin1}>{offset+i+1}</td>
-                <td className={css.pin2}><strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
+                <td className={css.pin2}><strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={feed}/><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
                 <td className={css.pin3}>{short(row.drug)}</td><td className={css.pin4}>{short(row.indication)}</td>
                 {BENEFIT_GROUPS.map(g=>active===g.number
                   ?[...g.fields.map(f=><td key={f.id}><FieldValue record={record} id={f.id}/></td>),
@@ -169,7 +158,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
           </select>
           {selected&&<div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8}}>
             <strong>{short(selected.ticker)}</strong>
-            <TrialTimelineSummary timeline={selected.timeline} today={today} compact/>
+            <TrialTimelineSummary timeline={selected.timeline} today={today} compact trial={selected} benefitFeed={feed}/>
           </div>}
           <p className={css.subline}>{selected?short(selected.drug)+" · "+short(selected.indication):""}</p>
         </div>

@@ -61,9 +61,9 @@ test("TOOLS trial listing and 20-assessment table show the green counters after 
  const matrix=read("ToolsBenefitMatrix.tsx");
  const route=read("api/scope-funnel/route.ts");
  assert.ok(sheet.includes("<strong>{display(row.ticker)}</strong>"));
- assert.ok(sheet.includes("<TrialTimelineSummary timeline={row.timeline} today={today} compact/>"));
- assert.ok(matrix.includes("<strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/>"));
- assert.ok(matrix.includes("<TrialTimelineSummary timeline={selected.timeline} today={today} compact/>"));
+ assert.ok(sheet.includes("<TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/>"));
+ assert.ok(matrix.includes("<strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={feed}/>"));
+ assert.ok(matrix.includes("<TrialTimelineSummary timeline={selected.timeline} today={today} compact trial={selected} benefitFeed={feed}/>"));
  assert.ok(route.includes("trialTimelines=new Map<string,TimelineDates>"));
  assert.ok(route.includes("timeline:trialTimelines.get(row.nctId+"));
 });

@@ -172,7 +172,8 @@ export default function TrialComparison(){
             {present.map(t=><div key={t.key} style={{border:"1px solid #c6d3e0",borderRadius:8,padding:12}}>
               <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:10}}>
                 <h3 style={{fontSize:18,margin:0}}>{t.row.ticker}</h3>
-                <TrialTimelineSummary timeline={t.row.timeline} compact/>
+                <TrialTimelineSummary timeline={t.row.timeline} compact trial={t.row}
+                  peers={present.filter(peer=>peer.key!==t.key).map(peer=>peer.row)} benefitFeed={feed}/>
               </div>
               <p style={muted}>{t.row.drug} · {t.row.indication}</p>
               <p><strong>{t.evidence.verified}</strong> source-verified fields of {t.evidence.required}
