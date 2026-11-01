@@ -4,6 +4,8 @@ import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
 import css from "./ToolsOpeningTrialGrid.module.css";
+import {TOOLS_CLEAR_EVENT,TOOLS_RATINGS_STORAGE_KEY,readToolsPreference,saveToolsPreference}
+  from "../lib/tools-selection-persistence";
 type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
   inventoryMode:boolean;loading:boolean;error:string;
@@ -50,6 +52,25 @@ export default function ToolsOpeningTrialGrid({
   const [desc,setDesc]=useState(false);
   const [today,setToday]=useState("");
   const [expandedRatings,setExpandedRatings]=useState<RatingGroupKey[]>([]);
+  const [selectionsRestored,setSelectionsRestored]=useState(false);
+  useEffect(()=>{
+    const raw=readToolsPreference(TOOLS_RATINGS_STORAGE_KEY);
+    if(Array.isArray(raw)){
+      const allowed=new Set<string>(RATING_GROUPS.map(group=>group.key));
+      setExpandedRatings([...new Set(raw.filter((key):key is RatingGroupKey=>
+        typeof key==="string"&&allowed.has(key)))]);
+    }
+    setSelectionsRestored(true);
+  },[]);
+  useEffect(()=>{
+    if(!selectionsRestored)return;
+    saveToolsPreference(TOOLS_RATINGS_STORAGE_KEY,expandedRatings);
+  },[expandedRatings,selectionsRestored]);
+  useEffect(()=>{
+    const clear=()=>setExpandedRatings([]);
+    window.addEventListener(TOOLS_CLEAR_EVENT,clear);
+    return ()=>window.removeEventListener(TOOLS_CLEAR_EVENT,clear);
+  },[]);
   const toggleRating=(key:RatingGroupKey)=>setExpandedRatings(current=>current.includes(key)
     ?current.filter(value=>value!==key):[...current,key]);
   const columnsCount=1+columns.length+extraColumns+RATING_GROUPS.reduce((n,g)=>
