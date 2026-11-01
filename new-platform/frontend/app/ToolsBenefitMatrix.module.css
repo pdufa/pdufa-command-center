@@ -165,3 +165,19 @@
 .fullAssessmentItem:focus-visible,.fullAssessmentSelected:focus-visible{outline:3px solid #368bb4;outline-offset:1px}
 .fullAssessmentNumber{display:flex;align-items:center;justify-content:center;flex:0 0 25px;height:25px;font-size:12px;font-weight:800;border-radius:6px;border:1px solid currentColor}
 @media(max-width:800px){.fullAssessmentGrid{grid-template-columns:minmax(0,1fr)}.fullAssessmentItem,.fullAssessmentSelected{min-height:38px}}
+
+/* Step 4 workflow modes share one original 20-assessment catalog.
+   On mobile, mode choices fit into a short grid above the selected metric. */
+.modeBar{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.modeButton,.modeActive{flex:1 1 104px;min-height:36px;border:1px solid #acc5bc;border-radius:7px;padding:6px 9px;background:#fff;color:#265644;font-size:12px;font-weight:750;cursor:pointer}
+.modeActive,.modeActive:hover{background:#13543d;border-color:#13543d;color:#fff}
+.modeButton:focus-visible,.modeActive:focus-visible{outline:3px solid #368bb4;outline-offset:1px}
+.modeHint{font-size:11px;line-height:1.4;color:#52675f;margin:5px 2px}
+.evidenceSummary{font-size:11px;line-height:1.45;color:#426359;margin:6px 2px 4px}
+.evidenceSummary strong{color:#154f38}
+@media(max-width:800px){
+ .modeBar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+ .modeButton,.modeActive{min-height:34px;padding:5px 7px;font-size:11px;white-space:normal}
+ .step4Compact{margin-top:5px}
+ .step4MetricPicker{flex-basis:100%}
+}
