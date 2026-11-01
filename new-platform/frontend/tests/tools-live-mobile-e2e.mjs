@@ -108,6 +108,17 @@ try{
     assert.match(after,/16 source-backed FDA program records/);
     assert.match(after,/NCT count not established/);
     assert.doesNotMatch(after,/UNIQUE TRIALS MATCHING COMBINED FILTERS\s+0/);
+    const download=page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']")
+      .getByRole("link",{name:"Export FDA program records (CSV)"});
+    await download.waitFor();
+    const programs=await context.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&limit=50&offset=0&format=csv&designations=accelerated_approval&stages="+encodeURIComponent(
+      ["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3","Phase 3","Phase 3 Results","NDA/BLA Submission","FDA Acceptance","PDUFA Decision","Post-Decision","Phase 4","Not Applicable","Unknown"].join(",")
+    ),{timeout:90000});
+    assert.equal(programs.status(),200,"FDA program CSV export rejected");
+    assert.equal(programs.headers()["x-pdufa-record-type"],"FDA_PROGRAM_EVENT_NOT_NCT");
+    const csvText=await programs.text();
+    assert.match(csvText,/FDA PROGRAM EVENT — NOT A CLINICAL TRIAL/);
+    assert.equal(csvText.trim().split(/\r?\n/).length,17,"16 sourced programs plus one CSV header");
     await screenshot("03c-accelerated-approval-all-stages-unverified");
     await page.getByRole("button",{name:"Clear all filters"}).click();
   });
