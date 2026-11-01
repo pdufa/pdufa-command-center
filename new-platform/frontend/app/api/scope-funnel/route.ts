@@ -152,6 +152,16 @@ export async function GET(req:NextRequest) {
           reasonCode:"DESIGNATION_FIELD_NOT_TRACKED"
         },{status:422,headers:{"Cache-Control":"private, no-store"}});
       }
+      // A saved designation grant on an FDA application is not sufficient to
+      // associate that designation with a specific NCT trial. Do not report a
+      // fabricated zero when no exact application-to-NCT crosswalk exists.
+      if(selectedDesignations.length>0 && index
+        && Object.keys(index.trialEvents).length===0){
+        return NextResponse.json({
+          error:"No verified NCT-to-application links are recorded for the FDA designations. The stage filter remains available, but the combined trial total cannot be calculated from the current sources.",
+          reasonCode:"DESIGNATION_NCT_LINKAGE_UNAVAILABLE"
+        },{status:422,headers:{"Cache-Control":"private, no-store"}});
+      }
       const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,
         query,Number(offset),Number(limit));
       const datasetVersion=createHash("sha256")
