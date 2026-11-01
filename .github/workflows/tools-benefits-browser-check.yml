@@ -1,0 +1,38 @@
+name: TOOLS benefit assessment live browser verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/tests/tools-assessments-browser-e2e.mjs'
+      - '.github/workflows/tools-benefits-browser-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install WebKit runner
+        run: |
+          npm install --no-audit --no-fund --no-save playwright@1.56.1
+          npx playwright install --with-deps webkit
+      - name: Verify live iPhone and PC grouped benefits
+        run: node tests/tools-assessments-browser-e2e.mjs
+      - name: Save verified layout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tools-20-benefits-webkit-screenshots
+          path: new-platform/frontend/test-results/tools-assessments-browser/
+          retention-days: 7
+          if-no-files-found: ignore
