@@ -49,3 +49,30 @@
 .sectionTools .hint{flex:1;min-width:150px;margin:0}
 .sectionTools .clear{margin:0;flex-shrink:0;min-height:40px}
 .clear:disabled{opacity:.45;cursor:not-allowed}
+
+
+/* Invert the palette on active ranking buttons and selected criteria. */
+.panelHeader[aria-expanded="true"],
+.panelHeader[aria-expanded="true"]:hover,
+.panelHeader[aria-expanded="true"]:active{
+  background:#124e36;
+  color:#fff;
+}
+.activeItem > .choice{
+  background:#124e36;
+  color:#fff;
+  border-radius:6px;
+  padding:6px;
+}
+.activeItem > .choice > span:last-child{color:#fff}
+.activeItem > .choice > .numberCircle{
+  background:#fff;
+  color:#124e36;
+  border-color:#fff;
+}
+.activeItem > .choice input{accent-color:#b9f2d0}
+.clear:not(:disabled):active{
+  background:#124e36;
+  border-color:#0b3927;
+  color:#fff;
+}
