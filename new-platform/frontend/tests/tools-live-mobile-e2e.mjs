@@ -153,7 +153,7 @@ try{
     assert.equal(filtered.status(),200,"Restricted Phase 3 must produce a successful filtered API response");
     const selectedGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Step 5 · Final Trials Spreadsheet"),null,{timeout:45000});
-    assert.match(await selectedGrid.innerText(),/Restricted trial matches/);
+    assert.match(await selectedGrid.innerText(),/Step 5 · Final Trials Spreadsheet — filtered trial matches/);
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
     await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').waitFor();
     const bottomGrid=page.locator("#tools-final-trial-spreadsheet");
@@ -208,22 +208,31 @@ try{
     assert.equal(await fdaCounts.count(),13,"All 13 FDA choices must have trial-count labels like the Phase rows");
     assert.ok(await fdaCounts.first().isVisible());
     assert.equal(await fdaCounts.first().evaluate(el=>getComputedStyle(el).textAlign),"right");
+    // The main count is the independent all-phase FDA baseline, while a second
+    // line shows its intersection with the current Phase 3 selection.
+    await page.waitForFunction(expected=>{
+      const row=[...document.querySelectorAll('#tools-first-designation label')]
+        .find(el=>el.textContent?.includes("Fast Track Designation"));
+      return row?.textContent?.includes("all phases · documented NCTs · partial") &&
+        row?.textContent?.includes("Within selected Phase/search: "+expected);
+    },contextualPhaseCounts?.fast_track?.matchingTrials?.toLocaleString("en-US")??"—",{timeout:45000});
     for(const [i,key] of categories.entries()){
       const scoped=contextualPhaseCounts?.[key]??null;
+      const baseline=openingDesignationTotals[key]??null;
       const label=await fdaCounts.nth(i).innerText();
-      if(openingDesignationTotals[key]===null)assert.match(label,/Not tracked/);
+      if(baseline===null)assert.match(label,/Not tracked/);
       else {
-        assert.equal(label.split("\n")[0].replaceAll(",",""),
-          scoped===null?"—":String(scoped.matchingTrials),
-          "FDA "+key+" must prominently show the restricted Phase-3 NCT match count");
-        if(scoped)assert.match(label,/documented NCT matches · partial/);
-        else assert.match(label,/count unavailable/);
+        assert.equal(label.split("\n")[0].replaceAll(",",""),String(baseline.linkedNcts),
+          "FDA "+key+" primary count must stay independent of selected Phase 3");
+        assert.match(label,/all phases · documented NCTs · partial/);
+        assert.match(label,/Within selected Phase\/search:/);
+        assert.match(label,new RegExp("Within selected Phase/search: "+(scoped===null?"—":scoped.matchingTrials.toLocaleString("en-US"))));
         assert.match(label,/Full FDA total unknown/);
       }
     }
     for(const c of await fdaCounts.all()){
-      assert.match(await c.innerText(),/documented NCT matches|count unavailable|Not tracked/,
-        "Show documented NCT matching count as prominent figure and disclose incomplete full FDA totals");
+      assert.match(await c.innerText(),/all phases · documented NCTs · partial|count unavailable|Not tracked/,
+        "Show source-backed all-phase FDA baseline separately from Phase/search intersection");
     }
     const orphanOnly=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&designations=orphan_drug&offset=0&limit=50",{timeout:120000});
     assert.equal(orphanOnly.status(),200);
@@ -246,17 +255,17 @@ try{
         .find(el=>el.textContent?.includes("Orphan Drug Designation"));
       const count=row?.querySelector('strong[class*="toolsFdaRowCount"]');
       if(!count)return false;
-      return expected===null?count.textContent?.includes("count unavailable")
-        :count.textContent?.includes(expected.toLocaleString("en-US")+"documented NCT matches");
+      return expected===null?count.textContent?.includes("Within selected Phase/search: —")
+        :count.textContent?.includes("Within selected Phase/search: "+expected.toLocaleString("en-US"));
     },contextual?.matchingTrials??null,{timeout:45000});
     assert.match(await orphanCount.innerText(),
-      contextual===null?/count unavailable/:/documented NCT matches/,
-      "FDA badge must display the exact Phase/search-faceted trial count returned by the result API");
+      contextual===null?/Within selected Phase\/search: —/:new RegExp("Within selected Phase/search: "+contextual.matchingTrials.toLocaleString("en-US")),
+      "FDA badge must display the exact Phase/search intersection while keeping the all-phase baseline independent");
     if(contextual)assert.equal(contextual.nctIds.length,Math.min(40,contextual.matchingTrials));
     assert.match(await designation.innerText(),/1 selected/);
     assert.match(await phase.innerText(),/1 selected/);
     await fda.getByText(/source programs/).first().waitFor({timeout:20000});
-    assert.match(await fda.innerText(),/verified NCT matches|NCT count unknown/);
+    assert.match(await fda.innerText(),/documented NCT matches|NCT count unavailable/);
     const clearFda=fda.getByRole("button",{name:"Clear This Section"});
     assert.equal(await clearFda.count(),1);
     await clearFda.click();
