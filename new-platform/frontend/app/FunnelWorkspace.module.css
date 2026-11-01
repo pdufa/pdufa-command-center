@@ -342,3 +342,20 @@
  .toolsStartChoice small{font-size:10px}
  .toolsStartPanel{padding:8px}
 }
+
+
+/* Clear scopes stay distinct: whole TOOLS vs only the visible Phase/FDA branch. */
+.toolsStepHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+.toolsStepHeader h2{font-size:18px;font-weight:800;color:#173f2a;margin:0}
+.toolsStepHeader h3{font-size:14px;font-weight:750;color:#164633;margin:0}
+.toolsClearAll,.toolsClearSection{font:700 12px/1.3 Arial,Helvetica,sans-serif;border-radius:8px;min-height:40px;padding:9px 11px;cursor:pointer;touch-action:manipulation;white-space:normal;text-align:center}
+.toolsClearAll{border:1px solid #acaaa0;background:#faf7f1;color:#664422}
+.toolsClearSection{border:1px solid #b0c6b8;background:#f3f9f5;color:#23533a}
+.toolsClearAll:focus-visible,.toolsClearSection:focus-visible{outline:3px solid #2778c4;outline-offset:2px}
+.toolsClearSection:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:600px){
+ .toolsStepHeader{gap:5px}
+ .toolsStepHeader h2{font-size:15px;flex:1;min-width:125px}
+ .toolsStepHeader h3{font-size:13px;flex:1;min-width:135px}
+ .toolsClearAll,.toolsClearSection{font-size:11px;padding:8px 9px;min-height:42px}
+}
