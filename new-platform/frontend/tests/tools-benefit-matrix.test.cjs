@@ -60,7 +60,7 @@ test("TOOLS mounts assessment matrix before source trial audit, and has mobile/d
   const css=fs.readFileSync(path.join(__dirname,"../app/ToolsBenefitMatrix.module.css"),"utf8");
   assert.ok(page.indexOf("<ToolsBenefitMatrix")<page.indexOf("Matching trial records"));
   assert.match(matrix,/BENEFIT_GROUPS\.map/);
-  assert.match(matrix,/colSpan=\{active===g\.number\?6:1\}/);
+  assert.match(matrix,/colSpan=\{active===g\.number\?g\.fields\.length\+2:1\}/);
   assert.match(matrix,/id="benefit-group-picker"/);
   assert.match(matrix,/id="benefit-trial-picker"/);
   assert.match(matrix,/rankAdvantages\(evidence,active\)/);
