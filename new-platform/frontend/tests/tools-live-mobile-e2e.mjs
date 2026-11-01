@@ -60,6 +60,7 @@ async function assertInvertedContrast(locator,label){
 const phase=page.locator('[aria-controls="tools-first-phase"]');
 const designation=page.locator('[aria-controls="tools-first-designation"]');
 let openingDesignationTotals=null;
+let phaseOnlyContextCounts=null;
 const categories=["fast_track","breakthrough_therapy","priority_review","accelerated_approval",
   "orphan_drug","rmat","qidp","rare_pediatric_disease","tropical_disease_prv",
   "rare_pediatric_disease_prv","material_threat_mcm_prv","lpad","animal_rule"];
@@ -181,6 +182,7 @@ try{
     assert.equal(phaseOnly.status(),200);
     const phaseOnlyData=await phaseOnly.json();
     const contextualPhaseCounts=phaseOnlyData.contextualDesignationCounts;
+    phaseOnlyContextCounts=contextualPhaseCounts;
     const fdaCounts=fda.locator("strong[class*='toolsFdaRowCount']");
     // FDA source index loads independently of the POOL trial query. Wait for it
     // before asserting badge counts; initial placeholders are not finalized counts.
@@ -269,7 +271,7 @@ try{
     const withoutPhaseData=await (await noPhaseResponse).json();
     const previewAfterClear=withoutPhaseData.contextualDesignationCounts?.orphan_drug??null;
     assert.ok(previewAfterClear===null||previewAfterClear.matchingTrials>=0);
-    const previousScopeCount=phaseOnlyData.contextualDesignationCounts?.orphan_drug??null;
+    const previousScopeCount=phaseOnlyContextCounts?.orphan_drug??null;
     if(previewAfterClear&&previousScopeCount)
       assert.ok(previewAfterClear.matchingTrials>=previousScopeCount.matchingTrials);
     const phaseAgain=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
