@@ -157,9 +157,9 @@ export default function PoolStageExplorer(){
   }
   function submitSearch(event:FormEvent<HTMLFormElement>){event.preventDefault();setQuery(queryInput);setOffset(0);}
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
-    <div className={styles.toolsStart} aria-label="Step 1 — choose a filter">
+    <div className={styles.toolsStart} aria-label="Step 3 — filter by phase or FDA designation">
       <div className={styles.toolsStepHeader}>
-        <h2>Step 1 · What would you like to select?</h2>
+        <h2>Step 3 · What would you like to select?</h2>
         <button type="button" className={styles.toolsClearAll} onClick={clearAllToolsSelections}
           aria-label="Clear all selections throughout TOOLS">Clear All Selections</button>
       </div>
@@ -169,24 +169,24 @@ export default function PoolStageExplorer(){
       <div className={styles.toolsStartChoices}>
         <button type="button" className={styles.toolsStartChoice} aria-expanded={activeFilter==="phase"}
           aria-controls="tools-first-phase" onClick={()=>setActiveFilter(open=>open==="phase"?null:"phase")}>
-          <ToolsOptionNumber level={1} index={0} total={2}/>
+          <ToolsOptionNumber level={3} index={0} total={2}/>
           <span>Phase ({page?.restrictedScope?count(page.restrictedScope.screenedTrials):"—"})<small>{selectedStages.length?selectedStages.length+" selected":"Select clinical stages"}</small></span>
           <span aria-hidden="true">{activeFilter==="phase"?"▴":"▾"}</span>
         </button>
         <button type="button" className={styles.toolsStartChoice} aria-expanded={activeFilter==="designation"}
           aria-controls="tools-first-designation" onClick={()=>setActiveFilter(open=>open==="designation"?null:"designation")}>
-          <ToolsOptionNumber level={1} index={1} total={2}/>
+          <ToolsOptionNumber level={3} index={1} total={2}/>
           <span>Special Designation ({page?.designationScopeSummary?count(page.designationScopeSummary.documentedCategoryLinks):"—"})<small>{page?.designationScopeSummary?count(page.designationScopeSummary.documentedUniqueTrials)+" documented trials · partial":page&&page.regulatorySourcesAvailable===false?"FDA source unavailable":"Documented category links · partial"}{selectedDesignations.length?" · "+selectedDesignations.length+" selected":" · Select FDA categories"}</small></span>
           <span aria-hidden="true">{activeFilter==="designation"?"▴":"▾"}</span>
         </button>
       </div>
       {activeFilter==="phase"&&<div id="tools-first-phase" className={styles.toolsStartPanel}>
         <div className={styles.toolsStepHeader}>
-          <h3>Step 2 · Choose a clinical phase</h3>
+          <h3>Step 3A · Choose a clinical phase</h3>
           <button type="button" className={styles.toolsClearSection} onClick={clearPhaseSection}
             disabled={selectedStages.length===0}>Clear This Section</button>
         </div>
-        <p className={styles.muted}><strong>Step 2 Phase breakdown:</strong> {stats?count(stats.trials):"—"} NCT trials across 14 mutually exclusive recorded stages, all inside the $300M–$10B market-cap screen. The counts below do not change when FDA categories are checked.</p>
+        <p className={styles.muted}><strong>Step 3A Phase breakdown:</strong> {stats?count(stats.trials):"—"} NCT trials across 14 mutually exclusive recorded stages, all inside the $300M–$10B market-cap screen. The counts below do not change when FDA categories are checked.</p>
         {selectedStages.length>0&&<p role="status" className={styles.muted}>{selectedStages.length} stage choices selected · {count(selectedPhaseTrials)} NCT trials across those stages, before any FDA or text-search intersection.</p>}
         <div className={styles.stageDesignationPane}>
           <div className={styles.stageDesignationBody}>
@@ -209,13 +209,13 @@ export default function PoolStageExplorer(){
       </div>}
       {activeFilter==="designation"&&<div id="tools-first-designation" className={styles.toolsStartPanel}>
         <div className={styles.toolsStepHeader}>
-          <h3>Step 2 · Choose an FDA special designation</h3>
+          <h3>Step 3B · Choose an FDA special designation</h3>
           <button type="button" className={styles.toolsClearSection}
             onClick={()=>changeDesignations([])} disabled={selectedDesignations.length===0}>
             Clear This Section
           </button>
         </div>
-        <p className={styles.muted}><strong>Step 2 designation totals:</strong> {page?.designationScopeSummary?count(page.designationScopeSummary.documentedCategoryLinks)+" documented FDA category links across "+count(page.designationScopeSummary.documentedUniqueTrials)+" distinct NCTs":"FDA evidence being checked"} in the same $300M–$10B restricted trial pool. Counts are partial, not a complete FDA census.</p>
+        <p className={styles.muted}><strong>Step 3B designation totals:</strong> {page?.designationScopeSummary?count(page.designationScopeSummary.documentedCategoryLinks)+" documented FDA category links across "+count(page.designationScopeSummary.documentedUniqueTrials)+" distinct NCTs":"FDA evidence being checked"} in the same $300M–$10B restricted trial pool. Counts are partial, not a complete FDA census.</p>
         <PoolDesignationSelector guided selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}
           poolTotals={page?.designationTotals??null}
           contextCounts={page?.contextualDesignationCounts??null}
