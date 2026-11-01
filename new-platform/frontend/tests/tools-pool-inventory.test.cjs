@@ -7,7 +7,7 @@ for(const ext of [".ts",".tsx"])require.extensions[ext]=(mod,file)=>
     compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}
   }).outputText,file);
 const {
-  verifiedToolPool,selectToolTrialIds,toolsDesignationTotals,filterToolTrials,buildToolsResults,buildToolsOpeningInventory,renderToolsSpreadsheetCsv
+  verifiedToolPool,selectToolTrialIds,toolsDesignationTotals,toolsContextualDesignationCounts,filterToolTrials,buildToolsResults,buildToolsOpeningInventory,renderToolsSpreadsheetCsv
 }=require("../lib/tools-pool-inventory.ts");
 const trial=(nct,stage,ticker="ACME")=>({id:"TRIAL|"+nct,ticker,company:"Company",drug:"Drug",indication:"Disease",stage});
 const trials=[
@@ -128,7 +128,49 @@ test("FDA row totals equal the exact NCT+issuer trial filter, never raw index li
    "Not a matching issuer means no displayed NCT attribution to that FDA program");
  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
  assert.match(route,/designationTotals=index\?toolsDesignationTotals\(inventory.poolRows,index\):null/);
- assert.match(route,/spreadsheetRows,pipelineResearch,designationTotals,datasetVersion/);
+ assert.match(route,/spreadsheetRows,pipelineResearch,designationTotals,contextualDesignationCounts,datasetVersion/);
+});
+
+test("FDA counts recalculate from exact resultant Phase and search scope, not entire POOL",()=>{
+ const snapshot=verifiedToolPool(raw());
+ const expandedIndex={...index,trialEvents:{
+   NCT00000001:["ACME|one"],NCT00000003:["ACME|one"],
+   NCT99999999:["ACME|one"], // outside published POOL must not count
+   NCT00000002:["OTHER|unmatched"]
+ }};
+ const all=toolsContextualDesignationCounts(snapshot.poolRows,expandedIndex,[],"");
+ assert.equal(all.fast_track.matchingTrials,2);
+ assert.deepEqual(all.fast_track.nctIds,["NCT00000001","NCT00000003"]);
+ assert.equal(all.orphan_drug.matchingTrials,2);
+ assert.equal(all.priority_review,null,"Untracked designation must be unknown, not zero");
+ const phase1=toolsContextualDesignationCounts(snapshot.poolRows,expandedIndex,["Phase 1"],"");
+ assert.equal(phase1.fast_track.matchingTrials,1);
+ assert.deepEqual(phase1.fast_track.nctIds,["NCT00000001"]);
+ const phase3=toolsContextualDesignationCounts(snapshot.poolRows,expandedIndex,["Phase 3"],"");
+ assert.equal(phase3.fast_track.matchingTrials,1);
+ assert.deepEqual(phase3.fast_track.nctIds,["NCT00000003"]);
+ const phase2=toolsContextualDesignationCounts(snapshot.poolRows,expandedIndex,["Phase 2"],"");
+ assert.equal(phase2.fast_track.matchingTrials,0,
+   "Known NCT links outside selected Phase create zero documented matches within that Phase");
+ assert.deepEqual(phase2.fast_track.nctIds,[]);
+ const searched=toolsContextualDesignationCounts(snapshot.poolRows,expandedIndex,[],"NCT00000003");
+ assert.equal(searched.fast_track.matchingTrials,1);
+ assert.deepEqual(searched.fast_track.nctIds,["NCT00000003"]);
+ const empty=toolsContextualDesignationCounts(snapshot.poolRows,expandedIndex,["Phase 1"],"absent-disease");
+ assert.equal(empty.fast_track.matchingTrials,0);
+ const missing=toolsContextualDesignationCounts(snapshot.poolRows,{
+  ...expandedIndex,trialEvents:{}
+ },["Phase 1"],"");
+ assert.equal(missing.fast_track,null,"No documented NCT crosswalk is unknown, not a proven zero");
+ assert.equal(toolsContextualDesignationCounts(snapshot.poolRows,null,["Phase 1"],"").fast_track,null);
+ const phaseResults=buildToolsResults(snapshot,expandedIndex,["Phase 1"],["fast_track","orphan_drug"],"",0,1);
+ assert.equal(phaseResults.total,1,"OR designation matches overlap and must not be added to total");
+ assert.deepEqual(phaseResults.selectionSummary.designationSelectors.map(x=>x.linkedTrials),[1,1]);
+ assert.equal(phaseResults.selectionSummary.designationCountSum,2,
+   "Per-choice matches may overlap; the resultant unique-trial total must remain one");
+ const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
+ assert.match(route,/toolsContextualDesignationCounts\(\s*inventory.poolRows,index,selectedStages,query\)/);
+ assert.match(route,/spreadsheetRows,pipelineResearch,designationTotals,contextualDesignationCounts,datasetVersion/);
 });
 
 test("source parity failure and stale POOL never produce invented trial totals",()=>{
