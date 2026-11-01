@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,rankAdvantages,type BenefitFeed,type BenefitRecord,type BenefitAdvantage,type BenefitGroup} from "../lib/benefit-assessments";
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import css from "./ToolsBenefitMatrix.module.css";
@@ -48,6 +48,14 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
   const [feedError,setFeedError]=useState("");
   const [active,setActive]=useState(1);
   const [chosen,setChosen]=useState("");
+  const scrollRegion=useRef<HTMLDivElement|null>(null);
+  const groupHeaders=useRef<Record<number,HTMLTableCellElement|null>>({});
+  useEffect(()=>{
+    const region=scrollRegion.current,header=groupHeaders.current[active];
+    if(!region||!header||window.matchMedia("(max-width:800px)").matches)return;
+    const left=header.offsetLeft-region.clientWidth/3;
+    region.scrollTo({left:Math.max(0,left),behavior:"smooth"});
+  },[active]);
   useEffect(()=>{
     const controller=new AbortController();
     void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
@@ -89,11 +97,11 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
       loading?<div className={css.empty} role="status">Loading source-matched resultant trials…</div>:
       error?<div className={css.empty} role="alert">Trial evidence unavailable. Assessment rows have not been asserted.</div>:
       rows.length===0?<div className={css.empty} role="status">{total?"No records on this page. Use spreadsheet pagination below.":"No source-linked NCT trial records match these filters. This does not prove there are no eligible therapies."}</div>:<>
-      <div className={css.desktop} role="region" aria-label="Desktop horizontally scrollable 20-assessment spreadsheet" tabIndex={0}>
+      <div className={css.desktop} ref={scrollRegion} role="region" aria-label="Desktop horizontally scrollable 20-assessment spreadsheet" tabIndex={0}>
         <table className={css.matrixTable}>
           <thead>
             <tr><th className={css.identityHeading} colSpan={4} scope="colgroup">PROGRAM / NCT IDENTIFICATION</th>
-              {BENEFIT_GROUPS.map(g=><th key={g.number} colSpan={active===g.number?6:1}
+              {BENEFIT_GROUPS.map(g=><th key={g.number} ref={node=>{groupHeaders.current[g.number]=node;}} colSpan={active===g.number?g.fields.length+2:1}
                 className={active===g.number?css.activeHeading:css.groupHeading} scope="colgroup">
                 <button type="button" aria-pressed={active===g.number} onClick={()=>setActive(g.number)}>#{g.number} — {g.name} {active===g.number?"▴":"▾"}</button>
               </th>)}
