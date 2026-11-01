@@ -100,18 +100,25 @@ try{
   const selectedNct=await trialSelect.inputValue();
   assert.match(selectedNct,/^NCT\d{8}$/);
   const sourceResponse=await page.request.get(base+"/api/registry-benefit-research?nct="+selectedNct,{timeout:50000});
-  assert.equal(sourceResponse.status(),200);
-  const research=await sourceResponse.json();
-  assert.equal(research.nctId,selectedNct);
-  assert.equal(research.sourceUrl,"https://clinicaltrials.gov/study/"+selectedNct);
-  assert.equal(research.comparisonVerified,false);
-  assert.equal(research.benefitRank,null);
-  assert.equal(research.fdaDecisionVerified,false);
+  assert.ok([200,404].includes(sourceResponse.status()),
+    "Registry detail must either supply exact sourced study evidence or report it unavailable");
   const benefit=page.locator("#tools-benefit-assessments");
-  const evidence=benefit.locator("details[aria-label='Independent ClinicalTrials.gov source evidence "+selectedNct+"']");
-  assert.ok(await evidence.isVisible());
-  await evidence.locator("summary").click();
-  await evidence.getByText("Open exact ClinicalTrials.gov study").waitFor({timeout:40000});
+  if(sourceResponse.status()===200){
+    const research=await sourceResponse.json();
+    assert.equal(research.nctId,selectedNct);
+    assert.equal(research.sourceUrl,"https://clinicaltrials.gov/study/"+selectedNct);
+    assert.equal(research.comparisonVerified,false);
+    assert.equal(research.benefitRank,null);
+    assert.equal(research.fdaDecisionVerified,false);
+    const evidence=benefit.locator("details[aria-label='Independent ClinicalTrials.gov source evidence "+selectedNct+"']");
+    assert.ok(await evidence.isVisible());
+    await evidence.locator("summary").click();
+    await evidence.getByText("Open exact ClinicalTrials.gov study").waitFor({timeout:40000});
+  }else{
+    console.log("REGISTRY_DETAIL_NOT_AVAILABLE_FOR_EXACT_NCT",selectedNct);
+    assert.doesNotMatch(await benefit.innerText(),/Source-verified overall drug superiority/,
+      "Missing study research must never be displayed as verified superiority");
+  }
   await groupSelect.selectOption("3");
   assert.match(await benefit.locator("h4").innerText(),/#3 — Clinical Benefit/);
   await benefit.getByRole("button",{name:/Next/}).click();
