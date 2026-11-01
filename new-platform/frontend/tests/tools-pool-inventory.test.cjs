@@ -82,3 +82,12 @@ test("CSV exports all filtered rows and prevents spreadsheet formula execution",
   assert.match(csv,/'=HYPERLINK/);
   assert.match(csv,/NCT00000001/);
 });
+
+test("stage selector displays live computed trial matches under heading, not the entire POOL",()=>{
+  const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  assert.match(ui,/Clinical development stages<\/div>\s*<p className=\{styles\.stageTrialMatchCount\}/);
+  assert.match(ui,/!hasSelections\?"0 matching trials"/);
+  assert.match(ui,/page\?count\(page\.total\)\+" matching trials"/);
+  assert.match(ui,/error\?"Trial count unavailable"/);
+  assert.match(ui,/Calculated from selected stages and FDA designations/);
+});
