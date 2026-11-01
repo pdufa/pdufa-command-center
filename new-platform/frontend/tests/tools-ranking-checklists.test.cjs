@@ -72,8 +72,12 @@ test("independent left and right cards are collapsed, side-by-side on iPhone and
  const tools=source("ToolsResultsSpreadsheet.tsx");
  assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
  assert.match(css,/@media\(max-width:480px\)/);
- assert.equal((comp.match(/<details className=\{css.panel\}>/g)||[]).length,2);
- assert.match(comp,/<details className=\{css.results\}>/);
+ assert.equal((comp.match(/<div className=\{css.panel\}>/g)||[]).length,2);
+ assert.match(comp,/<div className=\{css.results\}>/);
+ assert.match(comp,/aria-expanded=\{rankPanelOpen\}/);
+ assert.match(comp,/aria-expanded=\{priorityPanelOpen\}/);
+ assert.match(comp,/aria-expanded=\{summaryPanelOpen\}/);
+ assert.match(css,/min-height:44px/);
  assert.match(comp,/Rank Trials By/);
  assert.match(comp,/Rank 20 Assessments/);
  assert.match(comp,/Selected Ranking Criteria/);
