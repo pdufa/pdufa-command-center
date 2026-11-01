@@ -21,6 +21,13 @@ async function openAuthenticated(viewport,isMobile){
   await page.locator('[aria-controls="tools-first-phase"]').waitFor({timeout:45000});
   assert.equal(await page.locator("#tools-benefit-assessments").count(),0,
     "Benefit matrix must remain hidden until the first Phase/FDA selection");
+  const opening=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
+  await opening.waitFor({timeout:50000});
+  assert.match(await opening.innerText(),/Published POOL/);
+  await page.waitForFunction(()=>{
+    const table=document.querySelector('section[aria-label="Live trial inventory spreadsheet"] tbody');
+    return table&&/NCT\d{8}/.test(table.textContent||"");
+  },null,{timeout:60000});
   assert.equal(await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').count(),0);
   assert.equal(await page.locator('[aria-controls="tools-first-phase"]').getAttribute("aria-expanded"),"false");
   assert.equal(await page.locator('[aria-controls="tools-first-designation"]').getAttribute("aria-expanded"),"false");
