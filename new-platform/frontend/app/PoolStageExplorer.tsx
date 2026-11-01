@@ -118,6 +118,7 @@ export default function PoolStageExplorer(){
     setQueryInput("");
   }
   function clearAllTrialSelectors(){
+    setActiveFilter(null);
     setSelectedStages([]);
     setExpandedStageGroup(null);
     setSelectedDesignations([]);
