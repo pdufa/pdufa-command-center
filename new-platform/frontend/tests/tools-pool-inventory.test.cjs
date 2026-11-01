@@ -88,7 +88,7 @@ test("POOL heading shows exactly one selector-calculated trial count and clinica
   assert.match(ui,/<h2>POOL<\/h2>\s*<p className=\{styles\.stageTrialMatchCount\}/);
   assert.equal((ui.match(/className=\{styles\.stageTrialMatchCount\}/g)||[]).length,1);
   assert.match(ui,/const matchingTrialLabel=!hasSelections\?"0 matching trials"/);
-  assert.match(ui,/page\?count\(page\.total\)\+" matching trials"/);
+  assert.match(ui,/selectedDesignations\.length>0\?count\(page\.total\)\+" documented linked trial matches \(partial\)"/);
   assert.match(ui,/error\?"Trial count unavailable"/);
   assert.match(ui,/<div className=\{styles\.stageDropdownLabel\}>Clinical development stages<\/div>/);
   assert.match(ui,/Counts beside each stage describe the full POOL/);
@@ -102,4 +102,17 @@ test("when FDA program evidence lacks an exact NCT crosswalk, TOOLS reports unav
   assert.match(route,/DESIGNATION_NCT_LINKAGE_UNAVAILABLE/);
   assert.match(route,/status:422/);
   assert.match(designations,/No reviewed trial-to-designation links/);
+});
+
+test("FDA selector discloses program source count and incomplete NCT crosswalk separately",()=>{
+  const fs=require("node:fs"),path=require("node:path");
+  const source=fs.readFileSync(path.join(__dirname,"../app/PoolDesignationSelector.tsx"),"utf8");
+  const sheet=fs.readFileSync(path.join(__dirname,"../app/ToolsResultsSpreadsheet.tsx"),"utf8");
+  assert.match(source,/Incomplete FDA-to-trial coverage/);
+  assert.match(source,/positiveProgramIds\.size/);
+  assert.match(source,/d\.records\.length\.toLocaleString/);
+  assert.match(source,/d\.linkedTrials>0/);
+  assert.match(source,/NCT count unknown/);
+  assert.match(sheet,/Partial FDA coverage/);
+  assert.match(sheet,/No documented NCT links match the selected filters/);
 });
