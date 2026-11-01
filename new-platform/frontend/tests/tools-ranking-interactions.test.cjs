@@ -155,8 +155,7 @@ test("Clear This Section preserves the other ranking list, while TOOLS global re
   assert.doesNotMatch(textOf(body(root,"tools-selected-ranking-body")),/Group #1/);
   assert.match(textOf(body(root,"tools-selected-ranking-body")),/Priority #1:\s*Original #3/,
     "Scoped clearing must not erase the right ranking");
-  fakeWindow.dispatchEvent(new Event("pdufa-tools-clear-all-selections"));
-  await act(async()=>{});
+  await act(async()=>fakeWindow.dispatchEvent(new Event("pdufa-tools-clear-all-selections")));
   assert.match(textOf(body(root,"tools-selected-ranking-body")||""),/^$/,
     "Global clearing should collapse the ranking summary");
   await click(root,"tools-selected-ranking-body");
