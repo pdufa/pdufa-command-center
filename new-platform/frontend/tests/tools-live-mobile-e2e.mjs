@@ -152,37 +152,54 @@ try{
     await page.locator('section[aria-label="POOL to PIPELINE to TRIALS filter flow"]').waitFor();
     const assessments=page.locator('section[id="tools-benefit-assessments"]');
     await assessments.waitFor();
+    const modeButtons=page.getByRole("group",{name:"Step 4 organization mode"});
+    assert.equal(await modeButtons.getByRole("button").count(),4,
+      "Four organization modes must be independently selectable");
     const step4Groups=page.getByRole("group",{name:"Step 4 five assessment groups"});
     assert.equal(await step4Groups.getByRole("button").count(),5,
-      "All twenty original assessments must remain organized into five compact categories");
+      "Default Category mode shows all five original assessment groups");
+    const metricPicker=page.getByRole("combobox",{name:"Step 4 assessment 4a1 through 4a20"});
     const detail=page.locator("#tools-step4-analysis");
     assert.equal(await detail.getAttribute("open"),null,
       "The large clinical assessment details must be collapsed by default");
     const all20=page.locator("#tools-step4-all20");
     assert.equal(await all20.getAttribute("open"),null,
       "The optional complete 1–20 list must be hidden by default");
+    await modeButtons.getByRole("button",{name:"Investment focus"}).click();
+    assert.equal(await metricPicker.locator("option").count(),9,
+      "Investment research shortlist must preserve nine original metric identities");
+    assert.equal(await metricPicker.inputValue(),"3",
+      "Investment focus starts with clinical benefit without implying a return forecast");
+    assert.match(await assessments.innerText(),/not a proven return forecast/);
+    await modeButtons.getByRole("button",{name:"Medical benefits"}).click();
+    assert.equal(await metricPicker.locator("option").count(),6,
+      "Medical benefits mode shows original metrics 4a3 through 4a8");
+    assert.equal(await metricPicker.inputValue(),"3");
+    await modeButtons.getByRole("button",{name:"All 20"}).click();
+    assert.equal(await metricPicker.locator("option").count(),20,
+      "All 20 mode exposes every canonical assessment through one selector");
     await all20.locator(":scope > summary").click();
     const all20Options=page.getByRole("group",{name:"Complete separate Step 4 assessment list 1 through 20"});
     assert.equal(await all20Options.getByRole("button").count(),20,
-      "The optional expanded list must contain all twenty original assessments");
+      "Optional expanded list also contains all twenty assessments");
     await all20Options.getByRole("button",{name:/^Assessment 20 of 20 —/}).click();
     assert.equal(await all20.getAttribute("open"),null,
-      "The optional full list closes after choosing an assessment");
+      "Complete list closes after choosing an assessment");
+    assert.equal(await metricPicker.inputValue(),"20",
+      "Full numbered list and selector must share the same chosen assessment");
+    await modeButtons.getByRole("button",{name:"Categories"}).click();
     assert.equal(await step4Groups.getByRole("button",{name:"4E Stock"}).getAttribute("aria-pressed"),"true",
-      "The complete list and five-group selector must share selection state");
-    assert.match(await detail.locator(":scope > summary").innerText(),/4a20 — Shareholder Upside and Risk/);
+      "Returning to Category mode must retain the group associated with assessment 20");
     await step4Groups.getByRole("button",{name:"4E Stock"}).click();
-    const metricPicker=page.getByRole("combobox",{name:"Step 4 assessment 4a1 through 4a20"});
     await metricPicker.selectOption("20");
-    assert.match(await detail.locator(":scope > summary").innerText(),/4a20 — Shareholder Upside and Risk/,
-      "4a20 must select the real assessment #20");
+    assert.match(await detail.locator(":scope > summary").innerText(),/4a20 — Shareholder Upside and Risk/);
     await detail.locator(":scope > summary").click();
     assert.match(await assessments.innerText(),/ASSESSMENT 20 OF 20/,
-      "Opening the disclosure must reveal the original assessment evidence");
+      "View analysis reveals the actual original research fields and their evidence");
     await detail.locator(":scope > summary").click();
     await step4Groups.getByRole("button",{name:"4A Patients"}).click();
     assert.equal(await metricPicker.inputValue(),"1",
-      "Changing groups must choose the group's first original numbered assessment");
+      "Choosing another category synchronizes its first original assessment");
     const bottomGrid=page.locator("#tools-final-trial-spreadsheet");
     assert.ok(await bottomGrid.evaluate(el=>{
       const analysis=document.querySelector('section[id="tools-benefit-assessments"]');
