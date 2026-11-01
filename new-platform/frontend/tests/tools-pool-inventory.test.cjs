@@ -161,8 +161,43 @@ test("selecting all 14 stages preserves designation-only unique NCT count",()=>{
 test("parity banner is shown only for all selected stages without active text search",()=>{
   const file=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
   assert.match(file,/selectedStages===totalStages/);
-  assert.match(file,/selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error/);
+  assert.match(file,/selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error&&!noNctLink/);
   assert.match(file,/designationUniqueTrials===selectedTrials/);
   assert.match(file,/All-stage check passed:/);
   assert.match(file,/Count mismatch: selecting every clinical stage/);
+});
+
+
+test("Accelerated Approval: 16 documented program records cannot become a claimed zero-trial outcome",()=>{
+  const path=require("node:path");
+  const {buildDesignationIndex}=require("../lib/trial-designations.ts");
+  const {designationSourceCoverage}=require("../lib/tools-pool-inventory.ts");
+  const source=fs.readFileSync(path.join(__dirname,"../../../data/prediction_engine_designations.csv"),"utf8");
+  const index=buildDesignationIndex(source,null,"2026-10-31T00:00:00Z");
+  const snapshot=verifiedToolPool(raw());
+  const coverage=designationSourceCoverage(snapshot.poolRows,index,["accelerated_approval"]);
+  assert.equal(coverage.sourcePrograms,16);
+  assert.equal(coverage.linkedNcts,0);
+  assert.equal(coverage.unlinkedPrograms,16);
+  assert.equal(coverage.noVerifiedNctLinks,true);
+  assert.equal(coverage.programRows.length,16);
+  assert.ok(coverage.programRows.every(row=>row.designations.some(d=>d.key==="accelerated_approval"&&d.source.startsWith("https://"))));
+  const only=buildToolsResults(snapshot,index,[],["accelerated_approval"],"",0,50);
+  const allStages=buildToolsResults(snapshot,index,require("../lib/pool-pipeline-funnel.ts").POOL_STAGES,["accelerated_approval"],"",0,50);
+  assert.equal(only.designationCoverage.sourcePrograms,16);
+  assert.equal(allStages.designationCoverage.sourcePrograms,16);
+  assert.equal(allStages.designationCoverage.noVerifiedNctLinks,true);
+  assert.equal(only.selectionSummary.noVerifiedNctLinks,true);
+  assert.equal(allStages.selectionSummary.noVerifiedNctLinks,true);
+});
+test("all-stage parity must not claim success for programs without any NCT links",()=>{
+  const path=require("node:path");
+  const funnel=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
+  const sheet=fs.readFileSync(path.join(__dirname,"../app/ToolsResultsSpreadsheet.tsx"),"utf8");
+  assert.match(funnel,/noNctLink\?"Not established"/);
+  assert.match(funnel,/Program-record counts must not be presented as verified trial counts/);
+  assert.match(sheet,/FDA source program records — not clinical trial counts/);
+  assert.match(sheet,/trialCountUnverified\?"Not established"/);
+  assert.match(sheet,/NCT link not established/);
+  assert.match(sheet,/programRows\.map\(/);
 });
