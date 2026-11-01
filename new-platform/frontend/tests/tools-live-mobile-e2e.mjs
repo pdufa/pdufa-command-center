@@ -177,20 +177,24 @@ try{
     assert.equal(await all.getByRole("checkbox").count(),13);
     assert.match(await all.innerText(),/2a\/13/);
     assert.match(await all.innerText(),/2m\/13/);
+    const phaseOnly=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&stages=Phase%202&offset=0&limit=50",{timeout:120000});
+    assert.equal(phaseOnly.status(),200);
+    const phaseOnlyData=await phaseOnly.json();
+    const contextualPhaseCounts=phaseOnlyData.contextualDesignationCounts;
     const fdaCounts=fda.locator("strong[class*='toolsFdaRowCount']");
     assert.equal(await fdaCounts.count(),13,"All 13 FDA choices must have trial-count labels like the Phase rows");
     assert.ok(await fdaCounts.first().isVisible());
     assert.equal(await fdaCounts.first().evaluate(el=>getComputedStyle(el).textAlign),"right");
     for(const [i,key] of categories.entries()){
-      const total=openingDesignationTotals[key];
-      const expected=total&&total.linkedNcts>0?String(total.linkedNcts):"?";
+      const scoped=contextualPhaseCounts?.[key]??null;
+      const expected=scoped===null?"?":String(scoped.matchingTrials);
       const label=await fdaCounts.nth(i).innerText();
-      if(total===null)assert.match(label,/Not tracked/);
+      if(openingDesignationTotals[key]===null)assert.match(label,/Not tracked/);
       else assert.equal(label.split("\n")[0].replaceAll(",",""),expected,
-        "FDA "+key+" row count must exactly equal source-verified POOL NCT matching count");
+        "FDA "+key+" badge must equal Phase-2 resultant NCT matches, not all-Phase POOL source links");
     }
     for(const c of await fdaCounts.all()){
-      assert.match(await c.innerText(),/linked NCTs|NCTs unknown|Not tracked/,
+      assert.match(await c.innerText(),/trial matches|NCTs unknown|Not tracked/,
         "Never show source-program counts as NCT counts or turn missing evidence into zero");
     }
     const orphanOnly=await page.request.get(base+"/api/scope-funnel?view=pool&recordKind=trials&tools=1&designations=orphan_drug&offset=0&limit=50",{timeout:120000});
@@ -224,7 +228,7 @@ try{
     assert.match(await designation.innerText(),/1 selected/);
     assert.match(await phase.innerText(),/1 selected/);
     await fda.getByText(/source programs/).first().waitFor({timeout:20000});
-    assert.match(await fda.innerText(),/linked NCTs|NCT count unknown/);
+    assert.match(await fda.innerText(),/matching NCTs|NCT count unknown/);
     const clearFda=fda.getByRole("button",{name:"Clear This Section"});
     assert.equal(await clearFda.count(),1);
     await clearFda.click();
@@ -243,9 +247,6 @@ try{
     await row.waitFor({timeout:15000});
     assert.equal(await row.isChecked(),true);
     const sectionClear=page.locator("#tools-first-phase").getByRole("button",{name:"Clear This Section"});
-    await sectionClear.click();
-    assert.match(await phase.innerText(),/Select clinical stages/);
-    assert.match(await designation.innerText(),/1 selected/,"Clearing Phase must preserve FDA choices");
     const noPhaseResponse=page.waitForResponse(response=>{
       try{const url=new URL(response.url());
         return url.pathname==="/api/scope-funnel" &&
@@ -254,11 +255,15 @@ try{
           !url.searchParams.has("stages");
       }catch{return false;}
     },{timeout:60000});
-    // The Phase removal must recompute FDA counts for the broader trial scope.
-    const withoutPhase=await noPhaseResponse;
-    const withoutPhaseData=await withoutPhase.json();
-    const previewAfterClear=withoutPhaseData.contextualDesignationCounts?.orphan_drug;
+    await sectionClear.click();
+    assert.match(await phase.innerText(),/Select clinical stages/);
+    assert.match(await designation.innerText(),/1 selected/,"Clearing Phase must preserve FDA choices");
+    const withoutPhaseData=await (await noPhaseResponse).json();
+    const previewAfterClear=withoutPhaseData.contextualDesignationCounts?.orphan_drug??null;
     assert.ok(previewAfterClear===null||previewAfterClear.matchingTrials>=0);
+    const previousScopeCount=phaseOnlyData.contextualDesignationCounts?.orphan_drug??null;
+    if(previewAfterClear&&previousScopeCount)
+      assert.ok(previewAfterClear.matchingTrials>=previousScopeCount.matchingTrials);
     const phaseAgain=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
     await row.check();
     assert.equal((await phaseAgain).status(),200);
