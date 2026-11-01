@@ -1,8 +1,8 @@
 .root{margin:12px 0 18px;max-width:100%;font-family:inherit;color:#18372b}
 .columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
 .panel,.results{border:1px solid #b5ccb9;border-radius:9px;background:#fff;min-width:0;max-width:100%;overflow:hidden}
-.panelHeader{cursor:pointer;list-style:disclosure-closed;padding:10px 10px;font-size:13px;font-weight:800;color:#164633;line-height:1.35;overflow-wrap:anywhere}
-.panel[open]>.panelHeader,.results[open]>.panelHeader{background:#eaf4ed;list-style:disclosure-open}
+.panelHeader{display:flex;align-items:center;justify-content:space-between;gap:5px;width:100%;border:0;background:#fff;text-align:left;appearance:none;cursor:pointer;padding:10px 10px;font-family:inherit;font-size:13px;font-weight:800;color:#164633;line-height:1.35;overflow-wrap:anywhere;touch-action:manipulation;min-height:44px}
+.panelHeader[aria-expanded="true"]{background:#eaf4ed}
 .panelHeader:focus-visible{outline:3px solid #3679b6;outline-offset:-3px}
 .panelBody{padding:8px 9px 11px;min-width:0}
 .hint{font-size:11px;color:#566c62;line-height:1.45;margin:0 0 9px}
