@@ -220,3 +220,21 @@ test("Accelerated Approval CSV exports all 16 FDA program events, not an empty N
   assert.match(route,/result\.designationCoverage\?\.noVerifiedNctLinks/);
   assert.match(route,/pdufa-tools-fda-program-records-unlinked\.csv/);
 });
+
+
+test("unlinked FDA source count is clearly visible in the TRIALS card but never labeled 16 trials",()=>{
+  const path=require("node:path");
+  const funnel=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
+  const selector=fs.readFileSync(path.join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  const css=fs.readFileSync(path.join(__dirname,"../app/FunnelWorkspace.module.css"),"utf8");
+  assert.match(funnel,/FDA APPLICATION \/ PROGRAM RECORDS/);
+  assert.match(funnel,/UNIQUE NCT TRIAL COUNT/);
+  assert.match(funnel,/num\(designationCoverage!\.sourcePrograms\)/);
+  assert.match(funnel,/NOT \{num\(designationCoverage!\.sourcePrograms\)\} distinct trials/);
+  assert.match(funnel,/role="group" aria-label="FDA program record count, not clinical trials"/);
+  assert.match(funnel,/SELECTED FILTERS/);
+  assert.match(funnel,/Stages: \{stagesLabel\}/);
+  assert.match(funnel,/FDA: \{designationsLabel\}/);
+  assert.match(selector,/selectedDesignationLabels=\{selectedDesignations\.map/);
+  assert.match(css,/\.toolsFunnelProgramBand\{display:flex/);
+});
