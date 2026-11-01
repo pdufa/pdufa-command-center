@@ -95,13 +95,16 @@ try{
     assert.match(published.spreadsheetRows[0].nctId,/^NCT\d{8}$/);
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return !!grid&&grid.textContent?.includes("Step 5 · Final Trials Spreadsheet")&&
-        /NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+      return !!grid&&grid.textContent?.includes("Step 5 · Final Trials Spreadsheet — awaiting selection")&&
+        grid.querySelector("tbody")?.textContent?.includes("Select at least one Phase or Special Designation");
     },null,{timeout:60000});
     const spreadsheet=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     assert.ok(await spreadsheet.isVisible());
-    assert.match(await spreadsheet.locator("tbody").innerText(),/NCT\d{8}/);
-    assert.equal(await spreadsheet.locator("tbody tr").count(),Math.min(50,published.total));
+    assert.match(await spreadsheet.locator("tbody").innerText(),/Select at least one Phase or Special Designation/);
+    assert.doesNotMatch(await spreadsheet.locator("tbody").innerText(),/NCT\d{8}/);
+    assert.equal(await spreadsheet.locator("tbody tr").count(),1,"No NCT rows must appear before a selection");
+    assert.match(await spreadsheet.innerText(),/0 trials shown · no selections/);
+    assert.equal(await spreadsheet.getByRole("button",{name:"Next 50"}).isDisabled(),true);
     assert.equal(await page.locator("#tools-final-trial-spreadsheet").count(),1);
     assert.equal(await page.locator('section[aria-label="Live trial inventory spreadsheet"]').count(),1,
       "There must be only one continuously updating final trial spreadsheet");
@@ -172,8 +175,10 @@ try{
     assert.match(await phase.innerText(),/Select clinical stages/);
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return grid?.textContent?.includes("Step 5 · Final Trials Spreadsheet")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+      return grid?.textContent?.includes("awaiting selection")&&
+        grid.querySelector("tbody")?.textContent?.includes("Select at least one Phase or Special Designation");
     },null,{timeout:60000});
+    assert.doesNotMatch(await selectedGrid.locator("tbody").innerText(),/NCT\d{8}/,"Clearing the last checked Phase must immediately empty Step 5");
     assert.equal(await directStages.getByRole("checkbox").count(),14);
     const phase3Again=scopeResponse({stage:"Phase 3"});
     await phase3.check();
@@ -327,9 +332,12 @@ try{
     const restoredGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     await page.waitForFunction(()=>{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
-      return grid?.textContent?.includes("Step 5 · Final Trials Spreadsheet")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
+      return grid?.textContent?.includes("awaiting selection")&&
+        grid.querySelector("tbody")?.textContent?.includes("Select at least one Phase or Special Designation");
     },null,{timeout:60000});
-    assert.match(await restoredGrid.locator("tbody").innerText(),/NCT\d{8}/);
+    assert.doesNotMatch(await restoredGrid.locator("tbody").innerText(),/NCT\d{8}/);
+    assert.match(await restoredGrid.innerText(),/0 trials shown · no selections/);
+    assert.equal(await restoredGrid.getByRole("button",{name:"Next 50"}).isDisabled(),true);
     await capture("04-cleared-to-start");
   });
   assert.deepEqual(pageErrors,[],"The mobile guided selection flow must not throw browser errors");
