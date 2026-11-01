@@ -144,7 +144,7 @@ try{
     assert.match(await directStages.innerText(),/2a\/14/);
     assert.match(await directStages.innerText(),/2n\/14/);
     assert.equal(await page.locator('#tools-first-phase [aria-controls^="tools-stage-group-"]').count(),0);
-    const phase3=directStages.getByRole("checkbox",{name:/^Phase 3(?!\/)/});
+    const phase3=directStages.getByRole("checkbox",{name:/^Phase 3(?:\s+[\d,]+)?$/});
     assert.ok(await phase3.isVisible(),"Individual Phase 3 checkbox is directly visible");
     const response=scopeResponse({stage:"Phase 3"});
     await phase3.check();
@@ -271,7 +271,7 @@ try{
     await phase.click();
     assert.equal(await page.locator("#tools-first-designation").count(),0);
     assert.equal(await page.locator("#tools-first-phase").count(),1);
-    const row=page.locator("#tools-first-phase").getByRole("checkbox",{name:/^Phase 3(?!\/)/});
+    const row=page.locator("#tools-first-phase").getByRole("checkbox",{name:/^Phase 3(?:\s+[\d,]+)?$/});
     await row.waitFor({timeout:15000});
     assert.equal(await row.isChecked(),true);
     const sectionClear=page.locator("#tools-first-phase").getByRole("button",{name:"Clear This Section"});
