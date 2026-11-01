@@ -189,7 +189,7 @@ test("the reviewed crosswalk is fail-closed for missing files, fabricated trials
   const designationCsv=fs.readFileSync(path.join(__dirname,"../../../data/prediction_engine_designations.csv"),"utf8");
   const crosswalkCsv=fs.readFileSync(path.join(__dirname,"../../../data/fda_designation_nct_evidence.csv"),"utf8");
   const make=()=>lib.buildDesignationIndex(designationCsv,null,"2026-10-31T19:00:00Z");
-  assert.throws(()=>lib.applyReviewedDesignationLinks(make(),""),/Invalid trial/);
+  assert.throws(()=>lib.applyReviewedDesignationLinks(make(),""),/Invalid trial|Empty source CSV/);
   assert.throws(()=>lib.applyReviewedDesignationLinks(make(),crosswalkCsv+"\n"+crosswalkCsv.split("\n")[1]),
     /Duplicate reviewed designation claim/);
   assert.throws(()=>lib.applyReviewedDesignationLinks(make(),crosswalkCsv.replace("https://clinicaltrials.gov/study/NCT03406780","https://clinicaltrials.gov/study/NCT99999999")),
