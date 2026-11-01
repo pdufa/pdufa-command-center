@@ -45,22 +45,22 @@ export default function TrialTimelineSummary({
   return <section aria-label="Trial Phase 3 and PDUFA date counters" style={{margin:compact?"0":"12px 0",minWidth:0,flex:compact?"1 1 390px":undefined}}>
     {caption&&<p style={{...note,marginBottom:8}}>{caption}</p>}
     <div style={{...grid,flexWrap:"wrap"}}>
-      <div style={panel}>
+      <div style={{...panel,padding:compact?"6px 9px":panel.padding,minWidth:compact?112:135,flex:compact?"1 1 140px":panel.flex}}>
         <div style={label}>DAYS SINCE PHASE 3</div>
-        <div style={value}>{metric.since}</div>
+        <div style={{...value,fontSize:compact?18:23}}>{metric.since}</div>
         {metric.release
           ?<small style={note}>Public results released {metric.release.date}
             {" · "}<a target="_blank" rel="noopener noreferrer" href={metric.release.sourceUrl}>Verified source</a></small>
-          :<small style={note}>Public pivotal results-release date not verified. Trial completion is not a readout.</small>}
+          :<small style={note}>{compact?"Date not verified":"Public pivotal results-release date not verified. Trial completion is not a readout."}</small>}
       </div>
-      <div style={panel}>
+      <div style={{...panel,padding:compact?"6px 9px":panel.padding,minWidth:compact?112:135,flex:compact?"1 1 140px":panel.flex}}>
         <div style={label}>DAYS TO PDUFA</div>
-        <div style={value}>{metric.until}</div>
+        <div style={{...value,fontSize:compact?18:23}}>{metric.until}</div>
         {metric.pdufa
           ?<small style={note}>FDA target {metric.pdufa.date}
             {" · "}<a target="_blank" rel="noopener noreferrer" href={metric.pdufa.sourceUrl}>Verified source</a></small>
-          :<small style={note}>No source-verified FDA PDUFA target for this exact program.</small>}
-        {metric.pdufa&&current&&<small style={note}>This is a target-date countdown, not an FDA decision outcome.</small>}
+          :<small style={note}>{compact?"Date not verified":"No source-verified FDA PDUFA target for this exact program."}</small>}
+        {metric.pdufa&&current&&!compact&&<small style={note}>This is a target-date countdown, not an FDA decision outcome.</small>}
       </div>
     </div>
   </section>;
