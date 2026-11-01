@@ -140,7 +140,7 @@ test("checking FDA category reveals program and linked-trial counts without chan
   await act(async()=>first.findByType("input").props.onChange());
   const evidence=root.root.findAllByProps({className:"toolsCascadeFdaEvidence"});
   assert.equal(evidence.length,1);
-  assert.match(textOf(evidence[0]),/1 source programs/);
+  assert.match(textOf(evidence[0]),/1 unscoped source programs/);
   assert.match(textOf(evidence[0]),/1 documented NCT matches/);
   const linked=evidence[0].findAllByType("a").filter(x=>textOf(x)==="NCT00000001");
   assert.equal(linked.length,1,"Expanded FDA category must list the actual NCT study link");
