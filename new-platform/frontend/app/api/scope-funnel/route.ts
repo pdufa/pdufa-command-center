@@ -78,9 +78,34 @@ function linkedDesignationTrialIds(data:FunnelResult,index:DesignationIndex,sele
   return matched;
 }
 
+// Immutable at build time: the same verified published-source NCT inventory
+// is refreshed by the scheduled, authenticated GitHub source snapshot audit.
+// Never serve a stale, unverified, corrupt or mismatched snapshot.
+let publishedToolSnapshot:ReturnType<typeof verifiedToolPool>|null=null;
+let publishedToolSnapshotChecked=false;
+async function publishedPoolSource():Promise<ReturnType<typeof verifiedToolPool>|null>{
+  if(publishedToolSnapshotChecked)return publishedToolSnapshot;
+  publishedToolSnapshotChecked=true;
+  try{
+    const file=join(process.cwd(),"data","tools-pool-snapshot.json");
+    const raw=JSON.parse(await readFile(file,"utf8")) as Record<string,unknown>;
+    const timestamp=typeof raw.snapshotGeneratedAt==="string"?Date.parse(raw.snapshotGeneratedAt):NaN;
+    if(!Number.isFinite(timestamp)||timestamp>Date.now()+300000||Date.now()-timestamp>36*3600000)
+      throw Error("Published static POOL snapshot expired");
+    if(raw.schemaVersion!==1)throw Error("Published static POOL schema mismatch");
+    publishedToolSnapshot=verifiedToolPool(raw);
+    return publishedToolSnapshot;
+  }catch{
+    // Freshness/parity errors fall back to the authenticated live backend.
+    return null;
+  }
+}
+
 let toolsCache:{at:number;value:ReturnType<typeof verifiedToolPool>}|null=null;
 let toolsActive:Promise<ReturnType<typeof verifiedToolPool>>|null=null;
 async function toolsPoolSource():Promise<ReturnType<typeof verifiedToolPool>>{
+  const published=await publishedPoolSource();
+  if(published)return published;
   if(toolsCache && Date.now()-toolsCache.at<60000)return toolsCache.value;
   if(toolsActive)return toolsActive;
   toolsActive=(async()=>{
