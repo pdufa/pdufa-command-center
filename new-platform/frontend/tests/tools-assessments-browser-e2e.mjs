@@ -73,7 +73,7 @@ try {
   assert.equal(await page.locator("#benefit-trial-picker").count(),0,
     "No trial selector or assessment rows without checked filters");
   assert.match(await page.locator("#tools-benefit-assessments").innerText(),/0 matching trials/);
-  const csv=page.getByRole("link",{name:/Export all matches/});
+  const csv=page.locator("a").filter({hasText:"Export all matches (CSV)"});
   assert.equal(await csv.getAttribute("aria-disabled"),"true",
     "No-selection state must disable trial export");
   await populate(page);
