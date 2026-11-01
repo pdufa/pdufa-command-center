@@ -43,7 +43,11 @@ async function populate(page){
   const body=await response.json();
   assert.ok(body.total>0 && Array.isArray(body.spreadsheetRows) &&
     body.spreadsheetRows.length>0,"All-stage selection returned no source-linked NCT rows");
-  await page.locator("#benefit-trial-picker").waitFor({state:"visible",timeout:50000});
+  if((page.viewportSize()?.width||0)<=800){
+    await page.locator("#benefit-trial-picker").waitFor({state:"visible",timeout:50000});
+  }else{
+    await page.locator('[aria-label="Desktop horizontally scrollable 20-assessment spreadsheet"] table').waitFor({state:"visible",timeout:50000});
+  }
   await page.waitForFunction(()=>{
     const s=document.querySelector("#tools-benefit-assessments");
     const picker=document.querySelector("#benefit-trial-picker");
