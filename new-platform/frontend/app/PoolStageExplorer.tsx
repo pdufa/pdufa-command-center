@@ -205,7 +205,7 @@ export default function PoolStageExplorer(){
         <PoolDesignationSelector guided selected={selectedDesignations} onChange={changeDesignations} poolTrialCount={stats?.trials??null}
           poolTotals={page?.designationTotals??null}
           contextCounts={page?.contextualDesignationCounts??null}
-          scopeStages={selectedStages} scopeQuery={query} scopeLoading={loading} scopeError={error}/>
+          scopeStages={selectedStages} scopeQuery={hasSelections?query:""} scopeLoading={loading} scopeError={error}/>
       </div>}
       {hasSelections&&<div className={styles.toolsStartSelected} role="status">
         <strong>{selectedStages.length} Phase selected · {selectedDesignations.length} Special Designation selected</strong>
