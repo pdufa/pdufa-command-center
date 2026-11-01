@@ -249,7 +249,7 @@ export default function PipelineFourViews(){
      <tbody>{visible.map(row=>{
       const c=assessmentCoverage(row,today);
       const inventory=validateComparatorInventory(row,row.competitorEvidence||[]);
-      return <tr key={row.nctId}><td>{row.nctId}</td><td><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/></td>
+      return <tr key={row.nctId}><td>{row.nctId}</td><td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/></div></td>
        <td>{named(row)}<small>{row.indication||"Not assessed"}</small></td>
        <td>{row.timeline?.phase3DataRelease?.date||"Not verified"}</td><td>{trialDay(row,"daysSinceReadout",today).value}</td><td>{row.timeline?.pdufaTarget?.date||"Not verified"}</td><td>{trialDay(row,"daysToPdufa",today).value}</td>
        {c.map(item=><td key={item.rank} title={item.summary}>{item.state==="NOT_ASSESSED"?"Not assessed":item.verified+" of "+item.required+" sourced"}</td>)}
@@ -266,7 +266,7 @@ export default function PipelineFourViews(){
       <tr>
        <td><button type="button" aria-expanded={selected===row.nctId} onClick={()=>setSelected(selected===row.nctId?null:row.nctId)}>{selected===row.nctId?"Close":"Expand"}</button></td>
        <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId} ↗</a></td>
-       <td><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/><small>{row.company}</small></td>
+       <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact/></div><small>{row.company}</small></td>
        <td>{named(row)}<small>{row.indication||"Indication not verified"}</small></td>
        <td>{trialDay(row,"daysSinceReadout",today).value}</td>
        <td>{trialDay(row,"daysToPdufa",today).value}</td>
