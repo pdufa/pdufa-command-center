@@ -62,7 +62,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     onChange(selected.includes(key)?selected.filter(item=>item!==key):[...selected,key]);
   }
   if(guided)return <div className={styles.toolsGuidedDesignation}>
-    <p className={styles.muted}>Check one or more source-supported FDA categories below. An option reveals its documented programs and linked trial evidence.</p>
+    <p className={styles.muted}>Counts at right show distinct, documented NCT matches in the published POOL across all phases, before any Phase or text filters. They are not FDA program totals. A ? means the full trial count is unknown.</p>
     {loading&&<p role="status" className={styles.muted}>Loading FDA source evidence…</p>}
     {error&&<p role="alert" className={styles.error}>FDA source unavailable: {error} <button type="button" onClick={retry}>Retry</button></p>}
     <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
@@ -121,7 +121,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
       <p>{index?supported.length+" of 13 FDA categories have a tracked source field":"Source availability not established"}.
         {index?" Source-index NCT crosswalk coverage (not matched POOL): "+auditedNcts.toLocaleString("en-US"):""}
         {poolTrialCount!==null?" of "+poolTrialCount.toLocaleString("en-US")+" in POOL":""}.</p>
-      <p>Program counts are not the number of distinct clinical trials. Unlinked evidence remains unknown, not zero.</p>
+      <p>FDA program counts are not distinct clinical-trial counts. The NCT figures use the same POOL, NCT-ID and ticker match as the trial spreadsheet. FDA-to-trial coverage is partial; missing evidence is unknown, not zero.</p>
     </details>
   </div>;
   return <div className={styles.stageDropdownColumn}>
