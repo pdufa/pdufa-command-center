@@ -474,7 +474,7 @@ test("restricted research screen is mandatory before TOOLS Phase and FDA facet c
   assert.match(route,/timeline:trialTimelines\.get/);
   assert.match(route,/pdufa-tools-selected-trials\.csv/);
   const funnel=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
-  assert.match(funnel,/TRIALS uses the dated \$300M–\$10B registry-completed Phase 3 research screen BEFORE either Phase or FDA selection/);
+  assert.match(funnel,/TRIALS first restricts the full published POOL by saved verified issuer market cap \$300M–\$10B/);
 });
 test("published TOOLS snapshot freshness is reevaluated after caching, not frozen on first read",()=>{
   const {isToolsSnapshotFresh,parseToolsSnapshotTimestamp,TOOLS_SNAPSHOT_MAX_AGE_MS}=
