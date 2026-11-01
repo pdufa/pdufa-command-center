@@ -226,7 +226,7 @@ export async function GET(req:NextRequest) {
           .filter(row=>row.poolStatus==="EXACT_MATCH" &&
             row.postPhase3Evidence==="REGISTRY_COMPLETED")
           .map(row=>"TRIAL|"+row.nctId));
-        trialTimelines=new Map(research.reviewRows
+        trialTimelines=new Map<string,TimelineDates>(research.reviewRows
           .filter(row=>row.poolStatus==="EXACT_MATCH" &&
             row.postPhase3Evidence==="REGISTRY_COMPLETED")
           .map(row=>[row.nctId+"|"+row.ticker.toUpperCase(),row.timeline]));
