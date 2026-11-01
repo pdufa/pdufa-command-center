@@ -54,11 +54,11 @@ try{
     assert.equal(published.inventoryMode,true);
     assert.ok(published.total>=10000,"Opening trials must come from the published full NCT POOL");
     assert.ok(published.spreadsheetRows.length>0);
-    assert.match(published.spreadsheetRows[0].nctId,/^NCT\\d{8}$/);
+    assert.match(published.spreadsheetRows[0].nctId,/^NCT\d{8}$/);
     await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Published POOL"),null,{timeout:60000});
     const spreadsheet=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     assert.ok(await spreadsheet.isVisible());
-    assert.match(await spreadsheet.locator("tbody").innerText(),/NCT\\d{8}/);
+    assert.match(await spreadsheet.locator("tbody").innerText(),/NCT\d{8}/);
     assert.equal(await spreadsheet.locator("tbody tr").count(),Math.min(50,published.total));
     assert.ok((await spreadsheet.boundingBox()).y>(await designation.boundingBox()).y,
       "Opening inventory spreadsheet must be under the Phase / FDA first row");
@@ -143,7 +143,7 @@ try{
     assert.equal(await page.locator('section[aria-label="Selected filters and matching clinical trials spreadsheet"]').count(),0);
     const restoredGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
     await page.waitForFunction(()=>document.querySelector('section[aria-label="Live trial inventory spreadsheet"]')?.textContent?.includes("Published POOL"),null,{timeout:60000});
-    assert.match(await restoredGrid.locator("tbody").innerText(),/NCT\\d{8}/);
+    assert.match(await restoredGrid.locator("tbody").innerText(),/NCT\d{8}/);
     await capture("04-cleared-to-start");
   });
   assert.deepEqual(pageErrors,[],"The mobile guided selection flow must not throw browser errors");
