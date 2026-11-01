@@ -74,6 +74,18 @@ try{
     assert.equal(await page.getByRole("checkbox",{name:/^Orphan Drug Designation/}).isChecked(),true);
     await screenshot("03-orphan-only");
   });
+  await check("all-stages-preserve-selected-designation-trial-count",async()=>{
+    // "Select all phases" is mathematically the same as an unrestricted stage
+    // selection, so the exact-NCT designation count cannot decrease.
+    await page.getByRole("button",{name:"Select all",exact:true}).click();
+    const checked=page.getByRole("group",{name:"Clinical development stages"})
+      .getByRole("checkbox",{checked:true});
+    assert.equal(await checked.count(),14);
+    await page.getByText(/All-stage check passed: 4 matched trials = 4 linked designation trials/).waitFor({timeout:45000});
+    const sameCount=page.locator("section[aria-label='Selected filters and matching clinical trials spreadsheet']");
+    assert.match(await sameCount.innerText(),/4 documented linked trial matches/);
+    await screenshot("03b-all-phases-orphan-parity");
+  });
   await check("one-tap-combined",async()=>{
     await page.getByText("Find Phase 3 + Orphan Drug trials",{exact:true}).click();
     await page.getByRole("checkbox",{name:/^Phase 3(?! Results)/}).waitFor();
