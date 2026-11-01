@@ -143,12 +143,26 @@ test("FDA selector discloses program source count and incomplete NCT crosswalk s
   assert.match(sheet,/No documented NCT links match the selected filters/);
 });
 
-test("zero filters show zero immediately and do not show a misleading loading spinner",()=>{
+test("TOOLS automatically loads source-screened Pipeline candidates with no optional filters",()=>{
   const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
-  assert.match(ui,/\{hasSelections&&loading&&<p role="status">Calculating matching trial records/);
-  assert.match(ui,/\{!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials/);
-  assert.match(ui,/loading=\{hasSelections&&loading\}/);
-  assert.match(ui,/error=\{hasSelections\?error:""\}/);
+  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
+  assert.match(ui,/const \[baselineMode,setBaselineMode\]=useState\(true\)/);
+  assert.match(ui,/p\.set\("baseline","1"\)/);
+  assert.match(ui,/hasResultsScope&&loading/);
+  assert.match(ui,/onShowBaseline=\{clearAllTrialSelectors\}/);
+  assert.match(route,/screenedBaseline && pipelineResearchNcts===null/);
+  assert.match(route,/buildToolsResults\(inventory,index,selectedStages,selectedDesignations,[\s\S]*?pipelineResearchNcts,screenedBaseline\)/);
+});
+test("screened baseline populates only the exact-NCT reconciled screen; legacy zero-selection helper remains strict",()=>{
+  const snapshot=verifiedToolPool(raw());
+  const base=new Set(["TRIAL|NCT00000003"]);
+  assert.equal(buildToolsResults(snapshot,null,[],[],"",0,50,base).total,0);
+  const result=buildToolsResults(snapshot,null,[],[],"",0,50,base,true);
+  assert.equal(result.total,1);
+  assert.equal(result.spreadsheetRows[0].nctId,"NCT00000003");
+  assert.equal(result.selectionSummary.selectedCount,0);
+  assert.equal(result.pipelineResearch,undefined);
+  assert.equal(buildToolsResults(snapshot,null,[],[],"irrelevant",0,50,base,true).total,0);
 });
 test("one tap chooses Phase 3 AND Orphan Drug, clears search and resets offset",()=>{
   const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
