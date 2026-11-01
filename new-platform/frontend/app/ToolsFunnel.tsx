@@ -34,9 +34,9 @@ export default function ToolsFunnel({
   const phaseOnly=selectedStages>0&&selectedDesignations===0;
   const noNctLink=selectedDesignations>0&&designationCoverage?.noVerifiedNctLinks===true;
   const trialStatus=!filterActive?"0":loading?"…":error?"Unavailable":
-    noNctLink?"Not established":!pipelineResearch?"Not verified":selectedTrials===null?"Unavailable":num(selectedTrials);
+    noNctLink?"Not established":selectedTrials===null?"Unavailable":num(selectedTrials);
   const allStages=selectedStages===totalStages;
-  const shouldCompare=selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error&&!noNctLink&&!!pipelineResearch;
+  const shouldCompare=selectedDesignations>0&&!searchActive&&allStages&&!loading&&!error&&!noNctLink;
   const parity=shouldCompare&&designationUniqueTrials!==null&&selectedTrials!==null
     ?designationUniqueTrials===selectedTrials:null;
   const date=sourceDate&&sourceDate!=="Not recorded"?sourceDate:"Date not available";
@@ -82,45 +82,39 @@ export default function ToolsFunnel({
         {selectedDesignations>0&&designationCoverage&&!loading&&!error
           ?<div className={styles.toolsFunnelUnlinkedResult} role="status" aria-live="polite" aria-atomic="true">
             <div className={styles.toolsFunnelNctUnknown} role="group" aria-label="Unique NCT clinical trial count">
-              <span>UNIQUE NCT TRIAL COUNT AFTER SCREEN</span>
+              <span>UNIQUE NCT TRIAL COUNT FROM SELECTED POOL</span>
               <strong>{trialStatus}</strong>
               <small>{noNctLink
                 ?"Exact trial IDs and clinical stages are not established for these FDA programs."
-                :"Documented matches after the dated PIPELINE screen and selected clinical stages; incomplete FDA-to-NCT evidence, not an exhaustive trial census."}</small>
+                :"Documented NCT-linked matches in the POOL after selected stages; FDA-to-NCT coverage may be incomplete."}</small>
             </div>
             <div className={styles.toolsFunnelProgramBand} role="group" aria-label="FDA program record count, not clinical trials">
               <span>FDA APPLICATION / PROGRAM RECORDS</span>
               <strong>{num(designationCoverage!.sourcePrograms)}</strong>
               <small>Documented programs — NOT {num(designationCoverage!.sourcePrograms)} distinct trials.
-                {" "}{num(designationCoverage!.linkedNcts)} crosswalk-linked NCTs in the unrestricted POOL before applying the dated PIPELINE screen.</small>
+                {" "}{num(designationCoverage!.linkedNcts)} crosswalk-linked NCTs in the unrestricted POOL.</small>
             </div>
           </div>
           :phaseOnly?<div role="status" aria-live="polite" aria-atomic="true">
-            <div className={styles.toolsFunnelValue}>{selectedPhasePoolTrials===null?"—":num(selectedPhasePoolTrials)}</div>
-            <p>Trials in selected POOL phase(s)</p>
-            <small>Before PIPELINE restrictions; not verified post–Phase 3 candidates.</small>
+            <div className={styles.toolsFunnelValue}>{trialStatus}</div>
+            <p>Matching trials from selected POOL phase(s)</p>
+            <small>Across the full published POOL; not restricted to post–Phase 3 PIPELINE eligibility.</small>
             <div className={styles.toolsFunnelPhaseScreen}>
-              <strong>After PIPELINE screen: {trialStatus}</strong>
-              <small>Dated $300M–$10B completed Phase 3 subset. The results spreadsheet below shows screened matches.</small>
+              <strong>All selected phase records: {selectedPhasePoolTrials===null?"—":num(selectedPhasePoolTrials)}</strong>
+              <small>Unrestricted stage count before optional text search; matching trial records appear below.</small>
             </div>
           </div>
           :<>
             <div className={styles.toolsFunnelValue} role="status" aria-live="polite" aria-atomic="true">{trialStatus}</div>
             <p>{selectedDesignations>0?"Documented linked NCT matches":"Selected clinical trial matches"}</p>
-            <small>{!pipelineResearch
-              ?"Dated Pipeline screen unavailable; POOL-only detail below is NOT a qualified count"
-              :filterActive
-                ?selectedDesignations>0
-                  ?"After the same dated Phase 3 screen; FDA-to-NCT evidence is partial"
-                  :"After the same dated Phase 3 screen and selected stages"
-                :"0 filters checked"}</small>
+            <small>{selectedDesignations>0
+              ?"Documented NCT-linked POOL matches; FDA-to-NCT evidence is partial"
+              :filterActive?"All recorded POOL trials matching selected phases":"0 filters checked"}</small>
           </>}
       </div>
     </div>
     <p className={styles.toolsFunnelIntegrity}>
-      {pipelineResearch
-        ?"TRIALS requires at least one selected clinical stage or FDA designation and intersects the dated screened NCT subset with those selections. "
-        :"TRIALS cannot show an after-restrictions count until the dated census reconciles. "}
+      {"TRIALS uses the published unrestricted POOL and requires at least one clinical stage or FDA designation. The dated PIPELINE screen is a separate research subset and does not filter these results. "}
       <strong>Current full PIPELINE eligibility is not yet verified.</strong>
       {sourceState==="PARTIAL"?" POOL source coverage: PARTIAL.":""}
     </p>

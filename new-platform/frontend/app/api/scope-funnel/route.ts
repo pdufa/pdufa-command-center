@@ -193,19 +193,12 @@ export async function GET(req:NextRequest) {
           reasonCode:"DESIGNATION_FIELD_NOT_TRACKED"
         },{status:422,headers:{"Cache-Control":"private, no-store"}});
       }
-      // A saved designation grant on an FDA application is not sufficient to
-      // associate that designation with a specific NCT trial. Do not report a
-      // fabricated zero when no exact application-to-NCT crosswalk exists.
-      if(selectedDesignations.length>0 && index
-        && Object.keys(index.trialEvents).length===0){
-        return NextResponse.json({
-          error:"No verified NCT-to-application links are recorded for the FDA designations. The stage filter remains available, but the combined trial total cannot be calculated from the current sources.",
-          reasonCode:"DESIGNATION_NCT_LINKAGE_UNAVAILABLE"
-        },{status:422,headers:{"Cache-Control":"private, no-store"}});
-      }
-      // A dated research screen, not certification of all live Pipeline restrictions.
+      // Designation records without a reviewed NCT crosswalk are still returned
+      // as regulatory PROGRAM RECORDS. They cannot be counted as clinical trials.
+      // Do not block the full POOL stage selector or conceal source-program rows.
+      // An optional, independent dated research screen; never gates full POOL results.
       // Reconcile the pinned $300M–$10B Phase 3 census to THIS exact POOL.
-      // If this independent census cannot be validated, withhold its count.
+      // If this independent census cannot be validated, withhold ONLY its count.
       let pipelineResearchNcts:Set<string>|null=null;
       let trialTimelines=new Map<string,TimelineDates>();
       try{
@@ -234,17 +227,11 @@ export async function GET(req:NextRequest) {
         // Never silently substitute full POOL or the historical 375 baseline
         // for a failed exact-NCT reconciliation.
       }
-      // Every TOOLS result is restricted to the same dated, exact-NCT
-      // Pipeline screening set. Optional stage/FDA filters must NEVER bypass
-      // this boundary when the screening data cannot be validated.
-      if(pipelineResearchNcts===null){
-        return NextResponse.json({
-          error:"Screened Pipeline source cannot be reconciled. All filtered trial rows and counts are withheld rather than showing unscreened POOL records.",
-          reasonCode:"PIPELINE_SCREEN_UNAVAILABLE"
-        },{status:503,headers:{"Cache-Control":"private, no-store"}});
-      }
+      // The independent dated Pipeline census is for the PIPELINE information
+      // card and optional verified date evidence ONLY. It does not narrow
+      // TOOLS selectors, which must operate on every published POOL trial.
       const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,
-        query,Number(offset),Number(limit),pipelineResearchNcts);
+        query,Number(offset),Number(limit));
       const pipelineResearch=pipelineResearchNcts===null?null:{
         screenedTrials:pipelineResearchNcts.size,
         screenDate:"2026-10-26",
@@ -264,12 +251,9 @@ export async function GET(req:NextRequest) {
             "X-PDUFA-Source-Version":datasetVersion
           }});
         }
-        const matches=index?selectToolTrialIds(inventory.poolRows,index,selectedDesignations):null;
-        if(pipelineResearchNcts===null)return NextResponse.json({
-          error:"The dated Pipeline screening source cannot be reconciled; restricted trial export is unavailable."
-        },{status:503,headers:{"Cache-Control":"private, no-store"}});
-        const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query)
-          .filter(row=>pipelineResearchNcts.has(row.id));
+        const matches=selectedDesignations.length>0&&index
+          ?selectToolTrialIds(inventory.poolRows,index,selectedDesignations):null;
+        const rows=filterToolTrials(inventory.poolRows,selectedStages,matches,query);
         if(rows.length>25000)return NextResponse.json({error:"Selection exceeds export row limit"},{status:413});
         const csv=renderToolsSpreadsheetCsv(rows,selectedStages,selectedDesignations,index,inventory.sourceAsOf);
         return new NextResponse(csv,{headers:{

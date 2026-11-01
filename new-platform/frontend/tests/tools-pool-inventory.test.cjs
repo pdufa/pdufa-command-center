@@ -99,37 +99,45 @@ test("TOOLS shows three bordered funnel cards without fabricating PIPELINE quali
   assert.match(page,/<div className=\{styles\.stageDropdownLabel\}>Clinical development stages<\/div>/);
 });
 
-test("screened Pipeline candidate IDs intersect stage and designation selections, including all stages",()=>{
+
+test("TOOLS selects full POOL even if only a small separate Pipeline subset is known",()=>{
   const {POOL_STAGES}=require("../lib/pool-pipeline-funnel.ts");
   const snapshot=verifiedToolPool(raw());
-  const research=new Set(["TRIAL|NCT00000001","TRIAL|NCT00000003"]);
-  const early=buildToolsResults(snapshot,null,["Phase 1"],[],"",0,50,research);
-  assert.equal(early.total,1);
-  const designationOnly=buildToolsResults(snapshot,index,[],["fast_track"],"",0,50,research);
-  const allStages=buildToolsResults(snapshot,index,POOL_STAGES,["fast_track"],"",0,50,research);
+  const pipelineSubset=new Set(["TRIAL|NCT00000003"]);
+  const early=buildToolsResults(snapshot,null,["Phase 1"],[],"",0,50,pipelineSubset);
+  assert.equal(early.total,1,"Phase 1 is visible in TOOLS regardless of Phase 3 Pipeline");
+  assert.equal(early.rows[0].id,"TRIAL|NCT00000001");
+  const phase3=buildToolsResults(snapshot,null,["Phase 3"],[],"",0,50,pipelineSubset);
+  assert.equal(phase3.total,1);
+  const designationOnly=buildToolsResults(snapshot,index,[],["fast_track"],"",0,50,pipelineSubset);
+  const allStages=buildToolsResults(snapshot,index,POOL_STAGES,["fast_track"],"",0,50,pipelineSubset);
   assert.equal(designationOnly.total,1);
-  assert.equal(allStages.total,designationOnly.total);
-  assert.equal(allStages.selectionSummary.designationUniqueTrials,designationOnly.total);
-  const outsideResearch=buildToolsResults(snapshot,index,[],["fast_track"],"",0,50,
-    new Set(["TRIAL|NCT00000003"]));
-  assert.equal(outsideResearch.total,0);
-  assert.equal(outsideResearch.selectionSummary.designationUniqueTrials,0);
+  assert.equal(allStages.total,1);
+  assert.equal(allStages.selectionSummary.designationUniqueTrials,1);
+  const and=buildToolsResults(snapshot,index,["Phase 3"],["fast_track"],"",0,50,pipelineSubset);
+  assert.equal(and.total,0,"AND between unrelated Phase 3 and Phase 1 designation yields zero");
   const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
-  assert.match(route,/reconcilePoolPipeline\(/);
-  assert.match(route,/pipelineResearchNcts/);
-  assert.match(route,/pipelineResearch/);
+  assert.match(route,/query,Number\(offset\),Number\(limit\)\);/);
+  assert.doesNotMatch(route,/query,Number\(offset\),Number\(limit\),pipelineResearchNcts/);
 });
 
-test("when FDA program evidence lacks an exact NCT crosswalk, TOOLS reports unavailable, not zero",()=>{
+test("FDA programs without verified NCT links remain visible as programs, not empty trial claims",()=>{
   const root=require("node:path").join(__dirname,"..");
   const route=fs.readFileSync(require("node:path").join(root,"app/api/scope-funnel/route.ts"),"utf8");
   const designations=fs.readFileSync(require("node:path").join(root,"app/PoolDesignationSelector.tsx"),"utf8");
-  assert.match(route,/Object\.keys\(index\.trialEvents\)\.length===0/);
-  assert.match(route,/DESIGNATION_NCT_LINKAGE_UNAVAILABLE/);
-  assert.match(route,/status:422/);
+  assert.doesNotMatch(route,/DESIGNATION_NCT_LINKAGE_UNAVAILABLE/);
+  assert.match(route,/renderUnlinkedFdaProgramCsv/);
+  assert.match(route,/trialTimelines/);
   assert.match(designations,/No reviewed trial-to-designation links/);
+  const snapshot=verifiedToolPool(raw());
+  const missingIndex={...index,trialEvents:{}};
+  const result=buildToolsResults(snapshot,missingIndex,[],["fast_track"],"",0,50);
+  assert.equal(result.total,0);
+  assert.equal(result.designationCoverage.sourcePrograms,1);
+  assert.equal(result.designationCoverage.noVerifiedNctLinks,true);
+  assert.throws(()=>buildToolsResults(snapshot,null,[],["fast_track"],"",0,50),
+    /FDA_DESIGNATION_EVIDENCE_UNAVAILABLE/);
 });
-
 test("FDA selector discloses program source count and incomplete NCT crosswalk separately",()=>{
   const fs=require("node:fs"),path=require("node:path");
   const source=fs.readFileSync(path.join(__dirname,"../app/PoolDesignationSelector.tsx"),"utf8");
@@ -140,7 +148,7 @@ test("FDA selector discloses program source count and incomplete NCT crosswalk s
   assert.match(source,/d\.linkedTrials>0/);
   assert.match(source,/NCT count unknown/);
   assert.match(sheet,/FDA source program records — not clinical trial counts/);
-  assert.match(sheet,/No documented NCT links match the selected filters/);
+  assert.match(sheet,/No documented NCT-linked POOL trials match both the chosen phases/);
 });
 
 test("TOOLS shows zero TRIALS and an empty spreadsheet when no phase or FDA designation is selected",()=>{
@@ -267,17 +275,17 @@ test("Accelerated Approval CSV exports all 16 FDA program events, not an empty N
 });
 
 
-test("all FDA selections keep program records visible even when linked NCT match is zero or one",()=>{
+
+test("all FDA selections retain separate program counts and exact linked NCT counts",()=>{
   const path=require("node:path");
   const funnel=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
   assert.match(funnel,/selectedDesignations>0&&designationCoverage&&!loading&&!error/);
   assert.match(funnel,/num\(designationCoverage!\.sourcePrograms\)/);
   assert.match(funnel,/num\(designationCoverage!\.linkedNcts\)/);
-  assert.match(funnel,/UNIQUE NCT TRIAL COUNT AFTER SCREEN/);
-  assert.match(funnel,/unrestricted POOL before applying the dated PIPELINE screen/);
-  assert.match(funnel,/incomplete FDA-to-NCT evidence/);
+  assert.match(funnel,/UNIQUE NCT TRIAL COUNT FROM SELECTED POOL/);
+  assert.match(funnel,/crosswalk-linked NCTs in the unrestricted POOL/);
+  assert.match(funnel,/FDA-to-NCT coverage may be incomplete/);
 });
-
 test("unlinked FDA source count is clearly visible in the TRIALS card but never labeled 16 trials",()=>{
   const path=require("node:path");
   const funnel=fs.readFileSync(path.join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
@@ -295,14 +303,17 @@ test("unlinked FDA source count is clearly visible in the TRIALS card but never 
   assert.match(css,/\.toolsFunnelProgramBand\{display:flex/);
 });
 
-test("optional FDA/stage requests cannot fall back to unscreened POOL when Pipeline screen fails",()=>{
+
+test("optional Pipeline readout data cannot suppress or fabricate TOOLS POOL results",()=>{
   const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
-  const guard=route.indexOf("if(pipelineResearchNcts===null){");
-  const filtered=route.indexOf("const result=buildToolsResults(inventory,index,selectedStages,selectedDesignations,");
-  assert.ok(guard>0&&filtered>guard,"unconditional missing-screen guard must precede all result building");
-  assert.match(route.slice(guard,filtered),/status:503/);
-  assert.match(route.slice(guard,filtered),/PIPELINE_SCREEN_UNAVAILABLE/);
-  assert.doesNotMatch(route,/if\(screenedBaseline && pipelineResearchNcts===null\)/);
+  assert.doesNotMatch(route,/PIPELINE_SCREEN_UNAVAILABLE/);
+  assert.doesNotMatch(route,/\.filter\(row=>pipelineResearchNcts\.has\(row\.id\)\)/);
+  assert.match(route,/const result=buildToolsResults\(inventory,index,selectedStages,selectedDesignations,/);
+  assert.match(route,/const rows=filterToolTrials\(inventory\.poolRows,selectedStages,matches,query\);/);
+  assert.match(route,/timeline:trialTimelines\.get/);
+  assert.match(route,/pdufa-tools-selected-trials\.csv/);
+  const funnel=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsFunnel.tsx"),"utf8");
+  assert.match(funnel,/The dated PIPELINE screen is a separate research subset and does not filter these results/);
 });
 test("published TOOLS snapshot freshness is reevaluated after caching, not frozen on first read",()=>{
   const {isToolsSnapshotFresh,parseToolsSnapshotTimestamp,TOOLS_SNAPSHOT_MAX_AGE_MS}=
