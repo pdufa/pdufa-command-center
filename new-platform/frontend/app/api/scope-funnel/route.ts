@@ -69,6 +69,19 @@ async function designationEvidence():Promise<DesignationIndex & {pdufaLinks:Tool
     {pdufaLinks:buildToolPdufaIndex(applications)}
   );
 }
+async function toolsMarketCapSources():Promise<{capsCsv:string;registryCsv:string}>{
+  const files=["phase_pipeline_market_caps.csv","company_registry.csv"];
+  const [capsCsv,registryCsv]=await Promise.all(files.map(async name=>{
+    const response=await fetch(DESIGNATION_SOURCE+name,{
+      next:{revalidate:300},signal:AbortSignal.timeout(20000)
+    });
+    if(!response.ok)throw Error("RESTRICTED_MARKET_CAP_SOURCE_UNAVAILABLE");
+    const csv=await response.text();
+    if(!csv||csv.length>2_000_000)throw Error("RESTRICTED_MARKET_CAP_SOURCE_INVALID");
+    return csv;
+  }));
+  return {capsCsv,registryCsv};
+}
 function linkedDesignationTrialIds(data:FunnelResult,index:DesignationIndex,selected:readonly DesignationKey[]):Set<string>{
   const matched=new Set<string>();
   for(const trial of data.poolRows){
@@ -192,33 +205,21 @@ export async function GET(req:NextRequest) {
     return NextResponse.json({error:"Invalid scope or pagination"},{status:422});
   try {
     if(toolMode){
-      // The selected Phase and FDA facets MUST have one common $300M–$10B
-      // completed-Phase-3 research subset. If the pinned census is unavailable,
-      // fail closed instead of silently reverting to 11,623 unrestricted trials.
-      const [fullInventory,index,csv,sourceJson]=await Promise.all([
+      // Single scope for both independent breakdowns: published NCT POOL
+      // -> listed issuer with saved, VERIFIED $300M–$10B cap
+      // -> Phase totals and FDA totals. No phase or completed-study requirement
+      // is imposed until the user explicitly chooses one.
+      const [fullInventory,index,marketCapSources]=await Promise.all([
         toolsPoolSource(),
         designationEvidence().catch(error=>{
           if(selectedDesignations.length)throw error;
           return null;
         }),
-        readFile(join(process.cwd(),"public","phase3-census-2026-10-26.csv"),"utf8"),
-        readFile(join(process.cwd(),"public","phase3-census-sources-2026-10-26.json"),"utf8")
+        toolsMarketCapSources()
       ]);
-      const research=reconcilePoolPipeline({
-        pipeline:fullInventory.poolRows,asOf:fullInventory.sourceAsOf,
-        sourceHealth:{
-          state:fullInventory.sourceState,
-          clinicalRows:fullInventory.stageStats.trials,
-          regulatoryRows:fullInventory.stageStats.standaloneResults+fullInventory.stageStats.regulatoryEvents,
-          pipelineSourceParity:{exactPrograms:fullInventory.poolRows.length}
-        }
-      },csv,JSON.parse(sourceJson));
       const {snapshot:inventory,scope:restrictedScope}=restrictedToolsSnapshot(
-        fullInventory,research.reviewRows,research.overview.censusAsOf);
-      const scopedNcts=new Set(inventory.poolRows.map(row=>row.id));
-      const trialTimelines=new Map<string,TimelineDates>(research.reviewRows
-        .filter(row=>scopedNcts.has("TRIAL|"+row.nctId)&&row.poolStatus==="EXACT_MATCH")
-        .map(row=>[row.nctId+"|"+row.ticker.toUpperCase(),row.timeline]));
+        fullInventory,marketCapSources.capsCsv,marketCapSources.registryCsv);
+      const trialTimelines=new Map<string,TimelineDates>();
       const designationTotals=index?toolsDesignationTotals(inventory.poolRows,index):null;
       const contextualDesignationCounts=toolsContextualDesignationCounts(
         inventory.poolRows,index,selectedStages,query);
@@ -229,17 +230,16 @@ export async function GET(req:NextRequest) {
           reasonCode:"DESIGNATION_FIELD_NOT_TRACKED"
         },{status:422,headers:{"Cache-Control":"private, no-store"}});
       }
-      // A registry-completed and dated market-cap research pointer is NOT
-      // final PIPELINE qualification. Listing, current cap, pivotal readout,
-      // commercial rights and upcoming PDUFA must still be verified.
+      // Source-program records remain separate from the market-cap-restricted
+      // trial count. Exact NCT evidence remains partial.
       const result=openingInventory
         ?buildToolsOpeningInventory(inventory,Number(offset),Number(limit))
         :buildToolsResults(inventory,index,selectedStages,selectedDesignations,
           query,Number(offset),Number(limit));
       const pipelineResearch={screenedTrials:restrictedScope.screenedTrials,
-        screenDate:restrictedScope.censusAsOf.slice(0,10),qualification:"NOT_VERIFIED" as const};
+        screenDate:restrictedScope.capAsOf.slice(0,10),qualification:"NOT_VERIFIED" as const};
       const datasetVersion=createHash("sha256")
-        .update(JSON.stringify({asOf:inventory.sourceAsOf,scope:restrictedScope.scope,censusAsOf:restrictedScope.censusAsOf,recordCount:inventory.poolRows.length}))
+        .update(JSON.stringify({asOf:inventory.sourceAsOf,scope:restrictedScope.scope,capAsOf:restrictedScope.capAsOf,recordCount:inventory.poolRows.length}))
         .digest("hex");
       if(format==="csv"){
         // Every TOOLS export uses the same restricted NCT set as both selectors.
