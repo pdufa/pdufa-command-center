@@ -74,6 +74,8 @@ export function selectToolTrialIds(
 export type ToolsDesignationTotal={
   linkedNcts:number;
   nctIds:string[];
+  /** POOL-reconciled NCT links, keyed by FDA program event. */
+  programNctIds:Record<string,string[]>;
 };
 export type ToolsDesignationTotals=Record<DesignationKey,ToolsDesignationTotal|null>;
 export function toolsDesignationTotals(
@@ -83,7 +85,19 @@ export function toolsDesignationTotals(
     if(!index.availableKeys?.[key])return [key,null];
     const matches=selectToolTrialIds(poolRows,index,[key]);
     const ncts=[...matches].map(id=>id.slice("TRIAL|".length)).sort();
-    return [key,{linkedNcts:matches.size,nctIds:ncts.slice(0,40)}];
+    const byProgram:Record<string,string[]>=Object.create(null);
+    for(const trial of poolRows){
+      if(!isPoolTrial(trial)||!matches.has(trial.id))continue;
+      const nct=trial.id.slice("TRIAL|".length);
+      for(const eventKey of index.trialEvents[nct]||[]){
+        const program=index.programs[eventKey];
+        const evidence=program?.designations[key];
+        if(!program||program.ticker!==trial.ticker.toUpperCase()||
+           evidence?.status!=="GRANTED"||evidence.verification==="UNVERIFIED"||!evidence.source)continue;
+        (byProgram[eventKey]??=[]).push(nct);
+      }
+    }
+    return [key,{linkedNcts:matches.size,nctIds:ncts.slice(0,40),programNctIds:byProgram}];
   })) as ToolsDesignationTotals;
 }
 
