@@ -84,8 +84,14 @@ test("right cascade opens two numbered choices and fields immediately, without e
   assert.match(textOf(sub),/2b\/2/);
   assert.ok(sub.findAllByType("input").length>0,"research fields are visible without a second click");
   await check(label(right(),"Original #3 — Clinical Benefit"),true);
+  assert.match(textOf(label(right(),"Original #6 — Competitive Advantage")),/1f\/20/);
+  assert.match(textOf(label(right(),"Original #3 — Clinical Benefit")),/1c\/20/);
   const select=right().findAllByType("select").find(el=>el.props["aria-label"]==="Priority of original assessment #3");
   await act(async()=>select.props.onChange({target:{value:"1"}}));
+  assert.match(textOf(label(right(),"Original #6 — Competitive Advantage")),/1f\/20/,
+    "option letter for original #6 must not change after priority reordering");
+  assert.match(textOf(label(right(),"Original #3 — Clinical Benefit")),/1c\/20/,
+    "option letter for original #3 must not change after priority reordering");
   await click(root,summaryId);
   const summary=()=>body(root,summaryId);
   assert.match(textOf(summary()),/Priority #1:\s*Original #3/);

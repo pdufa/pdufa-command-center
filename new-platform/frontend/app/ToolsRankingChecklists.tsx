@@ -149,7 +149,7 @@ export default function ToolsRankingChecklists(){
       <p className={css.hint}>Choose any original assessment. It immediately reveals two next steps: priority and optional research fields.</p>
       <StepHeading number="1">Choose original assessment(s) #1–#20</StepHeading>
       <div className={css.list}>
-        {assessmentList.map((id,index)=>{
+        {assessmentList.map(id=>{
           const rank=value.priorities.indexOf(id)+1;
           const fields=byId.get(id)!.fields;
           const selectedFields=value.priorityCriteria[String(id)]||[];
@@ -157,7 +157,7 @@ export default function ToolsRankingChecklists(){
             <label className={css.choice}>
               <input type="checkbox" checked={prioritySet.has(id)}
                 onChange={event=>setPriority(id,event.target.checked)}/>
-              <NumberCircle text={"1"+letter(index)+"/20"}/>
+              <NumberCircle text={"1"+letter(id-1)+"/20"}/>
               <span>Original #{id} — {name(id)}</span>
             </label>
             {rank>0&&<div className={css.children} data-cascade-for={"priority-"+id}>
