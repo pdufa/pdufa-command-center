@@ -54,15 +54,15 @@ test("unverified or malformed source input cannot become a clinical or competiti
   const wrongOverall=good();wrongOverall.records[0].overallAdvantages[0].id="foreign";
   assert.throws(()=>parseBenefitFeed(wrongOverall),/BENEFIT_OVERALL_RANK_INVALID/);
 });
-test("TOOLS mounts assessment matrix before source trial audit, and has mobile/desktop separate layouts",()=>{
-  const page=fs.readFileSync(path.join(__dirname,"../app/ToolsResultsSpreadsheet.tsx"),"utf8");
+test("Step 4 mounts all twenty linked assessment choices directly above Step 5; detailed audit remains optional",()=>{
+  const page=fs.readFileSync(path.join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  const section=fs.readFileSync(path.join(__dirname,"../app/ToolsAssessmentSection.tsx"),"utf8");
   const matrix=fs.readFileSync(path.join(__dirname,"../app/ToolsBenefitMatrix.tsx"),"utf8");
   const css=fs.readFileSync(path.join(__dirname,"../app/ToolsBenefitMatrix.module.css"),"utf8");
-  assert.ok(page.indexOf("Matching trial records")<page.indexOf("<ToolsBenefitMatrix"),
-    "Keep the Step 4 assessment matrix immediately before the separate Step 5 final live spreadsheet");
-  assert.ok(page.indexOf('<div className={styles.toolsSheetMetrics}')<page.indexOf("<ToolsBenefitMatrix"));
-  assert.ok(page.indexOf("Selected selectors &amp; documented trial matches")<page.indexOf("<ToolsBenefitMatrix"),
-    "Move Step 4 numbered assessment choices and matrix next to the final Step 5 spreadsheet");
+  assert.ok(page.indexOf("<ToolsAssessmentSection")<page.indexOf('id="tools-final-trial-spreadsheet"'));
+  assert.ok(page.indexOf('id="tools-final-trial-spreadsheet"')<page.indexOf("<ToolsResultsSpreadsheet"));
+  assert.match(section,/<ToolsBenefitMatrix/);
+  assert.doesNotMatch(fs.readFileSync(path.join(__dirname,"../app/ToolsResultsSpreadsheet.tsx"),"utf8"),/<ToolsBenefitMatrix/);
   assert.match(matrix,/BENEFIT_GROUPS\.map/);
   assert.match(matrix,/aria-label="Step 4 numbered assessments 4a1 through 4a20"/);
   assert.match(matrix,/\{"4a"\+g\.number\}/);
