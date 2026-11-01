@@ -498,7 +498,7 @@ test("published TOOLS snapshot freshness is reevaluated after caching, not froze
 
 test("final live spreadsheet stays below every TOOLS selection and analysis section",()=>{
   const source=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
-  const head=source.indexOf('aria-label="Step 1 — choose a filter"');
+  const head=source.indexOf('aria-label="Step 3 — filter by phase or FDA designation"');
   const stage=source.indexOf('id="tools-first-phase"');
   const fda=source.indexOf('id="tools-first-designation"');
   const funnel=source.indexOf('<ToolsFunnel');
