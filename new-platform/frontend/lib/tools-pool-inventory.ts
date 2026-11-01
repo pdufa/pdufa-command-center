@@ -30,7 +30,7 @@ export function verifiedToolPool(raw:unknown):{
      parity.exactPrograms!==rows.length||
      !Number.isSafeInteger(health.clinicalRows)||
      !Number.isSafeInteger(health.regulatoryRows)||
-     health.clinicalRows!+health.regulatoryRows!==rows.length||
+     health.clinicalRows!+health.regulatoryRows! !==rows.length||
      rows.some(row=>!row||typeof row.id!=="string"||typeof row.ticker!=="string"||
        typeof row.stage!=="string") ||
      new Set(rows.map(row=>row.id)).size!==rows.length){
