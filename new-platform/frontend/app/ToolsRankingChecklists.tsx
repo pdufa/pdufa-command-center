@@ -66,93 +66,151 @@ export default function ToolsRankingChecklists(){
   const move=(id:number,rank:number)=>setValue(prev=>({
     ...prev,priorities:movePriority(prev.priorities,id,rank)
   }));
+  // Presentation-only navigation. Selection remains independent and saved.
+  const [activePanel,setActivePanel]=useState<"trials"|"assessments"|null>(null);
+  const [activeGroup,setActiveGroup]=useState<number|null>(null);
+  const [activeAssessment,setActiveAssessment]=useState<number|null>(null);
+  const [activePriority,setActivePriority]=useState<number|null>(null);
+  const enterGroup=(id:number)=>{
+    if(!value.groupIds.includes(id))setGroups(id,true);
+    setActiveGroup(id);setActiveAssessment(null);
+  };
+  const enterAssessment=(id:number)=>{
+    if(!value.groupAssessments.includes(id))setAssessment(id,true);
+    setActiveAssessment(id);
+  };
+  const enterPriority=(id:number)=>{
+    if(!value.priorities.includes(id))setPriority(id,true);
+    setActivePriority(id);
+  };
+  const currentGroup=TOOLS_RANKING_GROUPS.find(g=>g.id===activeGroup);
+  const currentAssessment=activeAssessment===null?null:byId.get(activeAssessment);
+  const currentPriority=activePriority===null?null:byId.get(activePriority);
   return <section className={css.root} aria-label="Independent cascading ranking checklists">
     <div className={css.columns}>
-      <div className={css.panel}>
-        <button type="button" className={css.panelHeader} aria-expanded={rankPanelOpen}
-          aria-controls="tools-rank-trials-body" onClick={()=>setRankPanelOpen(open=>!open)}>
-          <span>Rank Trials By</span><span aria-hidden="true">{rankPanelOpen?"⌃":"⌄"}</span>
-        </button>
-        {rankPanelOpen&&<div id="tools-rank-trials-body" className={css.panelBody}>
-          <p className={css.hint}>Check a group, then its assessments, then the exact research fields.</p>
-          <div className={css.list}>
-            {TOOLS_RANKING_GROUPS.map(group=>{
-              const checked=value.groupIds.includes(group.id);
-              return <div key={group.id} className={css.group}>
-                <label className={css.choice}>
-                  <input type="checkbox" checked={checked} onChange={e=>setGroups(group.id,e.target.checked)}/>
-                  <span><strong>#{group.id}</strong> — {group.title}</span>
-                </label>
-                {checked&&<div className={css.children}>
-                  {group.assessmentIds.map(id=>{
-                    const assessment=byId.get(id)!;
-                    const active=value.groupAssessments.includes(id);
-                    const selectedFields=value.groupCriteria[String(id)]||[];
-                    return <div key={id} className={css.assessment}>
-                      <label className={css.choice}>
-                        <input type="checkbox" checked={active} onChange={e=>setAssessment(id,e.target.checked)}/>
-                        <span><strong>#{id}</strong> — {assessment.name}</span>
-                      </label>
-                      {active&&<div className={css.fields}>
-                        {assessment.fields.map(field=><label key={field.id} className={css.choice}>
-                          <input type="checkbox" checked={selectedFields.includes(field.id)}
-                            onChange={e=>setCriterion(id,field.id,e.target.checked)}/>
-                          <span>{field.label}</span>
-                        </label>)}
-                      </div>}
-                    </div>;
-                  })}
-                </div>}
-              </div>;
-            })}
-          </div>
-          <button type="button" className={css.clear} onClick={()=>setValue(prev=>({
-            ...prev,groupIds:[],groupAssessments:[],groupCriteria:{}
-          }))}>Clear trial ranking selections</button>
-        </div>}
-      </div>
-      <div className={css.panel}>
-        <button type="button" className={css.panelHeader} aria-expanded={priorityPanelOpen}
-          aria-controls="tools-rank-priorities-body" onClick={()=>setPriorityPanelOpen(open=>!open)}>
-          <span>Rank 20 Assessments</span><span aria-hidden="true">{priorityPanelOpen?"⌃":"⌄"}</span>
-        </button>
-        {priorityPanelOpen&&<div id="tools-rank-priorities-body" className={css.panelBody}>
-          <p className={css.hint}>Check an assessment, set its priority, then select the research fields to emphasize.</p>
-          <div className={css.list}>
-            {assessmentList.map(id=>{
-              const rank=value.priorities.indexOf(id)+1;
-              return <div key={id} className={css.priorityItem}>
-                <label className={css.choice}>
-                  <input type="checkbox" checked={prioritySet.has(id)}
-                    onChange={e=>setPriority(id,e.target.checked)}/>
-                  <span><strong>#{id}</strong> — {name(id)}</span>
-                </label>
-                {rank>0&&<>
-                  <label className={css.priorityControl}>
-                    Priority
-                    <select value={rank} onChange={e=>move(id,Number(e.target.value))}
-                      aria-label={"Priority of original assessment #"+id}>
-                      {value.priorities.map((_,i)=><option key={i} value={i+1}>#{i+1}</option>)}
-                    </select>
-                  </label>
-                  <details className={css.priorityFields}>
-                    <summary>Choose research fields ({(value.priorityCriteria[String(id)]||[]).length})</summary>
-                    <div className={css.fields}>
-                      {byId.get(id)!.fields.map(field=><label key={field.id} className={css.choice}>
-                        <input type="checkbox" checked={(value.priorityCriteria[String(id)]||[]).includes(field.id)}
-                          onChange={e=>setPriorityCriterion(id,field.id,e.target.checked)}/>
-                        <span>{field.label}</span>
-                      </label>)}
-                    </div>
-                  </details>
-                </>}
-              </div>;
-            })}
-          </div>
-          <button type="button" className={css.clear} onClick={()=>setValue(prev=>({...prev,priorities:[],priorityCriteria:{}}))}>Clear assessment priorities</button>
-        </div>}
-      </div>
+      <button type="button" className={css.panelHeader} aria-expanded={activePanel==="trials"}
+        aria-controls="tools-rank-trials-body" onClick={()=>setActivePanel(prev=>prev==="trials"?null:"trials")}>
+        <span>Rank Trials By</span><span aria-hidden="true">{activePanel==="trials"?"⌃":"⌄"}</span>
+      </button>
+      <button type="button" className={css.panelHeader} aria-expanded={activePanel==="assessments"}
+        aria-controls="tools-rank-priorities-body" onClick={()=>setActivePanel(prev=>prev==="assessments"?null:"assessments")}>
+        <span>Rank 20 Assessments</span><span aria-hidden="true">{activePanel==="assessments"?"⌃":"⌄"}</span>
+      </button>
     </div>
+    {activePanel==="trials"&&<div id="tools-rank-trials-body" className={css.drillPanel}>
+      {activeGroup===null?<div className={css.panelBody}>
+        <p className={css.hint}>Step 1 of 3 · Choose a group to reveal its assessments.</p>
+        <div className={css.list}>
+          {TOOLS_RANKING_GROUPS.map(group=>{
+            const checked=value.groupIds.includes(group.id);
+            return <div key={group.id} className={css.optionRow}>
+              <label className={css.choice}>
+                <input type="checkbox" checked={checked} aria-label={"Select group #"+group.id}
+                  onChange={e=>{
+                    setGroups(group.id,e.target.checked);
+                    if(e.target.checked){setActiveGroup(group.id);setActiveAssessment(null);}
+                  }}/>
+                <span><strong>#{group.id}</strong> — {group.title}</span>
+              </label>
+              <button type="button" className={css.drillButton} onClick={()=>enterGroup(group.id)}
+                aria-label={"Open assessments for group #"+group.id}>›</button>
+            </div>;
+          })}
+        </div>
+      </div>:activeAssessment===null?<div className={css.panelBody}>
+        <button type="button" className={css.back} onClick={()=>{setActiveGroup(null);setActiveAssessment(null);}}>‹ All groups</button>
+        <h4 className={css.stepTitle}>#{activeGroup} — {currentGroup?.title}</h4>
+        <p className={css.hint}>Step 2 of 3 · Choose an assessment to reveal its research fields.</p>
+        <div className={css.list}>
+          {currentGroup?.assessmentIds.map(id=>{
+            const checked=value.groupAssessments.includes(id);
+            return <div key={id} className={css.optionRow}>
+              <label className={css.choice}>
+                <input type="checkbox" checked={checked} aria-label={"Select assessment #"+id}
+                  onChange={e=>{
+                    setAssessment(id,e.target.checked);
+                    if(e.target.checked)setActiveAssessment(id);
+                  }}/>
+                <span><strong>#{id}</strong> — {name(id)}</span>
+              </label>
+              <button type="button" className={css.drillButton} onClick={()=>enterAssessment(id)}
+                aria-label={"Open fields for assessment #"+id}>›</button>
+            </div>;
+          })}
+        </div>
+      </div>:<div className={css.panelBody}>
+        <button type="button" className={css.back} onClick={()=>setActiveAssessment(null)}>
+          ‹ Assessments
+        </button>
+        <h4 className={css.stepTitle}>#{activeAssessment} — {currentAssessment?.name}</h4>
+        <p className={css.hint}>Step 3 of 3 · Check the fields you want. You can select several.</p>
+        <div className={css.list}>
+          {currentAssessment?.fields.map(field=><label key={field.id} className={css.fieldChoice}>
+            <input type="checkbox" checked={(value.groupCriteria[String(activeAssessment)]||[]).includes(field.id)}
+              onChange={e=>setCriterion(activeAssessment,field.id,e.target.checked)}/>
+            <span>{field.label}</span>
+          </label>)}
+        </div>
+        <button type="button" className={css.done} onClick={()=>setActiveAssessment(null)}>Done · Choose another assessment</button>
+      </div>}
+      <div className={css.panelFooter}>
+        <span>{value.groupAssessments.length} assessments · {Object.values(value.groupCriteria).reduce((n,fields)=>n+fields.length,0)} fields selected</span>
+        <button type="button" className={css.clear} onClick={()=>{
+          setValue(prev=>({...prev,groupIds:[],groupAssessments:[],groupCriteria:{}}));
+          setActiveGroup(null);setActiveAssessment(null);
+        }}>Clear this list</button>
+      </div>
+    </div>}
+    {activePanel==="assessments"&&<div id="tools-rank-priorities-body" className={css.drillPanel}>
+      {activePriority===null?<div className={css.panelBody}>
+        <p className={css.hint}>Step 1 of 2 · Select any of the original 20 assessments to set its priority and fields.</p>
+        <div className={css.list}>
+          {assessmentList.map(id=>{
+            const checked=prioritySet.has(id);
+            return <div key={id} className={css.optionRow}>
+              <label className={css.choice}>
+                <input type="checkbox" checked={checked} aria-label={"Prioritize assessment #"+id}
+                  onChange={e=>{
+                    setPriority(id,e.target.checked);
+                    if(e.target.checked)setActivePriority(id);
+                  }}/>
+                <span><strong>#{id}</strong> — {name(id)}
+                  {checked&&<small className={css.priorityNumber}> · Priority {value.priorities.indexOf(id)+1}</small>}
+                </span>
+              </label>
+              <button type="button" className={css.drillButton} onClick={()=>enterPriority(id)}
+                aria-label={"Open priority and fields for assessment #"+id}>›</button>
+            </div>;
+          })}
+        </div>
+      </div>:<div className={css.panelBody}>
+        <button type="button" className={css.back} onClick={()=>setActivePriority(null)}>‹ All 20 assessments</button>
+        <h4 className={css.stepTitle}>#{activePriority} — {currentPriority?.name}</h4>
+        <p className={css.hint}>Step 2 of 2 · Set its rank and choose research fields.</p>
+        <label className={css.priorityControl}>Priority
+          <select value={value.priorities.indexOf(activePriority)+1}
+            onChange={e=>move(activePriority,Number(e.target.value))}
+            aria-label={"Priority of original assessment #"+activePriority}>
+            {value.priorities.map((_,i)=><option key={i} value={i+1}>#{i+1}</option>)}
+          </select>
+        </label>
+        <div className={css.list}>
+          {currentPriority?.fields.map(field=><label key={field.id} className={css.fieldChoice}>
+            <input type="checkbox" checked={(value.priorityCriteria[String(activePriority)]||[]).includes(field.id)}
+              onChange={e=>setPriorityCriterion(activePriority,field.id,e.target.checked)}/>
+            <span>{field.label}</span>
+          </label>)}
+        </div>
+        <button type="button" className={css.done} onClick={()=>setActivePriority(null)}>Done · Choose another assessment</button>
+      </div>}
+      <div className={css.panelFooter}>
+        <span>{value.priorities.length} of 20 priorities selected</span>
+        <button type="button" className={css.clear} onClick={()=>{
+          setValue(prev=>({...prev,priorities:[],priorityCriteria:{}}));
+          setActivePriority(null);
+        }}>Clear this list</button>
+      </div>
+    </div>}
     <div className={css.results}>
       <button type="button" className={css.panelHeader} aria-expanded={summaryPanelOpen}
         aria-controls="tools-selected-ranking-body" onClick={()=>setSummaryPanelOpen(open=>!open)}>
