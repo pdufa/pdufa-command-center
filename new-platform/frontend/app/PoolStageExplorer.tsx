@@ -13,11 +13,21 @@ type StageStats={
   stages:Record<string,StageCount>;
 };
 type PoolRow={id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string};
+type ProgramCoverage={
+  sourcePrograms:number;linkedPrograms:number;unlinkedPrograms:number;
+  linkedNcts:number;noVerifiedNctLinks:boolean;
+  programRows:{
+    eventKey:string;ticker:string;drug:string;indication:string;
+    designations:{key:DesignationKey;label:string;source:string}[];
+    linkedNcts:string[];
+  }[];
+};
 type PoolResponse={
   view:string;total:number;limit:number;offset:number;nextOffset:number|null;
   stageStats:StageStats;rows:PoolRow[];
   overview?:{poolAsOf:string|null;poolSourceState:string};
   designationLinkage?:{basis:string;sourceLinkedTrials:number}|null;
+  designationCoverage?:ProgramCoverage|null;
   spreadsheetRows?:ToolsSpreadsheetRow[];
   selectionSummary?:SelectedFiltersSummary|null;
 };
@@ -116,6 +126,7 @@ export default function PoolStageExplorer(){
       totalStages={stages.length}
       selectedDesignations={selectedDesignations.length}
       designationUniqueTrials={page?.selectionSummary?.designationUniqueTrials??null}
+      designationCoverage={page?.designationCoverage??null}
       loading={hasSelections&&loading}
       error={hasSelections?error:""}
       searchActive={Boolean(query.trim())}
@@ -179,11 +190,15 @@ export default function PoolStageExplorer(){
     {hasSelections&&error&&<p className={styles.error} role="alert">Results unavailable: {error} (not a verified zero).</p>}
     {!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials.</strong> Check a stage or FDA designation, or use the Phase 3 + Orphan Drug quick filter above.</p>}
     {hasSelections&&page&&!loading&&selectedDesignations.length>0&&<p className={styles.muted}>
-      FDA evidence is linked by exact NCT and ticker. {count(page.designationLinkage?.sourceLinkedTrials??0)} unique NCT trials match the selected designation categories before stage filtering.
+      {page.designationCoverage?.noVerifiedNctLinks
+        ?count(page.designationCoverage.sourcePrograms)+" documented FDA application/program records have no verified NCT links. The trial count is not established, even with all phases selected."
+        :"FDA evidence is linked by exact NCT and ticker. "+count(page.designationLinkage?.sourceLinkedTrials??0)+" documented linked NCT trials match the selected designation categories before stage filtering (partial coverage)."
+      }
     </p>}
     <ToolsResultsSpreadsheet
       rows={page?.spreadsheetRows||[]}
       summary={page?.selectionSummary||null}
+      designationCoverage={page?.designationCoverage??null}
       stages={selectedStages}
       designations={selectedDesignations}
       total={page?.total||0}
