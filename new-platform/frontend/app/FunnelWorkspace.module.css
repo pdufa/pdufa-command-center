@@ -125,3 +125,31 @@
 .designationResults small{display:block;color:#506f5b;font-size:11px}
 .designationResults a{font-size:12px}
 @media(max-width:760px){.stageDesignationColumns{grid-template-columns:minmax(0,1fr)}.stageDesignationList{max-height:340px}.stageDesignationSummary{font-size:14px}}
+
+
+/* Justinmind-style scrollable multi-select dropdowns on TOOLS. */
+.stageDropdownColumn{display:flex;flex-direction:column;gap:8px;min-width:0;align-self:start}
+.stageDropdownLabel{font-size:12px;font-weight:750;color:#214d38}
+.stageDropdownSubline{font-size:12px;line-height:1.45;color:#506c5c;margin:0;min-height:35px}
+.stageKindSelect{width:100%;max-width:100%;border:1px solid #c7d3cc;border-radius:9px;padding:12px;background:#fff;color:#18372b;min-height:44px;font-size:13px}
+.stageDropdownColumn>.stageDesignationPane{width:100%}
+.stageDropdownColumn .stageDesignationSummary{background:#fff;border-radius:10px;min-height:54px;border:1px solid #d5ded7;font-size:14px;font-weight:650;box-sizing:border-box}
+.stageDropdownColumn .stageDesignationPane{border:0;overflow:visible}
+.stageDropdownColumn .stageDesignationBody{background:#fff;border:1px solid #dce6df;border-radius:10px;margin-top:7px;padding:11px;box-shadow:0 10px 23px #092a1712}
+.stageDropdownActions{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.stageDropdownActions button{font-size:12px;border:1px solid #c4d6c9;border-radius:7px;background:#f5faf7;color:#164f37;padding:7px 11px;cursor:pointer}
+.stageDropdownActions button:disabled{opacity:.55;cursor:not-allowed}
+.stageCheckboxRow{display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border-bottom:1px solid #e8eee9;min-height:42px;line-height:1.35;font-size:13px;color:#253b31;background:#fff}
+.stageCheckboxRow:last-child{border-bottom:0}
+.stageCheckboxRow input{flex:0 0 auto;width:18px;height:18px;margin:0;accent-color:#247cda;cursor:pointer}
+.stageCheckboxRow input:disabled{cursor:not-allowed}
+.stageCheckboxRow span{min-width:0;flex:1;overflow-wrap:anywhere}
+.stageCheckboxRow strong{font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:28px;text-align:right;color:#355747}
+.stageCheckboxRow:hover{background:#f2f7ff}
+.stageCheckboxRow:has(input:checked){background:#e9f2fd}
+.stageCheckboxRow:has(input:disabled){color:#85978a}
+.stageDropdownColumn .stageDesignationList{max-height:390px;overflow-y:auto;overscroll-behavior:contain;scrollbar-color:#5c9dea #e7eef1;scrollbar-width:thin}
+.stageDropdownColumn .designationSelection{margin-top:5px}
+.stageDropdownColumn .stageDesignationSummary strong{background:#e9f3ee}
+.stageDropdownColumn .stageDesignationPane[open]>.stageDesignationSummary{border-color:#73a6d7;box-shadow:0 0 0 2px #dcecff}
+@media(max-width:760px){.stageDropdownColumn .stageDesignationList{max-height:300px}.stageDropdownSubline{min-height:0}}
