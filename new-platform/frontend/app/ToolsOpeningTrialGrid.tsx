@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
+import {Fragment,useEffect,useMemo,useState} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
@@ -15,6 +15,15 @@ const format=(n:number)=>n.toLocaleString("en-US");
 const safe=(v:string)=>v?.trim()||"Not recorded";
 const designationNames=new Map(SPECIAL_DESIGNATION_CATEGORIES.map(({key,label})=>[key,label]));
 const extraColumns=3;
+const RATING_GROUPS=[
+ {key:"M",name:"Missing",ingredients:[{key:"VER",name:"Verified inputs"},{key:"MOD",name:"Modeled inputs"},{key:"MISS",name:"Missing inputs"},{key:"CRIT",name:"Critical gaps"}]},
+ {key:"A",name:"Evidence",ingredients:[{key:"ER",name:"Evidence readiness"},{key:"FDA",name:"Regulatory readiness"}]},
+ {key:"B",name:"Medical",ingredients:[{key:"CL",name:"Clinical benefit"},{key:"SAF",name:"Safety"},{key:"COMP",name:"Competitive advantage"}]},
+ {key:"C",name:"Commercial",ingredients:[{key:"POP",name:"Patient opportunity"},{key:"ACCESS",name:"Commercial access"},{key:"REV",name:"Revenue potential"}]},
+ {key:"D",name:"Stock",ingredients:[{key:"VAL",name:"Valuation opportunity"},{key:"CASH",name:"Financial strength"},{key:"MOM",name:"Stock momentum"},{key:"FLOW",name:"Ownership and trading"},{key:"CAT",name:"Catalyst setup"}]},
+ {key:"E",name:"Final",ingredients:[{key:"APP",name:"Appreciation opportunity"},{key:"READY",name:"Research readiness"},{key:"GRADE",name:"Opportunity grade"}]}
+] as const;
+type RatingGroupKey=typeof RATING_GROUPS[number]["key"];
 const NO_DATES:TimelineDates={phase3DataRelease:null,pdufaTarget:null};
 type Field="nctId"|"ticker"|"company"|"s"|"d"|"drug"|"indication"|"stage";
 const columns:{key:Field;label:string;hint?:string}[]=[
@@ -27,7 +36,6 @@ const columns:{key:Field;label:string;hint?:string}[]=[
   {key:"indication",label:"Disease / indication"},
   {key:"stage",label:"Recorded stage"}
 ];
-const columnsCount=1+columns.length+extraColumns;
 function DayCell({count,date,url,description}:{count:number|null;date?:string;url?:string;description:string}){
   if(count===null)return <span className={css.dateUnknown} title={description+" date not source-verified"}>Not verified</span>;
   return <a href={url} target="_blank" rel="noopener noreferrer"
@@ -41,6 +49,11 @@ export default function ToolsOpeningTrialGrid({
   const [sortKey,setSortKey]=useState<Field>("nctId");
   const [desc,setDesc]=useState(false);
   const [today,setToday]=useState("");
+  const [expandedRatings,setExpandedRatings]=useState<RatingGroupKey[]>([]);
+  const toggleRating=(key:RatingGroupKey)=>setExpandedRatings(current=>current.includes(key)
+    ?current.filter(value=>value!==key):[...current,key]);
+  const columnsCount=1+columns.length+extraColumns+RATING_GROUPS.reduce((n,g)=>
+    n+1+(expandedRatings.includes(g.key)?g.ingredients.length:0),0);
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
   const ordered=useMemo(()=>[...rows].sort((a,b)=>{
     if(sortKey==="s"||sortKey==="d"){
@@ -79,6 +92,29 @@ export default function ToolsOpeningTrialGrid({
             </button>
             {col.hint&&<small>{col.hint}</small>}
           </th>)}
+          {RATING_GROUPS.map(group=>{
+            const open=expandedRatings.includes(group.key);
+            const outer=[css.ratingCell,open?css.ratingOpen:"",css.ratingStart,
+              !open?css.ratingEnd:""].filter(Boolean).join(" ");
+            return <Fragment key={group.key}>
+              <th className={outer} data-rating-group={group.key}
+                title={group.name+" combined rating; "+(open?"hide":"show")+" ingredient columns to the right"}>
+                <button type="button" aria-expanded={open}
+                  aria-label={(open?"Collapse ":"Expand ")+group.key+" "+group.name+" rating ingredients to the right"}
+                  onClick={()=>toggleRating(group.key)}>
+                  {group.key} <span aria-hidden="true">{open?"◀":"▶"}</span>
+                </button>
+                <small className={css.ratingGroupLabel}>{group.name}</small>
+              </th>
+              {open&&group.ingredients.map((ingredient,i)=><th key={ingredient.key}
+                data-rating-ingredient={ingredient.key}
+                className={[css.ratingCell,css.ratingOpen,
+                  i===group.ingredients.length-1?css.ratingEnd:""].filter(Boolean).join(" ")}
+                title={ingredient.name}>
+                <span className={css.ratingIngredientHeading}>{ingredient.key}</span>
+              </th>)}
+            </Fragment>;
+          })}
           <th>FDA designations <small>Documented subset</small></th>
           <th>PDUFA applications <small>Saved targets, not trial deadlines</small></th>
           <th>Study role</th>
@@ -96,15 +132,31 @@ export default function ToolsOpeningTrialGrid({
             <td className={css.rowNum}>{offset+i+1}</td>
             <td><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
             <td>{safe(row.ticker)}</td>
-            <td>{safe(row.company)}</td>
+            <td className={css.longTextCell}>{safe(row.company)}</td>
             <td className={css.dayCell}><DayCell count={days.daysSincePhase3Release}
               date={row.timeline?.phase3DataRelease?.date} url={row.timeline?.phase3DataRelease?.sourceUrl}
               description="S · Days since verified Phase 3 data release"/></td>
             <td className={css.dayCell}><DayCell count={days.daysToPdufa}
               date={row.timeline?.pdufaTarget?.date} url={row.timeline?.pdufaTarget?.sourceUrl}
               description="D · Days to verified PDUFA target"/></td>
-            <td>{safe(row.drug)}</td>
-            <td>{safe(row.indication)}</td>
+            {RATING_GROUPS.map(group=>{
+              const open=expandedRatings.includes(group.key);
+              return <Fragment key={group.key}>
+                <td className={[css.ratingCell,open?css.ratingOpen:"",
+                    css.ratingStart,!open?css.ratingEnd:""].filter(Boolean).join(" ")}
+                    title={group.name+" combined rating not yet calculated from verified research"}>
+                  <span className={css.ratingUnscored}>N/A</span>
+                </td>
+                {open&&group.ingredients.map((ingredient,i)=><td key={ingredient.key}
+                  className={[css.ratingCell,css.ratingOpen,
+                    i===group.ingredients.length-1?css.ratingEnd:""].filter(Boolean).join(" ")}
+                  title={ingredient.name+": not yet scored from verified source data"}>
+                  <span className={css.ratingUnscored}>N/A</span>
+                </td>)}
+              </Fragment>;
+            })}
+            <td className={css.longTextCell}>{safe(row.drug)}</td>
+            <td className={css.longTextCell}>{safe(row.indication)}</td>
             <td>{safe(row.stage)}</td>
             <td>{(()=>{
               const linked=Object.entries(row.designationMatches||{}).filter(([,items])=>!!items?.length);
@@ -133,6 +185,13 @@ export default function ToolsOpeningTrialGrid({
           </tr>;})}
         </tbody>
       </table>
+    </div>
+    <div className={css.ratingHelp}>
+      <strong>Ratings:</strong> M (Missing), A (Evidence), B (Medical), C (Commercial), D (Stock), E (Final).
+      Tap any rating heading to expand its ingredient columns <strong>to the right</strong> inside one outline.
+      <button type="button" onClick={()=>setExpandedRatings(RATING_GROUPS.map(g=>g.key))}>Expand all ratings</button>
+      <button type="button" onClick={()=>setExpandedRatings([])}>Collapse all ratings</button>
+      <span>N/A means no source-verified score has been computed; it does not mean zero.</span>
     </div>
     <div className={css.footer}>
       <span>{!hasSelection?"Showing 0 of 0 · No trial filters selected":!loading&&!error?("Showing "+(total?offset+1:0)+"–"+Math.min(offset+rows.length,total)+" of "+format(total)):"Awaiting matching records"} · Page sort only</span>
