@@ -2,6 +2,7 @@
 
 import {useEffect,useMemo,useState,type FormEvent} from "react";
 import styles from "./FunnelWorkspace.module.css";
+import PoolDesignationSelector from "./PoolDesignationSelector";
 
 type GroupKey="all"|"early"|"phase3"|"regulatory"|"other";
 type RecordKind="trials"|"all"|"other";
@@ -86,15 +87,6 @@ export default function PoolStageExplorer(){
           <option value="other">Standalone results + regulatory records</option>
         </select>
       </label>
-      <label style={{display:"flex",flexDirection:"column",gap:5,fontSize:13,fontWeight:700}}>
-        Select exact stage
-        <select value={stage} onChange={e=>selectStage(e.target.value)} style={{padding:9,borderRadius:7}}>
-          <option value="">All stages</option>
-          {groups.map(g=><optgroup key={g.id} label={g.name}>{g.stages.map(s=>
-            <option key={s} value={s}>{s} — {stats?count(summaryCount(stats.stages[s],kind)):"—"}</option>
-          )}</optgroup>)}
-        </select>
-      </label>
       <form className={styles.search} onSubmit={submitSearch}>
         <input aria-label="Search POOL trials by ticker, NCT, company, drug or indication" type="search"
           value={queryInput} onChange={e=>setQueryInput(e.target.value)} maxLength={100}
@@ -103,41 +95,41 @@ export default function PoolStageExplorer(){
         <button type="button" onClick={()=>{setQueryInput("");setQuery("");setOffset(0)}}>Clear</button>
       </form>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:10,margin:"14px 0"}}>
-      <button type="button" aria-pressed={group==="all"&&!stage} onClick={()=>selectGroup("all")}
-        style={{textAlign:"left",padding:13,borderRadius:10,border:group==="all"&&!stage?"2px solid #136f4c":"1px solid #c1d4c7",background:group==="all"&&!stage?"#e8f5ee":"#fff",color:"#174532"}}>
-        <strong style={{display:"block"}}>All stages</strong>
-        <b style={{display:"block",fontSize:24,marginTop:8}}>{totalForKind===null?"—":count(totalForKind)}</b>
-        <small>Entire selected record type</small>
-      </button>
-      {groups.map(g=>{
-        const n=stats?g.stages.reduce((a,s)=>a+summaryCount(stats.stages[s],kind),0):null;
-        return <button key={g.id} type="button" aria-pressed={group===g.id&&!stage} onClick={()=>selectGroup(g.id)}
-          style={{textAlign:"left",padding:13,borderRadius:10,border:group===g.id&&!stage?"2px solid #136f4c":"1px solid #c1d4c7",background:group===g.id&&!stage?"#e8f5ee":"#fff",color:"#174532"}}>
-          <strong style={{display:"block"}}>{g.name}</strong>
-          <b style={{display:"block",fontSize:24,marginTop:8}}>{n===null?"—":count(n)}</b>
-          <small>{g.description}</small>
-        </button>;
-      })}
+    <div className={styles.stageDesignationColumns}>
+      <details className={styles.stageDesignationPane} open>
+        <summary className={styles.stageDesignationSummary}>
+          <span>Clinical Development Stages</span>
+          <strong>{totalForKind===null?"—":count(totalForKind)} {kind==="trials"?"trials":"records"}</strong>
+        </summary>
+        <div className={styles.stageDesignationBody}>
+          <p className={styles.muted}>Select any stage to display its trials below. Counts are drawn from the preserved POOL, using one source record per NCT.</p>
+          <button type="button" className={styles.stageDesignationRow}
+            aria-pressed={group==="all"&&!stage} onClick={()=>selectGroup("all")}>
+            <span><strong>All stages</strong></span>
+            <strong>{totalForKind===null?"—":count(totalForKind)}</strong>
+          </button>
+          <div className={styles.stageDesignationList} role="group" aria-label="Select a POOL trial stage">
+            {groups.map(g=>{
+              const subtotal=stats?g.stages.reduce((sum,name)=>sum+summaryCount(stats.stages[name],kind),0):null;
+              return <div key={g.id}>
+                <button type="button" className={styles.stageDesignationGroup}
+                  aria-pressed={group===g.id&&!stage} onClick={()=>selectGroup(g.id)}>
+                  <span>{g.name}</span><strong>{subtotal===null?"—":count(subtotal)}</strong>
+                </button>
+                {g.stages.map(name=><button type="button" key={name}
+                  className={styles.stageDesignationRow}
+                  aria-pressed={stage===name} onClick={()=>selectStage(name)}>
+                  <span>{name}</span>
+                  <strong>{stats?count(summaryCount(stats.stages[name],kind)):"—"}</strong>
+                </button>)}
+              </div>;
+            })}
+          </div>
+          <p className={styles.muted}>A recorded stage does not certify a successful trial or FDA approval.</p>
+        </div>
+      </details>
+      <PoolDesignationSelector/>
     </div>
-    <details style={{border:"1px solid #c9d9cf",borderRadius:9,padding:"12px",margin:"12px 0"}}>
-      <summary style={{cursor:"pointer",fontWeight:700}}>All 14 individual stage counts — expand details</summary>
-      <div className={styles.scroll} style={{marginTop:12}}>
-        <table className={styles.table} style={{minWidth:580}}>
-          <thead><tr><th>Development stage</th><th>Unique NCT trials</th><th>Other source records</th><th>All records</th><th>Open</th></tr></thead>
-          <tbody>{stages.map(s=>{
-            const c=stats?.stages[s];
-            return <tr key={s}>
-              <td>{s}</td>
-              <td>{c?count(c.trials):"—"}</td>
-              <td>{c?count(c.standaloneResults+c.regulatoryEvents):"—"}</td>
-              <td>{c?count(c.total):"—"}</td>
-              <td><button type="button" onClick={()=>selectStage(s)}>Select</button></td>
-            </tr>;
-          })}</tbody>
-        </table>
-      </div>
-    </details>
     <p className={styles.muted}>Unique NCT counts use one preserved TRIAL|NCT identifier per trial. Standalone result announcements and FDA application/event records are shown separately; their totals must not be added to unique trial counts. Recorded stages are source classifications, not proof of FDA acceptance or approval.</p>
     {stats&&<p className={styles.muted}>Inventory composition: {count(stats.trials)} unique NCT trial records · {count(stats.standaloneResults)} standalone result records · {count(stats.regulatoryEvents)} regulatory/other records. Source: {value(page?.overview?.poolSourceState)}; snapshot {value(page?.overview?.poolAsOf||undefined)}.</p>}
     {loading&&<p role="status">Checking the published POOL and stage counts…</p>}
