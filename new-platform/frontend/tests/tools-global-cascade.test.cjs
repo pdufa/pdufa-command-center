@@ -52,7 +52,7 @@ test("stable circle codes cover every option, reject nonexistent indexes",()=>{
  assert.throws(()=>toolsOptionCode(2,20,13),/TOOLS_OPTION_INDEX_INVALID/);
  assert.equal(SPECIAL_DESIGNATION_CATEGORIES.length,13);
 });
-test("stage category click reveals choices, checkbox still sets exact API stage filter",async()=>{
+test("Phase 1a/2 exposes all fourteen 2a/14–2n/14 checkboxes immediately, just like FDA",async()=>{
  let root;
  const oldFetch=global.fetch;
  const queried=[];
@@ -66,46 +66,44 @@ test("stage category click reveals choices, checkbox still sets exact API stage 
  };
  try{
   await act(async()=>{root=create(React.createElement(PoolStageExplorer));});
-  const firstChoices=root.root.findAllByType("button")
-   .filter(x=>["tools-first-phase","tools-first-designation"].includes(x.props["aria-controls"]));
-  assert.equal(firstChoices.length,2,"Initial TOOLS view must show only two first-step filter choices");
-  assert.match(textOf(firstChoices[0]),/1a\/2[\s\S]*Phase/);
-  assert.match(textOf(firstChoices[1]),/1b\/2[\s\S]*Special Designation/);
+  const buttons=root.root.findAllByType("button");
+  const top=buttons.filter(x=>["tools-first-phase","tools-first-designation"].includes(x.props["aria-controls"]));
+  assert.equal(top.length,2);
+  assert.match(textOf(top[0]),/1a\/2[\s\S]*Phase/);
+  assert.match(textOf(top[1]),/1b\/2[\s\S]*Special Designation/);
   assert.equal(root.root.findAllByProps({id:"tools-first-phase"}).length,0);
-  assert.equal(root.root.findAllByProps({id:"tools-first-designation"}).length,0);
-  await act(async()=>firstChoices[0].props.onClick());
-  assert.equal(root.root.findAllByProps({id:"tools-first-phase"}).length,1);
-  const button=()=>root.root.findAllByType("button")
-   .find(x=>x.props["aria-controls"]==="tools-stage-group-0");
-  assert.ok(button());
-  assert.equal(button().props["aria-expanded"],false);
-  assert.equal(root.root.findAllByProps({id:"tools-stage-group-0"}).length,0);
-  await act(async()=>button().props.onClick());
-  assert.equal(button().props["aria-expanded"],true);
-  const children=root.root.findAllByProps({id:"tools-stage-group-0"})[0];
-  const phase=children.findAllByType("label").find(x=>textOf(x).includes("Phase 2")&&!textOf(x).includes("Phase 2/3"));
+  await act(async()=>top[0].props.onClick());
+  const panel=()=>root.root.findAllByProps({id:"tools-first-phase"})[0];
+  assert.ok(panel());
+  const all=panel().findAllByType("input").filter(x=>x.props.type==="checkbox");
+  assert.equal(all.length,14,"All 14 individual stages should be directly visible with no intermediate group click");
+  const list=panel().findAllByProps({role:"group","aria-label":"Clinical development stages"})[0];
+  assert.match(textOf(list),/2a\/14/);
+  assert.match(textOf(list),/2n\/14/);
+  assert.equal(panel().findAllByType("button").filter(x=>x.props["aria-controls"]?.startsWith("tools-stage-group-")).length,0);
+  const phase=panel().findAllByType("label").find(x=>textOf(x).includes("Phase 2")&&!textOf(x).includes("Phase 2/3"));
   assert.ok(phase);
-  assert.ok(textOf(children).includes("3a/5"));
-  assert.ok(textOf(children).includes("3e/5"));
   await act(async()=>phase.findByType("input").props.onChange());
-  assert.ok(queried.some(x=>x.includes("stages=Phase+2")),"stage selection must still update exact existing API query");
-  const phaseChoice=()=>root.root.findAllByType("button").find(x=>x.props["aria-controls"]==="tools-first-phase");
-  assert.match(textOf(phaseChoice()),/1 selected/);
-  assert.equal(root.root.findAllByProps({className:"toolsStartSelected"}).length,1);
-  const designationChoice=()=>root.root.findAllByType("button").find(x=>x.props["aria-controls"]==="tools-first-designation");
-  await act(async()=>designationChoice().props.onClick());
+  assert.ok(queried.some(x=>x.includes("stages=Phase+2")));
+  assert.match(textOf(top[0]),/1 selected/);
+  const clear=panel().findAllByType("button").find(x=>textOf(x)==="Clear This Section");
+  assert.ok(clear);
+  await act(async()=>clear.props.onClick());
+  assert.match(textOf(top[0]),/Select clinical stages/);
+  assert.equal(panel().findAllByType("input").filter(x=>x.props.checked).length,0);
+  await act(async()=>phase.findByType("input").props.onChange());
+  await act(async()=>top[1].props.onClick());
   assert.equal(root.root.findAllByProps({id:"tools-first-phase"}).length,0);
   assert.equal(root.root.findAllByProps({id:"tools-first-designation"}).length,1);
-  assert.match(textOf(phaseChoice()),/1 selected/);
-  await act(async()=>phaseChoice().props.onClick());
-  assert.equal(button().props["aria-expanded"],true);
-  await act(async()=>button().props.onClick());
-  assert.equal(root.root.findAllByProps({id:"tools-stage-group-0"}).length,0);
+  assert.match(textOf(top[0]),/1 selected/,"Switching to FDA preserves checked Phase");
+  await act(async()=>top[0].props.onClick());
+  assert.equal(panel().findAllByType("input").filter(x=>x.props.type==="checkbox").length,14);
  }finally{
   if(root)await act(async()=>root.unmount());
   global.fetch=oldFetch;
  }
 });
+
 test("checking FDA category reveals program and linked-trial counts without changing their meanings",async()=>{
  let root;
  function Wrapper(){
@@ -137,7 +135,8 @@ test("20-assessment selector stays sequential and evidence UI follows active ass
  const ranking=fs.readFileSync(require.resolve("../app/ToolsRankingChecklists.tsx"),"utf8");
  assert.match(ranking,/data-cascade-for=\{"assessment-"\+id\}/);
  const explorer=fs.readFileSync(require.resolve("../app/PoolStageExplorer.tsx"),"utf8");
- assert.match(explorer,/styles.toolsCascadeChildren/);
+ assert.match(explorer,/stages.map\(\(stage,stageIndex\)=>/);
+ assert.match(explorer,/total=\{stages.length\}/);
  const designation=fs.readFileSync(require.resolve("../app/PoolDesignationSelector.tsx"),"utf8");
  assert.match(designation,/checked&&index&&<div className=\{styles.toolsCascadeFdaEvidence\}/);
 });

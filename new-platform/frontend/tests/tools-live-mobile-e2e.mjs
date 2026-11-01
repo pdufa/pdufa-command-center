@@ -83,21 +83,19 @@ try{
     assert.equal(await phase.getAttribute("aria-expanded"),"true");
     assert.equal(await page.locator("#tools-first-phase").count(),1);
     assert.equal(await page.locator("#tools-first-designation").count(),0);
-    const categories=page.locator('#tools-first-phase [aria-controls^="tools-stage-group-"]');
-    assert.equal(await categories.count(),4);
-    assert.match(await categories.first().innerText(),/2a\/4/i);
-    assert.match(await categories.last().innerText(),/2d\/4/i);
-    assert.equal(await page.locator('#tools-first-phase input[type="checkbox"]').count(),0);
-    const beforeCategory=await page.locator('section[aria-label="Live trial inventory spreadsheet"]').boundingBox();
-    await categories.first().click();
-    const afterCategory=await page.locator('section[aria-label="Live trial inventory spreadsheet"]').boundingBox();
-    assert.ok(afterCategory.y>beforeCategory.y+20,"Expanding a stage group must push existing spreadsheet lower");
-    const children=page.locator("#tools-stage-group-0");
-    assert.equal(await children.getByRole("checkbox").count(),5);
-    assert.match(await children.innerText(),/3a\/5/);
-    assert.match(await children.innerText(),/3e\/5/);
+    assert.ok((await page.locator('section[aria-label="Live trial inventory spreadsheet"]').boundingBox()).y >
+      (await page.locator("#tools-first-phase").boundingBox()).y,
+      "The same trial table must move below the instantly revealed Phase choices");
+    const directStages=page.locator("#tools-first-phase").getByRole("group",{name:"Clinical development stages"});
+    const phaseBoxes=directStages.getByRole("checkbox");
+    assert.equal(await phaseBoxes.count(),14,"Phase should reveal 14 choices immediately like FDA");
+    assert.match(await directStages.innerText(),/2a\/14/);
+    assert.match(await directStages.innerText(),/2n\/14/);
+    assert.equal(await page.locator('#tools-first-phase [aria-controls^="tools-stage-group-"]').count(),0);
+    const phase2=directStages.getByRole("checkbox",{name:/^Phase 2(?!\/)/});
+    assert.ok(await phase2.isVisible(),"Individual Phase 2 checkbox is directly visible");
     const response=scopeResponse({stage:"Phase 2"});
-    await children.getByRole("checkbox",{name:/Phase 2(?!\/)/}).check();
+    await phase2.check();
     const filtered=await response;
     assert.equal(filtered.status(),200,"Selected Phase 2 must produce a successful existing filtered API response");
     const selectedGrid=page.locator('section[aria-label="Live trial inventory spreadsheet"]');
@@ -115,9 +113,9 @@ try{
       const grid=document.querySelector('section[aria-label="Live trial inventory spreadsheet"]');
       return grid?.textContent?.includes("Published POOL")&&/NCT\d{8}/.test(grid.querySelector("tbody")?.textContent||"");
     },null,{timeout:60000});
-    await categories.first().click();
+    assert.equal(await directStages.getByRole("checkbox").count(),14);
     const phase2Again=scopeResponse({stage:"Phase 2"});
-    await page.locator("#tools-stage-group-0").getByRole("checkbox",{name:/Phase 2(?!\/)/}).check();
+    await phase2.check();
     assert.equal((await phase2Again).status(),200);
     await capture("02-phase-selected");
   });
@@ -156,16 +154,15 @@ try{
     await phase.click();
     assert.equal(await page.locator("#tools-first-designation").count(),0);
     assert.equal(await page.locator("#tools-first-phase").count(),1);
-    const row=page.locator("#tools-stage-group-0").getByRole("checkbox",{name:/Phase 2(?!\/)/});
+    const row=page.locator("#tools-first-phase").getByRole("checkbox",{name:/^Phase 2(?!\/)/});
     await row.waitFor({timeout:15000});
     assert.equal(await row.isChecked(),true);
     const sectionClear=page.locator("#tools-first-phase").getByRole("button",{name:"Clear This Section"});
     await sectionClear.click();
     assert.match(await phase.innerText(),/Select clinical stages/);
     assert.match(await designation.innerText(),/1 selected/,"Clearing Phase must preserve FDA choices");
-    await page.locator('#tools-first-phase [aria-controls="tools-stage-group-0"]').click();
     const phaseAgain=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
-    await page.locator("#tools-stage-group-0").getByRole("checkbox",{name:/Phase 2(?!\/)/}).check();
+    await row.check();
     assert.equal((await phaseAgain).status(),200);
     // Ranking selections are locally persisted even if their section becomes unmounted.
     const ranking=page.locator('[aria-controls="tools-rank-trials-body"]');

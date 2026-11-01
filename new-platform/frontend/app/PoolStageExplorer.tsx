@@ -48,7 +48,6 @@ const stageCount=(stat:StageCount|undefined)=>stat?.trials??0;
 
 export default function PoolStageExplorer(){
   const [selectedStages,setSelectedStages]=useState<string[]>([]);
-  const [expandedStageGroup,setExpandedStageGroup]=useState<string|null>(null);
   const [activeFilter,setActiveFilter]=useState<"phase"|"designation"|null>(null);
   const [selectedDesignations,setSelectedDesignations]=useState<DesignationKey[]>([]);
   const [queryInput,setQueryInput]=useState("");
@@ -107,14 +106,12 @@ export default function PoolStageExplorer(){
   function toggleStage(stage:string){
     const next=selectedStages.includes(stage)?selectedStages.filter(item=>item!==stage):[...selectedStages,stage];
     setSelectedStages(next);
-    setExpandedStageGroup(groups.find(group=>group.stages.some(item=>item===stage))?.label||null);
     setOffset(0);
   }
-  function changeStages(next:string[]){setSelectedStages(next);if(next.length===1)setExpandedStageGroup(groups.find(g=>g.stages.some(item=>next.includes(item)))?.label||null);setOffset(0);}
+  function changeStages(next:string[]){setSelectedStages(next);setOffset(0);}
   function changeDesignations(next:DesignationKey[]){setSelectedDesignations(next);setOffset(0);}
   function findPhase3OrphanTrials(){
     setSelectedStages(["Phase 3"]);
-    setExpandedStageGroup("Phase 3 and results");
     setSelectedDesignations(["orphan_drug"]);
     setOffset(0);
     setQuery("");
@@ -123,7 +120,6 @@ export default function PoolStageExplorer(){
   function clearAllTrialSelectors(){
     setActiveFilter(null);
     setSelectedStages([]);
-    setExpandedStageGroup(null);
     setSelectedDesignations([]);
     setOffset(0);
     setQuery("");
@@ -138,11 +134,9 @@ export default function PoolStageExplorer(){
   }
   function clearPhaseSection(){
     changeStages([]);
-    setExpandedStageGroup(null);
   }
   function selectPhase3Trials(){
     setSelectedStages(["Phase 3"]);
-    setExpandedStageGroup("Phase 3 and results");
     setSelectedDesignations([]);
     setOffset(0);
     setQuery("");
@@ -173,40 +167,26 @@ export default function PoolStageExplorer(){
       </div>
       {activeFilter==="phase"&&<div id="tools-first-phase" className={styles.toolsStartPanel}>
         <div className={styles.toolsStepHeader}>
-          <h3>Step 2 · Choose a phase category</h3>
+          <h3>Step 2 · Choose a clinical phase</h3>
           <button type="button" className={styles.toolsClearSection} onClick={clearPhaseSection}
             disabled={selectedStages.length===0}>Clear This Section</button>
         </div>
-        <p className={styles.muted}>Tap a numbered category to reveal its Phase options. Check one or more phases to show matching trials.</p>
+        <p className={styles.muted}>Check any of the 14 numbered stage choices below. This works just like the FDA designation selector.</p>
         <div className={styles.stageDesignationPane}>
           <div className={styles.stageDesignationBody}>
             <div className={styles.stageDropdownActions}>
               <button type="button" onClick={()=>changeStages([...stages])}>Select all</button>
             </div>
             <div className={styles.stageDesignationList} role="group" aria-label="Clinical development stages">
-              {groups.map((group,groupIndex)=>{
-                const open=expandedStageGroup===group.label;
-                const selectedInGroup=group.stages.filter(stage=>selectedStages.includes(stage)).length;
-                return <div key={group.label}>
-                  <button type="button" className={styles.stageDesignationGroup+" "+styles.toolsCascadeGroup}
-                    aria-expanded={open} aria-controls={"tools-stage-group-"+groupIndex}
-                    onClick={()=>setExpandedStageGroup(open?null:group.label)}>
-                    <ToolsOptionNumber level={2} index={groupIndex} total={groups.length}/>
-                    <span>{group.label}{selectedInGroup>0?" · "+selectedInGroup+" selected":""}</span>
-                    <strong>{stats?count(group.stages.reduce((sum,name)=>sum+stageCount(stats.stages[name]),0)):"—"} {open?"▴":"▾"}</strong>
-                  </button>
-                  {open&&<div id={"tools-stage-group-"+groupIndex} className={styles.toolsCascadeChildren} role="group" aria-label={group.label+" stage choices"}>
-                    {group.stages.map((stage,stageIndex)=><label key={stage} className={styles.stageCheckboxRow}>
-                      <input type="checkbox" checked={selectedStages.includes(stage)} onChange={()=>toggleStage(stage)}/>
-                      <ToolsOptionNumber level={3} index={stageIndex} total={group.stages.length}/>
-                      <span>{stage}</span>
-                      <strong>{stats?count(stageCount(stats.stages[stage])):"—"}</strong>
-                    </label>)}
-                  </div>}
-                </div>;
-              })}
+              {stages.map((stage,stageIndex)=><label key={stage} className={styles.stageCheckboxRow}>
+                <input type="checkbox" checked={selectedStages.includes(stage)}
+                  onChange={()=>toggleStage(stage)}/>
+                <ToolsOptionNumber level={2} index={stageIndex} total={stages.length}/>
+                <span>{stage}</span>
+                <strong>{stats?count(stageCount(stats.stages[stage])):"—"}</strong>
+              </label>)}
             </div>
-            <p className={styles.muted}>Unchecked stages have no active selection. Counts alongside stage names describe the complete POOL, not the current combined matches.</p>
+            <p className={styles.muted}>Counts beside stages are from the complete published POOL, not combined Phase + FDA matches. You may select multiple stages.</p>
           </div>
 
         </div>
