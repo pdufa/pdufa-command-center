@@ -128,12 +128,21 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
         onClick={()=>changeMode(item.key)}>{item.label}</button>)}
     </div>
     <div className={css.step4Compact} aria-label="Step 4 compact assessment controls">
-      {mode==="category"&&<div className={css.step4GroupButtons} role="group" aria-label="Step 4 five assessment groups">
-        {STEP4_SECTIONS.map(section=><button type="button" key={section.code}
-          className={selectedSection.code===section.code?css.step4GroupActive:css.step4GroupButton}
-          aria-pressed={selectedSection.code===section.code}
-          title={section.label+" · 4a"+section.start+"–4a"+section.end}
-          onClick={()=>setActive(section.start)}>{section.code} {section.short}</button>)}
+      {mode==="category"&&<div className={css.step4CategoryPanel}>
+        <div className={css.step4CategoryHeading}>
+          <strong>Five assessment categories</strong>
+          <span>Select a category to see its assessments below.</span>
+        </div>
+        <div className={css.step4GroupButtons} role="group" aria-label="Step 4 five assessment groups">
+          {STEP4_SECTIONS.map(section=><button type="button" key={section.code}
+            className={selectedSection.code===section.code?css.step4GroupActive:css.step4GroupButton}
+            aria-pressed={selectedSection.code===section.code}
+            title={section.label+" · 4a"+section.start+"–4a"+section.end}
+            onClick={()=>setActive(section.start)}>
+            <span>{section.code} · {section.short}</span>
+            <small>4a{section.start}–4a{section.end}</small>
+          </button>)}
+        </div>
       </div>}
       <div className={css.step4MetricPicker}>
         <label htmlFor="benefit-group-picker">Assessment</label>
