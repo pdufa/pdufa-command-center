@@ -45,6 +45,8 @@ const stageCount=(stat:StageCount|undefined)=>stat?.trials??0;
 
 export default function PoolStageExplorer(){
   const [selectedStages,setSelectedStages]=useState<string[]>([]);
+  // Populate the source-screened Pipeline NCT baseline automatically; selectors only narrow it.
+  const [baselineMode,setBaselineMode]=useState(true);
   const [selectedDesignations,setSelectedDesignations]=useState<DesignationKey[]>([]);
   const [queryInput,setQueryInput]=useState("");
   const [query,setQuery]=useState("");
@@ -56,13 +58,15 @@ export default function PoolStageExplorer(){
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
   const hasSelections=selectedStages.length>0||selectedDesignations.length>0;
+  const hasResultsScope=hasSelections||baselineMode;
   const params=useMemo(()=>{
     const p=new URLSearchParams({view:"pool",recordKind:"trials",tools:"1",offset:String(offset),limit:"50"});
+    if(baselineMode&&!selectedStages.length&&!selectedDesignations.length)p.set("baseline","1");
     if(selectedStages.length)p.set("stages",selectedStages.join(","));
     if(selectedDesignations.length)p.set("designations",selectedDesignations.join(","));
     if(query.trim())p.set("query",query.trim());
     return p.toString();
-  },[selectedStages,selectedDesignations,offset,query]);
+  },[baselineMode,selectedStages,selectedDesignations,offset,query]);
   const downloadUrl=useMemo(()=>{
     const p=new URLSearchParams(params);
     p.set("format","csv");
@@ -99,12 +103,14 @@ export default function PoolStageExplorer(){
   },[params]);
   const stats=page?.stageStats||lastStats;
   function toggleStage(stage:string){
+    setBaselineMode(false);
     setSelectedStages(old=>old.includes(stage)?old.filter(item=>item!==stage):[...old,stage]);
     setOffset(0);
   }
-  function changeStages(next:string[]){setSelectedStages(next);setOffset(0);}
-  function changeDesignations(next:DesignationKey[]){setSelectedDesignations(next);setOffset(0);}
+  function changeStages(next:string[]){setBaselineMode(false);setSelectedStages(next);setOffset(0);}
+  function changeDesignations(next:DesignationKey[]){setBaselineMode(false);setSelectedDesignations(next);setOffset(0);}
   function findPhase3OrphanTrials(){
+    setBaselineMode(false);
     setSelectedStages(["Phase 3"]);
     setSelectedDesignations(["orphan_drug"]);
     setOffset(0);
@@ -112,6 +118,7 @@ export default function PoolStageExplorer(){
     setQueryInput("");
   }
   function clearAllTrialSelectors(){
+    setBaselineMode(true);
     setSelectedStages([]);
     setSelectedDesignations([]);
     setOffset(0);
@@ -123,7 +130,8 @@ export default function PoolStageExplorer(){
     <ToolsFunnel
       poolNcts={stats?.trials??null}
       pipelineResearch={page?.pipelineResearch??null}
-      selectedTrials={!hasSelections?0:loading||!!error?null:page?.total??null}
+      selectedTrials={!hasResultsScope?0:loading||!!error?null:page?.total??null}
+      baselineMode={baselineMode}
       selectedStages={selectedStages.length}
       totalStages={stages.length}
       selectedStageLabels={selectedStages}
@@ -131,19 +139,22 @@ export default function PoolStageExplorer(){
       selectedDesignations={selectedDesignations.length}
       designationUniqueTrials={page?.selectionSummary?.designationUniqueTrials??null}
       designationCoverage={page?.designationCoverage??null}
-      loading={hasSelections&&loading}
-      error={hasSelections?error:""}
+      loading={hasResultsScope&&loading}
+      error={hasResultsScope?error:""}
       searchActive={Boolean(query.trim())}
       sourceDate={sourceDate}
       sourceState={sourceState}
     />
     <div className={styles.toolsQuickFilter}>
+      <button type="button" onClick={clearAllTrialSelectors} aria-label="Load all historically screened Pipeline trial records without optional filters">
+        Show screened Pipeline trials
+      </button>
       <button type="button" onClick={findPhase3OrphanTrials} aria-label="Select Phase 3 and Orphan Drug Designation together">
         Find Phase 3 + Orphan Drug trials
       </button>
       <button type="button" className={styles.toolsQuickClear} onClick={clearAllTrialSelectors}
         disabled={!hasSelections&&!query&&!queryInput}>Clear all filters</button>
-      <small>One tap selects both checkboxes using AND. FDA evidence coverage is partial.</small>
+      <small>Screened Pipeline trials load automatically. Optional phase / FDA filters narrow them; FDA evidence coverage is partial.</small>
     </div>
     <div className={styles.stageDesignationColumns}>
       <div className={styles.stageDropdownColumn}>
@@ -190,9 +201,10 @@ export default function PoolStageExplorer(){
     </form>
     <p className={styles.muted}><strong>Filter logic:</strong> Selected stages are OR; selected designations are OR; choosing from both applies AND. A designation-only selection covers any recorded stage. A stage-only selection does not require a known designation. All counts are read-only.</p>
     {stats&&<p className={styles.muted}>Published POOL: {count(stats.trials)} unique NCT trials, plus {count(stats.standaloneResults+stats.regulatoryEvents)} separate source/event records. Source state: {value(sourceState)} · as of {value(sourceDate)}.</p>}
-    {hasSelections&&loading&&<p role="status">Calculating matching trial records from saved sources…</p>}
-    {hasSelections&&error&&<p className={styles.error} role="alert">Results unavailable: {error} (not a verified zero).</p>}
-    {!hasSelections&&<p role="status"><strong>0 selected · 0 matching trials.</strong> Check a stage or FDA designation, or use the Phase 3 + Orphan Drug quick filter above.</p>}
+    {hasResultsScope&&loading&&<p role="status">Calculating matching trial records from saved sources…</p>}
+    {hasResultsScope&&error&&<p className={styles.error} role="alert">Results unavailable: {error} (not a verified zero).</p>}
+    {baselineMode&&<p role="status"><strong>Screened Pipeline baseline:</strong> historically completed, exact-NCT-linked Phase 3 research candidates appear below without additional filters. They are not yet fully qualified programs.</p>}
+    {!hasResultsScope&&<p role="status"><strong>0 selected · 0 matching trials.</strong> Use “Show screened Pipeline trials” to restore the base list.</p>}
     {hasSelections&&page&&!loading&&selectedDesignations.length>0&&!page.designationCoverage?.noVerifiedNctLinks&&<p className={styles.muted}>
       FDA-filtered results: {count(page.designationLinkage?.sourceLinkedTrials??0)} documented linked NCT trials before stage filtering (partial evidence coverage).
     </p>}
@@ -204,8 +216,10 @@ export default function PoolStageExplorer(){
       designations={selectedDesignations}
       total={page?.total||0}
       offset={offset}
-      loading={hasSelections&&loading}
-      error={hasSelections?error:""}
+      baselineMode={baselineMode}
+      onShowBaseline={clearAllTrialSelectors}
+      loading={hasResultsScope&&loading}
+      error={hasResultsScope?error:""}
       downloadUrl={downloadUrl}
       onPrevious={()=>setOffset(Math.max(0,offset-50))}
       onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
