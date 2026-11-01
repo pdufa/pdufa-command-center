@@ -32,6 +32,36 @@ const index={
     designations:{fast_track:granted,orphan_drug:granted}}},
   trialEvents:{NCT00000001:["ACME|one"],NCT00000002:["WRONG|other"]}
 };
+test("FDA and saved PDUFA program facts merge onto ONE published NCT row without adding clinical trials",()=>{
+  const {buildToolPdufaIndex,matchedToolPdufaApplications}=require("../lib/tools-pdufa-links.ts");
+  const {toolSpreadsheetRow,renderToolsSpreadsheetCsv}=require("../lib/tools-spreadsheet.ts");
+  const header="event_key,ticker,nct_id,pdufa_date,pdufa_confirmation,drug,indication,pdufa_evidence_url,outcome,check_status,decision_date,application_type,last_checked";
+  const lines=[
+    "ACME|PDUFA_20261122,ACME,NCT00000001|NCT00000002,2026-11-22,REPORTED_ONLY,Drug,Disease,https://www.fda.gov/example,,PENDING,,NDA,2026-10-01",
+    "OTHER|PDUFA_20261122,OTHER,NCT00000001,2026-11-22,VERIFIED,Drug,Disease,https://www.fda.gov/other,,PENDING,,BLA,2026-10-01",
+    "ACME|UNLINKED_20261122,ACME,,2026-11-22,REPORTED_ONLY,Drug,Disease,https://www.fda.gov/unlinked,,PENDING,,NDA,2026-10-01",
+    "ACME|DUP_20261122,ACME,NCT00000001|NCT00000001,2026-11-22,REPORTED_ONLY,Drug,Disease,https://www.fda.gov/duplicate,,PENDING,,NDA,2026-10-01"
+  ];
+  const pdufa=buildToolPdufaIndex([header,...lines].join("\n")+"\n");
+  const snapshot=verifiedToolPool(raw());
+  const originalCount=snapshot.stageStats.trials;
+  const one=toolSpreadsheetRow(snapshot.poolRows[0],[],[],index,pdufa);
+  assert.equal(one.nctId,"NCT00000001");
+  assert.equal(one.designationMatches.fast_track.length,1,"A documented FDA designation appears before any FDA option is checked");
+  assert.equal(one.designationMatches.orphan_drug.length,1,"Multiple FDA designations are attributes of one clinical trial");
+  assert.equal(one.pdufaApplications.length,2,"Two application records never duplicate a trial row");
+  assert.equal(one.studyRole,"NOT_ESTABLISHED","Exact PDUFA link alone cannot prove pivotal trial role");
+  assert.deepEqual(one.pdufaApplications.map(a=>a.targetDate),["2026-11-22","2026-11-22"]);
+  assert.equal(matchedToolPdufaApplications({...snapshot.poolRows[0],ticker:"OTHER"},pdufa).length,1);
+  assert.equal(matchedToolPdufaApplications(snapshot.poolRows[2],pdufa).length,0);
+  assert.equal(snapshot.stageStats.trials,originalCount,"Adding application details cannot inflate the POOL");
+  const csv=renderToolsSpreadsheetCsv([snapshot.poolRows[0]],[],[],index,"2026-11-01",pdufa);
+  assert.match(csv,/Documented FDA special designations/);
+  assert.match(csv,/Fast Track Designation/);
+  assert.match(csv,/Orphan Drug Designation/);
+  assert.match(csv,/2026-11-22/);
+  assert.match(csv,/NOT ESTABLISHED/);
+});
 test("counts every real unique NCT stage without counting result announcements twice",()=>{
   const result=verifiedToolPool(raw());
   assert.equal(result.stageStats.trials,3);
