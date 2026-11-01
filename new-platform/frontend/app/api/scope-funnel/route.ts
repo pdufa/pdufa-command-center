@@ -166,7 +166,7 @@ export async function GET(req:NextRequest) {
         selectedDesignations,designationIndex,data.overview.poolAsOf||"");
       return new NextResponse(csv,{headers:{
         "Content-Type":"text/csv; charset=utf-8",
-        "Content-Disposition":"attachment; filename=\\"pdufa-tools-selected-trials.csv\\"",
+        "Content-Disposition":"attachment; filename=\"pdufa-tools-selected-trials.csv\"",
         "Cache-Control":"private, no-store",
         "X-PDUFA-Source-Version":datasetVersion
       }});
