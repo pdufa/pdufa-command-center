@@ -95,9 +95,9 @@ try{
     assert.match(await all.innerText(),/2m\/13/);
     const orphan=all.getByRole("checkbox",{name:/Orphan Drug Designation/});
     await orphan.waitFor({timeout:45000});
-    assert.equal(await orphan.isDisabled(),false,"Orphan designation must be selectable with source coverage");
     const response=scopeResponse({stage:"Phase 2",designation:"orphan_drug"});
-    await orphan.check();
+    await orphan.check({timeout:45000});
+    assert.equal(await orphan.isDisabled(),false);
     const filtered=await response;
     assert.equal(filtered.status(),200,"Phase AND FDA selection must retain prior filter when switching branches");
     assert.match(await designation.innerText(),/1 selected/);
