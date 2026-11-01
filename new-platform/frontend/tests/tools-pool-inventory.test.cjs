@@ -176,7 +176,7 @@ test("FDA row totals equal the exact NCT+issuer trial filter, never raw index li
    "Not a matching issuer means no displayed NCT attribution to that FDA program");
  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
  assert.match(route,/designationTotals=index\?toolsDesignationTotals\(inventory.poolRows,index\):null/);
- assert.match(route,/spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,contextualDesignationCounts,regulatorySourcesAvailable,datasetVersion/);
+ assert.match(route,/spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,designationScopeSummary,contextualDesignationCounts,regulatorySourcesAvailable,datasetVersion/);
 });
 
 test("FDA counts recalculate from exact resultant Phase and search scope, not entire POOL",()=>{
@@ -220,7 +220,7 @@ test("FDA counts recalculate from exact resultant Phase and search scope, not en
    "Per-choice matches may overlap; the resultant unique-trial total must remain one");
  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
  assert.match(route,/toolsContextualDesignationCounts\(\s*inventory.poolRows,index,selectedStages,query\)/);
- assert.match(route,/spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,contextualDesignationCounts,regulatorySourcesAvailable,datasetVersion/);
+ assert.match(route,/spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,designationScopeSummary,contextualDesignationCounts,regulatorySourcesAvailable,datasetVersion/);
 });
 
 test("source parity failure and stale POOL never produce invented trial totals",()=>{
