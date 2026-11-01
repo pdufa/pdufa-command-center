@@ -102,7 +102,8 @@ try{
     assert.equal(filtered.status(),200,"Phase AND FDA selection must retain prior filter when switching branches");
     assert.match(await designation.innerText(),/1 selected/);
     assert.match(await phase.innerText(),/1 selected/);
-    await all.locator("label").filter({has:orphan}).locator("xpath=following-sibling::div[1]").waitFor();
+    await fda.getByText(/source programs/).first().waitFor({timeout:20000});
+    assert.match(await fda.innerText(),/linked NCTs|NCT count unknown/);
     await capture("03-phase-plus-fda");
   });
   await check("switch-back-and-clear",async()=>{
