@@ -175,7 +175,7 @@ export function poolStageStatistics(rows:PoolTrialRecord[]){
   return {total:rows.length,trials,standaloneResults,regulatoryEvents,groups,stages};
 }
 export type ScopeView="pool"|"pipeline"|"readout-review"|"census-review";
-export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="",recordKind:PoolRecordKind="all",selectedStages:readonly string[]=[]){
+export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="",recordKind:PoolRecordKind="all",selectedStages:readonly string[]=[],designationTrialIds:ReadonlySet<string>|null=null,requireToolSelection=false){
   const q=query.trim().toLowerCase();
   const matches=(item:PoolTrialRecord|PostPhase3Review)=>[
     item.ticker,item.company,item.drug,item.indication,
@@ -189,6 +189,10 @@ export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limi
   const stageFiltered=view==="pool"
     ? searched.filter(row=>{
         const pool=row as PoolTrialRecord;
+        // TOOLS starts with zero matches until at least one stage or designation is selected.
+        // Ordinary POOL views retain their original unfiltered behavior.
+        if(requireToolSelection && selectedStages.length===0 && designationTrialIds===null)return false;
+        if(designationTrialIds!==null && !designationTrialIds.has(pool.id))return false;
         if(recordKind==="trials" && !isPoolTrial(pool))return false;
         if(recordKind==="other" && isPoolTrial(pool))return false;
         if(stageGroup!=="all" && poolStageBucket(pool.stage)!==stageGroup)return false;
