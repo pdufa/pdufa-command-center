@@ -63,6 +63,9 @@ export default function PoolDesignationSelector({selected,onChange}:{selected:De
   return <div className={styles.stageDropdownColumn}>
     <label className={styles.stageDropdownLabel}>Saved FDA source coverage</label>
     <p className={styles.stageDropdownSubline}>{index?supported.length+" of 13 categories have a tracked source field":"Checking saved evidence…"}</p>
+    {index && Object.keys(index.trialEvents).length===0&&<p className={styles.error} role="status">
+      No exact NCT-to-designation links are in the saved source. Designation program counts are visible, but a combined trial count cannot yet be verified. No matches are not equivalent to no designations.
+    </p>}
     <details className={styles.stageDesignationPane}>
       <summary className={styles.stageDesignationSummary}>
         <span>{selected.length===0?"Select FDA designations":selected.length+" designations selected"}</span>
