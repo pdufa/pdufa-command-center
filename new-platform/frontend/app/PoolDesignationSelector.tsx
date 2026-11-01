@@ -8,6 +8,7 @@ import {
   type DesignationProgram,
 } from "../lib/trial-designations";
 import styles from "./FunnelWorkspace.module.css";
+import ToolsOptionNumber from "./ToolsOptionNumber";
 
 type PositiveRecord={program:DesignationProgram;linkedNcts:string[]};
 type DesignationSummary={available:boolean;records:PositiveRecord[];linkedTrials:number};
@@ -87,6 +88,7 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
     </p>}
     <details className={styles.stageDesignationPane}>
       <summary className={styles.stageDesignationSummary}>
+        <ToolsOptionNumber level={1} index={1} total={2}/>
         <span>{selected.length===0?"Select FDA designations":selected.length+" designations selected"}</span>
         <strong>{selected.length} selected</strong>
       </summary>
@@ -97,22 +99,26 @@ export default function PoolDesignationSelector({selected,onChange,poolTrialCoun
           <button type="button" onClick={()=>onChange([])}>Clear</button>
         </div>
         <div className={styles.stageDesignationList} role="group" aria-label="FDA special designations and pathways">
-          {SPECIAL_DESIGNATION_CATEGORIES.map(category=>{
+          {SPECIAL_DESIGNATION_CATEGORIES.map((category,index)=>{
             const d=entries[category.key];
-            return <label className={styles.stageCheckboxRow} key={category.key}
-              title={index&&!d.available?"No source field available for this category":undefined}>
-              <input type="checkbox" checked={selected.includes(category.key)}
-                disabled={!index||!d.available} onChange={()=>toggle(category.key)}/>
-              <span>{category.label}</span>
-              <div className={styles.designationCountPair}>
-                {index&&d.available?<>
-                  <strong title="Saved, source-linked positive application/program records">{d.records.length.toLocaleString("en-US")} programs</strong>
-                  <small title="Exact reviewed NCT-to-therapy/indication links">
-                    {d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}
-                  </small>
-                </>:<strong title="Source category not tracked">Not tracked</strong>}
-              </div>
-            </label>;
+            const checked=selected.includes(category.key);
+            return <div key={category.key} className={styles.toolsCascadeFdaItem}>
+              <label className={styles.stageCheckboxRow}
+                title={!d.available?"No source field available for this category":undefined}>
+                <input type="checkbox" checked={checked}
+                  disabled={!index||!d.available} onChange={()=>toggle(category.key)}/>
+                <ToolsOptionNumber level={2} index={index} total={SPECIAL_DESIGNATION_CATEGORIES.length}/>
+                <span>{category.label}</span>
+                {!d.available&&<small>Not tracked</small>}
+              </label>
+              {checked&&<div className={styles.toolsCascadeFdaEvidence} role="group"
+                aria-label={category.label+" source evidence"}>
+                <div><strong>{d.records.length.toLocaleString("en-US")} source programs</strong>
+                  <small>FDA applications/program events, not distinct trials</small></div>
+                <div><strong>{d.linkedTrials>0?d.linkedTrials.toLocaleString("en-US")+" linked NCTs":"NCT count unknown"}</strong>
+                  <small>Verified exact trial links only</small></div>
+              </div>}
+            </div>;
           })}
         </div>
         <p className={styles.muted}>The top number counts positive source programs; the smaller number counts the few trial IDs matched to them. They are not interchangeable. “NCT count unknown” means research is incomplete, not zero trials.</p>
