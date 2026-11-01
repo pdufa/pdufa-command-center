@@ -4,8 +4,10 @@ import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
 import css from "./ToolsOpeningTrialGrid.module.css";
-import {TOOLS_CLEAR_EVENT,TOOLS_RATINGS_STORAGE_KEY,readToolsPreference,saveToolsPreference}
-  from "../lib/tools-selection-persistence";
+import {TOOLS_CLEAR_EVENT,TOOLS_RATINGS_STORAGE_KEY,TOOLS_COMPETITION_STORAGE_KEY,
+  readToolsPreference,saveToolsPreference} from "../lib/tools-selection-persistence";
+import {COMPETITIVE_STRATEGY_TOPICS} from "../lib/tools-competitive-strategy";
+import {parseBenefitFeed,benefitForTrial,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
 type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
   inventoryMode:boolean;loading:boolean;error:string;
@@ -52,6 +54,9 @@ export default function ToolsOpeningTrialGrid({
   const [desc,setDesc]=useState(false);
   const [today,setToday]=useState("");
   const [expandedRatings,setExpandedRatings]=useState<RatingGroupKey[]>([]);
+  const [competitiveOpen,setCompetitiveOpen]=useState(false);
+  const [competitionEvidence,setCompetitionEvidence]=useState<BenefitFeed|null>(null);
+  const [competitionError,setCompetitionError]=useState(false);
   const [selectionsRestored,setSelectionsRestored]=useState(false);
   useEffect(()=>{
     const raw=readToolsPreference(TOOLS_RATINGS_STORAGE_KEY);
@@ -60,21 +65,37 @@ export default function ToolsOpeningTrialGrid({
       setExpandedRatings([...new Set(raw.filter((key):key is RatingGroupKey=>
         typeof key==="string"&&allowed.has(key)))]);
     }
+    setCompetitiveOpen(readToolsPreference(TOOLS_COMPETITION_STORAGE_KEY)===true);
     setSelectionsRestored(true);
   },[]);
   useEffect(()=>{
     if(!selectionsRestored)return;
     saveToolsPreference(TOOLS_RATINGS_STORAGE_KEY,expandedRatings);
-  },[expandedRatings,selectionsRestored]);
+    saveToolsPreference(TOOLS_COMPETITION_STORAGE_KEY,competitiveOpen);
+  },[expandedRatings,competitiveOpen,selectionsRestored]);
+  useEffect(()=>{
+    if(!competitiveOpen)return;
+    const controller=new AbortController();
+    setCompetitionError(false);
+    void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
+      .then(async response=>{
+        if(!response.ok)throw Error("BENEFIT_FEED_UNAVAILABLE");
+        return parseBenefitFeed(await response.json());
+      })
+      .then(data=>{if(!controller.signal.aborted)setCompetitionEvidence(data);})
+      .catch(()=>{if(!controller.signal.aborted){setCompetitionEvidence(null);setCompetitionError(true);}});
+    return ()=>controller.abort();
+  },[competitiveOpen]);
   useEffect(()=>{
     if(typeof window==="undefined")return;
-    const clear=()=>setExpandedRatings([]);
+    const clear=()=>{setExpandedRatings([]);setCompetitiveOpen(false);};
     window.addEventListener(TOOLS_CLEAR_EVENT,clear);
     return ()=>window.removeEventListener(TOOLS_CLEAR_EVENT,clear);
   },[]);
   const toggleRating=(key:RatingGroupKey)=>setExpandedRatings(current=>current.includes(key)
     ?current.filter(value=>value!==key):[...current,key]);
-  const columnsCount=1+columns.length+extraColumns+RATING_GROUPS.reduce((n,g)=>
+  const columnsCount=1+columns.length+extraColumns+1+
+    (competitiveOpen?COMPETITIVE_STRATEGY_TOPICS.length:0)+RATING_GROUPS.reduce((n,g)=>
     n+1+(expandedRatings.includes(g.key)?g.ingredients.length:0),0);
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
   const ordered=useMemo(()=>[...rows].sort((a,b)=>{
@@ -106,14 +127,36 @@ export default function ToolsOpeningTrialGrid({
     <div className={css.scroll} role="region" aria-label="Scrollable clinical trial spreadsheet" tabIndex={0}>
       <table>
         <thead><tr><th className={css.rowNum}>#</th>
-          {columns.map(col=><th key={col.key} className={col.key==="s"||col.key==="d"?css.dayHeading:undefined}
-            title={col.hint||col.label}>
-            <button type="button" aria-label={"Sort visible trials by "+(col.hint||col.label)}
-              onClick={()=>{if(sortKey===col.key)setDesc(v=>!v);else{setSortKey(col.key);setDesc(false);}}}>
-              {col.label}{sortKey===col.key?(desc?" ↓":" ↑"):" ↕"}
-            </button>
-            {col.hint&&<small>{col.hint}</small>}
-          </th>)}
+          {columns.map(col=><Fragment key={col.key}>
+            {col.key==="drug"&&<Fragment>
+              <th className={[css.competitionCell,css.competitionStart,
+                competitiveOpen?css.competitionOpen:css.competitionEnd].join(" ")}
+                data-competition-group="CS"
+                title="Competitive Strategy · source-linked monitoring and ranking topics">
+                <button type="button" aria-expanded={competitiveOpen}
+                  aria-label={(competitiveOpen?"Collapse":"Expand")+" Competitive Strategy monitoring columns after S and D"}
+                  onClick={()=>setCompetitiveOpen(v=>!v)}>
+                  CS <span aria-hidden="true">{competitiveOpen?"◀":"▶"}</span>
+                </button>
+                <small>Competitive Strategy</small>
+              </th>
+              {competitiveOpen&&COMPETITIVE_STRATEGY_TOPICS.map((topic,i)=><th
+                key={topic.key} data-competition-topic={topic.key}
+                className={[css.competitionCell,css.competitionOpen,
+                  i===COMPETITIVE_STRATEGY_TOPICS.length-1?css.competitionEnd:""].join(" ")}
+                title={"Monitor: "+topic.monitor+" Ranking: "+topic.rank}>
+                <strong>{topic.key}</strong><small>{topic.name}</small>
+              </th>)}
+            </Fragment>}
+            <th className={col.key==="s"||col.key==="d"?css.dayHeading:undefined}
+              title={col.hint||col.label}>
+              <button type="button" aria-label={"Sort visible trials by "+(col.hint||col.label)}
+                onClick={()=>{if(sortKey===col.key)setDesc(v=>!v);else{setSortKey(col.key);setDesc(false);}}}>
+                {col.label}{sortKey===col.key?(desc?" ↓":" ↑"):" ↕"}
+              </button>
+              {col.hint&&<small>{col.hint}</small>}
+            </th>
+          </Fragment>)}
           {RATING_GROUPS.map(group=>{
             const open=expandedRatings.includes(group.key);
             const outer=[css.ratingCell,open?css.ratingOpen:"",css.ratingStart,
@@ -161,6 +204,36 @@ export default function ToolsOpeningTrialGrid({
             <td className={css.dayCell}><DayCell count={days.daysToPdufa}
               date={row.timeline?.pdufaTarget?.date} url={row.timeline?.pdufaTarget?.sourceUrl}
               description="D · Days to verified PDUFA target"/></td>
+            <td className={[css.competitionCell,css.competitionStart,
+                competitiveOpen?css.competitionOpen:css.competitionEnd].join(" ")}
+                title="Competitive Strategy ranking requires verified matched comparator evidence">
+              <span className={css.ratingUnscored}>Not ranked</span>
+            </td>
+            {competitiveOpen&&COMPETITIVE_STRATEGY_TOPICS.map((topic,i)=>{
+              const record=benefitForTrial(competitionEvidence,row);
+              const facts=topic.fields.flatMap(field=>{
+                const fact=record?.facts[field] as BenefitFact|undefined;
+                return fact?[{field,fact}]:[];
+              });
+              const verified=facts.filter(f=>f.fact.status==="VERIFIED").length;
+              const modeled=facts.filter(f=>f.fact.status==="MODELED").length;
+              return <td key={topic.key} data-competition-value={topic.key}
+                className={[css.competitionCell,css.competitionOpen,
+                  i===COMPETITIVE_STRATEGY_TOPICS.length-1?css.competitionEnd:""].join(" ")}
+                title={topic.name+": "+topic.monitor}>
+                {!facts.length?<span className={css.ratingUnscored}>{competitionError?"Evidence unavailable":"Not assessed"}</span>:
+                  <details className={css.competitionEvidence}>
+                    <summary>{verified} verified · {modeled} modeled</summary>
+                    {facts.map(({field,fact})=><p key={field}>
+                      <strong>{field}</strong> · {String(fact.value)} ({fact.status.toLowerCase()})
+                      <a href={fact.sourceUrl} target="_blank" rel="noopener noreferrer">Evidence · {fact.sourceDate}</a>
+                    </p>)}
+                  </details>}
+              </td>;
+            })}
+            <td className={css.longTextCell}>{safe(row.drug)}</td>
+            <td className={css.longTextCell}>{safe(row.indication)}</td>
+            <td>{safe(row.stage)}</td>
             {RATING_GROUPS.map(group=>{
               const open=expandedRatings.includes(group.key);
               return <Fragment key={group.key}>
@@ -177,9 +250,7 @@ export default function ToolsOpeningTrialGrid({
                 </td>)}
               </Fragment>;
             })}
-            <td className={css.longTextCell}>{safe(row.drug)}</td>
-            <td className={css.longTextCell}>{safe(row.indication)}</td>
-            <td>{safe(row.stage)}</td>
+
             <td>{(()=>{
               const linked=Object.entries(row.designationMatches||{}).filter(([,items])=>!!items?.length);
               return linked.length?<details>
@@ -207,6 +278,22 @@ export default function ToolsOpeningTrialGrid({
           </tr>;})}
         </tbody>
       </table>
+    </div>
+    <div className={css.competitionHelp}>
+      <strong>CS — Competitive Strategy:</strong> Tap the CS heading after S and D to reveal six monitoring columns.
+      <button type="button" onClick={()=>setCompetitiveOpen(v=>!v)}>
+        {competitiveOpen?"Collapse competitive strategy":"Expand competitive strategy"}
+      </button>
+      <details><summary>What the six columns monitor and how they could rank trials</summary>
+        <ol>{COMPETITIVE_STRATEGY_TOPICS.map(topic=><li key={topic.key}>
+          <strong>{topic.key} · {topic.name}.</strong> Monitor: {topic.monitor} Rank: {topic.rank}
+        </li>)}</ol>
+        <p>Monitoring definitions are not scores. A defensible comparative ranking requires
+          verified evidence matched to the drug, NCT, indication, treatment line and population,
+          with direct comparisons distinguished from indirect evidence.
+          Missing values remain Not assessed; source fields are not proof of clinical superiority
+          or price appreciation.</p>
+      </details>
     </div>
     <div className={css.ratingHelp}>
       <strong>Ratings:</strong> M (Missing), A (Evidence), B (Medical), C (Commercial), D (Stock), E (Final).
