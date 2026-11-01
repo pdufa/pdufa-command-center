@@ -176,7 +176,7 @@ test("FDA row totals equal the exact NCT+issuer trial filter, never raw index li
    "Not a matching issuer means no displayed NCT attribution to that FDA program");
  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
  assert.match(route,/designationTotals=index\?toolsDesignationTotals\(inventory.poolRows,index\):null/);
- assert.match(route,/spreadsheetRows,pipelineResearch,designationTotals,contextualDesignationCounts,datasetVersion/);
+ assert.match(route,/spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,contextualDesignationCounts,regulatorySourcesAvailable,datasetVersion/);
 });
 
 test("FDA counts recalculate from exact resultant Phase and search scope, not entire POOL",()=>{
@@ -220,7 +220,7 @@ test("FDA counts recalculate from exact resultant Phase and search scope, not en
    "Per-choice matches may overlap; the resultant unique-trial total must remain one");
  const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
  assert.match(route,/toolsContextualDesignationCounts\(\s*inventory.poolRows,index,selectedStages,query\)/);
- assert.match(route,/spreadsheetRows,pipelineResearch,designationTotals,contextualDesignationCounts,datasetVersion/);
+ assert.match(route,/spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,contextualDesignationCounts,regulatorySourcesAvailable,datasetVersion/);
 });
 
 test("source parity failure and stale POOL never produce invented trial totals",()=>{
@@ -443,7 +443,7 @@ test("all FDA selections retain separate program counts and exact linked NCT cou
   assert.match(funnel,/num\(designationCoverage!\.sourcePrograms\)/);
   assert.match(funnel,/num\(designationCoverage!\.linkedNcts\)/);
   assert.match(funnel,/UNIQUE NCT TRIAL COUNT FROM SELECTED POOL/);
-  assert.match(funnel,/crosswalk-linked NCTs in the unrestricted POOL/);
+  assert.match(funnel,/crosswalk-linked NCTs in the restricted research scope/);
   assert.match(funnel,/FDA-to-NCT coverage may be incomplete/);
 });
 test("unlinked FDA source count is clearly visible in the TRIALS card but never labeled 16 trials",()=>{
@@ -464,10 +464,10 @@ test("unlinked FDA source count is clearly visible in the TRIALS card but never 
 });
 
 
-test("optional Pipeline readout data cannot suppress or fabricate TOOLS POOL results",()=>{
+test("restricted research screen is mandatory before TOOLS Phase and FDA facet calculations",()=>{
   const route=fs.readFileSync(require("node:path").join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
-  assert.doesNotMatch(route,/PIPELINE_SCREEN_UNAVAILABLE/);
-  assert.doesNotMatch(route,/\.filter\(row=>pipelineResearchNcts\.has\(row\.id\)\)/);
+  assert.match(route,/restrictedToolsSnapshot\(/);
+  assert.match(route,/const \{snapshot:inventory,scope:restrictedScope\}=restrictedToolsSnapshot/);
   assert.match(route,/buildToolsResults\(inventory,index,selectedStages,selectedDesignations,/);
   assert.match(route,/const rows=filterToolTrials\(inventory\.poolRows,selectedStages,matches,query\);/);
   assert.match(route,/timeline:trialTimelines\.get/);
