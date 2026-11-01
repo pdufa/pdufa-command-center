@@ -502,15 +502,16 @@ test("final live spreadsheet stays below every TOOLS selection and analysis sect
   const stage=source.indexOf('id="tools-first-phase"');
   const fda=source.indexOf('id="tools-first-designation"');
   const funnel=source.indexOf('<ToolsFunnel');
+  const assessment=source.indexOf('<ToolsAssessmentSection');
   const research=source.indexOf('<ToolsResultsSpreadsheet');
   const final=source.indexOf('id="tools-final-trial-spreadsheet"');
   const closing=source.lastIndexOf('</section>');
   assert.ok([head,stage,fda,funnel,research,final,closing].every(n=>n>=0));
   const filterGate=source.indexOf('{hasSelections&&<>');
-  assert.ok(funnel<head&&head<stage&&stage<fda&&fda<filterGate&&filterGate<research&&research<final&&final<closing,
-    "POOL → PIPELINE → TRIALS must lead the page above Step 3 selectors even without selections; assessments must precede Step 5");
-  assert.match(source.slice(filterGate),/\{hasSelections&&<div className=\{styles\.toolsFinalSpreadsheet\} id="tools-final-trial-spreadsheet">/,
-    "Step 5 must remain fully unmounted until a Step 3 checkbox is checked");
+  assert.ok(funnel<head&&head<stage&&stage<fda&&fda<filterGate&&filterGate<assessment&&assessment<final&&final<research&&research<closing,
+    "Order must be POOL/PIPELINE, Step 3, Step 4 4a1–4a20, immediately Step 5, then advanced research");
+  assert.match(source.slice(assessment),/<div className=\{styles\.toolsFinalSpreadsheet\} id="tools-final-trial-spreadsheet">/,
+    "The Step 5 spreadsheet must directly follow Step 4 and be inside the same selection gate");
   assert.equal((source.match(/<ToolsOpeningTrialGrid\b/g)||[]).length,1,
     "Never render duplicate copies of the final live POOL spreadsheet");
   assert.match(source.slice(final),/rows=\{hasSelections\?page\?\.spreadsheetRows\|\|\[\]:\[\]\}/,"No trial data in Step 5 until Phase or FDA is checked");
@@ -519,9 +520,10 @@ test("final live spreadsheet stays below every TOOLS selection and analysis sect
   assert.match(source.slice(final),/loading=\{hasSelections&&loading\}/);
 });
 
-test("Step 5 is hidden until a Phase/FDA checkbox is checked, and resets when cleared",()=>{
+test("Step 4 and Step 5 are hidden until a Phase/FDA checkbox is checked, and reset when cleared",()=>{
   const grid=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsOpeningTrialGrid.tsx"),"utf8");
   const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
+  assert.match(ui,/\{hasSelections&&<>[\s\S]*<ToolsAssessmentSection/);
   assert.match(ui,/total=\{hasSelections\?page\?\.total\?\?0:0\}/);
   assert.match(ui,/nextOffset=\{hasSelections\?page\?\.nextOffset\?\?null:null\}/);
   assert.match(grid,/!hasSelection\?<tr><td colSpan=\{columnsCount\}/);
