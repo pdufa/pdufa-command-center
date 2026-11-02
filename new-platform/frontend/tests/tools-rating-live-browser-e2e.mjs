@@ -111,10 +111,10 @@ async function finalSurveyTest(page,label){
     if(bucket==="post"){
       await page.waitForFunction(()=>{
         const p=document.querySelector('[aria-label="Final SURVEY readiness and reluctant evidence grade"]');
-        return !!p&&/Source-verified coverage:\\s*\\d+ of 38/.test(p.textContent||"");
+        return !!p&&/Source-verified coverage:\s*\d+ of 38/.test(p.textContent||"");
       },null,{timeout:45000});
       const loaded=await audit.innerText();
-      check(/Source-verified coverage:\\s*[24] of 38/.test(loaded),
+      check(/Source-verified coverage:\s*[24] of 38/.test(loaded),
         "POST readout must display source-verified issuer trial observations, not empty placeholders");
       check(loaded.includes("FDA decision forecast: ABSTAIN"),
         "Sponsor topline findings must not create a probability or FDA verdict");
