@@ -86,7 +86,7 @@ async function finalSurveyTest(page,label){
     let body=await audit.innerText();
     assert.match(body,/Grade 1 · Full analysis readiness/);
     assert.match(body,/Grade 2 · Reluctant evidence-coverage grade/);
-    assert.match(body,/FDA decision forecast:\\s*ABSTAIN/);
+    assert.match(body,/FDA decision forecast:\s*ABSTAIN/);
     check(body.includes("Source-verified coverage:"),"Source coverage has to be visible");
     await page.waitForFunction(()=>{
       const panel=document.querySelector('[aria-label="Final SURVEY readiness and reluctant evidence grade"]');
