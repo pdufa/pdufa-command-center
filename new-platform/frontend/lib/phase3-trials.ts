@@ -21,15 +21,23 @@ export function catalogQuery(search: URLSearchParams): URLSearchParams | null {
   return new URLSearchParams({ period, q: query, decision, sort, dir: direction, page, page_size: size });
 }
 
+/** Validation pagination has one bounded integer field; ignore no arbitrary upstream params. */
+export function validationCaseQuery(search:URLSearchParams):URLSearchParams|null{
+ const pages=search.getAll("case_page");
+ if(pages.length>1||[...search.keys()].some(k=>k!=="case_page"))return null;
+ const page=pages[0]??"1";
+ if(!/^[1-9][0-9]{0,6}$/.test(page)||Number(page)>1000000)return null;
+ return new URLSearchParams({case_page:page});
+}
 export async function relayPhase3Catalog(req: NextRequest, validation = false) {
   if (!authConfigured() || !hasSession(req.cookies.get(COOKIE_NAME)?.value)) return error("Authentication required", 401);
-  const query = validation ? new URLSearchParams() : catalogQuery(req.nextUrl.searchParams);
-  if (!query) return error("Invalid trial catalog filters", 422);
+  const query = validation ? validationCaseQuery(req.nextUrl.searchParams) : catalogQuery(req.nextUrl.searchParams);
+  if (!query) return error(validation ? "Invalid historical case review page" : "Invalid trial catalog filters", 422);
   const base = process.env.PDUFA_API_BASE_URL?.replace(/\/$/, "");
   const key = process.env.PDUFA_INTERNAL_API_KEY;
   if (!base?.startsWith("https://") || !key) return error("Trial catalog backend is not configured", 503);
   try {
-    const response = await fetch(base + "/api/phase3-trials" + (validation ? "/validation" : "?" + query.toString()), {
+    const response = await fetch(base + "/api/phase3-trials" + (validation ? "/validation?" + query.toString() : "?" + query.toString()), {
       cache: "no-store", headers: { Accept: "application/json", "X-Pdufa-Internal-Key": key },
       signal: AbortSignal.any([req.signal, AbortSignal.timeout(25000)]),
     });
