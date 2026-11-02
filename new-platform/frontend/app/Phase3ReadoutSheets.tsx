@@ -9,18 +9,24 @@ type Bucket="pre"|"post"|"unverified";
 const LIMIT=50;
 const number=(v:number)=>v.toLocaleString("en-US");
 const txt=(v:string)=>v||"Not established";
-type ReadoutKey="nctId"|"ticker"|"company"|"drug"|"indication"|"status"|"date"|"source";
+type ReadoutKey="nctId"|"ticker"|"company"|"factorP"|"drug"|"indication"|"status"|"date"|"source";
 const readoutColumns:ColumnFilterField[]=[
  {key:"ticker",label:"Ticker"},{key:"nctId",label:"NCT / trial"},
  {key:"company",label:"Company"},{key:"drug",label:"Drug / therapy"},
  {key:"indication",label:"Indication"},{key:"status",label:"Registry status"},
  {key:"date",label:"Issuer release/check date"},{key:"source",label:"Evidence source"}
 ];
+const postReadoutColumns:ColumnFilterField[]=[
+ ...readoutColumns.slice(0,3),
+ {key:"factorP",label:"Factor P · primary endpoint p-value"},
+ ...readoutColumns.slice(3)
+];
 const unknownColumns:ColumnFilterField[]=[
  {key:"nctId",label:"NCT / trial"},{key:"ticker",label:"Ticker"},
  {key:"company",label:"Company"},{key:"status",label:"Registry status"}
 ];
 const readoutValue=(row:ReadoutRow,key:string):string=>{
+ if(key==="factorP")return row.evidence?.primaryEndpointP?.display||"";
  if(key==="date")return row.evidence?.evidenceDate||"";
  if(key==="drug")return row.evidence?.drug||"";
  if(key==="indication")return row.evidence?.indication||"";
@@ -40,9 +46,9 @@ function csvCell(v:string|number){
   return '"'+safe.replace(/"/g,'""')+'"';
 }
 function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
-  const fields=["NCT","Ticker","Company","ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication","Release evidence","Registry link"];
+  const fields=["NCT","Ticker","Company",...(bucket==="post"?["Factor P (Phase 3 primary endpoint p-value)"]:[]),"ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication","Release evidence","Registry link"];
   const table=[fields,...rows.map(row=>[
-    row.nctId,row.ticker,row.company,row.status,
+    row.nctId,row.ticker,row.company,...(bucket==="post"?[row.evidence?.primaryEndpointP?.display||"Not reported"]:[]),row.status,
     bucket==="pre"?"No public issuer release verified as of source check":
       bucket==="post"?"Public issuer Phase 3 readout confirmed":"Unverified",
     row.evidence?.evidenceDate||"",row.evidence?.drug||"",row.evidence?.indication||"",
@@ -61,20 +67,26 @@ function TrialTable({rows,bucket}:{rows:ReadoutRow[];bucket:Bucket}){
     <table className={css.table}>
       <thead><tr>
         <th>#</th><th>Ticker</th><th>NCT / trial</th><th>Company</th>
+        {bucket==="post"&&<th title="Verified Phase 3 primary-endpoint statistical p-value, not FDA approval probability">Factor P · p-value</th>}
         <th>Drug / therapy</th><th>Indication</th><th>Registered status</th>
         <th>{bucket==="pre"?"Source checked":bucket==="post"?"Public release date":"Public release"}</th><th>Source evidence</th>
       </tr></thead>
       <tbody>{rows.length?rows.map((row,i)=><tr key={row.nctId}>
         <td>{i+1}</td><td><strong>{row.ticker}</strong></td>
         <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
-        <td><span>{row.company}</span>{" "}<span className={`${css.stageBadge} ${bucket==="pre"?css.stageThree:css.stageP}`} title={bucket==="pre"?"3 · Phase 3 public results not identified at the dated source check":"P · Public Phase 3 results released; a PDUFA date is not implied"} aria-label={bucket==="pre"?"Phase 3 pre-release as last checked":"Post Phase 3 public readout confirmed"}>{bucket==="pre"?"3":"P"}</span></td><td>{txt(row.evidence?.drug||"")}</td>
+        <td><span>{row.company}</span>{" "}<span className={`${css.stageBadge} ${bucket==="pre"?css.stageThree:css.stageP}`} title={bucket==="pre"?"3 · Phase 3 public results not identified at the dated source check":"P · Public Phase 3 results released; a PDUFA date is not implied"} aria-label={bucket==="pre"?"Phase 3 pre-release as last checked":"Post Phase 3 public readout confirmed"}>{bucket==="pre"?"3":"P"}</span></td>
+        {bucket==="post"&&<td className={css.factorPCell}>
+          {row.evidence?.primaryEndpointP
+            ? <a className={css.factorPValue} href={row.evidence.primaryEndpointP.sourceUrl} target="_blank" rel="noopener noreferrer" title={row.evidence.primaryEndpointP.endpoint+" · issuer source"}>{row.evidence.primaryEndpointP.display}</a>
+            : <span className={css.factorPMissing} title="Exact Phase 3 primary endpoint p-value not verified in the referenced public readout">Not reported</span>}
+        </td>}<td>{txt(row.evidence?.drug||"")}</td>
         <td>{txt(row.evidence?.indication||"")}</td><td>{row.status.replaceAll("_"," ")}</td>
         <td>{row.evidence?.evidenceDate||"Not verified"}</td>
         <td>{row.evidence
           ? <a href={row.evidence.evidenceUrl} target="_blank" rel="noopener noreferrer">
             {bucket==="pre"?"Dated issuer check":"Public readout source"}</a>
           : "Not verified"}</td>
-      </tr>):<tr><td colSpan={9} className={css.empty}>No documented matches in this view. Unknown-release trials are not counted as pre-release.</td></tr>}</tbody>
+      </tr>):<tr><td colSpan={bucket==="post"?10:9} className={css.empty}>No documented matches in this view. Unknown-release trials are not counted as pre-release.</td></tr>}</tbody>
     </table>
   </div>;
 }
@@ -85,7 +97,7 @@ function Spreadsheet({bucket,rows,query,caption}:{bucket:"pre"|"post";rows:Reado
   const matched=useMemo(()=>{
     const q=query.trim().toLowerCase();
     const found=applyColumnFilters(rows,filters,readoutValue).filter(x=>
-      !q||[x.nctId,x.ticker,x.company,x.status,x.evidence?.drug||"",x.evidence?.indication||"",x.evidence?.evidenceDate||""]
+      !q||[x.nctId,x.ticker,x.company,x.status,x.evidence?.drug||"",x.evidence?.indication||"",x.evidence?.evidenceDate||"",x.evidence?.primaryEndpointP?.display||""]
         .some(field=>field.toLowerCase().includes(q)));
     return sortReadout(found,sort,desc);
   },[rows,query,filters,sort,desc]);
@@ -101,12 +113,12 @@ function Spreadsheet({bucket,rows,query,caption}:{bucket:"pre"|"post";rows:Reado
       </div>
     </div>
     <TrialColumnFilterBar title={pre?"Verified issuer pre-release":"Verified issuer post-release"}
-      fields={readoutColumns} filters={filters} onChange={setFilters}
+      fields={pre?readoutColumns:postReadoutColumns} filters={filters} onChange={setFilters}
       hint="Filter these issuer-announcement research rows, separately from the ClinicalTrials.gov results-posting spreadsheets.">
       <label style={{fontSize:12}}>Sort by
         <select aria-label={bucket+" release sort column"} value={sort}
           onChange={e=>setSort(e.target.value as ReadoutKey)}>
-          {readoutColumns.map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
+          {(pre?readoutColumns:postReadoutColumns).map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
         </select>
       </label>
       <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
@@ -171,7 +183,7 @@ export default function Phase3ReadoutSheets(){
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
       caption="Trials without a documented issuer public release at their source-check date. Each row retains the check date and issuer link."/>
     <Spreadsheet bucket="post" rows={data.post} query={query}
-      caption="Trials with a documented company public Phase 3 results announcement, including release date and original source."/>
+      caption="Trials with a documented company public Phase 3 results announcement. Factor P shows the sourced primary-endpoint p-value where reported; it is not approval probability."/>
     <details className={css.unverified}>
       <summary><strong>Release status not verified · {number(data.unverified.length)} trials</strong> <span>Expand for research queue</span></summary>
       <div className={css.pendingBody}>
