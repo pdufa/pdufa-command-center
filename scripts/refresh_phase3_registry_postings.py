@@ -50,10 +50,11 @@ def census_rows(path):
     return rows
 
 
-def request_batch(ncts):
-    url = API + "?" + urlencode({
-        "filter.ids": ",".join(ncts), "pageSize": len(ncts), "format": "json"
-    })
+def request_batch(ncts, page_token=""):
+    params = {"filter.ids": ",".join(ncts), "pageSize": len(ncts), "format": "json"}
+    if page_token:
+        params["pageToken"] = page_token
+    url = API + "?" + urlencode(params)
     for attempt in range(4):
         try:
             req = Request(url, headers={
@@ -103,23 +104,37 @@ def build_snapshot(rows, requester=request_batch, now=None, batch_size=25):
     recorded = {}
     for first in range(0, len(rows), batch_size):
         wanted = [r["nct_id"] for r in rows[first:first + batch_size]]
-        payload = requester(wanted)
-        if (not isinstance(payload, dict) or not isinstance(payload.get("studies"), list)
-            or payload.get("nextPageToken")):
-            raise ValueError("Incomplete or paginated registry results batch")
-        studies = payload["studies"]
-        if len(studies) != len(wanted):
-            raise ValueError("Missing registry study; previous snapshot preserved")
         expected = set(wanted)
-        for study in studies:
-            if not isinstance(study, dict):
-                raise ValueError("Malformed registry record")
-            protocol = study.get("protocolSection", {})
-            ident = protocol.get("identificationModule", {}) if isinstance(protocol, dict) else {}
-            nct = ident.get("nctId") if isinstance(ident, dict) else None
-            if not isinstance(nct, str) or nct not in expected or nct in recorded:
-                raise ValueError("Registry returned wrong or duplicate NCT")
-            recorded[nct] = posted_date(study, nct, cutoff)
+        seen_tokens = set()
+        page_token = ""
+        # The registry can paginate even an explicit NCT ID filter. Collect
+        # every page and reject omissions, repeats, foreign IDs and loops.
+        for page_index in range(max(2, len(wanted) + 1)):
+            payload = (requester(wanted, page_token) if page_token
+                       else requester(wanted))
+            if not isinstance(payload, dict) or not isinstance(payload.get("studies"), list):
+                raise ValueError("Malformed ClinicalTrials.gov results page")
+            for study in payload["studies"]:
+                if not isinstance(study, dict):
+                    raise ValueError("Malformed registry record")
+                protocol = study.get("protocolSection", {})
+                ident = protocol.get("identificationModule", {}) if isinstance(protocol, dict) else {}
+                nct = ident.get("nctId") if isinstance(ident, dict) else None
+                if not isinstance(nct, str) or nct not in expected or nct in recorded:
+                    raise ValueError("Registry returned wrong or duplicate NCT")
+                recorded[nct] = posted_date(study, nct, cutoff)
+            token = payload.get("nextPageToken")
+            if token is None or token == "":
+                if len(expected.intersection(recorded)) != len(expected):
+                    raise ValueError("Incomplete registry batch: missing exact NCTs")
+                break
+            if (not isinstance(token, str) or len(token) > 4000 or token in seen_tokens
+                or len(expected.intersection(recorded)) >= len(expected)):
+                raise ValueError("Invalid, repeated, or extraneous registry pagination token")
+            seen_tokens.add(token)
+            page_token = token
+        else:
+            raise ValueError("Registry pagination budget exhausted")
     if len(recorded) != len(rows):
         raise ValueError("Registry census not completely reconciled")
     entries = [{
