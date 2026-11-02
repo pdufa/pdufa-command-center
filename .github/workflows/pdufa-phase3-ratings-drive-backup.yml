@@ -8,6 +8,13 @@ on:
       - 'data/phase3_benefit_survey_catalog.json'
       - 'tests/test_phase3_ratings_survey_drive_backup.py'
       - '.github/workflows/pdufa-phase3-ratings-drive-backup.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/sync_phase3_ratings_survey_to_google_drive.py'
+      - 'data/phase3_benefit_survey_catalog.json'
+      - 'tests/test_phase3_ratings_survey_drive_backup.py'
+      - '.github/workflows/pdufa-phase3-ratings-drive-backup.yml'
   workflow_run:
     workflows:
       - "PDUFA Phase 3 Google Drive Backup"
@@ -23,6 +30,7 @@ concurrency:
 jobs:
   ratings-and-survey:
     if: >-
+      github.event_name == 'pull_request' ||
       github.event_name != 'workflow_run' ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_branch == 'main' &&
@@ -40,8 +48,10 @@ jobs:
       - name: Check taxonomy and complete 20-rating mapping for every Phase 3 NCT
         run: python -m unittest discover -s tests -p 'test_phase3_ratings_survey_drive_backup.py' -v
       - name: Install secure website and Sheets clients
+        if: github.event_name != 'pull_request'
         run: python -m pip install google-auth requests
       - name: Ensure source and Google Sheets credentials are configured
+        if: github.event_name != 'pull_request'
         env:
           DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
@@ -49,6 +59,7 @@ jobs:
           test -n "$DASHBOARD_PASSWORD" || { echo "::error::DASHBOARD_PASSWORD missing"; exit 1; }
           test -n "$GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON" || { echo "::error::Google Sheets service account missing"; exit 1; }
       - name: Export 20 ratings, survey responses and 38 ingredient requirements
+        if: github.event_name != 'pull_request'
         env:
           DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
