@@ -18,6 +18,8 @@ export type MetricHistoricalFeed={
 export type MetricHistoricalDiagnostic={
  stage:RaasStage;metricId:string;name:string;
  independentPrograms:number;observedReturnPairs:number;
+ benchmarkId:string|null;ruleVersion:string|null;protocolConsistent:boolean;
+ holdoutTrainPrograms:number;holdoutTestPrograms:number;
  spearmanScoreToReturn:number|null;meanHighMinusLowPercent:number|null;
  positiveReturnRateHigh:number|null;positiveReturnRateLow:number|null;
  status:"INSUFFICIENT_EVIDENCE"|"REVIEW_ELIGIBLE_NOT_APPROVED";
@@ -82,7 +84,8 @@ export function evaluateMetricHistory(
 ):MetricHistoricalDiagnostic[]{
  const cases=new Map(history.cases.map(c=>[c.caseId,c]));
  const accepted=new Map(outcomes.accepted.map(c=>[c.caseId,c]));
- const valid:{metricId:string;stage:RaasStage;caseId:string;program:string;returnPct:number;score:number;entryDate:string}[]=[];
+ const valid:{metricId:string;stage:RaasStage;caseId:string;program:string;returnPct:number;score:number;
+  entryDate:string;exitDate:string;benchmarkId:string;ruleVersion:string}[]=[];
  for(const r of rated.records){
   const c=cases.get(r.caseId),outcome=accepted.get(r.caseId);
   if(!c||!outcome||r.stage!==c.stage||r.ticker.trim().toLowerCase()!==c.ticker.trim().toLowerCase()||
@@ -91,7 +94,8 @@ export function evaluateMetricHistory(
    r.assessedAt>c.entryDate||r.assessedAt>rated.sourceAsOf)continue;
   valid.push({metricId:r.metricId,stage:r.stage,caseId:r.caseId,
    program:outcome.programKey,returnPct:outcome.realizedReturnPercent,
-   score:r.score,entryDate:outcome.entryDate});
+   score:r.score,entryDate:outcome.entryDate,exitDate:outcome.exitDate,
+   benchmarkId:r.benchmarkId,ruleVersion:r.ruleVersion});
  }
  const threshold=30;
  return (["pre","post"] as const).flatMap(stage=>
@@ -101,19 +105,40 @@ export function evaluateMetricHistory(
    const independent=new Map<string,typeof candidates[number]>();
    for(const c of candidates)if(!independent.has(c.program))independent.set(c.program,c);
    const p=[...independent.values()];
+   // Never pool incompatible scoring definitions into a single correlation.
+   const protocols=new Set(p.map(x=>x.benchmarkId+"|"+x.ruleVersion));
+   const protocolConsistent=protocols.size===1;
    const low=p.filter(x=>x.score<=25),high=p.filter(x=>x.score>=75);
    const avg=(v:typeof p)=>v.reduce((s,x)=>s+x.returnPct,0)/v.length;
    const positive=(v:typeof p)=>round(v.filter(x=>x.returnPct>0).length/v.length*100);
-   const enough=p.length>=threshold&&low.length>=5&&high.length>=5;
+   // Purged, chronological holdout: a training exit must be strictly before
+   // the first test entry. Deduplicate company/therapy/indication first.
+   let holdoutTrainPrograms=0,holdoutTestPrograms=0;
+   for(const cutoff of new Set(p.map(x=>x.entryDate))){
+    const train=p.filter(x=>x.exitDate<cutoff).length;
+    const test=p.filter(x=>x.entryDate>=cutoff).length;
+    if(Math.min(train,test)>Math.min(holdoutTrainPrograms,holdoutTestPrograms)){
+     holdoutTrainPrograms=train;holdoutTestPrograms=test;
+    }
+   }
+   const adequateCounts=p.length>=threshold&&low.length>=5&&high.length>=5;
+   const enough=adequateCounts&&protocolConsistent&&
+    holdoutTrainPrograms>=threshold&&holdoutTestPrograms>=threshold;
    return {stage,metricId:metric.id,name:metric.name,
     independentPrograms:p.length,observedReturnPairs:p.length,
-    spearmanScoreToReturn:spearman(p.map(x=>x.score),p.map(x=>x.returnPct)),
-    meanHighMinusLowPercent:low.length&&high.length?round(avg(high)-avg(low)):null,
-    positiveReturnRateHigh:high.length?positive(high):null,
-    positiveReturnRateLow:low.length?positive(low):null,
+    benchmarkId:protocolConsistent&&p.length?p[0].benchmarkId:null,
+    ruleVersion:protocolConsistent&&p.length?p[0].ruleVersion:null,
+    protocolConsistent,holdoutTrainPrograms,holdoutTestPrograms,
+    spearmanScoreToReturn:protocolConsistent?spearman(p.map(x=>x.score),p.map(x=>x.returnPct)):null,
+    meanHighMinusLowPercent:protocolConsistent&&low.length&&high.length?round(avg(high)-avg(low)):null,
+    positiveReturnRateHigh:protocolConsistent&&high.length?positive(high):null,
+    positiveReturnRateLow:protocolConsistent&&low.length?positive(low):null,
     status:enough?"REVIEW_ELIGIBLE_NOT_APPROVED" as const:"INSUFFICIENT_EVIDENCE" as const,
-    reason:enough?"Sample-count floor met, but no independent walk-forward calibration, uncertainty intervals or audit approved.":
-     "Missing sufficient independently identified before-entry ratings and realized event-window stock returns."
+    reason:!protocolConsistent&&p.length>0?
+      "Mixed benchmark or rule versions: metric returns cannot be pooled for validation.":
+      !adequateCounts?"Insufficient unique, source-dated before-entry programs or high/low grade cohorts.":
+      !enough?"No purged chronological 30-program training and 30-program holdout split is available.":
+      "Comparable scoring protocol and chronological sample floors met; independent audit, statistical uncertainty and calibration approval are still required."
    };
   })));
 }

@@ -13,7 +13,7 @@ export type RaasPilotFeed={schemaVersion:1;sourceAsOf:string;scope:"HISTORICAL_P
 export type MetricRating={
  nctId:string;ticker:string;stage:RaasStage;snapshot:Snapshot;metricId:string;
  score:0|25|50|75|100;assessedAt:string;sourceDate:string;sourceUrl:string;
- benchmarkId:string;method:string;evidenceId:string;status:"VERIFIED";
+ benchmarkId:string;ruleVersion?:string;method:string;evidenceId:string;status:"VERIFIED";
 };
 export type RiskGate={name:string;status:"PASSED"|"FAILED"|"UNKNOWN";sourceUrl?:string;sourceDate?:string};
 export type RaasResult={
