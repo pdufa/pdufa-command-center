@@ -1,35 +1,52 @@
 "use client";
+import {useState} from "react";
 import type {ReadoutRow} from "../lib/phase3-public-readout";
+import type {BenefitFeed} from "../lib/benefit-assessments";
+import {exactReadoutBenefit} from "../lib/phase3-readout-sort";
 import type {readoutResearchCoverage} from "../lib/phase3-readout-sort";
+import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
+import {RAAS_METRIC_CATALOG,RAAS_PROVISIONAL_ANCHORS,RAAS_SPEC_VERSION,type RaasStage,type RaasMetric} from "../lib/raas-metric-specs";
 import css from "./TrialRaasDisclosure.module.css";
 
-type Stage="pre"|"post";
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
-type Ingredient={name:string;weight:number;factors:readonly string[]};
-const TOP:readonly Ingredient[]=[
- {name:"Scientific success case",weight:25,factors:["Earlier randomized human efficacy and treatment effect","Pivotal endpoint alignment, trial power and design","Mechanism, target engagement and dose response","Safety signals and reproducibility","Arguments for and against a successful readout"]},
- {name:"Valuation and remaining upside",weight:25,factors:["Current equity value and enterprise value","Bull, base and bear prices at the TOP exit date","Success expectations implied by today's valuation","Probability-weighted remaining return","Commercial value without double counting trial results"]},
- {name:"Downside protection",weight:20,factors:["Serious clinical failure and early negative-news scenarios","Cash runway beyond the catalyst","Financing and fully diluted share count","Concentration in the trial drug versus other assets","Modeled severe-loss exposure"]},
- {name:"Readout and exit timing",weight:15,factors:["Source-verified prospective readout window","Expected trading days remaining","Early readout and delayed announcement risk","Entry and planned pre-readout exit","Other near-term corporate catalysts"]},
- {name:"Medical and peer advantage",weight:10,factors:["Patient-important benefit and unmet need","Same-indication treatment alternatives","Evidence-supported competitive differentiation","Eligible patient population and likely adoption","Important safety and treatment-convenience contrasts"]},
- {name:"Liquidity and execution",weight:5,factors:["Daily trading volume and bid-ask spread","Share float, volatility and event-gap risk","Slippage and trading-window assumptions","Position sizing and concentration risk"]}
-];
-const BOTTOM:readonly Ingredient[]=[
- {name:"Actual Phase 3 clinical benefit",weight:25,factors:["Primary endpoint and treatment effect size","Clinical importance and patient-reported outcomes","Confidence intervals, multiplicity and missing-data sensitivity","Replication, durability and subgroup reliability","Safety, tolerability and matched medical peer comparison"]},
- {name:"Remaining valuation upside",weight:25,factors:["Current post-readout enterprise and equity valuation","Bull, base and bear values at the BOTTOM exit date","Value already reflected in stock price after the readout","Probability-weighted remaining return","Projected dilution and other company assets"]},
- {name:"FDA, safety and manufacturing risk",weight:20,factors:["FDA submission and application acceptance status","Scientific adequacy of the pivotal evidence","Benefit-risk, indication and labeling questions","CMC, facilities and quality issues","Verified PDUFA date and unresolved review risks"]},
- {name:"Downside and financing",weight:15,factors:["Regulatory delay and adverse-decision scenarios","Cash runway, debt and convertible securities","Financing and future dilution risk","Severe-loss exposure before the planned exit","Sensitivity to lower modeled commercial value"]},
- {name:"Patients, payers and competition",weight:10,factors:["Evidence-supported eligible patient population","Clinical advantage against relevant alternatives","Reimbursement, insurer restrictions and coverage assumptions","Net pricing, uptake and market penetration","Peak sales, exclusivity and competitive threats"]},
- {name:"PDUFA timing and execution",weight:5,factors:["Confirmed exact-program PDUFA target","Planned exit three calendar days before that target","Unexpected early action and adverse-news risk","Trading spreads, liquidity and timing","Other milestones occurring before the exit"]}
-];
-export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,onResearchRequest}:{
-  row:ReadoutRow;bucket:Stage;researchStatus:ResearchStatus;
-  coverage:Coverage;onResearchRequest:()=>void;
+const fieldLabels=new Map(ALL_RESEARCH_FIELD_DEFINITIONS.map(field=>[field.id,field.label]));
+type Snapshot="ENTRY"|"CURRENT"|"EXIT";
+function MetricEvidence({metric,record,researchStatus}:{
+ metric:RaasMetric;
+ record:ReturnType<typeof exactReadoutBenefit>;
+ researchStatus:ResearchStatus;
+}){
+ const related=metric.relatedFieldIds.map(id=>({id,fact:record?.facts[id]}));
+ const available=related.filter(x=>!!x.fact);
+ const verified=available.filter(x=>x.fact?.status==="VERIFIED").length;
+ return <div className={css.metricEvidence}>
+   <strong>Related research fields · not a metric score</strong>
+   {researchStatus==="loading"||researchStatus==="idle"?
+     <p>Checking source-backed research…</p>:
+     researchStatus==="unavailable"?<p>Research feed unavailable. No result inferred.</p>:
+     related.length===0?<p>No directly mapped research field. A dedicated market, SEC, regulatory, or timing feed is required.</p>:
+     <><p>{verified} verified · {available.length-verified} modeled · {related.length-available.length} missing.</p>
+       {related.map(({id,fact})=><div className={css.evidenceItem} key={id}>
+         <span><strong>{fieldLabels.get(id)||id}</strong> · {fact?fact.status:"Not assessed"}</span>
+         {fact&&<><span>Recorded: {String(fact.value)} · {fact.sourceDate} · {fact.confidence} confidence</span>
+           <span>Method: {fact.method}</span>
+           <a href={fact.sourceUrl} target="_blank" rel="noopener noreferrer">Open research source</a></>}
+       </div>)}
+     </>}
+   <p className={css.evidenceCaution}>Related research input does not satisfy every requirement above or establish a numeric grade. The full metric must be independently validated.</p>
+ </div>;
+}
+export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,benefitFeed,onResearchRequest}:{
+ row:ReadoutRow;bucket:RaasStage;researchStatus:ResearchStatus;
+ coverage:Coverage;benefitFeed:BenefitFeed|null;onResearchRequest:()=>void;
 }){
  const isTop=bucket==="pre";
  const label=isTop?"TOP-RAAS":"BOTTOM-RAAS";
- const groups=isTop?TOP:BOTTOM;
+ const groups=RAAS_METRIC_CATALOG[bucket];
+ const record=researchStatus==="ready"?exactReadoutBenefit(row,benefitFeed):null;
+ const [snapshot,setSnapshot]=useState<Snapshot>("CURRENT");
+ const groupName="raas-group-"+bucket+"-"+row.nctId;
  return <details className={css.raas} data-raas-phase={bucket} data-raas-trial={row.nctId}>
    <summary className={css.summary} onClick={onResearchRequest}
      aria-label={label+" · "+row.ticker+" "+row.nctId+" · expand or collapse proposed score ingredients"}>
@@ -38,22 +55,44 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
      <span className={css.chevron} aria-hidden="true">▸</span>
    </summary>
    <div className={css.panel}>
-     <p className={css.disclaimer}><strong>Proposed risk-adjusted appreciation score.</strong> No numeric grade is calculated until the phase-specific methodology, current prices, event dates and evidence are verified and validated. Missing inputs are not zeros.</p>
+     <p className={css.disclaimer}><strong>Research specification {RAAS_SPEC_VERSION}.</strong> All 30 individual metrics have explicit evidence requirements, interpretation rules, and failure risks. Their numeric scores, category grades, and overall RAAS remain unassigned until source verification, metric-specific benchmarks and out-of-sample validation are complete. Missing inputs are not zeros.</p>
      <div className={css.snapshots} aria-label={label+" score snapshots"}>
-       <div><strong>ENTRY</strong><span>— / 100</span><small>{isTop?"Pre-readout signal":"Post-readout signal"}</small></div>
-       <div><strong>CURRENT</strong><span>— / 100</span><small>Reassessed as evidence changes</small></div>
-       <div><strong>EXIT</strong><span>— / 100</span><small>{isTop?"Before public Phase 3 data":"PDUFA − 3 days if verified"}</small></div>
+       {(["ENTRY","CURRENT","EXIT"] as const).map(period=>
+         <button key={period} type="button" className={css.snapshotButton} aria-pressed={snapshot===period}
+           onClick={()=>setSnapshot(period)}>
+           <strong>{period}</strong><span>— / 100</span>
+           <small>{period==="ENTRY"?(isTop?"Pre-readout signal":"Post-readout signal"):
+             period==="CURRENT"?"Current assessment":isTop?"Before public Phase 3 data":"PDUFA − 3 days if verified"}</small>
+         </button>)}
      </div>
-     <p className={css.hint}>Select any ingredient group to expand its components <strong>to the right</strong>. Every group starts retracted.</p>
+     <p className={css.hint}><strong>{snapshot} · Not scored.</strong> Expand one weighted category, then one metric to the right. Each metric exposes its evidence requirements, grading logic, failure case and linked research inputs. All sections start retracted.</p>
      <div className={css.factors} aria-label={label+" six weighted ingredients"}>
-       {groups.map((group,i)=><details key={group.name} className={css.factor} data-raas-factor={i+1}>
+       {groups.map((group,i)=><details key={group.id} name={groupName} className={css.factor} data-raas-factor={i+1}>
          <summary className={css.factorSummary}>
-           <span className={css.factorName}><strong>{i+1}. {group.name}</strong><small>Weight {group.weight}% · grade unassigned</small></span>
+           <span className={css.factorName}><strong>{i+1}. {group.name}</strong><small>Weight {group.weight}% · grade — / 100 · {group.metrics.length} metrics</small></span>
            <span className={css.factorChevron} aria-hidden="true">▸</span>
          </summary>
          <div className={css.factorBody}>
-           <strong>Underlying assessments</strong>
-           <ol>{group.factors.map(item=><li key={item}>{item}</li>)}</ol>
+           <strong className={css.metricIntro}>Individual metrics · open one for scoring evidence</strong>
+           {group.metrics.map((metric,j)=><details key={metric.id} name={"raas-metric-"+bucket+"-"+row.nctId+"-"+group.id}
+             className={css.metric} data-raas-metric={metric.id}>
+             <summary className={css.metricSummary}>
+               <span><strong>{j+1}. {metric.name}</strong><small>— / 100 · Evidence not graded</small></span>
+               <span aria-hidden="true" className={css.metricChevron}>▸</span>
+             </summary>
+             <div className={css.metricBody}>
+               <div className={css.metricStatus}><strong>Metric score: — / 100</strong><span>{snapshot} · Pending validated calculation</span></div>
+               <div className={css.requirement}><strong>Evidence required</strong><p>{metric.requiredEvidence}</p></div>
+               <div className={css.requirement}><strong>What improves this score?</strong><p>{metric.scoreRule}</p></div>
+               <div className={css.requirement}><strong>Major downside or disqualification risk</strong><p>{metric.criticalRisk}</p></div>
+               <details className={css.anchorDetails}>
+                 <summary>Provisional 0–100 grading anchors ▸</summary>
+                 <div>{RAAS_PROVISIONAL_ANCHORS.map(a=><p key={a.points}><strong>{a.points}/100 — {a.label}:</strong> {a.definition}</p>)}</div>
+                 <p>These are interpretation anchors, not clinical thresholds or validated stock-return cutoffs. Benchmarks must be established separately for each metric.</p>
+               </details>
+               <MetricEvidence metric={metric} record={record} researchStatus={researchStatus}/>
+             </div>
+           </details>)}
          </div>
        </details>)}
      </div>
