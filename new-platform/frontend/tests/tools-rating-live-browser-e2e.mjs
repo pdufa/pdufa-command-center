@@ -88,6 +88,16 @@ async function finalSurveyTest(page,label){
     assert.match(body,/Grade 2 · Reluctant evidence-coverage grade/);
     assert.match(body,/FDA decision forecast:\s*ABSTAIN/);
     check(body.includes("Source-verified coverage:"),"Source coverage has to be visible");
+    const matrix=dialog.locator('details[aria-label="Twenty survey evidence coverage matrix"]');
+    await matrix.locator(":scope > summary").click();
+    const items=matrix.locator("tbody tr[data-final-survey-number]");
+    assert.equal(await items.count(),20,"Final SURVEY must contain exactly 20 original assessments");
+    for(let index=1;index<=20;index++)
+      assert.equal(await items.nth(index-1).getAttribute("data-final-survey-number"),String(index));
+    check((await items.first().innerText()).includes("Not assessed")||
+      (await items.first().innerText()).includes("verified"),
+      "An unverified survey must never be treated as a clinical failure");
+    await matrix.locator(":scope > summary").click();
     await page.waitForFunction(()=>{
       const panel=document.querySelector('[aria-label="Final SURVEY readiness and reluctant evidence grade"]');
       return !!panel&&!panel.textContent.includes("Checking sources");
