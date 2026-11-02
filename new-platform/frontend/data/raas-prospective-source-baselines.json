@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_PROSPECTIVE_SOURCE_BASELINES",
+  "sourceAsOf": "2026-11-02",
+  "note": "First prospective (pre-readout) sourced Phase 3 TOP evidence baseline. Its initial repository commit gives a reviewable capture trail, not immutable third-party notarization. Observations are neither validated 0–100 RAAS ratings, forecasts nor historical trading cases. Vendor market cap remains provisional.",
+  "records": [
+    {
+      "id": "lbrx-nova2-2026-11-02-source-baseline",
+      "ticker": "LBRX",
+      "nctId": "NCT07363577",
+      "drug": "LB-102",
+      "indication": "schizophrenia",
+      "stage": "pre",
+      "capturedOn": "2026-11-02",
+      "readoutAtCapture": "NOT_YET_REPORTED",
+      "sourceBaselineStatus": "PROSPECTIVE_SOURCE_RESEARCH_ONLY",
+      "archivedRaasPrediction": false,
+      "predictedRaas": null,
+      "predictedReturnPercent": null,
+      "entryExecutionPrice": null,
+      "marketCap": {
+        "usdMillions": 1280,
+        "observedAsOf": "2026-10-30",
+        "sourceUrl": "https://stockanalysis.com/stocks/lbrx/market-cap/",
+        "verification": "VENDOR_REPORTED_NOT_INDEPENDENTLY_AUDITED",
+        "note": "S&P Global Market Intelligence referenced by vendor; daily published value, not fully diluted issuer share-count reconciliation."
+      },
+      "observations": [
+        {
+          "id": "nova2-protocol",
+          "metricIds": [
+            "pre-1-2"
+          ],
+          "kind": "PHASE3_TRIAL_DESIGN",
+          "observedAsOf": "2026-03-25",
+          "sourcePublishedAt": "2026-03-25",
+          "sourceUrl": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-initiates-pivotal-phase-3-trial-nova-2-for-lb-102-in-patients-with-schizophrenia/",
+          "valueText": "Phase 3 NOVA-2: randomized double-blind placebo-controlled study in schizophrenia; primary endpoint PANSS change at Week 6; approximately 460 planned patients.",
+          "limitation": "Sponsor-reported design, not a completed Phase 3 efficacy finding or independently adjudicated protocol."
+        },
+        {
+          "id": "nova2-accelerated-guidance",
+          "metricIds": [
+            "pre-4-1",
+            "pre-4-2"
+          ],
+          "kind": "PHASE3_READOUT_GUIDANCE",
+          "observedAsOf": "2026-07-22",
+          "sourcePublishedAt": "2026-07-22",
+          "sourceUrl": "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-announces-accelerated-timing-of-topline-results-from-the-phase-3-nova-2-trial-of-lb-102-in-schizophrenia/",
+          "valueText": "Company expects pivotal NOVA-2 Phase 3 topline data in H1 2027, not a specified announcement date.",
+          "limitation": "Sponsor estimate subject to change; does not identify an executable last-safe-exit date."
+        },
+        {
+          "id": "nova2-q2-finance",
+          "metricIds": [
+            "pre-3-2",
+            "pre-3-3"
+          ],
+          "kind": "ISSUER_CASH_DISCLOSURE",
+          "observedAsOf": "2026-06-30",
+          "sourcePublishedAt": "2026-08-11",
+          "sourceUrl": "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-reports-second-quarter-2026-financial-results-and-provides-corporate-update/",
+          "valueText": "Issuer reported $327.8M cash, cash equivalents and marketable securities as of June 30, 2026; separately announced $150M July 2026 financing.",
+          "limitation": "June quarter balance and subsequent financing cannot be summed without reconciling cash flows, fully diluted shares, liabilities and burn."
+        },
+        {
+          "id": "nova2-october-confirmation",
+          "metricIds": [
+            "pre-4-1"
+          ],
+          "kind": "PHASE3_READOUT_GUIDANCE",
+          "observedAsOf": "2026-10-06",
+          "sourcePublishedAt": "2026-10-06",
+          "sourceUrl": "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/",
+          "valueText": "Issuer reiterates expected H1 2027 topline timing in the October 6 R&D Day announcement.",
+          "limitation": "Sponsor statement dated October 6; does not claim October 27 presentation content or later progress."
+        }
+      ]
+    }
+  ]
+}
