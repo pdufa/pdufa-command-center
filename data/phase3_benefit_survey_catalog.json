@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 1,
+  "sourceDate": "2026-11-01",
+  "taxonomy": "CANONICAL_20_PIPELINE_BENEFIT_ASSESSMENTS",
+  "provenance": [
+    "new-platform/frontend/lib/pipeline-benefit-assessments.ts",
+    "new-platform/frontend/lib/pipeline-research-view.ts",
+    "new-platform/frontend/lib/competitive-assessment.ts",
+    "new-platform/frontend/lib/pipeline-assessment-inputs.ts"
+  ],
+  "description": "Survey/questions and ingredient measurement/evidence requirements. A question is not a completed rating, verified clinical advantage or investor forecast.",
+  "assessments": [
+    {
+      "rank": 1,
+      "name": "Patient Population",
+      "objective": "Eligible treated patients by jurisdiction, age, disease stage, biomarkers, prior therapy and treatment line.",
+      "fields": [
+        "eligibleUsPatients",
+        "bestSubgroup"
+      ],
+      "ingredients": [
+        {
+          "id": "eligibleUsPatients",
+          "label": "Eligible U.S. Patients",
+          "question": "Estimate the number of patients who could actually qualify for treatment, not merely total disease prevalence.",
+          "evidenceRequirement": "Dated U.S. epidemiology, diagnosis rates, label-eligible subsets and exclusions."
+        },
+        {
+          "id": "bestSubgroup",
+          "label": "Best-Responding Patient Subgroup",
+          "question": "Identify patient characteristics and biomarkers associated with supported incremental benefit.",
+          "evidenceRequirement": "Predefined subgroup analyses, interaction tests and population size."
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "name": "Unmet Medical Need",
+      "objective": "Document residual burden, current treatment gaps, refractory and intolerant populations.",
+      "fields": [
+        "standardOfCare",
+        "unmetNeed",
+        "treatmentResistantBenefit"
+      ],
+      "ingredients": [
+        {
+          "id": "standardOfCare",
+          "label": "Current Standard of Care",
+          "question": "Identify the treatments patients currently receive and the appropriate comparison.",
+          "evidenceRequirement": "Contemporary clinical guidelines, current FDA labels and treatment share."
+        },
+        {
+          "id": "unmetNeed",
+          "label": "Unmet Medical Need",
+          "question": "Determine how many patients remain inadequately treated by existing options.",
+          "evidenceRequirement": "Residual symptom burden, treatment failure and eligible untreated or refractory population."
+        },
+        {
+          "id": "treatmentResistantBenefit",
+          "label": "Treatment-Resistant Patient Advantage",
+          "question": "Assess benefit for patients with prior failures or intolerance to available treatment.",
+          "evidenceRequirement": "Refractory subgroup eligibility, comparator and confirmed benefit."
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "name": "Clinical Benefit",
+      "objective": "Source endpoints, effect sizes, significance, durability and patient-important differences.",
+      "fields": [
+        "clinicalBenefit",
+        "magnitude",
+        "meaningfulBenefit",
+        "durability",
+        "responseRemission",
+        "timeToResponse"
+      ],
+      "ingredients": [
+        {
+          "id": "clinicalBenefit",
+          "label": "Clinical Patient Benefit",
+          "question": "Explain exactly what improves for patients compared with existing treatment, and by how much.",
+          "evidenceRequirement": "Matched endpoints, effect size, comparator, follow-up and uncertainty, not a p-value alone."
+        },
+        {
+          "id": "magnitude",
+          "label": "Magnitude of Clinical Improvement",
+          "question": "Measure absolute and relative differences in patient-important outcomes against a valid comparator.",
+          "evidenceRequirement": "Matched effect sizes, units, follow-up and confidence intervals."
+        },
+        {
+          "id": "meaningfulBenefit",
+          "label": "Clinically Meaningful Benefit",
+          "question": "Distinguish patient-important improvements from statistical significance alone.",
+          "evidenceRequirement": "Disease-specific clinical relevance threshold and prespecified patient outcomes."
+        },
+        {
+          "id": "durability",
+          "label": "Durability of Treatment Effect",
+          "question": "Determine how long treatment response, remission or clinical benefit is maintained.",
+          "evidenceRequirement": "Matched follow-up windows, sustained response curves and censoring."
+        },
+        {
+          "id": "responseRemission",
+          "label": "Responder / Remission Advantage",
+          "question": "Compare the share of patients reaching clinically meaningful response or remission.",
+          "evidenceRequirement": "Same responder definition, denominator and follow-up time."
+        },
+        {
+          "id": "timeToResponse",
+          "label": "Time to Treatment Response",
+          "question": "Measure how quickly patients experience meaningful improvement.",
+          "evidenceRequirement": "Comparator-aligned onset endpoint, median time and uncertainty."
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "name": "Survival Benefit",
+      "objective": "Where applicable, evaluate OS/PFS, mortality, hazard ratio, follow-up and uncertainty; do not infer benefit otherwise.",
+      "fields": [
+        "survivalBenefit"
+      ],
+      "ingredients": [
+        {
+          "id": "survivalBenefit",
+          "label": "Survival Benefit Evidence",
+          "question": "Assess survival only when applicable; distinguish overall survival from progression endpoints.",
+          "evidenceRequirement": "Prespecified OS/PFS estimand, event counts, hazard ratio and confidence interval, absolute survival, censoring and follow-up."
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "name": "Quality-of-Life Improvement",
+      "objective": "Use validated patient-reported outcomes, daily functioning and minimal clinically important differences.",
+      "fields": [
+        "qualityOfLife"
+      ],
+      "ingredients": [
+        {
+          "id": "qualityOfLife",
+          "label": "Quality-of-Life Improvement",
+          "question": "Compare validated patient-reported outcomes, functioning and daily-life effects.",
+          "evidenceRequirement": "Validated scales, clinically important difference and missing-data impact."
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "name": "Competitive Advantage",
+      "objective": "Compare approved and pipeline competitors by matched indication, line and population; distinguish direct vs indirect comparisons.",
+      "fields": [
+        "closestCompetitor",
+        "competitorCount",
+        "headToHead",
+        "competitivePipelineThreat",
+        "competitiveStrategy"
+      ],
+      "ingredients": [
+        {
+          "id": "closestCompetitor",
+          "label": "Closest Competing Therapy",
+          "question": "Identify the most relevant existing or developing treatment for the same indication and line of therapy.",
+          "evidenceRequirement": "Current FDA label, guideline, eligibility overlap and line of treatment."
+        },
+        {
+          "id": "competitorCount",
+          "label": "Number of Competitors",
+          "question": "Count competing approved treatments and late-stage therapies separately, using the same indication and patient population.",
+          "evidenceRequirement": "Deduplicated drug-indication comparison, approved FDA labels and current Phase 3 pipeline; exclude same-drug duplicate trials."
+        },
+        {
+          "id": "headToHead",
+          "label": "Head-to-Head Evidence",
+          "question": "Determine whether a direct comparison shows superiority or noninferiority to the closest relevant therapy.",
+          "evidenceRequirement": "Randomized comparator details, predefined estimand, endpoints, results and uncertainty."
+        },
+        {
+          "id": "competitivePipelineThreat",
+          "label": "Competitive Pipeline Threat",
+          "question": "Identify late-stage challengers for the same patient group and material upcoming events.",
+          "evidenceRequirement": "Unique comparator programs, trial status, readout dates and labels."
+        },
+        {
+          "id": "competitiveStrategy",
+          "label": "Competitive Strategies",
+          "question": "Rank the therapy’s evidence-supported competitive advantages from strongest to weakest.",
+          "evidenceRequirement": "Rank each comparator-specific advantage with sources, magnitude and counterarguments; generic priorities are unscored."
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "name": "Treatment Convenience",
+      "objective": "Compare administration route, frequency, care setting, monitoring, treatment line and adherence.",
+      "fields": [
+        "convenience",
+        "treatmentSequence"
+      ],
+      "ingredients": [
+        {
+          "id": "convenience",
+          "label": "Treatment Convenience",
+          "question": "Compare dosing frequency, route, treatment burden, and monitoring.",
+          "evidenceRequirement": "Current vs proposed regimen, route, frequency, monitoring and persistence."
+        },
+        {
+          "id": "treatmentSequence",
+          "label": "Place in Treatment Sequence",
+          "question": "Identify whether the therapy is suitable for first-line, later-line or post-failure treatment.",
+          "evidenceRequirement": "Proposed indication, pivotal trial population and guideline sequencing."
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "name": "Safety Advantage",
+      "objective": "Compare relevant adverse events, serious risks and discontinuation with exposure-aligned denominators.",
+      "fields": [
+        "safetyAdvantage",
+        "seriousAes",
+        "discontinuation"
+      ],
+      "ingredients": [
+        {
+          "id": "safetyAdvantage",
+          "label": "Safety Advantage",
+          "question": "Compare adverse effects, serious risks, and treatment discontinuation.",
+          "evidenceRequirement": "Comparable safety populations, follow-up and clinically relevant adverse events."
+        },
+        {
+          "id": "seriousAes",
+          "label": "Serious Adverse Event Difference",
+          "question": "Compare serious adverse events and treatment-associated risks against relevant therapy.",
+          "evidenceRequirement": "Exposure-adjusted comparable SAE rates, attribution and follow-up."
+        },
+        {
+          "id": "discontinuation",
+          "label": "Treatment Discontinuation Difference",
+          "question": "Compare stops due to adverse events, treatment burden or lack of effect.",
+          "evidenceRequirement": "Similar follow-up and denominators with reason-coded discontinuations."
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "name": "Healthcare Cost Savings",
+      "objective": "Assess patient-important cost offsets, hospitalizations, treatment cost differences and value per outcome.",
+      "fields": [
+        "hospitalizationReduction",
+        "costDifference",
+        "valuePerOutcome"
+      ],
+      "ingredients": [
+        {
+          "id": "hospitalizationReduction",
+          "label": "Hospitalization / Complication Reduction",
+          "question": "Measure prevention of hospital admission, complications or disability.",
+          "evidenceRequirement": "Patient-relevant outcomes, event rates and comparator-adjusted effect."
+        },
+        {
+          "id": "costDifference",
+          "label": "Treatment Cost Advantage",
+          "question": "Compare equivalent first-year treatment costs and explain the difference.",
+          "evidenceRequirement": "Dated comparable price basis and 12-month drug plus monitoring/administration regimen costs."
+        },
+        {
+          "id": "valuePerOutcome",
+          "label": "Value per Clinical Outcome",
+          "question": "Compare added medical benefit with the incremental cost of treatment.",
+          "evidenceRequirement": "Comparable cost bases, outcome measures, time horizon and sensitivity analysis."
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "name": "Insurance Coverage Potential",
+      "objective": "Source coverage policy, payer barriers and reimbursement conditions; distinguish prospective from active coverage.",
+      "fields": [
+        "payerAccess"
+      ],
+      "ingredients": [
+        {
+          "id": "payerAccess",
+          "label": "Insurance / Access",
+          "question": "Determine whether coverage, reimbursement, and prescribing restrictions may limit adoption.",
+          "evidenceRequirement": "Payer policy, formulary, prior authorization, patient copays and access date."
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "name": "Expected Treatment Price",
+      "objective": "Source or explicitly model comparable net treatment pricing, duration and payer basis; no unsourced launch prices.",
+      "fields": [
+        "treatmentPrice"
+      ],
+      "ingredients": [
+        {
+          "id": "treatmentPrice",
+          "label": "Expected Treatment Price",
+          "question": "Document an observed price or an explicitly modeled price scenario.",
+          "evidenceRequirement": "Dated payer/price disclosure, territory, currency, gross versus net basis, dosing and treatment duration."
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "name": "Market Penetration",
+      "objective": "Model uptake from the actual eligible patient pool, treatment switching and addressable starts.",
+      "fields": [
+        "adoption",
+        "switchingPool"
+      ],
+      "ingredients": [
+        {
+          "id": "adoption",
+          "label": "Projected Adoption",
+          "question": "Estimate the proportion of eligible patients who could receive the new therapy over time.",
+          "evidenceRequirement": "12/24/36-month adoption assumptions, eligible denominator, switching, new starts, coverage and confidence."
+        },
+        {
+          "id": "switchingPool",
+          "label": "Switching-Eligible Patient Pool",
+          "question": "Estimate how many patients on current treatments could appropriately switch.",
+          "evidenceRequirement": "Indication overlap, contraindications, switching evidence and treated denominators."
+        }
+      ]
+    },
+    {
+      "rank": 13,
+      "name": "International Patient Population",
+      "objective": "Break down eligible non-US populations and separate foreign regulatory and reimbursement status.",
+      "fields": [
+        "internationalPatients"
+      ],
+      "ingredients": [
+        {
+          "id": "internationalPatients",
+          "label": "International Eligible Patients",
+          "question": "Estimate eligible patients outside the U.S. without summing overlapping populations.",
+          "evidenceRequirement": "Country-specific epidemiology, diagnosis and label eligibility, treatment line, year and reimbursement constraints."
+        }
+      ]
+    },
+    {
+      "rank": 14,
+      "name": "Additional Indications",
+      "objective": "Track adjacent indication-specific trial programs, distinct NCTs and required regulatory pathways.",
+      "fields": [
+        "additionalIndications"
+      ],
+      "ingredients": [
+        {
+          "id": "additionalIndications",
+          "label": "Additional Indication Programs",
+          "question": "Document distinct indication-specific expansion programs separately from the index program.",
+          "evidenceRequirement": "Exact additional NCT, sponsor/product, indication, phase and jurisdiction; no assumed approval or probability."
+        }
+      ]
+    },
+    {
+      "rank": 15,
+      "name": "Peak Annual Sales",
+      "objective": "Use explicit low/base/high uptake × net price × duration calculations and source territorial rights.",
+      "fields": [
+        "peakAnnualSales"
+      ],
+      "ingredients": [
+        {
+          "id": "peakAnnualSales",
+          "label": "Peak Annual Sales Scenarios",
+          "question": "Model transparent scenarios rather than assert an unsupported forecast.",
+          "evidenceRequirement": "Eligible population, adoption, net price, duration, territory and commercial rights, each with a source and assumptions."
+        }
+      ]
+    },
+    {
+      "rank": 16,
+      "name": "Revenue Growth Potential",
+      "objective": "Model launch ramp, new starts, persistence, price and competition over time with scenarios.",
+      "fields": [
+        "revenueGrowth"
+      ],
+      "ingredients": [
+        {
+          "id": "revenueGrowth",
+          "label": "Revenue Growth Scenarios",
+          "question": "Show launch ramp and revenue growth with explicit time horizons.",
+          "evidenceRequirement": "Dated issuer revenue baseline, launch timing, new starts, persistence, pricing and competition assumptions."
+        }
+      ]
+    },
+    {
+      "rank": 17,
+      "name": "Patent and Exclusivity Value",
+      "objective": "Check patent claims, expiry, regulatory exclusivity, challenges and market-entry timing.",
+      "fields": [
+        "exclusivity"
+      ],
+      "ingredients": [
+        {
+          "id": "exclusivity",
+          "label": "Commercial Exclusivity Advantage",
+          "question": "Evaluate relevant intellectual-property and regulatory exclusivity constraints.",
+          "evidenceRequirement": "Dated FDA exclusivity records, patent claims, term and litigation caveats."
+        }
+      ]
+    },
+    {
+      "rank": 18,
+      "name": "Licensing and Partnership Value",
+      "objective": "Check geographic commercial rights, partner identity, royalties, milestone and SEC agreement details.",
+      "fields": [
+        "licensingValue"
+      ],
+      "ingredients": [
+        {
+          "id": "licensingValue",
+          "label": "Licensing and Partnership Economics",
+          "question": "Reconcile contractual value to the exact product, indication and territory.",
+          "evidenceRequirement": "SEC-filed material agreement, partners, territorial rights, royalties, milestones, obligations and termination terms."
+        }
+      ]
+    },
+    {
+      "rank": 19,
+      "name": "Company Valuation Impact",
+      "objective": "Model product-level risk-adjusted value versus enterprise value, dilution and assets; separate FDA probability.",
+      "fields": [
+        "valuationImpact"
+      ],
+      "ingredients": [
+        {
+          "id": "valuationImpact",
+          "label": "Company Valuation Impact",
+          "question": "Separate product valuation scenarios from clinical assessment and FDA probability.",
+          "evidenceRequirement": "Dated enterprise value inputs, product cash-flow assumptions, cash/debt, rights, discounting and dilution."
+        }
+      ]
+    },
+    {
+      "rank": 20,
+      "name": "Shareholder Upside and Risk",
+      "objective": "Model bear/base/bull scenarios, financing, liquidity and dilution without implying a trade recommendation.",
+      "fields": [
+        "shareholderRisk"
+      ],
+      "ingredients": [
+        {
+          "id": "shareholderRisk",
+          "label": "Shareholder Upside and Risk Scenarios",
+          "question": "Document bear/base/bull outcomes, liquidity and dilution without a trading recommendation.",
+          "evidenceRequirement": "Dated share count, cash runway, debt, financing terms, scenario assumptions and counterevidence."
+        }
+      ]
+    }
+  ]
+}
