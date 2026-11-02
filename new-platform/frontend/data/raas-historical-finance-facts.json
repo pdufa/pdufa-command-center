@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_FINANCE_RESEARCH",
   "sourceAsOf": "2026-11-02",
-  "note": "Published issuer/SEC figures available before retrospectively chosen entries. NOT point-in-time forecasts, net-cash models, cash runway or audited stock price. All observations remain research-only until independent reconciliation.",
+  "note": "Seven issuer/SEC financial snapshots strictly published before retrospectively selected entries. MDGL Nov 6 2023 10-Q was removed from Nov 3 entry research as look-ahead; Aug 8 2023 Q2 10-Q is used instead. Not verified fully diluted price or cash runway.",
   "records": [
     {
       "id": "gern-2022-top",
@@ -125,33 +125,33 @@
       "caseId": "mdgl-resmetirom-nash-2023-2024-illustrative",
       "ticker": "MDGL",
       "stage": "post",
-      "asOf": "2023-09-30",
-      "publishedAt": "2023-11-06",
-      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523270803/d907859d10q.htm",
+      "asOf": "2023-06-30",
+      "publishedAt": "2023-08-08",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523205535/d530762d10q.htm",
       "facts": [
         {
           "type": "CASH_AND_MARKETABLE",
-          "valueUsdMillions": 232.351,
-          "method": "SEC Q3 2023 filing, 62.055 million cash and 170.296 million marketable securities (fair value table), summed.",
-          "caveat": "Does not reflect future ATM issuance and other liabilities; not a current market value."
+          "valueUsdMillions": 298.418,
+          "method": "June 30, 2023 cash, equivalents and marketable securities from August 8 2023 SEC Q2 filing.",
+          "caveat": "Dated pre-entry source; November 6 Q3 filing must not be used at November 3 entry."
         },
         {
-          "type": "OPERATING_CASH_USED_9M",
-          "valueUsdMillions": 244.297,
-          "method": "SEC nine-month net cash used in operations ending September 30, 2023.",
-          "caveat": "Historical period cash use not forward cash runway."
+          "type": "OPERATING_CASH_USED_6M",
+          "valueUsdMillions": 159.377,
+          "method": "Net cash used in operating activities, first six months ended June 30, 2023.",
+          "caveat": "Past half-year cash use is not forward cash runway."
         },
         {
-          "type": "ATM_CAPACITY_NOT_CASH",
-          "valueUsdMillions": 174.8,
-          "method": "Remaining available 2023 at-the-market issuance capacity as of September 30, 2023.",
-          "caveat": "Capacity is not cash, and utilization would dilute shares."
+          "type": "LOAN_PROCEEDS",
+          "valueUsdMillions": 50,
+          "method": "Six-month cash flow statement proceeds from new loan payable.",
+          "caveat": "Already reflected in June 30 liquidity; increases debt and must not be added twice."
         },
         {
-          "type": "ATM_PROCEEDS_9M",
-          "valueUsdMillions": 24.5,
-          "method": "Net ATM proceeds year-to-date through September 2023.",
-          "caveat": "Already captured in historic cash; avoid adding twice."
+          "type": "ATM_PROCEEDS_6M",
+          "valueUsdMillions": 21.754,
+          "method": "Six-month net stock-sale proceeds excluding related parties, from June 30 2023 cash flow statement.",
+          "caveat": "Share issuance affects dilution; issued proceeds already reflected in June 30 cash."
         }
       ]
     },
