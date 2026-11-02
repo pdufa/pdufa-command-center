@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_METRIC_SNAPSHOTS",
+  "sourceAsOf": "2026-11-02",
+  "note": "No historically timestamped metric ratings have passed reviewed intake yet. Ratings must be recorded before entry and joined to dated, valid historical event-window trades. Never reconstruct a historical grade from later FDA or trial outcomes.",
+  "records": []
+}
