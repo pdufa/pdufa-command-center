@@ -41,7 +41,7 @@ test("M–E headings expand ingredients immediately to the right and keep one co
   assert.deepEqual(ingredientCells.map(x=>x.props["data-rating-ingredient"]),["CL","SAF","COMP"]);
   assert.ok(ingredientCells.every(x=>x.props.className.includes("ratingOpen")));
   assert.match(ingredientCells[2].props.className,/ratingEnd/);
-  assert.equal(r.root.findAllByType("td").filter(x=>x.props.title?.includes("not yet scored from verified source data")).length,3);
+  assert.equal(r.root.findAllByType("td").filter(x=>x.props.title?.includes("source-backed input coverage or explicit unscored status")).length,3);
   await act(async()=>groupButton(r,"A").props.onClick());
   assert.deepEqual(names(r),["M","A","ER","FDA","B","CL","SAF","COMP","C","D","E"]);
   assert.equal(groupButton(r,"B").props["aria-expanded"],true,"B remains open independently");
@@ -51,8 +51,10 @@ test("M–E headings expand ingredients immediately to the right and keep one co
   await act(async()=>r.root.findAllByType("button").find(x=>textOf(x).includes("Expand all ratings")).props.onClick());
   assert.equal(ingredientHeaders(r).length,20);
   for(const id of ["M","A","B","C","D","E"])assert.equal(groupButton(r,id).props["aria-expanded"],true);
-  assert.equal(r.root.findAllByType("td").filter(x=>x.props.title?.includes("not yet")).length>=20,true,
-    "unscored values must not be fabricated");
+  assert.equal(r.root.findAllByType("td").filter(x=>x.props.title?.includes("source-backed input coverage or explicit unscored status")).length,20,
+    "twenty component slots remain present and source-gated");
+  assert.match(textOf(r.root.findAllByType("td").filter(x=>x.props.title?.includes("source-backed input coverage or explicit unscored status")).at(-1)),
+    /N\/A/,"the unvalidated final opportunity grade must remain unscored");
  }finally{if(r)await act(async()=>r.unmount());}
 });
 
