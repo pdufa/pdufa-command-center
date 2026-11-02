@@ -59,6 +59,16 @@ Research-only intake validators:
 - `lib/raas-retrospective-intake.ts` enforces BOTTOM pre-entry Phase 3 and PDUFA sources, market cap between $300M and $10B, exit no later than PDUFA minus three calendar days, and exit before *actual* early FDA decision in recorded examples.
 - Neither data source is read by `lib/raas-historical-backtest.ts` or `lib/raas-reviewed-score-ledger.ts`; these records cannot produce validated 0–100 RAAS grades.
 
+## Point-in-time finance and cost-sensitivity implementation
+
+- `data/raas-historical-finance-facts.json`: 7 dated pre-entry financial snapshots with 24 individually labeled issuer/SEC observations. Liquidity, operating losses, financing proceeds, debt, ATM availability, and financing commitments are separate fields; sources and balance dates are retained.
+- `lib/raas-finance-reconciliation.ts`: validates that each financial disclosure was **published before the simulated entry**. Distinguishes cash on hand from obligations, equity financing and committed/available funding; prevents duplicate categories from being treated as additive cash. Its returned readiness stays **unqualified** until security prices, shares, debt and transaction costs have been independently reconciled.
+- **Critical rejected source:** Madrigal's September 30, 2023 Form 10-Q was filed November 6, 2023, **after** the retrospectively selected November 3, 2023 entry. It must not be used to score or justify that entry. The research record now uses the **August 8, 2023 Form 10-Q for June 30, 2023** instead (cash and marketable securities $298.418M; six-month operating cash used $159.377M). A regression test rejects the later filing at that entry date.
+- `app/raas-history/RaasHistoricalWhatIf.tsx`: interactive historical close-to-close cost sensitivity and a **separate independent price-shock calculation**. User-selected round-trip costs and shock are assumptions, not real executions, probabilities, scenario forecasts or RAAS grades. Outputs cannot enter the genuine prediction registry.
+- `tests/raas-finance-reconciliation.test.cjs`: rejects wrong case identity, future financial disclosure, negative figures, double-counted cash categories and nonsensical scenario parameters.
+
+The actual historical adjusted closing prices, ADR conversion, holiday session checks, bid/ask and executed slippage, share count, debt waterfall and forward valuation are still not reconciled. No approved historical RAAS score exists. Source evidence collected after a trading date must **never** be backfilled into an earlier decision snapshot.
+
 ## Known gaps as of 2026-11-02
 
 - Genuine, precommitted historical investment-prediction cases: **0 reviewed**. Historic pre-entry RAAS metric score records: **0 reviewed**. Seven separately labeled retrospective observational windows are available for source-intake testing, but are **not** admissible model performance records.
