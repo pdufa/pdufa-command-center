@@ -90,9 +90,13 @@ test("source-verified historical registry records expose measured results withou
   nctId:row.nctId,retrievedAt:"2026-11-01T17:11:01.933Z",
   sourceUpdated:"2026-10-31",resultsPosted:true,
   primaryOutcomeCount:2,measuredPrimary:true,
-  seriousEventTerms:3,measuredSeriousEvents:true,truncated:false
+  secondaryOutcomeCount:1,measuredSecondary:true,
+  seriousEventTerms:3,measuredSeriousEvents:true,truncated:false,
+  measuredDimensions:4,dimensionsTotal:4,registryCoveragePercent:100
  };
  const audited=auditTrialRatings(row,"2026-11-01",null,false,receipt);
+ assert.equal(audited.ingredient.ER.label,"100% registry");
+ assert.match(audited.ingredient.ER.explanation,/NOT a clinical benefit/);
  assert.equal(audited.ingredient.CL.label,"Registry data");
  assert.equal(audited.ingredient.SAF.label,"Registry AEs");
  assert.equal(audited.ingredient.CL.kind,"coverage");
