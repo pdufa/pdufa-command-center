@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "censusDate": "2026-10-26",
+  "sourceAsOf": "2026-11-01",
+  "scope": "HISTORICAL_US_LISTED_300M_10B_PHASE3_LEAD_SPONSOR_RESEARCH",
+  "sourceFiles": [
+    "data/phase3_pre_readout_evidence.csv",
+    "data/post_phase3_discoveries.csv"
+  ],
+  "note": "PRE_AS_OF_CHECK is historical negative finding at the source check date, not a current unreleased guarantee. POST_PUBLIC_READOUT is an issuer readout announcement, not registry results posting or successful FDA qualification. All other census NCTs are UNVERIFIED; neither a missing registry posting nor trial status establishes pre-release.",
+  "entries": [
+    {
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2026-09-22",
+      "evidenceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria"
+    },
+    {
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2026-09-22",
+      "evidenceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria"
+    },
+    {
+      "nctId": "NCT06641076",
+      "ticker": "MLTX",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2026-08-10",
+      "evidenceUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+      "drug": "sonelokimab",
+      "indication": "psoriatic arthritis"
+    },
+    {
+      "nctId": "NCT07363577",
+      "ticker": "LBRX",
+      "kind": "PRE_AS_OF_CHECK",
+      "evidenceDate": "2026-10-11",
+      "evidenceUrl": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-presents-new-preclinical-data-supporting-lb-102s-bimodal-mechanism-of-action-and-highlights-ongoing-late-stage-clinical-development-programs-at-the-39th-ecnp-congress/",
+      "drug": "LB-102 (100 mg tablet) | LB-102 (50 mg tablet)",
+      "indication": "Schizophrenia"
+    },
+    {
+      "nctId": "NCT07671911",
+      "ticker": "TRVI",
+      "kind": "PRE_AS_OF_CHECK",
+      "evidenceDate": "2026-10-11",
+      "evidenceUrl": "https://trevitherapeutics.com/active-clinical-trials/",
+      "drug": "NAL ER",
+      "indication": "Idiopathic Pulmonary Fibrosis"
+    }
+  ]
+}
