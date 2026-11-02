@@ -3,9 +3,9 @@
  * RESEARCH SNAPSHOT and explicitly NOT the qualified PDUFA Pipeline count.
  * Keep independent market-cap/sponsor/eligibility evidence gates in place.
  *
- * Source: data/phase3_all_years_300m_10b_status.json, generated 2026-10-26.
+ * Source: pinned public/phase3-census-status-2026-10-26.json; the separate live census updates independently.
  */
-export const PHASE3_CENSUS_SOURCE = "https://github.com/pdufa/pdufa-command-center/blob/main/data/phase3_all_years_300m_10b_status.json";
+export const PHASE3_CENSUS_SOURCE = "https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/public/phase3-census-status-2026-10-26.json";
 export const PHASE3_CENSUS_SNAPSHOT = {
   generated_at: "2026-10-26T12:21:15.972309+00:00",
   registry_phase3_industry_trials_examined: 25020,
