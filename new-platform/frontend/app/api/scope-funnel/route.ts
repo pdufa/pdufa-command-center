@@ -11,6 +11,7 @@ import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
 import {pacificToday} from "../../../lib/pipeline-timeline";
 import {scanCompetitivePopulation} from "../../../lib/tools-competitive-readiness";
+import {parseBenefitFeed} from "../../../lib/benefit-assessments";
 import {buildToolPdufaIndex,type ToolPdufaIndex} from "../../../lib/tools-pdufa-links";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
 import {verifiedToolPool,buildToolsResults,buildToolsOpeningInventory,filterToolTrials,selectToolTrialIds,toolsDesignationTotals,toolsContextualDesignationCounts,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
@@ -226,8 +227,14 @@ export async function GET(req:NextRequest) {
         toolSpreadsheetRow(trial,[],[],null));
       if(competitionPopulation.length!==restrictedScope.screenedTrials)
         throw Error("COMPETITIVE_POPULATION_COUNT_MISMATCH");
+      // The saved, exact-identity CS research ledger may be empty. An empty
+      // but valid feed establishes zero documented topic inputs, not zero
+      // real-world clinical evidence. Unavailable/invalid feeds stay unknown.
+      const competitiveFeed=await readFile(join(process.cwd(),"data",
+        "benefit-assessment-research.json"),"utf8")
+        .then(content=>parseBenefitFeed(JSON.parse(content))).catch(()=>null);
       const competitiveScan=scanCompetitivePopulation(
-        competitionPopulation,pacificToday(),inventory.sourceAsOf);
+        competitionPopulation,pacificToday(),inventory.sourceAsOf,competitiveFeed);
       const designationTotals=index?toolsDesignationTotals(inventory.poolRows,index):null;
       // Both Step 1 button totals are measured over the entire cap-screened
       // NCT subset, irrespective of downstream Phase/FDA checkbox selections.
