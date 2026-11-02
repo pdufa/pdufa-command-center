@@ -299,7 +299,7 @@ export default function PoolStageExplorer(){
     <details className={styles.poolSegment} data-pool-segment="assessments">
       <summary className={styles.poolSegmentSummary}>
         <span>3 · Scientific Assessments</span>
-        <small>20 research assessments · {number(page?.total??0)} matching trials</small>
+        <small>20 research assessments · {count(page?.total??0)} matching trials</small>
       </summary>
       <div className={styles.poolSegmentBody}>
       <ToolsAssessmentSection
@@ -314,7 +314,7 @@ export default function PoolStageExplorer(){
     <details className={styles.poolSegment} data-pool-segment="live-trials">
       <summary className={styles.poolSegmentSummary}>
         <span>4 · Live Trial Spreadsheet</span>
-        <small>{number(page?.total??0)} matching trials · sortable results</small>
+        <small>{count(page?.total??0)} matching trials · sortable results</small>
       </summary>
       <div className={styles.poolSegmentBody}>
 <div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
