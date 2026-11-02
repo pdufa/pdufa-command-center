@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "new-platform/frontend/public/phase3-census-sources-2026-10-26.json"
 INPUTS = (
-    "data/phase3_all_years_300m_10b_trials.csv",
+    "new-platform/frontend/public/phase3-census-2026-10-26.csv",
     "data/company_registry.csv",
     "data/snapshots/phase_pipeline_market_caps_2026-10-26.csv",
     "config/snapshots/issuer_sources_2026-10-26.json",

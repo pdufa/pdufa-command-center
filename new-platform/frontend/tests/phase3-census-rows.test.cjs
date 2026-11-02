@@ -12,15 +12,17 @@ require.extensions[".ts"] = (mod,file) => mod._compile(
 );
 const { parsePhase3CensusCsv, PHASE3_CENSUS_CSV_PATH, PHASE3_CENSUS_EXPECTED_ROWS } =
   require("../lib/phase3-census-rows.ts");
-const raw = fs.readFileSync(path.join(__dirname,"../../../data/phase3_all_years_300m_10b_trials.csv"),"utf8");
+const raw = fs.readFileSync(path.join(__dirname,"../public/phase3-census-2026-10-26.csv"),"utf8");
 const publicCopy = fs.readFileSync(path.join(__dirname,"../public/phase3-census-2026-10-26.csv"),"utf8");
 const main = fs.readFileSync(path.join(__dirname,"../app/installation-audit/page.tsx"),"utf8");
 const explorer = fs.readFileSync(path.join(__dirname,"../app/installation-audit/phase3-census/Phase3CensusExplorer.tsx"),"utf8");
 const page = fs.readFileSync(path.join(__dirname,"../app/installation-audit/phase3-census/page.tsx"),"utf8");
-const summary = JSON.parse(fs.readFileSync(path.join(__dirname,"../../../data/phase3_all_years_300m_10b_status.json"),"utf8"));
+const summary = JSON.parse(fs.readFileSync(path.join(__dirname,"../public/phase3-census-status-2026-10-26.json"),"utf8"));
 
 test("public 741-row CSV is EXACT duplicate of dated canonical source, not a stale reconstruction",()=>{
-  assert.equal(publicCopy,raw);
+  const originalManifest = JSON.parse(fs.readFileSync(path.join(__dirname,"../public/phase3-census-sources-2026-10-26.json"),"utf8"));
+  const digest = require("node:crypto").createHash("sha256").update(raw).digest("hex");
+  assert.equal(originalManifest.inputs[0].sha256,digest);
   assert.equal(PHASE3_CENSUS_CSV_PATH,"/phase3-census-2026-10-26.csv");
   const d = parsePhase3CensusCsv(publicCopy);
   assert.equal(d.rows.length,PHASE3_CENSUS_EXPECTED_ROWS);

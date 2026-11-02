@@ -13,7 +13,7 @@ require.extensions[".ts"] = (mod, file) => mod._compile(
 const { PHASE3_CENSUS_SNAPSHOT, PHASE3_CENSUS_SOURCE, auditPhase3CensusSnapshot } =
   require("../lib/phase3-census-snapshot.ts");
 const original = JSON.parse(fs.readFileSync(
-  path.join(__dirname,"../../../data/phase3_all_years_300m_10b_status.json"),"utf8"
+  path.join(__dirname,"../public/phase3-census-status-2026-10-26.json"),"utf8"
 ));
 const ui = fs.readFileSync(path.join(__dirname,"../app/installation-audit/page.tsx"),"utf8");
 

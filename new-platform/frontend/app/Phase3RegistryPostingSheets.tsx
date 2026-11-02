@@ -45,7 +45,7 @@ function TrialSection({kind,rows,query,snapshotDate}:{kind:Kind;rows:readonly Re
   return <section className={css.sheet} aria-label={before?"Top unposted registry results trial spreadsheet":"Bottom posted registry results trial spreadsheet"}>
     <div className={css.sheetHeader}>
       <div>
-        <h3>{before?"TOP · PRE-RELEASE RESEARCH POOL":"BOTTOM · POST-RELEASE RESEARCH POOL"}</h3>
+        <h3>{before?"TOP · REGISTRY RESULTS NOT POSTED":"BOTTOM · REGISTRY RESULTS POSTED"}</h3>
         <p><strong>{before?"No ClinicalTrials.gov results posted":"ClinicalTrials.gov results posted"}</strong>
           {" — "}{before?
             "Not proof that the company has not publicly released data.":
@@ -70,7 +70,7 @@ function TrialSection({kind,rows,query,snapshotDate}:{kind:Kind;rows:readonly Re
           <td>{row.company}</td>
           <td>{row.registryStatus.replaceAll("_"," ")}</td>
           <td>{row.resultsCount>0?"Yes":"No"}</td>
-          <td>{row.resultsFirstPostedDate||"Not posted / legacy date unknown"}</td>
+          <td>{row.resultsFirstPostedDate||(row.resultsCount>0?"Legacy scan: date unavailable":"Not posted")}</td>
           <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov</a></td>
           <td>Not classified by this scan</td>
         </tr>):<tr><td colSpan={9} className={css.empty}>No records match this search.</td></tr>}</tbody>
@@ -101,10 +101,10 @@ export default function Phase3RegistryPostingSheets(){
         return parseRegistryPostingSnapshot(await fallback.json());
       })
       .then(snapshot=>{if(!ctrl.signal.aborted)setData(snapshot)})
-      .catch(()=>{if(!ctrl.signal.aborted)setError("The 730-trial historical source snapshot could not be verified. Counts are unavailable.")});
+      .catch(()=>{if(!ctrl.signal.aborted)setError("The saved Phase 3 results-posting snapshot could not be verified. Counts are unavailable.")});
     return ()=>ctrl.abort();
   },[]);
-  return <section className={css.root} id="tools-phase3-registry-tables" aria-label="730 Phase 3 studies separated by whether registry results are posted">
+  return <section className={css.root} id="tools-phase3-registry-tables" aria-label="Phase 3 studies separated by whether registry results are posted">
     <header className={css.heading}>
       <h2>Phase 3 · Two Populated Trial Spreadsheets</h2>
       <p>Results-posting research · $300M–$10B issuer-cap screen · automatically refreshed after complete registry downloads.</p>

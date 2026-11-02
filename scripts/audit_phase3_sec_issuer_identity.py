@@ -22,7 +22,7 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPANIES_PATH = ROOT / "new-platform/frontend/public/phase3-census-sources-2026-10-26.json"
-TRIALS_PATH = ROOT / "data/phase3_all_years_300m_10b_trials.csv"
+TRIALS_PATH = ROOT / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
 COMPANY_REGISTRY_PATH = ROOT / "data/company_registry.csv"
 SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 MAX_SOURCE_BYTES = 3_000_000
