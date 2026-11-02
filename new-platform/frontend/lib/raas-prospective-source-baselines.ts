@@ -4,7 +4,7 @@
  */
 import {RAAS_METRIC_CATALOG,type RaasStage} from "./raas-metric-specs";
 export type ProspectiveSourceFact={
- id:string;metricIds:string[];kind:"PHASE3_TRIAL_DESIGN"|
+ id:string;metricIds:string[];kind:"PRIOR_PHASE2B_EFFICACY"|"PHASE3_TRIAL_DESIGN"|
  "PHASE3_READOUT_GUIDANCE"|"ISSUER_CASH_DISCLOSURE";
  observedAsOf:string;sourcePublishedAt:string;sourceUrl:string;
  valueText:string;limitation:string;
@@ -67,7 +67,7 @@ export function parseProspectiveSourceBaselines(input:unknown):ProspectiveSource
     !present(o.limitation)||!Array.isArray(o.metricIds)||!o.metricIds.length||
     new Set(o.metricIds).size!==o.metricIds.length||
     o.metricIds.some(x=>!validMetricIds.has(x))||
-    !["PHASE3_TRIAL_DESIGN","PHASE3_READOUT_GUIDANCE","ISSUER_CASH_DISCLOSURE"].includes(o.kind)||
+    !["PRIOR_PHASE2B_EFFICACY","PHASE3_TRIAL_DESIGN","PHASE3_READOUT_GUIDANCE","ISSUER_CASH_DISCLOSURE"].includes(o.kind)||
     !dateOk(o.observedAsOf)||!dateOk(o.sourcePublishedAt)||
     o.observedAsOf>o.sourcePublishedAt||o.sourcePublishedAt>r.capturedOn||
     !secureUrl(o.sourceUrl))throw Error("RAAS_PROSPECTIVE_FACT_INVALID");
@@ -78,7 +78,8 @@ export function parseProspectiveSourceBaselines(input:unknown):ProspectiveSource
 }
 export function prospectiveSourceSummary(feed:ProspectiveSourceFeed){
  return {baselines:feed.records.length,
-  distinctPrograms:new Set(feed.records.map(x=>key(x))).size,
+  distinctPrograms:new Set(feed.records.map(x=>[x.ticker,x.drug,x.indication].map(s=>s.trim().toLowerCase()).join("|"))).size,
+  distinctIssuers:new Set(feed.records.map(x=>x.ticker.trim().toUpperCase())).size,
   recordedSourceFacts:feed.records.reduce((sum,r)=>sum+r.observations.length,0),
   numericRaasScores:0,validatedHistoricalOutcomes:0} as const;
 }

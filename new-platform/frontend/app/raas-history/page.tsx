@@ -231,7 +231,7 @@ export default function RaasHistoricalAuditPage(){
    <section className={css.section} aria-labelledby="raas-prospective-sources">
      <div className={css.sectionTitle}>
        <h2 id="raas-prospective-sources">Prospective TOP · pre-readout evidence captured</h2>
-       <span>{prospectiveSummary.baselines} source baseline · {prospectiveSummary.recordedSourceFacts} dated issuer facts · 0 predictions</span>
+       <span>{prospectiveSummary.baselines} source baselines · {prospectiveSummary.distinctIssuers} issuers · {prospectiveSummary.distinctPrograms} therapy programs · {prospectiveSummary.recordedSourceFacts} dated source facts · 0 predictions</span>
      </div>
      <p className={css.disclaimer}>These source observations were recorded on {prospective.sourceAsOf} while the corresponding pivotal readout was still expected in the future. Git commit history provides an inspectable capture trail, not cryptographic timestamp notarization. No original 0–100 RAAS grade, entry execution price or expected return has been recorded. Source facts here cannot be backfilled as historic investment forecasts.</p>
      <div className={css.cases}>

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_PROSPECTIVE_SOURCE_BASELINES",
   "sourceAsOf": "2026-11-02",
-  "note": "First prospective (pre-readout) sourced Phase 3 TOP evidence baseline. Its initial repository commit gives a reviewable capture trail, not immutable third-party notarization. Observations are neither validated 0–100 RAAS ratings, forecasts nor historical trading cases. Vendor market cap remains provisional.",
+  "note": "First prospective (pre-readout) sourced Phase 3 TOP evidence baseline. Its initial repository commit gives a reviewable capture trail, not immutable third-party notarization. Observations are neither validated 0–100 RAAS ratings, forecasts nor historical trading cases. Vendor market cap remains provisional. Added a second exact-NCT, pre-readout TOP research program (TRVI/OCEAN-1), with historical clinical, FDA meeting, financing and timing sources that existed on or before capture. No numeric RAAS score, actual trade or outcome is inferred.",
   "records": [
     {
       "id": "lbrx-nova2-2026-11-02-source-baseline",
@@ -75,6 +75,94 @@
           "sourceUrl": "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/",
           "valueText": "Issuer reiterates expected H1 2027 topline timing in the October 6 R&D Day announcement.",
           "limitation": "Sponsor statement dated October 6; does not claim October 27 presentation content or later progress."
+        }
+      ]
+    },
+    {
+      "id": "trvi-ocean1-2026-11-02-source-baseline",
+      "ticker": "TRVI",
+      "nctId": "NCT07671911",
+      "drug": "NAL ER",
+      "indication": "Idiopathic Pulmonary Fibrosis",
+      "stage": "pre",
+      "capturedOn": "2026-11-02",
+      "readoutAtCapture": "NOT_YET_REPORTED",
+      "sourceBaselineStatus": "PROSPECTIVE_SOURCE_RESEARCH_ONLY",
+      "archivedRaasPrediction": false,
+      "predictedRaas": null,
+      "predictedReturnPercent": null,
+      "entryExecutionPrice": null,
+      "marketCap": {
+        "usdMillions": 1932,
+        "observedAsOf": "2026-10-30",
+        "sourceUrl": "https://www.financecharts.com/stocks/TRVI/summary/market-cap",
+        "verification": "VENDOR_REPORTED_NOT_INDEPENDENTLY_AUDITED",
+        "note": "Vendor market cap for the Oct 30, 2026 close is about $1.932B, from reported stock price and share count; fully diluted shares, stock issuance and execution price need independent reconciliation. The OCEAN-1 and OCEAN-2 trials are a single issuer and therapy program, not two independent investment opportunities."
+      },
+      "observations": [
+        {
+          "id": "trvi-coral-prior-phase2b",
+          "metricIds": [
+            "pre-1-1",
+            "pre-1-4"
+          ],
+          "kind": "PRIOR_PHASE2B_EFFICACY",
+          "observedAsOf": "2025-06-02",
+          "sourcePublishedAt": "2025-06-02",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563880/000119312525132890/d949267d8k.htm",
+          "valueText": "SEC-filed prior Phase 2b CORAL readout: 24-hour cough-frequency relative change at Week 6 was -60.2% for nalbuphine ER 108 mg twice daily versus -16.9% with placebo (43.3 percentage-point placebo-adjusted difference, as reported).",
+          "limitation": "Separate earlier Phase 2b trial; sponsor disclosed outcome. Not the OCEAN-1 Phase 3 result. Endpoints, population, study duration, multiplicity, and statistical uncertainty must be reviewed before any RAAS grade."
+        },
+        {
+          "id": "trvi-fda-program-meeting",
+          "metricIds": [
+            "pre-1-2"
+          ],
+          "kind": "PHASE3_TRIAL_DESIGN",
+          "observedAsOf": "2026-03-17",
+          "sourcePublishedAt": "2026-03-17",
+          "sourceUrl": "https://ir.trevitherapeutics.com/news-releases/news-release-details/trevi-therapeutics-reports-fourth-quarter-and-year-end-2025-0",
+          "valueText": "Company reported overall FDA End-of-Phase-2 meeting alignment on the planned Phase 3 development program for IPF-related chronic cough.",
+          "limitation": "Issuer characterization of FDA meeting, not an FDA-approved drug or independent review of every pivotal design and statistical detail."
+        },
+        {
+          "id": "trvi-ocean1-phase3-design",
+          "metricIds": [
+            "pre-1-2",
+            "pre-4-1"
+          ],
+          "kind": "PHASE3_TRIAL_DESIGN",
+          "observedAsOf": "2026-06-29",
+          "sourcePublishedAt": "2026-08-06",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563880/000119312526337974/trvi-ex99_1.htm",
+          "valueText": "Trevi said the first of two IPF-related chronic cough pivotal trials, OCEAN-1, began in Q2 2026. Registered Phase 3 program NCT07671911 tests investigational oral nalbuphine ER with a double-blind placebo-controlled design.",
+          "limitation": "Trial start and design establish prospectively observable development status only; no OCEAN-1 Phase 3 topline evidence was available at the November 2026 capture."
+        },
+        {
+          "id": "trvi-ocean1-readout-guidance",
+          "metricIds": [
+            "pre-4-1",
+            "pre-4-2"
+          ],
+          "kind": "PHASE3_READOUT_GUIDANCE",
+          "observedAsOf": "2026-08-06",
+          "sourcePublishedAt": "2026-08-06",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563880/000119312526337974/trvi-ex99_1.htm",
+          "valueText": "Trevi expected the 52-week OCEAN-1 Phase 3 topline results in the first half of 2028. OCEAN-2's separately projected second-half 2027 results are NOT an OCEAN-1 readout.",
+          "limitation": "Management timing estimate, not a fixed data-release date, exchange trading exit, FDA decision, or assurance results will be released when forecast."
+        },
+        {
+          "id": "trvi-q2-finance-2026",
+          "metricIds": [
+            "pre-3-2",
+            "pre-3-3"
+          ],
+          "kind": "ISSUER_CASH_DISCLOSURE",
+          "observedAsOf": "2026-06-30",
+          "sourcePublishedAt": "2026-08-06",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563880/000119312526337974/trvi-ex99_1.htm",
+          "valueText": "At June 30, 2026 the company reported $318.9 million in cash, cash equivalents and marketable securities; the reported April 2026 offering net proceeds were approximately $162.3 million.",
+          "limitation": "April financing proceeds may already be reflected in the June 30 balance. Never add both cash numbers; cash runway, dilution, obligations, and execution cost remain uncalculated."
         }
       ]
     }
