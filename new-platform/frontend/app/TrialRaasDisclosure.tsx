@@ -13,6 +13,7 @@ import retrospectiveExamples from "../data/raas-retrospective-source-cases.json"
 import retrospectiveTopExamples from "../data/raas-retrospective-top-cases.json";
 import historicalMetricSnapshots from "../data/raas-historical-metric-snapshots.json";
 import {parseRaasPilotFeed,observationsForTrial,observedCalculation,computeRaasScore,type RaasObservation} from "../lib/raas-score-engine";
+import {raasMissingMetricChecklist} from "../lib/raas-missing-metric-checklist";
 import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
 import reviewedSnapshots from "../data/raas-reviewed-snapshots.json";
 import approvedCalibrations from "../data/raas-approved-calibrations.json";
@@ -118,6 +119,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const reviewed=scoreSnapshots.find(s=>s.period===snapshot)?.reviewed??null;
  const grading=reviewed?.score??computeRaasScore({stage:bucket,snapshot,asOf:pilot.sourceAsOf,
    trial:{nctId:row.nctId,ticker:row.ticker},ratings:[],gates:[]});
+ const missingChecklist=raasMissingMetricChecklist(bucket,record,grading.missing);
  const groupName="raas-group-"+bucket+"-"+row.nctId;
  return <details className={css.raas} data-raas-phase={bucket} data-raas-trial={row.nctId}>
    <summary className={css.summary} onClick={onResearchRequest}
@@ -209,6 +211,36 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
        </div>
      </details>
      <p className={css.hint}><strong>{snapshot} · {grading.graded}/30 approved metric grades · {pilotGrades.length} exploratory research score · {pilotFacts.length} dated observations.</strong> {grading.reason} Open a category and a metric to see numerical observations, threshold requirements, sources and downside risks. Only complete approved metric sets can produce an overall RAAS.</p>
+     <details className={css.anchorDetails} aria-label={label+" missing RAAS metric evidence checklist"}>
+       <summary>Missing RAAS metric grades · {missingChecklist?missingChecklist.missing+"/30":"Inventory check required"} · evidence worklist ▸</summary>
+       <div className={css.historicalStatus}>
+         <p><strong>How the final SURVEY connects to RAAS:</strong> Its 20 surveys and 38 research questions provide leads, but RAAS separately requires six weighted categories, 30 individually validated metric grades, approved calibrations, dated ENTRY/CURRENT/EXIT evidence and passed risk gates. This list does not manufacture a score.</p>
+         {!missingChecklist?<p role="status">RAAS catalog and score-engine metric IDs do not reconcile. No readiness conclusion can be drawn.</p>:
+           <>
+             <p><strong>Accepted RAAS metric grades:</strong> {missingChecklist.approved}/30 · <strong>still ungraded:</strong> {missingChecklist.missing}/30. Research-field coverage is not an approved metric grade, and missing data are not zeroes.</p>
+             {missingChecklist.categories.map(group=><details key={group.id} className={css.anchorDetails}>
+               <summary>{group.name} · {group.approved}/{group.total} accepted grades · {group.missing.length} remaining ▸</summary>
+               <div className={css.historicalStatus}>
+                 {group.missing.length===0?<p>All five metric grades are accepted in this category. Overall RAAS still requires every category and risk gate.</p>:
+                   <ol>{group.missing.map(metric=><li key={metric.id} className={css.requirement}>
+                     <strong>{metric.name} · {metric.id} · NOT GRADED</strong>
+                     <p><strong>Required evidence:</strong> {metric.requiredEvidence}</p>
+                     <p><strong>Related SURVEY inputs:</strong> {metric.relatedTotal===0?
+                       "No direct mapping — a dedicated clinical, SEC, market, or regulatory source is required":
+                       metric.relatedVerified+" source-recorded · "+metric.relatedModeled+" modeled · "+
+                       metric.relatedUnrecorded+" unrecorded (of "+metric.relatedTotal+" mapped fields)"}</p>
+                     <p>{metric.status==="RELATED_RESEARCH_RECORDED"?
+                       "Related research is recorded, but the benchmark, temporal evidence, independent verification and approved numeric calibration remain unproven.":
+                       metric.status==="DEDICATED_SOURCE_REQUIRED"?
+                       "This metric requires its own evidence feed; missing mappings are not adverse clinical findings.":
+                       "Verify the missing or modeled supporting research, then separately validate the metric-specific benchmark and score."}</p>
+                   </li>)}</ol>}
+               </div>
+             </details>)}
+           </>}
+         <p>RAAS is NOT SCORED unless all 30 grades are accepted, source-time checks pass, the calibration is approved, and required risk gates pass. The final SURVEY evidence grade must never be substituted for a RAAS numeric rating.</p>
+       </div>
+     </details>
      <div className={css.factors} aria-label={label+" six weighted ingredients"}>
        {groups.map((group,i)=><details key={group.id} name={groupName} className={css.factor} data-raas-factor={i+1}>
          <summary className={css.factorSummary}>
