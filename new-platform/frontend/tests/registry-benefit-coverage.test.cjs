@@ -25,6 +25,7 @@ test("official source snapshot shows exact-NCT data availability but never benef
  assert.equal(x.measurableRecords,1);
  assert.equal(x.meanRegistryCoveragePercent,100);
  assert.equal(x.records[0].registryCoveragePercent,100);
+ assert.deepEqual(x.coverageBuckets,{noMeasurements:0,partial:0,allFour:1,incompleteExtract:0});
  assert.equal(x.records[0].measuredDimensions,4);
  assert.equal(x.records[0].dimensionsTotal,4);
  assert.equal(x.records.length,1);
@@ -81,6 +82,7 @@ test("registry coverage percentages count only four documented source dimensions
  assert.equal(r.records[0].measuredDimensions,2);
  assert.equal(r.records[0].registryCoveragePercent,50);
  assert.equal(r.meanRegistryCoveragePercent,50);
+ assert.deepEqual(r.coverageBuckets,{noMeasurements:0,partial:1,allFour:0,incompleteExtract:0});
  assert.equal(r.withSecondaryMeasurements,0);
  const truncated=sample();
  truncated.records[0].truncatedEvidence.outcomes=true;
@@ -88,6 +90,7 @@ test("registry coverage percentages count only four documented source dimensions
  assert.equal(t.records[0].registryCoveragePercent,null);
  assert.equal(t.measurableRecords,0);
  assert.equal(t.meanRegistryCoveragePercent,null);
+ assert.deepEqual(t.coverageBuckets,{noMeasurements:0,partial:0,allFour:0,incompleteExtract:1});
  const invalid=sample();delete invalid.records[0].secondary;
  assert.throws(()=>registryCoverageFromSnapshot(invalid,now),/INVALID_REGISTRY_SECONDARY_SOURCE/);
 });
