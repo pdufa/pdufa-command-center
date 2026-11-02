@@ -173,7 +173,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
                </div>
                <div className={css.requirement}><strong>Historical investment-performance validation</strong>
                  <p>{metricBacktest?.independentPrograms??0} independently observed program/return pairs; score-return rank correlation: {metricBacktest?.spearmanScoreToReturn??"Not available"}.</p>
-                 <p>High-score minus low-score mean realized return: {metricBacktest?.meanHighMinusLowPercent===null?"Not available":metricBacktest?.meanHighMinusLowPercent+" percentage points"}.</p>
+                 <p>High-score minus low-score mean realized return: {metricBacktest?.meanHighMinusLowPercent==null?"Not available":metricBacktest?.meanHighMinusLowPercent+" percentage points"}.</p>
                  <p>{metricBacktest?.reason||"Missing historical metric review."} No score becomes approved solely from this descriptive backtest.</p>
                </div>
                <div className={css.requirement}><strong>Evidence required</strong><p>{metric.requiredEvidence}</p></div>
