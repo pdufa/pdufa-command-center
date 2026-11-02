@@ -12,7 +12,7 @@ import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phase3ReadoutSortKey} from "../lib/phase3-readout-sort";
 import {finalSurveyReadiness} from "../lib/final-survey-readiness";
 import {auditFinalFdaValidation,type FinalFdaValidation} from "../lib/final-survey-fda-validation";
-import {auditHistoricalCaseRoster,caseReasonLabel,type HistoricalCaseRoster} from "../lib/final-survey-case-roster";
+import {auditHistoricalCaseRoster,caseReasonLabel,type HistoricalCaseReason,type HistoricalCaseRoster} from "../lib/final-survey-case-roster";
 import {finalSurveyNextActions} from "../lib/final-survey-next-actions";
 import {phase3ScientificEvidenceAudit} from "../lib/phase3-scientific-evidence-audit";
 import {checkPhase3PublishedArithmetic} from "../lib/phase3-published-arithmetic";
@@ -435,7 +435,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
                       {Object.entries(outcomeValidation.roster.reasonCounts)
                         .filter(([,count])=>count>0)
                         .map(([reason,count])=><div key={reason}>
-                          <span>{caseReasonLabel(reason as keyof typeof outcomeValidation.roster.reasonCounts)}</span>
+                          <span>{caseReasonLabel(reason as HistoricalCaseReason)}</span>
                           <strong>{count}</strong>
                         </div>)}
                     </div>
