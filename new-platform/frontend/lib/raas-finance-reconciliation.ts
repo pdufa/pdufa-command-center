@@ -47,9 +47,9 @@ export function parseHistoricalFinance(
  if(f.schemaVersion!==1||f.scope!=="RAAS_HISTORICAL_FINANCE_RESEARCH"||
  !date(f.sourceAsOf)||!Array.isArray(f.records)||f.records.length>10000)
  throw Error("RAAS_FINANCE_FEED_INVALID");
- const lookup=new Map([
-  ...top.records.map(r=>[r.id,{ticker:r.ticker,stage:r.stage,entry:r.entry.date}]),
-  ...bottom.records.map(r=>[r.id,{ticker:r.ticker,stage:r.stage,entry:r.entry.date}])
+ const lookup=new Map<string,{ticker:string;stage:"pre"|"post";entry:string}>([
+  ...top.records.map(r=>[r.id,{ticker:r.ticker,stage:r.stage,entry:r.entry.date}] as const),
+  ...bottom.records.map(r=>[r.id,{ticker:r.ticker,stage:r.stage,entry:r.entry.date}] as const)
  ]);
  const seen=new Set<string>();const ids=new Set<string>();
  for(const r of f.records){
