@@ -16,7 +16,7 @@ const stage=require("../lib/raas-top-retrospective-intake.ts");
 const source=require("../data/raas-retrospective-top-cases.json");
 test("historical TOP pre-readout GERN window is sourced, stage separated, and never called a forecast",()=>{
  const feed=stage.parseTopRetrospective(source);
- assert.equal(feed.records.length,2);
+ assert.equal(feed.records.length,3);
  const record=feed.records[0];
  assert.equal(record.ticker,"GERN");
  assert.deepEqual(record.nctIds,["NCT02598661"]);
@@ -40,6 +40,17 @@ test("historical TOP pre-readout GERN window is sourced, stage separated, and ne
  assert.equal(mdgl.readoutDate,"2022-12-19");
  assert.equal(mdgl.forecastScore,null);
  assert.equal(mdgl.forecastError,null);
+ const bbio=stage.topRetrospectiveResults(feed).find(x=>x.ticker==="BBIO");
+ assert.ok(bbio);
+ assert.equal(bbio.entryClose,13.54);
+ assert.equal(bbio.exitClose,16.89);
+ assert.equal(bbio.observedGrossChangePercent,24.74);
+ assert.equal(bbio.marketCapUsdMillions,2173.18);
+ assert.equal(bbio.priorGuidanceDate,"2023-05-04");
+ assert.equal(bbio.readoutDate,"2023-07-17");
+ assert.equal(bbio.forecastScore,null);
+ assert.equal(bbio.forecastError,null);
+
 
 });
 test("TOP research examples cannot cross trial readout or borrow later sponsor guidance",()=>{
