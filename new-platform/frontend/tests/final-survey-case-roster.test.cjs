@@ -98,3 +98,61 @@ test("combined SURVEY shows verified case audit and source links but no invented
  assert.match(ui,/a research candidate/);
  assert.match(ui,/caseReasonLabel\(item\.reason\)/);
 });
+
+test("case pagination returns separate audited pages and keeps global reason totals unchanged",()=>{
+ const first=base();
+ first.number_with_known_outcomes=51;
+ first.case_review.total=51;
+ first.case_review.returned=50;
+ first.case_review.reason_counts.VERIFIED_OUTCOME_WITHOUT_LOCKED_PREDECISION_PREDICTION=51;
+ first.case_review.records=Array.from({length:50},(_,i)=>({
+  ...first.case_review.records[0],application_id:"NDA123456:sample-"+i
+ }));
+ first.case_review.page=1;first.case_review.pages=2;first.case_review.has_more=true;
+ const a=auditHistoricalCaseRoster(first,1);
+ assert.equal(a.page,1);
+ assert.equal(a.pages,2);
+ assert.equal(a.hasMore,true);
+ assert.equal(a.paginationAvailable,true);
+ assert.equal(a.reasonCounts.VERIFIED_OUTCOME_WITHOUT_LOCKED_PREDECISION_PREDICTION,51);
+ const second=JSON.parse(JSON.stringify(first));
+ second.case_review.page=2;second.case_review.returned=1;
+ second.case_review.has_more=false;
+ second.case_review.records=[{...first.case_review.records[0],application_id:"NDA123456:sample-50"}];
+ const b=auditHistoricalCaseRoster(second,2);
+ assert.equal(b.page,2);assert.equal(b.returned,1);assert.equal(b.hasMore,false);
+ assert.equal(b.total,a.total);
+ assert.throws(()=>auditHistoricalCaseRoster(second,1),/HISTORICAL_FDA_CASE_ROSTER_INVALID/);
+ const repeated=JSON.parse(JSON.stringify(second));
+ repeated.case_review.page=1;
+ assert.throws(()=>auditHistoricalCaseRoster(repeated,1),/HISTORICAL_FDA_CASE_ROSTER_INVALID/);
+ const impossible=JSON.parse(JSON.stringify(second));
+ impossible.case_review.pages=3;
+ assert.throws(()=>auditHistoricalCaseRoster(impossible,2),/HISTORICAL_FDA_CASE_ROSTER_INVALID/);
+});
+test("legacy first 50 still display without lying about page navigation",()=>{
+ const x=base();
+ x.number_with_known_outcomes=51;
+ x.case_review.total=51;x.case_review.returned=50;
+ x.case_review.reason_counts.VERIFIED_OUTCOME_WITHOUT_LOCKED_PREDECISION_PREDICTION=51;
+ x.case_review.records=Array.from({length:50},(_,i)=>({
+  ...x.case_review.records[0],application_id:"NDA123456:legacy-"+i
+ }));
+ const legacy=auditHistoricalCaseRoster(x,1);
+ assert.equal(legacy.total,51);
+ assert.equal(legacy.paginationAvailable,false);
+ assert.equal(legacy.pages,2);
+ assert.equal(legacy.hasMore,false);
+ assert.throws(()=>auditHistoricalCaseRoster(x,2),/HISTORICAL_FDA_CASE_ROSTER_INVALID/);
+});
+test("SURVEY case page next/previous uses validated, authenticated route and no direct backend requests",()=>{
+ const relay=fs.readFileSync(require.resolve("../lib/phase3-trials.ts"),"utf8");
+ assert.match(ui,/setCasePage\(page=>Math\.max\(1,page-1\)\)/);
+ assert.match(ui,/setCasePage\(page=>Math\.min\(/);
+ assert.match(ui,/Historical FDA case review pages/);
+ assert.match(ui,/auditHistoricalCaseRoster\(raw,casePage\)/);
+ assert.match(relay,/export function validationCaseQuery/);
+ assert.match(relay,/\^\[1-9\]/);
+ assert.match(relay,/Number\(page\)>1000000/);
+ assert.match(relay,/validationCaseQuery\(req\.nextUrl\.searchParams\)/);
+});
