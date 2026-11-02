@@ -6,7 +6,7 @@
   "companyCount": 130,
   "inputs": [
     {
-      "path": "data/phase3_all_years_300m_10b_trials.csv",
+      "path": "new-platform/frontend/public/phase3-census-2026-10-26.csv",
       "sha256": "a426ac6c01726a2c3a9916698e50f3cc87b0e6230260068231c88f1b4a30a143"
     },
     {
