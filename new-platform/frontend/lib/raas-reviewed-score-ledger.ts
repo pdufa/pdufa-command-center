@@ -100,7 +100,11 @@ export function reviewedScoreForTrial(
    history.ruleVersion===cal?.ruleVersion&&
    history.holdoutTrainPrograms>=30&&
    history.holdoutTestPrograms>=Math.max(30,cal?.outOfSampleTrials??30)&&
-   history.spearmanScoreToReturn!==null;
+   history.holdoutLowPrograms>=5&&history.holdoutHighPrograms>=5&&
+   history.holdoutSpearmanScoreToReturn!==null&&
+   history.holdoutSpearmanScoreToReturn>0&&
+   history.holdoutHighMinusLowPercent!==null&&
+   history.holdoutHighMinusLowPercent>0;
   // Legacy ratings without an explicit version are never upgraded by inference.
   return !!cal&&historySupported&&cal.benchmarkId===r.benchmarkId&&
    r.ruleVersion===cal.ruleVersion&&cal.validatedAt<=r.assessedAt;
