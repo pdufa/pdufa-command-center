@@ -250,7 +250,8 @@ test("TOOLS shows three bordered funnel cards without fabricating PIPELINE quali
   assert.match(css,/\.toolsFunnelCard\{border:3px solid/);
   assert.match(page,/aria-controls="tools-first-phase"/);
   assert.match(page,/aria-controls="tools-first-designation"/);
-  assert.match(page,/hasSelections&&<>/);
+  assert.match(page,/data-pool-segment="selectors"/);
+  assert.match(page,/\{hasSelections\?<ToolsAssessmentSection/);
   assert.match(page,/activeFilter==="phase"/);
   assert.match(page,/activeFilter==="designation"/);
 });
@@ -503,34 +504,37 @@ test("published TOOLS snapshot freshness is reevaluated after caching, not froze
 });
 
 
-test("final live spreadsheet stays below every TOOLS selection and analysis section",()=>{
+test("live spreadsheet stays below the selector and assessment accordions",()=>{
   const source=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
-  const head=source.indexOf('aria-label="Step 3 — filter by phase or FDA designation"');
-  const stage=source.indexOf('id="tools-first-phase"');
-  const fda=source.indexOf('id="tools-first-designation"');
-  const funnel=source.indexOf('<ToolsFunnel');
-  const assessment=source.indexOf('<ToolsAssessmentSection');
-  const research=source.indexOf('<ToolsResultsSpreadsheet');
+  const sectionNames=["funnel","selectors","assessments","live-trials","advanced"];
+  const positions=sectionNames.map(key=>source.indexOf('data-pool-segment="'+key+'"'));
+  assert.ok(positions.every(n=>n>=0));
+  assert.ok(positions.every((n,i)=>i===0||n>positions[i-1]),"Funnel, selectors, assessments, live trials, then advanced research");
+  const funnel=source.indexOf("<ToolsFunnel");
+  const heading=source.indexOf('aria-label="Step 3 — filter by phase or FDA designation"');
+  const phase=source.indexOf('id="tools-first-phase"');
+  const designation=source.indexOf('id="tools-first-designation"');
+  const assessment=source.indexOf("<ToolsAssessmentSection");
   const final=source.indexOf('id="tools-final-trial-spreadsheet"');
-  const closing=source.lastIndexOf('</section>');
-  assert.ok([head,stage,fda,funnel,research,final,closing].every(n=>n>=0));
-  const filterGate=source.indexOf('{hasSelections&&<>');
-  assert.ok(funnel<head&&head<stage&&stage<fda&&fda<filterGate&&filterGate<assessment&&assessment<final&&final<research&&research<closing,
-    "Order must be POOL/PIPELINE, Step 3, Step 4 4a1–4a20, immediately Step 5, then advanced research");
-  assert.match(source.slice(assessment),/<div className=\{styles\.toolsFinalSpreadsheet\} id="tools-final-trial-spreadsheet">/,
-    "The Step 5 spreadsheet must directly follow Step 4 and be inside the same selection gate");
-  assert.equal((source.match(/<ToolsOpeningTrialGrid\b/g)||[]).length,1,
-    "Never render duplicate copies of the final live POOL spreadsheet");
-  assert.match(source.slice(final),/rows=\{hasSelections\?page\?\.spreadsheetRows\|\|\[\]:\[\]\}/,"No trial data in Step 5 until Phase or FDA is checked");
+  const grid=source.indexOf("<ToolsOpeningTrialGrid");
+  const research=source.indexOf("<ToolsResultsSpreadsheet");
+  assert.ok(funnel<heading&&heading<phase&&phase<designation&&designation<assessment&&assessment<final&&final<grid&&grid<research);
+  assert.match(source.slice(positions[2],positions[3]),/hasSelections\?<ToolsAssessmentSection/);
+  assert.match(source.slice(positions[3],positions[4]),/hasSelections\?<div className=\{styles\.toolsFinalSpreadsheet\} id="tools-final-trial-spreadsheet">/);
+  assert.equal((source.match(/<ToolsOpeningTrialGrid\b/g)||[]).length,1,"One final live NCT spreadsheet");
+  assert.match(source.slice(final),/rows=\{hasSelections\?page\?\.spreadsheetRows\|\|\[\]:\[\]\}/);
   assert.match(source.slice(final),/inventoryMode=\{!hasSelections\}/);
   assert.match(source.slice(final),/onNext=\{\(\)=>\{/);
   assert.match(source.slice(final),/loading=\{hasSelections&&loading\}/);
 });
 
-test("Step 4 and Step 5 are hidden until a Phase/FDA checkbox is checked, and reset when cleared",()=>{
+test("unselected Phase/FDA keeps assessment and live-trial contents gated inside collapsed accordions",()=>{
   const grid=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsOpeningTrialGrid.tsx"),"utf8");
   const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/PoolStageExplorer.tsx"),"utf8");
-  assert.match(ui,/\{hasSelections&&<>[\s\S]*<ToolsAssessmentSection/);
+  for(const name of ["funnel","selectors","assessments","live-trials","advanced"])
+    assert.match(ui,new RegExp('data-pool-segment="'+name+'"'));
+  assert.match(ui,/hasSelections\?<ToolsAssessmentSection/);
+  assert.match(ui,/hasSelections\?<div className=\{styles\.toolsFinalSpreadsheet\}/);
   assert.match(ui,/total=\{hasSelections\?page\?\.total\?\?0:0\}/);
   assert.match(ui,/nextOffset=\{hasSelections\?page\?\.nextOffset\?\?null:null\}/);
   assert.match(grid,/!hasSelection\?<tr><td colSpan=\{columnsCount\}/);

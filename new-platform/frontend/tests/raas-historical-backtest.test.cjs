@@ -69,9 +69,9 @@ test("future features and retroactive source dates are rejected before calculati
 });
 test("two NCT entries for one company drug indication count as one independent program",()=>{
  const t1=top();
- const t2=top({caseId:"same-product-other-nct",nctIds:["NCT00000003"],entryDate:"2025-01-12",
+ const t2=top({caseId:"same-product-other-nct",nctIds:["NCT00000003"],entryDate:"2025-01-13",
   featureAsOf:"2025-01-11",predictionPublishedAt:"2025-01-11",featureSources:[source("2025-01-09")],
-  entryPrice:price("2025-01-12",11)});
+  entryPrice:price("2025-01-13",11)});
  const v=b.evaluateHistoricalFeed(b.parseHistoricalFeed(feed([t1,t2])));
  assert.equal(v.accepted.length,2);
  assert.equal(v.byStage[0].independentPrograms,1);

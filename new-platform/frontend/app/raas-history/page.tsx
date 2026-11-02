@@ -197,6 +197,7 @@ export default function RaasHistoricalAuditPage(){
    <div className={css.stats}>
      <div><strong>{summary.topExamples}</strong><span>TOP research windows</span></div>
      <div><strong>{summary.bottomExamples}</strong><span>BOTTOM research windows</span></div>
+     <div><strong>{summary.eligiblePredictions}</strong><span>Eligible original predictions · unvalidated historical cases excluded</span></div>
      <div><strong>{priceSummary.matchedPoints}/{priceSummary.quotedPoints}</strong><span>Second-source closing-price matches · adjustment pending</span></div>
      <div><strong>{sharesSummary.separatelyReportedCapMatches}/{sharesSummary.caseCount}</strong><span>Vendor cap cross-checks match · prices unverified</span></div>
    </div>

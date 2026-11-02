@@ -109,6 +109,8 @@ test("reload keeps clicked Phase/FDA filters; scoped clear preserves the other b
     const restoreFDA=root.root.findByProps({"aria-controls":"tools-first-designation"});
     assert.match(textOf(restorePhase),/1 selected/);
     assert.match(textOf(restoreFDA),/1 selected/);
+    // Reload intentionally closes accordion branches; open the FDA section before clearing it.
+    await act(async()=>restoreFDA.props.onClick());
     const clearFDA=root.root.findAllByType("button").find(x=>textOf(x)==="Clear This Section");
     assert.ok(clearFDA);
     await act(async()=>clearFDA.props.onClick());

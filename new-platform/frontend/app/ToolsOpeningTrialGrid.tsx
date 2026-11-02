@@ -5,6 +5,7 @@ import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
 import {TOOLS_RATING_GROUPS} from "../lib/tools-rating-groups";
 import css from "./ToolsOpeningTrialGrid.module.css";
+import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 import {TOOLS_CLEAR_EVENT,TOOLS_RATINGS_STORAGE_KEY,TOOLS_COMPETITION_STORAGE_KEY,
   readToolsPreference,saveToolsPreference} from "../lib/tools-selection-persistence";
 import {COMPETITIVE_STRATEGY_TOPICS} from "../lib/tools-competitive-strategy";
@@ -121,6 +122,7 @@ const columns:{key:Field;label:string;hint?:string}[]=[
   {key:"indication",label:"Disease / indication"},
   {key:"stage",label:"Recorded stage"}
 ];
+const columnFilterFields:ColumnFilterField[]=columns.map(({key,label})=>({key,label}));
 function DayCell({count,date,url,description}:{count:number|null;date?:string;url?:string;description:string}){
   if(count===null)return <span className={css.dateUnknown} title={description+" date not source-verified"}>Not verified</span>;
   return <a href={url} target="_blank" rel="noopener noreferrer"
@@ -132,6 +134,7 @@ export default function ToolsOpeningTrialGrid({
   selectedStages,selectedDesignations,noVerifiedNctLinks,sourceDate,sourceState,regulatorySourcesAvailable,competitiveScan=null,onPrevious,onNext
 }:Props){
   const [sortKey,setSortKey]=useState<Field>("nctId");
+  const [columnFilters,setColumnFilters]=useState<ColumnFilterState>({});
   const [desc,setDesc]=useState(false);
   const [today,setToday]=useState("");
   const [expandedRatings,setExpandedRatings]=useState<RatingGroupKey[]>([]);
@@ -227,7 +230,7 @@ export default function ToolsOpeningTrialGrid({
   },[selectedStages,selectedDesignations]);
   useEffect(()=>{
     if(typeof window==="undefined")return;
-    const clear=()=>{setExpandedRatings([]);setCompetitiveOpen(false);};
+    const clear=()=>{setExpandedRatings([]);setCompetitiveOpen(false);setColumnFilters({});};
     window.addEventListener(TOOLS_CLEAR_EVENT,clear);
     return ()=>window.removeEventListener(TOOLS_CLEAR_EVENT,clear);
   },[]);
@@ -250,6 +253,21 @@ export default function ToolsOpeningTrialGrid({
     const n=(a[sortKey]||"").localeCompare(b[sortKey]||"",undefined,{numeric:true,sensitivity:"base"});
     return desc?-n:n;
   }),[rows,sortKey,desc,today]);
+  const filteredRows=useMemo(()=>applyColumnFilters(ordered,columnFilters,(row,key)=>{
+    if(key==="s"||key==="d"){
+      const days=pipelineDayCounts(row.timeline||NO_DATES,today);
+      return key==="s"?days.daysSincePhase3Release:days.daysToPdufa;
+    }
+    switch(key){
+      case "nctId":return row.nctId;
+      case "ticker":return row.ticker;
+      case "company":return row.company;
+      case "drug":return row.drug;
+      case "indication":return row.indication;
+      case "stage":return row.stage;
+      default:return null;
+    }
+  }),[ordered,columnFilters,today]);
   const hasSelection=selectedStages+selectedDesignations>0;
   // FDA and PDUFA attributes belong to each NCT row; neither creates a second trial.
   const countUnverified=hasSelection&&selectedDesignations>0&&noVerifiedNctLinks&&!loading&&!error;
@@ -308,6 +326,13 @@ export default function ToolsOpeningTrialGrid({
           No comparative ranks have been established.</small>
       </div>}
     </div>}
+    <TrialColumnFilterBar title="Live trial spreadsheet" fields={columnFilterFields}
+      filters={columnFilters} onChange={setColumnFilters}
+      hint="Filters narrow only the loaded page (up to 50 trials). Phase/FDA controls above filter the full source pool. Multiple filters combine with AND. S and D accept comparisons such as >=30.">
+      <span role="status" style={{fontSize:12,color:"#34583f"}}>
+        {filteredRows.length} of {rows.length} loaded trial rows visible
+      </span>
+    </TrialColumnFilterBar>
     <div className={css.scroll} role="region" aria-label="Scrollable clinical trial spreadsheet" tabIndex={0}>
       <table>
         <thead><tr><th className={css.rowNum}>#</th>
@@ -372,12 +397,12 @@ export default function ToolsOpeningTrialGrid({
           {!hasSelection?<tr><td colSpan={columnsCount} className={css.empty}>Select at least one Phase or Special Designation in Step 3 to populate this spreadsheet.</td></tr>
           :loading?<tr><td colSpan={columnsCount} className={css.empty}>Loading matching trial records…</td></tr>
           :error?<tr><td colSpan={columnsCount} className={css.empty}>Cannot verify the trial inventory: {error}. No zero count assumed.</td></tr>
-          :ordered.length===0?<tr><td colSpan={columnsCount} className={css.empty}>
+          :filteredRows.length===0?<tr><td colSpan={columnsCount} className={css.empty}>
             {countUnverified?"No documented NCT matches within the restricted research subset. Full FDA trial coverage remains unknown."
               :hasSelection?"No documented trials match these selected criteria. Try a different Phase or FDA category."
               :"No trial records are available from the published source."}
           </td></tr>
-          :ordered.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);
+          :filteredRows.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);
             const readiness=competitiveReadiness(row,today,competitionEvidence);
             const audit=auditTrialRatings(row,today,competitionEvidence,competitionError,
               registryByNct.get(row.nctId)||null,peerLeads?.[row.nctId]||null);

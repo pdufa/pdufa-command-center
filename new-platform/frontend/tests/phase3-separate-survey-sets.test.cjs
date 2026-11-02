@@ -19,6 +19,7 @@ const labelGroups=(kind,all=false)=>visiblePostingRatingGroups(kind,all).map(g=>
 const fields=kind=>visiblePostingRatingGroups(kind).flatMap(g=>g.ingredients.map(v=>v.key));
 const sections=r=>r.root.findAllByType("section").filter(s=>/registry results trial spreadsheet/.test(s.props["aria-label"]||""));
 const headings=s=>s.findAllByType("thead")[0].findAllByType("tr")[0].findAllByType("th");
+const filterHeadings=s=>s.findAllByType("thead")[0].findAllByType("tr")[1].findAllByType("th");
 const textOf=node=>typeof node==="string"?node:typeof node==="number"?String(node):node?.children?.map(textOf).join("")||"";
 const buttons=(s,text)=>s.findAllByType("button").find(v=>textOf(v)===text);
 test("the upper and lower posting tables have intentionally distinct, fixed survey profiles",()=>{
@@ -61,6 +62,37 @@ test("profiles remove irrelevant default columns independently, preserving full 
   await act(async()=>buttons(bottom,"Expand all ratings").props.onClick());
   assert.equal(headings(bottom).length,35);
   assert.equal(headings(top).length,13);
+ }finally{
+  if(r)await act(async()=>r.unmount());
+  global.fetch=oldFetch;
+ }
+});
+
+test("an expanded rating remains enclosed through its header, filter controls, and trial values",async()=>{
+ const oldFetch=global.fetch;
+ global.fetch=async url=>({ok:true,json:async()=>String(url).includes("benefit-assessments")?{schemaVersion:1,sourceAsOf:null,records:[]}:snapshot});
+ let r;
+ try{
+  await act(async()=>{r=create(React.createElement(Phase3));});
+  const [top,bottom]=sections(r);
+  const expand=section=>section.findAllByType("button").find(b=>(b.props["aria-label"]||"").startsWith("Expand "+(section===top?"Before":"Past")+" M "));
+  await act(async()=>expand(top).props.onClick());
+  const heading=headings(top).find(th=>th.props["data-rating-group"]==="M");
+  const groupFilter=filterHeadings(top).find(th=>th.props["data-rating-group"]==="M");
+  const lastFilter=filterHeadings(top).find(th=>th.props["data-rating-ingredient"]==="CRIT");
+  const firstCell=top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td").find(td=>td.props["data-rating-group"]==="M");
+  assert.match(heading.props.className,/ratingOpen/);
+  assert.match(groupFilter.props.className,/ratingOpen/);
+  assert.match(groupFilter.props.className,/ratingStart/);
+  assert.match(lastFilter.props.className,/ratingEnd/);
+  assert.match(firstCell.props.className,/ratingStart/);
+  assert.equal(filterHeadings(bottom).filter(th=>th.props["data-rating-ingredient"]==="CRIT").length,0);
+  await act(async()=>expand(bottom).props.onClick());
+  assert.match(filterHeadings(bottom).find(th=>th.props["data-rating-group"]==="M").props.className,/ratingStart/);
+  await act(async()=>top.findAllByType("button").find(b=>(b.props["aria-label"]||"").startsWith("Collapse Before M ")).props.onClick());
+  assert.equal(filterHeadings(top).filter(th=>th.props["data-rating-ingredient"]==="CRIT").length,0);
+  assert.doesNotMatch(filterHeadings(top).find(th=>th.props["data-rating-group"]==="M").props.className,/ratingStart/);
+  assert.equal(filterHeadings(bottom).filter(th=>th.props["data-rating-ingredient"]==="CRIT").length,1);
  }finally{
   if(r)await act(async()=>r.unmount());
   global.fetch=oldFetch;
