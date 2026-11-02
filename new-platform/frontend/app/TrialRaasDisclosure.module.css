@@ -42,3 +42,43 @@
  .summary{min-height:48px}
  .factorSummary{min-height:48px}
 }
+
+/* Metric-level drilldown: six groups are independent, and each selected metric expands to the right. */
+.raas[open]{width:1080px}
+.snapshotButton{display:flex;flex-direction:column;align-items:flex-start;gap:4px;border:1px solid #cbdcd0;border-radius:7px;background:#f6faf7;color:#18432d;padding:9px;text-align:left;min-height:65px;cursor:pointer;touch-action:manipulation}
+.snapshotButton[aria-pressed="true"]{background:#e7f5eb;border:2px solid #257549}
+.snapshotButton:focus-visible{outline:3px solid #206baf;outline-offset:2px}
+.snapshotButton strong{font-size:11px}
+.snapshotButton span{font-size:14px;font-weight:800}
+.snapshotButton small{font-size:10px;line-height:1.45;color:#5e7365}
+.factorBody{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0;padding:9px}
+.factorBody>.metricIntro{font-size:11px;line-height:1.35;color:#345642}
+.metric{border:1px solid #bfd7c8;border-radius:7px;background:#fff;min-width:0}
+.metricSummary{min-height:45px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:8px;list-style:none;cursor:pointer;padding:8px 9px;touch-action:manipulation}
+.metricSummary::-webkit-details-marker{display:none}
+.metricSummary::marker{content:""}
+.metricSummary>span:first-child{display:flex;flex-direction:column;gap:4px;min-width:0}
+.metricSummary strong{font-size:11px;color:#24523b;line-height:1.35}
+.metricSummary small{font-size:10px;color:#64776b;line-height:1.35}
+.metricChevron{font-size:16px;flex:0 0 auto;color:#23734a}
+.metric[open]{display:flex;align-items:stretch;border:2px solid #23764c;background:#f2faf4}
+.metric[open]>.metricSummary{flex:0 0 172px;width:172px;min-height:90px;border-right:1px solid #bfdbcb;background:#e7f4ec}
+.metric[open]>.metricSummary .metricChevron{transform:rotate(90deg)}
+.metricBody{box-sizing:border-box;display:flex;flex-direction:column;gap:9px;flex:1;min-width:0;max-height:68vh;overflow-y:auto;overscroll-behavior:contain;padding:10px 11px;background:#fff;color:#264d36;font-size:11px;line-height:1.5}
+.metricStatus{display:flex;flex-direction:column;gap:3px;padding:8px;background:#edf7f0;border:1px solid #c9dfd0;border-radius:6px}
+.metricStatus strong{font-size:12px}
+.metricStatus span{color:#57715e}
+.requirement{display:flex;flex-direction:column;gap:3px;border-bottom:1px solid #e4ece6;padding-bottom:7px}
+.requirement strong,.metricEvidence>strong{font-size:11px;color:#234b34}
+.requirement p,.metricEvidence p{font-size:11px;line-height:1.5;margin:0;color:#496151}
+.metricEvidence{display:flex;flex-direction:column;gap:7px;padding:8px;border:1px solid #ccdcd1;border-radius:6px;background:#f9fcfa}
+.evidenceItem{border-top:1px solid #dbe8de;padding-top:7px;display:flex;flex-direction:column;gap:3px}
+.evidenceItem span{overflow-wrap:anywhere}
+.evidenceItem a{font-size:11px;color:#146944;text-decoration:underline;font-weight:750}
+.metricEvidence .evidenceCaution{font-size:10px;color:#6d6046}
+.anchorDetails{border:1px solid #d4ded7;border-radius:6px;padding:7px;background:#fbfcfb}
+.anchorDetails>summary{cursor:pointer;font-size:11px;font-weight:800;color:#29563d}
+.anchorDetails>div{display:flex;flex-direction:column;gap:7px;margin:8px 0}
+.anchorDetails p{font-size:10px;line-height:1.5;margin:0}
+.metricSummary:focus-visible,.anchorDetails>summary:focus-visible{outline:3px solid #206baf;outline-offset:1px}
+@media(max-width:640px){.raas[open]{width:1030px}.metric[open]>.metricSummary{flex-basis:155px;width:155px}.metricBody{max-height:72vh}}
