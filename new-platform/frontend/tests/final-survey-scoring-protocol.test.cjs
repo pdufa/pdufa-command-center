@@ -38,13 +38,24 @@ test("unmatched records never become missing-data failure percentages or numeric
  const assessments=surveyScoringAssessments(null,false);
  assert.equal(assessments.length,20);
  for(const item of assessments){
-  assert.equal(item.gate,"NO_EXACT_RECORD");
+  assert.equal(item.gate,item.protocol.requiresPublicReadout?
+    "PUBLIC_RESULTS_UNCONFIRMED":"NO_EXACT_RECORD");
   assert.equal(item.numericalScore,null);
   assert.equal(item.verified,null);
   assert.equal(item.modeled,null);
   assert.equal(item.missing,null);
   assert.deepEqual(item.sourceLinks,[]);
  }
+});
+test("unmatched pre-release trial explicitly blocks all five outcome-dependent scientific surveys before searching for a study record",()=>{
+ const pre=surveyScoringAssessments(null,false);
+ for(const number of [3,4,5,8,9]){
+  assert.equal(pre[number-1].gate,"PUBLIC_RESULTS_UNCONFIRMED");
+  assert.equal(pre[number-1].numericalScore,null);
+  assert.equal(pre[number-1].verified,null);
+ }
+ assert.equal(pre[0].gate,"NO_EXACT_RECORD");
+ assert.match(surveyScoringGateLabel(pre[2].gate),/Public results not documented as checked/);
 });
 test("a historical pre-readout source check blocks outcomes dependent on released clinical results",()=>{
  const pre=surveyScoringAssessments(record(allFacts),false);
