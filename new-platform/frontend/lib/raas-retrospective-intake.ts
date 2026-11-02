@@ -91,7 +91,10 @@ export function parseRetrospectiveFeed(input:unknown):RetrospectiveFeed{
    r.verifiedBeforeEntry.some(e=>!day(e.date)||e.date>r.entry.date||
     !secure(e.sourceUrl)||!e.notes?.trim()))
    throw Error("RAAS_RETROSPECTIVE_SOURCE_INVALID");
+  // A "pre-decision exit" must not quietly include a completed FDA action,
+  // even when that action happened earlier than the announced PDUFA target.
   if(!day(r.realizedFDAAction.date)||
+   r.exit.date>=r.realizedFDAAction.date||
    r.realizedFDAAction.date<r.entry.date||
    r.realizedFDAAction.date>f.sourceAsOf||
    r.realizedFDAAction.isPostEntryKnowledge!==true||
