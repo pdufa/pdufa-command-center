@@ -11,6 +11,7 @@ import shareBridgeResearch from "../../data/raas-share-bridge-research.json";
 import priceCrosscheckResearch from "../../data/raas-price-crosschecks.json";
 import corporateActionResearch from "../../data/raas-corporate-actions-research.json";
 import fdaPrimaryOutcomeData from "../../data/raas-fda-primary-outcomes.json";
+import prospectiveSourceData from "../../data/raas-prospective-source-baselines.json";
 import {parseTopRetrospective} from "../../lib/raas-top-retrospective-intake";
 import {parseRetrospectiveFeed} from "../../lib/raas-retrospective-intake";
 import {buildHistoricalResearchAudit,summarizeHistoricalResearch,type HistoricalAuditCase} from "../../lib/raas-history-audit";
@@ -20,6 +21,7 @@ import {parseShareBridge,bridgeForCase,bridgeSummary} from "../../lib/raas-share
 import {parsePriceCrosschecks,priceAuditForCase,priceAuditSummary} from "../../lib/raas-price-crosschecks";
 import {parseCorporateActions,corporateActionsForCase,corporateActionSummary} from "../../lib/raas-corporate-action-audit";
 import {parseFdaPrimaryOutcomes,fdaPrimaryOutcomeForCase,fdaPrimaryOutcomeSummary} from "../../lib/raas-fda-primary-outcomes";
+import {parseProspectiveSourceBaselines,prospectiveSourceSummary} from "../../lib/raas-prospective-source-baselines";
 import RaasHistoricalWhatIf from "./RaasHistoricalWhatIf";
 import css from "./page.module.css";
 
@@ -43,6 +45,8 @@ const actionFeed=parseCorporateActions(corporateActionResearch);
 const actionSummary=corporateActionSummary(actionFeed,pre,post);
 const fdaPrimary=parseFdaPrimaryOutcomes(fdaPrimaryOutcomeData,post);
 const fdaPrimarySummary=fdaPrimaryOutcomeSummary(fdaPrimary,post);
+const prospective=parseProspectiveSourceBaselines(prospectiveSourceData);
+const prospectiveSummary=prospectiveSourceSummary(prospective);
 const scenarioInputs=[
  ...pre.records.map(x=>({id:x.id,ticker:x.ticker,stage:"pre" as const,entryPrice:x.entry.close,exitPrice:x.exit.close})),
  ...post.records.map(x=>({id:x.id,ticker:x.ticker,stage:"post" as const,entryPrice:x.entry.close,exitPrice:x.exit.close}))
@@ -212,9 +216,10 @@ export default function RaasHistoricalAuditPage(){
    <header className={css.header}>
      <Link className={css.back} href="/tools">← Back to Tools</Link>
      <h1>RAAS · Historical Evidence Audit</h1>
-     <p>One place to inspect historic research windows, verify their sources, and identify why they cannot yet support qualified TOP or BOTTOM investment scores.</p>
+     <p>Inspect pre-readout evidence captured prospectively, historical research windows, and why neither yet supports approved TOP or BOTTOM investment scores.</p>
    </header>
    <div className={css.stats}>
+     <div><strong>{prospectiveSummary.baselines}</strong><span>Pre-readout source baselines recorded · not numerical ratings</span></div>
      <div><strong>{summary.topExamples}</strong><span>TOP research windows</span></div>
      <div><strong>{summary.bottomExamples}</strong><span>BOTTOM research windows</span></div>
      <div><strong>{summary.eligiblePredictions}</strong><span>Eligible original predictions · unvalidated historical cases excluded</span></div>
@@ -223,6 +228,47 @@ export default function RaasHistoricalAuditPage(){
      <div><strong>{sharesSummary.separatelyReportedCapMatches}/{sharesSummary.caseCount}</strong><span>Vendor cap cross-checks match · prices unverified</span></div>
    </div>
    <p className={css.disclaimer}>Five historical FDA actions are now separately cross-checked against primary FDA sources. These occurred after the selected historical exits and do not increase the count of valid backtested RAAS predictions. Corporate actions: {actionSummary.withPartialActionHistory} of {actionSummary.cases} study windows have some historical event evidence, but 0 have a completed corporate-action adjustment audit. Independent-provider research: {priceSummary.matchedPoints} of {priceSummary.quotedPoints} exact-date displayed historical closes agree; {priceSummary.bothClosesMatchedCases} of {priceSummary.caseCount} trade windows have both dates matched. Adjusted-return audits and approved predictions remain at zero. All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
+   <section className={css.section} aria-labelledby="raas-prospective-sources">
+     <div className={css.sectionTitle}>
+       <h2 id="raas-prospective-sources">Prospective TOP · pre-readout evidence captured</h2>
+       <span>{prospectiveSummary.baselines} source baseline · {prospectiveSummary.recordedSourceFacts} dated issuer facts · 0 predictions</span>
+     </div>
+     <p className={css.disclaimer}>These source observations were recorded on {prospective.sourceAsOf} while the corresponding pivotal readout was still expected in the future. Git commit history provides an inspectable capture trail, not cryptographic timestamp notarization. No original 0–100 RAAS grade, entry execution price or expected return has been recorded. Source facts here cannot be backfilled as historic investment forecasts.</p>
+     <div className={css.cases}>
+       {prospective.records.map(record=><details className={css.case} data-prospective-baseline={record.id} key={record.id}>
+         <summary className={css.caseHead}>
+           <span className={css.identity}><strong>{record.ticker} · {record.drug}</strong><span>{record.indication}</span><small>{record.nctId} · Phase 3 before readout</small></span>
+           <span className={css.numbers}><strong>{record.observations.length} sourced facts</strong><small>Not graded</small></span>
+           <span className={css.window}><strong>Recorded {record.capturedOn}</strong><small>Outcome still pending at capture</small></span>
+           <span className={css.review}><strong>RAAS — / 100</strong><small>No archived score or trade</small></span>
+           <span className={css.arrow} aria-hidden="true">▸</span>
+         </summary>
+         <div className={css.details}>
+           <p className={css.notice}><strong>Prospective research record, not a trading signal.</strong> The issuer and trial identity can be checked against <a href={"https://clinicaltrials.gov/study/"+record.nctId} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov</a>. The planned readout has not been recorded as completed. Recorded source evidence does not yet meet the 60 historically validated metric-calibration requirements.</p>
+           <div className={css.facts}>
+             <div><span>Historical price-filter reference</span><strong>${record.marketCap.usdMillions.toLocaleString("en-US")}M market cap · {record.marketCap.observedAsOf}</strong></div>
+             <div><span>Market capitalization verification</span><strong>Vendor reported · fully diluted share/corporate-action audit incomplete</strong></div>
+             <div><span>Original RAAS forecast</span><strong>None · no precommitted numeric score or return</strong></div>
+             <div><span>Stage</span><strong>TOP · Phase 3 before results</strong></div>
+           </div>
+           <p className={css.foot}><a href={record.marketCap.sourceUrl} target="_blank" rel="noopener noreferrer">Review dated market-cap reference</a> — {record.marketCap.note}</p>
+           <details className={css.check} data-prospective-facts={record.id}>
+             <summary><span className={css.indicator}>◌</span><strong>{record.observations.length} point-in-time clinical and financial source facts</strong><span className={css.status}>Expand sources · no ratings assigned</span></summary>
+             <div className={css.checkBody}>
+               {record.observations.map(fact=><div key={fact.id} className={css.sourceFact}>
+                 <strong>{fact.kind.replaceAll("_"," ")} · {fact.observedAsOf}</strong>
+                 <p>{fact.valueText}</p>
+                 <p>Source first published {fact.sourcePublishedAt}; candidate RAAS metric(s): {fact.metricIds.join(", ")}.</p>
+                 <p className={css.factCaution}>{fact.limitation}</p>
+                 <a href={fact.sourceUrl} target="_blank" rel="noopener noreferrer">Read contemporaneous issuer source</a>
+               </div>)}
+             </div>
+           </details>
+           <p className={css.foot}>Inspect the <a href="https://github.com/pdufa/pdufa-command-center/commits/main/new-platform/frontend/data/raas-prospective-source-baselines.json" target="_blank" rel="noopener noreferrer">repository record and commit history</a>. Neither independent scientific grading nor the 30/30 holdout validation is complete.</p>
+         </div>
+       </details>)}
+     </div>
+   </section>
    <section className={css.section} aria-labelledby="raas-history-top">
      <div className={css.sectionTitle}><h2 id="raas-history-top">TOP · 3 — before public Phase 3 results</h2><span>{top.length} examples · not validated</span></div>
      <div className={css.cases}>{top.map(x=><CaseRow key={x.id} entry={x}/>)}</div>
