@@ -8,7 +8,9 @@ import {
   type PostingFilters,type PostingSort,type PostingSortKey
 } from "../lib/phase3-registry-posting-filters";
 import {TOOLS_RATING_GROUPS,type ToolsRatingGroupKey} from "../lib/tools-rating-groups";
-import {postingRatingAudit,type PostingRatingCell} from "../lib/phase3-posting-rating-audit";
+import {postingRatingAudit,type PostingRatingCell,type PostingRatingAudit} from "../lib/phase3-posting-rating-audit";
+import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
+import {surveyMissingnessForPosting} from "../lib/phase3-survey-missingness";
 import {applyColumnFilters,activeColumnFilters,type ColumnFilterState} from "./TrialColumnFilterBar";
 import css from "./Phase3RegistryPostingSheets.module.css";
 
@@ -35,7 +37,8 @@ function safeCsvCell(value:string|number){
   const safe=/^[\s]*[=+@-]/.test(raw)?"'"+raw:raw;
   return '"'+safe.replace(/"/g,'""')+'"';
 }
-function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:string){
+function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:string,
+  audits:ReadonlyMap<string,PostingRatingAudit>){
   const headings=["Ticker","NCT trial","Company","Registry trial status",
     "Registry results posted","Results first-posted date","Registry classification","Registry checked on","ClinicalTrials.gov source",
     ...RATING_GROUPS.flatMap(g=>[g.key+" "+g.name,...g.ingredients.map(f=>g.key+" "+f.key+" "+f.name)])];
@@ -45,7 +48,7 @@ function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:str
     kind==="before"?"NO_REGISTRY_RESULTS_POSTED":"REGISTRY_RESULTS_POSTED",
     snapshotDate,row.sourceUrl,
     ...RATING_GROUPS.flatMap(group=>{
-      const audit=postingRatingAudit(row);
+      const audit=audits.get(row.nctId)||postingRatingAudit(row);
       return [audit.group[group.key].label,...group.ingredients.map(x=>audit.ingredient[x.key].label)];
     })
   ]);
@@ -57,8 +60,9 @@ function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:str
   document.body.appendChild(a);a.click();a.remove();
   window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function TrialSection({kind,rows,query,snapshotDate}:{
-  kind:Kind;rows:readonly RegistryPostingRow[];query:string;snapshotDate:string
+function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavailable}:{
+  kind:Kind;rows:readonly RegistryPostingRow[];query:string;snapshotDate:string;
+  surveyFeed:BenefitFeed|null;surveyFeedUnavailable:boolean;
 }){
   const [page,setPage]=useState(0);
   const [filters,setFilters]=useState<PostingFilters>({...EMPTY_POSTING_FILTERS});
@@ -69,16 +73,18 @@ function TrialSection({kind,rows,query,snapshotDate}:{
   const label=before?"Before":"Past";
   const tickers=useMemo(()=>[...new Set(rows.map(r=>r.ticker))].sort((a,b)=>a.localeCompare(b)),[rows]);
   const statuses=useMemo(()=>[...new Set(rows.map(r=>r.registryStatus))].sort((a,b)=>a.localeCompare(b)),[rows]);
+  const audits=useMemo(()=>new Map(rows.map(row=>[row.nctId,
+    postingRatingAudit(row,surveyMissingnessForPosting(row,surveyFeed))] as const)),[rows,surveyFeed]);
   const basicFiltered=useMemo(()=>filterAndSortPostingRows(rows,query,filters,sort),[rows,query,filters,sort]);
   const filtered=useMemo(()=>applyColumnFilters(basicFiltered,ratingFilters,(row,key)=>{
-    const audit=postingRatingAudit(row);
+    const audit=audits.get(row.nctId)||postingRatingAudit(row);
     if(key.startsWith("group:"))return audit.group[key.slice(6) as ToolsRatingGroupKey]?.label||"";
     if(key.startsWith("ingredient:")){
       const value=Object.entries(audit.ingredient).find(([name])=>name===key.slice(11));
       return value?.[1].label||"";
     }
     return "";
-  }),[basicFiltered,ratingFilters]);
+  }),[basicFiltered,ratingFilters,audits]);
   const filtersActive=postingFilterCount(filters)+activeColumnFilters(ratingFilters);
   const extraColumns=ratingColumnCount(expandedRatings);
   const toggleRating=(key:ToolsRatingGroupKey)=>setExpandedRatings(current=>
@@ -129,13 +135,16 @@ function TrialSection({kind,rows,query,snapshotDate}:{
           Clear column filters
         </button>
         <button type="button" disabled={!filtered.length}
-          onClick={()=>exportCsv(kind,filtered,snapshotDate)}>
+          onClick={()=>exportCsv(kind,filtered,snapshotDate,audits)}>
           Export {fmt(filtered.length)} matching CSV
         </button>
       </div>
     </div>
     <p className={css.filterHelp}>Filter each column below its heading, or tap a heading to sort.
-      Filters apply together with the search above. Each spreadsheet has its own filters.</p>
+      Filters apply together with the search above. Each spreadsheet has its own filters.
+      <strong> M shows the missing percentage of the 38 scientific survey inputs only for
+      exact matched research records.</strong> Unmatched trials display Not assessed, not an invented 100% missing.
+      {surveyFeedUnavailable?" The source research feed is unavailable; percentages cannot be verified.":""}</p>
     <div className={css.ratingToolbar} role="group" aria-label={label+" M–E rating controls"}>
       <strong>M · A · B · C · D · E</strong>
       <span>Tap a rating heading to expand its supporting ingredients <strong>to the right</strong>.
@@ -237,7 +246,7 @@ function TrialSection({kind,rows,query,snapshotDate}:{
           <td><strong>{row.ticker}</strong></td>
           <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
           {RATING_GROUPS.map(group=>{
-            const audit=postingRatingAudit(row);
+            const audit=audits.get(row.nctId)||postingRatingAudit(row);
             const open=expandedRatings.includes(group.key);
             return <Fragment key={group.key}>
               <td data-rating-group={group.key}
@@ -274,6 +283,8 @@ export default function Phase3RegistryPostingSheets(){
   const [data,setData]=useState<RegistryPostingSnapshot|null>(null);
   const [error,setError]=useState("");
   const [query,setQuery]=useState("");
+  const [surveyFeed,setSurveyFeed]=useState<BenefitFeed|null>(null);
+  const [surveyFeedUnavailable,setSurveyFeedUnavailable]=useState(false);
   useEffect(()=>{
     const ctrl=new AbortController();
     void fetch("/phase3-registry-postings-current.json",{cache:"no-store",signal:ctrl.signal})
@@ -287,6 +298,17 @@ export default function Phase3RegistryPostingSheets(){
       })
       .then(snapshot=>{if(!ctrl.signal.aborted)setData(snapshot)})
       .catch(()=>{if(!ctrl.signal.aborted)setError("The saved Phase 3 results-posting snapshot could not be verified. Counts are unavailable.")});
+    return ()=>ctrl.abort();
+  },[]);
+  useEffect(()=>{
+    const ctrl=new AbortController();
+    void fetch("/api/benefit-assessments",{cache:"no-store",signal:ctrl.signal})
+      .then(async response=>{
+        if(!response.ok)throw Error("Research feed unavailable");
+        return parseBenefitFeed(await response.json());
+      })
+      .then(feed=>{if(!ctrl.signal.aborted){setSurveyFeed(feed);setSurveyFeedUnavailable(false);}})
+      .catch(()=>{if(!ctrl.signal.aborted)setSurveyFeedUnavailable(true)});
     return ()=>ctrl.abort();
   },[]);
   return <section className={css.root} id="tools-phase3-registry-tables" aria-label="Phase 3 studies separated by whether registry results are posted">
@@ -309,8 +331,10 @@ export default function Phase3RegistryPostingSheets(){
           <button type="button" onClick={()=>setQuery("")} disabled={!query}>Clear</button>
         </div>
       </div>
-      <TrialSection key="before" kind="before" rows={data.before} query={query} snapshotDate={data.date}/>
-      <TrialSection key="after" kind="after" rows={data.after} query={query} snapshotDate={data.date}/>
+      <TrialSection key="before" kind="before" rows={data.before} query={query} snapshotDate={data.date}
+        surveyFeed={surveyFeed} surveyFeedUnavailable={surveyFeedUnavailable}/>
+      <TrialSection key="after" kind="after" rows={data.after} query={query} snapshotDate={data.date}
+        surveyFeed={surveyFeed} surveyFeedUnavailable={surveyFeedUnavailable}/>
       <p className={css.source}>Registry posting snapshot dated <strong>{data.date}</strong> · {data.fresh?"Automatic exact-NCT ClinicalTrials.gov refresh":"Historical static baseline; refresh pending"}. Source census: {data.sourceFile}. Each row links to its NCT source. The displayed registry status comes from the saved dated census, not a verified current FDA qualification. Page reload retrieves the latest successful snapshot.</p>
     </>}
   </section>;
