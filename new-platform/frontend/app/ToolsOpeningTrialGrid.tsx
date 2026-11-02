@@ -11,6 +11,7 @@ import {parseBenefitFeed,benefitForTrial,type BenefitFeed,type BenefitFact} from
 import {competitiveReadiness,type CompetitivePopulationScan}
   from "../lib/tools-competitive-readiness";
 import {auditTrialRatings,type RatingAuditCell} from "../lib/tools-rating-engine";
+import type {RegistryCoverage} from "../lib/registry-benefit-coverage";
 type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
   inventoryMode:boolean;loading:boolean;error:string;
@@ -76,6 +77,8 @@ export default function ToolsOpeningTrialGrid({
   const [competitiveOpen,setCompetitiveOpen]=useState(false);
   const [competitionEvidence,setCompetitionEvidence]=useState<BenefitFeed|null>(null);
   const [competitionError,setCompetitionError]=useState(false);
+  const [registryCoverage,setRegistryCoverage]=useState<RegistryCoverage|null>(null);
+  const [registryUnavailable,setRegistryUnavailable]=useState(false);
   const [selectionsRestored,setSelectionsRestored]=useState(false);
   useEffect(()=>{
     const raw=readToolsPreference(TOOLS_RATINGS_STORAGE_KEY);
@@ -108,6 +111,28 @@ export default function ToolsOpeningTrialGrid({
       .catch(()=>{if(!controller.signal.aborted){setCompetitionEvidence(null);setCompetitionError(true);}});
     return ()=>controller.abort();
   },[selectedStages,selectedDesignations]);
+  useEffect(()=>{
+    if(selectedStages+selectedDesignations===0){
+      setRegistryCoverage(null);setRegistryUnavailable(false);return;
+    }
+    const controller=new AbortController();
+    setRegistryUnavailable(false);
+    void fetch("/api/registry-benefit-coverage",{cache:"no-store",signal:controller.signal})
+      .then(async response=>{
+        if(!response.ok)throw Error("REGISTRY_SOURCE_UNAVAILABLE");
+        const payload=await response.json() as RegistryCoverage;
+        if(payload.schemaVersion!==1||!Array.isArray(payload.records)
+          ||!Number.isSafeInteger(payload.scanned)||!Number.isSafeInteger(payload.postedResults))
+          throw Error("REGISTRY_SOURCE_INVALID");
+        return payload;
+      })
+      .then(data=>{if(!controller.signal.aborted)setRegistryCoverage(data);})
+      .catch(()=>{if(!controller.signal.aborted){setRegistryCoverage(null);setRegistryUnavailable(true);}});
+    return ()=>controller.abort();
+  },[selectedStages,selectedDesignations]);
+  const registryByNct=useMemo(()=>
+    new Map(registryCoverage?.records.map(record=>[record.nctId,record])||[]),
+    [registryCoverage]);
   useEffect(()=>{
     if(typeof window==="undefined")return;
     const clear=()=>{setExpandedRatings([]);setCompetitiveOpen(false);};
@@ -230,7 +255,8 @@ export default function ToolsOpeningTrialGrid({
           </td></tr>
           :ordered.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);
             const readiness=competitiveReadiness(row,today,competitionEvidence);
-            const audit=auditTrialRatings(row,today,competitionEvidence,competitionError);
+            const audit=auditTrialRatings(row,today,competitionEvidence,competitionError,
+              registryByNct.get(row.nctId)||null);
             const statusLabel=readiness.status==="NO_VERIFIED_PUBLIC_READOUT"
               ?"Readout not verified":readiness.status==="PDUFA_DATE_UNVERIFIED"
               ?"PDUFA unverified":readiness.status==="PDUFA_CUTOFF_REACHED"
@@ -356,11 +382,18 @@ export default function ToolsOpeningTrialGrid({
       Tap any rating heading to expand its ingredient columns <strong>to the right</strong> inside one outline.
       <button type="button" onClick={()=>setExpandedRatings(RATING_GROUPS.map(g=>g.key))}>Expand all ratings</button>
       <button type="button" onClick={()=>setExpandedRatings([])}>Collapse all ratings</button>
-      <span><strong>Research inputs are now connected:</strong> M counts sourced/modeled/missing inputs;
+      <span><strong>Research inputs are now connected:</strong> ClinicalTrials.gov primary outcome
+        measurements and serious-adverse-event records are shown for exact-matched NCTs when
+        the source archive is current; neither is proof of superiority. M counts sourced/modeled/missing inputs;
         A reports evidence and date-gate readiness; B/C/D show supporting evidence coverage where available.
         These are not efficacy, approval-probability, competitive superiority or stock-return scores.
         E's appreciation/grade remains N/A until the ranking method has been validated.
         N/A does not mean zero.</span>
+      {registryCoverage&&<span>Registry primary-source archive: {registryCoverage.postedResults} of
+        {registryCoverage.scanned} historical trials have posted results;
+        these are not all qualified post–Phase 3 stock candidates.</span>}
+      {registryUnavailable&&<span role="status">Registry evidence archive unavailable or stale;
+        clinical inputs remain unscored until reverified.</span>}
       {competitionError&&<span role="alert">Research evidence feed unavailable; no unverified result is scored.</span>}
     </div>
     <div className={css.footer}>
