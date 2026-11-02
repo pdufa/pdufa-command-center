@@ -3,6 +3,10 @@ import {useEffect,useMemo,useState} from "react";
 import {
   parseRegistryPostingSnapshot,type RegistryPostingRow,type RegistryPostingSnapshot
 } from "../lib/phase3-registry-posting";
+import {
+  EMPTY_POSTING_FILTERS,INITIAL_POSTING_SORT,filterAndSortPostingRows,postingFilterCount,
+  type PostingFilters,type PostingSort,type PostingSortKey
+} from "../lib/phase3-registry-posting-filters";
 import css from "./Phase3RegistryPostingSheets.module.css";
 
 const PAGE_SIZE=50;
@@ -30,19 +34,42 @@ function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:str
   document.body.appendChild(a);a.click();a.remove();
   window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function TrialSection({kind,rows,query,snapshotDate}:{kind:Kind;rows:readonly RegistryPostingRow[];query:string;snapshotDate:string}){
+function TrialSection({kind,rows,query,snapshotDate}:{
+  kind:Kind;rows:readonly RegistryPostingRow[];query:string;snapshotDate:string
+}){
   const [page,setPage]=useState(0);
-  const searched=useMemo(()=>{
-    const q=query.trim().toLowerCase();
-    return !q?rows:rows.filter(row=>
-      [row.nctId,row.ticker,row.company,row.registryStatus]
-        .some(value=>value.toLowerCase().includes(q)));
-  },[rows,query]);
-  const pages=Math.ceil(searched.length/PAGE_SIZE);
-  const active=Math.min(page,Math.max(pages-1,0));
-  const pageRows=searched.slice(active*PAGE_SIZE,(active+1)*PAGE_SIZE);
+  const [filters,setFilters]=useState<PostingFilters>({...EMPTY_POSTING_FILTERS});
+  const [sort,setSort]=useState<PostingSort>({...INITIAL_POSTING_SORT});
   const before=kind==="before";
-  return <section className={css.sheet} aria-label={before?"Top unposted registry results trial spreadsheet":"Bottom posted registry results trial spreadsheet"}>
+  const label=before?"Before":"Past";
+  const tickers=useMemo(()=>[...new Set(rows.map(r=>r.ticker))].sort((a,b)=>a.localeCompare(b)),[rows]);
+  const statuses=useMemo(()=>[...new Set(rows.map(r=>r.registryStatus))].sort((a,b)=>a.localeCompare(b)),[rows]);
+  const filtered=useMemo(()=>filterAndSortPostingRows(rows,query,filters,sort),[rows,query,filters,sort]);
+  const filtersActive=postingFilterCount(filters);
+  const pages=Math.ceil(filtered.length/PAGE_SIZE);
+  const active=Math.min(page,Math.max(pages-1,0));
+  const pageRows=filtered.slice(active*PAGE_SIZE,(active+1)*PAGE_SIZE);
+  useEffect(()=>{setPage(0);},[query]);
+  const changeFilter=(next:Partial<PostingFilters>)=>{
+    setFilters(prev=>({...prev,...next}));setPage(0);
+  };
+  const resetFilters=()=>{setFilters({...EMPTY_POSTING_FILTERS});setSort({...INITIAL_POSTING_SORT});setPage(0);};
+  const changeSort=(key:PostingSortKey)=>{
+    setSort(prev=>({key,direction:prev.key===key&&prev.direction==="asc"?"desc":"asc"}));
+    setPage(0);
+  };
+  const sorting=(key:PostingSortKey)=>
+    sort.key!==key?"none":sort.direction==="asc"?"ascending":"descending";
+  const sortable=(key:PostingSortKey,caption:string)=><button type="button"
+    className={css.sortButton} onClick={()=>changeSort(key)}
+    aria-label={"Sort "+label+" by "+caption+", "+(sort.key===key?sort.direction:"not sorted")}
+    title={"Sort by "+caption}>
+    {caption} <span className={css.sortIcon} aria-hidden="true">
+      {sort.key!==key?"↕":sort.direction==="asc"?"↑":"↓"}
+    </span>
+  </button>;
+  return <section className={css.sheet} aria-label={before?
+      "Top unposted registry results trial spreadsheet":"Bottom posted registry results trial spreadsheet"}>
     <div className={css.sheetHeader}>
       <div>
         <h3>{before?"TOP · REGISTRY RESULTS NOT POSTED":"BOTTOM · REGISTRY RESULTS POSTED"}</h3>
@@ -52,16 +79,69 @@ function TrialSection({kind,rows,query,snapshotDate}:{kind:Kind;rows:readonly Re
             "Registry results are public, but this does not establish the issuer announcement date."}</p>
       </div>
       <div className={css.sheetActions}>
-        <strong>{fmt(rows.length)} trials{query?" · "+fmt(searched.length)+" matching":""}</strong>
-        <button type="button" onClick={()=>exportCsv(kind,searched,snapshotDate)}>Export all CSV</button>
+        <strong aria-live="polite">{fmt(rows.length)} total{query||filtersActive?
+          " · "+fmt(filtered.length)+" matching":""}</strong>
+        <button type="button" className={css.clearFilters} onClick={resetFilters}
+          disabled={!filtersActive&&sort.key==="ticker"&&sort.direction==="asc"}>
+          Clear column filters
+        </button>
+        <button type="button" disabled={!filtered.length}
+          onClick={()=>exportCsv(kind,filtered,snapshotDate)}>
+          Export {fmt(filtered.length)} matching CSV
+        </button>
       </div>
     </div>
-    <div className={css.scroll} tabIndex={0} role="region" aria-label={before?"No registry results posted table":"Registry results posted table"}>
+    <p className={css.filterHelp}>Filter each column below its heading, or tap a heading to sort.
+      Filters apply together with the search above. Each spreadsheet has its own filters.</p>
+    <div className={css.scroll} tabIndex={0} role="region"
+      aria-label={before?"No registry results posted table":"Registry results posted table"}>
       <table>
         <thead>
-          <tr><th>#</th><th>Ticker</th><th>NCT / Trial</th><th>Company</th>
-            <th>Registry status</th><th>Results posted?</th><th>First posted</th>
-            <th>Source (NCT)</th><th>Issuer announcement</th></tr>
+          <tr className={css.headingRow}>
+            <th scope="col">#</th>
+            <th scope="col" aria-sort={sorting("ticker")}>{sortable("ticker","Ticker")}</th>
+            <th scope="col" aria-sort={sorting("nctId")}>{sortable("nctId","NCT / Trial")}</th>
+            <th scope="col" aria-sort={sorting("company")}>{sortable("company","Company")}</th>
+            <th scope="col" aria-sort={sorting("registryStatus")}>{sortable("registryStatus","Registry status")}</th>
+            <th scope="col" aria-sort={sorting("resultsCount")}>{sortable("resultsCount","Results posted?")}</th>
+            <th scope="col" aria-sort={sorting("resultsFirstPostedDate")}>{sortable("resultsFirstPostedDate","First posted")}</th>
+            <th scope="col">Source (NCT)</th>
+            <th scope="col">Issuer announcement</th>
+          </tr>
+          <tr className={css.filterRow}>
+            <th scope="col"><span className={css.filterPlaceholder}>Filters</span></th>
+            <th scope="col"><select aria-label={label+" filter ticker"} value={filters.ticker}
+              onChange={e=>changeFilter({ticker:e.target.value})}>
+              <option value="">All tickers</option>
+              {tickers.map(ticker=><option value={ticker} key={ticker}>{ticker}</option>)}
+            </select></th>
+            <th scope="col"><input type="search" aria-label={label+" filter NCT"} placeholder="Find NCT"
+              value={filters.nctId} onChange={e=>changeFilter({nctId:e.target.value})} maxLength={40}/></th>
+            <th scope="col"><input type="search" aria-label={label+" filter company"} placeholder="Find company"
+              value={filters.company} onChange={e=>changeFilter({company:e.target.value})} maxLength={120}/></th>
+            <th scope="col"><select aria-label={label+" filter registry status"} value={filters.registryStatus}
+              onChange={e=>changeFilter({registryStatus:e.target.value})}>
+              <option value="">All statuses</option>
+              {statuses.map(status=><option value={status} key={status}>{status.replaceAll("_"," ")}</option>)}
+            </select></th>
+            <th scope="col"><select aria-label={label+" filter results posted"} value={filters.resultsPosted}
+              onChange={e=>changeFilter({resultsPosted:e.target.value as PostingFilters["resultsPosted"]})}>
+              <option value="all">All</option><option value="yes">Yes</option><option value="no">No</option>
+            </select></th>
+            <th scope="col"><div className={css.dateFilters}>
+              <select aria-label={label+" filter first-posted date availability"} value={filters.datePresence}
+                onChange={e=>changeFilter({datePresence:e.target.value as PostingFilters["datePresence"]})}>
+                <option value="all">Any date</option><option value="dated">Date recorded</option>
+                <option value="undated">No date</option>
+              </select>
+              <input type="date" aria-label={label+" first-posted from"} value={filters.from}
+                max={filters.to||undefined} onChange={e=>changeFilter({from:e.target.value})}/>
+              <input type="date" aria-label={label+" first-posted through"} value={filters.to}
+                min={filters.from||undefined} onChange={e=>changeFilter({to:e.target.value})}/>
+            </div></th>
+            <th scope="col"><span className={css.filterPlaceholder}>Linked to NCT</span></th>
+            <th scope="col"><span className={css.filterPlaceholder}>Unclassified</span></th>
+          </tr>
         </thead>
         <tbody>{pageRows.length?pageRows.map((row,index)=><tr key={row.nctId}>
           <td>{active*PAGE_SIZE+index+1}</td>
@@ -73,11 +153,12 @@ function TrialSection({kind,rows,query,snapshotDate}:{kind:Kind;rows:readonly Re
           <td>{row.resultsFirstPostedDate||(row.resultsCount>0?"Legacy scan: date unavailable":"Not posted")}</td>
           <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov</a></td>
           <td>Not classified by this scan</td>
-        </tr>):<tr><td colSpan={9} className={css.empty}>No records match this search.</td></tr>}</tbody>
+        </tr>):<tr><td colSpan={9} className={css.empty}>No trials match these column filters or the overall search.</td></tr>}</tbody>
       </table>
     </div>
     <div className={css.pager}>
-      <span>{searched.length?"Showing "+fmt(active*PAGE_SIZE+1)+"–"+fmt(active*PAGE_SIZE+pageRows.length):"Showing 0"} of {fmt(searched.length)} trials · Page {pages?active+1:0} of {pages}</span>
+      <span>{filtered.length?"Showing "+fmt(active*PAGE_SIZE+1)+"–"+fmt(active*PAGE_SIZE+pageRows.length):"Showing 0"} of {fmt(filtered.length)} matching / {fmt(rows.length)} total trials · Page {pages?active+1:0} of {pages}
+        {filtersActive?" · "+filtersActive+" active column filter"+(filtersActive===1?"":"s"):""}</span>
       <div>
         <button type="button" disabled={active===0} onClick={()=>setPage(Math.max(0,active-1))}>Previous</button>
         <button type="button" disabled={pages===0||active>=pages-1} onClick={()=>setPage(active+1)}>Next</button>
@@ -118,14 +199,14 @@ export default function Phase3RegistryPostingSheets(){
       </div>
       <p className={css.warning}><strong>Important:</strong> These are ClinicalTrials.gov <em>results-posting</em> categories, <strong>not</strong> verified company-announcement pre-release versus post-release totals. A company may announce before posting registry results. Historical, completed, terminated and withdrawn NCTs are retained. {data.fresh?"The latest complete, exact-NCT registry refresh covers "+fmt(data.total)+" trials; issuer-cap membership remains tied to the dated underlying census.":"Showing the October 18 historical 730-trial baseline (404/326), which differs from the newer 741-trial census. Automatic source refresh has not yet published; do not interpret these counts as current."}</p>
       <div className={css.search}>
-        <label htmlFor="phase3-postings-query">Search both spreadsheets by ticker, NCT, company or registry status</label>
+        <label htmlFor="phase3-postings-query">Search both spreadsheets by ticker, NCT, company, date or registry status</label>
         <div><input id="phase3-postings-query" type="search" value={query}
           onChange={event=>setQuery(event.target.value)} placeholder="Search trials…" maxLength={100}/>
           <button type="button" onClick={()=>setQuery("")} disabled={!query}>Clear</button>
         </div>
       </div>
-      <TrialSection key={"before|"+query} kind="before" rows={data.before} query={query} snapshotDate={data.date}/>
-      <TrialSection key={"after|"+query} kind="after" rows={data.after} query={query} snapshotDate={data.date}/>
+      <TrialSection key="before" kind="before" rows={data.before} query={query} snapshotDate={data.date}/>
+      <TrialSection key="after" kind="after" rows={data.after} query={query} snapshotDate={data.date}/>
       <p className={css.source}>Registry posting snapshot dated <strong>{data.date}</strong> · {data.fresh?"Automatic exact-NCT ClinicalTrials.gov refresh":"Historical static baseline; refresh pending"}. Source census: {data.sourceFile}. Each row links to its NCT source. The displayed registry status comes from the saved dated census, not a verified current FDA qualification. Page reload retrieves the latest successful snapshot.</p>
     </>}
   </section>;
