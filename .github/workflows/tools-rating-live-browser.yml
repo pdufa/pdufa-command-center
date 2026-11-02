@@ -8,6 +8,8 @@ on:
       - 'new-platform/frontend/app/Phase3ReadoutSheets.tsx'
       - 'new-platform/frontend/app/Phase3ReadoutSheets.module.css'
       - 'new-platform/frontend/lib/final-survey-readiness.ts'
+      - 'new-platform/frontend/lib/final-survey-scoring-protocol.ts'
+      - 'new-platform/frontend/tests/final-survey-scoring-protocol.test.cjs'
       - 'new-platform/frontend/lib/phase3-survey-source.ts'
       - 'new-platform/frontend/lib/phase3-scientific-evidence-audit.ts'
       - 'new-platform/frontend/app/api/phase3-readout-survey/route.ts'
