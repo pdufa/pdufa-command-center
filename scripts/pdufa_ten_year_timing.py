@@ -26,7 +26,17 @@ def get_archive():
         return sheets
     except Exception as e:
         note("External 2017-2022 archive unavailable: "+str(e)[:300]);return {}
+def parse_archive_date(value):
+    if isinstance(value, (int,float,np.number)) and pd.notna(value) and 20000 < float(value) < 60000:
+        return pd.Timestamp("1899-12-30") + pd.Timedelta(days=float(value))
+    if pd.isna(value): return pd.NaT
+    if isinstance(value,str) and value.strip().replace(".","",1).isdigit():
+        return parse_archive_date(float(value))
+    return pd.to_datetime(value, errors="coerce")
+
 def detect(df):
+    if "TICKER" in df and "STAGE" in df and "CATALYST" in df:
+        return "TICKER", "CATALYST", "STAGE"
     cols={str(x).lower().replace("_"," ").strip():x for x in df.columns}
     def find(*words):
         for c,real in cols.items():
@@ -51,7 +61,7 @@ def get_events():
             t=str(x[tick]).upper().strip()
             # Ignore multi-ticker descriptions and empty tickers
             if not re.fullmatch(r"[A-Z]{1,6}",t):continue
-            try: day=pd.to_datetime(x[dt],errors="coerce")
+            try: day=parse_archive_date(x[dt])
             except:continue
             if pd.isna(day):continue
             kind=str(x[cat]).upper()
