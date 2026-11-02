@@ -40,6 +40,6 @@ if(process.env.GITHUB_STEP_SUMMARY){
  const lines=["## RAAS read-only evidence readiness","",...message.slice(1).map(x=>"- "+x)];
  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,lines.join("\n")+"\n");
 }
-if(s.metricsInspected!==60||report.finalScoring==="ALL_STAGES_VALIDATED"&&s.approvedMetricCalibrations!==60){
+if(s.metricsInspected!==60||report.finalScoring!=="NOT_VALIDATED"){
  throw Error("RAAS_READINESS_SCAN_INVARIANT_FAILED");
 }
