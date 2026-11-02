@@ -45,7 +45,7 @@ const RULES:readonly Omit<SurveyScoringProtocol,"number">[]=[
   comparisonRequired:"A directional superiority claim needs direct comparative effect estimates; indirect estimates require validated adjustment.",
   outcomeCriterion:"Distinguish comparability, uncertainty and clinical relevance; a competitor count is not advantage.",requiresPublicReadout:false},
  {evidenceBasis:"Route, treatment frequency, monitoring, care setting and sequence for actual eligible patients.",
-  comparisonRequired:"Use a same-indication and treatment-line alternative.",
+  comparisonRequired:"Use a comparator matched to indication, eligible patient population, and treatment line.",
   outcomeCriterion:"Describe treatment burden and adherence consequences separately from clinical efficacy.",requiresPublicReadout:false},
  {evidenceBasis:"Exposure-aligned serious adverse events, discontinuations, attribution and follow-up.",
   comparisonRequired:"Use comparable denominators and exposure; avoid ranking safety from raw percentages alone.",
