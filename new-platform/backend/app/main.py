@@ -31,7 +31,7 @@ ENGINE = create_engine(
 # A quota-blocked persistent database must not crash the web process or
 # silently fall back to ephemeral storage / assign replacement program IDs.
 _DB_STATE = {"available": False, "reason": "STARTING"}
-ALLOWED_STAGES = {"PIPELINE", "GEM_JR", "GEM"}
+ALLOWED_STAGES = {"PIPELINE"}
 TICKER_PATTERN = re.compile(r"^[A-Z0-9][A-Z0-9.-]{0,14}$")
 
 
@@ -175,6 +175,8 @@ class ChecklistPayload(BaseModel):
 def validate_location(ticker: str, stage: str) -> tuple[str, str]:
     ticker = ticker.upper()
     stage = stage.upper()
+    if stage in {"GEM_JR", "GEM"}:
+        raise HTTPException(status_code=410, detail="Retired classification no longer available")
     if not TICKER_PATTERN.fullmatch(ticker) or stage not in ALLOWED_STAGES:
         raise HTTPException(status_code=422, detail="Invalid ticker or stage")
     return ticker, stage
@@ -321,8 +323,7 @@ async def lifespan(app: FastAPI):
             from .source_workspace import workspace
             from .workspace_response import prepared
             published = prepared(workspace())
-            # Direct Pipeline-to-WT clinical trial path must work even when a
-            # trial never entered GEM JR or GEM. Read-only startup smoke check.
+            # Direct Pipeline-to-WT clinical trial path: independent of retired tiers.
             try:
                 trial = next(
                     (r for r in published.get("pipeline", [])
@@ -354,31 +355,6 @@ async def lifespan(app: FastAPI):
             except Exception as exc:
                 logging.getLogger(__name__).error("CANDIDATE_ASSESSMENTS_BOOTSTRAP error_type=%s", type(exc).__name__)
             health = published.get("sourceHealth") or {}
-            member_rows = (published.get("members", {}).get("GEM_JR", {}).get("rows", [])
-                           + published.get("members", {}).get("GEM", {}).get("rows", []))
-            verified_profiles = sum(
-                isinstance(row.get("technical"), dict)
-                and "tradeCall" in row.get("technical", {})
-                for row in member_rows
-            )
-            market_profiles = sum(
-                isinstance(row.get("technical"), dict)
-                and row.get("technical", {}).get("close") is not None
-                for row in member_rows
-            )
-            logged_charts = sum(
-                isinstance(row.get("technical"), dict)
-                and len(row["technical"].get("chartBars") or []) >= 2
-                for row in member_rows
-            )
-            logging.getLogger(__name__).warning(
-                "PDUFA_CHART_SOURCE_CHECK saved_eod_series=%d/%d same_gem_chart_source=True",
-                logged_charts, len(member_rows),
-            )
-            logging.getLogger(__name__).warning(
-                "PDUFA_TECHNICAL_CHECK profiles=%d/%d eod_profiles=%d",
-                verified_profiles, len(member_rows), market_profiles,
-            )
             exact_programs = published["pipeline"]
             same_ids = {r["id"] for r in exact_programs}
             source_parity = health.get("pipelineSourceParity", {})
@@ -399,11 +375,9 @@ async def lifespan(app: FastAPI):
                 stage_distribution.get("Unknown", 0),
             )
             logging.getLogger(__name__).warning(
-                "PDUFA_SOURCE_CHECK state=%s programs=%d gem_jr=%d gem=%d clinical_rows=%d issues=%d payload_bytes=%d",
+                "PDUFA_SOURCE_CHECK state=%s programs=%d clinical_rows=%d issues=%d payload_bytes=%d",
                 health.get("state", "UNKNOWN"),
                 len(published.get("pipeline", [])),
-                len(published.get("members", {}).get("GEM_JR", {}).get("rows", [])),
-                len(published.get("members", {}).get("GEM", {}).get("rows", [])),
                 health.get("clinicalRows", 0),
                 len(health.get("issues", [])),
                 len(__import__("json").dumps(published, separators=(",", ":"), default=str).encode("utf-8")),
@@ -662,8 +636,6 @@ def read_checklist(ticker: str, stage: str):
 @app.put("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled)])
 def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
     ticker, stage = validate_location(ticker, stage)
-    if stage != "PIPELINE":
-        raise HTTPException(status_code=410, detail="Legacy GEM JR/GEM stage writes are archived; active research uses PIPELINE")
     payload.validate_size()
     now = datetime.now(timezone.utc)
     with Session(ENGINE) as session:
@@ -730,13 +702,15 @@ def read_alpaca_chart(program_id: str, range: str = "1Y"):
 @app.get("/api/review/investment-readiness/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
-def read_program_investment_readiness(program_id: str, identity: str, stage: str = "GEM_JR"):
+def read_program_investment_readiness(program_id: str, identity: str, stage: str = "PIPELINE"):
     """Isolated research review only; no trading or scoring mutations."""
     if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in ("1", "true", "yes"):
         raise HTTPException(status_code=404, detail="Isolated review disabled")
     if not PROGRAM_ID_PATTERN.fullmatch(program_id) or not identity or len(identity) > 512:
         raise HTTPException(status_code=422, detail="Exact program identity required")
-    if stage not in ("GEM_JR", "GEM"):
+    if stage in {"GEM_JR", "GEM"}:
+        raise HTTPException(status_code=410, detail="Retired classification no longer available")
+    if stage != "PIPELINE":
         raise HTTPException(status_code=422, detail="Invalid research stage")
     with Session(ENGINE) as session:
         registered = session.get(ProgramIdentity, int(program_id[6:]))
@@ -773,13 +747,15 @@ def read_program_market_enrichment(program_id: str, range: str = "1Y"):
 @app.get("/api/review/program-decision-readiness/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
-def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
+def review_program_decision_readiness(program_id: str, stage: str = "PIPELINE"):
     """Isolated, read-only evidence readiness. No trading or preset changes."""
     if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in {"1", "true", "yes"}:
         raise HTTPException(status_code=404, detail="Isolated review disabled")
     if not PROGRAM_ID_PATTERN.fullmatch(program_id):
         raise HTTPException(status_code=422, detail="Invalid Program ID")
-    if stage not in {"GEM_JR", "GEM"}:
+    if stage in {"GEM_JR", "GEM"}:
+        raise HTTPException(status_code=410, detail="Retired classification no longer available")
+    if stage != "PIPELINE":
         raise HTTPException(status_code=422, detail="Invalid research stage")
     with Session(ENGINE) as session:
         identity = session.get(ProgramIdentity, int(program_id[6:]))
@@ -888,7 +864,7 @@ def review_alpaca_program_smoke():
     Depends(require_internal_key), Depends(require_storage),
 ])
 def read_wt_research(program_id: str):
-    """Return same GEM scoring per immutable trial/program, without bulk copying data."""
+    """Return research indicators per immutable trial/program; no membership prerequisite."""
     if not PROGRAM_ID_PATTERN.fullmatch(program_id):
         raise HTTPException(status_code=422, detail="Invalid Program ID")
     with Session(ENGINE) as session:
@@ -919,11 +895,8 @@ def read_workspace_summary():
         total = len(published.get("pipeline") or [])
         if not parity or parity.get("exactPrograms") != total:
             raise ValueError("Pipeline source parity mismatch")
-        members = published.get("members") or {}
         return {
             "pipeline": total,
-            "gemJr": len((members.get("GEM_JR") or {}).get("rows") or []),
-            "gem": len((members.get("GEM") or {}).get("rows") or []),
             "sourceState": health.get("state", "UNKNOWN"),
             "asOf": published.get("asOf"),
         }
@@ -1130,6 +1103,8 @@ def put_program_watch_trade(payload: ProgramWatchTradePayload):
 
 def validate_program_checklist(session: Session, program_id: str, stage: str) -> tuple[str, str]:
     stage = stage.upper()
+    if stage in {"GEM_JR", "GEM"}:
+        raise HTTPException(status_code=410, detail="Retired classification no longer available")
     if not PROGRAM_ID_PATTERN.fullmatch(program_id) or stage not in ALLOWED_STAGES:
         raise HTTPException(status_code=422, detail="Invalid program or stage")
     serial = int(program_id[6:])
@@ -1157,8 +1132,6 @@ def read_program_checklist(program_id: str, stage: str):
     Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled),
 ])
 def save_program_checklist(program_id: str, stage: str, payload: ChecklistPayload):
-    if stage.upper() != "PIPELINE":
-        raise HTTPException(status_code=410, detail="Legacy GEM JR/GEM program checklists are archived; active research uses PIPELINE")
     payload.validate_size()
     now = datetime.now(timezone.utc)
     with Session(ENGINE) as session:
