@@ -108,8 +108,8 @@ export function surveyScoringAssessments(
     label:f.label,url:facts[f.id].sourceUrl,date:facts[f.id].sourceDate,
     confidence:facts[f.id].confidence
   }));
-  const gate:SurveyScoringGate=!record?"NO_EXACT_RECORD":
-   protocol.requiresPublicReadout&&!publicReadoutDocumented?"PUBLIC_RESULTS_UNCONFIRMED":
+  const gate:SurveyScoringGate=protocol.requiresPublicReadout&&!publicReadoutDocumented?"PUBLIC_RESULTS_UNCONFIRMED":
+   !record?"NO_EXACT_RECORD":
    verified.length!==group.fields.length?"MISSING_VERIFIED_INPUTS":
    lowConfidence.length>0?"LOW_CONFIDENCE_INPUTS":"METHOD_VALIDATION_REQUIRED";
   return {
