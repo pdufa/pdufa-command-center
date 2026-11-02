@@ -17,7 +17,7 @@ export type HistoricalCase={
  entryPrice:HistoricalPrice;exitPrice:HistoricalPrice;
  predictedRaas:number|null;predictedReturnPercent:number|null;
  predictedScenarioSourceUrl?:string;
- roundTripCostsPercent:number;publicEvidenceUrls:string[];
+ roundTripCostsPercent:number;featureSources:{sourceUrl:string;publishedAt:string}[];
 };
 export type HistoricalFeed={
  schemaVersion:1;scope:"RAAS_HISTORICAL_EVENT_BACKTEST";sourceAsOf:string;
@@ -69,8 +69,8 @@ export function parseHistoricalFeed(input:unknown):HistoricalFeed{
    !day(c.featureAsOf)||!day(c.predictionPublishedAt)||!day(c.entryDate)||!day(c.exitDate)||
    !day(c.phase3ReadoutDate)||!url(c.phase3ReadoutSourceUrl)||
    !day(c.phase3ReadoutSourcePublishedAt)||
-   !Array.isArray(c.publicEvidenceUrls)||c.publicEvidenceUrls.length===0||
-   c.publicEvidenceUrls.some(x=>!url(x))||!finite(c.roundTripCostsPercent)||
+   !Array.isArray(c.featureSources)||c.featureSources.length===0||
+   c.featureSources.some(x=>!x||!url(x.sourceUrl)||!day(x.publishedAt))||!finite(c.roundTripCostsPercent)||
    c.roundTripCostsPercent<0||c.roundTripCostsPercent>30||
    !c.entryPrice||!c.exitPrice)throw Error("RAAS_HISTORY_CASE_INVALID");
   keys.add(c.caseId);
@@ -90,6 +90,8 @@ export function parseHistoricalFeed(input:unknown):HistoricalFeed{
 }
 export function eligibleHistoricalCase(c:HistoricalCase,sourceAsOf:string):string|null{
  if(c.exitDate>sourceAsOf)return "Exit outcome not yet observable as of ledger date";
+ if(c.featureSources.some(x=>x.publishedAt>c.featureAsOf))
+  return "Look-ahead: evidence source was published after prediction features";
  if(c.featureAsOf>c.predictionPublishedAt||c.predictionPublishedAt>c.entryDate)
   return "Look-ahead: prediction or features not known at entry";
  if(c.marketCapSourcePublishedAt>c.entryDate)
@@ -144,8 +146,11 @@ function diagnostics(stage:RaasStage,items:HistoricalResult[]):HistoricalDiagnos
  const groupCount=new Set(items.map(x=>x.programKey)).size;
  // RAAS-to-return ranking requires each independent company/therapy/indication
  // represented once, never treating separate NCTs as independent validation.
- const singles=Array.from(new Map([...items].sort((a,b)=>a.entryDate.localeCompare(b.entryDate))
-   .map(r=>[r.programKey,r])).values());
+ const earliest=new Map<string,HistoricalResult>();
+ for(const row of [...items].sort((a,b)=>a.entryDate.localeCompare(b.entryDate))){
+  if(!earliest.has(row.programKey))earliest.set(row.programKey,row);
+ }
+ const singles=[...earliest.values()];
  const pairs=singles.filter((r):r is HistoricalResult & {predictedRaas:number}=>r.predictedRaas!==null);
  const forecasted=singles.filter((r):r is HistoricalResult & {predictedReturnPercent:number;returnErrorPercent:number}=>
   r.predictedReturnPercent!==null&&r.returnErrorPercent!==null);
