@@ -90,6 +90,10 @@ def initialize(engine):
     with engine.begin() as c:
         for sql in statements:
             c.execute(text(sql))
+        # Existing saved predictions have no trustworthy server receipt timestamp.
+        # Leave them NULL rather than retroactively inventing a prospective lock.
+        if "recorded_at" not in {column["name"] for column in inspect(c).get_columns("phase3_predictions")}:
+            c.execute(text("ALTER TABLE phase3_predictions ADD COLUMN recorded_at TEXT"))
         immutable = ("phase3_evidence", "phase3_dossier_versions", "phase3_predictions", "phase3_fda_decisions", "phase3_trial_applications")
         if engine.dialect.name == "postgresql":
             c.execute(text("""CREATE OR REPLACE FUNCTION phase3_reject_mutation() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Phase3 evidence, relationships, dossier revisions and predictions are append-only'; END; $$"""))
@@ -462,9 +466,10 @@ def record_prediction(engine, prediction):
             row = c.execute(text("SELECT retrieved_at FROM phase3_evidence WHERE evidence_id=:id AND verification_status='VERIFIED'"), {"id": eid}).first()
             if row is None or _time(row[0]) > cutoff:
                 raise ValueError("Prediction cites missing or later evidence")
-        c.execute(text("""INSERT INTO phase3_predictions(prediction_id,nct_id,application_id,decision,created_at,evidence_cutoff,evidence_ids,confidence,uncertainty,scientific_readiness,document)
-            VALUES(:id,:nct,:app,:decision,:created,:cutoff,:evidence,:confidence,:uncertainty,:readiness,:document)"""),
-            {"id": prediction["prediction_id"], "nct": prediction["nct_id"], "app": prediction["application_id"], "decision": prediction["decision"], "created": prediction["created_at"], "cutoff": prediction["evidence_cutoff"], "evidence": canonical(ids), "confidence": confidence, "uncertainty": prediction.get("uncertainty", "Not calibrated"), "readiness": prediction.get("scientific_readiness", "NOT READY"), "document": canonical(prediction)})
+        c.execute(text("""INSERT INTO phase3_predictions(prediction_id,nct_id,application_id,decision,created_at,evidence_cutoff,evidence_ids,confidence,uncertainty,scientific_readiness,document,recorded_at)
+            VALUES(:id,:nct,:app,:decision,:created,:cutoff,:evidence,:confidence,:uncertainty,:readiness,:document,:recorded_at)"""),
+            {"id": prediction["prediction_id"], "nct": prediction["nct_id"], "app": prediction["application_id"], "decision": prediction["decision"], "created": prediction["created_at"], "cutoff": prediction["evidence_cutoff"], "evidence": canonical(ids), "confidence": confidence, "uncertainty": prediction.get("uncertainty", "Not calibrated"), "readiness": prediction.get("scientific_readiness", "NOT READY"), "document": canonical(prediction),
+             "recorded_at": stamp()})
 
 
 def _application_outcome(c, application_id):
@@ -501,6 +506,21 @@ def _prediction_rows(c, nct, actual=None, actual_date=None):
             blockers.append("PREDICTION_NOT_BEFORE_FDA_ACTION")
         if _time(row["evidence_cutoff"]) > _time(row["created_at"]):
             blockers.append("EVIDENCE_CUTOFF_AFTER_PREDICTION")
+        # Do not score backfilled predictions using a caller-controlled created_at.
+        # Only the server receipt time proves that a prediction existed before FDA action.
+        saved_at = row.get("recorded_at")
+        if not saved_at or not actual_date or _time(saved_at).date().isoformat() >= actual_date:
+            blockers.append("PREDICTION_LOCK_NOT_BEFORE_FDA_ACTION")
+        # The current prediction schema identifies an application, not an FDA
+        # review cycle. A CRL followed by approval (or extension) cannot safely
+        # be scored against the latest action until the target cycle is locked.
+        actions = c.execute(text("""SELECT DISTINCT decision,decision_date
+            FROM phase3_fda_decisions WHERE application_id=:app
+            AND verification_status='VERIFIED'
+            AND decision IN ('APPROVED','CRL','EXTENDED')"""),
+            {"app":row["application_id"]}).all()
+        if len(actions)>1:
+            blockers.append("FDA_REVIEW_CYCLE_NOT_SCOPED")
         evidence = []
         for eid in json.loads(row["evidence_ids"]):
             source = c.execute(text("SELECT * FROM phase3_evidence WHERE evidence_id=:id AND verification_status='VERIFIED'"), {"id": eid}).mappings().first()
@@ -509,7 +529,6 @@ def _prediction_rows(c, nct, actual=None, actual_date=None):
                     blockers.append("PREDICTION_SOURCE_NOT_VERIFIED_AT_CUTOFF")
             else:
                 evidence.append(_public_evidence(source))
-        timely = not blockers
         # Official outcome evidence is a separate post-decision source. Never
         # treat trial results, an issuer press release, or a pending action as FDA approval.
         outcome_source = None
@@ -524,6 +543,9 @@ def _prediction_rows(c, nct, actual=None, actual_date=None):
               {"app":row["application_id"],"decision":actual,"action_date":actual_date}).first()
             if official:
                 outcome_source = official[0]
+            else:
+                blockers.append("FDA_PRIMARY_ACTION_SOURCE_NOT_VERIFIED")
+        timely = not blockers
         correctness = row["decision"] == expected[actual] if timely and row["decision"] != "ABSTAIN" else None
         result.append({"prediction_id": row["prediction_id"], "nct_id": nct, "application_id": row["application_id"], "decision": row["decision"], "created_at": row["created_at"], "evidence_cutoff": row["evidence_cutoff"], "actual_decision": actual, "actual_decision_date": actual_date, "scientific_readiness": row["scientific_readiness"], "confidence": row["confidence"], "uncertainty": row["uncertainty"], "evidence": evidence, "correctness": correctness, "prospective_eligible": timely,
                        "review_blockers": blockers, "fda_source_url": outcome_source})
