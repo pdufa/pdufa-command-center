@@ -12,6 +12,7 @@ import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phase3ReadoutSortKey} from "../lib/phase3-readout-sort";
 import {finalSurveyReadiness} from "../lib/final-survey-readiness";
 import {auditFinalFdaValidation,type FinalFdaValidation} from "../lib/final-survey-fda-validation";
+import {auditHistoricalCaseRoster,caseReasonLabel,type HistoricalCaseRoster} from "../lib/final-survey-case-roster";
 import {finalSurveyNextActions} from "../lib/final-survey-next-actions";
 import {phase3ScientificEvidenceAudit} from "../lib/phase3-scientific-evidence-audit";
 import {checkPhase3PublishedArithmetic} from "../lib/phase3-published-arithmetic";
@@ -261,7 +262,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
 }){
  const panelRef=useRef<HTMLDivElement>(null);
  const [selectedScoringSurvey,setSelectedScoringSurvey]=useState(1);
- const [outcomeValidation,setOutcomeValidation]=useState<{status:"loading"|"ready"|"unavailable";result:FinalFdaValidation|null}>({status:"loading",result:null});
+ const [outcomeValidation,setOutcomeValidation]=useState<{status:"loading"|"ready"|"unavailable";result:FinalFdaValidation|null;roster:HistoricalCaseRoster|null}>({status:"loading",result:null,roster:null});
  const closeRef=useRef(onClose);closeRef.current=onClose;
  useEffect(()=>{
    const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
@@ -280,10 +281,11 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
    void fetch("/api/phase3-trials/validation",{cache:"no-store",signal:ctrl.signal})
      .then(async response=>{
        if(!response.ok)throw Error("Historical outcome validation unavailable");
-       return auditFinalFdaValidation(await response.json());
+       const raw=await response.json();
+       return {result:auditFinalFdaValidation(raw),roster:auditHistoricalCaseRoster(raw)};
      })
-     .then(result=>{if(!ctrl.signal.aborted)setOutcomeValidation({status:"ready",result});})
-     .catch(()=>{if(!ctrl.signal.aborted)setOutcomeValidation({status:"unavailable",result:null});});
+     .then(result=>{if(!ctrl.signal.aborted)setOutcomeValidation({status:"ready",...result});})
+     .catch(()=>{if(!ctrl.signal.aborted)setOutcomeValidation({status:"unavailable",result:null,roster:null});});
    return ()=>ctrl.abort();
  },[]);
  const sameNct=feed?.records.filter(r=>r.nctId===row.nctId)||[];
@@ -422,6 +424,42 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
                     </tr>)}</tbody>
                   </table>
                 </div>
+                <details className={css.finalSurveyCaseRoster} aria-label="Historical FDA application case readiness roster">
+                  <summary>FDA historical case review · {outcomeValidation.roster?
+                    outcomeValidation.roster.total+" application/prediction review rows":
+                    "Case-level inventory unavailable"}</summary>
+                  <p>Review roster from saved prediction records and independently recorded FDA application outcomes. An FDA outcome without a locked prior prediction is a research candidate, <strong>not</strong> a successful backtest prediction.</p>
+                  {!outcomeValidation.roster?<p>Case-level diagnostics are not available from the authenticated historical backend. This does not mean zero verified cases.</p>:<>
+                    <p><strong>Rows shown:</strong> {outcomeValidation.roster.returned} of {outcomeValidation.roster.total} (first 50 at most; blockers first). <strong>Calibration:</strong> not established.</p>
+                    <div className={css.finalSurveyCaseReasons}>
+                      {Object.entries(outcomeValidation.roster.reasonCounts)
+                        .filter(([,count])=>count>0)
+                        .map(([reason,count])=><div key={reason}>
+                          <span>{caseReasonLabel(reason as keyof typeof outcomeValidation.roster.reasonCounts)}</span>
+                          <strong>{count}</strong>
+                        </div>)}
+                    </div>
+                    <div className={css.finalSurveyMatrixScroll} role="region" aria-label="FDA historical case review records" tabIndex={0}>
+                      <table>
+                        <thead><tr>
+                          <th scope="col">FDA application / trial</th><th scope="col">Prediction vs FDA outcome</th>
+                          <th scope="col">Date of forecast / FDA action</th><th scope="col">Eligibility and missing requirement</th>
+                          <th scope="col">Primary source</th>
+                        </tr></thead>
+                        <tbody>{outcomeValidation.roster.records.map((item,index)=><tr key={(item.predictionId||item.applicationId)+"-"+index}>
+                          <th scope="row">{item.applicationId}{item.nctId&&<>
+                            <span> · </span><a href={"https://clinicaltrials.gov/study/"+item.nctId} target="_blank" rel="noopener noreferrer">{item.nctId}</a></>}</th>
+                          <td>{item.predictedDecision||"No eligible locked prediction"} / {item.actualDecision}</td>
+                          <td>{item.predictionCreatedAt?.slice(0,10)||"No prediction"} / {item.decisionDate||"Not verified"}</td>
+                          <td><strong>{item.disposition.replaceAll("_"," ")}</strong> · {caseReasonLabel(item.reason)}</td>
+                          <td>{item.fdaSourceUrl?
+                            <a href={item.fdaSourceUrl} target="_blank" rel="noopener noreferrer">Verified FDA evidence</a>:
+                            "FDA source URL not established"}</td>
+                        </tr>)}</tbody>
+                      </table>
+                    </div>
+                  </>}
+                </details>
                 <p><strong>Calibration:</strong> Not established · <strong>Model validation:</strong> NOT VALIDATED.</p>
                 <p>{outcomeValidation.result.limitation}</p>
               </>}
