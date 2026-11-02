@@ -35,7 +35,7 @@ export default function TrialColumnFilterBar({title,fields,filters,onChange,hint
  return <div className="trialColumnFilterBar" style={{
    padding:"9px 11px",margin:"8px 0",border:"1px solid #a4c8b2",borderRadius:8,background:"#f1f8f3"
  }}>
-   <details>
+   <details open>
      <summary style={{cursor:"pointer",fontWeight:750,color:"#164d31"}}>
        {title} · Column filters{count?" ("+count+" active)":""}
      </summary>
