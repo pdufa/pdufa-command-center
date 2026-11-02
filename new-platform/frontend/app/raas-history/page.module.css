@@ -40,3 +40,11 @@
 .footer{margin-top:30px;background:#f6f9f7;border:1px solid #d8e2db;padding:16px;border-radius:10px}
 .footer strong{font-size:13px;color:#204b33}.footer p{font-size:12px;line-height:1.65;color:#556b5b;margin:7px 0 0}
 @media(max-width:800px){.root{padding:17px 12px 50px}.header h1{font-size:21px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.caseHead{grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr) 16px;gap:8px}.window,.review{grid-column:1 / 3;flex-direction:row!important;gap:5px!important;align-items:baseline}.review{display:none!important}.facts{grid-template-columns:1fr}.sectionTitle{flex-wrap:wrap}.sectionTitle>span{white-space:normal}}
+
+/* Historical source-dated research measurements remain visually separate from score labels. */
+.sourceFact{display:flex;flex-direction:column;gap:5px;padding:10px 11px;background:#fff;border:1px solid #d8e2dc;border-radius:7px}
+.sourceFact>strong{font-size:12px;line-height:1.4;color:#234f36}
+.sourceFact p{font-size:11px;line-height:1.5;margin:0;color:#51695b}
+.sourceFact p strong{font-weight:750;color:#1f583a}
+.sourceFact p.factCaution{color:#725f48;font-size:10px}
+.sourceFact a{color:#186340;font-size:11px;text-decoration:underline;font-weight:700}
