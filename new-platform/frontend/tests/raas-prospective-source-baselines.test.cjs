@@ -16,9 +16,9 @@ const calibration=require("../data/raas-approved-calibrations.json");
 const reviewed=require("../data/raas-reviewed-snapshots.json");
 const mod=require("../lib/raas-prospective-source-baselines.ts");
 const clone=()=>JSON.parse(JSON.stringify(raw));
-test("One publicly sourced pre-readout TOP baseline is captured at exact existing trial identity",()=>{
+test("Two source-dated pre-readout TOP baselines have exact prior pilot trial identities",()=>{
  const feed=mod.parseProspectiveSourceBaselines(raw);
- assert.equal(feed.records.length,1);
+ assert.equal(feed.records.length,2);
  const x=feed.records[0];
  assert.equal(x.ticker,"LBRX");
  assert.equal(x.nctId,"NCT07363577");
@@ -35,9 +35,48 @@ test("One publicly sourced pre-readout TOP baseline is captured at exact existin
  assert.equal(x.observations.length,4);
  assert.ok(x.observations.every(o=>o.sourcePublishedAt<=x.capturedOn));
  assert.deepEqual(mod.prospectiveSourceSummary(feed),{
-  baselines:1,distinctPrograms:1,recordedSourceFacts:4,
+  baselines:2,distinctPrograms:2,distinctIssuers:2,recordedSourceFacts:9,
   numericRaasScores:0,validatedHistoricalOutcomes:0
  });
+});
+test("TRVI NAL ER OCEAN-1 has source-backed prior efficacy and H1 2028 guidance, with no Phase 3 result",()=>{
+ const feed=mod.parseProspectiveSourceBaselines(raw);
+ const trial=feed.records.find(r=>r.nctId==="NCT07671911");
+ assert.ok(trial);
+ assert.equal(trial.ticker,"TRVI");
+ assert.equal(trial.drug,"NAL ER");
+ assert.equal(trial.indication,"Idiopathic Pulmonary Fibrosis");
+ assert.equal(trial.stage,"pre");
+ assert.equal(trial.marketCap.usdMillions,1932);
+ assert.equal(trial.marketCap.observedAsOf,"2026-10-30");
+ assert.equal(trial.marketCap.verification,"VENDOR_REPORTED_NOT_INDEPENDENTLY_AUDITED");
+ assert.equal(trial.observations.length,5);
+ assert.ok(trial.observations.every(o=>o.sourcePublishedAt<=trial.capturedOn));
+ assert.ok(trial.observations.every(o=>o.sourceUrl.startsWith("https://")));
+ const prior=trial.observations.find(o=>o.id==="trvi-coral-prior-phase2b");
+ assert.equal(prior.kind,"PRIOR_PHASE2B_EFFICACY");
+ assert.equal(prior.sourcePublishedAt,"2025-06-02");
+ assert.match(prior.limitation,/Not the OCEAN-1 Phase 3 result/);
+ const timing=trial.observations.find(o=>o.id==="trvi-ocean1-readout-guidance");
+ assert.match(timing.valueText,/first half of 2028/);
+ assert.match(timing.valueText,/NOT an OCEAN-1 readout/);
+ const finance=trial.observations.find(o=>o.id==="trvi-q2-finance-2026");
+ assert.match(finance.valueText,/318.9 million/);
+ assert.match(finance.limitation,/Never add both cash numbers/);
+ const original=pilot.records.find(p=>p.nctId===trial.nctId);
+ assert.ok(original);
+ assert.equal(original.ticker,trial.ticker);
+ assert.equal(original.drug,trial.drug);
+ assert.equal(original.stage,trial.stage);
+});
+test("Related NCTs of one issuer and the same therapy are not double-counted as independent programs",()=>{
+ const draft=clone();
+ draft.records.push({...draft.records[1],nctId:"NCT98765432",id:"separate-trial-same-therapy"});
+ const summary=mod.prospectiveSourceSummary(mod.parseProspectiveSourceBaselines(draft));
+ assert.equal(summary.baselines,3);
+ assert.equal(summary.distinctPrograms,2);
+ assert.equal(summary.distinctIssuers,2);
+ assert.equal(summary.numericRaasScores,0);
 });
 test("An issuer's published facts never masquerade as a recorded RAAS numeric forecast",()=>{
  const x=mod.parseProspectiveSourceBaselines(raw).records[0];
