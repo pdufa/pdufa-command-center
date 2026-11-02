@@ -1,0 +1,50 @@
+{
+  "application_rows_in_extract": 29417,
+  "application_type_counts": {
+    "ANDA": 23023,
+    "BLA": 485,
+    "NDA": 5907
+  },
+  "applications_tsv_sha256": "f7fc18dcc826b74b250f7c87d1d9e4b04b56207fc9eac882801a64745a388dd6",
+  "approval_rate": null,
+  "complete_nda_bla_review_cycle_population": null,
+  "complete_original_nda_bla_application_denominator_verified": false,
+  "cutoff_as_of": "2026-10-25",
+  "distinct_nda_bla_applications_in_original_submission_inventory": 5973,
+  "downloaded_at_utc": "2026-10-25T23:47:59.497780+00:00",
+  "excluded_submission_row_reason_counts": {
+    "NON_NDA_BLA_APPLICATION": 101547,
+    "NOT_AN_ORIGINAL_SUBMISSION": 81325,
+    "NO_MATCHING_APPLICATION_ROW": 5375
+  },
+  "fda_download_url": "https://www.fda.gov/media/89850/download?attachment=",
+  "fda_final_download_url": "https://www.fda.gov/media/89850/download?attachment=",
+  "independently_verified_fda_review_cycles": 0,
+  "model_eligible_records": 0,
+  "no_training_or_production_import": true,
+  "original_action_dates_independently_verified": 0,
+  "original_nda_bla_submission_rows": 6033,
+  "prediction_probability": null,
+  "predictive_accuracy": null,
+  "quarantined_application_row_reason_counts": {
+    "MALFORMED_OR_PLACEHOLDER_APPLICATION_ID": 2
+  },
+  "raw_status_not_a_verified_decision_label": true,
+  "readiness": "REVIEW_REQUIRED",
+  "source_applications_tsv_encoding": "utf-8-sig",
+  "source_data_quality_flag_counts": {
+    "RAW_SUBMISSION_STATUS_MISSING": 1
+  },
+  "source_submissions_tsv_encoding": "cp1252",
+  "source_zip_sha256": "4c3f84e98fa4b62619d963424d5bc789108e32baa7df67363f24d71cd2c74e01",
+  "status": "OFFICIAL_FDA_TABLE_ORIGINAL_SUBMISSIONS_QUARANTINED",
+  "submission_number_is_not_review_cycle": true,
+  "submission_rows_in_extract": 194280,
+  "submissions_tsv_sha256": "d74236b31ebe27ce80f529c6d7b6921f9ca95029d91fd92a30bdd95aaf0b3d00",
+  "unapproved_applications_absent_from_export_possible": true,
+  "validated_application_identity_rows": 29415,
+  "source_collection_workflow_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40246351051",
+  "aggregate_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40246351051/artifacts/12618966198",
+  "source_workflow_job_id": 121328645797,
+  "index_purpose": "RESEARCH_SOURCE_HISTORY_INVENTORY_NOT_ADJUDICATED_FDA_REVIEW_CYCLES"
+}

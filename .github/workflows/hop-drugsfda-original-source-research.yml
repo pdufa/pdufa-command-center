@@ -1,0 +1,233 @@
+name: HOP original NDA BLA submission-source audit (research only)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/hop-drugsfda-original-source-research.yml'
+      - 'new-platform/backend/app/hop_drugsfda_submission_spine.py'
+      - 'new-platform/backend/scripts/collect_hop_drugsfda_original_submissions.py'
+      - 'new-platform/backend/tests/test_hop_drugsfda_original_collector.py'
+      - 'new-platform/backend/tests/test_hop_drugsfda_submission_spine.py'
+      - 'new-platform/backend/app/hop_fda_original_letter_bridge.py'
+      - 'new-platform/backend/scripts/collect_hop_fda_original_letter_bridge.py'
+      - 'new-platform/backend/tests/test_hop_fda_original_letter_bridge.py'
+      - 'new-platform/backend/app/hop_drugsfda_original_source_diff.py'
+      - 'new-platform/backend/scripts/reconcile_hop_drugsfda_original_sources.py'
+      - 'new-platform/backend/tests/test_hop_drugsfda_original_source_diff.py'
+      - 'new-platform/backend/app/hop_fda_unmatched_letter_triage.py'
+      - 'new-platform/backend/tests/test_hop_fda_unmatched_letter_triage.py'
+      - 'new-platform/backend/app/hop_fda_gap_research_packets.py'
+      - 'new-platform/backend/scripts/screen_hop_fda_grouped_evidence_leads.py'
+      - 'new-platform/backend/tests/test_hop_fda_gap_research_packets.py'
+      - 'new-platform/backend/app/hop_fda_prior_pdf_lead_join.py'
+      - 'new-platform/backend/scripts/enrich_hop_fda_private_pdf_leads.py'
+      - 'new-platform/backend/tests/test_hop_fda_prior_pdf_lead_join.py'
+      - 'new-platform/backend/app/hop_fda_identity_gap_dual_review.py'
+      - 'new-platform/backend/scripts/prepare_hop_fda_identity_gap_dual_review.py'
+      - 'new-platform/backend/tests/test_hop_fda_identity_gap_dual_review.py'
+      - 'new-platform/backend/app/hop_fda_single_primary_review.py'
+      - 'new-platform/backend/scripts/prepare_hop_fda_single_primary_review.py'
+      - 'new-platform/backend/tests/test_hop_fda_single_primary_review.py'
+      - 'new-platform/backend/app/hop_fda_single_primary_encrypted_archive.py'
+      - 'new-platform/backend/scripts/transfer_hop_fda_single_primary_encrypted_archive.py'
+      - 'new-platform/backend/tests/test_hop_fda_single_primary_encrypted_archive.py'
+      - 'new-platform/backend/app/hop_fda_private_review_batches.py'
+      - 'new-platform/backend/scripts/prepare_hop_fda_review_batches.py'
+      - 'new-platform/backend/tests/test_hop_fda_private_review_batches.py'
+      - 'new-platform/backend/app/hop_fda_private_review_custody.py'
+      - 'new-platform/backend/app/hop_fda_private_encrypted_transfer.py'
+      - 'new-platform/backend/scripts/transfer_hop_fda_private_encrypted_archive.py'
+      - 'new-platform/backend/tests/test_hop_fda_private_encrypted_transfer.py'
+      - 'new-platform/backend/scripts/audit_hop_fda_private_review_custody.py'
+      - 'new-platform/backend/app/hop_fda_nda206627_primary_source.py'
+      - 'new-platform/backend/scripts/probe_hop_nda206627_primary_fda_approval.py'
+      - 'new-platform/backend/tests/test_hop_fda_nda206627_primary_source.py'
+      - 'new-platform/backend/app/hop_fda_pdf_page_candidate_sampling.py'
+      - 'new-platform/backend/scripts/sample_hop_fda_published_letter_page_hints.py'
+      - 'new-platform/backend/tests/test_hop_fda_pdf_page_candidate_sampling.py'
+      - 'new-platform/backend/app/hop_fda_visual_page_review.py'
+      - 'new-platform/backend/tests/test_hop_fda_visual_page_review.py'
+      - 'new-platform/backend/app/hop_fda_visual_handoff_preflight.py'
+      - 'new-platform/backend/app/hop_fda_visual_archive_crypto.py'
+      - 'new-platform/backend/scripts/manage_hop_fda_encrypted_visual_handoff.py'
+      - 'new-platform/backend/scripts/verify_hop_fda_visual_archive_roundtrip.py'
+      - 'new-platform/backend/tests/test_hop_fda_visual_archive_crypto.py'
+      - 'new-platform/backend/app/hop_fda_visual_recipient_envelope.py'
+      - 'new-platform/backend/scripts/manage_hop_fda_visual_recipient_keys.py'
+      - 'new-platform/backend/scripts/verify_hop_fda_visual_recipient_envelope.py'
+      - 'new-platform/backend/tests/test_hop_fda_visual_recipient_envelope.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hop-fda-original-sources-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-submission-coverage-only:
+    name: Collect original NDA BLA submissions without FDA outcome claims
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate synthetic-only source parser and ZIP safety tests
+        working-directory: new-platform/backend
+        run: |
+          python -m pip install pytest pypdf pymupdf cryptography
+          PYTHONPATH=. python -m pytest -q \
+            tests/test_hop_drugsfda_submission_spine.py \
+            tests/test_hop_drugsfda_original_collector.py \
+            tests/test_hop_fda_original_letter_bridge.py \
+            tests/test_hop_drugsfda_original_source_diff.py \
+            tests/test_hop_fda_unmatched_letter_triage.py \
+            tests/test_hop_fda_gap_research_packets.py \
+            tests/test_hop_fda_prior_pdf_lead_join.py \
+            tests/test_hop_fda_identity_gap_dual_review.py \
+            tests/test_hop_fda_single_primary_review.py \
+            tests/test_hop_fda_single_primary_encrypted_archive.py \
+            tests/test_hop_fda_private_review_batches.py \
+            tests/test_hop_fda_private_encrypted_transfer.py \
+            tests/test_hop_fda_nda206627_primary_source.py \
+            tests/test_hop_fda_pdf_page_candidate_sampling.py \
+            tests/test_hop_fda_visual_page_review.py \
+            tests/test_hop_fda_visual_archive_crypto.py \
+            tests/test_hop_fda_visual_recipient_envelope.py
+      - name: Download actual official Drugs@FDA archive and audit original NDA BLA submissions
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/collect_hop_drugsfda_original_submissions.py \
+            --as-of 2026-10-25 \
+            --output-dir "${{ runner.temp }}/hop-fda-original-source-research"
+      - name: Cross-check official FDA published letters against original application IDs
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/collect_hop_fda_original_letter_bridge.py \
+            --applications "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Applications.txt" \
+            --submissions "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Submissions.txt" \
+            --as-of 2026-10-25 \
+            --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_crl_identity_bridge.json" \
+            --private-gap-worklist "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_published_letter_review_worklist.json" \
+            --private-grouped-packets "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_application_research_packets.json"
+      - name: Download previously pinned original openFDA registry artifact (read-only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40224730350 --repo "${{ github.repository }}" \
+            --name hop-drugsfda-approved-registry-quarantined \
+            --dir "${{ runner.temp }}/hop-fda-original-source-research/private_pinned_openfda"
+      - name: Reconcile original NDA/BLA submission IDs between both pinned FDA sources
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/reconcile_hop_drugsfda_original_sources.py \
+            --applications "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Applications.txt" \
+            --submissions "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/Submissions.txt" \
+            --saved-openfda-registry-json "${{ runner.temp }}/hop-fda-original-source-research/private_pinned_openfda/drugsfda_approved_registry_quarantined.json" \
+            --as-of 2026-10-25 \
+            --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_submission_membership_discrepancies.json"
+      - name: Reuse pinned historical official FDA PDF byte-check artifact read-only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 40232393298 --repo "${{ github.repository }}" \
+            --name hop-fda-published-actions-evidence-review \
+            --dir "${{ runner.temp }}/hop-fda-original-source-research/private_prior_pdf_probe"
+      - name: Join private source-review packets to real hash-confirmed FDA PDF leads
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/enrich_hop_fda_private_pdf_leads.py \
+            --private-grouped-packets "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_application_research_packets.json" \
+            --prior-pdf-probes-json "${{ runner.temp }}/hop-fda-original-source-research/private_prior_pdf_probe/fda_all_published_action_pdf_checks.json" \
+            --prior-pdf-probes-audit-json "${{ runner.temp }}/hop-fda-original-source-research/private_prior_pdf_probe/fda_all_published_action_pdf_checks_audit.json" \
+            --private-enriched-packets-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_original_application_pdf_lead_coverage.json"
+      - name: Prepare two private blank reviewer handoffs for FDA original application identity gaps
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/prepare_hop_fda_identity_gap_dual_review.py \
+            --private-enriched-packets "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
+            --private-first-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_first_fda_identity_gap_review.json" \
+            --private-second-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_second_fda_identity_gap_review.json" \
+            --public-audit-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_identity_gap_dual_review_handoff_counts.json"
+      - name: Prepare seven FIRST-only primary FDA review batches with optional escalation
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/prepare_hop_fda_single_primary_review.py \
+            --prepare-primary-batches \
+            --private-blank-first-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_first_fda_identity_gap_review.json" \
+            --private-output-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/single_primary_reviewer_batches" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_single_primary_review_preparation_counts.json" \
+            --as-of 2026-10-25
+      - name: Inspect actual original FDA approval PDF pages for the missing NDA206627 application
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/probe_hop_nda206627_primary_fda_approval.py \
+            --output-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_nda206627_original_public_pdf_observation.json"
+      - name: Re-fetch eight distinct official published FDA PDFs and inspect bounded page hints
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/sample_hop_fda_published_letter_page_hints.py \
+            --private-enriched-packets-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
+            --private-pdf-page-hints-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_fda_pdf_page_navigation_hints.json" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_page_candidate_sample_aggregate.json" \
+            --limit 8 \
+            --offset 0 \
+            --private-visual-image-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_images" \
+            --private-visual-manifest-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch1.json"
+      - name: Sample next eight distinct hash-sorted FDA PDFs for page hints (batch 2)
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/sample_hop_fda_published_letter_page_hints.py \
+            --private-enriched-packets-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_original_fda_packets_with_pdf_leads.json" \
+            --private-pdf-page-hints-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/unverified_fda_pdf_page_navigation_hints_batch2.json" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_page_candidate_sample_aggregate_batch2.json" \
+            --limit 8 \
+            --offset 8 \
+            --private-visual-image-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_images" \
+            --private-visual-manifest-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch2.json"
+      - name: Ephemeral real 19-image FDA archive encrypt/decrypt integrity check (NO UPLOAD)
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/verify_hop_fda_visual_archive_roundtrip.py \
+            --private-image-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_images" \
+            --private-batch1-manifest "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch1.json" \
+            --private-batch2-manifest "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch2.json" \
+            --public-counts-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_real_visual_archive_ephemeral_aead_verification.json"
+      - name: Test 19 actual FDA source PNGs in disposable X25519 recipient envelope (no upload)
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/verify_hop_fda_visual_recipient_envelope.py \
+            --private-image-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_images" \
+            --private-batch1-manifest "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch1.json" \
+            --private-batch2-manifest "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/no_text_visual_manifest_batch2.json" \
+            --public-counts-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_source_recipient_public_key_ephemeral_audit.json"
+      - name: Prepare bounded private A/B FDA reviewer batches without decision labels
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/prepare_hop_fda_review_batches.py \
+            --private-first-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_first_fda_identity_gap_review.json" \
+            --private-second-review-json "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/blank_second_fda_identity_gap_review.json" \
+            --private-output-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/private_reviewer_batches" \
+            --public-aggregate-json "${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/fda_identity_gap_bounded_batch_counts.json"
+      - name: Create and verify strictly private FDA reviewer checksum baseline
+        working-directory: new-platform/backend
+        run: |
+          PYTHONPATH=. python scripts/audit_hop_fda_private_review_custody.py \
+            --private-batch-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/private_reviewer_batches" \
+            --create-baseline
+          PYTHONPATH=. python scripts/audit_hop_fda_private_review_custody.py \
+            --private-batch-dir "${{ runner.temp }}/hop-fda-original-source-research/private_original_tables/private_reviewer_batches" \
+            --verify-baseline
+      - name: Retain only aggregate FDA source coverage counts and fingerprints
+        uses: actions/upload-artifact@v4
+        with:
+          name: hop-fda-original-submissions-quarantined-aggregate
+          path: ${{ runner.temp }}/hop-fda-original-source-research/public_aggregate_only/
+          if-no-files-found: error
+          retention-days: 14
