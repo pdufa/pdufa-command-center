@@ -158,7 +158,7 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
      <p className={css.surveyClarification}><strong>Research coverage, not a numerical rating.</strong>
        {" "}All 5 groups, 20 surveys and 38 questions are included. Scores remain
        {" "}<strong>Not graded</strong> until source-backed scoring rules are validated.
-       Missing research never equals clinical failure or a zero score.</p>
+       Missing research never equals clinical failure or a zero score. A VERIFIED source input confirms an issuer-disclosed observation matched to this trial; it is not independent adjudication of efficacy or safety.</p>
      <div className={css.surveyOverview}>
        <div><small>Groups</small><strong>5</strong></div>
        <div><small>Surveys</small><strong>20</strong></div>
@@ -345,6 +345,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
          <p>Combination rule: <strong>all 5 groups have verified research inputs</strong>
            {" AND "}<strong>all relevant stage-specific checks pass</strong>.
            Modeled inputs are shown separately and cannot pass verified gates.
+           Issuer-disclosed topline observations are source-matched, not independently adjudicated results.
            This is an evidence-readiness decision, not an FDA probability or a forecast of stock appreciation.</p>
          <section className={css.finalSurveyCheckpoint} aria-label="Final SURVEY readiness and reluctant evidence grade">
            <h5>Final SURVEY · two independent grades</h5>
@@ -670,7 +671,7 @@ export default function Phase3ReadoutSheets(){
   useEffect(()=>{
     if((!activeSurvey&&!researchSortRequested)||researchStatus!=="idle")return;
     setResearchStatus("loading");
-    void fetch("/api/benefit-assessments",{cache:"no-store"})
+    void fetch("/api/phase3-readout-survey",{cache:"no-store"})
       .then(async r=>{if(!r.ok)throw Error("Research unavailable");return parseBenefitFeed(await r.json());})
       .then(feed=>{setBenefitFeed(feed);setResearchStatus("ready");})
       .catch(()=>setResearchStatus("unavailable"));

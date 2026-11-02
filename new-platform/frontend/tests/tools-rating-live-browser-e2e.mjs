@@ -108,6 +108,17 @@ async function finalSurveyTest(page,label){
     check((await actions.innerText()).includes("research checklist, not a medical failure list"),
       "Missing evidence must not be presented as a failed trial");
     await actions.locator(":scope > summary").click();
+    if(bucket==="post"){
+      await page.waitForFunction(()=>{
+        const p=document.querySelector('[aria-label="Final SURVEY readiness and reluctant evidence grade"]');
+        return !!p&&/Source-verified coverage:\s*\d+ of 38/.test(p.textContent||"");
+      },null,{timeout:45000});
+      const loaded=await audit.innerText();
+      check(/Source-verified coverage:\s*[24] of 38/.test(loaded),
+        "POST readout must display source-verified issuer trial observations, not empty placeholders");
+      check(loaded.includes("FDA decision forecast: ABSTAIN"),
+        "Sponsor topline findings must not create a probability or FDA verdict");
+    }
     await page.waitForFunction(()=>{
       const panel=document.querySelector('[aria-label="Final SURVEY readiness and reluctant evidence grade"]');
       return !!panel&&!panel.textContent.includes("Checking sources");
@@ -168,6 +179,13 @@ try{
       assert.equal(auth.status(),200,"Authenticated browser session is required");
       const response=await page.goto(base+"/tools",{waitUntil:"domcontentloaded",timeout:45000});
       assert.equal(response?.status(),200,"Production /tools should return HTTP 200");
+      const issuer=await context.request.get(base+"/api/phase3-readout-survey");
+      assert.equal(issuer.status(),200,"Authenticated issuer-specific survey feed must be accessible");
+      const published=await issuer.json();
+      assert.deepEqual(published.records.map(row=>row.nctId),
+        ["NCT06445023","NCT06455202","NCT06641076"]);
+      assert.equal(published.records[2].facts.clinicalBenefit,undefined,
+        "Blinded MLTX placebo comparator must never generate synthetic benefit");
       await ratingTest(page,device.label);
       await finalSurveyTest(page,device.label);
       if(!device.mobile)await liveTrialTest(page);
