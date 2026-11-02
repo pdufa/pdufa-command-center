@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_RETROSPECTIVE_EVIDENCE_INTAKE",
+  "sourceAsOf": "2026-11-02",
+  "note": "Real historical research observations, not original RAAS predictions or qualified backtests. Prices are vendor closing prices, adjusted corporate-action basis not independently confirmed. Event windows were chosen retrospectively and must never enter the ex-ante RAAS calibration ledger.",
+  "records": [
+    {
+      "id": "vrna-ensifentrine-copd-2024-illustrative",
+      "ticker": "VRNA",
+      "drug": "ensifentrine",
+      "indication": "COPD maintenance treatment",
+      "nctIds": [
+        "NCT04535986",
+        "NCT04542057"
+      ],
+      "stage": "post",
+      "historicalWindowSelected": "RETROSPECTIVELY",
+      "entryDecisionArchiveAvailable": false,
+      "verifiedBeforeEntry": [
+        {
+          "kind": "PHASE3_PUBLIC_READOUT",
+          "date": "2022-08-09",
+          "sourceUrl": "https://www.veronapharma.com/news/verona-pharma-announces-ensifentrine-meets-primary-endpoint-in-phase-3-enhance-2-trial-for-copd/",
+          "notes": "Positive ENHANCE-2 reported publicly; same drug asset as ENHANCE-1."
+        },
+        {
+          "kind": "PHASE3_PUBLIC_READOUT",
+          "date": "2022-12-20",
+          "sourceUrl": "https://www.veronapharma.com/news/verona-pharma-announces-ensifentrine-meets-primary-and-key-secondary-endpoints-in-phase-3-enhance-1-trial-for-copd/",
+          "notes": "Positive ENHANCE-1; 2 pivotal NCTs represent one issuer/program opportunity."
+        },
+        {
+          "kind": "PDUFA_CONFIRMED",
+          "date": "2023-09-11",
+          "sourceUrl": "https://www.veronapharma.com/news/verona-pharma-announces-the-us-fda-has-accepted-the-new-drug-application-filing-for-ensifentrine-for-the-maintenance-treatment-of-copd/",
+          "notes": "Company explicitly announced FDA NDA acceptance and June 26, 2024 target."
+        },
+        {
+          "kind": "PRE_ENTRY_COMPANY_UPDATE",
+          "date": "2024-05-09",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1657312/000165731224000011/a20240509vrna-10xqq1xpress.htm",
+          "notes": "Issuer Q1 2024 results, predated selected example entry."
+        }
+      ],
+      "pdufaDate": "2024-06-26",
+      "entry": {
+        "date": "2024-05-10",
+        "close": 14.85,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/VRNA/summary/price"
+      },
+      "exit": {
+        "date": "2024-06-21",
+        "close": 15,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/VRNA/summary/price"
+      },
+      "marketCapAtEntry": {
+        "usdMillions": 1204,
+        "sourceUrl": "https://www.financecharts.com/compare/VRNA%2C/summary/market-cap",
+        "basis": "Historical price and ordinary-share counts as presented by data vendor; issuer ADS share conversion must be cross-checked."
+      },
+      "realizedFDAAction": {
+        "date": "2024-06-26",
+        "status": "FDA_APPROVED",
+        "sourceUrl": "https://www.veronapharma.com/news/verona-pharma-announces-us-fda-approval-of-ohtuvayre-ensifentrine/",
+        "isPostEntryKnowledge": true
+      },
+      "eventQuality": {
+        "priceCorporateActionChecked": false,
+        "exchangeHolidayCalendarChecked": false,
+        "tradingFrictionAssessed": false,
+        "actualTradeOrArchivedPrediction": false,
+        "eligibleForValidatedRAAS": false
+      },
+      "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
+      "reviewNote": "Observed closing-price example yields gross +1.01% before commissions, spreads, taxes or slippage. No true pre-entry RAAS prediction exists, so it cannot measure RAAS forecast accuracy."
+    }
+  ]
+}
