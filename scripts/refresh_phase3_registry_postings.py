@@ -124,13 +124,15 @@ def build_snapshot(rows, requester=request_batch, now=None, batch_size=25):
                     raise ValueError("Registry returned wrong or duplicate NCT")
                 recorded[nct] = posted_date(study, nct, cutoff)
             token = payload.get("nextPageToken")
-            if token is None or token == "":
-                if len(expected.intersection(recorded)) != len(expected):
-                    raise ValueError("Incomplete registry batch: missing exact NCTs")
+            # The API occasionally includes nextPageToken *after* returning
+            # every specifically requested NCT. A complete exact-ID result
+            # is already authoritative: do not traverse unrelated extra pages.
+            if len(expected.intersection(recorded)) == len(expected):
                 break
-            if (not isinstance(token, str) or len(token) > 4000 or token in seen_tokens
-                or len(expected.intersection(recorded)) >= len(expected)):
-                raise ValueError("Invalid, repeated, or extraneous registry pagination token")
+            if token is None or token == "":
+                raise ValueError("Incomplete registry batch: missing exact NCTs")
+            if not isinstance(token, str) or len(token) > 4000 or token in seen_tokens:
+                raise ValueError("Invalid or repeated registry pagination token")
             seen_tokens.add(token)
             page_token = token
         else:
