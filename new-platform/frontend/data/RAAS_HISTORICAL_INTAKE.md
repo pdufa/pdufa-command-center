@@ -85,6 +85,23 @@ Same-day share counts need a pre-close SEC acceptance time; a filing after close
 
 All 8 case prices still need a second independently date-specific source; 5 cases still need a dated compatible SEC share-count bridge; historical splits, dividends, ADS transformations, options, debt and price execution remain unresolved.
 
+## Historical daily-close second-provider checks (2026-11-02)
+
+The research-only `data/raas-price-crosschecks.json` stores source links and exact dates for **4 of 16** historic ENTRY/EXIT closing-price observations across the 8 TOP/BOTTOM examples. Each price is independently displayed by a second website, but neither a licensed exchange-tape audit nor a verified corporate-action-adjusted price series has yet been obtained. Dated matches:
+
+| Example | Price side | Date | Original vendor close | Second provider close | Second source |
+|---|---|---|---:|---:|---|
+| BOTTOM VRNA / ensifentrine | Entry | 2024-05-10 | $14.85 | $14.85 | ChartExchange |
+| BOTTOM VRNA / ensifentrine | Exit | 2024-06-21 | $15.00 | $15.00 | ChartExchange |
+| BOTTOM URGN / UGN-102 | Exit | 2025-06-06 | $7.37 | $7.37 | ChartExchange |
+| TOP MDGL / resmetirom | Exit | 2022-12-16 | $63.80 | $63.80 | StatMuse |
+
+Secondary-source URLs and quote-basis warnings are retained per observation. Missing 12 other second-source observations are **not** counted as matches. Only the VRNA sample has both dates corroborated by a second website.
+
+`lib/raas-price-crosschecks.ts` rejects unknown case IDs, wrong trading dates, reuse of the first vendor URL, invalid price values and duplicate quotes. It highlights disagreements instead of averaging or overlooking them. The per-case collapsed section in `/raas-history` exposes each point, comparisons and outstanding blockers. `tests/raas-price-crosschecks.test.cjs` covers these safeguards.
+
+**Important limitations:** These 4 matching nominal closes have not been independently audited for split, dividend or ADS ratio changes, delisting/merger adjustments, exchange-specific session rules or actual executable fills. A second vendor publishing the same number may use the same upstream price feed. No adjusted total return has been certified and no retrospective case can generate a validated historic RAAS forecast. Next: verify remaining 12 closes, cross-check corporate actions and obtain independently sourced fully diluted historical capitalization.
+
 ## Known gaps as of 2026-11-02
 
 - Genuine, precommitted historical investment-prediction cases: **0 reviewed**. Historic pre-entry RAAS metric score records: **0 reviewed**. Seven separately labeled retrospective observational windows are available for source-intake testing, but are **not** admissible model performance records.
