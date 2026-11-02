@@ -20,7 +20,7 @@ import {parseRaasCalibrations,parseRaasReviewedLedger,reviewedScoreForTrial} fro
 import {contextualClinicalBenchmark} from "../lib/raas-clinical-benchmarks";
 import {evaluateHistoricalFeed,parseHistoricalFeed,walkForwardFolds,RAAS_HISTORICAL_MIN_INDEPENDENT_PROGRAMS} from "../lib/raas-historical-backtest";
 import {evaluateMetricHistory,parseMetricHistory} from "../lib/raas-metric-backtest";
-import {parseRetrospectiveFeed,retrospectiveResults} from "../lib/raas-retrospective-intake";
+import {parseRetrospectiveFeed,retrospectiveResults,observedClinicalRateDifference} from "../lib/raas-retrospective-intake";
 import {parseTopRetrospective,topRetrospectiveResults} from "../lib/raas-top-retrospective-intake";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
@@ -158,6 +158,18 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
                <p>Observed gross close-to-close change: <strong>{example.observedGrossChangePercent>=0?"+":""}{example.observedGrossChangePercent.toFixed(2)}%</strong>. Entry-date vendor market capitalization: ${example.marketCapUsdMillions.toLocaleString("en-US")} million.</p>
                <p>PDUFA target {original.pdufaDate} · minus-three-day cutoff {example.calendarCutoff}; actual FDA decision {original.realizedFDAAction.date} is future knowledge relative to entry.</p>
                <p>Closing-price adjustment, execution friction and exchange-holiday validation are pending. There is no archived pre-entry RAAS prediction or qualified performance forecast.</p>
+               {original.clinicalReadouts?.length? <details className={css.anchorDetails}>
+                 <summary>Published Phase 3 efficacy before selected entry · {original.clinicalReadouts.length} outcomes ▸</summary>
+                 <div className={css.historicalStatus}>
+                   {original.clinicalReadouts.map(o=><div key={o.metric+o.dose} className={css.requirement}>
+                     <strong>{o.metric} · {o.endpointTime}</strong>
+                     <p>{o.dose}: {o.activeRatePct}% · {o.comparator}: {o.comparatorRatePct}% · absolute treatment-placebo contrast: <strong>{observedClinicalRateDifference(o).toFixed(2)} percentage points</strong>.</p>
+                     <p>Disclosed {o.reportedAt}. {o.notes}</p>
+                     <a href={o.sourceUrl} target="_blank" rel="noopener noreferrer">View contemporaneous clinical results</a>
+                   </div>)}
+                   <p>Descriptive efficacy evidence only. Not a clinical benefit grade, FDA approval probability, or investment return forecast.</p>
+                 </div>
+               </details>:null}
                <a href={original.entry.sourceUrl} target="_blank" rel="noopener noreferrer">Historical closing-price source</a>
                <a href={original.marketCapAtEntry.sourceUrl} target="_blank" rel="noopener noreferrer">Historical market capitalization source</a>
                {original.verifiedBeforeEntry.map(item=><a key={item.kind+item.date} href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.kind.replaceAll("_"," ")} · {item.date}</a>)}
