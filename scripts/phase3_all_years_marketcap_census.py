@@ -60,7 +60,7 @@ while True:
  if page>300:raise RuntimeError("Unexpected pagination; refusing incomplete count")
 out=D/"phase3_all_years_300m_10b_trials.csv"
 with out.open("w",newline="",encoding="utf-8") as f:
- w=csv.DictWriter(f,fieldnames=["nct_id","ticker","company","status","source_url"]);w.writeheader();w.writerows(sorted(matched.values(),key=lambda x:(x["ticker"],x["nct_id"])))
+ w=csv.DictWriter(f,fieldnames=["nct_id","ticker","company","status","source_url"],lineterminator="\n");w.writeheader();w.writerows(sorted(matched.values(),key=lambda x:(x["ticker"],x["nct_id"])))
 status={"generated_at":datetime.now(timezone.utc).isoformat(),"scope":"All years, Phase 3 interventional trials, industry lead sponsor matched exactly to currently US-listed company, market cap $300M-$10B","market_cap_snapshot":"data/phase_pipeline_market_caps.csv","registry_companies":len(registry),"market_cap_eligible_tickers":len(eligible),"market_cap_unavailable_tickers":len(unknown),"registry_phase3_industry_trials_examined":total,"pages":page,"unique_phase3_trials_in_verified_market_cap_range":len(matched),"unique_companies_with_matching_trials":len({r["ticker"] for r in matched.values()}),"trial_records_with_unavailable_market_cap":len(unknown_rows),"ambiguous_sponsor_records":ambiguous,"complete_registry_pagination":True,"coverage_note":"Conservative lower bound: exact lead-sponsor matching only. Collaborator/licensing trials, renamed subsidiaries, and missing market caps not included; not a fully exhaustive company-associated census."}
 (D/"phase3_all_years_300m_10b_status.json").write_text(json.dumps(status,indent=2)+"\n")
 print(json.dumps(status,indent=2))
