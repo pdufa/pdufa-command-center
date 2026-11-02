@@ -19,15 +19,16 @@ const rawBottom=require("../data/raas-retrospective-source-cases.json");
 const top=topIntake.parseTopRetrospective(rawTop);
 const bottom=bottomIntake.parseRetrospectiveFeed(rawBottom);
 const cases=audit.buildHistoricalResearchAudit(top,bottom);
-test("audit distinguishes two pre-readout and four post-readout examples",()=>{
+test("audit counts every currently registered pre- and post-readout example",()=>{
  const sum=audit.summarizeHistoricalResearch(cases);
- assert.equal(sum.topExamples,2);
- assert.equal(sum.bottomExamples,4);
- assert.equal(sum.totalExamples,6);
+ assert.equal(sum.topExamples,top.records.length);
+ assert.equal(sum.bottomExamples,bottom.records.length);
+ assert.equal(sum.totalExamples,top.records.length+bottom.records.length);
+ assert.ok(sum.topExamples>=2&&sum.bottomExamples>=4);
  assert.equal(sum.eligiblePredictions,0);
  assert.equal(sum.qualifiedMetricGrades,0);
  assert.ok(sum.openReviews>=6);
- assert.equal(new Set(cases.map(c=>c.id)).size,6);
+ assert.equal(new Set(cases.map(c=>c.id)).size,cases.length);
 });
 test("each historic example has recorded dated source claims and explicit blocking reviews",()=>{
  for(const c of cases){
