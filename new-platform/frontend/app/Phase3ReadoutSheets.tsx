@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useMemo,useRef,useState} from "react";
+import {createPortal} from "react-dom";
 import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import css from "./Phase3ReadoutSheets.module.css";
@@ -85,12 +86,27 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
  row:ReadoutRow;bucket:"pre"|"post";feed:BenefitFeed|null;
  researchStatus:"idle"|"loading"|"ready"|"unavailable";onClose:()=>void;
 }){
- const dialog=useRef<HTMLDialogElement>(null);
+ const panelRef=useRef<HTMLDivElement>(null);
+ const closeRef=useRef(onClose);
+ closeRef.current=onClose;
  const [groupKey,setGroupKey]=useState<(typeof SURVEY_SECTIONS)[number]["key"]>("A");
  const [surveyRank,setSurveyRank]=useState(1);
  const [gapsOnly,setGapsOnly]=useState(false);
- useEffect(()=>{const el=dialog.current;if(el&&!el.open)el.showModal();
-   return ()=>{if(el?.open)el.close();};},[]);
+ useEffect(()=>{
+   const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
+   const previousOverflow=document.body.style.overflow;
+   document.body.style.overflow="hidden";
+   panelRef.current?.focus();
+   const handleKey=(event:KeyboardEvent)=>{
+     if(event.key==="Escape"){event.preventDefault();closeRef.current();}
+   };
+   document.addEventListener("keydown",handleKey);
+   return ()=>{
+     document.removeEventListener("keydown",handleKey);
+     document.body.style.overflow=previousOverflow;
+     previousFocus?.focus();
+   };
+ },[]);
  const section=SURVEY_SECTIONS.find(g=>g.key===groupKey)||SURVEY_SECTIONS[0];
  const surveys=BENEFIT_GROUPS.filter(x=>x.number>=section.min&&x.number<=section.max);
  // An NCT can have multiple products. Never join survey records by ticker alone.
@@ -115,8 +131,11 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
    const next=surveys[Math.max(0,Math.min(surveys.length-1,currentIndex+direction))];
    if(next)setSurveyRank(next.number);
  };
- return <dialog ref={dialog} className={css.surveyDialog} onClose={onClose} onCancel={onClose}
-   aria-label={"Survey Ratings for "+row.ticker+" "+row.nctId}>
+ return createPortal(
+   <div className={css.surveyBackdrop} role="presentation"
+     onClick={event=>{if(event.target===event.currentTarget)onClose();}}>
+     <div ref={panelRef} className={css.surveyDialog} role="dialog" aria-modal="true"
+       tabIndex={-1} aria-label={"Survey Ratings for "+row.ticker+" "+row.nctId}>
    <div className={css.surveyDialogHead}>
      <div>
        <p className={css.surveyEyebrow}>{bucket==="pre"?"UPPER · 3 · PHASE 3 BEFORE READOUT":"LOWER · P · PHASE 3 AFTER READOUT"}</p>
@@ -213,7 +232,8 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
          Issuer {bucket==="post"?"readout":"source check"} · {row.evidence.evidenceDate}</a>
        {" "}— not proof that every survey metric has been researched.</p>}
    </div>
- </dialog>;
+     </div>
+   </div>,document.body);
 }
 
 function TrialTable({rows,bucket,showSurveys,onSurveyOpen}:{
