@@ -8,11 +8,14 @@ import {TOOLS_CLEAR_EVENT,TOOLS_RATINGS_STORAGE_KEY,TOOLS_COMPETITION_STORAGE_KE
   readToolsPreference,saveToolsPreference} from "../lib/tools-selection-persistence";
 import {COMPETITIVE_STRATEGY_TOPICS} from "../lib/tools-competitive-strategy";
 import {parseBenefitFeed,benefitForTrial,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
+import {competitiveReadiness,type CompetitivePopulationScan}
+  from "../lib/tools-competitive-readiness";
 type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
   inventoryMode:boolean;loading:boolean;error:string;
   selectedStages:number;selectedDesignations:number;noVerifiedNctLinks:boolean;
   sourceDate:string;sourceState:string;regulatorySourcesAvailable:boolean;
+  competitiveScan?:CompetitivePopulationScan|null;
   onPrevious:()=>void;onNext:()=>void;
 };
 const format=(n:number)=>n.toLocaleString("en-US");
@@ -48,7 +51,7 @@ function DayCell({count,date,url,description}:{count:number|null;date?:string;ur
 }
 export default function ToolsOpeningTrialGrid({
   rows,total,offset,nextOffset,inventoryMode,loading,error,
-  selectedStages,selectedDesignations,noVerifiedNctLinks,sourceDate,sourceState,regulatorySourcesAvailable,onPrevious,onNext
+  selectedStages,selectedDesignations,noVerifiedNctLinks,sourceDate,sourceState,regulatorySourcesAvailable,competitiveScan=null,onPrevious,onNext
 }:Props){
   const [sortKey,setSortKey]=useState<Field>("nctId");
   const [desc,setDesc]=useState(false);
@@ -124,6 +127,19 @@ export default function ToolsOpeningTrialGrid({
       </div>
       <strong className={css.count} role="status">{!hasSelection?"0 trials shown · no selections":loading?"Loading…":error?"Unavailable":format(total)+" restricted NCT matches"}</strong>
     </div>
+    {hasSelection&&competitiveScan&&<div className={css.competitionScan} role="status"
+      aria-label="Full restricted-pool competitive research eligibility scan">
+      <strong>CS Research Readiness Scan · Entire restricted POOL</strong>
+      <span>{format(competitiveScan.populationCount)} market-cap-screened NCTs</span>
+      <span>{format(competitiveScan.verifiedPublicReadouts)} with source-recorded public Phase 3 readouts</span>
+      <span>{format(competitiveScan.openResearchWindow)} in the readout-to-PDUFA-minus-three-day window</span>
+      <span>{format(competitiveScan.unknownPdufa)} with readout but PDUFA unverified</span>
+      <span>{format(competitiveScan.pastResearchCutoff)} at or past cutoff</span>
+      <span>{format(competitiveScan.withoutVerifiedReadout)} without verified readout date</span>
+      <small>The verified release date is not proof of a complete results dataset or pivotal-program qualification.
+        Six-topic evidence coverage is checked per displayed trial; a complete full-pool source
+        audit of those six topics is not established yet.</small>
+    </div>}
     <div className={css.scroll} role="region" aria-label="Scrollable clinical trial spreadsheet" tabIndex={0}>
       <table>
         <thead><tr><th className={css.rowNum}>#</th>
@@ -193,7 +209,13 @@ export default function ToolsOpeningTrialGrid({
               :hasSelection?"No documented trials match these selected criteria. Try a different Phase or FDA category."
               :"No trial records are available from the published source."}
           </td></tr>
-          :ordered.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);return <tr key={row.id}>
+          :ordered.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);
+            const readiness=competitiveReadiness(row,today,competitionEvidence);
+            const statusLabel=readiness.status==="NO_VERIFIED_PUBLIC_READOUT"
+              ?"Readout not verified":readiness.status==="PDUFA_DATE_UNVERIFIED"
+              ?"PDUFA unverified":readiness.status==="PDUFA_CUTOFF_REACHED"
+              ?"Past cutoff":"Window open";
+            return <tr key={row.id}>
             <td className={css.rowNum}>{offset+i+1}</td>
             <td><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
             <td>{safe(row.ticker)}</td>
@@ -206,8 +228,20 @@ export default function ToolsOpeningTrialGrid({
               description="D · Days to verified PDUFA target"/></td>
             <td className={[css.competitionCell,css.competitionStart,
                 competitiveOpen?css.competitionOpen:css.competitionEnd].join(" ")}
-                title="Competitive Strategy ranking requires verified matched comparator evidence">
-              <span className={css.ratingUnscored}>Not ranked</span>
+                title="Competitive Strategy: source and PDUFA gates are shown, but a validated ranking is not yet available">
+              <div className={css.competitionStatus}>
+                <strong>Not ranked</strong>
+                <small>{statusLabel}</small>
+                <details><summary>{readiness.verifiedTopics}/6 CS topics verified</summary>
+                  <p>{readiness.evidence.replaceAll("_"," ").toLowerCase()}.
+                    Not a verified comparative superiority or stock-appreciation score.</p>
+                  <ul>{readiness.reasons.map(reason=><li key={reason}>{reason}</li>)}</ul>
+                  {row.timeline?.phase3DataRelease&&<p>
+                    <a href={row.timeline.phase3DataRelease.sourceUrl}
+                      target="_blank" rel="noopener noreferrer">Source for public Phase 3 readout date</a>
+                  </p>}
+                </details>
+              </div>
             </td>
             {competitiveOpen&&COMPETITIVE_STRATEGY_TOPICS.map((topic,i)=>{
               const record=benefitForTrial(competitionEvidence,row);
@@ -281,6 +315,8 @@ export default function ToolsOpeningTrialGrid({
     </div>
     <div className={css.competitionHelp}>
       <strong>CS — Competitive Strategy:</strong> Tap the CS heading after S and D to reveal six monitoring columns.
+      The CS cell now identifies each trial's readout/PDUFA evidence gate and topic readiness.
+      It remains Not ranked until comparator-specific conclusions are validated.
       <button type="button" onClick={()=>setCompetitiveOpen(v=>!v)}>
         {competitiveOpen?"Collapse competitive strategy":"Expand competitive strategy"}
       </button>
