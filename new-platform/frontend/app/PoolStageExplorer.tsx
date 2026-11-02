@@ -82,7 +82,9 @@ export default function PoolStageExplorer(){
     if(saved){
       setSelectedStages(saved.selectedStages);
       setSelectedDesignations(saved.selectedDesignations);
-      setActiveFilter(saved.activeFilter);
+      // Panel visibility is transient: re-open no Phase/FDA branch on a fresh visit.
+      // Keep saved selection values intact, but all POOL sections start closed.
+      setActiveFilter(null);
       setQuery(saved.query);
       setQueryInput(saved.queryInput);
       setOffset(saved.offset);
@@ -186,8 +188,14 @@ export default function PoolStageExplorer(){
   }
   function submitSearch(event:FormEvent<HTMLFormElement>){event.preventDefault();setQuery(queryInput);setOffset(0);}
   return <section className={styles.panel} aria-label="POOL stage and FDA designation tools" style={{margin:"18px 0"}}>
-    {/* Always-visible source-backed POOL → PIPELINE → TRIALS flow. Show it first,
-        before Step 3 controls, and keep it live as selections change. */}
+    {/* All POOL segments are independent native accordions, closed on initial render.
+        Their children remain mounted while closed, preserving selections and analysis. */}
+    <details className={styles.poolSegment} data-pool-segment="funnel">
+      <summary className={styles.poolSegmentSummary}>
+        <span>1 · POOL → PIPELINE → TRIALS</span>
+        <small>Live counts and source-backed funnel</small>
+      </summary>
+      <div className={styles.poolSegmentBody}>
     <ToolsFunnel
       poolNcts={page?.restrictedScope?.originalPoolTrials??null}
       pipelineResearch={page?.pipelineResearch??null}
@@ -206,7 +214,15 @@ export default function PoolStageExplorer(){
       sourceDate={sourceDate}
       sourceState={sourceState}
     />
+      </div>
+    </details>
 
+    <details className={styles.poolSegment} data-pool-segment="selectors">
+      <summary className={styles.poolSegmentSummary}>
+        <span>2 · Phase and FDA Special Designation</span>
+        <small>{selectedStages.length} phases · {selectedDesignations.length} designations selected</small>
+      </summary>
+      <div className={styles.poolSegmentBody}>
     <div className={styles.toolsStart} aria-label="Step 3 — filter by phase or FDA designation">
       <div className={styles.toolsStepHeader}>
         <h2>Step 3 · What would you like to select?</h2>
@@ -275,8 +291,17 @@ export default function PoolStageExplorer(){
         <strong>{selectedStages.length} Phase selected · {selectedDesignations.length} Special Designation selected</strong>
       </div>}
     </div>
-    {/* Step 3 selections reveal all twenty Step 4 assessments, then Step 5 immediately below. */}
+      </div>
+    </details>
+
+    {/* Assessments, trials and advanced research are separate default-closed segments. */}
     {hasSelections&&<>
+    <details className={styles.poolSegment} data-pool-segment="assessments">
+      <summary className={styles.poolSegmentSummary}>
+        <span>3 · Scientific Assessments</span>
+        <small>20 research assessments · {number(page?.total??0)} matching trials</small>
+      </summary>
+      <div className={styles.poolSegmentBody}>
       <ToolsAssessmentSection
         rows={page?.spreadsheetRows||[]}
         total={page?.total??0}
@@ -284,6 +309,14 @@ export default function PoolStageExplorer(){
         loading={loading}
         error={error}
       />
+      </div>
+    </details>
+    <details className={styles.poolSegment} data-pool-segment="live-trials">
+      <summary className={styles.poolSegmentSummary}>
+        <span>4 · Live Trial Spreadsheet</span>
+        <small>{number(page?.total??0)} matching trials · sortable results</small>
+      </summary>
+      <div className={styles.poolSegmentBody}>
 <div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
       <ToolsOpeningTrialGrid
         rows={hasSelections?page?.spreadsheetRows||[]:[]}
@@ -304,8 +337,14 @@ export default function PoolStageExplorer(){
         onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       />
     </div>
-      <details id="tools-advanced-research" className={styles.toolsAdvanced}>
-        <summary>Additional filters, detailed trial comparisons, rankings and CSV export</summary>
+      </div>
+    </details>
+      <details id="tools-advanced-research" className={styles.poolSegment} data-pool-segment="advanced">
+        <summary className={styles.poolSegmentSummary}>
+          <span>5 · Additional filters and detailed research</span>
+          <small>Quick filters, comparisons, rankings and CSV export</small>
+        </summary>
+        <div className={styles.poolSegmentBody}>
     <details className={styles.toolsAdvanced}>
       <summary>Quick filters and shortcuts</summary>
     <div className={styles.toolsQuickFilter}>
@@ -349,6 +388,7 @@ export default function PoolStageExplorer(){
       onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       nextOffset={page?.nextOffset??null}
     />
+        </div>
       </details>
     </>}
   </section>;
