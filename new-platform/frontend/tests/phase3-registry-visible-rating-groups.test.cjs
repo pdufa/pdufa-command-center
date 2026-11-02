@@ -42,7 +42,7 @@ test("registry posting alone cannot create medical, commercial or stock ratings"
  }
  assert.equal(auditBefore.group.A.label,"Not posted");
  assert.equal(auditAfter.group.A.label,"Results posted");
- assert.equal(auditAfter.ingredient.MISS.label,"38 to review");
+ assert.equal(auditAfter.ingredient.MISS.label,"% pending");
  assert.equal(auditAfter.ingredient.GRADE.label,"Not assessed");
  assert.ok(!Object.values(auditAfter.group).some(x=>/% upside|approved|pass grade/i.test(x.label)));
 });
