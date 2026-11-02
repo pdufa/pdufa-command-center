@@ -400,7 +400,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
             : <span className={css.factorPMissing} title="Exact Phase 3 primary endpoint p-value not verified in the referenced public readout">Not reported</span>}
         </td>}<td>
           <TrialRaasDisclosure row={row} bucket={bucket} researchStatus={researchStatus}
-            coverage={researchFor(row)} onResearchRequest={onRaasOpen}/>
+            coverage={researchFor(row)} benefitFeed={benefitFeed} onResearchRequest={onRaasOpen}/>
         </td>{showSurveys&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"details")}
             aria-label={"Explore five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
