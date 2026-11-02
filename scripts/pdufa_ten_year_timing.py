@@ -150,7 +150,7 @@ def run():
     pd.DataFrame(all_candidates).to_csv(OUT/"event_coverage.csv",index=False)
     trades=pd.DataFrame(historical)
     if trades.empty:
-        summary={"status":"NOT_VALIDATED_NO_COMPLETE_ELIGIBLE_COHORT","unique_event_candidates":len(events),"marketcap_eligible_and_phase3_known":sum(z.get("reason","").startswith("PILOT_") for z in all_candidates),"price_feeds":Counter(v[1] for v in memo.values()),"years_in_events":events.pdufa_date.str[:4].value_counts().sort_index().to_dict(),"missing_2016":not any(events.pdufa_date.str.startswith("2016")),"top_windows":[]}
+        summary={"status":"NOT_VALIDATED_NO_COMPLETE_ELIGIBLE_COHORT","unique_event_candidates":len(events),"marketcap_eligible_and_phase3_known":sum(z.get("reason","").startswith("PILOT_") for z in all_candidates),"price_feeds":dict(Counter(v[0][1] for v in memo.values())),"years_in_events":events.pdufa_date.str[:4].value_counts().sort_index().to_dict(),"missing_2016":not any(events.pdufa_date.str.startswith("2016")),"top_windows":[]}
     else:
         trades.to_csv(OUT/"trade_candidates.csv",index=False)
         group=trades.groupby(["entry_Tminus","exit_Tminus"])["return_pct"]
