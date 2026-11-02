@@ -64,3 +64,40 @@ test("TOP and BOTTOM sorting and trial rows are collapsed by default and expand 
   global.fetch=oldFetch;
  }
 });
+
+test("every TOOLS page top section and Phase 3 upper control group is closed individually by default",()=>{
+ const page=fs.readFileSync(path.resolve(__dirname,"../app/tools/page.tsx"),"utf8");
+ const sheets=fs.readFileSync(path.resolve(__dirname,"../app/Phase3ReadoutSheets.tsx"),"utf8");
+ const styles=fs.readFileSync(path.resolve(__dirname,"../app/Phase3ReadoutSheets.module.css"),"utf8");
+ assert.match(page,/<details data-tools-segment="pool"/);
+ assert.match(page,/<details data-tools-segment="phase3"/);
+ assert.equal((page.match(/<details/g)||[]).length,3);
+ assert.doesNotMatch(page,/<details[^>]*\sopen(?:\s|=|>)/);
+ for(const segment of ["overview","search","survey-ratings","survey-synthesis"])
+   assert.ok(sheets.includes('data-segment="phase3-'+segment+'"'),"Missing "+segment+" accordion");
+ assert.equal((sheets.match(/className=\{css\.topSegment\}/g)||[]).length,4);
+ assert.match(sheets,/return <section className=\{css\.sheet\}[^\n]*\n\s*<details className=\{css\.sheetAccordion\}>/);
+ assert.doesNotMatch(sheets,/<details[^>]*\sopen(?:\s|=|>)/);
+ assert.match(styles,/\.topSegmentSummary\{/);
+ assert.match(styles,/\.sheetAccordion\[open\]/);
+});
+test("each spreadsheet retains two independent default-closed inner segments",async()=>{
+ const oldFetch=global.fetch;
+ global.fetch=async()=>({ok:true,text:async()=>census,json:async()=>manifest});
+ let view;
+ try{
+  await act(async()=>{view=create(React.createElement(Component));});
+  const [top,bottom]=sheetSections(view.root);
+  for(const sheet of [top,bottom]){
+   const cards=sheet.findAllByType("details");
+   assert.equal(cards.length,1);
+   assert.equal(cards[0].props.open,undefined);
+   assert.equal(cards[0].findAllByType("summary").length,1);
+   assert.equal(press(sheet,"Sorting controls").props["aria-expanded"],false);
+   assert.equal(press(sheet,"Trial rows").props["aria-expanded"],false);
+  }
+ }finally{
+  if(view)await act(async()=>view.unmount());
+  global.fetch=oldFetch;
+ }
+});
