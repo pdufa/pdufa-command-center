@@ -128,6 +128,13 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
              <p>{fact.method}</p><p className={css.factCaution}>{fact.caveat}</p>
              <a href={finances.sourceUrl} target="_blank" rel="noopener noreferrer">Check original financial disclosure</a>
            </div>)}
+           {finances.riskDisclosure&&<div className={css.sourceFact} data-historical-preentry-risk={entry.id}>
+             <strong>Pre-entry SEC financing risk · going-concern substantial doubt</strong>
+             <p>Risk reported as of {finances.riskDisclosure.asOf} in an SEC filing published {finances.riskDisclosure.publishedAt}, before the selected research entry.</p>
+             <p>{finances.riskDisclosure.summary}</p>
+             <p className={css.factCaution}>{finances.riskDisclosure.caveat} This is entry-time adverse evidence, not a retrospective RAAS score.</p>
+             <a href={finances.riskDisclosure.sourceUrl} target="_blank" rel="noopener noreferrer">Read SEC going-concern disclosure</a>
+           </div>}
          </>:<p>No timely issuer/SEC financial source imported for this example.</p>}
          <p><strong>Still blocked:</strong> {financeQuality.issues.join("; ")}.</p>
        </div>
