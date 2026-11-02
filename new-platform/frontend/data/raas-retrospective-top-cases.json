@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_RETROSPECTIVE_PRE_READOUT_INTAKE",
+  "sourceAsOf": "2026-11-02",
+  "note": "Research-only historical pre-Phase3-readout example. Market data and entry window selected retrospectively, never represented as a contemporaneous RAAS prediction. Cash, biological evidence and market-cap figures must be verified for proper out-of-sample grading.",
+  "records": [
+    {
+      "id": "gern-imerge-mds-pre2023-illustrative",
+      "ticker": "GERN",
+      "drug": "imetelstat",
+      "indication": "Transfusion-dependent anemia in lower-risk MDS",
+      "nctIds": [
+        "NCT02598661"
+      ],
+      "stage": "pre",
+      "historicalWindowSelected": "RETROSPECTIVELY",
+      "entryDecisionArchiveAvailable": false,
+      "priorGuidanceDate": "2022-11-03",
+      "priorGuidanceSourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017022021575/gern-ex99_1.htm",
+      "priorGuidance": "IMerge Phase 3 topline results expected in early January 2023",
+      "publicReadoutDate": "2023-01-04",
+      "publicReadoutSourceUrl": "https://ir.geron.com/news-releases/news-release-details/geron-announces-positive-top-line-results-imerge-phase-3-trial",
+      "entry": {
+        "date": "2022-11-18",
+        "close": 2.26,
+        "currency": "USD",
+        "sourceUrl": "https://www.financecharts.com/stocks/GERN/summary/price"
+      },
+      "exit": {
+        "date": "2022-12-30",
+        "close": 2.42,
+        "currency": "USD",
+        "sourceUrl": "https://www.financecharts.com/stocks/GERN/summary/price"
+      },
+      "marketCapAtEntry": {
+        "usdMillions": 861.591,
+        "sourceUrl": "https://www.financecharts.com/stocks/GERN/summary/market-cap",
+        "basis": "2022-11-18 third-party historical market cap series; market data adjustments not independently audited."
+      },
+      "eventQuality": {
+        "priceCorporateActionChecked": false,
+        "tradingFrictionAssessed": false,
+        "actualTradeOrArchivedPrediction": false,
+        "eligibleForValidatedRAAS": false
+      },
+      "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
+      "reviewNote": "Two historical closes predate public Phase 3 results; no contemporaneously filed RAAS forecast. Clinical findings disclosed on January 4, 2023 must not influence the November 2022 eligibility/ratings."
+    }
+  ]
+}
