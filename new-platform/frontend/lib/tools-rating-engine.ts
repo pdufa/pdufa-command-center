@@ -5,6 +5,7 @@
  */
 import {BENEFIT_GROUPS,benefitForTrial,type BenefitFeed,type BenefitFact} from "./benefit-assessments";
 import {competitiveReadiness,type CompetitiveResearchTrial} from "./tools-competitive-readiness";
+import type {RegistrySourceRow} from "./registry-benefit-coverage";
 
 export type RatingGroupKey="M"|"A"|"B"|"C"|"D"|"E";
 export type RatingIngredientKey="VER"|"MOD"|"MISS"|"CRIT"|"ER"|"FDA"|
@@ -42,7 +43,7 @@ const factLinks=(facts:Record<string,BenefitFact>,fields:readonly string[]):Evid
  * server-validated fact. A missing feed is NOT counted as zero evidence. */
 export function auditTrialRatings(
   row:CompetitiveResearchTrial,today:string,feed:BenefitFeed|null,
-  feedUnavailable=false
+  feedUnavailable=false,registry:RegistrySourceRow|null=null
 ):RatingAudit{
   const matched=benefitForTrial(feed,row);
   const facts=matched?.facts||{};
@@ -62,6 +63,36 @@ export function auditTrialRatings(
       (fields.length-good-modeled)+" missing. Evidence coverage only, NOT a score or positive outcome.",
       "coverage",found):noScore(name+": "+absent);
   };
+  // Registry measures are independently source-recorded *observations*.
+  // Do not count them as efficacy, safety superiority, head-to-head findings,
+  // a public sponsor readout date or verified commercial differentiation.
+  const registryLink=registry?.resultsPosted?{
+    field:"ClinicalTrials.gov posted results (not comparative superiority)" as const,
+    status:"VERIFIED" as const,
+    url:"https://clinicaltrials.gov/study/"+row.nctId,
+    date:registry.retrievedAt.slice(0,10)
+  }:null;
+  const clinical=coverage(keys.CL,"Medical and clinical benefit");
+  const safety=coverage(keys.SAF,"Safety");
+  const primary=registry?.resultsPosted&&registry.measuredPrimary&&!registry.truncated;
+  const serious=registry?.resultsPosted&&registry.measuredSeriousEvents&&!registry.truncated;
+  const clinicalInput:RatingAuditCell=clinical.kind!=="unscored"?{
+    ...clinical,
+    explanation:clinical.explanation+(primary?
+      " ClinicalTrials.gov also has measured primary outcomes; interpreting efficacy still requires trial-specific review.":""),
+    links:registryLink&&primary?[...clinical.links,registryLink]:clinical.links
+  }:primary&&registryLink?input("Registry data",
+    registry.primaryOutcomeCount+" primary outcome(s) recorded in ClinicalTrials.gov as of "+
+    registry.retrievedAt.slice(0,10)+". Measurements are available but have NOT been clinically adjudicated; no comparative advantage is established.",
+    "coverage",[registryLink]):clinical;
+  const safetyInput:RatingAuditCell=safety.kind!=="unscored"?{
+    ...safety,
+    explanation:safety.explanation+(serious?
+      " Registry serious-adverse-event counts are available, not comparative safety superiority.":""),
+    links:registryLink&&serious?[...safety.links,registryLink]:safety.links
+  }:serious&&registryLink?input("Registry AEs",
+    registry.seriousEventTerms+" serious-adverse-event term(s) recorded; counts require comparable exposure and adjudication. NOT a safety advantage.",
+    "coverage",[registryLink]):safety;
   const unsupported=(name:string)=>noScore(name+": no validated source-linked rating inputs are mapped yet.");
   const critical=[
     !/^NCT\d{8}$/.test(row.nctId)||!row.ticker.trim()||!row.drug.trim()||!row.indication.trim()
@@ -89,7 +120,7 @@ export function auditTrialRatings(
       "Source-recorded days to PDUFA, not an FDA decision readiness score.","status",
       row.timeline?.pdufaTarget?[{field:"pdufaTarget",status:"VERIFIED",
         url:row.timeline.pdufaTarget.sourceUrl,date:row.timeline.pdufaTarget.date}]:[]),
-    CL:coverage(keys.CL,"Medical and clinical benefit"),SAF:coverage(keys.SAF,"Safety"),
+    CL:clinicalInput,SAF:safetyInput,
     COMP:coverage(keys.COMP,"Competitor-specific differentiation"),
     POP:coverage(keys.POP,"Patient opportunity"),ACCESS:coverage(keys.ACCESS,"Commercial access"),
     REV:coverage(keys.REV,"Revenue opportunity"),VAL:coverage(keys.VAL,"Valuation and shareholder risk"),
