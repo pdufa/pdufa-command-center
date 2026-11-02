@@ -47,7 +47,7 @@ export function parseCorporateActions(input:unknown):CorporateActionFeed{
  for(const r of f.records){
   if(!r||!r.ticker?.trim()||companies.has(r.ticker.toUpperCase())||
    !["NASDAQ_COMMON","NASDAQ_ADS"].includes(r.securityClass)||
-   (r.securityClass==="NASDAQ_ADS"&&(!Number.isInteger(r.adsOrdinaryShares)||!(r.adsOrdinaryShares!>1)))||
+   (r.securityClass==="NASDAQ_ADS"&&(typeof r.adsOrdinaryShares!=="number"||!Number.isInteger(r.adsOrdinaryShares)||r.adsOrdinaryShares<=1))||
    (r.securityClass==="NASDAQ_COMMON"&&r.adsOrdinaryShares!==undefined)||
    !Array.isArray(r.events)||!r.events.length||
    r.researchStatus!=="PARTIAL_CORPORATE_ACTION_HISTORY")
