@@ -431,6 +431,16 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
 }){
   const [sort,setSort]=useState<Phase3ReadoutSortKey>("ticker");
   const [desc,setDesc]=useState(false);
+  // Segment controls are intentionally independent for TOP and BOTTOM.
+  // Start every segment collapsed, including after a fresh page load.
+  const [sortSegmentOpen,setSortSegmentOpen]=useState(false);
+  const [rowsSegmentOpen,setRowsSegmentOpen]=useState(false);
+  const allSegmentsOpen=sortSegmentOpen&&rowsSegmentOpen;
+  const toggleAllSegments=()=>{
+    const next=!allSegmentsOpen;
+    setSortSegmentOpen(next);
+    setRowsSegmentOpen(next);
+  };
   const resetSorting=()=>{
     setSort("ticker");
     setDesc(false);
@@ -463,9 +473,29 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
         <strong>{number(rows.length)} documented trials · {number(matched.length)} matching</strong>
         <button type="button" onClick={()=>downloadCsv(bucket,matched)} disabled={!matched.length}>
           Export matching CSV</button>
+        <button type="button" className={css.sheetSegmentAllButton}
+          onClick={toggleAllSegments}
+          aria-label={(allSegmentsOpen?"Collapse all":"Expand all")+" "+(pre?"TOP":"BOTTOM")+" spreadsheet segments"}>
+          {allSegmentsOpen?"Collapse all segments ▴":"Expand all segments ▾"}
+        </button>
       </div>
     </div>
-    <div className={css.postSort}>
+    <div className={css.sheetSegmentButtons} role="group"
+      aria-label={(pre?"TOP · 3":"BOTTOM · P")+" collapsible spreadsheet segments"}>
+      <button type="button" aria-expanded={sortSegmentOpen}
+        aria-controls={bucket+"-phase3-sort-controls"}
+        onClick={()=>setSortSegmentOpen(open=>!open)}>
+        <span aria-hidden="true">{sortSegmentOpen?"▾":"▸"}</span>
+        Sorting controls <small>{sortSegmentOpen?"Expanded":"Collapsed"}</small>
+      </button>
+      <button type="button" aria-expanded={rowsSegmentOpen}
+        aria-controls={bucket+"-phase3-trial-rows"}
+        onClick={()=>setRowsSegmentOpen(open=>!open)}>
+        <span aria-hidden="true">{rowsSegmentOpen?"▾":"▸"}</span>
+        Trial rows <small>{number(matched.length)} matching · {rowsSegmentOpen?"Expanded":"Collapsed"}</small>
+      </button>
+    </div>
+    {sortSegmentOpen&&<div id={bucket+"-phase3-sort-controls"} className={css.postSort}>
       <label>Sort {pre?"pre-release":"post-release"} trials by{" "}
         <select aria-label={bucket+" release sort column"} value={sort}
           onChange={e=>{setSort(e.target.value as Phase3ReadoutSortKey);setDesc(false);if((e.target.value==="survey"||e.target.value==="synthesis")&&researchStatus==="idle")onResearchSort();}}>
@@ -485,10 +515,12 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
            researchStatus==="unavailable"?"Survey research unavailable · unassessed rows remain in original order":
            "Sorted by documented evidence coverage, not medical success or stock appreciation"}
         </span>}
-    </div>
-    <TrialTable rows={matched} bucket={bucket} originalOrder={rows} showSurveys={showSurveys}
-      showSynthesis={showSynthesis} sort={sort} desc={desc} onSort={setSortColumn}
-      benefitFeed={benefitFeed} researchStatus={researchStatus} onSurveyOpen={onSurveyOpen}/>
+    </div>}
+    {rowsSegmentOpen&&<div id={bucket+"-phase3-trial-rows"} className={css.sheetRowsSegment}>
+      <TrialTable rows={matched} bucket={bucket} originalOrder={rows} showSurveys={showSurveys}
+        showSynthesis={showSynthesis} sort={sort} desc={desc} onSort={setSortColumn}
+        benefitFeed={benefitFeed} researchStatus={researchStatus} onSurveyOpen={onSurveyOpen}/>
+    </div>}
   </section>;
 }
 /** Full historical issuer-cap census with dated issuer readouts, never registry-result proxy. */
