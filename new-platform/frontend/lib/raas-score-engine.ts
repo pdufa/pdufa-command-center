@@ -103,7 +103,7 @@ export function computeRaasScore(input:{
   const values=c.metrics.map(m=>accepted.get(m.id)?.score);
   const present=values.filter((v):v is 0|25|50|75|100=>v!==undefined);
   return {id:c.id,name:c.name,weight:c.weight,graded:present.length,total:5,
-   score:present.length===5?present.reduce((a,b)=>a+b,0)/5:null};
+   score:present.length===5?present.reduce<number>((a,b)=>a+b,0)/5:null};
  });
  const blocked=input.gates.length===0||input.gates.some(g=>g.status!=="PASSED");
  const full=missing.length===0&&rejected.length===0&&!blocked;
