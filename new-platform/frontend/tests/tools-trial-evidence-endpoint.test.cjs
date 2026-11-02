@@ -1,0 +1,32 @@
+"use strict";
+const {test}=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const route=fs.readFileSync(path.join(__dirname,"../app/api/tools-trial-evidence/route.ts"),"utf8");
+const ui=fs.readFileSync(path.join(__dirname,"../app/ToolsOpeningTrialGrid.tsx"),"utf8");
+test("universal TOOLS registry lookup is authenticated, strictly NCT-scoped and source-bounded",()=>{
+ assert.match(route,/hasSession/);
+ assert.match(route,/params\.size!==1/);
+ assert.match(route,/\/\^NCT\\d\{8\}\$\//);
+ assert.match(route,/tools-pool-snapshot\.json/);
+ assert.match(route,/verifiedToolPool\(raw\)/);
+ assert.match(route,/item\.id==="TRIAL\|"\+nct/);
+ assert.match(route,/registryBase\+nct/);
+ assert.match(route,/redirect:"error"/);
+ assert.match(route,/body\.length>max/);
+ assert.match(route,/parseRegistryBenefitResearch\(JSON\.parse\(body\),nct/);
+ assert.match(route,/qualification:"NOT_VERIFIED"/);
+ assert.match(route,/clinicalComparisonVerified:false/);
+ assert.match(route,/stockAppreciationRank:null/);
+ assert.doesNotMatch(route,/searchParams\.get\("url"\)/);
+});
+test("current screened-pool row permits source lookup even when not in historical 375 snapshot",()=>{
+ assert.match(ui,/\/api\/tools-trial-evidence\?nct=/);
+ assert.match(ui,/item\.nctId!==nctId/);
+ assert.match(ui,/ClinicalTrials\.gov has no posted outcome results/);
+ assert.match(ui,/Check trial endpoints/);
+ assert.match(ui,/Check serious-event counts/);
+ assert.match(ui,/observedSeriousEventRate\(group\.affected,group\.atRisk\)/);
+ assert.match(ui,/No effectiveness or stock ranking is calculated/);
+});
