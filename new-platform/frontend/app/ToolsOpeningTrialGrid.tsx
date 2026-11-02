@@ -12,7 +12,7 @@ import {competitiveReadiness,type CompetitivePopulationScan}
   from "../lib/tools-competitive-readiness";
 import {auditTrialRatings,type RatingAuditCell} from "../lib/tools-rating-engine";
 import type {RegistryCoverage} from "../lib/registry-benefit-coverage";
-import type {RegistryPeerLeads} from "../lib/registry-competitor-leads";
+import type {RegistryPeerLeads,RegistryPeerDiscoverySummary} from "../lib/registry-competitor-leads";
 type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
   inventoryMode:boolean;loading:boolean;error:string;
@@ -81,6 +81,7 @@ export default function ToolsOpeningTrialGrid({
   const [registryCoverage,setRegistryCoverage]=useState<RegistryCoverage|null>(null);
   const [registryUnavailable,setRegistryUnavailable]=useState(false);
   const [peerLeads,setPeerLeads]=useState<Record<string,RegistryPeerLeads>|null>(null);
+  const [peerSummary,setPeerSummary]=useState<RegistryPeerDiscoverySummary|null>(null);
   const [peerUnavailable,setPeerUnavailable]=useState(false);
   const [selectionsRestored,setSelectionsRestored]=useState(false);
   useEffect(()=>{
@@ -138,20 +139,30 @@ export default function ToolsOpeningTrialGrid({
     [registryCoverage]);
   useEffect(()=>{
     if(!competitiveOpen||selectedStages+selectedDesignations===0){
-      setPeerLeads(null);setPeerUnavailable(false);return;
+      setPeerLeads(null);setPeerSummary(null);setPeerUnavailable(false);return;
     }
     const controller=new AbortController();
     setPeerUnavailable(false);
     void fetch("/api/registry-competitor-leads",{cache:"no-store",signal:controller.signal})
       .then(async response=>{
         if(!response.ok)throw Error("PEER_LEADS_UNAVAILABLE");
-        const result=await response.json() as {schemaVersion:number;status:string;records:Record<string,RegistryPeerLeads>};
+        const result=await response.json() as {schemaVersion:number;status:string;
+          summary:RegistryPeerDiscoverySummary;records:Record<string,RegistryPeerLeads>};
         if(result.schemaVersion!==1||result.status!=="UNVERIFIED_DISCOVERY_ONLY"||
-          !result.records||typeof result.records!=="object")throw Error("PEER_LEADS_INVALID");
-        return result.records;
+          !result.records||typeof result.records!=="object"||
+          result.summary?.scope!=="HISTORICAL_375_PHASE3_REGISTRY_ARCHIVE"||
+          !Number.isSafeInteger(result.summary.studiesInArchive)||
+          result.summary.studiesInArchive!==Object.keys(result.records).length||
+          result.summary.validatedClinicalComparisons!==0||
+          result.summary.stockAppreciationRanks!==0)throw Error("PEER_LEADS_INVALID");
+        return result;
       })
-      .then(records=>{if(!controller.signal.aborted)setPeerLeads(records);})
-      .catch(()=>{if(!controller.signal.aborted){setPeerLeads(null);setPeerUnavailable(true);}});
+      .then(data=>{if(!controller.signal.aborted){
+        setPeerLeads(data.records);setPeerSummary(data.summary);
+      }})
+      .catch(()=>{if(!controller.signal.aborted){
+        setPeerLeads(null);setPeerSummary(null);setPeerUnavailable(true);
+      }});
     return ()=>controller.abort();
   },[competitiveOpen,selectedStages,selectedDesignations]);
   useEffect(()=>{
@@ -204,6 +215,18 @@ export default function ToolsOpeningTrialGrid({
       <small>The verified release date is not proof of a complete results dataset or pivotal-program qualification.
         Six-topic evidence coverage is checked per displayed trial; a complete full-pool source
         audit of those six topics is not established yet.</small>
+      {competitiveOpen&&peerSummary&&<div className={css.peerSummary} role="status">
+        <strong>Archived competitor discovery · research leads only</strong>
+        <span>{format(peerSummary.studiesWithConditionMatchedLeads)} / {format(peerSummary.studiesInArchive)}
+          {" "}historical studies have at least one condition-matched research lead</span>
+        <span>{format(peerSummary.postedResultStudiesWithLeads)} studies have both posted results
+          and at least one peer lead</span>
+        <span>{format(peerSummary.totalMatchedStudyLinks)} source-linked study pairings
+          across the archive</span>
+        <small>Not a complete current competitor inventory. No peer in this count is
+          verified as an active, directly comparable or FDA-approved commercial competitor.
+          No comparative ranks have been established.</small>
+      </div>}
     </div>}
     <div className={css.scroll} role="region" aria-label="Scrollable clinical trial spreadsheet" tabIndex={0}>
       <table>
