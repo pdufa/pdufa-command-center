@@ -1,0 +1,82 @@
+"use strict";
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const ts=require("typescript");
+require.extensions[".ts"]=(module,filename)=>{
+ const js=ts.transpileModule(fs.readFileSync(filename,"utf8"),{
+  fileName:filename,reportDiagnostics:true,
+  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}
+ }).outputText;
+ module._compile(js,filename);
+};
+const intake=require("../lib/raas-retrospective-intake.ts");
+const raw=require("../data/raas-retrospective-source-cases.json");
+test("one sourced historical post-Phase3 VRNA research window is identified but not treated as a prediction",()=>{
+ const feed=intake.parseRetrospectiveFeed(raw);
+ assert.equal(feed.records.length,1);
+ const record=feed.records[0];
+ assert.equal(record.ticker,"VRNA");
+ assert.equal(record.stage,"post");
+ assert.deepEqual(record.nctIds,["NCT04535986","NCT04542057"]);
+ assert.equal(record.entryDecisionArchiveAvailable,false);
+ assert.equal(record.eventQuality.eligibleForValidatedRAAS,false);
+ assert.equal(record.eventQuality.priceCorporateActionChecked,false);
+ assert.equal(record.entry.close,14.85);
+ assert.equal(record.exit.close,15);
+ assert.equal(record.pdufaDate,"2024-06-26");
+ assert.equal(record.marketCapAtEntry.usdMillions,1204);
+ assert.ok(record.verifiedBeforeEntry.every(e=>e.date<=record.entry.date));
+ const outcomes=intake.retrospectiveResults(feed);
+ assert.equal(outcomes.length,1);
+ assert.equal(outcomes[0].observedGrossChangePercent,1.01);
+ assert.equal(outcomes[0].calendarCutoff,"2024-06-23");
+ assert.equal(outcomes[0].status,"RESEARCH_ONLY_NOT_CALIBRATED");
+ assert.equal(outcomes[0].forecastScore,null);
+ assert.equal(outcomes[0].forecastError,null);
+});
+test("research-only feed can never masquerade as pre-committed trade predictions or validated RAAS",()=>{
+ const mutate=(changes)=>({...raw,records:[{...raw.records[0],...changes}]});
+ assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
+  entryDecisionArchiveAvailable:true
+ })),/RAAS_RETROSPECTIVE_IDENTITY_INVALID/);
+ assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
+  eventQuality:{...raw.records[0].eventQuality,eligibleForValidatedRAAS:true}
+ })),/RAAS_RETROSPECTIVE_IDENTITY_INVALID/);
+ assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
+  entry:{...raw.records[0].entry,date:"2024-05-11"}
+ })),/RAAS_RETROSPECTIVE_PRICE_INVALID/);
+});
+test("impossible cutoff, post-entry source and incorrect historical market cap are rejected",()=>{
+ const base=raw.records[0];
+ const mutate=(changes)=>({...raw,records:[{...base,...changes}]});
+ assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
+  exit:{...base.exit,date:"2024-06-24"}
+ })),/RAAS_RETROSPECTIVE_WINDOW_INVALID/);
+ assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
+  verifiedBeforeEntry:[...base.verifiedBeforeEntry,{kind:"PHASE3_PUBLIC_READOUT",date:"2024-05-14",sourceUrl:"https://example.org/later",notes:"Late"}]
+ })),/RAAS_RETROSPECTIVE_SOURCE_INVALID/);
+ assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
+  marketCapAtEntry:{...base.marketCapAtEntry,usdMillions:10001}
+ })),/RAAS_RETROSPECTIVE_MARKET_CAP_INVALID/);
+});
+test("research intake can coexist with zero approved historical RAAS outcomes",()=>{
+ const actualHistorical=require("../data/raas-historical-cases.json");
+ const approved=require("../data/raas-approved-calibrations.json");
+ const reviewed=require("../data/raas-reviewed-snapshots.json");
+ assert.equal(actualHistorical.cases.length,0);
+ assert.equal(approved.entries.length,0);
+ assert.equal(reviewed.records.length,0);
+});
+test("validator and RAAS disclosure TSX parse without errors",()=>{
+ const root=path.resolve(__dirname,"..");
+ for(const file of ["lib/raas-retrospective-intake.ts","app/TrialRaasDisclosure.tsx"]){
+  const result=ts.transpileModule(fs.readFileSync(path.join(root,file),"utf8"),{
+   fileName:file,reportDiagnostics:true,
+   compilerOptions:{module:ts.ModuleKind.ESNext,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}
+  });
+  assert.deepEqual((result.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCategory.Error)
+   .map(d=>ts.flattenDiagnosticMessageText(d.messageText," ")),[],file);
+ }
+});
