@@ -10,6 +10,7 @@ import ToolsFunnel from "./ToolsFunnel";
 import ToolsOptionNumber from "./ToolsOptionNumber";
 import ToolsOpeningTrialGrid from "./ToolsOpeningTrialGrid";
 import ToolsAssessmentSection from "./ToolsAssessmentSection";
+import type {CompetitivePopulationScan} from "../lib/tools-competitive-readiness";
 import {TOOLS_CLEAR_EVENT,TOOLS_FILTERS_STORAGE_KEY,readToolsPreference,saveToolsPreference,
   parseToolsFilterSelections,clearToolsPreferences} from "../lib/tools-selection-persistence";
 
@@ -47,6 +48,7 @@ type PoolResponse={
   spreadsheetRows?:ToolsSpreadsheetRow[];
   selectionSummary?:SelectedFiltersSummary|null;
   pipelineResearch?:{screenedTrials:number;screenDate:string;qualification:"NOT_VERIFIED"}|null;
+  competitiveScan?:CompetitivePopulationScan|null;
 };
 const groups=[
   {label:"Early clinical",stages:["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3"]},
@@ -296,6 +298,7 @@ export default function PoolStageExplorer(){
         error={hasSelections?error:""}
         sourceDate={sourceDate}
         sourceState={sourceState}
+        competitiveScan={page?.competitiveScan??null}
         regulatorySourcesAvailable={!!page?.regulatorySourcesAvailable}
         onPrevious={()=>setOffset(Math.max(0,offset-50))}
         onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
