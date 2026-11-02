@@ -180,6 +180,11 @@ test("Approved RAAS ledger requires matching benchmark AND rule version AND hold
  assert.equal(run({...d,holdoutTrainPrograms:29}).acceptedRatings.length,0);
  assert.equal(run({...d,holdoutTestPrograms:29}).acceptedRatings.length,0);
  assert.equal(run({...d,protocolConsistent:false}).acceptedRatings.length,0);
+ const oldRecord={...record,ratings:record.ratings.map(({ruleVersion,...older})=>older)};
+ const oldLedger=parseRaasReviewedLedger({schemaVersion:1,scope:"RAAS_REVIEWED_TRIAL_SNAPSHOTS",
+  sourceAsOf:"2026-11-02",note:"Synthetic legacy",records:[oldRecord]});
+ assert.equal(reviewedScoreForTrial(oldLedger,calibration,record,"pre","CURRENT",
+  "2026-11-02",[d]).acceptedRatings.length,0);
  assert.equal(run(d).acceptedRatings.length,1);
  assert.equal(run(d).score.score,null); // 29 other metric grades remain missing.
 });
