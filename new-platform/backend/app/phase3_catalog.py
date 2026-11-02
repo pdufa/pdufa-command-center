@@ -492,16 +492,41 @@ def _prediction_rows(c, nct, actual=None, actual_date=None):
             WHERE l.nct_id=:nct AND l.application_id=:app AND l.verification_status='VERIFIED'
             AND e.verification_status='VERIFIED' AND ae.verification_status='VERIFIED'"""), {"nct": nct, "app": row["application_id"]}).all()
         linked = any(_time(v[0]) <= _time(row["evidence_cutoff"]) and _time(v[1]) <= _time(row["evidence_cutoff"]) for v in linked_rows)
-        timely = bool(linked and actual in expected and actual_date and row["created_at"][:10] < actual_date and _time(row["evidence_cutoff"]) <= _time(row["created_at"]))
+        blockers = []
+        if not linked:
+            blockers.append("APPLICATION_RELATION_NOT_VERIFIED_AT_CUTOFF")
+        if actual not in expected or not actual_date:
+            blockers.append("FDA_OUTCOME_NOT_VERIFIED")
+        elif row["created_at"][:10] >= actual_date:
+            blockers.append("PREDICTION_NOT_BEFORE_FDA_ACTION")
+        if _time(row["evidence_cutoff"]) > _time(row["created_at"]):
+            blockers.append("EVIDENCE_CUTOFF_AFTER_PREDICTION")
         evidence = []
         for eid in json.loads(row["evidence_ids"]):
             source = c.execute(text("SELECT * FROM phase3_evidence WHERE evidence_id=:id AND verification_status='VERIFIED'"), {"id": eid}).mappings().first()
             if source is None or _time(source["retrieved_at"]) > _time(row["evidence_cutoff"]):
-                timely = False
-            elif source:
+                if "PREDICTION_SOURCE_NOT_VERIFIED_AT_CUTOFF" not in blockers:
+                    blockers.append("PREDICTION_SOURCE_NOT_VERIFIED_AT_CUTOFF")
+            else:
                 evidence.append(_public_evidence(source))
+        timely = not blockers
+        # Official outcome evidence is a separate post-decision source. Never
+        # treat trial results, an issuer press release, or a pending action as FDA approval.
+        outcome_source = None
+        if actual in expected and actual_date:
+            official = c.execute(text("""SELECT e.url FROM phase3_fda_decisions d
+              JOIN phase3_evidence e ON e.evidence_id=d.evidence_id
+              WHERE d.application_id=:app AND d.decision=:decision
+                AND d.decision_date=:action_date
+                AND d.verification_status='VERIFIED' AND e.verification_status='VERIFIED'
+                AND e.publisher_kind='FDA'
+              ORDER BY d.published_at DESC LIMIT 1"""),
+              {"app":row["application_id"],"decision":actual,"action_date":actual_date}).first()
+            if official:
+                outcome_source = official[0]
         correctness = row["decision"] == expected[actual] if timely and row["decision"] != "ABSTAIN" else None
-        result.append({"prediction_id": row["prediction_id"], "nct_id": nct, "application_id": row["application_id"], "decision": row["decision"], "created_at": row["created_at"], "evidence_cutoff": row["evidence_cutoff"], "actual_decision": actual, "actual_decision_date": actual_date, "scientific_readiness": row["scientific_readiness"], "confidence": row["confidence"], "uncertainty": row["uncertainty"], "evidence": evidence, "correctness": correctness, "prospective_eligible": timely})
+        result.append({"prediction_id": row["prediction_id"], "nct_id": nct, "application_id": row["application_id"], "decision": row["decision"], "created_at": row["created_at"], "evidence_cutoff": row["evidence_cutoff"], "actual_decision": actual, "actual_decision_date": actual_date, "scientific_readiness": row["scientific_readiness"], "confidence": row["confidence"], "uncertainty": row["uncertainty"], "evidence": evidence, "correctness": correctness, "prospective_eligible": timely,
+                       "review_blockers": blockers, "fda_source_url": outcome_source})
     return result
 
 
@@ -509,7 +534,20 @@ def historical_validation(engine):
     with engine.connect() as c:
         applications = c.execute(text("SELECT COUNT(*) FROM phase3_fda_applications")).scalar_one()
         apps = c.execute(text("SELECT application_id FROM phase3_fda_applications")).scalars().all()
-        known = sum(_application_outcome(c, app)[0] in ("APPROVED", "CRL", "EXTENDED") for app in apps)
+        outcomes_for_review = {app:_application_outcome(c,app) for app in apps}
+        known = sum(outcome[0] in ("APPROVED", "CRL", "EXTENDED") for outcome in outcomes_for_review.values())
+        _application_outcome_for_review = {}
+        for app,(actual,action_date) in outcomes_for_review.items():
+            if actual not in ("APPROVED","CRL","EXTENDED") or not action_date:
+                continue
+            source = c.execute(text("""SELECT e.url FROM phase3_fda_decisions d
+                JOIN phase3_evidence e ON e.evidence_id=d.evidence_id
+                WHERE d.application_id=:app AND d.decision=:decision
+                  AND d.decision_date=:action_date AND d.verification_status='VERIFIED'
+                  AND e.verification_status='VERIFIED' AND e.publisher_kind='FDA'
+                ORDER BY d.published_at DESC LIMIT 1"""),
+                {"app":app,"decision":actual,"action_date":action_date}).first()
+            _application_outcome_for_review[app] = (actual,action_date,source[0] if source else None)
         ncts = c.execute(text("SELECT DISTINCT nct_id FROM phase3_predictions")).scalars().all()
         predictions = [p for nct in ncts for p in _prediction_rows(c, nct)]
     eligible = [p for p in predictions if p["prospective_eligible"]]
@@ -524,6 +562,53 @@ def historical_validation(engine):
     for decision in ("PASS", "CRL", "EXTENSION"):
         subset = [p for p in evaluated if p["decision"] == decision]
         categories[decision] = {"evaluated": len(subset), "correct": sum(p["correctness"] for p in subset), "accuracy": sum(p["correctness"] for p in subset) / len(subset) if len(subset) >= 10 and len(evaluated) >= 30 else None}
+    selected_ids = {p["prediction_id"] for p in selected}
+    # Every saved prediction receives an explicit, reproducible disposition.
+    # No historical prediction may be fabricated after the FDA decision.
+    review_queue = []
+    for p in predictions:
+        if p["review_blockers"]:
+            disposition = "EXCLUDED"
+            reason = p["review_blockers"][0]
+        elif p["prediction_id"] not in selected_ids:
+            disposition = "EXCLUDED"
+            reason = "LATER_PREDICTION_FOR_SAME_APPLICATION"
+        elif p["decision"] == "ABSTAIN":
+            disposition = "ABSTAIN"
+            reason = "LOCKED_PREDICTION_ABSTAINED"
+        else:
+            disposition = "EVALUATED"
+            reason = "LOCKED_PREDICTION_BEFORE_FDA_DECISION"
+        review_queue.append({
+            "prediction_id":p["prediction_id"],"nct_id":p["nct_id"],
+            "application_id":p["application_id"],"predicted_decision":p["decision"],
+            "actual_decision":p["actual_decision"],"decision_date":p["actual_decision_date"],
+            "prediction_created_at":p["created_at"],"evidence_cutoff":p["evidence_cutoff"],
+            "disposition":disposition,"reason":reason,
+            "fda_source_url":p["fda_source_url"],"correctness":p["correctness"]
+        })
+    # FDA applications with known action but no eligible locked prediction
+    # are review candidates, not retrospectively scored model successes.
+    eligible_app_ids = set(first_by_app)
+    unforecasted = sorted(app for app in apps if app not in eligible_app_ids
+                          and app is not None and _application_outcome_for_review.get(app))
+    for app in unforecasted:
+        actual, action_date, source_url = _application_outcome_for_review[app]
+        review_queue.append({
+            "prediction_id":None,"nct_id":None,"application_id":app,
+            "predicted_decision":None,"actual_decision":actual,"decision_date":action_date,
+            "prediction_created_at":None,"evidence_cutoff":None,
+            "disposition":"NO_PREDICTION",
+            "reason":"VERIFIED_OUTCOME_WITHOUT_LOCKED_PREDECISION_PREDICTION",
+            "fda_source_url":source_url,"correctness":None
+        })
+    reason_counts = {}
+    for row in review_queue:
+        reason_counts[row["reason"]] = reason_counts.get(row["reason"],0)+1
+    # Prioritize blockers, then successful cases; the full count remains visible
+    # when the authenticated response returns only the first 50 review rows.
+    review_queue.sort(key=lambda p:(p["disposition"] in ("EVALUATED","ABSTAIN"),
+                                    p["application_id"],p["prediction_id"] or ""))
     cases = [{"id": p["prediction_id"], "nct_id": p.get("nct_id"),
               "predicted_decision": p["decision"], "actual_decision": p["actual_decision"],
               "confidence": p["confidence"], "status": "SCORED" if p["correctness"] is not None else "ABSTAIN_OR_UNRESOLVED",
@@ -531,7 +616,11 @@ def historical_validation(engine):
               "missing_evidence": p["uncertainty"]} for p in selected]
     counts = {"correct_predictions": sum(p["correctness"] is True for p in evaluated),
               "scored_predictions": len(evaluated), "abstentions": sum(p["decision"] == "ABSTAIN" for p in selected)}
-    return {"counts": counts, "cases": cases, "status": "NOT_VALIDATED" if not evaluated else "REVIEW_REQUIRED", "total_applications": applications, "eligible_applications": len(first_by_app),
+    return {"counts": counts, "cases": cases,
+            "case_review": {"total":len(review_queue),"returned":min(50,len(review_queue)),
+                            "reason_counts":reason_counts,"records":review_queue[:50],
+                            "limit":50},
+            "status": "NOT_VALIDATED" if not evaluated else "REVIEW_REQUIRED", "total_applications": applications, "eligible_applications": len(first_by_app),
             "number_evaluated": len(evaluated), "number_abstained": sum(p["decision"] == "ABSTAIN" for p in selected),
             "number_with_known_outcomes": known, "prediction_records": len(predictions), "temporally_eligible_predictions": len(eligible),
             "excluded_for_lookahead_or_missing_outcome": len(predictions) - len(eligible), "accuracy_by_decision": categories,
