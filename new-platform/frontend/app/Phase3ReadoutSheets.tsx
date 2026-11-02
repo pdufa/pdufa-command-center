@@ -301,6 +301,15 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  ];
  const checked=researchStatus==="ready";
  const audit=finalSurveyReadiness(groups,rules,checked&&!!record);
+ const surveyCoverage=BENEFIT_GROUPS.map(survey=>{
+   const verifiedCount=record?survey.fields.filter(field=>record.facts[field.id]?.status==="VERIFIED").length:0;
+   const modeledCount=record?survey.fields.filter(field=>record.facts[field.id]?.status==="MODELED").length:0;
+   return {
+     number:survey.number,name:survey.name,
+     verified:verifiedCount,modeled:modeledCount,
+     missing:survey.fields.length-verifiedCount-modeledCount,total:survey.fields.length
+   };
+ });
  const unverifiedQuestions=record?BENEFIT_GROUPS.flatMap(survey=>
    survey.fields.filter(field=>record.facts[field.id]?.status!=="VERIFIED").map(field=>({
      survey:survey.number,label:field.label,
@@ -352,6 +361,29 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
              "Not assessed"}
            </p>
            <p><strong>FDA decision forecast:</strong> ABSTAIN — this coverage audit cannot establish approval, a Complete Response Letter, an extension, or a probability. Scientific outcome calibration remains separate.</p>
+           <details className={css.finalSurveyMatrix} aria-label="Twenty survey evidence coverage matrix">
+             <summary>View all 20 surveys · 38 source-check questions</summary>
+             <p>Each row measures documented inputs, not clinical benefit, FDA success, or return probability. Unverified inputs cannot become zero scores.</p>
+             <div className={css.finalSurveyMatrixScroll} role="region" aria-label="All twenty survey evidence coverage" tabIndex={0}>
+               <table>
+                 <thead><tr>
+                   <th scope="col">Survey</th><th scope="col">Verified</th>
+                   <th scope="col">Modeled</th><th scope="col">Not recorded</th>
+                   <th scope="col">Evidence coverage</th>
+                 </tr></thead>
+                 <tbody>{surveyCoverage.map(survey=><tr key={survey.number} data-final-survey-number={survey.number}>
+                   <th scope="row">{survey.number}. {survey.name}</th>
+                   <td>{record?survey.verified+" / "+survey.total:"—"}</td>
+                   <td>{record?survey.modeled:"—"}</td>
+                   <td>{record?survey.missing:"—"}</td>
+                   <td>{record?
+                     (survey.verified===survey.total?"Fully verified":survey.verified>0?"Partially verified":"Not verified"):
+                     "Not assessed"}</td>
+                 </tr>)}</tbody>
+               </table>
+             </div>
+             <button type="button" className={css.surveyOpenButton} onClick={onDetailedSurveys}>Open individual survey questions →</button>
+           </details>
            {audit.assessable&&<details className={css.finalSurveyMissing}>
              <summary>Review outstanding evidence · {unverifiedQuestions.length} not verified · {audit.failedGates.length} failed checks</summary>
              {audit.failedGates.length>0&&<div>
