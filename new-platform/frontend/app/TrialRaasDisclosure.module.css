@@ -100,3 +100,9 @@
 .exploratoryGrade>strong{font-size:12px;color:#2c4352}
 .exploratoryGrade p{margin:0;font-size:11px;line-height:1.5;color:#40525c}
 .exploratoryGrade a{font-size:11px;color:#1b6482;text-decoration:underline;font-weight:750}
+
+/* Published clinical context is explicitly not a between-arm efficacy threshold. */
+.benchmarkContext{display:flex;flex-direction:column;gap:5px;border-top:1px solid #d1d9df;padding:8px;background:#fbfcfc}
+.benchmarkContext>strong{font-size:11px;color:#294e62}
+.benchmarkContext>p{margin:0;font-size:11px;line-height:1.45;color:#52646b}
+.benchmarkContext>a{font-size:11px;color:#145e7b;text-decoration:underline;font-weight:750}
