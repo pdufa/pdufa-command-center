@@ -229,6 +229,47 @@ def test_prediction_without_verified_trial_application_relationship_rejected(eng
         catalog.record_prediction(engine, {"prediction_id": "unmapped", "nct_id": "NCT00116805", "application_id": "NDA000099:unknown", "decision": "PASS", "created_at": "2026-11-01T00:00:00Z", "evidence_cutoff": "2026-10-30T23:00:00Z", "evidence_ids": ["ctgov:" + record()["sha256"]]})
 
 
+
+def test_historical_case_review_queue_identifies_unforecasted_official_fda_outcome(engine):
+    insert(engine)
+    regulatory(engine)
+    result = catalog.historical_validation(engine)
+    assert result["number_evaluated"] == 0
+    assert result["case_review"]["total"] == 1
+    assert result["case_review"]["reason_counts"] == {
+        "VERIFIED_OUTCOME_WITHOUT_LOCKED_PREDECISION_PREDICTION": 1
+    }
+    case = result["case_review"]["records"][0]
+    assert case["application_id"] == "NDA000001:example"
+    assert case["disposition"] == "NO_PREDICTION"
+    assert case["prediction_id"] is None and case["correctness"] is None
+    assert case["fda_source_url"] == "https://www.fda.gov/drugs/test-evidence"
+
+
+def test_historical_case_review_queue_exposes_post_decision_exclusion_and_no_fake_accuracy(engine):
+    insert(engine)
+    regulatory(engine, decision_date="2026-02-03")
+    source_id = "ctgov:" + record()["sha256"]
+    catalog.record_prediction(engine, {
+        "prediction_id": "post-outcome", "nct_id": "NCT00116805",
+        "application_id": "NDA000001:example", "decision": "PASS",
+        "created_at": "2026-11-01T00:00:00Z",
+        "evidence_cutoff": "2026-10-30T23:00:00Z",
+        "evidence_ids": [source_id]
+    })
+    result = catalog.historical_validation(engine)
+    assert result["number_evaluated"] == 0
+    assert result["case_review"]["total"] == 2
+    assert result["case_review"]["reason_counts"]["PREDICTION_NOT_BEFORE_FDA_ACTION"] == 1
+    excluded = next(row for row in result["case_review"]["records"] if row["prediction_id"] == "post-outcome")
+    assert excluded["disposition"] == "EXCLUDED"
+    assert excluded["reason"] == "PREDICTION_NOT_BEFORE_FDA_ACTION"
+    assert excluded["actual_decision"] == "APPROVED"
+    assert excluded["correctness"] is None
+    assert excluded["fda_source_url"] == "https://www.fda.gov/drugs/test-evidence"
+    assert sum(result["accuracy_by_decision"][k]["evaluated"] for k in ("PASS","CRL","EXTENSION")) == 0
+
+
 def test_historical_validation_empty_is_honest(engine):
     report = catalog.historical_validation(engine)
     assert report["status"] == "NOT_VALIDATED" and report["number_evaluated"] == 0

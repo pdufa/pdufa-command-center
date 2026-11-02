@@ -106,7 +106,7 @@ test("class performance requires both 30 scored cases and 10 per decision class"
  assert.equal(r.accuracyByDecision.CRL.accuracy,8/11);
 });
 test("final SURVEY uses only authenticated validation and never derives an FDA forecast",()=>{
- assert.match(component,/auditFinalFdaValidation\(await response\.json\(\)\)/);
+ assert.match(component,/auditFinalFdaValidation\(raw\)/);
  assert.match(component,/fetch\("\/api\/phase3-trials\/validation"/);
  assert.match(component,/Historical FDA decision validation audit/);
  assert.match(component,/Only predictions locked before their independently documented FDA decisions/);

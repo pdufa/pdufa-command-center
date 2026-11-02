@@ -105,6 +105,21 @@ async function finalSurveyTest(page,label){
       "Historical evidence cannot assert a certified model");
     check(!historyText.includes("Model validation: VALIDATED"),
       "Existing historical validation must not confer unsupported scientific approval");
+    const roster=history.locator('details[aria-label="Historical FDA application case readiness roster"]');
+    if(await roster.count()){
+      await roster.locator(":scope > summary").click();
+      const rosterText=await roster.innerText();
+      check(rosterText.includes("FDA historical case review")&&
+        (rosterText.includes("Case-level diagnostics are not available")||
+         rosterText.includes("Rows shown:")),
+        "Case readiness must distinguish legacy backend from an actual empty cohort");
+      check(rosterText.includes("not a successful backtest prediction"),
+        "A verified FDA outcome without a predecision prediction must never be a hit");
+      check(!rosterText.includes("Model validation: VALIDATED"),
+        "No historical case evidence should certify an outcome model");
+      await roster.locator(":scope > summary").click();
+    }
+
     await history.locator(":scope > summary").click();
     const registry=dialog.locator('details[aria-label="Cross-source Phase 3 registered protocol alignment"]');
     await registry.locator(":scope > summary").click();

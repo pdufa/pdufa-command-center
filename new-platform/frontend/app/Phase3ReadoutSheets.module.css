@@ -283,3 +283,15 @@
 .finalFdaValidationCounts strong{font-size:19px;font-variant-numeric:tabular-nums;color:#173e2b}
 .finalFdaValidationCounts span{font-size:11px;line-height:1.4;color:#4d6356}
 @media(max-width:640px){.finalFdaValidationCounts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Historical FDA case roster: a research queue, never a predictive grade. */
+.finalSurveyCaseRoster{margin-top:10px;border:1px solid #bcd4c5;border-radius:8px;padding:10px;background:#fff}
+.finalSurveyCaseRoster>summary{font-size:13px;font-weight:800;cursor:pointer;min-height:36px}
+.finalSurveyCaseRoster>p{font-size:12px;line-height:1.55}
+.finalSurveyCaseRoster table{min-width:850px}
+.finalSurveyCaseRoster tbody th{max-width:210px;overflow-wrap:anywhere}
+.finalSurveyCaseRoster td{white-space:normal;min-width:150px}
+.finalSurveyCaseReasons{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:9px 0}
+.finalSurveyCaseReasons>div{display:flex;justify-content:space-between;gap:12px;border:1px solid #d0e1d5;border-radius:6px;padding:8px;background:#f8faf8}
+.finalSurveyCaseReasons span{font-size:12px;line-height:1.5}
+.finalSurveyCaseReasons strong{font-size:13px;font-variant-numeric:tabular-nums}
