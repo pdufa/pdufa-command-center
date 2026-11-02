@@ -14,6 +14,7 @@ export default function ToolsPage(){
       <p className={styles.eyebrow}>PDUFA · RESEARCH TOOLS</p>
       <h1>TOOLS</h1>
     </header>
+    <PoolStageExplorer/>
     <Phase3RegistryPostingSheets/>
     <details style={{margin:"14px 0",padding:"10px",border:"1px solid #bfd5c7",borderRadius:9}}>
       <summary style={{cursor:"pointer",fontWeight:750,color:"#18543b"}}>
@@ -21,6 +22,5 @@ export default function ToolsPage(){
       </summary>
       <Phase3ReadoutSheets/>
     </details>
-    <PoolStageExplorer/>
   </main>;
 }
