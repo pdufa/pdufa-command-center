@@ -87,7 +87,7 @@ All 8 case prices still need a second independently date-specific source; 5 case
 
 ## Historical entry/exit second-provider price checks (2026-11-02)
 
-`data/raas-price-crosschecks.json` now stores dated comparison quotations for **12 of 16** historical ENTRY/EXIT points across 8 retrospective examples, including 5 examples whose **both dates** match a separately displayed price. Each result carries a source URL and explicitly marks whether it is a daily session close or a weekly Friday-ending close. A Friday weekly close is only compared with the same Friday entry/exit date.
+`data/raas-price-crosschecks.json` now stores dated comparison quotations for **14 of 16** historical ENTRY/EXIT points across 8 retrospective examples, including 6 examples whose **both dates** match a separately displayed price. Each result carries a source URL and explicitly marks whether it is a daily session close or a weekly Friday-ending close. A Friday weekly close is only compared with the same Friday entry/exit date.
 
 | Phase | Program | Side | Date | Original | Second quote | Secondary source |
 |---|---|---|---|---:|---:|---|
@@ -95,6 +95,8 @@ All 8 case prices still need a second independently date-specific source; 5 case
 | TOP | BBIO / acoramidis | EXIT | 2023-07-07 | $16.89 | $16.89 | StatMuse (dated daily) |
 | TOP | MDGL / resmetirom | EXIT | 2022-12-16 | $63.80 | $63.80 | StatMuse (dated daily) |
 | TOP | GERN / imetelstat | EXIT | 2022-12-30 | $2.42 | $2.42 | Geron SEC Form 4 (filed 2023-01-03) |
+| BOTTOM | MDGL / resmetirom | ENTRY | 2023-11-03 | $146.89 | $146.89 | Fintel dated earnings drift price |
+| BOTTOM | MDGL / resmetirom | EXIT | 2024-03-08 | $255.32 | $255.32 | GEN March 9, 2024 article |
 | BOTTOM | VRNA / ensifentrine | ENTRY | 2024-05-10 | $14.85 | $14.85 | ChartExchange (dated daily) |
 | BOTTOM | VRNA / ensifentrine | EXIT | 2024-06-21 | $15.00 | $15.00 | ChartExchange (dated daily) |
 | BOTTOM | GERN / imetelstat | ENTRY | 2024-05-03 | $3.93 | $3.93 | Sector Alpha (Friday weekly) |
@@ -104,18 +106,19 @@ All 8 case prices still need a second independently date-specific source; 5 case
 | BOTTOM | BBIO / acoramidis | ENTRY | 2024-05-10 | $29.10 | $29.10 | Sector Alpha (Friday weekly) |
 | BOTTOM | BBIO / acoramidis | EXIT | 2024-11-15 | $23.72 | $23.72 | Sector Alpha (Friday weekly) |
 
-**4 missing date-specific secondary closes** remain:
+**2 missing date-specific secondary closes** remain:
 - TOP GERN 2022-11-18
 - TOP MDGL 2022-11-18
-- BOTTOM MDGL 2023-11-03 and 2024-03-08
 
 Independent historical data collection may still find these quotes; do not infer the quoted price from a nearby day or a monthly average.
+
+**Additional date-specific cross-checks:** Fintel's earnings-history table lists the MDGL November 3, 2023 price of $146.89 (https://fintel.io/seps/us/mdgl). The *Genetic Engineering & Biotechnology News* article published March 9, 2024 reports the MDGL March 8, 2024 closing price of $255.32 (https://www.genengnews.com/topics/drug-discovery/stockwatch-madrigal-shares-soar-as-fda-nears-historic-mash-decision/). The GEN article was published **after** the simulated March 8 exit; the UI marks it as retrospective quote corroboration rather than contemporaneous prediction input.
 
 **Important chronology:** The GERN December 30 2022 closing price of $2.42 is directly corroborated by SEC Form 4 footnote F1, filed January 3 2023: https://www.sec.gov/Archives/edgar/data/886744/000106299323000091/form4.xml . Since the document was filed **after** the research example's December 30 exit, it can confirm a historical quote but must never be used to create a before-exit RAAS prediction. The UI flags this distinction and the validator checks the filing date.
 
 `lib/raas-price-crosschecks.ts` rejects unknown cases, mismatched trade dates, wrong source URLs, invalid prices, duplicated providers and weekly closes not tied to Fridays. The per-case audit in `/raas-history` displays missing prices and the daily-versus-weekly evidence granularity. Regression tests cover matches, mismatches and the prohibition on automatically approving any investment score.
 
-**These are NOT 12 independently tape-certified adjusted closes.** Third-party websites may share data providers; corporate actions, dividends, ADS/share-class transformations, split factors, merger/delisting cash-outs, NYSE/Nasdaq exchange sessions and actual fills remain unverified. Even 16/16 matching displayed closes would not validate RAAS predictive accuracy. Verified historic market prices and contemporaneous *original* predictions remain separate prerequisites.
+**These are NOT 14 independently tape-certified adjusted closes.** Third-party websites may share data providers; corporate actions, dividends, ADS/share-class transformations, split factors, merger/delisting cash-outs, NYSE/Nasdaq exchange sessions and actual fills remain unverified. Even 16/16 matching displayed closes would not validate RAAS predictive accuracy. Verified historic market prices and contemporaneous *original* predictions remain separate prerequisites.
 
 ## Preliminary corporate-action cross-checks (not a completed adjustment audit)
 
