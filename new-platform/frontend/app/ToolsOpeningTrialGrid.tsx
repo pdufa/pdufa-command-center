@@ -455,7 +455,7 @@ export default function ToolsOpeningTrialGrid({
                   title={ingredient.name+": source-backed input coverage or explicit unscored status"}>
                   <ResearchAuditCell cell={audit.ingredient[ingredient.key]}/>
                   {(ingredient.key==="CL"||ingredient.key==="SAF")&&
-                   /^NCT\\d{8}$/.test(row.nctId)&&
+                   /^NCT\d{8}$/.test(row.nctId)&&
                    <RegistryMeasuredDetail nctId={row.nctId} mode={ingredient.key}/>}
                 </td>)}
               </Fragment>;
