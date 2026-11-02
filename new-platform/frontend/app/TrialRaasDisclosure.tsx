@@ -10,6 +10,7 @@ import css from "./TrialRaasDisclosure.module.css";
 import pilotData from "../data/raas-pilot-observations.json";
 import historicalCases from "../data/raas-historical-cases.json";
 import retrospectiveExamples from "../data/raas-retrospective-source-cases.json";
+import retrospectiveTopExamples from "../data/raas-retrospective-top-cases.json";
 import historicalMetricSnapshots from "../data/raas-historical-metric-snapshots.json";
 import {parseRaasPilotFeed,observationsForTrial,observedCalculation,computeRaasScore,type RaasObservation} from "../lib/raas-score-engine";
 import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
@@ -20,6 +21,7 @@ import {contextualClinicalBenchmark} from "../lib/raas-clinical-benchmarks";
 import {evaluateHistoricalFeed,parseHistoricalFeed,walkForwardFolds,RAAS_HISTORICAL_MIN_INDEPENDENT_PROGRAMS} from "../lib/raas-historical-backtest";
 import {evaluateMetricHistory,parseMetricHistory} from "../lib/raas-metric-backtest";
 import {parseRetrospectiveFeed,retrospectiveResults} from "../lib/raas-retrospective-intake";
+import {parseTopRetrospective,topRetrospectiveResults} from "../lib/raas-top-retrospective-intake";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
@@ -30,6 +32,8 @@ const historicalFeed=parseHistoricalFeed(historicalCases);
 const historicalValidation=evaluateHistoricalFeed(historicalFeed);
 const retrospectiveFeed=parseRetrospectiveFeed(retrospectiveExamples);
 const retrospectiveWindows=retrospectiveResults(retrospectiveFeed);
+const retrospectiveTopFeed=parseTopRetrospective(retrospectiveTopExamples);
+const retrospectiveTopWindows=topRetrospectiveResults(retrospectiveTopFeed);
 const metricHistoryReview=evaluateMetricHistory(historicalFeed,historicalValidation,parseMetricHistory(historicalMetricSnapshots));
 const calibrationRegistry=parseRaasCalibrations(approvedCalibrations);
 const reviewedLedger=parseRaasReviewedLedger(reviewedSnapshots);
@@ -92,6 +96,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const historicalStage=historicalValidation.byStage.find(x=>x.stage===bucket)!;
  const historicalFolds=walkForwardFolds(historicalValidation.accepted,bucket);
  const comparableResearch=retrospectiveWindows.filter(example=>example.stage===bucket);
+ const comparableTopResearch=bucket==="pre"?retrospectiveTopWindows:[];
  const historyMetrics=metricHistoryReview.filter(m=>m.stage===bucket);
  const label=isTop?"TOP-RAAS":"BOTTOM-RAAS";
  const groups=RAAS_METRIC_CATALOG[bucket];
@@ -142,9 +147,9 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
        </div>
      </details>
      <details className={css.anchorDetails}>
-       <summary>Historical source-checked price examples · {comparableResearch.length} · research only ▸</summary>
+       <summary>Historical source-checked price examples · {comparableResearch.length+comparableTopResearch.length} · research only ▸</summary>
        <div className={css.historicalStatus}>
-         {comparableResearch.length===0?<p>No real-price research examples yet for this phase. Do not confuse a missing example with a zero return.</p>:
+         {comparableResearch.length===0&&comparableTopResearch.length===0?<p>No real-price research examples yet for this phase. Do not confuse a missing example with a zero return.</p>:
            comparableResearch.map(example=>{const original=retrospectiveFeed.records.find(r=>r.id===example.id)!;
              return <div key={example.id} className={css.pilotObservation}>
                <strong>{example.ticker} · {original.drug} · {original.indication}</strong>
@@ -159,7 +164,21 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
                <a href={original.realizedFDAAction.sourceUrl} target="_blank" rel="noopener noreferrer">Subsequent FDA decision source (outcome only)</a>
              </div>;
            })}
-         <p>These examples are held in a separate retrospective research ledger. They do not enter the qualified, timestamped RAAS scoring or return-validation calculations.</p>
+         {comparableTopResearch.map(example=>{const original=retrospectiveTopFeed.records.find(r=>r.id===example.id)!;
+           return <div key={example.id} className={css.pilotObservation}>
+             <strong>{example.ticker} · {original.drug} · {original.indication}</strong>
+             <p><strong>TOP research-only pre-readout example, retrospectively selected.</strong> {example.nctCount} registered trial identifier(s), one company-therapy opportunity. No archived RAAS buy signal.</p>
+             <p>Prior sponsor guidance {example.priorGuidanceDate}: {original.priorGuidance}.</p>
+             <p>Closing prices: {example.entryDate} ${example.entryClose.toFixed(2)} → {example.exitDate} ${example.exitClose.toFixed(2)}. Observed gross appreciation: <strong>{example.observedGrossChangePercent>=0?"+":""}{example.observedGrossChangePercent.toFixed(2)}%</strong>.</p>
+             <p>Phase 3 results released {example.readoutDate} after the selected exit; entry market capitalization: ${example.marketCapUsdMillions.toLocaleString("en-US")} million.</p>
+             <p>Corporate-action verification and execution costs remain outstanding. The subsequent positive result is deliberately excluded from any entry-date prediction.</p>
+             <a href={original.priorGuidanceSourceUrl} target="_blank" rel="noopener noreferrer">Sponsor readout timing guidance available at entry</a>
+             <a href={original.entry.sourceUrl} target="_blank" rel="noopener noreferrer">Historical TOP share closing prices</a>
+             <a href={original.marketCapAtEntry.sourceUrl} target="_blank" rel="noopener noreferrer">Historical entry market capitalization</a>
+             <a href={original.publicReadoutSourceUrl} target="_blank" rel="noopener noreferrer">Public Phase 3 outcome (future at entry)</a>
+           </div>;
+         })}
+         <p>These examples are held in separate retrospective TOP and BOTTOM research ledgers. They do not enter the qualified, timestamped RAAS scoring or return-validation calculations.</p>
        </div>
      </details>
      <p className={css.hint}><strong>{snapshot} · {grading.graded}/30 approved metric grades · {pilotGrades.length} exploratory research score · {pilotFacts.length} dated observations.</strong> {grading.reason} Open a category and a metric to see numerical observations, threshold requirements, sources and downside risks. Only complete approved metric sets can produce an overall RAAS.</p>
