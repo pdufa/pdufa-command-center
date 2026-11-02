@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "sourceAsOf": "2026-11-02",
+  "scope": "HISTORICAL_EXACT_NCT_PHASE3_ISSUER_READOUT_ONLY",
+  "notes": "Registry entries are sponsor-submitted protocol records, not an independent clinical trial analysis or independent efficacy/safety adjudication. Registry snapshot timing must not be conflated with historical protocol versioning.",
+  "records": [
+    {
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "trial": "EMBARQ-CSU1",
+      "primaryEndpointId": "UAS7_CHANGE",
+      "primaryEndpointLabel": "Mean change from baseline in UAS7",
+      "primaryWeek": 12,
+      "randomized": true,
+      "placeboControlled": true,
+      "blinded": true,
+      "registryMirror": "https://ichgcp.net/clinical-trials-registry/NCT06445023",
+      "canonicalRegistry": "https://clinicaltrials.gov/study/NCT06445023",
+      "registrySnapshotLastPosted": "2026-03-25",
+      "sourceNote": "Sponsor-supplied registry protocol; accessible March 2026 version predates September 2026 issuer readout. Last posted snapshot date is a record update, not independent trial-result adjudication."
+    },
+    {
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "trial": "EMBARQ-CSU2",
+      "primaryEndpointId": "UAS7_CHANGE",
+      "primaryEndpointLabel": "Mean change from baseline in UAS7",
+      "primaryWeek": 12,
+      "randomized": true,
+      "placeboControlled": true,
+      "blinded": true,
+      "registryMirror": "https://ichgcp.net/clinical-trials-registry/NCT06455202",
+      "canonicalRegistry": "https://clinicaltrials.gov/study/NCT06455202",
+      "registrySnapshotLastPosted": "2026-03-25",
+      "sourceNote": "Sponsor-supplied registry protocol; accessible March 2026 version predates September 2026 issuer readout. Last posted snapshot date is a record update, not independent trial-result adjudication."
+    },
+    {
+      "nctId": "NCT06641076",
+      "ticker": "MLTX",
+      "drug": "sonelokimab",
+      "indication": "psoriatic arthritis",
+      "trial": "IZAR-1",
+      "primaryEndpointId": "ACR50_RESPONSE",
+      "primaryEndpointLabel": "Proportion achieving ACR50 response",
+      "primaryWeek": 16,
+      "randomized": true,
+      "placeboControlled": true,
+      "blinded": true,
+      "registryMirror": "https://ichgcp.net/clinical-trials-registry/NCT06641076",
+      "canonicalRegistry": "https://clinicaltrials.gov/study/NCT06641076",
+      "registrySnapshotLastPosted": "2026-08-12",
+      "sourceNote": "Sponsor-supplied registry protocol. Accessible August 12 snapshot postdates August 10 issuer topline; this snapshot alone cannot establish the endpoint definition was preregistered before the readout. Placebo arm exists in design, but arm-level outcomes remain blinded."
+    }
+  ]
+}
