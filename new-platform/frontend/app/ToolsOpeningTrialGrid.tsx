@@ -4,7 +4,7 @@ import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
 import css from "./ToolsOpeningTrialGrid.module.css";
-import TrialColumnFilterBar,{applyColumnFilters,activeColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
+import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 import {TOOLS_CLEAR_EVENT,TOOLS_RATINGS_STORAGE_KEY,TOOLS_COMPETITION_STORAGE_KEY,
   readToolsPreference,saveToolsPreference} from "../lib/tools-selection-persistence";
 import {COMPETITIVE_STRATEGY_TOPICS} from "../lib/tools-competitive-strategy";
