@@ -101,7 +101,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const scoreSnapshots=(["ENTRY","CURRENT","EXIT"] as const).map(period=>({
    period,reviewed:reviewedScoreForTrial(reviewedLedger,calibrationRegistry,{
      nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
-   },bucket,period,reviewedLedger.sourceAsOf)
+   },bucket,period,reviewedLedger.sourceAsOf,metricHistoryReview)
  }));
  const reviewed=scoreSnapshots.find(s=>s.period===snapshot)?.reviewed??null;
  const grading=reviewed?.score??computeRaasScore({stage:bucket,snapshot,asOf:pilot.sourceAsOf,
