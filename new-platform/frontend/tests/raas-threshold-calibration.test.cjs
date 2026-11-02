@@ -100,7 +100,9 @@ test("Even manually approved labels cannot bypass missing same-metric historical
  const without=ledgers.reviewedScoreForTrial(...args,[]);
  assert.equal(without.acceptedRatings.length,0);
  assert.equal(without.score.score,null);
- const diagnostic={metricId:"pre-4-1",stage:"pre",independentPrograms:30,
+ const diagnostic={metricId:"pre-4-1",stage:"pre",independentPrograms:60,
+   benchmarkId,ruleVersion:"synthetic-v1",protocolConsistent:true,
+   holdoutTrainPrograms:30,holdoutTestPrograms:30,
    spearmanScoreToReturn:.2,status:"REVIEW_ELIGIBLE_NOT_APPROVED"};
  const withHistory=ledgers.reviewedScoreForTrial(...args,[diagnostic]);
  assert.equal(withHistory.acceptedRatings.length,1);
