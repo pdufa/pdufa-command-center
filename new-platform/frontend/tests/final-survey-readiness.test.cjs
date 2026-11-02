@@ -94,3 +94,17 @@ test("final dialog exposes separate grades, exact trial scope and every evidence
  assert.match(source,/ready=audit\.reviewReady/);
  assert.match(source,/matched research inputs|No unique matching research record/i);
 });
+
+test("combined final SURVEY preserves all 20 canonical rows with sourced statuses, not synthetic medical scores",()=>{
+ assert.match(source,/const surveyCoverage=BENEFIT_GROUPS\.map\(survey=>/);
+ assert.match(source,/data-final-survey-number=\{survey\.number\}/);
+ assert.match(source,/Twenty survey evidence coverage matrix/);
+ assert.match(source,/All twenty survey evidence coverage/);
+ assert.match(source,/survey\.fields\.filter\(field=>record\.facts\[field\.id\]\?\.status==="VERIFIED"\)/);
+ assert.match(source,/survey\.fields\.filter\(field=>record\.facts\[field\.id\]\?\.status==="MODELED"\)/);
+ assert.match(source,/survey\.fields\.length-verifiedCount-modeledCount/);
+ assert.match(source,/Fully verified/);
+ assert.match(source,/Partially verified/);
+ assert.match(source,/Not assessed/);
+ assert.match(source,/not clinical benefit, FDA success, or return probability/);
+});
