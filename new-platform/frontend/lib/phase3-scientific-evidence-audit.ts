@@ -3,6 +3,7 @@
  * FDA approval/CRL/extension probability.
  */
 import type {BenefitRecord} from "./benefit-assessments";
+import {checkPhase3PublishedArithmetic} from "./phase3-published-arithmetic";
 export type ScientificEvidenceCheck={
  id:string;
  title:string;
@@ -25,10 +26,9 @@ const fact=(record:BenefitRecord|null,id:string)=>
 export function phase3ScientificEvidenceAudit(record:BenefitRecord|null):ScientificEvidenceAudit{
  const source=record&&Object.values(record.facts).length>0&&
   Object.values(record.facts).every(f=>f.status==="VERIFIED");
- const primary=fact(record,"clinicalBenefit"),magnitude=fact(record,"magnitude");
- const comparator=!!primary&&!!magnitude&&
-  /vs placebo|versus placebo/i.test(String(primary.value))&&
-  /placebo-adjusted/i.test(String(magnitude.value));
+ // Source strings alone cannot validate a treatment effect. Require an exact
+ // blinded-arm ledger match and recomputed, correctly signed differences.
+ const comparator=checkPhase3PublishedArithmetic(record)!==null;
  const later=fact(record,"durability");
  const safety=fact(record,"seriousAes")||fact(record,"discontinuation");
  const checks=[
@@ -37,7 +37,7 @@ export function phase3ScientificEvidenceAudit(record:BenefitRecord|null):Scienti
    unknown("issuer","Exact-trial issuer result documentation",
    "No source-matched issuer research record is available; results cannot be inferred from study status or ticker."),
   comparator?documented("comparator","Placebo-adjusted numerical efficacy comparison",
-   "Sponsor disclosed a placebo comparison and treatment-effect magnitude; verify model assumptions, estimand, denominators, multiplicity, and confidence intervals independently."):
+   "Sponsor-published 150 mg versus placebo arms and derived arithmetic match the exact NCT source ledger. No independent clinical dataset review, covariance, model validation, CI or adjusted p-value has been established."):
    unknown("comparator","Placebo-adjusted numerical efficacy comparison",
    "An exact-arm placebo-adjusted estimate is not documented in this research record. An active-arm response alone cannot establish comparative efficacy."),
   later&&/Week 24/i.test(String(later.value))?

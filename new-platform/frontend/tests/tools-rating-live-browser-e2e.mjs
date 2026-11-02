@@ -97,6 +97,22 @@ async function finalSurveyTest(page,label){
       "Source presence must not falsely imply independent clinical review");
     check(scientificText.includes("FDA decision evidence"),
       "FDA decision evidence must remain explicitly unverified");
+    const arithmetic=scientific.locator('details[aria-label="Exact-trial published effect-size arithmetic"]');
+    await arithmetic.locator(":scope > summary").click();
+    const arithmeticText=await arithmetic.innerText();
+    if(bucket==="pre"){
+      check(arithmeticText.includes("No exact-NCT, fully reconciled placebo comparison"),
+        "Pre-readout evidence must not contain an invented treatment difference");
+    }else{
+      check(/Week 12 UAS7 extra mean reduction versus placebo/.test(arithmeticText),
+        "Source-matched EMBARQ study must have explicit arithmetic instead of a clinical grade");
+      check(/Week 24 complete-response difference/.test(arithmeticText),
+        "Longer-term response difference must be distinguishable from continuous durability");
+      check(arithmeticText.includes("SEC-filed copy of the same company release"),
+        "Company SEC filing is corroboration of a disclosure, not independent clinical review");
+      check(/No NNT, CI/.test(arithmeticText),"Missing arm denominators forbid fake NNT or CI");
+    }
+    await arithmetic.locator(":scope > summary").click();
     await scientific.locator(":scope > summary").click();
     const matrix=dialog.locator('details[aria-label="Twenty survey evidence coverage matrix"]');
     await matrix.locator(":scope > summary").click();
