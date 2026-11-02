@@ -106,6 +106,21 @@ async function finalSurveyTest(page,label){
     check(!historyText.includes("Model validation: VALIDATED"),
       "Existing historical validation must not confer unsupported scientific approval");
     await history.locator(":scope > summary").click();
+    const registry=dialog.locator('details[aria-label="Cross-source Phase 3 registered protocol alignment"]');
+    await registry.locator(":scope > summary").click();
+    const registryText=await registry.innerText();
+    if(bucket==="post"){
+      check(registryText.includes("Primary endpoint aligned"),
+        "Post-readout issuer result must match an exact-NCT registry primary endpoint");
+      check(registryText.includes("ClinicalTrials.gov exact NCT record"),
+        "Endpoint check must link its independent registry protocol source");
+      check(registryText.includes("does not increase any of the 38 SURVEY evidence counts"),
+        "Registry agreement must not inflate sponsor-result verification");
+    } else {
+      check(registryText.includes("Not established"),
+        "Pre-release trial without matching study research cannot pass protocol concordance");
+    }
+    await registry.locator(":scope > summary").click();
     const scientific=dialog.locator('details[aria-label="Phase 3 scientific evidence verification checklist"]');
     await scientific.locator(":scope > summary").click();
     const scientificText=await scientific.innerText();

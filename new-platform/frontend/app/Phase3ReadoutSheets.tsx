@@ -15,6 +15,8 @@ import {auditFinalFdaValidation,type FinalFdaValidation} from "../lib/final-surv
 import {finalSurveyNextActions} from "../lib/final-survey-next-actions";
 import {phase3ScientificEvidenceAudit} from "../lib/phase3-scientific-evidence-audit";
 import {checkPhase3PublishedArithmetic} from "../lib/phase3-published-arithmetic";
+import {phase3RegistryConcordance} from "../lib/phase3-registry-concordance";
+import protocolRegistry from "../data/phase3-protocol-registry-checks.json";
 import {surveyScoringAssessments,surveyScoringGateLabel} from "../lib/final-survey-scoring-protocol";
 
 type Bucket="pre"|"post"|"unverified";
@@ -321,6 +323,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  const audit=finalSurveyReadiness(groups,rules,checked&&!!record);
  const scientificAudit=phase3ScientificEvidenceAudit(record);
  const arithmeticAudit=checkPhase3PublishedArithmetic(record);
+ const registeredProtocol=phase3RegistryConcordance(record,protocolRegistry.records);
  const nextActions=finalSurveyNextActions({researchStatus,exactRecord:!!record,
    gates:rules,groups,
    questions:BENEFIT_GROUPS.flatMap(survey=>survey.fields.map(field=>({
@@ -425,6 +428,24 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
                 <p><strong>Calibration:</strong> Not established · <strong>Model validation:</strong> NOT VALIDATED.</p>
                 <p>{outcomeValidation.result.limitation}</p>
               </>}
+           </details>
+           <details className={css.finalSurveyMissing} aria-label="Cross-source Phase 3 registered protocol alignment">
+             <summary>ClinicalTrials.gov protocol cross-check · {registeredProtocol.status==="PROTOCOL_ALIGNED"?"Primary endpoint aligned":"Not established"}</summary>
+             <p><strong>{registeredProtocol.trial} · Protocol versus issuer disclosure:</strong> {registeredProtocol.summary}</p>
+             {registeredProtocol.status==="PROTOCOL_ALIGNED"&&<>
+               <p><strong>Registered primary outcome:</strong> {registeredProtocol.primaryOutcome}</p>
+               <p><strong>Trial design:</strong> {registeredProtocol.design}</p>
+               <p><strong>Accessible registry update:</strong> {registeredProtocol.snapshotDate} ·
+                 {registeredProtocol.snapshotPredatesDisclosure?" earlier than the dated issuer result":" historical precedence not demonstrated by this snapshot"}</p>
+               <p>
+                 <a href={registeredProtocol.registryUrl||undefined} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov exact NCT record</a>
+                 {" · "}
+                 <a href={registeredProtocol.registryMirrorUrl||undefined} target="_blank" rel="noopener noreferrer">Public registry-text mirror</a>
+                 {row.evidence?.evidenceUrl&&<>{" · "}<a href={row.evidence.evidenceUrl} target="_blank" rel="noopener noreferrer">Original issuer result</a></>}
+               </p>
+             </>}
+             <p className={css.conjunctionWarning}>{registeredProtocol.uncertainty}</p>
+             <p>Checking an outcome name and timepoint against a sponsor-submitted registry is separate from verifying the observed treatment effect, the statistical analysis plan, blinded safety denominators or FDA regulatory outcome. It does not increase any of the 38 SURVEY evidence counts.</p>
            </details>
            <details className={css.finalSurveyMissing} aria-label="Phase 3 scientific evidence verification checklist">
              <summary>Scientific validation checkpoints · {scientificAudit.documented} documented · {scientificAudit.gaps} not established</summary>
