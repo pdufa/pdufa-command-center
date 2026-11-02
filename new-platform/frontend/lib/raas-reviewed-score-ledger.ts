@@ -3,6 +3,7 @@
  */
 import {RAAS_METRIC_CATALOG,type RaasStage} from "./raas-metric-specs";
 import {computeRaasScore,type MetricRating,type RiskGate,type RaasResult,type Snapshot} from "./raas-score-engine";
+import type {MetricHistoricalDiagnostic} from "./raas-metric-backtest";
 export type CalibrationApproval={
  metricId:string;stage:RaasStage;benchmarkId:string;ruleVersion:string;
  validatedAt:string;validationSourceUrl:string;outOfSampleTrials:number;
@@ -77,7 +78,8 @@ export function parseRaasReviewedLedger(input:unknown):RaasReviewedLedger{
 export function reviewedScoreForTrial(
  ledger:RaasReviewedLedger,registry:CalibrationRegistry,
  trial:{nctId:string;ticker:string;drug:string;indication:string},
- stage:RaasStage,snapshot:Snapshot,asOf:string
+ stage:RaasStage,snapshot:Snapshot,asOf:string,
+ historicalDiagnostics:readonly MetricHistoricalDiagnostic[]=[]
 ):{record:RaasReviewedSnapshot;score:RaasResult;acceptedRatings:MetricRating[];excludedRatings:number}|null{
  if(!day(asOf)||asOf>ledger.sourceAsOf||asOf>registry.sourceAsOf)return null;
  const trialKey=key({...trial,stage});
@@ -90,7 +92,13 @@ export function reviewedScoreForTrial(
  // Reject a rating that lacks the EXACT approved benchmark and pre-readout validation.
  const accepted=record.ratings.filter(r=>{
   const cal=approved.get(r.metricId);
-  return !!cal&&cal.benchmarkId===r.benchmarkId&&cal.validatedAt<=r.assessedAt;
+  const history=historicalDiagnostics.find(d=>d.stage===stage&&d.metricId===r.metricId);
+  // An approval registry alone is insufficient: require independent, ex-ante
+  // same-metric return observations before any numeric grade is admitted.
+  const historySupported=!!history&&history.status==="REVIEW_ELIGIBLE_NOT_APPROVED"&&
+   history.independentPrograms>=Math.max(30,cal?.outOfSampleTrials??30)&&
+   history.spearmanScoreToReturn!==null;
+  return !!cal&&historySupported&&cal.benchmarkId===r.benchmarkId&&cal.validatedAt<=r.assessedAt;
  });
  const grade=computeRaasScore({stage,snapshot,asOf:record.asOf,
   trial:{nctId:trial.nctId,ticker:trial.ticker},ratings:accepted,gates:record.gates});
