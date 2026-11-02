@@ -22,6 +22,7 @@ def get_archive():
         r=s.get(url,timeout=35);r.raise_for_status()
         sheets=pd.read_excel(io.BytesIO(r.content),sheet_name=None)
         note("External archive sheets: "+str({k:{"count":len(v),"columns":list(v.columns)} for k,v in sheets.items()})[:2000])
+        note("Archive first records: "+str({k:v.head(8).astype(str).to_dict("records") for k,v in sheets.items()})[:3000])
         return sheets
     except Exception as e:
         note("External 2017-2022 archive unavailable: "+str(e)[:300]);return {}
@@ -111,14 +112,13 @@ def run():
     for _,r in events.iterrows():
         ticker=r.ticker
         if ticker not in memo:memo[ticker]=get_prices(ticker),get_shares(ticker)
-        stock,source=memo[ticker]
+        (stock,source),shares=memo[ticker]
         event=pd.Timestamp(r.pdufa_date)
         before=stock[stock.index.normalize()<event] if not stock.empty else stock
         rec=dict(r)
         rec.update({"stock_price_source":source,"predecision_sessions":len(before),"cap_at_T90":None,"phase3_known":bool(r.phase3_date),"eligible_marketcap_at_T90":False,"reason":""})
         if len(before)<90:
             rec["reason"]="LESS_THAN_90_PREDECISION_SESSIONS";all_candidates.append(rec);continue
-        shares=memo[ticker][1]
         cap=session_cap(float(before.iloc[-90]),shares,before.index[-90])
         rec["cap_at_T90"]=cap
         rec["eligible_marketcap_at_T90"]=cap is not None and 3e8<=cap<=1e10
