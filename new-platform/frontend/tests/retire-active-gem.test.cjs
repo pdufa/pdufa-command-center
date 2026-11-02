@@ -25,8 +25,8 @@ test("live source workspace has no GEM membership ledger, inputs or stage qualif
  assert.doesNotMatch(source,/sources\["gem_runway_evidence\.json"\]/);
  assert.doesNotMatch(source,/sources\["gem_two_close_recheck\.csv"\]/);
  assert.match(source,/ledger: dict = \{\}/);
- assert.match(source,/"GEM_JR": \{"asOf": "", "rows": \[\], "history": \[\]\}/);
- assert.match(source,/"GEM": \{"asOf": "", "rows": \[\], "history": \[\]\}/);
+ assert.doesNotMatch(source,/"members": members/);
+ assert.doesNotMatch(source,/GEM_JR": \{"asOf"/);
  assert.match(source,/original_pipeline_universe\(records, now\)/);
 });
 test("phase3 results scan remains live but GEM qualification and financing are not scheduled",()=>{
