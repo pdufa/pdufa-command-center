@@ -101,7 +101,7 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
      <details className={css.check} data-share-reconciliation={entry.id}>
        <summary><span className={css.indicator}>{capBridge?"◌":"!"}</span>
          <strong>Historical share count, share class and capitalization arithmetic</strong>
-         <span className={css.status}>{capBridge?(capBridge.status==="ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT"?"Arithmetic matches · price unverified":"Discrepancy to reconcile"):"SEC share count missing"}</span>
+         <span className={css.status}>{capBridge?(capBridge.capComparisonBasis==="SAME_SHARES_RECONSTRUCTION"?"Share-based cap reconstruction":capBridge.status==="ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT"?"Vendor cap arithmetic matches · price unverified":"Vendor cap discrepancy"):"SEC share count missing"}</span>
        </summary>
        <div className={css.checkBody}>
          {capBridge?<>
@@ -110,7 +110,7 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
              <strong>Quoted-security share equivalent: {capBridge.quotedSharesEquivalent.toLocaleString("en-US",{maximumFractionDigits:2})}</strong>
              <p>Arithmetic capitalization: <strong>${capBridge.reconstructedEquityCapUsdMillions.toLocaleString("en-US",{maximumFractionDigits:2})}M</strong></p>
              <p>Vendor capitalization: ${capBridge.vendorCapUsdMillions.toLocaleString("en-US",{maximumFractionDigits:2})}M; difference <strong>{capBridge.relativeDifferencePercent.toFixed(2)}%</strong>.</p>
-             <p className={css.factCaution}>Multiplication is a cross-check, not proof that either historical share price or vendor capitalization is correct. Fully diluted counts, corporate actions, ADR terms and executable transaction prices remain unverified. Never approve this for RAAS based only on matching arithmetic.</p>
+             <p className={css.factCaution}>{capBridge.capComparisonBasis==="SAME_SHARES_RECONSTRUCTION"?"This market-cap figure was derived from these same shares and price; matching it is circular, not an independent vendor confirmation.":"The stated market capitalization is a separate vendor estimate, but agreeing on multiplication does not independently verify the historical price."} Fully diluted shares, corporate actions and executable transactions remain unverified. Never approve RAAS from arithmetic alone.</p>
            </div>
            <a href={capBridge.shareSourceUrl} target="_blank" rel="noopener noreferrer">SEC cover share-count filing</a>
            <a href={capBridge.priceSourceUrl} target="_blank" rel="noopener noreferrer">Historical vendor price series</a>
@@ -151,7 +151,7 @@ export default function RaasHistoricalAuditPage(){
      <div><strong>{summary.topExamples}</strong><span>TOP research windows</span></div>
      <div><strong>{summary.bottomExamples}</strong><span>BOTTOM research windows</span></div>
      <div><strong>{summary.openReviews}</strong><span>Outstanding source/market reviews</span></div>
-     <div><strong>{sharesSummary.arithmeticMatches}/{sharesSummary.caseCount}</strong><span>SEC share-cap arithmetic matches · prices unverified</span></div>
+     <div><strong>{sharesSummary.separatelyReportedCapMatches}/{sharesSummary.caseCount}</strong><span>Vendor cap cross-checks match · prices unverified</span></div>
    </div>
    <p className={css.disclaimer}>All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
    <section className={css.section} aria-labelledby="raas-history-top">
