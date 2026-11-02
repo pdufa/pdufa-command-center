@@ -98,6 +98,16 @@ async function finalSurveyTest(page,label){
       (await items.first().innerText()).includes("verified"),
       "An unverified survey must never be treated as a clinical failure");
     await matrix.locator(":scope > summary").click();
+    const actions=dialog.locator('details[aria-label="Final SURVEY prioritized research actions"]');
+    await actions.waitFor({state:"visible",timeout:15000});
+    await actions.locator(":scope > summary").click();
+    check((await actions.innerText()).includes("Question verification remaining:"),
+      "Trial SURVEY must tell the user how many questions still need verification");
+    const exactTrial=actions.locator('a[href^="https://clinicaltrials.gov/study/"]');
+    assert.equal(await exactTrial.count(),1,"Source-first actions must link to the exact NCT trial");
+    check((await actions.innerText()).includes("research checklist, not a medical failure list"),
+      "Missing evidence must not be presented as a failed trial");
+    await actions.locator(":scope > summary").click();
     await page.waitForFunction(()=>{
       const panel=document.querySelector('[aria-label="Final SURVEY readiness and reluctant evidence grade"]');
       return !!panel&&!panel.textContent.includes("Checking sources");
