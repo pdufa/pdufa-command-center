@@ -10,6 +10,7 @@ import retrospectiveFinances from "../../data/raas-historical-finance-facts.json
 import shareBridgeResearch from "../../data/raas-share-bridge-research.json";
 import priceCrosscheckResearch from "../../data/raas-price-crosschecks.json";
 import corporateActionResearch from "../../data/raas-corporate-actions-research.json";
+import fdaPrimaryOutcomeData from "../../data/raas-fda-primary-outcomes.json";
 import {parseTopRetrospective} from "../../lib/raas-top-retrospective-intake";
 import {parseRetrospectiveFeed} from "../../lib/raas-retrospective-intake";
 import {buildHistoricalResearchAudit,summarizeHistoricalResearch,type HistoricalAuditCase} from "../../lib/raas-history-audit";
@@ -18,6 +19,7 @@ import {parseHistoricalFinance,financeForCase,financeReadiness} from "../../lib/
 import {parseShareBridge,bridgeForCase,bridgeSummary} from "../../lib/raas-share-bridge";
 import {parsePriceCrosschecks,priceAuditForCase,priceAuditSummary} from "../../lib/raas-price-crosschecks";
 import {parseCorporateActions,corporateActionsForCase,corporateActionSummary} from "../../lib/raas-corporate-action-audit";
+import {parseFdaPrimaryOutcomes,fdaPrimaryOutcomeForCase,fdaPrimaryOutcomeSummary} from "../../lib/raas-fda-primary-outcomes";
 import RaasHistoricalWhatIf from "./RaasHistoricalWhatIf";
 import css from "./page.module.css";
 
@@ -39,6 +41,8 @@ const priceResearch=parsePriceCrosschecks(priceCrosscheckResearch,pre,post);
 const priceSummary=priceAuditSummary(priceResearch,pre,post);
 const actionFeed=parseCorporateActions(corporateActionResearch);
 const actionSummary=corporateActionSummary(actionFeed,pre,post);
+const fdaPrimary=parseFdaPrimaryOutcomes(fdaPrimaryOutcomeData,post);
+const fdaPrimarySummary=fdaPrimaryOutcomeSummary(fdaPrimary,post);
 const scenarioInputs=[
  ...pre.records.map(x=>({id:x.id,ticker:x.ticker,stage:"pre" as const,entryPrice:x.entry.close,exitPrice:x.exit.close})),
  ...post.records.map(x=>({id:x.id,ticker:x.ticker,stage:"post" as const,entryPrice:x.entry.close,exitPrice:x.exit.close}))
@@ -52,6 +56,7 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
  const capBridge=bridgeForCase(shareResearch,pre,post,entry.id);
  const closeAudit=priceAuditForCase(priceResearch,pre,post,entry.id)!;
  const actionAudit=corporateActionsForCase(actionFeed,pre,post,entry.id)!;
+ const fdaDecision=entry.stage==="post"?fdaPrimaryOutcomeForCase(fdaPrimary,entry.id):null;
  return <details className={css.case} data-history-case={entry.id}>
    <summary className={css.caseHead}>
      <span className={css.identity}>
@@ -80,6 +85,21 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
        <div><span>{entry.stage==="pre"?"Actual Phase 3 readout":"Verified-target claim"}</span><strong>{entry.eventDate}</strong></div>
        <div><span>Historic RAAS validation</span><strong>Ineligible · no original forecast</strong></div>
      </div>
+     {entry.stage==="post"&&<details className={css.check} data-fda-primary-outcome={entry.id}>
+       <summary>
+         <span className={css.indicator}>{fdaDecision?"◌":"!"}</span>
+         <strong>Primary FDA action source · historical outcome only</strong>
+         <span className={css.status}>{fdaDecision?"FDA approval independently cross-checked":"FDA primary source not reconciled"}</span>
+       </summary>
+       <div className={css.checkBody}>
+         {fdaDecision?<div className={css.sourceFact}>
+           <strong>{fdaDecision.product} · FDA {fdaDecision.decision.toLowerCase()} · {fdaDecision.decisionDate}</strong>
+           <p>Drug and indication matched to this BOTTOM historical example. FDA publication was reviewed {fdaDecision.reviewedAt}. The FDA action occurred <strong>after</strong> the selected historical exit ({entry.exitDate}).</p>
+           <a href={fdaDecision.fdaUrl} target="_blank" rel="noopener noreferrer">{fdaDecision.sourceTitle}</a>
+         </div>:<p>FDA action date and product have not been independently reconciled to a primary FDA page for this case.</p>}
+         <p className={css.factCaution}>Outcome-only verification. This later regulatory decision did not exist at the selected historical entry or exit and cannot qualify a contemporaneous stock prediction, independently establish every associated NCT, validate adjusted market prices or produce a RAAS grade.</p>
+       </div>
+     </details>}
      {priorFacts.length>0&&<details className={css.check} data-preentry-facts={entry.id}>
        <summary><span className={css.indicator}>◌</span><strong>{priorFacts.length} historical clinical and financial observations available before entry</strong><span className={css.status}>Not RAAS scores</span></summary>
        <div className={css.checkBody}>
@@ -198,10 +218,11 @@ export default function RaasHistoricalAuditPage(){
      <div><strong>{summary.topExamples}</strong><span>TOP research windows</span></div>
      <div><strong>{summary.bottomExamples}</strong><span>BOTTOM research windows</span></div>
      <div><strong>{summary.eligiblePredictions}</strong><span>Eligible original predictions · unvalidated historical cases excluded</span></div>
+     <div><strong>{fdaPrimarySummary.crosschecked}/{fdaPrimarySummary.total}</strong><span>BOTTOM FDA actions matched to primary FDA pages · outcome only</span></div>
      <div><strong>{priceSummary.matchedPoints}/{priceSummary.quotedPoints}</strong><span>Second-source closing-price matches · adjustment pending</span></div>
      <div><strong>{sharesSummary.separatelyReportedCapMatches}/{sharesSummary.caseCount}</strong><span>Vendor cap cross-checks match · prices unverified</span></div>
    </div>
-   <p className={css.disclaimer}>Corporate actions: {actionSummary.withPartialActionHistory} of {actionSummary.cases} study windows have some historical event evidence, but 0 have a completed corporate-action adjustment audit. Independent-provider research: {priceSummary.matchedPoints} of {priceSummary.quotedPoints} exact-date displayed historical closes agree; {priceSummary.bothClosesMatchedCases} of {priceSummary.caseCount} trade windows have both dates matched. Adjusted-return audits and approved predictions remain at zero. All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
+   <p className={css.disclaimer}>Five historical FDA actions are now separately cross-checked against primary FDA sources. These occurred after the selected historical exits and do not increase the count of valid backtested RAAS predictions. Corporate actions: {actionSummary.withPartialActionHistory} of {actionSummary.cases} study windows have some historical event evidence, but 0 have a completed corporate-action adjustment audit. Independent-provider research: {priceSummary.matchedPoints} of {priceSummary.quotedPoints} exact-date displayed historical closes agree; {priceSummary.bothClosesMatchedCases} of {priceSummary.caseCount} trade windows have both dates matched. Adjusted-return audits and approved predictions remain at zero. All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
    <section className={css.section} aria-labelledby="raas-history-top">
      <div className={css.sectionTitle}><h2 id="raas-history-top">TOP · 3 — before public Phase 3 results</h2><span>{top.length} examples · not validated</span></div>
      <div className={css.cases}>{top.map(x=><CaseRow key={x.id} entry={x}/>)}</div>
