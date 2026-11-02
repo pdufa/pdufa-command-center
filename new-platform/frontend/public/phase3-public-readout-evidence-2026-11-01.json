@@ -16,7 +16,12 @@
       "evidenceDate": "2026-09-22",
       "evidenceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
       "drug": "barzolvolimab",
-      "indication": "chronic spontaneous urticaria"
+      "indication": "chronic spontaneous urticaria",
+      "primaryEndpointP": {
+        "display": "p < 0.00001",
+        "endpoint": "Mean change from baseline in UAS7 at Week 12 versus placebo; both 150 mg every 4 weeks and 300 mg every 8 weeks",
+        "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and"
+      }
     },
     {
       "nctId": "NCT06455202",
@@ -25,7 +30,12 @@
       "evidenceDate": "2026-09-22",
       "evidenceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
       "drug": "barzolvolimab",
-      "indication": "chronic spontaneous urticaria"
+      "indication": "chronic spontaneous urticaria",
+      "primaryEndpointP": {
+        "display": "p < 0.00001",
+        "endpoint": "Mean change from baseline in UAS7 at Week 12 versus placebo; both 150 mg every 4 weeks and 300 mg every 8 weeks",
+        "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and"
+      }
     },
     {
       "nctId": "NCT06641076",
