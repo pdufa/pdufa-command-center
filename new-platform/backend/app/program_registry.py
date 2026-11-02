@@ -26,12 +26,6 @@ def number_workspace(source: dict) -> dict:
         key = row.get("id")
         if isinstance(key, str) and key.startswith(("APPLICATION|", "TRIAL|", "RESULT|")):
             identity.setdefault(key, (str(row.get("ticker") or ""), str(row.get("drug") or "")))
-    for category in ("GEM_JR", "GEM"):
-        stage = source.get("members", {}).get(category, {})
-        for row in list(stage.get("rows", [])) + list(stage.get("history", [])):
-            key = row.get("id")
-            if isinstance(key, str) and key.startswith(("APPLICATION|", "TRIAL|", "RESULT|")):
-                identity.setdefault(key, (str(row.get("ticker") or ""), str(row.get("drug") or "")))
     if not identity:
         raise ValueError("No valid exact program identities available")
     now = datetime.now(timezone.utc)
@@ -74,19 +68,10 @@ def number_workspace(source: dict) -> dict:
                     result[key] = f"{PREFIX}{serial:06d}"
     if len(result) != len(identity):
         raise RuntimeError("Permanent program registry incomplete")
-    # Keep the original source cache immutable. Never give two program stages
-    # different numbers for the same exact trial/application key.
+    # Keep the original source cache immutable. Never reuse exact-program IDs.
     snapshot = {
         **source,
         "pipeline": [{**r, "programId": result.get(r.get("id"))} for r in source["pipeline"]],
-        "members": {
-            name: {
-                **detail,
-                "rows": [{**r, "programId": result.get(r.get("id"))} for r in detail.get("rows", [])],
-                "history": [{**r, "programId": result.get(r.get("id"))} for r in detail.get("history", [])],
-            }
-            for name, detail in source.get("members", {}).items()
-        },
         "identityRegistry": {
             "format": "PDUFA-000001",
             "strategy": "Neon database persistent sequence / never recycled",
