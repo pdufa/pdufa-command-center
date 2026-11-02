@@ -270,6 +270,44 @@ def test_historical_case_review_queue_exposes_post_decision_exclusion_and_no_fak
     assert sum(result["accuracy_by_decision"][k]["evaluated"] for k in ("PASS","CRL","EXTENSION")) == 0
 
 
+
+def test_historical_case_roster_paginated_without_changing_global_denominators(engine):
+    insert(engine)
+    # Synthetic fixture: many distinct FDA applications tied to one study;
+    # duplicate NCTs never count as independent predictions.
+    for i in range(51):
+        regulatory(engine, app_id=f"NDA000001:synthetic-{i:02d}")
+    first = catalog.historical_validation(engine, case_page=1)
+    second = catalog.historical_validation(engine, case_page=2)
+    assert first["number_with_known_outcomes"] == second["number_with_known_outcomes"] == 51
+    assert first["number_evaluated"] == second["number_evaluated"] == 0
+    assert first["case_review"]["total"] == second["case_review"]["total"] == 51
+    assert first["case_review"]["returned"] == 50 and second["case_review"]["returned"] == 1
+    assert first["case_review"]["pages"] == second["case_review"]["pages"] == 2
+    assert first["case_review"]["page"] == 1 and first["case_review"]["has_more"] is True
+    assert second["case_review"]["page"] == 2 and second["case_review"]["has_more"] is False
+    assert first["case_review"]["reason_counts"] == second["case_review"]["reason_counts"]
+    ids1 = {r["application_id"] for r in first["case_review"]["records"]}
+    ids2 = {r["application_id"] for r in second["case_review"]["records"]}
+    assert ids1.isdisjoint(ids2)
+    assert len(ids1 | ids2) == 51
+    assert all(r["disposition"] == "NO_PREDICTION" and r["correctness"] is None
+               for r in first["case_review"]["records"]+second["case_review"]["records"])
+    for invalid in (-1, 0, 3, 1000001, "2", True):
+        with pytest.raises(ValueError):
+            catalog.historical_validation(engine, case_page=invalid)
+
+
+def test_empty_historical_case_roster_has_one_empty_page(engine):
+    result = catalog.historical_validation(engine, case_page=1)
+    assert result["case_review"]["total"] == 0
+    assert result["case_review"]["returned"] == 0
+    assert result["case_review"]["pages"] == 1
+    assert result["case_review"]["records"] == []
+    with pytest.raises(ValueError):
+        catalog.historical_validation(engine, case_page=2)
+
+
 def test_historical_validation_empty_is_honest(engine):
     report = catalog.historical_validation(engine)
     assert report["status"] == "NOT_VALIDATED" and report["number_evaluated"] == 0
