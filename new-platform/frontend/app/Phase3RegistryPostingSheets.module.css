@@ -97,3 +97,7 @@
  .scroll thead th.ratingCell,.scroll tbody td.ratingCell{min-width:80px;padding:6px 4px}
  .scroll thead th.ratingCell small{font-size:9px}
 }
+
+/* Keep one continuous outline around each expanded rating plus its ingredient
+   headers, filter inputs and trial cells; filter-row backgrounds no longer break the frame. */
+.scroll thead .filterRow th.ratingOpen{background:#e9f5ed;border-top:0}
