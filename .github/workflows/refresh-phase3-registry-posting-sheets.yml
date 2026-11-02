@@ -14,6 +14,13 @@ on:
       - 'scripts/refresh_phase3_registry_postings.py'
       - 'new-platform/frontend/lib/phase3-registry-posting.ts'
       - '.github/workflows/refresh-phase3-registry-posting-sheets.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/refresh_phase3_registry_postings.py'
+      - 'tests/test_refresh_phase3_registry_postings.py'
+      - '.github/workflows/refresh-phase3-registry-posting-sheets.yml'
+      - '.github/workflows/phase3-all-years-marketcap-census.yml'
 
 permissions:
   contents: write
@@ -27,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - name: Checkout current source files
+      - name: Checkout source files or the exact PR commit
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -38,8 +45,10 @@ jobs:
       - name: Test full-count, duplicate and partial-source safeguards
         run: python -m unittest discover -s tests -p 'test_refresh_phase3_registry_postings.py' -v
       - name: Refresh every exact NCT from official registry results-first-posted evidence
+        if: github.event_name != 'pull_request'
         run: python scripts/refresh_phase3_registry_postings.py
       - name: Publish only a fully reconciled registry posting snapshot
+        if: github.event_name != 'pull_request'
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
