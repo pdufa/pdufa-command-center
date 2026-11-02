@@ -11,15 +11,15 @@ const pre=require("../lib/raas-top-retrospective-intake.ts").parseTopRetrospecti
 const post=require("../lib/raas-retrospective-intake.ts").parseRetrospectiveFeed(
  require("../data/raas-retrospective-source-cases.json"));
 const raw=require("../data/raas-price-crosschecks.json");
-test("four exact-date closes agree across separate display vendors; only one complete trade window",()=>{
+test("eleven exact-date closes agree across display vendors; five complete trade windows",()=>{
  const feed=moduleUnderTest.parsePriceCrosschecks(raw,pre,post);
  const s=moduleUnderTest.priceAuditSummary(feed,pre,post);
  assert.equal(s.caseCount,8);
  assert.equal(s.quotedPoints,16);
- assert.equal(s.secondaryPointsRecorded,4);
- assert.equal(s.matchedPoints,4);
+ assert.equal(s.secondaryPointsRecorded,11);
+ assert.equal(s.matchedPoints,11);
  assert.equal(s.mismatchedPoints,0);
- assert.equal(s.bothClosesMatchedCases,1);
+ assert.equal(s.bothClosesMatchedCases,5);
  assert.equal(s.adjustedTotalReturnsVerified,0);
  assert.equal(s.qualifiedHistoricalPredictions,0);
  const vrna=moduleUnderTest.priceAuditForCase(feed,pre,post,"vrna-ensifentrine-copd-2024-illustrative");
@@ -31,18 +31,24 @@ test("four exact-date closes agree across separate display vendors; only one com
  assert.equal(vrna.vendorPricesIndependentlyAudited,false);
  assert.equal(vrna.eligibleForValidatedRAAS,false);
  const urgn=moduleUnderTest.priceAuditForCase(feed,pre,post,"urgn-ugn102-nmibc-2025-illustrative");
- assert.equal(urgn.entry.status,"SECOND_SOURCE_MISSING");
+ assert.equal(urgn.entry.status,"PROVIDER_PRICE_MATCH");
  assert.equal(urgn.exit.status,"PROVIDER_PRICE_MATCH");
- assert.equal(urgn.bothClosesAgree,false);
+ assert.equal(urgn.bothClosesAgree,true);
  const mdgl=moduleUnderTest.priceAuditForCase(feed,pre,post,"mdgl-resmetirom-maestro-nash-pre2022-illustrative");
  assert.equal(mdgl.entry.status,"SECOND_SOURCE_MISSING");
  assert.equal(mdgl.exit.secondaryClose,63.8);
+ const bbio=moduleUnderTest.priceAuditForCase(feed,pre,post,"bbio-attribute-cm-pre2023-illustrative");
+ assert.equal(bbio.entry.quoteGranularity,"WEEKLY_FRIDAY_CLOSE");
+ assert.equal(bbio.exit.quoteGranularity,"DAILY_SESSION_CLOSE");
+ assert.equal(bbio.bothClosesAgree,true);
 });
 test("wrong date, unknown case, missing original independence, invalid quote reject",()=>{
  const mutate=(change)=>({...raw,observations:raw.observations.map((v,i)=>i===0?{...v,...change}:v)});
  assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({caseId:"not-a-real-case"}),pre,post),/OBSERVATION_INVALID/);
  assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({date:"2024-05-09"}),pre,post),/NOT_INDEPENDENT_DATE_OR_SOURCE/);
  assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({secondaryClose:-12}),pre,post),/OBSERVATION_INVALID/);
+ assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({quoteGranularity:"WEEKLY_FRIDAY_CLOSE",date:"2024-05-09"}),pre,post),/NOT_INDEPENDENT_DATE_OR_SOURCE/);
+ assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({quoteGranularity:"INTRADAY_SNAPSHOT"}),pre,post),/OBSERVATION_INVALID/);
  const first=pre.records[0];
  const source=post.records.find(x=>x.id===raw.observations[0].caseId).entry.sourceUrl;
  assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({sourceUrl:source}),pre,post),/NOT_INDEPENDENT_DATE_OR_SOURCE/);
