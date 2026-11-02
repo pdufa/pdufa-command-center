@@ -19,9 +19,9 @@ test("invalid numerators and denominators cannot create reported event incidence
 test("source packet detail is explicit exact-NCT on-demand; no fabricated clinical claim",()=>{
  const ui=fs.readFileSync(require("node:path").join(__dirname,"../app/ToolsOpeningTrialGrid.tsx"),"utf8");
  assert.match(ui,/function RegistryMeasuredDetail/);
- assert.match(ui,/\/api\/registry-benefit-research\?nct=/);
+ assert.match(ui,/\/api\/tools-trial-evidence\?nct=/);
  assert.match(ui,/item\.nctId!==nctId/);
  assert.match(ui,/observedSeriousEventRate\(group\.affected,group\.atRisk\)/);
  assert.match(ui,/No effectiveness or stock ranking/);
- assert.match(ui,/registryByNct\.get\(row\.nctId\)\?\.resultsPosted/);
+ assert.match(ui,/\/\^NCT\\d\{8\}\$\/\.test\(row\.nctId\)/);
 });
