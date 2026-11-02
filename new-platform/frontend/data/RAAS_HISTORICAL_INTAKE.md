@@ -85,22 +85,34 @@ Same-day share counts need a pre-close SEC acceptance time; a filing after close
 
 All 8 case prices still need a second independently date-specific source; 5 cases still need a dated compatible SEC share-count bridge; historical splits, dividends, ADS transformations, options, debt and price execution remain unresolved.
 
-## Historical daily-close second-provider checks (2026-11-02)
+## Historical entry/exit second-provider price checks (2026-11-02)
 
-The research-only `data/raas-price-crosschecks.json` stores source links and exact dates for **4 of 16** historic ENTRY/EXIT closing-price observations across the 8 TOP/BOTTOM examples. Each price is independently displayed by a second website, but neither a licensed exchange-tape audit nor a verified corporate-action-adjusted price series has yet been obtained. Dated matches:
+`data/raas-price-crosschecks.json` now stores dated comparison quotations for **11 of 16** historical ENTRY/EXIT points across 8 retrospective examples, including 5 examples whose **both dates** match a separately displayed price. Each result carries a source URL and explicitly marks whether it is a daily session close or a weekly Friday-ending close. A Friday weekly close is only compared with the same Friday entry/exit date.
 
-| Example | Price side | Date | Original vendor close | Second provider close | Second source |
-|---|---|---|---:|---:|---|
-| BOTTOM VRNA / ensifentrine | Entry | 2024-05-10 | $14.85 | $14.85 | ChartExchange |
-| BOTTOM VRNA / ensifentrine | Exit | 2024-06-21 | $15.00 | $15.00 | ChartExchange |
-| BOTTOM URGN / UGN-102 | Exit | 2025-06-06 | $7.37 | $7.37 | ChartExchange |
-| TOP MDGL / resmetirom | Exit | 2022-12-16 | $63.80 | $63.80 | StatMuse |
+| Phase | Program | Side | Date | Original | Second quote | Secondary source |
+|---|---|---|---|---:|---:|---|
+| TOP | BBIO / acoramidis | ENTRY | 2023-05-12 | $13.54 | $13.54 | Sector Alpha (Friday weekly) |
+| TOP | BBIO / acoramidis | EXIT | 2023-07-07 | $16.89 | $16.89 | StatMuse (dated daily) |
+| TOP | MDGL / resmetirom | EXIT | 2022-12-16 | $63.80 | $63.80 | StatMuse (dated daily) |
+| BOTTOM | VRNA / ensifentrine | ENTRY | 2024-05-10 | $14.85 | $14.85 | ChartExchange (dated daily) |
+| BOTTOM | VRNA / ensifentrine | EXIT | 2024-06-21 | $15.00 | $15.00 | ChartExchange (dated daily) |
+| BOTTOM | GERN / imetelstat | ENTRY | 2024-05-03 | $3.93 | $3.93 | Sector Alpha (Friday weekly) |
+| BOTTOM | GERN / imetelstat | EXIT | 2024-05-31 | $3.55 | $3.55 | Sector Alpha (Friday weekly) |
+| BOTTOM | URGN / UGN-102 | ENTRY | 2025-03-14 | $11.07 | $11.07 | Sector Alpha (Friday weekly) |
+| BOTTOM | URGN / UGN-102 | EXIT | 2025-06-06 | $7.37 | $7.37 | ChartExchange (dated daily) |
+| BOTTOM | BBIO / acoramidis | ENTRY | 2024-05-10 | $29.10 | $29.10 | Sector Alpha (Friday weekly) |
+| BOTTOM | BBIO / acoramidis | EXIT | 2024-11-15 | $23.72 | $23.72 | Sector Alpha (Friday weekly) |
 
-Secondary-source URLs and quote-basis warnings are retained per observation. Missing 12 other second-source observations are **not** counted as matches. Only the VRNA sample has both dates corroborated by a second website.
+**5 missing date-specific secondary closes** remain:
+- TOP GERN 2022-11-18 and 2022-12-30
+- TOP MDGL 2022-11-18
+- BOTTOM MDGL 2023-11-03 and 2024-03-08
 
-`lib/raas-price-crosschecks.ts` rejects unknown case IDs, wrong trading dates, reuse of the first vendor URL, invalid price values and duplicate quotes. It highlights disagreements instead of averaging or overlooking them. The per-case collapsed section in `/raas-history` exposes each point, comparisons and outstanding blockers. `tests/raas-price-crosschecks.test.cjs` covers these safeguards.
+Independent historical data collection may still find these quotes; do not infer the quoted price from a nearby day or a monthly average.
 
-**Important limitations:** These 4 matching nominal closes have not been independently audited for split, dividend or ADS ratio changes, delisting/merger adjustments, exchange-specific session rules or actual executable fills. A second vendor publishing the same number may use the same upstream price feed. No adjusted total return has been certified and no retrospective case can generate a validated historic RAAS forecast. Next: verify remaining 12 closes, cross-check corporate actions and obtain independently sourced fully diluted historical capitalization.
+`lib/raas-price-crosschecks.ts` rejects unknown cases, mismatched trade dates, wrong source URLs, invalid prices, duplicated providers and weekly closes not tied to Fridays. The per-case audit in `/raas-history` displays missing prices and the daily-versus-weekly evidence granularity. Regression tests cover matches, mismatches and the prohibition on automatically approving any investment score.
+
+**These are NOT 11 independently tape-certified adjusted closes.** Third-party websites may share data providers; corporate actions, dividends, ADS/share-class transformations, split factors, merger/delisting cash-outs, NYSE/Nasdaq exchange sessions and actual fills remain unverified. Even 16/16 matching displayed closes would not validate RAAS predictive accuracy. Verified historic market prices and contemporaneous *original* predictions remain separate prerequisites.
 
 ## Known gaps as of 2026-11-02
 
