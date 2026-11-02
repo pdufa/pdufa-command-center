@@ -69,6 +69,22 @@ Research-only intake validators:
 
 The actual historical adjusted closing prices, ADR conversion, holiday session checks, bid/ask and executed slippage, share count, debt waterfall and forward valuation are still not reconciled. No approved historical RAAS score exists. Source evidence collected after a trading date must **never** be backfilled into an earlier decision snapshot.
 
+## Historical share-count / market-cap reconciliation (2026-11-02)
+
+Source-backed point-in-time SEC cover counts are imported into `data/raas-share-bridge-research.json` and validated by `lib/raas-share-bridge.ts`. The research screen under `/raas-history` now expands an independent share-count / capitalization check per case.
+
+| Phase / case | SEC ordinary/common shares available by selected entry | Quoted-unit conversion | Vendor close × shares, $M | Existing market-cap estimate, $M | Independent cap comparison? |
+|---|---:|---:|---:|---:|---|
+| TOP BBIO 2023-05-12 | 160,500,999 (May 2 cover count, May 4 filing) | 1 share / quote | 2,173.18 | 2,173.18 | **No:** original listed cap was already calculated from these shares and vendor close |
+| BOTTOM GERN 2024-05-03 | 593,132,540 (April 26 cover count, May 2 filing) | 1 share / quote | 2,331.01 | 2,331 | **Separate vendor cap estimate**, still unverified prices |
+| BOTTOM VRNA 2024-05-10 | 648,654,174 (May 2 cover count, SEC filing May 10 **09:09:53 ET**) | **8 ordinary shares per ADS** | 1,204.06 | 1,204 | **Separate vendor cap estimate**, still unverified prices |
+
+Only **3 of the 8** registered retrospective examples have a source-vetted cover share-count bridge. Two reconcile arithmetically against separately reported vendor market-cap figures, but one (BBIO) is circular. This does **not** establish the historical close, market-cap methodology, corporate-action adjusted series, fully diluted share count or enterprise value.
+
+Same-day share counts need a pre-close SEC acceptance time; a filing after close is barred from the close-date historical reconstruction. No share-bridge match can enter approved RAAS scoring or predictive validation. Tests in `tests/raas-share-bridge.test.cjs` guard source timing, share conversion, arithmetic and nonpromotion.
+
+All 8 case prices still need a second independently date-specific source; 5 cases still need a dated compatible SEC share-count bridge; historical splits, dividends, ADS transformations, options, debt and price execution remain unresolved.
+
 ## Known gaps as of 2026-11-02
 
 - Genuine, precommitted historical investment-prediction cases: **0 reviewed**. Historic pre-entry RAAS metric score records: **0 reviewed**. Seven separately labeled retrospective observational windows are available for source-intake testing, but are **not** admissible model performance records.
