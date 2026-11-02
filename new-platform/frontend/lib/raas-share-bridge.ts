@@ -10,6 +10,7 @@ export type ShareBridgeRecord={
  securityLabel:string;sharesOutstanding:number;sharesAsOf:string;
  sharesPublishedAt:string;sharesPublishedTimeEastern?:string;
  sharesSourceUrl:string;ordinarySharesPerQuotedSecurity:number;
+ capComparisonBasis:"SAME_SHARES_RECONSTRUCTION"|"VENDOR_REPORTED_CAP_ESTIMATE";
  quoteCurrency:"USD";notes:string;
 };
 export type ShareBridgeFeed={
@@ -23,6 +24,7 @@ export type CapBridge={
  absoluteDifferenceUsdMillions:number;relativeDifferencePercent:number;
  shareSourceUrl:string;priceSourceUrl:string;vendorCapSourceUrl:string;
  shareCountAsOf:string;sharePublishedAt:string;
+ capComparisonBasis:"SAME_SHARES_RECONSTRUCTION"|"VENDOR_REPORTED_CAP_ESTIMATE";
  status:"ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT"|"ARITHMETIC_MISMATCH";
  fullyDilutedReconciled:false;corporateActionsReconciled:false;entryPriceIndependentlyVerified:false;
  approvedRaasScore:false;
@@ -57,7 +59,8 @@ export function parseShareBridge(input:unknown,top:TopRetrospectiveFeed,bottom:R
    (row.class!=="COMMON"&&row.class!=="ADS")||
    (row.class==="COMMON"&&row.ordinarySharesPerQuotedSecurity!==1)||
    (row.class==="ADS"&&row.ordinarySharesPerQuotedSecurity<=1)||
-   row.quoteCurrency!=="USD"||!validDate(row.sharesAsOf)||!validDate(row.sharesPublishedAt)||
+   row.quoteCurrency!=="USD"||!["SAME_SHARES_RECONSTRUCTION","VENDOR_REPORTED_CAP_ESTIMATE"].includes(row.capComparisonBasis)||
+   !validDate(row.sharesAsOf)||!validDate(row.sharesPublishedAt)||
    row.sharesAsOf>row.sharesPublishedAt||row.sharesPublishedAt>feed.sourceAsOf||
    row.sharesPublishedAt>c.entryDate||!validUrl(row.sharesSourceUrl))
    throw Error("RAAS_SHARE_BRIDGE_RECORD_INVALID");
@@ -93,6 +96,7 @@ export function bridgeForCase(feed:ShareBridgeFeed,top:TopRetrospectiveFeed,
   relativeDifferencePercent:round(diffPct),
   shareSourceUrl:record.sharesSourceUrl,priceSourceUrl:hist.priceUrl,vendorCapSourceUrl:hist.capUrl,
   shareCountAsOf:record.sharesAsOf,sharePublishedAt:record.sharesPublishedAt,
+  capComparisonBasis:record.capComparisonBasis,
   status:Math.abs(diffPct)<=2?"ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT":"ARITHMETIC_MISMATCH",
   fullyDilutedReconciled:false,corporateActionsReconciled:false,
   entryPriceIndependentlyVerified:false,approvedRaasScore:false};
@@ -102,6 +106,7 @@ export function bridgeSummary(feed:ShareBridgeFeed,top:TopRetrospectiveFeed,bott
  const bridges=cases.map(c=>bridgeForCase(feed,top,bottom,c.id));
  return {caseCount:cases.length,withSecShareCount:bridges.filter(Boolean).length,
   arithmeticMatches:bridges.filter(b=>b?.status==="ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT").length,
+  separatelyReportedCapMatches:bridges.filter(b=>b?.status==="ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT"&&b.capComparisonBasis==="VENDOR_REPORTED_CAP_ESTIMATE").length,
   missingShares:bridges.filter(b=>b===null).length,
   fullyVerifiedPriceCases:0,qualifiedRaasForecasts:0};
 }
