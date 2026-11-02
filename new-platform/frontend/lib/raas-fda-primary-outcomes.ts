@@ -29,7 +29,8 @@ export function parseFdaPrimaryOutcomes(raw:unknown,post:RetrospectiveFeed):FdaP
  if(!raw||typeof raw!=="object"||Array.isArray(raw))throw Error("RAAS_FDA_SOURCE_LEDGER_INVALID");
  const feed=raw as FdaPrimaryFeed;
  if(feed.schemaVersion!==1||feed.scope!=="RAAS_FDA_PRIMARY_HISTORICAL_OUTCOME_CROSSCHECKS"||
-    !day(feed.sourceAsOf)||feed.sourceAsOf>post.sourceAsOf||!textField(feed.note)||
+    !day(feed.sourceAsOf)||feed.sourceAsOf>post.sourceAsOf||
+    typeof feed.note!=="string"||!feed.note.trim()||feed.note.length>1500||
     !Array.isArray(feed.records)||feed.records.length>100)
    throw Error("RAAS_FDA_SOURCE_LEDGER_INVALID");
  const original=new Map(post.records.map(r=>[r.id,r]));
