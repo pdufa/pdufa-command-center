@@ -83,3 +83,18 @@ test("research matching refuses same ticker with the wrong exact program",()=>{
   study(a,five),{...study(a,five),drug:"Different agent"}]};
  assert.equal(readoutResearchCoverage(a,"post",duplicated),null);
 });
+
+test("TOP and BOTTOM sorting resets independently to the default Ticker A–Z",()=>{
+ const src=component;
+ const reset=/const resetSorting=\(\)=>\{\s*setSort\("ticker"\);\s*setDesc\(false\);\s*\};/;
+ assert.match(src,reset);
+ assert.match(src,/onClick=\{resetSorting\} disabled=\{sort==="ticker"&&!desc\}/);
+ assert.match(src,/aria-label=\{pre\?"Reset TOP spreadsheet sorting to Ticker A to Z":"Reset BOTTOM spreadsheet sorting to Ticker A to Z"\}/);
+ assert.equal(src.split('↺ Reset Sorting').length-1,1);
+ // A separate Spreadsheet instance holds a distinct sort/direction pair for each bucket.
+ assert.match(src,/<Spreadsheet bucket="pre"/);
+ assert.match(src,/<Spreadsheet bucket="post"/);
+ // Resetting the sort doesn't touch query or filtering, the survey controls or Factor P.
+ const fn=src.substring(src.indexOf("const resetSorting=()=>"),src.indexOf("const availableSortColumns"));
+ assert.doesNotMatch(fn,/setQuery|setShowSurveys|setShowSynthesis|setBenefitFeed/);
+});
