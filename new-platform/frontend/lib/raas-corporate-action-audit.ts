@@ -81,7 +81,7 @@ export function corporateActionsForCase(feed:CorporateActionFeed,t:TopRetrospect
  const during=listedEvents.filter(x=>x.placement==="DURING_WINDOW").length;
  return {caseId:id,ticker:w.ticker,stage:w.stage,
   securityClass:r?.securityClass??null,adsOrdinaryShares:r?.adsOrdinaryShares??null,
-  listedEvents,eventsDuringWindow:during.length,knownBefore:before,knownAfter:after,
+  listedEvents,eventsDuringWindow:during,knownBefore:before,knownAfter:after,
   researchStatus:r?"PARTIAL_HISTORY":"NO_ACTION_SOURCE_IMPORTED",
   actionHistoryComplete:false,adjustedTotalReturnVerified:false,approvedRAAS:false,
   blockers:[
