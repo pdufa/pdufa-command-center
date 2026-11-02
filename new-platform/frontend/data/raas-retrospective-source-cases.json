@@ -271,7 +271,31 @@
         "eligibleForValidatedRAAS": false
       },
       "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
-      "reviewNote": "Retrospectively selected after Phase 3 and after PDUFA confirmation. November 2023 to March 8, 2024 gain excludes March 14, 2024 FDA approval. This is NOT a contemporaneous RAAS investment recommendation or validated predictive record."
+      "reviewNote": "Retrospectively selected after Phase 3 and after PDUFA confirmation. November 2023 to March 8, 2024 gain excludes March 14, 2024 FDA approval. This is NOT a contemporaneous RAAS investment recommendation or validated predictive record.",
+      "clinicalReadouts": [
+        {
+          "metric": "NASH resolution without worsening of fibrosis",
+          "dose": "Resmetirom 100 mg daily",
+          "activeRatePct": 30,
+          "comparatorRatePct": 10,
+          "comparator": "Placebo",
+          "endpointTime": "52 weeks",
+          "reportedAt": "2022-12-19",
+          "sourceUrl": "https://ir.madrigalpharma.com/node/14516",
+          "notes": "Percentages rounded as in December 2022 topline announcement. Difference is descriptive, not a validated RAAS score."
+        },
+        {
+          "metric": "Fibrosis improvement by at least one stage without worsening of NASH",
+          "dose": "Resmetirom 100 mg daily",
+          "activeRatePct": 26,
+          "comparatorRatePct": 14,
+          "comparator": "Placebo",
+          "endpointTime": "52 weeks",
+          "reportedAt": "2022-12-19",
+          "sourceUrl": "https://ir.madrigalpharma.com/node/14516",
+          "notes": "Percentages rounded from sponsor pivotal trial announcement, not a peer-drug head-to-head comparison."
+        }
+      ]
     }
   ]
 }
