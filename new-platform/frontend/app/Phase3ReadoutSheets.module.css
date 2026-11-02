@@ -23,6 +23,9 @@
 .table th{position:sticky;top:0;background:#dceee3;color:#194a31;font-weight:800;z-index:1}
 .table tbody tr:nth-child(even){background:#f8fbf9}
 .table a{color:#126e4b;text-decoration:underline}
+.stageBadge{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-left:5px;min-width:22px;height:22px;padding:0 5px;border-radius:5px;font-size:12px;line-height:1;font-weight:800;border:1px solid;white-space:nowrap}
+.stageThree{color:#174a8b;background:#e8f1ff;border-color:#9bbde3}
+.stageP{color:#126042;background:#e4f6e9;border-color:#91c9a7}
 .table td.empty{text-align:center;font-weight:650;color:#576f60;padding:20px}
 .unverified{border:1px solid #b6cbdc;border-radius:9px;margin:14px 0;background:#f4f8fc}
 .unverified>summary{cursor:pointer;padding:11px;color:#224d6b;font-size:13px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;justify-content:space-between}
