@@ -13,6 +13,7 @@ import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phas
 import {finalSurveyReadiness} from "../lib/final-survey-readiness";
 import {finalSurveyNextActions} from "../lib/final-survey-next-actions";
 import {phase3ScientificEvidenceAudit} from "../lib/phase3-scientific-evidence-audit";
+import {checkPhase3PublishedArithmetic} from "../lib/phase3-published-arithmetic";
 import {surveyScoringAssessments,surveyScoringGateLabel} from "../lib/final-survey-scoring-protocol";
 
 type Bucket="pre"|"post"|"unverified";
@@ -306,6 +307,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  const checked=researchStatus==="ready";
  const audit=finalSurveyReadiness(groups,rules,checked&&!!record);
  const scientificAudit=phase3ScientificEvidenceAudit(record);
+ const arithmeticAudit=checkPhase3PublishedArithmetic(record);
  const nextActions=finalSurveyNextActions({researchStatus,exactRecord:!!record,
    gates:rules,groups,
    questions:BENEFIT_GROUPS.flatMap(survey=>survey.fields.map(field=>({
@@ -386,6 +388,24 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
                  <p>{check.detail}</p>
                </div>)}
              </div>
+             <details className={css.scientificArithmeticPanel} aria-label="Exact-trial published effect-size arithmetic">
+               <summary>Recompute published treatment effect and response differences</summary>
+               {arithmeticAudit?<div>
+                 <p><strong>{arithmeticAudit.trial}</strong> · {arithmeticAudit.nctId} · {arithmeticAudit.regimen}</p>
+                 <table className={css.scientificArithmeticTable}>
+                   <thead><tr><th scope="col">Source calculation</th><th scope="col">Arithmetic result</th></tr></thead>
+                   <tbody>
+                     <tr><th scope="row">Week 12 UAS7 extra mean reduction versus placebo</th><td>{arithmeticAudit.uas7ExtraReduction.toFixed(1)} UAS7 points</td></tr>
+                     <tr><th scope="row">Week 12 complete-response difference</th><td>+{arithmeticAudit.week12ExtraResponsePp.toFixed(1)} percentage points</td></tr>
+                     <tr><th scope="row">Week 24 complete-response difference</th><td>+{arithmeticAudit.week24ExtraResponsePp.toFixed(1)} percentage points</td></tr>
+                   </tbody>
+                 </table>
+                 <p>Reported overall trial enrollment: {arithmeticAudit.totalRandomized.toLocaleString("en-US")} randomized, <strong>not</strong> the per-arm analysis denominator.</p>
+                 <p><a href={arithmeticAudit.issuerUrl} target="_blank" rel="noopener noreferrer">Original issuer results table</a>{" · "}<a href={arithmeticAudit.filedCopyUrl} target="_blank" rel="noopener noreferrer">SEC-filed copy of the same company release</a></p>
+                 <strong>What these calculations cannot establish</strong>
+                 <ul>{arithmeticAudit.limitations.map(item=><li key={item}>{item}</li>)}</ul>
+               </div>:<p>No exact-NCT, fully reconciled placebo comparison is available for this research record. No effect-size difference, confidence interval, NNT or FDA likelihood is imputed.</p>}
+             </details>
              <p><strong>Readiness interpretation:</strong> Observed efficacy is not the same as verified clinical superiority or a validated FDA decision probability. Do not promote this checklist into the numerical medical grade.</p>
            </details>
            <details className={css.finalSurveyMissing} aria-label="Final SURVEY prioritized research actions">
