@@ -120,7 +120,6 @@ def prepare(snapshot,taxonomy,saved,canonical):
         if key in saved_by_id:raise ValueError("Conflicting saved reviewed research identity")
         saved_by_id[key]=record
 
-    survey_rows=[],[]
     summary=[COLUMNS_SUMMARY]
     survey=[COLUMNS_SURVEY]
     ingredients=[COLUMNS_INGREDIENTS]
@@ -146,7 +145,7 @@ def prepare(snapshot,taxonomy,saved,canonical):
                          reviewed.get("indication")!=research.get("indication")):
             reviewed=None
         saved_facts=reviewed.get("facts",{}) if reviewed else {}
-        ratings=[];verified_total=0;modeled_total=0;missing_total=0
+        ratings=[];verified_total=0;modeled_total=0;missing_total=0;trial_evidence_count=0
         for group in groups:
             rank=group["rank"];questions=group["ingredients"]
             item=research["assessments"][rank-1] if research else None
@@ -183,14 +182,21 @@ def prepare(snapshot,taxonomy,saved,canonical):
             else:rating="NOT_ASSESSED"
             ratings.append(rating)
             verified_total+=verified;modeled_total+=modeled;missing_total+=missing_count
-            recorded+=len(evidence)
+            recorded+=len(evidence);trial_evidence_count+=len(evidence)
+            reviewed_advantages=[a for a in (reviewed.get("advantages",[]) if reviewed else [])\
+                if isinstance(a,dict) and a.get("assessment")==rank]
+            review_text=" | ".join(str(a.get("title",""))+": "+str(a.get("comparison","")) for a in reviewed_advantages)
+            review_links=[a.get("sourceUrl","") for a in reviewed_advantages if isinstance(a.get("sourceUrl"),str)]
             survey.append([
                 nct,ticker,company,rank,group["name"],group["objective"],
                 " | ".join(f["id"] for f in questions),
                 " | ".join(f["label"]+": "+f["question"] for f in questions),
                 verified,modeled,missing_count,required,"",
-                rating,"; ".join(review_notes),
-                " | ".join(dict.fromkeys(e["sourceUrl"] for e in evidence)),
+                "REVIEW_FINDING_RECORDED" if reviewed_advantages else rating,
+                (item.get("summary","") if item else "No canonical research record") +
+                    (" | "+review_text if review_text else "") +
+                    (" | "+ "; ".join(review_notes) if review_notes else ""),
+                " | ".join(dict.fromkeys([e["sourceUrl"] for e in evidence]+review_links)),
                 " | ".join(dict.fromkeys(str(e["sourceDate"]) for e in evidence)),
                 " | ".join(missing),snapshot["sourceAsOf"],
                 json.dumps(evidence,ensure_ascii=False,separators=(",",":"))
@@ -201,7 +207,7 @@ def prepare(snapshot,taxonomy,saved,canonical):
             ticker,nct,company,"YES" if trial["resultsCount"] else "NO",
             "EXACT_CANONICAL_NCT" if research else "NO_EXACT_CANONICAL_RESEARCH_MATCH",
             *ratings,verified_total,modeled_total,missing_total,"",
-            "SOURCE_INPUTS_NOT_CLINICALLY_ADJUDICATED" if recorded else "NO_SCORED_RATINGS",
+            "SOURCE_INPUTS_NOT_CLINICALLY_ADJUDICATED" if trial_evidence_count else "NO_SCORED_RATINGS",
             snapshot["sourceAsOf"],"https://clinicaltrials.gov/study/"+nct
         ])
     if len(summary)!=len(ncts)+1 or len(survey)!=len(ncts)*20+1 or len(ingredients)!=39:
@@ -275,7 +281,7 @@ def publish(values,client):
         # Remove stale tails only after a complete write & readback.
         cap=max(p["gridProperties"]["rowCount"],nrows+100)
         if cap>nrows:
-            ending="AD" if title==SUMMARY else ("T" if title==SURVEY else "H")
+            ending="AF" if title==SUMMARY else ("T" if title==SURVEY else "H")
             request(client,"POST","/values/"+quote(f"'{title}'!A{nrows+1}:{ending}{cap}",safe="!':")+":clear",json={})
     return {key:len(rows)-1 for key,rows in values.items()}
 
