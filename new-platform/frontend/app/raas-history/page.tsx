@@ -5,9 +5,11 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import retrospectiveTopData from "../../data/raas-retrospective-top-cases.json";
 import retrospectiveBottomData from "../../data/raas-retrospective-source-cases.json";
+import retrospectiveAsOfData from "../../data/raas-retrospective-asof-evidence.json";
 import {parseTopRetrospective} from "../../lib/raas-top-retrospective-intake";
 import {parseRetrospectiveFeed} from "../../lib/raas-retrospective-intake";
 import {buildHistoricalResearchAudit,summarizeHistoricalResearch,type HistoricalAuditCase} from "../../lib/raas-history-audit";
+import {parseAsOfEvidence,factsForRetrospectiveCase,measureAsOfFact} from "../../lib/raas-retrospective-asof-evidence";
 import css from "./page.module.css";
 
 export const metadata:Metadata={
@@ -18,9 +20,12 @@ const pre=parseTopRetrospective(retrospectiveTopData);
 const post=parseRetrospectiveFeed(retrospectiveBottomData);
 const audits=buildHistoricalResearchAudit(pre,post);
 const summary=summarizeHistoricalResearch(audits);
+const datedFacts=parseAsOfEvidence(retrospectiveAsOfData,post);
+const observedFactCount=datedFacts.records.reduce((sum,r)=>sum+r.facts.length,0);
 const dateFormat=(s:string)=>s;
 function CaseRow({entry}:{entry:HistoricalAuditCase}){
  const sign=entry.grossPercent>0?"+":"";
+ const priorFacts=entry.stage==="post"?factsForRetrospectiveCase(datedFacts,entry.id):[];
  return <details className={css.case} data-history-case={entry.id}>
    <summary className={css.caseHead}>
      <span className={css.identity}>
@@ -49,6 +54,19 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
        <div><span>{entry.stage==="pre"?"Actual Phase 3 readout":"Verified-target claim"}</span><strong>{entry.eventDate}</strong></div>
        <div><span>Historic RAAS validation</span><strong>Ineligible · no original forecast</strong></div>
      </div>
+     {priorFacts.length>0&&<details className={css.check} data-preentry-facts={entry.id}>
+       <summary><span className={css.indicator}>◌</span><strong>{priorFacts.length} historical clinical and financial observations available before entry</strong><span className={css.status}>Not RAAS scores</span></summary>
+       <div className={css.checkBody}>
+         {priorFacts.map(fact=>{const calc=measureAsOfFact(fact);return <div key={fact.id} className={css.sourceFact}>
+           <strong>{fact.title}</strong>
+           <p>{calc.label}: <strong>{calc.value.toLocaleString("en-US",{maximumFractionDigits:2})} {calc.unit}</strong></p>
+           {fact.kind==="RANDOMIZED_RESPONSE"&&<p>Reported active arm {fact.activePercent}% versus comparator {fact.comparatorPercent}%.</p>}
+           <p>Source published {fact.sourcePublishedAt}. {fact.measurementAsOf?"Measurement as of "+fact.measurementAsOf+". ":""}{fact.context}</p>
+           <p className={css.factCaution}>{calc.interpretation}</p>
+           <a href={fact.sourceUrl} target="_blank" rel="noopener noreferrer">Inspect contemporaneous evidence</a>
+         </div>;})}
+       </div>
+     </details>}
      <h3>Point-in-time evidence and audit worklist</h3>
      <div className={css.checks}>
        {entry.items.map(item=><details key={item.id} className={css.check} data-check={item.id}>
@@ -84,7 +102,7 @@ export default function RaasHistoricalAuditPage(){
      <div><strong>{summary.openReviews}</strong><span>Outstanding source/market reviews</span></div>
      <div><strong>{summary.eligiblePredictions}</strong><span>Verified original RAAS forecasts</span></div>
    </div>
-   <p className={css.disclaimer}>All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. Published source links are recorded, not independently audited. This research screen never creates or certifies a RAAS investment score. As-of snapshot: {pre.sourceAsOf}.</p>
+   <p className={css.disclaimer}>All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} additional dated clinical/financial observations are available for BOTTOM research cases; none is a RAAS grade. Published source links are recorded, not independently audited. This screen never creates or certifies a RAAS investment score. As-of snapshot: {pre.sourceAsOf}.</p>
    <section className={css.section} aria-labelledby="raas-history-top">
      <div className={css.sectionTitle}><h2 id="raas-history-top">TOP · 3 — before public Phase 3 results</h2><span>{top.length} examples · not validated</span></div>
      <div className={css.cases}>{top.map(x=><CaseRow key={x.id} entry={x}/>)}</div>
