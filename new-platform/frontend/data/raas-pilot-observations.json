@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "sourceAsOf": "2026-11-02",
+  "scope": "HISTORICAL_PHASE3_RAAS_PILOT_OBSERVATIONS",
+  "note": "Dated pilot clinical and corporate-source facts only. There are no RAAS metric scores, FDA PDUFA action dates, or investment scenario prices in this file. Exact NCT+listed ticker+therapy+indication identity is required.",
+  "records": [
+    {
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "observations": [
+        {
+          "id": "c1-effect",
+          "metricIds": [
+            "post-1-1",
+            "post-1-2"
+          ],
+          "kind": "active_control_mean_change",
+          "title": "EMBARQ-CSU1 Week 12 UAS7 mean change, 150 mg Q4W",
+          "activeChange": -20.2,
+          "controlChange": -10.7,
+          "unit": "UAS7 points",
+          "assessmentDate": "2026-09-22",
+          "measurementDate": "2026-09-09",
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+          "method": "Reported least-squares mean change from baseline, active and placebo groups; comparator-adjusted improvement computed from absolute reduction difference.",
+          "note": "Issuer reported p < 0.00001; not a standalone clinical, regulatory or investment score."
+        },
+        {
+          "id": "c1-response",
+          "metricIds": [
+            "post-1-2",
+            "post-5-2"
+          ],
+          "kind": "active_control_response",
+          "title": "EMBARQ-CSU1 complete response (UAS7=0) at Week 12, 150 mg Q4W",
+          "activePercent": 42.4,
+          "controlPercent": 9.3,
+          "unit": "percentage points",
+          "assessmentDate": "2026-09-22",
+          "measurementDate": "2026-09-09",
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+          "method": "Reported complete response percentages. Difference in percentage points is descriptive and does not establish comparative superiority against a different treatment.",
+          "note": "Head-to-head superiority over approved therapies is not demonstrated by placebo comparison."
+        }
+      ]
+    },
+    {
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "observations": [
+        {
+          "id": "c2-effect",
+          "metricIds": [
+            "post-1-1",
+            "post-1-2"
+          ],
+          "kind": "active_control_mean_change",
+          "title": "EMBARQ-CSU2 Week 12 UAS7 mean change, 150 mg Q4W",
+          "activeChange": -20.2,
+          "controlChange": -11.4,
+          "unit": "UAS7 points",
+          "assessmentDate": "2026-09-22",
+          "measurementDate": "2026-09-09",
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+          "method": "Reported least-squares mean change from baseline, active and placebo groups; comparator-adjusted improvement computed from absolute reduction difference.",
+          "note": "Second pivotal trial of the same therapy; do not double-count the drug's commercial value."
+        },
+        {
+          "id": "c2-response",
+          "metricIds": [
+            "post-1-2",
+            "post-5-2"
+          ],
+          "kind": "active_control_response",
+          "title": "EMBARQ-CSU2 complete response (UAS7=0) at Week 12, 150 mg Q4W",
+          "activePercent": 45.7,
+          "controlPercent": 12.6,
+          "unit": "percentage points",
+          "assessmentDate": "2026-09-22",
+          "measurementDate": "2026-09-09",
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+          "method": "Reported complete response percentages. Difference in percentage points is descriptive and not a treatment-comparator superiority claim.",
+          "note": "Clinical importance and uncertainty must be assessed separately."
+        }
+      ]
+    },
+    {
+      "nctId": "NCT06641076",
+      "ticker": "MLTX",
+      "drug": "sonelokimab",
+      "indication": "psoriatic arthritis",
+      "stage": "post",
+      "observations": [
+        {
+          "id": "m-acr50",
+          "metricIds": [
+            "post-1-1",
+            "post-1-2"
+          ],
+          "kind": "single_arm_response",
+          "title": "IZAR-1 60 mg induction ACR50 at Week 16",
+          "activePercent": 42.1,
+          "unit": "% of sonelokimab-treated patients",
+          "assessmentDate": "2026-08-10",
+          "measurementDate": "2026-08-10",
+          "sourceUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+          "method": "Reported treated-arm ACR50 response; detailed active-versus-placebo and comparator analysis remained blinded in the sponsor's cited announcement.",
+          "note": "Cannot compute the placebo-adjusted effect or scientifically assign an efficacy grade from this treated-arm rate alone."
+        },
+        {
+          "id": "m-cash",
+          "metricIds": [
+            "post-4-2"
+          ],
+          "kind": "cash_balance",
+          "title": "June 30, 2026 cash and short-term debt securities",
+          "value": 537,
+          "unit": "USD million",
+          "assessmentDate": "2026-08-10",
+          "measurementDate": "2026-06-30",
+          "sourceUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+          "method": "Sponsor's second-quarter report: $537.0 million cash, cash equivalents and short-term marketable debt securities.",
+          "note": "Cash balance by itself is not cash runway or a financial-strength grade."
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07363577",
+      "ticker": "LBRX",
+      "drug": "LB-102 (100 mg tablet) | LB-102 (50 mg tablet)",
+      "indication": "Schizophrenia",
+      "stage": "pre",
+      "observations": [
+        {
+          "id": "l-guidance",
+          "metricIds": [
+            "pre-4-1",
+            "pre-4-2"
+          ],
+          "kind": "readout_window",
+          "title": "NOVA-2 expected Phase 3 topline results",
+          "valueText": "First half of 2027",
+          "unit": "sponsor forecast, not a fixed date",
+          "assessmentDate": "2026-10-27",
+          "measurementDate": "2026-10-27",
+          "sourceUrl": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/",
+          "method": "Sponsor's dated prospective guidance for NOVA-2 readout, corroborating August 11 guidance.",
+          "note": "The precise announcement date is not known; this is not enough to establish a reliable last-safe-exit date."
+        },
+        {
+          "id": "l-cash",
+          "metricIds": [
+            "pre-3-2"
+          ],
+          "kind": "cash_balance",
+          "title": "June 30, 2026 cash, cash equivalents and marketable securities",
+          "value": 327.8,
+          "unit": "USD million",
+          "assessmentDate": "2026-08-11",
+          "measurementDate": "2026-06-30",
+          "sourceUrl": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-reports-second-quarter-2026-financial-results-and-provides-corporate-update/",
+          "method": "Sponsor's second-quarter report: $327.8 million as of June 30, 2026.",
+          "note": "Quarterly source also mentions financing proceeds and runway guidance; one cash snapshot alone cannot establish dilution-adjusted valuation."
+        },
+        {
+          "id": "l-design",
+          "metricIds": [
+            "pre-1-2"
+          ],
+          "kind": "study_design",
+          "title": "NOVA-2 pivotal design",
+          "valueText": "Approximately 460 patients; primary endpoint PANSS total-score change at Week 6",
+          "unit": "protocol design",
+          "assessmentDate": "2026-03-25",
+          "measurementDate": "2026-03-25",
+          "sourceUrl": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-initiates-pivotal-phase-3-trial-nova-2-for-lb-102-in-patients-with-schizophrenia/",
+          "method": "Sponsor description of pivotal protocol at initiation.",
+          "note": "Sample size and endpoint description do not establish statistical power or scientific success probability."
+        }
+      ]
+    },
+    {
+      "nctId": "NCT07671911",
+      "ticker": "TRVI",
+      "drug": "NAL ER",
+      "indication": "Idiopathic Pulmonary Fibrosis",
+      "stage": "pre",
+      "observations": [
+        {
+          "id": "t-trials",
+          "metricIds": [
+            "pre-4-1",
+            "pre-1-2"
+          ],
+          "kind": "study_design",
+          "title": "OCEAN Phase 3 studies recruiting",
+          "valueText": "OCEAN 1 and OCEAN 2 in IPF-related chronic cough",
+          "unit": "investigational Phase 3",
+          "assessmentDate": "2026-10-11",
+          "measurementDate": "2026-10-11",
+          "sourceUrl": "https://trevitherapeutics.com/active-clinical-trials/",
+          "method": "Sponsor active-trial listing saved as source-check evidence in the trial classification.",
+          "note": "A website trial listing does not provide a trustworthy specific readout date, clinical success grade, or exit price."
+        }
+      ]
+    }
+  ]
+}
