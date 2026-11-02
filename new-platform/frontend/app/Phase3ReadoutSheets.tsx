@@ -8,6 +8,7 @@ import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type Colu
 import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
 import {RANKED_BENEFIT_ASSESSMENTS} from "../lib/pipeline-benefit-assessments";
 import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
+import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phase3ReadoutSortKey} from "../lib/phase3-readout-sort";
 
 type Bucket="pre"|"post"|"unverified";
 /** Reversible visibility-only feature; existing trial data and research sources are unchanged. */
@@ -29,17 +30,21 @@ const SURVEY_FIELD_DETAILS=new Map<string,{purpose:string;evidence:string}>(
 const LIMIT=50;
 const number=(v:number)=>v.toLocaleString("en-US");
 const txt=(v:string)=>v||"Not established";
-type ReadoutKey="nctId"|"ticker"|"company"|"factorP"|"drug"|"indication"|"status"|"date"|"source";
+type ReadoutKey=Exclude<Phase3ReadoutSortKey,"row"|"survey"|"synthesis">;
 const readoutColumns:ColumnFilterField[]=[
+ {key:"row",label:"Original row #"},
  {key:"ticker",label:"Ticker"},{key:"nctId",label:"NCT / trial"},
- {key:"company",label:"Company"},{key:"drug",label:"Drug / therapy"},
+ {key:"company",label:"Company"},
+ {key:"survey",label:"Survey Ratings · verified inputs"},
+ {key:"synthesis",label:"SURVEY · evidence readiness"},
+ {key:"drug",label:"Drug / therapy"},
  {key:"indication",label:"Indication"},{key:"status",label:"Registry status"},
  {key:"date",label:"Issuer release/check date"},{key:"source",label:"Evidence source"}
 ];
 const postReadoutColumns:ColumnFilterField[]=[
- ...readoutColumns.slice(0,3),
- {key:"factorP",label:"Factor P · primary endpoint p-value"},
- ...readoutColumns.slice(3)
+ ...readoutColumns.slice(0,4),
+ {key:"factorP",label:"Factor P · numeric threshold"},
+ ...readoutColumns.slice(4)
 ];
 const unknownColumns:ColumnFilterField[]=[
  {key:"nctId",label:"NCT / trial"},{key:"ticker",label:"Ticker"},
@@ -345,22 +350,45 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  </div>,document.body);
 }
 
-function TrialTable({rows,bucket,showSurveys,showSynthesis,onSurveyOpen}:{
- rows:ReadoutRow[];bucket:Bucket;showSurveys:boolean;showSynthesis:boolean;
+function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
+ onSurveyOpen,sort,desc,onSort,benefitFeed,researchStatus}:{
+ rows:ReadoutRow[];bucket:"pre"|"post";originalOrder:readonly ReadoutRow[];
+ showSurveys:boolean;showSynthesis:boolean;
  onSurveyOpen:(row:ReadoutRow,view:"details"|"synthesis")=>void;
+ sort:Phase3ReadoutSortKey;desc:boolean;onSort:(key:Phase3ReadoutSortKey)=>void;
+ benefitFeed:BenefitFeed|null;researchStatus:"idle"|"loading"|"ready"|"unavailable";
 }){
+ const originalNumbers=new Map(originalOrder.map((row,index)=>[row.nctId,index+1]));
+ const sortedHeader=(key:Phase3ReadoutSortKey,label:string,tooltip?:string)=>
+   <th aria-sort={sort===key?(desc?"descending":"ascending"):"none"}>
+     <button type="button" className={css.sortHeaderButton}
+       title={tooltip||"Sort by "+label}
+       aria-label={"Sort "+label+(sort===key?(desc?" ascending":" descending"):" ascending")}
+       onClick={()=>onSort(key)}>
+       <span>{label}</span>
+       <span className={css.sortArrow} aria-hidden="true">{sort===key?(desc?"↓":"↑"):"↕"}</span>
+     </button>
+   </th>;
+ const researchFor=(row:ReadoutRow)=>researchStatus==="ready"
+   ?readoutResearchCoverage(row,bucket,benefitFeed):null;
   return <div className={css.tableScroll} role="region" aria-label={bucket+" Phase 3 trial spreadsheet"} tabIndex={0}>
     <table className={css.table}>
       <thead><tr>
-        <th>#</th><th>Ticker</th><th>NCT / trial</th><th>Company</th>
-        {bucket==="post"&&<th title="Verified Phase 3 primary-endpoint statistical p-value, not FDA approval probability">Factor P · p-value</th>}
-        {showSurveys&&<th>Survey Ratings</th>}
-        {showSynthesis&&<th title="Conjunction of all five survey groups and stage-specific evidence gates">SURVEY</th>}
-        <th>Drug / therapy</th><th>Indication</th><th>Registered status</th>
-        <th>{bucket==="pre"?"Source checked":bucket==="post"?"Public release date":"Public release"}</th><th>Source evidence</th>
+        {sortedHeader("row","#","Original spreadsheet row number")}
+        {sortedHeader("ticker","Ticker")}
+        {sortedHeader("nctId","NCT / trial")}
+        {sortedHeader("company","Company")}
+        {bucket==="post"&&sortedHeader("factorP","Factor P · p-value","Sort by reported numeric p-value threshold, not FDA approval probability")}
+        {showSurveys&&sortedHeader("survey","Survey Ratings","Sort by count of verified research inputs; not clinical quality")}
+        {showSynthesis&&sortedHeader("synthesis","SURVEY","Sort by evidence-readiness gates; not expected stock appreciation")}
+        {sortedHeader("drug","Drug / therapy")}
+        {sortedHeader("indication","Indication")}
+        {sortedHeader("status","Registered status")}
+        {sortedHeader("date",bucket==="pre"?"Source checked":"Public release date")}
+        {sortedHeader("source","Source evidence","Sort by evidence source URL")}
       </tr></thead>
       <tbody>{rows.length?rows.map((row,i)=><tr key={row.nctId}>
-        <td>{i+1}</td><td><strong>{row.ticker}</strong></td>
+        <td>{originalNumbers.get(row.nctId)??i+1}</td><td><strong>{row.ticker}</strong></td>
         <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
         <td><span>{row.company}</span>{" "}<span className={`${css.stageBadge} ${bucket==="pre"?css.stageThree:css.stageP}`} title={bucket==="pre"?"3 · Phase 3 public results not identified at the dated source check":"P · Public Phase 3 results released; a PDUFA date is not implied"} aria-label={bucket==="pre"?"Phase 3 pre-release as last checked":"Post Phase 3 public readout confirmed"}>{bucket==="pre"?"3":"P"}</span></td>
         {bucket==="post"&&<td className={css.factorPCell}>
@@ -372,13 +400,17 @@ function TrialTable({rows,bucket,showSurveys,showSynthesis,onSurveyOpen}:{
             aria-label={"Explore five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
             Surveys <span aria-hidden="true">→</span>
           </button>
-          <small>5 groups · 20 surveys</small>
+          <small>{researchStatus==="loading"?"Loading verified inputs":
+            researchFor(row)?researchFor(row)!.verified+" verified / 38":"Not assessed · 5 groups"}</small>
         </td>}{showSynthesis&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"synthesis")}
             aria-label={"Open SURVEY combined assessment for "+row.ticker+" "+row.nctId}>
             SURVEY <span aria-hidden="true">→</span>
           </button>
-          <small>{bucket==="pre"?"Pre-readout":"Post-readout"} · evidence synthesis</small>
+          <small>{researchFor(row)?
+            (researchFor(row)!.ready?"Ready for evidence review":
+              "Incomplete evidence · "+researchFor(row)!.passedChecks+"/4 gates"):
+            "Evidence not assessed"}</small>
         </td>}<td>{txt(row.evidence?.drug||"")}</td>
         <td>{txt(row.evidence?.indication||"")}</td><td>{row.status.replaceAll("_"," ")}</td>
         <td>{row.evidence?.evidenceDate||"Not verified"}</td>
@@ -390,20 +422,34 @@ function TrialTable({rows,bucket,showSurveys,showSynthesis,onSurveyOpen}:{
     </table>
   </div>;
 }
-function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurveyOpen}:{
+function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurveyOpen,
+ benefitFeed,researchStatus,onResearchSort}:{
  bucket:"pre"|"post";rows:ReadoutRow[];query:string;caption:string;
- showSurveys:boolean;showSynthesis:boolean;
+ showSurveys:boolean;showSynthesis:boolean;benefitFeed:BenefitFeed|null;
+ researchStatus:"idle"|"loading"|"ready"|"unavailable";onResearchSort:()=>void;
  onSurveyOpen:(row:ReadoutRow,view:"details"|"synthesis")=>void;
 }){
-  const [sort,setSort]=useState<ReadoutKey>("ticker");
+  const [sort,setSort]=useState<Phase3ReadoutSortKey>("ticker");
   const [desc,setDesc]=useState(false);
+  const availableSortColumns=(bucket==="pre"?readoutColumns:postReadoutColumns)
+    .filter(field=>(field.key!=="survey"||showSurveys)&&(field.key!=="synthesis"||showSynthesis));
+  const setSortColumn=(key:Phase3ReadoutSortKey)=>{
+    if((key==="survey"||key==="synthesis")&&researchStatus==="idle")onResearchSort();
+    if(key===sort)setDesc(v=>!v);
+    else{setSort(key);setDesc(false);}
+  };
+  useEffect(()=>{
+    if(sort==="survey"&&!showSurveys||sort==="synthesis"&&!showSynthesis){
+      setSort("ticker");setDesc(false);
+    }
+  },[sort,showSurveys,showSynthesis]);
   const matched=useMemo(()=>{
     const q=query.trim().toLowerCase();
     const found=rows.filter(x=>
       !q||[x.nctId,x.ticker,x.company,x.status,x.evidence?.drug||"",x.evidence?.indication||"",x.evidence?.evidenceDate||"",x.evidence?.primaryEndpointP?.display||""]
         .some(field=>field.toLowerCase().includes(q)));
-    return sortReadout(found,sort,desc);
-  },[rows,query,sort,desc]);
+    return sortPhase3Readouts(found,rows,sort,desc,bucket,benefitFeed);
+  },[rows,query,sort,desc,bucket,benefitFeed]);
   const pre=bucket==="pre";
   return <section className={css.sheet} aria-label={pre?"Top pre-release spreadsheet":"Bottom post-release spreadsheet"}>
     <div className={css.sheetHeading}>
@@ -418,13 +464,21 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
     <div className={css.postSort}>
       <label>Sort {pre?"pre-release":"post-release"} trials by{" "}
         <select aria-label={bucket+" release sort column"} value={sort}
-          onChange={e=>setSort(e.target.value as ReadoutKey)}>
-          {(pre?readoutColumns:postReadoutColumns).map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
+          onChange={e=>{setSort(e.target.value as Phase3ReadoutSortKey);setDesc(false);if((e.target.value==="survey"||e.target.value==="synthesis")&&researchStatus==="idle")onResearchSort();}}>
+          {availableSortColumns.map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
         </select>
       </label>
       <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
+      {(sort==="survey"||sort==="synthesis")&&
+        <span role="status" className={css.sortEvidenceState}>
+          {researchStatus==="loading"?"Loading trial-specific survey evidence…":
+           researchStatus==="unavailable"?"Survey research unavailable · unassessed rows remain in original order":
+           "Sorted by documented evidence coverage, not medical success or stock appreciation"}
+        </span>}
     </div>
-    <TrialTable rows={matched} bucket={bucket} showSurveys={showSurveys} showSynthesis={showSynthesis} onSurveyOpen={onSurveyOpen}/>
+    <TrialTable rows={matched} bucket={bucket} originalOrder={rows} showSurveys={showSurveys}
+      showSynthesis={showSynthesis} sort={sort} desc={desc} onSort={setSortColumn}
+      benefitFeed={benefitFeed} researchStatus={researchStatus} onSurveyOpen={onSurveyOpen}/>
   </section>;
 }
 /** Full historical issuer-cap census with dated issuer readouts, never registry-result proxy. */
@@ -438,6 +492,7 @@ export default function Phase3ReadoutSheets(){
   const [activeSurvey,setActiveSurvey]=useState<{row:ReadoutRow;bucket:"pre"|"post";view:"details"|"synthesis"}|null>(null);
   const [benefitFeed,setBenefitFeed]=useState<BenefitFeed|null>(null);
   const [researchStatus,setResearchStatus]=useState<"idle"|"loading"|"ready"|"unavailable">("idle");
+  const [researchSortRequested,setResearchSortRequested]=useState(false);
   useEffect(()=>{
     if(!SURVEY_RATINGS_PREVIEW_ENABLED)return;
     try{if(window.localStorage.getItem(SURVEY_VISIBILITY_KEY)==="false")setShowSurveys(false);}catch{}
@@ -454,13 +509,13 @@ export default function Phase3ReadoutSheets(){
     try{window.localStorage.setItem(SYNTHESIS_VISIBILITY_KEY,String(next));}catch{}
   };
   useEffect(()=>{
-    if(!activeSurvey||researchStatus!=="idle")return;
+    if((!activeSurvey&&!researchSortRequested)||researchStatus!=="idle")return;
     setResearchStatus("loading");
     void fetch("/api/benefit-assessments",{cache:"no-store"})
       .then(async r=>{if(!r.ok)throw Error("Research unavailable");return parseBenefitFeed(await r.json());})
       .then(feed=>{setBenefitFeed(feed);setResearchStatus("ready");})
       .catch(()=>setResearchStatus("unavailable"));
-  },[activeSurvey,researchStatus]);
+  },[activeSurvey,researchSortRequested,researchStatus]);
   const [unknownPage,setUnknownPage]=useState(0);
   const [unknownFilters,setUnknownFilters]=useState<ColumnFilterState>({});
   const [unknownSort,setUnknownSort]=useState<ReadoutKey>("nctId");
@@ -524,10 +579,14 @@ export default function Phase3ReadoutSheets(){
     </div>}
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
+      benefitFeed={benefitFeed} researchStatus={researchStatus}
+      onResearchSort={()=>setResearchSortRequested(true)}
       onSurveyOpen={(row,view)=>setActiveSurvey({row,bucket:"pre",view})}
       caption="Trials without a documented issuer public release at their source-check date. Each row retains the check date and issuer link."/>
     <Spreadsheet bucket="post" rows={data.post} query={query}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
+      benefitFeed={benefitFeed} researchStatus={researchStatus}
+      onResearchSort={()=>setResearchSortRequested(true)}
       onSurveyOpen={(row,view)=>setActiveSurvey({row,bucket:"post",view})}
       caption="Trials with a documented company public Phase 3 results announcement. Factor P shows the sourced primary-endpoint p-value where reported; it is not approval probability."/>
     {activeSurvey?.view==="details"&&<SurveyExplorer key={activeSurvey.bucket+"|"+activeSurvey.row.nctId}
