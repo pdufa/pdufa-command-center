@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_PRIMARY_HISTORICAL_OUTCOME_CROSSCHECKS",
+  "sourceAsOf": "2026-11-02",
+  "note": "Primary FDA pages manually cross-checked against five existing retrospectively selected BOTTOM research examples. FDA actions occurred after the selected historical exits. These are independent outcome confirmations, NOT contemporaneous investment signals, prospectively archived forecasts, adjusted trading returns, or RAAS score calibration.",
+  "records": [
+    {
+      "caseId": "vrna-ensifentrine-copd-2024-illustrative",
+      "ticker": "VRNA",
+      "drug": "ensifentrine",
+      "indication": "COPD maintenance treatment",
+      "decisionDate": "2024-06-26",
+      "product": "OHTUVAYRE",
+      "fdaUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-ohtuvayre",
+      "sourceTitle": "FDA Drug Trials Snapshot: OHTUVAYRE",
+      "decision": "APPROVED",
+      "sourceType": "FDA_PRIMARY_PAGE",
+      "reviewedAt": "2026-11-02",
+      "scope": "HISTORICAL_POST_EXIT_OUTCOME_ONLY"
+    },
+    {
+      "caseId": "urgn-ugn102-nmibc-2025-illustrative",
+      "ticker": "URGN",
+      "drug": "UGN-102 (mitomycin intravesical solution)",
+      "indication": "Recurrent low-grade intermediate-risk non-muscle invasive bladder cancer",
+      "decisionDate": "2025-06-12",
+      "product": "ZUSDURI",
+      "fdaUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-mitomycin-intravesical-solution-recurrent-low-grade-intermediate-risk-non-muscle",
+      "sourceTitle": "FDA approves mitomycin intravesical solution",
+      "decision": "APPROVED",
+      "sourceType": "FDA_PRIMARY_PAGE",
+      "reviewedAt": "2026-11-02",
+      "scope": "HISTORICAL_POST_EXIT_OUTCOME_ONLY"
+    },
+    {
+      "caseId": "gern-imetelstat-mds-2024-illustrative",
+      "ticker": "GERN",
+      "drug": "imetelstat (RYTELO)",
+      "indication": "Transfusion-dependent anemia in lower-risk myelodysplastic syndromes",
+      "decisionDate": "2024-06-06",
+      "product": "RYTELO",
+      "fdaUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-imetelstat-low-intermediate-1-risk-myelodysplastic-syndromes-transfusion-dependent",
+      "sourceTitle": "FDA approves imetelstat for low- to intermediate-1 risk myelodysplastic syndromes",
+      "decision": "APPROVED",
+      "sourceType": "FDA_PRIMARY_PAGE",
+      "reviewedAt": "2026-11-02",
+      "scope": "HISTORICAL_POST_EXIT_OUTCOME_ONLY"
+    },
+    {
+      "caseId": "mdgl-resmetirom-nash-2023-2024-illustrative",
+      "ticker": "MDGL",
+      "drug": "resmetirom",
+      "indication": "Noncirrhotic NASH with moderate to advanced liver fibrosis",
+      "decisionDate": "2024-03-14",
+      "product": "REZDIFFRA",
+      "fdaUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-treatment-patients-liver-scarring-due-fatty-liver-disease",
+      "sourceTitle": "FDA approves first treatment for patients with liver scarring due to fatty liver disease",
+      "decision": "APPROVED",
+      "sourceType": "FDA_PRIMARY_PAGE",
+      "reviewedAt": "2026-11-02",
+      "scope": "HISTORICAL_POST_EXIT_OUTCOME_ONLY"
+    },
+    {
+      "caseId": "bbio-acoramidis-attrcm-2024-illustrative",
+      "ticker": "BBIO",
+      "drug": "acoramidis (ATTRUBY)",
+      "indication": "Transthyretin amyloid cardiomyopathy (ATTR-CM)",
+      "decisionDate": "2024-11-22",
+      "product": "ATTRUBY",
+      "fdaUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshot-attruby",
+      "sourceTitle": "FDA Drug Trials Snapshot: ATTRUBY",
+      "decision": "APPROVED",
+      "sourceType": "FDA_PRIMARY_PAGE",
+      "reviewedAt": "2026-11-02",
+      "scope": "HISTORICAL_POST_EXIT_OUTCOME_ONLY"
+    }
+  ]
+}
