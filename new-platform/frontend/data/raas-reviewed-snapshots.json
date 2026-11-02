@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_REVIEWED_TRIAL_SNAPSHOTS",
+  "sourceAsOf": "2026-11-02",
+  "note": "No manually approved score records yet. Each snapshot must match exact NCT, ticker, drug and indication; only precommitted, historically calibrated rules can contribute to RAAS. Never backfill an ENTRY with future knowledge.",
+  "records": []
+}
