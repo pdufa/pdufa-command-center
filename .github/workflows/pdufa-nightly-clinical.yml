@@ -253,6 +253,28 @@ jobs:
           done
           echo "::error::Clinical snapshot could not be published; source artifacts retained."
           exit 1
+      # The two TOOLS spreadsheets must track actual downloaded registry data,
+      # never the separate issuer-topline classifications.
+      - name: Refresh both TOOLS Phase 3 registry results spreadsheets
+        run: |
+          set -euo pipefail
+          python scripts/refresh_phase3_registry_postings.py
+      - name: Publish updated TOOLS registry results immediately after scan 4
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- new-platform/frontend/public/phase3-registry-postings-current.json
+          git diff --cached --check
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish Phase 3 TOOLS results-posting tables after scan 4"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 5
+          done
+          echo "::error::TOOLS results tables publication failed; last complete snapshot preserved."
+          exit 1
       - name: Archive scan results, source status and notification audit
         if: always()
         uses: actions/upload-artifact@v4

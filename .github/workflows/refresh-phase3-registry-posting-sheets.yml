@@ -1,0 +1,63 @@
+name: Refresh TOOLS Phase 3 results-posting spreadsheets
+
+# Bootstrap on installation, daily source refresh fallback, and manual repair.
+# Nightly clinical scan 4 also calls the SAME script immediately after a
+# successful source download (GitHub GITHUB_TOKEN pushes do not trigger push
+# workflows). The weekly census job also calls it after changing NCT scope.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 12 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/refresh_phase3_registry_postings.py'
+      - 'new-platform/frontend/lib/phase3-registry-posting.ts'
+      - '.github/workflows/refresh-phase3-registry-posting-sheets.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase3-registry-posting-tables-publish
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout current source files
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test full-count, duplicate and partial-source safeguards
+        run: python -m unittest discover -s tests -p 'test_refresh_phase3_registry_postings.py' -v
+      - name: Refresh every exact NCT from official registry results-first-posted evidence
+        run: python scripts/refresh_phase3_registry_postings.py
+      - name: Publish only a fully reconciled registry posting snapshot
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- new-platform/frontend/public/phase3-registry-postings-current.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Full registry results snapshot unchanged."
+            exit 0
+          fi
+          git commit -m "Refresh both Phase 3 registry results posting spreadsheets"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "TOOLS Phase 3 tables published from reconciled official results."
+              exit 0
+            fi
+            git rebase --abort || true
+            sleep 5
+          done
+          echo "::error::Registry refresh succeeded but publication failed"
+          exit 1
