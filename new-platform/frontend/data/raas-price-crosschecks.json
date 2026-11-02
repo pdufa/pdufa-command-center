@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_SECOND_PROVIDER_CLOSE_CHECKS",
   "sourceAsOf": "2026-11-02",
-  "note": "Second-provider historical close observations. These show agreement of displayed nominal closing prices, NOT independent tape certification, adjustment-factor verification, market execution, or original RAAS predictive accuracy. No approved investment score is created.",
+  "note": "Second-provider dated nominal close checks for 11/16 points in 8 retrospective research windows, including weekly period-ending-Friday prices corroborated on the selected dates. Quotes are not exchange-tape certified or corporate-action adjusted and sources can share upstream data. No authentic historical RAAS forecasts exist.",
   "observations": [
     {
       "caseId": "vrna-ensifentrine-copd-2024-illustrative",
@@ -51,6 +51,90 @@
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
       "sourceDisplayDate": "2026-11-02",
       "note": "StatMuse daily Dec 2022 table reports December 16 close $63.80 matching FinanceCharts. November 18 entry quote still needs a separate source."
+    },
+    {
+      "caseId": "bbio-attribute-cm-pre2023-illustrative",
+      "side": "ENTRY",
+      "date": "2023-05-12",
+      "secondaryClose": 13.54,
+      "secondaryProvider": "Sector Alpha",
+      "sourceUrl": "https://www.sectoralpha.in/us/stocks/bbio",
+      "note": "Sector Alpha historical weekly close for May 12 2023 is $13.54, agreeing with FinanceCharts. May 12 was a Friday, but weekly data need close-type/source methodology review.",
+      "currency": "USD",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02"
+    },
+    {
+      "caseId": "bbio-attribute-cm-pre2023-illustrative",
+      "side": "EXIT",
+      "date": "2023-07-07",
+      "secondaryClose": 16.89,
+      "secondaryProvider": "StatMuse",
+      "sourceUrl": "https://www.statmuse.com/money/ask/bbio-market-cap-july-2023",
+      "note": "StatMuse daily market-cap chart explicitly records July 7 2023 closing price $16.89, matching FinanceCharts. This share-based vendor calculation is not a stock-split audit.",
+      "currency": "USD",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02"
+    },
+    {
+      "caseId": "gern-imetelstat-mds-2024-illustrative",
+      "side": "ENTRY",
+      "date": "2024-05-03",
+      "secondaryClose": 3.93,
+      "secondaryProvider": "Sector Alpha",
+      "sourceUrl": "https://www.sectoralpha.in/us/stocks/gern",
+      "note": "Sector Alpha's weekly close on May 3 2024 shows $3.93, matching FinanceCharts. Nominal source quote, not exchange-certified adjustment.",
+      "currency": "USD",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02"
+    },
+    {
+      "caseId": "gern-imetelstat-mds-2024-illustrative",
+      "side": "EXIT",
+      "date": "2024-05-31",
+      "secondaryClose": 3.55,
+      "secondaryProvider": "Sector Alpha",
+      "sourceUrl": "https://www.sectoralpha.in/us/stocks/gern",
+      "note": "Sector Alpha weekly close May 31 2024 $3.55, matching FinanceCharts. FDA early-action risk and trade execution remain unverified.",
+      "currency": "USD",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02"
+    },
+    {
+      "caseId": "urgn-ugn102-nmibc-2025-illustrative",
+      "side": "ENTRY",
+      "date": "2025-03-14",
+      "secondaryClose": 11.07,
+      "secondaryProvider": "Sector Alpha",
+      "sourceUrl": "https://www.sectoralpha.in/us/stocks/urgn",
+      "note": "Sector Alpha March 14 2025 weekly close $11.07, matching original FinanceCharts March 14 price. Publication and adjustment basis of vendor chart require review.",
+      "currency": "USD",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02"
+    },
+    {
+      "caseId": "bbio-acoramidis-attrcm-2024-illustrative",
+      "side": "ENTRY",
+      "date": "2024-05-10",
+      "secondaryClose": 29.1,
+      "secondaryProvider": "Sector Alpha",
+      "sourceUrl": "https://www.sectoralpha.in/us/stocks/bbio",
+      "note": "Sector Alpha May 10 2024 $29.10 weekly close, corroborating original FinanceCharts record.",
+      "currency": "USD",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02"
+    },
+    {
+      "caseId": "bbio-acoramidis-attrcm-2024-illustrative",
+      "side": "EXIT",
+      "date": "2024-11-15",
+      "secondaryClose": 23.72,
+      "secondaryProvider": "Sector Alpha",
+      "sourceUrl": "https://www.sectoralpha.in/us/stocks/bbio",
+      "note": "Sector Alpha Nov 15 2024 weekly close $23.72, corroborating original FinanceCharts record. Regulatory and financed-value exposures remain distinct.",
+      "currency": "USD",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02"
     }
   ]
 }
