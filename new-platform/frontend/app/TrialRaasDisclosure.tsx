@@ -9,6 +9,7 @@ import {RAAS_METRIC_CATALOG,RAAS_PROVISIONAL_ANCHORS,RAAS_SPEC_VERSION,type Raas
 import css from "./TrialRaasDisclosure.module.css";
 import pilotData from "../data/raas-pilot-observations.json";
 import historicalCases from "../data/raas-historical-cases.json";
+import historicalMetricSnapshots from "../data/raas-historical-metric-snapshots.json";
 import {parseRaasPilotFeed,observationsForTrial,observedCalculation,computeRaasScore,type RaasObservation} from "../lib/raas-score-engine";
 import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
 import reviewedSnapshots from "../data/raas-reviewed-snapshots.json";
@@ -16,13 +17,16 @@ import approvedCalibrations from "../data/raas-approved-calibrations.json";
 import {parseRaasCalibrations,parseRaasReviewedLedger,reviewedScoreForTrial} from "../lib/raas-reviewed-score-ledger";
 import {contextualClinicalBenchmark} from "../lib/raas-clinical-benchmarks";
 import {evaluateHistoricalFeed,parseHistoricalFeed,walkForwardFolds,RAAS_HISTORICAL_MIN_INDEPENDENT_PROGRAMS} from "../lib/raas-historical-backtest";
+import {evaluateMetricHistory,parseMetricHistory} from "../lib/raas-metric-backtest";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
 const fieldLabels=new Map<string,string>(ALL_RESEARCH_FIELD_DEFINITIONS.map(field=>[field.id,field.label]));
 type Snapshot="ENTRY"|"CURRENT"|"EXIT";
 const pilot=parseRaasPilotFeed(pilotData);
-const historicalValidation=evaluateHistoricalFeed(parseHistoricalFeed(historicalCases));
+const historicalFeed=parseHistoricalFeed(historicalCases);
+const historicalValidation=evaluateHistoricalFeed(historicalFeed);
+const metricHistoryReview=evaluateMetricHistory(historicalFeed,historicalValidation,parseMetricHistory(historicalMetricSnapshots));
 const calibrationRegistry=parseRaasCalibrations(approvedCalibrations);
 const reviewedLedger=parseRaasReviewedLedger(reviewedSnapshots);
 function PilotEvidence({observations,metricId,snapshot,drug,indication}:{observations:readonly RaasObservation[];metricId:string;snapshot:Snapshot;drug:string;indication:string}){
@@ -83,6 +87,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const isTop=bucket==="pre";
  const historicalStage=historicalValidation.byStage.find(x=>x.stage===bucket)!;
  const historicalFolds=walkForwardFolds(historicalValidation.accepted,bucket);
+ const historyMetrics=metricHistoryReview.filter(m=>m.stage===bucket);
  const label=isTop?"TOP-RAAS":"BOTTOM-RAAS";
  const groups=RAAS_METRIC_CATALOG[bucket];
  const record=researchStatus==="ready"?exactReadoutBenefit(row,benefitFeed):null;
@@ -125,7 +130,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
        <div className={css.historicalStatus}>
          <p><strong>{label} validation:</strong> {historicalStage.cases} eligible historical trade windows; {historicalStage.independentPrograms} independent company/therapy/indication opportunities; {historicalStage.predictionCoverage}% documented return forecasts.</p>
          <p>Return forecast error: {historicalStage.maePercent===null?"Not calculable":historicalStage.maePercent+" percentage points mean absolute error"}; score versus realized-return rank correlation: {historicalStage.spearmanRaasVsReturn===null?"Not calculable":historicalStage.spearmanRaasVsReturn}.</p>
-         <p>Out-of-sample review folds: {historicalFolds.length}; verified/calibration-approved RAAS scoring profiles: {calibrationRegistry.entries.filter(x=>x.stage===bucket).length}/30.</p>
+         <p>Out-of-sample review folds: {historicalFolds.length}; metric histories meeting the minimum review sample floor: {historyMetrics.filter(m=>m.status==="REVIEW_ELIGIBLE_NOT_APPROVED").length}/30; calibration-approved RAAS scoring profiles: {calibrationRegistry.entries.filter(x=>x.stage===bucket).length}/30.</p>
          <p><strong>Current status:</strong> {historicalStage.reason}</p>
          <p>Historic outcome cases must use timestamped pre-entry sources, exact asset identity and verified readout or FDA target. Two NCTs of one drug cannot become two independent opportunities.</p>
          <p>Historical case ledger as of {historicalCases.sourceAsOf}. This is not a live quote, automated historical backfill, or backtest with validated predictive performance.</p>
@@ -142,6 +147,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
            <strong className={css.metricIntro}>Individual metrics · open one for scoring evidence</strong>
            {group.metrics.map((metric,j)=>{const exploratory=pilotGrades.find(g=>g.metricId===metric.id);
              const profile=thresholdProfile(bucket,metric.id);
+             const metricBacktest=historyMetrics.find(m=>m.metricId===metric.id);
              const qualified=reviewed?.acceptedRatings.find(r=>r.metricId===metric.id&&!grading.missing.includes(metric.id));
              return <details key={metric.id} name={"raas-metric-"+bucket+"-"+row.nctId+"-"+group.id}
              className={css.metric} data-raas-metric={metric.id}>
@@ -164,6 +170,11 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
                  <p>{profile?.status==="PROVISIONAL_NOT_CALIBRATED"?"Provisional nonvalidated research rule; excluded from RAAS":"BENCHMARK REQUIRED · No calibrated numeric score"}</p>
                  <p><strong>Data needed:</strong> {profile?.minimumInputs}</p>
                  <p><strong>Benchmark needed:</strong> {profile?.benchmarkRequired}</p>
+               </div>
+               <div className={css.requirement}><strong>Historical investment-performance validation</strong>
+                 <p>{metricBacktest?.independentPrograms??0} independently observed program/return pairs; score-return rank correlation: {metricBacktest?.spearmanScoreToReturn??"Not available"}.</p>
+                 <p>High-score minus low-score mean realized return: {metricBacktest?.meanHighMinusLowPercent===null?"Not available":metricBacktest?.meanHighMinusLowPercent+" percentage points"}.</p>
+                 <p>{metricBacktest?.reason||"Missing historical metric review."} No score becomes approved solely from this descriptive backtest.</p>
                </div>
                <div className={css.requirement}><strong>Evidence required</strong><p>{metric.requiredEvidence}</p></div>
                <div className={css.requirement}><strong>What improves this score?</strong><p>{metric.scoreRule}</p></div>
