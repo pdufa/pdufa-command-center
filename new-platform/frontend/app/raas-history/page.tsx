@@ -131,7 +131,7 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
        <div className={css.checkBody}>
          {([closeAudit.entry,closeAudit.exit] as const).map(point=><div key={point.side} className={css.sourceFact}>
            <strong>{point.side} · {point.date} · {point.status==="PROVIDER_PRICE_MATCH"?"Two displayed closing prices agree":point.status==="PROVIDER_PRICE_MISMATCH"?"Price discrepancy":"No independent second close yet"}</strong>
-           <p>Original price: <strong>${point.originalClose.toFixed(2)}</strong>; second source: {point.secondaryClose===null?"Not available":"$"+point.secondaryClose.toFixed(2)}{point.secondaryProvider?" ("+point.secondaryProvider+")":""}.</p>
+           <p>Original price: <strong>${point.originalClose.toFixed(2)}</strong>; second source: {point.secondaryClose===null?"Not available":"$"+point.secondaryClose.toFixed(2)}{point.secondaryProvider?" ("+point.secondaryProvider+")":""}. {point.quoteGranularity==="WEEKLY_FRIDAY_CLOSE"?"Secondary is a Friday-ending weekly close; source methodology needs review.":point.quoteGranularity==="DAILY_SESSION_CLOSE"?"Secondary source shows a dated daily trading session.":""}</p>
            {point.differenceUsd!==null&&<p>Difference: ${point.differenceUsd.toFixed(4)} ({point.differencePercent?.toFixed(2)}%).</p>}
            <a href={point.originalUrl} target="_blank" rel="noopener noreferrer">Original vendor price</a>
            {point.secondaryUrl&&<a href={point.secondaryUrl} target="_blank" rel="noopener noreferrer">Second provider's dated history</a>}
