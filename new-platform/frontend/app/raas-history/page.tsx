@@ -222,6 +222,7 @@ export default function RaasHistoricalAuditPage(){
  return <main className={css.root}>
    <header className={css.header}>
      <Link className={css.back} href="/tools">← Back to Tools</Link>
+      <p><Link href="/raas-scan">Open executed RAAS 60-metric readiness scan and unresolved requirements</Link></p>
      <h1>RAAS · Historical Evidence Audit</h1>
      <p>Inspect pre-readout evidence captured prospectively, historical research windows, and why neither yet supports approved TOP or BOTTOM investment scores.</p>
    </header>
