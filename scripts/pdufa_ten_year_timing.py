@@ -158,7 +158,7 @@ def run():
         rank.columns=["entry_Tminus","exit_Tminus","median_pct","mean_pct","n_events","n_positive"]
         rank=rank[rank.n_events>=10].sort_values("median_pct",ascending=False)
         rank.to_csv(OUT/"window_rankings_in_sample.csv",index=False)
-        summary={"status":"PRELIMINARY_ONLY_PENDING_PRIMARY_DATE_AND_EVENT_VERIFICATION","unique_event_candidates":len(events),"years_in_events":events.pdufa_date.str[:4].value_counts().sort_index().to_dict(),"price_feeds":dict(Counter(v[1] for v in memo.values())),"strict_phase3_cap_events":len(trades.event_key.unique()),"top_windows":rank.head(10).to_dict("records"),"train_years":"2016-2022","holdout_years":"2023-2025","warning":"Full independent 10-year validation requires original historical PDUFA dates, point-in-time shares and complete delisted coverage."}
+        summary={"status":"PRELIMINARY_ONLY_PENDING_PRIMARY_DATE_AND_EVENT_VERIFICATION","unique_event_candidates":len(events),"years_in_events":events.pdufa_date.str[:4].value_counts().sort_index().to_dict(),"price_feeds":dict(Counter(v[0][1] for v in memo.values())),"strict_phase3_cap_events":len(trades.event_key.unique()),"top_windows":rank.head(10).to_dict("records"),"train_years":"2016-2022","holdout_years":"2023-2025","warning":"Full independent 10-year validation requires original historical PDUFA dates, point-in-time shares and complete delisted coverage."}
         train=trades[trades.pdufa_year<=2022]
         hold=trades[trades.pdufa_year>=2023]
         if train.event_key.nunique()>=20 and hold.event_key.nunique()>=20:
