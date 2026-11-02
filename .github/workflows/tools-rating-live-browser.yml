@@ -12,6 +12,7 @@ on:
       - 'new-platform/frontend/tests/final-survey-scoring-protocol.test.cjs'
       - 'new-platform/frontend/lib/phase3-survey-source.ts'
       - 'new-platform/frontend/lib/phase3-scientific-evidence-audit.ts'
+      - 'new-platform/frontend/lib/phase3-published-arithmetic.ts'
       - 'new-platform/frontend/app/api/phase3-readout-survey/route.ts'
       - 'new-platform/frontend/data/phase3-readout-survey-research.json'
       - '.github/workflows/tools-rating-live-browser.yml'
