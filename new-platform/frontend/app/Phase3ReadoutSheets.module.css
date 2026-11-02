@@ -178,3 +178,33 @@
  .sheetSegmentButtons button{min-height:48px;flex-basis:100%;justify-content:flex-start}
  .sheetSegmentAllButton{min-height:48px}
 }
+
+/* TOOLS Phase 3: each top segment and each whole spreadsheet is independently closed initially. */
+.topSegment{margin:8px 0;border:1px solid #a5c7b2;border-radius:9px;overflow:hidden;background:#fff}
+.topSegmentSummary{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:48px;box-sizing:border-box;padding:12px 14px;cursor:pointer;font-size:13px;font-weight:800;color:#1c5439;background:#eff7f1;list-style:none}
+.topSegmentSummary::-webkit-details-marker{display:none}
+.topSegmentSummary::marker{content:""}
+.topSegmentSummary span{display:inline-block;flex:0 0 auto;font-size:16px;transform:rotate(-90deg);transition:transform .12s ease}
+.topSegment[open]>.topSegmentSummary span{transform:rotate(0)}
+.topSegmentBody{padding:12px 13px}
+.topSegmentBody>p{font-size:12px;line-height:1.5;color:#53685a}
+.topSegmentBody>.metrics{margin:10px 0}
+.topSegmentBody>.caveat{margin:10px 0 0}
+.topSegmentBody>.searchRow{margin:8px 0 0}
+.topSegmentBody>.surveyPreviewControls{margin:0}
+.sheetAccordion{display:block}
+.sheetAccordion>.sheetHeading{min-height:60px;display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;box-sizing:border-box}
+.sheetAccordion>.sheetHeading::-webkit-details-marker{display:none}
+.sheetAccordion>.sheetHeading::marker{content:""}
+.sheetAccordion>.sheetHeading::before{content:"▸";font-size:17px;line-height:1;color:#196242;flex:0 0 auto}
+.sheetAccordion[open]>.sheetHeading::before{content:"▾"}
+.sheetSummaryCount{font-size:12px;color:#22553a;font-variant-numeric:tabular-nums;white-space:normal}
+.sheetPanelActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 10px;background:#fff;border-bottom:1px solid #d5e5dc}
+.sheetPanelActions>button{min-height:44px;padding:9px 11px;border:1px solid #7da78b;border-radius:7px;background:#edf7f0;color:#164e34;font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.topSegmentSummary:focus-visible,.sheetAccordion>.sheetHeading:focus-visible,.sheetPanelActions>button:focus-visible{outline:3px solid #206baf;outline-offset:-3px}
+@media(max-width:640px){
+ .topSegmentSummary{min-height:48px;padding:11px}
+ .sheetAccordion>.sheetHeading{flex-wrap:wrap;padding:11px 9px;gap:8px}
+ .sheetSummaryCount{flex-basis:100%;padding-left:20px}
+ .sheetPanelActions>button{flex:1 1 145px;min-height:48px}
+}
