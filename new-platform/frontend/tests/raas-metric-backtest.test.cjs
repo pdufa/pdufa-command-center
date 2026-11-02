@@ -164,7 +164,7 @@ test("Approved RAAS ledger requires matching benchmark AND rule version AND hold
   reviewer:"synthetic-test",note:"not for production",
   ratings:[{nctId:"NCT12345678",ticker:"TEST",stage:"pre",snapshot:"CURRENT",
    metricId:"pre-1-1",score:75,assessedAt:"2026-09-30",sourceDate:"2026-09-29",
-   sourceUrl:"https://example.org/synthetic-score",benchmarkId:"synthetic-bench",
+   sourceUrl:"https://example.org/synthetic-score",benchmarkId:"synthetic-bench",ruleVersion:"synthetic-v1",
    method:"Synthetic grade",evidenceId:"synthetic-1",status:"VERIFIED"}],
   gates:[{name:"Synthetic eligibility",status:"PASSED"}]};
  const ledger=parseRaasReviewedLedger({schemaVersion:1,scope:"RAAS_REVIEWED_TRIAL_SNAPSHOTS",
