@@ -8,7 +8,7 @@
       "id": "lbrx-nova2-2026-11-02-source-baseline",
       "ticker": "LBRX",
       "nctId": "NCT07363577",
-      "drug": "LB-102",
+      "drug": "LB-102 (100 mg tablet) | LB-102 (50 mg tablet)",
       "indication": "schizophrenia",
       "stage": "pre",
       "capturedOn": "2026-11-02",
@@ -23,7 +23,7 @@
         "observedAsOf": "2026-10-30",
         "sourceUrl": "https://stockanalysis.com/stocks/lbrx/market-cap/",
         "verification": "VENDOR_REPORTED_NOT_INDEPENDENTLY_AUDITED",
-        "note": "S&P Global Market Intelligence referenced by vendor; daily published value, not fully diluted issuer share-count reconciliation."
+        "note": "S&P Global Market Intelligence referenced by vendor; daily published value, not fully diluted issuer share-count reconciliation. The two investigated dose arms represent a single LB-102 program, not two market opportunities."
       },
       "observations": [
         {
