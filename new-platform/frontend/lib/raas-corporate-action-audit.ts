@@ -86,7 +86,7 @@ export function corporateActionsForCase(feed:CorporateActionFeed,t:TopRetrospect
   actionHistoryComplete:false,adjustedTotalReturnVerified:false,approvedRAAS:false,
   blockers:[
    ...(r?[]:["No issuer/exchange corporate-action source recorded for this ticker"]),
-   ...(during.length?["A listed event falls during the observed price window"]:[]),
+   ...(during>0?["A listed event falls during the observed price window"]:[]),
    "Complete dated exchange/transfer-agent split, dividend and distribution record missing",
    "Nominal vendor closes have no independently audited historical adjustment factors",
    "No executable price, full dilution or original pre-entry RAAS prediction verified"
