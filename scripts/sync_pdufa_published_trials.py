@@ -10,6 +10,10 @@ from __future__ import annotations
 import csv
 import json
 import os
+import random
+import time
+from email.utils import parsedate_to_datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
 
@@ -74,9 +78,36 @@ def main() -> None:
     session.headers["Authorization"] = f"Bearer {creds.token}"
 
     def req(method, suffix, **kwargs):
-        response = session.request(method, BASE + suffix, timeout=60, **kwargs)
-        response.raise_for_status()
-        return response.json() if response.content else {}
+        # Sheets quotas can return 429 during large published-feed imports.
+        # Retry only transient failures; preserve existing data on exhaustion.
+        for attempt in range(8):
+            try:
+                response = session.request(method, BASE + suffix, timeout=60, **kwargs)
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                if attempt == 7:
+                    raise
+            else:
+                if response.status_code not in (429, 500, 502, 503, 504):
+                    response.raise_for_status()
+                    return response.json() if response.content else {}
+                if attempt == 7:
+                    response.raise_for_status()
+                retry_after = response.headers.get("Retry-After", "")
+                delay = 0.0
+                if retry_after:
+                    try:
+                        delay = max(0.0, float(retry_after))
+                    except ValueError:
+                        try:
+                            delay = max(0.0, (parsedate_to_datetime(retry_after) -
+                                             datetime.now(timezone.utc)).total_seconds())
+                        except (TypeError, ValueError, OverflowError):
+                            pass
+                if delay:
+                    time.sleep(min(delay, 120.0))
+                    continue
+            time.sleep(min(2 ** attempt + random.uniform(0, 1), 90.0))
+        raise RuntimeError("Sheets retry attempts exhausted")
 
     def a1(sheet, cells):
         return quote(f"'{sheet}'!{cells}", safe="!':")
