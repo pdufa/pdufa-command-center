@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_EVENT_BACKTEST",
+  "sourceAsOf": "2026-11-02",
+  "note": "Historical investment cases must include timestamped pre-entry evidence, real adjusted prices with provenance, and verified event dates. Five pilot trial rows are not independently validated return cases; two CLDX NCTs represent one program. No actual event-window outcomes have yet been reviewed.",
+  "cases": []
+}
