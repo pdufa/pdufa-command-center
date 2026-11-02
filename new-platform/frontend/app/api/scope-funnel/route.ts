@@ -9,6 +9,8 @@ import { renderPhase3CensusCsv } from "../../../lib/pipeline-census-csv";
 import {buildDesignationIndex, applyReviewedDesignationLinks, SPECIAL_DESIGNATION_CATEGORIES, type DesignationIndex, type DesignationKey} from "../../../lib/trial-designations";
 import {isPoolTrial} from "../../../lib/pool-pipeline-funnel";
 import {toolSpreadsheetRow,renderToolsSpreadsheetCsv} from "../../../lib/tools-spreadsheet";
+import {pacificToday} from "../../../lib/pipeline-timeline";
+import {scanCompetitivePopulation} from "../../../lib/tools-competitive-readiness";
 import {buildToolPdufaIndex,type ToolPdufaIndex} from "../../../lib/tools-pdufa-links";
 import {normalizePoolStage, type PoolTrialRecord} from "../../../lib/pool-pipeline-funnel";
 import {verifiedToolPool,buildToolsResults,buildToolsOpeningInventory,filterToolTrials,selectToolTrialIds,toolsDesignationTotals,toolsContextualDesignationCounts,renderUnlinkedFdaProgramCsv} from "../../../lib/tools-pool-inventory";
@@ -218,6 +220,14 @@ export async function GET(req:NextRequest) {
       ]);
       const {snapshot:inventory,scope:restrictedScope}=restrictedToolsSnapshot(
         fullInventory,marketCapSources.capsCsv,marketCapSources.registryCsv);
+      // Full restricted NCT population is audited independently of selections and
+      // pagination. No registry-completion shortcut can establish a Phase 3 readout.
+      const competitionPopulation=inventory.poolRows.filter(isPoolTrial).map(trial=>
+        toolSpreadsheetRow(trial,[],[],null));
+      if(competitionPopulation.length!==restrictedScope.screenedTrials)
+        throw Error("COMPETITIVE_POPULATION_COUNT_MISMATCH");
+      const competitiveScan=scanCompetitivePopulation(
+        competitionPopulation,pacificToday(),inventory.sourceAsOf);
       const designationTotals=index?toolsDesignationTotals(inventory.poolRows,index):null;
       // Both Step 1 button totals are measured over the entire cap-screened
       // NCT subset, irrespective of downstream Phase/FDA checkbox selections.
@@ -270,7 +280,7 @@ export async function GET(req:NextRequest) {
       // target dates. Unverified dates stay null instead of zero or estimates.
       const spreadsheetRows=result.rows.map(trial=>
         toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index,index?.pdufaLinks??null));
-      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,restrictedScope,designationTotals,designationScopeSummary,contextualDesignationCounts,regulatorySourcesAvailable:!!index,datasetVersion},
+      return NextResponse.json({...result,spreadsheetRows,pipelineResearch,restrictedScope,competitiveScan,designationTotals,designationScopeSummary,contextualDesignationCounts,regulatorySourcesAvailable:!!index,datasetVersion},
         {headers:{"Cache-Control":"private, no-store"}});
     }
     // Stage counts always come from the full POOL. Designation selection is
