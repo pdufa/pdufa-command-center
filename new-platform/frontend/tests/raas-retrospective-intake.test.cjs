@@ -15,7 +15,7 @@ const intake=require("../lib/raas-retrospective-intake.ts");
 const raw=require("../data/raas-retrospective-source-cases.json");
 test("three independently sourced historical post-Phase3 windows are NOT treated as predictions",()=>{
  const feed=intake.parseRetrospectiveFeed(raw);
- assert.equal(feed.records.length,3);
+ assert.equal(feed.records.length,4);
  const record=feed.records[0];
  assert.equal(record.ticker,"VRNA");
  assert.equal(record.stage,"post");
@@ -29,7 +29,7 @@ test("three independently sourced historical post-Phase3 windows are NOT treated
  assert.equal(record.marketCapAtEntry.usdMillions,1204);
  assert.ok(record.verifiedBeforeEntry.every(e=>e.date<=record.entry.date));
  const outcomes=intake.retrospectiveResults(feed);
- assert.equal(outcomes.length,3);
+ assert.equal(outcomes.length,4);
  assert.equal(outcomes[0].observedGrossChangePercent,1.01);
  assert.equal(outcomes[0].calendarCutoff,"2024-06-23");
  assert.equal(outcomes[0].status,"RESEARCH_ONLY_NOT_CALIBRATED");
@@ -51,6 +51,17 @@ test("three independently sourced historical post-Phase3 windows are NOT treated
  assert.notEqual(gern.programKey,urgn.programKey);
  assert.equal(feed.records.find(r=>r.ticker==="GERN").realizedFDAAction.date,"2024-06-06");
  assert.ok(gern.exitDate<feed.records.find(r=>r.ticker==="GERN").realizedFDAAction.date);
+ const mdgl=outcomes.find(o=>o.ticker==="MDGL");
+ assert.ok(mdgl);
+ assert.equal(mdgl.entryClose,146.89);
+ assert.equal(mdgl.exitClose,255.32);
+ assert.equal(mdgl.marketCapUsdMillions,2900);
+ assert.equal(mdgl.observedGrossChangePercent,73.82);
+ assert.equal(mdgl.calendarCutoff,"2024-03-11");
+ assert.equal(mdgl.forecastScore,null);
+ assert.equal(mdgl.forecastError,null);
+ assert.equal(new Set(outcomes.map(x=>x.programKey)).size,4);
+
 });
 test("research-only feed can never masquerade as pre-committed trade predictions or validated RAAS",()=>{
  const mutate=(changes)=>({...raw,records:[{...raw.records[0],...changes}]});
