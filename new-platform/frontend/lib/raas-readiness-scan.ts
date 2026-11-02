@@ -37,7 +37,7 @@ export type RaasReadinessReport={
  schemaVersion:1;scope:"RAAS_EXECUTED_READINESS_AUDIT";
  sourceAsOf:string;specVersion:string;
  scanExecution:"COMPLETED_READ_ONLY_SOURCE_AUDIT";
- finalScoring:"NOT_VALIDATED"|"ALL_STAGES_VALIDATED";
+ finalScoring:"NOT_VALIDATED";
  summary:{
   metricsInspected:number;preMetricsInspected:number;postMetricsInspected:number;
   approvedMetricCalibrations:number;reviewEligibleMetrics:number;
@@ -123,12 +123,13 @@ export function executeRaasReadinessScan():RaasReadinessReport{
  const shareSummary=bridgeSummary(shares,earlier,later);
  const fdaSummary=fdaPrimaryOutcomeSummary(fda,later);
  const approvedCount=metrics.filter(m=>m.approvedCalibration).length;
- const allScored=approvedCount===60&&reviewed.records.length>0;
+ // A source-readiness scan can never certify a complete clinical/trading
+ // score without separately reviewed per-trial snapshots and risk gates.
  return {
   schemaVersion:1,scope:"RAAS_EXECUTED_READINESS_AUDIT",
   sourceAsOf:historical.sourceAsOf,specVersion:RAAS_SPEC_VERSION,
   scanExecution:"COMPLETED_READ_ONLY_SOURCE_AUDIT",
-  finalScoring:allScored?"ALL_STAGES_VALIDATED":"NOT_VALIDATED",
+  finalScoring:"NOT_VALIDATED",
   summary:{
    metricsInspected:60,preMetricsInspected:30,postMetricsInspected:30,
    approvedMetricCalibrations:approvedCount,
