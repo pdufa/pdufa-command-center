@@ -130,3 +130,22 @@
 .surveyQuestion{flex-basis:230px;min-width:230px}
 .surveyNavigation button{padding:8px}
 }
+
+/* SURVEY: reversible combined/conjunctive evidence review. Neutral presentation, never a scored recommendation. */
+.conjunctionSection{border:1px solid #b8c8bd;border-radius:11px;background:#fff;padding:14px;display:flex;flex-direction:column;gap:11px}
+.conjunctionSection h4{margin:0;font-size:20px;line-height:1.3;color:#173f2c}
+.conjunctionSection h5{margin:4px 0 0;font-size:15px;color:#234e36}
+.conjunctionSection p{font-size:13px;line-height:1.6;margin:0;color:#405747}
+.conjunctionVerdict{border:1px solid #9ea8a0;border-radius:8px;padding:12px;font-size:16px;font-weight:800;color:#2c4032;background:#f8faf9}
+.conjunctionGroups,.conjunctionGates{display:grid;gap:7px}
+.conjunctionGroups>div,.conjunctionGates>div{display:flex;flex-direction:column;gap:4px;border:1px solid #d3ded6;border-radius:7px;padding:10px;background:#fff}
+.conjunctionGroups strong,.conjunctionGates strong{font-size:13px}
+.conjunctionGroups span,.conjunctionGates span{font-size:12px;color:#50685a;line-height:1.5}
+.conjunctionWarning{border-top:1px solid #d2dcd6;padding-top:10px}
+.conjunctionSection>.surveyOpenButton{align-self:flex-start;white-space:normal}
+@media(max-width:640px){
+.conjunctionSection{padding:11px}
+.conjunctionSection h4{font-size:18px}
+.conjunctionVerdict{font-size:14px}
+.conjunctionSection>.surveyOpenButton{width:100%;min-height:48px}
+}
