@@ -12,7 +12,7 @@ export type RatingGroupKey="M"|"A"|"B"|"C"|"D"|"E";
 export type RatingIngredientKey="VER"|"MOD"|"MISS"|"CRIT"|"ER"|"FDA"|
  "CL"|"SAF"|"COMP"|"POP"|"ACCESS"|"REV"|"VAL"|"CASH"|"MOM"|"FLOW"|"CAT"|
  "APP"|"READY"|"GRADE";
-export type EvidenceLink={field:string;status:BenefitFact["status"];url:string;date:string};
+export type EvidenceLink={field:string;status:BenefitFact["status"]|"LEAD";url:string;date:string};
 export type RatingAuditCell={
   label:string;explanation:string;kind:"count"|"coverage"|"status"|"lead"|"unscored";
   links:EvidenceLink[];
@@ -101,11 +101,11 @@ export function auditTrialRatings(
   const sameTrialLead=peerLeads?.nctId===row.nctId&&
     peerLeads.status==="RESEARCH_LEADS_ONLY"?peerLeads:null;
   const leadReceipts:EvidenceLink[]=sameTrialLead?.displayed.flatMap(candidate=>
-    /^NCT\\d{8}$/.test(candidate.nctId)&&
+    /^NCT\d{8}$/.test(candidate.nctId)&&
     candidate.sourceUrl==="https://clinicaltrials.gov/study/"+candidate.nctId&&
-    /^\\d{4}-\\d{2}-\\d{2}T/.test(candidate.retrievedAt)?
+    /^\d{4}-\d{2}-\d{2}T/.test(candidate.retrievedAt)?
     [{field:candidate.nctId+" · "+candidate.therapy+" · UNVERIFIED PEER LEAD",
-      status:"MODELED" as const,url:candidate.sourceUrl,date:candidate.retrievedAt.slice(0,10)}]:[]
+      status:"LEAD" as const,url:candidate.sourceUrl,date:candidate.retrievedAt.slice(0,10)}]:[]
   )||[];
   const competitor=coverage(keys.COMP,"Competitor-specific differentiation");
   const comparisonInput:RatingAuditCell=competitor.kind==="unscored"&&sameTrialLead&&
