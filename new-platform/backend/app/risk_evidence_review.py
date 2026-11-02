@@ -102,10 +102,10 @@ def _review_metric(metric, key, label, age, today, candidate):
 
 
 def risk_evidence_from_assessment(record: dict | None, *, program_id: str, exact_key: str,
-                                  stage: str = "GEM_JR", today: date | None = None) -> dict:
+                                  stage: str = "PIPELINE", today: date | None = None) -> dict:
     """Only inspect the selected stage and exact immutable assessment identity."""
-    if stage not in {"GEM_JR", "GEM"}:
-        raise ValueError("Only GEM JR and GEM assessments are eligible")
+    if stage != "PIPELINE":
+        raise ValueError("Only Pipeline assessments are active")
     today = today or datetime.now(ZoneInfo("America/Los_Angeles")).date()
     identity = "ASSESSMENT_UNAVAILABLE"
     metrics, candidate = {}, {}
