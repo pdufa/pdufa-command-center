@@ -49,11 +49,53 @@ const findings=pilot.records.map(x=>({
   treatedArmResponsePercent:o.kind==="single_arm_response"?o.activePercent:null
  }))
 }));
+const pool=JSON.parse(fs.readFileSync(path.join(base,prefix+"tools-pool-snapshot.json"),"utf8"));
+const registry=JSON.parse(fs.readFileSync(path.join(base,prefix+"registry-benefit-research-snapshot.json"),"utf8"));
+const distribution=(items,fn)=>Object.fromEntries([...items.reduce((m,x)=>{
+ const key=String(fn(x)??"UNKNOWN");m.set(key,(m.get(key)??0)+1);return m;
+},new Map())].sort((a,b)=>b[1]-a[1]).slice(0,40));
+const poolRows=pool.pipeline;
+const poolExactNcts=new Set(poolRows.map(x=>x.id).filter(x=>typeof x==="string"&&/^NCT\\d{8}$/.test(x)));
+const poolResult={
+ snapshotGeneratedAt:pool.snapshotGeneratedAt??null,
+ asOf:pool.asOf??null,
+ sourceHealth:pool.sourceHealth??null,
+ totalRows:poolRows.length,
+ distinctExactNctRowIds:poolExactNcts.size,
+ nonExactNctRowIds:poolRows.length-poolRows.filter(x=>poolExactNcts.has(x.id)).length,
+ withNonemptyTicker:poolRows.filter(x=>typeof x.ticker==="string"&&x.ticker.trim()).length,
+ withNonemptyDrug:poolRows.filter(x=>typeof x.drug==="string"&&x.drug.trim()).length,
+ withNonemptyIndication:poolRows.filter(x=>typeof x.indication==="string"&&x.indication.trim()).length,
+ stageDistribution:distribution(poolRows,x=>x.stage)
+};
+const registryRows=registry.records;
+const registryResult={
+ censusAsOf:registry.censusAsOf??null,
+ scanStartedAt:registry.scanStartedAt??null,
+ scanned:registry.scanned??null,
+ successful:registry.successful??null,
+ failed:registry.failed??null,
+ reusedWithin72Hours:registry.reusedWithin72Hours??null,
+ trialRecords:registryRows.length,
+ distinctNctIds:new Set(registryRows.map(x=>x.nctId)).size,
+ resultsPosted:registryRows.filter(x=>x.resultsPosted===true).length,
+ noResultsPosted:registryRows.filter(x=>x.resultsPosted===false).length,
+ unknownResultsPosted:registryRows.filter(x=>typeof x.resultsPosted!=="boolean").length,
+ withPrimaryEndpointRows:registryRows.filter(x=>Array.isArray(x.primary)&&x.primary.length>0).length,
+ withSecondaryEndpointRows:registryRows.filter(x=>Array.isArray(x.secondary)&&x.secondary.length>0).length,
+ withSeriousAdverseEventTerms:registryRows.filter(x=>Array.isArray(x.seriousAdverseEvents)&&x.seriousAdverseEvents.length>0).length,
+ comparatorVerification:distribution(registryRows,x=>x.comparisonVerified),
+ evidenceClassification:distribution(registryRows,x=>x.evidenceClassification),
+ fdaDecisionVerification:distribution(registryRows,x=>x.fdaDecisionVerified),
+ registryStatus:distribution(registryRows,x=>x.registryStatus),
+ benefitRank:distribution(registryRows,x=>x.benefitRank)
+};
 const report={
  kind:"RAAS_CURRENT_SAVED_EVIDENCE_SCAN_NOT_A_METRIC_CALIBRATION",
  runAtUtc:new Date().toISOString(),sourceRef:process.env.GITHUB_SHA??null,
  scope:"REPOSITORY_SAVED_DATA_ONLY_NO_LIVE_11K_CLINICALTRIALS_API_REFRESH",
  inventories:inventory,
+ fullPool:poolResult,registryResearch:registryResult,
  pilot:{trialRows:pilot.records.length,uniqueIssuers:new Set(pilot.records.map(x=>x.ticker)).size,
   independentTherapyPrograms:new Set(pilot.records.map(x=>[x.ticker,x.drug,x.indication].join("|"))).size,
   observations:pilot.records.reduce((s,x)=>s+x.observations.length,0),findings},
