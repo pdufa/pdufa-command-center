@@ -9,6 +9,7 @@ import retrospectiveAsOfData from "../../data/raas-retrospective-asof-evidence.j
 import retrospectiveFinances from "../../data/raas-historical-finance-facts.json";
 import shareBridgeResearch from "../../data/raas-share-bridge-research.json";
 import priceCrosscheckResearch from "../../data/raas-price-crosschecks.json";
+import corporateActionResearch from "../../data/raas-corporate-actions-research.json";
 import {parseTopRetrospective} from "../../lib/raas-top-retrospective-intake";
 import {parseRetrospectiveFeed} from "../../lib/raas-retrospective-intake";
 import {buildHistoricalResearchAudit,summarizeHistoricalResearch,type HistoricalAuditCase} from "../../lib/raas-history-audit";
@@ -16,6 +17,7 @@ import {parseAsOfEvidence,factsForRetrospectiveCase,measureAsOfFact} from "../..
 import {parseHistoricalFinance,financeForCase,financeReadiness} from "../../lib/raas-finance-reconciliation";
 import {parseShareBridge,bridgeForCase,bridgeSummary} from "../../lib/raas-share-bridge";
 import {parsePriceCrosschecks,priceAuditForCase,priceAuditSummary} from "../../lib/raas-price-crosschecks";
+import {parseCorporateActions,corporateActionsForCase,corporateActionSummary} from "../../lib/raas-corporate-action-audit";
 import RaasHistoricalWhatIf from "./RaasHistoricalWhatIf";
 import css from "./page.module.css";
 
@@ -35,6 +37,8 @@ const shareResearch=parseShareBridge(shareBridgeResearch,pre,post);
 const sharesSummary=bridgeSummary(shareResearch,pre,post);
 const priceResearch=parsePriceCrosschecks(priceCrosscheckResearch,pre,post);
 const priceSummary=priceAuditSummary(priceResearch,pre,post);
+const actionFeed=parseCorporateActions(corporateActionResearch);
+const actionSummary=corporateActionSummary(actionFeed,pre,post);
 const scenarioInputs=[
  ...pre.records.map(x=>({id:x.id,ticker:x.ticker,stage:"pre" as const,entryPrice:x.entry.close,exitPrice:x.exit.close})),
  ...post.records.map(x=>({id:x.id,ticker:x.ticker,stage:"post" as const,entryPrice:x.entry.close,exitPrice:x.exit.close}))
@@ -47,6 +51,7 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
  const financeQuality=financeReadiness(financialResearch,entry.id,entry.stage);
  const capBridge=bridgeForCase(shareResearch,pre,post,entry.id);
  const closeAudit=priceAuditForCase(priceResearch,pre,post,entry.id)!;
+ const actionAudit=corporateActionsForCase(actionFeed,pre,post,entry.id)!;
  return <details className={css.case} data-history-case={entry.id}>
    <summary className={css.caseHead}>
      <span className={css.identity}>
@@ -140,6 +145,25 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
          <p className={css.factCaution}>Matching two displayed nominal closes is useful price corroboration, but does NOT establish split- or dividend-adjusted total returns or independent exchange-tape verification. Neither price nor historical RAAS prediction is approved by this comparison.</p>
        </div>
      </details>
+     <details className={css.check} data-corporate-actions={entry.id}>
+       <summary><span className={css.indicator}>!</span>
+         <strong>Corporate actions, distributions and ADS ratio review</strong>
+         <span className={css.status}>{actionAudit.listedEvents.length} historical events recorded · full adjustment audit pending</span>
+       </summary>
+       <div className={css.checkBody}>
+         <p>Security class: {actionAudit.securityClass??"Not reconciled"}{actionAudit.adsOrdinaryShares?" · "+actionAudit.adsOrdinaryShares+" ordinary shares per quoted ADS":""}. This is a partial event history; absence of a listed event does not prove none occurred during this trade window.</p>
+         {actionAudit.listedEvents.length===0?<p>No supporting corporate-action event source has been recorded for this ticker.</p>:
+           actionAudit.listedEvents.map(({event,placement})=><div className={css.sourceFact} key={event.id}>
+             <strong>{event.date} · {event.type.replaceAll("_"," ")} · {placement.replaceAll("_"," ").toLowerCase()}</strong>
+             {event.factorNumerator&&event.factorDenominator&&<p>Reported factor: {event.factorNumerator}:{event.factorDenominator}. Factor is not applied to these historic returns.</p>}
+             {event.cashPerQuotedSecurityUsd&&<p>Reported later cash consideration: ${event.cashPerQuotedSecurityUsd.toFixed(2)} per quoted security; not used as an earlier trade forecast.</p>}
+             <p>{event.notes}</p>
+             <a href={event.sourceUrl} target="_blank" rel="noopener noreferrer">Review corporate-action evidence</a>
+           </div>)}
+         <p><strong>Open blockers:</strong> {actionAudit.blockers.join("; ")}.</p>
+         <p className={css.factCaution}>Verified split/dividend-adjusted total returns: NO. Approved investment predictions: NO. Events after the selected exit are not treated as knowledge available at entry.</p>
+       </div>
+     </details>
      <h3>Point-in-time evidence and audit worklist</h3>
      <div className={css.checks}>
        {entry.items.map(item=><details key={item.id} className={css.check} data-check={item.id}>
@@ -175,7 +199,7 @@ export default function RaasHistoricalAuditPage(){
      <div><strong>{summary.openReviews}</strong><span>Outstanding source/market reviews</span></div>
      <div><strong>{sharesSummary.separatelyReportedCapMatches}/{sharesSummary.caseCount}</strong><span>Vendor cap cross-checks match · prices unverified</span></div>
    </div>
-   <p className={css.disclaimer}>Independent-provider research: {priceSummary.matchedPoints} of {priceSummary.quotedPoints} exact-date displayed historical closes agree; {priceSummary.bothClosesMatchedCases} of {priceSummary.caseCount} trade windows have both dates matched. Adjusted-return audits and approved predictions remain at zero. All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
+   <p className={css.disclaimer}>Corporate actions: {actionSummary.withPartialActionHistory} of {actionSummary.cases} study windows have some historical event evidence, but 0 have a completed corporate-action adjustment audit. Independent-provider research: {priceSummary.matchedPoints} of {priceSummary.quotedPoints} exact-date displayed historical closes agree; {priceSummary.bothClosesMatchedCases} of {priceSummary.caseCount} trade windows have both dates matched. Adjusted-return audits and approved predictions remain at zero. All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
    <section className={css.section} aria-labelledby="raas-history-top">
      <div className={css.sectionTitle}><h2 id="raas-history-top">TOP · 3 — before public Phase 3 results</h2><span>{top.length} examples · not validated</span></div>
      <div className={css.cases}>{top.map(x=><CaseRow key={x.id} entry={x}/>)}</div>
