@@ -45,6 +45,10 @@ NCT03691831,ACRS,"Aclaris Therapeutics, Inc.",COMPLETED,https://clinicaltrials.g
 NCT03812510,ACRS,"Aclaris Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03812510
 NCT00538915,ADMA,"ADMA Biologics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00538915
 NCT01814800,ADMA,"ADMA Biologics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01814800
+NCT00033904,AGEN,Agenus Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT00033904
+NCT00039000,AGEN,Agenus Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT00039000
+NCT00126178,AGEN,Agenus Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT00126178
+NCT04943627,AGEN,Agenus Inc.,WITHDRAWN,https://clinicaltrials.gov/study/NCT04943627
 NCT03548220,AGIO,"Agios Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03548220
 NCT03559699,AGIO,"Agios Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03559699
 NCT03853798,AGIO,"Agios Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03853798
@@ -57,6 +61,8 @@ NCT07506863,AGIO,"Agios Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials
 NCT07517133,AGIO,"Agios Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07517133
 NCT07656415,AGIO,"Agios Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07656415
 NCT07859423,AGIO,"Agios Pharmaceuticals, Inc.",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07859423
+NCT04374136,ALEC,Alector Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT04374136
+NCT06111014,ALEC,Alector Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT06111014
 NCT00156923,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00156923
 NCT00156936,ALKS,"Alkermes, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT00156936
 NCT00501631,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00501631
@@ -118,6 +124,7 @@ NCT02110368,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.
 NCT02121002,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT02121002
 NCT02125253,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT02125253
 NCT05401357,AMRX,"Amneal Pharmaceuticals, LLC",RECRUITING,https://clinicaltrials.gov/study/NCT05401357
+NCT07898072,AMRX,"Amneal Pharmaceuticals, LLC",RECRUITING,https://clinicaltrials.gov/study/NCT07898072
 NCT04701164,ANNX,"Annexon, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04701164
 NCT06510816,ANNX,"Annexon, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06510816
 NCT07020819,ANNX,"Annexon, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07020819
@@ -166,7 +173,7 @@ NCT06007690,AURA,Aura Biosciences,ACTIVE_NOT_RECRUITING,https://clinicaltrials.g
 NCT05607550,AVBP,"ArriVent BioPharma, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05607550
 NCT07185997,AVBP,"ArriVent BioPharma, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07185997
 NCT05629962,AVIR,"Atea Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05629962
-NCT06868264,AVIR,"Atea Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06868264
+NCT06868264,AVIR,"Atea Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT06868264
 NCT07037277,AVIR,"Atea Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07037277
 NCT02504008,AXSM,"Axsome Therapeutics, Inc.",UNKNOWN,https://clinicaltrials.gov/study/NCT02504008
 NCT02741791,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02741791
@@ -269,8 +276,7 @@ NCT01158157,EBS,Emergent BioSolutions,COMPLETED,https://clinicaltrials.gov/study
 NCT01311674,EBS,Emergent BioSolutions,TERMINATED,https://clinicaltrials.gov/study/NCT01311674
 NCT01491607,EBS,Emergent BioSolutions,COMPLETED,https://clinicaltrials.gov/study/NCT01491607
 NCT03877926,EBS,Emergent BioSolutions,COMPLETED,https://clinicaltrials.gov/study/NCT03877926
-NCT06697301,EIKN,Eikon Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT06697301
-NCT07365319,EIKN,Eikon Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07365319
+NCT07905183,ELVN,Enliven Therapeutics,NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07905183
 NCT02334423,EOLS,"Evolus, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02334423
 NCT02334436,EOLS,"Evolus, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02334436
 NCT06346067,ERAS,"Erasca, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06346067
@@ -296,7 +302,7 @@ NCT05987332,IDYA,IDEAYA Biosciences,ACTIVE_NOT_RECRUITING,https://clinicaltrials
 NCT07015190,IDYA,IDEAYA Biosciences,RECRUITING,https://clinicaltrials.gov/study/NCT07015190
 NCT07804186,IDYA,IDEAYA Biosciences,RECRUITING,https://clinicaltrials.gov/study/NCT07804186
 NCT04871282,IMNM,"Immunome, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04871282
-NCT06295731,INBX,"Inhibrx Biosciences, Inc",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06295731
+NCT06295731,INBX,"Inhibrx Biosciences, Inc",RECRUITING,https://clinicaltrials.gov/study/NCT06295731
 NCT00017407,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00017407
 NCT00048113,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00048113
 NCT00048295,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00048295
@@ -324,6 +330,14 @@ NCT07298447,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials
 NCT07727538,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07727538
 NCT07782827,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07782827
 NCT05727904,IOVA,"Iovance Biotherapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT05727904
+NCT04620213,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT04620213
+NCT04638660,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT04638660
+NCT05134974,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05134974
+NCT05223478,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05223478
+NCT05646719,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05646719
+NCT06349759,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06349759
+NCT06542497,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06542497
+NCT07140783,IRD,"Opus Genetics, Inc",RECRUITING,https://clinicaltrials.gov/study/NCT07140783
 NCT05883748,IRON,"Disc Medicine, Inc",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT05883748
 NCT06910358,IRON,"Disc Medicine, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06910358
 NCT00730015,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00730015
@@ -333,6 +347,7 @@ NCT02291679,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltria
 NCT03561090,IRWD,"Ironwood Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT03561090
 NCT03561883,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03561883
 NCT03573908,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03573908
+NCT07902817,JBIO,"Jade Biosciences, Inc.",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07902817
 NCT07001800,KARD,"Kardigan, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07001800
 NCT07210723,KARD,"Kardigan, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07210723
 NCT07771465,KARD,"Kardigan, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07771465
@@ -391,6 +406,10 @@ NCT06724614,MANE,"Veradermics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrial
 NCT06972264,MANE,"Veradermics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06972264
 NCT07146022,MANE,"Veradermics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07146022
 NCT07699471,MBX,MBX Biosciences,RECRUITING,https://clinicaltrials.gov/study/NCT07699471
+NCT03900429,MDGL,"Madrigal Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT03900429
+NCT04197479,MDGL,"Madrigal Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04197479
+NCT04951219,MDGL,"Madrigal Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04951219
+NCT05500222,MDGL,"Madrigal Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05500222
 NCT00366145,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00366145
 NCT00482092,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00482092
 NCT00543374,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00543374
@@ -515,6 +534,7 @@ NCT01808573,PBYI,"Puma Biotechnology, Inc.",COMPLETED,https://clinicaltrials.gov
 NCT07284654,PCVX,"Vaxcyte, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT07284654
 NCT07365826,PCVX,"Vaxcyte, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07365826
 NCT07425392,PCVX,"Vaxcyte, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07425392
+NCT07901738,PGEN,"Precigen, Inc",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07901738
 NCT04124926,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04124926
 NCT04167670,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04167670
 NCT05195528,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05195528
