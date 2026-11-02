@@ -131,7 +131,9 @@ export function auditHistoricalCaseRoster(raw:unknown):HistoricalCaseRoster|null
    correctness:r.correctness as boolean|null
   });
  }
+ const reasonCounts={} as Record<HistoricalCaseReason,number>;
+ for(const reason of reasons)
+  reasonCounts[reason]=(data.reason_counts as Record<string,number>)[reason]??0;
  return {total:data.total as number,returned:data.returned as number,limit:50,
-  reasonCounts:Object.fromEntries(reasons.map(r=>[r,(data.reason_counts as Record<string,number>)[r]??0]))
-    as Record<HistoricalCaseReason,number>,records};
+  reasonCounts,records};
 }
