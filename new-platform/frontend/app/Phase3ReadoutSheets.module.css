@@ -149,3 +149,11 @@
 .conjunctionVerdict{font-size:14px}
 .conjunctionSection>.surveyOpenButton{width:100%;min-height:48px}
 }
+
+/* All Phase 3 columns sort by tapping an accessible header, including on iPhone. */
+.sortHeaderButton{display:flex;align-items:center;justify-content:space-between;gap:9px;width:100%;min-width:max-content;min-height:44px;margin:-6px -7px;padding:6px 7px;text-align:left;background:transparent;border:0;border-radius:5px;font:inherit;font-weight:800;color:inherit;cursor:pointer;touch-action:manipulation}
+.sortHeaderButton:hover{background:#c9e4d2}
+.sortHeaderButton:focus-visible{outline:3px solid #206baf;outline-offset:1px;background:#ecf8f0}
+.sortArrow{flex:0 0 auto;font-size:15px;color:#216e4a;line-height:1}
+.sortEvidenceState{font-size:11px;font-weight:650;color:#466755;max-width:340px;line-height:1.35}
+@media(max-width:640px){.sortHeaderButton{min-height:44px;white-space:normal}.sortArrow{font-size:17px}.sortEvidenceState{max-width:100%}}
