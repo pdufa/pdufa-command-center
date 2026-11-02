@@ -64,8 +64,8 @@ test("Future scores, future sources, wrong NCT, or wrong drug are rejected",()=>
 });
 test("Multiple NCTs of same drug program count once",()=>{
  const b={...caseA,caseId:"synthetic-b",nctIds:["NCT87654321"],
-  entryDate:"2025-01-11",featureAsOf:"2025-01-10",
-  predictionPublishedAt:"2025-01-10",entryPrice:price("2025-01-11",11)};
+  entryDate:"2025-01-13",featureAsOf:"2025-01-10",
+  predictionPublishedAt:"2025-01-10",entryPrice:price("2025-01-13",11)};
  const h=back([caseA,b]);
  const r=grade([rating(),rating({caseId:"synthetic-b",nctId:"NCT87654321",assessedAt:"2025-01-10"})]);
  const report=metric.evaluateMetricHistory(h,engine.evaluateHistoricalFeed(h),r);
