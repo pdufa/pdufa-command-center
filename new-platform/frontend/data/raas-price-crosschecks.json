@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_SECOND_PROVIDER_CLOSE_CHECKS",
   "sourceAsOf": "2026-11-02",
-  "note": "Second-provider dated nominal close checks for 11/16 points in 8 retrospective research windows, including weekly period-ending-Friday prices corroborated on the selected dates. Quotes are not exchange-tape certified or corporate-action adjusted and sources can share upstream data. No authentic historical RAAS forecasts exist.",
+  "note": "Separate website historical close corroboration for 11 of 16 exact dates. Sector Alpha data are Friday-ending weekly closes, while ChartExchange and StatMuse observations are dated daily rows. Matching values are NOT exchange-tape validation or split/dividend/ADR-adjusted performance; upstream feeds may overlap.",
   "observations": [
     {
       "caseId": "vrna-ensifentrine-copd-2024-illustrative",
@@ -14,7 +14,8 @@
       "sourceUrl": "https://chartexchange.com/symbol/nasdaq-vrna/historical/",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
       "sourceDisplayDate": "2026-11-02",
-      "note": "ChartExchange daily historical table lists May 10, 2024 closing price $14.85, matching original FinanceCharts $14.85. ADS corporate actions and adjustment methodology still need independent review."
+      "note": "ChartExchange daily historical table lists May 10, 2024 closing price $14.85, matching original FinanceCharts $14.85. ADS corporate actions and adjustment methodology still need independent review.",
+      "quoteGranularity": "DAILY_SESSION_CLOSE"
     },
     {
       "caseId": "vrna-ensifentrine-copd-2024-illustrative",
@@ -26,7 +27,8 @@
       "sourceUrl": "https://chartexchange.com/symbol/nasdaq-vrna/historical/",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
       "sourceDisplayDate": "2026-11-02",
-      "note": "ChartExchange June 21, 2024 close $15.00 matches original FinanceCharts $15.00. A matching close alone is not audited adjusted performance."
+      "note": "ChartExchange June 21, 2024 close $15.00 matches original FinanceCharts $15.00. A matching close alone is not audited adjusted performance.",
+      "quoteGranularity": "DAILY_SESSION_CLOSE"
     },
     {
       "caseId": "urgn-ugn102-nmibc-2025-illustrative",
@@ -38,7 +40,8 @@
       "sourceUrl": "https://chartexchange.com/symbol/nasdaq-urgn/historical/",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
       "sourceDisplayDate": "2026-11-02",
-      "note": "ChartExchange June 6, 2025 close $7.37 matches the FinanceCharts value. March 14 entry quote has not yet been independently corroborated."
+      "note": "ChartExchange June 6, 2025 close $7.37 matches the FinanceCharts value. March 14 entry quote has not yet been independently corroborated.",
+      "quoteGranularity": "DAILY_SESSION_CLOSE"
     },
     {
       "caseId": "mdgl-resmetirom-maestro-nash-pre2022-illustrative",
@@ -50,7 +53,8 @@
       "sourceUrl": "https://www.statmuse.com/money/ask/mdgl-stock-price-dec-2022",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
       "sourceDisplayDate": "2026-11-02",
-      "note": "StatMuse daily Dec 2022 table reports December 16 close $63.80 matching FinanceCharts. November 18 entry quote still needs a separate source."
+      "note": "StatMuse daily Dec 2022 table reports December 16 close $63.80 matching FinanceCharts. November 18 entry quote still needs a separate source.",
+      "quoteGranularity": "DAILY_SESSION_CLOSE"
     },
     {
       "caseId": "bbio-attribute-cm-pre2023-illustrative",
@@ -62,7 +66,8 @@
       "note": "Sector Alpha historical weekly close for May 12 2023 is $13.54, agreeing with FinanceCharts. May 12 was a Friday, but weekly data need close-type/source methodology review.",
       "currency": "USD",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
-      "sourceDisplayDate": "2026-11-02"
+      "sourceDisplayDate": "2026-11-02",
+      "quoteGranularity": "WEEKLY_FRIDAY_CLOSE"
     },
     {
       "caseId": "bbio-attribute-cm-pre2023-illustrative",
@@ -74,7 +79,8 @@
       "note": "StatMuse daily market-cap chart explicitly records July 7 2023 closing price $16.89, matching FinanceCharts. This share-based vendor calculation is not a stock-split audit.",
       "currency": "USD",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
-      "sourceDisplayDate": "2026-11-02"
+      "sourceDisplayDate": "2026-11-02",
+      "quoteGranularity": "DAILY_SESSION_CLOSE"
     },
     {
       "caseId": "gern-imetelstat-mds-2024-illustrative",
@@ -86,7 +92,8 @@
       "note": "Sector Alpha's weekly close on May 3 2024 shows $3.93, matching FinanceCharts. Nominal source quote, not exchange-certified adjustment.",
       "currency": "USD",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
-      "sourceDisplayDate": "2026-11-02"
+      "sourceDisplayDate": "2026-11-02",
+      "quoteGranularity": "WEEKLY_FRIDAY_CLOSE"
     },
     {
       "caseId": "gern-imetelstat-mds-2024-illustrative",
@@ -98,7 +105,8 @@
       "note": "Sector Alpha weekly close May 31 2024 $3.55, matching FinanceCharts. FDA early-action risk and trade execution remain unverified.",
       "currency": "USD",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
-      "sourceDisplayDate": "2026-11-02"
+      "sourceDisplayDate": "2026-11-02",
+      "quoteGranularity": "WEEKLY_FRIDAY_CLOSE"
     },
     {
       "caseId": "urgn-ugn102-nmibc-2025-illustrative",
@@ -110,7 +118,8 @@
       "note": "Sector Alpha March 14 2025 weekly close $11.07, matching original FinanceCharts March 14 price. Publication and adjustment basis of vendor chart require review.",
       "currency": "USD",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
-      "sourceDisplayDate": "2026-11-02"
+      "sourceDisplayDate": "2026-11-02",
+      "quoteGranularity": "WEEKLY_FRIDAY_CLOSE"
     },
     {
       "caseId": "bbio-acoramidis-attrcm-2024-illustrative",
@@ -122,7 +131,8 @@
       "note": "Sector Alpha May 10 2024 $29.10 weekly close, corroborating original FinanceCharts record.",
       "currency": "USD",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
-      "sourceDisplayDate": "2026-11-02"
+      "sourceDisplayDate": "2026-11-02",
+      "quoteGranularity": "WEEKLY_FRIDAY_CLOSE"
     },
     {
       "caseId": "bbio-acoramidis-attrcm-2024-illustrative",
@@ -134,7 +144,8 @@
       "note": "Sector Alpha Nov 15 2024 weekly close $23.72, corroborating original FinanceCharts record. Regulatory and financed-value exposures remain distinct.",
       "currency": "USD",
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
-      "sourceDisplayDate": "2026-11-02"
+      "sourceDisplayDate": "2026-11-02",
+      "quoteGranularity": "WEEKLY_FRIDAY_CLOSE"
     }
   ]
 }
