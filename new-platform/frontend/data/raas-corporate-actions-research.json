@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_CORPORATE_ACTION_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "Selected corporate action facts from issuer/exchange and public price data. This does not certify an exhaustive event history or adjusted historical total returns. A complete exchange/transfer-agent events feed remains required.",
+  "records": [
+    {
+      "ticker": "GERN",
+      "securityClass": "NASDAQ_COMMON",
+      "events": [
+        {
+          "id": "gern-2014-share-distribution",
+          "date": "2014-07-22",
+          "type": "SHARE_DISTRIBUTION",
+          "factorNumerator": 1058,
+          "factorDenominator": 1000,
+          "sourceUrl": "https://companiesmarketcap.com/geron/stock-splits/",
+          "notes": "Public stock-split provider reports 1058:1000 July 22, 2014; investigate nature as 2014 distribution before treating as ordinary split."
+        },
+        {
+          "id": "gern-2014-asterias-spinoff",
+          "date": "2014-07-22",
+          "type": "SPINOFF",
+          "sourceUrl": "https://www.1stock1.com/1stock1_2236.htm",
+          "notes": "Historic 2014 Asterias Biotherapeutics distribution reported as 0.0417 AST shares per GERN share; no total-return factor reconstructed. Both studied periods begin in 2022 or later."
+        }
+      ],
+      "researchStatus": "PARTIAL_CORPORATE_ACTION_HISTORY"
+    },
+    {
+      "ticker": "MDGL",
+      "securityClass": "NASDAQ_COMMON",
+      "events": [
+        {
+          "id": "mdgl-2016-reverse-split",
+          "date": "2016-07-25",
+          "type": "REVERSE_SPLIT",
+          "factorNumerator": 1,
+          "factorDenominator": 35,
+          "sourceUrl": "https://companiesmarketcap.com/madrigal-pharmaceuticals/stock-splits/",
+          "notes": "2016-07-25 one for thirty-five reverse split predates TOP 2022 and BOTTOM 2023/24 case windows. Full adjustment factors and later events not certified."
+        }
+      ],
+      "researchStatus": "PARTIAL_CORPORATE_ACTION_HISTORY"
+    },
+    {
+      "ticker": "VRNA",
+      "securityClass": "NASDAQ_ADS",
+      "adsOrdinaryShares": 8,
+      "events": [
+        {
+          "id": "vrna-2025-merger-delisting",
+          "date": "2025-10-07",
+          "type": "CASH_MERGER",
+          "cashPerQuotedSecurityUsd": 107,
+          "sourceUrl": "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2025-532",
+          "notes": "Nasdaq confirmed merger Oct 7, 2025, VRNA last traded Oct 6, 2025; 2024 studied entry/exit both predate the merger."
+        }
+      ],
+      "researchStatus": "PARTIAL_CORPORATE_ACTION_HISTORY"
+    }
+  ]
+}
