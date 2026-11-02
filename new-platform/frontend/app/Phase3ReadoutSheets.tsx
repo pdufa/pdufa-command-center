@@ -11,6 +11,7 @@ import {RANKED_BENEFIT_ASSESSMENTS} from "../lib/pipeline-benefit-assessments";
 import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phase3ReadoutSortKey} from "../lib/phase3-readout-sort";
 import {finalSurveyReadiness} from "../lib/final-survey-readiness";
+import {finalSurveyNextActions} from "../lib/final-survey-next-actions";
 
 type Bucket="pre"|"post"|"unverified";
 /** Reversible visibility-only feature; existing trial data and research sources are unchanged. */
@@ -301,6 +302,14 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  ];
  const checked=researchStatus==="ready";
  const audit=finalSurveyReadiness(groups,rules,checked&&!!record);
+ const nextActions=finalSurveyNextActions({researchStatus,exactRecord:!!record,
+   gates:rules,groups,
+   questions:BENEFIT_GROUPS.flatMap(survey=>survey.fields.map(field=>({
+     id:field.id,survey:survey.number,label:field.label,
+     status:record?.facts[field.id]?.status==="VERIFIED"?"VERIFIED" as const:
+       record?.facts[field.id]?.status==="MODELED"?"MODELED" as const:"UNRECORDED" as const
+   })))
+ });
  const surveyCoverage=BENEFIT_GROUPS.map(survey=>{
    const verifiedCount=record?survey.fields.filter(field=>record.facts[field.id]?.status==="VERIFIED").length:0;
    const modeledCount=record?survey.fields.filter(field=>record.facts[field.id]?.status==="MODELED").length:0;
@@ -361,6 +370,25 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
              "Not assessed"}
            </p>
            <p><strong>FDA decision forecast:</strong> ABSTAIN — this coverage audit cannot establish approval, a Complete Response Letter, an extension, or a probability. Scientific outcome calibration remains separate.</p>
+           <details className={css.finalSurveyMissing} aria-label="Final SURVEY prioritized research actions">
+             <summary>Next steps to complete SURVEY · {nextActions.actions.length} research tasks</summary>
+             <p>Priority order: resolve source/identity issues first, then required stage checks, unverified groups and individual research questions. This is a research checklist, not a medical failure list.</p>
+             <p><strong>Exact trial:</strong> <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId} · ClinicalTrials.gov</a>
+               {row.evidence?.evidenceUrl&&<> · <a href={row.evidence.evidenceUrl} target="_blank" rel="noopener noreferrer">Dated issuer evidence</a></>}</p>
+             <p><strong>Question verification remaining:</strong> {nextActions.unverifiedQuestions===null?
+               "Unknown until a unique, complete research record is available":nextActions.unverifiedQuestions+" of 38"}</p>
+             {nextActions.actions.length===0?
+               <p>All 38 research inputs are verified and the four stage checks are met. Independent scientific scoring validation is still required.</p>:
+               <ol>{nextActions.actions.slice(0,6).map(action=><li key={action.key}>
+                 <strong>{action.heading}</strong> · {action.detail}
+               </li>)}</ol>}
+             {nextActions.actions.length>6&&<details>
+               <summary>Show {nextActions.actions.length-6} additional research tasks</summary>
+               <ol start={7}>{nextActions.actions.slice(6).map(action=><li key={action.key}>
+                 <strong>{action.heading}</strong> · {action.detail}
+               </li>)}</ol>
+             </details>}
+           </details>
            <details className={css.finalSurveyMatrix} aria-label="Twenty survey evidence coverage matrix">
              <summary>View all 20 surveys · 38 source-check questions</summary>
              <p>Each row measures documented inputs, not clinical benefit, FDA success, or return probability. Unverified inputs cannot become zero scores.</p>
