@@ -15,7 +15,6 @@ def workspace_client(monkeypatch):
     source = {
         "mode": "LIVE_READ_ONLY_GITHUB_SOURCE", "asOf": "2026-10-19",
         "pipeline": [{"id": "TRIAL|ONE", "ticker": "ONE"}],
-        "members": {"GEM_JR": {"rows": []}, "GEM": {"rows": []}},
         "sourceHealth": {"state": "PARTIAL", "pipelineSourceParity": {"exactPrograms": 1}},
     }
     current, allocations = [source], []
