@@ -9,6 +9,7 @@ import {RAAS_METRIC_CATALOG,RAAS_PROVISIONAL_ANCHORS,RAAS_SPEC_VERSION,type Raas
 import css from "./TrialRaasDisclosure.module.css";
 import pilotData from "../data/raas-pilot-observations.json";
 import historicalCases from "../data/raas-historical-cases.json";
+import retrospectiveExamples from "../data/raas-retrospective-source-cases.json";
 import historicalMetricSnapshots from "../data/raas-historical-metric-snapshots.json";
 import {parseRaasPilotFeed,observationsForTrial,observedCalculation,computeRaasScore,type RaasObservation} from "../lib/raas-score-engine";
 import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
@@ -18,6 +19,7 @@ import {parseRaasCalibrations,parseRaasReviewedLedger,reviewedScoreForTrial} fro
 import {contextualClinicalBenchmark} from "../lib/raas-clinical-benchmarks";
 import {evaluateHistoricalFeed,parseHistoricalFeed,walkForwardFolds,RAAS_HISTORICAL_MIN_INDEPENDENT_PROGRAMS} from "../lib/raas-historical-backtest";
 import {evaluateMetricHistory,parseMetricHistory} from "../lib/raas-metric-backtest";
+import {parseRetrospectiveFeed,retrospectiveResults} from "../lib/raas-retrospective-intake";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
@@ -26,6 +28,8 @@ type Snapshot="ENTRY"|"CURRENT"|"EXIT";
 const pilot=parseRaasPilotFeed(pilotData);
 const historicalFeed=parseHistoricalFeed(historicalCases);
 const historicalValidation=evaluateHistoricalFeed(historicalFeed);
+const retrospectiveFeed=parseRetrospectiveFeed(retrospectiveExamples);
+const retrospectiveWindows=retrospectiveResults(retrospectiveFeed);
 const metricHistoryReview=evaluateMetricHistory(historicalFeed,historicalValidation,parseMetricHistory(historicalMetricSnapshots));
 const calibrationRegistry=parseRaasCalibrations(approvedCalibrations);
 const reviewedLedger=parseRaasReviewedLedger(reviewedSnapshots);
@@ -87,6 +91,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const isTop=bucket==="pre";
  const historicalStage=historicalValidation.byStage.find(x=>x.stage===bucket)!;
  const historicalFolds=walkForwardFolds(historicalValidation.accepted,bucket);
+ const comparableResearch=retrospectiveWindows.filter(example=>example.stage===bucket);
  const historyMetrics=metricHistoryReview.filter(m=>m.stage===bucket);
  const label=isTop?"TOP-RAAS":"BOTTOM-RAAS";
  const groups=RAAS_METRIC_CATALOG[bucket];
@@ -134,6 +139,27 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
          <p><strong>Current status:</strong> {historicalStage.reason}</p>
          <p>Historic outcome cases must use timestamped pre-entry sources, exact asset identity and verified readout or FDA target. Two NCTs of one drug cannot become two independent opportunities.</p>
          <p>Historical case ledger as of {historicalCases.sourceAsOf}. This is not a live quote, automated historical backfill, or backtest with validated predictive performance.</p>
+       </div>
+     </details>
+     <details className={css.anchorDetails}>
+       <summary>Historical source-checked price examples · {comparableResearch.length} · research only ▸</summary>
+       <div className={css.historicalStatus}>
+         {comparableResearch.length===0?<p>No real-price research examples yet for this phase. Do not confuse a missing example with a zero return.</p>:
+           comparableResearch.map(example=>{const original=retrospectiveFeed.records.find(r=>r.id===example.id)!;
+             return <div key={example.id} className={css.pilotObservation}>
+               <strong>{example.ticker} · {original.drug} · {original.indication}</strong>
+               <p><strong>Research-only, selected retrospectively.</strong> {original.nctIds.length} Phase 3 trial identifiers, one investment program. This is not a historical RAAS buy signal.</p>
+               <p>Close on {example.entryDate}: ${example.entryClose.toFixed(2)}; close on {example.exitDate}: ${example.exitClose.toFixed(2)}.</p>
+               <p>Observed gross close-to-close change: <strong>{example.observedGrossChangePercent>=0?"+":""}{example.observedGrossChangePercent.toFixed(2)}%</strong>. Entry-date vendor market capitalization: ${example.marketCapUsdMillions.toLocaleString("en-US")} million.</p>
+               <p>PDUFA target {original.pdufaDate} · minus-three-day cutoff {example.calendarCutoff}; actual FDA decision {original.realizedFDAAction.date} is future knowledge relative to entry.</p>
+               <p>Closing-price adjustment, execution friction and exchange-holiday validation are pending. There is no archived pre-entry RAAS prediction or qualified performance forecast.</p>
+               <a href={original.entry.sourceUrl} target="_blank" rel="noopener noreferrer">Historical closing-price source</a>
+               <a href={original.marketCapAtEntry.sourceUrl} target="_blank" rel="noopener noreferrer">Historical market capitalization source</a>
+               {original.verifiedBeforeEntry.map(item=><a key={item.kind+item.date} href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.kind.replaceAll("_"," ")} · {item.date}</a>)}
+               <a href={original.realizedFDAAction.sourceUrl} target="_blank" rel="noopener noreferrer">Subsequent FDA decision source (outcome only)</a>
+             </div>;
+           })}
+         <p>These examples are held in a separate retrospective research ledger. They do not enter the qualified, timestamped RAAS scoring or return-validation calculations.</p>
        </div>
      </details>
      <p className={css.hint}><strong>{snapshot} · {grading.graded}/30 approved metric grades · {pilotGrades.length} exploratory research score · {pilotFacts.length} dated observations.</strong> {grading.reason} Open a category and a metric to see numerical observations, threshold requirements, sources and downside risks. Only complete approved metric sets can produce an overall RAAS.</p>
