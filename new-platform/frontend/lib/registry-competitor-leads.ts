@@ -59,3 +59,41 @@ export function discoverRegistryPeerLeads(
   }
   return output;
 }
+
+/** Snapshot-wide progress metrics. These count historical registry lead
+ * suggestions, NOT validated active competitors or comparable trial outcomes.
+ * Completeness is restricted to the dated, 375-study research archive.
+ */
+export type RegistryPeerDiscoverySummary={
+  scope:"HISTORICAL_375_PHASE3_REGISTRY_ARCHIVE";
+  studiesInArchive:number;studiesWithPostedResults:number;
+  studiesWithConditionMatchedLeads:number;postedResultStudiesWithLeads:number;
+  totalMatchedStudyLinks:number;validatedClinicalComparisons:0;
+  stockAppreciationRanks:0;
+};
+export function summarizeRegistryPeerLeads(
+  records:readonly RegistryBenefitResearch[],
+  leads:Record<string,RegistryPeerLeads>
+):RegistryPeerDiscoverySummary{
+  if(records.length!==Object.keys(leads).length||records.length>375)
+    throw Error("PEER_SUMMARY_ARCHIVE_MISMATCH");
+  let studiesWithConditionMatchedLeads=0,postedResultStudiesWithLeads=0;
+  let totalMatchedStudyLinks=0;
+  for(const row of records){
+    const item=leads[row.nctId];
+    if(!item||item.status!=="RESEARCH_LEADS_ONLY"||
+       !Number.isSafeInteger(item.totalCandidates)||item.totalCandidates<0)
+      throw Error("PEER_SUMMARY_INVALID");
+    totalMatchedStudyLinks+=item.totalCandidates;
+    if(item.totalCandidates){
+      studiesWithConditionMatchedLeads++;
+      if(row.resultsPosted)postedResultStudiesWithLeads++;
+    }
+  }
+  return {scope:"HISTORICAL_375_PHASE3_REGISTRY_ARCHIVE",
+    studiesInArchive:records.length,
+    studiesWithPostedResults:records.filter(row=>row.resultsPosted).length,
+    studiesWithConditionMatchedLeads,postedResultStudiesWithLeads,
+    totalMatchedStudyLinks,validatedClinicalComparisons:0,
+    stockAppreciationRanks:0};
+}
