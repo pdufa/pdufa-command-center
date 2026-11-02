@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_SHARE_BRIDGE_RESEARCH",
   "sourceAsOf": "2026-11-02",
-  "note": "Three point-in-time SEC COVER share-count cross-checks of vendor close and reported market cap; these validate arithmetic consistency only, NOT closing price authenticity, share-class adjustments, fully diluted EV, strategy forecasts or final RAAS grades. BridgeBio TOP comparison is a share-count-based reconstruction, NOT a separate vendor market-cap observation.",
+  "note": "Five point-in-time SEC cover share-count checks of historical price × reported shares, including two Nov 2022 TOP entries. Three other windows still lack SEC entry share bridges. Nominal 2022-11-18 GERN/MDGL entry prices remain without independent second-source proof. None validates fully diluted value, corporate actions, total return or RAAS predictions.",
   "records": [
     {
       "caseId": "bbio-attribute-cm-pre2023-illustrative",
@@ -49,6 +49,36 @@
       "quoteCurrency": "USD",
       "notes": "SEC filing accepted 2024-05-10 at 09:09:53 ET before listed close; 648,654,174 ordinary shares / 8 = 81,081,771.75 ADS equivalents. Fractional ADS equivalent is arithmetic only. Fully diluted shares, share changes and split-adjustment basis still unverified.",
       "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE"
+    },
+    {
+      "caseId": "gern-imerge-mds-pre2023-illustrative",
+      "ticker": "GERN",
+      "stage": "pre",
+      "class": "COMMON",
+      "securityLabel": "NASDAQ listed common stock",
+      "sharesOutstanding": 381235046,
+      "sharesAsOf": "2022-11-01",
+      "sharesPublishedAt": "2022-11-07",
+      "sharesSourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017022022712/gern-20220930.htm",
+      "ordinarySharesPerQuotedSecurity": 1,
+      "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE",
+      "quoteCurrency": "USD",
+      "notes": "Geron Q3 2022 SEC 10-Q cover reports 381,235,046 common shares outstanding Nov 1, filed Nov 7, before the retrospective Nov 18 entry. At vendor-reported $2.26 quote this produces ~$861.59M capitalization vs vendor $861.591M. This multiplication does not independently corroborate the Nov 18 close or account for dilution, split adjustments, warrants or later securities."
+    },
+    {
+      "caseId": "mdgl-resmetirom-maestro-nash-pre2022-illustrative",
+      "ticker": "MDGL",
+      "stage": "pre",
+      "class": "COMMON",
+      "securityLabel": "NASDAQ listed common stock",
+      "sharesOutstanding": 17103395,
+      "sharesAsOf": "2022-11-01",
+      "sharesPublishedAt": "2022-11-03",
+      "sharesSourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312522276468/d403221d10q.htm",
+      "ordinarySharesPerQuotedSecurity": 1,
+      "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE",
+      "quoteCurrency": "USD",
+      "notes": "Madrigal Q3 2022 SEC 10-Q cover reports 17,103,395 common shares outstanding Nov 1, filed Nov 3 before Nov 18 retrospective entry. At vendor-reported $72.80 this reconstructs ~$1.245B cap, near vendor $1.245B; historical nominal quote is NOT second-source verified. Crucially the same pre-entry filing explicitly states substantial doubt about going concern given then-available liquidity; future financing/results must not enter pre-entry risk assessment."
     }
   ]
 }

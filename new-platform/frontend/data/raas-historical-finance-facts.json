@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_FINANCE_RESEARCH",
   "sourceAsOf": "2026-11-02",
-  "note": "Seven issuer/SEC financial snapshots strictly published before retrospectively selected entries. MDGL Nov 6 2023 10-Q was removed from Nov 3 entry research as look-ahead; Aug 8 2023 Q2 10-Q is used instead. Not verified fully diluted price or cash runway.",
+  "note": "Seven issuer/SEC financial snapshots strictly published before retrospectively selected entries. MDGL Nov 6 2023 10-Q was removed from Nov 3 entry research as look-ahead; Aug 8 2023 Q2 10-Q is used instead. Not verified fully diluted price or cash runway. Added Nov 3 2022 SEC going-concern disclosure for the Nov 18 MDGL TOP example, capturing an adverse fact publicly known at entry; it is not a scored RAAS risk grade.",
   "records": [
     {
       "id": "gern-2022-top",
@@ -54,7 +54,15 @@
           "method": "Net loan facility proceeds during nine months ended September 30, 2022.",
           "caveat": "Not a cash-balance component to add again."
         }
-      ]
+      ],
+      "riskDisclosure": {
+        "risk": "GOING_CONCERN_SUBSTANTIAL_DOUBT",
+        "asOf": "2022-09-30",
+        "publishedAt": "2022-11-03",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312522276468/d403221d10q.htm",
+        "summary": "Before the November 18, 2022 retrospective TOP entry, Madrigal's Form 10-Q disclosed $153.2M cash, equivalents and marketable securities; management concluded those resources were insufficient for the following year and said the conditions raised substantial doubt about its ability to continue as a going concern under ASC 205-40. This was an entry-time financing/solvency risk, not an outcome-informed opinion.",
+        "caveat": "A going-concern warning does not mean bankruptcy or determine later returns. Potential milestone loan tranches or equity raises were contingent; no financing is added to available cash unless already funded as of the chosen entry."
+      }
     },
     {
       "id": "vrna-2024-bottom",

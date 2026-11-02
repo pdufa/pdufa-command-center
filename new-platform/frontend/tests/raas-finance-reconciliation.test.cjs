@@ -38,6 +38,39 @@ test("all seven TOP/BOTTOM historical examples have on-time issuer/SEC financial
  assert.ok(mdglRecord.publishedAt<"2023-11-03");
  assert.ok(mdglRecord.facts.some(x=>x.type==="OPERATING_CASH_USED_6M"&&x.valueUsdMillions===159.377));
 });
+test("November 2022 MDGL going-concern risk was public before TOP entry and is not assigned a RAAS grade",()=>{
+ const f=engine.parseHistoricalFinance(raw,top,bottom);
+ const mdgl=engine.financeForCase(f,"mdgl-resmetirom-maestro-nash-pre2022-illustrative");
+ assert.equal(mdgl.publishedAt,"2022-11-03");
+ assert.equal(mdgl.riskDisclosure.risk,"GOING_CONCERN_SUBSTANTIAL_DOUBT");
+ assert.equal(mdgl.riskDisclosure.asOf,"2022-09-30");
+ assert.equal(mdgl.riskDisclosure.publishedAt,"2022-11-03");
+ assert.match(mdgl.riskDisclosure.sourceUrl,/sec.gov\/Archives\/edgar/);
+ assert.match(mdgl.riskDisclosure.summary,/substantial doubt/i);
+ assert.match(mdgl.riskDisclosure.caveat,/not mean bankruptcy/i);
+ const summary=engine.financeReadiness(f,mdgl.caseId,mdgl.stage);
+ assert.equal(summary.usableInApprovedRAAS,false);
+ assert.equal(summary.cashRunwayCalculated,false);
+ const page=fs.readFileSync(path.join(__dirname,"../app/raas-history/page.tsx"),"utf8");
+ assert.match(page,/data-historical-preentry-risk/);
+ assert.match(page,/finances.riskDisclosure.publishedAt/);
+ assert.match(page,/going-concern substantial doubt/i);
+});
+test("A retrospective financing-risk flag cannot be backfilled using a future filing",()=>{
+ const edit=(riskPatch)=>({...raw,records:raw.records.map(r=>r.id==="mdgl-2022-top"?
+  {...r,riskDisclosure:{...r.riskDisclosure,...riskPatch}}:r)});
+ for(const invalid of [
+  {publishedAt:"2022-11-21"},
+  {publishedAt:"2026-11-02"},
+  {sourceUrl:""},
+  {risk:"GOING_CONCERN_RESOLVED"},
+  {summary:""},
+  {asOf:"2022-12-01"}
+ ]){
+  assert.throws(()=>engine.parseHistoricalFinance(edit(invalid),top,bottom),
+   /RAAS_FINANCE_RISK_TIME_OR_SOURCE_INVALID/);
+ }
+});
 test("Conditional loans, offering proceeds and ATM headroom are not counted twice as cash",()=>{
  const f=engine.parseHistoricalFinance(raw,top,bottom);
  const geron=engine.financeReadiness(f,"gern-imetelstat-mds-2024-illustrative","post");

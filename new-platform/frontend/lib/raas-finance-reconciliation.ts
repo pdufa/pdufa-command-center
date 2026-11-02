@@ -15,6 +15,10 @@ export type FinanceFact={type:FinanceFactType;valueUsdMillions:number;method:str
 export type FinanceRecord={
  id:string;caseId:string;ticker:string;stage:"pre"|"post";
  asOf:string;publishedAt:string;sourceUrl:string;facts:FinanceFact[];
+ riskDisclosure?:{
+  risk:"GOING_CONCERN_SUBSTANTIAL_DOUBT";asOf:string;publishedAt:string;
+  sourceUrl:string;summary:string;caveat:string;
+ };
 };
 export type FinanceFeed={
  schemaVersion:1;scope:"RAAS_HISTORICAL_FINANCE_RESEARCH";
@@ -61,6 +65,15 @@ export function parseHistoricalFinance(
     !Array.isArray(r.facts)||r.facts.length===0||r.facts.length>30)
     throw Error("RAAS_FINANCE_ROW_INVALID");
   seen.add(r.caseId);ids.add(r.id);
+  if(r.riskDisclosure){
+   const risk=r.riskDisclosure;
+   if(risk.risk!=="GOING_CONCERN_SUBSTANTIAL_DOUBT"||
+      !date(risk.asOf)||!date(risk.publishedAt)||
+      risk.asOf>risk.publishedAt||risk.publishedAt>r.publishedAt||
+      risk.publishedAt>c.entry||risk.publishedAt>f.sourceAsOf||
+      !url(risk.sourceUrl)||!risk.summary?.trim()||!risk.caveat?.trim())
+      throw Error("RAAS_FINANCE_RISK_TIME_OR_SOURCE_INVALID");
+  }
   const factTypes=new Set<string>();
   for(const fact of r.facts){
    if(!types.has(fact.type)||factTypes.has(fact.type)||
