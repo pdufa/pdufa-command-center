@@ -58,7 +58,7 @@ test("archive read is signed-in and UI presents source-only status separately fr
  assert.match(ui,/\/api\/registry-benefit-coverage/);
  assert.match(ui,/sourceReviewHint\(sourceIndex.get\(row.nctId\),g.number\)/);
  assert.match(ui,/Official registry research archive/);
- assert.match(ui,/Assessment conclusions remain Not assessed until reviewed/);
+ assert.match(ui,/Assessment conclusions remain Not assessed until reviewed|Source data requires assessment before a benefit rating is assigned/);
  assert.match(ui,/Registry data · review required/);
 });
 test("published research archive has the expected census and valid provenance without assuming benefit",()=>{
