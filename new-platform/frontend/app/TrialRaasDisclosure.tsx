@@ -144,7 +144,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
        <div className={css.historicalStatus}>
          <p><strong>{label} validation:</strong> {historicalStage.cases} eligible historical trade windows; {historicalStage.independentPrograms} independent company/therapy/indication opportunities; {historicalStage.predictionCoverage}% documented return forecasts.</p>
          <p>Return forecast error: {historicalStage.maePercent===null?"Not calculable":historicalStage.maePercent+" percentage points mean absolute error"}; score versus realized-return rank correlation: {historicalStage.spearmanRaasVsReturn===null?"Not calculable":historicalStage.spearmanRaasVsReturn}.</p>
-         <p>Out-of-sample review folds: {historicalFolds.length}; metric histories meeting the minimum review sample floor: {historyMetrics.filter(m=>m.status==="REVIEW_ELIGIBLE_NOT_APPROVED").length}/30; calibration-approved RAAS scoring profiles: {calibrationRegistry.entries.filter(x=>x.stage===bucket).length}/30.</p>
+         <p>Out-of-sample event-window review folds: {historicalFolds.length}; metric histories with consistent scoring versions and purged 30/30 chronological holdouts: {historyMetrics.filter(m=>m.status==="REVIEW_ELIGIBLE_NOT_APPROVED").length}/30; calibration-approved RAAS scoring profiles: {calibrationRegistry.entries.filter(x=>x.stage===bucket).length}/30.</p>
          <p><strong>Current status:</strong> {historicalStage.reason}</p>
          <p>Historic outcome cases must use timestamped pre-entry sources, exact asset identity and verified readout or FDA target. Two NCTs of one drug cannot become two independent opportunities.</p>
          <p>Historical case ledger as of {historicalCases.sourceAsOf}. This is not a live quote, automated historical backfill, or backtest with validated predictive performance.</p>
@@ -278,6 +278,11 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
                <div className={css.requirement}><strong>Historical investment-performance validation</strong>
                  <p>{metricBacktest?.independentPrograms??0} independently observed program/return pairs; score-return rank correlation: {metricBacktest?.spearmanScoreToReturn??"Not available"}.</p>
                  <p>High-score minus low-score mean realized return: {metricBacktest?.meanHighMinusLowPercent==null?"Not available":metricBacktest?.meanHighMinusLowPercent+" percentage points"}.</p>
+                 <p><strong>Historical metric protocol:</strong> {metricBacktest?.benchmarkId&&metricBacktest?.ruleVersion?
+                   metricBacktest.benchmarkId+" · "+metricBacktest.ruleVersion:
+                   metricBacktest?.protocolConsistent===false&&metricBacktest.independentPrograms>0?
+                   "Incompatible or unresolved historical rule versions":"No documented comparable historical protocol"}.</p>
+                 <p><strong>Chronological independent programs:</strong> {metricBacktest?.holdoutTrainPrograms??0} training / {metricBacktest?.holdoutTestPrograms??0} held out. Each must have at least 30 unique programs without overlapping the training exit and holdout entry windows.</p>
                  <p>{metricBacktest?.reason||"Missing historical metric review."} No score becomes approved solely from this descriptive backtest.</p>
                </div>
                <div className={css.requirement}><strong>Evidence required</strong><p>{metric.requiredEvidence}</p></div>
