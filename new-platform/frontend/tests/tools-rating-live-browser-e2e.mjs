@@ -97,6 +97,26 @@ async function finalSurveyTest(page,label){
     check((await items.first().innerText()).includes("Not assessed")||
       (await items.first().innerText()).includes("verified"),
       "An unverified survey must never be treated as a clinical failure");
+    await matrix.getByRole("button",{name:"Inspect scoring protocol for survey 3"}).click();
+    const method=matrix.getByRole("region",{name:"Selected survey scoring method"});
+    await method.waitFor({state:"visible"});
+    const text=await method.innerText();
+    check(text.includes("Survey 3")&&text.includes("Evidence basis:")&&
+      text.includes("Required comparison:")&&text.includes("Interpretation method:"),
+      "Survey 3 must show its distinct scientific scoring method to the right");
+    check(text.includes("Not calibrated")&&text.includes("no numerical score assigned"),
+      "Source completeness must not fabricate a scientific or FDA outcome score");
+    if(bucket==="pre")check(text.includes("Public results not documented as checked"),
+      "Pre-readout clinical scoring should not infer published outcome evidence");
+    const rowStyle=await matrix.locator('tr[data-final-survey-number="3"]').evaluate(el=>({
+      selected:el.querySelector("button")?.getAttribute("aria-pressed"),
+      border:getComputedStyle(el.querySelector("th")).borderLeftWidth
+    }));
+    assert.equal(rowStyle.selected,"true","The right-hand panel must track the selected survey");
+    check(Number.parseFloat(rowStyle.border)>=2,"Selected survey row requires a visible outline");
+    await matrix.getByRole("button",{name:"Inspect scoring protocol for survey 8"}).click();
+    check((await method.innerText()).includes("Survey 8"),
+      "Selecting another survey must update the right-hand methodology panel");
     await matrix.locator(":scope > summary").click();
     const actions=dialog.locator('details[aria-label="Final SURVEY prioritized research actions"]');
     await actions.waitFor({state:"visible",timeout:15000});

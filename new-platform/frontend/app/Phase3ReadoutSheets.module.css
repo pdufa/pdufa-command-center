@@ -235,3 +235,18 @@
 .finalSurveyMatrixScroll td{font-variant-numeric:tabular-nums;white-space:nowrap}
 .finalSurveyMatrix>.surveyOpenButton{margin-top:9px}
 .finalSurveyMatrixScroll:focus-visible,.finalSurveyMatrix>summary:focus-visible{outline:3px solid #206baf;outline-offset:2px}
+
+/* Final SURVEY method panel opens horizontally to the right of the selected assessment. */
+.finalSurveyScoringLayout{display:grid;grid-template-columns:minmax(650px,1fr) minmax(300px,360px);gap:10px;min-width:980px;align-items:start}
+.finalSurveyScoringLayout>table{min-width:650px;width:100%}
+.finalSurveyScoringDetails{position:sticky;right:0;top:0;display:flex;flex-direction:column;gap:9px;background:#f3faf5;border:2px solid #317855;border-radius:9px;padding:12px;min-width:0;max-height:62vh;overflow-y:auto;box-sizing:border-box}
+.finalSurveyScoringDetails h5{margin:0;font-size:15px;color:#143d2b}
+.finalSurveyScoringDetails p,.finalSurveyScoringDetails li{font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.finalSurveyScoringDetails ul{margin:0 0 4px;padding-left:18px}
+.finalSurveySelect{border:1px solid transparent;border-radius:6px;cursor:pointer;padding:6px;text-align:left;line-height:1.35;background:transparent;color:#1b5437;font:inherit;font-weight:750;width:100%}
+.finalSurveySelect span{float:right}
+.finalSurveySelect[aria-pressed=true]{background:#d7ecde;color:#143c28;border-color:#317855}
+.finalSurveySelect:focus-visible,.finalSurveyScoringDetails a:focus-visible{outline:3px solid #206baf;outline-offset:2px}
+.finalSurveyScoringLayout tr.finalSurveySelectedRow>th,.finalSurveyScoringLayout tr.finalSurveySelectedRow>td{border-top:2px solid #317855;border-bottom:2px solid #317855;background:#f1f8f3}
+.finalSurveyScoringLayout tr.finalSurveySelectedRow>th{border-left:2px solid #317855}
+.finalSurveyScoringLayout tr.finalSurveySelectedRow>td:last-child{border-right:2px solid #317855}
