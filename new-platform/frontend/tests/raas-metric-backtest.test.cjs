@@ -144,7 +144,7 @@ test("Sixty same-date programs cannot masquerade as a chronological historical h
  assert.equal(d.independentPrograms,60);
  assert.ok(d.holdoutTrainPrograms<30||d.holdoutTestPrograms<30);
  assert.equal(d.status,"INSUFFICIENT_EVIDENCE");
- assert.match(d.reason,/No purged chronological/);
+ assert.match(d.reason,/No issuer-disjoint, purged chronological/);
 });
 test("Approved RAAS ledger requires matching benchmark AND rule version AND holdout before accepting any metric",()=>{
  const {parseRaasCalibrations,parseRaasReviewedLedger,reviewedScoreForTrial}=
@@ -171,6 +171,8 @@ test("Approved RAAS ledger requires matching benchmark AND rule version AND hold
   sourceAsOf:"2026-11-02",note:"Synthetic",records:[record]});
  const d={stage:"pre",metricId:"pre-1-1",status:"REVIEW_ELIGIBLE_NOT_APPROVED",
   independentPrograms:60,holdoutTrainPrograms:30,holdoutTestPrograms:30,
+  holdoutLowPrograms:15,holdoutHighPrograms:15,
+  holdoutSpearmanScoreToReturn:.45,holdoutHighMinusLowPercent:25,
   protocolConsistent:true,benchmarkId:"synthetic-bench",ruleVersion:"synthetic-v1",
   spearmanScoreToReturn:.45};
  const run=(diag)=>reviewedScoreForTrial(ledger,calibration,record,"pre","CURRENT",
@@ -180,6 +182,11 @@ test("Approved RAAS ledger requires matching benchmark AND rule version AND hold
  assert.equal(run({...d,holdoutTrainPrograms:29}).acceptedRatings.length,0);
  assert.equal(run({...d,holdoutTestPrograms:29}).acceptedRatings.length,0);
  assert.equal(run({...d,protocolConsistent:false}).acceptedRatings.length,0);
+ assert.equal(run({...d,holdoutSpearmanScoreToReturn:-.2}).acceptedRatings.length,0);
+ assert.equal(run({...d,holdoutHighMinusLowPercent:-4}).acceptedRatings.length,0);
+ assert.equal(run({...d,holdoutHighPrograms:4}).acceptedRatings.length,0);
+ assert.equal(run({...d,holdoutLowPrograms:4}).acceptedRatings.length,0);
+ assert.equal(run({...d,holdoutSpearmanScoreToReturn:null}).acceptedRatings.length,0);
  const oldRecord={...record,ratings:record.ratings.map(({ruleVersion,...older})=>older)};
  const oldLedger=parseRaasReviewedLedger({schemaVersion:1,scope:"RAAS_REVIEWED_TRIAL_SNAPSHOTS",
   sourceAsOf:"2026-11-02",note:"Synthetic legacy",records:[oldRecord]});
@@ -187,4 +194,51 @@ test("Approved RAAS ledger requires matching benchmark AND rule version AND hold
   "2026-11-02",[d]).acceptedRatings.length,0);
  assert.equal(run(d).acceptedRatings.length,1);
  assert.equal(run(d).score.score,null); // 29 other metric grades remain missing.
+});
+
+test("Large positive pooled correlation cannot rescue an inverse later issuer holdout",()=>{
+ const {cases,ratings}=syntheticCohort(60);
+ cases.forEach((row,i)=>{
+  const high=ratings[i].score===75;
+  row.exitPrice.adjustedClose=i<30?(high?25:5):(high?9.5:10.5);
+ });
+ const history=engine.parseHistoricalFeed({...productionEvents,sourceAsOf:"2026-11-02",cases});
+ const scores=metric.parseMetricHistory({...productionScores,sourceAsOf:"2026-11-02",records:ratings});
+ const d=metric.evaluateMetricHistory(history,engine.evaluateHistoricalFeed(history),scores)
+  .find(x=>x.metricId==="pre-1-1");
+ assert.ok(d.spearmanScoreToReturn>0,"Pooled history may look favorable");
+ assert.ok(d.holdoutSpearmanScoreToReturn<0,"Later holdout must reveal inverse score/return relationship");
+ assert.ok(d.holdoutHighMinusLowPercent<0);
+ assert.equal(d.holdoutTrainPrograms,30);
+ assert.equal(d.holdoutTestPrograms,30);
+ assert.equal(d.status,"INSUFFICIENT_EVIDENCE");
+ assert.match(d.reason,/Held-out issuer scores do not demonstrate/);
+});
+test("Repeated ticker with another drug is not an independent train/test issuer",()=>{
+ const {cases,ratings}=syntheticCohort(60);
+ for(let i=30;i<60;i++){
+  cases[i].ticker="CASE"+(i-30);
+  ratings[i].ticker=cases[i].ticker;
+ }
+ const history=engine.parseHistoricalFeed({...productionEvents,sourceAsOf:"2026-11-02",cases});
+ const scores=metric.parseMetricHistory({...productionScores,sourceAsOf:"2026-11-02",records:ratings});
+ const d=metric.evaluateMetricHistory(history,engine.evaluateHistoricalFeed(history),scores)
+  .find(x=>x.metricId==="pre-1-1");
+ assert.equal(d.independentPrograms,60);
+ assert.ok(d.holdoutIssuerPurgedPrograms>0);
+ assert.ok(d.holdoutTrainPrograms<30||d.holdoutTestPrograms<30);
+ assert.equal(d.status,"INSUFFICIENT_EVIDENCE");
+});
+test("Held-out rating class missing blocks review even with 60 issuer records",()=>{
+ const {cases,ratings}=syntheticCohort(60);
+ for(let i=30;i<60;i++)ratings[i].score=75;
+ const history=engine.parseHistoricalFeed({...productionEvents,sourceAsOf:"2026-11-02",cases});
+ const scores=metric.parseMetricHistory({...productionScores,sourceAsOf:"2026-11-02",records:ratings});
+ const d=metric.evaluateMetricHistory(history,engine.evaluateHistoricalFeed(history),scores)
+  .find(x=>x.metricId==="pre-1-1");
+ assert.equal(d.holdoutTrainPrograms,30);
+ assert.equal(d.holdoutTestPrograms,30);
+ assert.equal(d.holdoutLowPrograms,0);
+ assert.equal(d.status,"INSUFFICIENT_EVIDENCE");
+ assert.match(d.reason,/Held-out issuer cohort lacks/);
 });
