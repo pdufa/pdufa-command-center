@@ -13,6 +13,7 @@ import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from
 import reviewedSnapshots from "../data/raas-reviewed-snapshots.json";
 import approvedCalibrations from "../data/raas-approved-calibrations.json";
 import {parseRaasCalibrations,parseRaasReviewedLedger,reviewedScoreForTrial} from "../lib/raas-reviewed-score-ledger";
+import {contextualClinicalBenchmark} from "../lib/raas-clinical-benchmarks";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
@@ -21,16 +22,24 @@ type Snapshot="ENTRY"|"CURRENT"|"EXIT";
 const pilot=parseRaasPilotFeed(pilotData);
 const calibrationRegistry=parseRaasCalibrations(approvedCalibrations);
 const reviewedLedger=parseRaasReviewedLedger(reviewedSnapshots);
-function PilotEvidence({observations,metricId,snapshot}:{observations:readonly RaasObservation[];metricId:string;snapshot:Snapshot}){
+function PilotEvidence({observations,metricId,snapshot,drug,indication}:{observations:readonly RaasObservation[];metricId:string;snapshot:Snapshot;drug:string;indication:string}){
  const matching=observations.filter(o=>o.metricIds.includes(metricId));
  return <div className={css.pilotEvidence}>
    <strong>Source-backed measured facts · {snapshot}</strong>
    {snapshot!=="CURRENT"?<p>No dated {snapshot} evidence snapshot has been verified. Later findings are not retroactively applied to ENTRY or EXIT.</p>:
      matching.length===0?<p>No verified numerical pilot observation for this metric in the dated research snapshot. A metric score is not inferred.</p>:
-     matching.map(o=>{const calc=observedCalculation(o);return <div className={css.pilotObservation} key={o.id}>
+     matching.map(o=>{const calc=observedCalculation(o);
+       const clinicalBenchmark=o.kind==="active_control_mean_change"?contextualClinicalBenchmark(drug,indication,o.unit):null;
+       return <div className={css.pilotObservation} key={o.id}>
        <strong>{o.title}</strong>
        {calc&&<p className={css.pilotMeasured}><strong>{calc.value.toLocaleString("en-US",{maximumFractionDigits:2})} {calc.unit}</strong> · {calc.label}</p>}
        {o.valueText&&<p>Documented: {o.valueText}</p>}
+       {clinicalBenchmark&&<div className={css.benchmarkContext}>
+         <strong>Published clinical interpretation benchmark · not a RAAS grade</strong>
+         <p>{clinicalBenchmark.endpoint} within-patient minimal important difference: {clinicalBenchmark.min}–{clinicalBenchmark.max} {clinicalBenchmark.unit}. This refers to individual patient change, not the placebo-adjusted treatment contrast.</p>
+         <p>{clinicalBenchmark.notApplicableTo}</p>
+         <a href={clinicalBenchmark.sourceUrl} target="_blank" rel="noopener noreferrer">Read published clinical benchmark</a>
+       </div>}
        <p>Source published {o.assessmentDate} · Measurement as of {o.measurementDate}.</p>
        <p>Method: {o.method}</p>
        <p>{o.note}</p>
@@ -148,7 +157,8 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
                  <div>{RAAS_PROVISIONAL_ANCHORS.map(a=><p key={a.points}><strong>{a.points}/100 — {a.label}:</strong> {a.definition}</p>)}</div>
                  <p>These are interpretation anchors, not clinical thresholds or validated stock-return cutoffs. Benchmarks must be established separately for each metric.</p>
                </details>
-               <PilotEvidence metricId={metric.id} observations={pilotFacts} snapshot={snapshot}/>
+               <PilotEvidence metricId={metric.id} observations={pilotFacts} snapshot={snapshot}
+                 drug={row.evidence?.drug||""} indication={row.evidence?.indication||""}/>
                <MetricEvidence metric={metric} record={record} researchStatus={researchStatus}/>
              </div>
            </details>;})}
