@@ -30,7 +30,7 @@ const dateOk=(v:string):boolean=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&
 const urlOk=(v:string):boolean=>/^https:\/\/[^\s/]+\/\S+/.test(v);
 const same=(a:string,b:string)=>a.trim().toLowerCase()===b.trim().toLowerCase();
 const finite=(v:unknown):v is number=>typeof v==="number"&&Number.isFinite(v);
-const validPercent=(v:unknown)=>finite(v)&&v>=0&&v<=100;
+const validPercent=(v:unknown):v is number=>finite(v)&&v>=0&&v<=100;
 /** All pilot records are checked as data, not inferred from matching ticker alone. */
 export function parseRaasPilotFeed(input:unknown):RaasPilotFeed{
  if(!input||typeof input!=="object")throw Error("RAAS_FEED_INVALID");
