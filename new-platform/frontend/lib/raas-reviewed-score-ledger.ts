@@ -78,7 +78,7 @@ export function reviewedScoreForTrial(
  ledger:RaasReviewedLedger,registry:CalibrationRegistry,
  trial:{nctId:string;ticker:string;drug:string;indication:string},
  stage:RaasStage,snapshot:Snapshot,asOf:string
-):{record:RaasReviewedSnapshot;score:RaasResult;acceptedRatings:number;excludedRatings:number}|null{
+):{record:RaasReviewedSnapshot;score:RaasResult;acceptedRatings:MetricRating[];excludedRatings:number}|null{
  if(!day(asOf)||asOf>ledger.sourceAsOf||asOf>registry.sourceAsOf)return null;
  const trialKey=key({...trial,stage});
  const matching=ledger.records.filter(r=>key(r)===trialKey&&r.snapshot===snapshot&&r.asOf<=asOf);
@@ -94,6 +94,6 @@ export function reviewedScoreForTrial(
  });
  const grade=computeRaasScore({stage,snapshot,asOf:record.asOf,
   trial:{nctId:trial.nctId,ticker:trial.ticker},ratings:accepted,gates:record.gates});
- return {record,score:grade,acceptedRatings:accepted.length,
+ return {record,score:grade,acceptedRatings:accepted,
   excludedRatings:record.ratings.length-accepted.length};
 }
