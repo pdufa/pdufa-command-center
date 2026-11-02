@@ -7,6 +7,10 @@ export type RetrospectiveEvidence={
  kind:"PHASE3_PUBLIC_READOUT"|"PDUFA_CONFIRMED"|"PRE_ENTRY_COMPANY_UPDATE";
  date:string;sourceUrl:string;notes:string;
 };
+export type RetrospectiveClinicalReadout={
+ metric:string;dose:string;activeRatePct:number;comparatorRatePct:number;
+ comparator:string;endpointTime:string;reportedAt:string;sourceUrl:string;notes:string;
+};
 export type RetrospectiveClose={
  date:string;close:number;currency:"USD";
  priceKind:"VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN";
@@ -16,6 +20,7 @@ export type RetrospectiveWindow={
  id:string;ticker:string;drug:string;indication:string;nctIds:string[];
  stage:RaasStage;historicalWindowSelected:"RETROSPECTIVELY";
  entryDecisionArchiveAvailable:false;verifiedBeforeEntry:RetrospectiveEvidence[];
+ clinicalReadouts?:RetrospectiveClinicalReadout[];
  pdufaDate:string;entry:RetrospectiveClose;exit:RetrospectiveClose;
  marketCapAtEntry:{usdMillions:number;sourceUrl:string;basis:string};
  realizedFDAAction:{date:string;status:"FDA_APPROVED"|"FDA_REJECTED"|"FDA_DELAYED";sourceUrl:string;isPostEntryKnowledge:true};
@@ -86,6 +91,16 @@ export function parseRetrospectiveFeed(input:unknown):RetrospectiveFeed{
    r.marketCapAtEntry.usdMillions<300||r.marketCapAtEntry.usdMillions>10000||
    !secure(r.marketCapAtEntry.sourceUrl)||!r.marketCapAtEntry.basis?.trim())
    throw Error("RAAS_RETROSPECTIVE_MARKET_CAP_INVALID");
+  if(r.clinicalReadouts!==undefined&&(
+   !Array.isArray(r.clinicalReadouts)||r.clinicalReadouts.length>30||
+   r.clinicalReadouts.some(o=>!o||!o.metric?.trim()||!o.dose?.trim()||
+     !o.comparator?.trim()||!o.endpointTime?.trim()||!o.notes?.trim()||
+     typeof o.activeRatePct!=="number"||!Number.isFinite(o.activeRatePct)||
+     typeof o.comparatorRatePct!=="number"||!Number.isFinite(o.comparatorRatePct)||
+     o.activeRatePct<0||o.activeRatePct>100||
+     o.comparatorRatePct<0||o.comparatorRatePct>100||
+     !day(o.reportedAt)||o.reportedAt>r.entry.date||
+     !secure(o.sourceUrl))))throw Error("RAAS_RETROSPECTIVE_CLINICAL_INVALID");
   if(!r.verifiedBeforeEntry.some(e=>e.kind==="PDUFA_CONFIRMED")||
    !r.verifiedBeforeEntry.some(e=>e.kind==="PHASE3_PUBLIC_READOUT")||
    r.verifiedBeforeEntry.some(e=>!day(e.date)||e.date>r.entry.date||
@@ -103,6 +118,10 @@ export function parseRetrospectiveFeed(input:unknown):RetrospectiveFeed{
    throw Error("RAAS_RETROSPECTIVE_OUTCOME_INVALID");
  }
  return f;
+}
+/** Descriptive measured difference only. Not clinical-score calibration. */
+export function observedClinicalRateDifference(o:RetrospectiveClinicalReadout):number{
+ return Math.round((o.activeRatePct-o.comparatorRatePct)*100)/100;
 }
 export function retrospectiveResults(feed:RetrospectiveFeed):RetrospectiveResult[]{
  return feed.records.map(r=>({
