@@ -36,8 +36,11 @@ export function finalSurveyNextActions(args:{
    unverifiedQuestions:null};
  // Refuse an invented checklist if the canonical 20 surveys / 38 fields are not intact.
  if(questions.length!==38||new Set(questions.map(q=>q.id)).size!==38||
-   groups.length!==5||gates.length!==4||
-   questions.some(q=>!Number.isInteger(q.survey)||q.survey<1||q.survey>20))
+   groups.length!==5||gates.length!==4||new Set(questions.map(q=>q.survey)).size!==20||
+   groups.some(g=>!Number.isInteger(g.verified)||g.verified<0)||
+   gates.some(g=>typeof g.passed!=="boolean"||!g.label.trim())||
+   questions.some(q=>!Number.isInteger(q.survey)||q.survey<1||q.survey>20||
+     !["VERIFIED","MODELED","UNRECORDED"].includes(q.status)))
   return {actions:[{key:"inventory-invalid",category:"SOURCE",
    heading:"Reconcile the 20-survey question inventory",
    detail:"Expected 38 unique research questions in five groups. Cannot prioritize an incomplete inventory."}],
