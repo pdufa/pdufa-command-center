@@ -210,13 +210,17 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
             {ratingGroups.map(group=>{
               const open=expandedRatings.includes(group.key);
               return <Fragment key={group.key}>
-                <th scope="col" className={css.ratingFilter}>
+                <th scope="col" data-rating-group={group.key}
+                  className={[css.ratingFilter,open?css.ratingOpen:"",open?css.ratingStart:"",
+                    open&&group.ingredients.length===0?css.ratingEnd:""].filter(Boolean).join(" ")}>
                   <input type="search" aria-label={label+" filter "+group.key+" rating"}
                     placeholder={"Filter "+group.key} maxLength={40}
                     value={ratingFilters["group:"+group.key]||""}
                     onChange={e=>filterRating("group:"+group.key,e.target.value)}/>
                 </th>
-                {open&&group.ingredients.map(ingredient=><th scope="col" key={ingredient.key} className={css.ratingFilter}>
+                {open&&group.ingredients.map(ingredient=><th scope="col" key={ingredient.key} data-rating-ingredient={ingredient.key}
+                  className={[css.ratingFilter,css.ratingOpen,
+                    ingredient.key===group.ingredients[group.ingredients.length-1]?.key?css.ratingEnd:""].filter(Boolean).join(" ")}>
                   <input type="search" aria-label={label+" filter "+ingredient.key+" ingredient"}
                     placeholder={"Filter "+ingredient.key} maxLength={40}
                     value={ratingFilters["ingredient:"+ingredient.key]||""}
