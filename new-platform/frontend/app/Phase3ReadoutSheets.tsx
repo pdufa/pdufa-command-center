@@ -595,34 +595,63 @@ export default function Phase3ReadoutSheets(){
   return <section className={css.root} id="tools-phase3-release-sheets" aria-label="Pre-release and post-release Phase 3 spreadsheets">
     <div className={css.title}>
       <h2>Phase 3 · Public Data Release</h2>
-      <p>Two independent, source-linked spreadsheets from the {number(data.total)}-trial October 26, 2026 historical $300M–$10B issuer-cap census. Counted by distinct NCT, not by company or indication.</p>
+      <p>Open only the section you want to work with. All segments start collapsed.</p>
     </div>
-    <div className={css.metrics}>
-      <div><span>Pre-release · as last checked</span><strong>{number(data.pre.length)}</strong></div>
-      <div><span>Post-release · documented</span><strong>{number(data.post.length)}</strong></div>
-      <div><span>Release not established</span><strong>{number(data.unverified.length)}</strong></div>
-    </div>
-    <p className={css.caveat}><strong>Important:</strong> Pre-release means no issuer readout was identified at a dated source check (October 11, 2026); it is not a guarantee that the study is still unreleased today. Post-release requires a source-backed public Phase 3 announcement. ClinicalTrials.gov results-posting and “COMPLETED” status alone do not establish either category. This is historical research, not a current PDUFA-qualified or stock-buy list.</p>
-    <label className={css.searchLabel} htmlFor="phase3-readout-search">Find an NCT, ticker, company, drug or indication across both spreadsheets</label>
-    <div className={css.searchRow}>
-      <input id="phase3-readout-search" type="search" value={query}
-        onChange={e=>{setQuery(e.target.value);setUnknownPage(0)}}
-        placeholder="Search trials…" maxLength={90}/>
-      <button type="button" onClick={()=>{setQuery("");setUnknownPage(0)}} disabled={!query}>Clear</button>
-    </div>
-    {SURVEY_RATINGS_PREVIEW_ENABLED&&<div className={css.surveyPreviewControls}>
-      <div><strong>Survey Ratings preview</strong><span>Optional column · 5 groups · 20 surveys · 38 questions · no invented scores.</span></div>
-      <button type="button" onClick={toggleSurveys} aria-pressed={showSurveys}>
-        {showSurveys?"Hide Survey Ratings":"Show Survey Ratings"}
-      </button>
-    </div>}
-    {SYNTHESIS_COLUMN_ENABLED&&<div className={css.surveyPreviewControls}>
-      <div><strong>SURVEY · Combined assessment</strong>
-        <span>One source-gated synthesis of your five groups, independent of the detailed survey display.</span></div>
-      <button type="button" onClick={toggleSynthesis} aria-pressed={showSynthesis}>
-        {showSynthesis?"Hide SURVEY":"Show SURVEY"}
-      </button>
-    </div>}
+    <details className={css.topSegment} data-segment="phase3-overview">
+      <summary className={css.topSegmentSummary}>Research overview &amp; source checks
+        <span>▾</span>
+      </summary>
+      <div className={css.topSegmentBody}>
+        <p>Two independent, source-linked spreadsheets from the {number(data.total)}-trial October 26, 2026 historical $300M–$10B issuer-cap census. Counted by distinct NCT, not by company or indication.</p>
+        <div className={css.metrics}>
+          <div><span>Pre-release · as last checked</span><strong>{number(data.pre.length)}</strong></div>
+          <div><span>Post-release · documented</span><strong>{number(data.post.length)}</strong></div>
+          <div><span>Release not established</span><strong>{number(data.unverified.length)}</strong></div>
+        </div>
+        <p className={css.caveat}><strong>Important:</strong> Pre-release means no issuer readout was identified at a dated source check (October 11, 2026); it is not a guarantee that the study is still unreleased today. Post-release requires a source-backed public Phase 3 announcement. ClinicalTrials.gov results-posting and “COMPLETED” status alone do not establish either category. This is historical research, not a current PDUFA-qualified or stock-buy list.</p>
+      </div>
+    </details>
+    <details className={css.topSegment} data-segment="phase3-search">
+      <summary className={css.topSegmentSummary}>Search across TOP &amp; BOTTOM spreadsheets
+        <span>▾</span>
+      </summary>
+      <div className={css.topSegmentBody}>
+        <label className={css.searchLabel} htmlFor="phase3-readout-search">Find an NCT, ticker, company, drug or indication across both spreadsheets</label>
+        <div className={css.searchRow}>
+          <input id="phase3-readout-search" type="search" value={query}
+            onChange={e=>{setQuery(e.target.value);setUnknownPage(0)}}
+            placeholder="Search trials…" maxLength={90}/>
+          <button type="button" onClick={()=>{setQuery("");setUnknownPage(0)}} disabled={!query}>Clear</button>
+        </div>
+      </div>
+    </details>
+    {SURVEY_RATINGS_PREVIEW_ENABLED&&<details className={css.topSegment} data-segment="phase3-survey-ratings">
+      <summary className={css.topSegmentSummary}>Survey Ratings column settings
+        <span>▾</span>
+      </summary>
+      <div className={css.topSegmentBody}>
+        <div className={css.surveyPreviewControls}>
+          <div><strong>Survey Ratings preview</strong><span>Optional column · 5 groups · 20 surveys · 38 questions · no invented scores.</span></div>
+          <button type="button" onClick={toggleSurveys} aria-pressed={showSurveys}>
+            {showSurveys?"Hide Survey Ratings":"Show Survey Ratings"}
+          </button>
+        </div>
+      </div>
+    </details>}
+    {SYNTHESIS_COLUMN_ENABLED&&<details className={css.topSegment} data-segment="phase3-survey-synthesis">
+      <summary className={css.topSegmentSummary}>SURVEY combined assessment settings
+        <span>▾</span>
+      </summary>
+      <div className={css.topSegmentBody}>
+        <div className={css.surveyPreviewControls}>
+          <div><strong>SURVEY · Combined assessment</strong>
+            <span>One source-gated synthesis of your five groups, independent of the detailed survey display.</span></div>
+          <button type="button" onClick={toggleSynthesis} aria-pressed={showSynthesis}>
+            {showSynthesis?"Hide SURVEY":"Show SURVEY"}
+          </button>
+        </div>
+      </div>
+    </details>}
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
       benefitFeed={benefitFeed} researchStatus={researchStatus}
