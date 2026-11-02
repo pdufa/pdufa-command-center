@@ -10,6 +10,7 @@ const sample=()=>({schemaVersion:1,censusAsOf:"2026-10-26",scanStartedAt:"2026-1
   nctId:"NCT12345678",sourceUrl:"https://clinicaltrials.gov/study/NCT12345678",
   retrievedAt:"2026-11-01T04:55:23.000Z",sourceUpdated:"2026-10-20",
   resultsPosted:true,primary:[{measurements:[{group:"Study arm",value:"53"}]}],
+  secondary:[{measurements:[{group:"Study arm",value:"34"}]}],
   seriousAdverseEvents:[{groups:[{group:"Study arm",affected:1,atRisk:100}]}],
   truncatedEvidence:{outcomes:false,seriousEvents:false},
   comparisonVerified:false,benefitRank:null,fdaDecisionVerified:false
@@ -20,6 +21,12 @@ test("official source snapshot shows exact-NCT data availability but never benef
  assert.equal(x.postedResults,1);
  assert.equal(x.withPrimaryMeasurements,1);
  assert.equal(x.withSeriousEventCounts,1);
+ assert.equal(x.withSecondaryMeasurements,1);
+ assert.equal(x.measurableRecords,1);
+ assert.equal(x.meanRegistryCoveragePercent,100);
+ assert.equal(x.records[0].registryCoveragePercent,100);
+ assert.equal(x.records[0].measuredDimensions,4);
+ assert.equal(x.records[0].dimensionsTotal,4);
  assert.equal(x.records.length,1);
  assert.match(sourceReviewHint(x.records[0],3),/review required/i);
  assert.match(sourceReviewHint(x.records[0],8),/review required/i);
@@ -64,4 +71,23 @@ test("published research archive has the expected census and valid provenance wi
   assert.ok(x.withPrimaryMeasurements<=x.records.length);
   assert.ok(x.records.every(row=>/^NCT\d{8}$/.test(row.nctId)));
  }
+});
+
+test("registry coverage percentages count only four documented source dimensions, not trial benefit",()=>{
+ const partially=sample();
+ partially.records[0].secondary=[];
+ partially.records[0].seriousAdverseEvents=[];
+ const r=registryCoverageFromSnapshot(partially,now);
+ assert.equal(r.records[0].measuredDimensions,2);
+ assert.equal(r.records[0].registryCoveragePercent,50);
+ assert.equal(r.meanRegistryCoveragePercent,50);
+ assert.equal(r.withSecondaryMeasurements,0);
+ const truncated=sample();
+ truncated.records[0].truncatedEvidence.outcomes=true;
+ const t=registryCoverageFromSnapshot(truncated,now);
+ assert.equal(t.records[0].registryCoveragePercent,null);
+ assert.equal(t.measurableRecords,0);
+ assert.equal(t.meanRegistryCoveragePercent,null);
+ const invalid=sample();delete invalid.records[0].secondary;
+ assert.throws(()=>registryCoverageFromSnapshot(invalid,now),/INVALID_REGISTRY_SECONDARY_SOURCE/);
 });
