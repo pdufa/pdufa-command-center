@@ -96,11 +96,11 @@ function Spreadsheet({bucket,rows,query,caption}:{bucket:"pre"|"post";rows:Reado
   const [desc,setDesc]=useState(false);
   const matched=useMemo(()=>{
     const q=query.trim().toLowerCase();
-    const found=applyColumnFilters(rows,filters,readoutValue).filter(x=>
+    const found=applyColumnFilters(rows,bucket==="pre"?filters:{},readoutValue).filter(x=>
       !q||[x.nctId,x.ticker,x.company,x.status,x.evidence?.drug||"",x.evidence?.indication||"",x.evidence?.evidenceDate||"",x.evidence?.primaryEndpointP?.display||""]
         .some(field=>field.toLowerCase().includes(q)));
     return sortReadout(found,sort,desc);
-  },[rows,query,filters,sort,desc]);
+  },[rows,query,bucket,filters,sort,desc]);
   const pre=bucket==="pre";
   return <section className={css.sheet} aria-label={pre?"Top pre-release spreadsheet":"Bottom post-release spreadsheet"}>
     <div className={css.sheetHeading}>
@@ -112,17 +112,25 @@ function Spreadsheet({bucket,rows,query,caption}:{bucket:"pre"|"post";rows:Reado
           Export matching CSV</button>
       </div>
     </div>
-    <TrialColumnFilterBar title={pre?"Verified issuer pre-release":"Verified issuer post-release"}
-      fields={pre?readoutColumns:postReadoutColumns} filters={filters} onChange={setFilters}
+    {pre?<TrialColumnFilterBar title="Verified issuer pre-release"
+      fields={readoutColumns} filters={filters} onChange={setFilters}
       hint="Filter these issuer-announcement research rows, separately from the ClinicalTrials.gov results-posting spreadsheets.">
       <label style={{fontSize:12}}>Sort by
         <select aria-label={bucket+" release sort column"} value={sort}
           onChange={e=>setSort(e.target.value as ReadoutKey)}>
-          {(pre?readoutColumns:postReadoutColumns).map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
+          {readoutColumns.map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
         </select>
       </label>
       <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
-    </TrialColumnFilterBar>
+    </TrialColumnFilterBar>:<div className={css.postSort}>
+      <label>Sort post-release trials by{" "}
+        <select aria-label="post release sort column" value={sort}
+          onChange={e=>setSort(e.target.value as ReadoutKey)}>
+          {postReadoutColumns.map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
+        </select>
+      </label>
+      <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
+    </div>}
     <TrialTable rows={matched} bucket={bucket}/>
   </section>;
 }
