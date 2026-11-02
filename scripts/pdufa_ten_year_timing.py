@@ -32,7 +32,14 @@ def parse_archive_date(value):
     if pd.isna(value): return pd.NaT
     if isinstance(value,str) and value.strip().replace(".","",1).isdigit():
         return parse_archive_date(float(value))
-    return pd.to_datetime(value, errors="coerce")
+    d=pd.to_datetime(value, errors="coerce")
+    # Source archive encodes many YYYY-DD-MM-looking dates in Excel date cells:
+    # e.g. 2022-12-01 = January 12, 2022 per its contemporaneous event description.
+    if pd.notna(d) and (isinstance(value, (pd.Timestamp,)) or
+        (isinstance(value,str) and re.fullmatch(r"20\d{2}-\d{2}-\d{2}( 00:00:00)?",value.strip()))):
+        if d.month<=12 and d.day<=12:
+            d=d.replace(month=d.day,day=d.month)
+    return d
 
 def detect(df):
     if "TICKER" in df and "STAGE" in df and "CATALYST" in df:
@@ -54,6 +61,7 @@ def get_events():
             if pd.notna(dt) and YEAR1<=dt.year<=YEAR2 and re.fullmatch(r"[A-Z]{1,6}",sym):
                 rows.append({"ticker":sym,"pdufa_date":dt.date().isoformat(),"event_source":"project_fda_v3","date_status":"UNVERIFIED_PREDECISION_DISCLOSURE"})
     phase3={}
+    def drug_key(z): return re.sub(r"[^a-z0-9]","",str(z).lower())
     for name,df in get_archive().items():
         tick,dt,cat=detect(df)
         if not all([tick,dt,cat]):continue
@@ -66,14 +74,14 @@ def get_events():
             if pd.isna(day):continue
             kind=str(x[cat]).upper()
             if ("PDUFA" in kind and YEAR1<=day.year<=YEAR2):
-                rows.append({"ticker":t,"pdufa_date":day.date().isoformat(),"event_source":"public_2017_2022_archive","date_status":"THIRD_PARTY_DATE_VERIFY"})
+                rows.append({"ticker":t,"pdufa_date":day.date().isoformat(),"drug_key":drug_key(x.get("DRUG","")),"event_source":"public_2017_2022_archive","date_status":"THIRD_PARTY_DATE_VERIFY"})
             if "PHASE 3" in kind or "PHASE III" in kind:
-                phase3.setdefault(t,[]).append(day.date())
+                phase3.setdefault((t,drug_key(x.get("DRUG",""))),[]).append(day.date())
     events=pd.DataFrame(rows)
     if events.empty:
         return pd.DataFrame(columns=["ticker","pdufa_date","event_source","date_status","phase3_date"]),phase3
     events=events.sort_values("event_source").drop_duplicates(["ticker","pdufa_date"]).sort_values("pdufa_date")
-    events["phase3_date"]=events.apply(lambda x:max((d for d in phase3.get(x.ticker,[]) if d<date.fromisoformat(x.pdufa_date)),default=None),axis=1)
+    events["phase3_date"]=events.apply(lambda x:max((d for d in phase3.get((x.ticker,x.get("drug_key","")),[]) if d<date.fromisoformat(x.pdufa_date)),default=None),axis=1)
     return events,phase3
 def get_prices(symbol):
     # Yahoo first, then Stooq. Never infer prices from sources lacking history.
