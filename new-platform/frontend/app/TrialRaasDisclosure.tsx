@@ -9,6 +9,7 @@ import {RAAS_METRIC_CATALOG,RAAS_PROVISIONAL_ANCHORS,RAAS_SPEC_VERSION,type Raas
 import css from "./TrialRaasDisclosure.module.css";
 import pilotData from "../data/raas-pilot-observations.json";
 import {parseRaasPilotFeed,observationsForTrial,observedCalculation,computeRaasScore,type RaasObservation} from "../lib/raas-score-engine";
+import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
@@ -70,6 +71,9 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const pilotFacts=snapshot==="CURRENT"?observationsForTrial(pilot,{
    nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
  },bucket,pilot.sourceAsOf):[];
+ const pilotGrades=provisionalGradesForTrial(pilot,{
+   nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
+ },bucket,snapshot,pilot.sourceAsOf);
  const grading=computeRaasScore({stage:bucket,snapshot,asOf:pilot.sourceAsOf,
    trial:{nctId:row.nctId,ticker:row.ticker},ratings:[],gates:[]});
  const groupName="raas-group-"+bucket+"-"+row.nctId;
@@ -81,7 +85,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
      <span className={css.chevron} aria-hidden="true">▸</span>
    </summary>
    <div className={css.panel}>
-     <p className={css.disclaimer}><strong>Research specification {RAAS_SPEC_VERSION}.</strong> Metric-level grading and weighted aggregation now enforce source, date and eligibility checks. The pilot evidence has {pilot.records.length} exactly identified trials and is dated {pilot.sourceAsOf}; it is not a live market feed. Scores remain unassigned until all phase-specific requirements and independent validation are met. Missing inputs are not zeros.</p>
+     <p className={css.disclaimer}><strong>Research specification {RAAS_SPEC_VERSION}.</strong> {RAAS_THRESHOLD_PROFILES.length} metric-specific calibration requirements are registered. The dated pilot has {pilot.records.length} exactly identified trials as of {pilot.sourceAsOf}. Exploratory metric ratings are visibly separate and <strong>never</strong> contribute to RAAS. Qualified overall scores remain unavailable until all verified benchmarks, risk gates, scenario inputs and historical validation are ready. Missing inputs are not zeros.</p>
      <div className={css.snapshots} aria-label={label+" score snapshots"}>
        {(["ENTRY","CURRENT","EXIT"] as const).map(period=>
          <button key={period} type="button" className={css.snapshotButton} aria-pressed={snapshot===period}
@@ -91,7 +95,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
              period==="CURRENT"?"Current assessment":isTop?"Before public Phase 3 data":"PDUFA − 3 days if verified"}</small>
          </button>)}
      </div>
-     <p className={css.hint}><strong>{snapshot} · {grading.graded}/30 validated metric grades · {pilotFacts.length} dated observations.</strong> {grading.reason} Expand one weighted category, then one metric to the right for its evidence, numeric clinical measurement where available, scoring rules and failure case. All sections start retracted.</p>
+     <p className={css.hint}><strong>{snapshot} · {grading.graded}/30 qualified RAAS metric grades · {pilotGrades.length} exploratory timing score · {pilotFacts.length} dated observations.</strong> {grading.reason} Open a category and a metric to see numeric research measurements, the score threshold, calibration status, sources and failure risks. Pilot grades are not used for category or overall RAAS.</p>
      <div className={css.factors} aria-label={label+" six weighted ingredients"}>
        {groups.map((group,i)=><details key={group.id} name={groupName} className={css.factor} data-raas-factor={i+1}>
          <summary className={css.factorSummary}>
@@ -100,14 +104,29 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
          </summary>
          <div className={css.factorBody}>
            <strong className={css.metricIntro}>Individual metrics · open one for scoring evidence</strong>
-           {group.metrics.map((metric,j)=><details key={metric.id} name={"raas-metric-"+bucket+"-"+row.nctId+"-"+group.id}
+           {group.metrics.map((metric,j)=>{const exploratory=pilotGrades.find(g=>g.metricId===metric.id);
+             const profile=thresholdProfile(bucket,metric.id);
+             return <details key={metric.id} name={"raas-metric-"+bucket+"-"+row.nctId+"-"+group.id}
              className={css.metric} data-raas-metric={metric.id}>
              <summary className={css.metricSummary}>
-               <span><strong>{j+1}. {metric.name}</strong><small>— / 100 · Evidence not graded</small></span>
+               <span><strong>{j+1}. {metric.name}</strong><small>{exploratory?exploratory.score+" / 100 · EXPLORATORY ONLY":"— / 100 · Evidence not graded"}</small></span>
                <span aria-hidden="true" className={css.metricChevron}>▸</span>
              </summary>
              <div className={css.metricBody}>
-               <div className={css.metricStatus}><strong>Metric score: — / 100</strong><span>{snapshot} · Pending validated calculation</span></div>
+               <div className={css.metricStatus}><strong>Qualified RAAS metric score: — / 100</strong><span>{snapshot} · Pending validated calculation</span></div>
+               {exploratory&&<div className={css.exploratoryGrade}>
+                 <strong>{exploratory.score}/100 · {exploratory.label}</strong>
+                 <p>RESEARCH-ONLY · This is a provisional timing-specificity grade, <strong>not</strong> a validated appreciation or scientific-success score.</p>
+                 <p><strong>Source input:</strong> {exploratory.inputs} · {exploratory.sourceDate}</p>
+                 <p>{exploratory.explanation}</p>
+                 <p><strong>Limitations:</strong> {exploratory.limitations}</p>
+                 <a href={exploratory.sourceUrl} target="_blank" rel="noopener noreferrer">Source for timing guidance</a>
+               </div>}
+               <div className={css.requirement}><strong>Metric-specific threshold calibration</strong>
+                 <p>{profile?.status==="PROVISIONAL_NOT_CALIBRATED"?"Provisional nonvalidated research rule; excluded from RAAS":"BENCHMARK REQUIRED · No calibrated numeric score"}</p>
+                 <p><strong>Data needed:</strong> {profile?.minimumInputs}</p>
+                 <p><strong>Benchmark needed:</strong> {profile?.benchmarkRequired}</p>
+               </div>
                <div className={css.requirement}><strong>Evidence required</strong><p>{metric.requiredEvidence}</p></div>
                <div className={css.requirement}><strong>What improves this score?</strong><p>{metric.scoreRule}</p></div>
                <div className={css.requirement}><strong>Major downside or disqualification risk</strong><p>{metric.criticalRisk}</p></div>
@@ -119,7 +138,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
                <PilotEvidence metricId={metric.id} observations={pilotFacts} snapshot={snapshot}/>
                <MetricEvidence metric={metric} record={record} researchStatus={researchStatus}/>
              </div>
-           </details>)}
+           </details>;})}
          </div>
        </details>)}
      </div>
