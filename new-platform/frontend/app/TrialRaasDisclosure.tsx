@@ -10,7 +10,7 @@ import css from "./TrialRaasDisclosure.module.css";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
-const fieldLabels=new Map(ALL_RESEARCH_FIELD_DEFINITIONS.map(field=>[field.id,field.label]));
+const fieldLabels=new Map<string,string>(ALL_RESEARCH_FIELD_DEFINITIONS.map(field=>[field.id,field.label]));
 type Snapshot="ENTRY"|"CURRENT"|"EXIT";
 function MetricEvidence({metric,record,researchStatus}:{
  metric:RaasMetric;
