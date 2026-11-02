@@ -144,9 +144,23 @@ export function auditTrialRatings(
       feedUnavailable?absent:missing+" of "+allFields.length+" supporting research fields lack valid evidence.","count"),
     CRIT:input(String(critical.length)+" gaps",critical.length?critical.join("; "):
       "No readout or date-gate gaps observed; independent pivotal, market-cap and commercial-rights checks remain outstanding.","status"),
-    ER:input(feedUnavailable?"Unavailable":verified+"/"+allFields.length,
-      feedUnavailable?absent:verified+" verified, "+modeled+" modeled and "+missing+
-        " missing research fields. This measures source coverage, not scientific strength.","coverage",observed),
+    ER:registry?input(registry.registryCoveragePercent===null?"Incomplete extract":
+        registry.registryCoveragePercent+"% registry",
+      "Four registry-source dimensions: results posted "+
+      Number(registry.resultsPosted)+"/1; primary outcomes "+
+      Number(registry.measuredPrimary)+"/1; secondary outcomes "+
+      Number(registry.measuredSecondary)+"/1; serious-event counts "+
+      Number(registry.measuredSeriousEvents)+"/1. "+
+      registry.measuredDimensions+"/4 available; "+
+      (registry.truncated?"extraction truncated, percentage withheld. ":"")+
+      "Separately, "+verified+" independently verified, "+modeled+" modeled and "+
+      missing+" missing research assessment fields. Coverage is NOT a clinical benefit, "+
+      "trial success or stock-appreciation score.","coverage",
+      [...observed,...(registryLink?[registryLink]:[])]):
+      input(feedUnavailable?"Unavailable":verified+"/"+allFields.length,
+        feedUnavailable?absent:verified+" verified, "+modeled+" modeled and "+missing+
+          " missing research assessment fields. This measures source coverage, not scientific strength.",
+        "coverage",observed),
     FDA:input(readiness.daysToPdufa===null?"Date unknown":readiness.daysToPdufa+" days",
       readiness.daysToPdufa===null?"No exact-program PDUFA date verified; FDA decision readiness is not assessed.":
       "Source-recorded days to PDUFA, not an FDA decision readiness score.","status",
