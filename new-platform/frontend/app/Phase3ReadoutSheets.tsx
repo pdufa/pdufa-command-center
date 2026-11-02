@@ -4,6 +4,7 @@ import {createPortal} from "react-dom";
 import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import css from "./Phase3ReadoutSheets.module.css";
+import TrialRaasDisclosure from "./TrialRaasDisclosure";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
 import {RANKED_BENEFIT_ASSESSMENTS} from "../lib/pipeline-benefit-assessments";
@@ -351,10 +352,11 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
 }
 
 function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
- onSurveyOpen,sort,desc,onSort,benefitFeed,researchStatus}:{
+ onSurveyOpen,onRaasOpen,sort,desc,onSort,benefitFeed,researchStatus}:{
  rows:ReadoutRow[];bucket:"pre"|"post";originalOrder:readonly ReadoutRow[];
  showSurveys:boolean;showSynthesis:boolean;
  onSurveyOpen:(row:ReadoutRow,view:"details"|"synthesis")=>void;
+ onRaasOpen:()=>void;
  sort:Phase3ReadoutSortKey;desc:boolean;onSort:(key:Phase3ReadoutSortKey)=>void;
  benefitFeed:BenefitFeed|null;researchStatus:"idle"|"loading"|"ready"|"unavailable";
 }){
@@ -379,6 +381,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
         {sortedHeader("nctId","NCT / trial")}
         {sortedHeader("company","Company")}
         {bucket==="post"&&sortedHeader("factorP","Factor P · p-value","Sort by reported numeric p-value threshold, not FDA approval probability")}
+        <th scope="col" title="Proposed phase-specific risk-adjusted appreciation score; grade not yet validated">{bucket==="pre"?"TOP-RAAS":"BOTTOM-RAAS"}</th>
         {showSurveys&&sortedHeader("survey","Survey Ratings","Sort by count of verified research inputs; not clinical quality")}
         {showSynthesis&&sortedHeader("synthesis","SURVEY","Sort by evidence-readiness gates; not expected stock appreciation")}
         {sortedHeader("drug","Drug / therapy")}
@@ -395,7 +398,10 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
           {row.evidence?.primaryEndpointP
             ? <a className={css.factorPValue} href={row.evidence.primaryEndpointP.sourceUrl} target="_blank" rel="noopener noreferrer" title={row.evidence.primaryEndpointP.endpoint+" · issuer source"}>{row.evidence.primaryEndpointP.display}</a>
             : <span className={css.factorPMissing} title="Exact Phase 3 primary endpoint p-value not verified in the referenced public readout">Not reported</span>}
-        </td>}{showSurveys&&<td className={css.surveyCell}>
+        </td>}<td>
+          <TrialRaasDisclosure row={row} bucket={bucket} researchStatus={researchStatus}
+            coverage={researchFor(row)} onResearchRequest={onRaasOpen}/>
+        </td>{showSurveys&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"details")}
             aria-label={"Explore five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
             Surveys <span aria-hidden="true">→</span>
@@ -418,7 +424,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
           ? <a href={row.evidence.evidenceUrl} target="_blank" rel="noopener noreferrer">
             {bucket==="pre"?"Dated issuer check":"Public readout source"}</a>
           : "Not verified"}</td>
-      </tr>):<tr><td colSpan={(bucket==="post"?10:9)+(showSurveys?1:0)+(showSynthesis?1:0)} className={css.empty}>No documented matches in this view. Unknown-release trials are not counted as pre-release.</td></tr>}</tbody>
+      </tr>):<tr><td colSpan={(bucket==="post"?11:10)+(showSurveys?1:0)+(showSynthesis?1:0)} className={css.empty}>No documented matches in this view. Unknown-release trials are not counted as pre-release.</td></tr>}</tbody>
     </table>
   </div>;
 }
@@ -522,7 +528,8 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
     {rowsSegmentOpen&&<div id={bucket+"-phase3-trial-rows"} className={css.sheetRowsSegment}>
       <TrialTable rows={matched} bucket={bucket} originalOrder={rows} showSurveys={showSurveys}
         showSynthesis={showSynthesis} sort={sort} desc={desc} onSort={setSortColumn}
-        benefitFeed={benefitFeed} researchStatus={researchStatus} onSurveyOpen={onSurveyOpen}/>
+        benefitFeed={benefitFeed} researchStatus={researchStatus} onSurveyOpen={onSurveyOpen}
+         onRaasOpen={onResearchSort}/>
     </div>}
     </details>
   </section>;
