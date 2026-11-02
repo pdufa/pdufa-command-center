@@ -141,6 +141,7 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
   const evidence=selected?benefitForTrial(feed,selected):null;
   const sourceVerified=current.fields.filter(f=>evidence?.facts[f.id]?.status==="VERIFIED").length;
   const scenarioModeled=current.fields.filter(f=>evidence?.facts[f.id]?.status==="MODELED").length;
+  const notAssessedCount=Math.max(0,current.fields.length-sourceVerified-scenarioModeled);
   const overall=rankAdvantages(evidence);
   const selectedSourceHint=selected?sourceReviewHint(sourceIndex.get(selected.nctId),active):null;
   const studied=(record:BenefitRecord|null,group:BenefitGroup)=>
@@ -217,6 +218,14 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
       rows.length===0?<div className={css.empty} role="status">
         <p>{total?"No records on this page. Use spreadsheet pagination below.":"No source-linked NCT trial records match these selected filters. This does not prove there are no eligible therapies."}</p>
       </div>:<>
+      <div className={css.ratingNavigator} role="group" aria-label="Browse assessment ratings horizontally">
+        <button type="button" disabled={active===1} onClick={()=>setActive(n=>Math.max(1,n-1))}>← Previous rating</button>
+        <span className={css.ratingNavLabel}>
+          <strong>4a{active} · {current.name}</strong>
+          <small>{notAssessedCount} of {current.fields.length} fields not assessed for {selected?.nctId}</small>
+        </span>
+        <button type="button" disabled={active===20} onClick={()=>setActive(n=>Math.min(20,n+1))}>Next rating →</button>
+      </div>
       <div className={css.desktop} ref={scrollRegion} role="region" aria-label="Desktop horizontally scrollable 20-assessment spreadsheet" tabIndex={0}>
         <table className={css.matrixTable}>
           <thead>
@@ -230,9 +239,9 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
               <th className={css.pin1}>#</th><th className={css.pin2}>Ticker / NCT</th>
               <th className={css.pin3}>Drug / therapy</th><th className={css.pin4}>Indication</th>
               {BENEFIT_GROUPS.map(g=>active===g.number
-                ?g.fields.map(f=><th key={f.id}>{f.label}</th>).concat([
-                  <th key={"rank"+g.number}>Ranked advantages</th>,
-                  <th key={"status"+g.number}>Evidence status</th>
+                ?g.fields.map((f,index)=><th key={f.id} className={css.selectedGroupCell+(index===0?" "+css.selectedFirst:"")}>{f.label}</th>).concat([
+                  <th key={"rank"+g.number} className={css.selectedGroupCell}>Ranked advantages</th>,
+                  <th key={"status"+g.number} className={css.selectedGroupCell+" "+css.selectedLast}>Evidence status</th>
                 ])
                 :<th key={"closed"+g.number}>Assessment status</th>)}
             </tr>
@@ -245,9 +254,9 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
                 <td className={css.pin2}><strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={feed}/><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
                 <td className={css.pin3}>{short(row.drug)}</td><td className={css.pin4}>{short(row.indication)}</td>
                 {BENEFIT_GROUPS.map(g=>active===g.number
-                  ?[...g.fields.map(f=><td key={f.id}><FieldValue record={record} id={f.id}/></td>),
-                    <td key={"rank"+g.number}><GroupAdvantage record={record} group={g}/></td>,
-                    <td key={"status"+g.number}>{studied(record,g)?"Assessment evidence recorded":sourceReviewHint(sourceIndex.get(row.nctId),g.number)||"Not assessed"}</td>]
+                  ?[...g.fields.map((f,index)=><td key={f.id} className={css.selectedGroupCell+(index===0?" "+css.selectedFirst:"")}><FieldValue record={record} id={f.id}/></td>),
+                    <td key={"rank"+g.number} className={css.selectedGroupCell}><GroupAdvantage record={record} group={g}/></td>,
+                    <td key={"status"+g.number} className={css.selectedGroupCell+" "+css.selectedLast}>{studied(record,g)?"Assessment evidence recorded":sourceReviewHint(sourceIndex.get(row.nctId),g.number)||"Not assessed"}</td>]
                   :<td key={"closed"+g.number}><button type="button" className={css.statusButton} onClick={()=>setActive(g.number)}>{studied(record,g)?"Assessment evidence available":sourceReviewHint(sourceIndex.get(row.nctId),g.number)?"Registry data · review required":"Not assessed"} ▾</button></td>)}
               </tr>;
             })}
@@ -272,29 +281,35 @@ export default function ToolsBenefitMatrix({rows,hasSelection,total,offset,loadi
             <RankedList list={overall} empty="No evidence-reviewed overall drug ranking has been established for this exact drug–indication / NCT identity."/>
           </div>
         </details>
-        <div className={css.groupMobile}>
+        <div className={css.groupMobile} aria-label={"Selected rating and right-hand ingredients for assessment "+active}>
           <div className={css.mobileGroupTitle}>
-            <small>ASSESSMENT {active} OF 20</small><h4><ToolsOptionNumber level={1} index={active-1} total={BENEFIT_GROUPS.length}/> #{active} — {current.name}</h4>
+            <small>RATING {active} OF 20</small>
+            <h4><ToolsOptionNumber level={1} index={active-1} total={BENEFIT_GROUPS.length}/> #{active} — {current.name}</h4>
+            <p className={css.mobileMissing}><strong>{notAssessedCount} / {current.fields.length}</strong> fields not assessed</p>
+            <small className={css.horizontalCue}>Ingredients →</small>
           </div>
-          {selectedSourceHint&&<p className={css.sourceHint}><strong>Official registry source:</strong> {selectedSourceHint}. See the expandable original-source evidence section below. Assessment conclusions remain Not assessed until reviewed.</p>}
-          <div className={css.fieldScroll} role="region" aria-label={"Assessment "+active+" subcolumns"} tabIndex={0}>
-            <table className={css.mobileTable}>
-              <thead><tr>{current.fields.map(f=><th key={f.id}>{f.label}</th>)}</tr></thead>
-              <tbody><tr>{current.fields.map(f=><td key={f.id}><FieldValue record={evidence} id={f.id}/></td>)}</tr></tbody>
-            </table>
-          </div>
-          <details className={css.mobileAdv}>
-            <summary>Competitive advantages · strongest first</summary>
-            <div className={css.detailBody}><RankedList list={rankAdvantages(evidence,active)} empty="Not assessed. A comparator-specific, evidence-reviewed advantage ranking is not yet available."/></div>
-          </details>
-          <details className={css.mobileAdv}>
-            <summary>Trial identity &amp; source</summary>
-            <div className={css.detailBody}>
-              <p>Source NCT: <a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(selected!.nctId)} target="_blank" rel="noopener noreferrer">{selected!.nctId}</a></p>
-              <p>Company: {short(selected!.company)} · Recorded stage: {short(selected!.stage)}</p>
-              <p>Drug–indication identity is source-reported and requires program-level verification before combining multiple NCTs.</p>
+          <div className={css.mobileIngredients}>
+            <div className={css.fieldScroll} role="region" aria-label={"Scroll right through assessment "+active+" ingredient fields"} tabIndex={0}>
+              <table className={css.mobileTable}>
+                <thead><tr>{current.fields.map(f=><th key={f.id}>{f.label}</th>)}</tr></thead>
+                <tbody><tr>{current.fields.map(f=><td key={f.id}><FieldValue record={evidence} id={f.id}/></td>)}</tr></tbody>
+              </table>
             </div>
-          </details>
+            <p className={css.swipeCue}>Swipe across the ingredient fields →</p>
+            {selectedSourceHint&&<p className={css.sourceHint}><strong>Official registry source:</strong> {selectedSourceHint}. Source data requires assessment before a benefit rating is assigned.</p>}
+            <details className={css.mobileAdv}>
+              <summary>Ranked competitive advantages</summary>
+              <div className={css.detailBody}><RankedList list={rankAdvantages(evidence,active)} empty="Not assessed. A comparator-specific, evidence-reviewed advantage ranking is not yet available."/></div>
+            </details>
+            <details className={css.mobileAdv}>
+              <summary>Trial identity &amp; source</summary>
+              <div className={css.detailBody}>
+                <p>Source NCT: <a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(selected!.nctId)} target="_blank" rel="noopener noreferrer">{selected!.nctId}</a></p>
+                <p>Company: {short(selected!.company)} · Recorded stage: {short(selected!.stage)}</p>
+                <p>Drug–indication identity is source-reported and requires program-level verification before combining multiple NCTs.</p>
+              </div>
+            </details>
+          </div>
         </div>
         <div className={css.next}>
           <button type="button" disabled={active===1} onClick={()=>setActive(v=>v-1)}>← Previous</button>
