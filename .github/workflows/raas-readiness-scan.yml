@@ -1,0 +1,62 @@
+name: RAAS 60-Metric Readiness Scan
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '25 5 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/lib/raas-*.ts'
+      - 'new-platform/frontend/data/raas-*.json'
+      - 'new-platform/frontend/scripts/raas-readiness-scan.cjs'
+      - 'new-platform/frontend/tests/raas-readiness-scan.test.cjs'
+      - '.github/workflows/raas-readiness-scan.yml'
+  pull_request:
+    paths:
+      - 'new-platform/frontend/lib/raas-*.ts'
+      - 'new-platform/frontend/data/raas-*.json'
+      - 'new-platform/frontend/scripts/raas-readiness-scan.cjs'
+      - 'new-platform/frontend/tests/raas-readiness-scan.test.cjs'
+      - '.github/workflows/raas-readiness-scan.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: raas-readiness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Validate and inventory all 60 RAAS metric requirements
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install exact locked audited dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Run fail-closed RAAS scan regression checks
+        run: node --test tests/raas-readiness-scan.test.cjs
+      - name: Run actual read-only 60-metric scan and publish execution summary
+        env:
+          RAAS_SCAN_OUTPUT: ${{ runner.temp }}/raas-readiness-result.json
+        run: node scripts/raas-readiness-scan.cjs
+      - name: Save complete per-metric evidence-gap report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-60-metric-readiness-report
+          path: ${{ runner.temp }}/raas-readiness-result.json
+          if-no-files-found: ignore
+          retention-days: 30

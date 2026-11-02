@@ -150,6 +150,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
          <p>Historical case ledger as of {historicalCases.sourceAsOf}. This is not a live quote, automated historical backfill, or backtest with validated predictive performance.</p>
        </div>
      </details>
+     <p className={css.disclaimer}><a href="/raas-scan" style={{color:"#176945",textDecoration:"underline",fontWeight:750}}>View 60-metric RAAS scan execution, independent holdout gaps and validation status</a></p>
      <p className={css.disclaimer}><a href="/raas-history" style={{color:"#176945",textDecoration:"underline",fontWeight:750}}>Open historical RAAS audit worklist · {retrospectiveTopWindows.length+retrospectiveWindows.length} cases, source links and unresolved evidence checks</a></p>
      <details className={css.anchorDetails}>
        <summary>Historical source-checked price examples · {comparableResearch.length+comparableTopResearch.length} · research only ▸</summary>
