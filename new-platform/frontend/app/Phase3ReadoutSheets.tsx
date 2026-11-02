@@ -466,11 +466,15 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
   },[rows,query,sort,desc,bucket,benefitFeed]);
   const pre=bucket==="pre";
   return <section className={css.sheet} aria-label={pre?"Top pre-release spreadsheet":"Bottom post-release spreadsheet"}>
-    <div className={css.sheetHeading}>
-      <div><h3>{pre?"TOP SPREADSHEET · 3 · PHASE 3 DATA NOT RELEASED (AS LAST CHECKED)":"BOTTOM SPREADSHEET · P · PHASE 3 DATA RELEASED"}</h3>
-        <p>{caption}</p></div>
-      <div className={css.actions}>
-        <strong>{number(rows.length)} documented trials · {number(matched.length)} matching</strong>
+    <details className={css.sheetAccordion}>
+      <summary className={css.sheetHeading}>
+        <div><h3>{pre?"TOP SPREADSHEET · 3 · PHASE 3 DATA NOT RELEASED (AS LAST CHECKED)":"BOTTOM SPREADSHEET · P · PHASE 3 DATA RELEASED"}</h3>
+          <p>{caption}</p></div>
+        <strong className={css.sheetSummaryCount}>
+          {number(rows.length)} documented trials · {number(matched.length)} matching
+        </strong>
+      </summary>
+      <div className={css.sheetPanelActions}>
         <button type="button" onClick={()=>downloadCsv(bucket,matched)} disabled={!matched.length}>
           Export matching CSV</button>
         <button type="button" className={css.sheetSegmentAllButton}
@@ -479,7 +483,6 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
           {allSegmentsOpen?"Collapse all segments ▴":"Expand all segments ▾"}
         </button>
       </div>
-    </div>
     <div className={css.sheetSegmentButtons} role="group"
       aria-label={(pre?"TOP · 3":"BOTTOM · P")+" collapsible spreadsheet segments"}>
       <button type="button" aria-expanded={sortSegmentOpen}
@@ -521,6 +524,7 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
         showSynthesis={showSynthesis} sort={sort} desc={desc} onSort={setSortColumn}
         benefitFeed={benefitFeed} researchStatus={researchStatus} onSurveyOpen={onSurveyOpen}/>
     </div>}
+    </details>
   </section>;
 }
 /** Full historical issuer-cap census with dated issuer readouts, never registry-result proxy. */
