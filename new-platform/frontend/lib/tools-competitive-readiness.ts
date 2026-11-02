@@ -72,29 +72,61 @@ export type CompetitivePopulationScan={
   verifiedPublicReadouts:number;openResearchWindow:number;unknownPdufa:number;
   pastResearchCutoff:number;withoutVerifiedReadout:number;
   /** A recorded public release does not establish a complete results dataset. */
-  evidenceCoverage:"NOT_COMPUTED_FOR_FULL_POOL";
+  evidenceCoverage:"NOT_COMPUTED_FOR_FULL_POOL"|"SOURCE_INPUT_AUDIT_IN_WINDOW";
+  /** Exact-NCT source facts in the verified public-readout to PDUFA-3 research
+   * window; six topic slots per candidate. NOT treatment-effect or stock ranks. */
+  topicSourceAudit:{
+    eligibleTrials:number;topicSlots:number;verifiedSlots:number;
+    modeledOnlySlots:number;missingSlots:number;verifiedPercent:number|null;
+    trialsWithSixVerifiedTopics:number;sourceFeedAsOf:string|null;
+  }|null;
   qualification:"NOT_VERIFIED";
 };
 /** Compute the census from ALL restricted rows, never merely 50 visible trials. */
 export function scanCompetitivePopulation(
-  rows:readonly CompetitiveResearchTrial[],today:string,sourceDate:string
+  rows:readonly CompetitiveResearchTrial[],today:string,sourceDate:string,
+  feed:BenefitFeed|null=null
 ):CompetitivePopulationScan{
   const counts={verifiedPublicReadouts:0,openResearchWindow:0,unknownPdufa:0,
     pastResearchCutoff:0,withoutVerifiedReadout:0};
+  const audited={verifiedSlots:0,modeledOnlySlots:0,missingSlots:0,
+    trialsWithSixVerifiedTopics:0};
   const ids=new Set<string>();
   for(const row of rows){
     if(ids.has(row.nctId))throw Error("DUPLICATED_COMPETITIVE_TRIAL_ID");
     ids.add(row.nctId);
-    const status=competitiveReadiness(row,today).status;
+    const readiness=competitiveReadiness(row,today,feed);
+    const status=readiness.status;
     if(status==="NO_VERIFIED_PUBLIC_READOUT")counts.withoutVerifiedReadout++;
     else {
       counts.verifiedPublicReadouts++;
       if(status==="PDUFA_DATE_UNVERIFIED")counts.unknownPdufa++;
       else if(status==="PDUFA_CUTOFF_REACHED")counts.pastResearchCutoff++;
-      else counts.openResearchWindow++;
+      else {
+        counts.openResearchWindow++;
+        if(feed){
+          const verified=readiness.topics.filter(topic=>topic.verified>0).length;
+          audited.verifiedSlots+=verified;
+          audited.modeledOnlySlots+=readiness.topics.filter(
+            topic=>topic.verified===0&&topic.modeled>0).length;
+          audited.missingSlots+=readiness.topics.filter(
+            topic=>topic.verified===0&&topic.modeled===0).length;
+          if(verified===COMPETITIVE_STRATEGY_TOPICS.length)
+            audited.trialsWithSixVerifiedTopics++;
+        }
+      }
     }
   }
+  const topicSlots=counts.openResearchWindow*COMPETITIVE_STRATEGY_TOPICS.length;
+  if(feed&&audited.verifiedSlots+audited.modeledOnlySlots+
+    audited.missingSlots!==topicSlots)throw Error("COMPETITIVE_SOURCE_AUDIT_PARITY_FAILED");
+  const topicSourceAudit=feed?{
+    eligibleTrials:counts.openResearchWindow,topicSlots,...audited,
+    verifiedPercent:topicSlots?Math.round(audited.verifiedSlots/topicSlots*1000)/10:null,
+    sourceFeedAsOf:feed.sourceAsOf
+  }:null;
   return {scope:"FULL_RESTRICTED_TOOLS_POOL",populationCount:rows.length,
-    sourceDate,...counts,evidenceCoverage:"NOT_COMPUTED_FOR_FULL_POOL",
-    qualification:"NOT_VERIFIED"};
+    sourceDate,...counts,
+    evidenceCoverage:feed?"SOURCE_INPUT_AUDIT_IN_WINDOW":"NOT_COMPUTED_FOR_FULL_POOL",
+    topicSourceAudit,qualification:"NOT_VERIFIED"};
 }

@@ -278,9 +278,29 @@ export default function ToolsOpeningTrialGrid({
       <span>{format(competitiveScan.unknownPdufa)} with readout but PDUFA unverified</span>
       <span>{format(competitiveScan.pastResearchCutoff)} at or past cutoff</span>
       <span>{format(competitiveScan.withoutVerifiedReadout)} without verified readout date</span>
-      <small>The verified release date is not proof of a complete results dataset or pivotal-program qualification.
-        Six-topic evidence coverage is checked per displayed trial; a complete full-pool source
-        audit of those six topics is not established yet.</small>
+      {competitiveScan.topicSourceAudit?<div className={css.peerSummary}
+        aria-label="Full research-window competitive topic evidence coverage">
+        <strong>Six-topic source audit · all screened eligible NCTs</strong>
+        <span>{format(competitiveScan.topicSourceAudit.verifiedSlots)} /
+          {format(competitiveScan.topicSourceAudit.topicSlots)} source-verified topic inputs
+          {" · "}{competitiveScan.topicSourceAudit.verifiedPercent===null
+            ?"percentage unavailable (no verified open-window trials)"
+            :competitiveScan.topicSourceAudit.verifiedPercent.toFixed(1)+"% verified coverage"}</span>
+        <span>{format(competitiveScan.topicSourceAudit.modeledOnlySlots)} modeled-only topic inputs
+          {" · "}{format(competitiveScan.topicSourceAudit.missingSlots)} without recorded topic evidence</span>
+        <span>{format(competitiveScan.topicSourceAudit.trialsWithSixVerifiedTopics)} /
+          {format(competitiveScan.topicSourceAudit.eligibleTrials)} trials have at least one
+          verified input in all six topics</span>
+        <small>Research ledger dated {competitiveScan.topicSourceAudit.sourceFeedAsOf||"not established"}.
+          Covers the entire restricted public-readout-to-PDUFA-minus-three-day
+          research window, not just 50 visible rows. Unreviewed registry
+          packets are not source-verified comparative facts. Evidence-input
+          coverage only; not clinical superiority, FDA probability or stock upside.</small>
+      </div>:<small>Full research-window topic-input coverage is unavailable.
+        No missing-input percentage is inferred.</small>}
+      <small>The verified release date is not proof of a complete results dataset
+        or pivotal-program qualification. No competitive ranking is established
+        by source-field counts.</small>
       {competitiveOpen&&peerSummary&&<div className={css.peerSummary} role="status">
         <strong>Archived competitor discovery · research leads only</strong>
         <span>{format(peerSummary.studiesWithConditionMatchedLeads)} / {format(peerSummary.studiesInArchive)}
