@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_VALIDATED_METRIC_CALIBRATIONS",
+  "sourceAsOf": "2026-11-02",
+  "note": "No metric-specific scoring bands have passed historical out-of-sample validation yet. Exploratory timing specificity is NOT approved for composite.",
+  "entries": []
+}
