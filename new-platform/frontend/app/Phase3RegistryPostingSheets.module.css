@@ -62,3 +62,38 @@
 .scroll th,.scroll td{padding:8px 9px}
 .pager{padding:8px}
 }
+
+/* The six M–E headings are visible in both Before and Past spreadsheets.
+   Clicking a heading adds ingredient columns immediately to its right. */
+.ratingToolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:9px 12px;background:#f0f7f2;border-top:1px solid #c7dfd0;color:#1b5638;font-size:11px}
+.ratingToolbar strong{white-space:nowrap}
+.ratingToolbar span{flex:1;min-width:175px}
+.ratingToolbar button{padding:6px 8px;border:1px solid #8cb99a;border-radius:6px;background:#fff;color:#185c3a;font-size:11px;font-weight:750;cursor:pointer}
+.ratingToolbar button:focus-visible{outline:3px solid #368ba1;outline-offset:2px}
+.scroll thead th.ratingCell,.scroll tbody td.ratingCell{min-width:92px;max-width:160px;text-align:center;padding:7px 6px;white-space:normal;font-variant-numeric:tabular-nums}
+.scroll thead th.ratingCell{background:#d8eade}
+.scroll thead th.ratingOpen,.scroll tbody td.ratingOpen{background:#edf7f0}
+.scroll thead th.ratingOpen{border-top:2px solid #28754a}
+.scroll th.ratingStart,.scroll td.ratingStart{border-left:2px solid #28754a}
+.scroll th.ratingEnd,.scroll td.ratingEnd{border-right:2px solid #28754a}
+.scroll tbody tr:last-child td.ratingOpen{border-bottom:2px solid #28754a}
+.ratingToggle{display:inline-flex;gap:7px;align-items:center;justify-content:center;border:1px solid #79a989;border-radius:6px;background:#f6fbf7;color:#12492e;min-width:46px;min-height:32px;cursor:pointer;font-size:14px;font-weight:850}
+.ratingToggle:hover{background:#c5e7d1}
+.ratingToggle:focus-visible{outline:3px solid #2d8061;outline-offset:2px}
+.scroll thead th.ratingCell small{display:block;font-size:10px;line-height:1.25;font-weight:600;margin-top:3px;max-width:145px}
+.ratingAudit{display:flex;flex-direction:column;align-items:center;gap:3px}
+.ratingValue{color:#18553a;font-weight:700}
+.ratingUnscored{color:#646d66;font-weight:600}
+.ratingExplanation{font-size:10px;color:#406449;max-width:180px}
+.ratingExplanation summary{cursor:pointer;text-decoration:underline}
+.ratingExplanation p{margin:4px 0;min-width:120px;white-space:normal}
+.scroll thead th.ratingFilter{padding:6px;background:#f0f8f2;min-width:90px}
+.scroll thead th.ratingFilter input{display:block;width:100%;min-width:78px;box-sizing:border-box;border:1px solid #9dbdac;border-radius:5px;padding:6px 4px;color:#214634;background:#fff;font-size:11px;height:34px}
+.scroll thead th.ratingFilter input:focus-visible{outline:3px solid #368ba1;outline-offset:2px}
+@media(max-width:640px){
+ .ratingToolbar{padding:8px 9px;gap:6px}
+ .ratingToolbar span{min-width:100%;order:2}
+ .ratingToolbar button{min-height:34px}
+ .scroll thead th.ratingCell,.scroll tbody td.ratingCell{min-width:80px;padding:6px 4px}
+ .scroll thead th.ratingCell small{font-size:9px}
+}

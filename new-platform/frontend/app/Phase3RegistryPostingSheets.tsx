@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
+import {Fragment,useEffect,useMemo,useState} from "react";
 import {
   parseRegistryPostingSnapshot,type RegistryPostingRow,type RegistryPostingSnapshot
 } from "../lib/phase3-registry-posting";
@@ -7,11 +7,29 @@ import {
   EMPTY_POSTING_FILTERS,INITIAL_POSTING_SORT,filterAndSortPostingRows,postingFilterCount,
   type PostingFilters,type PostingSort,type PostingSortKey
 } from "../lib/phase3-registry-posting-filters";
+import {TOOLS_RATING_GROUPS,type ToolsRatingGroupKey} from "../lib/tools-rating-groups";
+import {postingRatingAudit,type PostingRatingCell} from "../lib/phase3-posting-rating-audit";
+import {applyColumnFilters,activeColumnFilters,type ColumnFilterState} from "./TrialColumnFilterBar";
 import css from "./Phase3RegistryPostingSheets.module.css";
 
 const PAGE_SIZE=50;
 const fmt=(n:number)=>n.toLocaleString("en-US");
 type Kind="before"|"after";
+const RATING_GROUPS=TOOLS_RATING_GROUPS;
+const ratingColumnCount=(expanded:readonly ToolsRatingGroupKey[])=>
+  RATING_GROUPS.reduce((sum,g)=>sum+1+(expanded.includes(g.key)?g.ingredients.length:0),0);
+function RatingAuditValue({value}:{value:PostingRatingCell}){
+  return <div className={css.ratingAudit}>
+    <span className={value.label==="Not assessed"||value.label==="Not reviewed"?css.ratingUnscored:css.ratingValue}
+      title={value.description}>{value.label}</span>
+    <details className={css.ratingExplanation}>
+      <summary>Why?</summary>
+      <p>{value.description}</p>
+      {value.sourceUrl&&<a href={value.sourceUrl} target="_blank" rel="noopener noreferrer">
+        Exact NCT evidence</a>}
+    </details>
+  </div>;
+}
 function safeCsvCell(value:string|number){
   const raw=String(value??"");
   const safe=/^[\s]*[=+@-]/.test(raw)?"'"+raw:raw;
@@ -19,12 +37,17 @@ function safeCsvCell(value:string|number){
 }
 function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:string){
   const headings=["Ticker","NCT trial","Company","Registry trial status",
-    "Registry results posted","Results first-posted date","Registry classification","Registry checked on","ClinicalTrials.gov source"];
+    "Registry results posted","Results first-posted date","Registry classification","Registry checked on","ClinicalTrials.gov source",
+    ...RATING_GROUPS.flatMap(g=>[g.key+" "+g.name,...g.ingredients.map(f=>g.key+" "+f.key+" "+f.name)])];
   const records=rows.map(row=>[
     row.ticker,row.nctId,row.company,row.registryStatus,
     row.resultsCount>0?"YES":"NO",row.resultsFirstPostedDate||"",
     kind==="before"?"NO_REGISTRY_RESULTS_POSTED":"REGISTRY_RESULTS_POSTED",
-    snapshotDate,row.sourceUrl
+    snapshotDate,row.sourceUrl,
+    ...RATING_GROUPS.flatMap(group=>{
+      const audit=postingRatingAudit(row);
+      return [audit.group[group.key].label,...group.ingredients.map(x=>audit.ingredient[x.key].label)];
+    })
   ]);
   const csv="\ufeff"+[headings,...records].map(line=>line.map(safeCsvCell).join(",")).join("\r\n")+"\r\n";
   const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
@@ -40,12 +63,29 @@ function TrialSection({kind,rows,query,snapshotDate}:{
   const [page,setPage]=useState(0);
   const [filters,setFilters]=useState<PostingFilters>({...EMPTY_POSTING_FILTERS});
   const [sort,setSort]=useState<PostingSort>({...INITIAL_POSTING_SORT});
+  const [expandedRatings,setExpandedRatings]=useState<ToolsRatingGroupKey[]>([]);
+  const [ratingFilters,setRatingFilters]=useState<ColumnFilterState>({});
   const before=kind==="before";
   const label=before?"Before":"Past";
   const tickers=useMemo(()=>[...new Set(rows.map(r=>r.ticker))].sort((a,b)=>a.localeCompare(b)),[rows]);
   const statuses=useMemo(()=>[...new Set(rows.map(r=>r.registryStatus))].sort((a,b)=>a.localeCompare(b)),[rows]);
-  const filtered=useMemo(()=>filterAndSortPostingRows(rows,query,filters,sort),[rows,query,filters,sort]);
-  const filtersActive=postingFilterCount(filters);
+  const basicFiltered=useMemo(()=>filterAndSortPostingRows(rows,query,filters,sort),[rows,query,filters,sort]);
+  const filtered=useMemo(()=>applyColumnFilters(basicFiltered,ratingFilters,(row,key)=>{
+    const audit=postingRatingAudit(row);
+    if(key.startsWith("group:"))return audit.group[key.slice(6) as ToolsRatingGroupKey]?.label||"";
+    if(key.startsWith("ingredient:")){
+      const value=Object.entries(audit.ingredient).find(([name])=>name===key.slice(11));
+      return value?.[1].label||"";
+    }
+    return "";
+  }),[basicFiltered,ratingFilters]);
+  const filtersActive=postingFilterCount(filters)+activeColumnFilters(ratingFilters);
+  const extraColumns=ratingColumnCount(expandedRatings);
+  const toggleRating=(key:ToolsRatingGroupKey)=>setExpandedRatings(current=>
+    current.includes(key)?current.filter(item=>item!==key):[...current,key]);
+  const filterRating=(key:string,value:string)=>{
+    setRatingFilters(current=>({...current,[key]:value}));setPage(0);
+  };
   const pages=Math.ceil(filtered.length/PAGE_SIZE);
   const active=Math.min(page,Math.max(pages-1,0));
   const pageRows=filtered.slice(active*PAGE_SIZE,(active+1)*PAGE_SIZE);
@@ -53,7 +93,10 @@ function TrialSection({kind,rows,query,snapshotDate}:{
   const changeFilter=(next:Partial<PostingFilters>)=>{
     setFilters(prev=>({...prev,...next}));setPage(0);
   };
-  const resetFilters=()=>{setFilters({...EMPTY_POSTING_FILTERS});setSort({...INITIAL_POSTING_SORT});setPage(0);};
+  const resetFilters=()=>{
+    setFilters({...EMPTY_POSTING_FILTERS});setRatingFilters({});
+    setSort({...INITIAL_POSTING_SORT});setPage(0);
+  };
   const changeSort=(key:PostingSortKey)=>{
     setSort(prev=>({key,direction:prev.key===key&&prev.direction==="asc"?"desc":"asc"}));
     setPage(0);
@@ -93,6 +136,15 @@ function TrialSection({kind,rows,query,snapshotDate}:{
     </div>
     <p className={css.filterHelp}>Filter each column below its heading, or tap a heading to sort.
       Filters apply together with the search above. Each spreadsheet has its own filters.</p>
+    <div className={css.ratingToolbar} role="group" aria-label={label+" M–E rating controls"}>
+      <strong>M · A · B · C · D · E</strong>
+      <span>Tap a rating heading to expand its supporting ingredients <strong>to the right</strong>.
+        Registry status is not a clinical or investment score.</span>
+      <button type="button" onClick={()=>setExpandedRatings(RATING_GROUPS.map(g=>g.key))}>
+        Expand all ratings</button>
+      <button type="button" onClick={()=>setExpandedRatings([])}>
+        Collapse all ratings</button>
+    </div>
     <div className={css.scroll} tabIndex={0} role="region"
       aria-label={before?"No registry results posted table":"Registry results posted table"}>
       <table>
@@ -101,6 +153,26 @@ function TrialSection({kind,rows,query,snapshotDate}:{
             <th scope="col">#</th>
             <th scope="col" aria-sort={sorting("ticker")}>{sortable("ticker","Ticker")}</th>
             <th scope="col" aria-sort={sorting("nctId")}>{sortable("nctId","NCT / Trial")}</th>
+            {RATING_GROUPS.map(group=>{
+              const open=expandedRatings.includes(group.key);
+              return <Fragment key={group.key}>
+                <th scope="col" data-rating-group={group.key}
+                  className={[css.ratingCell,css.ratingStart,open?css.ratingOpen:"",!open?css.ratingEnd:""].filter(Boolean).join(" ")}>
+                  <button type="button" className={css.ratingToggle} aria-expanded={open}
+                    aria-label={(open?"Collapse ":"Expand ")+label+" "+group.key+" "+group.name+" ingredients to the right"}
+                    onClick={()=>toggleRating(group.key)}>
+                    {group.key} <span aria-hidden="true">{open?"◀":"▶"}</span>
+                  </button>
+                  <small>{group.name}</small>
+                </th>
+                {open&&group.ingredients.map((ingredient,i)=><th scope="col" key={ingredient.key}
+                  data-rating-ingredient={ingredient.key}
+                  className={[css.ratingCell,css.ratingOpen,i===group.ingredients.length-1?css.ratingEnd:""].filter(Boolean).join(" ")}
+                  title={ingredient.name}>
+                  <strong>{ingredient.key}</strong><small>{ingredient.name}</small>
+                </th>)}
+              </Fragment>;
+            })}
             <th scope="col" aria-sort={sorting("company")}>{sortable("company","Company")}</th>
             <th scope="col" aria-sort={sorting("registryStatus")}>{sortable("registryStatus","Registry status")}</th>
             <th scope="col" aria-sort={sorting("resultsCount")}>{sortable("resultsCount","Results posted?")}</th>
@@ -117,6 +189,23 @@ function TrialSection({kind,rows,query,snapshotDate}:{
             </select></th>
             <th scope="col"><input type="search" aria-label={label+" filter NCT"} placeholder="Find NCT"
               value={filters.nctId} onChange={e=>changeFilter({nctId:e.target.value})} maxLength={40}/></th>
+            {RATING_GROUPS.map(group=>{
+              const open=expandedRatings.includes(group.key);
+              return <Fragment key={group.key}>
+                <th scope="col" className={css.ratingFilter}>
+                  <input type="search" aria-label={label+" filter "+group.key+" rating"}
+                    placeholder={"Filter "+group.key} maxLength={40}
+                    value={ratingFilters["group:"+group.key]||""}
+                    onChange={e=>filterRating("group:"+group.key,e.target.value)}/>
+                </th>
+                {open&&group.ingredients.map(ingredient=><th scope="col" key={ingredient.key} className={css.ratingFilter}>
+                  <input type="search" aria-label={label+" filter "+ingredient.key+" ingredient"}
+                    placeholder={"Filter "+ingredient.key} maxLength={40}
+                    value={ratingFilters["ingredient:"+ingredient.key]||""}
+                    onChange={e=>filterRating("ingredient:"+ingredient.key,e.target.value)}/>
+                </th>)}
+              </Fragment>;
+            })}
             <th scope="col"><input type="search" aria-label={label+" filter company"} placeholder="Find company"
               value={filters.company} onChange={e=>changeFilter({company:e.target.value})} maxLength={120}/></th>
             <th scope="col"><select aria-label={label+" filter registry status"} value={filters.registryStatus}
@@ -147,13 +236,28 @@ function TrialSection({kind,rows,query,snapshotDate}:{
           <td>{active*PAGE_SIZE+index+1}</td>
           <td><strong>{row.ticker}</strong></td>
           <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
+          {RATING_GROUPS.map(group=>{
+            const audit=postingRatingAudit(row);
+            const open=expandedRatings.includes(group.key);
+            return <Fragment key={group.key}>
+              <td data-rating-group={group.key}
+                className={[css.ratingCell,css.ratingStart,open?css.ratingOpen:"",!open?css.ratingEnd:""].filter(Boolean).join(" ")}>
+                <RatingAuditValue value={audit.group[group.key]}/>
+              </td>
+              {open&&group.ingredients.map((ingredient,i)=><td key={ingredient.key}
+                data-rating-ingredient={ingredient.key}
+                className={[css.ratingCell,css.ratingOpen,i===group.ingredients.length-1?css.ratingEnd:""].filter(Boolean).join(" ")}>
+                <RatingAuditValue value={audit.ingredient[ingredient.key]}/>
+              </td>)}
+            </Fragment>;
+          })}
           <td>{row.company}</td>
           <td>{row.registryStatus.replaceAll("_"," ")}</td>
           <td>{row.resultsCount>0?"Yes":"No"}</td>
           <td>{row.resultsFirstPostedDate||(row.resultsCount>0?"Legacy scan: date unavailable":"Not posted")}</td>
           <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov</a></td>
           <td>Not classified by this scan</td>
-        </tr>):<tr><td colSpan={9} className={css.empty}>No trials match these column filters or the overall search.</td></tr>}</tbody>
+        </tr>):<tr><td colSpan={9+extraColumns} className={css.empty}>No trials match these column filters or the overall search.</td></tr>}</tbody>
       </table>
     </div>
     <div className={css.pager}>
