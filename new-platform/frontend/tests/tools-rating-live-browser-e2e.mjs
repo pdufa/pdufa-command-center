@@ -68,6 +68,39 @@ async function ratingTest(page,label){
   check(await beforeRows.count()>1,"Clearing the NCT filter must restore source rows");
   console.log("PASS",label,"registry ratings expand right; selected border continuous; filters isolated");
 }
+async function finalSurveyTest(page,label){
+  const readout=page.locator("main > details").nth(1);
+  await readout.locator(":scope > summary").click();
+  for(const [bucket,caption] of [["pre","Top pre-release spreadsheet"],["post","Bottom post-release spreadsheet"]]){
+    const sheet=page.locator('section[aria-label="'+caption+'"]');
+    await sheet.waitFor({state:"visible",timeout:90000});
+    await sheet.locator(":scope > details > summary").click();
+    await sheet.getByRole("button",{name:/Trial rows/}).click();
+    const open=sheet.locator('button[aria-label^="Open SURVEY combined assessment for"]').first();
+    await open.waitFor({state:"visible",timeout:60000});
+    await open.click();
+    const dialog=page.getByRole("dialog",{name:/SURVEY synthesis for/});
+    await dialog.waitFor({state:"visible",timeout:15000});
+    const audit=dialog.getByRole("region",{name:"Final SURVEY readiness and reluctant evidence grade"});
+    await audit.waitFor({state:"visible",timeout:15000});
+    let body=await audit.innerText();
+    assert.match(body,/Grade 1 · Full analysis readiness/);
+    assert.match(body,/Grade 2 · Reluctant evidence-coverage grade/);
+    assert.match(body,/FDA decision forecast:\\s*ABSTAIN/);
+    check(body.includes("Source-verified coverage:"),"Source coverage has to be visible");
+    await page.waitForFunction(()=>{
+      const panel=document.querySelector('[aria-label="Final SURVEY readiness and reluctant evidence grade"]');
+      return !!panel&&!panel.textContent.includes("Checking sources");
+    },null,{timeout:45000});
+    body=await audit.innerText();
+    check(/NOT READY|NOT ASSESSED|READY — 38\/38 VERIFIED/.test(body),
+      "Full analysis grade must be explicit even for sparse trials");
+    check(!/\b(?:APPROVAL PROBABILITY|CRL PROBABILITY)\b/i.test(body),
+      "Coverage grade must not assert an FDA outcome likelihood");
+    await dialog.getByRole("button",{name:/Close/}).click();
+    console.log("PASS",label,bucket,"two-grade SURVEY audit with no implied FDA prediction");
+  }
+}
 async function liveTrialTest(page){
   const pool=page.locator("main > details").first();
   await pool.locator(":scope > summary").click();
@@ -116,6 +149,7 @@ try{
       const response=await page.goto(base+"/tools",{waitUntil:"domcontentloaded",timeout:45000});
       assert.equal(response?.status(),200,"Production /tools should return HTTP 200");
       await ratingTest(page,device.label);
+      await finalSurveyTest(page,device.label);
       if(!device.mobile)await liveTrialTest(page);
       console.log("PASS",device.label,"production TOOLS browser smoke; page errors",browserErrors.length);
       if(browserErrors.length)console.log("BROWSER_ERRORS",browserErrors.slice(0,4));
