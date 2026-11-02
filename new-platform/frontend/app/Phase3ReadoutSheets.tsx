@@ -431,6 +431,10 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
 }){
   const [sort,setSort]=useState<Phase3ReadoutSortKey>("ticker");
   const [desc,setDesc]=useState(false);
+  const resetSorting=()=>{
+    setSort("ticker");
+    setDesc(false);
+  };
   const availableSortColumns=(bucket==="pre"?readoutColumns:postReadoutColumns)
     .filter(field=>(field.key!=="survey"||showSurveys)&&(field.key!=="synthesis"||showSynthesis));
   const setSortColumn=(key:Phase3ReadoutSortKey)=>{
@@ -469,6 +473,12 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
         </select>
       </label>
       <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
+      <button type="button" className={css.resetSortingButton}
+        onClick={resetSorting} disabled={sort==="ticker"&&!desc}
+        aria-label={pre?"Reset TOP spreadsheet sorting to Ticker A to Z":"Reset BOTTOM spreadsheet sorting to Ticker A to Z"}
+        title="Reset this spreadsheet to its default Ticker A–Z sort">
+        ↺ Reset Sorting
+      </button>
       {(sort==="survey"||sort==="synthesis")&&
         <span role="status" className={css.sortEvidenceState}>
           {researchStatus==="loading"?"Loading trial-specific survey evidence…":
