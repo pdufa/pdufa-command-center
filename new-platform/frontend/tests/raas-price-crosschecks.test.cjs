@@ -11,13 +11,13 @@ const pre=require("../lib/raas-top-retrospective-intake.ts").parseTopRetrospecti
 const post=require("../lib/raas-retrospective-intake.ts").parseRetrospectiveFeed(
  require("../data/raas-retrospective-source-cases.json"));
 const raw=require("../data/raas-price-crosschecks.json");
-test("eleven exact-date closes agree across display vendors; five complete trade windows",()=>{
+test("twelve exact-date closes agree, including a post-exit SEC Form 4; five complete trade windows",()=>{
  const feed=moduleUnderTest.parsePriceCrosschecks(raw,pre,post);
  const s=moduleUnderTest.priceAuditSummary(feed,pre,post);
  assert.equal(s.caseCount,8);
  assert.equal(s.quotedPoints,16);
- assert.equal(s.secondaryPointsRecorded,11);
- assert.equal(s.matchedPoints,11);
+ assert.equal(s.secondaryPointsRecorded,12);
+ assert.equal(s.matchedPoints,12);
  assert.equal(s.mismatchedPoints,0);
  assert.equal(s.bothClosesMatchedCases,5);
  assert.equal(s.adjustedTotalReturnsVerified,0);
@@ -37,6 +37,13 @@ test("eleven exact-date closes agree across display vendors; five complete trade
  const mdgl=moduleUnderTest.priceAuditForCase(feed,pre,post,"mdgl-resmetirom-maestro-nash-pre2022-illustrative");
  assert.equal(mdgl.entry.status,"SECOND_SOURCE_MISSING");
  assert.equal(mdgl.exit.secondaryClose,63.8);
+ const gern=moduleUnderTest.priceAuditForCase(feed,pre,post,"gern-imerge-mds-pre2023-illustrative");
+ assert.equal(gern.entry.status,"SECOND_SOURCE_MISSING");
+ assert.equal(gern.exit.status,"PROVIDER_PRICE_MATCH");
+ assert.equal(gern.exit.secondaryProvider,"Geron SEC Form 4");
+ assert.equal(gern.exit.postExitDisclosure,true);
+ assert.equal(gern.exit.sourceFirstPublishedAt,"2023-01-03");
+ assert.equal(gern.bothClosesAgree,false);
  const bbio=moduleUnderTest.priceAuditForCase(feed,pre,post,"bbio-attribute-cm-pre2023-illustrative");
  assert.equal(bbio.entry.quoteGranularity,"WEEKLY_FRIDAY_CLOSE");
  assert.equal(bbio.exit.quoteGranularity,"DAILY_SESSION_CLOSE");
@@ -49,6 +56,8 @@ test("wrong date, unknown case, missing original independence, invalid quote rej
  assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({secondaryClose:-12}),pre,post),/OBSERVATION_INVALID/);
  assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({quoteGranularity:"WEEKLY_FRIDAY_CLOSE",date:"2024-05-09"}),pre,post),/NOT_INDEPENDENT_DATE_OR_SOURCE/);
  assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({quoteGranularity:"INTRADAY_SNAPSHOT"}),pre,post),/OBSERVATION_INVALID/);
+ const badPostDate={...raw,observations:raw.observations.map(x=>x.secondaryProvider==="Geron SEC Form 4"?{...x,sourceFirstPublishedAt:"2027-01-03"}:x)};
+ assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(badPostDate,pre,post),/OBSERVATION_INVALID/);
  const first=pre.records[0];
  const source=post.records.find(x=>x.id===raw.observations[0].caseId).entry.sourceUrl;
  assert.throws(()=>moduleUnderTest.parsePriceCrosschecks(mutate({sourceUrl:source}),pre,post),/NOT_INDEPENDENT_DATE_OR_SOURCE/);
