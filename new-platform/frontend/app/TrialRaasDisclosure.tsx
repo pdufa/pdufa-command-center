@@ -10,12 +10,17 @@ import css from "./TrialRaasDisclosure.module.css";
 import pilotData from "../data/raas-pilot-observations.json";
 import {parseRaasPilotFeed,observationsForTrial,observedCalculation,computeRaasScore,type RaasObservation} from "../lib/raas-score-engine";
 import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
+import reviewedSnapshots from "../data/raas-reviewed-snapshots.json";
+import approvedCalibrations from "../data/raas-approved-calibrations.json";
+import {parseRaasCalibrations,parseRaasReviewedLedger,reviewedScoreForTrial} from "../lib/raas-reviewed-score-ledger";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
 const fieldLabels=new Map<string,string>(ALL_RESEARCH_FIELD_DEFINITIONS.map(field=>[field.id,field.label]));
 type Snapshot="ENTRY"|"CURRENT"|"EXIT";
 const pilot=parseRaasPilotFeed(pilotData);
+const calibrationRegistry=parseRaasCalibrations(approvedCalibrations);
+const reviewedLedger=parseRaasReviewedLedger(reviewedSnapshots);
 function PilotEvidence({observations,metricId,snapshot}:{observations:readonly RaasObservation[];metricId:string;snapshot:Snapshot}){
  const matching=observations.filter(o=>o.metricIds.includes(metricId));
  return <div className={css.pilotEvidence}>
@@ -74,7 +79,13 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const pilotGrades=provisionalGradesForTrial(pilot,{
    nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
  },bucket,snapshot,pilot.sourceAsOf);
- const grading=computeRaasScore({stage:bucket,snapshot,asOf:pilot.sourceAsOf,
+ const scoreSnapshots=(["ENTRY","CURRENT","EXIT"] as const).map(period=>({
+   period,reviewed:reviewedScoreForTrial(reviewedLedger,calibrationRegistry,{
+     nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
+   },bucket,period,reviewedLedger.sourceAsOf)
+ }));
+ const reviewed=scoreSnapshots.find(s=>s.period===snapshot)?.reviewed??null;
+ const grading=reviewed?.score??computeRaasScore({stage:bucket,snapshot,asOf:pilot.sourceAsOf,
    trial:{nctId:row.nctId,ticker:row.ticker},ratings:[],gates:[]});
  const groupName="raas-group-"+bucket+"-"+row.nctId;
  return <details className={css.raas} data-raas-phase={bucket} data-raas-trial={row.nctId}>
@@ -85,35 +96,37 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
      <span className={css.chevron} aria-hidden="true">▸</span>
    </summary>
    <div className={css.panel}>
-     <p className={css.disclaimer}><strong>Research specification {RAAS_SPEC_VERSION}.</strong> {RAAS_THRESHOLD_PROFILES.length} metric-specific calibration requirements are registered. The dated pilot has {pilot.records.length} exactly identified trials as of {pilot.sourceAsOf}. Exploratory metric ratings are visibly separate and <strong>never</strong> contribute to RAAS. Qualified overall scores remain unavailable until all verified benchmarks, risk gates, scenario inputs and historical validation are ready. Missing inputs are not zeros.</p>
+     <p className={css.disclaimer}><strong>Research specification {RAAS_SPEC_VERSION}.</strong> {RAAS_THRESHOLD_PROFILES.length} metric scoring profiles registered; {calibrationRegistry.entries.length} validated scoring calibrations approved. The dated pilot has {pilot.records.length} identified trials as of {pilot.sourceAsOf}. Exploratory grades are separate and <strong>never</strong> contribute to RAAS. The approved-grade ledger preserves exact-trial ENTRY / CURRENT / EXIT assessments without backfilling future evidence. Missing inputs are not zeros.</p>
      <div className={css.snapshots} aria-label={label+" score snapshots"}>
        {(["ENTRY","CURRENT","EXIT"] as const).map(period=>
          <button key={period} type="button" className={css.snapshotButton} aria-pressed={snapshot===period}
            onClick={()=>setSnapshot(period)}>
-           <strong>{period}</strong><span>— / 100</span>
+           <strong>{period}</strong><span>{scoreSnapshots.find(s=>s.period===period)?.reviewed?.score.score??"—"} / 100</span>
            <small>{period==="ENTRY"?(isTop?"Pre-readout signal":"Post-readout signal"):
              period==="CURRENT"?"Current assessment":isTop?"Before public Phase 3 data":"PDUFA − 3 days if verified"}</small>
          </button>)}
      </div>
-     <p className={css.hint}><strong>{snapshot} · {grading.graded}/30 qualified RAAS metric grades · {pilotGrades.length} exploratory timing score · {pilotFacts.length} dated observations.</strong> {grading.reason} Open a category and a metric to see numeric research measurements, the score threshold, calibration status, sources and failure risks. Pilot grades are not used for category or overall RAAS.</p>
+     <p className={css.hint}><strong>{snapshot} · {grading.graded}/30 approved metric grades · {pilotGrades.length} exploratory research score · {pilotFacts.length} dated observations.</strong> {grading.reason} Open a category and a metric to see numerical observations, threshold requirements, sources and downside risks. Only complete approved metric sets can produce an overall RAAS.</p>
      <div className={css.factors} aria-label={label+" six weighted ingredients"}>
        {groups.map((group,i)=><details key={group.id} name={groupName} className={css.factor} data-raas-factor={i+1}>
          <summary className={css.factorSummary}>
-           <span className={css.factorName}><strong>{i+1}. {group.name}</strong><small>Weight {group.weight}% · grade — / 100 · {group.metrics.length} metrics</small></span>
+           <span className={css.factorName}><strong>{i+1}. {group.name}</strong><small>Weight {group.weight}% · grade {grading.categories[i]?.score??"—"} / 100 · {grading.categories[i]?.graded??0}/{group.metrics.length} approved</small></span>
            <span className={css.factorChevron} aria-hidden="true">▸</span>
          </summary>
          <div className={css.factorBody}>
            <strong className={css.metricIntro}>Individual metrics · open one for scoring evidence</strong>
            {group.metrics.map((metric,j)=>{const exploratory=pilotGrades.find(g=>g.metricId===metric.id);
              const profile=thresholdProfile(bucket,metric.id);
+             const qualified=reviewed?.acceptedRatings.find(r=>r.metricId===metric.id&&!grading.missing.includes(metric.id));
              return <details key={metric.id} name={"raas-metric-"+bucket+"-"+row.nctId+"-"+group.id}
              className={css.metric} data-raas-metric={metric.id}>
              <summary className={css.metricSummary}>
-               <span><strong>{j+1}. {metric.name}</strong><small>{exploratory?exploratory.score+" / 100 · EXPLORATORY ONLY":"— / 100 · Evidence not graded"}</small></span>
+               <span><strong>{j+1}. {metric.name}</strong><small>{qualified?qualified.score+" / 100 · APPROVED":exploratory?exploratory.score+" / 100 · EXPLORATORY ONLY":"— / 100 · Evidence not graded"}</small></span>
                <span aria-hidden="true" className={css.metricChevron}>▸</span>
              </summary>
              <div className={css.metricBody}>
-               <div className={css.metricStatus}><strong>Qualified RAAS metric score: — / 100</strong><span>{snapshot} · Pending validated calculation</span></div>
+               <div className={css.metricStatus}><strong>Qualified RAAS metric score: {qualified?.score??"—"} / 100</strong><span>{snapshot} · {qualified?"Approved, source-dated metric assessment":"Pending validated calculation"}</span>
+                 {qualified&&<><span>Benchmark: {qualified.benchmarkId} · Assessed {qualified.assessedAt}</span><a href={qualified.sourceUrl} target="_blank" rel="noopener noreferrer">Open approved score evidence</a></>}</div>
                {exploratory&&<div className={css.exploratoryGrade}>
                  <strong>{exploratory.score}/100 · {exploratory.label}</strong>
                  <p>RESEARCH-ONLY · This is a provisional timing-specificity grade, <strong>not</strong> a validated appreciation or scientific-success score.</p>
