@@ -3,11 +3,37 @@ import {useEffect,useMemo,useState} from "react";
 import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import css from "./Phase3ReadoutSheets.module.css";
+import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 
 type Bucket="pre"|"post"|"unverified";
 const LIMIT=50;
 const number=(v:number)=>v.toLocaleString("en-US");
 const txt=(v:string)=>v||"Not established";
+type ReadoutKey="nctId"|"ticker"|"company"|"drug"|"indication"|"status"|"date"|"source";
+const readoutColumns:ColumnFilterField[]=[
+ {key:"ticker",label:"Ticker"},{key:"nctId",label:"NCT / trial"},
+ {key:"company",label:"Company"},{key:"drug",label:"Drug / therapy"},
+ {key:"indication",label:"Indication"},{key:"status",label:"Registry status"},
+ {key:"date",label:"Issuer release/check date"},{key:"source",label:"Evidence source"}
+];
+const unknownColumns:ColumnFilterField[]=[
+ {key:"nctId",label:"NCT / trial"},{key:"ticker",label:"Ticker"},
+ {key:"company",label:"Company"},{key:"status",label:"Registry status"}
+];
+const readoutValue=(row:ReadoutRow,key:string):string=>{
+ if(key==="date")return row.evidence?.evidenceDate||"";
+ if(key==="drug")return row.evidence?.drug||"";
+ if(key==="indication")return row.evidence?.indication||"";
+ if(key==="source")return row.evidence?.evidenceUrl||row.sourceUrl;
+ return String(row[key as keyof Pick<ReadoutRow,"nctId"|"ticker"|"company"|"status">]||"");
+};
+function sortReadout(rows:ReadoutRow[],key:ReadoutKey,desc:boolean):ReadoutRow[]{
+ return [...rows].sort((a,b)=>{
+  const cmp=readoutValue(a,key).localeCompare(readoutValue(b,key),"en-US",{numeric:true,sensitivity:"base"});
+  return (desc?-cmp:cmp)||a.nctId.localeCompare(b.nctId);
+ });
+}
+
 function csvCell(v:string|number){
   const value=String(v??"");
   const safe=/^[=+@-]/.test(value)?"'"+value:value;
@@ -53,24 +79,38 @@ function TrialTable({rows,bucket}:{rows:ReadoutRow[];bucket:Bucket}){
   </div>;
 }
 function Spreadsheet({bucket,rows,query,caption}:{bucket:"pre"|"post";rows:ReadoutRow[];query:string;caption:string}){
+  const [filters,setFilters]=useState<ColumnFilterState>({});
+  const [sort,setSort]=useState<ReadoutKey>("ticker");
+  const [desc,setDesc]=useState(false);
   const matched=useMemo(()=>{
     const q=query.trim().toLowerCase();
-    return !q?rows:rows.filter(x=>
-      [x.nctId,x.ticker,x.company,x.evidence?.drug||"",x.evidence?.indication||""]
+    const found=applyColumnFilters(rows,filters,readoutValue).filter(x=>
+      !q||[x.nctId,x.ticker,x.company,x.status,x.evidence?.drug||"",x.evidence?.indication||"",x.evidence?.evidenceDate||""]
         .some(field=>field.toLowerCase().includes(q)));
-  },[rows,query]);
+    return sortReadout(found,sort,desc);
+  },[rows,query,filters,sort,desc]);
   const pre=bucket==="pre";
   return <section className={css.sheet} aria-label={pre?"Top pre-release spreadsheet":"Bottom post-release spreadsheet"}>
     <div className={css.sheetHeading}>
-      <div>
-        <h3>{pre?"TOP SPREADSHEET · PRE-RELEASE":"BOTTOM SPREADSHEET · POST-RELEASE"}</h3>
-        <p>{caption}</p>
-      </div>
+      <div><h3>{pre?"TOP SPREADSHEET · PRE-RELEASE":"BOTTOM SPREADSHEET · POST-RELEASE"}</h3>
+        <p>{caption}</p></div>
       <div className={css.actions}>
-        <strong>{number(rows.length)} documented trials{query?" · "+matched.length+" matching":""}</strong>
-        <button type="button" onClick={()=>downloadCsv(bucket,matched)}>Export CSV</button>
+        <strong>{number(rows.length)} documented trials · {number(matched.length)} matching</strong>
+        <button type="button" onClick={()=>downloadCsv(bucket,matched)} disabled={!matched.length}>
+          Export matching CSV</button>
       </div>
     </div>
+    <TrialColumnFilterBar title={pre?"Verified issuer pre-release":"Verified issuer post-release"}
+      fields={readoutColumns} filters={filters} onChange={setFilters}
+      hint="Filter these issuer-announcement research rows, separately from the ClinicalTrials.gov results-posting spreadsheets.">
+      <label style={{fontSize:12}}>Sort by
+        <select aria-label={bucket+" release sort column"} value={sort}
+          onChange={e=>setSort(e.target.value as ReadoutKey)}>
+          {readoutColumns.map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
+        </select>
+      </label>
+      <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
+    </TrialColumnFilterBar>
     <TrialTable rows={matched} bucket={bucket}/>
   </section>;
 }
@@ -81,6 +121,9 @@ export default function Phase3ReadoutSheets(){
   const [error,setError]=useState("");
   const [query,setQuery]=useState("");
   const [unknownPage,setUnknownPage]=useState(0);
+  const [unknownFilters,setUnknownFilters]=useState<ColumnFilterState>({});
+  const [unknownSort,setUnknownSort]=useState<ReadoutKey>("nctId");
+  const [unknownDesc,setUnknownDesc]=useState(false);
   useEffect(()=>{
     const controller=new AbortController();
     Promise.all([
@@ -98,9 +141,11 @@ export default function Phase3ReadoutSheets(){
   },[]);
   const unknown=useMemo(()=>{
     const q=query.trim().toLowerCase();
-    return data?.unverified.filter(x=>!q||
-      [x.nctId,x.ticker,x.company,x.status].some(s=>s.toLowerCase().includes(q)))||[];
-  },[data,query]);
+    const pageRows=(data?.unverified||[]).filter(x=>!q||
+      [x.nctId,x.ticker,x.company,x.status].some(s=>s.toLowerCase().includes(q)));
+    return sortReadout(applyColumnFilters(pageRows,unknownFilters,readoutValue),
+      unknownSort,unknownDesc);
+  },[data,query,unknownFilters,unknownSort,unknownDesc]);
   const pages=Math.ceil(unknown.length/LIMIT);
   const activePage=Math.min(unknownPage,Math.max(0,pages-1));
   if(loading)return <section className={css.root} role="status">Loading dated Phase 3 release spreadsheets…</section>;
@@ -135,6 +180,18 @@ export default function Phase3ReadoutSheets(){
           <strong>{number(unknown.length)} matching unverified NCTs</strong>
           <button type="button" onClick={()=>downloadCsv("unverified",unknown)}>Export unverified CSV</button>
         </div>
+        <TrialColumnFilterBar title="Unverified readout queue" fields={unknownColumns}
+          filters={unknownFilters} onChange={next=>{setUnknownFilters(next);setUnknownPage(0)}}
+          hint="These are unverified announcements, not presumed pre-release or post-release. Filters are independent of the other two tables.">
+          <label style={{fontSize:12}}>Sort by
+            <select aria-label="Unverified release sort column" value={unknownSort}
+              onChange={e=>{setUnknownSort(e.target.value as ReadoutKey);setUnknownPage(0)}}>
+              {unknownColumns.map(field=><option key={field.key} value={field.key}>{field.label}</option>)}
+            </select>
+          </label>
+          <button type="button" onClick={()=>{setUnknownDesc(v=>!v);setUnknownPage(0)}}>
+            {unknownDesc?"Descending ↓":"Ascending ↑"}</button>
+        </TrialColumnFilterBar>
         <div className={css.tableScroll} role="region" aria-label="Unverified Phase 3 readout research queue" tabIndex={0}>
           <table className={css.table}>
             <thead><tr><th>NCT</th><th>Ticker</th><th>Company</th><th>Registry status</th><th>Public readout</th></tr></thead>

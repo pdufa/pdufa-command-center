@@ -4,13 +4,14 @@ import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
 import css from "./ToolsOpeningTrialGrid.module.css";
+import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 import {TOOLS_CLEAR_EVENT,TOOLS_RATINGS_STORAGE_KEY,TOOLS_COMPETITION_STORAGE_KEY,
   readToolsPreference,saveToolsPreference} from "../lib/tools-selection-persistence";
 import {COMPETITIVE_STRATEGY_TOPICS} from "../lib/tools-competitive-strategy";
 import {parseBenefitFeed,benefitForTrial,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
 import {competitiveReadiness,type CompetitivePopulationScan}
   from "../lib/tools-competitive-readiness";
-import {auditTrialRatings,type RatingAuditCell} from "../lib/tools-rating-engine";
+import {auditTrialRatings,type RatingAuditCell,type RatingIngredientKey} from "../lib/tools-rating-engine";
 import type {RegistryCoverage} from "../lib/registry-benefit-coverage";
 import type {RegistryBenefitResearch} from "../lib/registry-benefit-research";
 import {observedSeriousEventRate} from "../lib/registry-observation-math";
@@ -127,6 +128,14 @@ const columns:{key:Field;label:string;hint?:string}[]=[
   {key:"indication",label:"Disease / indication"},
   {key:"stage",label:"Recorded stage"}
 ];
+const filterFields:ColumnFilterField[]=[
+ ...columns.map(c=>({key:c.key,label:c.hint||c.label})),
+ ...RATING_GROUPS.map(g=>({key:"rating:"+g.key,label:g.key+" — "+g.name})),
+ ...RATING_GROUPS.flatMap(g=>g.ingredients.map(v=>({key:"ingredient:"+v.key,label:g.key+" · "+v.name}))),
+ {key:"fdaLinks",label:"FDA designation count"},
+ {key:"pdufaLinks",label:"PDUFA application count"},
+ {key:"studyRole",label:"Study role"},
+];
 function DayCell({count,date,url,description}:{count:number|null;date?:string;url?:string;description:string}){
   if(count===null)return <span className={css.dateUnknown} title={description+" date not source-verified"}>Not verified</span>;
   return <a href={url} target="_blank" rel="noopener noreferrer"
@@ -138,6 +147,7 @@ export default function ToolsOpeningTrialGrid({
   selectedStages,selectedDesignations,noVerifiedNctLinks,sourceDate,sourceState,regulatorySourcesAvailable,competitiveScan=null,onPrevious,onNext
 }:Props){
   const [sortKey,setSortKey]=useState<Field>("nctId");
+  const [columnFilters,setColumnFilters]=useState<ColumnFilterState>({});
   const [desc,setDesc]=useState(false);
   const [today,setToday]=useState("");
   const [expandedRatings,setExpandedRatings]=useState<RatingGroupKey[]>([]);
@@ -243,7 +253,25 @@ export default function ToolsOpeningTrialGrid({
     (competitiveOpen?COMPETITIVE_STRATEGY_TOPICS.length:0)+RATING_GROUPS.reduce((n,g)=>
     n+1+(expandedRatings.includes(g.key)?g.ingredients.length:0),0);
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
-  const ordered=useMemo(()=>[...rows].sort((a,b)=>{
+  const filteredPageRows=useMemo(()=>applyColumnFilters(rows,columnFilters,(row,key)=>{
+    if(key==="s"||key==="d"){
+      const day=pipelineDayCounts(row.timeline||NO_DATES,today);
+      return (key==="s"?day.daysSincePhase3Release:day.daysToPdufa)??null;
+    }
+    if(key==="fdaLinks")return Object.values(row.designationMatches||{}).filter(x=>!!x?.length).length;
+    if(key==="pdufaLinks")return row.pdufaApplications?.length||0;
+    if(key==="studyRole")return row.studyRole||"Not established";
+    if(key.startsWith("rating:")||key.startsWith("ingredient:")){
+      const audit=auditTrialRatings(row,today,competitionEvidence,competitionError,
+        registryByNct.get(row.nctId)||null,peerLeads?.[row.nctId]||null);
+      return key.startsWith("rating:")?
+        audit.group[key.slice(7) as RatingGroupKey]?.label||"":
+        audit.ingredient[key.slice(11) as RatingIngredientKey]?.label||"";
+    }
+    const value=row[key as keyof ToolsSpreadsheetRow];
+    return typeof value==="string"?value:"";
+  }),[rows,columnFilters,today,competitionEvidence,competitionError,registryByNct,peerLeads]);
+  const ordered=useMemo(()=>[...filteredPageRows].sort((a,b)=>{
     if(sortKey==="s"||sortKey==="d"){
       const field=sortKey==="s"?"daysSincePhase3Release":"daysToPdufa";
       const x=pipelineDayCounts(a.timeline||NO_DATES,today)[field];
@@ -255,7 +283,7 @@ export default function ToolsOpeningTrialGrid({
     }
     const n=(a[sortKey]||"").localeCompare(b[sortKey]||"",undefined,{numeric:true,sensitivity:"base"});
     return desc?-n:n;
-  }),[rows,sortKey,desc,today]);
+  }),[filteredPageRows,sortKey,desc,today]);
   const hasSelection=selectedStages+selectedDesignations>0;
   // FDA and PDUFA attributes belong to each NCT row; neither creates a second trial.
   const countUnverified=hasSelection&&selectedDesignations>0&&noVerifiedNctLinks&&!loading&&!error;
@@ -314,6 +342,13 @@ export default function ToolsOpeningTrialGrid({
           No comparative ranks have been established.</small>
       </div>}
     </div>}
+    <TrialColumnFilterBar title="Final trials spreadsheet" fields={filterFields}
+      filters={columnFilters} onChange={setColumnFilters}
+      hint="Filter the currently loaded trial page, including M–E ratings and every rating ingredient. Multiple filters combine; missing evidence is not a zero score.">
+      <span role="status" style={{fontSize:12,color:"#34583f"}}>
+        {filteredPageRows.length} of {rows.length} loaded rows visible
+      </span>
+    </TrialColumnFilterBar>
     <div className={css.scroll} role="region" aria-label="Scrollable clinical trial spreadsheet" tabIndex={0}>
       <table>
         <thead><tr><th className={css.rowNum}>#</th>
@@ -562,7 +597,7 @@ export default function ToolsOpeningTrialGrid({
       {competitionError&&<span role="alert">Research evidence feed unavailable; no unverified result is scored.</span>}
     </div>
     <div className={css.footer}>
-      <span>{!hasSelection?"Showing 0 of 0 · No trial filters selected":!loading&&!error?("Showing "+(total?offset+1:0)+"–"+Math.min(offset+rows.length,total)+" of "+format(total)):"Awaiting matching records"} · Page sort only</span>
+      <span>{!hasSelection?"Showing 0 of 0 · No trial filters selected":!loading&&!error?("Showing "+(total?offset+1:0)+"–"+Math.min(offset+rows.length,total)+" of "+format(total)):"Awaiting matching records"} · Page sorting and column filters only</span>
       <div className={css.pager}>
         <button type="button" disabled={!hasSelection||loading||!!error||offset===0} onClick={onPrevious}>Previous 50</button>
         <button type="button" disabled={!hasSelection||loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>

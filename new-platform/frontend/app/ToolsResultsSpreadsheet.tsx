@@ -8,6 +8,7 @@ import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-d
 import type {ToolPdufaApplication} from "../lib/tools-pdufa-links";
 import styles from "./FunnelWorkspace.module.css";
 import ToolsRankingChecklists from "./ToolsRankingChecklists";
+import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 
 export type ToolSourceEvidence={
   eventKey:string;source:string;designationDate:string;checkedAt:string;
@@ -67,11 +68,17 @@ const sortFields:{key:SortField;label:string;hint?:string}[]=[
   {key:"indication",label:"Disease / indication"},
   {key:"stage",label:"Recorded stage"},
 ];
+const tableFilterFields:ColumnFilterField[]=[
+ ...sortFields.map(c=>({key:c.key,label:c.hint||c.label})),
+ {key:"fdaLinks",label:"FDA link count"},{key:"pdufaLinks",label:"PDUFA application count"},
+ {key:"studyRole",label:"Study role"}
+];
 export default function ToolsResultsSpreadsheet({
   rows,summary,designationCoverage,stages,designations,total,offset,loading,error,downloadUrl,
   onPrevious,onNext,nextOffset
 }:Props){
   const [sortKey,setSortKey]=useState<SortField>("nctId");
+  const [columnFilters,setColumnFilters]=useState<ColumnFilterState>({});
   const [benefitFeed,setBenefitFeed]=useState<BenefitFeed|null>(null);
   const [benefitError,setBenefitError]=useState("");
   useEffect(()=>{
@@ -85,7 +92,18 @@ export default function ToolsResultsSpreadsheet({
   const [descending,setDescending]=useState(false);
   const [today,setToday]=useState("");
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
-  const ordered=useMemo(()=>[...rows].sort((a,b)=>{
+  const filteredPageRows=useMemo(()=>applyColumnFilters(rows,columnFilters,(row,key)=>{
+    if(key==="s"||key==="d"){
+      const day=pipelineDayCounts(row.timeline||NO_DATES,today);
+      return (key==="s"?day.daysSincePhase3Release:day.daysToPdufa)??null;
+    }
+    if(key==="fdaLinks")return Object.values(row.designationMatches||{}).filter(x=>!!x?.length).length;
+    if(key==="pdufaLinks")return row.pdufaApplications?.length||0;
+    if(key==="studyRole")return row.studyRole||"Not established";
+    const value=row[key as keyof ToolsSpreadsheetRow];
+    return typeof value==="string"?value:"";
+  }),[rows,columnFilters,today]);
+  const ordered=useMemo(()=>[...filteredPageRows].sort((a,b)=>{
     if(sortKey==="s"||sortKey==="d"){
       const key=sortKey==="s"?"daysSincePhase3Release":"daysToPdufa";
       const x=pipelineDayCounts(a.timeline||NO_DATES,today)[key];
@@ -96,7 +114,7 @@ export default function ToolsResultsSpreadsheet({
     }
     const result=(a[sortKey]||"").localeCompare(b[sortKey]||"",undefined,{numeric:true,sensitivity:"base"});
     return descending?-result:result;
-  }),[rows,sortKey,descending,today]);
+  }),[filteredPageRows,sortKey,descending,today]);
   function sort(key:SortField){
     if(sortKey===key)setDescending(prev=>!prev);
     else {setSortKey(key);setDescending(false);}
@@ -162,6 +180,13 @@ export default function ToolsResultsSpreadsheet({
     </div>
     <p className={styles.muted}><strong>S</strong> is days since verified public Phase 3 data release; <strong>D</strong> is days to the verified PDUFA target (negative after the target date). Missing source evidence stays Not verified, never zero.</p>
     <ToolsRankingChecklists/>
+    <TrialColumnFilterBar title="Selected trial records" fields={tableFilterFields}
+      filters={columnFilters} onChange={setColumnFilters}
+      hint="Filters narrow only the loaded page; Step 3 selectors control the full trial pool. S and D accept numeric expressions such as >=30.">
+      <span role="status" style={{fontSize:12,color:"#34583f"}}>
+        {filteredPageRows.length} of {rows.length} loaded trial rows visible
+      </span>
+    </TrialColumnFilterBar>
     <div className={styles.toolsSheetTableScroll} role="region" aria-label="Scrollable spreadsheet containing selected trial matches" tabIndex={0}>
       <table className={styles.toolsSheetGrid}>
         <thead><tr>
@@ -262,7 +287,7 @@ export default function ToolsResultsSpreadsheet({
     </div>
     <div className={styles.pagination}>
       <button type="button" disabled={loading||!!error||offset===0} onClick={onPrevious}>Previous 50</button>
-      <span>{"Showing "+pageFirst+"–"+pageLast+" of "+(hasSelection&&!error?fmt(total):"0")+" restricted NCT matches · sorting affects the visible page only"}</span>
+      <span>{"Showing "+pageFirst+"–"+pageLast+" of "+(hasSelection&&!error?fmt(total):"0")+" restricted NCT matches · sorting and column filters affect the visible page only"}</span>
       <button type="button" disabled={loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
     </div>
     {designations.length>0&&designationCoverage&&designationCoverage.programRows.length>0&&<section className={styles.toolsSheetTotals} aria-label="FDA source programs not yet assigned to clinical trial stages">
