@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_FINANCE_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "Published issuer/SEC figures available before retrospectively chosen entries. NOT point-in-time forecasts, net-cash models, cash runway or audited stock price. All observations remain research-only until independent reconciliation.",
+  "records": [
+    {
+      "id": "gern-2022-top",
+      "caseId": "gern-imerge-mds-pre2023-illustrative",
+      "ticker": "GERN",
+      "stage": "pre",
+      "asOf": "2022-09-30",
+      "publishedAt": "2022-11-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017022021575/gern-ex99_1.htm",
+      "facts": [
+        {
+          "type": "CASH_AND_MARKETABLE",
+          "valueUsdMillions": 195.151,
+          "method": "September 2022 balance sheet: 61.467 million cash and restricted cash plus 133.684 million current marketable securities.",
+          "caveat": "Includes restricted cash; not unrestricted cash runway."
+        },
+        {
+          "type": "OPERATING_EXPENSES_QTR",
+          "valueUsdMillions": 49.3,
+          "method": "Quarterly operating expenses from November 2022 issuer report, approximate.",
+          "caveat": "Operating expense is not equal to net operating cash burn."
+        }
+      ]
+    },
+    {
+      "id": "mdgl-2022-top",
+      "caseId": "mdgl-resmetirom-maestro-nash-pre2022-illustrative",
+      "ticker": "MDGL",
+      "stage": "pre",
+      "asOf": "2022-09-30",
+      "publishedAt": "2022-11-03",
+      "sourceUrl": "https://ir.madrigalpharma.com/node/14486",
+      "facts": [
+        {
+          "type": "CASH_AND_MARKETABLE",
+          "valueUsdMillions": 153.2,
+          "method": "Cash, cash equivalents and marketable securities as of September 30, 2022, per November 3 issuer release.",
+          "caveat": "Excludes available credit; not a runway forecast."
+        },
+        {
+          "type": "OPERATING_CASH_USED_9M",
+          "valueUsdMillions": 166.3,
+          "method": "Cash used in operations for nine months ended September 30, 2022.",
+          "caveat": "Historical cash flow not projected steady burn."
+        },
+        {
+          "type": "LOAN_PROCEEDS",
+          "valueUsdMillions": 49,
+          "method": "Net loan facility proceeds during nine months ended September 30, 2022.",
+          "caveat": "Not a cash-balance component to add again."
+        }
+      ]
+    },
+    {
+      "id": "vrna-2024-bottom",
+      "caseId": "vrna-ensifentrine-copd-2024-illustrative",
+      "ticker": "VRNA",
+      "stage": "post",
+      "asOf": "2024-03-31",
+      "publishedAt": "2024-05-09",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1657312/000165731224000011/a20240509vrna-10xqq1xpress.htm",
+      "facts": [
+        {
+          "type": "CASH_UNRESTRICTED",
+          "valueUsdMillions": 254.882,
+          "method": "March 31 cash and cash equivalents from issuer's May 9 results.",
+          "caveat": "Net debt, restricted cash, projected launch spending and future loan obligations not reconciled."
+        },
+        {
+          "type": "NET_LOSS_QTR",
+          "valueUsdMillions": 25.794,
+          "method": "Quarter ended March 31, 2024 net loss.",
+          "caveat": "Net loss is not operating cash burn."
+        },
+        {
+          "type": "FINANCING_COMMITMENT_NOT_CASH",
+          "valueUsdMillions": 650,
+          "method": "Potential strategic financing facility mentioned by issuer subject to funding availability.",
+          "caveat": "Do not add this to cash; conditional capital and obligations require review."
+        }
+      ]
+    },
+    {
+      "id": "gern-2024-bottom",
+      "caseId": "gern-imetelstat-mds-2024-illustrative",
+      "ticker": "GERN",
+      "stage": "post",
+      "asOf": "2024-03-31",
+      "publishedAt": "2024-05-02",
+      "sourceUrl": "https://ir.geron.com/news-releases/news-release-details/geron-corporation-reports-first-quarter-2024-financial-results",
+      "facts": [
+        {
+          "type": "CASH_AND_MARKETABLE",
+          "valueUsdMillions": 465,
+          "method": "Issuer rounded March 31 cash and marketable securities total including restricted cash and long-term securities.",
+          "caveat": "Rounded, source grouping differs from unrestricted cash. Do not combine with offering proceeds a second time."
+        },
+        {
+          "type": "EQUITY_OFFERING_NET_PROCEEDS",
+          "valueUsdMillions": 141,
+          "method": "March 2024 underwritten public stock and pre-funded warrant offering net proceeds, included in reported March 31 cash.",
+          "caveat": "Financing is already reflected in historical balance; fully diluted share count unknown."
+        },
+        {
+          "type": "DEBT_PRINCIPAL",
+          "valueUsdMillions": 80,
+          "method": "Issuer reported debt outstanding principal as of May 2 update.",
+          "caveat": "Debt amount and balance date differ slightly; exclude from automatic net cash until reconciled."
+        },
+        {
+          "type": "NET_LOSS_QTR",
+          "valueUsdMillions": 55.39,
+          "method": "Quarter ended March 31, 2024 net loss.",
+          "caveat": "Not identical to cash burn."
+        }
+      ]
+    },
+    {
+      "id": "mdgl-2023-bottom",
+      "caseId": "mdgl-resmetirom-nash-2023-2024-illustrative",
+      "ticker": "MDGL",
+      "stage": "post",
+      "asOf": "2023-09-30",
+      "publishedAt": "2023-11-06",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523270803/d907859d10q.htm",
+      "facts": [
+        {
+          "type": "CASH_AND_MARKETABLE",
+          "valueUsdMillions": 232.351,
+          "method": "SEC Q3 2023 filing, 62.055 million cash and 170.296 million marketable securities (fair value table), summed.",
+          "caveat": "Does not reflect future ATM issuance and other liabilities; not a current market value."
+        },
+        {
+          "type": "OPERATING_CASH_USED_9M",
+          "valueUsdMillions": 244.297,
+          "method": "SEC nine-month net cash used in operations ending September 30, 2023.",
+          "caveat": "Historical period cash use not forward cash runway."
+        },
+        {
+          "type": "ATM_CAPACITY_NOT_CASH",
+          "valueUsdMillions": 174.8,
+          "method": "Remaining available 2023 at-the-market issuance capacity as of September 30, 2023.",
+          "caveat": "Capacity is not cash, and utilization would dilute shares."
+        },
+        {
+          "type": "ATM_PROCEEDS_9M",
+          "valueUsdMillions": 24.5,
+          "method": "Net ATM proceeds year-to-date through September 2023.",
+          "caveat": "Already captured in historic cash; avoid adding twice."
+        }
+      ]
+    },
+    {
+      "id": "urgn-2025-bottom",
+      "caseId": "urgn-ugn102-nmibc-2025-illustrative",
+      "ticker": "URGN",
+      "stage": "post",
+      "asOf": "2024-12-31",
+      "publishedAt": "2025-03-10",
+      "sourceUrl": "https://investors.urogen.com/news-releases/news-release-details/urogen-pharma-reports-fourth-quarter-and-full-year-2024/",
+      "facts": [
+        {
+          "type": "CASH_AND_MARKETABLE",
+          "valueUsdMillions": 241.707,
+          "method": "Company audited year-end consolidated balance sheet summary published March 10, 2025.",
+          "caveat": "Snapshot not proof of runway; excludes financing economics."
+        },
+        {
+          "type": "TOTAL_LIABILITIES",
+          "valueUsdMillions": 294.514,
+          "method": "Issuer's December 31, 2024 balance-sheet liabilities.",
+          "caveat": "Liabilities are not identical to financial debt and should not all be netted from cash."
+        },
+        {
+          "type": "NET_LOSS_FY",
+          "valueUsdMillions": 126.9,
+          "method": "Issuer reported annual 2024 net loss.",
+          "caveat": "Accounting loss not an annualized burn projection."
+        }
+      ]
+    },
+    {
+      "id": "bbio-2024-bottom",
+      "caseId": "bbio-acoramidis-attrcm-2024-illustrative",
+      "ticker": "BBIO",
+      "stage": "post",
+      "asOf": "2024-03-31",
+      "publishedAt": "2024-05-02",
+      "sourceUrl": "https://investor.bridgebio.com/news/news-details/2024/bridgebio-pharma-reports-first-quarter-2024-financial-results-and-business-update-05-02-2024/default.aspx",
+      "facts": [
+        {
+          "type": "CASH_AND_MARKETABLE",
+          "valueUsdMillions": 519.8,
+          "method": "Company Q1 combined cash, marketable securities and short-term restricted cash as of March 31, 2024.",
+          "caveat": "Includes restricted funds; not pure unencumbered operating liquidity."
+        },
+        {
+          "type": "OPERATING_CASH_USED_QTR",
+          "valueUsdMillions": 219.5,
+          "method": "Net operating cash used in three months ended March 31, 2024.",
+          "caveat": "Q1 may include nonrecurring licensing/working-capital items; don't project as constant burn."
+        },
+        {
+          "type": "EQUITY_FINANCING_NET_PROCEEDS",
+          "valueUsdMillions": 315.3,
+          "method": "Q1 equity financings, net proceeds per issuer.",
+          "caveat": "Already part of Q1 ending cash and dilutes equity; requires actual shares issued."
+        },
+        {
+          "type": "NEW_LOAN_NET_PROCEEDS",
+          "valueUsdMillions": 437.7,
+          "method": "New term loan net proceeds during Q1 2024, per issuer.",
+          "caveat": "Matched by debt refinance/fees, not 437.7 additional free cash."
+        },
+        {
+          "type": "DEBT_REFINANCE_COSTS",
+          "valueUsdMillions": 473.4,
+          "method": "Repayment of prior senior secured debt plus associated fees/exit costs during Q1.",
+          "caveat": "Disclosed flows, not directly equal to current debt outstanding."
+        }
+      ]
+    }
+  ]
+}
