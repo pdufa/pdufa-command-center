@@ -106,3 +106,8 @@
 .benchmarkContext>strong{font-size:11px;color:#294e62}
 .benchmarkContext>p{margin:0;font-size:11px;line-height:1.45;color:#52646b}
 .benchmarkContext>a{font-size:11px;color:#145e7b;text-decoration:underline;font-weight:750}
+
+/* Compact, independently collapsed historical RAAS validation disclosure. */
+.historicalStatus{display:flex;flex-direction:column;gap:7px;padding:9px;background:#fbfdfc;border:1px solid #dae5df;border-radius:6px;margin:7px 0}
+.historicalStatus p{margin:0;font-size:11px;line-height:1.5;color:#405d4d}
+.historicalStatus strong{color:#214d35}
