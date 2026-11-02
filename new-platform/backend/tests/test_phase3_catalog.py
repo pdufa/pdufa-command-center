@@ -362,7 +362,8 @@ def test_multiple_fda_actions_do_not_relabel_first_review_cycle_to_later_approva
     report=catalog.historical_validation(engine)
     assert report["number_evaluated"] == 0
     assert report["counts"]["correct_predictions"] == 0
-    row=report["case_review"]["records"][0]
+    row=next(r for r in report["case_review"]["records"]
+             if r["prediction_id"] == "time-locked-forecast")
     assert row["disposition"] == "EXCLUDED"
     assert row["reason"] == "FDA_REVIEW_CYCLE_NOT_SCOPED"
     assert row["correctness"] is None
