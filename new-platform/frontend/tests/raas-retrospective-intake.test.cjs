@@ -15,7 +15,7 @@ const intake=require("../lib/raas-retrospective-intake.ts");
 const raw=require("../data/raas-retrospective-source-cases.json");
 test("three independently sourced historical post-Phase3 windows are NOT treated as predictions",()=>{
  const feed=intake.parseRetrospectiveFeed(raw);
- assert.equal(feed.records.length,4);
+ assert.equal(feed.records.length,5);
  const record=feed.records[0];
  assert.equal(record.ticker,"VRNA");
  assert.equal(record.stage,"post");
@@ -29,7 +29,7 @@ test("three independently sourced historical post-Phase3 windows are NOT treated
  assert.equal(record.marketCapAtEntry.usdMillions,1204);
  assert.ok(record.verifiedBeforeEntry.every(e=>e.date<=record.entry.date));
  const outcomes=intake.retrospectiveResults(feed);
- assert.equal(outcomes.length,4);
+ assert.equal(outcomes.length,5);
  assert.equal(outcomes[0].observedGrossChangePercent,1.01);
  assert.equal(outcomes[0].calendarCutoff,"2024-06-23");
  assert.equal(outcomes[0].status,"RESEARCH_ONLY_NOT_CALIBRATED");
@@ -60,7 +60,18 @@ test("three independently sourced historical post-Phase3 windows are NOT treated
  assert.equal(mdgl.calendarCutoff,"2024-03-11");
  assert.equal(mdgl.forecastScore,null);
  assert.equal(mdgl.forecastError,null);
- assert.equal(new Set(outcomes.map(x=>x.programKey)).size,4);
+ assert.equal(new Set(outcomes.map(x=>x.programKey)).size,5);
+ const bbio=outcomes.find(x=>x.ticker==="BBIO");
+ assert.ok(bbio);
+ assert.equal(bbio.entryClose,29.1);
+ assert.equal(bbio.exitClose,23.72);
+ assert.equal(bbio.observedGrossChangePercent,-18.49);
+ assert.equal(bbio.marketCapUsdMillions,5208);
+ assert.equal(bbio.calendarCutoff,"2024-11-26");
+ assert.equal(feed.records.find(r=>r.ticker==="BBIO").realizedFDAAction.date,"2024-11-22");
+ assert.ok(bbio.exitDate<feed.records.find(r=>r.ticker==="BBIO").realizedFDAAction.date);
+ assert.equal(bbio.forecastScore,null);
+
  const trial=feed.records.find(x=>x.ticker==="MDGL");
  assert.equal(trial.clinicalReadouts.length,2);
  assert.equal(intake.observedClinicalRateDifference(trial.clinicalReadouts[0]),20);
