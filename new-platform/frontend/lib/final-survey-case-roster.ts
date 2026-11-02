@@ -6,6 +6,8 @@ export type HistoricalCaseReason=
  "APPLICATION_RELATION_NOT_VERIFIED_AT_CUTOFF"|
  "FDA_OUTCOME_NOT_VERIFIED"|"PREDICTION_NOT_BEFORE_FDA_ACTION"|
  "EVIDENCE_CUTOFF_AFTER_PREDICTION"|"PREDICTION_SOURCE_NOT_VERIFIED_AT_CUTOFF"|
+ "PREDICTION_LOCK_NOT_BEFORE_FDA_ACTION"|"FDA_REVIEW_CYCLE_NOT_SCOPED"|
+ "FDA_PRIMARY_ACTION_SOURCE_NOT_VERIFIED"|
  "LATER_PREDICTION_FOR_SAME_APPLICATION"|
  "LOCKED_PREDICTION_ABSTAINED"|
  "LOCKED_PREDICTION_BEFORE_FDA_DECISION"|
@@ -30,6 +32,8 @@ const reasons:readonly HistoricalCaseReason[]=[
  "APPLICATION_RELATION_NOT_VERIFIED_AT_CUTOFF",
  "FDA_OUTCOME_NOT_VERIFIED","PREDICTION_NOT_BEFORE_FDA_ACTION",
  "EVIDENCE_CUTOFF_AFTER_PREDICTION","PREDICTION_SOURCE_NOT_VERIFIED_AT_CUTOFF",
+ "PREDICTION_LOCK_NOT_BEFORE_FDA_ACTION","FDA_REVIEW_CYCLE_NOT_SCOPED",
+ "FDA_PRIMARY_ACTION_SOURCE_NOT_VERIFIED",
  "LATER_PREDICTION_FOR_SAME_APPLICATION",
  "LOCKED_PREDICTION_ABSTAINED","LOCKED_PREDICTION_BEFORE_FDA_DECISION",
  "VERIFIED_OUTCOME_WITHOUT_LOCKED_PREDECISION_PREDICTION"
@@ -52,6 +56,9 @@ export const caseReasonLabel=(reason:HistoricalCaseReason):string=>({
  PREDICTION_NOT_BEFORE_FDA_ACTION:"Prediction made on or after FDA action day",
  EVIDENCE_CUTOFF_AFTER_PREDICTION:"Evidence cutoff follows prediction date",
  PREDICTION_SOURCE_NOT_VERIFIED_AT_CUTOFF:"Required prediction evidence unavailable at forecast cutoff",
+ PREDICTION_LOCK_NOT_BEFORE_FDA_ACTION:"Immutable server receipt does not prove the forecast predates FDA action",
+ FDA_REVIEW_CYCLE_NOT_SCOPED:"Multiple FDA actions; original prediction has no specific review-cycle target",
+ FDA_PRIMARY_ACTION_SOURCE_NOT_VERIFIED:"Independently verified FDA action source is missing",
  LATER_PREDICTION_FOR_SAME_APPLICATION:"Another earlier eligible forecast already represents this application",
  LOCKED_PREDICTION_ABSTAINED:"Locked forecast abstained",
  LOCKED_PREDICTION_BEFORE_FDA_DECISION:"Eligible locked forecast; outcome compared",
@@ -121,7 +128,7 @@ export function auditHistoricalCaseRoster(raw:unknown,requestedPage=1):Historica
     if(r.reason!=="LOCKED_PREDICTION_ABSTAINED"||
        r.predicted_decision!=="ABSTAIN"||r.correctness!==null)return fail();
    }else{
-    if(!reasons.slice(0,6).includes(r.reason as HistoricalCaseReason)||
+    if(!reasons.slice(0,9).includes(r.reason as HistoricalCaseReason)||
        r.correctness!==null)return fail();
    }
   }
