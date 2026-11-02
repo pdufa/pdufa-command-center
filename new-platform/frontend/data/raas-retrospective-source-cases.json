@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_RETROSPECTIVE_EVIDENCE_INTAKE",
   "sourceAsOf": "2026-11-02",
-  "note": "Real historical research observations, not original RAAS predictions or qualified backtests. Prices are vendor closing prices, adjusted corporate-action basis not independently confirmed. Event windows were chosen retrospectively and must never enter the ex-ante RAAS calibration ledger.",
+  "note": "Two independently identified historical biotech program examples selected retrospectively, not pre-entry forecasts. Price data are third-party vendor closes, adjustment basis and actual execution not verified. Do not import into the approved RAAS prediction ledger.",
   "records": [
     {
       "id": "vrna-ensifentrine-copd-2024-illustrative",
@@ -77,6 +77,73 @@
       },
       "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
       "reviewNote": "Observed closing-price example yields gross +1.01% before commissions, spreads, taxes or slippage. No true pre-entry RAAS prediction exists, so it cannot measure RAAS forecast accuracy."
+    },
+    {
+      "id": "urgn-ugn102-nmibc-2025-illustrative",
+      "ticker": "URGN",
+      "drug": "UGN-102 (mitomycin intravesical solution)",
+      "indication": "Recurrent low-grade intermediate-risk non-muscle invasive bladder cancer",
+      "nctIds": [
+        "NCT05243550"
+      ],
+      "stage": "post",
+      "historicalWindowSelected": "RETROSPECTIVELY",
+      "entryDecisionArchiveAvailable": false,
+      "verifiedBeforeEntry": [
+        {
+          "kind": "PHASE3_PUBLIC_READOUT",
+          "date": "2023-07-27",
+          "sourceUrl": "https://investors.urogen.com/news-releases/news-release-details/ugn-102-development-potential-first-non-surgical-therapy-lg-ir",
+          "notes": "Issuer announced positive Phase 3 ENVISION and ATLAS results in July 2023; archived signal predates example entry."
+        },
+        {
+          "kind": "PDUFA_CONFIRMED",
+          "date": "2024-10-15",
+          "sourceUrl": "https://investors.urogen.com/news-releases/news-release-details/urogen-announces-fda-acceptance-its-new-drug-application-ugn-102",
+          "notes": "FDA accepted UGN-102 NDA and assigned June 13, 2025 PDUFA target."
+        },
+        {
+          "kind": "PRE_ENTRY_COMPANY_UPDATE",
+          "date": "2025-03-10",
+          "sourceUrl": "https://investors.urogen.com/news-releases/news-release-details/urogen-pharma-reports-fourth-quarter-and-full-year-2024",
+          "notes": "Issuer reported 18-month DOR, cash and reaffirmed June 13, 2025 target before the March 14 example entry."
+        }
+      ],
+      "pdufaDate": "2025-06-13",
+      "entry": {
+        "date": "2025-03-14",
+        "close": 11.07,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/URGN/summary/price"
+      },
+      "exit": {
+        "date": "2025-06-06",
+        "close": 7.37,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/URGN/summary/price"
+      },
+      "marketCapAtEntry": {
+        "usdMillions": 510.264,
+        "sourceUrl": "https://www.financecharts.com/stocks/URGN/summary/market-cap",
+        "basis": "Third-party vendor's historical market-cap series; issuer share count and any corporate actions are not reconciled."
+      },
+      "realizedFDAAction": {
+        "date": "2025-06-12",
+        "status": "FDA_APPROVED",
+        "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-mitomycin-intravesical-solution-recurrent-low-grade-intermediate-risk-non-muscle",
+        "isPostEntryKnowledge": true
+      },
+      "eventQuality": {
+        "priceCorporateActionChecked": false,
+        "exchangeHolidayCalendarChecked": false,
+        "tradingFrictionAssessed": false,
+        "actualTradeOrArchivedPrediction": false,
+        "eligibleForValidatedRAAS": false
+      },
+      "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
+      "reviewNote": "Real published historical closes show a sizable price decline from an arbitrarily selected March 14 entry to June 6; post-entry FDA approval is a future outcome. Does not demonstrate RAAS predictive accuracy or an executable strategy."
     }
   ]
 }
