@@ -11,7 +11,7 @@
 .search>div{display:flex;gap:7px}
 .search input{flex:1;min-width:0;font-size:13px;background:#fff;color:#1b4530;border:1px solid #91b5a1;border-radius:7px;padding:9px 10px}
 .search button,.sheetActions button,.pager button{background:#f0f7f2;color:#1d5035;border:1px solid #a7c6b0;border-radius:7px;padding:8px 10px;cursor:pointer;font-size:12px;font-weight:750}
-.search button:disabled,.pager button:disabled{opacity:.45;cursor:not-allowed}
+.search button:disabled,.pager button:disabled,.sheetActions button:disabled{opacity:.45;cursor:not-allowed}
 .search button:focus-visible,.sheetActions button:focus-visible,.pager button:focus-visible{outline:3px solid #368ba1;outline-offset:2px}
 .sheet{border:2px solid #a2cab2;background:#fff;margin:14px 0;border-radius:10px;overflow:hidden}
 .sheetHeader{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;background:#e6f4eb;padding:12px}
@@ -20,9 +20,22 @@
 .sheetActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .sheetActions strong{font-size:13px;color:#165438;white-space:normal;font-variant-numeric:tabular-nums}
 .scroll{overflow:auto;max-width:100%;max-height:470px;border-top:1px solid #c7dfd0;border-bottom:1px solid #c7dfd0}
-.scroll table{border-collapse:separate;border-spacing:0;width:100%;min-width:1110px;font-size:12px}
-.scroll thead th{position:sticky;top:0;background:#d9ebdf;color:#204c33;z-index:2}
-.scroll th,.scroll td{border-bottom:1px solid #e2ede5;text-align:left;white-space:normal;overflow-wrap:anywhere;padding:9px 10px;min-width:100px;vertical-align:top}
+.scroll table{border-collapse:separate;border-spacing:0;width:100%;min-width:1370px;font-size:12px}
+.scroll thead{position:sticky;top:0;z-index:3}
+.scroll thead th{background:#d9ebdf;color:#204c33}
+.scroll thead .filterRow th{background:#f0f8f2;vertical-align:top;padding:7px}
+.filterHelp{margin:0;padding:7px 12px;color:#3b6350;font-size:11px;border-top:1px solid #c7dfd0}
+.sortButton{display:flex;align-items:center;justify-content:space-between;gap:7px;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;font-weight:800;padding:2px 0;cursor:pointer}
+.sortIcon{color:#176447;font-size:15px;font-weight:900}
+.sortButton:hover{text-decoration:underline}
+.sortButton:focus-visible,.filterRow input:focus-visible,.filterRow select:focus-visible{outline:3px solid #368ba1;outline-offset:2px}
+.filterRow input,.filterRow select{display:block;width:100%;min-width:84px;max-width:100%;box-sizing:border-box;border:1px solid #9dbdac;border-radius:5px;padding:6px 5px;color:#214634;background:#fff;font-size:11px;font-weight:500;height:34px}
+.filterRow input[type="date"]{min-width:120px}
+.filterPlaceholder{display:block;font-size:10px;font-weight:600;color:#617667;line-height:1.4}
+.dateFilters{display:grid;gap:4px;min-width:145px}
+.sheetActions button:disabled{opacity:.45;cursor:not-allowed}
+
+.scroll th,.scroll td{border-bottom:1px solid #e2ede5;text-align:left;white-space:normal;overflow-wrap:anywhere;padding:9px 10px;min-width:110px;vertical-align:top}
 .scroll th:first-child,.scroll td:first-child{min-width:40px;width:40px;max-width:45px;font-variant-numeric:tabular-nums}
 .scroll tbody tr:nth-child(even){background:#f7fbf8}
 .scroll tbody tr:hover{background:#eaf4ec}
@@ -44,6 +57,8 @@
 .sheetActions button{min-height:34px}
 .scroll{max-height:350px}
 .scroll table{font-size:11px}
+.filterHelp{padding:7px 9px}
+.filterRow input,.filterRow select{font-size:12px;min-height:38px}
 .scroll th,.scroll td{padding:8px 9px}
 .pager{padding:8px}
 }
