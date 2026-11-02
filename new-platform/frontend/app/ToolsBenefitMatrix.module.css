@@ -187,3 +187,42 @@
  .step4Compact{margin-top:5px}
  .step4MetricPicker{flex-basis:100%}
 }
+
+
+/* One outlined selection joins the expanded rating heading to every right-hand
+   ingredient column. Next/Previous selection moves the entire outline. */
+.ratingNavigator{display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:100%;min-width:0;margin:10px 0;padding:8px;border:2px solid #0e644a;border-radius:9px;background:#f1faf4}
+.ratingNavigator button{min-height:38px;flex:0 1 135px;min-width:0;border:1px solid #83b09e;border-radius:7px;background:#fff;color:#16553e;font-size:12px;font-weight:750;cursor:pointer;padding:7px 8px}
+.ratingNavigator button:disabled{opacity:.45;cursor:not-allowed}
+.ratingNavigator button:focus-visible{outline:3px solid #2582af;outline-offset:2px}
+.ratingNavLabel{flex:1 1 150px;min-width:0;text-align:center;display:flex;flex-direction:column;gap:3px;overflow-wrap:anywhere}
+.ratingNavLabel strong{font-size:12px;color:#164e38}
+.ratingNavLabel small{font-size:10px;color:#536b61}
+.matrixTable thead tr:first-child th.activeHeading{border-top:3px solid #0f6849;border-left:3px solid #0f6849;border-right:3px solid #0f6849;border-bottom:0}
+.matrixTable thead tr:nth-child(2) th.selectedGroupCell{background:#d9f0e3;color:#104b35}
+.matrixTable tbody td.selectedGroupCell{background:#f3fbf6}
+.matrixTable tbody tr:nth-child(even) td.selectedGroupCell{background:#eaf6ef}
+.matrixTable tbody tr:hover td.selectedGroupCell{background:#dff2e7}
+.matrixTable .selectedGroupCell.selectedFirst{border-left:3px solid #0f6849}
+.matrixTable .selectedGroupCell.selectedLast{border-right:3px solid #0f6849}
+.matrixTable tbody tr:last-child td.selectedGroupCell{border-bottom:3px solid #0f6849}
+@media(max-width:800px){
+  .ratingNavigator{gap:5px;padding:6px;margin:8px 0}
+  .ratingNavigator button{flex:0 1 76px;min-height:46px;padding:5px 4px;font-size:10px;white-space:normal}
+  .ratingNavLabel strong{font-size:11px}
+  .ratingNavLabel small{font-size:10px}
+  /* Always place the selected rating on the LEFT and ingredients on the RIGHT. */
+  .groupMobile{display:grid;grid-template-columns:minmax(115px,40%) minmax(0,1fr);border:3px solid #0f6849;border-radius:10px;align-items:stretch;overflow:hidden;min-width:0}
+  .mobileGroupTitle{min-width:0;padding:10px 8px;border-right:3px solid #0f6849;background:#e7f3ea;overflow-wrap:anywhere}
+  .mobileGroupTitle h4{font-size:13px;line-height:1.35}
+  .mobileMissing{font-size:11px;line-height:1.4;margin:10px 0 5px;color:#305c48}
+  .mobileMissing strong{display:block;color:#0d5b40;font-size:15px}
+  .horizontalCue{font-size:10px;font-weight:800;color:#1e6850}
+  .mobileIngredients{min-width:0;overflow:hidden;background:#fff}
+  .mobileIngredients .fieldScroll{max-width:100%;width:100%;overflow-x:auto;overscroll-behavior-inline:contain;touch-action:pan-x pan-y}
+  .mobileIngredients .mobileTable th,.mobileIngredients .mobileTable td{min-width:148px;max-width:210px;overflow-wrap:anywhere}
+  .swipeCue{margin:0;padding:5px 8px;font-size:10px;color:#365f50;background:#f1f8f4;border-bottom:1px solid #d3e6d9}
+  .mobileIngredients .mobileAdv>summary{font-size:11px;line-height:1.4;padding:9px 8px}
+  .mobileIngredients .detailBody{padding:3px 8px 10px}
+  .mobileIngredients .sourceHint{font-size:10px;padding:7px}
+}
