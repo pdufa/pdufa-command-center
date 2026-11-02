@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
 import PoolStageExplorer from "../PoolStageExplorer";
+import Phase3ReadoutSheets from "../Phase3ReadoutSheets";
 import styles from "../FunnelWorkspace.module.css";
 
 export const metadata:Metadata={
@@ -12,6 +13,7 @@ export default function ToolsPage(){
       <p className={styles.eyebrow}>PDUFA · RESEARCH TOOLS</p>
       <h1>TOOLS</h1>
     </header>
+    <Phase3ReadoutSheets/>
     <PoolStageExplorer/>
   </main>;
 }
