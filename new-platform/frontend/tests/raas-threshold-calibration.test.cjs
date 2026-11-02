@@ -91,7 +91,7 @@ test("Even manually approved labels cannot bypass missing same-metric historical
   reviewer:"synthetic-test",note:"Test historical gates only",ratings:[{
    nctId:"NCT07363577",ticker:"LBRX",stage:"pre",snapshot:"CURRENT",
    metricId:"pre-4-1",score:50,assessedAt:"2026-11-02",sourceDate:"2026-10-27",
-   sourceUrl:"https://example.org/synthetic-score",benchmarkId,
+   sourceUrl:"https://example.org/synthetic-score",benchmarkId,ruleVersion:"synthetic-v1",
    method:"synthetic test",evidenceId:"synthetic-only",status:"VERIFIED"
   }],gates:[{name:"Eligibility",status:"PASSED"}]};
  const ledger=ledgers.parseRaasReviewedLedger({...rawLedger,records:[record]});
