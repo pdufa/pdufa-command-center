@@ -156,3 +156,29 @@ test("SURVEY case page next/previous uses validated, authenticated route and no 
  assert.match(relay,/Number\(page\)>1000000/);
  assert.match(relay,/validationCaseQuery\(req\.nextUrl\.searchParams\)/);
 });
+
+test("historical case roster explains unproven server locks, review-cycle ambiguity and absent FDA primary sources",()=>{
+ const examples=[
+  ["PREDICTION_LOCK_NOT_BEFORE_FDA_ACTION",/server receipt/i],
+  ["FDA_REVIEW_CYCLE_NOT_SCOPED",/multiple FDA actions/i],
+  ["FDA_PRIMARY_ACTION_SOURCE_NOT_VERIFIED",/FDA action source is missing/i]
+ ];
+ for(const [reason,label] of examples){
+  const caseData=base();
+  caseData.prediction_records=1;caseData.case_review.total=2;
+  caseData.case_review.returned=2;
+  caseData.case_review.reason_counts[reason]=1;
+  caseData.case_review.records.push({
+   prediction_id:"unscored",nct_id:"NCT12345678",application_id:"NDA123456:sample",
+   predicted_decision:"CRL",actual_decision:"APPROVED",decision_date:"2026-03-05",
+   prediction_created_at:"2026-01-01T00:00:00Z",
+   evidence_cutoff:"2025-12-31T00:00:00Z",
+   disposition:"EXCLUDED",reason,
+   fda_source_url:null,correctness:null
+  });
+  const audited=auditHistoricalCaseRoster(caseData);
+  assert.equal(audited.records[1].disposition,"EXCLUDED");
+  assert.equal(audited.records[1].correctness,null);
+  assert.match(caseReasonLabel(reason),label);
+ }
+});
