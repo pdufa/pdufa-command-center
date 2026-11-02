@@ -90,7 +90,7 @@ test("contradictory counts, duplicate prediction IDs or unsafe source URLs fail 
  }
 });
 test("combined SURVEY shows verified case audit and source links but no invented prediction",()=>{
- assert.match(ui,/auditHistoricalCaseRoster\(raw\)/);
+ assert.match(ui,/auditHistoricalCaseRoster\(raw,casePage\)/);
  assert.match(ui,/Historical FDA application case readiness roster/);
  assert.match(ui,/FDA historical case review/);
  assert.match(ui,/Verified FDA evidence/);
