@@ -13,6 +13,8 @@ type Bucket="pre"|"post"|"unverified";
 /** Reversible visibility-only feature; existing trial data and research sources are unchanged. */
 const SURVEY_RATINGS_PREVIEW_ENABLED=true;
 const SURVEY_VISIBILITY_KEY="phase3-readout-survey-column-visible-v1";
+const SYNTHESIS_COLUMN_ENABLED=true;
+const SYNTHESIS_VISIBILITY_KEY="phase3-survey-conjunction-visible-v1";
 const SURVEY_SECTIONS=[
  {key:"A",name:"Medical Impact",min:1,max:5},
  {key:"B",name:"Competitive Strength",min:6,max:8},
@@ -234,6 +236,113 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
    </div>
      </div>
    </div>,document.body);
+}
+
+
+/** One AND-gated, non-numeric synthesis of the existing 20 surveys / 38 questions.
+ * This is not a new clinical assessment and may be hidden without touching the original columns.
+ */
+function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurveys}:{
+ row:ReadoutRow;bucket:"pre"|"post";feed:BenefitFeed|null;
+ researchStatus:"idle"|"loading"|"ready"|"unavailable";
+ onClose:()=>void;onDetailedSurveys:()=>void;
+}){
+ const panelRef=useRef<HTMLDivElement>(null);
+ const closeRef=useRef(onClose);closeRef.current=onClose;
+ useEffect(()=>{
+   const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
+   const previousOverflow=document.body.style.overflow;
+   document.body.style.overflow="hidden";
+   panelRef.current?.focus();
+   const handleKey=(event:KeyboardEvent)=>{
+     if(event.key==="Escape"){event.preventDefault();closeRef.current();}
+   };
+   document.addEventListener("keydown",handleKey);
+   return ()=>{document.removeEventListener("keydown",handleKey);
+     document.body.style.overflow=previousOverflow;previousFocus?.focus();};
+ },[]);
+ const sameNct=feed?.records.filter(r=>r.nctId===row.nctId)||[];
+ const record=sameNct.length===1?benefitForTrial(feed,{
+   nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",
+   indication:row.evidence?.indication||""}):null;
+ const verified=(id:string)=>record?.facts[id]?.status==="VERIFIED";
+ const any=(...ids:string[])=>ids.some(verified);
+ const groups=SURVEY_SECTIONS.map(g=>{
+   const fields=BENEFIT_GROUPS.filter(s=>s.number>=g.min&&s.number<=g.max).flatMap(s=>s.fields);
+   const v=record?fields.filter(f=>verified(f.id)).length:0;
+   const modeled=record?fields.filter(f=>record.facts[f.id]?.status==="MODELED").length:0;
+   return {...g,verified:v,modeled,missing:fields.length-v-modeled,total:fields.length};
+ });
+ const rules=bucket==="pre"?[
+   {label:"Historical issuer pre-release source check",passed:row.evidence?.kind==="PRE_AS_OF_CHECK",
+    detail:"An older source check does not prove the company has not released data since."},
+   {label:"Patient population and unmet need",passed:any("eligibleUsPatients","standardOfCare","unmetNeed"),
+    detail:"At least one verified, exact-program patient-need input."},
+   {label:"Competitive environment",passed:any("closestCompetitor","competitorCount","competitivePipelineThreat"),
+    detail:"At least one sourced treatment-alternative or competitive input."},
+   {label:"Valuation and shareholder risks",passed:any("valuationImpact","shareholderRisk"),
+    detail:"At least one verified valuation or shareholder-risk research input."}
+ ]:[
+   {label:"Issuer Phase 3 data release",passed:row.evidence?.kind==="POST_PUBLIC_READOUT",
+    detail:"A public results announcement is not an FDA filing or PDUFA confirmation."},
+   {label:"Clinical benefit and effect magnitude",passed:!!verified("clinicalBenefit")&&!!verified("magnitude"),
+    detail:"Both treatment effect and its size must be independently documented."},
+   {label:"Safety and tolerability",passed:any("safetyAdvantage","seriousAes","discontinuation"),
+    detail:"Verified safety data rather than a p-value alone."},
+   {label:"Valuation and shareholder risks",passed:any("valuationImpact","shareholderRisk"),
+    detail:"Investment expectations, financing and dilution are separate from clinical significance."}
+ ];
+ const checked=researchStatus==="ready";
+ const ready=checked&&!!record&&groups.every(g=>g.verified>0)&&rules.every(r=>r.passed);
+ const summary=researchStatus==="loading"||researchStatus==="idle"?"Checking sources":
+   researchStatus==="unavailable"?"Evidence unavailable":
+   ready?"READY FOR EVIDENCE REVIEW":"ABSTAIN · EVIDENCE INCOMPLETE";
+ return createPortal(<div className={css.surveyBackdrop} role="presentation"
+     onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+   <div ref={panelRef} className={css.surveyDialog} role="dialog" aria-modal="true"
+      tabIndex={-1} aria-label={"SURVEY synthesis for "+row.ticker+" "+row.nctId}>
+     <div className={css.surveyDialogHead}>
+       <div><p className={css.surveyEyebrow}>{bucket==="pre"?"UPPER · 3 · BEFORE DATA RELEASE":"LOWER · P · AFTER DATA RELEASE"}</p>
+         <h3>SURVEY · {row.ticker}</h3><p>{row.company} · {row.nctId}</p></div>
+       <button className={css.surveyClose} type="button" onClick={onClose}>Close ✕</button>
+     </div>
+     <div className={css.surveyDialogBody}>
+       <section className={css.conjunctionSection} aria-label="Combined survey conclusion">
+         <p className={css.surveyEyebrow}>CONJUNCTIVE SURVEY SUMMARY</p>
+         <h4>{bucket==="pre"?"Readout research readiness":"Post-readout research readiness"}</h4>
+         <div className={css.conjunctionVerdict} role="status">{summary}</div>
+         <p>Combination rule: <strong>all 5 groups have verified research inputs</strong>
+           {" AND "}<strong>all relevant stage-specific checks pass</strong>.
+           Modeled inputs are shown separately and cannot pass verified gates.
+           This is an evidence-readiness decision, not an FDA probability or a forecast of stock appreciation.</p>
+         <h5>Five required groups · combined evidence</h5>
+         <div className={css.conjunctionGroups}>
+           {groups.map(g=><div key={g.key}>
+             <strong>{g.key} · {g.name}</strong>
+             <span>{record?g.verified+" verified · "+g.modeled+" modeled · "+g.missing+" unrecorded":"Not assessed"} ({g.total} questions)</span>
+           </div>)}
+         </div>
+         <h5>Stage-specific checks</h5>
+         <div className={css.conjunctionGates}>
+           {rules.map(rule=><div key={rule.label}>
+             <strong>{checked?(rule.passed?"Verified":"Not verified"):"Pending"} · {rule.label}</strong>
+             <span>{rule.detail}</span>
+           </div>)}
+         </div>
+         {researchStatus==="unavailable"&&<p role="alert">Research feed is unavailable; no readiness conclusion is inferred.</p>}
+         {checked&&!record&&<p>No unique matching research record for this NCT, ticker, therapy and indication. Not assessed is not a failed trial result.</p>}
+         <p className={css.conjunctionWarning}>
+           {bucket==="pre"?
+             "Readout guidance is not stored as a verified date/window in this dataset. This synthesis does not establish when results will be announced.":
+             "A Phase 3 p-value does not by itself establish meaningful clinical benefit. FDA filing, accepted application and PDUFA action date require separate verification."}
+         </p>
+         <button type="button" className={css.surveyOpenButton} onClick={onDetailedSurveys}>
+           Explore 20 surveys and 38 questions →
+         </button>
+       </section>
+     </div>
+   </div>
+ </div>,document.body);
 }
 
 function TrialTable({rows,bucket,showSurveys,onSurveyOpen}:{
