@@ -12,6 +12,7 @@ import {competitiveReadiness,type CompetitivePopulationScan}
   from "../lib/tools-competitive-readiness";
 import {auditTrialRatings,type RatingAuditCell} from "../lib/tools-rating-engine";
 import type {RegistryCoverage} from "../lib/registry-benefit-coverage";
+import type {RegistryPeerLeads} from "../lib/registry-competitor-leads";
 type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
   inventoryMode:boolean;loading:boolean;error:string;
@@ -79,6 +80,8 @@ export default function ToolsOpeningTrialGrid({
   const [competitionError,setCompetitionError]=useState(false);
   const [registryCoverage,setRegistryCoverage]=useState<RegistryCoverage|null>(null);
   const [registryUnavailable,setRegistryUnavailable]=useState(false);
+  const [peerLeads,setPeerLeads]=useState<Record<string,RegistryPeerLeads>|null>(null);
+  const [peerUnavailable,setPeerUnavailable]=useState(false);
   const [selectionsRestored,setSelectionsRestored]=useState(false);
   useEffect(()=>{
     const raw=readToolsPreference(TOOLS_RATINGS_STORAGE_KEY);
@@ -133,6 +136,24 @@ export default function ToolsOpeningTrialGrid({
   const registryByNct=useMemo(()=>
     new Map(registryCoverage?.records.map(record=>[record.nctId,record])||[]),
     [registryCoverage]);
+  useEffect(()=>{
+    if(!competitiveOpen||selectedStages+selectedDesignations===0){
+      setPeerLeads(null);setPeerUnavailable(false);return;
+    }
+    const controller=new AbortController();
+    setPeerUnavailable(false);
+    void fetch("/api/registry-competitor-leads",{cache:"no-store",signal:controller.signal})
+      .then(async response=>{
+        if(!response.ok)throw Error("PEER_LEADS_UNAVAILABLE");
+        const result=await response.json() as {schemaVersion:number;status:string;records:Record<string,RegistryPeerLeads>};
+        if(result.schemaVersion!==1||result.status!=="UNVERIFIED_DISCOVERY_ONLY"||
+          !result.records||typeof result.records!=="object")throw Error("PEER_LEADS_INVALID");
+        return result.records;
+      })
+      .then(records=>{if(!controller.signal.aborted)setPeerLeads(records);})
+      .catch(()=>{if(!controller.signal.aborted){setPeerLeads(null);setPeerUnavailable(true);}});
+    return ()=>controller.abort();
+  },[competitiveOpen,selectedStages,selectedDesignations]);
   useEffect(()=>{
     if(typeof window==="undefined")return;
     const clear=()=>{setExpandedRatings([]);setCompetitiveOpen(false);};
@@ -309,6 +330,23 @@ export default function ToolsOpeningTrialGrid({
                       <a href={fact.sourceUrl} target="_blank" rel="noopener noreferrer">Evidence · {fact.sourceDate}</a>
                     </p>)}
                   </details>}
+                {topic.key==="PIPE"&&peerLeads?.[row.nctId]&&
+                  peerLeads[row.nctId].totalCandidates>0&&
+                  <details className={css.competitionEvidence}>
+                    <summary>{peerLeads[row.nctId].totalCandidates} registry peer leads · unverified</summary>
+                    <p>Studies share an exact registry condition term and have a distinct recorded
+                      intervention. They are NOT confirmed treatment-line competitors,
+                      directly comparable therapies, active programs or investment candidates.</p>
+                    {peerLeads[row.nctId].displayed.map(peer=><p key={peer.nctId}>
+                      <strong>{peer.therapy}</strong> · {peer.sharedConditions.join(" / ")}
+                      · {peer.resultsPosted?"Results posted":"Results not posted"}
+                      <a href={peer.sourceUrl} target="_blank" rel="noopener noreferrer">
+                        {peer.nctId} · Registry source</a>
+                    </p>)}
+                    {peerLeads[row.nctId].truncated&&<p>Additional unreviewed leads omitted from this view.</p>}
+                  </details>}
+                {topic.key==="PIPE"&&peerUnavailable&&<span className={css.ratingUnscored}>
+                  Registry peer-lead source unavailable</span>}
               </td>;
             })}
             <td className={css.longTextCell}>{safe(row.drug)}</td>
@@ -394,6 +432,9 @@ export default function ToolsOpeningTrialGrid({
         these are not all qualified post–Phase 3 stock candidates.</span>}
       {registryUnavailable&&<span role="status">Registry evidence archive unavailable or stale;
         clinical inputs remain unscored until reverified.</span>}
+      {competitiveOpen&&<span>PIPE competitor discovery displays source-linked historical
+        trial leads with shared conditions, not validated comparative therapy ratings.
+        Those leads are deliberately excluded from CS rankings.</span>}
       {competitionError&&<span role="alert">Research evidence feed unavailable; no unverified result is scored.</span>}
     </div>
     <div className={css.footer}>
