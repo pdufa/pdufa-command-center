@@ -6,6 +6,7 @@
 import {BENEFIT_GROUPS,benefitForTrial,type BenefitFeed,type BenefitFact} from "./benefit-assessments";
 import {competitiveReadiness,type CompetitiveResearchTrial} from "./tools-competitive-readiness";
 import type {RegistrySourceRow} from "./registry-benefit-coverage";
+import type {RegistryPeerLeads} from "./registry-competitor-leads";
 
 export type RatingGroupKey="M"|"A"|"B"|"C"|"D"|"E";
 export type RatingIngredientKey="VER"|"MOD"|"MISS"|"CRIT"|"ER"|"FDA"|
@@ -13,7 +14,7 @@ export type RatingIngredientKey="VER"|"MOD"|"MISS"|"CRIT"|"ER"|"FDA"|
  "APP"|"READY"|"GRADE";
 export type EvidenceLink={field:string;status:BenefitFact["status"];url:string;date:string};
 export type RatingAuditCell={
-  label:string;explanation:string;kind:"count"|"coverage"|"status"|"unscored";
+  label:string;explanation:string;kind:"count"|"coverage"|"status"|"lead"|"unscored";
   links:EvidenceLink[];
 };
 export type RatingAudit={
@@ -43,7 +44,8 @@ const factLinks=(facts:Record<string,BenefitFact>,fields:readonly string[]):Evid
  * server-validated fact. A missing feed is NOT counted as zero evidence. */
 export function auditTrialRatings(
   row:CompetitiveResearchTrial,today:string,feed:BenefitFeed|null,
-  feedUnavailable=false,registry:RegistrySourceRow|null=null
+  feedUnavailable=false,registry:RegistrySourceRow|null=null,
+  peerLeads:RegistryPeerLeads|null=null
 ):RatingAudit{
   const matched=benefitForTrial(feed,row);
   const facts=matched?.facts||{};
@@ -93,6 +95,36 @@ export function auditTrialRatings(
   }:serious&&registryLink?input("Registry AEs",
     registry.seriousEventTerms+" serious-adverse-event term(s) recorded; counts require comparable exposure and adjudication. NOT a safety advantage.",
     "coverage",[registryLink]):safety;
+  // Same-condition registry peers are discovery leads, not verified competing
+  // products. They do NOT satisfy the clinical comparison ingredient or create
+  // a clinical/stock score; provide exact-NCT source receipts for human review.
+  const sameTrialLead=peerLeads?.nctId===row.nctId&&
+    peerLeads.status==="RESEARCH_LEADS_ONLY"?peerLeads:null;
+  const leadReceipts:EvidenceLink[]=sameTrialLead?.displayed.flatMap(candidate=>
+    /^NCT\\d{8}$/.test(candidate.nctId)&&
+    candidate.sourceUrl==="https://clinicaltrials.gov/study/"+candidate.nctId&&
+    /^\\d{4}-\\d{2}-\\d{2}T/.test(candidate.retrievedAt)?
+    [{field:candidate.nctId+" · "+candidate.therapy+" · UNVERIFIED PEER LEAD",
+      status:"MODELED" as const,url:candidate.sourceUrl,date:candidate.retrievedAt.slice(0,10)}]:[]
+  )||[];
+  const competitor=coverage(keys.COMP,"Competitor-specific differentiation");
+  const comparisonInput:RatingAuditCell=competitor.kind==="unscored"&&sameTrialLead&&
+    sameTrialLead.totalCandidates>0&&leadReceipts.length?
+    input(sameTrialLead.totalCandidates+" leads",
+      "Historical Phase 3 studies with a matching registry condition term and "+
+      "a distinct intervention. These candidates are UNVERIFIED: confirm "+
+      "treatment line, population, regimen, outcome, current commercial status "+
+      "and sponsor rights before assessing advantage. "+
+      leadReceipts.length+" source receipts displayed; "+
+      "lead counts are NOT approved competitors, clinical superiority, or stock ranks.",
+      "lead",leadReceipts)
+    :competitor.kind!=="unscored"&&leadReceipts.length?{
+      ...competitor,
+      explanation:competitor.explanation+" "+leadReceipts.length+
+        " additional unverified same-condition registry leads are available for review; "+
+        "they are excluded from the verified comparison count.",
+      links:[...competitor.links,...leadReceipts]
+    }:competitor;
   const unsupported=(name:string)=>noScore(name+": no validated source-linked rating inputs are mapped yet.");
   const critical=[
     !/^NCT\d{8}$/.test(row.nctId)||!row.ticker.trim()||!row.drug.trim()||!row.indication.trim()
@@ -121,7 +153,7 @@ export function auditTrialRatings(
       row.timeline?.pdufaTarget?[{field:"pdufaTarget",status:"VERIFIED",
         url:row.timeline.pdufaTarget.sourceUrl,date:row.timeline.pdufaTarget.date}]:[]),
     CL:clinicalInput,SAF:safetyInput,
-    COMP:coverage(keys.COMP,"Competitor-specific differentiation"),
+    COMP:comparisonInput,
     POP:coverage(keys.POP,"Patient opportunity"),ACCESS:coverage(keys.ACCESS,"Commercial access"),
     REV:coverage(keys.REV,"Revenue opportunity"),VAL:coverage(keys.VAL,"Valuation and shareholder risk"),
     CASH:unsupported("Financial strength"),MOM:unsupported("Stock momentum"),
@@ -138,7 +170,9 @@ export function auditTrialRatings(
     GRADE:unsupported("Final stock opportunity grade")
   };
   const groupCoverage=(ingredientKeys:readonly RatingIngredientKey[],groupName:string)=>{
-    const count=ingredientKeys.filter(k=>ingredients[k].kind!=="unscored").length;
+    // Discovery leads do not qualify as supporting comparison evidence.
+    const count=ingredientKeys.filter(k=>ingredients[k].kind!=="unscored"&&
+      ingredients[k].kind!=="lead").length;
     return count?input(count+"/"+ingredientKeys.length+" inputs",
       groupName+": "+count+" component(s) have source coverage or a timeline status. "+
       "Do not interpret this as a clinical or investment score.","coverage",
