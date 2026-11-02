@@ -197,7 +197,7 @@ export default function RaasHistoricalAuditPage(){
    <div className={css.stats}>
      <div><strong>{summary.topExamples}</strong><span>TOP research windows</span></div>
      <div><strong>{summary.bottomExamples}</strong><span>BOTTOM research windows</span></div>
-     <div><strong>{summary.openReviews}</strong><span>Outstanding source/market reviews</span></div>
+     <div><strong>{priceSummary.matchedPoints}/{priceSummary.quotedPoints}</strong><span>Second-source closing-price matches · adjustment pending</span></div>
      <div><strong>{sharesSummary.separatelyReportedCapMatches}/{sharesSummary.caseCount}</strong><span>Vendor cap cross-checks match · prices unverified</span></div>
    </div>
    <p className={css.disclaimer}>Corporate actions: {actionSummary.withPartialActionHistory} of {actionSummary.cases} study windows have some historical event evidence, but 0 have a completed corporate-action adjustment audit. Independent-provider research: {priceSummary.matchedPoints} of {priceSummary.quotedPoints} exact-date displayed historical closes agree; {priceSummary.bothClosesMatchedCases} of {priceSummary.caseCount} trade windows have both dates matched. Adjusted-return audits and approved predictions remain at zero. All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
