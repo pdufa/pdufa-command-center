@@ -88,6 +88,24 @@ async function finalSurveyTest(page,label){
     assert.match(body,/Grade 2 · Reluctant evidence-coverage grade/);
     assert.match(body,/FDA decision forecast:\s*ABSTAIN/);
     check(body.includes("Source-verified coverage:"),"Source coverage has to be visible");
+    const history=dialog.locator('details[aria-label="Historical FDA decision validation audit"]');
+    await history.waitFor({state:"visible",timeout:15000});
+    await history.locator(":scope > summary").click();
+    check((await history.innerText()).includes("Only predictions locked before their independently documented FDA decisions"),
+      "Historical FDA validation must explain strict prospective case eligibility");
+    await page.waitForFunction(()=>{
+      const e=document.querySelector('details[aria-label="Historical FDA decision validation audit"]');
+      const t=e?.textContent||"";
+      return t.includes("Historical validation endpoint is unavailable")||
+        t.includes("Known application outcomes");
+    },null,{timeout:50000});
+    const historyText=await history.innerText();
+    check(historyText.includes("NOT VALIDATED")||
+      historyText.includes("No accuracy or calibration is asserted"),
+      "Historical evidence cannot assert a certified model");
+    check(!historyText.includes("Model validation: VALIDATED"),
+      "Existing historical validation must not confer unsupported scientific approval");
+    await history.locator(":scope > summary").click();
     const scientific=dialog.locator('details[aria-label="Phase 3 scientific evidence verification checklist"]');
     await scientific.locator(":scope > summary").click();
     const scientificText=await scientific.innerText();

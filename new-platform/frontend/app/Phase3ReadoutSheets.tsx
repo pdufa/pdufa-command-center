@@ -11,6 +11,7 @@ import {RANKED_BENEFIT_ASSESSMENTS} from "../lib/pipeline-benefit-assessments";
 import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phase3ReadoutSortKey} from "../lib/phase3-readout-sort";
 import {finalSurveyReadiness} from "../lib/final-survey-readiness";
+import {auditFinalFdaValidation,type FinalFdaValidation} from "../lib/final-survey-fda-validation";
 import {finalSurveyNextActions} from "../lib/final-survey-next-actions";
 import {phase3ScientificEvidenceAudit} from "../lib/phase3-scientific-evidence-audit";
 import {checkPhase3PublishedArithmetic} from "../lib/phase3-published-arithmetic";
@@ -260,6 +261,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
 }){
  const panelRef=useRef<HTMLDivElement>(null);
  const [selectedScoringSurvey,setSelectedScoringSurvey]=useState(1);
+ const [outcomeValidation,setOutcomeValidation]=useState<{status:"loading"|"ready"|"unavailable";result:FinalFdaValidation|null}>({status:"loading",result:null});
  const closeRef=useRef(onClose);closeRef.current=onClose;
  useEffect(()=>{
    const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
@@ -272,6 +274,17 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
    document.addEventListener("keydown",handleKey);
    return ()=>{document.removeEventListener("keydown",handleKey);
      document.body.style.overflow=previousOverflow;previousFocus?.focus();};
+ },[]);
+ useEffect(()=>{
+   const ctrl=new AbortController();
+   void fetch("/api/phase3-trials/validation",{cache:"no-store",signal:ctrl.signal})
+     .then(async response=>{
+       if(!response.ok)throw Error("Historical outcome validation unavailable");
+       return auditFinalFdaValidation(await response.json());
+     })
+     .then(result=>{if(!ctrl.signal.aborted)setOutcomeValidation({status:"ready",result});})
+     .catch(()=>{if(!ctrl.signal.aborted)setOutcomeValidation({status:"unavailable",result:null});});
+   return ()=>ctrl.abort();
  },[]);
  const sameNct=feed?.records.filter(r=>r.nctId===row.nctId)||[];
  const record=sameNct.length===1?benefitForTrial(feed,{
@@ -379,6 +392,40 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
              "Not assessed"}
            </p>
            <p><strong>FDA decision forecast:</strong> ABSTAIN — this coverage audit cannot establish approval, a Complete Response Letter, an extension, or a probability. Scientific outcome calibration remains separate.</p>
+           <details className={css.finalSurveyMissing} aria-label="Historical FDA decision validation audit">
+             <summary>Historical FDA outcome validation · {outcomeValidation.status==="loading"?"Checking":
+               outcomeValidation.status==="unavailable"?"Unavailable":
+               outcomeValidation.result?.status==="NO_ELIGIBLE_PREDICTIONS"?"No eligible predictions":"Review required — not validated"}</summary>
+             <p>Read-only, application-specific historical outcomes. Only predictions locked before their independently documented FDA decisions can enter this audit. It does not use this trial's coverage grade to invent a forecast.</p>
+             {outcomeValidation.status==="loading"?<p role="status">Checking saved historical prediction and FDA outcome counts…</p>:
+              outcomeValidation.status==="unavailable"?<p role="status">Historical validation endpoint is unavailable or its counts did not reconcile. No accuracy or calibration is asserted.</p>:
+              outcomeValidation.result&&<>
+                <div className={css.finalFdaValidationCounts}>
+                  <div><strong>{outcomeValidation.result.knownOutcomes}</strong><span>Known application outcomes</span></div>
+                  <div><strong>{outcomeValidation.result.temporallyEligible}</strong><span>Time-eligible records</span></div>
+                  <div><strong>{outcomeValidation.result.scored}</strong><span>Scored predictions</span></div>
+                  <div><strong>{outcomeValidation.result.abstained}</strong><span>Abstentions</span></div>
+                </div>
+                <p><strong>Excluded predictions:</strong> {outcomeValidation.result.lookaheadExcluded} of {outcomeValidation.result.predictionRecords} saved records excluded for timing or missing outcome.</p>
+                <p><strong>Observed historical accuracy:</strong> {outcomeValidation.result.observedAccuracy===null?
+                  "Not reportable — fewer than 30 independently scoped scored predictions":
+                  (100*outcomeValidation.result.observedAccuracy).toFixed(1)+"% in this historical sample (not an independently validated forecast)"}.</p>
+                <div className={css.finalSurveyMatrixScroll} role="region" aria-label="FDA outcomes historical confusion summary" tabIndex={0}>
+                  <table>
+                    <thead><tr><th scope="col">Predicted FDA decision</th><th scope="col">Evaluated</th><th scope="col">Correct</th><th scope="col">Observed accuracy</th></tr></thead>
+                    <tbody>{(["PASS","CRL","EXTENSION"] as const).map(decision=><tr key={decision}>
+                      <th scope="row">{decision}</th>
+                      <td>{outcomeValidation.result!.accuracyByDecision[decision].evaluated}</td>
+                      <td>{outcomeValidation.result!.accuracyByDecision[decision].correct}</td>
+                      <td>{outcomeValidation.result!.accuracyByDecision[decision].accuracy===null?
+                        "Insufficient sample":(100*outcomeValidation.result!.accuracyByDecision[decision].accuracy!).toFixed(1)+"% · uncalibrated"}</td>
+                    </tr>)}</tbody>
+                  </table>
+                </div>
+                <p><strong>Calibration:</strong> Not established · <strong>Model validation:</strong> NOT VALIDATED.</p>
+                <p>{outcomeValidation.result.limitation}</p>
+              </>}
+           </details>
            <details className={css.finalSurveyMissing} aria-label="Phase 3 scientific evidence verification checklist">
              <summary>Scientific validation checkpoints · {scientificAudit.documented} documented · {scientificAudit.gaps} not established</summary>
              <p>This is a methodological evidence audit, not a score for treatment benefit. Source-transcribed sponsor findings still require independent adjudication.</p>
