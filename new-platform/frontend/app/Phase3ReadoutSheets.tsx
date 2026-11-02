@@ -12,6 +12,7 @@ import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phase3ReadoutSortKey} from "../lib/phase3-readout-sort";
 import {finalSurveyReadiness} from "../lib/final-survey-readiness";
 import {finalSurveyNextActions} from "../lib/final-survey-next-actions";
+import {surveyScoringAssessments,surveyScoringGateLabel} from "../lib/final-survey-scoring-protocol";
 
 type Bucket="pre"|"post"|"unverified";
 /** Reversible visibility-only feature; existing trial data and research sources are unchanged. */
@@ -256,6 +257,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  onClose:()=>void;onDetailedSurveys:()=>void;
 }){
  const panelRef=useRef<HTMLDivElement>(null);
+ const [selectedScoringSurvey,setSelectedScoringSurvey]=useState(1);
  const closeRef=useRef(onClose);closeRef.current=onClose;
  useEffect(()=>{
    const previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;
@@ -310,6 +312,8 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
        record?.facts[field.id]?.status==="MODELED"?"MODELED" as const:"UNRECORDED" as const
    })))
  });
+ const scoringAssessment=surveyScoringAssessments(record,row.evidence?.kind==="POST_PUBLIC_READOUT");
+ const selectedScoring=scoringAssessment[selectedScoringSurvey-1]||scoringAssessment[0];
  const surveyCoverage=BENEFIT_GROUPS.map(survey=>{
    const verifiedCount=record?survey.fields.filter(field=>record.facts[field.id]?.status==="VERIFIED").length:0;
    const modeledCount=record?survey.fields.filter(field=>record.facts[field.id]?.status==="MODELED").length:0;
@@ -393,23 +397,61 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
            <details className={css.finalSurveyMatrix} aria-label="Twenty survey evidence coverage matrix">
              <summary>View all 20 surveys · 38 source-check questions</summary>
              <p>Each row measures documented inputs, not clinical benefit, FDA success, or return probability. Unverified inputs cannot become zero scores.</p>
+             <p>Select a survey to reveal its scoring method and evidence blockers to the right. This is a protocol, not a calibrated rating.</p>
              <div className={css.finalSurveyMatrixScroll} role="region" aria-label="All twenty survey evidence coverage" tabIndex={0}>
-               <table>
-                 <thead><tr>
-                   <th scope="col">Survey</th><th scope="col">Verified</th>
-                   <th scope="col">Modeled</th><th scope="col">Not recorded</th>
-                   <th scope="col">Evidence coverage</th>
-                 </tr></thead>
-                 <tbody>{surveyCoverage.map(survey=><tr key={survey.number} data-final-survey-number={survey.number}>
-                   <th scope="row">{survey.number}. {survey.name}</th>
-                   <td>{record?survey.verified+" / "+survey.total:"—"}</td>
-                   <td>{record?survey.modeled:"—"}</td>
-                   <td>{record?survey.missing:"—"}</td>
-                   <td>{record?
-                     (survey.verified===survey.total?"Fully verified":survey.verified>0?"Partially verified":"Not verified"):
-                     "Not assessed"}</td>
-                 </tr>)}</tbody>
-               </table>
+               <div className={css.finalSurveyScoringLayout}>
+                 <table>
+                   <thead><tr>
+                     <th scope="col">Survey</th><th scope="col">Verified</th>
+                     <th scope="col">Modeled</th><th scope="col">Not recorded</th>
+                     <th scope="col">Evidence coverage</th><th scope="col">Scoring gate</th>
+                   </tr></thead>
+                   <tbody>{surveyCoverage.map(survey=><tr key={survey.number}
+                     data-final-survey-number={survey.number}
+                     className={selectedScoringSurvey===survey.number?css.finalSurveySelectedRow:undefined}>
+                     <th scope="row"><button type="button"
+                       className={css.finalSurveySelect}
+                       aria-pressed={selectedScoringSurvey===survey.number}
+                       aria-label={"Inspect scoring protocol for survey "+survey.number}
+                       onClick={()=>setSelectedScoringSurvey(survey.number)}>
+                       {survey.number}. {survey.name} <span aria-hidden="true">→</span>
+                     </button></th>
+                     <td>{record?survey.verified+" / "+survey.total:"—"}</td>
+                     <td>{record?survey.modeled:"—"}</td>
+                     <td>{record?survey.missing:"—"}</td>
+                     <td>{record?
+                       (survey.verified===survey.total?"Fully verified":survey.verified>0?"Partially verified":"Not verified"):
+                       "Not assessed"}</td>
+                     <td>{surveyScoringGateLabel(scoringAssessment[survey.number-1].gate)}</td>
+                   </tr>)}</tbody>
+                 </table>
+                 <aside className={css.finalSurveyScoringDetails} role="region"
+                   aria-label="Selected survey scoring method">
+                   <h5>Survey {selectedScoring.number} · {selectedScoring.name}</h5>
+                   <p><strong>Scoring gate:</strong> {surveyScoringGateLabel(selectedScoring.gate)}</p>
+                   <p><strong>Evidence basis:</strong> {selectedScoring.protocol.evidenceBasis}</p>
+                   <p><strong>Required comparison:</strong> {selectedScoring.protocol.comparisonRequired}</p>
+                   <p><strong>Interpretation method:</strong> {selectedScoring.protocol.outcomeCriterion}</p>
+                   <p><strong>Recorded inputs:</strong> {selectedScoring.verified===null?
+                     "Not assessed — no exact matched research record":
+                     selectedScoring.verified+" / "+selectedScoring.required+" verified · "+
+                     selectedScoring.modeled+" modeled · "+selectedScoring.missing+" missing · "+
+                     selectedScoring.lowConfidence+" low-confidence verified inputs"}</p>
+                   <p><strong>Numerical scientific grade:</strong> Not calibrated · no numerical score assigned.</p>
+                   {selectedScoring.missingInputs.length>0&&<>
+                     <strong>Outstanding question evidence</strong>
+                     <ul>{selectedScoring.missingInputs.map(item=><li key={item}>{item}</li>)}</ul>
+                   </>}
+                   {selectedScoring.sourceLinks.length>0&&<>
+                     <strong>Source-recorded verified inputs</strong>
+                     <ul>{selectedScoring.sourceLinks.map(source=><li key={source.label}>
+                       <a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a>
+                       {" · "+source.date+" · "+source.confidence+" confidence"}
+                     </li>)}</ul>
+                   </>}
+                   <p className={css.conjunctionWarning}>Even complete source records do not establish comparative efficacy, clinical-grade scoring, or FDA approval probability without methodological adjudication and independent validation.</p>
+                 </aside>
+               </div>
              </div>
              <button type="button" className={css.surveyOpenButton} onClick={onDetailedSurveys}>Open individual survey questions →</button>
            </details>
