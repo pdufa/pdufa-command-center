@@ -117,3 +117,13 @@
 .peerSummary strong{width:100%;color:#173e5a}
 .peerSummary span{background:#f7fbfd}
 .peerSummary small{max-width:920px}
+
+/* Optional exact-NCT registry outcome detail; compact on phone. */
+.registryDetail{padding-top:5px;white-space:normal;max-width:230px;font-size:10px}
+.registryDetail>button{color:#205b7d;background:#f3f9fd;border:1px solid #b3d0df;
+  border-radius:5px;padding:4px 6px;cursor:pointer;font-size:10px}
+.registryDetailContent{margin-top:6px;padding:7px;border:1px solid #bed4e1;background:#fff;
+  border-radius:5px;max-width:240px;text-align:left;max-height:320px;overflow:auto}
+.registryDetailContent strong{display:block;padding-top:5px}
+.registryDetailContent p{margin:4px 0;line-height:1.4;overflow-wrap:anywhere}
+.registryDetailContent a{overflow-wrap:anywhere}
