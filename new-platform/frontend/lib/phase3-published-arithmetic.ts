@@ -46,7 +46,7 @@ export function checkPhase3PublishedArithmetic(record:BenefitRecord|null):Phase3
     f.sourceDate!=="2026-09-22"||f.confidence==="LOW")return null;
  }
  const extra=oneDecimal(raw.primary.placebo-raw.primary.active);
- const strings=[
+ const strings:readonly (readonly [unknown,string])[]=[
   [facts.clinicalBenefit.value,`${raw.trial} Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W ${str(raw.primary.active)} vs placebo ${str(raw.primary.placebo)}`],
   [facts.magnitude.value,`placebo-adjusted LS mean reduction ${str(extra)} points`],
   [facts.responseRemission.value,`150 mg Q4W ${str(raw.week12.active)}% vs placebo ${str(raw.week12.placebo)}%`],
