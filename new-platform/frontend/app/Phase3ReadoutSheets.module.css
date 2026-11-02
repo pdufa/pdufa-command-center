@@ -163,3 +163,18 @@
 .postSort .resetSortingButton:focus-visible{outline:3px solid #206baf;outline-offset:2px}
 .postSort .resetSortingButton:disabled{opacity:.5;cursor:default}
 @media(max-width:640px){.postSort .resetSortingButton{min-height:44px}}
+
+/* Independent TOP/P segment accordions. Both controls and trial rows start closed. */
+.sheetSegmentButtons{display:flex;gap:8px;flex-wrap:wrap;padding:10px;background:#f7fbf8;border-top:1px solid #d6e6dc;border-bottom:1px solid #d6e6dc}
+.sheetSegmentButtons button,.sheetSegmentAllButton{min-height:44px;padding:10px 13px;border:1px solid #88b198;border-radius:8px;background:#fff;color:#184e32;font-size:13px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.sheetSegmentButtons button{display:inline-flex;gap:8px;align-items:center;justify-content:center;flex:1 1 190px;text-align:left}
+.sheetSegmentButtons button[aria-expanded="true"]{border-color:#217647;background:#eaf6ed}
+.sheetSegmentButtons button small{font-size:11px;font-weight:600;color:#5b7064}
+.sheetSegmentAllButton{background:#f1f9f3;white-space:normal}
+.sheetSegmentButtons button:focus-visible,.sheetSegmentAllButton:focus-visible{outline:3px solid #246bb0;outline-offset:2px}
+.sheetRowsSegment{min-width:0;max-width:100%}
+@media(max-width:640px){
+ .sheetSegmentButtons{padding:8px;gap:6px}
+ .sheetSegmentButtons button{min-height:48px;flex-basis:100%;justify-content:flex-start}
+ .sheetSegmentAllButton{min-height:48px}
+}
