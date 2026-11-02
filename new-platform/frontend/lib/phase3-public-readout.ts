@@ -27,7 +27,7 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
   const sourceFiles=value.sourceFiles,entries=value.entries;
   if(value.schemaVersion!==1||value.scope!==SCOPE||
     !dayOk(censusDate)||!dayOk(sourceAsOf)||
-    censusDate>sourceAsOf||
+    (censusDate as string)>(sourceAsOf as string)||
     !Array.isArray(sourceFiles)||
     sourceFiles.length!==2||
     !sourceFiles.includes("data/phase3_pre_readout_evidence.csv")||
@@ -43,15 +43,15 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
     const evidenceDate=row.evidenceDate,evidenceUrl=row.evidenceUrl;
     const drug=row.drug,indication=row.indication;
     if(typeof nctId!=="string"||!/^NCT\d{8}$/.test(nctId)||
-      typeof ticker!=="string"||known.has(nctId)||
-      censusIds.get(nctId)?.ticker!==ticker||
+      typeof ticker!=="string"||known.has(nctId as string)||
+      censusIds.get(nctId as string)?.ticker!==ticker||
       !["PRE_AS_OF_CHECK","POST_PUBLIC_READOUT"].includes(String(kind))||
-      !dayOk(evidenceDate)||evidenceDate>sourceAsOf||
+      !dayOk(evidenceDate)||(evidenceDate as string)>(sourceAsOf as string)||
       !sourceUrlOk(evidenceUrl)||
       typeof drug!=="string"||typeof indication!=="string"||
       drug.length>300||indication.length>300)return fail();
-    known.set(nctId,{
-      nctId,ticker,kind:kind as ReadoutKind,evidenceDate,evidenceUrl,drug,indication
+    known.set(nctId as string,{
+      nctId:nctId as string,ticker:ticker as string,kind:kind as ReadoutKind,evidenceDate:evidenceDate as string,evidenceUrl:evidenceUrl as string,drug:drug as string,indication:indication as string
     });
   }
   const pre:ReadoutRow[]=[],post:ReadoutRow[]=[],unverified:ReadoutRow[]=[];
@@ -68,6 +68,6 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
   pre.sort(byTicker);post.sort(byTicker);unverified.sort(byTicker);
   return {
     pre,post,unverified,total:census.length,
-    censusDate,sourceAsOf,sourceFiles:sourceFiles as string[]
+    censusDate:censusDate as string,sourceAsOf:sourceAsOf as string,sourceFiles:sourceFiles as string[]
   };
 }
