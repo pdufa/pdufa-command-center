@@ -256,3 +256,12 @@
 .scientificAuditCheck{background:#f8faf9;border:1px solid #d4e1d9;border-radius:7px;padding:9px 11px}
 .scientificAuditCheck strong{font-size:13px;line-height:1.45;color:#214735}
 .scientificAuditCheck p{font-size:12px;line-height:1.55;margin:5px 0 0;color:#425a4c}
+
+/* On touch-sized screens a right-sticky scoring panel overlaps the survey
+ * row buttons after horizontal scrolling and steals taps. Preserve the
+ * requested right-hand panel in document flow without overlaying its table. */
+@media(max-width:640px){
+ .finalSurveyScoringDetails{position:static;right:auto;top:auto;max-height:none;overflow-y:visible}
+ .finalSurveyScoringLayout{align-items:start}
+ .finalSurveySelect{min-height:44px;touch-action:manipulation}
+}
