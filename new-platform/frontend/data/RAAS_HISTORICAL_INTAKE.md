@@ -35,14 +35,20 @@ Updated 2026-11-02. This document is an implementation contract, not a completed
 
 ## Source-backed retrospective research examples, added 2026-11-02
 
+The dedicated page `/raas-history` now audits each registered TOP/BOTTOM example separately. `lib/raas-history-audit.ts` lists documented source claims, price/corporate-action verification, SEC financing reconciliation, peer comparison and the lack of original predictions. The separately reviewed `data/raas-retrospective-asof-evidence.json` adds nine dated, structured clinical/financial observations across four BOTTOM programs. The validator `lib/raas-retrospective-asof-evidence.ts` rejects facts first published after the retrospectively selected entry date and prevents a single-arm rate from becoming a placebo comparison. This research does not establish any RAAS score.
+
+
 These are *observed* historic closing-price illustrations, not historical RAAS forecasts. Entry and exit windows were selected **after** knowing subsequent outcomes. No case has been moved into the validated ex-ante `raas-historical-cases.json` registry. Market-cap and price vendors are external and corporate-action adjustments and execution costs still need independent auditing.
 
-| Phase | Program | Historical entry and exit closes | Gross change | Future event (not known at entry) |
+| Phase | Program | Historical entry and exit closes | Gross change | Later event (unknown at entry) |
 |---|---|---|---:|---|
-| TOP | GERN / imetelstat / MDS (IMerge) | 2022-11-18 $2.26 → 2022-12-30 $2.42 | +7.08% | Phase 3 public data 2023-01-04 |
+| TOP | GERN / imetelstat / MDS | 2022-11-18 $2.26 → 2022-12-30 $2.42 | +7.08% | Phase 3 public data 2023-01-04 |
+| TOP | MDGL / resmetirom / NASH | 2022-11-18 $72.80 → 2022-12-16 $63.80 | −12.36% | Phase 3 public data 2022-12-19 |
 | BOTTOM | VRNA / ensifentrine / COPD | 2024-05-10 $14.85 → 2024-06-21 $15.00 | +1.01% | FDA action 2024-06-26 |
-| BOTTOM | GERN / imetelstat / MDS | 2024-05-03 $3.93 → 2024-05-31 $3.55 | −9.67% | FDA action **2024-06-06**, **before** 2024-06-16 PDUFA target |
-| BOTTOM | URGN / UGN-102 / bladder cancer | 2025-03-14 $11.07 → 2025-06-06 $7.37 | −33.42% | FDA action 2025-06-12, before 2025-06-13 PDUFA target |
+| BOTTOM | GERN / imetelstat / MDS | 2024-05-03 $3.93 → 2024-05-31 $3.55 | −9.67% | FDA action **2024-06-06**, ahead of 2024-06-16 PDUFA target |
+| BOTTOM | URGN / UGN-102 / bladder cancer | 2025-03-14 $11.07 → 2025-06-06 $7.37 | −33.42% | FDA action 2025-06-12, ahead of 2025-06-13 PDUFA target |
+| BOTTOM | MDGL / resmetirom / NASH | 2023-11-03 $146.89 → 2024-03-08 $255.32 | +73.82% | FDA action 2024-03-14 |
+| BOTTOM | BBIO / acoramidis / ATTR-CM | 2024-05-10 $29.10 → 2024-11-15 $23.72 | −18.49% | FDA action 2024-11-22, ahead of 2024-11-29 PDUFA target |
 
 Primary company announcements and FDA sources, plus market-cap and closing-price vendor URLs, are attached to each record in `data/raas-retrospective-top-cases.json` and `data/raas-retrospective-source-cases.json`.
 
@@ -55,7 +61,7 @@ Research-only intake validators:
 
 ## Known gaps as of 2026-11-02
 
-- Genuine, precommitted historical investment-prediction cases: **0 reviewed**. Historic pre-entry RAAS metric score records: **0 reviewed**. Four separately labeled retrospective observational windows are available for source-intake testing, but are **not** admissible model performance records.
+- Genuine, precommitted historical investment-prediction cases: **0 reviewed**. Historic pre-entry RAAS metric score records: **0 reviewed**. Seven separately labeled retrospective observational windows are available for source-intake testing, but are **not** admissible model performance records.
 - Historical source-backed pilot observations cover five NCT records but not actionable, verified pre-entry stock valuation/return timelines. Two CLDX records are one underlying barzolvolimab-CSU asset.
 - FDA target and full stock-price/financing sources have not been authenticated for BOTTOM pilot investments, so there is no qualified BOTTOM return forecast.
 - No 0–100 RAAS metric has completed independent calibration. Only one experimental **readout-window specificity** research score exists, expressly excluded from overall RAAS.
