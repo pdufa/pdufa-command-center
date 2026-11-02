@@ -24,11 +24,11 @@ export type ProspectiveSourceFeed={
  sourceAsOf:string;note:string;records:ProspectiveSourceBaseline[];
 };
 const dateOk=(s:unknown):s is string=>typeof s==="string"&&
- /^\\d{4}-\\d{2}-\\d{2}$/.test(s)&&
+ /^\d{4}-\d{2}-\d{2}$/.test(s)&&
  !Number.isNaN(Date.parse(s+"T00:00:00Z"))&&
  new Date(s+"T00:00:00Z").toISOString().slice(0,10)===s;
 const secureUrl=(s:unknown):s is string=>typeof s==="string"&&
- /^https:\\/\\/[^\\s/@:?#]+(?:\\:[0-9]+)?\\/\\S+$/.test(s)&&!s.includes("@");
+ /^https:\/\/[^\s/@:?#]+(?:\:[0-9]+)?\/\S+$/.test(s)&&!s.includes("@");
 const present=(s:unknown):s is string=>typeof s==="string"&&s.trim().length>0&&s.length<1500;
 const key=(r:{nctId:string;ticker:string;drug:string;indication:string})=>
  [r.nctId,r.ticker,r.drug,r.indication].map(s=>s.trim().toLowerCase()).join("|");
@@ -41,7 +41,7 @@ export function parseProspectiveSourceBaselines(input:unknown):ProspectiveSource
    f.records.length>2000)throw Error("RAAS_PROSPECTIVE_FEED_INVALID");
  const ids=new Set<string>(),unique=new Set<string>();
  for(const r of f.records){
-  if(!r||!present(r.id)||ids.has(r.id)||!/^NCT\\d{8}$/.test(r.nctId)||
+  if(!r||!present(r.id)||ids.has(r.id)||!/^NCT\d{8}$/.test(r.nctId)||
    !present(r.ticker)||!present(r.drug)||!present(r.indication)||
    (r.stage!=="pre"&&r.stage!=="post")||
    !dateOk(r.capturedOn)||r.capturedOn>f.sourceAsOf||
