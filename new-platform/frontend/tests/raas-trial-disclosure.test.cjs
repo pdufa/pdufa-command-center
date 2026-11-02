@@ -63,6 +63,8 @@ test("no scores invented; related research data is only displayed as candidate e
  assert.match(raas,/Related research fields · not a metric score/);
  assert.match(raas,/exactReadoutBenefit\(row,benefitFeed\)/);
  assert.match(raas,/Pending validated calculation/);
+ assert.match(raas,/PilotEvidence/);
+ assert.match(raas,/computeRaasScore\(/);
  assert.match(specs,/precommitted/);
  assert.match(specs,/missing data/i);
 });
