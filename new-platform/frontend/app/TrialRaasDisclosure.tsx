@@ -22,6 +22,7 @@ import {evaluateHistoricalFeed,parseHistoricalFeed,walkForwardFolds,RAAS_HISTORI
 import {evaluateMetricHistory,parseMetricHistory} from "../lib/raas-metric-backtest";
 import {parseRetrospectiveFeed,retrospectiveResults,observedClinicalRateDifference} from "../lib/raas-retrospective-intake";
 import {parseTopRetrospective,topRetrospectiveResults} from "../lib/raas-top-retrospective-intake";
+import {pairRetrospectivePrograms} from "../lib/raas-retrospective-pairs";
 
 type ResearchStatus="idle"|"loading"|"ready"|"unavailable";
 type Coverage=ReturnType<typeof readoutResearchCoverage>;
@@ -34,6 +35,7 @@ const retrospectiveFeed=parseRetrospectiveFeed(retrospectiveExamples);
 const retrospectiveWindows=retrospectiveResults(retrospectiveFeed);
 const retrospectiveTopFeed=parseTopRetrospective(retrospectiveTopExamples);
 const retrospectiveTopWindows=topRetrospectiveResults(retrospectiveTopFeed);
+const retrospectivePairs=pairRetrospectivePrograms(retrospectiveTopFeed,retrospectiveTopWindows,retrospectiveFeed,retrospectiveWindows);
 const metricHistoryReview=evaluateMetricHistory(historicalFeed,historicalValidation,parseMetricHistory(historicalMetricSnapshots));
 const calibrationRegistry=parseRaasCalibrations(approvedCalibrations);
 const reviewedLedger=parseRaasReviewedLedger(reviewedSnapshots);
@@ -191,6 +193,18 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
              <a href={original.publicReadoutSourceUrl} target="_blank" rel="noopener noreferrer">Public Phase 3 outcome (future at entry)</a>
            </div>;
          })}
+         <details className={css.anchorDetails}>
+           <summary>Same-drug TOP versus BOTTOM comparisons · {retrospectivePairs.length} matched examples ▸</summary>
+           <div className={css.historicalStatus}>
+             {retrospectivePairs.length===0?<p>No same-drug historical examples available for comparison.</p>:
+               retrospectivePairs.map(pair=><div key={pair.pre.id+pair.post.id} className={css.pilotObservation}>
+                 <strong>{pair.ticker} · {pair.drug} · {pair.sharedNctIds.join(", ")}</strong>
+                 <p>TOP {pair.pre.entryDate} to {pair.pre.exitDate}: <strong>{pair.pre.grossPercent>=0?"+":""}{pair.pre.grossPercent.toFixed(2)}%</strong></p>
+                 <p>BOTTOM {pair.post.entryDate} to {pair.post.exitDate}: <strong>{pair.post.grossPercent>=0?"+":""}{pair.post.grossPercent.toFixed(2)}%</strong></p>
+                 <p>Separate retrospectively selected windows. Returns must not be combined or counted as two independent company/program validation observations.</p>
+               </div>)}
+           </div>
+         </details>
          <p>These examples are held in separate retrospective TOP and BOTTOM research ledgers. They do not enter the qualified, timestamped RAAS scoring or return-validation calculations.</p>
        </div>
      </details>
