@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_RETROSPECTIVE_EVIDENCE_INTAKE",
   "sourceAsOf": "2026-11-02",
-  "note": "Two independently identified historical biotech program examples selected retrospectively, not pre-entry forecasts. Price data are third-party vendor closes, adjustment basis and actual execution not verified. Do not import into the approved RAAS prediction ledger.",
+  "note": "Three independent historical post-Phase3 public-company investment examples using retrospective, source-checked closes, not archived forecasts. Prices and capitalization come from third-party vendors; corporate-action adjustments, execution and exact entry feasibility still require audit. Never import into approved RAAS prediction metrics.",
   "records": [
     {
       "id": "vrna-ensifentrine-copd-2024-illustrative",
@@ -144,6 +144,73 @@
       },
       "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
       "reviewNote": "Real published historical closes show a sizable price decline from an arbitrarily selected March 14 entry to June 6; post-entry FDA approval is a future outcome. Does not demonstrate RAAS predictive accuracy or an executable strategy."
+    },
+    {
+      "id": "gern-imetelstat-mds-2024-illustrative",
+      "ticker": "GERN",
+      "drug": "imetelstat (RYTELO)",
+      "indication": "Transfusion-dependent anemia in lower-risk myelodysplastic syndromes",
+      "nctIds": [
+        "NCT02598661"
+      ],
+      "stage": "post",
+      "historicalWindowSelected": "RETROSPECTIVELY",
+      "entryDecisionArchiveAvailable": false,
+      "verifiedBeforeEntry": [
+        {
+          "kind": "PHASE3_PUBLIC_READOUT",
+          "date": "2023-01-04",
+          "sourceUrl": "https://ir.geron.com/news-releases/news-release-details/geron-announces-positive-top-line-results-imerge-phase-3-trial",
+          "notes": "Geron public IMerge Phase 3 results including the transfusion independence endpoint."
+        },
+        {
+          "kind": "PDUFA_CONFIRMED",
+          "date": "2024-02-28",
+          "sourceUrl": "https://ir.geron.com/news-releases/news-release-details/geron-corporation-reports-business-highlights-and-fourth-quarter",
+          "notes": "Geron quarterly business update states June 16, 2024 FDA PDUFA target; not the actual decision date."
+        },
+        {
+          "kind": "PRE_ENTRY_COMPANY_UPDATE",
+          "date": "2024-05-02",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024051565/gern-ex99_1.htm",
+          "notes": "Issuer quarterly update on May 2, 2024 reaffirmed the June 16 PDUFA and discussed prior advisory committee vote."
+        }
+      ],
+      "pdufaDate": "2024-06-16",
+      "entry": {
+        "date": "2024-05-03",
+        "close": 3.93,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/GERN/summary/price"
+      },
+      "exit": {
+        "date": "2024-05-31",
+        "close": 3.55,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/GERN/summary/price"
+      },
+      "marketCapAtEntry": {
+        "usdMillions": 2331,
+        "sourceUrl": "https://www.financecharts.com/stocks/GERN/summary/market-cap",
+        "basis": "Third-party May 3, 2024 market cap, as reported; share-count/corporate-action reconciliation pending."
+      },
+      "realizedFDAAction": {
+        "date": "2024-06-06",
+        "status": "FDA_APPROVED",
+        "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-imetelstat-low-intermediate-1-risk-myelodysplastic-syndromes-transfusion-dependent",
+        "isPostEntryKnowledge": true
+      },
+      "eventQuality": {
+        "priceCorporateActionChecked": false,
+        "exchangeHolidayCalendarChecked": false,
+        "tradingFrictionAssessed": false,
+        "actualTradeOrArchivedPrediction": false,
+        "eligibleForValidatedRAAS": false
+      },
+      "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
+      "reviewNote": "FDA acted June 6 before its announced June 16 target. This example intentionally exits May 31, before the early decision; a PDUFA-minus-three-only exit would have crossed an unexpected regulatory binary. Never infer that the early action date was forecastable."
     }
   ]
 }
