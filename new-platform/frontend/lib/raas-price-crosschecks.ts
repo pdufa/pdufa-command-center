@@ -10,7 +10,7 @@ export type Crosscheck={
  secondaryProvider:string;sourceUrl:string;
  quoteGranularity:"DAILY_SESSION_CLOSE"|"WEEKLY_FRIDAY_CLOSE";
  sourceQuoteBasis:"NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED";
- sourceDisplayDate:string;note:string;
+ sourceDisplayDate:string;sourceFirstPublishedAt?:string;note:string;
 };
 export type PriceCrosscheckFeed={
  schemaVersion:1;scope:"RAAS_HISTORICAL_SECOND_PROVIDER_CLOSE_CHECKS";
@@ -21,6 +21,7 @@ export type PriceCheckResult={
  secondaryClose:number|null;secondaryProvider:string|null;
  quoteGranularity:"DAILY_SESSION_CLOSE"|"WEEKLY_FRIDAY_CLOSE"|null;
  originalUrl:string;secondaryUrl:string|null;
+ sourceFirstPublishedAt:string|null;postExitDisclosure:boolean;
  differenceUsd:number|null;differencePercent:number|null;
  status:"PROVIDER_PRICE_MATCH"|"PROVIDER_PRICE_MISMATCH"|"SECOND_SOURCE_MISSING";
 };
@@ -55,6 +56,7 @@ export function parsePriceCrosschecks(input:unknown,top:TopRetrospectiveFeed,bot
     !Number.isFinite(r.secondaryClose)||r.secondaryClose<=0||
     !r.secondaryProvider?.trim()||!url(r.sourceUrl)||!r.note?.trim()||
     !validDate(r.sourceDisplayDate)||r.sourceDisplayDate>feed.sourceAsOf||
+    (r.sourceFirstPublishedAt!==undefined&&(!validDate(r.sourceFirstPublishedAt)||r.sourceFirstPublishedAt>feed.sourceAsOf))||
     !["DAILY_SESSION_CLOSE","WEEKLY_FRIDAY_CLOSE"].includes(r.quoteGranularity)||
     r.currency!=="USD"||
     r.sourceQuoteBasis!=="NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED")
@@ -80,7 +82,8 @@ export function priceAuditForCase(feed:PriceCrosscheckFeed,top:TopRetrospectiveF
   const secondaries=feed.observations.filter(x=>x.caseId===id&&x.side===side);
   if(!secondaries.length)return {side,date:baseline.date,originalClose:baseline.close,
    secondaryClose:null,secondaryProvider:null,quoteGranularity:null,originalUrl:baseline.sourceUrl,
-   secondaryUrl:null,differenceUsd:null,differencePercent:null,status:"SECOND_SOURCE_MISSING"};
+   secondaryUrl:null,sourceFirstPublishedAt:null,postExitDisclosure:false,
+   differenceUsd:null,differencePercent:null,status:"SECOND_SOURCE_MISSING"};
   // Different secondary providers with conflicting prices do not silently
   // validate an existing vendor number.
   const primary=secondaries[0],difference=primary.secondaryClose-baseline.close;
@@ -91,6 +94,8 @@ export function priceAuditForCase(feed:PriceCrosscheckFeed,top:TopRetrospectiveF
    secondaryClose:primary.secondaryClose,secondaryProvider:primary.secondaryProvider,
    quoteGranularity:primary.quoteGranularity,
    originalUrl:baseline.sourceUrl,secondaryUrl:primary.sourceUrl,
+   sourceFirstPublishedAt:primary.sourceFirstPublishedAt??null,
+   postExitDisclosure:primary.sourceFirstPublishedAt!==undefined&&primary.sourceFirstPublishedAt>original.exit.date,
    differenceUsd:Math.round(difference*10000)/10000,
    differencePercent:Math.round(difference/baseline.close*10000)/100,
    status:matches?"PROVIDER_PRICE_MATCH":"PROVIDER_PRICE_MISMATCH"};
