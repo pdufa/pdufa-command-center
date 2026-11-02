@@ -10,6 +10,7 @@ import {COMPETITIVE_STRATEGY_TOPICS} from "../lib/tools-competitive-strategy";
 import {parseBenefitFeed,benefitForTrial,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
 import {competitiveReadiness,type CompetitivePopulationScan}
   from "../lib/tools-competitive-readiness";
+import {auditTrialRatings,type RatingAuditCell} from "../lib/tools-rating-engine";
 type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
   inventoryMode:boolean;loading:boolean;error:string;
@@ -22,6 +23,21 @@ const format=(n:number)=>n.toLocaleString("en-US");
 const safe=(v:string)=>v?.trim()||"Not recorded";
 const designationNames=new Map(SPECIAL_DESIGNATION_CATEGORIES.map(({key,label})=>[key,label]));
 const extraColumns=3;
+function ResearchAuditCell({cell}:{cell:RatingAuditCell}){
+  const text=<span className={cell.kind==="unscored"?css.ratingUnscored:css.ratingEvidenceValue}
+    title={cell.explanation}>{cell.label}</span>;
+  return <div className={css.ratingAudit}>
+    {text}
+    {cell.kind!=="unscored"&&<details><summary aria-label={"Evidence details for "+cell.label}>Why?</summary>
+      <p>{cell.explanation}</p>
+      {cell.links.map(link=><p key={link.field+"|"+link.url}>
+        <strong>{link.field}</strong> · {link.status.toLowerCase()}
+        {" · "}<a href={link.url} target="_blank" rel="noopener noreferrer">
+          Source {link.date}</a>
+      </p>)}
+    </details>}
+  </div>;
+}
 const RATING_GROUPS=[
  {key:"M",name:"Missing",ingredients:[{key:"VER",name:"Verified inputs"},{key:"MOD",name:"Modeled inputs"},{key:"MISS",name:"Missing inputs"},{key:"CRIT",name:"Critical gaps"}]},
  {key:"A",name:"Evidence",ingredients:[{key:"ER",name:"Evidence readiness"},{key:"FDA",name:"Regulatory readiness"}]},
@@ -77,9 +93,12 @@ export default function ToolsOpeningTrialGrid({
     saveToolsPreference(TOOLS_COMPETITION_STORAGE_KEY,competitiveOpen);
   },[expandedRatings,competitiveOpen,selectionsRestored]);
   useEffect(()=>{
-    if(!competitiveOpen)return;
+    if(selectedStages+selectedDesignations===0){
+      setCompetitionEvidence(null);setCompetitionError(false);return;
+    }
     const controller=new AbortController();
     setCompetitionError(false);
+    // Rating inputs load whenever trials are selected: opening CS is NOT required.
     void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
       .then(async response=>{
         if(!response.ok)throw Error("BENEFIT_FEED_UNAVAILABLE");
@@ -88,7 +107,7 @@ export default function ToolsOpeningTrialGrid({
       .then(data=>{if(!controller.signal.aborted)setCompetitionEvidence(data);})
       .catch(()=>{if(!controller.signal.aborted){setCompetitionEvidence(null);setCompetitionError(true);}});
     return ()=>controller.abort();
-  },[competitiveOpen]);
+  },[selectedStages,selectedDesignations]);
   useEffect(()=>{
     if(typeof window==="undefined")return;
     const clear=()=>{setExpandedRatings([]);setCompetitiveOpen(false);};
@@ -211,6 +230,7 @@ export default function ToolsOpeningTrialGrid({
           </td></tr>
           :ordered.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);
             const readiness=competitiveReadiness(row,today,competitionEvidence);
+            const audit=auditTrialRatings(row,today,competitionEvidence,competitionError);
             const statusLabel=readiness.status==="NO_VERIFIED_PUBLIC_READOUT"
               ?"Readout not verified":readiness.status==="PDUFA_DATE_UNVERIFIED"
               ?"PDUFA unverified":readiness.status==="PDUFA_CUTOFF_REACHED"
@@ -273,14 +293,14 @@ export default function ToolsOpeningTrialGrid({
               return <Fragment key={group.key}>
                 <td className={[css.ratingCell,open?css.ratingOpen:"",
                     css.ratingStart,!open?css.ratingEnd:""].filter(Boolean).join(" ")}
-                    title={group.name+" combined rating not yet calculated from verified research"}>
-                  <span className={css.ratingUnscored}>N/A</span>
+                    title={group.name+": research input audit, not a validated benefit or investment score"}>
+                  <ResearchAuditCell cell={audit.group[group.key]}/>
                 </td>
                 {open&&group.ingredients.map((ingredient,i)=><td key={ingredient.key}
                   className={[css.ratingCell,css.ratingOpen,
                     i===group.ingredients.length-1?css.ratingEnd:""].filter(Boolean).join(" ")}
-                  title={ingredient.name+": not yet scored from verified source data"}>
-                  <span className={css.ratingUnscored}>N/A</span>
+                  title={ingredient.name+": source-backed input coverage or explicit unscored status"}>
+                  <ResearchAuditCell cell={audit.ingredient[ingredient.key]}/>
                 </td>)}
               </Fragment>;
             })}
@@ -336,7 +356,12 @@ export default function ToolsOpeningTrialGrid({
       Tap any rating heading to expand its ingredient columns <strong>to the right</strong> inside one outline.
       <button type="button" onClick={()=>setExpandedRatings(RATING_GROUPS.map(g=>g.key))}>Expand all ratings</button>
       <button type="button" onClick={()=>setExpandedRatings([])}>Collapse all ratings</button>
-      <span>N/A means no source-verified score has been computed; it does not mean zero.</span>
+      <span><strong>Research inputs are now connected:</strong> M counts sourced/modeled/missing inputs;
+        A reports evidence and date-gate readiness; B/C/D show supporting evidence coverage where available.
+        These are not efficacy, approval-probability, competitive superiority or stock-return scores.
+        E's appreciation/grade remains N/A until the ranking method has been validated.
+        N/A does not mean zero.</span>
+      {competitionError&&<span role="alert">Research evidence feed unavailable; no unverified result is scored.</span>}
     </div>
     <div className={css.footer}>
       <span>{!hasSelection?"Showing 0 of 0 · No trial filters selected":!loading&&!error?("Showing "+(total?offset+1:0)+"–"+Math.min(offset+rows.length,total)+" of "+format(total)):"Awaiting matching records"} · Page sort only</span>
