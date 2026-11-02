@@ -110,3 +110,10 @@
 .ratingAudit p{font-size:10px;line-height:1.4;white-space:normal;margin:5px 0;max-width:200px;
   overflow-wrap:anywhere}
 .ratingAudit a{display:inline-block;overflow-wrap:anywhere}
+
+/* Source-scoped competitor-research progress, never a verified opponent count. */
+.peerSummary{width:100%;display:flex;gap:5px;flex-wrap:wrap;align-items:center;
+  border-top:1px solid #b7d0dd;padding:8px 0 2px;margin-top:3px}
+.peerSummary strong{width:100%;color:#173e5a}
+.peerSummary span{background:#f7fbfd}
+.peerSummary small{max-width:920px}
