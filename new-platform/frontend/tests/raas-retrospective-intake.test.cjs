@@ -13,9 +13,9 @@ require.extensions[".ts"]=(module,filename)=>{
 };
 const intake=require("../lib/raas-retrospective-intake.ts");
 const raw=require("../data/raas-retrospective-source-cases.json");
-test("two independently sourced historical post-Phase3 windows are NOT treated as predictions",()=>{
+test("three independently sourced historical post-Phase3 windows are NOT treated as predictions",()=>{
  const feed=intake.parseRetrospectiveFeed(raw);
- assert.equal(feed.records.length,2);
+ assert.equal(feed.records.length,3);
  const record=feed.records[0];
  assert.equal(record.ticker,"VRNA");
  assert.equal(record.stage,"post");
@@ -29,7 +29,7 @@ test("two independently sourced historical post-Phase3 windows are NOT treated a
  assert.equal(record.marketCapAtEntry.usdMillions,1204);
  assert.ok(record.verifiedBeforeEntry.every(e=>e.date<=record.entry.date));
  const outcomes=intake.retrospectiveResults(feed);
- assert.equal(outcomes.length,2);
+ assert.equal(outcomes.length,3);
  assert.equal(outcomes[0].observedGrossChangePercent,1.01);
  assert.equal(outcomes[0].calendarCutoff,"2024-06-23");
  assert.equal(outcomes[0].status,"RESEARCH_ONLY_NOT_CALIBRATED");
@@ -43,6 +43,14 @@ test("two independently sourced historical post-Phase3 windows are NOT treated a
  assert.equal(urgn.forecastScore,null);
  assert.equal(urgn.forecastError,null);
  assert.notEqual(urgn.programKey,outcomes[0].programKey);
+ const gern=outcomes.find(o=>o.ticker==="GERN");
+ assert.ok(gern);
+ assert.equal(gern.observedGrossChangePercent,-9.67);
+ assert.equal(gern.calendarCutoff,"2024-06-13");
+ assert.equal(gern.marketCapUsdMillions,2331);
+ assert.notEqual(gern.programKey,urgn.programKey);
+ assert.equal(feed.records.find(r=>r.ticker==="GERN").realizedFDAAction.date,"2024-06-06");
+ assert.ok(gern.exitDate<feed.records.find(r=>r.ticker==="GERN").realizedFDAAction.date);
 });
 test("research-only feed can never masquerade as pre-committed trade predictions or validated RAAS",()=>{
  const mutate=(changes)=>({...raw,records:[{...raw.records[0],...changes}]});
@@ -65,6 +73,9 @@ test("impossible cutoff, post-entry source and incorrect historical market cap a
  assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
   verifiedBeforeEntry:[...base.verifiedBeforeEntry,{kind:"PHASE3_PUBLIC_READOUT",date:"2024-05-14",sourceUrl:"https://example.org/later",notes:"Late"}]
  })),/RAAS_RETROSPECTIVE_SOURCE_INVALID/);
+ assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
+  exit:{...base.exit,date:"2024-06-26"}
+ })),/RAAS_RETROSPECTIVE_WINDOW_INVALID/);
  assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
   marketCapAtEntry:{...base.marketCapAtEntry,usdMillions:10001}
  })),/RAAS_RETROSPECTIVE_MARKET_CAP_INVALID/);
