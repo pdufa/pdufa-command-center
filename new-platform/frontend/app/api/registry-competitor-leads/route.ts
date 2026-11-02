@@ -3,7 +3,7 @@ import {readFile} from "node:fs/promises";
 import {join} from "node:path";
 import {authConfigured,COOKIE_NAME,hasSession} from "../../../lib/auth";
 import {registryCoverageFromSnapshot} from "../../../lib/registry-benefit-coverage";
-import {discoverRegistryPeerLeads} from "../../../lib/registry-competitor-leads";
+import {discoverRegistryPeerLeads,summarizeRegistryPeerLeads} from "../../../lib/registry-competitor-leads";
 import type {RegistryBenefitResearch} from "../../../lib/registry-benefit-research";
 
 export const runtime="nodejs";
@@ -23,9 +23,10 @@ export async function GET(req:NextRequest){
     const records=raw.records as RegistryBenefitResearch[];
     if(records.length!==audited.records.length)throw Error("REGISTRY_PEER_COVERAGE_MISMATCH");
     const result=discoverRegistryPeerLeads(records,8);
+    const summary=summarizeRegistryPeerLeads(records,result);
     return NextResponse.json({schemaVersion:1,sourceAsOf:audited.sourceAsOf,
       status:"UNVERIFIED_DISCOVERY_ONLY",scope:"375_HISTORICAL_PHASE3_ARCHIVE",
-      records:result},{headers});
+      summary,records:result},{headers});
   }catch{
     return NextResponse.json({error:"Competitor discovery archive unavailable or stale; do not infer zero competitors"},
       {status:503,headers});
