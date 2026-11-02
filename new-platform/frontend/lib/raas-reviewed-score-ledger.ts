@@ -96,9 +96,13 @@ export function reviewedScoreForTrial(
   // An approval registry alone is insufficient: require independent, ex-ante
   // same-metric return observations before any numeric grade is admitted.
   const historySupported=!!history&&history.status==="REVIEW_ELIGIBLE_NOT_APPROVED"&&
-   history.independentPrograms>=Math.max(30,cal?.outOfSampleTrials??30)&&
+   history.protocolConsistent&&history.benchmarkId===cal?.benchmarkId&&
+   history.ruleVersion===cal?.ruleVersion&&
+   history.holdoutTrainPrograms>=30&&
+   history.holdoutTestPrograms>=Math.max(30,cal?.outOfSampleTrials??30)&&
    history.spearmanScoreToReturn!==null;
-  return !!cal&&historySupported&&cal.benchmarkId===r.benchmarkId&&cal.validatedAt<=r.assessedAt;
+  return !!cal&&historySupported&&cal.benchmarkId===r.benchmarkId&&
+   cal.validatedAt<=r.assessedAt;
  });
  const grade=computeRaasScore({stage,snapshot,asOf:record.asOf,
   trial:{nctId:trial.nctId,ticker:trial.ticker},ratings:accepted,gates:record.gates});
