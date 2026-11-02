@@ -67,7 +67,7 @@ function TrialTable({rows,bucket}:{rows:ReadoutRow[];bucket:Bucket}){
       <tbody>{rows.length?rows.map((row,i)=><tr key={row.nctId}>
         <td>{i+1}</td><td><strong>{row.ticker}</strong></td>
         <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
-        <td>{row.company}</td><td>{txt(row.evidence?.drug||"")}</td>
+        <td><span>{row.company}</span>{" "}<span className={`${css.stageBadge} ${bucket==="pre"?css.stageThree:css.stageP}`} title={bucket==="pre"?"3 · Phase 3 public results not identified at the dated source check":"P · Public Phase 3 results released; a PDUFA date is not implied"} aria-label={bucket==="pre"?"Phase 3 pre-release as last checked":"Post Phase 3 public readout confirmed"}>{bucket==="pre"?"3":"P"}</span></td><td>{txt(row.evidence?.drug||"")}</td>
         <td>{txt(row.evidence?.indication||"")}</td><td>{row.status.replaceAll("_"," ")}</td>
         <td>{row.evidence?.evidenceDate||"Not verified"}</td>
         <td>{row.evidence
@@ -92,7 +92,7 @@ function Spreadsheet({bucket,rows,query,caption}:{bucket:"pre"|"post";rows:Reado
   const pre=bucket==="pre";
   return <section className={css.sheet} aria-label={pre?"Top pre-release spreadsheet":"Bottom post-release spreadsheet"}>
     <div className={css.sheetHeading}>
-      <div><h3>{pre?"TOP SPREADSHEET · PRE-RELEASE":"BOTTOM SPREADSHEET · POST-RELEASE"}</h3>
+      <div><h3>{pre?"TOP SPREADSHEET · 3 · PHASE 3 DATA NOT RELEASED (AS LAST CHECKED)":"BOTTOM SPREADSHEET · P · PHASE 3 DATA RELEASED"}</h3>
         <p>{caption}</p></div>
       <div className={css.actions}>
         <strong>{number(rows.length)} documented trials · {number(matched.length)} matching</strong>
