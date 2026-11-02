@@ -98,7 +98,9 @@ test("rating column filters are independent and do not lose original registry to
   assert.match(totalBottom,new RegExp(snapshot.resultsPosted+" total"));
   const f=top.findAllByType("input").find(x=>x.props["aria-label"]==="Before filter A rating");
   await act(async()=>f.props.onChange({target:{value:"Results posted"}}));
-  assert.equal(top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td").length,15);
+  assert.equal(top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td").length,1);
+  assert.equal(top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td")[0].props.colSpan,15,
+    "An empty filtered table spans every visible rating and trial column");
   assert.match(textOf(top),/0 matching/);
   assert.ok(!textOf(bottom).includes("0 matching"));
   await act(async()=>top.findAllByType("button").find(x=>textOf(x)==="Clear column filters").props.onClick());
