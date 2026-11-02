@@ -64,7 +64,7 @@ export function auditTrialRatings(
   };
   const unsupported=(name:string)=>noScore(name+": no validated source-linked rating inputs are mapped yet.");
   const critical=[
-    !/^NCT\\d{8}$/.test(row.nctId)||!row.ticker.trim()||!row.drug.trim()||!row.indication.trim()
+    !/^NCT\d{8}$/.test(row.nctId)||!row.ticker.trim()||!row.drug.trim()||!row.indication.trim()
       ?"Exact NCT, company, drug and indication identity incomplete":null,
     readiness.status==="NO_VERIFIED_PUBLIC_READOUT"?"Public Phase 3 results release not verified":null,
     readiness.status==="PDUFA_DATE_UNVERIFIED"?"Exact-program PDUFA date not verified":null,
