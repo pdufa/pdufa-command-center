@@ -6,10 +6,13 @@ import Link from "next/link";
 import retrospectiveTopData from "../../data/raas-retrospective-top-cases.json";
 import retrospectiveBottomData from "../../data/raas-retrospective-source-cases.json";
 import retrospectiveAsOfData from "../../data/raas-retrospective-asof-evidence.json";
+import retrospectiveFinances from "../../data/raas-historical-finance-facts.json";
 import {parseTopRetrospective} from "../../lib/raas-top-retrospective-intake";
 import {parseRetrospectiveFeed} from "../../lib/raas-retrospective-intake";
 import {buildHistoricalResearchAudit,summarizeHistoricalResearch,type HistoricalAuditCase} from "../../lib/raas-history-audit";
 import {parseAsOfEvidence,factsForRetrospectiveCase,measureAsOfFact} from "../../lib/raas-retrospective-asof-evidence";
+import {parseHistoricalFinance,financeForCase,financeReadiness} from "../../lib/raas-finance-reconciliation";
+import RaasHistoricalWhatIf from "./RaasHistoricalWhatIf";
 import css from "./page.module.css";
 
 export const metadata:Metadata={
@@ -22,10 +25,18 @@ const audits=buildHistoricalResearchAudit(pre,post);
 const summary=summarizeHistoricalResearch(audits);
 const datedFacts=parseAsOfEvidence(retrospectiveAsOfData,post);
 const observedFactCount=datedFacts.records.reduce((sum,r)=>sum+r.facts.length,0);
+const financialResearch=parseHistoricalFinance(retrospectiveFinances,pre,post);
+const financeCount=financialResearch.records.reduce((sum,r)=>sum+r.facts.length,0);
+const scenarioInputs=[
+ ...pre.records.map(x=>({id:x.id,ticker:x.ticker,stage:"pre" as const,entryPrice:x.entry.close,exitPrice:x.exit.close})),
+ ...post.records.map(x=>({id:x.id,ticker:x.ticker,stage:"post" as const,entryPrice:x.entry.close,exitPrice:x.exit.close}))
+];
 const dateFormat=(s:string)=>s;
 function CaseRow({entry}:{entry:HistoricalAuditCase}){
  const sign=entry.grossPercent>0?"+":"";
  const priorFacts=entry.stage==="post"?factsForRetrospectiveCase(datedFacts,entry.id):[];
+ const finances=financeForCase(financialResearch,entry.id);
+ const financeQuality=financeReadiness(financialResearch,entry.id,entry.stage);
  return <details className={css.case} data-history-case={entry.id}>
    <summary className={css.caseHead}>
      <span className={css.identity}>
@@ -67,6 +78,21 @@ function CaseRow({entry}:{entry:HistoricalAuditCase}){
          </div>;})}
        </div>
      </details>}
+     <details className={css.check} data-historical-financing={entry.id}>
+       <summary><span className={css.indicator}>◌</span><strong>{financeQuality.financeFactCount} dated SEC/issuer financial facts · unresolved valuation checks</strong><span className={css.status}>Not cash runway</span></summary>
+       <div className={css.checkBody}>
+         {finances?<>
+           <p>Financial observation as of {finances.asOf}, published {finances.publishedAt}, before the selected historical entry. Values in USD millions.</p>
+           {finances.facts.map(fact=><div key={fact.type} className={css.sourceFact}>
+             <strong>{fact.type.replaceAll("_"," ")}</strong>
+             <p>Reported amount: <strong>${fact.valueUsdMillions.toLocaleString("en-US",{maximumFractionDigits:3})}M</strong></p>
+             <p>{fact.method}</p><p className={css.factCaution}>{fact.caveat}</p>
+             <a href={finances.sourceUrl} target="_blank" rel="noopener noreferrer">Check original financial disclosure</a>
+           </div>)}
+         </>:<p>No timely issuer/SEC financial source imported for this example.</p>}
+         <p><strong>Still blocked:</strong> {financeQuality.issues.join("; ")}.</p>
+       </div>
+     </details>
      <h3>Point-in-time evidence and audit worklist</h3>
      <div className={css.checks}>
        {entry.items.map(item=><details key={item.id} className={css.check} data-check={item.id}>
@@ -102,7 +128,7 @@ export default function RaasHistoricalAuditPage(){
      <div><strong>{summary.openReviews}</strong><span>Outstanding source/market reviews</span></div>
      <div><strong>{summary.eligiblePredictions}</strong><span>Verified original RAAS forecasts</span></div>
    </div>
-   <p className={css.disclaimer}>All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} additional dated clinical/financial observations are available for BOTTOM research cases; none is a RAAS grade. Published source links are recorded, not independently audited. This screen never creates or certifies a RAAS investment score. As-of snapshot: {pre.sourceAsOf}.</p>
+   <p className={css.disclaimer}>All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations and {financeCount} sourced financing figures are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
    <section className={css.section} aria-labelledby="raas-history-top">
      <div className={css.sectionTitle}><h2 id="raas-history-top">TOP · 3 — before public Phase 3 results</h2><span>{top.length} examples · not validated</span></div>
      <div className={css.cases}>{top.map(x=><CaseRow key={x.id} entry={x}/>)}</div>
@@ -111,6 +137,7 @@ export default function RaasHistoricalAuditPage(){
      <div className={css.sectionTitle}><h2 id="raas-history-bottom">BOTTOM · P — after Phase 3, before FDA action</h2><span>{bottom.length} examples · not validated</span></div>
      <div className={css.cases}>{bottom.map(x=><CaseRow key={x.id} entry={x}/>)}</div>
    </section>
+   <RaasHistoricalWhatIf cases={scenarioInputs}/>
    <footer className={css.footer}>
      <strong>Score readiness</strong>
      <p>To qualify a score: collect dated pre-entry sources, reconstruct fully diluted valuation, reconcile split-adjusted prices, model execution and tail losses, and validate metric thresholds on independent walk-forward holdouts. Historic replay must remain labeled as a simulation; only subsequently recorded forecasts can establish forward predictive performance.</p>
