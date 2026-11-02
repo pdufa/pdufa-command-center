@@ -32,13 +32,18 @@ test("all seven TOP/BOTTOM historical examples have on-time issuer/SEC financial
   assert.equal(engine.financeReadiness(f,row.caseId,row.stage).cashRunwayCalculated,false);
  }
  assert.equal(engine.financeForCase(f,"gern-imerge-mds-pre2023-illustrative").facts.find(x=>x.type==="OPERATING_EXPENSES_QTR").valueUsdMillions,40.245);
+ const mdglRecord=engine.financeForCase(f,"mdgl-resmetirom-nash-2023-2024-illustrative");
+ assert.equal(mdglRecord.publishedAt,"2023-08-08");
+ assert.equal(mdglRecord.asOf,"2023-06-30");
+ assert.ok(mdglRecord.publishedAt<"2023-11-03");
+ assert.ok(mdglRecord.facts.some(x=>x.type==="OPERATING_CASH_USED_6M"&&x.valueUsdMillions===159.377));
 });
 test("Conditional loans, offering proceeds and ATM headroom are not counted twice as cash",()=>{
  const f=engine.parseHistoricalFinance(raw,top,bottom);
  const geron=engine.financeReadiness(f,"gern-imetelstat-mds-2024-illustrative","post");
  assert.equal(geron.cashAmountUsdMillions,465);
  const mdgl=engine.financeReadiness(f,"mdgl-resmetirom-nash-2023-2024-illustrative","post");
- assert.equal(mdgl.cashAmountUsdMillions,232.351);
+ assert.equal(mdgl.cashAmountUsdMillions,298.418);
  const vrna=engine.financeReadiness(f,"vrna-ensifentrine-copd-2024-illustrative","post");
  assert.equal(vrna.cashAmountUsdMillions,254.882);
  assert.ok(vrna.issues.some(x=>/fully diluted valuation/i.test(x)));
@@ -49,6 +54,9 @@ test("Later financing, wrong case, repeated cash class, and invalid amounts are 
  const f=(change)=>({...raw,records:raw.records.map((r,i)=>i===0?{...r,...change}:r)});
  assert.throws(()=>engine.parseHistoricalFinance(f({publishedAt:"2022-12-31"}),top,bottom),/RAAS_FINANCE_ROW_INVALID/);
  assert.throws(()=>engine.parseHistoricalFinance(f({caseId:"unknown-case"}),top,bottom),/RAAS_FINANCE_ROW_INVALID/);
+ const futureQ3={...raw,records:raw.records.map(r=>r.id==="mdgl-2023-bottom"?
+  {...r,publishedAt:"2023-11-06",asOf:"2023-09-30"}:r)};
+ assert.throws(()=>engine.parseHistoricalFinance(futureQ3,top,bottom),/RAAS_FINANCE_ROW_INVALID/);
  const first=raw.records[0];
  assert.throws(()=>engine.parseHistoricalFinance(f({facts:[...first.facts,{type:"CASH_UNRESTRICTED",valueUsdMillions:5,method:"duplicate",caveat:"not valid"}]}),top,bottom),/RAAS_FINANCE_CASH_DOUBLE_COUNT/);
  assert.throws(()=>engine.parseHistoricalFinance(f({facts:first.facts.map((v,i)=>i===0?{...v,valueUsdMillions:-2}:v)}),top,bottom),/RAAS_FINANCE_FACT_INVALID/);
