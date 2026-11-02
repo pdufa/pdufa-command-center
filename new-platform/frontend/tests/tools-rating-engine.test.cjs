@@ -106,3 +106,40 @@ test("source-verified historical registry records expose measured results withou
  assert.equal(truncated.ingredient.CL.label,"N/A","Truncated observations cannot count as complete input");
  assert.equal(truncated.ingredient.SAF.label,"N/A");
 });
+
+test("historical same-condition competitor leads appear in COMP as leads, never a validated comparison rating",()=>{
+ const receipt={nctId:row.nctId,status:"RESEARCH_LEADS_ONLY",totalCandidates:2,
+  displayed:[{nctId:"NCT12345679",therapy:"Candidate B",
+   sharedConditions:["Rare Condition"],resultsPosted:true,
+   sourceUrl:"https://clinicaltrials.gov/study/NCT12345679",
+   retrievedAt:"2026-11-01T17:11:01.933Z"}],
+  truncated:true};
+ const audit=auditTrialRatings(row,"2026-11-01",null,false,null,receipt);
+ assert.equal(audit.ingredient.COMP.kind,"lead");
+ assert.equal(audit.ingredient.COMP.label,"2 leads");
+ assert.equal(audit.ingredient.COMP.links.length,1);
+ assert.equal(audit.ingredient.COMP.links[0].status,"LEAD");
+ assert.equal(audit.group.B.label,"N/A","unverified lead does not count toward verified medical inputs");
+ assert.equal(audit.ingredient.GRADE.label,"N/A");
+ assert.equal(audit.eligibleForInvestmentRanking,false);
+ assert.equal(audit.verifiedFields,0,"peer research is not a verified clinical benefit fact");
+ const unrelated=auditTrialRatings({...row,nctId:"NCT12345680"},"2026-11-01",null,false,null,receipt);
+ assert.equal(unrelated.ingredient.COMP.label,"N/A","cross-NCT lead data must not leak");
+ const malformed={...receipt,displayed:[{...receipt.displayed[0],sourceUrl:"https://attacker.example/study/NCT12345679"}]};
+ const unverified=auditTrialRatings(row,"2026-11-01",null,false,null,malformed);
+ assert.equal(unverified.ingredient.COMP.label,"N/A","invalid source receipts must not be linked");
+});
+test("verified competitive fields remain separate from extra unverified peer suggestions",()=>{
+ const receipt={nctId:row.nctId,status:"RESEARCH_LEADS_ONLY",totalCandidates:1,
+  displayed:[{nctId:"NCT12345679",therapy:"Candidate B",
+   sharedConditions:["Rare Condition"],resultsPosted:true,
+   sourceUrl:"https://clinicaltrials.gov/study/NCT12345679",
+   retrievedAt:"2026-11-01T17:11:01.933Z"}],
+  truncated:false};
+ const audit=auditTrialRatings(row,"2026-11-01",feed,false,null,receipt);
+ assert.equal(audit.ingredient.COMP.kind,"coverage");
+ assert.match(audit.ingredient.COMP.label,/verified/);
+ assert.equal(audit.ingredient.COMP.links.length,2);
+ assert.equal(audit.ingredient.COMP.links.filter(x=>x.status==="LEAD").length,1);
+ assert.equal(audit.verifiedFields,4);
+});
