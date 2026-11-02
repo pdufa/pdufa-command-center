@@ -94,3 +94,9 @@
 .pilotObservation>p{font-size:11px;line-height:1.5;color:#465e50;margin:0}
 .pilotObservation .pilotMeasured{font-size:12px;color:#165a3d}
 .pilotObservation a{font-size:11px;font-weight:750;color:#146b45;text-decoration:underline}
+
+/* Pilot score is an unvalidated research-only signal, visually separate from real RAAS. */
+.exploratoryGrade{display:flex;flex-direction:column;gap:6px;padding:10px;background:#f6f7f8;border:1px dashed #8c9aa1;border-radius:7px}
+.exploratoryGrade>strong{font-size:12px;color:#2c4352}
+.exploratoryGrade p{margin:0;font-size:11px;line-height:1.5;color:#40525c}
+.exploratoryGrade a{font-size:11px;color:#1b6482;text-decoration:underline;font-weight:750}
