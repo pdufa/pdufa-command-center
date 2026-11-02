@@ -15,12 +15,12 @@ export default function ToolsPage(){
       <h1>TOOLS</h1>
     </header>
     <PoolStageExplorer/>
-    <Phase3RegistryPostingSheets/>
+    <Phase3ReadoutSheets/>
     <details style={{margin:"14px 0",padding:"10px",border:"1px solid #bfd5c7",borderRadius:9}}>
       <summary style={{cursor:"pointer",fontWeight:750,color:"#18543b"}}>
-        Separate issuer-announcement release verification · 2 historically unreleased, 3 released
+        Supplementary Phase 3 registry-posting spreadsheets and 38-question ratings (not public-readout classification)
       </summary>
-      <Phase3ReadoutSheets/>
+      <Phase3RegistryPostingSheets/>
     </details>
   </main>;
 }
