@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_SECOND_PROVIDER_CLOSE_CHECKS",
+  "sourceAsOf": "2026-11-02",
+  "note": "Second-provider historical close observations. These show agreement of displayed nominal closing prices, NOT independent tape certification, adjustment-factor verification, market execution, or original RAAS predictive accuracy. No approved investment score is created.",
+  "observations": [
+    {
+      "caseId": "vrna-ensifentrine-copd-2024-illustrative",
+      "side": "ENTRY",
+      "date": "2024-05-10",
+      "secondaryClose": 14.85,
+      "currency": "USD",
+      "secondaryProvider": "ChartExchange",
+      "sourceUrl": "https://chartexchange.com/symbol/nasdaq-vrna/historical/",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02",
+      "note": "ChartExchange daily historical table lists May 10, 2024 closing price $14.85, matching original FinanceCharts $14.85. ADS corporate actions and adjustment methodology still need independent review."
+    },
+    {
+      "caseId": "vrna-ensifentrine-copd-2024-illustrative",
+      "side": "EXIT",
+      "date": "2024-06-21",
+      "secondaryClose": 15,
+      "currency": "USD",
+      "secondaryProvider": "ChartExchange",
+      "sourceUrl": "https://chartexchange.com/symbol/nasdaq-vrna/historical/",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02",
+      "note": "ChartExchange June 21, 2024 close $15.00 matches original FinanceCharts $15.00. A matching close alone is not audited adjusted performance."
+    },
+    {
+      "caseId": "urgn-ugn102-nmibc-2025-illustrative",
+      "side": "EXIT",
+      "date": "2025-06-06",
+      "secondaryClose": 7.37,
+      "currency": "USD",
+      "secondaryProvider": "ChartExchange",
+      "sourceUrl": "https://chartexchange.com/symbol/nasdaq-urgn/historical/",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02",
+      "note": "ChartExchange June 6, 2025 close $7.37 matches the FinanceCharts value. March 14 entry quote has not yet been independently corroborated."
+    },
+    {
+      "caseId": "mdgl-resmetirom-maestro-nash-pre2022-illustrative",
+      "side": "EXIT",
+      "date": "2022-12-16",
+      "secondaryClose": 63.8,
+      "currency": "USD",
+      "secondaryProvider": "StatMuse",
+      "sourceUrl": "https://www.statmuse.com/money/ask/mdgl-stock-price-dec-2022",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceDisplayDate": "2026-11-02",
+      "note": "StatMuse daily Dec 2022 table reports December 16 close $63.80 matching FinanceCharts. November 18 entry quote still needs a separate source."
+    }
+  ]
+}
