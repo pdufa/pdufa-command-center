@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_SHARE_BRIDGE_RESEARCH",
   "sourceAsOf": "2026-11-02",
-  "note": "Three point-in-time SEC COVER share-count cross-checks of vendor close and reported market cap; these validate arithmetic consistency only, NOT closing price authenticity, share-class adjustments, fully diluted EV, strategy forecasts or final RAAS grades.",
+  "note": "Three point-in-time SEC COVER share-count cross-checks of vendor close and reported market cap; these validate arithmetic consistency only, NOT closing price authenticity, share-class adjustments, fully diluted EV, strategy forecasts or final RAAS grades. BridgeBio TOP comparison is a share-count-based reconstruction, NOT a separate vendor market-cap observation.",
   "records": [
     {
       "caseId": "bbio-attribute-cm-pre2023-illustrative",
@@ -16,7 +16,8 @@
       "sharesSourceUrl": "https://www.sec.gov/Archives/edgar/data/1743881/000095017023017812/bbio-20230331.htm",
       "ordinarySharesPerQuotedSecurity": 1,
       "quoteCurrency": "USD",
-      "notes": "SEC 2023 Q1 10-Q cover count; does not include options, converts, warrants, or changes after May 2. May 12 closing price is unverified vendor observation."
+      "notes": "SEC 2023 Q1 10-Q cover count; does not include options, converts, warrants, or changes after May 2. May 12 closing price is unverified vendor observation.",
+      "capComparisonBasis": "SAME_SHARES_RECONSTRUCTION"
     },
     {
       "caseId": "gern-imetelstat-mds-2024-illustrative",
@@ -30,7 +31,8 @@
       "sharesSourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024052074/gern-20240331.htm",
       "ordinarySharesPerQuotedSecurity": 1,
       "quoteCurrency": "USD",
-      "notes": "SEC 2024 Q1 10-Q; count excludes fully diluted instruments; equity offering included in April reported shares but price and options still unverified."
+      "notes": "SEC 2024 Q1 10-Q; count excludes fully diluted instruments; equity offering included in April reported shares but price and options still unverified.",
+      "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE"
     },
     {
       "caseId": "vrna-ensifentrine-copd-2024-illustrative",
@@ -45,7 +47,8 @@
       "sharesSourceUrl": "https://www.sec.gov/Archives/edgar/data/1657312/000165731224000014/vrna-20240331.htm",
       "ordinarySharesPerQuotedSecurity": 8,
       "quoteCurrency": "USD",
-      "notes": "SEC filing accepted 2024-05-10 at 09:09:53 ET before listed close; 648,654,174 ordinary shares / 8 = 81,081,771.75 ADS equivalents. Fractional ADS equivalent is arithmetic only. Fully diluted shares, share changes and split-adjustment basis still unverified."
+      "notes": "SEC filing accepted 2024-05-10 at 09:09:53 ET before listed close; 648,654,174 ordinary shares / 8 = 81,081,771.75 ADS equivalents. Fractional ADS equivalent is arithmetic only. Fully diluted shares, share changes and split-adjustment basis still unverified.",
+      "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE"
     }
   ]
 }
