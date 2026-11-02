@@ -11,15 +11,15 @@ const pre=require("../lib/raas-top-retrospective-intake.ts").parseTopRetrospecti
 const post=require("../lib/raas-retrospective-intake.ts").parseRetrospectiveFeed(
  require("../data/raas-retrospective-source-cases.json"));
 const raw=require("../data/raas-price-crosschecks.json");
-test("twelve exact-date closes agree, including a post-exit SEC Form 4; five complete trade windows",()=>{
+test("fourteen exact-date closes agree; six complete trade windows, including post-exit evidence",()=>{
  const feed=moduleUnderTest.parsePriceCrosschecks(raw,pre,post);
  const s=moduleUnderTest.priceAuditSummary(feed,pre,post);
  assert.equal(s.caseCount,8);
  assert.equal(s.quotedPoints,16);
- assert.equal(s.secondaryPointsRecorded,12);
- assert.equal(s.matchedPoints,12);
+ assert.equal(s.secondaryPointsRecorded,14);
+ assert.equal(s.matchedPoints,14);
  assert.equal(s.mismatchedPoints,0);
- assert.equal(s.bothClosesMatchedCases,5);
+ assert.equal(s.bothClosesMatchedCases,6);
  assert.equal(s.adjustedTotalReturnsVerified,0);
  assert.equal(s.qualifiedHistoricalPredictions,0);
  const vrna=moduleUnderTest.priceAuditForCase(feed,pre,post,"vrna-ensifentrine-copd-2024-illustrative");
@@ -44,6 +44,15 @@ test("twelve exact-date closes agree, including a post-exit SEC Form 4; five com
  assert.equal(gern.exit.postExitDisclosure,true);
  assert.equal(gern.exit.sourceFirstPublishedAt,"2023-01-03");
  assert.equal(gern.bothClosesAgree,false);
+ const mdglBottom=moduleUnderTest.priceAuditForCase(feed,pre,post,"mdgl-resmetirom-nash-2023-2024-illustrative");
+ assert.equal(mdglBottom.entry.secondaryClose,146.89);
+ assert.equal(mdglBottom.entry.secondaryProvider,"Fintel historical earnings drift");
+ assert.equal(mdglBottom.exit.secondaryClose,255.32);
+ assert.equal(mdglBottom.exit.secondaryProvider,"Genetic Engineering & Biotechnology News (GEN)");
+ assert.equal(mdglBottom.exit.sourceFirstPublishedAt,"2024-03-09");
+ assert.equal(mdglBottom.exit.postExitDisclosure,true);
+ assert.equal(mdglBottom.bothClosesAgree,true);
+ assert.equal(mdglBottom.eligibleForValidatedRAAS,false);
  const bbio=moduleUnderTest.priceAuditForCase(feed,pre,post,"bbio-attribute-cm-pre2023-illustrative");
  assert.equal(bbio.entry.quoteGranularity,"WEEKLY_FRIDAY_CLOSE");
  assert.equal(bbio.exit.quoteGranularity,"DAILY_SESSION_CLOSE");
