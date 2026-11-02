@@ -101,3 +101,12 @@
 .competitionStatus li{margin:4px 0;overflow-wrap:anywhere}
 .competitionStatus a{overflow-wrap:anywhere}
 @media(max-width:600px){.competitionScan{padding:8px;gap:5px}.competitionStatus{min-width:112px}}
+
+/* Evidence-input audit cells: data completeness is not a clinical or trading score. */
+.ratingAudit{display:flex;flex-direction:column;align-items:center;gap:2px;white-space:normal}
+.ratingEvidenceValue{font-weight:800;color:#214e6b;font-size:11px;white-space:normal;line-height:1.35}
+.ratingAudit details{text-align:left;max-width:220px;font-weight:normal}
+.ratingAudit summary{font-size:10px;color:#2c617e;cursor:pointer;font-weight:700}
+.ratingAudit p{font-size:10px;line-height:1.4;white-space:normal;margin:5px 0;max-width:200px;
+  overflow-wrap:anywhere}
+.ratingAudit a{display:inline-block;overflow-wrap:anywhere}
