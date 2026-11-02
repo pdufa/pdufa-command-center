@@ -57,3 +57,77 @@
 .table th,.table td{padding:7px 9px;min-width:85px}
 .unverified>summary{font-size:12px}
 }
+
+/* Reversible Phase 3 survey-preview column and touch-friendly modal explorer. */
+.surveyPreviewControls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid #b6d0c0;border-radius:10px;background:#fff}
+.surveyPreviewControls>div{display:flex;flex-direction:column;gap:3px}
+.surveyPreviewControls strong{font-size:14px;color:#144c34}
+.surveyPreviewControls span{font-size:12px;color:#52675a}
+.surveyPreviewControls button,.surveyOpenButton{min-height:44px;border:1px solid #75a987;border-radius:8px;background:#e7f5ec;color:#164f35;font-size:14px;font-weight:800;cursor:pointer;padding:10px 13px}
+.surveyPreviewControls button:focus-visible,.surveyOpenButton:focus-visible,.surveyDialog button:focus-visible,.surveyDialog a:focus-visible,.surveyDialog input:focus-visible{outline:3px solid #206baf;outline-offset:2px}
+.surveyCell{min-width:160px!important}
+.surveyCell small{display:block;margin-top:5px;font-size:11px;color:#536b5b}
+.surveyOpenButton{white-space:nowrap}
+.surveyDialog{width:min(900px,calc(100vw - 24px));max-width:none;height:min(88dvh,880px);max-height:calc(100dvh - 20px);box-sizing:border-box;padding:0;border:2px solid #72a586;border-radius:15px;background:#fbfdfb;color:#183d2b;box-shadow:0 18px 65px rgba(0,0,0,.26);overflow:hidden}
+.surveyDialog[open]{display:flex;flex-direction:column}
+.surveyDialog::backdrop{background:rgba(7,20,15,.72)}
+.surveyDialogHead{flex:0 0 auto;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:14px 16px;background:#e8f3eb;border-bottom:1px solid #bad6c5}
+.surveyDialogHead h3{font-size:20px;line-height:1.3;margin:4px 0;color:#12462f}
+.surveyDialogHead p{font-size:13px;margin:0;line-height:1.4}
+.surveyEyebrow{color:#43644d;font-size:11px!important;font-weight:800;letter-spacing:.035em}
+.surveyClose{min-height:44px;min-width:75px;border-radius:8px;background:#fff;border:1px solid #91b6a0;color:#17432e;padding:8px 11px;font-size:14px;font-weight:750;cursor:pointer;white-space:nowrap}
+.surveyDialogBody{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 16px 20px}
+.surveyClarification{margin:0 0 12px;line-height:1.55;background:#fff8e8;border:1px solid #e5d5ab;border-radius:8px;padding:10px;font-size:13px;color:#67522a}
+.surveyOverview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.surveyOverview>div{min-width:0;display:flex;flex-direction:column;gap:5px;padding:10px;background:#f0f7f2;border:1px solid #bfd7c7;border-radius:8px}
+.surveyOverview small{font-size:11px;color:#526a5c}
+.surveyOverview strong{font-size:17px;color:#18492f}
+.surveyStatus{margin:10px 0;padding:10px;border:1px solid #c7d5d0;border-radius:7px;background:#f7faf8;font-size:13px;line-height:1.5}
+.surveyLabel{font-size:15px;margin:16px 0 9px;color:#14492f}
+.surveyGroupRail{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x proximity}
+.surveyGroupButton{min-width:160px;max-width:210px;flex:0 0 auto;display:flex;flex-direction:column;gap:8px;text-align:left;min-height:93px;padding:11px;border:2px solid #bfd8c8;border-radius:10px;background:#fff;color:#254b36;font-size:14px;cursor:pointer;scroll-snap-align:start}
+.surveyGroupButton strong{font-size:14px}
+.surveyGroupButton small{font-size:12px;color:#557062}
+.surveyGroupButton[aria-pressed="true"]{border-color:#19764a;background:#eaf6ef}
+.surveyLabelRow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.surveyLabelRow span{font-size:12px;color:#61786b}
+.surveyCoverage{display:flex;flex-wrap:wrap;gap:8px 18px;padding:10px;background:#f0f6f2;border:1px solid #c6d8cd;border-radius:8px;font-size:13px}
+.surveyCoverage span{color:#526c5b}
+.surveyNavigation{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:12px 0}
+.surveyNavigation button{border:1px solid #91b7a2;border-radius:7px;background:#fff;color:#174a32;padding:9px 12px;min-height:44px;font-size:13px;font-weight:750;cursor:pointer}
+.surveyNavigation button:disabled{opacity:.4;cursor:not-allowed}
+.surveyNavigation span{font-size:12px;color:#4d6e58;text-align:center}
+.surveyRail{display:flex;align-items:stretch;gap:10px;overflow-x:auto;max-width:100%;min-height:188px;padding:4px 3px 14px;scrollbar-color:#78a78a #edf7f0;scroll-snap-type:x proximity}
+.surveyCluster,.surveyClusterActive{display:flex;flex:0 0 auto;align-items:stretch;gap:9px;padding:8px;border:2px solid #c0d5c7;border-radius:11px;background:#fff;scroll-snap-align:start}
+.surveyClusterActive{border-color:#197b4d;background:#f1faf4}
+.surveyClusterHeader{display:flex;flex-direction:column;justify-content:space-between;gap:12px;flex:0 0 175px;width:175px;min-height:125px;text-align:left;background:#fff;border:1px solid #adceba;border-radius:8px;padding:12px;color:#1c5036;font-size:14px;cursor:pointer}
+.surveyClusterHeader span,.surveyClusterHeader small{font-size:12px;color:#4f6859}
+.surveyQuestions{display:flex;align-items:stretch;gap:8px}
+.surveyQuestion{box-sizing:border-box;flex:0 0 245px;min-width:245px;padding:12px;border:1px solid #bacfc0;border-radius:8px;background:#fff;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.surveyQuestion h5{font-size:15px;margin:6px 0 11px;line-height:1.3}
+.surveyQuestion p{margin:9px 0}
+.surveyQuestionNum{font-size:11px;font-weight:800;color:#56745e}
+.surveyVerified{color:#156044}.surveyModeled{color:#80520c}.surveyUnscored{color:#6c5656}
+.surveyFact{margin-top:10px;border-top:1px solid #d8e3dc;padding-top:8px}
+.surveyFact a,.surveySource a{color:#126e4b;text-decoration:underline;font-weight:750}
+.surveyNoGaps{min-width:180px;margin:10px;font-size:13px}
+.surveyFoot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:10px 0 0;padding:12px 0;border-top:1px solid #d0ded4;font-size:13px}
+.surveyFoot label{display:flex;align-items:center;gap:9px;font-weight:700}
+.surveyFoot input{width:20px;height:20px}
+.surveyFoot span{font-size:12px;color:#566d60}
+.surveySource{font-size:12px;line-height:1.5;color:#5a705d}
+@media(max-width:640px){
+.surveyPreviewControls{padding:9px}
+.surveyPreviewControls button{width:100%}
+.surveyDialog{width:calc(100vw - 12px);height:calc(100dvh - 12px);max-height:calc(100dvh - 12px);border-radius:12px}
+.surveyDialogHead{padding:11px 12px}
+.surveyDialogHead h3{font-size:18px}
+.surveyDialogBody{padding:12px 10px calc(16px + env(safe-area-inset-bottom))}
+.surveyOverview{gap:5px}
+.surveyOverview>div{padding:8px 6px}
+.surveyOverview strong{font-size:14px;overflow-wrap:anywhere}
+.surveyGroupButton{min-width:155px}
+.surveyClusterHeader{flex-basis:140px;width:140px;padding:10px}
+.surveyQuestion{flex-basis:230px;min-width:230px}
+.surveyNavigation button{padding:8px}
+}
