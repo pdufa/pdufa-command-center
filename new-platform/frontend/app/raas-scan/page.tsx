@@ -22,7 +22,7 @@ export default function RaasScanPage(){
     <div><strong>{s.approvedMetricCalibrations}/60</strong><span>Approved metric scoring calibrations</span></div>
     <div><strong>{s.historicalAcceptedCases}</strong><span>Accepted historical event-window trades</span></div>
    </div>
-   <p className={css.disclaimer}><strong>SCAN EXECUTED · FINAL RAAS NOT VALIDATED.</strong> The audit inspected every definition and available evidence record. It did not create a price forecast, set missing scores to zero, import unpublished trial outcomes, or claim that a source lead has been calibrated. Underlying research snapshot: {report.sourceAsOf}; metric specification: {report.specVersion}.</p>
+   <p className={css.disclaimer}><strong>SCAN EXECUTED · FINAL RAAS NOT VALIDATED.</strong> The audit inspected every definition and available evidence record. It did not create a price forecast, set missing scores to zero, import unpublished trial outcomes, or claim that a source lead has been calibrated. Underlying source snapshot: {report.sourceAsOf}; metric specification: {report.specVersion}.</p>
    <section className={css.section}>
     <div className={css.sectionTitle}><h2>Evidence actually recorded</h2><span>Research coverage only, not validated scores</span></div>
     <div className={css.facts}>
