@@ -138,7 +138,7 @@ export default function ToolsOpeningTrialGrid({
     new Map(registryCoverage?.records.map(record=>[record.nctId,record])||[]),
     [registryCoverage]);
   useEffect(()=>{
-    if(!competitiveOpen||selectedStages+selectedDesignations===0){
+    if(selectedStages+selectedDesignations===0){
       setPeerLeads(null);setPeerSummary(null);setPeerUnavailable(false);return;
     }
     const controller=new AbortController();
@@ -164,7 +164,7 @@ export default function ToolsOpeningTrialGrid({
         setPeerLeads(null);setPeerSummary(null);setPeerUnavailable(true);
       }});
     return ()=>controller.abort();
-  },[competitiveOpen,selectedStages,selectedDesignations]);
+  },[selectedStages,selectedDesignations]);
   useEffect(()=>{
     if(typeof window==="undefined")return;
     const clear=()=>{setExpandedRatings([]);setCompetitiveOpen(false);};
@@ -300,7 +300,7 @@ export default function ToolsOpeningTrialGrid({
           :ordered.map((row,i)=>{const days=pipelineDayCounts(row.timeline||NO_DATES,today);
             const readiness=competitiveReadiness(row,today,competitionEvidence);
             const audit=auditTrialRatings(row,today,competitionEvidence,competitionError,
-              registryByNct.get(row.nctId)||null);
+              registryByNct.get(row.nctId)||null,peerLeads?.[row.nctId]||null);
             const statusLabel=readiness.status==="NO_VERIFIED_PUBLIC_READOUT"
               ?"Readout not verified":readiness.status==="PDUFA_DATE_UNVERIFIED"
               ?"PDUFA unverified":readiness.status==="PDUFA_CUTOFF_REACHED"
