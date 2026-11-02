@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_SECOND_PROVIDER_CLOSE_CHECKS",
   "sourceAsOf": "2026-11-02",
-  "note": "Separate website historical close corroboration for 11 of 16 exact dates. Sector Alpha data are Friday-ending weekly closes, while ChartExchange and StatMuse observations are dated daily rows. Matching values are NOT exchange-tape validation or split/dividend/ADR-adjusted performance; upstream feeds may overlap.",
+  "note": "12 of 16 exact-date historical closes have a second independently displayed reference, including one Geron SEC Form 4 citing the December 30 2022 close but filed January 3 2023 (post-exit). These are retrospective checks only, not original predictions. Corporate actions and vendor adjusted returns remain unverified.",
   "observations": [
     {
       "caseId": "vrna-ensifentrine-copd-2024-illustrative",
@@ -146,6 +146,20 @@
       "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
       "sourceDisplayDate": "2026-11-02",
       "quoteGranularity": "WEEKLY_FRIDAY_CLOSE"
+    },
+    {
+      "caseId": "gern-imerge-mds-pre2023-illustrative",
+      "side": "EXIT",
+      "date": "2022-12-30",
+      "secondaryClose": 2.42,
+      "currency": "USD",
+      "secondaryProvider": "Geron SEC Form 4",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000106299323000091/form4.xml",
+      "sourceQuoteBasis": "NOMINAL_DAILY_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "quoteGranularity": "DAILY_SESSION_CLOSE",
+      "sourceDisplayDate": "2026-11-02",
+      "sourceFirstPublishedAt": "2023-01-03",
+      "note": "Geron director equity-award Form 4 F1 expressly cites Geron common-stock closing price on December 30 2022 of $2.42 per share. Filed on January 3 2023, AFTER the selected exit: usable only for retrospective nominal price corroboration, never as a pre-exit investment signal."
     }
   ]
 }
