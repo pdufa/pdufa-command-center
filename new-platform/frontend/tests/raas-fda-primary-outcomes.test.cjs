@@ -78,7 +78,7 @@ test("History page surfaces a separated accessible FDA outcome audit and explici
  assert.match(page,/parseFdaPrimaryOutcomes\(fdaPrimaryOutcomeData,post\)/);
  assert.match(page,/data-fda-primary-outcome=/);
  assert.match(page,/FDA action occurred/);
- assert.match(page,/after.*selected historical exit/);
+ assert.match(page,/after<\\/strong> the selected historical exit/);
  assert.match(page,/No RAAS score is assigned/);
  assert.match(page,/do not increase the count of valid backtested RAAS predictions/);
  assert.match(page,/fdaPrimarySummary\.crosschecked/);
