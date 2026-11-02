@@ -68,11 +68,48 @@ class RefreshRegistryPostingTests(unittest.TestCase):
         self.assertEqual(new["noResultsPosted"],740)
         self.assertEqual(new["resultsPosted"],1)
 
+    def test_paginated_registry_response_is_fully_reconciled(self):
+        first = self.rows[0]["nct_id"]
+        seen_pages = []
+        def requester(ids, page_token=""):
+            seen_pages.append(page_token)
+            middle = len(ids)//2
+            if not page_token:
+                result = response(ids[:middle], {first:"2026-10-31"})
+                result["nextPageToken"] = "part-two"
+                return result
+            if page_token == "part-two":
+                return response(ids[middle:])
+            raise AssertionError("Unexpected registry pagination token")
+        result = module.build_snapshot(self.rows, requester, self.now, 25)
+        self.assertEqual(result["total"], 741)
+        self.assertEqual(result["resultsPosted"], 1)
+        self.assertEqual(result["noResultsPosted"], 740)
+        self.assertIn("part-two", seen_pages)
+
+    def test_missing_nct_on_final_page_is_not_published(self):
+        def requester(ids, page_token=""):
+            if not page_token:
+                out = response(ids[:len(ids)//2])
+                out["nextPageToken"]="partial"
+                return out
+            return response(ids[len(ids)//2:], missing=True)
+        with self.assertRaisesRegex(ValueError, "Incomplete registry batch"):
+            module.build_snapshot(self.rows, requester, self.now, 25)
+
+    def test_repeated_pagination_token_is_refused(self):
+        def requester(ids, page_token=""):
+            out = response(ids[:1] if not page_token else ids[1:2])
+            out["nextPageToken"]="loop"
+            return out
+        with self.assertRaisesRegex(ValueError, "repeated"):
+            module.build_snapshot(self.rows, requester, self.now, 25)
+
     def test_missing_duplicate_or_pagination_refused(self):
         for requester in (
             lambda ids:response(ids,missing=True),
             lambda ids:response(ids,duplicate=True),
-            lambda ids:dict(response(ids),nextPageToken="unread"),
+            lambda ids,page_token="":dict(response(ids[:1]),nextPageToken="unread"),
         ):
             with self.assertRaises(ValueError):
                 module.build_snapshot(self.rows,requester,self.now)
