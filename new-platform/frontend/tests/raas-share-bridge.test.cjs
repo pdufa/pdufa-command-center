@@ -18,6 +18,7 @@ test("All dated share counts from SEC cover filings precede vendor close; 3 arit
  assert.equal(summary.caseCount,top.records.length+bottom.records.length);
  assert.equal(summary.withSecShareCount,3);
  assert.equal(summary.arithmeticMatches,3);
+ assert.equal(summary.separatelyReportedCapMatches,2);
  assert.equal(summary.missingShares,summary.caseCount-3);
  assert.equal(summary.fullyVerifiedPriceCases,0);
  assert.equal(summary.qualifiedRaasForecasts,0);
@@ -38,6 +39,8 @@ test("BridgeBio May 2023 and Geron April 2024 SEC share-cover counts reproduce v
  assert.equal(bbio.quotedSharesEquivalent,160500999);
  assert.equal(gern.quotedSharesEquivalent,593132540);
  assert.ok(Math.abs(bbio.reconstructedEquityCapUsdMillions-2173.18)<.02);
+ assert.equal(bbio.capComparisonBasis,"SAME_SHARES_RECONSTRUCTION");
+ assert.equal(gern.capComparisonBasis,"VENDOR_REPORTED_CAP_ESTIMATE");
  assert.ok(Math.abs(gern.reconstructedEquityCapUsdMillions-2331.01)<.02);
 });
 test("Verona ordinary shares are divided by eight to compare with USD ADS price, never multiplied by eight",()=>{
@@ -46,6 +49,7 @@ test("Verona ordinary shares are divided by eight to compare with USD ADS price,
  assert.equal(v.quotedSharesEquivalent,648654174/8);
  assert.ok(Math.abs(v.reconstructedEquityCapUsdMillions-1204.06)<.02);
  assert.equal(v.sharePublishedAt,"2024-05-10");
+ assert.equal(v.capComparisonBasis,"VENDOR_REPORTED_CAP_ESTIMATE");
 });
 test("No shares disclosed after entry, same-day post-close filing or mismatched ticker can pass",()=>{
  const edit=(caseId,changes)=>({...raw,records:raw.records.map(r=>r.caseId===caseId?{...r,...changes}:r)});
