@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_RETROSPECTIVE_PRE_READOUT_INTAKE",
   "sourceAsOf": "2026-11-02",
-  "note": "Two pre-readout real-stock research examples with issuer guidance predating selected entry; dates and vendor closing prices are retrospective and corporate-action audits remain unverified. No pre-registered RAAS forecasts are available; never include these in the qualified scoring ledger.",
+  "note": "Three historical research-only TOP observations (GERN, MDGL, BBIO), retrospectively selected, using issuer guidance and vendor closes. No archived predictive RAAS scores; all remain excluded from independent validation.",
   "records": [
     {
       "id": "gern-imerge-mds-pre2023-illustrative",
@@ -87,6 +87,48 @@
       },
       "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
       "reviewNote": "Retrospectively selected Nov. 18 to Dec. 16 window, before the Dec. 19 Phase 3 release, shows a gross loss; excludes subsequent readout price shock. Not a historical investment forecast or validated RAAS success/failure observation."
+    },
+    {
+      "id": "bbio-attribute-cm-pre2023-illustrative",
+      "ticker": "BBIO",
+      "drug": "acoramidis",
+      "indication": "Transthyretin amyloid cardiomyopathy (ATTR-CM)",
+      "nctIds": [
+        "NCT03860935"
+      ],
+      "stage": "pre",
+      "historicalWindowSelected": "RETROSPECTIVELY",
+      "entryDecisionArchiveAvailable": false,
+      "priorGuidanceDate": "2023-05-04",
+      "priorGuidanceSourceUrl": "https://investor.bridgebio.com/news/news-details/2023/bridgebio-pharma-reports-first-quarter-2023-financial-results-and-business-update-05-04-2023/default.aspx",
+      "priorGuidance": "Phase 3 ATTRibute-CM 30-month results on track for late July 2023, published May 4 2023.",
+      "publicReadoutDate": "2023-07-17",
+      "publicReadoutSourceUrl": "https://investor.bridgebio.com/news/news-details/2023/bridgebio-announces-consistently-positive-results-from-phase-3-attribute-cm-study-of-acoramidis-for-patients-with-transthyretin-amyloid-cardiomyopathy-attr-cm-07-17-2023/default.aspx",
+      "entry": {
+        "date": "2023-05-12",
+        "close": 13.54,
+        "currency": "USD",
+        "sourceUrl": "https://www.financecharts.com/stocks/BBIO/summary/price"
+      },
+      "exit": {
+        "date": "2023-07-07",
+        "close": 16.89,
+        "currency": "USD",
+        "sourceUrl": "https://www.financecharts.com/stocks/BBIO/summary/price"
+      },
+      "marketCapAtEntry": {
+        "usdMillions": 2173.18,
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1743881/000095017023017812/bbio-20230331.htm",
+        "basis": "Illustrative May 12 equity cap = $13.54 dated vendor close × 160,500,999 May 2 2023 shares from May 4 10-Q. Subsequent new issuance, ADS actions, and price-adjustment basis not reconciled."
+      },
+      "eventQuality": {
+        "priceCorporateActionChecked": false,
+        "tradingFrictionAssessed": false,
+        "actualTradeOrArchivedPrediction": false,
+        "eligibleForValidatedRAAS": false
+      },
+      "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
+      "reviewNote": "The company forecast late-July data as of May 4; actual results came earlier on July 17. Selected July 7 exit predates public readout by 10 calendar days. Return is illustrative, not an archived RAAS prediction or calibrated pre-readout strategy."
     }
   ]
 }
