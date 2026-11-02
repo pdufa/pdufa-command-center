@@ -84,3 +84,25 @@ test("missing readout or passed PDUFA cutoff must fail research-gate readiness",
  assert.equal(b.ingredient.CRIT.label,"1 gaps");
  assert.equal(b.ingredient.READY.label,"Not qualified");
 });
+
+test("source-verified historical registry records expose measured results without inventing clinical superiority",()=>{
+ const receipt={
+  nctId:row.nctId,retrievedAt:"2026-11-01T17:11:01.933Z",
+  sourceUpdated:"2026-10-31",resultsPosted:true,
+  primaryOutcomeCount:2,measuredPrimary:true,
+  seriousEventTerms:3,measuredSeriousEvents:true,truncated:false
+ };
+ const audited=auditTrialRatings(row,"2026-11-01",null,false,receipt);
+ assert.equal(audited.ingredient.CL.label,"Registry data");
+ assert.equal(audited.ingredient.SAF.label,"Registry AEs");
+ assert.equal(audited.ingredient.CL.kind,"coverage");
+ assert.equal(audited.ingredient.CL.links.length,1);
+ assert.match(audited.ingredient.CL.explanation,/NOT been clinically adjudicated/);
+ assert.equal(audited.ingredient.COMP.label,"N/A");
+ assert.equal(audited.group.E.label,"N/A");
+ assert.equal(audited.eligibleForInvestmentRanking,false);
+ assert.equal(audited.verifiedFields,0,"ClinicalTrials.gov receipts do not falsely fill benefit/superiority fields");
+ const truncated=auditTrialRatings(row,"2026-11-01",null,false,{...receipt,truncated:true});
+ assert.equal(truncated.ingredient.CL.label,"N/A","Truncated observations cannot count as complete input");
+ assert.equal(truncated.ingredient.SAF.label,"N/A");
+});
