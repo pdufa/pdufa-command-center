@@ -20,6 +20,9 @@ export type MetricHistoricalDiagnostic={
  independentPrograms:number;observedReturnPairs:number;
  benchmarkId:string|null;ruleVersion:string|null;protocolConsistent:boolean;
  holdoutTrainPrograms:number;holdoutTestPrograms:number;
+ holdoutCutoffDate:string|null;holdoutIssuerPurgedPrograms:number;
+ holdoutHighPrograms:number;holdoutLowPrograms:number;
+ holdoutSpearmanScoreToReturn:number|null;holdoutHighMinusLowPercent:number|null;
  spearmanScoreToReturn:number|null;meanHighMinusLowPercent:number|null;
  positiveReturnRateHigh:number|null;positiveReturnRateLow:number|null;
  status:"INSUFFICIENT_EVIDENCE"|"REVIEW_ELIGIBLE_NOT_APPROVED";
@@ -85,7 +88,7 @@ export function evaluateMetricHistory(
  const cases=new Map(history.cases.map(c=>[c.caseId,c]));
  const accepted=new Map(outcomes.accepted.map(c=>[c.caseId,c]));
  const valid:{metricId:string;stage:RaasStage;caseId:string;program:string;returnPct:number;score:number;
-  entryDate:string;exitDate:string;benchmarkId:string;ruleVersion:string}[]=[];
+  entryDate:string;exitDate:string;benchmarkId:string;ruleVersion:string;ticker:string}[]=[];
  for(const r of rated.records){
   const c=cases.get(r.caseId),outcome=accepted.get(r.caseId);
   if(!c||!outcome||r.stage!==c.stage||r.ticker.trim().toLowerCase()!==c.ticker.trim().toLowerCase()||
@@ -95,7 +98,7 @@ export function evaluateMetricHistory(
   valid.push({metricId:r.metricId,stage:r.stage,caseId:r.caseId,
    program:outcome.programKey,returnPct:outcome.realizedReturnPercent,
    score:r.score,entryDate:outcome.entryDate,exitDate:outcome.exitDate,
-   benchmarkId:r.benchmarkId,ruleVersion:r.ruleVersion});
+   benchmarkId:r.benchmarkId,ruleVersion:r.ruleVersion,ticker:r.ticker.trim().toUpperCase()});
  }
  const threshold=30;
  return (["pre","post"] as const).flatMap(stage=>
@@ -111,24 +114,61 @@ export function evaluateMetricHistory(
    const low=p.filter(x=>x.score<=25),high=p.filter(x=>x.score>=75);
    const avg=(v:typeof p)=>v.reduce((s,x)=>s+x.returnPct,0)/v.length;
    const positive=(v:typeof p)=>round(v.filter(x=>x.returnPct>0).length/v.length*100);
-   // Purged, chronological holdout: a training exit must be strictly before
-   // the first test entry. Deduplicate company/therapy/indication first.
-   let holdoutTrainPrograms=0,holdoutTestPrograms=0;
+   // Choose the fold solely from timestamp and issuer counts, never from
+   // returns. All prior positions for an issuer in the test set are purged
+   // from training. Within each fold a ticker counts once, even when its
+   // different drugs / indications have distinct program IDs.
+   const distinctIssuers=(rows:typeof p):typeof p=>{
+    const seen=new Set<string>();
+    return rows.filter(x=>{
+     if(seen.has(x.ticker))return false;
+     seen.add(x.ticker);return true;
+    });
+   };
+   let chosen:{cutoff:string;train:typeof p;test:typeof p;purged:number}|null=null;
    for(const cutoff of new Set(p.map(x=>x.entryDate))){
-    const train=p.filter(x=>x.exitDate<cutoff).length;
-    const test=p.filter(x=>x.entryDate>=cutoff).length;
-    if(Math.min(train,test)>Math.min(holdoutTrainPrograms,holdoutTestPrograms)){
-     holdoutTrainPrograms=train;holdoutTestPrograms=test;
+    const testCandidates=p.filter(x=>x.entryDate>=cutoff);
+    const testIssuers=new Set(testCandidates.map(x=>x.ticker));
+    const trainBeforeCutoff=p.filter(x=>x.exitDate<cutoff);
+    const train=distinctIssuers(trainBeforeCutoff.filter(x=>!testIssuers.has(x.ticker)));
+    const test=distinctIssuers(testCandidates);
+    const purged=trainBeforeCutoff.filter(x=>testIssuers.has(x.ticker)).length;
+    if(!train.length||!test.length)continue;
+    if(!chosen||
+       Math.min(train.length,test.length)>Math.min(chosen.train.length,chosen.test.length)||
+       (Math.min(train.length,test.length)===Math.min(chosen.train.length,chosen.test.length)&&
+        train.length+test.length>chosen.train.length+chosen.test.length)){
+     chosen={cutoff,train,test,purged};
     }
    }
+   const holdoutTrainPrograms=chosen?.train.length??0;
+   const holdoutTestPrograms=chosen?.test.length??0;
+   const heldOut=chosen?.test??[];
+   const holdoutLow=heldOut.filter(x=>x.score<=25);
+   const holdoutHigh=heldOut.filter(x=>x.score>=75);
+   const holdoutSpearman=protocolConsistent?
+     spearman(heldOut.map(x=>x.score),heldOut.map(x=>x.returnPct)):null;
+   const holdoutSpread=protocolConsistent&&holdoutLow.length&&holdoutHigh.length?
+     round(avg(holdoutHigh)-avg(holdoutLow)):null;
    const adequateCounts=p.length>=threshold&&low.length>=5&&high.length>=5;
+   const adequateHoldoutCohorts=holdoutLow.length>=5&&holdoutHigh.length>=5;
+   // Positive in-sample associations alone are not validation. The only
+   // evidence accepted for review must work on untouched later issuers.
+   const holdoutSupportsDirection=holdoutSpearman!==null&&
+     holdoutSpearman>0&&holdoutSpread!==null&&holdoutSpread>0;
    const enough=adequateCounts&&protocolConsistent&&
-    holdoutTrainPrograms>=threshold&&holdoutTestPrograms>=threshold;
+    holdoutTrainPrograms>=threshold&&holdoutTestPrograms>=threshold&&
+    adequateHoldoutCohorts&&holdoutSupportsDirection;
    return {stage,metricId:metric.id,name:metric.name,
     independentPrograms:p.length,observedReturnPairs:p.length,
     benchmarkId:protocolConsistent&&p.length?p[0].benchmarkId:null,
     ruleVersion:protocolConsistent&&p.length?p[0].ruleVersion:null,
     protocolConsistent,holdoutTrainPrograms,holdoutTestPrograms,
+    holdoutCutoffDate:chosen?.cutoff??null,
+    holdoutIssuerPurgedPrograms:chosen?.purged??0,
+    holdoutHighPrograms:holdoutHigh.length,holdoutLowPrograms:holdoutLow.length,
+    holdoutSpearmanScoreToReturn:holdoutSpearman,
+    holdoutHighMinusLowPercent:holdoutSpread,
     spearmanScoreToReturn:protocolConsistent?spearman(p.map(x=>x.score),p.map(x=>x.returnPct)):null,
     meanHighMinusLowPercent:protocolConsistent&&low.length&&high.length?round(avg(high)-avg(low)):null,
     positiveReturnRateHigh:protocolConsistent&&high.length?positive(high):null,
@@ -137,8 +177,13 @@ export function evaluateMetricHistory(
     reason:!protocolConsistent&&p.length>0?
       "Mixed benchmark or rule versions: metric returns cannot be pooled for validation.":
       !adequateCounts?"Insufficient unique, source-dated before-entry programs or high/low grade cohorts.":
-      !enough?"No purged chronological 30-program training and 30-program holdout split is available.":
-      "Comparable scoring protocol and chronological sample floors met; independent audit, statistical uncertainty and calibration approval are still required."
+      holdoutTrainPrograms<threshold||holdoutTestPrograms<threshold?
+       "No issuer-disjoint, purged chronological 30-issuer training and 30-issuer holdout split is available.":
+      !adequateHoldoutCohorts?
+       "Held-out issuer cohort lacks at least five low and five high pre-entry metric ratings.":
+      !holdoutSupportsDirection?
+       "Held-out issuer scores do not demonstrate both positive rank association and positive high-minus-low returns.":
+      "Issuer-disjoint chronological holdout shows a positive descriptive association; independent audit, statistical uncertainty, multiple-testing controls and calibration approval remain required."
    };
   })));
 }
