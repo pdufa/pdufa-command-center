@@ -28,7 +28,8 @@ test("per-trial TOP and BOTTOM RAAS begin closed with four-stage drilldown",()=>
  assert.match(raas,/const label=isTop\?"TOP-RAAS":"BOTTOM-RAAS"/);
  assert.match(raas,/data-raas-phase=\{bucket\} data-raas-trial=\{row.nctId\}/);
  assert.match(raas,/groups.map\(\(group,i\)=><details/);
- assert.match(raas,/group.metrics.map\(\(metric,j\)=><details/);
+ assert.match(raas,/group.metrics.map\(\(metric,j\)=>\{/);
+ assert.match(raas,/return <details key=\{metric.id\}/);
  assert.doesNotMatch(raas,/<details[^>]*\sopen(?:\s|=|>)/);
  assert.match(styles,/\.factor\[open\]\{display:flex;flex-wrap:nowrap/);
  assert.match(styles,/\.metric\[open\]\{display:flex/);
