@@ -517,14 +517,21 @@ export default function ToolsOpeningTrialGrid({
         These are not efficacy, approval-probability, competitive superiority or stock-return scores.
         E's appreciation/grade remains N/A until the ranking method has been validated.
         N/A does not mean zero.</span>
-      {registryCoverage&&<span>Registry primary-source archive: {registryCoverage.postedResults} of
-        {registryCoverage.scanned} historical trials have posted results;
-        {registryCoverage.meanRegistryCoveragePercent!==null&&
-          " mean source-packet evidence coverage "+registryCoverage.meanRegistryCoveragePercent+
-          "% across "+registryCoverage.measurableRecords+" untruncated packets;"}
-        primary outcomes, secondary outcomes and serious-event counts have distinct
-        source coverage. These are NOT all qualified post–Phase 3 stocks,
-        clinical benefit scores or stock-appreciation predictions.</span>}
+      {registryCoverage&&<span><strong>Historical registry research packets:</strong>{" "}
+        {registryCoverage.postedResults} of {registryCoverage.scanned} have posted results.
+        <strong> Average four-field coverage:{" "}
+          {registryCoverage.meanRegistryCoveragePercent===null?"Not measurable":
+            registryCoverage.meanRegistryCoveragePercent.toFixed(1)+"%"}.</strong>{" "}
+        {registryCoverage.coverageBuckets.allFour} have all four data categories;
+        {registryCoverage.coverageBuckets.partial} have partial data;
+        {registryCoverage.coverageBuckets.noMeasurements} have no available
+        result measurements; {registryCoverage.coverageBuckets.incompleteExtract}
+        have truncated extracts and are excluded from the average.
+        Coverage is based on result posting, measured primary outcomes, measured
+        secondary outcomes, and serious-event counts. This measures source
+        availability only, not efficacy, FDA approval, a competitive rank or stock
+        appreciation. This dated 375-trial archive is not your full qualified Pipeline.
+      </span>}
       {registryUnavailable&&<span role="status">Registry evidence archive unavailable or stale;
         clinical inputs remain unscored until reverified.</span>}
       {competitiveOpen&&<span>PIPE competitor discovery displays source-linked historical
