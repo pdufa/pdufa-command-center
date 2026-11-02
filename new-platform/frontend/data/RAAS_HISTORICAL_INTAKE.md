@@ -123,6 +123,17 @@ Independent historical data collection may still find these quotes; do not infer
 
 No historical example is marked `CORPORATE_ACTIONS_RECONCILED`. All displayed appreciation figures remain simple observed gross nominal closing-price differences and are not original RAAS forecasts.
 
+## Corporate-action window audit implementation (2026-11-02)
+
+- Source research lives in `data/raas-corporate-actions-research.json`; `lib/raas-corporate-action-audit.ts` classifies each documented event as **before**, **during** or **after** the historical entry/exit window. These are **partial** event histories, not audited adjustment-factor streams.
+- GERN: sourced 2014 1.058x share distribution and Asterias spinoff, predating the 2022 TOP and 2024 BOTTOM studies. A reported distribution may affect historical total-return reconstruction and must not be assumed to be a normal cash dividend.
+- MDGL: sourced July 25, 2016 1-for-35 reverse split, before the 2022 TOP and 2023/24 BOTTOM studies. Madrigal's own price-lookup page states prices are adjusted for splits/dividends, but has not provided audited per-session values for our selected dates.
+- VRNA: source-confirmed 8 ordinary shares per ADS; Nasdaq reported October 7, 2025 merger completion with $107/ADS consideration, **after** the selected May–June 2024 BOTTOM window. That later acquisition is future knowledge and cannot be used in a 2024 forecast.
+- The BBIO and URGN cases still have no complete corporate-action history imported; **absence of a listed event is not a statement that none occurred**.
+- `/raas-history` has a collapsed action-history panel for every case, with source links and open adjustment blockers. `tests/raas-corporate-action-audit.test.cjs` checks event placement, ADS ratios, invalid factors and the refusal to approve any return from partial history.
+
+**Status:** Partial corporate-action sources for 5/8 retrospective windows; **0/8** complete adjusted-return audits. The dated close source reconciliation stays at **11/16**, with five exact-date secondary quotes still missing. These two workstreams are independent and neither can create a validated RAAS forecast.
+
 ## Known gaps as of 2026-11-02
 
 - Genuine, precommitted historical investment-prediction cases: **0 reviewed**. Historic pre-entry RAAS metric score records: **0 reviewed**. Seven separately labeled retrospective observational windows are available for source-intake testing, but are **not** admissible model performance records.
