@@ -12,6 +12,7 @@ import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phase3ReadoutSortKey} from "../lib/phase3-readout-sort";
 import {finalSurveyReadiness} from "../lib/final-survey-readiness";
 import {finalSurveyNextActions} from "../lib/final-survey-next-actions";
+import {phase3ScientificEvidenceAudit} from "../lib/phase3-scientific-evidence-audit";
 import {surveyScoringAssessments,surveyScoringGateLabel} from "../lib/final-survey-scoring-protocol";
 
 type Bucket="pre"|"post"|"unverified";
@@ -304,6 +305,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  ];
  const checked=researchStatus==="ready";
  const audit=finalSurveyReadiness(groups,rules,checked&&!!record);
+ const scientificAudit=phase3ScientificEvidenceAudit(record);
  const nextActions=finalSurveyNextActions({researchStatus,exactRecord:!!record,
    gates:rules,groups,
    questions:BENEFIT_GROUPS.flatMap(survey=>survey.fields.map(field=>({
@@ -375,6 +377,17 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
              "Not assessed"}
            </p>
            <p><strong>FDA decision forecast:</strong> ABSTAIN — this coverage audit cannot establish approval, a Complete Response Letter, an extension, or a probability. Scientific outcome calibration remains separate.</p>
+           <details className={css.finalSurveyMissing} aria-label="Phase 3 scientific evidence verification checklist">
+             <summary>Scientific validation checkpoints · {scientificAudit.documented} documented · {scientificAudit.gaps} not established</summary>
+             <p>This is a methodological evidence audit, not a score for treatment benefit. Source-transcribed sponsor findings still require independent adjudication.</p>
+             <div className={css.scientificAuditChecks}>
+               {scientificAudit.checks.map(check=><div key={check.id} className={css.scientificAuditCheck}>
+                 <strong>{check.status==="DOCUMENTED"?"Source documented":"Not established"} · {check.title}</strong>
+                 <p>{check.detail}</p>
+               </div>)}
+             </div>
+             <p><strong>Readiness interpretation:</strong> Observed efficacy is not the same as verified clinical superiority or a validated FDA decision probability. Do not promote this checklist into the numerical medical grade.</p>
+           </details>
            <details className={css.finalSurveyMissing} aria-label="Final SURVEY prioritized research actions">
              <summary>Next steps to complete SURVEY · {nextActions.actions.length} research tasks</summary>
              <p>Priority order: resolve source/identity issues first, then required stage checks, unverified groups and individual research questions. This is a research checklist, not a medical failure list.</p>
