@@ -308,6 +308,107 @@ def test_empty_historical_case_roster_has_one_empty_page(engine):
         catalog.historical_validation(engine, case_page=2)
 
 
+
+def prospective_application_fixture(engine, *, action="CRL"):
+    """Synthetic FDA submission evidence predating a forecast; not production cases."""
+    catalog.upsert_trial(engine, record(when="2025-10-01T09:00:00+00:00"))
+    body = ("FDA accepted NDA000001 for Investigational Drug treating Example Disease "
+            "with trial NCT00116805. Application submitted.")
+    source = {
+        "url":"https://www.fda.gov/drugs/synthetic-submission",
+        "sha256":hashlib.sha256(body.encode()).hexdigest(),
+        "retrieved_at":"2025-10-10T09:00:00+00:00",
+        "verification_status":"VERIFIED",
+        "publisher_kind":"FDA","document":body
+    }
+    catalog.record_regulatory_evidence(
+        engine, application={"application_id":"NDA000001:example",
+            "application_number":"NDA000001","sponsor":"Example Sponsor",
+            "drug":"Investigational Drug","indication":"Example Disease"},
+        decision="PENDING",nct_ids=["NCT00116805"],source=source,
+        published_at="2025-10-10T08:00:00+00:00",
+        decision_date="2025-10-10",submission_status="ACCEPTED"
+    )
+    return {
+        "prediction_id":"time-locked-forecast","nct_id":"NCT00116805",
+        "application_id":"NDA000001:example","decision":action,
+        "created_at":"2026-01-10T12:00:00Z",
+        "evidence_cutoff":"2025-10-12T00:00:00Z",
+        "evidence_ids":["ctgov:"+record()["sha256"]]
+    }
+
+
+def test_verified_predecision_application_and_server_locked_forecast_evaluate_once(engine,monkeypatch):
+    prediction=prospective_application_fixture(engine)
+    monkeypatch.setattr(catalog,"stamp",lambda:"2026-01-10T12:01:00+00:00")
+    catalog.record_prediction(engine,prediction)
+    regulatory(engine,decision="CRL",decision_date="2026-03-01")
+    report=catalog.historical_validation(engine)
+    assert report["number_evaluated"] == report["counts"]["correct_predictions"] == 1
+    assert report["case_review"]["reason_counts"] == {"LOCKED_PREDICTION_BEFORE_FDA_DECISION":1}
+    case=report["case_review"]["records"][0]
+    assert case["correctness"] is True and case["disposition"] == "EVALUATED"
+    assert case["fda_source_url"] == "https://www.fda.gov/drugs/test-evidence"
+    assert report["calibration_metrics"] is None
+    assert report["accuracy_by_decision"]["CRL"]["accuracy"] is None
+
+
+def test_multiple_fda_actions_do_not_relabel_first_review_cycle_to_later_approval(engine,monkeypatch):
+    prediction=prospective_application_fixture(engine)
+    monkeypatch.setattr(catalog,"stamp",lambda:"2026-01-10T12:01:00+00:00")
+    catalog.record_prediction(engine,prediction)
+    regulatory(engine,decision="CRL",decision_date="2026-03-01")
+    regulatory(engine,decision="APPROVED",decision_date="2026-05-01")
+    report=catalog.historical_validation(engine)
+    assert report["number_evaluated"] == 0
+    assert report["counts"]["correct_predictions"] == 0
+    row=next(r for r in report["case_review"]["records"]
+             if r["prediction_id"] == "time-locked-forecast")
+    assert row["disposition"] == "EXCLUDED"
+    assert row["reason"] == "FDA_REVIEW_CYCLE_NOT_SCOPED"
+    assert row["correctness"] is None
+    assert report["accuracy_by_decision"]["PASS"]["accuracy"] is None
+
+
+def test_backdated_created_at_does_not_replace_real_server_prediction_receipt(engine):
+    prediction=prospective_application_fixture(engine)
+    catalog.record_prediction(engine,prediction)
+    regulatory(engine,decision="CRL",decision_date="2026-03-01")
+    result=catalog.historical_validation(engine)
+    assert result["number_evaluated"] == 0
+    row=next(r for r in result["case_review"]["records"] if r["prediction_id"])
+    assert row["disposition"] == "EXCLUDED"
+    assert row["reason"] == "PREDICTION_LOCK_NOT_BEFORE_FDA_ACTION"
+    assert row["correctness"] is None
+
+
+def test_missing_independently_verified_fda_source_blocks_correctness(engine,monkeypatch):
+    prediction=prospective_application_fixture(engine)
+    monkeypatch.setattr(catalog,"stamp",lambda:"2026-01-10T12:01:00+00:00")
+    catalog.record_prediction(engine,prediction)
+    body=("Complete response letter for NDA000001, Investigational Drug in "
+          "Example Disease, trial NCT00116805. Official Sponsor")
+    source={
+        "url":"https://example.com/sponsor-announcement",
+        "sha256":hashlib.sha256(body.encode()).hexdigest(),
+        "retrieved_at":"2026-03-02T09:00:00+00:00",
+        "verification_status":"VERIFIED","publisher_kind":"OFFICIAL_SPONSOR",
+        "official_sponsor_domain":"example.com","document":body
+    }
+    catalog.record_regulatory_evidence(
+        engine,application={"application_id":"NDA000001:example",
+            "application_number":"NDA000001","sponsor":"Example Sponsor",
+            "drug":"Investigational Drug","indication":"Example Disease"},
+        decision="CRL",nct_ids=["NCT00116805"],source=source,
+        published_at="2026-03-02T09:00:00+00:00",
+        decision_date="2026-03-01",submission_status="ACCEPTED")
+    result=catalog.historical_validation(engine)
+    assert result["number_evaluated"] == 0
+    row=next(r for r in result["case_review"]["records"] if r["prediction_id"])
+    assert row["reason"] == "FDA_PRIMARY_ACTION_SOURCE_NOT_VERIFIED"
+    assert row["fda_source_url"] is None and row["correctness"] is None
+
+
 def test_historical_validation_empty_is_honest(engine):
     report = catalog.historical_validation(engine)
     assert report["status"] == "NOT_VALIDATED" and report["number_evaluated"] == 0
