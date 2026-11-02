@@ -1,11 +1,28 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import css from "./Phase3ReadoutSheets.module.css";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
+import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
+import {RANKED_BENEFIT_ASSESSMENTS} from "../lib/pipeline-benefit-assessments";
+import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 
 type Bucket="pre"|"post"|"unverified";
+/** Reversible visibility-only feature; existing trial data and research sources are unchanged. */
+const SURVEY_RATINGS_PREVIEW_ENABLED=true;
+const SURVEY_VISIBILITY_KEY="phase3-readout-survey-column-visible-v1";
+const SURVEY_SECTIONS=[
+ {key:"A",name:"Medical Impact",min:1,max:5},
+ {key:"B",name:"Competitive Strength",min:6,max:8},
+ {key:"C",name:"Market Opportunity",min:9,max:14},
+ {key:"D",name:"Revenue Value",min:15,max:18},
+ {key:"E",name:"Investment Potential",min:19,max:20}
+] as const;
+const SURVEY_QUESTION_IDS=BENEFIT_GROUPS.flatMap(s=>s.fields.map(f=>f.id));
+const SURVEY_QUESTION_NUMBERS=new Map(SURVEY_QUESTION_IDS.map((id,i)=>[id,i+1]));
+const SURVEY_FIELD_DETAILS=new Map<string,{purpose:string;evidence:string}>(
+ ALL_RESEARCH_FIELD_DEFINITIONS.map(f=>[f.id,{purpose:f.purpose,evidence:f.evidence}]));
 const LIMIT=50;
 const number=(v:number)=>v.toLocaleString("en-US");
 const txt=(v:string)=>v||"Not established";
@@ -62,12 +79,152 @@ function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
   document.body.append(anchor);anchor.click();anchor.remove();
   window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function TrialTable({rows,bucket}:{rows:ReadoutRow[];bucket:Bucket}){
+
+/** Source-backed survey navigator. A recorded research input is not a rating or stock forecast. */
+function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
+ row:ReadoutRow;bucket:"pre"|"post";feed:BenefitFeed|null;
+ researchStatus:"idle"|"loading"|"ready"|"unavailable";onClose:()=>void;
+}){
+ const dialog=useRef<HTMLDialogElement>(null);
+ const [groupKey,setGroupKey]=useState<(typeof SURVEY_SECTIONS)[number]["key"]>("A");
+ const [surveyRank,setSurveyRank]=useState(1);
+ const [gapsOnly,setGapsOnly]=useState(false);
+ useEffect(()=>{const el=dialog.current;if(el&&!el.open)el.showModal();
+   return ()=>{if(el?.open)el.close();};},[]);
+ const section=SURVEY_SECTIONS.find(g=>g.key===groupKey)||SURVEY_SECTIONS[0];
+ const surveys=BENEFIT_GROUPS.filter(x=>x.number>=section.min&&x.number<=section.max);
+ // An NCT can have multiple products. Never join survey records by ticker alone.
+ const matches=feed?.records.filter(x=>x.nctId===row.nctId)||[];
+ const record=matches.length===1?benefitForTrial(feed,{
+   nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",
+   indication:row.evidence?.indication||""}):null;
+ const fact=(id:string):BenefitFact|null=>record?.facts[id]||null;
+ const coverage=(fields:readonly {id:string}[])=>{
+   const verified=record?fields.filter(f=>fact(f.id)?.status==="VERIFIED").length:0;
+   const modeled=record?fields.filter(f=>fact(f.id)?.status==="MODELED").length:0;
+   return {verified,modeled,gaps:fields.length-verified-modeled};
+ };
+ const all=coverage(BENEFIT_GROUPS.flatMap(x=>x.fields));
+ const groupFields=surveys.flatMap(x=>x.fields);
+ const groupCoverage=coverage(groupFields);
+ const currentIndex=surveys.findIndex(x=>x.number===surveyRank);
+ const changeGroup=(key:(typeof SURVEY_SECTIONS)[number]["key"],first:number)=>{
+   setGroupKey(key);setSurveyRank(first);setGapsOnly(false);
+ };
+ const moveSurvey=(direction:-1|1)=>{
+   const next=surveys[Math.max(0,Math.min(surveys.length-1,currentIndex+direction))];
+   if(next)setSurveyRank(next.number);
+ };
+ return <dialog ref={dialog} className={css.surveyDialog} onClose={onClose} onCancel={onClose}
+   aria-label={"Survey Ratings for "+row.ticker+" "+row.nctId}>
+   <div className={css.surveyDialogHead}>
+     <div>
+       <p className={css.surveyEyebrow}>{bucket==="pre"?"UPPER · 3 · PHASE 3 BEFORE READOUT":"LOWER · P · PHASE 3 AFTER READOUT"}</p>
+       <h3>Survey Ratings · {row.ticker}</h3>
+       <p>{row.company} · {row.nctId}</p>
+     </div>
+     <button type="button" className={css.surveyClose} onClick={onClose} autoFocus>Close ✕</button>
+   </div>
+   <div className={css.surveyDialogBody}>
+     <p className={css.surveyClarification}><strong>Research coverage, not a numerical rating.</strong>
+       {" "}All 5 groups, 20 surveys and 38 questions are included. Scores remain
+       {" "}<strong>Not graded</strong> until source-backed scoring rules are validated.
+       Missing research never equals clinical failure or a zero score.</p>
+     <div className={css.surveyOverview}>
+       <div><small>Groups</small><strong>5</strong></div>
+       <div><small>Surveys</small><strong>20</strong></div>
+       <div><small>Questions</small><strong>{SURVEY_QUESTION_IDS.length}</strong></div>
+       <div><small>Verified inputs</small><strong>{record?all.verified+" / 38":"Not assessed"}</strong></div>
+     </div>
+     {researchStatus==="loading"&&<p role="status" className={css.surveyStatus}>Checking exact-NCT survey evidence…</p>}
+     {researchStatus==="unavailable"&&<p role="status" className={css.surveyStatus}>Research feed unavailable. Questions remain visible without scores.</p>}
+     {researchStatus==="ready"&&!record&&<p role="status" className={css.surveyStatus}>No unambiguous NCT + ticker + therapy + indication research match. Missing percentages and trial scores are not assumed.</p>}
+     {record&&<p role="status" className={css.surveyStatus}>Matched research inputs: {all.verified} verified · {all.modeled} modeled · {all.gaps} unrecorded. This is evidence coverage, not medical merit.</p>}
+     <h4 className={css.surveyLabel}>1 · Survey groups</h4>
+     <div className={css.surveyGroupRail} role="group" aria-label="Five survey groups">
+       {SURVEY_SECTIONS.map(g=>{
+         const groupSurveys=BENEFIT_GROUPS.filter(x=>x.number>=g.min&&x.number<=g.max);
+         const fields=groupSurveys.flatMap(x=>x.fields),c=coverage(fields);
+         return <button type="button" className={css.surveyGroupButton} key={g.key}
+           aria-pressed={groupKey===g.key} onClick={()=>changeGroup(g.key,g.min)}>
+           <strong>{g.key} · {g.name}</strong>
+           <small>{groupSurveys.length} surveys · {fields.length} questions</small>
+           <small>{record?c.verified+" verified · "+c.gaps+" gaps":"Not graded"}</small>
+         </button>;
+       })}
+     </div>
+     <div className={css.surveyLabelRow}>
+       <h4 className={css.surveyLabel}>2 · {section.name}</h4>
+       <span>{surveys.length} surveys · {groupFields.length} questions</span>
+     </div>
+     <div className={css.surveyCoverage}>
+       <strong>Combined group rating: Not graded</strong>
+       <span>{record?groupCoverage.verified+" verified · "+groupCoverage.modeled+" modeled · "+groupCoverage.gaps+" research gaps":"Evidence coverage not assessed"}</span>
+     </div>
+     <div className={css.surveyNavigation}>
+       <button type="button" disabled={currentIndex<=0} onClick={()=>moveSurvey(-1)}>← Previous</button>
+       <span>Survey {surveyRank||"—"} · {Math.max(0,currentIndex)+1}/{surveys.length}</span>
+       <button type="button" disabled={currentIndex>=surveys.length-1} onClick={()=>moveSurvey(1)}>Next →</button>
+     </div>
+     <div className={css.surveyRail} role="region" aria-label="Surveys and horizontally expanding questions" tabIndex={0}>
+       {surveys.map(survey=>{
+         const selected=survey.number===surveyRank;
+         const questions=survey.fields.filter(f=>!gapsOnly||!fact(f.id));
+         const c=coverage(survey.fields);
+         const spec=RANKED_BENEFIT_ASSESSMENTS.find(s=>s.rank===survey.number);
+         return <div className={selected?css.surveyClusterActive:css.surveyCluster} key={survey.number}>
+           <button type="button" className={css.surveyClusterHeader} aria-expanded={selected}
+             onClick={()=>setSurveyRank(selected?0:survey.number)}>
+             <strong>{survey.number}. {survey.name}</strong>
+             <small>{survey.fields.length} questions · {record?c.verified+" verified":"Not graded"}</small>
+             <span aria-hidden="true">{selected?"◀ Collapse":"Expand ▶"}</span>
+           </button>
+           {selected&&<div className={css.surveyQuestions}>
+             {questions.length?questions.map(f=>{
+               const detail=SURVEY_FIELD_DETAILS.get(f.id);
+               const input=fact(f.id);
+               return <article className={css.surveyQuestion} key={f.id}>
+                 <small className={css.surveyQuestionNum}>QUESTION {SURVEY_QUESTION_NUMBERS.get(f.id)}</small>
+                 <h5>{f.label}</h5>
+                 <strong className={input?.status==="VERIFIED"?css.surveyVerified:input?.status==="MODELED"?css.surveyModeled:css.surveyUnscored}>
+                   {input?.status==="VERIFIED"?"Verified input":input?.status==="MODELED"?"Modeled input":"Not assessed"}
+                 </strong>
+                 <p>{detail?.purpose||spec?.objective||"Survey question"}</p>
+                 <p><strong>Evidence needed:</strong> {detail?.evidence||"Source-backed trial research"}</p>
+                 {input?<div className={css.surveyFact}>
+                   <p><strong>Value:</strong> {String(input.value)}</p>
+                   <p><strong>Confidence:</strong> {input.confidence} · {input.sourceDate}</p>
+                   <p><strong>Method:</strong> {input.method}</p>
+                   <a href={input.sourceUrl} target="_blank" rel="noopener noreferrer">Open evidence source</a>
+                 </div>:<p className={css.surveyUnscored}>No exact-trial survey input recorded; no rating assigned.</p>}
+               </article>;
+             }):<p className={css.surveyNoGaps}>No unrecorded questions in this survey.</p>}
+           </div>}
+         </div>;
+       })}
+     </div>
+     <div className={css.surveyFoot}>
+       <label><input type="checkbox" checked={gapsOnly} onChange={e=>setGapsOnly(e.target.checked)}/>
+         Show unrecorded questions only</label>
+       <span>Swipe sideways. Select a survey to expand its component questions to the right.</span>
+     </div>
+     {row.evidence?.evidenceUrl&&<p className={css.surveySource}>
+       <a href={row.evidence.evidenceUrl} target="_blank" rel="noopener noreferrer">
+         Issuer {bucket==="post"?"readout":"source check"} · {row.evidence.evidenceDate}</a>
+       {" "}— not proof that every survey metric has been researched.</p>}
+   </div>
+ </dialog>;
+}
+
+function TrialTable({rows,bucket,showSurveys,onSurveyOpen}:{
+ rows:ReadoutRow[];bucket:Bucket;showSurveys:boolean;onSurveyOpen:(row:ReadoutRow)=>void;
+}){
   return <div className={css.tableScroll} role="region" aria-label={bucket+" Phase 3 trial spreadsheet"} tabIndex={0}>
     <table className={css.table}>
       <thead><tr>
         <th>#</th><th>Ticker</th><th>NCT / trial</th><th>Company</th>
         {bucket==="post"&&<th title="Verified Phase 3 primary-endpoint statistical p-value, not FDA approval probability">Factor P · p-value</th>}
+        {showSurveys&&<th>Survey Ratings</th>}
         <th>Drug / therapy</th><th>Indication</th><th>Registered status</th>
         <th>{bucket==="pre"?"Source checked":bucket==="post"?"Public release date":"Public release"}</th><th>Source evidence</th>
       </tr></thead>
@@ -79,6 +236,12 @@ function TrialTable({rows,bucket}:{rows:ReadoutRow[];bucket:Bucket}){
           {row.evidence?.primaryEndpointP
             ? <a className={css.factorPValue} href={row.evidence.primaryEndpointP.sourceUrl} target="_blank" rel="noopener noreferrer" title={row.evidence.primaryEndpointP.endpoint+" · issuer source"}>{row.evidence.primaryEndpointP.display}</a>
             : <span className={css.factorPMissing} title="Exact Phase 3 primary endpoint p-value not verified in the referenced public readout">Not reported</span>}
+        </td>}{showSurveys&&<td className={css.surveyCell}>
+          <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row)}
+            aria-label={"Explore five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
+            Surveys <span aria-hidden="true">→</span>
+          </button>
+          <small>5 groups · 20 surveys</small>
         </td>}<td>{txt(row.evidence?.drug||"")}</td>
         <td>{txt(row.evidence?.indication||"")}</td><td>{row.status.replaceAll("_"," ")}</td>
         <td>{row.evidence?.evidenceDate||"Not verified"}</td>
@@ -86,11 +249,14 @@ function TrialTable({rows,bucket}:{rows:ReadoutRow[];bucket:Bucket}){
           ? <a href={row.evidence.evidenceUrl} target="_blank" rel="noopener noreferrer">
             {bucket==="pre"?"Dated issuer check":"Public readout source"}</a>
           : "Not verified"}</td>
-      </tr>):<tr><td colSpan={bucket==="post"?10:9} className={css.empty}>No documented matches in this view. Unknown-release trials are not counted as pre-release.</td></tr>}</tbody>
+      </tr>):<tr><td colSpan={(bucket==="post"?10:9)+(showSurveys?1:0)} className={css.empty}>No documented matches in this view. Unknown-release trials are not counted as pre-release.</td></tr>}</tbody>
     </table>
   </div>;
 }
-function Spreadsheet({bucket,rows,query,caption}:{bucket:"pre"|"post";rows:ReadoutRow[];query:string;caption:string}){
+function Spreadsheet({bucket,rows,query,caption,showSurveys,onSurveyOpen}:{
+ bucket:"pre"|"post";rows:ReadoutRow[];query:string;caption:string;
+ showSurveys:boolean;onSurveyOpen:(row:ReadoutRow)=>void;
+}){
   const [sort,setSort]=useState<ReadoutKey>("ticker");
   const [desc,setDesc]=useState(false);
   const matched=useMemo(()=>{
@@ -120,7 +286,7 @@ function Spreadsheet({bucket,rows,query,caption}:{bucket:"pre"|"post";rows:Reado
       </label>
       <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
     </div>
-    <TrialTable rows={matched} bucket={bucket}/>
+    <TrialTable rows={matched} bucket={bucket} showSurveys={showSurveys} onSurveyOpen={onSurveyOpen}/>
   </section>;
 }
 /** Full historical issuer-cap census with dated issuer readouts, never registry-result proxy. */
@@ -129,6 +295,27 @@ export default function Phase3ReadoutSheets(){
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
   const [query,setQuery]=useState("");
+  const [showSurveys,setShowSurveys]=useState(SURVEY_RATINGS_PREVIEW_ENABLED);
+  const [activeSurvey,setActiveSurvey]=useState<{row:ReadoutRow;bucket:"pre"|"post"}|null>(null);
+  const [benefitFeed,setBenefitFeed]=useState<BenefitFeed|null>(null);
+  const [researchStatus,setResearchStatus]=useState<"idle"|"loading"|"ready"|"unavailable">("idle");
+  useEffect(()=>{
+    if(!SURVEY_RATINGS_PREVIEW_ENABLED)return;
+    try{if(window.localStorage.getItem(SURVEY_VISIBILITY_KEY)==="false")setShowSurveys(false);}catch{}
+  },[]);
+  const toggleSurveys=()=>{
+    const next=!showSurveys;setShowSurveys(next);
+    if(!next)setActiveSurvey(null);
+    try{window.localStorage.setItem(SURVEY_VISIBILITY_KEY,String(next));}catch{}
+  };
+  useEffect(()=>{
+    if(!activeSurvey||researchStatus!=="idle")return;
+    setResearchStatus("loading");
+    void fetch("/api/benefit-assessments",{cache:"no-store"})
+      .then(async r=>{if(!r.ok)throw Error("Research unavailable");return parseBenefitFeed(await r.json());})
+      .then(feed=>{setBenefitFeed(feed);setResearchStatus("ready");})
+      .catch(()=>setResearchStatus("unavailable"));
+  },[activeSurvey,researchStatus]);
   const [unknownPage,setUnknownPage]=useState(0);
   const [unknownFilters,setUnknownFilters]=useState<ColumnFilterState>({});
   const [unknownSort,setUnknownSort]=useState<ReadoutKey>("nctId");
@@ -177,10 +364,21 @@ export default function Phase3ReadoutSheets(){
         placeholder="Search trials…" maxLength={90}/>
       <button type="button" onClick={()=>{setQuery("");setUnknownPage(0)}} disabled={!query}>Clear</button>
     </div>
+    {SURVEY_RATINGS_PREVIEW_ENABLED&&<div className={css.surveyPreviewControls}>
+      <div><strong>Survey Ratings preview</strong><span>Optional column · 5 groups · 20 surveys · 38 questions · no invented scores.</span></div>
+      <button type="button" onClick={toggleSurveys} aria-pressed={showSurveys}>
+        {showSurveys?"Hide Survey Ratings":"Show Survey Ratings"}
+      </button>
+    </div>}
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
+      showSurveys={showSurveys} onSurveyOpen={row=>setActiveSurvey({row,bucket:"pre"})}
       caption="Trials without a documented issuer public release at their source-check date. Each row retains the check date and issuer link."/>
     <Spreadsheet bucket="post" rows={data.post} query={query}
+      showSurveys={showSurveys} onSurveyOpen={row=>setActiveSurvey({row,bucket:"post"})}
       caption="Trials with a documented company public Phase 3 results announcement. Factor P shows the sourced primary-endpoint p-value where reported; it is not approval probability."/>
+    {showSurveys&&activeSurvey&&<SurveyExplorer key={activeSurvey.bucket+"|"+activeSurvey.row.nctId}
+      row={activeSurvey.row} bucket={activeSurvey.bucket} feed={benefitFeed}
+      researchStatus={researchStatus} onClose={()=>setActiveSurvey(null)}/>}
     <details className={css.unverified}>
       <summary><strong>Release status not verified · {number(data.unverified.length)} trials</strong> <span>Expand for research queue</span></summary>
       <div className={css.pendingBody}>
