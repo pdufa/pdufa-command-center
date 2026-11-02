@@ -1,0 +1,40 @@
+name: TOOLS production horizontal-rating browser smoke
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/tests/tools-rating-live-browser-e2e.mjs'
+      - '.github/workflows/tools-rating-live-browser.yml'
+permissions:
+  contents: read
+jobs:
+  webkit-tools:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install audited Playwright WebKit runner
+        run: |
+          npm install --no-audit --no-fund --no-save playwright@1.56.1
+          npx playwright install --with-deps webkit
+      - name: Verify desktop and iPhone TOOLS rating, filters and outline
+        run: node tests/tools-rating-live-browser-e2e.mjs
+      - name: Save screenshots only if an interaction fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tools-production-rating-browser-failure
+          path: new-platform/frontend/test-results/tools-rating-production/
+          retention-days: 3
+          if-no-files-found: ignore
