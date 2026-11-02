@@ -68,6 +68,21 @@ class RefreshRegistryPostingTests(unittest.TestCase):
         self.assertEqual(new["noResultsPosted"],740)
         self.assertEqual(new["resultsPosted"],1)
 
+    def test_extra_cursor_after_all_exact_ncts_does_not_block_publish(self):
+        requests=[]
+        def requester(ids, page_token=""):
+            requests.append((len(ids),page_token))
+            # Some official registry pages return a cursor despite having
+            # already included every NCT requested by filter.ids.
+            out=response(ids)
+            out["nextPageToken"]="extraneous-after-complete-set"
+            return out
+        result=module.build_snapshot(self.rows,requester,self.now,25)
+        self.assertEqual(result["total"],741)
+        self.assertEqual(result["noResultsPosted"],741)
+        self.assertEqual(result["resultsPosted"],0)
+        self.assertTrue(all(token=="" for _,token in requests))
+
     def test_paginated_registry_response_is_fully_reconciled(self):
         first = self.rows[0]["nct_id"]
         seen_pages = []
