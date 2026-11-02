@@ -61,6 +61,12 @@ test("three independently sourced historical post-Phase3 windows are NOT treated
  assert.equal(mdgl.forecastScore,null);
  assert.equal(mdgl.forecastError,null);
  assert.equal(new Set(outcomes.map(x=>x.programKey)).size,4);
+ const trial=feed.records.find(x=>x.ticker==="MDGL");
+ assert.equal(trial.clinicalReadouts.length,2);
+ assert.equal(intake.observedClinicalRateDifference(trial.clinicalReadouts[0]),20);
+ assert.equal(intake.observedClinicalRateDifference(trial.clinicalReadouts[1]),12);
+ assert.ok(trial.clinicalReadouts.every(x=>x.reportedAt<trial.entry.date));
+
 
 });
 test("research-only feed can never masquerade as pre-committed trade predictions or validated RAAS",()=>{
@@ -90,6 +96,13 @@ test("impossible cutoff, post-entry source and incorrect historical market cap a
  assert.throws(()=>intake.parseRetrospectiveFeed(mutate({
   marketCapAtEntry:{...base.marketCapAtEntry,usdMillions:10001}
  })),/RAAS_RETROSPECTIVE_MARKET_CAP_INVALID/);
+});
+test("late or invalid historical efficacy is rejected rather than backfilled",()=>{
+ const base=raw.records.find(r=>r.ticker==="MDGL");
+ const amended={...base,clinicalReadouts:[{...base.clinicalReadouts[0],reportedAt:"2024-04-01"}]};
+ assert.throws(()=>intake.parseRetrospectiveFeed({...raw,records:raw.records.map(r=>r.id===base.id?amended:r)}),/RAAS_RETROSPECTIVE_CLINICAL_INVALID/);
+ const invalid={...base,clinicalReadouts:[{...base.clinicalReadouts[0],activeRatePct:105}]};
+ assert.throws(()=>intake.parseRetrospectiveFeed({...raw,records:raw.records.map(r=>r.id===base.id?invalid:r)}),/RAAS_RETROSPECTIVE_CLINICAL_INVALID/);
 });
 test("research intake can coexist with zero approved historical RAAS outcomes",()=>{
  const actualHistorical=require("../data/raas-historical-cases.json");
