@@ -1,0 +1,55 @@
+name: Back up Phase 3 Ratings and Survey to Google Drive
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sync_phase3_ratings_survey_to_google_drive.py'
+      - 'data/phase3_benefit_survey_catalog.json'
+      - 'tests/test_phase3_ratings_survey_drive_backup.py'
+      - '.github/workflows/pdufa-phase3-ratings-drive-backup.yml'
+  workflow_run:
+    workflows:
+      - "PDUFA Phase 3 Google Drive Backup"
+      - "PDUFA Pipeline research canonical sync"
+    types: [completed]
+  schedule:
+    - cron: '50 13 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: pdufa-phase3-ratings-survey-drive-backup
+  cancel-in-progress: false
+jobs:
+  ratings-and-survey:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check taxonomy and complete 20-rating mapping for every Phase 3 NCT
+        run: python -m unittest discover -s tests -p 'test_phase3_ratings_survey_drive_backup.py' -v
+      - name: Install secure website and Sheets clients
+        run: python -m pip install google-auth requests
+      - name: Ensure source and Google Sheets credentials are configured
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: |
+          test -n "$DASHBOARD_PASSWORD" || { echo "::error::DASHBOARD_PASSWORD missing"; exit 1; }
+          test -n "$GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON" || { echo "::error::Google Sheets service account missing"; exit 1; }
+      - name: Export 20 ratings, survey responses and 38 ingredient requirements
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/sync_phase3_ratings_survey_to_google_drive.py
