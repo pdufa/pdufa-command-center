@@ -12,6 +12,8 @@ import {competitiveReadiness,type CompetitivePopulationScan}
   from "../lib/tools-competitive-readiness";
 import {auditTrialRatings,type RatingAuditCell} from "../lib/tools-rating-engine";
 import type {RegistryCoverage} from "../lib/registry-benefit-coverage";
+import type {RegistryBenefitResearch} from "../lib/registry-benefit-research";
+import {observedSeriousEventRate} from "../lib/registry-observation-math";
 import type {RegistryPeerLeads,RegistryPeerDiscoverySummary} from "../lib/registry-competitor-leads";
 type Props={
   rows:ToolsSpreadsheetRow[];total:number;offset:number;nextOffset:number|null;
@@ -38,6 +40,68 @@ function ResearchAuditCell({cell}:{cell:RatingAuditCell}){
           Source {link.date}</a>
       </p>)}
     </details>}
+  </div>;
+}
+/** On-demand exact-NCT primary-source observations, not treatment effects. */
+function RegistryMeasuredDetail({nctId,mode}:{nctId:string;mode:"CL"|"SAF"}){
+  const [open,setOpen]=useState(false);
+  const [loading,setLoading]=useState(false);
+  const [error,setError]=useState(false);
+  const [packet,setPacket]=useState<RegistryBenefitResearch|null>(null);
+  const toggle=()=>{
+    setOpen(v=>!v);
+    if(open||loading||packet)return;
+    setLoading(true);setError(false);
+    void fetch("/api/registry-benefit-research?nct="+encodeURIComponent(nctId),
+      {cache:"no-store"}).then(async response=>{
+      if(!response.ok)throw Error("REGISTRY_DATA_UNAVAILABLE");
+      const item=await response.json() as RegistryBenefitResearch;
+      if(item.nctId!==nctId||item.sourceUrl!=="https://clinicaltrials.gov/study/"+nctId
+         ||!item.resultsPosted||!Array.isArray(item.primary)||!Array.isArray(item.secondary)
+         ||!Array.isArray(item.seriousAdverseEvents))throw Error("REGISTRY_DATA_INVALID");
+      return item;
+    }).then(item=>setPacket(item)).catch(()=>setError(true)).finally(()=>setLoading(false));
+  };
+  return <div className={css.registryDetail}>
+    <button type="button" onClick={toggle} aria-expanded={open}>
+      {open?"Hide registry observations":mode==="CL"?"View measured endpoints":"View serious-event counts"}
+    </button>
+    {open&&<div className={css.registryDetailContent}>
+      {loading&&<p>Checking exact-NCT source…</p>}
+      {error&&<p>Registry measurements unavailable or stale. No result inferred.</p>}
+      {packet&&<div>
+        <p><a href={packet.sourceUrl} target="_blank" rel="noopener noreferrer">
+          ClinicalTrials.gov · {nctId}</a></p>
+        {mode==="CL"?<>
+          {([["Primary",packet.primary],["Secondary",packet.secondary]] as const).map(([label,items])=>
+            <div key={label}><strong>{label} reported outcomes ({items.length})</strong>
+              {items.slice(0,6).map((outcome,i)=><div key={label+i}>
+                <p>{outcome.title} · {outcome.timeFrame||"Time frame not stated"}
+                  {" · "}{outcome.unit||"Unit not stated"}</p>
+                {outcome.measurements.slice(0,8).map((m,j)=>
+                  <p key={j}>{m.group}: {m.value}{m.spread?" (spread "+m.spread+")":""}</p>)}
+                {outcome.measurements.length===0&&<p>Measurement not reported</p>}
+              </div>)}
+              {items.length>6&&<p>Additional outcomes available at source.</p>}
+            </div>)}
+        </>:<>
+          <strong>Reported serious adverse event terms ({packet.seriousAdverseEvents.length})</strong>
+          {packet.seriousAdverseEvents.slice(0,12).map((event,i)=><div key={i}>
+            <p>{event.term}</p>
+            {event.groups.slice(0,8).map((group,j)=>{
+              const percent=observedSeriousEventRate(group.affected,group.atRisk);
+              return <p key={j}>{group.group}: {group.affected}/{group.atRisk}
+                {percent===null?" · frequency unavailable":" · "+percent.toFixed(1)+"% observed"}</p>;
+            })}
+          </div>)}
+          {packet.seriousAdverseEvents.length>12&&
+            <p>Additional reported events available at source.</p>}
+        </>}
+        <p>Raw registry observations only. Population, exposure, adverse-event
+          attribution, statistical significance and comparability require review.
+          No effectiveness or stock ranking is calculated from these values.</p>
+      </div>}
+    </div>}
   </div>;
 }
 const RATING_GROUPS=[
@@ -388,6 +452,9 @@ export default function ToolsOpeningTrialGrid({
                     i===group.ingredients.length-1?css.ratingEnd:""].filter(Boolean).join(" ")}
                   title={ingredient.name+": source-backed input coverage or explicit unscored status"}>
                   <ResearchAuditCell cell={audit.ingredient[ingredient.key]}/>
+                  {(ingredient.key==="CL"||ingredient.key==="SAF")&&
+                   registryByNct.get(row.nctId)?.resultsPosted&&
+                   <RegistryMeasuredDetail nctId={row.nctId} mode={ingredient.key}/>}
                 </td>)}
               </Fragment>;
             })}
@@ -452,7 +519,12 @@ export default function ToolsOpeningTrialGrid({
         N/A does not mean zero.</span>
       {registryCoverage&&<span>Registry primary-source archive: {registryCoverage.postedResults} of
         {registryCoverage.scanned} historical trials have posted results;
-        these are not all qualified post–Phase 3 stock candidates.</span>}
+        {registryCoverage.meanRegistryCoveragePercent!==null&&
+          " mean source-packet evidence coverage "+registryCoverage.meanRegistryCoveragePercent+
+          "% across "+registryCoverage.measurableRecords+" untruncated packets;"}
+        primary outcomes, secondary outcomes and serious-event counts have distinct
+        source coverage. These are NOT all qualified post–Phase 3 stocks,
+        clinical benefit scores or stock-appreciation predictions.</span>}
       {registryUnavailable&&<span role="status">Registry evidence archive unavailable or stale;
         clinical inputs remain unscored until reverified.</span>}
       {competitiveOpen&&<span>PIPE competitor discovery displays source-linked historical
