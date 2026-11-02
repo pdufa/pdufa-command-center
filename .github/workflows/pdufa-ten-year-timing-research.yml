@@ -1,0 +1,32 @@
+name: PDUFA ten-year historical price timing (research branch)
+on:
+  push:
+    branches:
+      - study/pdufa-ten-year-price-timing-20261102
+    paths:
+      - scripts/pdufa_ten_year_timing.py
+      - .github/workflows/pdufa-ten-year-timing-research.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install data research dependencies
+        run: python -m pip install --disable-pip-version-check "pandas>=2.2,<3" "numpy>=2.0,<3" "requests>=2.31,<3" "yfinance>=0.2.52,<2" "openpyxl>=3.1,<4"
+      - name: Run 2016-2025 PDUFA price timing investigation
+        run: python scripts/pdufa_ten_year_timing.py
+      - name: Record audit and candidate results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-ten-year-price-timing-audit
+          path: research_outputs/pdufa_ten_year
+          if-no-files-found: warn
+          retention-days: 30
