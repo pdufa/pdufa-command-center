@@ -114,6 +114,15 @@ Independent historical data collection may still find these quotes; do not infer
 
 **These are NOT 11 independently tape-certified adjusted closes.** Third-party websites may share data providers; corporate actions, dividends, ADS/share-class transformations, split factors, merger/delisting cash-outs, NYSE/Nasdaq exchange sessions and actual fills remain unverified. Even 16/16 matching displayed closes would not validate RAAS predictive accuracy. Verified historic market prices and contemporaneous *original* predictions remain separate prerequisites.
 
+## Preliminary corporate-action cross-checks (not a completed adjustment audit)
+
+- **GERN:** FinanceCharts reports a 1.058-for-1 split effective 2014-07-22, before the November/December 2022 TOP and May 2024 BOTTOM example windows. Source: https://www.financecharts.com/stocks/GERN/stock-splits . This is evidence of an older split, not a verified complete 2022/2024 corporate-action and dividend record.
+- **MDGL:** FinanceCharts reports a 1-for-35 split effective 2016-07-25, before the 2022 TOP and 2023–24 BOTTOM examples. Source: https://www.financecharts.com/stocks/MDGL/stock-splits . Full vendor adjustment basis and any other relevant distributions remain to be reconciled.
+- **VRNA:** One Nasdaq-listed ADS represented **eight ordinary shares**. MSD confirmed that ratio when announcing the October 7, 2025 transaction closing and Nasdaq ADS delisting: https://www.msd.com/news/msd-completes-acquisition-of-verona-pharma/ . The historical price windows in this study are in May–June 2024, **before** that delisting. The later 2025 acquisition must not be used to reconstruct a 2024 price move or as a 2024 investment signal.
+- **Other securities:** A search result or absence of a split entry does not prove that no split, dividend, ADR conversion, special distribution or ticker restructuring occurred during a studied holding interval. Obtain a full, dated corporate-action record and reconcile share class before certifying any adjusted total return.
+
+No historical example is marked `CORPORATE_ACTIONS_RECONCILED`. All displayed appreciation figures remain simple observed gross nominal closing-price differences and are not original RAAS forecasts.
+
 ## Known gaps as of 2026-11-02
 
 - Genuine, precommitted historical investment-prediction cases: **0 reviewed**. Historic pre-entry RAAS metric score records: **0 reviewed**. Seven separately labeled retrospective observational windows are available for source-intake testing, but are **not** admissible model performance records.
