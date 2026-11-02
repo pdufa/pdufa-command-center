@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_RETROSPECTIVE_EVIDENCE_INTAKE",
   "sourceAsOf": "2026-11-02",
-  "note": "Four distinct post-Phase3 historical investment examples chosen retrospectively; MDGL now joins VRNA, URGN and GERN. Prices are vendor closes without verified corporate-action or execution adjustments; no historical RAAS prediction existed. Never classify these as out-of-sample RAAS performance.",
+  "note": "Five distinct retrospectively selected BOTTOM historical program windows (VRNA, URGN, GERN, MDGL, BBIO); no archived RAAS predictions. Third-party vendor stock-price and capitalization bases require independent audit. All excluded from official validated scoring.",
   "records": [
     {
       "id": "vrna-ensifentrine-copd-2024-illustrative",
@@ -296,6 +296,80 @@
           "notes": "Percentages rounded from sponsor pivotal trial announcement, not a peer-drug head-to-head comparison."
         }
       ]
+    },
+    {
+      "id": "bbio-acoramidis-attrcm-2024-illustrative",
+      "ticker": "BBIO",
+      "drug": "acoramidis (ATTRUBY)",
+      "indication": "Transthyretin amyloid cardiomyopathy (ATTR-CM)",
+      "nctIds": [
+        "NCT03860935"
+      ],
+      "stage": "post",
+      "historicalWindowSelected": "RETROSPECTIVELY",
+      "entryDecisionArchiveAvailable": false,
+      "verifiedBeforeEntry": [
+        {
+          "kind": "PHASE3_PUBLIC_READOUT",
+          "date": "2023-07-17",
+          "sourceUrl": "https://investor.bridgebio.com/news/news-details/2023/bridgebio-announces-consistently-positive-results-from-phase-3-attribute-cm-study-of-acoramidis-for-patients-with-transthyretin-amyloid-cardiomyopathy-attr-cm-07-17-2023/default.aspx",
+          "notes": "Sponsor reported positive ATTRibute-CM Phase 3 data July 17, 2023 including a hierarchical primary endpoint win ratio 1.8."
+        },
+        {
+          "kind": "PDUFA_CONFIRMED",
+          "date": "2024-02-05",
+          "sourceUrl": "https://www.globenewswire.com/news-release/2024/2/5/2823433/0/en/BridgeBio-Pharma-Announces-U-S-Food-and-Drug-Administration-FDA-Acceptance-of-New-Drug-Application-NDA-for-Acoramidis-for-the-Treatment-of-Patients-with-Transthyretin-Amyloid-Cardi.html",
+          "notes": "FDA accepted acoramidis NDA for ATTR-CM with PDUFA target November 29, 2024. Not a guaranteed action date."
+        }
+      ],
+      "pdufaDate": "2024-11-29",
+      "entry": {
+        "date": "2024-05-10",
+        "close": 29.1,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/BBIO/summary/price"
+      },
+      "exit": {
+        "date": "2024-11-15",
+        "close": 23.72,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/BBIO/summary/price"
+      },
+      "marketCapAtEntry": {
+        "usdMillions": 5208,
+        "sourceUrl": "https://www.financecharts.com/stocks/BBIO/summary/enterprise-value",
+        "basis": "Historical May 10 2024 market cap as represented in enterprise-value vendor table ($5.208B). Other vendor series may differ; share count, basis and price adjustment need independent reconciliation."
+      },
+      "clinicalReadouts": [
+        {
+          "metric": "30-month all-cause survival",
+          "dose": "Acoramidis",
+          "activeRatePct": 81,
+          "comparatorRatePct": 74,
+          "comparator": "Placebo",
+          "endpointTime": "30 months",
+          "reportedAt": "2023-07-17",
+          "sourceUrl": "https://investor.bridgebio.com/news/news-details/2023/bridgebio-announces-consistently-positive-results-from-phase-3-attribute-cm-study-of-acoramidis-for-patients-with-transthyretin-amyloid-cardiomyopathy-attr-cm-07-17-2023/default.aspx",
+          "notes": "Sponsor reported rounded survival proportions 81% and 74%; descriptive 7-percentage-point difference is NOT the primary hierarchical trial test, and not the reported unrounded absolute-risk reduction."
+        }
+      ],
+      "realizedFDAAction": {
+        "date": "2024-11-22",
+        "status": "FDA_APPROVED",
+        "sourceUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshot-attruby",
+        "isPostEntryKnowledge": true
+      },
+      "eventQuality": {
+        "priceCorporateActionChecked": false,
+        "exchangeHolidayCalendarChecked": false,
+        "tradingFrictionAssessed": false,
+        "actualTradeOrArchivedPrediction": false,
+        "eligibleForValidatedRAAS": false
+      },
+      "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
+      "reviewNote": "Observed May 10–Nov 15, 2024 vendor-close decline; exit precedes surprise early FDA approval on Nov 22, ahead of Nov 29 target. Does not establish an ex-ante RAAS prediction, adjusted total return, or risk-free PDUFA exit."
     }
   ]
 }
