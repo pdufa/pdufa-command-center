@@ -5,6 +5,7 @@ export type ReadoutKind="PRE_AS_OF_CHECK"|"POST_PUBLIC_READOUT";
 export type ReadoutEvidence={
   nctId:string;ticker:string;kind:ReadoutKind;
   evidenceDate:string;evidenceUrl:string;drug:string;indication:string;
+  primaryEndpointP?:{display:string;endpoint:string;sourceUrl:string};
 };
 export type ReadoutRow=Phase3CensusTrial&{evidence:ReadoutEvidence|null};
 export type ReadoutClassification={
@@ -42,6 +43,16 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
     const nctId=row.nctId,ticker=row.ticker,kind=row.kind;
     const evidenceDate=row.evidenceDate,evidenceUrl=row.evidenceUrl;
     const drug=row.drug,indication=row.indication;
+    const rawP=row.primaryEndpointP;
+    let primaryEndpointP:ReadoutEvidence["primaryEndpointP"];
+    if(rawP!==undefined){
+      if(kind!=="POST_PUBLIC_READOUT"||!rawP||typeof rawP!=="object"||Array.isArray(rawP))return fail();
+      const p=rawP as Record<string,unknown>;
+      if(typeof p.display!=="string"||!/^p\s*(?:<|=|≤)\s*0?\.\d+$/.test(p.display)||
+        typeof p.endpoint!=="string"||!p.endpoint.trim()||p.endpoint.length>400||
+        !sourceUrlOk(p.sourceUrl)||p.sourceUrl!==evidenceUrl)return fail();
+      primaryEndpointP={display:p.display,endpoint:p.endpoint,sourceUrl:p.sourceUrl};
+    }
     if(typeof nctId!=="string"||!/^NCT\d{8}$/.test(nctId)||
       typeof ticker!=="string"||known.has(nctId)||
       censusIds.get(nctId)?.ticker!==ticker||
@@ -51,7 +62,7 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
       typeof drug!=="string"||typeof indication!=="string"||
       drug.length>300||indication.length>300)return fail();
     known.set(nctId,{
-      nctId,ticker,kind:kind as ReadoutKind,evidenceDate,evidenceUrl,drug,indication
+      nctId,ticker,kind:kind as ReadoutKind,evidenceDate,evidenceUrl,drug,indication,primaryEndpointP
     });
   }
   const pre:ReadoutRow[]=[],post:ReadoutRow[]=[],unverified:ReadoutRow[]=[];
