@@ -21,8 +21,8 @@
         },
         {
           "type": "OPERATING_EXPENSES_QTR",
-          "valueUsdMillions": 49.3,
-          "method": "Quarterly operating expenses from November 2022 issuer report, approximate.",
+          "valueUsdMillions": 40.245,
+          "method": "Quarter ending September 30, 2022 operating expenses of $40.245 million, from issuer's November 3 SEC exhibit.",
           "caveat": "Operating expense is not equal to net operating cash burn."
         }
       ]
