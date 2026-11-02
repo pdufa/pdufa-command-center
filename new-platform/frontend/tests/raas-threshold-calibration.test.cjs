@@ -77,6 +77,37 @@ test("published CSU UAS7 reference is within-patient, never placebo-adjusted thr
  assert.match(b.notApplicableTo,/between-group/);
  assert.equal(clinical.contextualClinicalBenchmark("sonelokimab","psoriatic arthritis","UAS7 points"),null);
 });
+
+test("Even manually approved labels cannot bypass missing same-metric historical evidence",()=>{
+ const benchmarkId="synthetic-calibration-only";
+ const cal=ledgers.parseRaasCalibrations({...rawCalibrations,entries:[{
+  metricId:"pre-4-1",stage:"pre",benchmarkId,ruleVersion:"synthetic-v1",
+  validatedAt:"2026-10-01",validationSourceUrl:"https://example.org/synthetic-calibration",
+  outOfSampleTrials:30,benchmarkDescription:"Synthetic only, never save to production",status:"APPROVED_FOR_COMPOSITE",
+  scoreThresholds:[0,25,50,75,100].map(grade=>({grade,rule:"synthetic scoring rule"}))
+ }]});
+ const record={nctId:"NCT07363577",ticker:"LBRX",drug:"LB-102",indication:"Schizophrenia",
+  stage:"pre",snapshot:"CURRENT",asOf:"2026-11-02",reviewedAt:"2026-11-02",
+  reviewer:"synthetic-test",note:"Test historical gates only",ratings:[{
+   nctId:"NCT07363577",ticker:"LBRX",stage:"pre",snapshot:"CURRENT",
+   metricId:"pre-4-1",score:50,assessedAt:"2026-11-02",sourceDate:"2026-10-27",
+   sourceUrl:"https://example.org/synthetic-score",benchmarkId,
+   method:"synthetic test",evidenceId:"synthetic-only",status:"VERIFIED"
+  }],gates:[{name:"Eligibility",status:"PASSED"}]};
+ const ledger=ledgers.parseRaasReviewedLedger({...rawLedger,records:[record]});
+ const args=[ledger,cal,{nctId:record.nctId,ticker:record.ticker,drug:record.drug,indication:record.indication},
+   "pre","CURRENT","2026-11-02"];
+ const without=ledgers.reviewedScoreForTrial(...args,[]);
+ assert.equal(without.acceptedRatings.length,0);
+ assert.equal(without.score.score,null);
+ const diagnostic={metricId:"pre-4-1",stage:"pre",independentPrograms:30,
+   spearmanScoreToReturn:.2,status:"REVIEW_ELIGIBLE_NOT_APPROVED"};
+ const withHistory=ledgers.reviewedScoreForTrial(...args,[diagnostic]);
+ assert.equal(withHistory.acceptedRatings.length,1);
+ assert.equal(withHistory.score.score,null);
+ assert.equal(withHistory.score.graded,1);
+});
+
 test("new grading TS modules and UI parse without diagnostics",()=>{
  const files=["lib/raas-threshold-profiles.ts","lib/raas-reviewed-score-ledger.ts","lib/raas-clinical-benchmarks.ts","app/TrialRaasDisclosure.tsx"];
  for(const file of files){
