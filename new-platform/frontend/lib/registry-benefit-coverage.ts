@@ -5,14 +5,18 @@
 export type RegistrySourceRow={
   nctId:string;retrievedAt:string;sourceUpdated:string|null;
   resultsPosted:boolean;primaryOutcomeCount:number;measuredPrimary:boolean;
+  secondaryOutcomeCount:number;measuredSecondary:boolean;
   seriousEventTerms:number;measuredSeriousEvents:boolean;
   truncated:boolean;
+  /** Four explicit source-data presence checks; not scientific merit or effectiveness. */
+  measuredDimensions:number;dimensionsTotal:4;registryCoveragePercent:number|null;
 };
 export type RegistryCoverage={
   schemaVersion:1;scanned:number;successful:number;failed:number;
   sourceAsOf:string;records:RegistrySourceRow[];
-  postedResults:number;withPrimaryMeasurements:number;withSeriousEventCounts:number;
-  truncatedRecords:number;
+  postedResults:number;withPrimaryMeasurements:number;withSecondaryMeasurements:number;
+  withSeriousEventCounts:number;truncatedRecords:number;
+  measurableRecords:number;meanRegistryCoveragePercent:number|null;
 };
 const safeDateTime=(v:unknown):v is string=>
   typeof v==="string"&&/^\d{4}-\d{2}-\d{2}T/.test(v)&&Number.isFinite(Date.parse(v));
@@ -48,25 +52,40 @@ export function registryCoverageFromSnapshot(raw:unknown,now=Date.now()):Registr
       throw Error("INVALID_REGISTRY_SOURCE_IDENTITY");
     seen.add(item.nctId);
     const primary=item.primary as unknown[];
+    if(!Array.isArray(item.secondary))throw Error("INVALID_REGISTRY_SECONDARY_SOURCE");
+    const secondary=item.secondary as unknown[];
     const adverse=item.seriousAdverseEvents as unknown[];
-    if(primary.length>24||adverse.length>80)throw Error("UNBOUNDED_REGISTRY_SOURCE_RECORD");
+    if(primary.length>24||secondary.length>24||adverse.length>80)throw Error("UNBOUNDED_REGISTRY_SOURCE_RECORD");
     const measuredPrimary=primary.some(x=>isObj(x)&&Array.isArray(x.measurements)&&x.measurements.length>0);
+    const measuredSecondary=secondary.some(x=>isObj(x)&&Array.isArray(x.measurements)&&x.measurements.length>0);
     const measuredSeriousEvents=adverse.some(x=>isObj(x)&&Array.isArray(x.groups)&&x.groups.length>0);
-    if(!item.resultsPosted&&(primary.length>0||adverse.length>0))throw Error("INCONSISTENT_REGISTRY_POSTING_STATE");
+    if(!item.resultsPosted&&(primary.length>0||secondary.length>0||adverse.length>0))
+      throw Error("INCONSISTENT_REGISTRY_POSTING_STATE");
+    const truncated=item.truncatedEvidence.outcomes||item.truncatedEvidence.seriousEvents;
+    const measuredDimensions=Number(item.resultsPosted)+Number(measuredPrimary)+
+      Number(measuredSecondary)+Number(measuredSeriousEvents);
+    // Partial extraction cannot be called complete just because four flags are present.
     records.push({nctId:item.nctId,retrievedAt:item.retrievedAt,
       sourceUpdated:item.sourceUpdated as string|null,resultsPosted:item.resultsPosted,
       primaryOutcomeCount:primary.length,measuredPrimary,
+      secondaryOutcomeCount:secondary.length,measuredSecondary,
       seriousEventTerms:adverse.length,measuredSeriousEvents,
-      truncated:item.truncatedEvidence.outcomes||item.truncatedEvidence.seriousEvents});
+      truncated,measuredDimensions,dimensionsTotal:4 as const,
+      registryCoveragePercent:truncated?null:measuredDimensions*25});
   }
   if(records.length>raw.successful+raw.reusedWithin72Hours)
     throw Error("UNRECONCILED_REGISTRY_SOURCE_ARCHIVE");
+  const measurable=records.filter(x=>x.registryCoveragePercent!==null);
   return {schemaVersion:1,scanned:raw.scanned as number,successful:raw.successful as number,
     failed:raw.failed as number,sourceAsOf:raw.scanStartedAt,
     records,postedResults:records.filter(x=>x.resultsPosted).length,
     withPrimaryMeasurements:records.filter(x=>x.measuredPrimary).length,
+    withSecondaryMeasurements:records.filter(x=>x.measuredSecondary).length,
     withSeriousEventCounts:records.filter(x=>x.measuredSeriousEvents).length,
-    truncatedRecords:records.filter(x=>x.truncated).length};
+    truncatedRecords:records.filter(x=>x.truncated).length,
+    measurableRecords:measurable.length,
+    meanRegistryCoveragePercent:measurable.length?Math.round(10*measurable.reduce(
+      (total,row)=>total+(row.registryCoveragePercent??0),0)/measurable.length)/10:null};
 }
 export function sourceReviewHint(row:RegistrySourceRow|undefined,group:number):string|null{
   if(!row)return null;
