@@ -54,32 +54,33 @@ test("both registry tables show M–E and independently expand ingredients horiz
   await act(async()=>{r=create(React.createElement(Phase3));});
   const [top,bottom]=sections(r);
   assert.ok(top&&bottom);
-  for(const section of [top,bottom]){
-   assert.deepEqual(groups(section).map(x=>x.props["data-rating-group"]),keys);
+  assert.deepEqual(groups(top).map(x=>x.props["data-rating-group"]),["M","A","C","D"]);
+  assert.deepEqual(groups(bottom).map(x=>x.props["data-rating-group"]),keys);
+  for(const [section,n] of [[top,13],[bottom,15]]){
    assert.deepEqual(ingredients(section),[]);
-   assert.equal(headers(section).length,15);
-   assert.equal(cells(section).length,15);
+   assert.equal(headers(section).length,n);
+   assert.equal(cells(section).length,n);
    assert.ok(groups(section).every(x=>x.findByType("button").props["aria-expanded"]===false));
   }
-  await act(async()=>button(top,"B").props.onClick());
-  assert.deepEqual(ingredients(top).map(x=>x.props["data-rating-ingredient"]),["CL","SAF","COMP"]);
+  await act(async()=>button(top,"C").props.onClick());
+  assert.deepEqual(ingredients(top).map(x=>x.props["data-rating-ingredient"]),["POP","ACCESS"]);
   assert.deepEqual(ingredients(bottom),[],"second sheet must remain collapsed");
-  assert.equal(headers(top).length,18);
+  assert.equal(headers(top).length,15);
   assert.equal(cells(top).length,headers(top).length);
-  assert.match(groups(top).find(x=>x.props["data-rating-group"]==="B").props.className,/ratingOpen/);
+  assert.match(groups(top).find(x=>x.props["data-rating-group"]==="C").props.className,/ratingOpen/);
   assert.match(ingredients(top).at(-1).props.className,/ratingEnd/);
   await act(async()=>button(bottom,"M").props.onClick());
   assert.deepEqual(ingredients(bottom).map(x=>x.props["data-rating-ingredient"]),["VER","MOD","MISS","CRIT"]);
   assert.equal(cells(bottom).length,headers(bottom).length);
   await act(async()=>top.findAllByType("button").find(x=>textOf(x)==="Expand all ratings").props.onClick());
-  assert.equal(ingredients(top).length,20);
-  assert.equal(headers(top).length,35);
-  assert.equal(cells(top).length,35);
+  assert.equal(ingredients(top).length,11);
+  assert.equal(headers(top).length,24);
+  assert.equal(cells(top).length,24);
   assert.equal(headers(bottom).length,19);
   assert.ok(textOf(top).includes("Not assessed"));
   await act(async()=>top.findAllByType("button").find(x=>textOf(x)==="Collapse all ratings").props.onClick());
-  assert.equal(headers(top).length,15);
-  assert.equal(cells(top).length,15);
+  assert.equal(headers(top).length,13);
+  assert.equal(cells(top).length,13);
  }finally{
   if(r)await act(async()=>r.unmount());
   global.fetch=previous;
@@ -99,7 +100,7 @@ test("rating column filters are independent and do not lose original registry to
   const f=top.findAllByType("input").find(x=>x.props["aria-label"]==="Before filter A rating");
   await act(async()=>f.props.onChange({target:{value:"Results posted"}}));
   assert.equal(top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td").length,1);
-  assert.equal(top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td")[0].props.colSpan,15,
+  assert.equal(top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td")[0].props.colSpan,13,
     "An empty filtered table spans every visible rating and trial column");
   assert.match(textOf(top),/0 matching/);
   assert.ok(!textOf(bottom).includes("0 matching"));

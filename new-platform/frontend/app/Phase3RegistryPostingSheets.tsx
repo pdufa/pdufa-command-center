@@ -7,7 +7,8 @@ import {
   EMPTY_POSTING_FILTERS,INITIAL_POSTING_SORT,filterAndSortPostingRows,postingFilterCount,
   type PostingFilters,type PostingSort,type PostingSortKey
 } from "../lib/phase3-registry-posting-filters";
-import {TOOLS_RATING_GROUPS,type ToolsRatingGroupKey} from "../lib/tools-rating-groups";
+import {type ToolsRatingGroupKey} from "../lib/tools-rating-groups";
+import {visiblePostingRatingGroups,visiblePostingTestCount,type PostingVisibleGroup} from "../lib/phase3-survey-visibility";
 import {postingRatingAudit,type PostingRatingCell,type PostingRatingAudit} from "../lib/phase3-posting-rating-audit";
 import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import {surveyMissingnessForPosting} from "../lib/phase3-survey-missingness";
@@ -17,9 +18,8 @@ import css from "./Phase3RegistryPostingSheets.module.css";
 const PAGE_SIZE=50;
 const fmt=(n:number)=>n.toLocaleString("en-US");
 type Kind="before"|"after";
-const RATING_GROUPS=TOOLS_RATING_GROUPS;
-const ratingColumnCount=(expanded:readonly ToolsRatingGroupKey[])=>
-  RATING_GROUPS.reduce((sum,g)=>sum+1+(expanded.includes(g.key)?g.ingredients.length:0),0);
+const ratingColumnCount=(groups:readonly PostingVisibleGroup[],expanded:readonly ToolsRatingGroupKey[])=>
+  groups.reduce((sum,g)=>sum+1+(expanded.includes(g.key)?g.ingredients.length:0),0);
 function RatingAuditValue({value}:{value:PostingRatingCell}){
   return <div className={css.ratingAudit}>
     <span className={value.label==="Not assessed"||value.label==="Not reviewed"?css.ratingUnscored:css.ratingValue}
@@ -38,7 +38,8 @@ function safeCsvCell(value:string|number){
   return '"'+safe.replace(/"/g,'""')+'"';
 }
 function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:string,
-  audits:ReadonlyMap<string,PostingRatingAudit>){
+  audits:ReadonlyMap<string,PostingRatingAudit>,showAllSurveys:boolean){
+  const RATING_GROUPS=visiblePostingRatingGroups(kind,showAllSurveys);
   const headings=["Ticker","NCT trial","Company","Registry trial status",
     "Registry results posted","Results first-posted date","Registry classification","Registry checked on","ClinicalTrials.gov source",
     ...RATING_GROUPS.flatMap(g=>[g.key+" "+g.name,...g.ingredients.map(f=>g.key+" "+f.key+" "+f.name)])];
@@ -69,6 +70,8 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
   const [sort,setSort]=useState<PostingSort>({...INITIAL_POSTING_SORT});
   const [expandedRatings,setExpandedRatings]=useState<ToolsRatingGroupKey[]>([]);
   const [ratingFilters,setRatingFilters]=useState<ColumnFilterState>({});
+  const [showAllSurveys,setShowAllSurveys]=useState(false);
+  const ratingGroups=useMemo(()=>visiblePostingRatingGroups(kind,showAllSurveys),[kind,showAllSurveys]);
   const before=kind==="before";
   const label=before?"Before":"Past";
   const tickers=useMemo(()=>[...new Set(rows.map(r=>r.ticker))].sort((a,b)=>a.localeCompare(b)),[rows]);
@@ -86,7 +89,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
     return "";
   }),[basicFiltered,ratingFilters,audits]);
   const filtersActive=postingFilterCount(filters)+activeColumnFilters(ratingFilters);
-  const extraColumns=ratingColumnCount(expandedRatings);
+  const extraColumns=ratingColumnCount(ratingGroups,expandedRatings);
   const toggleRating=(key:ToolsRatingGroupKey)=>setExpandedRatings(current=>
     current.includes(key)?current.filter(item=>item!==key):[...current,key]);
   const filterRating=(key:string,value:string)=>{
@@ -135,7 +138,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
           Clear column filters
         </button>
         <button type="button" disabled={!filtered.length}
-          onClick={()=>exportCsv(kind,filtered,snapshotDate,audits)}>
+          onClick={()=>exportCsv(kind,filtered,snapshotDate,audits,showAllSurveys)}>
           Export {fmt(filtered.length)} matching CSV
         </button>
       </div>
@@ -146,10 +149,16 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
       exact matched research records.</strong> Unmatched trials display Not assessed, not an invented 100% missing.
       {surveyFeedUnavailable?" The source research feed is unavailable; percentages cannot be verified.":""}</p>
     <div className={css.ratingToolbar} role="group" aria-label={label+" M–E rating controls"}>
-      <strong>M · A · B · C · D · E</strong>
-      <span>Tap a rating heading to expand its supporting ingredients <strong>to the right</strong>.
-        Registry status is not a clinical or investment score.</span>
-      <button type="button" onClick={()=>setExpandedRatings(RATING_GROUPS.map(g=>g.key))}>
+      <strong>{ratingGroups.map(group=>group.key).join(" · ")}</strong>
+      <span><strong>{visiblePostingTestCount(kind,showAllSurveys)} relevant survey tests</strong>
+        {" · "}{before?"Pre-results-posting research: evidence gaps, patient/access potential, financing and catalysts.":
+          "Posted-results review: evidence, clinical benefit, commercial value, stock and final readiness."}
+        {" "}Tap a heading to expand ingredients to the right. These are research checks, not validated investment ratings.
+        Hidden tests do not change the 38-input M percentage.</span>
+      <button type="button" aria-pressed={showAllSurveys} onClick={()=>{
+        setShowAllSurveys(value=>!value);setExpandedRatings([]);setRatingFilters({});setPage(0);
+      }}>{showAllSurveys?"Use relevant surveys only":"Show additional surveys"}</button>
+      <button type="button" onClick={()=>setExpandedRatings(ratingGroups.map(g=>g.key))}>
         Expand all ratings</button>
       <button type="button" onClick={()=>setExpandedRatings([])}>
         Collapse all ratings</button>
@@ -162,7 +171,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
             <th scope="col">#</th>
             <th scope="col" aria-sort={sorting("ticker")}>{sortable("ticker","Ticker")}</th>
             <th scope="col" aria-sort={sorting("nctId")}>{sortable("nctId","NCT / Trial")}</th>
-            {RATING_GROUPS.map(group=>{
+            {ratingGroups.map(group=>{
               const open=expandedRatings.includes(group.key);
               return <Fragment key={group.key}>
                 <th scope="col" data-rating-group={group.key}
@@ -198,7 +207,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
             </select></th>
             <th scope="col"><input type="search" aria-label={label+" filter NCT"} placeholder="Find NCT"
               value={filters.nctId} onChange={e=>changeFilter({nctId:e.target.value})} maxLength={40}/></th>
-            {RATING_GROUPS.map(group=>{
+            {ratingGroups.map(group=>{
               const open=expandedRatings.includes(group.key);
               return <Fragment key={group.key}>
                 <th scope="col" className={css.ratingFilter}>
@@ -245,7 +254,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
           <td>{active*PAGE_SIZE+index+1}</td>
           <td><strong>{row.ticker}</strong></td>
           <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
-          {RATING_GROUPS.map(group=>{
+          {ratingGroups.map(group=>{
             const audit=audits.get(row.nctId)||postingRatingAudit(row);
             const open=expandedRatings.includes(group.key);
             return <Fragment key={group.key}>
