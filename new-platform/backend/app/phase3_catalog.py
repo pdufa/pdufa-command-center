@@ -530,7 +530,9 @@ def _prediction_rows(c, nct, actual=None, actual_date=None):
     return result
 
 
-def historical_validation(engine):
+def historical_validation(engine, case_page=1):
+    if type(case_page) is not int or not 1 <= case_page <= 1000000:
+        raise ValueError("Invalid historical case review page")
     with engine.connect() as c:
         applications = c.execute(text("SELECT COUNT(*) FROM phase3_fda_applications")).scalar_one()
         apps = c.execute(text("SELECT application_id FROM phase3_fda_applications")).scalars().all()
@@ -609,6 +611,13 @@ def historical_validation(engine):
     # when the authenticated response returns only the first 50 review rows.
     review_queue.sort(key=lambda p:(p["disposition"] in ("EVALUATED","ABSTAIN"),
                                     p["application_id"],p["prediction_id"] or ""))
+    page_limit = 50
+    total_review_rows = len(review_queue)
+    total_review_pages = max(1, math.ceil(total_review_rows / page_limit))
+    if case_page > total_review_pages:
+        raise ValueError("Historical case review page exceeds the cohort")
+    page_start = (case_page - 1) * page_limit
+    selected_review_rows = review_queue[page_start:page_start + page_limit]
     cases = [{"id": p["prediction_id"], "nct_id": p.get("nct_id"),
               "predicted_decision": p["decision"], "actual_decision": p["actual_decision"],
               "confidence": p["confidence"], "status": "SCORED" if p["correctness"] is not None else "ABSTAIN_OR_UNRESOLVED",
@@ -617,9 +626,10 @@ def historical_validation(engine):
     counts = {"correct_predictions": sum(p["correctness"] is True for p in evaluated),
               "scored_predictions": len(evaluated), "abstentions": sum(p["decision"] == "ABSTAIN" for p in selected)}
     return {"counts": counts, "cases": cases,
-            "case_review": {"total":len(review_queue),"returned":min(50,len(review_queue)),
-                            "reason_counts":reason_counts,"records":review_queue[:50],
-                            "limit":50},
+            "case_review": {"total":total_review_rows,"returned":len(selected_review_rows),
+                            "reason_counts":reason_counts,"records":selected_review_rows,
+                            "limit":page_limit,"page":case_page,"pages":total_review_pages,
+                            "has_more":case_page < total_review_pages},
             "status": "NOT_VALIDATED" if not evaluated else "REVIEW_REQUIRED", "total_applications": applications, "eligible_applications": len(first_by_app),
             "number_evaluated": len(evaluated), "number_abstained": sum(p["decision"] == "ABSTAIN" for p in selected),
             "number_with_known_outcomes": known, "prediction_records": len(predictions), "temporally_eligible_predictions": len(eligible),
@@ -656,8 +666,11 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
         }
 
     @router.get("/validation")
-    def validation():
-        return historical_validation(engine_provider())
+    def validation(case_page: int = Query(default=1, ge=1, le=1000000)):
+        try:
+            return historical_validation(engine_provider(), case_page=case_page)
+        except ValueError as exc:
+            raise HTTPException(422, "Invalid historical case review page") from exc
 
     @router.get("/status")
     def status():

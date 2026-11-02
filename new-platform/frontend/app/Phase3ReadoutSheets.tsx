@@ -264,6 +264,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
 }){
  const panelRef=useRef<HTMLDivElement>(null);
  const [selectedScoringSurvey,setSelectedScoringSurvey]=useState(1);
+ const [casePage,setCasePage]=useState(1);
  const [outcomeValidation,setOutcomeValidation]=useState<{status:"loading"|"ready"|"unavailable";result:FinalFdaValidation|null;roster:HistoricalCaseRoster|null}>({status:"loading",result:null,roster:null});
  const closeRef=useRef(onClose);closeRef.current=onClose;
  useEffect(()=>{
@@ -280,16 +281,18 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  },[]);
  useEffect(()=>{
    const ctrl=new AbortController();
-   void fetch("/api/phase3-trials/validation",{cache:"no-store",signal:ctrl.signal})
+   setOutcomeValidation({status:"loading",result:null,roster:null});
+   void fetch("/api/phase3-trials/validation"+(casePage>1?"?case_page="+casePage:""),
+     {cache:"no-store",signal:ctrl.signal})
      .then(async response=>{
        if(!response.ok)throw Error("Historical outcome validation unavailable");
        const raw=await response.json();
-       return {result:auditFinalFdaValidation(raw),roster:auditHistoricalCaseRoster(raw)};
+       return {result:auditFinalFdaValidation(raw),roster:auditHistoricalCaseRoster(raw,casePage)};
      })
      .then(result=>{if(!ctrl.signal.aborted)setOutcomeValidation({status:"ready",...result});})
      .catch(()=>{if(!ctrl.signal.aborted)setOutcomeValidation({status:"unavailable",result:null,roster:null});});
    return ()=>ctrl.abort();
- },[]);
+ },[casePage]);
  const sameNct=feed?.records.filter(r=>r.nctId===row.nctId)||[];
  const record=sameNct.length===1?benefitForTrial(feed,{
    nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",
@@ -433,7 +436,15 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
                     "Case-level inventory unavailable"}</summary>
                   <p>Review roster from saved prediction records and independently recorded FDA application outcomes. An FDA outcome without a locked prior prediction is a research candidate, <strong>not</strong> a successful backtest prediction.</p>
                   {!outcomeValidation.roster?<p>Case-level diagnostics are not available from the authenticated historical backend. This does not mean zero verified cases.</p>:<>
-                    <p><strong>Rows shown:</strong> {outcomeValidation.roster.returned} of {outcomeValidation.roster.total} (first 50 at most; blockers first). <strong>Calibration:</strong> not established.</p>
+                    <p><strong>Rows shown:</strong> {outcomeValidation.roster.returned} of {outcomeValidation.roster.total} · Page {outcomeValidation.roster.page} of {outcomeValidation.roster.pages}. <strong>Calibration:</strong> not established.</p>
+                    {outcomeValidation.roster.paginationAvailable?<nav className={css.finalSurveyCasePager} aria-label="Historical FDA case review pages">
+                      <button type="button" disabled={outcomeValidation.roster.page===1}
+                        onClick={()=>setCasePage(page=>Math.max(1,page-1))}>Previous 50</button>
+                      <span>Page {outcomeValidation.roster.page} / {outcomeValidation.roster.pages}</span>
+                      <button type="button" disabled={!outcomeValidation.roster.hasMore}
+                        onClick={()=>setCasePage(page=>Math.min(outcomeValidation.roster!.pages,page+1))}>Next 50</button>
+                    </nav>:outcomeValidation.roster.total>outcomeValidation.roster.returned?
+                     <p role="status">The connected historical backend provides only the first 50 cases. Further pages will become available after its pagination update is deployed.</p>:null}
                     <div className={css.finalSurveyCaseReasons}>
                       {Object.entries(outcomeValidation.roster.reasonCounts)
                         .filter(([,count])=>count>0)

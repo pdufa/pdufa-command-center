@@ -295,3 +295,10 @@
 .finalSurveyCaseReasons>div{display:flex;justify-content:space-between;gap:12px;border:1px solid #d0e1d5;border-radius:6px;padding:8px;background:#f8faf8}
 .finalSurveyCaseReasons span{font-size:12px;line-height:1.5}
 .finalSurveyCaseReasons strong{font-size:13px;font-variant-numeric:tabular-nums}
+
+/* Cohort audit pagination: reachable on iPhone without changing historical facts. */
+.finalSurveyCasePager{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:10px 0}
+.finalSurveyCasePager span{font-variant-numeric:tabular-nums;font-size:12px;font-weight:700}
+.finalSurveyCasePager button{padding:8px 12px;border:1px solid #537a65;border-radius:7px;background:white;color:#17432a;font-weight:700;font-size:12px;cursor:pointer;min-height:38px}
+.finalSurveyCasePager button:disabled{cursor:not-allowed;opacity:.42}
+.finalSurveyCasePager button:focus-visible{outline:3px solid #206baf;outline-offset:2px}

@@ -21,6 +21,7 @@ export type HistoricalCase={
 };
 export type HistoricalCaseRoster={
  total:number;returned:number;limit:number;
+ page:number;pages:number;hasMore:boolean;paginationAvailable:boolean;
  reasonCounts:Readonly<Record<HistoricalCaseReason,number>>;
  records:readonly HistoricalCase[];
 };
@@ -61,16 +62,25 @@ export const caseReasonLabel=(reason:HistoricalCaseReason):string=>({
  * Malformed or contradictory rosters are rejected; they are never shown as
  * valid or used to measure historical model performance.
  */
-export function auditHistoricalCaseRoster(raw:unknown):HistoricalCaseRoster|null{
+export function auditHistoricalCaseRoster(raw:unknown,requestedPage=1):HistoricalCaseRoster|null{
+ if(!numeric(requestedPage)||requestedPage<1||requestedPage>1000000)return fail();
  if(!object(raw))return fail();
  if(raw.case_review===undefined)return null;
  const data=raw.case_review;
  if(!object(data)||!object(data.reason_counts)||!Array.isArray(data.records)||
     !numeric(data.total)||!numeric(data.returned)||data.limit!==50||
-    data.returned!==Math.min(data.total,50)||data.records.length!==data.returned||
+    data.records.length!==data.returned||
     !numeric(raw.prediction_records)||!numeric(raw.number_with_known_outcomes)||
     !numeric(raw.eligible_applications)||!numeric(raw.number_evaluated)||
     !numeric(raw.number_abstained))return fail();
+ const paginationAvailable=data.page!==undefined;
+ const pages=Math.max(1,Math.ceil(data.total/50));
+ const page=paginationAvailable?data.page:1;
+ if((paginationAvailable&&(!numeric(page)||page!==requestedPage||data.pages!==pages||
+       data.has_more!==(page<pages)))||
+    (!paginationAvailable&&requestedPage!==1)||
+    !numeric(page)||page<1||page>pages||
+    data.returned!==Math.min(50,Math.max(0,data.total-(page-1)*50)))return fail();
  const total=raw.prediction_records+raw.number_with_known_outcomes-raw.eligible_applications;
  if(data.total!==total||total<0)return fail();
  const reasonValues=data.reason_counts as Record<string,unknown>;
@@ -136,5 +146,6 @@ export function auditHistoricalCaseRoster(raw:unknown):HistoricalCaseRoster|null
  for(const reason of reasons)
   reasonCounts[reason]=(data.reason_counts as Record<string,number>)[reason]??0;
  return {total:data.total as number,returned:data.returned as number,limit:50,
-  reasonCounts,records};
+  page:page as number,pages,hasMore:paginationAvailable&&page<pages,
+  paginationAvailable,reasonCounts,records};
 }
