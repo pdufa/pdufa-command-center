@@ -265,3 +265,14 @@
  .finalSurveyScoringLayout{align-items:start}
  .finalSurveySelect{min-height:44px;touch-action:manipulation}
 }
+
+/* Patient-source arithmetic table is an auditable disclosure, never a medical grade. */
+.scientificArithmeticPanel{border:1px solid #bdd3c2;border-radius:8px;background:#fff;padding:10px;min-width:0}
+.scientificArithmeticPanel>summary{font-weight:800;font-size:13px;cursor:pointer;min-height:36px}
+.scientificArithmeticPanel p,.scientificArithmeticPanel li{font-size:12px;line-height:1.55}
+.scientificArithmeticPanel ul{padding-left:20px;margin:8px 0}
+.scientificArithmeticTable{width:100%;border-collapse:collapse;font-size:12px;min-width:0}
+.scientificArithmeticTable th,.scientificArithmeticTable td{text-align:left;vertical-align:top;padding:9px 7px;border-bottom:1px solid #deeadf}
+.scientificArithmeticTable thead th{background:#ebf5ef}
+.scientificArithmeticTable td{font-variant-numeric:tabular-nums;font-weight:800;white-space:normal}
+@media(max-width:640px){.scientificArithmeticPanel{padding:8px}.scientificArithmeticTable th,.scientificArithmeticTable td{padding:7px 5px}}
