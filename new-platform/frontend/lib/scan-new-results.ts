@@ -1,6 +1,6 @@
 /**
  * Read-only clinical scan reporting. Active categories: PIPELINE and posted
- * Phase 3 results. Former GEM membership data is archival and not collected,
+ * Phase 3 results. Former tier membership data is archival and not collected,
  * interpreted, or returned as a new/current candidate.
  */
 type JsonObject = Record<string, unknown>;
