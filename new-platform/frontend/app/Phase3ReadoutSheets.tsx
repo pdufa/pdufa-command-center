@@ -345,8 +345,9 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
  </div>,document.body);
 }
 
-function TrialTable({rows,bucket,showSurveys,onSurveyOpen}:{
- rows:ReadoutRow[];bucket:Bucket;showSurveys:boolean;onSurveyOpen:(row:ReadoutRow)=>void;
+function TrialTable({rows,bucket,showSurveys,showSynthesis,onSurveyOpen}:{
+ rows:ReadoutRow[];bucket:Bucket;showSurveys:boolean;showSynthesis:boolean;
+ onSurveyOpen:(row:ReadoutRow,view:"details"|"synthesis")=>void;
 }){
   return <div className={css.tableScroll} role="region" aria-label={bucket+" Phase 3 trial spreadsheet"} tabIndex={0}>
     <table className={css.table}>
@@ -354,6 +355,7 @@ function TrialTable({rows,bucket,showSurveys,onSurveyOpen}:{
         <th>#</th><th>Ticker</th><th>NCT / trial</th><th>Company</th>
         {bucket==="post"&&<th title="Verified Phase 3 primary-endpoint statistical p-value, not FDA approval probability">Factor P · p-value</th>}
         {showSurveys&&<th>Survey Ratings</th>}
+        {showSynthesis&&<th title="Conjunction of all five survey groups and stage-specific evidence gates">SURVEY</th>}
         <th>Drug / therapy</th><th>Indication</th><th>Registered status</th>
         <th>{bucket==="pre"?"Source checked":bucket==="post"?"Public release date":"Public release"}</th><th>Source evidence</th>
       </tr></thead>
@@ -366,11 +368,17 @@ function TrialTable({rows,bucket,showSurveys,onSurveyOpen}:{
             ? <a className={css.factorPValue} href={row.evidence.primaryEndpointP.sourceUrl} target="_blank" rel="noopener noreferrer" title={row.evidence.primaryEndpointP.endpoint+" · issuer source"}>{row.evidence.primaryEndpointP.display}</a>
             : <span className={css.factorPMissing} title="Exact Phase 3 primary endpoint p-value not verified in the referenced public readout">Not reported</span>}
         </td>}{showSurveys&&<td className={css.surveyCell}>
-          <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row)}
+          <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"details")}
             aria-label={"Explore five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
             Surveys <span aria-hidden="true">→</span>
           </button>
           <small>5 groups · 20 surveys</small>
+        </td>}{showSynthesis&&<td className={css.surveyCell}>
+          <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"synthesis")}
+            aria-label={"Open SURVEY combined assessment for "+row.ticker+" "+row.nctId}>
+            SURVEY <span aria-hidden="true">→</span>
+          </button>
+          <small>{bucket==="pre"?"Pre-readout":"Post-readout"} · evidence synthesis</small>
         </td>}<td>{txt(row.evidence?.drug||"")}</td>
         <td>{txt(row.evidence?.indication||"")}</td><td>{row.status.replaceAll("_"," ")}</td>
         <td>{row.evidence?.evidenceDate||"Not verified"}</td>
@@ -378,13 +386,14 @@ function TrialTable({rows,bucket,showSurveys,onSurveyOpen}:{
           ? <a href={row.evidence.evidenceUrl} target="_blank" rel="noopener noreferrer">
             {bucket==="pre"?"Dated issuer check":"Public readout source"}</a>
           : "Not verified"}</td>
-      </tr>):<tr><td colSpan={(bucket==="post"?10:9)+(showSurveys?1:0)} className={css.empty}>No documented matches in this view. Unknown-release trials are not counted as pre-release.</td></tr>}</tbody>
+      </tr>):<tr><td colSpan={(bucket==="post"?10:9)+(showSurveys?1:0)+(showSynthesis?1:0)} className={css.empty}>No documented matches in this view. Unknown-release trials are not counted as pre-release.</td></tr>}</tbody>
     </table>
   </div>;
 }
-function Spreadsheet({bucket,rows,query,caption,showSurveys,onSurveyOpen}:{
+function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurveyOpen}:{
  bucket:"pre"|"post";rows:ReadoutRow[];query:string;caption:string;
- showSurveys:boolean;onSurveyOpen:(row:ReadoutRow)=>void;
+ showSurveys:boolean;showSynthesis:boolean;
+ onSurveyOpen:(row:ReadoutRow,view:"details"|"synthesis")=>void;
 }){
   const [sort,setSort]=useState<ReadoutKey>("ticker");
   const [desc,setDesc]=useState(false);
@@ -415,7 +424,7 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,onSurveyOpen}:{
       </label>
       <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
     </div>
-    <TrialTable rows={matched} bucket={bucket} showSurveys={showSurveys} onSurveyOpen={onSurveyOpen}/>
+    <TrialTable rows={matched} bucket={bucket} showSurveys={showSurveys} showSynthesis={showSynthesis} onSurveyOpen={onSurveyOpen}/>
   </section>;
 }
 /** Full historical issuer-cap census with dated issuer readouts, never registry-result proxy. */
@@ -425,17 +434,24 @@ export default function Phase3ReadoutSheets(){
   const [error,setError]=useState("");
   const [query,setQuery]=useState("");
   const [showSurveys,setShowSurveys]=useState(SURVEY_RATINGS_PREVIEW_ENABLED);
-  const [activeSurvey,setActiveSurvey]=useState<{row:ReadoutRow;bucket:"pre"|"post"}|null>(null);
+  const [showSynthesis,setShowSynthesis]=useState(SYNTHESIS_COLUMN_ENABLED);
+  const [activeSurvey,setActiveSurvey]=useState<{row:ReadoutRow;bucket:"pre"|"post";view:"details"|"synthesis"}|null>(null);
   const [benefitFeed,setBenefitFeed]=useState<BenefitFeed|null>(null);
   const [researchStatus,setResearchStatus]=useState<"idle"|"loading"|"ready"|"unavailable">("idle");
   useEffect(()=>{
     if(!SURVEY_RATINGS_PREVIEW_ENABLED)return;
     try{if(window.localStorage.getItem(SURVEY_VISIBILITY_KEY)==="false")setShowSurveys(false);}catch{}
+    try{if(window.localStorage.getItem(SYNTHESIS_VISIBILITY_KEY)==="false")setShowSynthesis(false);}catch{}
   },[]);
   const toggleSurveys=()=>{
     const next=!showSurveys;setShowSurveys(next);
-    if(!next)setActiveSurvey(null);
+    if(!next)setActiveSurvey(active=>active?.view==="details"?null:active);
     try{window.localStorage.setItem(SURVEY_VISIBILITY_KEY,String(next));}catch{}
+  };
+  const toggleSynthesis=()=>{
+    const next=!showSynthesis;setShowSynthesis(next);
+    if(!next)setActiveSurvey(active=>active?.view==="synthesis"?null:active);
+    try{window.localStorage.setItem(SYNTHESIS_VISIBILITY_KEY,String(next));}catch{}
   };
   useEffect(()=>{
     if(!activeSurvey||researchStatus!=="idle")return;
@@ -499,15 +515,29 @@ export default function Phase3ReadoutSheets(){
         {showSurveys?"Hide Survey Ratings":"Show Survey Ratings"}
       </button>
     </div>}
+    {SYNTHESIS_COLUMN_ENABLED&&<div className={css.surveyPreviewControls}>
+      <div><strong>SURVEY · Combined assessment</strong>
+        <span>One source-gated synthesis of your five groups, independent of the detailed survey display.</span></div>
+      <button type="button" onClick={toggleSynthesis} aria-pressed={showSynthesis}>
+        {showSynthesis?"Hide SURVEY":"Show SURVEY"}
+      </button>
+    </div>}
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
-      showSurveys={showSurveys} onSurveyOpen={row=>setActiveSurvey({row,bucket:"pre"})}
+      showSurveys={showSurveys} showSynthesis={showSynthesis}
+      onSurveyOpen={(row,view)=>setActiveSurvey({row,bucket:"pre",view})}
       caption="Trials without a documented issuer public release at their source-check date. Each row retains the check date and issuer link."/>
     <Spreadsheet bucket="post" rows={data.post} query={query}
-      showSurveys={showSurveys} onSurveyOpen={row=>setActiveSurvey({row,bucket:"post"})}
+      showSurveys={showSurveys} showSynthesis={showSynthesis}
+      onSurveyOpen={(row,view)=>setActiveSurvey({row,bucket:"post",view})}
       caption="Trials with a documented company public Phase 3 results announcement. Factor P shows the sourced primary-endpoint p-value where reported; it is not approval probability."/>
-    {showSurveys&&activeSurvey&&<SurveyExplorer key={activeSurvey.bucket+"|"+activeSurvey.row.nctId}
+    {activeSurvey?.view==="details"&&<SurveyExplorer key={activeSurvey.bucket+"|"+activeSurvey.row.nctId}
       row={activeSurvey.row} bucket={activeSurvey.bucket} feed={benefitFeed}
       researchStatus={researchStatus} onClose={()=>setActiveSurvey(null)}/>}
+    {activeSurvey?.view==="synthesis"&&<SynthesisPanel
+      key={activeSurvey.bucket+"|"+activeSurvey.row.nctId+"|synthesis"}
+      row={activeSurvey.row} bucket={activeSurvey.bucket} feed={benefitFeed}
+      researchStatus={researchStatus} onClose={()=>setActiveSurvey(null)}
+      onDetailedSurveys={()=>setActiveSurvey({...activeSurvey,view:"details"})}/>}
     <details className={css.unverified}>
       <summary><strong>Release status not verified · {number(data.unverified.length)} trials</strong> <span>Expand for research queue</span></summary>
       <div className={css.pendingBody}>
