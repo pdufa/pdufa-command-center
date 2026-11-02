@@ -47,6 +47,11 @@ export const RAAS_HISTORICAL_MIN_INDEPENDENT_PROGRAMS=30;
 export function programKey(x:{ticker:string;drug:string;indication:string}):string{
  return [x.ticker,x.drug,x.indication].map(v=>v.trim().toLowerCase().replace(/\s+/g," ")).join("|");
 }
+/** Minimum calendar safeguard. Full NYSE holiday-session evidence is still required for independent review. */
+function weekday(date:string):boolean{
+ const w=new Date(date+"T00:00:00Z").getUTCDay();
+ return w!==0&&w!==6;
+}
 function calendarDayOffset(date:string,days:number):string{
  const time=Date.parse(date+"T00:00:00Z");
  return new Date(time+days*86400000).toISOString().slice(0,10);
@@ -97,7 +102,9 @@ export function eligibleHistoricalCase(c:HistoricalCase,sourceAsOf:string):strin
  if(c.marketCapSourcePublishedAt>c.entryDate)
   return "Look-ahead: entry-time market cap disclosed after entry";
  if(c.entryPrice.date!==c.entryDate||c.exitPrice.date!==c.exitDate)
-  return "Price dates do not match actual trade sessions";
+  return "Price records do not match entry and exit dates";
+ if(!weekday(c.entryDate)||!weekday(c.exitDate))
+  return "Entry or exit falls on a weekend rather than a trading session";
  if(c.entryPrice.sourcePublishedAt>sourceAsOf||c.exitPrice.sourcePublishedAt>sourceAsOf)
   return "Historical price provenance not yet available";
  if(c.phase3ReadoutSourcePublishedAt>sourceAsOf||c.phase3ReadoutDate>sourceAsOf)
