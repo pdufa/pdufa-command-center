@@ -10,6 +10,7 @@ import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,type BenefitFeed,type Be
 import {RANKED_BENEFIT_ASSESSMENTS} from "../lib/pipeline-benefit-assessments";
 import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 import {exactReadoutBenefit,readoutResearchCoverage,sortPhase3Readouts,type Phase3ReadoutSortKey} from "../lib/phase3-readout-sort";
+import {finalSurveyReadiness} from "../lib/final-survey-readiness";
 
 type Bucket="pre"|"post"|"unverified";
 /** Reversible visibility-only feature; existing trial data and research sources are unchanged. */
@@ -299,7 +300,13 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
     detail:"Investment expectations, financing and dilution are separate from clinical significance."}
  ];
  const checked=researchStatus==="ready";
- const ready=checked&&!!record&&groups.every(g=>g.verified>0)&&rules.every(r=>r.passed);
+ const audit=finalSurveyReadiness(groups,rules,checked&&!!record);
+ const unverifiedQuestions=record?BENEFIT_GROUPS.flatMap(survey=>
+   survey.fields.filter(field=>record.facts[field.id]?.status!=="VERIFIED").map(field=>({
+     survey:survey.number,label:field.label,
+     status:record.facts[field.id]?.status==="MODELED"?"Modeled only":"Not recorded"
+   }))):[];
+ const ready=audit.reviewReady;
  const summary=researchStatus==="loading"||researchStatus==="idle"?"Checking sources":
    researchStatus==="unavailable"?"Evidence unavailable":
    ready?"READY FOR EVIDENCE REVIEW":"ABSTAIN · EVIDENCE INCOMPLETE";
@@ -321,6 +328,45 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
            {" AND "}<strong>all relevant stage-specific checks pass</strong>.
            Modeled inputs are shown separately and cannot pass verified gates.
            This is an evidence-readiness decision, not an FDA probability or a forecast of stock appreciation.</p>
+         <section className={css.finalSurveyCheckpoint} aria-label="Final SURVEY readiness and reluctant evidence grade">
+           <h5>Final SURVEY · two independent grades</h5>
+           <div className={css.finalSurveyGrades}>
+             <div>
+               <small>Grade 1 · Full analysis readiness</small>
+               <strong>{audit.fullReadinessGrade}</strong>
+               <span>Requires 38/38 source-verified questions, evidence in every group, and all four stage-specific checks.</span>
+             </div>
+             <div>
+               <small>Grade 2 · Reluctant evidence-coverage grade</small>
+               <strong>{audit.provisionalGrade}</strong>
+               <span>Only the percentage of 38 source-verified research inputs. A ≥90%, B ≥75%, C ≥50%, D ≥25%, E below 25%. No grade without an exact record.</span>
+             </div>
+           </div>
+           <p><strong>Source-verified coverage:</strong> {audit.assessable?
+             audit.verified+" of "+audit.total+" ("+audit.verifiedPercent+"%) · "+audit.modeled+" modeled · "+audit.missing+" not recorded":
+             "Not assessable — a unique source-matched study record and a valid research feed are required."}
+           </p>
+           <p><strong>Preliminary evidence-review gate:</strong> {audit.assessable?
+             (audit.reviewReady?"PASS · all five groups represented and all stage checks passed":
+              "NOT READY · "+audit.missingGroups.length+" groups without verified research · "+audit.failedGates.length+" stage checks not met"):
+             "Not assessed"}
+           </p>
+           <p><strong>FDA decision forecast:</strong> ABSTAIN — this coverage audit cannot establish approval, a Complete Response Letter, an extension, or a probability. Scientific outcome calibration remains separate.</p>
+           {audit.assessable&&<details className={css.finalSurveyMissing}>
+             <summary>Review outstanding evidence · {unverifiedQuestions.length} not verified · {audit.failedGates.length} failed checks</summary>
+             {audit.failedGates.length>0&&<div>
+               <strong>Required stage checks not met</strong>
+               <ul>{audit.failedGates.map(label=><li key={label}>{label}</li>)}</ul>
+             </div>}
+             {audit.missingGroups.length>0&&<p><strong>Groups without a verified input:</strong> {audit.missingGroups.join("; ")}</p>}
+             <strong>Research questions still requiring verification</strong>
+             {unverifiedQuestions.length?
+               <ol>{unverifiedQuestions.map(q=><li key={q.survey+"|"+q.label}>
+                 Survey {q.survey} · {q.label} — {q.status}
+               </li>)}</ol>:<p>All 38 questions have source-verified inputs.</p>}
+           </details>}
+           <p className={css.conjunctionWarning}>The reluctant grade is a provisional research-completeness label, not a validated clinical-merit, investment-return or FDA-decision grade. An incomplete study must never receive a fictitious failure score.</p>
+         </section>
          <h5>Five required groups · combined evidence</h5>
          <div className={css.conjunctionGroups}>
            {groups.map(g=><div key={g.key}>
