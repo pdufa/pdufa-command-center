@@ -17,7 +17,7 @@
           "confidence": "MODERATE"
         },
         "magnitude": {
-          "value": "EMBARQ-CSU1 Week 12 UAS7: 150 mg Q4W placebo-adjusted LS mean reduction  9.5 points (active -20.2, placebo -10.7); arithmetic from issuer table, not independently re-estimated.",
+          "value": "EMBARQ-CSU1 Week 12 UAS7: 150 mg Q4W placebo-adjusted LS mean reduction 9.5 points (active -20.2, placebo -10.7); arithmetic from issuer table, not independently re-estimated.",
           "status": "VERIFIED",
           "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
           "sourceDate": "2026-09-22",
@@ -39,6 +39,14 @@
           "sourceDate": "2026-09-22",
           "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
           "confidence": "MODERATE"
+        },
+        "durability": {
+          "value": "EMBARQ-CSU1 complete response (UAS7=0), 150 mg every 4 weeks: Week 12 42.4% (placebo 9.3%); Week 24 49.0% (placebo 15.4%). These are separate timepoint proportions; the release does not establish individual uninterrupted response persistence.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported Week 12 and Week 24 response tables in September 22, 2026 issuer release; cross-sectional arm-level proportions only. Not an independent patient-level longitudinal dataset audit or proof of uninterrupted response.",
+          "confidence": "MODERATE"
         }
       },
       "advantages": []
@@ -58,7 +66,7 @@
           "confidence": "MODERATE"
         },
         "magnitude": {
-          "value": "EMBARQ-CSU2 Week 12 UAS7: 150 mg Q4W placebo-adjusted LS mean reduction  8.8 points (active -20.2, placebo -11.4); arithmetic from issuer table, not independently re-estimated.",
+          "value": "EMBARQ-CSU2 Week 12 UAS7: 150 mg Q4W placebo-adjusted LS mean reduction 8.8 points (active -20.2, placebo -11.4); arithmetic from issuer table, not independently re-estimated.",
           "status": "VERIFIED",
           "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
           "sourceDate": "2026-09-22",
@@ -79,6 +87,14 @@
           "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
           "sourceDate": "2026-09-22",
           "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        },
+        "durability": {
+          "value": "EMBARQ-CSU2 complete response (UAS7=0), 150 mg every 4 weeks: Week 12 45.7% (placebo 12.6%); Week 24 54.0% (placebo 17.6%). These are separate timepoint proportions; the release does not establish individual uninterrupted response persistence.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported Week 12 and Week 24 response tables in September 22, 2026 issuer release; cross-sectional arm-level proportions only. Not an independent patient-level longitudinal dataset audit or proof of uninterrupted response.",
           "confidence": "MODERATE"
         }
       },

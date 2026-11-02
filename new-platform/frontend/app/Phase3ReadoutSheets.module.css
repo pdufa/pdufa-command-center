@@ -250,3 +250,9 @@
 .finalSurveyScoringLayout tr.finalSurveySelectedRow>th,.finalSurveyScoringLayout tr.finalSurveySelectedRow>td{border-top:2px solid #317855;border-bottom:2px solid #317855;background:#f1f8f3}
 .finalSurveyScoringLayout tr.finalSurveySelectedRow>th{border-left:2px solid #317855}
 .finalSurveyScoringLayout tr.finalSurveySelectedRow>td:last-child{border-right:2px solid #317855}
+
+/* Evidence-audit checkpoint: independent from completion/clinical outcome grades. */
+.scientificAuditChecks{display:grid;gap:8px;margin:10px 0}
+.scientificAuditCheck{background:#f8faf9;border:1px solid #d4e1d9;border-radius:7px;padding:9px 11px}
+.scientificAuditCheck strong{font-size:13px;line-height:1.45;color:#214735}
+.scientificAuditCheck p{font-size:12px;line-height:1.55;margin:5px 0 0;color:#425a4c}
