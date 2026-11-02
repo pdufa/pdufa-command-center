@@ -222,3 +222,16 @@
 .finalSurveyMissing li{font-size:12px;line-height:1.5;margin-bottom:4px}
 .finalSurveyMissing ol,.finalSurveyMissing ul{padding-left:22px;margin:8px 0}
 @media(max-width:640px){.finalSurveyGrades{grid-template-columns:1fr}.finalSurveyCheckpoint{padding:10px}}
+
+/* Final evidence matrix: one independently auditable row per canonical survey. */
+.finalSurveyMatrix{border:1px solid #c5d5cb;border-radius:7px;background:#fff;padding:10px;min-width:0}
+.finalSurveyMatrix>summary{cursor:pointer;font-size:13px;font-weight:800;min-height:32px}
+.finalSurveyMatrix>p{font-size:12px;color:#536b5d;margin:9px 0}
+.finalSurveyMatrixScroll{overflow-x:auto;max-width:100%;border:1px solid #dde7e0;border-radius:7px}
+.finalSurveyMatrixScroll table{width:100%;min-width:520px;border-collapse:collapse;font-size:12px}
+.finalSurveyMatrixScroll th,.finalSurveyMatrixScroll td{padding:9px 8px;text-align:left;border-bottom:1px solid #e0e9e3;vertical-align:top}
+.finalSurveyMatrixScroll thead th{background:#ecf5ee;font-weight:800;position:sticky;top:0}
+.finalSurveyMatrixScroll tbody th{max-width:260px;min-width:160px;font-weight:750;white-space:normal}
+.finalSurveyMatrixScroll td{font-variant-numeric:tabular-nums;white-space:nowrap}
+.finalSurveyMatrix>.surveyOpenButton{margin-top:9px}
+.finalSurveyMatrixScroll:focus-visible,.finalSurveyMatrix>summary:focus-visible{outline:3px solid #206baf;outline-offset:2px}
