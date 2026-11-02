@@ -16,7 +16,7 @@ const stage=require("../lib/raas-top-retrospective-intake.ts");
 const source=require("../data/raas-retrospective-top-cases.json");
 test("historical TOP pre-readout GERN window is sourced, stage separated, and never called a forecast",()=>{
  const feed=stage.parseTopRetrospective(source);
- assert.equal(feed.records.length,1);
+ assert.equal(feed.records.length,2);
  const record=feed.records[0];
  assert.equal(record.ticker,"GERN");
  assert.deepEqual(record.nctIds,["NCT02598661"]);
@@ -31,6 +31,16 @@ test("historical TOP pre-readout GERN window is sourced, stage separated, and ne
  assert.equal(out.marketCapUsdMillions,861.591);
  assert.equal(out.forecastScore,null);
  assert.equal(out.forecastError,null);
+ const mdgl=stage.topRetrospectiveResults(feed).find(x=>x.ticker==="MDGL");
+ assert.ok(mdgl);
+ assert.equal(mdgl.entryClose,72.8);
+ assert.equal(mdgl.exitClose,63.8);
+ assert.equal(mdgl.marketCapUsdMillions,1245);
+ assert.equal(mdgl.observedGrossChangePercent,-12.36);
+ assert.equal(mdgl.readoutDate,"2022-12-19");
+ assert.equal(mdgl.forecastScore,null);
+ assert.equal(mdgl.forecastError,null);
+
 });
 test("TOP research examples cannot cross trial readout or borrow later sponsor guidance",()=>{
  const base=source.records[0];
