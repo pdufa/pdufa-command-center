@@ -73,13 +73,14 @@ export function auditHistoricalCaseRoster(raw:unknown):HistoricalCaseRoster|null
     !numeric(raw.number_abstained))return fail();
  const total=raw.prediction_records+raw.number_with_known_outcomes-raw.eligible_applications;
  if(data.total!==total||total<0)return fail();
- const keys=Object.keys(data.reason_counts);
- if(keys.some(k=>!reasons.includes(k as HistoricalCaseReason)||!numeric(data.reason_counts[k]))||
-    keys.reduce((n,k)=>n+(data.reason_counts[k] as number),0)!==total ||
-    data.reason_counts.LOCKED_PREDICTION_ABSTAINED!==raw.number_abstained&&
-      (data.reason_counts.LOCKED_PREDICTION_ABSTAINED??0)!==raw.number_abstained ||
-    (data.reason_counts.LOCKED_PREDICTION_BEFORE_FDA_DECISION??0)!==raw.number_evaluated ||
-    (data.reason_counts.VERIFIED_OUTCOME_WITHOUT_LOCKED_PREDECISION_PREDICTION??0)!==
+ const reasonValues=data.reason_counts as Record<string,unknown>;
+ const keys=Object.keys(reasonValues);
+ if(keys.some(k=>!reasons.includes(k as HistoricalCaseReason)||!numeric(reasonValues[k]))||
+    keys.reduce((n,k)=>n+(reasonValues[k] as number),0)!==total ||
+    reasonValues.LOCKED_PREDICTION_ABSTAINED!==raw.number_abstained&&
+      (reasonValues.LOCKED_PREDICTION_ABSTAINED??0)!==raw.number_abstained ||
+    (reasonValues.LOCKED_PREDICTION_BEFORE_FDA_DECISION??0)!==raw.number_evaluated ||
+    (reasonValues.VERIFIED_OUTCOME_WITHOUT_LOCKED_PREDECISION_PREDICTION??0)!==
       raw.number_with_known_outcomes-raw.eligible_applications)return fail();
  const seen=new Set<string>(),records:HistoricalCase[]=[];
  for(const r of data.records){
