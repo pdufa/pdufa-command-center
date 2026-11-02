@@ -294,21 +294,20 @@ export default function PoolStageExplorer(){
       </div>
     </details>
 
-    {/* Assessments, trials and advanced research are separate default-closed segments. */}
-    {hasSelections&&<>
+    {/* All five section headings remain available, even before filters are selected. */}
     <details className={styles.poolSegment} data-pool-segment="assessments">
       <summary className={styles.poolSegmentSummary}>
         <span>3 · Scientific Assessments</span>
         <small>20 research assessments · {count(page?.total??0)} matching trials</small>
       </summary>
       <div className={styles.poolSegmentBody}>
-      <ToolsAssessmentSection
-        rows={page?.spreadsheetRows||[]}
-        total={page?.total??0}
-        offset={offset}
-        loading={loading}
-        error={error}
-      />
+        {hasSelections?<ToolsAssessmentSection
+          rows={page?.spreadsheetRows||[]}
+          total={page?.total??0}
+          offset={offset}
+          loading={loading}
+          error={error}
+        />:<p className={styles.muted}>Select a Phase or FDA designation in section 2 to view the 20 assessments. This section stays available and collapsed until you open it.</p>}
       </div>
     </details>
     <details className={styles.poolSegment} data-pool-segment="live-trials">
@@ -317,7 +316,7 @@ export default function PoolStageExplorer(){
         <small>{count(page?.total??0)} matching trials · sortable results</small>
       </summary>
       <div className={styles.poolSegmentBody}>
-<div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
+        {hasSelections?<div className={styles.toolsFinalSpreadsheet} id="tools-final-trial-spreadsheet">
       <ToolsOpeningTrialGrid
         rows={hasSelections?page?.spreadsheetRows||[]:[]}
         total={hasSelections?page?.total??0:0}
@@ -336,7 +335,7 @@ export default function PoolStageExplorer(){
         onPrevious={()=>setOffset(Math.max(0,offset-50))}
         onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       />
-    </div>
+        </div>:<p className={styles.muted}>Select a Phase or FDA designation in section 2 to populate the live trial spreadsheet.</p>}
       </div>
     </details>
       <details id="tools-advanced-research" className={styles.poolSegment} data-pool-segment="advanced">
@@ -373,7 +372,7 @@ export default function PoolStageExplorer(){
     {hasSelections&&page&&!loading&&selectedDesignations.length>0&&!page.designationCoverage?.noVerifiedNctLinks&&<p className={styles.muted}>
       FDA-filtered results: {count(page.designationLinkage?.sourceLinkedTrials??0)} documented linked NCT trials before stage filtering (partial evidence coverage).
     </p>}
-    <ToolsResultsSpreadsheet
+    {hasSelections&&<ToolsResultsSpreadsheet
       rows={page?.spreadsheetRows||[]}
       summary={page?.selectionSummary||null}
       designationCoverage={page?.designationCoverage??null}
@@ -387,9 +386,8 @@ export default function PoolStageExplorer(){
       onPrevious={()=>setOffset(Math.max(0,offset-50))}
       onNext={()=>{if(page?.nextOffset!==null&&page?.nextOffset!==undefined)setOffset(page.nextOffset);}}
       nextOffset={page?.nextOffset??null}
-    />
+    />}
         </div>
       </details>
-    </>}
   </section>;
 }
