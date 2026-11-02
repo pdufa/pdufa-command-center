@@ -88,6 +88,16 @@ async function finalSurveyTest(page,label){
     assert.match(body,/Grade 2 · Reluctant evidence-coverage grade/);
     assert.match(body,/FDA decision forecast:\s*ABSTAIN/);
     check(body.includes("Source-verified coverage:"),"Source coverage has to be visible");
+    const scientific=dialog.locator('details[aria-label="Phase 3 scientific evidence verification checklist"]');
+    await scientific.locator(":scope > summary").click();
+    const scientificText=await scientific.innerText();
+    check(scientificText.includes("Scientific validation checkpoints"),
+      "Scientific verification must be visible for each trial");
+    check(scientificText.includes("Independent clinical data adjudication"),
+      "Source presence must not falsely imply independent clinical review");
+    check(scientificText.includes("FDA decision evidence"),
+      "FDA decision evidence must remain explicitly unverified");
+    await scientific.locator(":scope > summary").click();
     const matrix=dialog.locator('details[aria-label="Twenty survey evidence coverage matrix"]');
     await matrix.locator(":scope > summary").click();
     const items=matrix.locator("tbody tr[data-final-survey-number]");
@@ -134,7 +144,7 @@ async function finalSurveyTest(page,label){
         return !!p&&/Source-verified coverage:\s*\d+ of 38/.test(p.textContent||"");
       },null,{timeout:45000});
       const loaded=await audit.innerText();
-      check(/Source-verified coverage:\s*[24] of 38/.test(loaded),
+      check(/Source-verified coverage:\s*[25] of 38/.test(loaded),
         "POST readout must display source-verified issuer trial observations, not empty placeholders");
       check(loaded.includes("FDA decision forecast: ABSTAIN"),
         "Sponsor topline findings must not create a probability or FDA verdict");
@@ -204,6 +214,10 @@ try{
       const published=await issuer.json();
       assert.deepEqual(published.records.map(row=>row.nctId),
         ["NCT06445023","NCT06455202","NCT06641076"]);
+      check(!!published.records[0].facts.durability&&!!published.records[1].facts.durability,
+        "Separate CSU trials must each carry a source-backed Week 24 field");
+      check(published.records[2].facts.durability===undefined,
+        "The blinded IZAR-1 topline must not fabricate longer-term durability");
       assert.equal(published.records[2].facts.clinicalBenefit,undefined,
         "Blinded MLTX placebo comparator must never generate synthetic benefit");
       await ratingTest(page,device.label);
