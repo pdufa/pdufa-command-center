@@ -82,3 +82,5 @@
 .anchorDetails p{font-size:10px;line-height:1.5;margin:0}
 .metricSummary:focus-visible,.anchorDetails>summary:focus-visible{outline:3px solid #206baf;outline-offset:1px}
 @media(max-width:640px){.raas[open]{width:1030px}.metric[open]>.metricSummary{flex-basis:155px;width:155px}.metricBody{max-height:72vh}}
+
+.factorBody>.metricIntro{flex:0 0 auto;align-self:stretch}
