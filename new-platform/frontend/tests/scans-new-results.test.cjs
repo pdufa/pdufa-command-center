@@ -23,143 +23,86 @@ const pipeline = {
   status:"COMPLETE",started_at:"2026-10-20T04:31:58Z",finished_at:"2026-10-20T04:32:53Z",
   new_master_programs:[{ticker:"PTGX",drug:"Rusfertide",nct_id:"NCT05210790"}]
 };
-const gem = {run_id:39369399911,generated_at_utc:"2026-10-20T04:36:32Z"};
-const ledger = {
-  stages:{
-    GEM_JR:{last_complete_snapshot:"2026-10-19",entries:{
-      "A":{status:"ACTIVE",ticker:"AXSM",drug:"AXS-12",nct_id:"NCT03881852",periods:[{found:"2026-10-16",left:null}]}
-    }},
-    GEM:{last_complete_snapshot:"2026-10-19",entries:{
-      "B":{status:"ACTIVE",ticker:"SVRA",drug:"MOLBREEVI",nct_id:"NCT04544293",periods:[{found:"2026-10-16",left:null}]}
-    }}
-  }
-};
 
-test("shows 1 new pipeline program, 1 new GEM JR result, 0 new GEM JR/GEM members and 62 updates", () => {
-  const result = newFromScanSummary(clinical,gem,pipeline,ledger);
+test("new scan reports Pipeline and Phase 3 results without GEM stages or membership", () => {
+  const result = newFromScanSummary(clinical,pipeline);
   assert.equal(result.runId,39369399911);
   assert.equal(result.scanPacificDate,"2026-10-19");
   assert.deepEqual([
-    result.pipelineNewPrograms,result.gemJrNewResultRecords,
-    result.gemJrNewMembersOnDate,result.gemNewMembersOnDate,result.pipelineChangedTrials
-  ],[1,1,0,0,62]);
-  assert.equal(result.membershipBasis,"SAME_DATE_LEDGER");
-  assert.equal(result.rows.length,2);
-  assert.deepEqual(result.rows[0],{
-    kind:"NEW_PROGRAM",stage:"PIPELINE",ticker:"PTGX",drug:"Rusfertide",
-    trialId:"NCT05210790",label:"NEW FROM SCAN — newly identified master program",exactRun:true
-  });
-  assert.equal(result.rows[1].kind,"NEW_PHASE3_RESULT");
-  assert.equal(result.rows[1].ticker,null,"Do not invent a ticker for an aggregated result");
+    result.pipelineNewPrograms,result.phase3NewResultRecords,result.pipelineChangedTrials
+  ],[1,1,62]);
+  assert.deepEqual(result.rows.map(x=>x.stage),["PIPELINE","PHASE3_RESULTS"]);
+  assert.equal(result.rows[1].ticker,null,"Unknown identity must not be fabricated");
+  assert.ok(!("membershipBasis" in result));
+  assert.ok(!Object.keys(result).some(k=>/gem|junior|membership/i.test(k)));
 });
 
-test("a newly posted GEM JR result displays its verified ticker, trial ID and primary source",() => {
+test("verified Phase 3 result preserves trial ID, drug and primary source",() => {
   const report=structuredClone(clinical);
   report.scans[2].new_record_details=[{
     ticker:"EXBT",drug:"Example investigational biologic",nct_id:"NCT01234567",
     results_posted_at:"2026-10-19",
-    source_url:"https://clinicaltrials.gov/study/NCT01234567",
-    verification_status:"REGISTERED_RESULTS_POSTED"
+    source_url:"https://clinicaltrials.gov/study/NCT01234567"
   }];
-  const result=newFromScanSummary(report,gem,pipeline,ledger);
-  const jr=result.rows.find(x=>x.kind==="NEW_PHASE3_RESULT");
-  assert.equal(jr.ticker,"EXBT");
-  assert.equal(jr.trialId,"NCT01234567");
-  assert.equal(jr.sourceUrl,"https://clinicaltrials.gov/study/NCT01234567");
-  assert.equal(result.rows.length,2);
+  const result=newFromScanSummary(report,pipeline);
+  const item=result.rows.find(x=>x.kind==="NEW_PHASE3_RESULT");
+  assert.equal(item.ticker,"EXBT");
+  assert.equal(item.stage,"PHASE3_RESULTS");
+  assert.equal(item.trialId,"NCT01234567");
+  assert.equal(item.sourceUrl,"https://clinicaltrials.gov/study/NCT01234567");
 });
 
-test("old archived stage must never make a new-record claim for the current run",() => {
+test("stale Phase 3 collector cannot falsely report a current result",() => {
   const report=structuredClone(clinical);
   report.scans[2].run_id=39200754095;
-  const result=newFromScanSummary(report,gem,pipeline,ledger);
-  assert.equal(result.gemJrNewResultRecords,null);
+  const result=newFromScanSummary(report,pipeline);
+  assert.equal(result.phase3NewResultRecords,null);
   assert.equal(result.rows.filter(x=>x.kind==="NEW_PHASE3_RESULT").length,0);
+  assert.match(result.warnings.join(" "),/different or unverified run/);
   report.scans[0].artifact_integrity="ISSUES";
-  assert.equal(newFromScanSummary(report,gem,pipeline,ledger).pipelineChangedTrials,null);
+  assert.equal(newFromScanSummary(report,pipeline).pipelineChangedTrials,null);
 });
 
-test("stale pipeline report cannot be presented as a new result from the current scan",() => {
-  const result = newFromScanSummary(clinical,gem,{
+test("stale pipeline source and mismatched completion times withhold new program counts",() => {
+  const stale=newFromScanSummary(clinical,{
     ...pipeline,started_at:"2026-10-18T04:31:58Z",finished_at:"2026-10-18T04:32:53Z"
-  },ledger);
-  assert.equal(result.pipelineNewPrograms,null);
-  assert.ok(!result.rows.some(x=>x.ticker==="PTGX"));
-  assert.equal(result.pipelineChangedTrials,62);
-});
-
-test("new pipeline programs require matching stage 3 artifact completion timestamp",() => {
-  const wrong = structuredClone(clinical);
+  });
+  assert.equal(stale.pipelineNewPrograms,null);
+  assert.ok(!stale.rows.some(x=>x.ticker==="PTGX"));
+  const wrong=structuredClone(clinical);
   wrong.scans[1].collected_at_utc="2026-10-20T03:02:53Z";
-  const result=newFromScanSummary(wrong,gem,pipeline,ledger);
-  assert.equal(result.pipelineNewPrograms,null);
-  assert.ok(!result.rows.some(x=>x.ticker==="PTGX"));
+  assert.equal(newFromScanSummary(wrong,pipeline).pipelineNewPrograms,null);
 });
 
-test("unmatched GEM report and membership dates never imply zero new admissions",() => {
-  const wrongGem = newFromScanSummary(clinical,{...gem,run_id:1},pipeline,ledger);
-  assert.equal(wrongGem.gemNewMembersOnDate,null);
-  assert.equal(wrongGem.gemJrNewMembersOnDate,null);
-  assert.equal(wrongGem.membershipBasis,"UNVERIFIED");
-  const oldLedger = structuredClone(ledger);
-  oldLedger.stages.GEM.last_complete_snapshot="2026-10-17";
-  const mixed = newFromScanSummary(clinical,gem,pipeline,oldLedger);
-  assert.equal(mixed.gemNewMembersOnDate,null);
-  assert.equal(mixed.gemJrNewMembersOnDate,0);
-});
-
-test("reports genuinely recorded same-date GEM stage admissions without duplicate records",() => {
-  const saved = structuredClone(ledger);
-  saved.stages.GEM_JR.entries.C = {
-    status:"ACTIVE",ticker:"CORT",drug:"relacorilant",nct_id:"NCT04308590",
-    periods:[{found:"2026-10-19",left:null},{found:"2026-10-19",left:null}]
-  };
-  saved.stages.GEM.entries.D = {
-    status:"ACTIVE",ticker:"PRAX",drug:"ulixacaltamide",nct_id:"NCT06087276",
-    periods:[{found:"2026-10-19",left:null}]
-  };
-  saved.stages.GEM.entries.E = {
-    status:"LEFT",ticker:"OTHER",periods:[{found:"2026-10-19",left:"2026-10-19"}]
-  };
-  const result = newFromScanSummary(clinical,gem,pipeline,saved);
-  assert.equal(result.gemJrNewMembersOnDate,1);
-  assert.equal(result.gemNewMembersOnDate,1);
-  assert.equal(result.rows.filter(r=>r.kind==="NEW_STAGE_MEMBER").length,2);
-  assert.ok(result.rows.filter(r=>r.kind==="NEW_STAGE_MEMBER").every(r=>!r.exactRun));
-});
-
-test("unknown counts are not silently presented as zero; program IDs must be real NCT IDs",() => {
-  const result=newFromScanSummary({...clinical,scans:[]},null,{
+test("unknown results remain unknown and program IDs require exact NCT",() => {
+  const missing=newFromScanSummary({...clinical,scans:[]},pipeline);
+  assert.equal(missing.pipelineNewPrograms,null);
+  assert.equal(missing.phase3NewResultRecords,null);
+  assert.equal(missing.pipelineChangedTrials,null);
+  const invalid=newFromScanSummary(clinical,{
     ...pipeline,new_master_programs:[{ticker:"PTGX",nct_id:"not-an-nct"}]
-  },null);
-  assert.equal(result.pipelineNewPrograms,null,"a missing scan stage is not a verified zero");
-  assert.equal(result.gemJrNewResultRecords,null);
-  assert.equal(result.gemNewMembersOnDate,null);
-  assert.equal(result.pipelineChangedTrials,null);
-  assert.equal(result.rows.length,0);
-  const invalid=newFromScanSummary(clinical,gem,{
-    ...pipeline,new_master_programs:[{ticker:"PTGX",nct_id:"not-an-nct"}]
-  },ledger);
-  assert.equal(invalid.pipelineNewPrograms,0,"a verified empty list is zero");
+  });
+  assert.equal(invalid.pipelineNewPrograms,0);
   assert.equal(invalid.rows.some(x=>x.ticker==="PTGX"),false);
 });
 
-test("Pacific date distinguishes late UTC evening and observes DST",() => {
+test("Pacific scan day is timezone aware",() => {
   assert.equal(pacificDay("2026-10-20T04:24:25Z"),"2026-10-19");
   assert.equal(pacificDay("2026-01-20T05:24:25Z"),"2026-01-19");
   assert.equal(pacificDay("not a timestamp"),null);
 });
 
-test("SCANS page places new results summary ahead of job progress and identifies updates separately",()=>{
+test("SCANS summary uses Pipeline and Phase 3 results, not retired GEM artifacts",()=>{
   const page=fs.readFileSync(require.resolve("../app/PublishedScansPanel.tsx"),"utf8");
   const panel=fs.readFileSync(require.resolve("../app/ScanNewResultsPanel.tsx"),"utf8");
   const api=fs.readFileSync(require.resolve("../app/api/published-scans/route.ts"),"utf8");
-  assert.ok(page.includes("<ScanNewResultsPanel summary={record?.newFromScan}"));
+  const core=fs.readFileSync(require.resolve("../lib/scan-new-results.ts"),"utf8");
   assert.ok(page.indexOf("<ScanNewResultsPanel")<page.indexOf("<LiveScansProgress />"));
-  assert.ok(panel.includes("NEW FROM SCAN"));
-  assert.ok(panel.includes("UPDATED / RECHECKED"));
-  assert.ok(panel.includes("Counts are dated source observations"));
-  assert.ok(api.includes("newFromScan: newFromScanSummary"));
+  assert.match(panel,/phase3NewResultRecords/);
+  assert.match(panel,/UPDATED \/ RECHECKED/);
+  assert.match(panel,/Counts are dated source observations/);
+  assert.match(api,/newFromScan: newFromScanSummary\(clinical, pipelineState\)/);
+  for(const text of [core,panel,api])assert.doesNotMatch(text,/\bGEM(?:_JR| JR)?\b|gemJr|gem_stage_membership|gem_scan_block_report/);
 });
 
 test("Source Verification Ledger is behind a default-closed caret with unresolved count", () => {
