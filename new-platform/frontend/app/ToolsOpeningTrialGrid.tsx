@@ -52,24 +52,26 @@ function RegistryMeasuredDetail({nctId,mode}:{nctId:string;mode:"CL"|"SAF"}){
     setOpen(v=>!v);
     if(open||loading||packet)return;
     setLoading(true);setError(false);
-    void fetch("/api/registry-benefit-research?nct="+encodeURIComponent(nctId),
+    void fetch("/api/tools-trial-evidence?nct="+encodeURIComponent(nctId),
       {cache:"no-store"}).then(async response=>{
       if(!response.ok)throw Error("REGISTRY_DATA_UNAVAILABLE");
       const item=await response.json() as RegistryBenefitResearch;
       if(item.nctId!==nctId||item.sourceUrl!=="https://clinicaltrials.gov/study/"+nctId
-         ||!item.resultsPosted||!Array.isArray(item.primary)||!Array.isArray(item.secondary)
+         ||!Array.isArray(item.primary)||!Array.isArray(item.secondary)
          ||!Array.isArray(item.seriousAdverseEvents))throw Error("REGISTRY_DATA_INVALID");
       return item;
     }).then(item=>setPacket(item)).catch(()=>setError(true)).finally(()=>setLoading(false));
   };
   return <div className={css.registryDetail}>
     <button type="button" onClick={toggle} aria-expanded={open}>
-      {open?"Hide registry observations":mode==="CL"?"View measured endpoints":"View serious-event counts"}
+      {open?"Hide registry observations":mode==="CL"?"Check trial endpoints":"Check serious-event counts"}
     </button>
     {open&&<div className={css.registryDetailContent}>
       {loading&&<p>Checking exact-NCT source…</p>}
       {error&&<p>Registry measurements unavailable or stale. No result inferred.</p>}
       {packet&&<div>
+        {!packet.resultsPosted&&<p>ClinicalTrials.gov has no posted outcome results for this NCT;
+          registry completion alone cannot establish a Phase 3 public readout.</p>}
         <p><a href={packet.sourceUrl} target="_blank" rel="noopener noreferrer">
           ClinicalTrials.gov · {nctId}</a></p>
         {mode==="CL"?<>
@@ -453,7 +455,7 @@ export default function ToolsOpeningTrialGrid({
                   title={ingredient.name+": source-backed input coverage or explicit unscored status"}>
                   <ResearchAuditCell cell={audit.ingredient[ingredient.key]}/>
                   {(ingredient.key==="CL"||ingredient.key==="SAF")&&
-                   registryByNct.get(row.nctId)?.resultsPosted&&
+                   /^NCT\\d{8}$/.test(row.nctId)&&
                    <RegistryMeasuredDetail nctId={row.nctId} mode={ingredient.key}/>}
                 </td>)}
               </Fragment>;
