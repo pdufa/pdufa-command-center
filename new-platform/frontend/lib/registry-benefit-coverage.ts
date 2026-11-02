@@ -17,6 +17,7 @@ export type RegistryCoverage={
   postedResults:number;withPrimaryMeasurements:number;withSecondaryMeasurements:number;
   withSeriousEventCounts:number;truncatedRecords:number;
   measurableRecords:number;meanRegistryCoveragePercent:number|null;
+  coverageBuckets:{noMeasurements:number;partial:number;allFour:number;incompleteExtract:number};
 };
 const safeDateTime=(v:unknown):v is string=>
   typeof v==="string"&&/^\d{4}-\d{2}-\d{2}T/.test(v)&&Number.isFinite(Date.parse(v));
@@ -85,7 +86,14 @@ export function registryCoverageFromSnapshot(raw:unknown,now=Date.now()):Registr
     truncatedRecords:records.filter(x=>x.truncated).length,
     measurableRecords:measurable.length,
     meanRegistryCoveragePercent:measurable.length?Math.round(10*measurable.reduce(
-      (total,row)=>total+(row.registryCoveragePercent??0),0)/measurable.length)/10:null};
+      (total,row)=>total+(row.registryCoveragePercent??0),0)/measurable.length)/10:null,
+    coverageBuckets:{
+      noMeasurements:measurable.filter(x=>x.registryCoveragePercent===0).length,
+      partial:measurable.filter(x=>x.registryCoveragePercent!==null&&
+        x.registryCoveragePercent>0&&x.registryCoveragePercent<100).length,
+      allFour:measurable.filter(x=>x.registryCoveragePercent===100).length,
+      incompleteExtract:records.length-measurable.length
+    }};
 }
 export function sourceReviewHint(row:RegistrySourceRow|undefined,group:number):string|null{
   if(!row)return null;
