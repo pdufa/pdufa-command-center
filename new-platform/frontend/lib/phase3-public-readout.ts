@@ -23,32 +23,35 @@ const fail=():never=>{throw Error("Dated Phase 3 readout evidence did not pass i
 export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusTrial[]):ReadoutClassification{
   if(!raw||typeof raw!=="object"||Array.isArray(raw))fail();
   const value=raw as Record<string,unknown>;
+  const censusDate=value.censusDate,sourceAsOf=value.sourceAsOf;
+  const sourceFiles=value.sourceFiles,entries=value.entries;
   if(value.schemaVersion!==1||value.scope!==SCOPE||
-    !dayOk(value.censusDate)||!dayOk(value.sourceAsOf)||
-    value.censusDate>value.sourceAsOf||
-    !Array.isArray(value.sourceFiles)||
-    value.sourceFiles.length!==2||
-    !value.sourceFiles.includes("data/phase3_pre_readout_evidence.csv")||
-    !value.sourceFiles.includes("data/post_phase3_discoveries.csv")||
-    !Array.isArray(value.entries)||value.entries.length>census.length)fail();
+    !dayOk(censusDate)||!dayOk(sourceAsOf)||
+    censusDate>sourceAsOf||
+    !Array.isArray(sourceFiles)||
+    sourceFiles.length!==2||
+    !sourceFiles.includes("data/phase3_pre_readout_evidence.csv")||
+    !sourceFiles.includes("data/post_phase3_discoveries.csv")||
+    !Array.isArray(entries)||entries.length>census.length)fail();
   const censusIds=new Map(census.map(row=>[row.nctId,row]));
   if(censusIds.size!==741||census.length!==741)fail();
   const known=new Map<string,ReadoutEvidence>();
-  for(const item of value.entries as unknown[]){
+  for(const item of entries as unknown[]){
     if(!item||typeof item!=="object"||Array.isArray(item))fail();
     const row=item as Record<string,unknown>;
-    if(typeof row.nctId!=="string"||!/^NCT\d{8}$/.test(row.nctId)||
-      typeof row.ticker!=="string"||known.has(row.nctId)||
-      censusIds.get(row.nctId)?.ticker!==row.ticker||
-      !["PRE_AS_OF_CHECK","POST_PUBLIC_READOUT"].includes(String(row.kind))||
-      !dayOk(row.evidenceDate)||row.evidenceDate>value.sourceAsOf||
-      !sourceUrlOk(row.evidenceUrl)||
-      typeof row.drug!=="string"||typeof row.indication!=="string"||
-      row.drug.length>300||row.indication.length>300)fail();
-    known.set(row.nctId,{
-      nctId:row.nctId,ticker:row.ticker,kind:row.kind as ReadoutKind,
-      evidenceDate:row.evidenceDate,evidenceUrl:row.evidenceUrl,
-      drug:row.drug,indication:row.indication
+    const nctId=row.nctId,ticker=row.ticker,kind=row.kind;
+    const evidenceDate=row.evidenceDate,evidenceUrl=row.evidenceUrl;
+    const drug=row.drug,indication=row.indication;
+    if(typeof nctId!=="string"||!/^NCT\d{8}$/.test(nctId)||
+      typeof ticker!=="string"||known.has(nctId)||
+      censusIds.get(nctId)?.ticker!==ticker||
+      !["PRE_AS_OF_CHECK","POST_PUBLIC_READOUT"].includes(String(kind))||
+      !dayOk(evidenceDate)||evidenceDate>sourceAsOf||
+      !sourceUrlOk(evidenceUrl)||
+      typeof drug!=="string"||typeof indication!=="string"||
+      drug.length>300||indication.length>300)fail();
+    known.set(nctId,{
+      nctId,ticker,kind:kind as ReadoutKind,evidenceDate,evidenceUrl,drug,indication
     });
   }
   const pre:ReadoutRow[]=[],post:ReadoutRow[]=[],unverified:ReadoutRow[]=[];
@@ -65,8 +68,6 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
   pre.sort(byTicker);post.sort(byTicker);unverified.sort(byTicker);
   return {
     pre,post,unverified,total:census.length,
-    censusDate:value.censusDate as string,
-    sourceAsOf:value.sourceAsOf as string,
-    sourceFiles:value.sourceFiles as string[]
+    censusDate,sourceAsOf,sourceFiles:sourceFiles as string[]
   };
 }
