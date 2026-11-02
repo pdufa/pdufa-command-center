@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_RETROSPECTIVE_EVIDENCE_INTAKE",
   "sourceAsOf": "2026-11-02",
-  "note": "Three independent historical post-Phase3 public-company investment examples using retrospective, source-checked closes, not archived forecasts. Prices and capitalization come from third-party vendors; corporate-action adjustments, execution and exact entry feasibility still require audit. Never import into approved RAAS prediction metrics.",
+  "note": "Four distinct post-Phase3 historical investment examples chosen retrospectively; MDGL now joins VRNA, URGN and GERN. Prices are vendor closes without verified corporate-action or execution adjustments; no historical RAAS prediction existed. Never classify these as out-of-sample RAAS performance.",
   "records": [
     {
       "id": "vrna-ensifentrine-copd-2024-illustrative",
@@ -211,6 +211,67 @@
       },
       "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
       "reviewNote": "FDA acted June 6 before its announced June 16 target. This example intentionally exits May 31, before the early decision; a PDUFA-minus-three-only exit would have crossed an unexpected regulatory binary. Never infer that the early action date was forecastable."
+    },
+    {
+      "id": "mdgl-resmetirom-nash-2023-2024-illustrative",
+      "ticker": "MDGL",
+      "drug": "resmetirom",
+      "indication": "Noncirrhotic NASH with moderate to advanced liver fibrosis",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "stage": "post",
+      "historicalWindowSelected": "RETROSPECTIVELY",
+      "entryDecisionArchiveAvailable": false,
+      "verifiedBeforeEntry": [
+        {
+          "kind": "PHASE3_PUBLIC_READOUT",
+          "date": "2022-12-19",
+          "sourceUrl": "https://ir.madrigalpharma.com/node/14516",
+          "notes": "Public positive pivotal MAESTRO-NASH results. December 19, 2022 is after the separate TOP selected exit."
+        },
+        {
+          "kind": "PDUFA_CONFIRMED",
+          "date": "2023-09-13",
+          "sourceUrl": "https://ir.madrigalpharma.com/news-releases/news-release-details/madrigal-pharmaceuticals-announces-nda-acceptance-and-priority",
+          "notes": "FDA accepted resmetirom NDA, granted priority review and set March 14, 2024 target for this drug/indication."
+        }
+      ],
+      "pdufaDate": "2024-03-14",
+      "entry": {
+        "date": "2023-11-03",
+        "close": 146.89,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/MDGL/summary/price"
+      },
+      "exit": {
+        "date": "2024-03-08",
+        "close": 255.32,
+        "currency": "USD",
+        "priceKind": "VENDOR_REPORTED_CLOSE_UNADJUSTED_STATUS_UNKNOWN",
+        "sourceUrl": "https://www.financecharts.com/stocks/MDGL/summary/price"
+      },
+      "marketCapAtEntry": {
+        "usdMillions": 2900,
+        "sourceUrl": "https://www.financecharts.com/stocks/MDGL/summary/market-cap",
+        "basis": "Vendor-reported November 3, 2023 market cap $2.9B using historical share count. Split adjustment, issuer filings and actual trade execution remain unaudited."
+      },
+      "realizedFDAAction": {
+        "date": "2024-03-14",
+        "status": "FDA_APPROVED",
+        "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2024/217785Orig1s000Approv.pdf",
+        "isPostEntryKnowledge": true
+      },
+      "eventQuality": {
+        "priceCorporateActionChecked": false,
+        "exchangeHolidayCalendarChecked": false,
+        "tradingFrictionAssessed": false,
+        "actualTradeOrArchivedPrediction": false,
+        "eligibleForValidatedRAAS": false
+      },
+      "reviewStatus": "RETROSPECTIVE_EXAMPLE_ONLY",
+      "reviewNote": "Retrospectively selected after Phase 3 and after PDUFA confirmation. November 2023 to March 8, 2024 gain excludes March 14, 2024 FDA approval. This is NOT a contemporaneous RAAS investment recommendation or validated predictive record."
     }
   ]
 }
