@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "sourceAsOf": "2026-11-01",
+  "records": [
+    {
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "EMBARQ-CSU1 Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W -20.2 vs placebo -10.7; sponsor reports p < 0.00001.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        },
+        "magnitude": {
+          "value": "EMBARQ-CSU1 Week 12 UAS7: 150 mg Q4W placebo-adjusted LS mean reduction  9.5 points (active -20.2, placebo -10.7); arithmetic from issuer table, not independently re-estimated.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        },
+        "responseRemission": {
+          "value": "EMBARQ-CSU1 Week 12 complete response UAS7=0: 150 mg Q4W 42.4% vs placebo 9.3%; rates in disclosed trial arms, not cross-trial comparisons.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        },
+        "treatmentResistantBenefit": {
+          "value": "EMBARQ-CSU1 omalizumab-refractory subgroup, Week 12 complete response UAS7=0: barzolvolimab 150 mg Q4W 55.3% vs placebo 9.3%; exploratory subgroup interpretation needs detailed methods.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "EMBARQ-CSU2 Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W -20.2 vs placebo -11.4; sponsor reports p < 0.00001.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        },
+        "magnitude": {
+          "value": "EMBARQ-CSU2 Week 12 UAS7: 150 mg Q4W placebo-adjusted LS mean reduction  8.8 points (active -20.2, placebo -11.4); arithmetic from issuer table, not independently re-estimated.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        },
+        "responseRemission": {
+          "value": "EMBARQ-CSU2 Week 12 complete response UAS7=0: 150 mg Q4W 45.7% vs placebo 12.6%; rates in disclosed trial arms, not cross-trial comparisons.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        },
+        "treatmentResistantBenefit": {
+          "value": "EMBARQ-CSU2 omalizumab-refractory subgroup, Week 12 complete response UAS7=0: barzolvolimab 150 mg Q4W 41.7% vs placebo 15.1%; exploratory subgroup interpretation needs detailed methods.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Sponsor-reported prespecified Phase 3 endpoint tables in Celldex's September 22, 2026 issuer release; numerical disclosure verified against source. Not an independent dataset audit, comparative-effectiveness claim, or FDA-grade clinical score.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06641076",
+      "ticker": "MLTX",
+      "drug": "sonelokimab",
+      "indication": "psoriatic arthritis",
+      "facts": {
+        "responseRemission": {
+          "value": "IZAR-1 Week 16 ACR50 response: 42.1% on sonelokimab 60 mg with induction. Placebo comparative data remained blinded; no placebo-adjusted benefit inferred.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+          "sourceDate": "2026-08-10",
+          "method": "Sponsor-reported blinded Phase 3 IZAR-1 Week 16 topline disclosure, August 10, 2026. Placebo and other-arm comparative values were not yet disclosed; numerical disclosure verified against issuer source, not independent efficacy adjudication.",
+          "confidence": "MODERATE"
+        },
+        "qualityOfLife": {
+          "value": "IZAR-1 Week 16 sponsor-reported change from baseline: HAQ-DI -0.427; SF-36 PCS +6.54. Comparative placebo differences not disclosed, so no patient-outcome superiority inferred.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+          "sourceDate": "2026-08-10",
+          "method": "Sponsor-reported blinded Phase 3 IZAR-1 Week 16 topline disclosure, August 10, 2026. Placebo and other-arm comparative values were not yet disclosed; numerical disclosure verified against issuer source, not independent efficacy adjudication.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    }
+  ]
+}
