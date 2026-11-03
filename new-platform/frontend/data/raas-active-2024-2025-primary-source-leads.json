@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Two source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake.",
+  "note": "Two source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -76,6 +76,42 @@
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
       "notes": "MOMENTUM 2019-12-30 Phase3 results, INTERCEPT 2020-04-06 positive co-primary endpoints; updated Phase3 date uses later second pivotal publication. Original September 4 2024 company release announces Class2 NDA resubmission PDUFA January31 2025. Original FDA 2025 summary states approval Jan30, one day early. Prior 2022 manufacturing CRL is a different review cycle. Historical 2024 Q2 SEC 48,000,205 shares as of July29 filed Aug5; 2024 Q3 SEC 48,462,376 Nov5 filed Nov12. Corporate actions and price independence remain unreviewed."
+    },
+    {
+      "caseId": "MDGL|REZDIFFRA|NDA217785|2024",
+      "ticker": "MDGL",
+      "programId": "MDGL_RESMETIROM_MAESTRO_NASH_SUBPART_H_ACCELERATED",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "drug": "REZDIFFRA (resmetirom) oral tablets",
+      "indication": "noncirrhotic NASH/MASH with moderate-to-advanced F2–F3 fibrosis, accelerated approval",
+      "application": "NDA 217785",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2024-03-14",
+      "targetAnnouncementDate": "2023-09-13",
+      "targetAnnouncementSourceUrl": "https://ir.madrigalpharma.com/news-releases/news-release-details/madrigal-pharmaceuticals-announces-nda-acceptance-and-priority",
+      "phase3ReadoutDate": "2022-12-19",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312522307935/d423141d8k.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT03900429",
+      "actualFDAActionDate": "2024-03-14",
+      "actualFDAActionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2024/217785Orig1s000ltr.pdf",
+      "actualFDAOutcome": "APPROVED",
+      "acceleratedApproval": true,
+      "confirmatoryEvidenceStillRequired": true,
+      "firstPublicFDAActionAnnouncementDate": "2024-03-14",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-treatment-patients-liver-scarring-due-fatty-liver-disease",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523270803/d907859d10q.htm",
+      "archivedEventKey": "MDGL|2024-03-14",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "SEC-exhibited pivotal MAESTRO-NASH Phase 3 data first announced December 19 2022. Original September 13 2023 company NDA acceptance announced March 14 2024 PDUFA goal; original FDA 2024 NDA 217785 approval letter confirms accelerated approval March 14. This is accelerated approval based on surrogate endpoints, requiring confirmatory evidence, not a confirmed long-term clinical outcome. 2023 Q3 10-Q Nov 6 2023 cover 19,742,646 common shares as of Nov 1; 2023 10-K Feb 28 2024 cover 19,897,425 common shares as of Feb 22. Neither snapshot establishes continuous historical shares, financing, cap eligibility or price return. Preserve PDUFA target and approval as distinct facts."
     }
   ]
 }
