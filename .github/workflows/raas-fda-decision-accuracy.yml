@@ -11,6 +11,7 @@ on:
       - 'scripts/raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_top8_source_intake.py'
+      - 'tests/test_raas_v2_original_goal_queue_safety.py'
       - 'new-platform/frontend/data/raas-v2-top8-2026-source-intake.json'
       - 'data/raas_fda_three_way_*.json'
       - 'data/prediction_engine_history.csv'
@@ -31,6 +32,7 @@ on:
       - 'scripts/raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_top8_source_intake.py'
+      - 'tests/test_raas_v2_original_goal_queue_safety.py'
       - 'new-platform/frontend/data/raas-v2-top8-2026-source-intake.json'
       - 'data/raas_fda_three_way_*.json'
       - 'data/prediction_engine_history.csv'
@@ -74,6 +76,8 @@ jobs:
         run: node --test new-platform/frontend/tests/raas-v2-top8-source-site.test.cjs
       - name: Validate eight 2026 source cases, CAPR prior goal and ANAB third-party rights
         run: python -m unittest discover -s tests -p 'test_raas_v2_top8_source_intake.py' -v
+      - name: Test V2 nightly original-deadline queue excludes revised goals and preserves source-only tags
+        run: python -m unittest discover -s tests -p 'test_raas_v2_original_goal_queue_safety.py' -v
       - name: Compute retrospective baseline and prospective FDA decision audit
         env:
           RAAS_FDA_ACCURACY_JSON: ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
