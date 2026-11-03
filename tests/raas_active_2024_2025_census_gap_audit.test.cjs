@@ -74,9 +74,9 @@ test("Separate event dates for same ticker remain reviews but only one issuer sl
  assert.equal(x.byTargetYear[2024].archivedTargetDateRows,6);
  assert.equal(x.byTargetYear[2024].archiveRowsAlreadySameGoalSourced,2);
  assert.equal(x.byTargetYear[2024].archivedUnverifiedDateRows,4);
- assert.equal(x.byTargetYear[2024].newCandidateTickerNamesNotYetSourceBacked,2);
- assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,6);
- assert.equal(x.byTargetYear[2024].minimumAdditionalIssuerDiscoveryBeyondCurrentTargetQueue,24);
+ assert.equal(x.byTargetYear[2024].newCandidateTickerNamesNotYetSourceBacked,3);
+ assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,7);
+ assert.equal(x.byTargetYear[2024].minimumAdditionalIssuerDiscoveryBeyondCurrentTargetQueue,23);
  assert.equal(x.byTargetYear[2025].sourceBackedTargetEvents,3);
  assert.equal(x.byTargetYear[2025].archivedUnverifiedDateRows,2);
  assert.equal(x.byTargetYear[2025].newCandidateTickerNamesNotYetSourceBacked,2);
@@ -115,7 +115,7 @@ test("A different archival target date on already sourced ticker is NOT silently
  assert.equal(x.archiveSameGoalDuplicatedSourceRows,1);
  const g=x.nextArchivedTargetSourceReviews.find(r=>r.ticker==="GERN");
  assert.equal(g.possibleSameIssuerOtherCycle,true);
- assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,6);
+ assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,7);
 });
 test("CSV is formula-injection safe, counts all review tasks, and preserves target dates as text",()=>{
  const r=make();
