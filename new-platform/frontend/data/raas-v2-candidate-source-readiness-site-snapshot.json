@@ -18,7 +18,8 @@
     "No calibration thresholds were changed; V1 remains installed and V2 is not an approved model.",
     "CAPR, SVRA and PRAX legacy rows reference revised dates; EXEL retains the old December 3 original date even though the target is now March 3, 2027. All four are excluded from unresolved upcoming original-goal forecasts.",
     "Of 36 future-dated legacy source leads, 15 now have issuer-documented goal/revision sources; four formally extended case dates are excluded from unresolved original-goal predictions and 21 still lack issuer review. No independently verified three-way forecasts or approved Phase 3 qualifications are implied.",
-    "The new GILD anito-cel and COGT nonadvanced systemic mastocytosis source leads cite pivotal Phase 2 trials, so they cannot automatically enter the Phase 3-only Pipeline. The two Cogent NDA reviews have distinct application-specific case IDs."
+    "The new GILD anito-cel and COGT nonadvanced systemic mastocytosis source leads cite pivotal Phase 2 trials, so they cannot automatically enter the Phase 3-only Pipeline. The two Cogent NDA reviews have distinct application-specific case IDs.",
+    "CYTK and SMMT Nov 14 original issuer goals are corroborated with distinct ClinicalTrials.gov Phase 3 study records. FDA independently confirms CYTK original NDA 219083 approval in 2025; this does not certify the 2026 sNDA supplement number or original-goal cycle. SMMT's current BLA number is unverified."
   ],
   "issuerDocumentedNearTermCycleSourceLeads": 15,
   "knownRevisedGoalExcludedFromOriginalDeadlineQueue": 4,
@@ -27,5 +28,8 @@
   "provenIndependentFirstGoalForecasts": 0,
   "additionalIssuerDocumentedFormallyExtendedCases": 3,
   "additionalOriginalGoalIssuerSourceLeads": 4,
-  "pivotalPhase2SourceLeadsNotStrictPhase3Eligible": 2
+  "pivotalPhase2SourceLeadsNotStrictPhase3Eligible": 2,
+  "nov14IndependentPhase3RegistryCrossChecks": 2,
+  "nov14NumberedCurrentFdaApplicationCyclesCertified": 0,
+  "nov14FrozenThreeWayForecasts": 0
 }
