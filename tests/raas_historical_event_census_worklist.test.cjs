@@ -6,6 +6,9 @@ const root=path.resolve(__dirname,"..");
 const primary=JSON.parse(fs.readFileSync(path.join(root,
  "new-platform/frontend/data/raas-historical-2020-primary-source-leads.json"),"utf8"));
 const archive=fs.readFileSync(path.join(root,"data/historical_assessed_decisions.csv"),"utf8");
+const issuerCrosswalk={scope:"FDA_2016_2019_APPROVAL_SPONSOR_CURRENT_REGISTRY_NAME_RESEARCH",
+ rows:[{fdaCandidateId:"NDA123456|ORIG|1|20180111",
+  status:"EXACT_NAME_PUBLIC_REGISTRY_LEAD",candidateTicker:"TEST"}]};
 const fda={scope:"FDA_DRUGS_AT_FDA_2016_2019_APPROVAL_DISCOVERY_NOT_PDUFA_CENSUS",
  candidates:[{id:"NDA123456|ORIG|1|20180111",year:2018,
   status:"FDA_APPROVAL_DISCOVERY_ONLY",actualApprovalDate:"2018-01-11",
@@ -19,7 +22,7 @@ test("first-public source findings validate without promoting historical market-
  assert.ok(a.every(x=>x.nctIds.length>=1));
 });
 test("source-based event date mismatch is exposed for DBVT, without changing real PDUFA goal date",()=>{
- const r=m.consolidate({archiveCsv:archive,primaryLeads:primary,approvalDiscovery:fda});
+ const r=m.consolidate({archiveCsv:archive,primaryLeads:primary,approvalDiscovery:fda,issuerCrosswalk});
  assert.equal(r.summary.archiveCandidates,126);
  assert.equal(r.summary.fdaApprovalLeads,1);
  assert.equal(r.summary.primaryTargetSourceLeads,2);
@@ -37,11 +40,13 @@ test("source-based event date mismatch is exposed for DBVT, without changing rea
  assert.ok(r.candidates.every(x=>x.eligibleForCalibration===false));
 });
 test("FDA action date is not used as PDUFA target date for legacy approval rows",()=>{
- const r=m.consolidate({archiveCsv:archive,primaryLeads:primary,approvalDiscovery:fda});
+ const r=m.consolidate({archiveCsv:archive,primaryLeads:primary,approvalDiscovery:fda,issuerCrosswalk});
  const first=r.candidates.find(x=>x.source==="FDA_ORIGINAL_APPROVAL_DISCOVERY");
  assert.equal(first.actualFDAActionDate,"2018-01-11");
  assert.equal(first.pdufaTargetDate,null);
- assert.equal(first.ticker,null);
+ assert.equal(first.ticker,"TEST");
+ assert.equal(first.historicalIssuerIdentityVerified,false);
+ assert.equal(r.summary.currentTickerNameMatchLeads,1);
  assert.equal(r.coverage[2018].completePdufaCensus,false);
 });
 test("invalid dates, duplicate case identity and false capitalization review status fail closed",()=>{
@@ -52,5 +57,5 @@ test("invalid dates, duplicate case identity and false capitalization review sta
  assert.throws(()=>m.validateSourceLeads({...primary,records:[
   {...primary.records[0],targetAnnouncementDate:"2020-11-01"}]}),/RAAS_PRIMARY_EVENT_SOURCE_INVALID/);
  assert.throws(()=>m.consolidate({archiveCsv:archive,primaryLeads:primary,
-   approvalDiscovery:{scope:"FDA_ACTIONS_CALIBRATED",candidates:[]}}),/RAAS_FDA_ARCHIVE_INVALID/);
+   approvalDiscovery:{scope:"FDA_ACTIONS_CALIBRATED",candidates:[]},issuerCrosswalk}),/RAAS_FDA_ARCHIVE_INVALID/);
 });
