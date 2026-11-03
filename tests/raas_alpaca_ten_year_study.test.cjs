@@ -119,3 +119,23 @@ test("one reviewed synthetic issuer yields grid research, never a ten-year winne
  assert.equal(res.selectedWindow.winner,null);
  assert.equal(res.tenYearCensusComplete,false);
 });
+
+test("2024 ZEAL Copenhagen listing is an explicit unresolved provider-venue gap, not a fictitious US price",async()=>{
+ const venue=JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-alpaca-venue-exceptions.json"),"utf8"));
+ const zeal=venue.records.find(x=>x.ticker==="ZEAL" && x.eventDate==="2024-12-22");
+ assert.ok(zeal);
+ assert.equal(zeal.notUSListedForEvent,true);
+ assert.match(zeal.sourceUrl,/zealandpharma\.com/);
+ const output=await m.execute({key:"test",secret:"test",intake,
+  candidates:[{ticker:"ZEAL",pdufaDate:"2024-12-22",eventKey:"ZEAL|2024-12-22|glepaglutide"}],
+  request:async()=>{throw Error("provider must not be called for foreign venue exception");}});
+ assert.equal(output.discoveryCandidates,1);
+ assert.equal(output.outOfAlpacaVenueEvents,1);
+ assert.equal(output.priceEventKeysCollected,0);
+ assert.equal(output.priceSourceFailures,0);
+ assert.equal(output.eligibleWindowRows,0);
+ assert.equal(output.priceRetrievalStatuses[0].status,"OUTSIDE_ALPACA_US_STOCK_FEED");
+ assert.equal(output.priceRetrievalStatuses[0].reviewStatus,
+  "NEEDS_NON_US_MARKET_DATA_OR_SEPARATE_UNIVERSE_DECISION");
+});
