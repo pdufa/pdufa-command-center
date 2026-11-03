@@ -111,3 +111,12 @@
 .historicalStatus{display:flex;flex-direction:column;gap:7px;padding:9px;background:#fbfdfc;border:1px solid #dae5df;border-radius:6px;margin:7px 0}
 .historicalStatus p{margin:0;font-size:11px;line-height:1.5;color:#405d4d}
 .historicalStatus strong{color:#214d35}
+
+/* Current source evidence counts, directly visible on TOP/BOTTOM row cells. */
+.raas{width:225px}
+.summaryText small{white-space:normal;line-height:1.35}
+.evidenceScanGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.evidenceScanGrid>div{display:flex;flex-direction:column;gap:3px;padding:8px;border:1px solid #d8e6dc;border-radius:6px;background:#fff;min-width:0}
+.evidenceScanGrid strong{font-size:11px;color:#244e36}
+.evidenceScanGrid span{font-size:10px;line-height:1.4;color:#537160;overflow-wrap:anywhere}
+@media(max-width:640px){.evidenceScanGrid{grid-template-columns:1fr}.raas{width:210px}}
