@@ -8,12 +8,15 @@ import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";
 import {RAAS_METRIC_CATALOG,RAAS_PROVISIONAL_ANCHORS,RAAS_SPEC_VERSION,type RaasStage,type RaasMetric} from "../lib/raas-metric-specs";
 import css from "./TrialRaasDisclosure.module.css";
 import pilotData from "../data/raas-pilot-observations.json";
+import prospectiveEvidenceData from "../data/raas-prospective-source-baselines.json";
 import historicalCases from "../data/raas-historical-cases.json";
 import retrospectiveExamples from "../data/raas-retrospective-source-cases.json";
 import retrospectiveTopExamples from "../data/raas-retrospective-top-cases.json";
 import historicalMetricSnapshots from "../data/raas-historical-metric-snapshots.json";
 import {parseRaasPilotFeed,observationsForTrial,observedCalculation,computeRaasScore,type RaasObservation} from "../lib/raas-score-engine";
 import {raasMissingMetricChecklist} from "../lib/raas-missing-metric-checklist";
+import {parseProspectiveSourceBaselines} from "../lib/raas-prospective-source-baselines";
+import {scanRaasCurrentEvidence} from "../lib/raas-current-evidence-scan";
 import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
 import reviewedSnapshots from "../data/raas-reviewed-snapshots.json";
 import approvedCalibrations from "../data/raas-approved-calibrations.json";
@@ -30,6 +33,7 @@ type Coverage=ReturnType<typeof readoutResearchCoverage>;
 const fieldLabels=new Map<string,string>(ALL_RESEARCH_FIELD_DEFINITIONS.map(field=>[field.id,field.label]));
 type Snapshot="ENTRY"|"CURRENT"|"EXIT";
 const pilot=parseRaasPilotFeed(pilotData);
+const prospective=parseProspectiveSourceBaselines(prospectiveEvidenceData);
 const historicalFeed=parseHistoricalFeed(historicalCases);
 const historicalValidation=evaluateHistoricalFeed(historicalFeed);
 const retrospectiveFeed=parseRetrospectiveFeed(retrospectiveExamples);
@@ -121,15 +125,38 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
    trial:{nctId:row.nctId,ticker:row.ticker},ratings:[],gates:[]});
  const missingChecklist=raasMissingMetricChecklist(bucket,record,grading.missing);
  const groupName="raas-group-"+bucket+"-"+row.nctId;
+ const currentEvidence=scanRaasCurrentEvidence(pilot,prospective,{nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug,indication:row.evidence?.indication},bucket,pilot.sourceAsOf);
  return <details className={css.raas} data-raas-phase={bucket} data-raas-trial={row.nctId}>
    <summary className={css.summary} onClick={onResearchRequest}
      aria-label={label+" · "+row.ticker+" "+row.nctId+" · expand or collapse proposed score ingredients"}>
      <span className={css.summaryText}><strong>{label}</strong>
-       <small>— / 100 · Not scored</small></span>
+       <small data-raas-current-scan={row.nctId}>{currentEvidence.mappedMetrics}/30 metric areas with sources</small>
+       <small>{currentEvidence.exploratoryTimingGrade?`Timing pilot ${currentEvidence.exploratoryTimingGrade.score}/100 · not RAAS`:"Overall RAAS —/100 · pending"}</small></span>
      <span className={css.chevron} aria-hidden="true">▸</span>
    </summary>
    <div className={css.panel}>
      <p className={css.disclaimer}><strong>Research specification {RAAS_SPEC_VERSION}.</strong> {RAAS_THRESHOLD_PROFILES.length} metric scoring profiles registered; {calibrationRegistry.entries.length} validated scoring calibrations approved. The dated pilot has {pilot.records.length} identified trials as of {pilot.sourceAsOf}. Exploratory grades are separate and <strong>never</strong> contribute to RAAS. The approved-grade ledger preserves exact-trial ENTRY / CURRENT / EXIT assessments without backfilling future evidence. Missing inputs are not zeros.</p>
+     <details className={css.anchorDetails} data-raas-source-scan={row.nctId}>
+       <summary>Current source-evidence scan · {currentEvidence.mappedMetrics}/30 mapped metric areas · {currentEvidence.missingMetricCount} without sources ▸</summary>
+       <div className={css.historicalStatus}>
+         <p><strong>Current saved evidence, dated {currentEvidence.asOf}:</strong> {currentEvidence.pilotObservations.length} pilot observations and {currentEvidence.prospectiveFacts.length} prospectively recorded issuer facts. Exact ticker + NCT + stage required; a source attached to a metric is a research lead, <strong>not</strong> a completed assessment of that metric.</p>
+         <p><strong>Approved 0–100 RAAS:</strong> — /100. Missing metric ratings remain unknown rather than zero. These {currentEvidence.mappedMetrics} areas have evidence to review but 0 approved metric calibrations are available.</p>
+         {currentEvidence.exploratoryTimingGrade&&<p><strong>Existing exploratory timing-only grade: {currentEvidence.exploratoryTimingGrade.score}/100.</strong> {currentEvidence.exploratoryTimingGrade.explanation} Not an expected return, clinical success probability, or overall RAAS score. <a href={currentEvidence.exploratoryTimingGrade.sourceUrl} target="_blank" rel="noopener noreferrer">Dated source</a>.</p>}
+         <div className={css.evidenceScanGrid}>
+           {currentEvidence.categories.map(g=><div key={g.id}>
+             <strong>{g.name}: {g.mapped}/5 areas</strong>
+             <span>{g.metricIds.length?g.metricIds.join(" · "):"No mapped source evidence yet"}</span>
+           </div>)}
+         </div>
+         {currentEvidence.pilotObservations.map(o=><p key={o.id}>
+           <strong>{o.title} · {o.assessmentDate}</strong> · mapped: {o.metricIds.join(", ")}. <a href={o.sourceUrl} target="_blank" rel="noopener noreferrer">Source</a>.
+         </p>)}
+         {currentEvidence.prospectiveFacts.map(o=><p key={o.id}>
+           <strong>{o.kind.replaceAll("_"," ")} · {o.sourcePublishedAt}</strong> · mapped: {o.metricIds.join(", ")}. {o.valueText} <a href={o.sourceUrl} target="_blank" rel="noopener noreferrer">Source</a>.
+         </p>)}
+         {currentEvidence.mappedMetrics===0&&<p>No metric-specific issuer observations are in the saved RAAS intake for this NCT and ticker. The general trial row may have a dated public release, but that is not equivalent to graded clinical, market or risk evidence.</p>}
+       </div>
+     </details>
      <div className={css.snapshots} aria-label={label+" score snapshots"}>
        {(["ENTRY","CURRENT","EXIT"] as const).map(period=>
          <button key={period} type="button" className={css.snapshotButton} aria-pressed={snapshot===period}
