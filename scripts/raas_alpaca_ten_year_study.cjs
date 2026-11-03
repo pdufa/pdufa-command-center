@@ -54,6 +54,7 @@ function validRecord(r) {
   !day(r.actualFDAActionDate) ||
   !urlOK(r.pdufaSourceUrl) || !urlOK(r.phase3SourceUrl) ||
   !urlOK(r.actualFDAActionSourceUrl) || !Array.isArray(r.historicalMarketCaps) ||
+  r.historicalMarketCaps.length===0 ||
   r.reviewStatus!=="SOURCE_REVIEWED") return false;
  const seen=new Set();
  return r.historicalMarketCaps.every(c=>{
