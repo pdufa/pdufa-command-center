@@ -10,6 +10,7 @@ import {raasFull903Overview} from "../../lib/raas-full-90-3-window-policy";
 import expansionSource from "../../data/raas-2024-2025-expanded-candidate-source-leads.json";
 import expandedCoverShares from "../../data/raas-2024-2025-expanded-candidate-sec-snapshots.json";
 import fdaDecisionAccuracy from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
+import goal2025Research from "../../data/raas-2025-nine-archived-goal-original-source-triage.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
 
@@ -59,6 +60,18 @@ function FDAAccuracySection(){
     <li>No approval of prediction models or the 60 RAAS rating metrics unless separate validation succeeds</li>
    </ul>
    <p>Older FDA-DIRECTIONAL V1.9 has {x.priorBinaryCasesInLatestVersion} unique pregoal binary freeze cases, not fully sourced three-way probability forecasts. Snapshot: {x.snapshotAsOf}.</p>
+  </details>
+  <details id="raas-2025-original-fda-goal-review">
+   <summary>Review {goal2025Research.records.length} archived 2025 FDA goal source leads · {goal2025Research.formalExtensionSourceLeads} formal extension candidates</summary>
+   <p><strong>Research only, not approved FDA prediction labels.</strong> The first announced PDUFA goal must stay separate from any later revised date or eventual FDA approval. Each source still needs independent exact-cycle and evidence-clock adjudication.</p>
+   <ul>{goal2025Research.records.map(r=><li key={r.caseId}>
+    <strong>{r.ticker}</strong> · archive date {r.archivedSuggestedGoalDate}; first-cycle goal {r.firstCycleGoalDate}
+    {r.revision?<>; formally revised to <strong>{r.revision.newDate}</strong> (disclosed {r.revision.publicDate})</>:null}
+    ; classification <em>{r.observedOriginalGoalResearchLabel.replaceAll("_"," ").toLowerCase()}</em>
+    {r.goalSourceUrl?<> · <a href={r.goalSourceUrl} target="_blank" rel="noopener noreferrer">Dated goal source</a></>:<> · first contemporaneous goal source unresolved</>}
+    {r.revision?<> · <a href={r.revision.url} target="_blank" rel="noopener noreferrer">SEC formal extension source</a></>:null}
+   </li>)}</ul>
+   <p className={css.notice}>These source leads do not change the independent forecasting denominator, the verified three-class accuracy, or RAAS metric approvals.</p>
   </details>
   <p><a href={x.workflowUrl} target="_blank" rel="noopener noreferrer">Open daily FDA accuracy audit and downloadable report</a>. The site displays a dated snapshot; the GitHub Action's latest report is the refreshed audit.</p>
  </section>;
