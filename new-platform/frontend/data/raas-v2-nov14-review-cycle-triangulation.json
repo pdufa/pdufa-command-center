@@ -36,7 +36,18 @@
       "independentlyVerifiedThreeWayForecast": false,
       "approvedPipelineMarketCapAndPhase3Qualification": false,
       "approvedRAASAccuracyMetric": false,
-      "notes": "FDA approval package verifies parent NDA 219083 original approval on Dec 19 2025; not the November 2026 MAPLE-HCM supplement identity or result. NCT registry verifies Phase 3 MAPLE-HCM; issuer reports Nov 14 supplemental goal. No current sNDA supplement sequence or independent original-goal decision evidence verified."
+      "notes": "FDA letter NDA 219083/S-001 dated February 5, 2026 approves a January 7 REMS-only modification, NOT MAPLE-HCM. Cytokinetics separately publicly reported MAPLE-HCM sNDA filing on Feb 24 and FDA acceptance with Nov 14 goal on May 5. Trial NCT confirms Phase 3, but current MAPLE-HCM supplemental sequence is STILL unknown; S-001 cannot be treated as the Nov 14 decision.",
+      "fdaPreviouslyApprovedUnrelatedSupplementNumber": "S-001",
+      "fdaPreviouslyApprovedUnrelatedSupplementApprovalDate": "2026-02-05",
+      "fdaPreviouslyApprovedUnrelatedSupplementPurpose": "REMS_MODIFICATION_NOT_MAPLE_HCM",
+      "fdaPreviouslyApprovedUnrelatedSupplementSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219083Orig1s001ltr.pdf",
+      "fdaPreviouslyApprovedS001IsNov14PendingMapleHcmSupplement": false,
+      "fdaPreviouslyApprovedS001EstablishesNov14FDAOutcome": false,
+      "mapleHcmSubmissionPubliclyDisclosedAt": "2026-02-24",
+      "mapleHcmSubmissionPublicSourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526067012/cytk-ex99_1.htm",
+      "mapleHcmFDAAcceptanceAndGoalFirstLocatedAt": "2026-05-05",
+      "mapleHcmFDAAcceptanceAndGoalSourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526206360/cytk-ex99_1.htm",
+      "specificPendingMAPLESupplementNumberIndependentlyVerified": false
     },
     {
       "ticker": "SMMT",
@@ -67,7 +78,16 @@
       "independentlyVerifiedThreeWayForecast": false,
       "approvedPipelineMarketCapAndPhase3Qualification": false,
       "approvedRAASAccuracyMetric": false,
-      "notes": "Issuer SEC exhibit reported Jan 29 BLA acceptance and Nov 14 goal; NCT registry independently verifies HARMONi Phase 3 study and Summit sponsor. FDA numbered BLA, any later extensions, original-goal review-cycle certification and decision are not independently verified."
+      "notes": "Independent trial registry confirms HARMONi Phase 3. Company's Q2 2026 SEC 10-Q says FDA emphasized statistically significant overall survival benefit is necessary to support approval and PFS alone may be insufficient. Primary OS p=0.057 was not statistically significant at the primary analysis; subsequent July/September follow-up data are publicly disclosed but do not adjudicate FDA action, trigger an automatic CRL forecast, or certify the BLA number.",
+      "fdaOSStatisticalSignificanceRequirementReportedBySponsor": true,
+      "fdaOSStatisticalSignificanceRequirementPublicSourceUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000068/smmt-20260630.htm",
+      "pivotalPrimaryOverallSurvivalStatisticallySignificantAtPrimaryAnalysis": false,
+      "pivotalPrimaryOverallSurvivalReportedPValue": 0.057,
+      "pivotalPrimaryOverallSurvivalSourceUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000058/a2026_prx0722xharmonidat.htm",
+      "laterOverallSurvivalFollowUpSourceDate": "2026-09-15",
+      "laterOverallSurvivalFollowUpSourceUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000081/a2026_prx0915xharmoniltf.htm",
+      "laterOverallSurvivalFollowUpEstablishesFDAApprovalOrExtension": false,
+      "fdaOSRequirementAndStudyDataAutomaticallyEstablishCRL": false
     }
   ],
   "disclosures": [
@@ -75,6 +95,8 @@
     "ClinicalTrials.gov validates study phase and sponsor, but NOT an FDA application number, review-cycle target or actual regulatory action.",
     "CYTK FDA parent NDA 219083 was approved in 2025; it does not identify the pending November 2026 sNDA supplement number.",
     "Both cases still need numbered current application or supplement identity, issuer-family/cohort eligibility, verified goal revision history, prospective signed immutable 3-class probabilities, and FDA-independent outcome adjudication.",
-    "Phase 3 evidence alone does not verify the $300M-$10B post-Phase-3 Pipeline market capitalization filter or all 60 RAAS calibrations."
+    "Phase 3 evidence alone does not verify the $300M-$10B post-Phase-3 Pipeline market capitalization filter or all 60 RAAS calibrations.",
+    "FDA approved NDA 219083/S-001 on February 5, 2026 for REMS changes; this is an unrelated supplement, and its approval must never be counted as the November 14 MAPLE-HCM FDA action. FDA supplemental sequence for MAPLE remains unverified.",
+    "Summit Q2 2026 SEC 10-Q describes FDA's overall-survival evidentiary requirement, while primary HARMONi OS p=0.057 did not meet statistical significance. This is contemporaneous regulatory risk evidence; no prospective PASS/CRL/EXTENSION probability or FDA outcome is inferred."
   ]
 }
