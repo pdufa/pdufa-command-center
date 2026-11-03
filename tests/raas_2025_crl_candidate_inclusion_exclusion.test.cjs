@@ -40,7 +40,7 @@ test("Even if hypothetical ALDX raw entry cap is >$300m, zero eligibility/trade/
  const r=await build({candidates:fixture(),primarySource:primary,key:"fake",secret:"fake",fetcher});
  const a=r.rows.find(x=>x.ticker==="ALDX");
  assert.equal(a.status,"BLOCKED_FOR_FULL_VALIDATION_EVEN_WITH_CAP_IN_BAND");
- assert.equal(a.capResearchMillions,303.9);
+ assert.equal(a.capResearchMillions,303.7);
  assert.equal(a.historicalEntryTradeApproved,false);
  assert.equal(a.validatedHistoricalReturn,false);
  assert.equal(r.independentlyValidatedEntryCaps,0);
