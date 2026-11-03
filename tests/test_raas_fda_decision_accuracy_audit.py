@@ -124,7 +124,7 @@ class ThreeWayTests(unittest.TestCase):
 
     def test_no_covered_forecasts_means_not_zero_accuracy(self):
         m=audit.score_three_way([],7)
-        self.assertEqual(m["covered"],0)
+        self.assertEqual(m["countScored"],0)
         self.assertEqual(m["abstentionsAndUnverified"],7)
         self.assertIsNone(m["accuracy"])
         self.assertIsNone(m["logLoss"])
