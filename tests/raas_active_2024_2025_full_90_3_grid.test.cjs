@@ -81,8 +81,7 @@ test("PDUFA goal revision and unpublished Phase 3 prevent after-the-fact window 
  assert.equal(v[1].version,"FINAL_AS_PUBLISHED");
  const before=assess(e,v[1],{entryLeadDays:90,exitLeadDays:3},[],
   [earlierShare("SLNO"),share("SLNO")]);
- assert.equal(before.reason,"GOAL_DATE_NOT_PUBLIC_BY_PLANNED_ENTRY"===before.reason?
-  "GOAL_DATE_NOT_PUBLIC_BY_PLANNED_ENTRY":before.reason);
+ assert.equal(before.reason,"MISSING_ALPACA_RAW_AND_ADJUSTED_BARS");
  const copied={...v[0],sourceUrl:"https://source.example.com/known-original"};
  const revisedWindow=assess(e,copied,{entryLeadDays:70,exitLeadDays:3},[],
   [earlierShare("SLNO"),share("SLNO")]);
