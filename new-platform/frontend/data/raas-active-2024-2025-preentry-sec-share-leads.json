@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated.",
+  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -87,6 +87,27 @@
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024022056/gern-20231231.htm",
       "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024022056/0000950170-24-022056-index-headers.html",
       "originalSourceDescription": "Geron FY2023 10-K accepted Feb 28 2024 16:05:44 ET, original cover shows 546,059,309 common shares as of Feb 23; conservative Feb 29 first use. Q1 2024 common shares expanded after equity financing; no daily continuity presumed."
+    },
+    {
+      "caseId": "SLNO|VYKAT_XR_DCCR|NDA216665|2025",
+      "ticker": "SLNO",
+      "cik": "0001484565",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 43117432,
+      "sharesMeasurementDate": "2024-10-31",
+      "filedDate": "2024-11-06",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2024-11-07",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000095017024122276/slno-20240930.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000095017024122276/0000950170-24-122276-index.htm",
+      "originalSourceDescription": "2024 Q3 Form 10-Q filed November 6 at 16:06:37 ET; cover 43,117,432 common shares outstanding as of October 31. First conservatively usable November 7 2024, before November 26 announced goal extension. Later 2025 10-K cover 45,857,291; do not imply constant 2024-2025 daily share counts."
     }
   ]
 }
