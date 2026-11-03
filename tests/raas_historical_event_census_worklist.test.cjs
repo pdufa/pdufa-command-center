@@ -29,7 +29,7 @@ const fda={scope:"FDA_DRUGS_AT_FDA_2016_2019_APPROVAL_DISCOVERY_NOT_PDUFA_CENSUS
   fdaRecordUrl:"https://api.fda.gov/drug/drugsfda.json?search=NDA123456"}]};
 test("first-public source findings validate without promoting historical market-cap or scores",()=>{
  const a=m.validateSourceLeads(primary);
- assert.equal(a.length,5);
+ assert.equal(a.length,6);
  assert.ok(a.every(x=>x.historicalCapitalizationAtEntryVerified===false));
  assert.ok(a.every(x=>x.firstLocatedNotFirstEverPublicDisclosure===true));
  assert.ok(a.every(x=>x.nctIds.length>=1));
@@ -46,7 +46,7 @@ test("source-based event date mismatch is exposed for DBVT, without changing rea
  assert.equal(crl.preDecisionInformationEligible,false);
  assert.equal(crl.eligibleForCalibration,false);
  assert.equal(r.coverage[2018].fdaArchivedCrlLeads,1);
- assert.equal(r.summary.primaryTargetSourceLeads,5);
+ assert.equal(r.summary.primaryTargetSourceLeads,6);
  const dbvt=r.archiveTargetMismatches.find(x=>x.ticker==="DBVT");
  assert.ok(dbvt);
  assert.equal(dbvt.previouslyLabeledDate,"2020-08-03");
@@ -113,4 +113,32 @@ test("incomplete CRL archive does not create source-complete years or ex ante ra
   approvalDiscovery:fda,issuerCrosswalk,crlDiscovery:{...crlDiscovery,cases:[
    {...crlDiscovery.cases[0],preDecisionInformationEligible:true}]}}),
   /RAAS_FDA_CRL_ARCHIVE_INVALID/);
+});
+
+test("ICPT 2020 extension, late-public CRL and 2023 review are distinct identities",()=>{
+ const icpt=primary.records.find(x=>x.caseId==="ICPT|OCA_NASH|NDA212833|2020");
+ assert.ok(icpt);
+ assert.equal(icpt.application,"NDA 212833");
+ assert.equal(icpt.initialPdufaTargetDate,"2020-03-26");
+ assert.equal(icpt.revisedTargetFDACommunicationDate,"2020-01-15");
+ assert.equal(icpt.targetAnnouncementDate,"2020-01-17");
+ assert.equal(icpt.pdufaTargetDate,"2020-06-26");
+ assert.equal(icpt.phase3ReadoutDate,"2019-02-19");
+ assert.deepEqual(icpt.nctIds,["NCT02548351"]);
+ assert.equal(icpt.actualFDAActionDate,"2020-06-26");
+ assert.equal(icpt.firstPublicFDAActionAnnouncementDate,"2020-06-29");
+ assert.equal(icpt.retrospectiveCRLActionDateSourcePublishedAfterEvent,true);
+ assert.equal(icpt.historicalCapitalizationAtEntryVerified,false);
+ const r=m.consolidate({archiveCsv:archive,primaryLeads:primary,
+  approvalDiscovery:fda,issuerCrosswalk,crlDiscovery});
+ const original2023=r.candidates.find(x=>x.source==="PRIOR_RETROSPECTIVE_DATE"&&
+  x.ticker==="ICPT"&&x.archiveDate==="2023-06-22");
+ assert.ok(original2023);
+ assert.equal(original2023.primarySourceCaseId,null);
+ const source2020=r.candidates.find(x=>x.key===icpt.caseId);
+ assert.ok(source2020);
+ assert.equal(source2020.source,"LOCATED_PRIMARY_SOURCES_NO_ARCHIVE_JOIN");
+ assert.equal(source2020.actualFDAActionDate,"2020-06-26");
+ assert.equal(source2020.eligibleForCalibration,false);
+ assert.equal(r.summary.fullCensusYears,0);
 });
