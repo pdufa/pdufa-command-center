@@ -34,7 +34,8 @@ export default function RaasLiveRegistryEvidence({nctId,stage}:{nctId:string;sta
    }})
    .finally(()=>{if(!ctl.signal.aborted)setBusy(false);});
  };
- return <section data-raas-live-registry={nctId} style={{
+ useEffect(()=>{scan();},[nctId,stage]);
+  return <section data-raas-live-registry={nctId} style={{
   border:"1px solid #b5cfbd",borderRadius:8,padding:10,background:"#fff",
   display:"flex",flexDirection:"column",gap:8,fontSize:12}}>
   <strong>Scan this trial's live ClinicalTrials.gov evidence</strong>
@@ -44,7 +45,7 @@ export default function RaasLiveRegistryEvidence({nctId,stage}:{nctId:string;sta
   <button type="button" disabled={busy} onClick={scan}
     style={{padding:10,minHeight:44,alignSelf:"flex-start",fontWeight:750,
       border:"1px solid #52866a",borderRadius:6,color:"#17462d",background:"#e9f5ed"}}>
-   {busy?"Checking primary registry…":audit?"Refresh exact-NCT registry scan":"Scan registry evidence now"}
+   {busy?"Checking primary registry…":audit?"Refresh exact-NCT registry scan":"Run registry scan again"}
   </button>
   {error&&<p role="alert" style={{margin:0}}>{error}</p>}
   {audit&&result&&<div data-raas-live-result={audit.status} style={{display:"flex",flexDirection:"column",gap:8}}>
