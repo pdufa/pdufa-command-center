@@ -102,14 +102,14 @@ test("A missing T79/14 price window is represented as blocked, never fabricated 
  const out=m.build(x,events);
  assert.equal(out.blockedCases,1);
  assert.equal(out.rows.find(x=>x.ticker==="ARQT").grossReturnPct,null);
- assert.equal(out.allProvisional.cases,6);
+ assert.equal(out.allProvisional.cases,7);
 });
 test("CSV output quotes source text and escapes formulas before spreadsheet opening",()=>{
  const result=m.build(fixture(),events);result.rows[0].ticker='=HYPERLINK("https://evil.test","x")';
  const csv=m.csv(result);
  assert.ok(csv.includes("'=HYPERLINK"));
  assert.ok(!csv.includes('"=HYPERLINK'));
- assert.equal(csv.trim().split("\n").length,8);
+ assert.equal(csv.trim().split("\n").length,9);
 });
 
 test("A CRL must stay a retrospectively known outcome, not be transformed into approval",()=>{
