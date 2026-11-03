@@ -26,8 +26,10 @@ function checkedLead(share,caseEvent){
   !url(share.sourceUrl)||!url(share.filingIndexUrl)||
   share.securityCurrency!=="USD"||share.rawCloseCurrency!=="USD"||
   share.venue!=="NASDAQ"||
-  caseEvent.actualFDAActionDate>=caseEvent.pdufaTargetDate &&
-  !date(caseEvent.actualFDAActionDate))
+  !date(caseEvent.targetAnnouncementDate)||!date(caseEvent.phase3ReadoutDate)||
+  !date(caseEvent.actualFDAActionDate)||
+  caseEvent.targetAnnouncementDate>=caseEvent.pdufaTargetDate||
+  caseEvent.phase3ReadoutDate>=caseEvent.pdufaTargetDate)
   throw Error("RAAS_CAP_SOURCE_IDENTITY_OR_ASOF_INVALID");
  return share;
 }
