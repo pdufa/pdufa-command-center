@@ -29,7 +29,7 @@ const fda={scope:"FDA_DRUGS_AT_FDA_2016_2019_APPROVAL_DISCOVERY_NOT_PDUFA_CENSUS
   fdaRecordUrl:"https://api.fda.gov/drug/drugsfda.json?search=NDA123456"}]};
 test("first-public source findings validate without promoting historical market-cap or scores",()=>{
  const a=m.validateSourceLeads(primary);
- assert.equal(a.length,3);
+ assert.equal(a.length,5);
  assert.ok(a.every(x=>x.historicalCapitalizationAtEntryVerified===false));
  assert.ok(a.every(x=>x.firstLocatedNotFirstEverPublicDisclosure===true));
  assert.ok(a.every(x=>x.nctIds.length>=1));
@@ -46,7 +46,7 @@ test("source-based event date mismatch is exposed for DBVT, without changing rea
  assert.equal(crl.preDecisionInformationEligible,false);
  assert.equal(crl.eligibleForCalibration,false);
  assert.equal(r.coverage[2018].fdaArchivedCrlLeads,1);
- assert.equal(r.summary.primaryTargetSourceLeads,3);
+ assert.equal(r.summary.primaryTargetSourceLeads,5);
  const dbvt=r.archiveTargetMismatches.find(x=>x.ticker==="DBVT");
  assert.ok(dbvt);
  assert.equal(dbvt.previouslyLabeledDate,"2020-08-03");
@@ -62,6 +62,15 @@ test("source-based event date mismatch is exposed for DBVT, without changing rea
  assert.equal(heron.actualFDAActionDate,"2020-06-26");
  assert.equal(heron.firstLocatedTargetDisclosureDate,"2020-02-19");
  assert.equal(heron.nctIds.length,2);
+ const espr=r.candidates.filter(x=>x.primarySourceCaseId?.startsWith("ESPR|"));
+ assert.equal(espr.length,2);
+ assert.deepEqual(espr.map(x=>x.pdufaTargetDate).sort(),
+  ["2020-02-21","2020-02-26"]);
+ assert.deepEqual(espr.map(x=>x.actualFDAActionDate).sort(),
+  ["2020-02-21","2020-02-26"]);
+ assert.ok(espr.every(x=>x.eligibleForCalibration===false));
+ assert.equal(new Set(espr.map(x=>x.ticker)).size,1);
+
  const crlLink=r.candidates.find(x=>x.key.startsWith("NDA 211988|2020-06-26|"));
  assert.deepEqual(crlLink.relatedPrimarySourceCaseIds,["HRTX|HTX011|NDA211988|2020"]);
  assert.deepEqual(crlLink.sameApplicationAndActionDateLeads,["HRTX|HTX011|NDA211988|2020"]);
