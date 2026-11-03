@@ -134,7 +134,10 @@ async function execute({archiveCsv,registryCsv,request=fetch,maxIssuers=150,paus
  });
  const found=cases.filter(x=>x.secCoverShareFactsFound>0).length;
  const asof=cases.reduce((n,c)=>n+Object.values(c.observations).filter(x=>x.shareEvidence?.status==="SEC_PUBLIC_COVER_SHARES_RESEARCH_ONLY").length,0);
- return {scope:"RAAS_SEC_POINT_IN_TIME_SHARE_EVIDENCE_RESEARCH_ONLY",status:"SEC_SHARE_LEADS_COLLECTED_NOT_MARKET_CAP_AUDITED",
+ return {scope:"RAAS_SEC_POINT_IN_TIME_SHARE_EVIDENCE_RESEARCH_ONLY",
+  status:accessDeniedCircuitOpen?"BLOCKED_SEC_API_ACCESS_DENIED_403":
+   found>0?"SEC_SHARE_LEADS_COLLECTED_NOT_MARKET_CAP_AUDITED":
+   "NO_USABLE_SEC_SHARE_FACTS",
   archivedEvents:discovery.length,archiveYears:[...new Set(discovery.map(x=>x.pdufaDate.slice(0,4)))].sort(),
   uniqueCurrentRegistryTickers:symbols.length,
   issuersQueried:requests.filter(x=>x.status!=="NOT_ATTEMPTED_SOURCE_ACCESS_DENIED").length,
