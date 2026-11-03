@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_2024_2025_EXPANDED_CANDIDATE_SEC_COVER_SNAPSHOTS_RESEARCH_ONLY",
+  "sourceAsOf": "2026-11-03",
+  "allResearchOnly": true,
+  "independentlyValidatedDailyShareCounts": 0,
+  "independentlyValidatedEntryMarketCaps": 0,
+  "approvedStudyCases": 0,
+  "warnings": [
+    "All SEC filings below are contemporaneous published cover share snapshots, NOT continuous daily shares or a verified full market cap.",
+    "The first safe use date is the trading day after filing even if intraday filing time is before market close.",
+    "The research study must only use the most recently published share count by proposed entry date; never use future filings.",
+    "Full adjusted price vendor parity, split/ADR, share class, dilution, and complete FDA event census remain unvalidated."
+  ],
+  "records": [
+    {
+      "caseId": "TVTX|FILSPARI_SPARSENTAN_IGAN|NDA216403_SCONVERSION|2024",
+      "ticker": "TVTX",
+      "cik": "0001438533",
+      "venue": "NASDAQ",
+      "shareClass": "Common Stock, par value $0.0001 per share",
+      "rawCloseCurrency": "USD",
+      "snapshots": [
+        {
+          "sharesOutstanding": 76129018,
+          "sharesMeasurementDate": "2024-05-02",
+          "filedDate": "2024-05-06",
+          "acceptedTimeET": "16:46:22",
+          "firstConservativeEntryDate": "2024-05-07",
+          "periodOfReport": "2024-03-31",
+          "form": "10-Q",
+          "accession": "0001438533-24-000020",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1438533/000143853324000020/tvtx-20240331.htm",
+          "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1438533/0001438533-24-000020-index.htm"
+        },
+        {
+          "sharesOutstanding": 76491485,
+          "sharesMeasurementDate": "2024-07-29",
+          "filedDate": "2024-08-01",
+          "acceptedTimeET": null,
+          "firstConservativeEntryDate": "2024-08-02",
+          "periodOfReport": "2024-06-30",
+          "form": "10-Q",
+          "accession": "0001438533-24-000031",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1438533/000143853324000031/tvtx-20240630.htm",
+          "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1438533/0001438533-24-000031-index.html"
+        }
+      ]
+    },
+    {
+      "caseId": "URGN|ZUSDURI_UGN102_LGIRNMIBC|NDA215793|2025",
+      "ticker": "URGN",
+      "cik": "0001668243",
+      "venue": "NASDAQ",
+      "shareClass": "Ordinary Shares, par value NIS 0.01 per share",
+      "rawCloseCurrency": "USD",
+      "snapshots": [
+        {
+          "sharesOutstanding": 46094352,
+          "sharesMeasurementDate": "2025-03-03",
+          "filedDate": "2025-03-10",
+          "acceptedTimeET": "16:32:40",
+          "firstConservativeEntryDate": "2025-03-11",
+          "periodOfReport": "2024-12-31",
+          "form": "10-K",
+          "accession": "0001437749-25-006842",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1668243/000143774925006842/urgn20241231_10k.htm",
+          "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1668243/0001437749-25-006842-index.html"
+        },
+        {
+          "sharesOutstanding": 46107451,
+          "sharesMeasurementDate": "2025-05-05",
+          "filedDate": "2025-05-12",
+          "acceptedTimeET": "08:06:37",
+          "firstConservativeEntryDate": "2025-05-13",
+          "periodOfReport": "2025-03-31",
+          "form": "10-Q",
+          "accession": "0001437749-25-015956",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1668243/000143774925015956/urgn20250331_10q.htm",
+          "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1668243/0001437749-25-015956-index.htm"
+        }
+      ]
+    }
+  ]
+}
