@@ -97,7 +97,9 @@ test("future disclosure, early FDA action and missing historical share source ar
  const future=m.evaluate(i.event,bars,{...earlier,firstConservativeEntryDate:"2020-08-01"},i.share,79,14);
  assert.equal(future.reason,"NO_DATED_SHARE_SOURCE_KNOWN_AT_ENTRY");
  assert.equal(future.provisionalNetReturnPct,null);
- const early=m.evaluate(i.event,bars,earlier,i.share,14,3);
+ const k=fixture("KALA");
+ const kBars=m.validateBars(k.research,k.event,k.share);
+ const early=m.evaluate(k.event,kBars,null,k.share,14,3);
  assert.equal(early.reason,"EARLY_FDA_ACTION_CENSORS_EXIT");
  assert.equal(early.provisionalNetReturnPct,null);
 });
