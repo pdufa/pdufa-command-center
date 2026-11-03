@@ -168,11 +168,33 @@ def parse_prospective(protocol, roster, forecasts, outcomes):
         gate(day(cases[k]["goalFirstPublicAtDate"]) < happened <= goal
              and disclosed.date() >= happened,
              "OUTCOME_DISPOSITION_CHRONOLOGY_INVALID")
-        gate(FDA_LINK.fullmatch(o.get("officialFdaSourceUrl", "")) and
-             type(o.get("independentFDAReviewerVerified")) is bool and
+        gate(type(o.get("independentFDAReviewerVerified")) is bool and
              (actual == "EXTENSION") ==
              (o.get("formalFDAExtensionDocumented") is True),
-             "EXTENSION_OR_FDA_PRIMARY_SOURCE_MISSING")
+             "EXTENSION_OR_INDEPENDENT_REVIEW_MISSING")
+        if actual == "EXTENSION":
+            # A formal FDA goal-extension can first become public in an
+            # issuer's contemporaneous SEC filing. It need not have a public
+            # FDA action letter (unlike a PASS or CRL), but requires exact
+            # cycle corroboration and an independently reviewed original.
+            source = o.get("formalExtensionSourceUrl")
+            source_public = utc(o.get("formalExtensionFirstPublicAtUTC"))
+            gate(isinstance(source, str) and
+                 (source.startswith("https://www.sec.gov/Archives/edgar/data/")
+                  or FDA_LINK.fullmatch(source)) and
+                 happened <= source_public.date() <= goal and
+                 source_public <= disclosed and
+                 isinstance(o.get("formalExtensionCycleCitation"), str)
+                 and bool(o["formalExtensionCycleCitation"].strip()),
+                 "EXTENSION_CONTEMPORANEOUS_PRIMARY_SOURCE_MISSING")
+            if o.get("officialFdaSourceUrl") is not None:
+                gate(FDA_LINK.fullmatch(o["officialFdaSourceUrl"]),
+                     "EXTENSION_FDA_CORROBORATION_SOURCE_INVALID")
+        else:
+            gate(FDA_LINK.fullmatch(o.get("officialFdaSourceUrl", "")),
+                 "PASS_CRL_FDA_PRIMARY_SOURCE_MISSING")
+            gate(o.get("formalExtensionSourceUrl") is None,
+                 "NON_EXTENSION_HAS_EXTENSION_SOURCE")
         if k in preds:
             gate(utc(preds[k]["frozenAtUTC"]).date() < happened,
                  "PREDICTION_AFTER_FDA_OUTCOME")
@@ -329,6 +351,40 @@ def legacy_freeze_inventory(rows):
     }
 
 
+def legacy_future_source_queue(rows, asof):
+    """Future-dated directional leads, not original-goal certified FDA forecasts."""
+    day_of_audit = utc(asof).date()
+    leads = {}
+    for r in rows:
+        if r.get("model_version") != "FDA-DIRECTIONAL-100-V1.9":
+            continue
+        goal = day(r["pdufa_date"])
+        frozen = utc(r["frozen_at"])
+        key = r.get("fda_regulatory_case_id", "")
+        if (goal <= day_of_audit or frozen.date() >= goal or
+            r.get("prospective_eligible") != "YES" or
+            r.get("count_in_coverage") != "YES"):
+            continue
+        identity(key)
+        gate(key not in leads, "DUPLICATE_FUTURE_REVIEW_SOURCE_LEAD")
+        leads[key] = {
+            "researchCaseKey":key,
+            "ticker":r["ticker"],
+            "drug":r["drug"],
+            "legacyReportedGoalDateNotVerified":r["pdufa_date"],
+            "legacyBinaryFreezeUTC":r["frozen_at"],
+            "legacyDirectionNotThreeWay":r["forced_direction"],
+            "status":"SOURCE_QUEUE_ONLY_NOT_THREE_WAY_FORECAST",
+            "originalGoalConfirmed":False,
+            "applicationCycleVerified":False,
+            "predecisionThreeWayProbabilitiesFrozen":False,
+            "independentlyVerifiedFDAOutcome":False,
+            "missingEvidence":"original issuer/FDA PDUFA goal version, exact NDA/BLA review cycle, independent issuer-family assignment, contemporaneous 3-way probability receipt, independent action or formal extension",
+        }
+    return sorted(leads.values(), key=lambda x:(
+        x["legacyReportedGoalDateNotVerified"],x["researchCaseKey"]))
+
+
 def prospective_audit(protocol, roster, forecasts, outcomes, asof):
     cases,preds,labels=parse_prospective(protocol,roster,forecasts,outcomes)
     cutoff=utc(asof)
@@ -405,7 +461,9 @@ def prospective_audit(protocol, roster, forecasts, outcomes, asof):
 def execute(folder=DATA, asof="2026-11-03T23:59:59Z"):
     folder=Path(folder)
     historical,queue=legacy_audit(csv_rows(folder/"prediction_engine_history.csv"))
-    frozen=legacy_freeze_inventory(csv_rows(folder/"fda_directional_100pct_freezes.csv"))
+    old_rows=csv_rows(folder/"fda_directional_100pct_freezes.csv")
+    frozen=legacy_freeze_inventory(old_rows)
+    future_leads=legacy_future_source_queue(old_rows,asof)
     prospective=prospective_audit(
         load_json(folder/"raas_fda_three_way_protocol.json"),
         load_json(folder/"raas_fda_three_way_eligible_cases.json"),
@@ -416,6 +474,8 @@ def execute(folder=DATA, asof="2026-11-03T23:59:59Z"):
         "asOfUTC":asof,"status":"BENCHMARK_INSTALLED_NO_VALIDATED_THREE_WAY_ACCURACY",
         "historicalBinaryRetrospective":historical,
         "olderFrozenBinaryDirections":frozen,
+        "legacyFutureSourceQueue":future_leads,
+        "legacyFutureSourceQueueCount":len(future_leads),
         "threeWayProspective":prospective,
         "historicalReviewQueue":queue,
         "approvedBestPredictiveModel":None,
@@ -425,7 +485,7 @@ def execute(folder=DATA, asof="2026-11-03T23:59:59Z"):
     }
 
 
-def export(report, report_path, queue_path):
+def export(report, report_path, queue_path, future_queue_path=None):
     json_file=Path(report_path)
     json_file.parent.mkdir(parents=True,exist_ok=True)
     json_file.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n",encoding="utf-8")
@@ -437,12 +497,26 @@ def export(report, report_path, queue_path):
         w.writeheader()
         w.writerows(report["historicalReviewQueue"])
 
+    if future_queue_path is not None:
+        dest=Path(future_queue_path)
+        dest.parent.mkdir(parents=True,exist_ok=True)
+        cols=["researchCaseKey","ticker","drug","legacyReportedGoalDateNotVerified",
+              "legacyBinaryFreezeUTC","legacyDirectionNotThreeWay","status",
+              "originalGoalConfirmed","applicationCycleVerified",
+              "predecisionThreeWayProbabilitiesFrozen",
+              "independentlyVerifiedFDAOutcome","missingEvidence"]
+        with dest.open("w",newline="",encoding="utf-8") as handle:
+            w=csv.DictWriter(handle,fieldnames=cols)
+            w.writeheader()
+            w.writerows(report["legacyFutureSourceQueue"])
+
 
 def main():
     asof=os.getenv("RAAS_FDA_EVALUATION_AS_OF_UTC","2026-11-03T23:59:59Z")
     report=execute(DATA,asof)
     export(report,os.getenv("RAAS_FDA_ACCURACY_JSON",str(ROOT/"raas-fda-decision-accuracy.json")),
-           os.getenv("RAAS_FDA_ACCURACY_QUEUE_CSV",str(ROOT/"raas-fda-historical-source-queue.csv")))
+           os.getenv("RAAS_FDA_ACCURACY_QUEUE_CSV",str(ROOT/"raas-fda-historical-source-queue.csv")),
+           os.getenv("RAAS_FDA_LEGACY_FUTURE_QUEUE_CSV",str(ROOT/"raas-fda-upcoming-freeze-source-review.csv")))
     brief={
         "status":report["status"],
         "legacyCohortCases":report["historicalBinaryRetrospective"]["cases"],
@@ -450,6 +524,7 @@ def main():
         "alwaysApproveBaselinePct":report["historicalBinaryRetrospective"]["alwaysApproveAccuracyPct"],
         "existingBinaryFreezeCasesV1_9":report["olderFrozenBinaryDirections"]["latestV1_9ProspectivelyEligibleUniqueCases"],
         "frozenThreeWayPredictions":report["threeWayProspective"]["frozenThreeClassPredictions"],
+        "legacyFutureSourceLeadsNotValidated":report["legacyFutureSourceQueueCount"],
         "FDAThreeWayValidatedAccuracyPct":None,"modelApproved":False}
     print(json.dumps(brief,sort_keys=True))
     if os.getenv("GITHUB_STEP_SUMMARY"):

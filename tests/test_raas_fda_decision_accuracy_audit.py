@@ -37,6 +37,14 @@ def fixture():
             "officialFdaSourceUrl":"https://www.fda.gov/drugs/decision-"+str(i),
             "independentFDAReviewerVerified":True,
             "formalFDAExtensionDocumented":actual=="EXTENSION",
+            "formalExtensionSourceUrl":(
+                "https://www.sec.gov/Archives/edgar/data/12345/00000001/example-8k.htm"
+                if actual=="EXTENSION" else None),
+            "formalExtensionFirstPublicAtUTC":(
+                "2027-03-02T00:00:00Z" if actual=="EXTENSION" else None),
+            "formalExtensionCycleCitation":(
+                "Exact NDA review-cycle and revised PDUFA goal listed in FDA correspondence"
+                if actual=="EXTENSION" else None),
         })
         state="ABSTAIN" if i==3 else "PREDICTED"
         prob={c:0.1 for c in audit.CLASSES}
@@ -90,6 +98,26 @@ class ThreeWayTests(unittest.TestCase):
         self.assertEqual(old["latestV1_9ProspectivelyEligibleUniqueCases"],40)
         self.assertEqual(old["certifiedThreeClassProbabilities"],0)
         self.assertEqual(old["portedToThreeWayLedger"],0)
+
+    def test_future_legacy_casedated_queue_has_no_promoted_three_way_forecasts(self):
+        report=audit.execute()
+        leads=report["legacyFutureSourceQueue"]
+        self.assertEqual(report["legacyFutureSourceQueueCount"],36)
+        self.assertTrue(all(r["status"]=="SOURCE_QUEUE_ONLY_NOT_THREE_WAY_FORECAST"
+                            for r in leads))
+        self.assertTrue(all(r["originalGoalConfirmed"] is False and
+                            r["predecisionThreeWayProbabilitiesFrozen"] is False
+                            for r in leads))
+        self.assertTrue(all(r["legacyReportedGoalDateNotVerified"]>"2026-11-03"
+                            for r in leads))
+        self.assertEqual(report["threeWayProspective"]["frozenThreeClassPredictions"],0)
+
+    def test_legacy_queue_expires_old_dates_without_invented_actual_outcomes(self):
+        rows=audit.csv_rows(audit.DATA/"fda_directional_100pct_freezes.csv")
+        future=audit.legacy_future_source_queue(rows,"2026-11-03T23:59:59Z")
+        later=audit.legacy_future_source_queue(rows,"2028-01-01T00:00:00Z")
+        self.assertEqual(len(future),36)
+        self.assertEqual(len(later),0)
 
     def test_three_class_metrics_correct_without_claim_of_independent_validation(self):
         inp=fixture()
@@ -179,11 +207,33 @@ class ThreeWayTests(unittest.TestCase):
         p,r,f,o=fixture()
         g=deepcopy(o)
         g["records"][2]["formalFDAExtensionDocumented"]=False
-        with self.assertRaisesRegex(ValueError,"EXTENSION_OR_FDA_PRIMARY_SOURCE_MISSING"):
+        with self.assertRaisesRegex(ValueError,"EXTENSION_OR_INDEPENDENT_REVIEW_MISSING"):
             audit.parse_prospective(p,r,f,g)
         g=deepcopy(o)
         g["records"][2]["officialFdaSourceUrl"]="https://www.sec.gov/filing"
-        with self.assertRaisesRegex(ValueError,"EXTENSION_OR_FDA_PRIMARY_SOURCE_MISSING"):
+        with self.assertRaisesRegex(ValueError,"EXTENSION_FDA_CORROBORATION_SOURCE_INVALID"):
+            audit.parse_prospective(p,r,f,g)
+
+    def test_issuer_sec_can_document_formal_extension_without_public_fda_letter(self):
+        p,r,f,o=fixture()
+        o["records"][2]["officialFdaSourceUrl"]=None
+        d=audit.prospective_audit(p,r,f,o,"2027-07-01T00:00:00Z")
+        self.assertEqual(d["mathMetrics"]["confusion"]["EXTENSION"]["EXTENSION"],1)
+        self.assertIsNone(d["verifiedFDAAccuracyPct"])
+
+    def test_extension_must_be_public_before_original_goal_and_exact_cycle_sourced(self):
+        p,r,f,o=fixture()
+        g=deepcopy(o)
+        g["records"][2]["formalExtensionFirstPublicAtUTC"]="2027-06-02T00:00:00Z"
+        with self.assertRaisesRegex(ValueError,"EXTENSION_CONTEMPORANEOUS_PRIMARY_SOURCE_MISSING"):
+            audit.parse_prospective(p,r,f,g)
+        g=deepcopy(o)
+        g["records"][2]["formalExtensionCycleCitation"]=""
+        with self.assertRaisesRegex(ValueError,"EXTENSION_CONTEMPORANEOUS_PRIMARY_SOURCE_MISSING"):
+            audit.parse_prospective(p,r,f,g)
+        g=deepcopy(o)
+        g["records"][2]["formalExtensionSourceUrl"]="https://example.com/press"
+        with self.assertRaisesRegex(ValueError,"EXTENSION_CONTEMPORANEOUS_PRIMARY_SOURCE_MISSING"):
             audit.parse_prospective(p,r,f,g)
 
     def test_unreviewed_outcome_and_unverified_receipt_not_scored(self):

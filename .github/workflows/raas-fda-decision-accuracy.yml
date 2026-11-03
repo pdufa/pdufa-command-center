@@ -50,6 +50,7 @@ jobs:
         env:
           RAAS_FDA_ACCURACY_JSON: ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
           RAAS_FDA_ACCURACY_QUEUE_CSV: ${{ runner.temp }}/raas-fda-historical-source-review-queue.csv
+          RAAS_FDA_LEGACY_FUTURE_QUEUE_CSV: ${{ runner.temp }}/raas-fda-upcoming-original-goal-review-queue.csv
         run: |
           export RAAS_FDA_EVALUATION_AS_OF_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           python scripts/raas_fda_decision_accuracy_audit.py
@@ -61,5 +62,6 @@ jobs:
           path: |
             ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
             ${{ runner.temp }}/raas-fda-historical-source-review-queue.csv
+            ${{ runner.temp }}/raas-fda-upcoming-original-goal-review-queue.csv
           if-no-files-found: warn
           retention-days: 30
