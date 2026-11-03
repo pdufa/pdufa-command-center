@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
+  "asOf": "2026-11-03",
+  "note": "One retrospectively located 2017 CRL case. actualFDAActionDate field uses first public issuer-disclosure date, NOT a verified original FDA CRL-letter date. Not complete 2017 census, point-in-time final share capitalization or approved trade.",
+  "records": [
+    {
+      "caseId": "PTCT|TRANSLARNA|NDA200896|2017",
+      "ticker": "PTCT",
+      "programId": "PTCT_ATALUREN_TRANSLARNA_ACTDMD_NMDMD_FOP_2017",
+      "nctIds": [
+        "NCT01826487"
+      ],
+      "drug": "ataluren (TRANSLARNA)",
+      "indication": "nonsense mutation Duchenne muscular dystrophy (nmDMD)",
+      "application": "NDA 200896",
+      "applicationEvidenceSourceUrl": "https://fda.report/media/107653/PTC-Briefing-Information-for-the-September-28--2017-Meeting-of-the-Peripheral-and-Central-Nervous-System-Drugs-Advisory-Committee.pdf",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2017-10-24",
+      "targetAnnouncementDate": "2017-03-06",
+      "targetAnnouncementSourceUrl": "https://ir.ptcbio.com/news-releases/news-release-details/ptc-therapeutics-announces-fda-acknowledgment-new-drug?mobile=1",
+      "phase3ReadoutDate": "2015-10-15",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1070081/000107008115000122/a8-k101515.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT01826487",
+      "actualFDAActionDate": "2017-10-25",
+      "actualFDAOutcome": "CRL",
+      "actualFDAActionSourceUrl": "https://www.sec.gov/Archives/edgar/data/1070081/000107008117000124/a8-k102517.htm",
+      "actualFDAActionDateBasis": "COMPANY_FIRST_PUBLIC_2017_10_25_DISCLOSURE_NOT_FDA_LETTER_DATE",
+      "originalFdaCrlLetterDateIndependentlyVerified": false,
+      "firstPublicFDAActionAnnouncementDate": "2017-10-25",
+      "firstPublicFDAActionAnnouncementUrl": "https://ir.ptcbio.com/news-releases/news-release-details/ptc-therapeutics-receives-complete-response-letter-atalurens-nda?mobile=1",
+      "fileOverProtestAfterRefuseToFile": true,
+      "earlier2016RefuseToFileNotA2017CRL": true,
+      "earlierRefuseToFileAnnouncementDate": "2016-02-23",
+      "phase3OverallIttPrimaryEndpointSignificant": false,
+      "phase3OverallIttPrimaryEndpointP": 0.213,
+      "phase3PrespecifiedSubgroupResultsNotPrimarySuccess": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1070081/000107008117000060/earningsrelease.htm",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "PTC announced Oct 24 2017 PDUFA on March 6, after filing-over-protest from 2016 RTF; Phase 3 ACT DMD NCT01826487 Oct 15 2015 original SEC release reported ITT p=0.213 (negative primary), despite subgroup 300-400m p=0.007. PTC 2017-10-25 8-K announces 2017 CRL. The date of the original FDA letter has NOT been independently verified; 2017-10-25 in actualFDAActionDate is a placeholder for first public outcome evidence, not an exact audited action date, with all event trades and RAAS scores disallowed. Re-filing 2024/2026 history is different cycle and never prospective 2017 data."
+    }
+  ]
+}
