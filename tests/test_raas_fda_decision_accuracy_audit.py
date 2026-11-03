@@ -99,6 +99,26 @@ class ThreeWayTests(unittest.TestCase):
         self.assertEqual(old["certifiedThreeClassProbabilities"],0)
         self.assertEqual(old["portedToThreeWayLedger"],0)
 
+    def test_future_legacy_casedated_queue_has_no_promoted_three_way_forecasts(self):
+        report=audit.execute()
+        leads=report["legacyFutureSourceQueue"]
+        self.assertEqual(report["legacyFutureSourceQueueCount"],36)
+        self.assertTrue(all(r["status"]=="SOURCE_QUEUE_ONLY_NOT_THREE_WAY_FORECAST"
+                            for r in leads))
+        self.assertTrue(all(r["originalGoalConfirmed"] is False and
+                            r["predecisionThreeWayProbabilitiesFrozen"] is False
+                            for r in leads))
+        self.assertTrue(all(r["legacyReportedGoalDateNotVerified"]>"2026-11-03"
+                            for r in leads))
+        self.assertEqual(report["threeWayProspective"]["frozenThreeClassPredictions"],0)
+
+    def test_legacy_queue_expires_old_dates_without_invented_actual_outcomes(self):
+        rows=audit.csv_rows(audit.DATA/"fda_directional_100pct_freezes.csv")
+        future=audit.legacy_future_source_queue(rows,"2026-11-03T23:59:59Z")
+        later=audit.legacy_future_source_queue(rows,"2028-01-01T00:00:00Z")
+        self.assertEqual(len(future),36)
+        self.assertEqual(len(later),0)
+
     def test_three_class_metrics_correct_without_claim_of_independent_validation(self):
         inp=fixture()
         cases,preds,outcomes=audit.parse_prospective(*inp)
