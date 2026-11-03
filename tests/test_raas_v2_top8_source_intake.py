@@ -58,7 +58,8 @@ class V2IssuerGoalsTests(unittest.TestCase):
 
     def test_stage0_report_enriched_but_not_three_way_scored(self):
         r=v2.execute(ASOF)
-        self.assertEqual(r["issuerPublishedGoalSourceLeadsCount"],11)
+        self.assertEqual(r["issuerPublishedGoalSourceLeadsCount"],15)
+        self.assertEqual(r["additionalOriginalGoalIssuerSourcesCount"],4)
         self.assertEqual(r["additionalFormallyExtendedSourceLeadsCount"],3)
         self.assertEqual(r["independentlyCertifiedOriginalGoalRecords"],0)
         self.assertEqual(len(r["caseCycleAndSponsorSourceChecks"]),8)

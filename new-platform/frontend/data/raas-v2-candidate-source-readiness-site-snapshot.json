@@ -17,12 +17,15 @@
     "The nightly report updates the time-specific queue; this website snapshot does not auto-refresh from GitHub artifacts.",
     "No calibration thresholds were changed; V1 remains installed and V2 is not an approved model.",
     "CAPR, SVRA and PRAX legacy rows reference revised dates; EXEL retains the old December 3 original date even though the target is now March 3, 2027. All four are excluded from unresolved upcoming original-goal forecasts.",
-    "Of 36 future-dated legacy binary source leads, 11 have issuer-documented goal/revision sources; 4 have known formal extensions, and 25 still lack issuer review. The 32 remaining are NOT certified first-goal forecasts."
+    "Of 36 future-dated legacy source leads, 15 now have issuer-documented goal/revision sources; four formally extended case dates are excluded from unresolved original-goal predictions and 21 still lack issuer review. No independently verified three-way forecasts or approved Phase 3 qualifications are implied.",
+    "The new GILD anito-cel and COGT nonadvanced systemic mastocytosis source leads cite pivotal Phase 2 trials, so they cannot automatically enter the Phase 3-only Pipeline. The two Cogent NDA reviews have distinct application-specific case IDs."
   ],
-  "issuerDocumentedNearTermCycleSourceLeads": 11,
+  "issuerDocumentedNearTermCycleSourceLeads": 15,
   "knownRevisedGoalExcludedFromOriginalDeadlineQueue": 4,
   "remainingUnexcludedLegacyDateResearchLeads": 32,
-  "legacyCasesStillUnreviewedByIssuerSources": 25,
+  "legacyCasesStillUnreviewedByIssuerSources": 21,
   "provenIndependentFirstGoalForecasts": 0,
-  "additionalIssuerDocumentedFormallyExtendedCases": 3
+  "additionalIssuerDocumentedFormallyExtendedCases": 3,
+  "additionalOriginalGoalIssuerSourceLeads": 4,
+  "pivotalPhase2SourceLeadsNotStrictPhase3Eligible": 2
 }
