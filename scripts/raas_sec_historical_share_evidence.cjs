@@ -93,16 +93,29 @@ async function execute({archiveCsv,registryCsv,request=fetch,maxIssuers=150,paus
  const limit=Math.max(0,Math.min(150,Math.floor(maxIssuers)));
  const selected=symbols.filter(t=>index.map.has(t)).slice(0,limit);
  const factMap=new Map(),requests=[];
+ let consecutiveAccessDenied=0,accessDeniedCircuitOpen=false;
  for(const ticker of selected){
   const cik=index.map.get(ticker).cik;
+  if(accessDeniedCircuitOpen){
+   requests.push({ticker,cik,status:"NOT_ATTEMPTED_SOURCE_ACCESS_DENIED",
+    reason:"SEC_API_HTTP_403_CIRCUIT_OPEN",sourceUrl:urlFor(cik)});
+   continue;
+  }
   try{
    const facts=await getFacts(cik,request);
+   consecutiveAccessDenied=0;
    factMap.set(ticker,facts);
    requests.push({ticker,cik,status:facts.length?"SHARE_FACTS_RECEIVED":"NO_USABLE_SEC_COVER_SHARES",
     facts:facts.length,sourceUrl:urlFor(cik)});
-  }catch(e){requests.push({ticker,cik,status:"SEC_SOURCE_UNAVAILABLE",reason:String(e.message),
-    sourceUrl:urlFor(cik)});}
-  await pause(550);
+  }catch(e){
+   const reason=String(e.message);
+   if(reason==="SEC_HTTP_403")consecutiveAccessDenied++;
+   else consecutiveAccessDenied=0;
+   requests.push({ticker,cik,status:"SEC_SOURCE_UNAVAILABLE",reason,
+    sourceUrl:urlFor(cik)});
+   if(consecutiveAccessDenied>=3)accessDeniedCircuitOpen=true;
+  }
+  if(!accessDeniedCircuitOpen)await pause(550);
  }
  const cases=discovery.map(c=>{
   const issuer=index.map.get(c.ticker),facts=factMap.get(c.ticker)||[];
@@ -123,8 +136,10 @@ async function execute({archiveCsv,registryCsv,request=fetch,maxIssuers=150,paus
  const asof=cases.reduce((n,c)=>n+Object.values(c.observations).filter(x=>x.shareEvidence?.status==="SEC_PUBLIC_COVER_SHARES_RESEARCH_ONLY").length,0);
  return {scope:"RAAS_SEC_POINT_IN_TIME_SHARE_EVIDENCE_RESEARCH_ONLY",status:"SEC_SHARE_LEADS_COLLECTED_NOT_MARKET_CAP_AUDITED",
   archivedEvents:discovery.length,archiveYears:[...new Set(discovery.map(x=>x.pdufaDate.slice(0,4)))].sort(),
-  uniqueCurrentRegistryTickers:symbols.length,issuersQueried:requests.length,
-  eventsWithShareFacts:found,datedAsOfShareLeads:asof,
+  uniqueCurrentRegistryTickers:symbols.length,
+  issuersQueried:requests.filter(x=>x.status!=="NOT_ATTEMPTED_SOURCE_ACCESS_DENIED").length,
+  issuersSkippedByAccessDenied:requests.filter(x=>x.status==="NOT_ATTEMPTED_SOURCE_ACCESS_DENIED").length,
+  accessDeniedCircuitOpen,eventsWithShareFacts:found,datedAsOfShareLeads:asof,
   requests,registryCikConflicts:index.conflicts,cases,
   notes:["A modern CIK mapping does not establish ownership, rights or historical listing.",
    "SEC cover-share facts must be reconciled to class, ADS ratio and split history before computing historical market cap.",
@@ -138,12 +153,14 @@ if(require.main===module){
   fs.writeFileSync(output,JSON.stringify(x,null,2)+"\n");
   const h={status:x.status,archivedEvents:x.archivedEvents,issuersQueried:x.issuersQueried,
    eventsWithShareFacts:x.eventsWithShareFacts,datedAsOfShareLeads:x.datedAsOfShareLeads,
-   sourceErrors:x.requests.filter(x=>x.status==="SEC_SOURCE_UNAVAILABLE").length};
+   sourceErrors:x.requests.filter(x=>x.status==="SEC_SOURCE_UNAVAILABLE").length,
+   accessDeniedCircuitOpen:x.accessDeniedCircuitOpen,
+   issuersSkippedByAccessDenied:x.issuersSkippedByAccessDenied};
   console.log(JSON.stringify(h));
   if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
    "### Historical SEC cover-share intake (not qualifying market cap)\n\n"+
    JSON.stringify(h)+"\n\nDownload artifact for as-of evidence and source gaps.\n");
-  if(h.sourceErrors===x.issuersQueried&&x.issuersQueried)process.exitCode=1;
+  if(x.accessDeniedCircuitOpen || h.sourceErrors===x.issuersQueried&&x.issuersQueried)process.exitCode=1;
  }).catch(e=>{console.error("RAAS_SEC_SHARES_FATAL_"+String(e.message));process.exitCode=1;});
 }
 module.exports={issuers,sourceFacts,latestVisible,getFacts,execute};
