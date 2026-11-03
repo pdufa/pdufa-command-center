@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_2016_2025_PDUFA_POINT_IN_TIME_INTAKE",
+  "sourceAsOf": "2026-11-02",
+  "note": "Source-evidence intake, not validated 10-year study. FDA historical event archive candidates are unverified. Add a record only after issuer/FDA first-public PDUFA date, Phase 3 first-public result, actual FDA action, program/NCT mapping, and dated historical capitalization with shares/ADS evidence have been reviewed. No fabricated market caps. A year is FULL_EVENT_CENSUS_AUDITED only when completeness has independent source evidence. See docs/raas-ten-year-pdufa-study.md.",
+  "yearAudits": [
+    {
+      "year": 2016,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2017,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2018,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2019,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2020,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2021,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2022,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2023,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2024,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2025,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    }
+  ],
+  "records": []
+}

@@ -1,0 +1,49 @@
+name: RAAS Alpaca 2016-2025 source-gated PDUFA price research
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/raas_alpaca_ten_year_study.cjs'
+      - 'tests/raas_alpaca_ten_year_study.test.cjs'
+      - 'new-platform/frontend/data/raas-ten-year-pdufa-intake.json'
+      - '.github/workflows/raas-alpaca-ten-year-study.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/raas_alpaca_ten_year_study.cjs'
+      - 'tests/raas_alpaca_ten_year_study.test.cjs'
+      - 'new-platform/frontend/data/raas-ten-year-pdufa-intake.json'
+      - '.github/workflows/raas-alpaca-ten-year-study.yml'
+permissions:
+  contents: read
+jobs:
+  ten-year-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test 10-year study source and look-ahead restrictions
+        run: |
+          node --test tests/raas_alpaca_historical_price_study.test.cjs
+          node --test tests/raas_alpaca_ten_year_study.test.cjs
+      - name: Research historic SIP adjusted bars (candidate prices are not validated trade opportunities)
+        env:
+          APCA_API_KEY_ID: ${{ github.event_name != 'pull_request' && secrets.APCA_API_KEY_ID || '' }}
+          APCA_API_SECRET_KEY: ${{ github.event_name != 'pull_request' && secrets.APCA_API_SECRET_KEY || '' }}
+          ALPACA_API_KEY_ID: ${{ github.event_name != 'pull_request' && secrets.ALPACA_API_KEY_ID || '' }}
+          ALPACA_SECRET_KEY: ${{ github.event_name != 'pull_request' && secrets.ALPACA_SECRET_KEY || '' }}
+          RAAS_TEN_YEAR_RESULT_PATH: ${{ runner.temp }}/raas-ten-year-pdufa-research.json
+        run: node scripts/raas_alpaca_ten_year_study.cjs
+      - name: Upload strict 10-year coverage and price diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-ten-year-pdufa-research
+          path: ${{ runner.temp }}/raas-ten-year-pdufa-research.json
+          retention-days: 14
+          if-no-files-found: warn
