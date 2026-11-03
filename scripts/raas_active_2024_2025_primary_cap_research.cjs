@@ -6,7 +6,7 @@
  * or fully validated active 2024/2025 event intake.
  *
  * 2024 MDGL Rezdiffra original NDA: FDA acted on target.\n * 2024 GERN Rytelo original NDA: FDA acted ten days before target.\n * 2024 ARQT Zoryve 0.15% supplemental NDA: FDA acted 2 days AFTER target.
- * 2025 AXSM Symbravo: FDA acted 1 day BEFORE target.
+ * 2024 LXRX Zynquista: FDA issued a CRL ON target (older 2019 CRL is a different review).\n * 2025 AXSM Symbravo: FDA acted 1 day BEFORE target.
  * 2025 SLNO Vykat XR: FDA granted three-month extension then acted one day before revised target.
  * PDUFA target, Phase 3 readout, SEC share publication, FDA action
  * and previous application review cycle must remain separated.
@@ -27,15 +27,15 @@ const paths={
 const load=p=>JSON.parse(fs.readFileSync(path.join(root,p),"utf8"));
 function verify(events,shares,earlier,intake){
  const cases=validateSourceLeads(events);
- if(cases.length!==5||shares.records?.length!==5||
-  earlier.records?.length!==5||intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
+ if(cases.length!==6||shares.records?.length!==6||
+  earlier.records?.length!==6||intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
   intake.records.some(x=>cases.some(c=>x.caseId===c.caseId)))
   throw Error("RAAS_ACTIVE_SOURCE_LEADS_MUST_NOT_COUNT_AS_ACCEPTED_INTAKE");
  const order=cases.slice().sort((a,b)=>a.pdufaTargetDate.localeCompare(b.pdufaTargetDate));
  const byTicker=new Map(order.map(e=>[e.ticker,e]));
  const arqt=byTicker.get("ARQT"),axsm=byTicker.get("AXSM"),
-  mdgl=byTicker.get("MDGL"),gern=byTicker.get("GERN"),slno=byTicker.get("SLNO");
- if(byTicker.size!==5||
+  mdgl=byTicker.get("MDGL"),gern=byTicker.get("GERN"),\n  slno=byTicker.get("SLNO"),lxrx=byTicker.get("LXRX");
+ if(byTicker.size!==6||\n  lxrx?.caseId!=="LXRX|ZYNQUISTA_SOTAGLIFLOZIN|NDA210934|2024_CRL"||\n  lxrx.application!=="NDA 210934"||\n  lxrx.pdufaTargetDate!=="2024-12-20"||\n  lxrx.targetAnnouncementDate!=="2024-07-16"||\n  lxrx.phase3ReadoutDate!=="2017-06-09"||\n  lxrx.actualFDAActionDate!=="2024-12-20"||\n  lxrx.actualFDAOutcome!=="CRL"||\n  lxrx.previous2019CRLIsSeparateReviewCycle!==true||\n  lxrx.priorCRLDate!=="2019-03-22"||\n  lxrx.firstPublicFDAActionAnnouncementDate!=="2024-12-20"||\n  !lxrx.nctIds.includes("NCT02531035")||
   slno?.caseId!=="SLNO|VYKAT_XR_DCCR|NDA216665|2025"||
   slno.application!=="NDA 216665"||
   slno.pdufaTargetDate!=="2025-03-27"||
@@ -99,7 +99,7 @@ function verify(events,shares,earlier,intake){
    !now.needsShareContinuityAudit||!now.needsIndependentPriceCrosscheck)
    throw Error("RAAS_ACTIVE_SEC_COVER_SHARE_CHRONOLOGY_INVALID");
   const difference=now.sharesOutstanding-old.sharesOutstanding;
-  if(event.ticker==="SLNO"&&(
+  if(event.ticker==="LXRX"&&(\n   old.sharesOutstanding!==361492295||now.sharesOutstanding!==361492295||\n   old.firstConservativeEntryDate!=="2024-08-03"||\n   now.firstConservativeEntryDate!=="2024-11-14"||difference!==0))\n   throw Error("RAAS_2024_LXRX_SECURITIES_DISCLOSURE_MISMATCH");\n  if(event.ticker==="SLNO"&&(
    old.sharesOutstanding!==43117432||now.sharesOutstanding!==45857291||
    old.firstConservativeEntryDate!=="2024-11-07"||
    now.firstConservativeEntryDate!=="2025-03-01"||
@@ -157,7 +157,7 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
   provisionalPrimaryWindowRows:0,provisionalEarlierShareWindows:0};
  const raw=await cap.execute({key,secret,request,events,shares});
  if(raw.status!=="UNVALIDATED_HISTORICAL_CAP_RESEARCH_ONLY"||
-  raw.cases?.length!==5||raw.historicallyEligibleTrades!==0||
+  raw.cases?.length!==6||raw.historicallyEligibleTrades!==0||
   raw.approvedRaasRatings!==0)
   throw Error("RAAS_ACTIVE_RAW_CAP_PRICE_RESEARCH_INVALID");
  const queue=assemble({primary:events,shares,rawCap:raw});
@@ -183,11 +183,11 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
    missingAudit:"SEC_SHARE_CONTINUITY_SPLITS_INDEPENDENT_PRICE_VENDOR_2024_2025_CENSUS"})),
   priceDataRawAndAdjusted:raw.cases,
   sourceQueue:queue.cases,
-  warnings:["Five originally sourced programs out of the 2024–2025 discovery universe; NOT two complete FDA year censuses.",
+  warnings:["Six originally sourced programs (including one 2024 CRL) out of the 2024–2025 discovery universe; NOT two complete FDA year censuses.",
    "2024 ARQT FDA action July 9 occurred after the company-announced July 7 goal, without independently established formal extension.",
    "2025 AXSM FDA action Jan 30 occurred one day before Jan 31 goal; older 2022 manufacturing CRL was a separate review cycle.",
-   "2025 SLNO revised PDUFA March 27 followed Nov 26 2024 formal extension from original Dec 27 2024; FDA acted one day early. C601 Phase 3 primary endpoint failed before C602 randomized withdrawal positive result.",
-   "SEC cover snapshots increased by 154,779 MDGL, 47,073,231 GERN, 18,950,801 ARQT, 462,171 AXSM and 2,739,859 SLNO. Do not interpolate constant capitalization.",
+   "2024 LXRX FDA issued a December 20 CRL on its published PDUFA goal; prior March 2019 CRL was a separate cycle. Historical FDA PDF publication is retrospective and its content cannot be used as a predecision signal.",\n   "2025 SLNO revised PDUFA March 27 followed Nov 26 2024 formal extension from original Dec 27 2024; FDA acted one day early. C601 Phase 3 primary endpoint failed before C602 randomized withdrawal positive result.",
+   "SEC cover snapshots increased by 154,779 MDGL, 47,073,231 GERN, 18,950,801 ARQT, 462,171 AXSM and 2,739,859 SLNO, while LXRX snapshots differ by zero (NOT proof of daily share continuity). Do not interpolate constant capitalization.",
    "A qualifying price bar is not an independently validated historical issuer, trading fill or RAAS prediction."]};
 }
 function main(){
