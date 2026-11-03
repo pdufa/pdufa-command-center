@@ -46,6 +46,7 @@ test("Price provenance does not silently become an adjusted return or archived p
  assert.equal(report.eligibleCalibrations,0);
  assert.ok(report.windows.every(x=>x.adjustedTotalReturnVerified===false&&
   x.historicalPredictionRecorded===false));
+ assert.ok(report.windows.every(x=>x.daysEntryToScheduledEvent>x.daysExitToScheduledEvent));
 });
 test("Relative event-window offsets preserve published pre-readout and PDUFA chronology",()=>{
  const caseByTicker=(t,stage)=>report.windows.find(x=>x.ticker===t&&x.stage===stage);
