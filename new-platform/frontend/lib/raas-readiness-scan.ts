@@ -45,7 +45,7 @@ export type RaasReadinessReport={
   reviewedTrialSnapshots:number;prospectiveIssuers:number;prospectivePrograms:number;
   prospectiveSourceFacts:number;retrospectiveResearchWindows:number;
   independentlyConfirmedNominalCloses:number;nominalClosePoints:number;
-  secShareBridgeCases:number;fdaPrimaryCrosschecks:number;
+  secShareBridgeCases:number;secShareCapMismatches:number;fdaPrimaryCrosschecks:number;
  };
  categories:{stage:RaasStage;id:string;name:string;total:number;approved:number;
   sourceFacts:number;historicallyValidated:number}[];
@@ -143,6 +143,7 @@ export function executeRaasReadinessScan():RaasReadinessReport{
    independentlyConfirmedNominalCloses:priceSummary.matchedPoints,
    nominalClosePoints:priceSummary.quotedPoints,
    secShareBridgeCases:shareSummary.withSecShareCount,
+   secShareCapMismatches:shareSummary.mismatchedVendorCaps,
    fdaPrimaryCrosschecks:fdaSummary.crosschecked
   },
   categories,metrics,

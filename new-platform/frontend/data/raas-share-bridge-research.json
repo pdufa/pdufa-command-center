@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_SHARE_BRIDGE_RESEARCH",
   "sourceAsOf": "2026-11-02",
-  "note": "Five point-in-time SEC cover share-count checks of historical price × reported shares, including two Nov 2022 TOP entries. Three other windows still lack SEC entry share bridges. Nominal 2022-11-18 GERN/MDGL entry prices remain without independent second-source proof. None validates fully diluted value, corporate actions, total return or RAAS predictions.",
+  "note": "All eight historical TOP/BOTTOM illustrative windows now have a dated SEC cover/basic-share count publicly available before entry. Six basic-share × vendor-entry-price calculations agree with stored vendor capitalization to within 2%; MDGL 2023 bottom and BBIO 2024 bottom have material discrepancies of roughly -6.44% and +4.56%, respectively, to investigate. No independently audited adjusted stock-close series, fully diluted capital, executable fills, contemporaneous archived RAAS predictions or approved metric grades are produced. The Nov 18, 2022 GERN/MDGL entry closes still lack an independent exact-date second provider.",
   "records": [
     {
       "caseId": "bbio-attribute-cm-pre2023-illustrative",
@@ -79,6 +79,51 @@
       "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE",
       "quoteCurrency": "USD",
       "notes": "Madrigal Q3 2022 SEC 10-Q cover reports 17,103,395 common shares outstanding Nov 1, filed Nov 3 before Nov 18 retrospective entry. At vendor-reported $72.80 this reconstructs ~$1.245B cap, near vendor $1.245B; historical nominal quote is NOT second-source verified. Crucially the same pre-entry filing explicitly states substantial doubt about going concern given then-available liquidity; future financing/results must not enter pre-entry risk assessment."
+    },
+    {
+      "caseId": "urgn-ugn102-nmibc-2025-illustrative",
+      "ticker": "URGN",
+      "stage": "post",
+      "class": "COMMON",
+      "securityLabel": "Nasdaq-listed Israeli issuer ordinary shares",
+      "sharesOutstanding": 46094352,
+      "sharesAsOf": "2025-03-03",
+      "sharesPublishedAt": "2025-03-10",
+      "sharesSourceUrl": "https://www.sec.gov/Archives/edgar/data/1668243/000143774925006842/urgn20241231_10k.htm",
+      "ordinarySharesPerQuotedSecurity": 1,
+      "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE",
+      "quoteCurrency": "USD",
+      "notes": "UroGen 2024 annual 10-K published March 10 2025 shows 46,094,352 ordinary shares as of March 3 2025, before March 14 entry. Multiplying $11.07 by the SEC count yields ~$510.264M, close to vendor $510.264M. Basic capitalization arithmetic, NOT fully diluted EV or an independent adjusted entry close."
+    },
+    {
+      "caseId": "mdgl-resmetirom-nash-2023-2024-illustrative",
+      "ticker": "MDGL",
+      "stage": "post",
+      "class": "COMMON",
+      "securityLabel": "Nasdaq common stock",
+      "sharesOutstanding": 18471233,
+      "sharesAsOf": "2023-08-03",
+      "sharesPublishedAt": "2023-08-08",
+      "sharesSourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523205535/d530762d10q.htm",
+      "ordinarySharesPerQuotedSecurity": 1,
+      "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE",
+      "quoteCurrency": "USD",
+      "notes": "Madrigal Q2 2023 Form 10-Q (filed Aug 8, before Nov 3 retrospective entry) lists 18,471,233 common shares outstanding Aug 3. $146.89 vendor close × this SEC count = $2.713B, 6.44% BELOW vendor $2.900B. Explicit cap disagreement: share issuance between Aug 3 and Nov 3, potential convertible/pre-funded instruments and vendor denominator need dated reconciliation; cannot assume vendor price or valuation is confirmed."
+    },
+    {
+      "caseId": "bbio-acoramidis-attrcm-2024-illustrative",
+      "ticker": "BBIO",
+      "stage": "post",
+      "class": "COMMON",
+      "securityLabel": "Nasdaq common stock",
+      "sharesOutstanding": 187122744,
+      "sharesAsOf": "2024-03-31",
+      "sharesPublishedAt": "2024-05-02",
+      "sharesSourceUrl": "https://www.sec.gov/Archives/edgar/data/1743881/000095017024052165/bbio-20240331.htm",
+      "ordinarySharesPerQuotedSecurity": 1,
+      "capComparisonBasis": "VENDOR_REPORTED_CAP_ESTIMATE",
+      "quoteCurrency": "USD",
+      "notes": "BridgeBio March 31 2024 SEC 10-Q filed May 2 before May 10 illustrative entry shows 187,122,744 outstanding common shares after March follow-on. $29.10 × 187,122,744 = ~$5.445B, 4.56% ABOVE recorded vendor $5.208B. Vendor cap denominator ~178.97M differs from reported basic outstanding shares. This discrepancy must be resolved, NOT smoothed away by share-count arithmetic or treated as a new independently validated adjusted quote."
     }
   ]
 }

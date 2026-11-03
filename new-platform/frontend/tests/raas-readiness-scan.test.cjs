@@ -41,7 +41,8 @@ test("Recorded clinical leads and independent nominal-price audits count accurat
  assert.equal(s.retrospectiveResearchWindows,8);
  assert.equal(s.independentlyConfirmedNominalCloses,14);
  assert.equal(s.nominalClosePoints,16);
- assert.equal(s.secShareBridgeCases,5);
+ assert.equal(s.secShareBridgeCases,8);
+ assert.equal(s.secShareCapMismatches,2);
  assert.equal(s.fdaPrimaryCrosschecks,5);
  const lbrx=raw.metrics.find(m=>m.id==="pre-4-1");
  const trvi=raw.metrics.find(m=>m.id==="pre-1-1");

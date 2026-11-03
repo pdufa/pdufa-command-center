@@ -11,20 +11,21 @@ const parseBottom=require("../lib/raas-retrospective-intake.ts").parseRetrospect
 const top=parseTop(require("../data/raas-retrospective-top-cases.json"));
 const bottom=parseBottom(require("../data/raas-retrospective-source-cases.json"));
 const raw=require("../data/raas-share-bridge-research.json");
-test("All dated share counts from SEC cover filings precede vendor close; 5 arithmetical checks are NOT certified prices",()=>{
+test("All dated share counts from SEC cover filings precede vendor close; 8 share checks are NOT certified market prices",()=>{
  const feed=bridge.parseShareBridge(raw,top,bottom);
  const summary=bridge.bridgeSummary(feed,top,bottom);
- assert.equal(feed.records.length,5);
+ assert.equal(feed.records.length,8);
  assert.equal(summary.caseCount,top.records.length+bottom.records.length);
- assert.equal(summary.withSecShareCount,5);
- assert.equal(summary.arithmeticMatches,5);
- assert.equal(summary.separatelyReportedCapMatches,4);
- assert.equal(summary.missingShares,summary.caseCount-5);
+ assert.equal(summary.withSecShareCount,8);
+ assert.equal(summary.arithmeticMatches,6);
+ assert.equal(summary.separatelyReportedCapMatches,5);
+ assert.equal(summary.missingShares,0);
+ assert.equal(summary.mismatchedVendorCaps,2);
  assert.equal(summary.fullyVerifiedPriceCases,0);
  assert.equal(summary.qualifiedRaasForecasts,0);
  for(const r of feed.records){
   const b=bridge.bridgeForCase(feed,top,bottom,r.caseId);
-  assert.equal(b.status,"ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT");
+  assert.ok(["ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT","ARITHMETIC_MISMATCH"].includes(b.status));
   assert.equal(b.approvedRaasScore,false);
   assert.equal(b.fullyDilutedReconciled,false);
   assert.equal(b.corporateActionsReconciled,false);
@@ -66,6 +67,44 @@ test("2022 GERN and MDGL TOP entry cap arithmetic uses SEC Q3 cover counts known
   assert.equal(audit.approvedRaasScore,false);
  }
 });
+test("All remaining 2023–2025 SEC share bridges are represented; two vendor cap mismatches are NOT certified",()=>{
+ const feed=bridge.parseShareBridge(raw,top,bottom);
+ const urgn=bridge.bridgeForCase(feed,top,bottom,"urgn-ugn102-nmibc-2025-illustrative");
+ const mdgl=bridge.bridgeForCase(feed,top,bottom,"mdgl-resmetirom-nash-2023-2024-illustrative");
+ const bbio=bridge.bridgeForCase(feed,top,bottom,"bbio-acoramidis-attrcm-2024-illustrative");
+ assert.equal(urgn.quotedSharesEquivalent,46094352);
+ assert.equal(urgn.shareCountAsOf,"2025-03-03");
+ assert.equal(urgn.sharePublishedAt,"2025-03-10");
+ assert.ok(Math.abs(urgn.reconstructedEquityCapUsdMillions-510.26)<.01);
+ assert.equal(urgn.status,"ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT");
+ assert.equal(mdgl.quotedSharesEquivalent,18471233);
+ assert.equal(mdgl.shareCountAsOf,"2023-08-03");
+ assert.equal(mdgl.sharePublishedAt,"2023-08-08");
+ assert.ok(Math.abs(mdgl.reconstructedEquityCapUsdMillions-2713.24)<.01);
+ assert.ok(Math.abs(mdgl.relativeDifferencePercent-(-6.44))<.01);
+ assert.equal(mdgl.status,"ARITHMETIC_MISMATCH");
+ assert.equal(bbio.quotedSharesEquivalent,187122744);
+ assert.equal(bbio.shareCountAsOf,"2024-03-31");
+ assert.equal(bbio.sharePublishedAt,"2024-05-02");
+ assert.ok(Math.abs(bbio.reconstructedEquityCapUsdMillions-5445.27)<.01);
+ assert.ok(Math.abs(bbio.relativeDifferencePercent-4.56)<.01);
+ assert.equal(bbio.status,"ARITHMETIC_MISMATCH");
+ for(const x of [urgn,mdgl,bbio]){
+  assert.equal(x.approvedRaasScore,false);
+  assert.equal(x.fullyDilutedReconciled,false);
+  assert.equal(x.entryPriceIndependentlyVerified,false);
+  assert.equal(x.corporateActionsReconciled,false);
+ }
+});
+test("Future SEC share count and silent vendor mismatch erasure cannot pass audit",()=>{
+ const altered={...raw,records:raw.records.map(r=>r.caseId==="urgn-ugn102-nmibc-2025-illustrative"?
+   {...r,sharesPublishedAt:"2025-03-18"}:r)};
+ assert.throws(()=>bridge.parseShareBridge(altered,top,bottom),/RAAS_SHARE_BRIDGE_RECORD_INVALID/);
+ const summary=bridge.bridgeSummary(bridge.parseShareBridge(raw,top,bottom),top,bottom);
+ assert.equal(summary.arithmeticMatches,6);
+ assert.equal(summary.withSecShareCount,8);
+ assert.equal(summary.missingShares,0);
+});
 test("2022 share-count evidence published after entry is rejected",()=>{
  const altered={...raw,records:raw.records.map(r=>r.caseId==="mdgl-resmetirom-maestro-nash-pre2022-illustrative"?
   {...r,sharesPublishedAt:"2022-11-21"}:r)};
@@ -92,7 +131,7 @@ test("The SEC price-share bridge cannot make a false market cap match into a val
  const copy={...raw,records:raw.records.filter(r=>r.ticker!=="GERN")};
  const p=bridge.parseShareBridge(copy,top,bottom);
  const s=bridge.bridgeSummary(p,top,bottom);
- assert.equal(s.withSecShareCount,3);
+ assert.equal(s.withSecShareCount,6);
  assert.equal(s.qualifiedRaasForecasts,0);
  assert.equal(bridge.bridgeForCase(p,top,bottom,"gern-imetelstat-mds-2024-illustrative"),null);
 });
