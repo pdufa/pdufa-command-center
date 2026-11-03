@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
+  "asOf": "2026-11-02",
+  "note": "Original independent 2021 FDA and issuer source leads, not a complete 2021 event census or approved investment opportunity. Archived outcomes must not become predecision inputs.",
+  "records": [
+    {
+      "caseId": "CARA|KORSUVA|NDA214916|2021",
+      "ticker": "CARA",
+      "programId": "KORSUVA_DIFELIKEFALIN_KALM1_KALM2_CKD_PRURITUS",
+      "nctIds": [
+        "NCT03422653",
+        "NCT03636269"
+      ],
+      "drug": "difelikefalin (KORSUVA) injection",
+      "indication": "moderate-to-severe pruritus associated with CKD in adults undergoing hemodialysis",
+      "application": "NDA 214916",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2021-08-23",
+      "targetAnnouncementDate": "2021-03-08",
+      "targetAnnouncementSourceUrl": "https://www.sec.gov/Archives/edgar/data/1346830/000110465921032984/tm218984d1_ex99-1.htm",
+      "phase3ReadoutDate": "2020-04-21",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1346830/000110465920049009/tm2016471d1_ex99-1.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT03636269",
+      "actualFDAActionDate": "2021-08-23",
+      "actualFDAActionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2021/214916Orig1s000Approv.pdf",
+      "actualFDAOutcome": "APPROVED",
+      "firstPublicFDAActionAnnouncementDate": "2021-08-23",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/1346830/000110465921108597/tm2125639d1_ex99-1.htm",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1346830/000110465921032984/tm218984d1_ex99-1.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "March 8, 2021 Nasdaq CARA SEC-exhibited release announces August 23 FDA target; dated April 21 2020 KALM-2 Phase 3 readout; FDA 2021 original approval package confirms NDA 214916 action August 23. These original sources are source leads, not a first-ever disclosure census or verified trading event. The 2021 FDA approval package is retrospective action evidence, never a predecision feature."
+    }
+  ]
+}
