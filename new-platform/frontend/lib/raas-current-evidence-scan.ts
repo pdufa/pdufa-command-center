@@ -29,7 +29,10 @@ export function scanRaasCurrentEvidence(
  pilot:RaasPilotFeed,prospective:ProspectiveSourceFeed,
  trial:RaasEvidenceTrial,stage:RaasStage,asOf:string
 ):RaasCurrentEvidence{
- if(!day(asOf)||asOf>pilot.sourceAsOf||asOf>prospective.sourceAsOf)
+ // The source-intake records were captured on the shared saved-snapshot
+ // date. A publication date from months earlier does NOT prove that RAAS
+ // made an archived prediction then. Disallow reconstructed past snapshots.
+ if(!day(asOf)||asOf!==pilot.sourceAsOf||asOf!==prospective.sourceAsOf)
   throw Error("RAAS_EVIDENCE_SCAN_ASOF_INVALID");
  const matchingPilot=pilot.records.filter(x=>x.stage===stage&&x.nctId===trial.nctId&&same(x.ticker,trial.ticker));
  const matchingProspective=prospective.records.filter(x=>x.stage===stage&&x.nctId===trial.nctId&&
