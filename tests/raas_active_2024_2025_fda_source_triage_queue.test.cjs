@@ -22,6 +22,7 @@ const action=(app,type,num,dt,sponsor)=>({
  independentMarketCapVerified:false,approvedHistoricalTrade:false,approvedRaasGrade:false
 });
 const a=action("NDA215985","SUPPL","7","2024-07-09","ARCUTIS BIOTHERAPEUTICS");
+const mdgl=action("NDA217785","ORIG","1","2024-03-14","MADRIGAL PHARMACEUTICALS");
 const b=action("NDA215431","ORIG","1","2025-01-30","AXSOME THERAPEUTICS INC");
 const c=action("NDA333333","SUPPL","2","2025-06-03","ACME BIO");
 const crl=year=>({caseId:"NDA 33333|"+year,applicationNumber:"NDA 33333",
@@ -35,11 +36,11 @@ const discovery={
  status:"SOURCE_DISCOVERY_COMPLETE_FOR_OFFICIAL_ENDPOINTS_NOT_PDUFA_DENOMINATOR",
  studyYears:[2024,2025],actionYearIsNotPdufaTargetYear:true,
  years:[
-  {year:2024,totalFdaApprovalActionLeads:1,archivedCRLLetterLeads:1,
+  {year:2024,totalFdaApprovalActionLeads:2,archivedCRLLetterLeads:1,
    completePdufaEventCensus:false,approvedHistoricalTrades:0,calibratedRaasMetrics:0},
   {year:2025,totalFdaApprovalActionLeads:2,archivedCRLLetterLeads:1,
    completePdufaEventCensus:false,approvedHistoricalTrades:0,calibratedRaasMetrics:0}
- ],approvalActionLeads:[a,b,c],crlLetterLeads:[crl("2024"),crl("2025")],
+ ],approvalActionLeads:[a,mdgl,b,c],crlLetterLeads:[crl("2024"),crl("2025")],
  originalSourceLeadsCrosscheck:[],fullFDAEventCensusYearsAudited:0,
  approvedHistoricalTrades:0,approvedRaasCalibrations:0
 };
@@ -48,12 +49,12 @@ const make=overrides=>m.build({discovery,config,archiveCsv,known,intake,
 test("review queue enumerates all official original, supplemental and CRL actions without loss",()=>{
  const r=make();
  assert.equal(r.scope,"RAAS_ACTIVE_2024_2025_FDA_SOURCE_EVIDENCE_TRIAGE_QUEUE");
- assert.equal(r.totals.originalSourceLeads,2);
+ assert.equal(r.totals.originalSourceLeads,3);
  assert.equal(r.totals.archiveUnverifiedTargetDateLeads,2);
- assert.equal(r.totals.FDAApprovalActionLeads,3);
+ assert.equal(r.totals.FDAApprovalActionLeads,4);
  assert.equal(r.totals.FDAArchivedCRLLetterLeads,2);
- assert.equal(r.totals.reviewRows,9);
- assert.deepEqual(r.reviewRows.map(x=>x.reviewPriority),[1,1,2,2,3,3,4,5,5]);
+ assert.equal(r.totals.reviewRows,11);
+ assert.deepEqual(r.reviewRows.map(x=>x.reviewPriority),[1,1,1,2,2,3,3,4,4,5,5]);
  assert.equal(r.fullYearsAudited,0);
  assert.equal(r.validatedHistoricalTradingCases,0);
  assert.equal(r.approvedRaasCalibrations,0);
@@ -69,10 +70,14 @@ test("2024 Zoryve supplemental outcome and 2025 Symbravo original FDA action mat
  assert.equal(original[0].originalPublicPdufaTargetDate,"2024-07-07");
  assert.equal(original[0].retrospectiveActionDate,"2024-07-09");
  assert.deepEqual(original[0].matchedOfficialApprovalActionIds,[a.id]);
- assert.equal(original[1].ticker,"AXSM");
- assert.equal(original[1].originalPublicPdufaTargetDate,"2025-01-31");
- assert.equal(original[1].retrospectiveActionDate,"2025-01-30");
- assert.deepEqual(original[1].matchedOfficialApprovalActionIds,[b.id]);
+ assert.equal(original[1].ticker,"MDGL");
+ assert.equal(original[1].originalPublicPdufaTargetDate,"2024-03-14");
+ assert.equal(original[1].retrospectiveActionDate,"2024-03-14");
+ assert.deepEqual(original[1].matchedOfficialApprovalActionIds,[mdgl.id]);
+ assert.equal(original[2].ticker,"AXSM");
+ assert.equal(original[2].originalPublicPdufaTargetDate,"2025-01-31");
+ assert.equal(original[2].retrospectiveActionDate,"2025-01-30");
+ assert.deepEqual(original[2].matchedOfficialApprovalActionIds,[b.id]);
  assert.ok(original.every(x=>x.currentStage.includes("UNVALIDATED")));
  const official=r.reviewRows.filter(x=>x.reviewPriority>=4);
  assert.ok(official.every(x=>x.originalPublicPdufaTargetDate===null));
@@ -122,7 +127,7 @@ test("review CSV retains all source blockers and escapes hostile CSV text",()=>{
  const d=make();
  const csv=m.csvForReview(d);
  const lines=csv.trim().split("\n");
- assert.equal(lines.length,10);
+ assert.equal(lines.length,12);
  assert.match(csv,/FDA_ORIGINAL_APPROVAL_ACTION/);
  assert.match(csv,/FDA_SUPPLEMENTAL_APPROVAL_ACTION/);
  assert.match(csv,/ORIGINAL_FDA_AND_ISSUER_SOURCE_LEAD/);
