@@ -42,6 +42,7 @@ const shareResearch=parseShareBridge(shareBridgeResearch,pre,post);
 const sharesSummary=bridgeSummary(shareResearch,pre,post);
 const priceResearch=parsePriceCrosschecks(priceCrosscheckResearch,pre,post);
 const priceSummary=priceAuditSummary(priceResearch,pre,post);
+const historicalReturns=analyzeRaasHistoricalReturns(pre,post,priceResearch);
 const actionFeed=parseCorporateActions(corporateActionResearch);
 const actionSummary=corporateActionSummary(actionFeed,pre,post);
 const fdaPrimary=parseFdaPrimaryOutcomes(fdaPrimaryOutcomeData,post);
