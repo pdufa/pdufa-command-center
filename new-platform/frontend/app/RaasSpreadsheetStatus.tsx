@@ -33,6 +33,11 @@ export default function RaasSpreadsheetStatus({trial}:{trial:RaasSpreadsheetTria
     </div>}
    {pending&&<p>No approved overall RAAS score. Missing inputs are not zero and
     exploratory timing grades are excluded.</p>}
+   <a href={s.stage?"/raas-worklist?"+new URLSearchParams({stage:s.stage,nctId:trial.nctId,ticker:trial.ticker,
+     ...(trial.drug?{drug:trial.drug}:{}),
+     ...(trial.indication?{indication:trial.indication}:{})}).toString()+"#raas-"+(s.stage==="pre"?"top":"bottom")+"-worklist":"/raas-worklist"}>
+     Open detailed RAAS validation worklist · each metric and missing input</a>
+   <span>{" · "}</span>
    <a href="/raas-scan">See all 60 RAAS metrics and validation gaps</a>
    <span>{" · "}</span>
    <a href="/tools#tools-phase3-release-sheets">TOP/BOTTOM evidence tables</a>
