@@ -9,7 +9,9 @@ on:
       - 'scripts/raas_fda_decision_accuracy_audit.py'
       - 'tests/test_raas_fda_decision_accuracy_audit.py'
       - 'scripts/raas_v2_prospective_source_readiness.py'
+      - 'scripts/raas_v2_source_provenance_manifest.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
+      - 'tests/test_raas_v2_source_provenance_manifest.py'
       - 'tests/test_raas_v2_top8_source_intake.py'
       - 'tests/test_raas_v2_original_goal_queue_safety.py'
       - 'new-platform/frontend/data/raas-v2-top8-2026-source-intake.json'
@@ -30,7 +32,9 @@ on:
       - 'scripts/raas_fda_decision_accuracy_audit.py'
       - 'tests/test_raas_fda_decision_accuracy_audit.py'
       - 'scripts/raas_v2_prospective_source_readiness.py'
+      - 'scripts/raas_v2_source_provenance_manifest.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
+      - 'tests/test_raas_v2_source_provenance_manifest.py'
       - 'tests/test_raas_v2_top8_source_intake.py'
       - 'tests/test_raas_v2_original_goal_queue_safety.py'
       - 'new-platform/frontend/data/raas-v2-top8-2026-source-intake.json'
@@ -78,6 +82,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_raas_v2_top8_source_intake.py' -v
       - name: Test V2 nightly original-deadline queue excludes revised goals and preserves source-only tags
         run: python -m unittest discover -s tests -p 'test_raas_v2_original_goal_queue_safety.py' -v
+      - name: Verify five-file source snapshot checksums never claim approved predictions
+        run: python -m unittest discover -s tests -p 'test_raas_v2_source_provenance_manifest.py' -v
       - name: Compute retrospective baseline and prospective FDA decision audit
         env:
           RAAS_FDA_ACCURACY_JSON: ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
@@ -93,6 +99,11 @@ jobs:
         run: |
           export RAAS_V2_ASOF_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           python scripts/raas_v2_prospective_source_readiness.py
+      - name: Create GitHub-run-bound checksum manifest for V2 research sources only
+        env:
+          RAAS_SOURCE_REPORTS_DIRECTORY: ${{ runner.temp }}
+          RAAS_V2_SOURCE_PROVENANCE_JSON: ${{ runner.temp }}/raas-v2-source-research-provenance.json
+        run: python scripts/raas_v2_source_provenance_manifest.py
       - name: Publish evidence-gap and accuracy report
         if: always()
         uses: actions/upload-artifact@v4
@@ -104,5 +115,6 @@ jobs:
             ${{ runner.temp }}/raas-fda-upcoming-original-goal-review-queue.csv
             ${{ runner.temp }}/raas-v2-prospective-source-readiness.json
             ${{ runner.temp }}/raas-v2-prospective-source-review.csv
+            ${{ runner.temp }}/raas-v2-source-research-provenance.json
           if-no-files-found: warn
-          retention-days: 30
+          retention-days: 90
