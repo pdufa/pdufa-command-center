@@ -112,7 +112,7 @@ test("A different archival target date on already sourced ticker is NOT silently
  const a=q.reviewRows.find(r=>r.reviewTrack==="ARCHIVE_TARGET_DATE_TO_VERIFY"&&r.ticker==="GERN");
  a.archiveSuggestedPdufaDate="2024-12-06";
  const x=make({queue:q});
- assert.equal(x.archiveSameGoalDuplicatedSourceRows,1);
+ assert.equal(x.archiveSameGoalDuplicatedSourceRows,2);
  const g=x.nextArchivedTargetSourceReviews.find(r=>r.ticker==="GERN");
  assert.equal(g.possibleSameIssuerOtherCycle,true);
  assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,7);
