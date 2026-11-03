@@ -73,7 +73,7 @@ export function auditGoalVersionSource(input:unknown):GoalAsOfAudit{
  if(!input||typeof input!=="object"||Array.isArray(input))
   throw Error("RAAS_GOAL_ASOF_SOURCE_INVALID");
  const d=input as {schemaVersion?:unknown;scope?:unknown;sourceAsOf?:unknown;records?:unknown};
- if(d.schemaVersion!==1||d.scope!=="RAAS_ACTIVE_2024_2025_ORIGINAL_SOURCE_PDUFA_LEADS"||
+ if(d.schemaVersion!==1||d.scope!=="RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH"||
   !dateOK(d.sourceAsOf)||!Array.isArray(d.records)||d.records.length===0||d.records.length>1000)
   throw Error("RAAS_GOAL_ASOF_SOURCE_SCOPE_INVALID");
  const seen=new Set<string>(),rows:GoalAsOfCase[]=[];
@@ -120,10 +120,10 @@ export function auditGoalVersionSource(input:unknown):GoalAsOfAudit{
    x.phase3ReadoutDate,revised?"REVISED_PUBLIC_GOAL":"ORIGINAL_PUBLIC_GOAL");
   const firstKnown=initial.targetWasPublishedByCalendarEntry&&initial.phase3ReadoutListedBeforeEntry;
   const finalKnown=current.targetWasPublishedByCalendarEntry&&current.phase3ReadoutListedBeforeEntry;
-  const state:GoalAsOfCase["reviewState"]=!finalKnown?
-   "BLOCKED_FINAL_GOAL_OR_PHASE3_NOT_PUBLIC_BY_T79":
-   revised&&!current.targetWasPublishedByCalendarEntry?
-    "BLOCKED_REVISED_GOAL_NOT_PUBLIC_AT_T79":"POINT_IN_TIME_SOURCE_LEAD_ONLY";
+  const state:GoalAsOfCase["reviewState"]=revised&&!current.targetWasPublishedByCalendarEntry?
+   "BLOCKED_REVISED_GOAL_NOT_PUBLIC_AT_T79":
+   !finalKnown?"BLOCKED_FINAL_GOAL_OR_PHASE3_NOT_PUBLIC_BY_T79":
+   "POINT_IN_TIME_SOURCE_LEAD_ONLY";
   rows.push({
    caseId:x.caseId,ticker:cap(x.ticker),application:x.application,
    reviewYear:Number(x.pdufaTargetDate.slice(0,4)) as 2024|2025,
