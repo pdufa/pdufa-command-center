@@ -12,7 +12,9 @@ const targets={
  AXSM:{entry:"2024-11-13",exit:"2025-01-17",gross:-6.03,cap:4741.07,old:false},
  MDGL:{entry:"2023-12-26",exit:"2024-02-29",gross:-0.05,cap:4665.58,old:true},
  GERN:{entry:"2024-04-01",exit:"2024-05-31",gross:11.99,cap:1731.01,old:true},
- SLNO:{entry:"2025-01-07",exit:"2025-03-13",gross:6.08,cap:1992.89,old:true}
+ SLNO:{entry:"2025-01-07",exit:"2025-03-13",gross:6.08,cap:1992.89,old:true},
+ // Synthetic regression-only return, never actual historical LXRX performance.
+ LXRX:{entry:"2024-10-02",exit:"2024-12-06",gross:-20.00,cap:450,old:true}
 };
 function fixture(){
  const sourceLeads=[],caseResearch=[],priceDataRawAndAdjusted=[];
@@ -53,15 +55,18 @@ function fixture(){
   studyStartDate:"2024-01-01",studyEndDate:"2025-12-31",
   sourceLeadCount:events.records.length,sourceLeads,caseResearch,priceDataRawAndAdjusted};
 }
-test("Five independent research leads yield source-gated T79/14 estimates, not trading approvals",()=>{
+test("Six source-backed cases, including one 2024 CRL, remain research-only and not trading approvals",()=>{
  const x=m.build(fixture(),events);
- assert.equal(x.sourceCaseCount,5);
- assert.equal(x.allProvisional.cases,5);
- assert.equal(x.allProvisional.provisionalMeanGrossPct,1.06);
- assert.equal(x.allProvisional.provisionalMedianGrossPct,-0.05);
- assert.equal(x.allProvisional.hypotheticalMeanNetPct,0.06);
- assert.equal(x.byYear[2024].cases,3);
+ assert.equal(x.sourceCaseCount,6);
+ assert.equal(x.allProvisional.cases,6);
+ assert.equal(x.allProvisional.provisionalMeanGrossPct,-2.45);
+ assert.equal(x.allProvisional.provisionalMedianGrossPct,-3.04);
+ assert.equal(x.allProvisional.hypotheticalMeanNetPct,-3.45);
+ assert.equal(x.byYear[2024].cases,4);
  assert.equal(x.byYear[2025].cases,2);
+ assert.equal(x.byOutcome.CRL.cases,1);
+ assert.equal(x.byOutcome.APPROVED.cases,5);
+ assert.equal(x.rows.find(r=>r.ticker==="LXRX").actualFdaOutcomeRetrospective,"CRL");
  assert.equal(x.byYear[2025].provisionalMeanGrossPct,0.03);
  assert.equal(x.independentlyValidatedTradingCases,0);
  assert.equal(x.approvedOptimalWindow,null);
@@ -93,12 +98,26 @@ test("A missing T79/14 price window is represented as blocked, never fabricated 
  const out=m.build(x,events);
  assert.equal(out.blockedCases,1);
  assert.equal(out.rows.find(x=>x.ticker==="ARQT").grossReturnPct,null);
- assert.equal(out.allProvisional.cases,4);
+ assert.equal(out.allProvisional.cases,5);
 });
 test("CSV output quotes source text and escapes formulas before spreadsheet opening",()=>{
  const result=m.build(fixture(),events);result.rows[0].ticker='=HYPERLINK("https://evil.test","x")';
  const csv=m.csv(result);
  assert.ok(csv.includes("'=HYPERLINK"));
  assert.ok(!csv.includes('"=HYPERLINK'));
- assert.equal(csv.trim().split("\n").length,6);
+ assert.equal(csv.trim().split("\n").length,7);
+});
+
+test("A CRL must stay a retrospectively known outcome, not be transformed into approval",()=>{
+ const result=m.build(fixture(),events);
+ const adverse=result.rows.find(r=>r.ticker==="LXRX");
+ assert.equal(adverse.actualFdaOutcomeRetrospective,"CRL");
+ assert.equal(adverse.actualFdaActionDate,"2024-12-20");
+ assert.equal(adverse.entryDate,"2024-10-02");
+ assert.equal(adverse.exitDate,"2024-12-06");
+ assert.equal(adverse.validatedTradingCase,false);
+ assert.equal(result.approvedOptimalWindow,null);
+ const wrong=structuredClone(events);
+ wrong.records.find(r=>r.ticker==="LXRX").actualFDAOutcome="UNKNOWN";
+ assert.throws(()=>m.build(fixture(),wrong),/CASE_IDENTITY_OR_SOURCE_INVALID/);
 });

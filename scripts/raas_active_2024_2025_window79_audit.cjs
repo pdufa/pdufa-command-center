@@ -55,7 +55,8 @@ function build(research,sourceEvents){
    prices.source!=="ALPACA_SIP_RAW_CLOSE_X_SEC_COVER_SHARES"||
    prices.priceReturnSource!=="ALPACA_SIP_ADJUSTMENT_ALL_SEPARATE"||
    !Array.isArray(prices.observations)||!validDate(event.targetAnnouncementDate)||
-   !validDate(event.phase3ReadoutDate)||!validDate(event.actualFDAActionDate))
+   !validDate(event.phase3ReadoutDate)||!validDate(event.actualFDAActionDate)||
+   !["APPROVED","CRL"].includes(event.actualFDAOutcome))
    throw Error("RAAS_T79_14_CASE_IDENTITY_OR_SOURCE_INVALID");
   seen.add(event.caseId);
   const x=c.namedWindow79to14;
@@ -67,6 +68,7 @@ function build(research,sourceEvents){
    revisedPdufaGoalDate:event.pdufaTargetDate,goalFirstPublicDate:event.targetAnnouncementDate,
    formalExtension:!!event.formalGoalExtensionIndependentlyVerified,
    actualFdaActionDate:event.actualFDAActionDate,
+   actualFdaOutcomeRetrospective:event.actualFDAOutcome,
    entryLeadDays:79,exitLeadDays:14,entryDate:x.actualEntryDate||null,
    exitDate:x.actualExitDate||null,netCostModel:"ILLUSTRATIVE_FLAT_ONE_PERCENTAGE_POINT",
    validatedTradingCase:false,approvedRaasMetric:false,independentlyVerifiedPrice:false,
@@ -144,7 +146,9 @@ function build(research,sourceEvents){
   status:"UNVALIDATED_PROVISIONAL_RETURN_DIAGNOSTIC_ONLY",
   period:"2024-2025",window:{entryLeadCalendarDays:79,exitLeadCalendarDays:14},
   sourceCaseCount:rows.length,rows,
-  allProvisional:stats(accepted),byYear:{
+  allProvisional:stats(accepted),byOutcome:{
+   APPROVED:stats(accepted.filter(r=>r.actualFdaOutcomeRetrospective==="APPROVED")),
+   CRL:stats(accepted.filter(r=>r.actualFdaOutcomeRetrospective==="CRL"))},byYear:{
    2024:stats(accepted.filter(r=>r.year===2024)),
    2025:stats(accepted.filter(r=>r.year===2025))},
   blockedCases:rows.length-accepted.length,
@@ -156,11 +160,12 @@ function build(research,sourceEvents){
    "The net result deducts a hypothetical flat 1 percentage point, not verified historical execution costs.",
    "The SEC cover share snapshots and Alpaca raw/adjusted price arithmetic remain unvalidated for share continuity, actions and independent vendor consistency.",
    "SLNO's 2025 goal follows a 2024 formal extension; its revised date must have been public before the entry session.",
+   "Historical FDA outcome labels are retrospective for describing cohorts, not features available at trade entry.",
    "No T-79/T-14 statistical optimum or RAAS score is established."]};
 }
 function csv(result){
  const cols=["ticker","year","originalPdufaGoalDate","revisedPdufaGoalDate",
-  "goalFirstPublicDate","actualFdaActionDate","entryDate","exitDate",
+  "goalFirstPublicDate","actualFdaActionDate","actualFdaOutcomeRetrospective","entryDate","exitDate",
   "status","grossReturnPct","hypotheticalNetReturnPct","entryCapResearchMillions","blocker"];
  const cell=x=>{const s=String(x??"");const safe=/^[\s\u0000-\u001f]*[=+\-@]/u.test(s)?"'"+s:s;
   return '"'+safe.replaceAll('"','""')+'"';};
@@ -182,7 +187,7 @@ function main(){
    medianGross:result.allProvisional.provisionalMedianGrossPct,
    byYear:result.byYear,validatedTradingCases:0,approvedRaasMetrics:0}));
   if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-   "### T-79 to T-14 price window: five UNVALIDATED issuer cases\n\n"+
+   "### T-79 to T-14 price window: "+result.sourceCaseCount+" UNVALIDATED issuer research leads\n\n"+
    JSON.stringify(result.allProvisional,null,2)+"\n\nNo optimal strategy or RAAS grade.\n");
  }catch(e){console.error("RAAS_T79_14_AUDIT_FATAL_"+String(e.message||e).replace(/[^A-Z0-9_]/g,"_"));process.exitCode=1;}
 }
