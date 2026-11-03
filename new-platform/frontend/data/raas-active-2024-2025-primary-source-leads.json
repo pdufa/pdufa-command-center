@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated.",
+  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated. Added independent FDA 2025 MYQORZO NDA219083 CYTK original/revised target and dated SEC cover shares. Historical cap and returns NOT validated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -259,6 +259,46 @@
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
       "notes": "2025 Scholar Rock original BLA 761463 apitegromab for SMA, PDUFA Sept 22 2025 publicly announced March 25 2025. Positive pivotal Phase 3 SAPPHIRE NCT05156320 primary endpoint announced Oct 7 2024. Official FDA CRL electronically signed 2025-09-22 17:47:21 ET, whereas first located sponsor public CRL announcement was Sept 23 2025 at 07:00 ET. FDA CRL cited third-party Catalent Indiana fill-finish facility inspection/cGMP deficiencies, not a failed SAPPHIRE primary endpoint; note additional labeling edits and administrative requests but no efficacy/safety approvability issue reported. Archived FDA PDF is retrospective, not pre-CRL public information. SEC Q1 2025 10-Q filed May 14 07:20 ET cover shows 94,945,562 shares May 12; Q2 10-Q filed Aug 6 07:16 ET cover shows 96,127,265 shares Aug 1; increase 1,181,703 and significant outstanding pre-funded warrants imply cap/issuer financing continuity audit remains necessary. Later 2026 BLA resubmission is separate FDA review cycle, never 2025 approved outcome. Research only; no validated entry-day market cap or trade."
+    },
+    {
+      "caseId": "CYTK|AFICAMTEN_OHCM|NDA219083|2025",
+      "ticker": "CYTK",
+      "programId": "CYTK_AFICAMTEN_SEQUOIA_HCM_OHCM_FIRST_NDA",
+      "nctIds": [
+        "NCT05186818"
+      ],
+      "drug": "MYQORZO (aficamten) tablets",
+      "indication": "treatment of adults with symptomatic obstructive hypertrophic cardiomyopathy (oHCM) to improve functional capacity and symptoms",
+      "application": "NDA 219083",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2025-12-26",
+      "originallyAnnouncedPdufaTargetDate": "2025-09-26",
+      "originalTargetAnnouncementDate": "2024-12-02",
+      "originalTargetAnnouncementSourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2024/Cytokinetics-Announces-FDA-Acceptance-of-New-Drug-Application-for-Aficamten-for-the-Treatment-of-Obstructive-Hypertrophic-Cardiomyopathy-12-02-2024/default.aspx",
+      "targetAnnouncementDate": "2025-05-01",
+      "targetAnnouncementSourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Announces-New-PDUFA-Date-for-Aficamten-in-Obstructive-Hypertrophic-Cardiomyopathy-05-01-2025/default.aspx",
+      "fdaGoalExtensionAnnouncedDate": "2025-05-01",
+      "formalGoalExtensionIndependentlyVerified": true,
+      "goalExtensionReason": "FDA requested REMS; major amendment assigned 3-month goal extension",
+      "phase3ReadoutDate": "2023-12-27",
+      "phase3ReadoutSourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2023/Cytokinetics-Announces-Positive-Results-From-SEQUOIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-With-Obstructive-Hypertrophic-Cardiomyopathy-12-27-2023/default.aspx",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT05186818",
+      "actualFDAActionDate": "2025-12-19",
+      "actualFDAActionSourceUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-myqorzo",
+      "originalPublicApprovalAnnouncementUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Announces-FDA-Approval-of-MYQORZO-aficamten-for-the-Treatment-of-Adults-with-Symptomatic-Obstructive-Hypertrophic-Cardiomyopathy-to-Improve-Functional-Capacity-and-Symptoms/default.aspx",
+      "actualFDAOutcome": "APPROVED",
+      "fdaActionEarlierThanPdufaGoalDays": 7,
+      "firstPublicFDAActionAnnouncementDate": "2025-12-19",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000095017025105108/cytk-20250630.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "2024-12-02 first located original September 26 2025 standard PDUFA goal; May 1 2025 company announcement formally revised goal to December 26 2025 for an FDA-requested REMS major amendment, publicly known before the T-79 Oct 8 2025 window. Phase 3 SEQUOIA-HCM NCT05186818 positive trial reported Dec 27 2023. FDA original NDA 219083 approved Dec 19 2025, seven calendar days before revised goal, independently verified in FDA Drug Trials Snapshot; not a CRL or original Sep26 deadline. This is *NOT* a new 2025 Phase3 readout. SEC Q2 Aug7 2025 after-close filing cover 119,657,156 shares as of Aug5, conservative from Aug8; SEC Q3 Nov5 2025 after-close filing cover 122,264,929 shares as of Nov3 conservative from Nov6; 2,607,773 more shares, not proof of day-by-day issuance. ATM facilities/convertible and shareholder dilution and independent vendor verification remain unresolved. Do not retroactively apply the later SEC cover to earlier entry dates or promote market-cap eligibility or score."
     }
   ]
 }
