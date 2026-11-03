@@ -3,18 +3,38 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 08 * * *'
+  pull_request:
+    paths:
+      - '.github/workflows/refresh-tools-pool-snapshot.yml'
+      - '.github/scripts/build_tools_pool_snapshot.py'
+      - '.github/scripts/verify_tools_pool_nct_additions.py'
+      - 'tests/test_tools_pool_verified_nct_additions.py'
   push:
     branches: [main]
     paths:
       - '.github/workflows/refresh-tools-pool-snapshot.yml'
       - '.github/scripts/build_tools_pool_snapshot.py'
+      - '.github/scripts/verify_tools_pool_nct_additions.py'
+      - 'tests/test_tools_pool_verified_nct_additions.py'
 permissions:
   contents: write
 concurrency:
   group: verified-tools-pool-snapshot
   cancel-in-progress: false
 jobs:
+  verify-ctgov-new-ids:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify source-delta controls offline without production credentials
+        run: python3 -m unittest discover -s tests -p 'test_tools_pool_verified_nct_additions.py'
   publish:
+    if: github.event_name != 'pull_request'
+    needs: [verify-ctgov-new-ids]
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
