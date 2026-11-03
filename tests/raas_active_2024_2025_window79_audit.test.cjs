@@ -121,3 +121,21 @@ test("A CRL must stay a retrospectively known outcome, not be transformed into a
  wrong.records.find(r=>r.ticker==="LXRX").actualFDAOutcome="UNKNOWN";
  assert.throws(()=>m.build(fixture(),wrong),/CASE_IDENTITY_OR_SOURCE_INVALID/);
 });
+
+test("CSV negative gross and net returns are numeric cells, and formula text remains escaped",()=>{
+ const output=m.csv(m.build(fixture(),events));
+ const head=output.trim().split("\n")[0].split(",");
+ const lines=output.trim().split("\n");
+ const pctIndex=head.indexOf("grossReturnPct");
+ const netIndex=head.indexOf("hypotheticalNetReturnPct");
+ const lxrx=lines.find(x=>x.startsWith('"LXRX",'));
+ assert.ok(lxrx);
+ const cols=lxrx.split(",");
+ assert.equal(cols[pctIndex],"-20");
+ assert.equal(cols[netIndex],"-21");
+ assert.equal(cols[head.indexOf("entryCapResearchMillions")],"450");
+ assert.ok(!lxrx.includes("'"+(-20)));
+ const contaminated=m.build(fixture(),events);
+ contaminated.rows[0].grossReturnPct="=HYPERLINK(1,2)";
+ assert.throws(()=>m.csv(contaminated),/EXPORT_NON_NUMERIC_RESULT/);
+});
