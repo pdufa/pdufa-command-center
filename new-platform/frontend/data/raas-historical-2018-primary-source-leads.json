@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
+  "asOf": "2026-11-02",
+  "note": "One 2018 original AcelRx DSUVIA resubmission FDA cycle with differing issuer-announced Nov3 PDUFA target vs retrospectively listed FDA internal Nov2 goal. Not full 2018 cohort and not a validated trade.",
+  "records": [
+    {
+      "caseId": "ACRX|DSUVIA|NDA209128|2018",
+      "ticker": "ACRX",
+      "programId": "ACRX_SUFENTANIL_SUBLINGUAL_DSUVIA_SAP302_SAP303",
+      "nctIds": [
+        "NCT02447848"
+      ],
+      "drug": "DSUVIA (sufentanil sublingual tablet 30 mcg)",
+      "indication": "acute pain severe enough to require an opioid analgesic in adults in certified medically supervised settings",
+      "application": "NDA 209128",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2018-11-03",
+      "targetAnnouncementDate": "2018-05-24",
+      "targetAnnouncementSourceUrl": "https://www.prnewswire.com/news-releases/acelrx-announces-fda-acceptance-of-nda-for-dsuvia-300654151.html",
+      "fdaInternalGoalFromRetrospectiveReviewDate": "2018-11-02",
+      "fdaInternalGoalRetrospectiveReviewSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2018/209128Orig1s000StatR.pdf",
+      "phase3ReadoutDate": "2016-09-15",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1427925/000143774916038720/ex99-1.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT02447848",
+      "actualFDAActionDate": "2018-11-02",
+      "actualFDAActionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2018/209128Orig1s000Ltr.pdf",
+      "actualFDAOutcome": "APPROVED",
+      "firstPublicFDAActionAnnouncementDate": "2018-11-02",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/1427925/000143774918019403/ex_127679.htm",
+      "priorCRLActionDate": "2017-10-11",
+      "priorCRLReviewCycleDifferent": true,
+      "priorCRLRetrospectiveSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2018/209128Orig1s000Ltr.pdf",
+      "remSRequiredOnApproval": true,
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.prnewswire.com/news-releases/acelrx-announces-fda-acceptance-of-nda-for-dsuvia-300654151.html",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "AcelRx publicly stated PDUFA 2018-11-03 in its May 24 2018 issuer press release. Original FDA retrospective statistical review specifies internal goal 2018-11-02, and FDA approved November 2, one day before publicly announced target. Keep first-public target and retrospective internal goal as two independent fields. Original application received October 2017 CRL; May 3 2018 complete Class 2 resubmission, separate cycle. Phase 3 SAP303 top-line Sept 15 2016 and SAP302 NCT02447848. 2018 Q1/Q2 10-Q cover shares jumped from 51,320,598 to 60,599,914; cap must use dated publicly available share facts and be independently audited for offerings, splits and liquidity. No approved 10-year trading event or RAAS metric."
+    }
+  ]
+}
