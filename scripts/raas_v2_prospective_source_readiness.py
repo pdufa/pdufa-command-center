@@ -90,6 +90,120 @@ def validate_archive(archive):
     return archive
 
 
+def validate_top8_source_intake(intake, old_rows, as_of):
+    """Contemporaneous issuer/Securities & Exchange source references, never FDA grade.
+    Date and cycle controls reject trying to use original-goal review when the
+    real first goal was already formally extended.
+    """
+    assert_safe(type(intake) is dict and intake.get("schemaVersion")==1 and
+                intake.get("scope")==
+                "RAAS_V2_TOP8_2026_ISSUER_GOAL_PUBLICATION_SOURCE_RESEARCH_NOT_VALIDATED" and
+                intake.get("goalSourceLeads")==8 and
+                intake.get("issuerPublicationSourcesLocated")==8 and
+                intake.get("caseCountIndependentlyCertified")==0 and
+                intake.get("independentlyVerifiedOriginalGoalFDAOutcomeCases")==0 and
+                intake.get("scoredThreeWayForecasts")==0 and
+                intake.get("independentlyCalibratedRaasMetrics")==0 and
+                intake.get("eligibleForPredictionFreeze")==0 and
+                intake.get("activeScoringVersion")=="2026-11-02-foundation-v1" and
+                type(intake.get("records")) is list and len(intake["records"])==8,
+                "TOP8_SOURCE_GATES_OR_SCHEMA_INVALID")
+    allowed={
+        "CYTK":"SUPPLEMENTAL_NDA",
+        "SMMT":"ORIGINAL_BLA_REPORTED",
+        "CAPR":"REVISED_BLA_TARGET_AFTER_FORMAL_EXTENSION",
+        "BBIO":"ORIGINAL_NDA_REPORTED",
+        "VRTX":"ORIGINAL_BLA_REPORTED",
+        "ANAB":"LICENSED_THIRD_PARTY_BLA_SPONSOR",
+        "CORT":"NDA_RESUBMISSION_AFTER_PRIOR_CRL",
+        "MLYS":"ORIGINAL_NDA_REPORTED",
+    }
+    legacy={r.get("fda_regulatory_case_id"):r for r in old_rows if
+            r.get("model_version")=="FDA-DIRECTIONAL-100-V1.9"}
+    assert_safe(len(legacy)==40,"TOP8_LEGACY_CASES_NOT_UNIQUE")
+    cutoff=audit.utc(as_of).date()
+    seen=set()
+    result=[]
+    for r in intake["records"]:
+        assert_safe(type(r) is dict, "TOP8_CASE_NOT_OBJECT")
+        ticker=r.get("ticker")
+        key=r.get("legacyCaseKey")
+        audit.identity(key)
+        assert_safe(ticker in allowed and ticker not in seen and
+                    r.get("applicationType")==allowed[ticker] and
+                    key in legacy and legacy[key]["ticker"]==ticker and
+                    r.get("legacyGoalDate")==legacy[key]["pdufa_date"],
+                    "TOP8_LEGACY_OR_APPLICATION_IDENTITY_MISMATCH")
+        seen.add(ticker)
+        proposed=audit.day(r["legacyGoalDate"])
+        publication=audit.day(r["sourcePublicationDate"])
+        first_goal=audit.day(r["firstCycleGoalDate"])
+        assert_safe(first_goal<=proposed and publication<=cutoff and
+                    isinstance(r.get("issuerSourceUrl"),str) and
+                    r["issuerSourceUrl"].startswith("https://") and
+                    isinstance(r.get("clinicalSponsor"),str) and
+                    r["clinicalSponsor"].strip() and
+                    isinstance(r.get("stockExposure"),str) and
+                    r["stockExposure"].strip() and
+                    isinstance(r.get("notes"),str) and r["notes"].strip(),
+                    "TOP8_ISSUER_PUBLICATION_OR_DATE_INVALID")
+        assert_safe(r.get("sourceDocumentLocated") is True and
+                    all(r.get(k) is False for k in (
+                        "earliestGoalPublicationIndependentlyAttested",
+                        "applicationNumberIndependentlyVerified",
+                        "exactReviewCycleIndependentlyVerified",
+                        "issuerSponsorRightsIndependentlyReconciled",
+                        "prospectivelyFrozenThreeWayProbabilities",
+                        "independentlyAdjudicatedGoalDisposition",
+                        "enrolledInV2ProspectiveCohort",
+                        "FDAThreeWayAccuracyQualified",
+                        "approvalForTradingModel")),
+                    "TOP8_UNJUSTIFIED_APPROVAL_OR_INDEPENDENCE")
+        rev=r.get("formalGoalRevision")
+        if ticker=="CAPR":
+            assert_safe(type(rev) is dict and
+                        first_goal.isoformat()=="2026-08-22" and
+                        proposed.isoformat()=="2026-11-22" and
+                        rev.get("revisedGoalDate")=="2026-11-22" and
+                        rev.get("firstPublicDate")=="2026-08-24" and
+                        audit.day(rev["firstPublicDate"])<=cutoff and
+                        isinstance(rev.get("sourceUrl"),str) and
+                        rev["sourceUrl"]==r["issuerSourceUrl"],
+                        "TOP8_CAPR_ORIGINAL_GOAL_EXTENSION_INVALID")
+        else:
+            assert_safe(rev is None and first_goal==proposed,
+                        "TOP8_NOT_FORMAL_EXTENSION_ORIGINAL_CYCLE")
+        if ticker=="ANAB":
+            assert_safe("Vanda" in r["clinicalSponsor"] and
+                        "Anaptys" in r["stockExposure"] and
+                        r["clinicalSponsor"]!=r["stockExposure"],
+                        "TOP8_ANAB_LICENSED_SPONSOR_NOT_RECONCILED")
+        if ticker=="CORT":
+            assert_safe("RESUBMISSION" in r["applicationType"],
+                        "TOP8_CORT_CRLS_MUST_BE_SEPARATE_CYCLES")
+        result.append({
+            "ticker":ticker,"researchCaseKey":key,"drug":r["drug"],
+            "issuerPublishedCurrentGoalDate":proposed.isoformat(),
+            "issuerGoalSourcePublicationDate":publication.isoformat(),
+            "issuerGoalSourceUrl":r["issuerSourceUrl"],
+            "issuerSourceLocatedAtAudit":True,
+            "firstPublicGoalDateForThisCycleIndependentlyCertified":False,
+            "applicationType":r["applicationType"],
+            "clinicalApplicantOrSponsor":r["clinicalSponsor"],
+            "publicStockExposure":r["stockExposure"],
+            "firstReportedReviewCycleGoalDate":first_goal.isoformat(),
+            "formalGoalRevision":rev,
+            "originalGoalAlreadyPassedBeforeAudit":first_goal<cutoff,
+            "stillNeedsExactCycleAdjudication":True,
+            "immutableThreeClassForecastVerified":False,
+            "eligibleForApprovedPredictiveAccuracy":False,
+            "notes":r["notes"]
+        })
+    assert_safe(set(allowed)==seen,"TOP8_SOURCE_COVERAGE_NOT_COMPLETE")
+    result.sort(key=lambda r:(r["issuerPublishedCurrentGoalDate"],r["ticker"]))
+    return result
+
+
 def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, as_of):
     """No acceptance of old directional calls as FDA 3-way forecasts."""
     as_of_dt=audit.utc(as_of)
@@ -193,14 +307,28 @@ def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, 
 
 def execute(asof=ASOF, data=DATA):
     folder=Path(data)
+    old_rows=audit.csv_rows(folder/"fda_directional_100pct_freezes.csv")
     report=compile_report(
-        old_rows=audit.csv_rows(folder/"fda_directional_100pct_freezes.csv"),
+        old_rows=old_rows,
         archive=audit.load_json(ROOT/"new-platform/frontend/data/raas-2025-nine-archived-goal-original-source-triage.json"),
         protocol=audit.load_json(folder/"raas_fda_three_way_protocol.json"),
         roster=audit.load_json(folder/"raas_fda_three_way_eligible_cases.json"),
         forecasts=audit.load_json(folder/"raas_fda_three_way_frozen_forecasts.json"),
         outcomes=audit.load_json(folder/"raas_fda_three_way_outcomes.json"),
         as_of=asof)
+    source=audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-top8-2026-source-intake.json")
+    selected=validate_top8_source_intake(source,old_rows,asof)
+    report["newSourceIntakeStage"]="EIGHT_ISSUER_PUBLISHED_GOAL_SOURCES_FOUND_NOT_INDEPENDENTLY_CERTIFIED"
+    report["issuerPublishedGoalSourceLeadsCount"]=len(selected)
+    report["independentlyCertifiedOriginalGoalRecords"]=0
+    report["caseCycleAndSponsorSourceChecks"]=selected
+    report["sourceIntakeStillExcludedFromApprovedFDAAccuracy"]=True
+    report["clinicalReviewCycleRisks"]={
+        "supplemental":1,"previouslyExtendedOriginalGoalAlreadyPassed":1,
+        "licensedThirdPartySponsor":1,"resubmissionAfterCRL":1
+    }
+    # Source references are useful evidence-gathering progress; never
+    # override independentlyVerified flags in the original 36-case queue.
     return report
 
 
@@ -237,7 +365,7 @@ def main():
            os.getenv("RAAS_V2_SOURCE_STATUS_CSV",str(ROOT/"raas-v2-prospective-source-review.csv")))
     brief={k:report[k] for k in
            ("status","version","sourceQueueCount","distinctLegacyIssuerTickers",
-            "byPriority","readyForThreeWayProspectiveFreeze",
+            "byPriority","issuerPublishedGoalSourceLeadsCount","readyForThreeWayProspectiveFreeze",
             "verifiedProspectiveForecasts","approvedRAASMetricCalibrations")}
     print(json.dumps(brief,sort_keys=True))
     if os.getenv("GITHUB_STEP_SUMMARY"):
