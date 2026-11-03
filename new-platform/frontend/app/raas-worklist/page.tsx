@@ -9,6 +9,7 @@ import {activeSECAsOfEntryShares} from "../../lib/raas-historical-sec-entry-brid
 import {raasFull903Overview} from "../../lib/raas-full-90-3-window-policy";
 import expansionSource from "../../data/raas-2024-2025-expanded-candidate-source-leads.json";
 import expandedCoverShares from "../../data/raas-2024-2025-expanded-candidate-sec-snapshots.json";
+import fdaDecisionAccuracy from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
 
@@ -34,6 +35,34 @@ function hrefForTrial(t:RaasWorklistTrial|null,stage:RaasStage):string{
  * inputs being evaluated for the two FDA and timing source gates.
  */
 /** Search specification only: research outputs remain provisional until validated. */
+/** FDA decision-model validation is independent of price-window research and RAAS metric grades. */
+function FDAAccuracySection(){
+ const x=fdaDecisionAccuracy;
+ return <section id="raas-fda-prediction-accuracy" className={css.context}
+  data-raas-fda-accuracy="UNVALIDATED_NO_CLAIM">
+  <h2>FDA decision accuracy · PASS / CRL / EXTENSION</h2>
+  <p><strong>Not independently validated.</strong> This is the three-way first-announced-PDUFA-goal benchmark, not the stock-return study. It separately records FDA approvals, Complete Response Letters, and formally announced goal extensions known before the original deadline.</p>
+  <div className={css.stats}>
+   <div><strong>{x.legacyRetrospectiveCases}</strong><span>Older selected binary FDA cases · not an unbiased census</span></div>
+   <div><strong>{x.legacyRetrospectiveAccuracyPct}%</strong><span>Legacy retrospective model diagnostic</span></div>
+   <div><strong>{x.alwaysApproveRetrospectiveAccuracyPct}%</strong><span>Simply guessing approval on the same historical cases</span></div>
+   <div><strong>{x.predecisionThreeWayIndependentlyVerifiedForecasts}</strong><span>Independently verified frozen three-way forecasts</span></div>
+  </div>
+  <p className={css.notice}><strong>Critical finding:</strong> The historical model's {x.legacyCorrect}/{x.legacyRetrospectiveCases} correct calls did not beat predicting approval in all {x.legacyRetrospectiveCases} selected cases ({x.alwaysApproveCorrect} correct). The historical source contains {x.historicalExtensions} independently scored extensions; therefore three-class balanced accuracy and calibration are not established.</p>
+  <details>
+   <summary>Show what the accuracy scanner checks and what is missing</summary>
+   <ul>
+    <li>A separately pre-registered application and review-cycle roster, including no calls and abstentions</li>
+    <li>Frozen probabilities for PASS / CRL / EXTENSION whose FDA and Phase 3 sources were public before the forecast</li>
+    <li>Independent original-goal action dates and official FDA outcome or formal extension evidence</li>
+    <li>Issuer-disjoint chronological holdout, per-outcome recall, confusion matrix, multiclass Brier, log loss, calibration, Wilson confidence interval, and coverage</li>
+    <li>No approval of prediction models or the 60 RAAS rating metrics unless separate validation succeeds</li>
+   </ul>
+   <p>Older FDA-DIRECTIONAL V1.9 has {x.priorBinaryCasesInLatestVersion} unique pregoal binary freeze cases, not fully sourced three-way probability forecasts. Snapshot: {x.snapshotAsOf}.</p>
+  </details>
+  <p><a href={x.workflowUrl} target="_blank" rel="noopener noreferrer">Open daily FDA accuracy audit and downloadable report</a>. The site displays a dated snapshot; the GitHub Action's latest report is the refreshed audit.</p>
+ </section>;
+}
 function FullRange903History(){
  const x=raasFull903Overview();
  return <section id="raas-full-t90-t3-study" className={css.context}
@@ -204,6 +233,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
    <Link href={hrefForTrial(trial,"post")} aria-current={anchorStage==="post"?"location":undefined}>BOTTOM · 30 metrics</Link>
    <Link href="/raas-scan">Full 60-metric readiness scan</Link>
   </nav>
+  <FDAAccuracySection/>
   <FullRange903History/>
   <ExpandedHistoricalCandidates/>
   <GoalAsOfHistory/>
