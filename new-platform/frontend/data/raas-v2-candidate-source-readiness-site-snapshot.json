@@ -15,6 +15,13 @@
   "disclosures": [
     "36 are future-dated older binary prediction source leads at the dated snapshot, NOT 36 FDA V2 forecasts.",
     "The nightly report updates the time-specific queue; this website snapshot does not auto-refresh from GitHub artifacts.",
-    "No calibration thresholds were changed; V1 remains installed and V2 is not an approved model."
-  ]
+    "No calibration thresholds were changed; V1 remains installed and V2 is not an approved model.",
+    "CAPR's November 22, 2026 goal is a revised deadline from the August 22 BLA resubmission cycle; it is excluded from the prospective first-goal count.",
+    "Of 36 future-dated legacy binary cases, eight have issuer-documented sources, one is a known revised deadline, and 28 lack this source review. The remaining 35 are NOT certified first-goal forecasts."
+  ],
+  "issuerDocumentedNearTermCycleSourceLeads": 8,
+  "knownRevisedGoalExcludedFromOriginalDeadlineQueue": 1,
+  "remainingUnexcludedLegacyDateResearchLeads": 35,
+  "legacyCasesStillUnreviewedByIssuerSources": 28,
+  "provenIndependentFirstGoalForecasts": 0
 }
