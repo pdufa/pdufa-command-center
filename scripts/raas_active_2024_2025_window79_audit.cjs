@@ -167,9 +167,19 @@ function csv(result){
  const cols=["ticker","year","originalPdufaGoalDate","revisedPdufaGoalDate",
   "goalFirstPublicDate","actualFdaActionDate","actualFdaOutcomeRetrospective","entryDate","exitDate",
   "status","grossReturnPct","hypotheticalNetReturnPct","entryCapResearchMillions","blocker"];
- const cell=x=>{const s=String(x??"");const safe=/^[\s\u0000-\u001f]*[=+\-@]/u.test(s)?"'"+s:s;
-  return '"'+safe.replaceAll('"','""')+'"';};
- return cols.join(",")+"\n"+result.rows.map(x=>cols.map(k=>cell(x[k])).join(",")).join("\n")+"\n";
+ const numericFields=new Set(["grossReturnPct","hypotheticalNetReturnPct","entryCapResearchMillions"]);
+ const cell=(key,value)=>{
+  if(numericFields.has(key)){
+   if(value===null||value===undefined)return '""';
+   if(typeof value!=="number"||!Number.isFinite(value))
+    throw Error("RAAS_T79_14_EXPORT_NON_NUMERIC_RESULT");
+   return String(value); // Real Excel/Sheets numeric including negatives, not a formula.
+  }
+  const s=String(value??"");
+  const safe=/^[\s\u0000-\u001f]*[=+\-@]/u.test(s)?"'"+s:s;
+  return '"'+safe.replaceAll('"','""')+'"';
+ };
+ return cols.join(",")+"\n"+result.rows.map(x=>cols.map(k=>cell(k,x[k])).join(",")).join("\n")+"\n";
 }
 function main(){
  try{
