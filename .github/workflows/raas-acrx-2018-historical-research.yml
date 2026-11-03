@@ -1,0 +1,52 @@
+name: RAAS 2018 ACRX original FDA PDUFA and historical capitalization research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/data/raas-historical-2018-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2018-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-preentry-2018-sec-cover-share-leads.json'
+      - 'scripts/raas_historical_acrx_2018_research.cjs'
+      - 'tests/raas_historical_acrx_2018_research.test.cjs'
+      - '.github/workflows/raas-acrx-2018-historical-research.yml'
+  pull_request:
+    paths:
+      - 'new-platform/frontend/data/raas-historical-2018-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2018-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-preentry-2018-sec-cover-share-leads.json'
+      - 'scripts/raas_historical_acrx_2018_research.cjs'
+      - 'tests/raas_historical_acrx_2018_research.test.cjs'
+      - '.github/workflows/raas-acrx-2018-historical-research.yml'
+permissions:
+  contents: read
+jobs:
+  historical-acrx-2018:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify 2018 public and internal FDA goal discrepancy, historical offerings and eligibility blockers
+        run: |
+          node --test tests/raas_historical_acrx_2018_research.test.cjs
+          node --test tests/raas_historical_raw_market_cap_research.test.cjs
+      - name: Run live 2018 as-of stock-price, historic cap and T-90 to T-3 window research without a trade or score
+        if: github.event_name != 'pull_request'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          RAAS_2018_ACRX_OUTPUT: ${{ runner.temp }}/raas-2018-acrx-dsuvia-research.json
+        run: node scripts/raas_historical_acrx_2018_research.cjs
+      - name: Save research-only 2018 original sources and price diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-2018-acrx-dsuvia-research
+          path: ${{ runner.temp }}/raas-2018-acrx-dsuvia-research.json
+          retention-days: 30
+          if-no-files-found: ignore
