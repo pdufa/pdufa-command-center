@@ -106,6 +106,30 @@ function examine(share,event,raw,adjusted){
    "SEC issuer share count is not diluted or necessarily stable across all entry dates.",
    "No full 2016–2025 event census or issuer-disjoint RAAS scoring holdout."]};
 }
+/** Distinct FDA programs may be highly dependent stock trades. One issuer can
+ * supply many event rows but cannot inflate the independent issuer count. */
+function issuerExposureDiagnostics(events) {
+ const byTicker=new Map();
+ for(const e of events){
+  if(!e||!/^[A-Z][A-Z0-9.-]{0,11}$/.test(e.ticker||"")||
+   !date(e.pdufaTargetDate)||!e.caseId)throw Error("RAAS_ISSUER_EXPOSURE_INVALID");
+  if(!byTicker.has(e.ticker))byTicker.set(e.ticker,[]);
+  byTicker.get(e.ticker).push(e);
+ }
+ const overlaps=[];
+ for(const [ticker,cases] of byTicker){
+  cases.sort((a,b)=>a.pdufaTargetDate.localeCompare(b.pdufaTargetDate));
+  for(let i=0;i<cases.length;i++)for(let j=i+1;j<cases.length;j++){
+   const gap=(Date.parse(cases[j].pdufaTargetDate+"T00:00:00Z")-
+    Date.parse(cases[i].pdufaTargetDate+"T00:00:00Z"))/86400000;
+   if(gap<100)overlaps.push({ticker,caseIds:[cases[i].caseId,cases[j].caseId],
+    targetGapDays:gap,
+    reason:"OVERLAPPING_SAME_ISSUER_PDUFA_WINDOWS_NOT_INDEPENDENT_HOLDOUTS"});
+  }
+ }
+ return {researchPrograms:events.length,distinctResearchIssuers:byTicker.size,
+  overlappingSameIssuerPairs:overlaps.length,overlaps};
+}
 async function execute({key,secret,request=fetch,shares=read("new-platform/frontend/data/raas-2020-sec-cover-share-leads.json"),
  events=read("new-platform/frontend/data/raas-historical-2020-primary-source-leads.json")}={}){
  if(shares.scope!=="RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH"||
@@ -123,7 +147,8 @@ async function execute({key,secret,request=fetch,shares=read("new-platform/front
   result.push(examine(share,event,raw,adjusted));
  }
  return {scope:"RAAS_HISTORIC_RAW_CAP_RESEARCH",status:"UNVALIDATED_HISTORICAL_CAP_RESEARCH_ONLY",
-  cases:result,rawSessions:result.reduce((a,x)=>a+x.observations.length,0),
+  cases:result,issuerExposures:issuerExposureDiagnostics(result),
+  rawSessions:result.reduce((a,x)=>a+x.observations.length,0),
   possible300mTo10bResearchSessions:result.reduce((a,x)=>a+x.researchDaysIn300mTo10b,0),
   historicallyEligibleTrades:0,approvedRaasRatings:0,
   notes:["Read-only source research. No scores or market-cap eligibility are written to approved RAAS intake.",
@@ -137,6 +162,8 @@ if(require.main===module) {
   fs.writeFileSync(p,JSON.stringify(x,null,2)+"\n");
   const s={status:x.status,cases:x.cases.length,rawSessions:x.rawSessions,
    possible300mTo10bResearchSessions:x.possible300mTo10bResearchSessions,
+   distinctResearchIssuers:x.issuerExposures?.distinctResearchIssuers??0,
+   overlappingSameIssuerPairs:x.issuerExposures?.overlappingSameIssuerPairs??0,
    historicallyEligibleTrades:x.historicallyEligibleTrades,approvedRaasRatings:x.approvedRaasRatings};
   console.log(JSON.stringify(s));
   if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
@@ -145,4 +172,4 @@ if(require.main===module) {
   if(x.status==="BLOCKED_MISSING_ALPACA_CREDENTIALS")process.exitCode=1;
  }).catch(e=>{console.error("RAAS_CAP_RESEARCH_FATAL_"+String(e.message).replace(/[^A-Z0-9_]/g,"_"));process.exitCode=1;});
 }
-module.exports={checkedLead,fetchBars,examine,execute};
+module.exports={checkedLead,fetchBars,examine,issuerExposureDiagnostics,execute};

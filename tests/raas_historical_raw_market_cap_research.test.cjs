@@ -92,3 +92,45 @@ test("Heron SEC cover shares yield independent RAW capitalization leads only aft
  assert.equal(result.eventTradeCasesValidated,0);
  assert.equal(result.approvedRaasRatings,0);
 });
+
+test("ESPR NDA 211616 and 211617 are distinct programs but one correlated issuer",()=>{
+ const shares=require("../new-platform/frontend/data/raas-2020-sec-cover-share-leads.json").records;
+ const events=require("../new-platform/frontend/data/raas-historical-2020-primary-source-leads.json").records;
+ const espr=events.filter(x=>x.ticker==="ESPR");
+ assert.equal(espr.length,2);
+ assert.deepEqual(espr.map(x=>x.application),["NDA 211616","NDA 211617"]);
+ assert.deepEqual(espr.map(x=>x.pdufaTargetDate),["2020-02-21","2020-02-26"]);
+ assert.deepEqual(espr.map(x=>x.actualFDAActionDate),["2020-02-21","2020-02-26"]);
+ assert.deepEqual(espr.map(x=>x.nctIds[0]),["NCT02666664","NCT03337308"]);
+ for(const event of espr){
+  const share=shares.find(x=>x.caseId===event.caseId);
+  assert.ok(share);
+  assert.equal(share.sharesOutstanding,27327409);
+  assert.equal(share.sharesMeasurementDate,"2019-11-01");
+  assert.equal(share.filedDate,"2019-11-06");
+  assert.equal(share.firstConservativeEntryDate,"2019-11-07");
+  assert.equal(share.sourceUrl.includes("20190930x10q"),true);
+  assert.equal(m.checkedLead(share,event).ticker,"ESPR");
+ }
+ const counts=m.issuerExposureDiagnostics(events);
+ assert.equal(counts.researchPrograms,5);
+ assert.equal(counts.distinctResearchIssuers,4);
+ assert.equal(counts.overlappingSameIssuerPairs,1);
+ assert.equal(counts.overlaps[0].ticker,"ESPR");
+ assert.equal(counts.overlaps[0].targetGapDays,5);
+});
+test("ESPR 2019 SEC fact cannot be multiplied by raw prices before first public date",()=>{
+ const shares=require("../new-platform/frontend/data/raas-2020-sec-cover-share-leads.json").records;
+ const events=require("../new-platform/frontend/data/raas-historical-2020-primary-source-leads.json").records;
+ const s=shares.find(x=>x.caseId==="ESPR|NEXLETOL|NDA211616|2020");
+ const e=events.find(x=>x.caseId===s.caseId);
+ const raw=bars(38,"2019-11-04",114),adj=bars(3800,"2019-11-04",114);
+ const x=m.examine(s,e,raw,adj);
+ assert.equal(x.observations.find(x=>x.session==="2019-11-06").historicMarketCapResearchMillions,null);
+ const after=x.observations.find(x=>x.session==="2019-11-07");
+ assert.equal(after.historicMarketCapResearchMillions,1038.44);
+ assert.equal(after.within300mTo10bUnreviewed,true);
+ assert.equal(after.adjustedClose,3800);
+ assert.equal(x.eventTradeCasesValidated,0);
+ assert.equal(x.approvedRaasRatings,0);
+});
