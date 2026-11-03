@@ -40,7 +40,7 @@ class NightlyManifestTests(unittest.TestCase):
             self.assertEqual(m["githubWorkflowRunId"],RUN)
             self.assertEqual(m["sourceCommitSHA"],SHA)
             self.assertEqual(m["sourceResearchCases"],36)
-            self.assertEqual(m["revisedPdufaTargetsExcludedFromOriginalGoalResearchCount"],1)
+            self.assertEqual(m["revisedPdufaTargetsExcludedFromOriginalGoalResearchCount"],4)
             self.assertEqual(m["independentlyCertifiedThreeWayForecasts"],0)
             self.assertIsNone(m["independentlyValidatedFDAAccuracyPct"])
             self.assertEqual(m["approvedRAASMetricCalibrations"],0)
