@@ -48,7 +48,7 @@ test("Four new distinct original-goal source leads preserve the Phase 3-only fil
    x.prospectivelyFrozenThreeWayProbabilities===false &&
    x.exactReviewCycleIndependentlyVerified===false));
  assert.match(source,/raas-v2-additional-original-goals/);
- assert.match(source,/additionalOriginalGoalIssuerSourceCases\\.map/);
+ assert.ok(source.includes("additionalOriginalGoalIssuerSourceCases.map"));
 });
 
 test("Additional SVRA PRAX EXEL source-led formal extensions cannot become forecasts",()=>{
