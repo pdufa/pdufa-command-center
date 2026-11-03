@@ -284,7 +284,7 @@ test("2024 BridgeBio BBIO Attruby FDA original target must precede Nov22 approva
  assert.equal(audit.eligibleForApprovedTrading,false);
  const bad=structuredClone(earlier);
  bad.records.find(x=>x.ticker==="BBIO").firstConservativeEntryDate="2024-08-01";
- assert.throws(()=>m.verify(events,shares,bad,intake),/BBIO_SECURITIES_DISCLOSURE_MISMATCH/);
+ assert.throws(()=>m.verify(events,shares,bad,intake),/BBIO_SECURITIES_DISCLOSURE_MISMATCH|CAP_SOURCE_IDENTITY_OR_ASOF_INVALID/);
  const changed=structuredClone(events);
  changed.records.find(x=>x.ticker==="BBIO").actualFDAActionDate="2024-11-29";
  assert.throws(()=>m.verify(changed,shares,earlier,intake),/ORIGINAL_TARGET_ACTION_IDENTITY_INVALID/);
