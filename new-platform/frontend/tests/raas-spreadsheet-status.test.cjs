@@ -76,8 +76,8 @@ test("Every primary trial spreadsheet and its CSV has a deliberate RAAS status f
  assert.deepEqual(postExport,["BOTTOM","","3","10","","PENDING_VALIDATION"]);
  for(const rel of ["app/Phase3ReadoutSheets.tsx","app/Phase3RegistryPostingSheets.tsx","lib/tools-spreadsheet.ts"]){
    const code=fs.readFileSync(path.join(root,rel),"utf8");
-   assert.match(code,/Research source coverage % \\(NOT RAAS score\\)/);
-   assert.match(code,/Timing-only exploratory pilot \\(NOT RAAS score\\)/);
+   assert.match(code,/Research source coverage % \(NOT RAAS score\)/);
+   assert.match(code,/Timing-only exploratory pilot \(NOT RAAS score\)/);
  }
  const sourceTable=fs.readFileSync(path.join(root,"app/TrialRaasDisclosure.tsx"),"utf8");
  assert.match(sourceTable,/Source coverage/);
