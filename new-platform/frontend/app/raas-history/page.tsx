@@ -20,6 +20,7 @@ import {parseHistoricalFinance,financeForCase,financeReadiness} from "../../lib/
 import {parseShareBridge,bridgeForCase,bridgeSummary} from "../../lib/raas-share-bridge";
 import {parsePriceCrosschecks,priceAuditForCase,priceAuditSummary} from "../../lib/raas-price-crosschecks";
 import {analyzeRaasHistoricalReturns} from "../../lib/raas-historical-return-distribution";
+import {auditRaasNinetyToThree} from "../../lib/raas-90to3-eligibility";
 import {parseCorporateActions,corporateActionsForCase,corporateActionSummary} from "../../lib/raas-corporate-action-audit";
 import {parseFdaPrimaryOutcomes,fdaPrimaryOutcomeForCase,fdaPrimaryOutcomeSummary} from "../../lib/raas-fda-primary-outcomes";
 import {parseProspectiveSourceBaselines,prospectiveSourceSummary} from "../../lib/raas-prospective-source-baselines";
@@ -43,6 +44,7 @@ const sharesSummary=bridgeSummary(shareResearch,pre,post);
 const priceResearch=parsePriceCrosschecks(priceCrosscheckResearch,pre,post);
 const priceSummary=priceAuditSummary(priceResearch,pre,post);
 const historicalReturns=analyzeRaasHistoricalReturns(pre,post,priceResearch);
+const filteredWindows=auditRaasNinetyToThree(historicalReturns,pre,post,shareResearch,priceResearch);
 const actionFeed=parseCorporateActions(corporateActionResearch);
 const actionSummary=corporateActionSummary(actionFeed,pre,post);
 const fdaPrimary=parseFdaPrimaryOutcomes(fdaPrimaryOutcomeData,post);
@@ -244,6 +246,24 @@ export default function RaasHistoricalAuditPage(){
        <span>{historicalReturns.windows.length} selected windows · {historicalReturns.totalUniqueIssuers} distinct issuers · {historicalReturns.yearRange}</span>
      </div>
      <p className={css.notice}><strong>Retrospectively selected cases — Not a validated return forecast.</strong> These observed changes were computed from previously sourced entry and exit closes, not from original RAAS trading signals. The sample is small and selected after outcomes. A mean cannot determine which time span is best, and the same companies appear in both stages.</p>
+     <details className={css.check} data-raas-90-to-3-eligibility>
+       <summary><span className={css.indicator}>◌</span>
+         <strong>90–3 days + $300M–$10B eligibility audit · {filteredWindows.calendarWindowCount}/{filteredWindows.rows.length} in calendar window</strong>
+         <span className={css.status}>{filteredWindows.eligibleForSourceFollowUpCount} have consistent basic cap plus both nominal closes · 0 validated trades</span>
+       </summary>
+       <div className={css.checkBody}>
+         <p><strong>Retrospective timing:</strong> {filteredWindows.topCalendarCount} TOP and {filteredWindows.bottomCalendarCount} BOTTOM examples enter at most 90 days before their event and exit at least 3 days before it. TOP is measured against the <strong>actual readout date known in hindsight</strong>; BOTTOM uses the scheduled PDUFA target known before entry.</p>
+         <p><strong>Capitalization:</strong> {filteredWindows.issuerCapInRangeCount}/{filteredWindows.rows.length} recorded vendor caps fall within $300M–$10B, but {filteredWindows.matchingCapBridgeCount}/{filteredWindows.rows.length} agree with the SEC pre-entry basic-share arithmetic within 2%. The two measures are not fully diluted values.</p>
+         <p><strong>Additional validation still required:</strong> historical trading calendar, corporate actions, adjusted prices, execution, unbiased cohort selection, original RAAS predictions and issuer-disjoint holdouts. Source follow-up eligibility is not scoring approval.</p>
+         {filteredWindows.rows.map(r=><div key={r.caseId} className={css.sourceFact} data-raas-window-filter={r.caseId}>
+           <strong>{r.stage==="pre"?"TOP":"BOTTOM"} · {r.ticker} · {r.entryDaysBeforeEvent} days before event entry → {r.exitDaysBeforeEvent} days before event exit</strong>
+           <p>Historical gross price change {r.grossReturnPercent>0?"+":""}{r.grossReturnPercent.toFixed(2)}% · {r.eligibleCalendarWindow?"Within selected 90–3-day calendar window":"Outside the specified 90–3-day calendar window"}.</p>
+           <p>Vendor entry cap: ${r.vendorCapUsdMillions.toLocaleString("en-US")}M · SEC basic-share × quote: {r.secReconstructedCapUsdMillions===null?"Missing":"$"+r.secReconstructedCapUsdMillions.toLocaleString("en-US")+"M"} · within 2%: {r.secBridgeAgreesWithin2Pct?"yes":"no"} · both nominal closes matched: {r.hasBothIndependentNominalCloses?"yes":"no"}.</p>
+           <p>Source follow-up: <strong>{r.eligibleForSourceFollowUp?"Eligible for further research, NOT RAAS scoring":"Blocked pending evidence or timing"}</strong>.</p>
+           <p className={css.factCaution}>{r.blockers.join(" · ")}</p>
+         </div>)}
+       </div>
+     </details>
      <div className={css.cohortScroll}>
        <table className={css.cohortTable}>
          <thead><tr>
