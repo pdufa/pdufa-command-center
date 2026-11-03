@@ -55,7 +55,7 @@ const make=changes=>build({queue:fixture(),config,primary,...changes});
 test("2024/2025 target year counts exclude action year and already-sourced goal duplicates",()=>{
  const x=make();
  assert.equal(x.originalEventSourceCount,primary.records.length);
- assert.equal(x.queueSourceActionRows,17);
+ assert.equal(x.queueSourceActionRows,18);
  assert.equal(x.fdaRetrospectiveApprovalActionRows,1);
  assert.equal(x.fdaRetrospectiveCRLLetterRows,1);
  assert.equal(x.actionYearRowsNotCountedAsTargetYearDenominator,2);
@@ -77,11 +77,11 @@ test("Separate event dates for same ticker remain reviews but only one issuer sl
  assert.equal(x.byTargetYear[2024].newCandidateTickerNamesNotYetSourceBacked,3);
  assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,7);
  assert.equal(x.byTargetYear[2024].minimumAdditionalIssuerDiscoveryBeyondCurrentTargetQueue,23);
- assert.equal(x.byTargetYear[2025].sourceBackedTargetEvents,3);
+ assert.equal(x.byTargetYear[2025].sourceBackedTargetEvents,4);
  assert.equal(x.byTargetYear[2025].archivedUnverifiedDateRows,2);
  assert.equal(x.byTargetYear[2025].newCandidateTickerNamesNotYetSourceBacked,2);
- assert.equal(x.byTargetYear[2025].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,5);
- assert.equal(x.byTargetYear[2025].minimumAdditionalIssuerDiscoveryBeyondCurrentTargetQueue,25);
+ assert.equal(x.byTargetYear[2025].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,6);
+ assert.equal(x.byTargetYear[2025].minimumAdditionalIssuerDiscoveryBeyondCurrentTargetQueue,24);
  const s=x.sameYearMultipleGoalSameTicker.find(r=>r.ticker==="SNDX");
  assert.deepEqual(s.suggestedDistinctTargetDates,["2024-08-28","2024-12-26"]);
  assert.equal(s.independentIssuerSlotsAllowed,1);
