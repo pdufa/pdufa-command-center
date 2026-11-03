@@ -92,7 +92,7 @@ test("unreviewed leads cannot silently enter accepted two-year intake or add a t
  const changed=structuredClone(events);
  changed.records[1].actualFDAActionDate="2025-01-31";
  assert.throws(()=>m.verify(changed,shares,earlier,intake),
-  /ACTIVE_ORIGINAL_TARGET_ACTION_IDENTITY_INVALID/);
+  /PRIMARY_EVENT_SOURCE_INVALID|ACTIVE_ORIGINAL_TARGET_ACTION_IDENTITY_INVALID/);
 });
 test("unpublished SEC cover shares and fabricated share counts fail closed",()=>{
  const later=structuredClone(shares);
