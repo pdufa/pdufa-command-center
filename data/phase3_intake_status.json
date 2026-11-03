@@ -1,16 +1,25 @@
 {
-  "mode": "backfill",
-  "started_at": "2026-11-02T04:22:14.996530+00:00",
+  "mode": "daily",
+  "started_at": "2026-11-03T04:21:52.498202+00:00",
   "registry_companies": 717,
-  "pages": 51,
-  "studies_checked": 50135,
-  "matched_posted_results": 2486,
-  "new_records": 0,
-  "new_record_details": [],
+  "pages": 4,
+  "studies_checked": 3965,
+  "matched_posted_results": 101,
+  "new_records": 1,
+  "new_record_details": [
+    {
+      "ticker": "NVO",
+      "drug": "Placebo (Semaglutide) | Semaglutide",
+      "nct_id": "NCT04916470",
+      "results_posted_at": "2026-11-02",
+      "source_url": "https://clinicaltrials.gov/study/NCT04916470",
+      "verification_status": "DRUG_IDENTITY_REVIEW"
+    }
+  ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-02T04:23:45.342540+00:00",
-  "stored_results": 2494,
+  "finished_at": "2026-11-03T04:21:59.521051+00:00",
+  "stored_results": 2495,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
