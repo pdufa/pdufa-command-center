@@ -5,6 +5,7 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import {buildRaasMetricValidationWorklist,raasDocumentedTrialOptions,type RaasWorklistTrial} from "../../lib/raas-metric-validation-worklist";
 import {activePdufaGoalAsOfAudit} from "../../lib/raas-pdufa-goal-asof-metric-audit";
+import {activeSECAsOfEntryShares} from "../../lib/raas-historical-sec-entry-bridge";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
 
@@ -82,6 +83,42 @@ function GoalAsOfHistory(){
   </details>)}
  </section>;
 }
+/** Historical SEC shares only, never an approved 2024/25 PDUFA capitalization score. */
+function SECAsOfHistory(){
+ const audit=activeSECAsOfEntryShares();
+ return <section id="raas-sec-entry-asof" className={css.context}
+  data-raas-sec-entry-asof="research-only">
+  <h2>Historical SEC cover shares known at proposed T−79 entry · 2024–2025</h2>
+  <p><strong>{audit.coverFactsPublicAtProposedEntry}/{audit.caseCount}</strong> cases have a dated, pre-entry SEC share-count source lead. <strong>{audit.laterSnapshotsUnavailableAtEntry}</strong> later cover filings cannot be used at their proposed entry. <strong>0</strong> independently verified entry market caps; <strong>0</strong> independently verified adjusted entry/exit price pairs.</p>
+  <p className={css.notice}>A historical cover-page share count is a dated disclosure, not a continuous or fully diluted day-of-trade share count. The $300 million–$10 billion market-cap restriction is still <strong>unverified</strong> for every case. Revised targets and proposed Nasdaq sessions are handled by the separate goal-date audit above.</p>
+  {audit.rows.map(x=><details key={x.caseId} className={css.group} data-raas-sec-entry-case={x.ticker}>
+   <summary><strong>{x.ticker} · {x.application}</strong>
+    <span>Proposed entry {x.proposedEntrySession} · {x.currentSECShares===null?"SEC source missing":x.currentSECShares.toLocaleString("en-US")+" dated SEC shares (not verified cap)"}</span>
+    <i aria-hidden="true">▸</i>
+   </summary>
+   <div className={css.metricBody}>
+    <div className={css.reviewGrid}>
+     <div><span>Proposed entry → exit regular sessions</span>
+      <strong>{x.proposedEntrySession} → {x.proposedExitSession}</strong></div>
+     <div><span>Cover-page outstanding common shares available at entry</span>
+      <strong>{x.currentSECShares?.toLocaleString("en-US")??"No eligible pre-entry SEC source"}</strong></div>
+     <div><span>Share-count observation date → conservative first public use</span>
+      <strong>{x.currentSECSharesMeasurementDate??"—"} → {x.currentSECFirstConservativeUse??"—"}</strong></div>
+     <div><span>Share measurement age at proposed entry</span>
+      <strong>{x.currentSECDisclosureAgeDays===null?"—":x.currentSECDisclosureAgeDays+" calendar days"}</strong></div>
+     <div><span>Earlier / later saved SEC share observations</span>
+      <strong>{x.earlierCoverShares.toLocaleString("en-US")} / {x.laterCoverShares.toLocaleString("en-US")}</strong></div>
+     <div><span>Later SEC source usable at original entry?</span>
+      <strong>{x.laterCoverAvailableAtEntry?"Yes, conservative as-of date passed":"No — later filing excluded from entry source"}</strong></div>
+     <div><span>Same-day market cap eligibility</span><strong>Unverified · no USD calculation promoted</strong></div>
+     <div><span>Independent adjusted entry/exit prices</span><strong>Not verified · return and RAAS score withheld</strong></div>
+    </div>
+    <p className={css.muted}>Earlier cover shares <a href={x.earlierSECUrl} target="_blank" rel="noopener noreferrer">SEC filing</a> · Later cover shares <a href={x.laterSECUrl} target="_blank" rel="noopener noreferrer">SEC filing</a>{x.currentSECSourceUrl?<> · <a href={x.currentSECSourceUrl} target="_blank" rel="noopener noreferrer">Source eligible at proposed entry</a></>:""}</p>
+    <p className={css.notice}>Source review still required: exact-day common share continuity, splits and financing, independent adjusted vendor closes and full FDA event census. Later cover difference: {x.shareSnapshotDifference.toLocaleString("en-US")} shares; this is not a proven change on the entry day.</p>
+   </div>
+  </details>)}
+ </section>;
+}
 export default async function RaasWorklistPage({searchParams}:{searchParams:Promise<Params>}){
  const q=await searchParams;
  const anchorStage:RaasStage=first(q.stage)==="post"?"post":"pre";
@@ -110,6 +147,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
    <Link href="/raas-scan">Full 60-metric readiness scan</Link>
   </nav>
   <GoalAsOfHistory/>
+  <SECAsOfHistory/>
   <section className={css.context} aria-label="Trial source filter">
    <h2>Evidence context</h2>
    {invalidContext&&<p className={css.notice}>Invalid trial identity in the URL. Showing global source examples; no trial-specific score is inferred.</p>}
