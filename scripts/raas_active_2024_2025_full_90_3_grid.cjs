@@ -86,7 +86,7 @@ function assess(e,g,w,bars,shareRows){
  if(g.announced>pe)return {...base,reason:"GOAL_DATE_NOT_PUBLIC_BY_PLANNED_ENTRY"};
  if(e.phase3ReadoutDate>pe)return {...base,reason:"PHASE3_READOUT_NOT_PUBLIC_BY_PLANNED_ENTRY"};
  if(g.revisesAt&&g.revisesAt<=px)return {...base,reason:"ORIGINAL_GOAL_REVISED_BEFORE_PLANNED_EXIT"};
- if(!bars)return {...base,reason:"MISSING_ALPACA_RAW_AND_ADJUSTED_BARS"};
+ if(!bars||bars.length===0)return {...base,reason:"MISSING_ALPACA_RAW_AND_ADJUSTED_BARS"};
  const entry=bars.find(b=>b.session>=pe&&b.session<=day(pe,4));
  const exit=[...bars].reverse().find(b=>b.session<=px&&b.session>=day(px,-4));
  const dates={entrySession:entry?.session??null,exitSession:exit?.session??null};
