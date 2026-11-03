@@ -70,7 +70,7 @@ test("No original FDA action or postdecision label leaks into this source-time b
  const c=csv(activeSECAsOfEntryShares());
  assert.equal(c.trim().split("\n").length,10);
  assert.match(c,/AXSM/);
- assert.match(c,/independently/===false? /currentSECShares/:/currentSECShares/);
+ assert.match(c,/currentSECShares/);
  assert.doesNotMatch(c,/APPROVED|CRL/);
 });
 test("Mobile worklist shows individual SEC as-of source links, missing cap/price and no fabricated score",()=>{
@@ -79,7 +79,7 @@ test("Mobile worklist shows individual SEC as-of source links, missing cap/price
  assert.match(c,/SECAsOfHistory/);
  assert.match(c,/data-raas-sec-entry-case/);
  assert.match(c,/currentSECShares/);
- assert.match(c,/entryMarketCap/);
+ assert.match(c,/market cap eligibility/i);
  assert.match(c,/independent adjusted/i);
  const file=fs.readFileSync(path.join(root,"lib/raas-historical-sec-entry-bridge.ts"),"utf8");
  for(const raw of [file,c]){
