@@ -139,7 +139,7 @@ function build({discovery,config,archiveCsv,known,intake,registryCsv}){
    currentStage:"ORIGINAL_SOURCE_FOUND_MARKET_CAP_AND_RETURN_UNVALIDATED",
    historicallyValidatedTrade:false,approvedRaasMetric:false});
  }
- if(reviewRows.length!==3)throw Error("RAAS_TWO_YEAR_EXPECTED_SOURCE_LEADS_MISSING");
+ if(reviewRows.length!==known.records.length)throw Error("RAAS_TWO_YEAR_EXPECTED_SOURCE_LEADS_MISSING");
  const seenArchive=new Set();
  for(const lead of archive){
   const id="ARCHIVE|"+lead.eventKey+"|"+lead.ticker+"|"+lead.pdufaDate;
