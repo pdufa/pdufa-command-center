@@ -5,6 +5,7 @@ import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import css from "./Phase3ReadoutSheets.module.css";
 import TrialRaasDisclosure from "./TrialRaasDisclosure";
+import RaasAllClassifiedLiveReview from "./RaasAllClassifiedLiveReview";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
 import {RANKED_BENEFIT_ASSESSMENTS} from "../lib/pipeline-benefit-assessments";
@@ -958,6 +959,7 @@ export default function Phase3ReadoutSheets(){
         </div>
       </div>
     </details>}
+    <RaasAllClassifiedLiveReview data={data}/>
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
       benefitFeed={benefitFeed} researchStatus={researchStatus}
