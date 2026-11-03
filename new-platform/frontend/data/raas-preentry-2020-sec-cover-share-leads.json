@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "Earlier audited filing citations for 2020 entry-window research; source timestamps prove publication, NOT per-day share continuity, dilution-free capital or suitability for approved PDUFA backtest.",
+  "records": [
+    {
+      "caseId": "HRTX|HTX011|NDA211988|2020",
+      "ticker": "HRTX",
+      "cik": "0000818033",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "sharesOutstanding": 90374284,
+      "sharesMeasurementDate": "2020-02-03",
+      "filedDate": "2020-03-02",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2020-03-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/818033/000156459020007973/hrtx-10k_20191231.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/818033/000156459020007973/0001564590-20-007973-index.htm",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "originalSourceDescription": "FY2019 annual 10-K filed March 2, 2020 at 07:47:59 ET, cover 90,374,284 common shares outstanding on Feb 3; conservative use March 3 or later. Subsequent May 6 Q1 10-Q reports 90,642,154 as of Apr 29. These are snapshots, never proven daily shares."
+    },
+    {
+      "caseId": "ICPT|OCA_NASH|NDA212833|2020",
+      "ticker": "ICPT",
+      "cik": "0001270073",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "sharesOutstanding": 32853066,
+      "sharesMeasurementDate": "2019-12-31",
+      "filedDate": "2020-02-25",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2020-02-26",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1270073/000155837020001314/icpt-20191231x10k93558c.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1270073/000155837020001314/0001558370-20-001314-index.htm",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "originalSourceDescription": "FY2019 annual 10-K filed Feb 25 2020 at 16:04:15 ET, 32,853,066 common shares at Dec 31 2019. Conservative use Feb 26 or later. May 11 Q1 10-Q reports 32,937,431 as of Mar 31; continuity between reporting dates cannot be presumed."
+    }
+  ]
+}
