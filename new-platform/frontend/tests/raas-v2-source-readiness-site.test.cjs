@@ -16,6 +16,11 @@ test("V2 source-readiness snapshot cannot pretend to be a calibrated model",()=>
  assert.equal(snapshot.verifiedOriginalGoalProspectiveThreeWayForecasts,0);
  assert.equal(snapshot.independentlyValidatedThreeWayFdaAccuracy,null);
  assert.equal(snapshot.approvedMetricCalibrations,0);
+ assert.equal(snapshot.issuerDocumentedNearTermCycleSourceLeads,8);
+ assert.equal(snapshot.knownRevisedGoalExcludedFromOriginalDeadlineQueue,1);
+ assert.equal(snapshot.remainingUnexcludedLegacyDateResearchLeads,35);
+ assert.equal(snapshot.legacyCasesStillUnreviewedByIssuerSources,28);
+ assert.equal(snapshot.provenIndependentFirstGoalForecasts,0);
  assert.equal(existing.approvedRaasMetricCalibrations,0);
  assert.match(metricSpecs,/RAAS_SPEC_VERSION="2026-11-02-foundation-v1"/);
 });
@@ -31,4 +36,7 @@ test("Mobile site distinguishes V1 active foundation and V2 source candidate and
  assert.match(source,/x\.approvedMetricCalibrations/);
  assert.match(source,/x\.nightlySourceReadinessAuditUrl/);
  assert.match(source,/href="#raas-v2-source-readiness"/);
+ assert.match(source,/x\.knownRevisedGoalExcludedFromOriginalDeadlineQueue/);
+ assert.match(source,/x\.legacyCasesStillUnreviewedByIssuerSources/);
+ assert.match(source,/The remaining \{x\.remainingUnexcludedLegacyDateResearchLeads\} are not independently certified original-goal forecasts/);
 });
