@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE",
+  "studyStartDate": "2024-01-01",
+  "studyEndDate": "2025-12-31",
+  "sourceAsOf": "2026-11-03",
+  "note": "Active two-year source-reviewed PDUFA intake; no source leads promoted from the 2016–2025 archive without independent checks of original target announcement, FDA action, Phase 3, historic entry-day capitalization and price. Complete 2024 and 2025 FDA approval/CRL/extension/withdrawal outcome denominator audit required before a best window or numerical RAAS score.",
+  "yearAudits": [
+    {
+      "year": 2024,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    },
+    {
+      "year": 2025,
+      "status": "NOT_AUDITED",
+      "sourceUrl": null
+    }
+  ],
+  "records": []
+}
