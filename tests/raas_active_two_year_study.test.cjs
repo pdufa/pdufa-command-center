@@ -94,7 +94,8 @@ test("2024/2025 source-reviewed synthetic entries yield only research rows, neve
    assert.ok(["2024-07-26","2025-07-26"].includes(u.searchParams.get("asof")));
    assert.equal(opts.headers["APCA-API-KEY-ID"],"fake");
    seen.push(ticker);
-   return response(ticker,(ticker==="TOP"?a:b).bars);
+   return response(ticker,(ticker==="TOP"?a:b).bars.filter(x=>
+    x.date>=u.searchParams.get("start")&&x.date<=u.searchParams.get("end")));
   }});
  assert.deepEqual(seen.sort(),["BOT","TOP"]);
  assert.equal(r.studyDurationYears,2);
