@@ -11,6 +11,7 @@ import expansionSource from "../../data/raas-2024-2025-expanded-candidate-source
 import expandedCoverShares from "../../data/raas-2024-2025-expanded-candidate-sec-snapshots.json";
 import fdaDecisionAccuracy from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
 import v2Readiness from "../../data/raas-v2-candidate-source-readiness-site-snapshot.json";
+import v2UpcomingCycleSources from "../../data/raas-v2-upcoming-2026-cycle-source-research.json";
 import goal2025Research from "../../data/raas-2025-nine-archived-goal-original-source-triage.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
@@ -90,6 +91,18 @@ function V2CandidateReadiness(){
    <div><strong>{x.approvedMetricCalibrations} / 60</strong><span>Approved RAAS metric calibrations</span></div>
    <div><strong>V1</strong><span>Active RAAS foundation; V2 not released</span></div>
   </div>
+  <details id="raas-v2-near-term-cycle-source-review">
+   <summary>{v2UpcomingCycleSources.records.length} upcoming issuer-source reviews · one revised PDUFA goal</summary>
+   <p><strong>These are issuer-documented source findings, not independently verified model events.</strong> The current three-way accuracy remains unmeasured.</p>
+   <ul>{v2UpcomingCycleSources.records.map(r=><li key={r.legacyCaseKey}>
+    <strong>{r.ticker}</strong> · {r.issuerDocumentedApplicationClass.replaceAll("_"," ")}
+    · first goal for current review cycle: <strong>{r.firstAnnouncedGoalForThisReviewCycle}</strong>
+    {r.formallyRevisedGoal?<> · later reported target <strong>{r.legacyGoalDate}</strong> (revision disclosed {r.revisionDisclosedAt}, after the original goal)</>:null}
+    · <a href={r.issuerGoalSourceUrl} target="_blank" rel="noopener noreferrer">Dated issuer goal source</a>
+    {r.revisionSourceUrl?<> · <a href={r.revisionSourceUrl} target="_blank" rel="noopener noreferrer">Extension filing</a></>:null}
+   </li>)}</ul>
+   <p className={css.notice}>CAPR's November 22 date must not enter the future first-goal prediction denominator. CYTK is supplemental rather than an original NDA; SMMT is a BLA. FDA application cycle numbers and independent goal-disposition labels still require review.</p>
+  </details>
   <details>
    <summary>See the seven V2 research-to-validation gates</summary>
    <ol>
