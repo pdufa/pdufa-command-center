@@ -204,6 +204,80 @@ def validate_top8_source_intake(intake, old_rows, as_of):
     return result
 
 
+
+def validate_additional_formal_extensions(intake, old_rows, as_of):
+    """Issuer-reported formal extensions are SOURCE leads, never prospective forecasts.
+
+    SVRA/PRAX legacy rows contain revised goals; EXEL's older row still
+    contains the original December goal despite its public September revision.
+    Either pattern is barred from an *unresolved upcoming original-goal* cohort.
+    """
+    items=intake.get("additionalFormalRevisionCases")
+    assert_safe(intake.get("additionalFormallyExtendedLegacyReviewLeads")==3
+                and type(items) is list and len(items)==3,
+                "FORMAL_EXTENSION_SOURCE_SCHEMA_INVALID")
+    expected={
+        "SVRA":("SVRA|MOLBREEVI_PAP_20261122","2026-08-22","2026-11-22","BLA"),
+        "PRAX":("RELUTRIGINE_DEE_US_20261227","2026-09-27","2026-12-27","NDA"),
+        "EXEL":("ZANZALINTINIB_CRC_US_20261203","2026-12-03","2027-03-03","NDA"),
+    }
+    legacy={r.get("fda_regulatory_case_id"):r for r in old_rows if
+            r.get("model_version")=="FDA-DIRECTIONAL-100-V1.9"}
+    cutoff=audit.utc(as_of).date()
+    result=[]
+    seen=set()
+    for r in items:
+        ticker=r.get("ticker")
+        assert_safe(ticker in expected and ticker not in seen,
+                    "FORMAL_EXTENSION_IDENTITY_INVALID")
+        seen.add(ticker)
+        key,original,revised,typ=expected[ticker]
+        first=audit.day(r.get("firstCycleGoalDate"))
+        last=audit.day(r.get("revisedGoalDate"))
+        publication=audit.day(r.get("originalGoalPublicationDate"))
+        revision=audit.day(r.get("formalExtensionAnnouncementDate"))
+        assert_safe(r.get("legacyCaseKey")==key and
+                    key in legacy and legacy[key]["ticker"]==ticker and
+                    r.get("legacyGoalDate")==legacy[key]["pdufa_date"] and
+                    first.isoformat()==original and last.isoformat()==revised and
+                    r.get("applicationType")==typ and
+                    r.get("legacyGoalDate") in {original,revised},
+                    "FORMAL_EXTENSION_GOAL_CYCLE_MISMATCH")
+        assert_safe(publication<=revision<=cutoff and
+                    revision<first<last and
+                    r.get("sourceDocumentLocated") is True and
+                    all(r.get(x) is False for x in (
+                        "exactApplicationCycleIndependentlyVerified",
+                        "independentFDAOriginalGoalOutcome",
+                        "prospectivelyFrozenThreeWayProbabilities",
+                        "eligibleForV2OriginalGoalPrediction")) and
+                    all(isinstance(r.get(x),str) and
+                        r[x].startswith("https://") for x in
+                        ("originalGoalSourceUrl","formalExtensionSourceUrl")) and
+                    isinstance(r.get("clinicalSponsor"),str) and
+                    bool(r["clinicalSponsor"].strip()) and
+                    isinstance(r.get("notes"),str) and bool(r["notes"].strip()),
+                    "FORMAL_EXTENSION_SOURCE_CHRONOLOGY_OR_PROMOTION_INVALID")
+        result.append({
+            "ticker":ticker,"researchCaseKey":key,
+            "firstReportedReviewCycleGoalDate":original,
+            "currentIssuerReportedRevisedGoalDate":revised,
+            "legacyGoalDate":r["legacyGoalDate"],
+            "applicationType":"FORMALLY_EXTENDED_"+typ,
+            "originalGoalSourceUrl":r["originalGoalSourceUrl"],
+            "formalExtensionSourceUrl":r["formalExtensionSourceUrl"],
+            "formalExtensionAnnouncementDate":revision.isoformat(),
+            "issuerSourceLocatedAtAudit":True,
+            "independentlyCertifiedReviewCycle":False,
+            "immutableThreeClassForecastVerified":False,
+            "eligibleForApprovedPredictiveAccuracy":False,
+            "legacyDateIsFormerOriginalGoal":r["legacyGoalDate"]==original,
+            "notes":r["notes"],
+        })
+    assert_safe(seen==set(expected),"FORMAL_EXTENSION_COVERAGE_INCOMPLETE")
+    return result
+
+
 def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, as_of):
     """No acceptance of old directional calls as FDA 3-way forecasts."""
     as_of_dt=audit.utc(as_of)
@@ -318,9 +392,13 @@ def execute(asof=ASOF, data=DATA):
         as_of=asof)
     source=audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-top8-2026-source-intake.json")
     selected=validate_top8_source_intake(source,old_rows,asof)
+    extended=validate_additional_formal_extensions(source,old_rows,asof)
     # Use the EXISTING eight-source ledger, enriching the SAME nightly CSV
     # rather than adding a conflicting calendar. No independent review claim.
     findings={r["researchCaseKey"]:r for r in selected}
+    extended_findings={r["researchCaseKey"]:r for r in extended}
+    assert_safe(not (findings.keys() & extended_findings.keys()),
+                "FORMAL_EXTENSION_DUPLICATE_ISSUER_SOURCE")
     reviewed=0
     revised=0
     for entry in report["blockedSourceItems"]:
@@ -331,8 +409,26 @@ def execute(asof=ASOF, data=DATA):
         entry["firstGoalForThisCycleIssuerReported"]=None
         entry["knownRevisedGoalNotOriginalPrediction"]=False
         entry["sourceResearchStatus"]="NOT_YET_SOURCE_REVIEWED"
+        entry["currentIssuerReportedRevisedGoalDate"]=None
         entry["independentlyVerifiedApplicationCycle"]=False
         if not match:
+            revised_match=extended_findings.get(entry["researchCaseKey"])
+            if not revised_match:
+                continue
+            reviewed+=1
+            revised+=1
+            entry["issuerSourceFound"]=True
+            entry["issuerSourceLink"]=revised_match["formalExtensionSourceUrl"]
+            entry["applicationClassIssuerReported"]=revised_match["applicationType"]
+            entry["firstGoalForThisCycleIssuerReported"]=revised_match[
+                "firstReportedReviewCycleGoalDate"]
+            entry["currentIssuerReportedRevisedGoalDate"]=revised_match[
+                "currentIssuerReportedRevisedGoalDate"]
+            entry["knownRevisedGoalNotOriginalPrediction"]=True
+            entry["sourceResearchStatus"]=(
+                "FORMAL_EXTENSION_KNOWN_ORIGINAL_DATE_NO_LONGER_UNRESOLVED"
+                if revised_match["legacyDateIsFormerOriginalGoal"]
+                else "REVISED_GOAL_MUST_NOT_COUNT_AS_FUTURE_ORIGINAL_DEADLINE")
             continue
         reviewed+=1
         first=audit.day(match["firstReportedReviewCycleGoalDate"])
@@ -346,6 +442,8 @@ def execute(asof=ASOF, data=DATA):
         entry["applicationClassIssuerReported"]=match["applicationType"]
         entry["firstGoalForThisCycleIssuerReported"]=first.isoformat()
         entry["knownRevisedGoalNotOriginalPrediction"]=is_revised
+        entry["currentIssuerReportedRevisedGoalDate"]=(
+            match["issuerPublishedCurrentGoalDate"] if is_revised else None)
         entry["sourceResearchStatus"]=(
             "REVISED_GOAL_MUST_NOT_COUNT_AS_FUTURE_ORIGINAL_DEADLINE"
             if is_revised else "ISSUER_GOAL_LOCATED_EXACT_CYCLE_STILL_UNVERIFIED")
@@ -357,13 +455,16 @@ def execute(asof=ASOF, data=DATA):
     report["unexcludedLegacyDeadlineLeadsNotIndependentlyVerified"]=(
         report["sourceQueueCount"]-revised)
     report["newSourceIntakeStage"]="EIGHT_ISSUER_PUBLISHED_GOAL_SOURCES_FOUND_NOT_INDEPENDENTLY_CERTIFIED"
-    report["issuerPublishedGoalSourceLeadsCount"]=len(selected)
+    report["issuerPublishedGoalSourceLeadsCount"]=len(selected)+len(extended)
+    report["additionalFormallyExtendedSourceLeadsCount"]=len(extended)
+    report["additionalFormalRevisionCycleChecks"]=extended
     report["independentlyCertifiedOriginalGoalRecords"]=0
     report["caseCycleAndSponsorSourceChecks"]=selected
     report["sourceIntakeStillExcludedFromApprovedFDAAccuracy"]=True
     report["clinicalReviewCycleRisks"]={
         "supplemental":1,"previouslyExtendedOriginalGoalAlreadyPassed":1,
-        "licensedThirdPartySponsor":1,"resubmissionAfterCRL":1
+        "licensedThirdPartySponsor":1,"resubmissionAfterCRL":1,
+        "additionalFormalExtensionSources":len(extended)
     }
     # Source references are useful evidence-gathering progress; never
     # override independentlyVerified flags in the original 36-case queue.
@@ -390,6 +491,7 @@ def export(report, json_out, csv_out):
           "issuerSourceFound","applicationClassIssuerReported",
           "firstGoalForThisCycleIssuerReported","knownRevisedGoalNotOriginalPrediction",
           "sourceResearchStatus","issuerSourceLink",
+          "currentIssuerReportedRevisedGoalDate",
           "independentlyVerifiedApplicationCycle"]
     with path.open("w",encoding="utf-8",newline="") as f:
         w=csv.DictWriter(f,fieldnames=keys,extrasaction="ignore")

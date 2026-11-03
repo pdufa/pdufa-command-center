@@ -91,7 +91,7 @@ function V2CandidateReadiness(){
    <div><strong>{x.approvedMetricCalibrations} / 60</strong><span>Approved RAAS metric calibrations</span></div>
    <div><strong>V1</strong><span>Active RAAS foundation; V2 not released</span></div>
   </div>
-  <p className={css.notice}>Of {x.remainingLegacyFutureCaseSourceLeadsAtSnapshot} old future-dated binary case leads, {x.issuerDocumentedNearTermCycleSourceLeads} have issuer goal sources. <strong>{x.knownRevisedGoalExcludedFromOriginalDeadlineQueue} revised deadline</strong> (CAPR) is excluded from the future original-goal count; {x.legacyCasesStillUnreviewedByIssuerSources} cases still lack this source review. The remaining {x.remainingUnexcludedLegacyDateResearchLeads} are not independently certified original-goal forecasts.</p>
+  <p className={css.notice}>Of {x.remainingLegacyFutureCaseSourceLeadsAtSnapshot} old future-dated binary case leads, {x.issuerDocumentedNearTermCycleSourceLeads} have issuer goal or formal-revision sources. <strong>{x.knownRevisedGoalExcludedFromOriginalDeadlineQueue} formally extended case dates</strong> (CAPR, SVRA, PRAX and EXEL) are excluded from the unresolved original-goal prediction count; {x.legacyCasesStillUnreviewedByIssuerSources} cases still lack this source review. The remaining {x.remainingUnexcludedLegacyDateResearchLeads} are not independently certified original-goal forecasts.</p>
   <details id="raas-v2-source-verified-eight">
    <summary>{v2Top8Sources.goalSourceLeads} dated issuer source leads · original, supplemental, revised and licensed sponsor distinctions</summary>
    <p><strong>Contemporaneous issuer and SEC publications located; not independently certified FDA application identities or predictions.</strong> CAPR's first target already passed and was extended, CYTK is a supplemental NDA, CORT is a post-CRL resubmission, and ANAB receives financial rights to a Vanda-licensed program.</p>
@@ -103,6 +103,16 @@ function V2CandidateReadiness(){
     ; source published {r.sourcePublicationDate} · <a href={r.issuerSourceUrl} target="_blank" rel="noopener noreferrer">Open original dated source</a>
    </li>)}</ul>
    <p className={css.notice}>These {v2Top8Sources.records.length} source leads remain research-only: no independent review-cycle certification, no immutable three-way forecast receipts, no approved V2 model.</p>
+  </details>
+  <details id="raas-v2-formally-revised-goals">
+   <summary>{v2Top8Sources.additionalFormallyExtendedLegacyReviewLeads} additional formal FDA goal revisions · exclude stale or moved deadlines</summary>
+   <p><strong>Issuer-documented research findings, not independently certified FDA results or model predictions.</strong> SVRA and PRAX have legacy revised dates; EXEL retains the old December 3 original date even though an extension to March 3, 2027 was reported before that deadline.</p>
+   <ul>{v2Top8Sources.additionalFormalRevisionCases.map(r=><li key={r.legacyCaseKey}>
+    <strong>{r.ticker}</strong> · {r.drug} · original first-cycle goal <strong>{r.firstCycleGoalDate}</strong> → issuer-reported revised goal <strong>{r.revisedGoalDate}</strong>
+    ; legacy spreadsheet goal {r.legacyGoalDate} {r.legacyGoalDate===r.firstCycleGoalDate?"(old original date; already formally extended)":"(revised date, not original)"}
+    ; extension disclosed {r.formalExtensionAnnouncementDate} · <a href={r.originalGoalSourceUrl} target="_blank" rel="noopener noreferrer">Original dated goal source</a> · <a href={r.formalExtensionSourceUrl} target="_blank" rel="noopener noreferrer">Dated extension source</a>
+   </li>)}</ul>
+   <p className={css.notice}>These records do not establish independent review-cycle verification or frozen PASS/CRL/EXTENSION probabilities. No revised goal is a new original FDA action deadline.</p>
   </details>
   <details>
    <summary>See the seven V2 research-to-validation gates</summary>

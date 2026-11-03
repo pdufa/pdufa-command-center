@@ -15,11 +15,11 @@ class OriginalGoalQueueSafetyTests(unittest.TestCase):
     def test_source_findings_are_joined_without_promoting_to_approved_fda_predictions(self):
         r=v2.execute("2026-11-03T23:59:59Z")
         self.assertEqual(r["sourceQueueCount"],36)
-        self.assertEqual(r["issuerSourceReviewedFutureDeadlineLeads"],8)
+        self.assertEqual(r["issuerSourceReviewedFutureDeadlineLeads"],11)
         self.assertEqual(r["sourceDocumentedFirstGoalStillFuture"],7)
-        self.assertEqual(r["knownRevisedDeadlineExcludedFromOriginalGoalCount"],1)
-        self.assertEqual(r["unreviewedLegacyDeadlineLeads"],28)
-        self.assertEqual(r["unexcludedLegacyDeadlineLeadsNotIndependentlyVerified"],35)
+        self.assertEqual(r["knownRevisedDeadlineExcludedFromOriginalGoalCount"],4)
+        self.assertEqual(r["unreviewedLegacyDeadlineLeads"],25)
+        self.assertEqual(r["unexcludedLegacyDeadlineLeadsNotIndependentlyVerified"],32)
         self.assertEqual(r["independentlyCertifiedOriginalGoalRecords"],0)
         self.assertEqual(r["readyForThreeWayProspectiveFreeze"],0)
         self.assertEqual(r["verifiedProspectiveForecasts"],0)
@@ -48,10 +48,48 @@ class OriginalGoalQueueSafetyTests(unittest.TestCase):
         self.assertEqual(indexed["ANAB"]["applicationClassIssuerReported"],
                          "LICENSED_THIRD_PARTY_BLA_SPONSOR")
 
+    def test_three_more_publicly_extended_deadlines_are_excluded_without_three_way_forecasts(self):
+        r=v2.execute("2026-11-03T23:59:59Z")
+        case={x["researchCaseKey"]:x for x in r["blockedSourceItems"]}
+        for key,first,revised in (
+            ("SVRA|MOLBREEVI_PAP_20261122","2026-08-22","2026-11-22"),
+            ("RELUTRIGINE_DEE_US_20261227","2026-09-27","2026-12-27"),
+            ("ZANZALINTINIB_CRC_US_20261203","2026-12-03","2027-03-03"),
+        ):
+            x=case[key]
+            self.assertTrue(x["issuerSourceFound"])
+            self.assertTrue(x["knownRevisedGoalNotOriginalPrediction"])
+            self.assertEqual(x["firstGoalForThisCycleIssuerReported"],first)
+            self.assertEqual(x["currentIssuerReportedRevisedGoalDate"],revised)
+            self.assertFalse(x["independentlyVerifiedApplicationCycle"])
+            self.assertFalse(x["V2ForecastEligible"])
+            self.assertFalse(x["immutablePreactionThreeWayProbabilityVector"])
+        self.assertEqual(case["ZANZALINTINIB_CRC_US_20261203"]["legacyGoalDateUnverified"],"2026-12-03")
+        self.assertEqual(case["ZANZALINTINIB_CRC_US_20261203"]["sourceResearchStatus"],
+                         "FORMAL_EXTENSION_KNOWN_ORIGINAL_DATE_NO_LONGER_UNRESOLVED")
+        self.assertEqual(r["additionalFormallyExtendedSourceLeadsCount"],3)
+        self.assertEqual(r["sourceDocumentedFirstGoalStillFuture"],7)
+
+    def test_false_extension_source_or_promotion_is_rejected(self):
+        from copy import deepcopy
+        import raas_fda_decision_accuracy_audit as audit
+        source=audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-top8-2026-source-intake.json")
+        legacy=audit.csv_rows(ROOT/"data/fda_directional_100pct_freezes.csv")
+        for field,value in (
+            ("formalExtensionAnnouncementDate","2026-12-31"),
+            ("eligibleForV2OriginalGoalPrediction",True),
+            ("revisedGoalDate","2026-08-22"),
+        ):
+            changed=deepcopy(source)
+            changed["additionalFormalRevisionCases"][0][field]=value
+            with self.assertRaises(ValueError):
+                v2.validate_additional_formal_extensions(
+                    changed,legacy,"2026-11-03T23:59:59Z")
+
     def test_source_record_lapses_with_matured_legacy_dates(self):
         r=v2.execute("2026-11-18T23:59:59Z")
-        self.assertEqual(r["issuerSourceReviewedFutureDeadlineLeads"],6)
-        self.assertEqual(r["knownRevisedDeadlineExcludedFromOriginalGoalCount"],1)
+        self.assertEqual(r["issuerSourceReviewedFutureDeadlineLeads"],9)
+        self.assertEqual(r["knownRevisedDeadlineExcludedFromOriginalGoalCount"],4)
         self.assertTrue(all(x["legacyGoalDateUnverified"]>"2026-11-18"
                             for x in r["blockedSourceItems"]))
         r=v2.execute("2028-01-02T23:59:59Z")
