@@ -1,0 +1,48 @@
+name: RAAS dated SEC shares x Alpaca raw historical-cap research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/raas_historical_raw_market_cap_research.cjs'
+      - 'tests/raas_historical_raw_market_cap_research.test.cjs'
+      - 'new-platform/frontend/data/raas-2020-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-historical-2020-primary-source-leads.json'
+      - '.github/workflows/raas-raw-historical-cap-research.yml'
+  pull_request:
+    paths:
+      - 'scripts/raas_historical_raw_market_cap_research.cjs'
+      - 'tests/raas_historical_raw_market_cap_research.test.cjs'
+      - 'new-platform/frontend/data/raas-2020-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-historical-2020-primary-source-leads.json'
+      - '.github/workflows/raas-raw-historical-cap-research.yml'
+permissions:
+  contents: read
+jobs:
+  raw-cap-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify SEC original filing chronology, RAW and adjusted Alpaca prices and no RAAS grade promotion
+        run: node --test tests/raas_historical_raw_market_cap_research.test.cjs
+      - name: Analyze historical common shares x Alpaca SIP raw close
+        if: github.event_name != 'pull_request'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          RAAS_RAW_CAP_OUTPUT: ${{ runner.temp }}/raas-historical-raw-cap-research.json
+        run: node scripts/raas_historical_raw_market_cap_research.cjs
+      - name: Save unapproved historical capitalization research
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-historical-raw-cap-research
+          path: ${{ runner.temp }}/raas-historical-raw-cap-research.json
+          retention-days: 30
+          if-no-files-found: ignore

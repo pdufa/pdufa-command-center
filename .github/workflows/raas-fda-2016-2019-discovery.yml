@@ -8,6 +8,9 @@ on:
       - 'tests/raas_openfda_2016_2019_discovery.test.cjs'
       - 'scripts/raas_match_fda_2016_2019_sponsors.cjs'
       - 'tests/raas_match_fda_2016_2019_sponsors.test.cjs'
+      - 'scripts/raas_historical_event_census_worklist.cjs'
+      - 'tests/raas_historical_event_census_worklist.test.cjs'
+      - 'new-platform/frontend/data/raas-historical-2020-primary-source-leads.json'
       - '.github/workflows/raas-fda-2016-2019-discovery.yml'
   pull_request:
     paths:
@@ -15,6 +18,9 @@ on:
       - 'tests/raas_openfda_2016_2019_discovery.test.cjs'
       - 'scripts/raas_match_fda_2016_2019_sponsors.cjs'
       - 'tests/raas_match_fda_2016_2019_sponsors.test.cjs'
+      - 'scripts/raas_historical_event_census_worklist.cjs'
+      - 'tests/raas_historical_event_census_worklist.test.cjs'
+      - 'new-platform/frontend/data/raas-historical-2020-primary-source-leads.json'
       - '.github/workflows/raas-fda-2016-2019-discovery.yml'
 permissions:
   contents: read
@@ -33,6 +39,7 @@ jobs:
         run: |
           node --test tests/raas_openfda_2016_2019_discovery.test.cjs
           node --test tests/raas_match_fda_2016_2019_sponsors.test.cjs
+          node --test tests/raas_historical_event_census_worklist.test.cjs
       - name: Research original NDA/BLA approval lead candidates (main only)
         if: github.event_name != 'pull_request'
         env:
@@ -44,6 +51,13 @@ jobs:
           RAAS_FDA_BACKFILL_OUTPUT: ${{ runner.temp }}/raas-fda-2016-2019-discovery.json
           RAAS_FDA_CROSSWALK_OUTPUT: ${{ runner.temp }}/raas-fda-2016-2019-issuer-crosswalk.json
         run: node scripts/raas_match_fda_2016_2019_sponsors.cjs
+      - name: Compile 2016-2025 PDUFA target versus actual FDA action evidence worklist
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_FDA_BACKFILL_OUTPUT: ${{ runner.temp }}/raas-fda-2016-2019-discovery.json
+          RAAS_FDA_CROSSWALK_OUTPUT: ${{ runner.temp }}/raas-fda-2016-2019-issuer-crosswalk.json
+          RAAS_EVENT_WORKLIST_OUTPUT: ${{ runner.temp }}/raas-historical-event-worklist.json
+        run: node scripts/raas_historical_event_census_worklist.cjs
       - name: Save FDA action discovery research, not a PDUFA event census
         if: always()
         uses: actions/upload-artifact@v4
@@ -52,5 +66,6 @@ jobs:
           path: |
             ${{ runner.temp }}/raas-fda-2016-2019-discovery.json
             ${{ runner.temp }}/raas-fda-2016-2019-issuer-crosswalk.json
+            ${{ runner.temp }}/raas-historical-event-worklist.json
           if-no-files-found: ignore
           retention-days: 30
