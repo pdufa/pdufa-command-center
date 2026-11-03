@@ -32,7 +32,6 @@ function checkSource(x,known){
   !day(x.targetAnnouncementDate)||!day(x.phase3ReadoutDate)||
   !day(x.actualFDAActionDate)||!day(x.originalPublicActionAnnouncementDate)||
   x.targetAnnouncementDate>=x.pdufaTargetDate||
-  x.phase3ReadoutDate<=x.targetAnnouncementDate&&x.phase3ReadoutDate>"2025-12-31"||
   x.actualFDAActionDate>x.originalPublicActionAnnouncementDate||
   x.actualFDAOutcome!=="CRL"||
   !url(x.targetAnnouncementSourceUrl)||!url(x.phase3ReadoutSourceUrl)||
