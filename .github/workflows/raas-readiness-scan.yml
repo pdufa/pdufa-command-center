@@ -47,7 +47,9 @@ jobs:
       - name: Install exact locked audited dependencies
         run: npm ci --no-audit --no-fund
       - name: Run fail-closed RAAS scan regression checks
-        run: node --test tests/raas-readiness-scan.test.cjs
+        run: |
+          node --test tests/raas-readiness-scan.test.cjs
+          node --test tests/raas-installation-gates.test.cjs
       - name: Run actual read-only 60-metric scan and publish execution summary
         env:
           RAAS_SCAN_OUTPUT: ${{ runner.temp }}/raas-readiness-result.json
