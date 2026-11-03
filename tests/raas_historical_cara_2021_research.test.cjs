@@ -39,7 +39,7 @@ test("2021 CARA FDA review has independently dated public goal, Phase 3 and FDA 
  assert.equal(x.year,2021);
  assert.equal(x.caseId,"CARA|KORSUVA|NDA214916|2021");
  assert.match(x.originalFDAApprovalSourceUrl,/214916Orig1s000Approv\.pdf/);
- assert.match(x.originalPdufaSourceUrl,/202103.*ex99/);
+ assert.match(x.originalPdufaSourceUrl,/tm218984d1_ex99-1/);
  assert.equal(x.earlierPublishedShares,49876763);
  assert.equal(x.laterPublishedShares,50052011);
  assert.equal(x.publishedShareCountChange,175248);
