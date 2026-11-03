@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH",
+  "sourceAsOf": "2026-11-03",
+  "note": "Later original annual/quarterly 10-K/Q SEC cover shares for 2024 ARQT and 2025 AXSM historical research, separate from older dated facts. No daily share continuity verified.",
+  "records": [
+    {
+      "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
+      "ticker": "ARQT",
+      "cik": "0001787306",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 115764164,
+      "sharesMeasurementDate": "2024-05-10",
+      "filedDate": "2024-05-14",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2024-05-15",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000178730624000079/arqt-20240331.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1787306/0001787306-24-000079-index.htm",
+      "originalSourceDescription": "May 14 2024 SEC 10-Q accepted 16:08:16 ET: original cover reports 115,764,164 shares as of May 10. Earlier 10-K 96,813,363 shares Feb21; 2024 equity offering. Use Q1 cover from May15 research only."
+    },
+    {
+      "caseId": "AXSM|SYMBRAVO|NDA215431|2025",
+      "ticker": "AXSM",
+      "cik": "0001579428",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 48462376,
+      "sharesMeasurementDate": "2024-11-05",
+      "filedDate": "2024-11-12",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2024-11-13",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024124758/axsm-20240930.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1579428/0000950170-24-124758-index.html",
+      "originalSourceDescription": "Nov12 2024 SEC 10-Q accepted 09:43:35 ET, cover says 48,462,376 shares as of Nov5; conservative use Nov13, regardless intraday filing time. T-79 2024-11-13 can use it, T-90 2024-11-02 cannot."
+    }
+  ]
+}
