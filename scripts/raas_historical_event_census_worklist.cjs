@@ -205,8 +205,11 @@ if(require.main===module){
    "new-platform/frontend/data/raas-historical-2020-primary-source-leads.json"),"utf8"));
   const followingYearLeads=JSON.parse(fs.readFileSync(path.join(root,
    "new-platform/frontend/data/raas-historical-2021-primary-source-leads.json"),"utf8"));
+  const nextYearLeads=JSON.parse(fs.readFileSync(path.join(root,
+   "new-platform/frontend/data/raas-historical-2022-primary-source-leads.json"),"utf8"));
   const primaryLeads={...firstYearLeads,records:[
-   ...validateSourceLeads(firstYearLeads),...validateSourceLeads(followingYearLeads)]};
+   ...validateSourceLeads(firstYearLeads),...validateSourceLeads(followingYearLeads),
+   ...validateSourceLeads(nextYearLeads)]};
   const approvalDiscovery=JSON.parse(fs.readFileSync(approvalPath,"utf8"));
   const crosswalkPath=process.env.RAAS_FDA_CROSSWALK_OUTPUT||
    path.join(root,"raas-fda-2016-2019-issuer-crosswalk.json");
