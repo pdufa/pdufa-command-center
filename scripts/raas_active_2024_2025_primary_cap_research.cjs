@@ -34,7 +34,8 @@ function verify(events,shares,earlier,intake){
  const order=cases.slice().sort((a,b)=>a.pdufaTargetDate.localeCompare(b.pdufaTargetDate));
  const byTicker=new Map(order.map(e=>[e.ticker,e]));
  const arqt=byTicker.get("ARQT"),axsm=byTicker.get("AXSM"),
-  mdgl=byTicker.get("MDGL"),gern=byTicker.get("GERN"),\n  slno=byTicker.get("SLNO"),lxrx=byTicker.get("LXRX");
+  mdgl=byTicker.get("MDGL"),gern=byTicker.get("GERN"),
+  slno=byTicker.get("SLNO"),lxrx=byTicker.get("LXRX");
  if(byTicker.size!==6||\n  lxrx?.caseId!=="LXRX|ZYNQUISTA_SOTAGLIFLOZIN|NDA210934|2024_CRL"||\n  lxrx.application!=="NDA 210934"||\n  lxrx.pdufaTargetDate!=="2024-12-20"||\n  lxrx.targetAnnouncementDate!=="2024-07-16"||\n  lxrx.phase3ReadoutDate!=="2017-06-09"||\n  lxrx.actualFDAActionDate!=="2024-12-20"||\n  lxrx.actualFDAOutcome!=="CRL"||\n  lxrx.previous2019CRLIsSeparateReviewCycle!==true||\n  lxrx.priorCRLDate!=="2019-03-22"||\n  lxrx.firstPublicFDAActionAnnouncementDate!=="2024-12-20"||\n  !lxrx.nctIds.includes("NCT02531035")||
   slno?.caseId!=="SLNO|VYKAT_XR_DCCR|NDA216665|2025"||
   slno.application!=="NDA 216665"||
