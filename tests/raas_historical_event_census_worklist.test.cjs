@@ -192,3 +192,32 @@ test("new 2022 original ARQT FDA source enters incomplete multi-year census with
  assert.equal(src.actualFDAActionDate,"2022-07-29");
  assert.equal(src.eligibleForCalibration,false);
 });
+
+test("2019 SAGE revised REMS target is included without backdating original target or declaring a complete year",()=>{
+ const year2019=JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-historical-2019-primary-source-leads.json"),"utf8"));
+ const year2021=JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-historical-2021-primary-source-leads.json"),"utf8"));
+ const year2022=JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-historical-2022-primary-source-leads.json"),"utf8"));
+ const combined={...primary,records:[
+  ...year2019.records,...primary.records,...year2021.records,...year2022.records]};
+ assert.equal(m.validateSourceLeads(combined).length,9);
+ const r=m.consolidate({archiveCsv:archive,primaryLeads:combined,
+  approvalDiscovery:fda,issuerCrosswalk,crlDiscovery});
+ assert.equal(r.summary.primaryTargetSourceLeads,9);
+ assert.equal(r.coverage[2019].sourceLeads,1);
+ assert.equal(r.coverage[2020].sourceLeads,6);
+ assert.equal(r.coverage[2021].sourceLeads,1);
+ assert.equal(r.coverage[2022].sourceLeads,1);
+ assert.equal(r.coverage[2019].completePdufaCensus,false);
+ assert.equal(r.summary.fullCensusYears,0);
+ assert.equal(r.summary.historicallyEligibleTrades,0);
+ assert.equal(r.summary.approvedRaasMetrics,0);
+ const x=r.candidates.find(c=>c.key==="SAGE|ZULRESSO|NDA211371|2019"||
+  c.primarySourceCaseId==="SAGE|ZULRESSO|NDA211371|2019");
+ assert.ok(x);
+ assert.equal(x.pdufaTargetDate,"2019-03-19");
+ assert.equal(x.actualFDAActionDate,"2019-03-19");
+ assert.equal(x.eligibleForCalibration,false);
+});
