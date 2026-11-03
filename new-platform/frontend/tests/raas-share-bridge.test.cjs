@@ -20,6 +20,7 @@ test("All dated share counts from SEC cover filings precede vendor close; 8 shar
  assert.equal(summary.arithmeticMatches,6);
  assert.equal(summary.separatelyReportedCapMatches,5);
  assert.equal(summary.missingShares,0);
+ assert.equal(summary.mismatchedVendorCaps,2);
  assert.equal(summary.fullyVerifiedPriceCases,0);
  assert.equal(summary.qualifiedRaasForecasts,0);
  for(const r of feed.records){
