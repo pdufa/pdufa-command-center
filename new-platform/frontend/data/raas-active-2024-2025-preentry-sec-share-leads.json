@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals.",
+  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -66,6 +66,27 @@
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523270803/d907859d10q.htm",
       "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523270803/0001193125-23-270803-index.htm",
       "originalSourceDescription": "Madrigal Q3 2023 10-Q filed Nov 6 2023 06:10 ET, cover shows 19,742,646 common shares as of November 1, 2023. Conservative first research entry November 7. Later FY2023 10-K filed February 28 2024 disclosed 19,897,425; no interpolation to earlier entry days."
+    },
+    {
+      "caseId": "GERN|RYTELO_IMETELSTAT|NDA217779|2024",
+      "ticker": "GERN",
+      "cik": "0000886744",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 546059309,
+      "sharesMeasurementDate": "2024-02-23",
+      "filedDate": "2024-02-28",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2024-02-29",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024022056/gern-20231231.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024022056/0000950170-24-022056-index-headers.html",
+      "originalSourceDescription": "Geron FY2023 10-K accepted Feb 28 2024 16:05:44 ET, original cover shows 546,059,309 common shares as of Feb 23; conservative Feb 29 first use. Q1 2024 common shares expanded after equity financing; no daily continuity presumed."
     }
   ]
 }
