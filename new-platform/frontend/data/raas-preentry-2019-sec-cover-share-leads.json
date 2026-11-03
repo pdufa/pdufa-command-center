@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "Sage Q3 2018 SEC 10-Q earlier shares available before the revised March 2019 PDUFA entry window; review potential dilution, corporate actions, delisting and vendor instrument continuity.",
+  "records": [
+    {
+      "caseId": "SAGE|ZULRESSO|NDA211371|2019",
+      "ticker": "SAGE",
+      "cik": "0001597553",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 46887174,
+      "sharesMeasurementDate": "2018-10-31",
+      "filedDate": "2018-11-06",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2018-11-07",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1597553/000156459018027097/sage-10q_20180930.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1597553/000156459018027097/0001564590-18-027097-index.htm",
+      "originalSourceDescription": "Sage Q3 2018 10-Q accepted Nov 6 2018 at 07:55 ET, cover shows 46,887,174 common shares Oct 31. Conservative use Nov 7 or later. This predates the Nov 20 revised FDA goal; T-79 revised-goal window Dec 30 2018 can use it provisionally, NOT proof the same shares were outstanding every session."
+    }
+  ]
+}
