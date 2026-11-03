@@ -41,11 +41,11 @@ test("SEC requests are pinned to official concept endpoint and identify the craw
  const req=async(url,opt)=>{
   const u=new URL(url);assert.equal(u.hostname,"data.sec.gov");
   assert.match(u.pathname,/companyconcept\/CIK0000000123\/dei\/EntityCommonStockSharesOutstanding.json$/);
-  assert.match(opt.headers["User-Agent"],/PDUFA-Command-Center/);
+  assert.match(opt.headers["User-Agent"],/research-team@example.org/);
   return {ok:true,status:200,text:async()=>JSON.stringify(payload())};
  };
- assert.equal((await m.getFacts("0000000123",req)).length,1);
- await assert.rejects(m.getFacts("0000000123",async()=>({ok:false,status:403})),
+ assert.equal((await m.getFacts("0000000123",req,"PDUFA Research research-team@example.org")).length,1);
+ await assert.rejects(m.getFacts("0000000123",async()=>({ok:false,status:403}),"PDUFA Research research-team@example.org"),
   /SEC_HTTP_403/);
 });
 test("complete archive retains unknown and source failures instead of fabricated market caps",async()=>{
@@ -53,7 +53,7 @@ test("complete archive retains unknown and source failures instead of fabricated
   if(url.includes("CIK0000000456"))return {ok:false,status:403};
   return {ok:true,status:200,text:async()=>JSON.stringify(payload())};
  };
- const x=await m.execute({archiveCsv:archive,registryCsv:registry,request:req,pause:async()=>{}});
+ const x=await m.execute({archiveCsv:archive,registryCsv:registry,request:req,userAgent:"PDUFA Research research-team@example.org",pause:async()=>{}});
  assert.equal(x.archivedEvents,3);
  assert.equal(x.issuersQueried,2);
  assert.equal(x.requests.filter(y=>y.status==="SEC_SOURCE_UNAVAILABLE").length,1);
@@ -74,12 +74,28 @@ test("systemic SEC HTTP 403 stops requests without disguising skipped issuers as
  }
  let attempts=0;
  const req=async()=>{attempts++;return {ok:false,status:403};};
- const x=await m.execute({archiveCsv:arc.join("\n"),registryCsv:regs.join("\n"),request:req,pause:async()=>{}});
+ const x=await m.execute({archiveCsv:arc.join("\n"),registryCsv:regs.join("\n"),request:req,userAgent:"PDUFA Research research-team@example.org",pause:async()=>{}});
  assert.equal(attempts,3);
  assert.equal(x.accessDeniedCircuitOpen,true);
  assert.equal(x.issuersQueried,3);
  assert.equal(x.issuersSkippedByAccessDenied,5);
  assert.equal(x.requests.filter(v=>v.status==="SEC_SOURCE_UNAVAILABLE").length,3);
  assert.equal(x.eventsWithShareFacts,0);
+ assert.ok(x.cases.every(c=>c.marketCapAtEntryVerified===false));
+});
+
+
+test("valid declared SEC identity needs an operational contact address",async()=>{
+ assert.equal(m.validUserAgent("PDUFA research research-team@example.org"),true);
+ assert.equal(m.validUserAgent("GitHub automated bot"),false);
+ assert.equal(m.validUserAgent("PDUFA research research-team@example.org\nX-Header: malicious"),false);
+ let attempts=0;
+ const x=await m.execute({archiveCsv:archive,registryCsv:registry,
+  userAgent:"GitHub automated bot",
+  request:async()=>{attempts++;return {ok:false,status:403};},pause:async()=>{}});
+ assert.equal(attempts,0);
+ assert.equal(x.missingDeclaredSecContact,true);
+ assert.equal(x.issuersQueried,0);
+ assert.equal(x.requests.filter(x=>x.status==="NOT_ATTEMPTED_MISSING_SEC_CONTACT").length,2);
  assert.ok(x.cases.every(c=>c.marketCapAtEntryVerified===false));
 });
