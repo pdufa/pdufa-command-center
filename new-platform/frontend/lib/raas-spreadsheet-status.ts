@@ -40,12 +40,17 @@ export type RaasSpreadsheetTrial={
 export type RaasSpreadsheetSummary={
  stage:RaasStage|null;approvedScore:number|null;
  mappedAreas:number|null;missingAreas:number|null;
+ /** Source leads mapped to 30 slots, NOT an approved RAAS metric or score. */
+ sourceCoveragePercent:number|null;
+ /** Narrow sponsor timing-specificity research pilot only, not a composite score. */
+ exploratoryTimingScore:number|null;sourceFactCount:number|null;
  sourceAsOf:string;approvedMetrics:number;
  state:"INVALID_IDENTITY"|"STAGE_UNVERIFIED"|"PENDING_VALIDATION"|"APPROVED";
 };
 export function raasSpreadsheetSummary(trial:RaasSpreadsheetTrial):RaasSpreadsheetSummary{
  const base={
   stage:null,approvedScore:null,mappedAreas:null,missingAreas:null,
+  sourceCoveragePercent:null,exploratoryTimingScore:null,sourceFactCount:null,
   sourceAsOf:pilot.sourceAsOf,approvedMetrics:calibrations.entries.length
  } as const;
  if(!/^NCT\d{8}$/.test(trial.nctId)||!trial.ticker?.trim())
@@ -72,7 +77,10 @@ export function raasSpreadsheetSummary(trial:RaasSpreadsheetTrial):RaasSpreadshe
  },stage,"CURRENT",reviewed.sourceAsOf,diagnostics):null;
  const score=review?.score.score??null;
  return {stage,approvedScore:score,mappedAreas:mapped,
-  missingAreas:30-mapped,sourceAsOf:pilot.sourceAsOf,
+  missingAreas:30-mapped,sourceCoveragePercent:Math.round(mapped/30*100),
+  exploratoryTimingScore:evidence?.exploratoryTimingGrade?.score??null,
+  sourceFactCount:evidence?(evidence.pilotObservations.length+evidence.prospectiveFacts.length):0,
+  sourceAsOf:pilot.sourceAsOf,
   approvedMetrics:calibrations.entries.filter(x=>x.stage===stage).length,
   state:score===null?"PENDING_VALIDATION":"APPROVED"};
 }
@@ -80,5 +88,8 @@ export function raasSpreadsheetExport(trial:RaasSpreadsheetTrial){
  const s=raasSpreadsheetSummary(trial);
  return [s.stage?(s.stage==="pre"?"TOP":"BOTTOM"):"UNCLASSIFIED",
   s.approvedScore===null?"":String(s.approvedScore),
-  s.mappedAreas===null?"":String(s.mappedAreas),s.state] as const;
+  s.mappedAreas===null?"":String(s.mappedAreas),
+  s.sourceCoveragePercent===null?"":String(s.sourceCoveragePercent),
+  s.exploratoryTimingScore===null?"":String(s.exploratoryTimingScore),
+  s.state] as const;
 }
