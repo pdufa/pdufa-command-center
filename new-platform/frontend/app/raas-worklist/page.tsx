@@ -104,6 +104,17 @@ function V2CandidateReadiness(){
    </li>)}</ul>
    <p className={css.notice}>These {v2Top8Sources.records.length} source leads remain research-only: no independent review-cycle certification, no immutable three-way forecast receipts, no approved V2 model.</p>
   </details>
+  <details id="raas-v2-additional-original-goals">
+   <summary>{v2Top8Sources.additionalOriginalGoalIssuerSourceLeads} new issuer-sourced original FDA goal leads · NDA/BLA review-cycle separation</summary>
+   <p><strong>Source research only, not independent FDA application verification.</strong> GILD anito-cel and COGT nonadvanced mastocytosis cite pivotal Phase 2 studies: they are not automatically eligible for the Phase 3-only Pipeline. Cogent's GIST and nonadvanced mastocytosis NDAs are separate review-cycle cases.</p>
+   <ul>{v2Top8Sources.additionalOriginalGoalIssuerSourceCases.map(r=><li key={r.legacyCaseKey}>
+    <strong>{r.ticker}</strong> · {r.drug} · reported original goal <strong>{r.issuerReportedFirstGoalDate}</strong>
+    ; {r.applicationType.replaceAll("_"," ").toLowerCase()} · pivotal evidence {r.pivotalPhaseEvidence.replaceAll("_"," ").toLowerCase()}
+    ; original announcement {r.sourcePublicationDate} · <a href={r.issuerSourceUrl} target="_blank" rel="noopener noreferrer">Dated issuer source</a> · <a href={r.phaseEvidenceSourceUrl} target="_blank" rel="noopener noreferrer">Study evidence</a>
+    ; no certified Phase 3 qualification or three-way prediction
+   </li>)}</ul>
+   <p className={css.notice}>Issuer evidence does not certify the earliest publicly disclosed deadline, exact numbered FDA application, absence of extensions, or independence of FDA outcome. No RAAS score has been approved.</p>
+  </details>
   <details id="raas-v2-formally-revised-goals">
    <summary>{v2Top8Sources.additionalFormallyExtendedLegacyReviewLeads} additional formal FDA goal revisions · exclude stale or moved deadlines</summary>
    <p><strong>Issuer-documented research findings, not independently certified FDA results or model predictions.</strong> SVRA and PRAX have legacy revised dates; EXEL retains the old December 3 original date even though an extension to March 3, 2027 was reported before that deadline.</p>
