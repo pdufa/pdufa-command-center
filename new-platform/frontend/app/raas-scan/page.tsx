@@ -28,7 +28,7 @@ export default function RaasScanPage(){
     <div className={css.facts}>
      <div><span>Prospective source collection</span><strong>{s.prospectiveIssuers} issuers · {s.prospectivePrograms} therapy programs · {s.prospectiveSourceFacts} dated facts</strong></div>
      <div><span>Retrospective study material</span><strong>{s.retrospectiveResearchWindows} selected research windows, 0 original RAAS predictions</strong></div>
-     <div><span>Price and SEC verification</span><strong>{s.independentlyConfirmedNominalCloses}/{s.nominalClosePoints} nominal closes cross-checked; {s.secShareBridgeCases}/{s.retrospectiveResearchWindows} SEC share counts</strong></div>
+     <div><span>Price and SEC verification</span><strong>{s.independentlyConfirmedNominalCloses}/{s.nominalClosePoints} nominal closes cross-checked; {s.secShareBridgeCases}/{s.retrospectiveResearchWindows} SEC share counts; {s.secShareCapMismatches} unresolved capitalization discrepancies</strong></div>
      <div><span>Regulatory evidence</span><strong>{s.fdaPrimaryCrosschecks} historical post-exit FDA action source checks</strong></div>
     </div>
     <p className={css.disclaimer}>Matching a nominal closing price, counting trial identifiers, or recording earlier issuer data does not establish independently verified adjusted returns or a successful RAAS prediction. The source audit does not fetch new market data automatically.</p>
