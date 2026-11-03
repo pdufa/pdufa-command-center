@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "Raw SEC cover-share facts found in original filings, not extracted through blocked SEC API. A filed snapshot gives known shares as of its publication, not day-by-day diluted shares or approved historical market cap.",
+  "records": [
+    {
+      "caseId": "KALA|EYSUVIS|NDA210933|2020",
+      "ticker": "KALA",
+      "cik": "0001479419",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "sharesOutstanding": 56059865,
+      "sharesMeasurementDate": "2020-08-03",
+      "filedDate": "2020-08-06",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2020-08-07",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1479419/000155837020009714/kala-20200630x10q.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1479419/000155837020009714/0001558370-20-009714-index.htm",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "originalSourceDescription": "Q2 2020 Form 10-Q cover, 56,059,865 shares of common stock outstanding as of 2020-08-03, filing accepted 2020-08-06 17:08 ET. Never usable for earlier entries."
+    }
+  ]
+}
