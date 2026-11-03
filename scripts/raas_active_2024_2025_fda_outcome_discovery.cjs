@@ -127,13 +127,21 @@ function synthesize({approvals,crls,sourceLeads,intake}){
    const match=/\/S-?0*(\d+)/.exec(e.application);
    return match&&Number(x.submissionNumber)===Number(match[1]);
   });
+  const crlMatches=crlActions.filter(x=>x.applicationNumber===e.application&&
+   x.letterDate===e.actualFDAActionDate&&x.actualFdaActionType==="CRL");
+  if(!["APPROVED","CRL"].includes(e.actualFDAOutcome))
+   throw Error("RAAS_ACTIVE_UNKNOWN_FDA_OUTCOME_FOR_SOURCE_LEAD");
+  if(e.actualFDAOutcome==="CRL"&&(matched.length!==0||crlMatches.length!==1)||
+     e.actualFDAOutcome==="APPROVED"&&(crlMatches.length!==0||matched.length!==1))
+   throw Error("RAAS_ACTIVE_SOURCE_OUTCOME_NOT_MATCHED_TO_OFFICIAL_FDA");
   return {caseId:e.caseId,ticker:e.ticker,
    pdufaTargetDate:e.pdufaTargetDate,actualFDAActionDate:e.actualFDAActionDate,
    actualFDAOutcome:e.actualFDAOutcome,
    fdaApprovalDatabaseActionMatches:matched.map(x=>x.id),
-   sourceConfidence:matched.length===1?
-    "FDA_ACTION_DATE_AND_APPLICATION_DISCOVERY_MATCHED_OUTCOME_ONLY":
-    matched.length===0?"FDA_ACTION_DISCOVERY_MATCH_MISSING":"AMBIGUOUS_MULTIPLE_ACTIONS",
+   fdaCrlArchiveLetterMatches:crlMatches.map(x=>x.caseId),
+   sourceConfidence:e.actualFDAOutcome==="CRL"?
+    "FDA_CRL_ARCHIVE_APPLICATION_AND_ACTION_DATE_MATCHED_RETROSPECTIVE_ONLY":
+    "FDA_ACTION_DATE_AND_APPLICATION_DISCOVERY_MATCHED_OUTCOME_ONLY",
    validatedTrade:false,completeFDAEventCensus:false};
  });
  const yearStats=YEARS.map(year=>{
