@@ -117,8 +117,17 @@ function build({discovery,config,archiveCsv,known,intake,registryCsv}){
      a.submissionType==="SUPPL"&&
      Number(a.submissionNumber)===
        Number(/\/S-?0*(\d+)/.exec(lead.application)?.[1]))));
+  const officialCrlMatches=discovery.crlLetterLeads.filter(c=>
+   c.applicationNumber===lead.application&&
+   c.letterDate===lead.actualFDAActionDate&&
+   c.actualFdaActionType==="CRL"&&c.eligibleForRaasCalibration===false);
   if(lead.actualFDAOutcome==="APPROVED"&&officialMatches.length!==1)
    throw Error("RAAS_TWO_YEAR_ORIGINAL_FDA_ACTION_NOT_INDEPENDENTLY_MATCHED");
+  if(lead.actualFDAOutcome==="CRL"&&
+   (officialCrlMatches.length!==1||officialMatches.length!==0))
+   throw Error("RAAS_TWO_YEAR_ORIGINAL_CRL_NOT_INDEPENDENTLY_MATCHED");
+  if(!["APPROVED","CRL"].includes(lead.actualFDAOutcome))
+   throw Error("RAAS_TWO_YEAR_UNKNOWN_HISTORIC_OUTCOME");
   reviewRows.push({id:"ORIGINAL|"+lead.caseId,year:yearOf(lead.pdufaTargetDate),
    yearBasis:"PUBLICLY_ANNOUNCED_PDUFA_TARGET_YEAR",
    reviewTrack:"ORIGINAL_FDA_AND_ISSUER_SOURCE_LEAD",
@@ -130,6 +139,8 @@ function build({discovery,config,archiveCsv,known,intake,registryCsv}){
    retrospectiveActionDate:lead.actualFDAActionDate,
    actualOutcome:lead.actualFDAOutcome,
    matchedOfficialApprovalActionIds:officialMatches.map(a=>a.id),
+   matchedOfficialCrlLetterIds:officialCrlMatches.map(c=>c.caseId),
+   crlOfficialPDFWasNotPublicAtTradeEntry:lead.actualFDAOutcome==="CRL",
    sourceUrls:[lead.targetAnnouncementSourceUrl,
     lead.phase3ReadoutSourceUrl,lead.actualFDAActionSourceUrl],
    blockers:["FIRST_EVER_PUBLIC_PDUFA_TARGET_CENSUS_NOT_ESTABLISHED",
