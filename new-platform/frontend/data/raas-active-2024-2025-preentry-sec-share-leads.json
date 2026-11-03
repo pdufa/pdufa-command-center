@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated. Added independent FDA 2025 MYQORZO NDA219083 CYTK original/revised target and dated SEC cover shares. Historical cap and returns NOT validated.",
+  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated. Added independent FDA 2025 MYQORZO NDA219083 CYTK original/revised target and dated SEC cover shares. Historical cap and returns NOT validated. BBIO 2024 Attruby NDA216540 original FDA PDUFA goal, Phase 3 and timestamped SEC shares are source-verified research only, no validated trades or market cap.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -171,6 +171,27 @@
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000095017025105108/cytk-20250630.htm",
       "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000095017025105108/0000950170-25-105108-index.html",
       "originalSourceDescription": "2025 Q2 Cytokinetics 10-Q Aug 7 at 16:30:30 ET; original cover says 119,657,156 common shares outstanding as of Aug 5. Not usable before the Aug 7 after-close filing; conservative from Aug 8. No inference of stable shares, issuance, warrants or accurate market cap over every later trading session."
+    },
+    {
+      "caseId": "BBIO|ATTRUBY_ACORAMIDIS_ATTR_CM|NDA216540|2024",
+      "ticker": "BBIO",
+      "cik": "0001743881",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 188032738,
+      "sharesMeasurementDate": "2024-07-25",
+      "filedDate": "2024-08-01",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2024-08-02",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1743881/000095017024089326/bbio-20240630.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1743881/0000950170-24-089326-index.htm",
+      "originalSourceDescription": "BridgeBio Q2 2024 10-Q filed Aug 1 16:24:46 ET, common cover shares 188,032,738 as of Jul 25; conservatively first use Aug 2 (next trading session). This is the latest independently dated cover share snapshot before T-79 (Sep 11). Q3 Nov cover must not be applied to September entry. Share continuity and financing/dilution not fully audited."
     }
   ]
 }
