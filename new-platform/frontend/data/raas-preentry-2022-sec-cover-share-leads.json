@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "Earlier Feb 2022 10-K share count is an as-published snapshot, not proof shares were unchanged to May or July 2022.",
+  "records": [
+    {
+      "caseId": "ARQT|ZORYVE_CREAM|NDA215985|2022",
+      "ticker": "ARQT",
+      "cik": "0001787306",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 50380254,
+      "sharesMeasurementDate": "2022-02-16",
+      "filedDate": "2022-02-22",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2022-02-23",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000178730622000009/arqt-20211231.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000178730622000009/0001787306-22-000009-index.html",
+      "originalSourceDescription": "Original FY2021 annual 10-K accepted February 22, 2022 16:08:28 ET, reports 50,380,254 outstanding common shares as of February 16. Later May 5 Q1 10-Q reported 51,417,963. No unverified daily constancy assumed."
+    }
+  ]
+}

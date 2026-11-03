@@ -166,3 +166,29 @@ test("2021 original CARA lead extends historical coverage without claiming a 10-
  assert.equal(lead.actualFDAActionDate,"2021-08-23");
  assert.equal(lead.eligibleForCalibration,false);
 });
+
+test("new 2022 original ARQT FDA source enters incomplete multi-year census without approving a score",()=>{
+ const year2021=JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-historical-2021-primary-source-leads.json"),"utf8"));
+ const year2022=JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-historical-2022-primary-source-leads.json"),"utf8"));
+ const combined={...primary,records:[...primary.records,
+  ...year2021.records,...year2022.records]};
+ assert.equal(m.validateSourceLeads(combined).length,8);
+ const r=m.consolidate({archiveCsv:archive,primaryLeads:combined,
+  approvalDiscovery:fda,issuerCrosswalk,crlDiscovery});
+ assert.equal(r.summary.primaryTargetSourceLeads,8);
+ assert.equal(r.coverage[2020].sourceLeads,6);
+ assert.equal(r.coverage[2021].sourceLeads,1);
+ assert.equal(r.coverage[2022].sourceLeads,1);
+ assert.equal(r.coverage[2022].completePdufaCensus,false);
+ assert.equal(r.summary.fullCensusYears,0);
+ assert.equal(r.summary.historicallyEligibleTrades,0);
+ assert.equal(r.summary.approvedRaasMetrics,0);
+ const src=r.candidates.find(x=>x.primarySourceCaseId==="ARQT|ZORYVE_CREAM|NDA215985|2022"||
+  x.key==="ARQT|ZORYVE_CREAM|NDA215985|2022");
+ assert.ok(src);
+ assert.equal(src.pdufaTargetDate,"2022-07-29");
+ assert.equal(src.actualFDAActionDate,"2022-07-29");
+ assert.equal(src.eligibleForCalibration,false);
+});

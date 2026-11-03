@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
+  "asOf": "2026-11-02",
+  "note": "One source-linked 2022 Arcutis ZORYVE original PDUFA target and FDA action, not a complete 2022 FDA event census or approved trading opportunity.",
+  "records": [
+    {
+      "caseId": "ARQT|ZORYVE_CREAM|NDA215985|2022",
+      "ticker": "ARQT",
+      "programId": "ARQT_ROFLUMILAST_CREAM_03_DERMIS1_DERMIS2_PSO",
+      "nctIds": [
+        "NCT04211363",
+        "NCT04211389"
+      ],
+      "drug": "ZORYVE (roflumilast) cream 0.3%",
+      "indication": "plaque psoriasis including intertriginous areas in persons age 12 years and older",
+      "application": "NDA 215985",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2022-07-29",
+      "targetAnnouncementDate": "2021-12-22",
+      "targetAnnouncementSourceUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000178730621000033/arqt-20211222.htm",
+      "phase3ReadoutDate": "2021-02-01",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000162828021001202/arqt-20210201.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT04211363",
+      "actualFDAActionDate": "2022-07-29",
+      "actualFDAActionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2022/215985Orig1s000ltr.pdf",
+      "actualFDAOutcome": "APPROVED",
+      "firstPublicFDAActionAnnouncementDate": "2022-07-29",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000162828022020207/arqt-20220729.htm",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000178730621000033/arqt-20211222.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "FDA publicly announced July 29 2022 PDUFA goal in 2021-12-22 SEC 8-K, submitted Dec 23; original SEC February 1 2021 8-K reports positive DERMIS-1 and DERMIS-2 Phase 3. FDA July 29 2022 original approval letter confirms NDA 215985. None of the retrospective FDA document or later outcomes is available as ex ante 2022 prediction input. Earlier disclosure completeness, corporate actions and capitalizations unaudited."
+    }
+  ]
+}
