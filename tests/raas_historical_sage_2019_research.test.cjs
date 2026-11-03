@@ -68,7 +68,7 @@ test("SAGE 2019 SIP raw and separately adjusted simulated provider request never
  assert.equal(named.validated,false);
  assert.ok(named.provisionalEntryCapMillions>=300);
  const later=r.earlyShareWindowDiagnostics[0].namedWindowDiagnostics.find(x=>
-  x.entryLeadDays===30&&x.exitLeadDays===14);
+  x.entryLeadDays===21&&x.exitLeadDays===3);
  assert.equal(later.supplementalShareFactUsed,false);
  assert.equal(r.summary.validatedEventTrades,0);
  assert.equal(r.summary.approvedRaasScores,0);
