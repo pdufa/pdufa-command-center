@@ -41,6 +41,7 @@ test("Alpaca request mandates SIP, 1Day, adjustment=all and historical ticker as
   assert.equal(u.searchParams.get("timeframe"),"1Day");
   assert.equal(u.searchParams.get("feed"),"sip");
   assert.equal(u.searchParams.get("adjustment"),"all");
+  assert.equal(u.searchParams.get("asof"),w.scheduledEventDate);
   assert.equal(u.searchParams.get("sort"),"asc");
   assert.equal(opts.headers["APCA-API-KEY-ID"],"test-key");
   assert.equal(opts.headers["APCA-API-SECRET-KEY"],"test-secret");
@@ -99,7 +100,8 @@ test("synthetic provider fixture proves grid arithmetic but is never a real back
  let n=0;
  const result=await lib.execute({key:"test",secret:"test",top,bottom,
   request:async(url)=>{n++;const ticker=url.split("/stocks/")[1].split("/bars")[0];
-   const win=cases.find(c=>c.ticker===ticker);
+   const params=new URL(url).searchParams;
+   const win=cases.find(c=>c.ticker===ticker&&c.firstBarDate===params.get("start"));
    return response(win,dailyBars(win));}});
  assert.equal(n,8);
  assert.equal(result.status,"RESEARCH_PRICE_GRID_COLLECTED");
