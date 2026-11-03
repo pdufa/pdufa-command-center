@@ -168,11 +168,33 @@ def parse_prospective(protocol, roster, forecasts, outcomes):
         gate(day(cases[k]["goalFirstPublicAtDate"]) < happened <= goal
              and disclosed.date() >= happened,
              "OUTCOME_DISPOSITION_CHRONOLOGY_INVALID")
-        gate(FDA_LINK.fullmatch(o.get("officialFdaSourceUrl", "")) and
-             type(o.get("independentFDAReviewerVerified")) is bool and
+        gate(type(o.get("independentFDAReviewerVerified")) is bool and
              (actual == "EXTENSION") ==
              (o.get("formalFDAExtensionDocumented") is True),
-             "EXTENSION_OR_FDA_PRIMARY_SOURCE_MISSING")
+             "EXTENSION_OR_INDEPENDENT_REVIEW_MISSING")
+        if actual == "EXTENSION":
+            # A formal FDA goal-extension can first become public in an
+            # issuer's contemporaneous SEC filing. It need not have a public
+            # FDA action letter (unlike a PASS or CRL), but requires exact
+            # cycle corroboration and an independently reviewed original.
+            source = o.get("formalExtensionSourceUrl")
+            source_public = utc(o.get("formalExtensionFirstPublicAtUTC"))
+            gate(isinstance(source, str) and
+                 (source.startswith("https://www.sec.gov/Archives/edgar/data/")
+                  or FDA_LINK.fullmatch(source)) and
+                 happened <= source_public.date() <= goal and
+                 source_public <= disclosed and
+                 isinstance(o.get("formalExtensionCycleCitation"), str)
+                 and bool(o["formalExtensionCycleCitation"].strip()),
+                 "EXTENSION_CONTEMPORANEOUS_PRIMARY_SOURCE_MISSING")
+            if o.get("officialFdaSourceUrl") is not None:
+                gate(FDA_LINK.fullmatch(o["officialFdaSourceUrl"]),
+                     "EXTENSION_FDA_CORROBORATION_SOURCE_INVALID")
+        else:
+            gate(FDA_LINK.fullmatch(o.get("officialFdaSourceUrl", "")),
+                 "PASS_CRL_FDA_PRIMARY_SOURCE_MISSING")
+            gate(o.get("formalExtensionSourceUrl") is None,
+                 "NON_EXTENSION_HAS_EXTENSION_SOURCE")
         if k in preds:
             gate(utc(preds[k]["frozenAtUTC"]).date() < happened,
                  "PREDICTION_AFTER_FDA_OUTCOME")
