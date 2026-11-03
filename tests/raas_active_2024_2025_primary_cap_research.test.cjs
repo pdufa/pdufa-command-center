@@ -88,7 +88,7 @@ test("unreviewed leads cannot silently enter accepted two-year intake or add a t
  const wrong=structuredClone(events);
  wrong.records[0].pdufaTargetDate="2023-07-07";
  assert.throws(()=>m.verify(wrong,shares,earlier,intake),
-  /ACTIVE_ORIGINAL_TARGET_ACTION_IDENTITY_INVALID/);
+  /PRIMARY_EVENT_SOURCE_INVALID|ACTIVE_ORIGINAL_TARGET_ACTION_IDENTITY_INVALID/);
  const changed=structuredClone(events);
  changed.records[1].actualFDAActionDate="2025-01-31";
  assert.throws(()=>m.verify(changed,shares,earlier,intake),
