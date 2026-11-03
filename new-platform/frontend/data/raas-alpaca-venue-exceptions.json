@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_ALPACA_VENUE_AND_IDENTIFICATION_EXCEPTIONS",
+  "sourceAsOf": "2026-11-02",
+  "note": "These are researched vendor-coverage exceptions, not a filter on publicly traded FDA-event programs. Foreign listings may require a separate historical price data provider. Never interpret out-of-feed as zero appreciation.",
+  "records": [
+    {
+      "ticker": "ZEAL",
+      "eventDate": "2024-12-22",
+      "issuer": "Zealand Pharma A/S",
+      "drug": "glepaglutide",
+      "venue": "Nasdaq Copenhagen",
+      "notUSListedForEvent": true,
+      "sourceUrl": "https://www.zealandpharma.com/investors/faqs/",
+      "sourceNote": "Issuer states ADR program was discontinued and American Depositary Shares voluntarily delisted from Nasdaq New York in August 2022. Shares traded on Nasdaq Copenhagen under ZEAL in 2024.",
+      "earlyFDAActionDate": "2024-12-19",
+      "earlyFDAActionSourceUrl": "https://www.globenewswire.com/news-release/2024/12/19/3000220/0/en/u-s-food-and-drug-administration-issues-complete-response-letter-for-the-glepaglutide-new-drug-application-for-the-treatment-of-short-bowel-syndrome.html",
+      "status": "FOREIGN_LISTING_NOT_COVERED_BY_ALPACA_US_STOCK_FEED",
+      "followUp": "Require independently sourced Copenhagen historical price and DKK/USD / cap conversion if non-US public shares remain in scope; censor at December 19 CRL, before published December 22 goal."
+    }
+  ]
+}

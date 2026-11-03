@@ -12,6 +12,7 @@ const prior = require("./raas_alpaca_historical_price_study.cjs");
 const root = path.resolve(__dirname, "..");
 const INTAKE = "new-platform/frontend/data/raas-ten-year-pdufa-intake.json";
 const CANDIDATES = "data/historical_assessed_decisions.csv";
+const VENUE_EXCEPTIONS = "new-platform/frontend/data/raas-alpaca-venue-exceptions.json";
 const START = "2016-01-01";
 const END = "2025-12-31";
 const years = Array.from({length:10},(_,i)=>2016+i);
@@ -159,15 +160,28 @@ function chooseWindow(rows,censusComplete) {
 }
 async function execute({key,secret,request=fetch,
  candidates=candidateQueue(read(CANDIDATES)),
- intake=JSON.parse(read(INTAKE)),fetchCandidates=true}={}) {
+ intake=JSON.parse(read(INTAKE)),
+ venueExceptions=JSON.parse(read(VENUE_EXCEPTIONS)).records,
+ fetchCandidates=true}={}) {
  const audit=intakeRecords(intake), work=new Map(), statuses=[];
  for(const x of [...candidates,...audit.accepted]) {
   const k=x.ticker+"|"+x.pdufaDate;
   if (!work.has(k))work.set(k,{ticker:x.ticker,pdufaDate:x.pdufaDate});
  }
+ const exceptions=venueExceptions.filter(v=>v.notUSListedForEvent===true &&
+   typeof v.ticker==="string" && day(v.eventDate) &&
+   urlOK(v.sourceUrl) && v.status==="FOREIGN_LISTING_NOT_COVERED_BY_ALPACA_US_STOCK_FEED");
  const prices=new Map();
  if(key && secret) {
   for(const [k,x] of work) {
+   const venueGap=exceptions.find(v=>v.ticker===x.ticker && v.eventDate===x.pdufaDate);
+   if(venueGap) {
+    statuses.push({ticker:x.ticker,pdufaDate:x.pdufaDate,
+     status:"OUTSIDE_ALPACA_US_STOCK_FEED",
+     reason:venueGap.status,sourceUrl:venueGap.sourceUrl,
+     reviewStatus:"NEEDS_NON_US_MARKET_DATA_OR_SEPARATE_UNIVERSE_DECISION"});
+    continue;
+   }
    const win={ticker:x.ticker,scheduledEventDate:x.pdufaDate,
     firstBarDate:prior.minusDays(x.pdufaDate,100),
     lastBarDate:x.pdufaDate};
@@ -197,7 +211,7 @@ async function execute({key,secret,request=fetch,
   eligiblePriceWindows:eligible.filter(r=>r.year===y).length
  }]));
  const rank=chooseWindow(windowRows,audit.complete);
- return {scope:"2016-2025 US PDUFA events; historical market cap $300M-$10B",
+ return {scope:"2016-2025 publicly traded FDA PDUFA event candidates; Alpaca US-stock subset only; historical $300M-$10B cap gating",
   status:!key||!secret?"BLOCKED_MISSING_ALPACA_CREDENTIALS":
    !audit.complete?"PARTIAL_CENSUS_RESEARCH_ONLY":rank.status,
   dataFeed:"ALPACA_SIP_1DAY_ADJUSTMENT_ALL",
@@ -209,6 +223,7 @@ async function execute({key,secret,request=fetch,
   eligibleWindowRows:eligible.length,
   blockedWindowRows:windowRows.length-eligible.length,
   priceSourceFailures:statuses.filter(x=>x.status==="PRICE_SOURCE_UNAVAILABLE").length,
+  outOfAlpacaVenueEvents:statuses.filter(x=>x.status==="OUTSIDE_ALPACA_US_STOCK_FEED").length,
   priceRetrievalStatuses:statuses,
   // Retain auditable vendor observations without pretending discovery-only
   // dates or unresolved market caps are validated trade-entry evidence.
@@ -225,6 +240,7 @@ async function execute({key,secret,request=fetch,
    "The 2016-2025 event census is incomplete until all years are independently audited.",
    "Historical SIP adjusted prices and any source-provided share counts require independent audit.",
    "A realized event date cannot substitute for what was known when trading.",
+   "Foreign-listed public biotech programs remain in scope for research but require a non-Alpaca data source; never treat venue gaps as zero returns.",
    "Retrospective results are not prospective RAAS predictions or investment advice."]};
 }
 if(require.main===module) {
@@ -238,6 +254,7 @@ if(require.main===module) {
     reviewedEvents:r.reviewedEvents,tenYearCensusComplete:r.tenYearCensusComplete,
     historicalDailyBarsCollected:r.historicalDailyBarsCollected,
     eligibleWindowRows:r.eligibleWindowRows,priceSourceFailures:r.priceSourceFailures,
+    outOfAlpacaVenueEvents:r.outOfAlpacaVenueEvents,
     selectionStatus:r.selectedWindow.status};
    process.stdout.write(JSON.stringify(headline)+"\n");
    if(env.GITHUB_STEP_SUMMARY)fs.appendFileSync(env.GITHUB_STEP_SUMMARY,
