@@ -55,6 +55,7 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           RAAS_FDA_BACKFILL_OUTPUT: ${{ runner.temp }}/raas-fda-2016-2019-discovery.json
+          RAAS_FDA_CROSSWALK_OUTPUT: ${{ runner.temp }}/raas-fda-2016-2019-issuer-crosswalk.json
           RAAS_EVENT_WORKLIST_OUTPUT: ${{ runner.temp }}/raas-historical-event-worklist.json
         run: node scripts/raas_historical_event_census_worklist.cjs
       - name: Save FDA action discovery research, not a PDUFA event census
