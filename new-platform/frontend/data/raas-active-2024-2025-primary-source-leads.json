@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated. Added independent FDA 2025 MYQORZO NDA219083 CYTK original/revised target and dated SEC cover shares. Historical cap and returns NOT validated.",
+  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated. Added independent FDA 2025 MYQORZO NDA219083 CYTK original/revised target and dated SEC cover shares. Historical cap and returns NOT validated. BBIO 2024 Attruby NDA216540 original FDA PDUFA goal, Phase 3 and timestamped SEC shares are source-verified research only, no validated trades or market cap.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -299,6 +299,40 @@
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
       "notes": "2024-12-02 first located original September 26 2025 standard PDUFA goal; May 1 2025 company announcement formally revised goal to December 26 2025 for an FDA-requested REMS major amendment, publicly known before the T-79 Oct 8 2025 window. Phase 3 SEQUOIA-HCM NCT05186818 positive trial reported Dec 27 2023. FDA original NDA 219083 approved Dec 19 2025, seven calendar days before revised goal, independently verified in FDA Drug Trials Snapshot; not a CRL or original Sep26 deadline. This is *NOT* a new 2025 Phase3 readout. SEC Q2 Aug7 2025 after-close filing cover 119,657,156 shares as of Aug5, conservative from Aug8; SEC Q3 Nov5 2025 after-close filing cover 122,264,929 shares as of Nov3 conservative from Nov6; 2,607,773 more shares, not proof of day-by-day issuance. ATM facilities/convertible and shareholder dilution and independent vendor verification remain unresolved. Do not retroactively apply the later SEC cover to earlier entry dates or promote market-cap eligibility or score."
+    },
+    {
+      "caseId": "BBIO|ATTRUBY_ACORAMIDIS_ATTR_CM|NDA216540|2024",
+      "ticker": "BBIO",
+      "programId": "BBIO_ACORAMIDIS_ATTRIBUTE_CM_NDA216540",
+      "nctIds": [
+        "NCT03860935"
+      ],
+      "drug": "ATTRUBY (acoramidis)",
+      "indication": "adult transthyretin amyloid cardiomyopathy (ATTR-CM), wild type or hereditary, reduce cardiovascular death and cardiovascular-related hospitalization",
+      "application": "NDA 216540",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2024-11-29",
+      "targetAnnouncementDate": "2024-02-05",
+      "targetAnnouncementSourceUrl": "https://www.globenewswire.com/news-release/2024/2/5/2823433/0/en/BridgeBio-Pharma-Announces-U-S-Food-and-Drug-Administration-FDA-Acceptance-of-New-Drug-Application-NDA-for-Acoramidis-for-the-Treatment-of-Patients-with-Transthyretin-Amyloid-Cardi.html",
+      "phase3ReadoutDate": "2023-07-17",
+      "phase3ReadoutSourceUrl": "https://investor.bridgebio.com/news/news-details/2023/bridgebio-announces-consistently-positive-results-from-phase-3-attribute-cm-study-of-acoramidis-for-patients-with-transthyretin-amyloid-cardiomyopathy-attr-cm-07-17-2023/default.aspx",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT03860935",
+      "actualFDAActionDate": "2024-11-22",
+      "actualFDAActionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2024/216540Orig1s000Approv.pdf",
+      "originalPublicApprovalAnnouncementUrl": "https://www.globenewswire.com/news-release/2024/11/23/2986250/0/en/attruby-acoramidis-a-near-complete-ttr-stabilizer-90-approved-by-fda-to-reduce-cardiovascular-death-and-cardiovascular-related-hospitalization-in-attr-cm-patients.html",
+      "firstPublicFDAActionAnnouncementDate": "2024-11-22",
+      "actualFDAOutcome": "APPROVED",
+      "fdaActionEarlierThanPdufaGoalDays": 7,
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1743881/000095017024089326/bbio-20240630.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "Original FDA NDA 216540 review accepted Feb 5 2024 with PDUFA Nov 29 2024, no verified goal extension; FDA approval package and issuer press release specify Nov 22 approval, exactly seven calendar days early. Positive 2023-07-17 ATTRibute-CM pivotal Phase 3 result NCT03860935 from Eidos Therapeutics (BridgeBio company). FDA original NDA 216540, not unrelated approval or another BridgeBio asset. SEC Q2 2024 cover 188,032,738 common shares July 25, report accepted Aug 1 16:24:46 ET; conservative first usable Aug 2. SEC Q3 2024 cover 188,989,802 common shares as of Nov 5, report accepted Nov 12 07:32:57 ET; conservative first usable Nov 13. Share count increased 957,064; counts do not establish day-by-day continuity or price validation, and Q3 shares may not be used retroactively before Nov 13. Company financing and royalties/corporate actions require audit; no independent price-vendor verification or certification of $300M-$10B eligibility. This is source-discovered, never accepted as scored trade."
     }
   ]
 }

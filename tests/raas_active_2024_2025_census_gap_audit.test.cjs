@@ -55,14 +55,14 @@ const make=changes=>build({queue:fixture(),config,primary,...changes});
 test("2024/2025 target year counts exclude action year and already-sourced goal duplicates",()=>{
  const x=make();
  assert.equal(x.originalEventSourceCount,primary.records.length);
- assert.equal(x.queueSourceActionRows,18);
+ assert.equal(x.queueSourceActionRows,19);
  assert.equal(x.fdaRetrospectiveApprovalActionRows,1);
  assert.equal(x.fdaRetrospectiveCRLLetterRows,1);
  assert.equal(x.actionYearRowsNotCountedAsTargetYearDenominator,2);
  assert.equal(x.archivedTargetDateLeadRows,8);
- assert.equal(x.archiveSameGoalDuplicatedSourceRows,2);
- assert.equal(x.unsourcedArchivedTargetReviewTasks,6);
- assert.deepEqual(x.previouslySourcedArchiveOverlaps.map(r=>r.ticker),["GERN","MDGL"]);
+ assert.equal(x.archiveSameGoalDuplicatedSourceRows,3);
+ assert.equal(x.unsourcedArchivedTargetReviewTasks,5);
+ assert.deepEqual(x.previouslySourcedArchiveOverlaps.map(r=>r.ticker),["GERN","MDGL","BBIO"]);
  assert.equal(x.annualTargetsAudited,0);
  assert.equal(x.independentlyValidatedTradingCases,0);
  assert.equal(x.calibratedRaasMetrics,0);
@@ -70,11 +70,11 @@ test("2024/2025 target year counts exclude action year and already-sourced goal 
 });
 test("Separate event dates for same ticker remain reviews but only one issuer slot",()=>{
  const x=make();
- assert.equal(x.byTargetYear[2024].sourceBackedTargetEvents,4);
+ assert.equal(x.byTargetYear[2024].sourceBackedTargetEvents,5);
  assert.equal(x.byTargetYear[2024].archivedTargetDateRows,6);
- assert.equal(x.byTargetYear[2024].archiveRowsAlreadySameGoalSourced,2);
- assert.equal(x.byTargetYear[2024].archivedUnverifiedDateRows,4);
- assert.equal(x.byTargetYear[2024].newCandidateTickerNamesNotYetSourceBacked,3);
+ assert.equal(x.byTargetYear[2024].archiveRowsAlreadySameGoalSourced,3);
+ assert.equal(x.byTargetYear[2024].archivedUnverifiedDateRows,3);
+ assert.equal(x.byTargetYear[2024].newCandidateTickerNamesNotYetSourceBacked,2);
  assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,7);
  assert.equal(x.byTargetYear[2024].minimumAdditionalIssuerDiscoveryBeyondCurrentTargetQueue,23);
  assert.equal(x.byTargetYear[2025].sourceBackedTargetEvents,4);
@@ -112,7 +112,7 @@ test("A different archival target date on already sourced ticker is NOT silently
  const a=q.reviewRows.find(r=>r.reviewTrack==="ARCHIVE_TARGET_DATE_TO_VERIFY"&&r.ticker==="GERN");
  a.archiveSuggestedPdufaDate="2024-12-06";
  const x=make({queue:q});
- assert.equal(x.archiveSameGoalDuplicatedSourceRows,1);
+ assert.equal(x.archiveSameGoalDuplicatedSourceRows,2);
  const g=x.nextArchivedTargetSourceReviews.find(r=>r.ticker==="GERN");
  assert.equal(g.possibleSameIssuerOtherCycle,true);
  assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,7);
@@ -129,4 +129,14 @@ test("CSV is formula-injection safe, counts all review tasks, and preserves targ
  r.nextArchivedTargetSourceReviews[0].ticker="=HYPERLINK(1,2)";
  assert.ok(csv(r).includes("'=HYPERLINK(1,2)"));
  assert.throws(()=>csv({scope:"SOMETHING_ELSE"}),/CSV_SOURCE_INVALID/);
+});
+
+test("BBIO Nov 29 archived target is now independently sourced and never double counted",()=>{
+ const r=make();
+ const bbio=r.previouslySourcedArchiveOverlaps.find(e=>e.ticker==="BBIO");
+ assert.equal(bbio.archiveSuggestedPdufaDate,"2024-11-29");
+ assert.equal(bbio.matchedOriginalCaseId,"BBIO|ATTRUBY_ACORAMIDIS_ATTR_CM|NDA216540|2024");
+ assert.equal(r.nextArchivedTargetSourceReviews.some(e=>e.ticker==="BBIO"),false);
+ assert.equal(r.byTargetYear[2024].sourceBackedDistinctTickers,5);
+ assert.equal(r.byTargetYear[2024].actualIndependentlyValidatedIssuers,0);
 });

@@ -13,11 +13,11 @@ function fakePrices(){
  const seen=[];
  const request=async(uri,headers)=>{
   const u=new URL(uri),ticker=u.pathname.split("/")[3],adjustment=u.searchParams.get("adjustment");
-  assert.ok(["ARQT","AXSM","MDGL","GERN","SLNO","LXRX","SRRK","CYTK"].includes(ticker));
+  assert.ok(["ARQT","AXSM","MDGL","GERN","SLNO","LXRX","SRRK","CYTK","BBIO"].includes(ticker));
   assert.ok(["raw","all"].includes(adjustment));
   assert.equal(u.searchParams.get("feed"),"sip");
   assert.equal(u.searchParams.get("timeframe"),"1Day");
-  assert.equal(u.searchParams.get("asof"),ticker==="ARQT"?"2024-07-07":ticker==="MDGL"?"2024-03-14":ticker==="GERN"?"2024-06-16":ticker==="SLNO"?"2025-03-27":ticker==="LXRX"?"2024-12-20":ticker==="SRRK"?"2025-09-22":ticker==="CYTK"?"2025-12-26":"2025-01-31");
+  assert.equal(u.searchParams.get("asof"),ticker==="ARQT"?"2024-07-07":ticker==="MDGL"?"2024-03-14":ticker==="GERN"?"2024-06-16":ticker==="SLNO"?"2025-03-27":ticker==="LXRX"?"2024-12-20":ticker==="SRRK"?"2025-09-22":ticker==="CYTK"?"2025-12-26":ticker==="BBIO"?"2024-11-29":"2025-01-31");
   assert.equal(headers.headers["APCA-API-KEY-ID"],"key");
   assert.equal(headers.headers["APCA-API-SECRET-KEY"],"secret");
   seen.push(ticker+"|"+adjustment);
@@ -25,7 +25,7 @@ function fakePrices(){
   const start=u.searchParams.get("start"),end=u.searchParams.get("end");
   for(let t=Date.parse(start+"T00:00:00Z");t<=Date.parse(end+"T00:00:00Z");t+=86400000){
    const d=new Date(t),dow=d.getUTCDay();if(dow===0||dow===6)continue;
-   const base=ticker==="ARQT"?7:ticker==="MDGL"?230:ticker==="GERN"?3:ticker==="SLNO"?55:ticker==="LXRX"?1.30:ticker==="SRRK"?28:ticker==="CYTK"?50:92;
+   const base=ticker==="ARQT"?7:ticker==="MDGL"?230:ticker==="GERN"?3:ticker==="SLNO"?55:ticker==="LXRX"?1.30:ticker==="SRRK"?28:ticker==="CYTK"?50:ticker==="BBIO"?28:92;
    const c=adjustment==="raw"?base:base+bars.length*.05;
    bars.push({t:d.toISOString().slice(0,10)+"T00:00:00Z",
     o:c-.05,h:c+.2,l:c-.2,c,v:250000});
@@ -35,10 +35,10 @@ function fakePrices(){
  };
  return {seen,request};
 }
-test("source queue has four separately sourced 2024 targets including CRL and four 2025 targets including CRL; none is a validated trade",()=>{
+test("source queue has five separately sourced 2024 targets including CRL and four 2025 targets including CRL; none is a validated trade",()=>{
  const facts=m.verify(events,shares,earlier,intake);
- assert.deepEqual(facts.map(x=>x.year),[2024,2024,2024,2024,2025,2025,2025,2025]);
- assert.deepEqual(facts.map(x=>x.ticker),["MDGL","GERN","ARQT","LXRX","AXSM","SLNO","SRRK","CYTK"]);
+ assert.deepEqual(facts.map(x=>x.year),[2024,2024,2024,2024,2024,2025,2025,2025,2025]);
+ assert.deepEqual(facts.map(x=>x.ticker),["MDGL","GERN","ARQT","BBIO","LXRX","AXSM","SLNO","SRRK","CYTK"]);
  assert.equal(facts[0].pdufaTargetDate,"2024-03-14");
  assert.equal(facts[0].actualFDAActionDate,"2024-03-14");
  assert.equal(facts[0].reportedCoverShareChange,154779);
@@ -47,22 +47,25 @@ test("source queue has four separately sourced 2024 targets including CRL and fo
  assert.equal(facts[1].reportedCoverShareChange,47073231);
  assert.equal(facts[2].pdufaTargetDate,"2024-07-07");
  assert.equal(facts[2].actualFDAActionDate,"2024-07-09");
- assert.equal(facts[3].pdufaTargetDate,"2024-12-20");
- assert.equal(facts[3].actualFDAActionDate,"2024-12-20");
- assert.equal(facts[3].reportedCoverShareChange,0);
- assert.equal(facts[4].pdufaTargetDate,"2025-01-31");
- assert.equal(facts[4].actualFDAActionDate,"2025-01-30");
+ assert.equal(facts.find(x=>x.ticker==="BBIO").pdufaTargetDate,"2024-11-29");
+ assert.equal(facts.find(x=>x.ticker==="BBIO").actualFDAActionDate,"2024-11-22");
+ assert.equal(facts.find(x=>x.ticker==="BBIO").reportedCoverShareChange,957064);
+ assert.equal(facts.find(x=>x.ticker==="LXRX").pdufaTargetDate,"2024-12-20");
+ assert.equal(facts.find(x=>x.ticker==="LXRX").actualFDAActionDate,"2024-12-20");
+ assert.equal(facts.find(x=>x.ticker==="LXRX").reportedCoverShareChange,0);
+ assert.equal(facts.find(x=>x.ticker==="AXSM").pdufaTargetDate,"2025-01-31");
+ assert.equal(facts.find(x=>x.ticker==="AXSM").actualFDAActionDate,"2025-01-30");
  assert.equal(facts[2].reportedCoverShareChange,18950801);
- assert.equal(facts[4].reportedCoverShareChange,462171);
- assert.equal(facts[5].pdufaTargetDate,"2025-03-27");
- assert.equal(facts[5].actualFDAActionDate,"2025-03-26");
- assert.equal(facts[5].reportedCoverShareChange,2739859);
- assert.equal(facts[6].pdufaTargetDate,"2025-09-22");
- assert.equal(facts[6].actualFDAActionDate,"2025-09-22");
- assert.equal(facts[6].reportedCoverShareChange,1181703);
- assert.equal(facts[7].pdufaTargetDate,"2025-12-26");
- assert.equal(facts[7].actualFDAActionDate,"2025-12-19");
- assert.equal(facts[7].reportedCoverShareChange,2607773);
+ assert.equal(facts.find(x=>x.ticker==="AXSM").reportedCoverShareChange,462171);
+ assert.equal(facts.find(x=>x.ticker==="SLNO").pdufaTargetDate,"2025-03-27");
+ assert.equal(facts.find(x=>x.ticker==="SLNO").actualFDAActionDate,"2025-03-26");
+ assert.equal(facts.find(x=>x.ticker==="SLNO").reportedCoverShareChange,2739859);
+ assert.equal(facts.find(x=>x.ticker==="SRRK").pdufaTargetDate,"2025-09-22");
+ assert.equal(facts.find(x=>x.ticker==="SRRK").actualFDAActionDate,"2025-09-22");
+ assert.equal(facts.find(x=>x.ticker==="SRRK").reportedCoverShareChange,1181703);
+ assert.equal(facts.find(x=>x.ticker==="CYTK").pdufaTargetDate,"2025-12-26");
+ assert.equal(facts.find(x=>x.ticker==="CYTK").actualFDAActionDate,"2025-12-19");
+ assert.equal(facts.find(x=>x.ticker==="CYTK").reportedCoverShareChange,2607773);
  assert.ok(facts.every(x=>x.eligibleForApprovedTrading===false));
 });
 test("original FDA 2024 after-goal action and 2025 early approval remain distinct, including prior NDA review cycle",()=>{
@@ -80,13 +83,13 @@ test("historical Alpaca RAW plus separately adjusted prices remain research-only
  const fake=fakePrices();
  const r=await m.execute({events,shares,earlier,intake,key:"key",secret:"secret",
   request:fake.request});
- assert.deepEqual(fake.seen,["ARQT|raw","ARQT|all","AXSM|raw","AXSM|all","MDGL|raw","MDGL|all","GERN|raw","GERN|all","SLNO|raw","SLNO|all","LXRX|raw","LXRX|all","SRRK|raw","SRRK|all","CYTK|raw","CYTK|all"]);
+ assert.deepEqual(fake.seen,["ARQT|raw","ARQT|all","AXSM|raw","AXSM|all","MDGL|raw","MDGL|all","GERN|raw","GERN|all","SLNO|raw","SLNO|all","LXRX|raw","LXRX|all","SRRK|raw","SRRK|all","CYTK|raw","CYTK|all","BBIO|raw","BBIO|all"]);
  assert.equal(r.status,"2024_2025_SOURCE_LEADS_UNVALIDATED_PRICE_RESEARCH");
- assert.equal(r.sourceLeadCount,8);
+ assert.equal(r.sourceLeadCount,9);
  assert.deepEqual(r.sourceLeadYears,[2024,2025]);
  assert.equal(r.reviewedIntakeCases,0);
- assert.equal(r.plannedWindowPairsExamined,8*3828);
- assert.ok(r.rawHistoricalSessions>=525);
+ assert.equal(r.plannedWindowPairsExamined,9*3828);
+ assert.ok(r.rawHistoricalSessions>=580);
  assert.ok(r.provisionalCapIn300mTo10bResearchSessions>0);
  assert.ok(r.provisionalPrimaryWindowRows>0);
  assert.ok(r.provisionalEarlierShareWindows>0);
@@ -262,4 +265,27 @@ test("2025 CYTK FDA original September goal, May publicly revised December goal,
  const forged=structuredClone(shares);
  forged.records.find(x=>x.ticker==="CYTK").sharesOutstanding=122264930;
  assert.throws(()=>m.verify(events,forged,earlier,intake),/2025_CYTK_SECURITIES_DISCLOSURE_MISMATCH/);
+});
+
+test("2024 BridgeBio BBIO Attruby FDA original target must precede Nov22 approval and respect SEC as-of dates",()=>{
+ const bbio=cases.find(x=>x.ticker==="BBIO");
+ assert.equal(bbio.application,"NDA 216540");
+ assert.deepEqual(bbio.nctIds,["NCT03860935"]);
+ assert.equal(bbio.targetAnnouncementDate,"2024-02-05");
+ assert.equal(bbio.phase3ReadoutDate,"2023-07-17");
+ assert.equal(bbio.pdufaTargetDate,"2024-11-29");
+ assert.equal(bbio.actualFDAActionDate,"2024-11-22");
+ assert.equal(bbio.actualFDAOutcome,"APPROVED");
+ assert.equal(bbio.fdaActionEarlierThanPdufaGoalDays,7);
+ const audit=m.verify(events,shares,earlier,intake).find(x=>x.ticker==="BBIO");
+ assert.equal(audit.reportedCoverShareChange,957064);
+ assert.equal(audit.earlierShares,188032738);
+ assert.equal(audit.laterShares,188989802);
+ assert.equal(audit.eligibleForApprovedTrading,false);
+ const bad=structuredClone(earlier);
+ bad.records.find(x=>x.ticker==="BBIO").firstConservativeEntryDate="2024-08-01";
+ assert.throws(()=>m.verify(events,shares,bad,intake),/BBIO_SECURITIES_DISCLOSURE_MISMATCH|CAP_SOURCE_IDENTITY_OR_ASOF_INVALID/);
+ const changed=structuredClone(events);
+ changed.records.find(x=>x.ticker==="BBIO").actualFDAActionDate="2024-11-29";
+ assert.throws(()=>m.verify(changed,shares,earlier,intake),/ORIGINAL_TARGET_ACTION_IDENTITY_INVALID/);
 });
