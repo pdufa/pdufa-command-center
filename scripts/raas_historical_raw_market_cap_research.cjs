@@ -130,6 +130,23 @@ function issuerExposureDiagnostics(events) {
  return {researchPrograms:events.length,distinctResearchIssuers:byTicker.size,
   overlappingSameIssuerPairs:overlaps.length,overlaps};
 }
+/** A revised PDUFA date must not truncate raw/adjusted SIP bars needed to
+ * examine the original goal's full T−90..T−3 range. This is ONLY a price
+ * download interval; original and revised publication gates are separate.
+ */
+function priceResearchRange(event){
+ const final=event?.pdufaTargetDate,original=event?.originallyAnnouncedPdufaTargetDate;
+ if(!date(final))throw Error("RAAS_CAP_RESEARCH_FINAL_GOAL_INVALID");
+ if(original!==undefined&&(
+  !date(original)||original>=final||
+  !date(event.originalTargetAnnouncementDate)||
+  event.originalTargetAnnouncementDate>=event.targetAnnouncementDate))
+  throw Error("RAAS_CAP_RESEARCH_ORIGINAL_GOAL_CHAIN_INVALID");
+ const earliest=original??final;
+ return {start:prior.minusDays(earliest,100),
+  end:prior.minusDays(final,1),
+  earliestPdufaGoalDate:earliest,finalPdufaGoalDate:final};
+}
 async function execute({key,secret,request=fetch,shares=read("new-platform/frontend/data/raas-2020-sec-cover-share-leads.json"),
  events=read("new-platform/frontend/data/raas-historical-2020-primary-source-leads.json")}={}){
  if(shares.scope!=="RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH"||
@@ -140,11 +157,12 @@ async function execute({key,secret,request=fetch,shares=read("new-platform/front
  for(const share of shares.records){
   const event=events.records.find(x=>x.caseId===share.caseId);
   checkedLead(share,event);
-  const start=prior.minusDays(event.pdufaTargetDate,100);
-  const end=prior.minusDays(event.pdufaTargetDate,1);
-  const raw=await fetchBars(event.ticker,event.pdufaTargetDate,start,end,"raw",key,secret,request);
-  const adjusted=await fetchBars(event.ticker,event.pdufaTargetDate,start,end,"all",key,secret,request);
-  result.push(examine(share,event,raw,adjusted));
+  const range=priceResearchRange(event);
+  const raw=await fetchBars(event.ticker,event.pdufaTargetDate,range.start,range.end,"raw",key,secret,request);
+  const adjusted=await fetchBars(event.ticker,event.pdufaTargetDate,range.start,range.end,"all",key,secret,request);
+  result.push({...examine(share,event,raw,adjusted),
+   requestedPriceStart:range.start,requestedPriceEnd:range.end,
+   earliestGoalDateIncluded:range.earliestPdufaGoalDate});
  }
  return {scope:"RAAS_HISTORIC_RAW_CAP_RESEARCH",status:"UNVALIDATED_HISTORICAL_CAP_RESEARCH_ONLY",
   cases:result,issuerExposures:issuerExposureDiagnostics(result),
@@ -172,4 +190,4 @@ if(require.main===module) {
   if(x.status==="BLOCKED_MISSING_ALPACA_CREDENTIALS")process.exitCode=1;
  }).catch(e=>{console.error("RAAS_CAP_RESEARCH_FATAL_"+String(e.message).replace(/[^A-Z0-9_]/g,"_"));process.exitCode=1;});
 }
-module.exports={checkedLead,fetchBars,examine,issuerExposureDiagnostics,execute};
+module.exports={checkedLead,priceResearchRange,fetchBars,examine,issuerExposureDiagnostics,execute};

@@ -121,3 +121,33 @@ test("An invented, missing, duplicate or after-FDA price bar never produces a va
  broken.priceDataRawAndAdjusted[0].eventTradeCasesValidated=1;
  assert.throws(()=>base({research:broken}),/RAAS_T90_T3_PRICE_CASE_IDENTITY_INVALID/);
 });
+
+test("2025 SLNO original 2024 goal must stay 2025 holdout, not leak into 2024 training",()=>{
+ const p=clone(primary),slno=p.records.find(x=>x.ticker==="SLNO");
+ assert.equal(slno.originallyAnnouncedPdufaTargetDate,"2024-12-27");
+ slno.originalTargetAnnouncementSourceUrl="https://research.example.org/slno-original-goal";
+ const research=makeResearch(),originalDate=slno.originallyAnnouncedPdufaTargetDate;
+ const entry=date(originalDate,-45),exit=date(originalDate,-35);
+ assert.equal(entry,"2024-11-12");
+ assert.equal(exit,"2024-11-22");
+ research.priceDataRawAndAdjusted.find(x=>x.caseId===slno.caseId).observations=[
+  bar(slno,entry,10,5),bar(slno,exit,11,5.5)
+ ];
+ const report=base({primary:p,research});
+ const row=report.caseWindows.find(x=>x.caseId===slno.caseId&&
+  x.targetVersion==="ORIGINAL_AS_PUBLISHED"&&
+  x.entryLeadDays===45&&x.exitLeadDays===35);
+ assert.equal(row.reason,"PROVISIONAL_UNVERIFIED_ELIGIBILITY");
+ assert.equal(row.targetYear,2024);
+ assert.equal(row.cohortYear,2025);
+ assert.equal(row.provisionalGrossReturnPct,10);
+ const summary=report.windowSummaries.find(x=>x.targetVersion==="ORIGINAL_AS_PUBLISHED"&&
+  x.entryLeadDays===45&&x.exitLeadDays===35);
+ assert.equal(summary.training2024.n,0);
+ assert.equal(summary.holdout2025.n,1);
+ assert.equal(summary.holdout2025.meanGrossPct,10);
+ assert.match(stringifyCSV(report),/cohortYear,targetYear/);
+ assert.equal(report.cohortSplitRule,
+  "FINAL_PUBLIC_PDUFA_GOAL_YEAR_REGARDLESS_OF_ORIGINAL_GOAL_VERSION");
+ assert.equal(report.approvedBestEntryExitWindow,null);
+});

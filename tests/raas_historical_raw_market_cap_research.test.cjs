@@ -159,3 +159,35 @@ test("ICPT May 11 shares are post-close research only, never 2020 CRL leakage",(
  assert.equal(result.approvedRaasRatings,0);
  assert.ok(result.observations.filter(x=>x.session>="2020-06-26").every(x=>!x.beforeActualFDAAction));
 });
+
+test("Revised 2025 FDA goals request Alpaca bars spanning the earlier originally announced goal",()=>{
+ const events=require("../new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json").records;
+ const slno=events.find(x=>x.ticker==="SLNO"),cytk=events.find(x=>x.ticker==="CYTK"),
+  arqt=events.find(x=>x.ticker==="ARQT");
+ assert.ok(slno&&cytk&&arqt);
+ const s=m.priceResearchRange(slno),k=m.priceResearchRange(cytk),
+  a=m.priceResearchRange(arqt);
+ assert.equal(s.start,"2024-09-18");
+ assert.equal(s.end,"2025-03-26");
+ assert.equal(k.start,"2025-06-18");
+ assert.equal(k.end,"2025-12-25");
+ assert.equal(a.start,"2024-03-29");
+ assert.equal(a.end,"2024-07-06");
+ assert.equal(s.earliestPdufaGoalDate,"2024-12-27");
+ assert.equal(k.earliestPdufaGoalDate,"2025-09-26");
+ assert.equal(a.earliestPdufaGoalDate,arqt.pdufaTargetDate);
+ assert.ok(s.start<"2024-11-12");
+ assert.ok(k.start<"2025-08-10");
+});
+test("An invalid revised-goal chain fails closed rather than fetching dates",()=>{
+ const e=require("../new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json")
+  .records.find(x=>x.ticker==="SLNO");
+ for(const change of [
+  {originallyAnnouncedPdufaTargetDate:"2025-04-01"},
+  {originallyAnnouncedPdufaTargetDate:"bad-date"},
+  {originalTargetAnnouncementDate:"2025-06-01"},
+  {originallyAnnouncedPdufaTargetDate:null}
+ ]){
+  assert.throws(()=>m.priceResearchRange({...e,...change}),/RAAS_CAP_RESEARCH_ORIGINAL_GOAL_CHAIN_INVALID/);
+ }
+});
