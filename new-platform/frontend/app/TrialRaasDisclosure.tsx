@@ -123,6 +123,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
    },bucket,period,reviewedLedger.sourceAsOf,metricHistoryReview)
  }));
  const reviewed=scoreSnapshots.find(s=>s.period===snapshot)?.reviewed??null;
+ const currentOverallLabel=reviewed?`Overall RAAS ${reviewed.score.score}/100 · approved`:"Overall RAAS —/100 · pending";
  const grading=reviewed?.score??computeRaasScore({stage:bucket,snapshot,asOf:pilot.sourceAsOf,
    trial:{nctId:row.nctId,ticker:row.ticker},ratings:[],gates:[]});
  const missingChecklist=raasMissingMetricChecklist(bucket,record,grading.missing);
@@ -134,7 +135,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
      aria-label={label+" · "+row.ticker+" "+row.nctId+" · expand or collapse proposed score ingredients"}>
      <span className={css.summaryText}><strong>{label}</strong>
        <small data-raas-current-scan={row.nctId}>Source coverage {Math.round(currentEvidence.mappedMetrics/30*100)}% · {currentEvidence.mappedMetrics}/30 areas</small>
-       <small>Overall RAAS {reviewed?.score.score??"—"}/100 · {reviewed?"approved":"pending"}</small>
+       <small>{currentOverallLabel}</small>
        {currentEvidence.exploratoryTimingGrade&&<small>Timing pilot {currentEvidence.exploratoryTimingGrade.score}/100 · research only, not overall RAAS</small>}</span>
      <span className={css.chevron} aria-hidden="true">▸</span>
    </summary>
