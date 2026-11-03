@@ -1,0 +1,42 @@
+name: RAAS historical SEC share evidence audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/raas_sec_historical_share_evidence.cjs'
+      - 'tests/raas_sec_historical_share_evidence.test.cjs'
+      - '.github/workflows/raas-sec-historical-shares.yml'
+  pull_request:
+    paths:
+      - 'scripts/raas_sec_historical_share_evidence.cjs'
+      - 'tests/raas_sec_historical_share_evidence.test.cjs'
+      - '.github/workflows/raas-sec-historical-shares.yml'
+permissions:
+  contents: read
+jobs:
+  source-shares:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check as-of SEC filing dates, CIK identity, source ambiguity and no-leakage rules
+        run: node --test tests/raas_sec_historical_share_evidence.test.cjs
+      - name: Collect point-in-time SEC cover-share leads (not market cap)
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_SEC_SHARE_OUTPUT: ${{ runner.temp }}/raas-sec-historical-shares.json
+        run: node scripts/raas_sec_historical_share_evidence.cjs
+      - name: Save historical SEC as-of evidence worklist
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-sec-historical-share-research
+          path: ${{ runner.temp }}/raas-sec-historical-shares.json
+          retention-days: 30
+          if-no-files-found: ignore
