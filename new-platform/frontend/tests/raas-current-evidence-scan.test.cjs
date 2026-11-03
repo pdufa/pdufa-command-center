@@ -52,15 +52,15 @@ test("Exact NCT plus listed issuer and stage gate every mapped fact",()=>{
  assert.equal(run({nctId:"NCT99999999",ticker:"TRVI"},"pre").mappedMetrics,0);
  assert.throws(()=>scan(pilot,prospective,{nctId:"NCT07363577",ticker:"LBRX"},"pre","2026-11-03"),/RAAS_EVIDENCE_SCAN_ASOF_INVALID/);
 });
-test("No pre-readout knowledge is transferred into an earlier time or as-of market snapshot",()=>{
- const a=scan(pilot,prospective,{nctId:"NCT07363577",ticker:"LBRX"},"pre","2026-04-01");
- assert.equal(a.pilotObservations.length,1);
- assert.equal(a.prospectiveFacts.length,1);
- assert.equal(a.mappedMetrics,1);
- assert.equal(a.exploratoryTimingGrade,null);
- const trvi=scan(pilot,prospective,{nctId:"NCT07671911",ticker:"TRVI"},"pre","2026-01-01");
- assert.equal(trvi.mappedMetrics,1);
- assert.equal(trvi.prospectiveFacts.length,1);
+test("Current evidence cannot be retroactively presented as archived pre-entry RAAS predictions",()=>{
+ for(const asOf of ["2026-04-01","2026-10-30","2026-11-03"]){
+  assert.throws(
+   ()=>scan(pilot,prospective,{nctId:"NCT07363577",ticker:"LBRX"},"pre",asOf),
+   /RAAS_EVIDENCE_SCAN_ASOF_INVALID/);
+  assert.throws(
+   ()=>scan(pilot,prospective,{nctId:"NCT07671911",ticker:"TRVI"},"pre",asOf),
+   /RAAS_EVIDENCE_SCAN_ASOF_INVALID/);
+ }
 });
 test("Spreadsheet RAAS cells are visibly populated with mapped sources and honest grade separation",()=>{
  const page=fs.readFileSync(path.join(__dirname,"../app/TrialRaasDisclosure.tsx"),"utf8");
