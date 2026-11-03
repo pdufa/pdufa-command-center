@@ -237,7 +237,7 @@ function csvForReview(data){
   const raw=String(x??"");
   // Source text can become an executable spreadsheet formula even in a
   // quoted CSV cell. Prefix the dangerous leading characters before export.
-  const safe=/^[\\s\\u0000-\\u001f]*[=+\\-@]/.test(raw)?"'"+raw:raw;
+  const safe=["=","+","-","@"].includes(raw.trimStart().slice(0,1))?"'"+raw:raw;
   return '"'+safe.replaceAll('"','""')+'"';
  };
  return fields.join(",")+"\n"+
