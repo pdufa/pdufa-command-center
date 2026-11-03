@@ -142,3 +142,27 @@ test("ICPT 2020 extension, late-public CRL and 2023 review are distinct identiti
  assert.equal(source2020.eligibleForCalibration,false);
  assert.equal(r.summary.fullCensusYears,0);
 });
+
+test("2021 original CARA lead extends historical coverage without claiming a 10-year census",()=>{
+ const year2021=JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-historical-2021-primary-source-leads.json"),"utf8"));
+ const combined={...primary,records:[...primary.records,...year2021.records]};
+ const verified=m.validateSourceLeads(combined);
+ assert.equal(verified.length,7);
+ assert.equal(verified.filter(x=>x.pdufaTargetDate.startsWith("2021")).length,1);
+ const r=m.consolidate({archiveCsv:archive,primaryLeads:combined,
+  approvalDiscovery:fda,issuerCrosswalk,crlDiscovery});
+ assert.equal(r.summary.primaryTargetSourceLeads,7);
+ assert.equal(r.coverage[2020].sourceLeads,6);
+ assert.equal(r.coverage[2021].sourceLeads,1);
+ assert.equal(r.coverage[2021].completePdufaCensus,false);
+ assert.equal(r.summary.fullCensusYears,0);
+ assert.equal(r.summary.historicallyEligibleTrades,0);
+ assert.equal(r.summary.approvedRaasMetrics,0);
+ const lead=r.candidates.find(x=>x.key==="CARA|KORSUVA|NDA214916|2021"||
+  x.primarySourceCaseId==="CARA|KORSUVA|NDA214916|2021");
+ assert.ok(lead);
+ assert.equal(lead.pdufaTargetDate,"2021-08-23");
+ assert.equal(lead.actualFDAActionDate,"2021-08-23");
+ assert.equal(lead.eligibleForCalibration,false);
+});
