@@ -8,6 +8,7 @@ import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-d
 import type {ToolPdufaApplication} from "../lib/tools-pdufa-links";
 import styles from "./FunnelWorkspace.module.css";
 import ToolsRankingChecklists from "./ToolsRankingChecklists";
+import RaasSpreadsheetStatus from "./RaasSpreadsheetStatus";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 
 export type ToolSourceEvidence={
@@ -200,15 +201,16 @@ export default function ToolsResultsSpreadsheet({
           </th>)}
           <th>FDA links <small>Source-recorded, partial</small></th>
           <th>PDUFA application <small>Linked program, not a trial deadline</small></th>
+          <th>RAAS <small>Approved score / evidence</small></th>
           <th>Study role <small>Pivotal status</small></th>
           {stages.map(stage=><th key={"stage:"+stage} title="Selected stage criterion">{stage}<small>Selected stage</small></th>)}
           {designations.map(key=><th key={"designation:"+key} title="Selected FDA designation category">{names.get(key)||key}<small>FDA designation evidence</small></th>)}
         </tr></thead>
         <tbody>
-          {!hasSelection?<tr><td colSpan={12+stages.length+designations.length} className={styles.toolsSheetEmpty}>Select a clinical stage or FDA designation to populate rows.</td></tr>:
-          loading?<tr><td colSpan={12+stages.length+designations.length} className={styles.toolsSheetEmpty}>Loading matching trial rows…</td></tr>:
-          error?<tr><td colSpan={12+stages.length+designations.length} className={styles.toolsSheetEmpty}>Trial evidence could not be verified. No result total is asserted.</td></tr>:
-          ordered.length===0?<tr><td colSpan={12+stages.length+designations.length} className={styles.toolsSheetEmpty}>
+          {!hasSelection?<tr><td colSpan={13+stages.length+designations.length} className={styles.toolsSheetEmpty}>Select a clinical stage or FDA designation to populate rows.</td></tr>:
+          loading?<tr><td colSpan={13+stages.length+designations.length} className={styles.toolsSheetEmpty}>Loading matching trial rows…</td></tr>:
+          error?<tr><td colSpan={13+stages.length+designations.length} className={styles.toolsSheetEmpty}>Trial evidence could not be verified. No result total is asserted.</td></tr>:
+          ordered.length===0?<tr><td colSpan={13+stages.length+designations.length} className={styles.toolsSheetEmpty}>
             {trialCountUnverified
               ?"No documented FDA-linked NCT matched in this dated restricted research screen. Other source programs remain unlinked; comprehensive trial counts are not established."
               :designations.length>0?"No documented NCT-linked POOL trials match both the chosen phases and FDA categories. Unlinked FDA programs remain visible separately below.":"No restricted-screen NCT trials match the selected phases or text search. Clear the text search or choose other phases."}
@@ -235,6 +237,9 @@ export default function ToolsResultsSpreadsheet({
             <td>{display(row.drug)}</td>
             <td>{display(row.indication)}</td>
             <td>{display(row.stage)}</td>
+            <td><RaasSpreadsheetStatus trial={{nctId:row.nctId,ticker:row.ticker,
+              drug:row.drug,indication:row.indication,
+              confirmedPostReadout:!!row.timeline?.phase3DataRelease}}/></td>
             <td>{(()=>{
               const linked=Object.entries(row.designationMatches||{}).filter(([,claims])=>!!claims?.length);
               return linked.length?<details className={styles.toolsSheetEvidence}>
@@ -279,7 +284,7 @@ export default function ToolsResultsSpreadsheet({
           </tr>;})}
         </tbody>
         {hasSelection&&!loading&&!error&&<tfoot><tr>
-          <th colSpan={12+stages.length+designations.length}>
+          <th colSpan={13+stages.length+designations.length}>
             {(designations.length?"Documented FDA-linked NCT matches within restricted subset: ":"Matching restricted NCT trials: ")+fmt(total)} · Selected filters: {selectedCount}
           </th>
         </tr></tfoot>}

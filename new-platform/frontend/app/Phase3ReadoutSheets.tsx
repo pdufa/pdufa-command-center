@@ -5,6 +5,7 @@ import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import css from "./Phase3ReadoutSheets.module.css";
 import TrialRaasDisclosure from "./TrialRaasDisclosure";
+import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
 import RaasAllClassifiedLiveReview from "./RaasAllClassifiedLiveReview";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
@@ -82,13 +83,17 @@ function csvCell(v:string|number){
   return '"'+safe.replace(/"/g,'""')+'"';
 }
 function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
-  const fields=["NCT","Ticker","Company",...(bucket==="post"?["Factor P (Phase 3 primary endpoint p-value)"]:[]),"ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication","Release evidence","Registry link"];
+  const fields=["NCT","Ticker","Company",...(bucket==="post"?["Factor P (Phase 3 primary endpoint p-value)"]:[]),"ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication","Release evidence","Registry link",
+    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","RAAS validation status"];
   const table=[fields,...rows.map(row=>[
     row.nctId,row.ticker,row.company,...(bucket==="post"?[row.evidence?.primaryEndpointP?.display||"Not reported"]:[]),row.status,
     bucket==="pre"?"No public issuer release verified as of source check":
       bucket==="post"?"Public issuer Phase 3 readout confirmed":"Unverified",
     row.evidence?.evidenceDate||"",row.evidence?.drug||"",row.evidence?.indication||"",
-    row.evidence?.evidenceUrl||"",row.sourceUrl
+    row.evidence?.evidenceUrl||"",row.sourceUrl,
+    ...raasSpreadsheetExport({nctId:row.nctId,ticker:row.ticker,
+     drug:row.evidence?.drug,indication:row.evidence?.indication,
+     classifiedStage:bucket==="unverified"?null:bucket})
   ])];
   const csv="\ufeff"+table.map(r=>r.map(csvCell).join(",")).join("\r\n")+"\r\n";
   const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});

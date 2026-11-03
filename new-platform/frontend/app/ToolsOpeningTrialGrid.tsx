@@ -2,6 +2,7 @@
 import {Fragment,useEffect,useMemo,useState} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
+import RaasSpreadsheetStatus from "./RaasSpreadsheetStatus";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
 import {TOOLS_RATING_GROUPS} from "../lib/tools-rating-groups";
 import css from "./ToolsOpeningTrialGrid.module.css";
@@ -236,7 +237,7 @@ export default function ToolsOpeningTrialGrid({
   },[]);
   const toggleRating=(key:RatingGroupKey)=>setExpandedRatings(current=>current.includes(key)
     ?current.filter(value=>value!==key):[...current,key]);
-  const columnsCount=1+columns.length+extraColumns+1+
+  const columnsCount=1+columns.length+extraColumns+2+
     (competitiveOpen?COMPETITIVE_STRATEGY_TOPICS.length:0)+RATING_GROUPS.reduce((n,g)=>
     n+1+(expandedRatings.includes(g.key)?g.ingredients.length:0),0);
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
@@ -366,6 +367,7 @@ export default function ToolsOpeningTrialGrid({
               {col.hint&&<small>{col.hint}</small>}
             </th>
           </Fragment>)}
+          <th>RAAS <small>Approved score / source coverage</small></th>
           {RATING_GROUPS.map(group=>{
             const open=expandedRatings.includes(group.key);
             const outer=[css.ratingCell,open?css.ratingOpen:"",css.ratingStart,
@@ -480,6 +482,9 @@ export default function ToolsOpeningTrialGrid({
             <td className={css.longTextCell}>{safe(row.drug)}</td>
             <td className={css.longTextCell}>{safe(row.indication)}</td>
             <td>{safe(row.stage)}</td>
+            <td><RaasSpreadsheetStatus trial={{nctId:row.nctId,ticker:row.ticker,
+              drug:row.drug,indication:row.indication,
+              confirmedPostReadout:!!row.timeline?.phase3DataRelease}}/></td>
             {RATING_GROUPS.map(group=>{
               const open=expandedRatings.includes(group.key);
               return <Fragment key={group.key}>
