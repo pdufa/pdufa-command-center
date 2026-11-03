@@ -92,6 +92,58 @@ class Nov14RegistryCrossSourceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             v2.validate_nov14_trial_registry_triangulation(changed,source,legacy,ASOF)
 
+    def test_fda_approved_s001_rems_is_not_the_maple_hcm_snda_and_os_is_not_a_crl(self):
+        dossier,source,legacy=fixtures()
+        found=v2.validate_nov14_trial_registry_triangulation(dossier,source,legacy,ASOF)
+        by={x["ticker"]:x for x in found}
+        self.assertTrue(by["CYTK"]["fdaPriorUnrelatedSupplementS001RemsNotMaple"])
+        self.assertTrue(by["SMMT"]["sponsorReportedOSRequirementWithoutSignificantPrimaryOS"])
+        self.assertFalse(by["CYTK"]["fdaCurrentCycleApplicationOrSupplementNumberVerified"])
+        self.assertFalse(by["SMMT"]["independentPreDecisionThreeWayForecastExists"])
+        source_c=dossier["records"][0]
+        self.assertEqual(source_c["fdaPreviouslyApprovedUnrelatedSupplementNumber"],"S-001")
+        self.assertEqual(source_c["fdaPreviouslyApprovedUnrelatedSupplementApprovalDate"],"2026-02-05")
+        self.assertEqual(source_c["mapleHcmSubmissionPubliclyDisclosedAt"],"2026-02-24")
+        self.assertEqual(source_c["mapleHcmFDAAcceptanceAndGoalFirstLocatedAt"],"2026-05-05")
+        self.assertFalse(source_c["fdaPreviouslyApprovedS001EstablishesNov14FDAOutcome"])
+        self.assertEqual(dossier["records"][1]["pivotalPrimaryOverallSurvivalReportedPValue"],0.057)
+        self.assertFalse(dossier["records"][1]["fdaOSRequirementAndStudyDataAutomaticallyEstablishCRL"])
+        report=v2.execute(ASOF)
+        self.assertEqual(report["nov14KnownUnrelatedAlreadyApprovedFdaSupplementS001Count"],1)
+        self.assertEqual(report["nov14SponsorDisclosedOSRequirementWithNonsignificantPrimaryCount"],1)
+        rows={x["researchCaseKey"]:x for x in report["blockedSourceItems"]}
+        self.assertTrue(rows["CYTK|MYQORZO_HCM_20261114"]["priorFDAApprovedS001RemsNotCurrentMapleHcm"])
+        self.assertTrue(rows["SMMT|IVONESCIMAB_20261114"]["sponsorOSSignificanceRequirementEvidenceFound"])
+        with TemporaryDirectory() as td:
+            v2.export(report,Path(td)/"report.json",Path(td)/"report.csv")
+            with (Path(td)/"report.csv").open(newline="") as stream:
+                csvrows={r["researchCaseKey"]:r for r in csv.DictReader(stream)}
+            self.assertEqual(csvrows["CYTK|MYQORZO_HCM_20261114"][
+                "priorFDAApprovedS001RemsNotCurrentMapleHcm"],"True")
+            self.assertEqual(csvrows["SMMT|IVONESCIMAB_20261114"][
+                "sponsorOSSignificanceRequirementEvidenceFound"],"True")
+
+    def test_fda_s001_and_os_evidence_cannot_be_mislabeled_as_current_fda_action(self):
+        dossier,source,legacy=fixtures()
+        for i,field,bad in (
+            (0,"fdaPreviouslyApprovedUnrelatedSupplementNumber","S-002"),
+            (0,"fdaPreviouslyApprovedUnrelatedSupplementPurpose","EFFICACY_MAPLE_HCM"),
+            (0,"fdaPreviouslyApprovedUnrelatedSupplementApprovalDate","2026-11-14"),
+            (0,"fdaPreviouslyApprovedS001IsNov14PendingMapleHcmSupplement",True),
+            (0,"fdaPreviouslyApprovedS001EstablishesNov14FDAOutcome",True),
+            (0,"mapleHcmSubmissionPubliclyDisclosedAt","2026-01-05"),
+            (0,"specificPendingMAPLESupplementNumberIndependentlyVerified",True),
+            (1,"fdaOSStatisticalSignificanceRequirementReportedBySponsor",False),
+            (1,"pivotalPrimaryOverallSurvivalStatisticallySignificantAtPrimaryAnalysis",True),
+            (1,"pivotalPrimaryOverallSurvivalReportedPValue",0.0001),
+            (1,"fdaOSRequirementAndStudyDataAutomaticallyEstablishCRL",True),
+            (1,"laterOverallSurvivalFollowUpEstablishesFDAApprovalOrExtension",True),
+        ):
+            altered=deepcopy(dossier)
+            altered["records"][i][field]=bad
+            with self.subTest(ticker=altered["records"][i]["ticker"],field=field),self.assertRaises(ValueError):
+                v2.validate_nov14_trial_registry_triangulation(altered,source,legacy,ASOF)
+
     def test_matured_nov14_goals_no_longer_upcoming_even_if_registry_remains_historical(self):
         report=v2.execute("2026-11-18T23:59:59Z")
         self.assertEqual(report["nov14ThirdPartyRegistryPhase3CrossCheckedCount"],2)
