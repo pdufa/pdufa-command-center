@@ -42,7 +42,7 @@ function GoalAsOfHistory(){
    <div><strong>{audit.calendarWeekendEntryCases}</strong><span>Calendar T−79 entries falling on weekends</span></div>
    <div><strong>{audit.calendarWeekendExitCases}</strong><span>Calendar T−14 exits falling on weekends</span></div>
   </div>
-  <p className={css.notice}>Calendar offsets are not executable trading sessions. Issuer announcement links establish a research source lead, not independent FDA validation, verified capitalization, historical adjusted return, or an approved 0–100 grade. SLNO's separately saved original announcement URL remains missing.</p>
+  <p className={css.notice}>Calendar offsets and proposed next-entry / prior-exit Nasdaq sessions are not executable trading sessions, verified prices, or independent historical returns. Market closures include the exceptional January 9, 2025 shutdown; <a href="https://classic.nasdaqtrader.com/TraderNews.aspx?id=ETA2025-1" target="_blank" rel="noopener noreferrer">Nasdaq closure notice</a>. Issuer announcements do not independently validate FDA chronology or capitalization. No 0–100 RAAS grade is approved. SLNO's separately saved original announcement URL remains missing.</p>
   {audit.cases.map(c=><details key={c.caseId} className={css.group}
     data-raas-goal-asof-case={c.ticker}>
     <summary><strong>{c.ticker} · {c.application}</strong>
@@ -59,6 +59,12 @@ function GoalAsOfHistory(){
        <strong>{c.eventTargetDate} · {c.revised?c.revisedGoalAnnouncementDate:c.initialGoalAnnouncementDate}</strong></div>
       <div><span>Current T−79 → T−14 calendar window</span>
        <strong>{c.current.calendarEntryDate} → {c.current.calendarExitDate}</strong></div>
+      <div><span>Indicative Nasdaq regular sessions · enter next / exit prior</span>
+       <strong>{c.current.indicativeEntrySessionDate} → {c.current.indicativeExitSessionDate}</strong></div>
+      <div><span>Calendar-to-session adjustment</span>
+       <strong>Entry +{c.current.entrySessionShiftCalendarDays} days · exit {c.current.exitSessionShiftCalendarDays} days</strong></div>
+      <div><span>Abbreviated session close flags</span>
+       <strong>Entry {c.current.entrySessionIsEarlyClose?"early close":"normal calendar"} · exit {c.current.exitSessionIsEarlyClose?"early close":"normal calendar"}</strong></div>
       <div><span>FDA goal revision, calendar day shift</span>
        <strong>{c.sourceShiftCalendarDays} days</strong></div>
       <div><span>Pre-entry source gate for post-3-5 / post-6-1</span>
@@ -70,6 +76,7 @@ function GoalAsOfHistory(){
      {c.revised&&c.revisedGoalSourceUrl&&<p className={css.muted}><strong>Target revision:</strong> <a href={c.revisedGoalSourceUrl} target="_blank" rel="noopener noreferrer">Open dated revised target source</a> · originally announced target moved {c.sourceShiftCalendarDays} calendar days.</p>}
      <p className={css.muted}><strong>Phase 3 public-result source listed:</strong> {c.phase3ReadoutListedDate} · <a href={c.phase3ReadoutSourceUrl} target="_blank" rel="noopener noreferrer">Original clinical source</a>. Independently audited source publication chronology: <strong>not complete</strong>.</p>
      {(c.current.entryIsWeekend||c.current.exitIsWeekend)&&<p className={css.notice}>At least one proposed T−79/T−14 date is a weekend. Exact trading-session normalization, real price verification and slippage are required before any return claim.</p>}
+     <p className={css.muted}><strong>Market-session limitations:</strong> Session dates are calendar proposals, not proof of ticker-level open trading, independent daily bars, adjusted prices, slippage, financing or market cap. Verify actual Alpaca/independent price data before any return comparison.</p>
      <p className={css.muted}><strong>Metric-grade status:</strong> —/100 for post-3-5 and post-6-1. Post-6-2 cannot be graded using calendar dates alone. Historical outcome decisions have not been used in this source-time calculation.</p>
     </div>
   </details>)}

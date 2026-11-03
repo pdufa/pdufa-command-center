@@ -19,6 +19,10 @@ export type GoalSourceCandidate={
 export type GoalAsOfWindow={
  targetVersion:"ORIGINAL_PUBLIC_GOAL"|"REVISED_PUBLIC_GOAL";
  calendarEntryDate:string;calendarExitDate:string;
+ /** Exchange-schedule candidates only: never broker-verified trades. */
+ indicativeEntrySessionDate:string;indicativeExitSessionDate:string;
+ entrySessionShiftCalendarDays:number;exitSessionShiftCalendarDays:number;
+ entrySessionIsEarlyClose:boolean;exitSessionIsEarlyClose:boolean;
  entryIsWeekend:boolean;exitIsWeekend:boolean;
  targetWasPublishedByCalendarEntry:boolean;phase3ReadoutListedBeforeEntry:boolean;
  goalSourceUrl:string;
@@ -61,11 +65,51 @@ const urlOK=(s:unknown):s is string=>typeof s==="string"&&/^https:\/\/[^\s/@:?#]
 const shift=(d:string,n:number)=>new Date(Date.parse(d+"T00:00:00Z")+n*86400000).toISOString().slice(0,10);
 const daysBetween=(a:string,b:string)=>(Date.parse(b+"T00:00:00Z")-Date.parse(a+"T00:00:00Z"))/86400000;
 const isWeekend=(d:string)=>[0,6].includes(new Date(d+"T00:00:00Z").getUTCDay());
+/** Dated Nasdaq regular-session closures for the supported 2023–2025 audit
+ * range. Official exchange references:
+ * https://www.nasdaqtrader.com/Trader.aspx?id=Calendar
+ * https://www.nasdaq.com/press-release/nyse-group-announces-2024-2025-and-2026-holiday-and-early-closings-calendar-2023-11
+ * https://classic.nasdaqtrader.com/TraderNews.aspx?id=ETA2025-1
+ * 2025-01-09 is the exceptional Jimmy Carter national day of mourning.
+ * This calendar does NOT verify a specific security's price bar, trading
+ * status, adjusted return, execution, or historical market capitalization.
+ */
+const usEquityFullClosureDates=new Set([
+ "2023-12-25",
+ "2024-01-01","2024-01-15","2024-02-19","2024-03-29","2024-05-27",
+ "2024-06-19","2024-07-04","2024-09-02","2024-11-28","2024-12-25",
+ "2025-01-01","2025-01-09","2025-01-20","2025-02-17","2025-04-18",
+ "2025-05-26","2025-06-19","2025-07-04","2025-09-01","2025-11-27","2025-12-25"
+]);
+const usEquityEarlyCloses=new Set([
+ "2024-07-03","2024-11-29","2024-12-24",
+ "2025-07-03","2025-11-28","2025-12-24"
+]);
+export function indicativeNasdaqRegularSession(d:string,direction:"entry"|"exit"):string{
+ if(!dateOK(d)||d<"2023-12-01"||d>"2025-12-31"||
+  (direction!=="entry"&&direction!=="exit"))
+  throw Error("RAAS_GOAL_ASOF_SESSION_CALENDAR_UNSUPPORTED");
+ for(let n=0;n<10;n++){
+  const candidate=shift(d,n*(direction==="entry"?1:-1));
+  if(candidate<"2023-12-01"||candidate>"2025-12-31")
+   throw Error("RAAS_GOAL_ASOF_SESSION_CALENDAR_UNSUPPORTED");
+  if(!isWeekend(candidate)&&!usEquityFullClosureDates.has(candidate))return candidate;
+ }
+ throw Error("RAAS_GOAL_ASOF_SESSION_CALENDAR_UNRESOLVED");
+}
 const cap=(s:string)=>s.trim().toUpperCase();
 function windowFor(goal:string,announced:string,url:string,readoutDate:string,
  version:GoalAsOfWindow["targetVersion"]):GoalAsOfWindow{
  const entry=shift(goal,-79),exit=shift(goal,-14);
+ const entrySession=indicativeNasdaqRegularSession(entry,"entry");
+ const exitSession=indicativeNasdaqRegularSession(exit,"exit");
+ if(entrySession>=exitSession)throw Error("RAAS_GOAL_ASOF_PROPOSED_WINDOW_INVALID");
  return {targetVersion:version,calendarEntryDate:entry,calendarExitDate:exit,
+  indicativeEntrySessionDate:entrySession,indicativeExitSessionDate:exitSession,
+  entrySessionShiftCalendarDays:daysBetween(entry,entrySession),
+  exitSessionShiftCalendarDays:daysBetween(exit,exitSession),
+  entrySessionIsEarlyClose:usEquityEarlyCloses.has(entrySession),
+  exitSessionIsEarlyClose:usEquityEarlyCloses.has(exitSession),
   entryIsWeekend:isWeekend(entry),exitIsWeekend:isWeekend(exit),
   targetWasPublishedByCalendarEntry:announced<=entry,
   phase3ReadoutListedBeforeEntry:readoutDate<=entry,goalSourceUrl:url};
@@ -170,7 +214,8 @@ export function auditGoalVersionSource(input:unknown):GoalAsOfAudit{
    "PDUFA source-link presence at T-79 is not independent verification of FDA acceptance, all revisions or an actionable entry.",
    "FDA outcomes and decisions are deliberately excluded from this pre-entry metric feature audit; retrospective information must never backfill a score.",
    "The initial PDUFA goal and later revised goal create different T-79/T-14 windows. The revised window is only source-eligible when the revision was already publicly announced at its own entry.",
-   "Calendar T-79/T-14 marks may fall on weekends or holidays; neither a date nor an issuer announcement alone verifies an actual tradable close or a conservative execution session.",
+   "Calendar T-79/T-14 marks may fall on weekends or holidays; proposed next-entry/prior-exit regular-session dates use a dated Nasdaq closure schedule and are not verified executable prices, bars or trades.",
+   "Early-close trading sessions and unscheduled closures must be checked against broker bars independently; January 9, 2025 is excluded as an exchange closure, not a valid trade date.",
    "Some originally announced targets lack a separately saved contemporary original-goal URL; those references are not independently verified.",
    "Even two FDA target and timing metric source candidates do not establish a risk score: statistical holdout, FDA census, adjusted-price checks, capitalization and source completeness remain blocked.",
    "Historical approval counts and RAAS calibrated metric grades remain zero."

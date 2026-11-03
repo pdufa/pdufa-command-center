@@ -6,7 +6,7 @@ require.extensions[".ts"]=(mod,file)=>mod._compile(ts.transpileModule(
  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}
 ).outputText,file);
 const primary=require("../data/raas-active-2024-2025-primary-source-leads.json");
-const {activePdufaGoalAsOfAudit,auditGoalVersionSource}=
+const {activePdufaGoalAsOfAudit,auditGoalVersionSource,indicativeNasdaqRegularSession}=
  require("../lib/raas-pdufa-goal-asof-metric-audit.ts");
 const clone=()=>structuredClone(primary);
 test("All nine 2024/25 research sources have dated T-79 target inputs; none have a validated RAAS score",()=>{
@@ -32,6 +32,30 @@ test("All nine 2024/25 research sources have dated T-79 target inputs; none have
   assert.equal(x.reviewState,"POINT_IN_TIME_SOURCE_LEAD_ONLY");
   assert.ok(x.current.calendarEntryDate<x.current.calendarExitDate);
   assert.ok(x.current.calendarExitDate<x.eventTargetDate);
+ }
+});
+test("Conservative session proposals respect Nasdaq weekends, full holidays, exceptional closures and early closes",()=>{
+ assert.equal(indicativeNasdaqRegularSession("2025-01-09","entry"),"2025-01-10");
+ assert.equal(indicativeNasdaqRegularSession("2025-01-09","exit"),"2025-01-08");
+ assert.equal(indicativeNasdaqRegularSession("2024-03-29","entry"),"2024-04-01");
+ assert.equal(indicativeNasdaqRegularSession("2024-03-29","exit"),"2024-03-28");
+ assert.equal(indicativeNasdaqRegularSession("2024-12-25","entry"),"2024-12-26");
+ assert.equal(indicativeNasdaqRegularSession("2024-12-25","exit"),"2024-12-24");
+ assert.equal(indicativeNasdaqRegularSession("2024-06-16","entry"),"2024-06-17");
+ assert.equal(indicativeNasdaqRegularSession("2024-06-16","exit"),"2024-06-14");
+ assert.throws(()=>indicativeNasdaqRegularSession("2026-01-01","entry"),/UNSUPPORTED/);
+ const r=activePdufaGoalAsOfAudit();
+ assert.equal(r.cases.length,9);
+ for(const x of r.cases){
+  for(const w of [x.initial,x.current]){
+   assert.ok(w.indicativeEntrySessionDate>=w.calendarEntryDate);
+   assert.ok(w.indicativeExitSessionDate<=w.calendarExitDate);
+   assert.ok(w.indicativeEntrySessionDate<w.indicativeExitSessionDate);
+   assert.ok(Number.isInteger(w.entrySessionShiftCalendarDays)&&w.entrySessionShiftCalendarDays>=0);
+   assert.ok(Number.isInteger(w.exitSessionShiftCalendarDays)&&w.exitSessionShiftCalendarDays<=0);
+  }
+  assert.equal(x.marketSessionCalendarVerified,false);
+  assert.equal(x.approvedRaasScore,null);
  }
 });
 test("Revised goal is NOT applied retroactively to the original T-79 calendar window",()=>{
@@ -106,6 +130,9 @@ test("The 60-metric worklist exposes historical target source audit, not a fabri
  assert.match(p,/raas-pdufa-asof-history/);
  assert.match(p,/data-raas-goal-asof-case/);
  assert.match(p,/sourceShiftCalendarDays/);
+ assert.match(p,/indicativeEntrySessionDate/);
+ assert.match(p,/indicativeExitSessionDate/);
+ assert.match(p,/ETA2025-1/);
  assert.match(p,/post-3-5/);
  assert.match(p,/post-6-1/);
  assert.match(p,/post-6-2/);
