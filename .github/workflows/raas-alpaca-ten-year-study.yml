@@ -6,6 +6,7 @@ on:
       - 'scripts/raas_alpaca_ten_year_study.cjs'
       - 'tests/raas_alpaca_ten_year_study.test.cjs'
       - 'new-platform/frontend/data/raas-ten-year-pdufa-intake.json'
+      - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
       - '.github/workflows/raas-alpaca-ten-year-study.yml'
   push:
     branches: [main]
@@ -13,6 +14,7 @@ on:
       - 'scripts/raas_alpaca_ten_year_study.cjs'
       - 'tests/raas_alpaca_ten_year_study.test.cjs'
       - 'new-platform/frontend/data/raas-ten-year-pdufa-intake.json'
+      - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
       - '.github/workflows/raas-alpaca-ten-year-study.yml'
 permissions:
   contents: read
