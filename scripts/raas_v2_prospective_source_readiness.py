@@ -372,6 +372,120 @@ def validate_additional_original_goal_sources(intake, old_rows, as_of):
     return result
 
 
+
+def validate_nov14_trial_registry_triangulation(dossier, intake, old_rows, as_of):
+    """NLM independent *trial* phase evidence; never independent FDA cycle proof.
+
+    CYTK's FDA NDA approval letter refers to the *2025 original* application,
+    NOT the November 2026 MAPLE-HCM supplemental FDA action. Both November
+    goals continue to lack an independently certified numbered current cycle.
+    """
+    assert_safe(type(dossier) is dict and dossier.get("schemaVersion")==1 and
+                dossier.get("scope")==
+                "RAAS_V2_NOV14_2026_ISSUER_FDA_AND_REGISTRY_TRIANGULATION_RESEARCH_ONLY"
+                and dossier.get("researchAsOf")=="2026-11-03" and
+                dossier.get("casesCrossChecked")==2 and
+                dossier.get("independentlyVerifiedCurrentApplicationCycleCount")==0
+                and dossier.get("independentlyVerifiedFrozenThreeWayForecastCount")==0
+                and dossier.get("approvedMetricCalibrations")==0 and
+                type(dossier.get("records")) is list and len(dossier["records"])==2,
+                "NOV14_REGISTRY_TRIANGULATION_SCHEMA_INVALID")
+    cutoff=audit.utc(as_of).date()
+    assert_safe(audit.day(dossier["researchAsOf"])<=cutoff,
+                "NOV14_REGISTRY_TRIANGULATION_FUTURE_RESEARCH")
+    expected={
+        "CYTK|MYQORZO_HCM_20261114":
+            ("CYTK","2026-05-05","NCT05767346","MAPLE-HCM","2026-06-09",
+             "SUPPLEMENTAL_NDA","Cytokinetics"),
+        "SMMT|IVONESCIMAB_20261114":
+            ("SMMT","2026-01-29","NCT06396065","HARMONi","2026-07-28",
+             "ORIGINAL_BLA_REPORTED","Summit Therapeutics")
+    }
+    originals={x["legacyCaseKey"]:x for x in intake["records"]}
+    legacy={r.get("fda_regulatory_case_id"):r for r in old_rows if
+            r.get("model_version")=="FDA-DIRECTIONAL-100-V1.9"}
+    checked=[]
+    seen=set()
+    for row in dossier["records"]:
+        key=row.get("researchCaseKey")
+        assert_safe(key in expected and key not in seen,
+                    "NOV14_REGISTRY_DUPLICATE_OR_WRONG_APPLICATION")
+        seen.add(key)
+        ticker,published,nct,study,registry_date,typ,sponsor=expected[key]
+        original=originals[key]
+        assert_safe(key in legacy and legacy[key]["ticker"]==ticker and
+                    legacy[key]["pdufa_date"]=="2026-11-14" and
+                    original["ticker"]==ticker and
+                    original["applicationType"]==typ and
+                    original["clinicalSponsor"]==sponsor and
+                    row.get("ticker")==ticker and
+                    row.get("applicationClass")==typ and
+                    row.get("issuerReportedFirstGoalDate")==
+                    original["firstCycleGoalDate"]=="2026-11-14" and
+                    row.get("issuerGoalSourceUrl")==original["issuerSourceUrl"] and
+                    row.get("issuerSourcePublicationDate")==
+                    original["sourcePublicationDate"]==published and
+                    row.get("clinicalTrialsGovId")==nct and
+                    row.get("clinicalTrialsGovStudyName")==study and
+                    row.get("clinicalTrialsGovRecordLastUpdatePosted")==registry_date
+                    and row.get("clinicalTrialsGovPhase")=="PHASE_3" and
+                    row.get("clinicalTrialsGovSponsor")==sponsor and
+                    row.get("clinicalTrialsGovUrl")==
+                    "https://clinicaltrials.gov/study/"+nct and
+                    row.get("clinicalTrialsGovPhaseAndSponsorCrossChecked") is True,
+                    "NOV14_REGISTRY_WRONG_TRIAL_OR_REVIEW_CYCLE")
+        assert_safe(audit.day(published)<audit.day("2026-11-14") and
+                    audit.day(registry_date)<=cutoff and
+                    all(row.get(x) is False for x in (
+                        "exactCurrentFDAReviewCycleIndependentlyCertified",
+                        "independentlyVerifiedThreeWayForecast",
+                        "approvedPipelineMarketCapAndPhase3Qualification",
+                        "approvedRAASAccuracyMetric")) and
+                    isinstance(row.get("notes"),str) and bool(row["notes"].strip()) and
+                    isinstance(row.get("underReview"),str) and bool(row["underReview"].strip()),
+                    "NOV14_REGISTRY_CHRONOLOGY_OR_FORECAST_PROMOTION_INVALID")
+        if ticker=="CYTK":
+            assert_safe(row.get("usFDAParentOriginalNdaNumber")=="219083" and
+                        row.get("usFDAParentOriginalNdaApprovalDate")=="2025-12-19" and
+                        row.get("usFDAParentOriginalApprovalLetterUrl")==
+                        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219083Orig1s000Approv.pdf"
+                        and row.get("usFDAParentOriginalNdaNumberCrossChecked") is True
+                        and row.get("currentSupplementSequenceNumber") is None and
+                        row.get("currentSupplementSequenceIndependentlyVerified") is False and
+                        row.get("firstPublicGoalForSpecificSupplementIndependentlyAttested") is False and
+                        row.get("anyPostAcceptanceFDAExtensionIndependentlyRuledOut") is False,
+                        "NOV14_PARENT_NDA_NOT_CURRENT_SUPPLEMENT")
+        else:
+            assert_safe(row.get("usFDAParentOriginalNdaNumber") is None and
+                        row.get("usFDAParentOriginalNdaApprovalDate") is None and
+                        row.get("usFDAParentOriginalApprovalLetterUrl") is None and
+                        row.get("usFDAParentOriginalNdaNumberCrossChecked") is False
+                        and row.get("currentBlaNumber") is None and
+                        row.get("currentBlaNumberIndependentlyVerified") is False and
+                        row.get("firstPublicGoalForSpecificBlaIndependentlyAttested") is False
+                        and row.get("anyPostAcceptanceFDAExtensionIndependentlyRuledOut") is False,
+                        "NOV14_BLA_NUMBER_OR_CYCLE_NOT_VERIFIED")
+        checked.append({
+            "ticker":ticker,"researchCaseKey":key,
+            "issuerReportedFirstGoalDate":"2026-11-14",
+            "applicationClass":typ,
+            "clinicalTrialsGovId":nct,
+            "clinicalTrialsGovPhase":"PHASE_3",
+            "clinicalTrialsGovRegistryEvidenceUrl":row["clinicalTrialsGovUrl"],
+            "trialPhaseAndSponsorCrossChecked":True,
+            "fdaApprovedParentNdaNumber":row["usFDAParentOriginalNdaNumber"],
+            "fdaParentOriginalNdaEvidenceUrl":row["usFDAParentOriginalApprovalLetterUrl"],
+            "fdaCurrentCycleApplicationOrSupplementNumberVerified":False,
+            "fdaOriginalGoalAndExtensionsIndependentlyCertified":False,
+            "currentFdaReviewCycleIndependentlyCertified":False,
+            "independentPreDecisionThreeWayForecastExists":False,
+            "qualifiesForStrictPhase3MarketCapPipeline":False,
+            "notes":row["notes"],
+        })
+    assert_safe(seen==set(expected),"NOV14_REGISTRY_COVERAGE_INCOMPLETE")
+    return sorted(checked,key=lambda r:r["ticker"])
+
+
 def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, as_of):
     """No acceptance of old directional calls as FDA 3-way forecasts."""
     as_of_dt=audit.utc(as_of)
@@ -488,6 +602,9 @@ def execute(asof=ASOF, data=DATA):
     selected=validate_top8_source_intake(source,old_rows,asof)
     extended=validate_additional_formal_extensions(source,old_rows,asof)
     original=validate_additional_original_goal_sources(source,old_rows,asof)
+    nov14=validate_nov14_trial_registry_triangulation(
+        audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json"),
+        source,old_rows,asof)
     # Use the EXISTING eight-source ledger, enriching the SAME nightly CSV
     # rather than adding a conflicting calendar. No independent review claim.
     findings={r["researchCaseKey"]:r for r in [*selected,*original]}
@@ -547,6 +664,30 @@ def execute(asof=ASOF, data=DATA):
             "REVISED_GOAL_MUST_NOT_COUNT_AS_FUTURE_ORIGINAL_DEADLINE"
             if is_revised else "ISSUER_GOAL_LOCATED_EXACT_CYCLE_STILL_UNVERIFIED")
         revised+=int(is_revised)
+    by_case={x["researchCaseKey"]:x for x in nov14}
+    near_term_in_live_queue=0
+    for entry in report["blockedSourceItems"]:
+        item=by_case.get(entry["researchCaseKey"])
+        entry["clinicalTrialsGovNctId"]=None
+        entry["thirdPartyClinicalTrialPhase3CrossChecked"]=False
+        entry["FDAApprovedParentOriginalNdaNumber"]=None
+        entry["fdaCurrentReviewApplicationOrSupplementNumberVerified"]=False
+        if not item:
+            continue
+        assert_safe(entry["issuerSourceFound"] is True and
+                    entry["firstGoalForThisCycleIssuerReported"]=="2026-11-14" and
+                    entry["applicationClassIssuerReported"]==item["applicationClass"] and
+                    not entry["V2ForecastEligible"],
+                    "NOV14_REGISTRY_NOT_ORIGINAL_SOURCE_LINKED")
+        near_term_in_live_queue+=1
+        entry["clinicalTrialsGovNctId"]=item["clinicalTrialsGovId"]
+        entry["thirdPartyClinicalTrialPhase3CrossChecked"]=True
+        entry["FDAApprovedParentOriginalNdaNumber"]=item["fdaApprovedParentNdaNumber"]
+    report["nov14IssuerGoalAndThirdPartyTrialRecordsCrossChecked"]=nov14
+    report["nov14ThirdPartyRegistryPhase3CrossCheckedCount"]=len(nov14)
+    report["nov14ThirdPartyRegistryUpcomingCaseCount"]=near_term_in_live_queue
+    report["nov14ExactCurrentFDAReviewCyclesIndependentlyCertified"]=0
+    report["nov14FrozenThreeWayPredictionsIndependentlyVerified"]=0
     report["issuerSourceReviewedFutureDeadlineLeads"]=reviewed
     report["sourceDocumentedFirstGoalStillFuture"]=reviewed-revised
     report["knownRevisedDeadlineExcludedFromOriginalGoalCount"]=revised
@@ -598,6 +739,9 @@ def export(report, json_out, csv_out):
           "sourceResearchStatus","issuerSourceLink",
           "currentIssuerReportedRevisedGoalDate","pivotalPhaseIssuerResearch",
           "approvedPipelinePhase3Qualification",
+          "clinicalTrialsGovNctId","thirdPartyClinicalTrialPhase3CrossChecked",
+          "FDAApprovedParentOriginalNdaNumber",
+          "fdaCurrentReviewApplicationOrSupplementNumberVerified",
           "independentlyVerifiedApplicationCycle"]
     with path.open("w",encoding="utf-8",newline="") as f:
         w=csv.DictWriter(f,fieldnames=keys,extrasaction="ignore")
