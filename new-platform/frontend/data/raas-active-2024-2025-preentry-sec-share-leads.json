@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated.",
+  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -108,6 +108,27 @@
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000095017024122276/slno-20240930.htm",
       "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000095017024122276/0000950170-24-122276-index.htm",
       "originalSourceDescription": "2024 Q3 Form 10-Q filed November 6 at 16:06:37 ET; cover 43,117,432 common shares outstanding as of October 31. First conservatively usable November 7 2024, before November 26 announced goal extension. Later 2025 10-K cover 45,857,291; do not imply constant 2024-2025 daily share counts."
+    },
+    {
+      "caseId": "LXRX|ZYNQUISTA_SOTAGLIFLOZIN|NDA210934|2024_CRL",
+      "ticker": "LXRX",
+      "cik": "0001062822",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 361492295,
+      "sharesMeasurementDate": "2024-07-30",
+      "filedDate": "2024-08-02",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2024-08-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1062822/000106282224000046/lxrx-20240630.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1062822/0001062822-24-000046-index.htm",
+      "originalSourceDescription": "Lexicon Q2 2024 10-Q filed Aug 2 2024 07:06:49 ET, original cover 361,492,295 shares on July 30. Conservative first use Aug 3 calendar day (first trading session Aug 5). Subsequent Nov 13 filing reported same number, not evidence of uninterrupted share continuity."
     }
   ]
 }
