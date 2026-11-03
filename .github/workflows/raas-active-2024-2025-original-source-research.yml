@@ -7,6 +7,9 @@ on:
     paths:
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
       - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json'
+      - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-sec-snapshots.json'
+      - 'scripts/raas_2024_2025_expanded_sec_price_research.cjs'
+      - 'tests/raas_2024_2025_expanded_sec_price_research.test.cjs'
       - 'tests/raas_active_2024_2025_expansion_source_leads.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
@@ -36,6 +39,9 @@ on:
     paths:
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
       - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json'
+      - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-sec-snapshots.json'
+      - 'scripts/raas_2024_2025_expanded_sec_price_research.cjs'
+      - 'tests/raas_2024_2025_expanded_sec_price_research.test.cjs'
       - 'tests/raas_active_2024_2025_expansion_source_leads.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
@@ -80,6 +86,7 @@ jobs:
           node --test tests/raas_active_2024_2025_full_90_3_grid.test.cjs
           node --test tests/raas_active_2024_2025_walkforward_selection_audit.test.cjs
           node --test tests/raas_active_2024_2025_expansion_source_leads.test.cjs
+          node --test tests/raas_2024_2025_expanded_sec_price_research.test.cjs
           node --test tests/raas_active_2024_2025_window_robustness_audit.test.cjs
           node --test tests/raas_active_2024_2025_sec_cap_snapshot_sensitivity.test.cjs
           node --test tests/raas_2025_crl_candidate_inclusion_exclusion.test.cjs
@@ -114,6 +121,14 @@ jobs:
           RAAS_WALKFORWARD_JSON: ${{ runner.temp }}/raas-2024-2025-walkforward-selection-bias.json
           RAAS_WALKFORWARD_CSV: ${{ runner.temp }}/raas-2024-2025-walkforward-selection-bias.csv
         run: node scripts/raas_active_2024_2025_walkforward_selection_audit.cjs
+      - name: Research TVTX and URGN T-90 to T-3 original SEC share snapshots and Alpaca raw/adjusted prices (not accepted backtest)
+        if: github.event_name != 'pull_request'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          RAAS_EXPANDED_SEC_CAP_JSON: ${{ runner.temp }}/raas-2024-2025-expanded-sec-cap-prices.json
+          RAAS_EXPANDED_SEC_CAP_CSV: ${{ runner.temp }}/raas-2024-2025-expanded-sec-cap-prices.csv
+        run: node scripts/raas_2024_2025_expanded_sec_price_research.cjs
       - name: Quantify T-79/T-14 leave-one-issuer-out fragility and holdout split (NOT validated)
         if: github.event_name != 'pull_request'
         env:
@@ -158,6 +173,8 @@ jobs:
             ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.csv
             ${{ runner.temp }}/raas-2024-2025-walkforward-selection-bias.json
             ${{ runner.temp }}/raas-2024-2025-walkforward-selection-bias.csv
+            ${{ runner.temp }}/raas-2024-2025-expanded-sec-cap-prices.json
+            ${{ runner.temp }}/raas-2024-2025-expanded-sec-cap-prices.csv
             ${{ runner.temp }}/raas-2024-2025-t79-14-robustness.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-leave-one-out.csv
             ${{ runner.temp }}/raas-2024-2025-sec-cap-snapshot-sensitivity.json

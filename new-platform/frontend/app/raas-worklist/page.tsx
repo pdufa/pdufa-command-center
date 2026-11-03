@@ -8,6 +8,7 @@ import {activePdufaGoalAsOfAudit} from "../../lib/raas-pdufa-goal-asof-metric-au
 import {activeSECAsOfEntryShares} from "../../lib/raas-historical-sec-entry-bridge";
 import {raasFull903Overview} from "../../lib/raas-full-90-3-window-policy";
 import expansionSource from "../../data/raas-2024-2025-expanded-candidate-source-leads.json";
+import expandedCoverShares from "../../data/raas-2024-2025-expanded-candidate-sec-snapshots.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
 
@@ -64,6 +65,7 @@ function ExpandedHistoricalCandidates(){
   data-raas-expanded-candidates="source-leads-only">
   <h2>Expand the historical 2024–2025 research sample</h2>
   <p><strong>{x.records.length} additional Phase 3-linked FDA case leads</strong> are now recorded for independent eligibility review. They do not increase the nine-stock research results, the validated-trade count or the RAAS score.</p>
+  <p><strong>Four dated SEC share-count disclosures</strong> are now tracked across the two additional cases. The historical scan checks all 3,828 entry/exit calendar combinations for each stock using only shares published before entry, plus Alpaca raw and adjusted price bars. All results remain research-only.</p>
   <div className={css.stats}>
    <div><strong>{x.records.length}</strong><span>New dated FDA and Phase 3 case leads</span></div>
    <div><strong>{x.approvedAdditionsTo2024To2025Backtest}</strong><span>Eligible cases added to the approved return sample</span></div>
@@ -73,6 +75,15 @@ function ExpandedHistoricalCandidates(){
    <p>{c.indication}. Review type: {c.reviewCycleType}; trial {c.nctIds.join(", ")}.</p>
    <p>Phase 3 source date: <strong>{c.phase3EvidenceDate}</strong> · PDUFA target publicly announced <strong>{c.targetAnnouncementDate}</strong> · recorded retrospective FDA action <strong>{c.actualFDAActionDate}</strong> ({c.actualFDAOutcome}).</p>
    <p><a href={c.phase3EvidenceSourceUrl} target="_blank" rel="noopener noreferrer">Phase 3 readout source</a> · <a href={c.targetAnnouncementSourceUrl} target="_blank" rel="noopener noreferrer">Published PDUFA target</a> · <a href={c.outcomeSourceUrl} target="_blank" rel="noopener noreferrer">FDA outcome source</a>.</p>
+   {expandedCoverShares.records.filter(share=>share.caseId===c.caseId).map(share=><div key={share.caseId}>
+    <h4>Historical SEC share-count evidence (source only)</h4>
+    <ul>{share.snapshots.map(s=><li key={s.accession}>
+     <strong>{s.sharesOutstanding.toLocaleString("en-US")} shares</strong> as of {s.sharesMeasurementDate}; filed {s.filedDate}; conservative first use {s.firstConservativeEntryDate}.
+     {" "}<a href={s.sourceUrl} target="_blank" rel="noopener noreferrer">Open original SEC filing</a>
+    </li>)}</ul>
+   </div>)}
+   <p className={css.notice}><strong>Research status:</strong> Published share snapshots found, daily share continuity not verified. Market-cap classification requires Alpaca historical RAW prices. Adjusted price returns and splits require independent verification. No calibrated study result is approved.</p>
+   <p><a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-active-2024-2025-original-source-research.yml" target="_blank" rel="noopener noreferrer">Open nightly historical source &amp; price scan</a></p>
    <p className={css.notice}>Not yet approved for the $300M–$10B study. Missing: {c.missingChecks.join("; ")}. No adjusted price return or validated historical market cap has been computed for this candidate.</p>
   </details>)}
  </section>;
