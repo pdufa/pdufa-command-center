@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "AcelRx May 2018 SEC Q1 cover share snapshot predates the large 2018 equity issuance and may not be carried into August positions without a corporate actions audit.",
+  "records": [
+    {
+      "caseId": "ACRX|DSUVIA|NDA209128|2018",
+      "ticker": "ACRX",
+      "cik": "0001427925",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 51320598,
+      "sharesMeasurementDate": "2018-05-07",
+      "filedDate": "2018-05-10",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2018-05-11",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1427925/000143774918009269/acrx20180331_10q.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1427925/000143774918009269/0001437749-18-009269-index.htm",
+      "originalSourceDescription": "AcelRx Q1 2018 10-Q cover reports 51,320,598 common shares as of May 7; prospectus dated June 27 confirms it was filed May 10. Conservative use May 11. Later Q2 cover reports 60,599,914 July 26; no assumption of unchanged capital, especially given underwritten July 2018 equity offering."
+    }
+  ]
+}
