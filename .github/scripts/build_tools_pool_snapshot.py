@@ -65,18 +65,16 @@ ncts={x.split("|",1)[1] for x in ids if re.fullmatch(r"TRIAL\|NCT\d{8}",x)}
 with (ROOT/"data/all_phase_trials.csv").open(encoding="utf-8-sig",newline="") as stream:
     original={r["nct_id"].strip() for r in csv.DictReader(stream)
               if re.fullmatch(r"NCT\d{8}",r.get("nct_id","").strip())}
-if ncts!=original:
-    # Exact public NCT identifiers are safe to log; never expose session/auth data.
-    # Report both directions so a source sync can be repaired without weakening
-    # the fail-closed identity gate or silently truncating new clinical trials.
-    added=sorted(ncts-original)
-    missing=sorted(original-ncts)
-    raise ValueError(
-        "Current-source NCT identity drift: "
-        f"{len(ncts)} POOL vs {len(original)} source; "
-        f"POOL_ONLY_COUNT={len(added)} POOL_ONLY_NCT_IDS={added[:20]}; "
-        f"SOURCE_ONLY_COUNT={len(missing)} SOURCE_ONLY_NCT_IDS={missing[:20]}"
-    )
+# A static source export is an audit baseline, not a permanent ceiling for
+# recently posted clinical trials. Strictly retain every baseline NCT and
+# independently verify any new public NCT against ClinicalTrials.gov before
+# publishing it in the lightweight Tools snapshot. Failure still fails closed.
+from verify_tools_pool_nct_additions import verify_recent_nct_additions
+verified_additions=verify_recent_nct_additions(ncts,original,rows)
+if verified_additions:
+    print("CTG_INDEPENDENT_NEW_NCT_IDS", [x["nctId"] for x in verified_additions])
+    print("CTG_VERIFIED_ADD_COUNT",len(verified_additions))
+
 fields=("id","ticker","company","drug","indication","stage")
 filtered=[]
 for row in rows:
@@ -96,6 +94,8 @@ snapshot={
         "state":health["state"],
         "clinicalRows":health["clinicalRows"],
         "regulatoryRows":health["regulatoryRows"],
+        "originalClinicalNctBaselineCount":len(original),
+        "verifiedNewClinicalNcts":verified_additions,
         "pipelineSourceParity":{"exactPrograms":len(filtered)}
     },
     "pipeline":filtered
