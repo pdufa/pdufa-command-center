@@ -62,3 +62,24 @@ test("complete archive retains unknown and source failures instead of fabricated
  assert.ok(x.cases.every(c=>c.marketCapAtEntryVerified===false));
  assert.ok(x.cases.every(c=>c.pdufaFirstPublicDateVerified===false));
 });
+
+test("systemic SEC HTTP 403 stops requests without disguising skipped issuers as checked",async()=>{
+ const alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+ const regs=["ticker,company,cik10,exchange,sic,sic_description,status"];
+ const arc=["event_key,ticker,pdufa_date,actual_outcome"];
+ for(let i=0;i<8;i++){
+  const ticker=alphabet[i]+"ZZ";
+  regs.push(ticker+",Test "+ticker+","+(1000+i)+",Nasdaq,2834,Pharma,OK");
+  arc.push(ticker+"|2024-11-20|test,"+ticker+",2024-11-20,APPROVED");
+ }
+ let attempts=0;
+ const req=async()=>{attempts++;return {ok:false,status:403};};
+ const x=await m.execute({archiveCsv:arc.join("\n"),registryCsv:regs.join("\n"),request:req,pause:async()=>{}});
+ assert.equal(attempts,3);
+ assert.equal(x.accessDeniedCircuitOpen,true);
+ assert.equal(x.issuersQueried,3);
+ assert.equal(x.issuersSkippedByAccessDenied,5);
+ assert.equal(x.requests.filter(v=>v.status==="SEC_SOURCE_UNAVAILABLE").length,3);
+ assert.equal(x.eventsWithShareFacts,0);
+ assert.ok(x.cases.every(c=>c.marketCapAtEntryVerified===false));
+});
