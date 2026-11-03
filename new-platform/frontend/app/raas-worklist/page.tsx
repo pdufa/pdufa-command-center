@@ -6,6 +6,7 @@ import Link from "next/link";
 import {buildRaasMetricValidationWorklist,raasDocumentedTrialOptions,type RaasWorklistTrial} from "../../lib/raas-metric-validation-worklist";
 import {activePdufaGoalAsOfAudit} from "../../lib/raas-pdufa-goal-asof-metric-audit";
 import {activeSECAsOfEntryShares} from "../../lib/raas-historical-sec-entry-bridge";
+import {raasFull903Overview} from "../../lib/raas-full-90-3-window-policy";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
 
@@ -30,11 +31,36 @@ function hrefForTrial(t:RaasWorklistTrial|null,stage:RaasStage):string{
  * FDA outcomes are intentionally absent; dated target versions are the only
  * inputs being evaluated for the two FDA and timing source gates.
  */
+/** Search specification only: research outputs remain provisional until validated. */
+function FullRange903History(){
+ const x=raasFull903Overview();
+ return <section id="raas-full-t90-t3-study" className={css.context}
+  data-raas-full-window-study="T90-to-T3-all-combinations">
+  <h2>Full entry / exit study · anywhere from T−90 to T−3</h2>
+  <p><strong>Any entry and exit combination is allowed</strong> when the entry occurs before the exit. Neither T−79 nor T−14 is a benchmark or required date.</p>
+  <div className={css.stats}>
+   <div><strong>{x.availablePairs.toLocaleString("en-US")}</strong><span>Entry/exit combinations per PDUFA goal version</span></div>
+   <div><strong>{x.sampleCaseCount}</strong><span>2024–2025 historical source-traced trial cases (not full FDA census)</span></div>
+   <div><strong>{x.historicalGoalVersionCaseSets}</strong><span>Goal-version case sets (including two revisions)</span></div>
+   <div><strong>{x.scenarioEvaluations.toLocaleString("en-US")}</strong><span>Total case-window comparisons in research scan</span></div>
+  </div>
+  <div className={css.reviewGrid}>
+   <div><span>Entry day range</span><strong>{x.entryRange}</strong></div>
+   <div><span>Exit day range</span><strong>{x.exitRange}</strong></div>
+   <div><span>Calendar and price alignment</span><strong>Next actual session at entry / preceding actual session at exit, at most 4 calendar days</strong></div>
+   <div><span>Minimum source-quality safeguards</span><strong>Point-in-time FDA target and Phase 3 date, SEC cover-share publication, and early FDA-action censoring</strong></div>
+   <div><span>2024 vs 2025</span><strong>Separate exploratory training and descriptive holdout; no pooling into a claimed optimal result</strong></div>
+   <div><span>Approved best entry / exit</span><strong>None — historical evidence not yet independently validated</strong></div>
+  </div>
+  <p className={css.notice}>Full pairwise research is generated in the 2024–2025 historical source workflow as JSON/CSV; the displayed counts represent configured comparisons, <strong>not verified profitable trades</strong>. Results use separate raw Alpaca prices for provisional $300 million–$10 billion capitalization and adjusted bars for provisional returns. Independent prices, stock split/share-continuity checks, the full FDA event census, trading costs, and out-of-sample replication remain required. <a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-active-2024-2025-original-source-research.yml" target="_blank" rel="noopener noreferrer">View historical comparison scan and artifacts</a>.</p>
+  <p className={css.muted}>The T−79 to T−14 source-date entries further down this page are older single-window audit examples only. The full research configuration does not privilege or optimize around them.</p>
+ </section>;
+}
 function GoalAsOfHistory(){
  const audit=activePdufaGoalAsOfAudit();
  return <section id="raas-pdufa-asof-history" className={css.context}
    data-raas-pdufa-asof-metric-research="research-only">
-  <h2>Historical FDA target-version evidence · 2024–2025</h2>
+  <h2>Legacy T−79/T−14 date-source example · 2024–2025 (not preferred)</h2>
   <p><strong>{audit.sourceCases} source-traced cases</strong> · <strong>{audit.revisedGoalCases} formal goal revisions</strong> · <strong>{audit.finalGoalPublishedBeforeFinalEntryCases}/{audit.sourceCases}</strong> target sources published by the provisional T−79 entry · <strong>{audit.stageMetricHistoricalApprovedCases}</strong> approved historical RAAS metric grades.</p>
   <p>For <strong>post-3-5</strong> (PDUFA date and review risks), <strong>post-6-1</strong> (exact-program target) and <strong>post-6-2</strong> (tradable exit calendar). These are historical examples only, <strong>not</strong> source evidence or scores transferred to the selected trial. No FDA outcomes or post-decision facts are used as entry features.</p>
   <div className={css.stats}>
@@ -88,7 +114,7 @@ function SECAsOfHistory(){
  const audit=activeSECAsOfEntryShares();
  return <section id="raas-sec-entry-asof" className={css.context}
   data-raas-sec-entry-asof="research-only">
-  <h2>Historical SEC cover shares known at proposed T−79 entry · 2024–2025</h2>
+  <h2>Legacy single-window SEC share-source example · proposed T−79 (not preferred)</h2>
   <p><strong>{audit.coverFactsPublicAtProposedEntry}/{audit.caseCount}</strong> cases have a dated, pre-entry SEC share-count source lead. <strong>{audit.laterSnapshotsUnavailableAtEntry}</strong> later cover filings cannot be used at their proposed entry. <strong>0</strong> independently verified entry market caps; <strong>0</strong> independently verified adjusted entry/exit price pairs.</p>
   <p className={css.notice}>A historical cover-page share count is a dated disclosure, not a continuous or fully diluted day-of-trade share count. The $300 million–$10 billion market-cap restriction is still <strong>unverified</strong> for every case. Revised targets and proposed Nasdaq sessions are handled by the separate goal-date audit above.</p>
   {audit.rows.map(x=><details key={x.caseId} className={css.group} data-raas-sec-entry-case={x.ticker}>
@@ -146,6 +172,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
    <Link href={hrefForTrial(trial,"post")} aria-current={anchorStage==="post"?"location":undefined}>BOTTOM · 30 metrics</Link>
    <Link href="/raas-scan">Full 60-metric readiness scan</Link>
   </nav>
+  <FullRange903History/>
   <GoalAsOfHistory/>
   <SECAsOfHistory/>
   <section className={css.context} aria-label="Trial source filter">
