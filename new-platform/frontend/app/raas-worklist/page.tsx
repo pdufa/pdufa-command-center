@@ -4,6 +4,7 @@
 import type {Metadata} from "next";
 import Link from "next/link";
 import {buildRaasMetricValidationWorklist,raasDocumentedTrialOptions,type RaasWorklistTrial} from "../../lib/raas-metric-validation-worklist";
+import {activePdufaGoalAsOfAudit} from "../../lib/raas-pdufa-goal-asof-metric-audit";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
 
@@ -23,6 +24,56 @@ function hrefForTrial(t:RaasWorklistTrial|null,stage:RaasStage):string{
   if(t.indication)args.set("indication",t.indication);
  }
  return "/raas-worklist?"+args.toString()+"#raas-"+(stage==="pre"?"top":"bottom")+"-worklist";
+}
+/** Historical examples, not exact-trial evidence for a selected current program.
+ * FDA outcomes are intentionally absent; dated target versions are the only
+ * inputs being evaluated for the two FDA and timing source gates.
+ */
+function GoalAsOfHistory(){
+ const audit=activePdufaGoalAsOfAudit();
+ return <section id="raas-pdufa-asof-history" className={css.context}
+   data-raas-pdufa-asof-metric-research="research-only">
+  <h2>Historical FDA target-version evidence · 2024–2025</h2>
+  <p><strong>{audit.sourceCases} source-traced cases</strong> · <strong>{audit.revisedGoalCases} formal goal revisions</strong> · <strong>{audit.finalGoalPublishedBeforeFinalEntryCases}/{audit.sourceCases}</strong> target sources published by the provisional T−79 entry · <strong>{audit.stageMetricHistoricalApprovedCases}</strong> approved historical RAAS metric grades.</p>
+  <p>For <strong>post-3-5</strong> (PDUFA date and review risks), <strong>post-6-1</strong> (exact-program target) and <strong>post-6-2</strong> (tradable exit calendar). These are historical examples only, <strong>not</strong> source evidence or scores transferred to the selected trial. No FDA outcomes or post-decision facts are used as entry features.</p>
+  <div className={css.stats}>
+   <div><strong>{audit.reviewYears[2024]}</strong><span>2024 FDA target-year selected cases</span></div>
+   <div><strong>{audit.reviewYears[2025]}</strong><span>2025 FDA target-year selected cases</span></div>
+   <div><strong>{audit.calendarWeekendEntryCases}</strong><span>Calendar T−79 entries falling on weekends</span></div>
+   <div><strong>{audit.calendarWeekendExitCases}</strong><span>Calendar T−14 exits falling on weekends</span></div>
+  </div>
+  <p className={css.notice}>Calendar offsets are not executable trading sessions. Issuer announcement links establish a research source lead, not independent FDA validation, verified capitalization, historical adjusted return, or an approved 0–100 grade. SLNO's separately saved original announcement URL remains missing.</p>
+  {audit.cases.map(c=><details key={c.caseId} className={css.group}
+    data-raas-goal-asof-case={c.ticker}>
+    <summary><strong>{c.ticker} · {c.application}</strong>
+     <span>{c.revised?"Revised FDA target":"Original FDA target"} · {c.eventTargetDate} · T−79 {c.current.calendarEntryDate} · {c.finalTargetKnownAtFinalT79Entry?"dated source exists":"entry blocked"}</span>
+     <i aria-hidden="true">▸</i>
+    </summary>
+    <div className={css.metricBody}>
+     <div className={css.reviewGrid}>
+      <div><span>Original publicly stated goal</span>
+       <strong>{c.initialGoalDate} · first dated announcement {c.initialGoalAnnouncementDate}</strong></div>
+      <div><span>Original T−79 → T−14 calendar window</span>
+       <strong>{c.initial.calendarEntryDate} → {c.initial.calendarExitDate}</strong></div>
+      <div><span>{c.revised?"Revised":"Current saved"} goal and announced-on date</span>
+       <strong>{c.eventTargetDate} · {c.revised?c.revisedGoalAnnouncementDate:c.initialGoalAnnouncementDate}</strong></div>
+      <div><span>Current T−79 → T−14 calendar window</span>
+       <strong>{c.current.calendarEntryDate} → {c.current.calendarExitDate}</strong></div>
+      <div><span>FDA goal revision, calendar day shift</span>
+       <strong>{c.sourceShiftCalendarDays} days</strong></div>
+      <div><span>Pre-entry source gate for post-3-5 / post-6-1</span>
+       <strong>{c.reviewState==="POINT_IN_TIME_SOURCE_LEAD_ONLY"?"Issuer source known; not graded":"BLOCKED — announcement/evidence not known at entry"}</strong></div>
+     </div>
+     <p className={css.muted}><strong>Original source:</strong> {c.initialGoalSourceUrl?
+      <a href={c.initialGoalSourceUrl} target="_blank" rel="noopener noreferrer">Open dated original announcement</a>:
+      "No separate original announcement URL retained; historical attribution not independently verified."}</p>
+     {c.revised&&c.revisedGoalSourceUrl&&<p className={css.muted}><strong>Target revision:</strong> <a href={c.revisedGoalSourceUrl} target="_blank" rel="noopener noreferrer">Open dated revised target source</a> · originally announced target moved {c.sourceShiftCalendarDays} calendar days.</p>}
+     <p className={css.muted}><strong>Phase 3 public-result source listed:</strong> {c.phase3ReadoutListedDate} · <a href={c.phase3ReadoutSourceUrl} target="_blank" rel="noopener noreferrer">Original clinical source</a>. Independently audited source publication chronology: <strong>not complete</strong>.</p>
+     {(c.current.entryIsWeekend||c.current.exitIsWeekend)&&<p className={css.notice}>At least one proposed T−79/T−14 date is a weekend. Exact trading-session normalization, real price verification and slippage are required before any return claim.</p>}
+     <p className={css.muted}><strong>Metric-grade status:</strong> —/100 for post-3-5 and post-6-1. Post-6-2 cannot be graded using calendar dates alone. Historical outcome decisions have not been used in this source-time calculation.</p>
+    </div>
+  </details>)}
+ </section>;
 }
 export default async function RaasWorklistPage({searchParams}:{searchParams:Promise<Params>}){
  const q=await searchParams;
@@ -51,6 +102,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
    <Link href={hrefForTrial(trial,"post")} aria-current={anchorStage==="post"?"location":undefined}>BOTTOM · 30 metrics</Link>
    <Link href="/raas-scan">Full 60-metric readiness scan</Link>
   </nav>
+  <GoalAsOfHistory/>
   <section className={css.context} aria-label="Trial source filter">
    <h2>Evidence context</h2>
    {invalidContext&&<p className={css.notice}>Invalid trial identity in the URL. Showing global source examples; no trial-specific score is inferred.</p>}
@@ -103,6 +155,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
           <div><span>Issuer-disjoint train / holdout</span><strong>{metric.historicalTrainIssuers} / 30 · {metric.historicalHoldoutIssuers} / 30</strong></div>
           <div><span>Held-out high / low groups</span><strong>{metric.historicalHighHoldoutIssuers} / 5 · {metric.historicalLowHoldoutIssuers} / 5</strong></div>
          </div>
+         {["post-3-5","post-6-1","post-6-2"].includes(metric.id)&&<p><a href="#raas-pdufa-asof-history">Review 2024–2025 original vs revised PDUFA goal dates, evidence known at entry and trading-session gaps (historical research only)</a></p>}
          <h4>Recorded metric-specific sources · {metric.sourceCount}</h4>
          {metric.sourceLeads.length===0?<p className={css.muted}>No dated source linked to this metric for the selected context. Other trials' evidence is not substituted.</p>:
           <ul className={css.evidenceList}>{metric.sourceLeads.map(source=>
