@@ -89,6 +89,27 @@
       "status": "COVER_SHARE_RESEARCH_ONLY",
       "issuerExposureKey": "ESPR|BEMPEDOIC_FRANCHISE|FEB2020",
       "originalSourceDescription": "Esperion Q3 2019 Form 10-Q filed 2019-11-06; cover says 27,327,409 common shares as of Nov 1. Conservative entry eligibility no earlier than Nov 7. Same shares represent one issuer for two FDA applications; financial evidence not independently audited."
+    },
+    {
+      "caseId": "ICPT|OCA_NASH|NDA212833|2020",
+      "ticker": "ICPT",
+      "cik": "0001270073",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "sharesOutstanding": 32937431,
+      "sharesMeasurementDate": "2020-03-31",
+      "filedDate": "2020-05-11",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2020-05-12",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1270073/000155837020006235/icpt-20200511x10q.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1270073/000155837020006235/0001558370-20-006235-index.htm",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "originalSourceDescription": "Intercept Q1 2020 Form 10-Q states 32,937,431 outstanding common shares as of March 31, 2020, filed May 11 at 16:03:49 ET; conservative eligible research entries start May 12. No claim that March 31 shares remained unchanged through June 26; 2020 CRL and 2023 re-review must not be conflated."
     }
   ]
 }
