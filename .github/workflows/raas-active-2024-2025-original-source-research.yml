@@ -1,6 +1,8 @@
 name: RAAS ACTIVE 2024-2025 original FDA and SEC historical case research
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '30 7 * * *'
   pull_request:
     paths:
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
@@ -8,6 +10,8 @@ on:
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
       - 'scripts/raas_active_2024_2025_window79_audit.cjs'
+      - 'scripts/raas_active_2024_2025_full_90_3_grid.cjs'
+      - 'tests/raas_active_2024_2025_full_90_3_grid.test.cjs'
       - 'scripts/raas_active_2024_2025_window_robustness_audit.cjs'
       - 'tests/raas_active_2024_2025_window_robustness_audit.test.cjs'
       - 'scripts/raas_active_2024_2025_sec_cap_snapshot_sensitivity.cjs'
@@ -29,6 +33,8 @@ on:
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
       - 'scripts/raas_active_2024_2025_window79_audit.cjs'
+      - 'scripts/raas_active_2024_2025_full_90_3_grid.cjs'
+      - 'tests/raas_active_2024_2025_full_90_3_grid.test.cjs'
       - 'scripts/raas_active_2024_2025_window_robustness_audit.cjs'
       - 'tests/raas_active_2024_2025_window_robustness_audit.test.cjs'
       - 'scripts/raas_active_2024_2025_sec_cap_snapshot_sensitivity.cjs'
@@ -59,6 +65,7 @@ jobs:
         run: |
           node --test tests/raas_active_2024_2025_primary_cap_research.test.cjs
           node --test tests/raas_active_2024_2025_window79_audit.test.cjs
+          node --test tests/raas_active_2024_2025_full_90_3_grid.test.cjs
           node --test tests/raas_active_2024_2025_window_robustness_audit.test.cjs
           node --test tests/raas_active_2024_2025_sec_cap_snapshot_sensitivity.test.cjs
           node --test tests/raas_2025_crl_candidate_inclusion_exclusion.test.cjs
@@ -79,6 +86,13 @@ jobs:
           RAAS_T79_14_AUDIT_JSON: ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
           RAAS_T79_14_AUDIT_CSV: ${{ runner.temp }}/raas-2024-2025-t79-14-audit.csv
         run: node scripts/raas_active_2024_2025_window79_audit.cjs
+      - name: Compare all 3,828 T-90 to T-3 entry-exit combinations for each published PDUFA goal version (NOT validated)
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_ACTIVE_SOURCE_RESEARCH_OUTPUT: ${{ runner.temp }}/raas-2024-2025-original-source-research.json
+          RAAS_T90_T3_GRID_JSON: ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.json
+          RAAS_T90_T3_GRID_CSV: ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.csv
+        run: node scripts/raas_active_2024_2025_full_90_3_grid.cjs
       - name: Quantify T-79/T-14 leave-one-issuer-out fragility and holdout split (NOT validated)
         if: github.event_name != 'pull_request'
         env:
@@ -119,6 +133,8 @@ jobs:
             ${{ runner.temp }}/raas-2024-2025-original-source-research.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-audit.csv
+            ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.json
+            ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.csv
             ${{ runner.temp }}/raas-2024-2025-t79-14-robustness.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-leave-one-out.csv
             ${{ runner.temp }}/raas-2024-2025-sec-cap-snapshot-sensitivity.json
