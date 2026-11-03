@@ -130,3 +130,19 @@ test("review CSV retains all source blockers and escapes hostile CSV text",()=>{
  const result=m.csvForReview(modified);
  assert.ok(result.includes('"""danger,'));
 });
+
+test("exported CSV prevents source-text spreadsheet formula injection",()=>{
+ const d=make();
+ const dangerous={...d,reviewRows:[
+  {...d.reviewRows[0],drug:'=HYPERLINK("https://example.test","link")'},
+  {...d.reviewRows[1],drug:"  +SUM(1,1)"},
+  {...d.reviewRows[2],drug:"@SUM(1,1)"},
+  {...d.reviewRows[3],drug:"-1+2"}
+ ]};
+ const csv=m.csvForReview(dangerous);
+ assert.ok(csv.includes("'=HYPERLINK"));
+ assert.ok(csv.includes("'  +SUM(1,1)"));
+ assert.ok(csv.includes("'@SUM(1,1)"));
+ assert.ok(csv.includes("'-1+2"));
+ assert.ok(!csv.includes('"=HYPERLINK'));
+});
