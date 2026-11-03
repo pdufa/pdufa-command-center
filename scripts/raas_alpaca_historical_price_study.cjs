@@ -102,6 +102,7 @@ async function downloadBars(win,key,secret,request=fetch){
   url.searchParams.set("end",win.lastBarDate);
   url.searchParams.set("limit","1000");
   url.searchParams.set("adjustment","all");
+  url.searchParams.set("asof",win.eventDate||win.scheduledEventDate);
   url.searchParams.set("feed","sip");
   url.searchParams.set("sort","asc");
   if(pageToken)url.searchParams.set("page_token",pageToken);
