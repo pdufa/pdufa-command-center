@@ -45,7 +45,7 @@ def day(s):
 
 def utc(s):
     gate(isinstance(s, str) and re.fullmatch(
-        r"\d{4}-\d{2}T\d{2}:\d{2}:\d{2}Z", s), "INVALID_UTC")
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", s), "INVALID_UTC")
     try:
         return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
     except ValueError as exc:
