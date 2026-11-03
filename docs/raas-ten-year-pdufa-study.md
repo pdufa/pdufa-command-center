@@ -2,6 +2,26 @@
 
 ## Status
 
+## Observed first production-branch run — November 2, 2026 Pacific
+
+The Actions run at https://github.com/pdufa/pdufa-command-center/actions/runs/41576836131
+successfully pulled **8,719** adjusted SIP daily price rows across **125** archive
+candidate events. The original archive contained **126** events: 20 in 2020,
+24 in 2021, 22 in 2022, 24 in 2023, 26 in 2024, 10 in 2025, and **zero**
+in 2016–2019. There are **zero source-reviewed investment cases** and
+**zero eligible PDUFA price-return windows**; no optimum can be declared.
+
+The one venue exception is ZEAL / Zealand Pharma's December 22, 2024
+glepaglutide event. The issuer states its US ADR program was delisted in
+August 2022 and the stock traded on Nasdaq Copenhagen in 2024. Its FDA
+CRL was publicly announced December 19, 2024, before the target date.
+See new-platform/frontend/data/raas-alpaca-venue-exceptions.json
+for issuer source links and details. This publicly traded issuer remains a
+research **coverage gap** requiring a separate non-US price vendor if the
+study retains globally traded securities. Do not call it an Alpaca
+authentication problem, use a US security's prices as a substitute, or
+silently drop it from the required population.
+
 **Research infrastructure only. No 10-year optimized entry/exit claim is authorized yet.**
 
 The historical FDA-decision archive in data/historical_assessed_decisions.csv
