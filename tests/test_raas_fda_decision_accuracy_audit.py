@@ -201,10 +201,27 @@ class ThreeWayTests(unittest.TestCase):
         p,r,f,o=fixture()
         o["records"].pop()
         report=audit.prospective_audit(p,r,f,o,"2027-07-01T00:00:00Z")
-        self.assertEqual(report["pendingOutcomes"],1)
+        self.assertEqual(report["pendingOutcomes"],0)
+        self.assertEqual(report["maturedUnresolvedGoalOutcomes"],1)
         self.assertEqual(report["abstained"],0)
         self.assertEqual(report["coveredScoredCases"],3)
         self.assertEqual(report["mathMetrics"]["coverage"],1)
+
+    def test_abstention_is_allowed_with_no_public_evidence_facts(self):
+        p,r,f,o=fixture()
+        f["records"][3]["publicEvidence"]=[]
+        result=audit.prospective_audit(p,r,f,o,"2027-07-01T00:00:00Z")
+        self.assertEqual(result["abstained"],1)
+        self.assertEqual(result["coveredScoredCases"],3)
+
+    def test_not_yet_matured_goal_without_label_counts_as_pending(self):
+        p,r,f,o=fixture()
+        o["records"].pop()
+        result=audit.prospective_audit(p,r,f,o,"2027-02-01T00:00:00Z")
+        self.assertEqual(result["pendingOutcomes"],4)
+        self.assertEqual(result["maturedUnresolvedGoalOutcomes"],0)
+        self.assertEqual(result["mathMetrics"]["countScored"],0)
+        self.assertIsNone(result["mathMetrics"]["accuracy"])
 
     def test_reports_can_export_consistent_queue_without_unlocking_strategy(self):
         from tempfile import TemporaryDirectory
