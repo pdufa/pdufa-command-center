@@ -5,7 +5,7 @@
  * FDA *action years* are NOT PDUFA target years. A supplementary approval
  * or archived CRL is not a fully sourced Phase 3 / publicly traded event.
  *
- * Keep EVERY official action lead in the queue. Put the two original
+ * Keep EVERY official action lead in the queue. Put the three original
  * PDUFA source cases and the archival candidates in separate review tiers,
  * and refuse to promote ANY row into a validated trade or RAAS metric.
  */
@@ -139,7 +139,7 @@ function build({discovery,config,archiveCsv,known,intake,registryCsv}){
    currentStage:"ORIGINAL_SOURCE_FOUND_MARKET_CAP_AND_RETURN_UNVALIDATED",
    historicallyValidatedTrade:false,approvedRaasMetric:false});
  }
- if(reviewRows.length!==2)throw Error("RAAS_TWO_YEAR_EXPECTED_SOURCE_LEADS_MISSING");
+ if(reviewRows.length!==3)throw Error("RAAS_TWO_YEAR_EXPECTED_SOURCE_LEADS_MISSING");
  const seenArchive=new Set();
  for(const lead of archive){
   const id="ARCHIVE|"+lead.eventKey+"|"+lead.ticker+"|"+lead.pdufaDate;
