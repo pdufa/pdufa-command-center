@@ -221,3 +221,30 @@ test("2019 SAGE revised REMS target is included without backdating original targ
  assert.equal(x.actualFDAActionDate,"2019-03-19");
  assert.equal(x.eligibleForCalibration,false);
 });
+
+test("2018 ACRX public Nov-3 FDA goal and internal Nov-2 goal stay distinct in incomplete five-year worklist",()=>{
+ const get=y=>JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-historical-"+y+"-primary-source-leads.json"),"utf8"));
+ const y2018=get("2018"),y2019=get("2019"),y2021=get("2021"),y2022=get("2022");
+ const combined={...primary,records:[
+  ...y2018.records,...y2019.records,...primary.records,...y2021.records,...y2022.records]};
+ assert.equal(m.validateSourceLeads(combined).length,10);
+ const r=m.consolidate({archiveCsv:archive,primaryLeads:combined,
+  approvalDiscovery:fda,issuerCrosswalk,crlDiscovery});
+ assert.equal(r.summary.primaryTargetSourceLeads,10);
+ assert.deepEqual([2018,2019,2020,2021,2022].map(y=>r.coverage[y].sourceLeads),[1,1,6,1,1]);
+ assert.equal(r.coverage[2018].completePdufaCensus,false);
+ assert.equal(r.summary.fullCensusYears,0);
+ assert.equal(r.summary.historicallyEligibleTrades,0);
+ assert.equal(r.summary.approvedRaasMetrics,0);
+ const source=combined.records.find(x=>x.caseId==="ACRX|DSUVIA|NDA209128|2018");
+ assert.equal(source.pdufaTargetDate,"2018-11-03");
+ assert.equal(source.fdaInternalGoalFromRetrospectiveReviewDate,"2018-11-02");
+ assert.equal(source.actualFDAActionDate,"2018-11-02");
+ assert.equal(source.priorCRLActionDate,"2017-10-11");
+ const joined=r.candidates.find(x=>x.primarySourceCaseId===source.caseId||x.key===source.caseId);
+ assert.ok(joined);
+ assert.equal(joined.pdufaTargetDate,"2018-11-03");
+ assert.equal(joined.actualFDAActionDate,"2018-11-02");
+ assert.equal(joined.eligibleForCalibration,false);
+});
