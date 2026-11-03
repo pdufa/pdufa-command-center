@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "Historical May 2022 Q1 10-Q common-share fact only, requires audit of rights, dilution, corporate actions and vendor price at each entry.",
+  "records": [
+    {
+      "caseId": "ARQT|ZORYVE_CREAM|NDA215985|2022",
+      "ticker": "ARQT",
+      "cik": "0001787306",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 51417963,
+      "sharesMeasurementDate": "2022-04-29",
+      "filedDate": "2022-05-05",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2022-05-06",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000178730622000032/arqt-20220331.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000178730622000032/0001787306-22-000032-index.html",
+      "originalSourceDescription": "2022 Q1 Form 10-Q accepted May 5, 2022, 16:09:41 ET. Original SEC cover reports 51,417,963 common shares as of April 29, 2022; conservative first entry Friday May 6. Neither diluted nor continuous share-count proof; earlier FY2021 cover differs."
+    }
+  ]
+}
