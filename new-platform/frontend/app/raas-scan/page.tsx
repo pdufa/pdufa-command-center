@@ -88,6 +88,7 @@ export default function RaasScanPage(){
    <footer className={css.footer}>
     <strong>Audit record and execution history</strong>
     <p><a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-readiness-scan.yml" target="_blank" rel="noopener noreferrer">Open scheduled RAAS scan workflow and dated per-metric JSON artifacts</a>. The workflow executes on source changes and a daily schedule; its output reflects the committed sources at each execution, not a claim of automatic independent evidence collection.</p>
+    <p><Link href="/raas-worklist">Open the 60-metric TOP/BOTTOM RAAS evidence and validation worklist</Link></p>
     <p><Link href="/raas-history">Open detailed historical evidence and prospective source baseline audit</Link></p>
    </footer>
  </main>;
