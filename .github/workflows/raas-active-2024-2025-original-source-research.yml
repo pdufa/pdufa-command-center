@@ -11,6 +11,8 @@ on:
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
       - 'scripts/raas_active_2024_2025_window79_audit.cjs'
       - 'scripts/raas_active_2024_2025_full_90_3_grid.cjs'
+      - 'scripts/raas_active_2024_2025_walkforward_selection_audit.cjs'
+      - 'tests/raas_active_2024_2025_walkforward_selection_audit.test.cjs'
       - 'scripts/raas_historical_raw_market_cap_research.cjs'
       - 'tests/raas_historical_raw_market_cap_research.test.cjs'
       - 'tests/raas_active_2024_2025_full_90_3_grid.test.cjs'
@@ -36,6 +38,8 @@ on:
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
       - 'scripts/raas_active_2024_2025_window79_audit.cjs'
       - 'scripts/raas_active_2024_2025_full_90_3_grid.cjs'
+      - 'scripts/raas_active_2024_2025_walkforward_selection_audit.cjs'
+      - 'tests/raas_active_2024_2025_walkforward_selection_audit.test.cjs'
       - 'scripts/raas_historical_raw_market_cap_research.cjs'
       - 'tests/raas_historical_raw_market_cap_research.test.cjs'
       - 'tests/raas_active_2024_2025_full_90_3_grid.test.cjs'
@@ -70,6 +74,7 @@ jobs:
           node --test tests/raas_active_2024_2025_primary_cap_research.test.cjs
           node --test tests/raas_active_2024_2025_window79_audit.test.cjs
           node --test tests/raas_active_2024_2025_full_90_3_grid.test.cjs
+          node --test tests/raas_active_2024_2025_walkforward_selection_audit.test.cjs
           node --test tests/raas_active_2024_2025_window_robustness_audit.test.cjs
           node --test tests/raas_active_2024_2025_sec_cap_snapshot_sensitivity.test.cjs
           node --test tests/raas_2025_crl_candidate_inclusion_exclusion.test.cjs
@@ -97,6 +102,13 @@ jobs:
           RAAS_T90_T3_GRID_JSON: ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.json
           RAAS_T90_T3_GRID_CSV: ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.csv
         run: node scripts/raas_active_2024_2025_full_90_3_grid.cjs
+      - name: Audit training-only T-90 to T-3 selection against separate 2025 descriptive holdout (NOT validated)
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_T90_T3_GRID_JSON: ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.json
+          RAAS_WALKFORWARD_JSON: ${{ runner.temp }}/raas-2024-2025-walkforward-selection-bias.json
+          RAAS_WALKFORWARD_CSV: ${{ runner.temp }}/raas-2024-2025-walkforward-selection-bias.csv
+        run: node scripts/raas_active_2024_2025_walkforward_selection_audit.cjs
       - name: Quantify T-79/T-14 leave-one-issuer-out fragility and holdout split (NOT validated)
         if: github.event_name != 'pull_request'
         env:
@@ -139,6 +151,8 @@ jobs:
             ${{ runner.temp }}/raas-2024-2025-t79-14-audit.csv
             ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.json
             ${{ runner.temp }}/raas-2024-2025-full-t90-t3-grid.csv
+            ${{ runner.temp }}/raas-2024-2025-walkforward-selection-bias.json
+            ${{ runner.temp }}/raas-2024-2025-walkforward-selection-bias.csv
             ${{ runner.temp }}/raas-2024-2025-t79-14-robustness.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-leave-one-out.csv
             ${{ runner.temp }}/raas-2024-2025-sec-cap-snapshot-sensitivity.json
