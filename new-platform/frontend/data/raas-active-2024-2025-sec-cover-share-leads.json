@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Later original annual/quarterly 10-K/Q SEC cover shares for 2024 ARQT and 2025 AXSM historical research, separate from older dated facts. No daily share continuity verified. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals.",
+  "note": "Later original annual/quarterly 10-K/Q SEC cover shares for 2024 ARQT and 2025 AXSM historical research, separate from older dated facts. No daily share continuity verified. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -66,6 +66,27 @@
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000162828024007376/mdgl-20231231.htm",
       "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1157601/0001628280-24-007376-index.htm",
       "originalSourceDescription": "Madrigal FY2023 Form 10-K accepted Feb 28 2024 06:32 ET, cover shows 19,897,425 outstanding shares Feb 22, 2024. Conservatively use February 29. Earlier 2023 Q3 Nov6 10-Q shows 19,742,646 on Nov1. No daily share/corporate action continuity proved."
+    },
+    {
+      "caseId": "GERN|RYTELO_IMETELSTAT|NDA217779|2024",
+      "ticker": "GERN",
+      "cik": "0000886744",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 593132540,
+      "sharesMeasurementDate": "2024-04-26",
+      "filedDate": "2024-05-02",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2024-05-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024052074/gern-20240331.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024052074/0000950170-24-052074-index.html",
+      "originalSourceDescription": "Geron Q1 2024 10-Q accepted May 2 2024 16:05:39 ET, original cover 593,132,540 common shares as of Apr 26. Conservative May 3; 47,073,231 more than previous annual cover, reflecting financing/capital changes. Not proof of continuous shares or valid trade returns."
     }
   ]
 }

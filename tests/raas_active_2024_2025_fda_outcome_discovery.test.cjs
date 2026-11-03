@@ -12,6 +12,7 @@ const x=(app,type,num,dt,brand)=>({
 const ARQT=x("NDA215985","SUPPL","007","20240709","ZORYVE");
 const MDGL=x("NDA217785","ORIG","1","20240314","REZDIFFRA");
 const AXSM=x("NDA215431","ORIG","1","20250130","SYMBRAVO");
+const GERN=x("NDA217779","ORIG","1","20240606","RYTELO");
 const crl=(date,app,file)=>({
  letter_type:"COMPLETE RESPONSE",letter_date:date,
  application_number:[app],company_name:"Issuer",file_name:file});
@@ -29,7 +30,7 @@ function request(url){
  const query=u.searchParams.get("search");
  assert.match(query,/submission_status:AP/);
  assert.doesNotMatch(query,/submission_type:ORIG/);
- if(query.includes("20240101 TO 20241231"))return Promise.resolve(payload([ARQT,MDGL],2));
+ if(query.includes("20240101 TO 20241231"))return Promise.resolve(payload([ARQT,MDGL,GERN],3));
  if(query.includes("20250101 TO 20251231"))return Promise.resolve(payload([AXSM],1));
  throw Error("Unexpected FDA year query "+query);
 }
@@ -87,18 +88,22 @@ test("official FDA original and supplemental approval leads PLUS redacted CRLs r
  const result=await m.execute({request,sourceLeads:sources,intake});
  assert.equal(result.status,"SOURCE_DISCOVERY_COMPLETE_FOR_OFFICIAL_ENDPOINTS_NOT_PDUFA_DENOMINATOR");
  assert.deepEqual(result.studyYears,[2024,2025]);
- assert.equal(result.totalOriginalApprovalActions,2);
+ assert.equal(result.totalOriginalApprovalActions,3);
  assert.equal(result.totalSupplementalApprovalActions,1);
  assert.equal(result.totalRedactedArchiveCRLLetters,2);
  assert.equal(result.years[0].supplementalApprovalActions,1);
  assert.equal(result.years[1].originalApprovalActions,1);
  assert.equal(result.years[0].archivedCRLLetterLeads,1);
  assert.equal(result.years[1].archivedCRLLetterLeads,1);
- assert.equal(result.originalSourceLeadsCrosscheck.length,3);
+ assert.equal(result.originalSourceLeadsCrosscheck.length,4);
  const mdgl=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="MDGL");
  assert.deepEqual(mdgl.fdaApprovalDatabaseActionMatches,["NDA217785|ORIG|1|2024-03-14"]);
  assert.equal(mdgl.pdufaTargetDate,"2024-03-14");
  assert.equal(mdgl.actualFDAActionDate,"2024-03-14");
+ const g=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="GERN");
+ assert.deepEqual(g.fdaApprovalDatabaseActionMatches,["NDA217779|ORIG|1|2024-06-06"]);
+ assert.equal(g.pdufaTargetDate,"2024-06-16");
+ assert.equal(g.actualFDAActionDate,"2024-06-06");
  const a=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="ARQT");
  const b=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="AXSM");
  assert.deepEqual(a.fdaApprovalDatabaseActionMatches,["NDA215985|SUPPL|007|2024-07-09"]);

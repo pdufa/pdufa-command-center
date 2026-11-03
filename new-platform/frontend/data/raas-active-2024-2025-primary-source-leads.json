@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Two source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals.",
+  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -112,6 +112,40 @@
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
       "notes": "SEC-exhibited pivotal MAESTRO-NASH Phase 3 data first announced December 19 2022. Original September 13 2023 company NDA acceptance announced March 14 2024 PDUFA goal; original FDA 2024 NDA 217785 approval letter confirms accelerated approval March 14. This is accelerated approval based on surrogate endpoints, requiring confirmatory evidence, not a confirmed long-term clinical outcome. 2023 Q3 10-Q Nov 6 2023 cover 19,742,646 common shares as of Nov 1; 2023 10-K Feb 28 2024 cover 19,897,425 common shares as of Feb 22. Neither snapshot establishes continuous historical shares, financing, cap eligibility or price return. Preserve PDUFA target and approval as distinct facts."
+    },
+    {
+      "caseId": "GERN|RYTELO_IMETELSTAT|NDA217779|2024",
+      "ticker": "GERN",
+      "programId": "GERN_IMERGE_PHASE3_IMETELSTAT_LOW_RISK_MDS",
+      "nctIds": [
+        "NCT02598661"
+      ],
+      "drug": "RYTELO (imetelstat) injection",
+      "indication": "transfusion-dependent anemia in adults with lower-risk myelodysplastic syndromes after ESA ineligibility or failure",
+      "application": "NDA 217779",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2024-06-16",
+      "targetAnnouncementDate": "2023-08-22",
+      "targetAnnouncementSourceUrl": "https://s201.q4cdn.com/710325604/files/doc_news/Geron-Announces-PDUFA-Date-for-Imetelstat-NDA-in-Lower-Risk-MDS-2023.pdf",
+      "phase3ReadoutDate": "2023-01-04",
+      "phase3ReadoutSourceUrl": "https://ir.geron.com/news-releases/news-release-details/geron-announces-positive-top-line-results-imerge-phase-3-trial",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT02598661",
+      "actualFDAActionDate": "2024-06-06",
+      "actualFDAActionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2024/217779Orig1s000Approv.pdf",
+      "actualFDAOutcome": "APPROVED",
+      "fdaActionEarlierThanPdufaGoalDays": 10,
+      "firstPublicFDAActionAnnouncementDate": "2024-06-06",
+      "firstPublicFDAActionAnnouncementUrl": "https://ir.geron.com/news-releases/news-release-details/geron-announces-fda-approval-rytelotm-imetelstat-first-class",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017024022056/gern-20231231.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "Original Geron August 22 2023 public PDUFA target of June 16 2024 for imetelstat NDA 217779; January 4 2023 IMerge Phase 3 readout was public before entry. FDA original NDA approval letter dated June 6 2024, 10 calendar days before target. Separate contemporaneous SEC 2023 annual cover 546,059,309 common shares as of Feb 23 2024, and Q1 2024 cover 593,132,540 shares as of Apr 26 2024. The 47,073,231 increase includes 2024 equity financing and must not be interpolated. 2024 source lead only, not a verified trade or complete FDA target-year census."
     }
   ]
 }
