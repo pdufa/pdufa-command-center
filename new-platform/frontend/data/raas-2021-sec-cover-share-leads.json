@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "CARA Q1 2021 dated SEC common stock cover snapshot for independent RAW x shares market cap research. Does not prove capitalization or share continuity.",
+  "records": [
+    {
+      "caseId": "CARA|KORSUVA|NDA214916|2021",
+      "ticker": "CARA",
+      "cik": "0001346830",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "sharesOutstanding": 50052011,
+      "sharesMeasurementDate": "2021-05-06",
+      "filedDate": "2021-05-10",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2021-05-11",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1346830/000155837021006674/cara-20210331x10q.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1346830/000155837021006674/0001558370-21-006674-index.htm",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "originalSourceDescription": "CARA 2021 Q1 Form 10-Q SEC index accepted May 10, 2021 at 16:16:39 ET; cover reports 50,052,011 shares outstanding as of May 6, 2021. First conservative research entry May 11; later 2021 dates not assumed to have constant shares."
+    }
+  ]
+}
