@@ -98,7 +98,7 @@ test("A missing T79/14 price window is represented as blocked, never fabricated 
  const out=m.build(x,events);
  assert.equal(out.blockedCases,1);
  assert.equal(out.rows.find(x=>x.ticker==="ARQT").grossReturnPct,null);
- assert.equal(out.allProvisional.cases,4);
+ assert.equal(out.allProvisional.cases,5);
 });
 test("CSV output quotes source text and escapes formulas before spreadsheet opening",()=>{
  const result=m.build(fixture(),events);result.rows[0].ticker='=HYPERLINK("https://evil.test","x")';
