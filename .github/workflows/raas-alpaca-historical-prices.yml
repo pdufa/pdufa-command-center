@@ -1,0 +1,47 @@
+name: RAAS Alpaca historical adjusted price research
+on:
+  pull_request:
+    paths:
+      - "scripts/raas_alpaca_historical_price_study.cjs"
+      - "tests/raas_alpaca_historical_price_study.test.cjs"
+      - ".github/workflows/raas-alpaca-historical-prices.yml"
+      - "new-platform/frontend/data/raas-retrospective-*.json"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/raas_alpaca_historical_price_study.cjs"
+      - "tests/raas_alpaca_historical_price_study.test.cjs"
+      - ".github/workflows/raas-alpaca-historical-prices.yml"
+      - "new-platform/frontend/data/raas-retrospective-*.json"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-gated-alpaca-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify eight actual event dates, strict SIP adjusted query and no invented prices
+        run: node --test tests/raas_alpaca_historical_price_study.test.cjs
+      - name: Fetch adjusted historical daily bars, only if credentials exist
+        env:
+          APCA_API_KEY_ID: ${{ github.event_name == 'pull_request' && '' || secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ github.event_name == 'pull_request' && '' || secrets.APCA_API_SECRET_KEY }}
+          ALPACA_API_KEY_ID: ${{ github.event_name == 'pull_request' && '' || secrets.ALPACA_API_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ github.event_name == 'pull_request' && '' || secrets.ALPACA_SECRET_KEY }}
+          RAAS_ALPACA_RESULT_PATH: ${{ runner.temp }}/raas-alpaca-historical-research.json
+        run: node scripts/raas_alpaca_historical_price_study.cjs
+      - name: Save explicitly labeled research prices and blocked statuses
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-alpaca-historical-price-research
+          path: ${{ runner.temp }}/raas-alpaca-historical-research.json
+          if-no-files-found: warn
+          retention-days: 14
