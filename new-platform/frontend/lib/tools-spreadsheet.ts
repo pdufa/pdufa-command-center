@@ -1,4 +1,5 @@
 import {normalizePoolStage, type PoolTrialRecord} from "./pool-pipeline-funnel";
+import {raasSpreadsheetExport} from "./raas-spreadsheet-status";
 import {exactProgramTimeline,pacificToday,pipelineDayCounts,type TimelineDates} from "./pipeline-timeline";
 import {matchedToolPdufaApplications,type ToolPdufaApplication,type ToolPdufaIndex} from "./tools-pdufa-links";
 import {
@@ -89,6 +90,7 @@ export function renderToolsSpreadsheetCsv(
     "Saved PDUFA target dates (application-level, not trial-level)",
     "PDUFA candidate source status","PDUFA application event keys","PDUFA record evidence links",
     "Pivotal/supporting study role",
+    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","RAAS validation status",
     ...stages.map(stage=>"Selected stage: "+stage),
     ...designations.map(key=>"Selected designation: "+(labels.get(key)||key)),
     ...designations.map(key=>"Evidence link: "+(labels.get(key)||key)),
@@ -113,6 +115,9 @@ export function renderToolsSpreadsheetCsv(
       item.pdufaApplications.map(a=>a.eventKey).join(" | "),
       item.pdufaApplications.map(a=>a.evidenceUrl).filter(Boolean).join(" | "),
       "NOT ESTABLISHED",
+      ...raasSpreadsheetExport({nctId:item.nctId,ticker:item.ticker,
+       drug:item.drug,indication:item.indication,
+       confirmedPostReadout:!!item.timeline.phase3DataRelease}),
       ...stages.map(stage=>item.stage===stage?"MATCH":""),
       ...designations.map(key=>item.designationMatches[key]?.length?"SOURCE-LINKED GRANT":""),
       ...designations.map(key=>[...new Set((item.designationMatches[key]||[]).map(v=>v.source))].join(" | ")),
