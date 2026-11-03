@@ -1,0 +1,54 @@
+name: RAAS FDA PASS-CRL-EXTENSION Prediction Accuracy Audit
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 8 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/raas_fda_decision_accuracy_audit.py'
+      - 'tests/test_raas_fda_decision_accuracy_audit.py'
+      - 'data/raas_fda_three_way_*.json'
+      - 'data/prediction_engine_history.csv'
+      - 'data/fda_directional_100pct_freezes.csv'
+      - '.github/workflows/raas-fda-decision-accuracy.yml'
+  pull_request:
+    paths:
+      - 'scripts/raas_fda_decision_accuracy_audit.py'
+      - 'tests/test_raas_fda_decision_accuracy_audit.py'
+      - 'data/raas_fda_three_way_*.json'
+      - 'data/prediction_engine_history.csv'
+      - 'data/fda_directional_100pct_freezes.csv'
+      - '.github/workflows/raas-fda-decision-accuracy.yml'
+permissions:
+  contents: read
+jobs:
+  prospective-three-way-decision-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Protect 3-class target, source clocks and 146 case baseline
+        run: python -m unittest discover -s tests -p 'test_raas_fda_decision_accuracy_audit.py' -v
+      - name: Compute retrospective baseline and prospective FDA decision audit
+        env:
+          RAAS_FDA_ACCURACY_JSON: ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
+          RAAS_FDA_ACCURACY_QUEUE_CSV: ${{ runner.temp }}/raas-fda-historical-source-review-queue.csv
+        run: |
+          export RAAS_FDA_EVALUATION_AS_OF_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          python scripts/raas_fda_decision_accuracy_audit.py
+      - name: Publish evidence-gap and accuracy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-fda-three-way-decision-validation
+          path: |
+            ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
+            ${{ runner.temp }}/raas-fda-historical-source-review-queue.csv
+          if-no-files-found: warn
+          retention-days: 30
