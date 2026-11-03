@@ -85,7 +85,7 @@ test("Spreadsheet CSV exports neutralize formula-like leading text and retain al
  assert.equal(m.csvEscape("Normal Name"),'"Normal Name"');
  data.reviewRows[0].reviewId='=HYPERLINK("https://bad.test","x")';
  const csv=m.csvForReview(data);
- assert.equal(csv.trim().split("\n").length,9);
+ assert.equal(csv.trim().split("\n").length,data.totalTasks+1);
  assert.ok(csv.includes("'=HYPERLINK"));
  assert.ok(!csv.includes('"=HYPERLINK'));
 });
