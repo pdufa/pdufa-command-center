@@ -31,10 +31,10 @@ jobs:
         run: node --test tests/raas_alpaca_historical_price_study.test.cjs
       - name: Fetch adjusted historical daily bars, only if credentials exist
         env:
-          APCA_API_KEY_ID: ${{ github.event_name == 'pull_request' && '' || secrets.APCA_API_KEY_ID }}
-          APCA_API_SECRET_KEY: ${{ github.event_name == 'pull_request' && '' || secrets.APCA_API_SECRET_KEY }}
-          ALPACA_API_KEY_ID: ${{ github.event_name == 'pull_request' && '' || secrets.ALPACA_API_KEY_ID }}
-          ALPACA_SECRET_KEY: ${{ github.event_name == 'pull_request' && '' || secrets.ALPACA_SECRET_KEY }}
+          APCA_API_KEY_ID: ${{ github.event_name != 'pull_request' && secrets.APCA_API_KEY_ID || '' }}
+          APCA_API_SECRET_KEY: ${{ github.event_name != 'pull_request' && secrets.APCA_API_SECRET_KEY || '' }}
+          ALPACA_API_KEY_ID: ${{ github.event_name != 'pull_request' && secrets.ALPACA_API_KEY_ID || '' }}
+          ALPACA_SECRET_KEY: ${{ github.event_name != 'pull_request' && secrets.ALPACA_SECRET_KEY || '' }}
           RAAS_ALPACA_RESULT_PATH: ${{ runner.temp }}/raas-alpaca-historical-research.json
         run: node scripts/raas_alpaca_historical_price_study.cjs
       - name: Save explicitly labeled research prices and blocked statuses
