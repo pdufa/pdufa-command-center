@@ -1,0 +1,42 @@
+name: RAAS official FDA 2016–2019 historical approval discovery
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/raas_openfda_2016_2019_discovery.cjs'
+      - 'tests/raas_openfda_2016_2019_discovery.test.cjs'
+      - '.github/workflows/raas-fda-2016-2019-discovery.yml'
+  pull_request:
+    paths:
+      - 'scripts/raas_openfda_2016_2019_discovery.cjs'
+      - 'tests/raas_openfda_2016_2019_discovery.test.cjs'
+      - '.github/workflows/raas-fda-2016-2019-discovery.yml'
+permissions:
+  contents: read
+jobs:
+  source-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test approval action dates cannot masquerade as historical PDUFA target dates
+        run: node --test tests/raas_openfda_2016_2019_discovery.test.cjs
+      - name: Research original NDA/BLA approval lead candidates (main only)
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_FDA_BACKFILL_OUTPUT: ${{ runner.temp }}/raas-fda-2016-2019-discovery.json
+        run: node scripts/raas_openfda_2016_2019_discovery.cjs
+      - name: Save FDA action discovery research, not a PDUFA event census
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-fda-2016-2019-discovery
+          path: ${{ runner.temp }}/raas-fda-2016-2019-discovery.json
+          if-no-files-found: ignore
+          retention-days: 30
