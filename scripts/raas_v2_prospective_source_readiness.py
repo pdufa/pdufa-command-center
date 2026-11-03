@@ -278,6 +278,100 @@ def validate_additional_formal_extensions(intake, old_rows, as_of):
     return result
 
 
+
+def validate_additional_original_goal_sources(intake, old_rows, as_of):
+    """Locate issuer original-goal source leads; never independently certify them.
+
+    Use the application-level case key rather than ticker because Cogent has
+    separate GIST and NonAdvSM reviews. Pivotal Phase 2 is NOT equivalent to
+    post-Phase-3 Pipeline qualification.
+    """
+    records=intake.get("additionalOriginalGoalIssuerSourceCases")
+    assert_safe(intake.get("additionalOriginalGoalIssuerSourceLeads")==4 and
+                type(records) is list and len(records)==4,
+                "NEW_ORIGINAL_GOAL_SOURCE_SCHEMA_INVALID")
+    expected={
+        "COGT|BEZUCLASTINIB_GIST_20261130":
+            ("COGT","2026-11-30","2026-05-28","ORIGINAL_NDA_REPORTED",
+             "PHASE_3_REPORTED_PEAK"),
+        "ANITOCEL_RRMM_US_20261223":
+            ("GILD","2026-12-23","2026-02-23","ORIGINAL_BLA_REPORTED",
+             "PIVOTAL_PHASE_2_REPORTED_IMMAGINE1"),
+        "MR107A02_ACUTEPAIN_US_20261227":
+            ("VTRS","2026-12-27","2026-05-18","ORIGINAL_NDA_REPORTED",
+             "PHASE_NOT_INDEPENDENTLY_VERIFIED"),
+        "BEZUCLASTINIB_NONADVSM_US_20261230":
+            ("COGT","2026-12-30","2026-03-16","ORIGINAL_NDA_REPORTED",
+             "PIVOTAL_PHASE_2_REPORTED_SUMMIT"),
+    }
+    legacy={r.get("fda_regulatory_case_id"):r for r in old_rows if
+            r.get("model_version")=="FDA-DIRECTIONAL-100-V1.9"}
+    as_of_date=audit.utc(as_of).date()
+    result=[]
+    seen=set()
+    for row in records:
+        key=row.get("legacyCaseKey")
+        assert_safe(key in expected and key not in seen,
+                    "NEW_ORIGINAL_GOAL_DUPLICATE_OR_WRONG_CASE")
+        seen.add(key)
+        ticker,goal,published,typ,phase=expected[key]
+        audit.identity(key)
+        publication=audit.day(row.get("sourcePublicationDate"))
+        announced=audit.day(row.get("issuerReportedFirstGoalDate"))
+        assert_safe(key in legacy and legacy[key]["ticker"]==ticker
+                    and legacy[key]["pdufa_date"]==goal and
+                    row.get("legacyGoalDate")==goal and
+                    announced.isoformat()==goal and
+                    publication.isoformat()==published and
+                    publication<=as_of_date and publication<announced and
+                    row.get("ticker")==ticker and
+                    row.get("applicationType")==typ and
+                    row.get("pivotalPhaseEvidence")==phase,
+                    "NEW_ORIGINAL_GOAL_IDENTITY_OR_SOURCE_CLOCK_INVALID")
+        assert_safe(row.get("sourceDocumentLocated") is True and
+                    all(row.get(flag) is False for flag in (
+                        "earliestGoalPublicationIndependentlyAttested",
+                        "applicationNumberIndependentlyVerified",
+                        "exactReviewCycleIndependentlyVerified",
+                        "issuerSponsorRightsIndependentlyReconciled",
+                        "originalDeadlineEverRevisedIndependentlyChecked",
+                        "prospectivelyFrozenThreeWayProbabilities",
+                        "independentlyAdjudicatedGoalDisposition",
+                        "enrolledInV2ProspectiveCohort",
+                        "FDAThreeWayAccuracyQualified",
+                        "approvedPipelinePhase3Qualification",
+                        "approvalForTradingModel")) and
+                    all(isinstance(row.get(field),str) and
+                        row[field].startswith("https://") and
+                        len(row[field])<1200 for field in (
+                            "issuerSourceUrl","phaseEvidenceSourceUrl")) and
+                    isinstance(row.get("clinicalSponsor"),str) and
+                    bool(row["clinicalSponsor"].strip()) and
+                    isinstance(row.get("notes"),str) and bool(row["notes"].strip()),
+                    "NEW_ORIGINAL_GOAL_INDEPENDENCE_OR_PROMOTION_INVALID")
+        result.append({
+            "ticker":ticker,"researchCaseKey":key,
+            "issuerPublishedCurrentGoalDate":goal,
+            "firstReportedReviewCycleGoalDate":goal,
+            "issuerGoalSourcePublicationDate":publication.isoformat(),
+            "issuerGoalSourceUrl":row["issuerSourceUrl"],
+            "applicationType":typ,
+            "pivotalPhaseEvidence":phase,
+            "phaseEvidenceSourceUrl":row["phaseEvidenceSourceUrl"],
+            "clinicalApplicantOrSponsor":row["clinicalSponsor"],
+            "publicStockExposure":row["stockExposure"],
+            "issuerSourceLocatedAtAudit":True,
+            "firstPublicGoalDateForThisCycleIndependentlyCertified":False,
+            "independentlyVerifiedApplicationCycle":False,
+            "immutableThreeClassForecastVerified":False,
+            "eligibleForApprovedPredictiveAccuracy":False,
+            "approvedPipelinePhase3Qualification":False,
+            "notes":row["notes"],
+        })
+    assert_safe(seen==set(expected),"NEW_ORIGINAL_GOAL_COVERAGE_INCOMPLETE")
+    return result
+
+
 def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, as_of):
     """No acceptance of old directional calls as FDA 3-way forecasts."""
     as_of_dt=audit.utc(as_of)
@@ -393,12 +487,14 @@ def execute(asof=ASOF, data=DATA):
     source=audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-top8-2026-source-intake.json")
     selected=validate_top8_source_intake(source,old_rows,asof)
     extended=validate_additional_formal_extensions(source,old_rows,asof)
+    original=validate_additional_original_goal_sources(source,old_rows,asof)
     # Use the EXISTING eight-source ledger, enriching the SAME nightly CSV
     # rather than adding a conflicting calendar. No independent review claim.
-    findings={r["researchCaseKey"]:r for r in selected}
+    findings={r["researchCaseKey"]:r for r in [*selected,*original]}
     extended_findings={r["researchCaseKey"]:r for r in extended}
-    assert_safe(not (findings.keys() & extended_findings.keys()),
-                "FORMAL_EXTENSION_DUPLICATE_ISSUER_SOURCE")
+    assert_safe(len(findings)==len(selected)+len(original) and
+                not (findings.keys() & extended_findings.keys()),
+                "FORMAL_EXTENSION_OR_ORIGINAL_DUPLICATE_SOURCE")
     reviewed=0
     revised=0
     for entry in report["blockedSourceItems"]:
@@ -411,6 +507,8 @@ def execute(asof=ASOF, data=DATA):
         entry["sourceResearchStatus"]="NOT_YET_SOURCE_REVIEWED"
         entry["currentIssuerReportedRevisedGoalDate"]=None
         entry["independentlyVerifiedApplicationCycle"]=False
+        entry["pivotalPhaseIssuerResearch"]=None
+        entry["approvedPipelinePhase3Qualification"]=False
         if not match:
             revised_match=extended_findings.get(entry["researchCaseKey"])
             if not revised_match:
@@ -440,6 +538,7 @@ def execute(asof=ASOF, data=DATA):
         entry["issuerSourceFound"]=True
         entry["issuerSourceLink"]=match["issuerGoalSourceUrl"]
         entry["applicationClassIssuerReported"]=match["applicationType"]
+        entry["pivotalPhaseIssuerResearch"]=match.get("pivotalPhaseEvidence")
         entry["firstGoalForThisCycleIssuerReported"]=first.isoformat()
         entry["knownRevisedGoalNotOriginalPrediction"]=is_revised
         entry["currentIssuerReportedRevisedGoalDate"]=(
@@ -454,12 +553,18 @@ def execute(asof=ASOF, data=DATA):
     report["unreviewedLegacyDeadlineLeads"]=report["sourceQueueCount"]-reviewed
     report["unexcludedLegacyDeadlineLeadsNotIndependentlyVerified"]=(
         report["sourceQueueCount"]-revised)
-    report["newSourceIntakeStage"]="EIGHT_ISSUER_PUBLISHED_GOAL_SOURCES_FOUND_NOT_INDEPENDENTLY_CERTIFIED"
-    report["issuerPublishedGoalSourceLeadsCount"]=len(selected)+len(extended)
+    report["newSourceIntakeStage"]="FIFTEEN_ISSUER_GOAL_OR_REVISION_SOURCE_LEADS_FOUND_NOT_INDEPENDENTLY_CERTIFIED"
+    report["issuerPublishedGoalSourceLeadsCount"]=len(selected)+len(extended)+len(original)
+    report["additionalOriginalGoalIssuerSourcesCount"]=len(original)
+    report["additionalOriginalGoalCycleAndPhaseChecks"]=original
     report["additionalFormallyExtendedSourceLeadsCount"]=len(extended)
     report["additionalFormalRevisionCycleChecks"]=extended
     report["independentlyCertifiedOriginalGoalRecords"]=0
     report["caseCycleAndSponsorSourceChecks"]=selected
+    report["issuerDocumentedGistAndNonAdvSMRemainSeparate"]=True
+    report["phase2PivotalOriginalGoalSourceCases"]=[
+        r["researchCaseKey"] for r in original if
+        r["pivotalPhaseEvidence"].startswith("PIVOTAL_PHASE_2_")]
     report["sourceIntakeStillExcludedFromApprovedFDAAccuracy"]=True
     report["clinicalReviewCycleRisks"]={
         "supplemental":1,"previouslyExtendedOriginalGoalAlreadyPassed":1,
@@ -491,7 +596,8 @@ def export(report, json_out, csv_out):
           "issuerSourceFound","applicationClassIssuerReported",
           "firstGoalForThisCycleIssuerReported","knownRevisedGoalNotOriginalPrediction",
           "sourceResearchStatus","issuerSourceLink",
-          "currentIssuerReportedRevisedGoalDate",
+          "currentIssuerReportedRevisedGoalDate","pivotalPhaseIssuerResearch",
+          "approvedPipelinePhase3Qualification",
           "independentlyVerifiedApplicationCycle"]
     with path.open("w",encoding="utf-8",newline="") as f:
         w=csv.DictWriter(f,fieldnames=keys,extrasaction="ignore")
