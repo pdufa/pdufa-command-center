@@ -168,7 +168,7 @@ function build({audit,research,earlier,later}){
  const compared=rows.filter(r=>r.status==="RETROSPECTIVE_SHARE_SNAPSHOT_CAP_SENSITIVITY_ONLY");
  const sorted=compared.slice().sort((a,b)=>b.absoluteCapSnapshotSpreadMillions-
   a.absoluteCapSnapshotSpreadMillions||a.ticker.localeCompare(b.ticker));
- return {schemaVersion:1,scope:OUT,status:"PROVISIONAL_SEC_COVER_SNAPSHOT_SENSITIVITY_NOT_MARKET_CAP_VALIDATION",
+ return {schemaVersion:1,scope:OUT_SCOPE,status:"PROVISIONAL_SEC_COVER_SNAPSHOT_SENSITIVITY_NOT_MARKET_CAP_VALIDATION",
   sourceCaseCount:rows.length,comparedCases:compared.length,
   blockedCases:rows.length-compared.length,
   casesWhereLaterCoverWasNotPublicAtEntry:compared.filter(x=>!x.laterSourceAvailableAtEntry).length,
@@ -191,7 +191,7 @@ function build({audit,research,earlier,later}){
   ]};
 }
 function csv(report){
- if(report?.scope!==OUT)throw Error("RAAS_SEC_SENSITIVITY_CSV_SCOPE_INVALID");
+ if(report?.scope!==OUT_SCOPE)throw Error("RAAS_SEC_SENSITIVITY_CSV_SCOPE_INVALID");
  const cols=["ticker","year","entryDate","sourceUsedAtEntry","laterSourceAvailableAtEntry",
   "earlierCoverShares","laterCoverShares","publishedCoverShareChangePct",
   "rawEntryClose","capUsingEarlierCoverMillions","capUsingLaterCoverMillions",
