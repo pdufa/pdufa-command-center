@@ -8,6 +8,8 @@ const source=fs.readFileSync(path.join(dir,"app/raas-worklist/page.tsx"),"utf8")
 test("Eight original issuer source leads are research, not certified FDA predictions",()=>{
  assert.equal(d.scope,"RAAS_V2_TOP8_2026_ISSUER_GOAL_PUBLICATION_SOURCE_RESEARCH_NOT_VALIDATED");
  assert.equal(d.records.length,8);
+ assert.equal(d.additionalFormalRevisionCases.length,3);
+ assert.equal(d.additionalFormallyExtendedLegacyReviewLeads,3);
  assert.equal(d.goalSourceLeads,8);
  assert.equal(d.issuerPublicationSourcesLocated,8);
  assert.equal(d.scoredThreeWayForecasts,0);
@@ -30,6 +32,23 @@ test("Website keeps review-cycle, revised-goal and third-party sponsor distincti
  assert.match(source,/ANAB receives financial rights to a Vanda-licensed program/);
  assert.match(source,/no immutable three-way forecast receipts/);
  assert.match(source,/V2 candidate/);
+});
+
+test("Additional SVRA PRAX EXEL source-led formal extensions cannot become forecasts",()=>{
+ const by=Object.fromEntries(d.additionalFormalRevisionCases.map(r=>[r.ticker,r]));
+ assert.deepEqual(Object.keys(by).sort(),["EXEL","PRAX","SVRA"]);
+ assert.equal(by.SVRA.firstCycleGoalDate,"2026-08-22");
+ assert.equal(by.SVRA.revisedGoalDate,"2026-11-22");
+ assert.equal(by.PRAX.firstCycleGoalDate,"2026-09-27");
+ assert.equal(by.PRAX.revisedGoalDate,"2026-12-27");
+ assert.equal(by.EXEL.firstCycleGoalDate,"2026-12-03");
+ assert.equal(by.EXEL.revisedGoalDate,"2027-03-03");
+ assert.equal(by.EXEL.legacyGoalDate,by.EXEL.firstCycleGoalDate);
+ assert.ok(d.additionalFormalRevisionCases.every(x=>
+   x.sourceDocumentLocated===true && x.exactApplicationCycleIndependentlyVerified===false &&
+   x.prospectivelyFrozenThreeWayProbabilities===false && x.eligibleForV2OriginalGoalPrediction===false));
+ assert.match(source,/id="raas-v2-formally-revised-goals"/);
+ assert.match(source,/v2Top8Sources\.additionalFormalRevisionCases\.map/);
 });
 
 test("Historical first-goal, supplemental, post-CRL and third-party license evidence remain explicit",()=>{
