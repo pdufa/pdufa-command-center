@@ -15,10 +15,10 @@ class OriginalGoalQueueSafetyTests(unittest.TestCase):
     def test_source_findings_are_joined_without_promoting_to_approved_fda_predictions(self):
         r=v2.execute("2026-11-03T23:59:59Z")
         self.assertEqual(r["sourceQueueCount"],36)
-        self.assertEqual(r["issuerSourceReviewedFutureDeadlineLeads"],11)
-        self.assertEqual(r["sourceDocumentedFirstGoalStillFuture"],7)
+        self.assertEqual(r["issuerSourceReviewedFutureDeadlineLeads"],15)
+        self.assertEqual(r["sourceDocumentedFirstGoalStillFuture"],11)
         self.assertEqual(r["knownRevisedDeadlineExcludedFromOriginalGoalCount"],4)
-        self.assertEqual(r["unreviewedLegacyDeadlineLeads"],25)
+        self.assertEqual(r["unreviewedLegacyDeadlineLeads"],21)
         self.assertEqual(r["unexcludedLegacyDeadlineLeadsNotIndependentlyVerified"],32)
         self.assertEqual(r["independentlyCertifiedOriginalGoalRecords"],0)
         self.assertEqual(r["readyForThreeWayProspectiveFreeze"],0)
@@ -68,7 +68,7 @@ class OriginalGoalQueueSafetyTests(unittest.TestCase):
         self.assertEqual(case["ZANZALINTINIB_CRC_US_20261203"]["sourceResearchStatus"],
                          "FORMAL_EXTENSION_KNOWN_ORIGINAL_DATE_NO_LONGER_UNRESOLVED")
         self.assertEqual(r["additionalFormallyExtendedSourceLeadsCount"],3)
-        self.assertEqual(r["sourceDocumentedFirstGoalStillFuture"],7)
+        self.assertEqual(r["sourceDocumentedFirstGoalStillFuture"],11)
 
     def test_false_extension_source_or_promotion_is_rejected(self):
         from copy import deepcopy
@@ -86,9 +86,56 @@ class OriginalGoalQueueSafetyTests(unittest.TestCase):
                 v2.validate_additional_formal_extensions(
                     changed,legacy,"2026-11-03T23:59:59Z")
 
+    def test_four_additional_issuer_original_goals_and_two_phase2_cases_never_promote(self):
+        r=v2.execute("2026-11-03T23:59:59Z")
+        by={x["researchCaseKey"]:x for x in r["blockedSourceItems"]}
+        cases={
+          "COGT|BEZUCLASTINIB_GIST_20261130":("2026-11-30","PHASE_3_REPORTED_PEAK"),
+          "ANITOCEL_RRMM_US_20261223":("2026-12-23","PIVOTAL_PHASE_2_REPORTED_IMMAGINE1"),
+          "MR107A02_ACUTEPAIN_US_20261227":("2026-12-27","PHASE_NOT_INDEPENDENTLY_VERIFIED"),
+          "BEZUCLASTINIB_NONADVSM_US_20261230":("2026-12-30","PIVOTAL_PHASE_2_REPORTED_SUMMIT"),
+        }
+        for key,(goal,phase) in cases.items():
+            x=by[key]
+            self.assertTrue(x["issuerSourceFound"])
+            self.assertEqual(x["legacyGoalDateUnverified"],goal)
+            self.assertEqual(x["pivotalPhaseIssuerResearch"],phase)
+            self.assertFalse(x["approvedPipelinePhase3Qualification"])
+            self.assertFalse(x["knownRevisedGoalNotOriginalPrediction"])
+            self.assertFalse(x["V2ForecastEligible"])
+            self.assertFalse(x["immutablePreactionThreeWayProbabilityVector"])
+        self.assertEqual(r["additionalOriginalGoalIssuerSourcesCount"],4)
+        self.assertEqual(len(r["phase2PivotalOriginalGoalSourceCases"]),2)
+        self.assertTrue(r["issuerDocumentedGistAndNonAdvSMRemainSeparate"])
+
+    def test_bad_new_source_identity_or_future_publication_fails_closed(self):
+        from copy import deepcopy
+        import raas_fda_decision_accuracy_audit as audit
+        original=audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-top8-2026-source-intake.json")
+        old=audit.csv_rows(ROOT/"data/fda_directional_100pct_freezes.csv")
+        for field,bad in (
+            ("issuerReportedFirstGoalDate","2026-12-01"),
+            ("sourcePublicationDate","2026-11-20"),
+            ("pivotalPhaseEvidence","PIVOTAL_PHASE_2_REPORTED_SUMMIT"),
+            ("approvedPipelinePhase3Qualification",True),
+            ("applicationNumberIndependentlyVerified",True),
+            ("ticker","GILD"),
+        ):
+            modified=deepcopy(original)
+            modified["additionalOriginalGoalIssuerSourceCases"][0][field]=bad
+            with self.assertRaises(ValueError):
+                v2.validate_additional_original_goal_sources(
+                    modified,old,"2026-11-03T23:59:59Z")
+        modified=deepcopy(original)
+        modified["additionalOriginalGoalIssuerSourceCases"][3]["legacyCaseKey"]=(
+            modified["additionalOriginalGoalIssuerSourceCases"][0]["legacyCaseKey"])
+        with self.assertRaises(ValueError):
+            v2.validate_additional_original_goal_sources(
+                modified,old,"2026-11-03T23:59:59Z")
+
     def test_source_record_lapses_with_matured_legacy_dates(self):
         r=v2.execute("2026-11-18T23:59:59Z")
-        self.assertEqual(r["issuerSourceReviewedFutureDeadlineLeads"],9)
+        self.assertEqual(r["issuerSourceReviewedFutureDeadlineLeads"],13)
         self.assertEqual(r["knownRevisedDeadlineExcludedFromOriginalGoalCount"],4)
         self.assertTrue(all(x["legacyGoalDateUnverified"]>"2026-11-18"
                             for x in r["blockedSourceItems"]))
