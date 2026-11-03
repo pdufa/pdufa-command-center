@@ -1,0 +1,52 @@
+name: RAAS 2017 PTCT Translarna CRL historical research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/data/raas-historical-2017-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2017-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-preentry-2017-sec-cover-share-leads.json'
+      - 'scripts/raas_historical_ptct_2017_research.cjs'
+      - 'tests/raas_historical_ptct_2017_research.test.cjs'
+      - '.github/workflows/raas-ptct-2017-historical-research.yml'
+  pull_request:
+    paths:
+      - 'new-platform/frontend/data/raas-historical-2017-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2017-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-preentry-2017-sec-cover-share-leads.json'
+      - 'scripts/raas_historical_ptct_2017_research.cjs'
+      - 'tests/raas_historical_ptct_2017_research.test.cjs'
+      - '.github/workflows/raas-ptct-2017-historical-research.yml'
+permissions:
+  contents: read
+jobs:
+  ptct-2017-actual-primary-negative-fda-outcome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify 2017 PDUFA, prior RTF, Phase 3 failed primary and dated SEC cover shares
+        run: |
+          node --test tests/raas_historical_ptct_2017_research.test.cjs
+          node --test tests/raas_historical_raw_market_cap_research.test.cjs
+      - name: Research 2017 original PTCT NASDAQ SIP raw/adjusted price, no eligible trade or RAAS score
+        if: github.event_name != 'pull_request'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          RAAS_2017_PTCT_OUTPUT: ${{ runner.temp }}/raas-2017-ptct-translarna-research.json
+        run: node scripts/raas_historical_ptct_2017_research.cjs
+      - name: Save unapproved 2017 negative-outcome historical source and Alpaca windows
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-2017-ptct-translarna-research
+          path: ${{ runner.temp }}/raas-2017-ptct-translarna-research.json
+          retention-days: 30
+          if-no-files-found: ignore
