@@ -107,6 +107,7 @@ export function bridgeSummary(feed:ShareBridgeFeed,top:TopRetrospectiveFeed,bott
  return {caseCount:cases.length,withSecShareCount:bridges.filter(Boolean).length,
   arithmeticMatches:bridges.filter(b=>b?.status==="ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT").length,
   separatelyReportedCapMatches:bridges.filter(b=>b?.status==="ARITHMETIC_MATCH_REQUIRES_PRICE_AUDIT"&&b.capComparisonBasis==="VENDOR_REPORTED_CAP_ESTIMATE").length,
+  mismatchedVendorCaps:bridges.filter(b=>b?.status==="ARITHMETIC_MISMATCH").length,
   missingShares:bridges.filter(b=>b===null).length,
   fullyVerifiedPriceCases:0,qualifiedRaasForecasts:0};
 }
