@@ -8,6 +8,8 @@ on:
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
       - 'scripts/raas_active_2024_2025_window79_audit.cjs'
+      - 'scripts/raas_active_2024_2025_window_robustness_audit.cjs'
+      - 'tests/raas_active_2024_2025_window_robustness_audit.test.cjs'
       - 'tests/raas_active_2024_2025_window79_audit.test.cjs'
       - 'tests/raas_active_2024_2025_primary_cap_research.test.cjs'
       - '.github/workflows/raas-active-2024-2025-original-source-research.yml'
@@ -19,6 +21,8 @@ on:
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
       - 'scripts/raas_active_2024_2025_window79_audit.cjs'
+      - 'scripts/raas_active_2024_2025_window_robustness_audit.cjs'
+      - 'tests/raas_active_2024_2025_window_robustness_audit.test.cjs'
       - 'tests/raas_active_2024_2025_window79_audit.test.cjs'
       - 'tests/raas_active_2024_2025_primary_cap_research.test.cjs'
       - '.github/workflows/raas-active-2024-2025-original-source-research.yml'
@@ -39,6 +43,7 @@ jobs:
         run: |
           node --test tests/raas_active_2024_2025_primary_cap_research.test.cjs
           node --test tests/raas_active_2024_2025_window79_audit.test.cjs
+          node --test tests/raas_active_2024_2025_window_robustness_audit.test.cjs
           node --test tests/raas_historical_raw_market_cap_research.test.cjs
           node --test tests/raas_historical_preentry_share_window_research.test.cjs
       - name: Gather active 2024/2025 original source case as-of RAW and adjusted Alpaca daily prices
@@ -55,6 +60,13 @@ jobs:
           RAAS_T79_14_AUDIT_JSON: ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
           RAAS_T79_14_AUDIT_CSV: ${{ runner.temp }}/raas-2024-2025-t79-14-audit.csv
         run: node scripts/raas_active_2024_2025_window79_audit.cjs
+      - name: Quantify T-79/T-14 leave-one-issuer-out fragility and holdout split (NOT validated)
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_T79_14_AUDIT_JSON: ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
+          RAAS_T79_14_ROBUSTNESS_JSON: ${{ runner.temp }}/raas-2024-2025-t79-14-robustness.json
+          RAAS_T79_14_ROBUSTNESS_CSV: ${{ runner.temp }}/raas-2024-2025-t79-14-leave-one-out.csv
+        run: node scripts/raas_active_2024_2025_window_robustness_audit.cjs
       - name: Publish provisional case price and SEC share audit gaps, no validated scores
         if: always()
         uses: actions/upload-artifact@v4
@@ -64,5 +76,7 @@ jobs:
             ${{ runner.temp }}/raas-2024-2025-original-source-research.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-audit.csv
+            ${{ runner.temp }}/raas-2024-2025-t79-14-robustness.json
+            ${{ runner.temp }}/raas-2024-2025-t79-14-leave-one-out.csv
           if-no-files-found: ignore
           retention-days: 30
