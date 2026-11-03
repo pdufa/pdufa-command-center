@@ -5,7 +5,7 @@
  * This is an isolated ORIGINAL source-lead queue, not the accepted-score
  * or fully validated active 2024/2025 event intake.
  *
- * 2024 ARQT Zoryve 0.15% supplemental NDA: FDA acted 2 days AFTER target.
+ * 2024 MDGL Rezdiffra original NDA: FDA acted on target.\n * 2024 ARQT Zoryve 0.15% supplemental NDA: FDA acted 2 days AFTER target.
  * 2025 AXSM Symbravo: FDA acted 1 day BEFORE target.
  * PDUFA target, Phase 3 readout, SEC share publication, FDA action
  * and previous application review cycle must remain separated.
@@ -26,31 +26,42 @@ const paths={
 const load=p=>JSON.parse(fs.readFileSync(path.join(root,p),"utf8"));
 function verify(events,shares,earlier,intake){
  const cases=validateSourceLeads(events);
- if(cases.length!==2||shares.records?.length!==2||
-  earlier.records?.length!==2||intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
+ if(cases.length!==3||shares.records?.length!==3||
+  earlier.records?.length!==3||intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
   intake.records.some(x=>cases.some(c=>x.caseId===c.caseId)))
   throw Error("RAAS_ACTIVE_SOURCE_LEADS_MUST_NOT_COUNT_AS_ACCEPTED_INTAKE");
  const order=cases.slice().sort((a,b)=>a.pdufaTargetDate.localeCompare(b.pdufaTargetDate));
- if(order[0].caseId!=="ARQT|ZORYVE015_AD|NDA215985_S007|2024"||
-  order[0].ticker!=="ARQT"||order[0].pdufaTargetDate!=="2024-07-07"||
-  order[0].targetAnnouncementDate!=="2023-11-29"||
-  order[0].phase3ReadoutDate!=="2022-12-12"||
-  order[0].actualFDAActionDate!=="2024-07-09"||
-  order[0].fdaDecisionAfterPdufaGoalDays!==2||
-  order[0].formalGoalExtensionIndependentlyVerified!==false||
-  order[0].actualFDAOutcome!=="APPROVED"||
-  !order[0].nctIds.includes("NCT04773587")||
-  !order[0].nctIds.includes("NCT04773600")||
-  order[1].caseId!=="AXSM|SYMBRAVO|NDA215431|2025"||
-  order[1].ticker!=="AXSM"||order[1].pdufaTargetDate!=="2025-01-31"||
-  order[1].targetAnnouncementDate!=="2024-09-04"||
-  order[1].phase3ReadoutDate!=="2020-04-06"||
-  order[1].actualFDAActionDate!=="2025-01-30"||
-  order[1].fdaActionEarlierThanPdufaGoalDays!==1||
-  order[1].previousCRLAddressedInResubmission!==true||
-  order[1].initial2022CRLNot2025Outcome!==true||
-  !order[1].nctIds.includes("NCT03896009")||
-  !order[1].nctIds.includes("NCT04163185"))
+ const byTicker=new Map(order.map(e=>[e.ticker,e]));
+ const arqt=byTicker.get("ARQT"),axsm=byTicker.get("AXSM"),mdgl=byTicker.get("MDGL");
+ if(byTicker.size!==3||
+  mdgl?.caseId!=="MDGL|REZDIFFRA|NDA217785|2024"||
+  mdgl.pdufaTargetDate!=="2024-03-14"||
+  mdgl.targetAnnouncementDate!=="2023-09-13"||
+  mdgl.phase3ReadoutDate!=="2022-12-19"||
+  mdgl.actualFDAActionDate!=="2024-03-14"||
+  mdgl.actualFDAOutcome!=="APPROVED"||
+  mdgl.acceleratedApproval!==true||
+  !mdgl.nctIds.includes("NCT03900429")||
+  arqt?.caseId!=="ARQT|ZORYVE015_AD|NDA215985_S007|2024"||
+  arqt.ticker!=="ARQT"||arqt.pdufaTargetDate!=="2024-07-07"||
+  arqt.targetAnnouncementDate!=="2023-11-29"||
+  arqt.phase3ReadoutDate!=="2022-12-12"||
+  arqt.actualFDAActionDate!=="2024-07-09"||
+  arqt.fdaDecisionAfterPdufaGoalDays!==2||
+  arqt.formalGoalExtensionIndependentlyVerified!==false||
+  arqt.actualFDAOutcome!=="APPROVED"||
+  !arqt.nctIds.includes("NCT04773587")||
+  !arqt.nctIds.includes("NCT04773600")||
+  axsm.caseId!=="AXSM|SYMBRAVO|NDA215431|2025"||
+  axsm.ticker!=="AXSM"||axsm.pdufaTargetDate!=="2025-01-31"||
+  axsm.targetAnnouncementDate!=="2024-09-04"||
+  axsm.phase3ReadoutDate!=="2020-04-06"||
+  axsm.actualFDAActionDate!=="2025-01-30"||
+  axsm.fdaActionEarlierThanPdufaGoalDays!==1||
+  axsm.previousCRLAddressedInResubmission!==true||
+  axsm.initial2022CRLNot2025Outcome!==true||
+  !axsm.nctIds.includes("NCT03896009")||
+  !axsm.nctIds.includes("NCT04163185"))
   throw Error("RAAS_ACTIVE_ORIGINAL_TARGET_ACTION_IDENTITY_INVALID");
  const prior=validatePreentry({primary:events,shares,preentry:earlier});
  const laterByCase=new Map(shares.records.map(s=>[s.caseId,s]));
@@ -63,6 +74,12 @@ function verify(events,shares,earlier,intake){
    !now.needsShareContinuityAudit||!now.needsIndependentPriceCrosscheck)
    throw Error("RAAS_ACTIVE_SEC_COVER_SHARE_CHRONOLOGY_INVALID");
   const difference=now.sharesOutstanding-old.sharesOutstanding;
+  if(event.ticker==="MDGL"&&(
+   old.sharesOutstanding!==19742646||now.sharesOutstanding!==19897425||
+   old.firstConservativeEntryDate!=="2023-11-07"||
+   now.firstConservativeEntryDate!=="2024-02-29"||
+   difference!==154779))
+   throw Error("RAAS_2024_MDGL_SECURITIES_DISCLOSURE_MISMATCH");
   if(event.ticker==="ARQT"&&(
    old.sharesOutstanding!==96813363||now.sharesOutstanding!==115764164||
    old.firstConservativeEntryDate!=="2024-02-28"||
@@ -103,7 +120,7 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
   provisionalPrimaryWindowRows:0,provisionalEarlierShareWindows:0};
  const raw=await cap.execute({key,secret,request,events,shares});
  if(raw.status!=="UNVALIDATED_HISTORICAL_CAP_RESEARCH_ONLY"||
-  raw.cases?.length!==2||raw.historicallyEligibleTrades!==0||
+  raw.cases?.length!==3||raw.historicallyEligibleTrades!==0||
   raw.approvedRaasRatings!==0)
   throw Error("RAAS_ACTIVE_RAW_CAP_PRICE_RESEARCH_INVALID");
  const queue=assemble({primary:events,shares,rawCap:raw});
@@ -129,10 +146,10 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
    missingAudit:"SEC_SHARE_CONTINUITY_SPLITS_INDEPENDENT_PRICE_VENDOR_2024_2025_CENSUS"})),
   priceDataRawAndAdjusted:raw.cases,
   sourceQueue:queue.cases,
-  warnings:["Two originally sourced programs out of the 2024–2025 discovery universe; NOT two complete FDA year censuses.",
+  warnings:["Three originally sourced programs out of the 2024–2025 discovery universe; NOT two complete FDA year censuses.",
    "2024 ARQT FDA action July 9 occurred after the company-announced July 7 goal, without independently established formal extension.",
    "2025 AXSM FDA action Jan 30 occurred one day before Jan 31 goal; older 2022 manufacturing CRL was a separate review cycle.",
-   "SEC shares increased by 18,950,801 ARQT and 462,171 AXSM between dated snapshots. Do not interpolate constant capitalization.",
+   "SEC shares increased by 154,779 MDGL, 18,950,801 ARQT and 462,171 AXSM between dated snapshots. Do not interpolate constant capitalization.",
    "A qualifying price bar is not an independently validated historical issuer, trading fill or RAAS prediction."]};
 }
 function main(){
