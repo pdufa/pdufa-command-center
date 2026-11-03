@@ -105,7 +105,7 @@ async function execute({primary=read(FILES.primary),shares=read(FILES.shares),
   earlierShares.summary.independentlyValidatedEventTrades!==0||
   priceWindows.summary.optimalWindowDeclared||earlierShares.summary.optimalWindowDeclared)
   throw Error("RAAS_2017_PREMATURE_TRADE_SCORE_PROMOTION");
- return {...base,status:"2017_CR L_RESEARCH_ONLY".replace(" ",""),
+ return {...base,status:"2017_CRL_RESEARCH_ONLY",
   summary:{sourcePrograms2017:1,
    priceResearchSessions:raw.rawSessions,
    provisionalCapInRangeSessions:raw.possible300mTo10bResearchSessions,
