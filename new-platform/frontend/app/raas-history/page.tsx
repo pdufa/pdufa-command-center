@@ -248,7 +248,7 @@ export default function RaasHistoricalAuditPage(){
        <table className={css.cohortTable}>
          <thead><tr>
            <th>Stage</th><th>Historical windows</th><th>Winners</th>
-           <th>Mean gross</th><th>Median gross</th><th>Median with 1% round trip cost</th>
+           <th>Mean gross</th><th>Median gross</th><th>Mean with 1% round trip cost</th><th>Median with 1% round trip cost</th>
            <th>Range of gross returns</th><th>Mean after leaving out one case</th>
            <th>Both closes second-source matched</th>
          </tr></thead>
@@ -258,6 +258,7 @@ export default function RaasHistoricalAuditPage(){
              <td>{s.count}</td><td>{s.winCount}/{s.count}</td>
              <td>{s.meanGrossPercent>0?"+":""}{s.meanGrossPercent.toFixed(2)}%</td>
              <td>{s.medianGrossPercent>0?"+":""}{s.medianGrossPercent.toFixed(2)}%</td>
+             <td>{s.meanAfterOnePercentCost>0?"+":""}{s.meanAfterOnePercentCost.toFixed(2)}%</td>
              <td>{s.medianAfterOnePercentCost>0?"+":""}{s.medianAfterOnePercentCost.toFixed(2)}%</td>
              <td>{s.minimumGrossPercent.toFixed(2)}% to +{s.maximumGrossPercent.toFixed(2)}%</td>
              <td>{s.leaveOneOutMeanRange? s.leaveOneOutMeanRange.min.toFixed(2)+"% to "+s.leaveOneOutMeanRange.max.toFixed(2)+"%":"Not calculable"}</td>
