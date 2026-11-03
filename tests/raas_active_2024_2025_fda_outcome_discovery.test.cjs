@@ -93,7 +93,7 @@ test("official FDA original and supplemental approval leads PLUS redacted CRLs r
  assert.equal(result.totalSupplementalApprovalActions,1);
  assert.equal(result.totalRedactedArchiveCRLLetters,2);
  assert.equal(result.years[0].supplementalApprovalActions,1);
- assert.equal(result.years[1].originalApprovalActions,1);
+ assert.equal(result.years[1].originalApprovalActions,2);
  assert.equal(result.years[0].archivedCRLLetterLeads,1);
  assert.equal(result.years[1].archivedCRLLetterLeads,1);
  assert.equal(result.originalSourceLeadsCrosscheck.length,5);
