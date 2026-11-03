@@ -201,6 +201,8 @@ if(require.main===module){
  try{
   const approvalPath=process.env.RAAS_FDA_BACKFILL_OUTPUT||path.join(root,"raas-fda-2016-2019-discovery.json");
   const archiveCsv=fs.readFileSync(path.join(root,"data/historical_assessed_decisions.csv"),"utf8");
+  const earlier2018Leads=JSON.parse(fs.readFileSync(path.join(root,
+   "new-platform/frontend/data/raas-historical-2018-primary-source-leads.json"),"utf8"));
   const earlier2019Leads=JSON.parse(fs.readFileSync(path.join(root,
    "new-platform/frontend/data/raas-historical-2019-primary-source-leads.json"),"utf8"));
   const firstYearLeads=JSON.parse(fs.readFileSync(path.join(root,
@@ -210,8 +212,9 @@ if(require.main===module){
   const nextYearLeads=JSON.parse(fs.readFileSync(path.join(root,
    "new-platform/frontend/data/raas-historical-2022-primary-source-leads.json"),"utf8"));
   const primaryLeads={...firstYearLeads,records:[
-   ...validateSourceLeads(earlier2019Leads),...validateSourceLeads(firstYearLeads),
-   ...validateSourceLeads(followingYearLeads),...validateSourceLeads(nextYearLeads)]};
+   ...validateSourceLeads(earlier2018Leads),...validateSourceLeads(earlier2019Leads),
+   ...validateSourceLeads(firstYearLeads),...validateSourceLeads(followingYearLeads),
+   ...validateSourceLeads(nextYearLeads)]};
   const approvalDiscovery=JSON.parse(fs.readFileSync(approvalPath,"utf8"));
   const crosswalkPath=process.env.RAAS_FDA_CROSSWALK_OUTPUT||
    path.join(root,"raas-fda-2016-2019-issuer-crosswalk.json");
