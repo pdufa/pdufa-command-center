@@ -248,3 +248,33 @@ test("2018 ACRX public Nov-3 FDA goal and internal Nov-2 goal stay distinct in i
  assert.equal(joined.actualFDAActionDate,"2018-11-02");
  assert.equal(joined.eligibleForCalibration,false);
 });
+
+test("2017 PTCT source adds independent negative FDA outcome without promoting unverified CRL-letter date",()=>{
+ const byYear=y=>JSON.parse(fs.readFileSync(path.join(root,
+  "new-platform/frontend/data/raas-historical-"+y+"-primary-source-leads.json"),"utf8"));
+ const records=[...byYear("2017").records,...byYear("2018").records,
+  ...byYear("2019").records,...primary.records,...byYear("2021").records,...byYear("2022").records];
+ const study={...primary,records};
+ assert.equal(m.validateSourceLeads(study).length,11);
+ const r=m.consolidate({archiveCsv:archive,primaryLeads:study,
+  approvalDiscovery:fda,issuerCrosswalk,crlDiscovery});
+ assert.equal(r.summary.primaryTargetSourceLeads,11);
+ assert.deepEqual([2017,2018,2019,2020,2021,2022].map(y=>r.coverage[y].sourceLeads),
+  [1,1,1,6,1,1]);
+ assert.equal(r.summary.fullCensusYears,0);
+ assert.equal(r.summary.historicallyEligibleTrades,0);
+ assert.equal(r.summary.approvedRaasMetrics,0);
+ assert.equal(r.coverage[2017].completePdufaCensus,false);
+ const event=records.find(e=>e.caseId==="PTCT|TRANSLARNA|NDA200896|2017");
+ assert.ok(event);
+ assert.equal(event.actualFDAOutcome,"CRL");
+ assert.equal(event.pdufaTargetDate,"2017-10-24");
+ assert.equal(event.firstPublicFDAActionAnnouncementDate,"2017-10-25");
+ assert.equal(event.originalFdaCrlLetterDateIndependentlyVerified,false);
+ assert.equal(event.phase3OverallIttPrimaryEndpointSignificant,false);
+ const row=r.candidates.find(x=>x.primarySourceCaseId===event.caseId||x.key===event.caseId);
+ assert.ok(row);
+ assert.equal(row.pdufaTargetDate,"2017-10-24");
+ assert.equal(row.actualFDAActionDate,"2017-10-25");
+ assert.equal(row.eligibleForCalibration,false);
+});
