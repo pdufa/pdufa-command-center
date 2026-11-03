@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
+  "asOf": "2026-11-02",
+  "note": "One original 2019 FDA PDUFA action case with REMS extension and DEA legal marketing caveat. Not a complete 2019 event census or validated stock-price trading case.",
+  "records": [
+    {
+      "caseId": "SAGE|ZULRESSO|NDA211371|2019",
+      "ticker": "SAGE",
+      "programId": "BREXANOLONE_ZULRESSO_202B_202C_POSTPARTUM_DEPRESSION",
+      "nctIds": [
+        "NCT02942004",
+        "NCT02942017"
+      ],
+      "drug": "brexanolone (ZULRESSO) intravenous injection",
+      "indication": "postpartum depression in adults",
+      "application": "NDA 211371",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2019-03-19",
+      "initialPdufaTargetDate": "2018-12-19",
+      "revisedTargetFDACommunicationDate": "2018-11-20",
+      "targetAnnouncementDate": "2018-11-20",
+      "targetAnnouncementSourceUrl": "https://www.sec.gov/Archives/edgar/data/1597553/000119312518331312/d674636dex991.htm",
+      "phase3ReadoutDate": "2017-11-09",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1597553/000119312517338015/d486951dex991.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT02942004",
+      "actualFDAActionDate": "2019-03-19",
+      "actualFDAActionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2019/211371Orig1s000Approv.pdf",
+      "actualFDAOutcome": "APPROVED",
+      "firstPublicFDAActionAnnouncementDate": "2019-03-19",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/1597553/000119312519079860/d721324dex991.htm",
+      "marketingDeferredPendingDEAScheduling": true,
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1597553/000119312518331312/d674636dex991.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "SAGE Nov 20 2018 SEC-exhibited release announced REMS-driven extension from Dec 19 2018 to Mar 19 2019; Nov 9 2017 SEC-exhibited Phase 3 202B/202C positive results. FDA original NDA 211371 letter and March 19 2019 public release identify FDA action; the FDA letter states legally effective approval/marketing required subsequent DEA scheduling, so action date is not equivalent to first permitted sale. Preserve revised and initial targets separately, and never use postaction materials for prospective features. Company trading or price history after a later delisting/acquisition may require vendor as-of instrument resolution. Neither source leads nor SEC covers make an approved RAAS trade."
+    }
+  ]
+}
