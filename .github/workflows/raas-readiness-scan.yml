@@ -15,6 +15,8 @@ on:
       - 'new-platform/frontend/lib/raas-historical-sec-entry-bridge.ts'
       - 'new-platform/frontend/scripts/raas-historical-sec-entry-bridge.cjs'
       - 'new-platform/frontend/tests/raas-historical-sec-entry-bridge.test.cjs'
+      - 'new-platform/frontend/lib/raas-full-90-3-window-policy.ts'
+      - 'new-platform/frontend/tests/raas-full-90-3-window-policy.test.cjs'
       - 'new-platform/frontend/tests/raas-readiness-scan.test.cjs'
       - '.github/workflows/raas-readiness-scan.yml'
   pull_request:
@@ -27,6 +29,8 @@ on:
       - 'new-platform/frontend/lib/raas-historical-sec-entry-bridge.ts'
       - 'new-platform/frontend/scripts/raas-historical-sec-entry-bridge.cjs'
       - 'new-platform/frontend/tests/raas-historical-sec-entry-bridge.test.cjs'
+      - 'new-platform/frontend/lib/raas-full-90-3-window-policy.ts'
+      - 'new-platform/frontend/tests/raas-full-90-3-window-policy.test.cjs'
       - 'new-platform/frontend/tests/raas-readiness-scan.test.cjs'
       - '.github/workflows/raas-readiness-scan.yml'
 
@@ -62,6 +66,7 @@ jobs:
           node --test tests/raas-installation-gates.test.cjs
           node --test tests/raas-pdufa-goal-asof-metric-audit.test.cjs
           node --test tests/raas-historical-sec-entry-bridge.test.cjs
+          node --test tests/raas-full-90-3-window-policy.test.cjs
       - name: Run actual read-only 60-metric scan and publish execution summary
         env:
           RAAS_SCAN_OUTPUT: ${{ runner.temp }}/raas-readiness-result.json
