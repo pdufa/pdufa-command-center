@@ -66,7 +66,17 @@ with (ROOT/"data/all_phase_trials.csv").open(encoding="utf-8-sig",newline="") as
     original={r["nct_id"].strip() for r in csv.DictReader(stream)
               if re.fullmatch(r"NCT\d{8}",r.get("nct_id","").strip())}
 if ncts!=original:
-    raise ValueError(f"Current-source NCT identity drift: {len(ncts)} POOL vs {len(original)} source")
+    # Exact public NCT identifiers are safe to log; never expose session/auth data.
+    # Report both directions so a source sync can be repaired without weakening
+    # the fail-closed identity gate or silently truncating new clinical trials.
+    added=sorted(ncts-original)
+    missing=sorted(original-ncts)
+    raise ValueError(
+        "Current-source NCT identity drift: "
+        f"{len(ncts)} POOL vs {len(original)} source; "
+        f"POOL_ONLY_COUNT={len(added)} POOL_ONLY_NCT_IDS={added[:20]}; "
+        f"SOURCE_ONLY_COUNT={len(missing)} SOURCE_ONLY_NCT_IDS={missing[:20]}"
+    )
 fields=("id","ticker","company","drug","indication","stage")
 filtered=[]
 for row in rows:
