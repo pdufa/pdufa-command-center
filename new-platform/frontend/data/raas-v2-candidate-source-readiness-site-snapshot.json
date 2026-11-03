@@ -15,6 +15,12 @@
   "disclosures": [
     "36 are future-dated older binary prediction source leads at the dated snapshot, NOT 36 FDA V2 forecasts.",
     "The nightly report updates the time-specific queue; this website snapshot does not auto-refresh from GitHub artifacts.",
-    "No calibration thresholds were changed; V1 remains installed and V2 is not an approved model."
-  ]
+    "No calibration thresholds were changed; V1 remains installed and V2 is not an approved model.",
+    "CYTK November 14 is a supplemental NDA; SMMT November 14 is an initial BLA; CAPR November 22 is a revised goal after an August 22 Class 2 BLA resubmission goal.",
+    "These are issuer-documented source leads, not independently verified cycle labels or new RAAS forecasts."
+  ],
+  "issuerDocumentedNearTermSourceLeads": 3,
+  "issuerDocumentedFutureOriginalGoalLeads": 2,
+  "revisedGoalNotFutureOriginalGoal": 1,
+  "independentlyVerifiedThreeWayOutcomeLabels": 0
 }
