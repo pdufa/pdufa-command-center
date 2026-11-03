@@ -13,11 +13,11 @@ function fakePrices(){
  const seen=[];
  const request=async(uri,headers)=>{
   const u=new URL(uri),ticker=u.pathname.split("/")[3],adjustment=u.searchParams.get("adjustment");
-  assert.ok(["ARQT","AXSM","MDGL","GERN","SLNO","LXRX"].includes(ticker));
+  assert.ok(["ARQT","AXSM","MDGL","GERN","SLNO","LXRX","SRRK"].includes(ticker));
   assert.ok(["raw","all"].includes(adjustment));
   assert.equal(u.searchParams.get("feed"),"sip");
   assert.equal(u.searchParams.get("timeframe"),"1Day");
-  assert.equal(u.searchParams.get("asof"),ticker==="ARQT"?"2024-07-07":ticker==="MDGL"?"2024-03-14":ticker==="GERN"?"2024-06-16":ticker==="SLNO"?"2025-03-27":ticker==="LXRX"?"2024-12-20":"2025-01-31");
+  assert.equal(u.searchParams.get("asof"),ticker==="ARQT"?"2024-07-07":ticker==="MDGL"?"2024-03-14":ticker==="GERN"?"2024-06-16":ticker==="SLNO"?"2025-03-27":ticker==="LXRX"?"2024-12-20":ticker==="SRRK"?"2025-09-22":"2025-01-31");
   assert.equal(headers.headers["APCA-API-KEY-ID"],"key");
   assert.equal(headers.headers["APCA-API-SECRET-KEY"],"secret");
   seen.push(ticker+"|"+adjustment);
@@ -25,7 +25,7 @@ function fakePrices(){
   const start=u.searchParams.get("start"),end=u.searchParams.get("end");
   for(let t=Date.parse(start+"T00:00:00Z");t<=Date.parse(end+"T00:00:00Z");t+=86400000){
    const d=new Date(t),dow=d.getUTCDay();if(dow===0||dow===6)continue;
-   const base=ticker==="ARQT"?7:ticker==="MDGL"?230:ticker==="GERN"?3:ticker==="SLNO"?55:ticker==="LXRX"?1.30:92;
+   const base=ticker==="ARQT"?7:ticker==="MDGL"?230:ticker==="GERN"?3:ticker==="SLNO"?55:ticker==="LXRX"?1.30:ticker==="SRRK"?28:92;
    const c=adjustment==="raw"?base:base+bars.length*.05;
    bars.push({t:d.toISOString().slice(0,10)+"T00:00:00Z",
     o:c-.05,h:c+.2,l:c-.2,c,v:250000});
@@ -35,10 +35,10 @@ function fakePrices(){
  };
  return {seen,request};
 }
-test("source queue has four separately sourced 2024 targets including CRL and two 2025 targets; none is a validated trade",()=>{
+test("source queue has four separately sourced 2024 targets including CRL and three 2025 targets including CRL; none is a validated trade",()=>{
  const facts=m.verify(events,shares,earlier,intake);
- assert.deepEqual(facts.map(x=>x.year),[2024,2024,2024,2024,2025,2025]);
- assert.deepEqual(facts.map(x=>x.ticker),["MDGL","GERN","ARQT","LXRX","AXSM","SLNO"]);
+ assert.deepEqual(facts.map(x=>x.year),[2024,2024,2024,2024,2025,2025,2025]);
+ assert.deepEqual(facts.map(x=>x.ticker),["MDGL","GERN","ARQT","LXRX","AXSM","SLNO","SRRK"]);
  assert.equal(facts[0].pdufaTargetDate,"2024-03-14");
  assert.equal(facts[0].actualFDAActionDate,"2024-03-14");
  assert.equal(facts[0].reportedCoverShareChange,154779);
@@ -57,6 +57,9 @@ test("source queue has four separately sourced 2024 targets including CRL and tw
  assert.equal(facts[5].pdufaTargetDate,"2025-03-27");
  assert.equal(facts[5].actualFDAActionDate,"2025-03-26");
  assert.equal(facts[5].reportedCoverShareChange,2739859);
+ assert.equal(facts[6].pdufaTargetDate,"2025-09-22");
+ assert.equal(facts[6].actualFDAActionDate,"2025-09-22");
+ assert.equal(facts[6].reportedCoverShareChange,1181703);
  assert.ok(facts.every(x=>x.eligibleForApprovedTrading===false));
 });
 test("original FDA 2024 after-goal action and 2025 early approval remain distinct, including prior NDA review cycle",()=>{
@@ -74,13 +77,13 @@ test("historical Alpaca RAW plus separately adjusted prices remain research-only
  const fake=fakePrices();
  const r=await m.execute({events,shares,earlier,intake,key:"key",secret:"secret",
   request:fake.request});
- assert.deepEqual(fake.seen,["ARQT|raw","ARQT|all","AXSM|raw","AXSM|all","MDGL|raw","MDGL|all","GERN|raw","GERN|all","SLNO|raw","SLNO|all","LXRX|raw","LXRX|all"]);
+ assert.deepEqual(fake.seen,["ARQT|raw","ARQT|all","AXSM|raw","AXSM|all","MDGL|raw","MDGL|all","GERN|raw","GERN|all","SLNO|raw","SLNO|all","LXRX|raw","LXRX|all","SRRK|raw","SRRK|all"]);
  assert.equal(r.status,"2024_2025_SOURCE_LEADS_UNVALIDATED_PRICE_RESEARCH");
- assert.equal(r.sourceLeadCount,6);
+ assert.equal(r.sourceLeadCount,7);
  assert.deepEqual(r.sourceLeadYears,[2024,2025]);
  assert.equal(r.reviewedIntakeCases,0);
- assert.equal(r.plannedWindowPairsExamined,6*3828);
- assert.ok(r.rawHistoricalSessions>=390);
+ assert.equal(r.plannedWindowPairsExamined,7*3828);
+ assert.ok(r.rawHistoricalSessions>=450);
  assert.ok(r.provisionalCapIn300mTo10bResearchSessions>0);
  assert.ok(r.provisionalPrimaryWindowRows>0);
  assert.ok(r.provisionalEarlierShareWindows>0);
@@ -207,4 +210,28 @@ test("LXRX 2024 ZYNQUISTA adverse FDA CRL is not 2019 review or positive approva
  const forged=structuredClone(shares);
  forged.records.find(x=>x.ticker==="LXRX").sharesOutstanding=361492296;
  assert.throws(()=>m.verify(events,forged,earlier,intake),/LXRX_SECURITIES_DISCLOSURE_MISMATCH/);
+});
+
+test("SRRK September 2025 CRL is a manufacturing failure despite positive SAPPHIRE Phase 3",()=>{
+ const srrk=cases.find(x=>x.ticker==="SRRK");
+ assert.equal(srrk.application,"BLA 761463");
+ assert.equal(srrk.actualFDAOutcome,"CRL");
+ assert.equal(srrk.pdufaTargetDate,"2025-09-22");
+ assert.equal(srrk.actualFDAActionDate,"2025-09-22");
+ assert.equal(srrk.targetAnnouncementDate,"2025-03-25");
+ assert.equal(srrk.phase3ReadoutDate,"2024-10-07");
+ assert.equal(srrk.firstPublicFDAActionAnnouncementDate,"2025-09-23");
+ assert.equal(srrk.fdaLetterRetrospectivelyPublishedAfterAction,true);
+ assert.equal(srrk.phase3PrimaryEndpointMet,true);
+ assert.equal(srrk.primaryOutcomeReason,"THIRD_PARTY_FILL_FINISH_FACILITY_CGMP_DEFICIENCIES");
+ assert.deepEqual(srrk.nctIds,["NCT05156320"]);
+ const f=m.verify(events,shares,earlier,intake).find(x=>x.ticker==="SRRK");
+ assert.equal(f.reportedCoverShareChange,1181703);
+ assert.equal(f.eligibleForApprovedTrading,false);
+ const altered=structuredClone(events);
+ altered.records.find(x=>x.ticker==="SRRK").actualFDAOutcome="APPROVED";
+ assert.throws(()=>m.verify(altered,shares,earlier,intake),/ACTIVE_ORIGINAL_TARGET_ACTION_IDENTITY_INVALID/);
+ const forged=structuredClone(shares);
+ forged.records.find(x=>x.ticker==="SRRK").sharesOutstanding=96127266;
+ assert.throws(()=>m.verify(events,forged,earlier,intake),/2025_SRRK_SECURITIES_DISCLOSURE_MISMATCH/);
 });
