@@ -455,6 +455,29 @@ def validate_nov14_trial_registry_triangulation(dossier, intake, old_rows, as_of
                         row.get("firstPublicGoalForSpecificSupplementIndependentlyAttested") is False and
                         row.get("anyPostAcceptanceFDAExtensionIndependentlyRuledOut") is False,
                         "NOV14_PARENT_NDA_NOT_CURRENT_SUPPLEMENT")
+            # An FDA-approved unrelated safety-REMS supplement is NOT evidence
+            # for the upcoming efficacy/data MAPLE-HCM review cycle.
+            assert_safe(
+                row.get("fdaPreviouslyApprovedUnrelatedSupplementNumber")=="S-001"
+                and row.get("fdaPreviouslyApprovedUnrelatedSupplementApprovalDate")=="2026-02-05"
+                and row.get("fdaPreviouslyApprovedUnrelatedSupplementPurpose")==
+                    "REMS_MODIFICATION_NOT_MAPLE_HCM"
+                and row.get("fdaPreviouslyApprovedUnrelatedSupplementSourceUrl")==
+                    "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219083Orig1s001ltr.pdf"
+                and row.get("fdaPreviouslyApprovedS001IsNov14PendingMapleHcmSupplement") is False
+                and row.get("fdaPreviouslyApprovedS001EstablishesNov14FDAOutcome") is False
+                and row.get("specificPendingMAPLESupplementNumberIndependentlyVerified") is False
+                and row.get("mapleHcmSubmissionPubliclyDisclosedAt")=="2026-02-24"
+                and row.get("mapleHcmSubmissionPublicSourceUrl")==
+                    "https://www.sec.gov/Archives/edgar/data/1061983/000119312526067012/cytk-ex99_1.htm"
+                and row.get("mapleHcmFDAAcceptanceAndGoalFirstLocatedAt")=="2026-05-05"
+                and row.get("mapleHcmFDAAcceptanceAndGoalSourceUrl")==
+                    "https://www.sec.gov/Archives/edgar/data/1061983/000119312526206360/cytk-ex99_1.htm"
+                and audit.day(row["fdaPreviouslyApprovedUnrelatedSupplementApprovalDate"])<
+                    audit.day(row["mapleHcmSubmissionPubliclyDisclosedAt"])<
+                    audit.day(row["mapleHcmFDAAcceptanceAndGoalFirstLocatedAt"])<
+                    audit.day("2026-11-14"),
+                "NOV14_FDA_S001_REMS_NOT_MAPLE_NEGATIVE_CONTROL")
         else:
             assert_safe(row.get("usFDAParentOriginalNdaNumber") is None and
                         row.get("usFDAParentOriginalNdaApprovalDate") is None and
@@ -465,6 +488,22 @@ def validate_nov14_trial_registry_triangulation(dossier, intake, old_rows, as_of
                         row.get("firstPublicGoalForSpecificBlaIndependentlyAttested") is False
                         and row.get("anyPostAcceptanceFDAExtensionIndependentlyRuledOut") is False,
                         "NOV14_BLA_NUMBER_OR_CYCLE_NOT_VERIFIED")
+            assert_safe(
+                row.get("fdaOSStatisticalSignificanceRequirementReportedBySponsor") is True
+                and row.get("fdaOSStatisticalSignificanceRequirementPublicSourceUrl")==
+                    "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000068/smmt-20260630.htm"
+                and row.get("pivotalPrimaryOverallSurvivalStatisticallySignificantAtPrimaryAnalysis") is False
+                and type(row.get("pivotalPrimaryOverallSurvivalReportedPValue")) is float
+                and row["pivotalPrimaryOverallSurvivalReportedPValue"]==0.057
+                and row.get("pivotalPrimaryOverallSurvivalSourceUrl")==
+                    "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000058/a2026_prx0722xharmonidat.htm"
+                and row.get("laterOverallSurvivalFollowUpSourceDate")=="2026-09-15"
+                and row.get("laterOverallSurvivalFollowUpSourceUrl")==
+                    "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000081/a2026_prx0915xharmoniltf.htm"
+                and audit.day(row["laterOverallSurvivalFollowUpSourceDate"])<=cutoff
+                and row.get("laterOverallSurvivalFollowUpEstablishesFDAApprovalOrExtension") is False
+                and row.get("fdaOSRequirementAndStudyDataAutomaticallyEstablishCRL") is False,
+                "NOV14_SMMT_OS_EVIDENCE_NOT_FDA_OUTCOME_OR_PREDICTION")
         checked.append({
             "ticker":ticker,"researchCaseKey":key,
             "issuerReportedFirstGoalDate":"2026-11-14",
@@ -475,6 +514,12 @@ def validate_nov14_trial_registry_triangulation(dossier, intake, old_rows, as_of
             "trialPhaseAndSponsorCrossChecked":True,
             "fdaApprovedParentNdaNumber":row["usFDAParentOriginalNdaNumber"],
             "fdaParentOriginalNdaEvidenceUrl":row["usFDAParentOriginalApprovalLetterUrl"],
+            "fdaPriorUnrelatedSupplementS001RemsNotMaple":ticker=="CYTK",
+            "fdaPriorUnrelatedSupplementEvidenceUrl":(
+                row.get("fdaPreviouslyApprovedUnrelatedSupplementSourceUrl")),
+            "sponsorReportedOSRequirementWithoutSignificantPrimaryOS":ticker=="SMMT",
+            "sponsorReportedOSRequirementEvidenceUrl":(
+                row.get("fdaOSStatisticalSignificanceRequirementPublicSourceUrl")),
             "fdaCurrentCycleApplicationOrSupplementNumberVerified":False,
             "fdaOriginalGoalAndExtensionsIndependentlyCertified":False,
             "currentFdaReviewCycleIndependentlyCertified":False,
@@ -671,6 +716,8 @@ def execute(asof=ASOF, data=DATA):
         entry["clinicalTrialsGovNctId"]=None
         entry["thirdPartyClinicalTrialPhase3CrossChecked"]=False
         entry["FDAApprovedParentOriginalNdaNumber"]=None
+        entry["priorFDAApprovedS001RemsNotCurrentMapleHcm"]=False
+        entry["sponsorOSSignificanceRequirementEvidenceFound"]=False
         entry["fdaCurrentReviewApplicationOrSupplementNumberVerified"]=False
         if not item:
             continue
@@ -683,6 +730,12 @@ def execute(asof=ASOF, data=DATA):
         entry["clinicalTrialsGovNctId"]=item["clinicalTrialsGovId"]
         entry["thirdPartyClinicalTrialPhase3CrossChecked"]=True
         entry["FDAApprovedParentOriginalNdaNumber"]=item["fdaApprovedParentNdaNumber"]
+        entry["priorFDAApprovedS001RemsNotCurrentMapleHcm"]=(
+            item["fdaPriorUnrelatedSupplementS001RemsNotMaple"])
+        entry["sponsorOSSignificanceRequirementEvidenceFound"]=(
+            item["sponsorReportedOSRequirementWithoutSignificantPrimaryOS"])
+    report["nov14KnownUnrelatedAlreadyApprovedFdaSupplementS001Count"]=1
+    report["nov14SponsorDisclosedOSRequirementWithNonsignificantPrimaryCount"]=1
     report["nov14IssuerGoalAndThirdPartyTrialRecordsCrossChecked"]=nov14
     report["nov14ThirdPartyRegistryPhase3CrossCheckedCount"]=len(nov14)
     report["nov14ThirdPartyRegistryUpcomingCaseCount"]=near_term_in_live_queue
@@ -741,6 +794,8 @@ def export(report, json_out, csv_out):
           "approvedPipelinePhase3Qualification",
           "clinicalTrialsGovNctId","thirdPartyClinicalTrialPhase3CrossChecked",
           "FDAApprovedParentOriginalNdaNumber",
+          "priorFDAApprovedS001RemsNotCurrentMapleHcm",
+          "sponsorOSSignificanceRequirementEvidenceFound",
           "fdaCurrentReviewApplicationOrSupplementNumberVerified",
           "independentlyVerifiedApplicationCycle"]
     with path.open("w",encoding="utf-8",newline="") as f:
