@@ -11,6 +11,9 @@ on:
       - 'data/raas_fda_three_way_*.json'
       - 'data/prediction_engine_history.csv'
       - 'data/fda_directional_100pct_freezes.csv'
+      - 'new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json'
+      - 'new-platform/frontend/app/raas-worklist/page.tsx'
+      - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
       - '.github/workflows/raas-fda-decision-accuracy.yml'
   pull_request:
     paths:
@@ -19,6 +22,9 @@ on:
       - 'data/raas_fda_three_way_*.json'
       - 'data/prediction_engine_history.csv'
       - 'data/fda_directional_100pct_freezes.csv'
+      - 'new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json'
+      - 'new-platform/frontend/app/raas-worklist/page.tsx'
+      - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
       - '.github/workflows/raas-fda-decision-accuracy.yml'
 permissions:
   contents: read
@@ -33,6 +39,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify iPhone research-panel truthfulness and prospective ledger gates
+        run: node --test new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs
       - name: Protect 3-class target, source clocks and 146 case baseline
         run: python -m unittest discover -s tests -p 'test_raas_fda_decision_accuracy_audit.py' -v
       - name: Compute retrospective baseline and prospective FDA decision audit
