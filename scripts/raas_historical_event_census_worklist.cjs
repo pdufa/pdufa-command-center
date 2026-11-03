@@ -201,8 +201,12 @@ if(require.main===module){
  try{
   const approvalPath=process.env.RAAS_FDA_BACKFILL_OUTPUT||path.join(root,"raas-fda-2016-2019-discovery.json");
   const archiveCsv=fs.readFileSync(path.join(root,"data/historical_assessed_decisions.csv"),"utf8");
-  const primaryLeads=JSON.parse(fs.readFileSync(path.join(root,
+  const firstYearLeads=JSON.parse(fs.readFileSync(path.join(root,
    "new-platform/frontend/data/raas-historical-2020-primary-source-leads.json"),"utf8"));
+  const followingYearLeads=JSON.parse(fs.readFileSync(path.join(root,
+   "new-platform/frontend/data/raas-historical-2021-primary-source-leads.json"),"utf8"));
+  const primaryLeads={...firstYearLeads,records:[
+   ...validateSourceLeads(firstYearLeads),...validateSourceLeads(followingYearLeads)]};
   const approvalDiscovery=JSON.parse(fs.readFileSync(approvalPath,"utf8"));
   const crosswalkPath=process.env.RAAS_FDA_CROSSWALK_OUTPUT||
    path.join(root,"raas-fda-2016-2019-issuer-crosswalk.json");
