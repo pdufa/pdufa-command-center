@@ -314,8 +314,8 @@ def legacy_freeze_inventory(rows):
         by_version[version]+=1
         if frozen.date()>=goal:
             post_goal+=1
-        if r["prospective_eligible"]=="YES" and
-           r.get("count_in_coverage")=="YES" and frozen.date()<goal:
+        if (r["prospective_eligible"]=="YES" and
+            r.get("count_in_coverage")=="YES" and frozen.date()<goal):
             cases[version].add(r["fda_regulatory_case_id"])
     return {
         "rowsAcrossRepeatedVersions":len(rows),
