@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "CARA annual 10-K Feb 2021 earlier share snapshot; known shares changed by May 2021. These are research leads and do not prove any daily share count.",
+  "records": [
+    {
+      "caseId": "CARA|KORSUVA|NDA214916|2021",
+      "ticker": "CARA",
+      "cik": "0001346830",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "sharesOutstanding": 49876763,
+      "sharesMeasurementDate": "2021-02-22",
+      "filedDate": "2021-02-25",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2021-02-26",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1346830/000155837021001839/cara-20201231x10k.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1346830/000155837021001839/0001558370-21-001839-index.htm",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "originalSourceDescription": "CARA 2020 annual 10-K accepted February 25, 2021 at 16:29:30 ET, reports 49,876,763 common shares as of Feb 22, 2021. Conservative use no earlier than Feb 26; later Q1 May 10 filing reports increased shares. Neither establishes continuous daily shares."
+    }
+  ]
+}
