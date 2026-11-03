@@ -20,6 +20,7 @@ const crl=(date,app,file)=>({
 const crlRecords=[crl("08/07/2024","NDA 212345","a.pdf"),
  crl("12/20/2024","NDA 210934","CRL_NDA210934_20241220.pdf"),
  crl("06/01/2025","BLA 123456","b.pdf"),
+ crl("09/22/2025","BLA 761463","CRL_BLA761463_20250922.pdf"),
  crl("09/10/2023","NDA 211111","c.pdf")];
 const payload=(results,total)=>({ok:true,status:200,headers:{get:()=>"application/json"},
  text:async()=>JSON.stringify({meta:{results:{total},last_updated:"2026-10-05"},results})});
@@ -92,12 +93,12 @@ test("official FDA original and supplemental approval leads PLUS redacted CRLs r
  assert.deepEqual(result.studyYears,[2024,2025]);
  assert.equal(result.totalOriginalApprovalActions,4);
  assert.equal(result.totalSupplementalApprovalActions,1);
- assert.equal(result.totalRedactedArchiveCRLLetters,3);
+ assert.equal(result.totalRedactedArchiveCRLLetters,4);
  assert.equal(result.years[0].supplementalApprovalActions,1);
  assert.equal(result.years[1].originalApprovalActions,2);
  assert.equal(result.years[0].archivedCRLLetterLeads,2);
- assert.equal(result.years[1].archivedCRLLetterLeads,1);
- assert.equal(result.originalSourceLeadsCrosscheck.length,6);
+ assert.equal(result.years[1].archivedCRLLetterLeads,2);
+ assert.equal(result.originalSourceLeadsCrosscheck.length,7);
  const lxrx=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="LXRX");
  assert.deepEqual(lxrx.fdaApprovalDatabaseActionMatches,[]);
  assert.deepEqual(lxrx.fdaCrlArchiveLetterMatches,
@@ -106,6 +107,14 @@ test("official FDA original and supplemental approval leads PLUS redacted CRLs r
  assert.equal(lxrx.pdufaTargetDate,"2024-12-20");
  assert.equal(lxrx.actualFDAActionDate,"2024-12-20");
  assert.equal(lxrx.validatedTrade,false);
+ const srrk=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="SRRK");
+ assert.deepEqual(srrk.fdaApprovalDatabaseActionMatches,[]);
+ assert.deepEqual(srrk.fdaCrlArchiveLetterMatches,
+  ["BLA 761463|2025-09-22|CRL_BLA761463_20250922.pdf|Issuer"]);
+ assert.equal(srrk.actualFDAOutcome,"CRL");
+ assert.equal(srrk.pdufaTargetDate,"2025-09-22");
+ assert.equal(srrk.actualFDAActionDate,"2025-09-22");
+ assert.equal(srrk.validatedTrade,false);
  const mdgl=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="MDGL");
  assert.deepEqual(mdgl.fdaApprovalDatabaseActionMatches,["NDA217785|ORIG|1|2024-03-14"]);
  assert.equal(mdgl.pdufaTargetDate,"2024-03-14");
@@ -170,5 +179,19 @@ test("2024 LXRX CRL must remain matched to official CRL archive and cannot be mi
  const forged=structuredClone(sources);
  forged.records.find(x=>x.ticker==="LXRX").actualFDAOutcome="APPROVED";
  await assert.rejects(m.execute({request,sourceLeads:forged,intake}),
+  /SOURCE_OUTCOME_NOT_MATCHED_TO_OFFICIAL_FDA/);
+});
+
+test("2025 apitegromab manufacturing CRL requires official FDA 2025 letter, not an invented approval",async()=>{
+ await assert.rejects(m.execute({request:async url=>{
+  if(new URL(url).pathname==="/transparency/crl.json"){
+   const records=crlRecords.filter(x=>!x.application_number.includes("BLA 761463"));
+   return payload(records,records.length);
+  }
+  return request(url);
+ },sourceLeads:sources,intake}),/SOURCE_OUTCOME_NOT_MATCHED_TO_OFFICIAL_FDA/);
+ const changed=structuredClone(sources);
+ changed.records.find(x=>x.ticker==="SRRK").actualFDAOutcome="APPROVED";
+ await assert.rejects(m.execute({request,sourceLeads:changed,intake}),
   /SOURCE_OUTCOME_NOT_MATCHED_TO_OFFICIAL_FDA/);
 });
