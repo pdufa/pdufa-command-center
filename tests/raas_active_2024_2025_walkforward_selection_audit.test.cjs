@@ -82,7 +82,8 @@ test("Source and study-date falsification fails closed",()=>{
   {independentlyPriceVerified:true},{fullTwoYearFDACensus:true},
   {researchWindowCount:999},
   {cohortSplitRule:"ORIGINAL_GOAL_YEAR"}
- ])assert.throws(()=>build({...input,...corrupt}),/RAAS_WALKFORWARD_/);
+ ])assert.throws(()=>build({...input,...corrupt}),/RAAS_WALKFORWARD_/,
+   "Must reject "+JSON.stringify(corrupt));
  const bad=structuredClone(input);
  bad.caseWindows[0].approvedRAASScore=81;
  assert.throws(()=>build(bad),/RAAS_WALKFORWARD_CLAIMED_APPROVAL_INVALID/);
