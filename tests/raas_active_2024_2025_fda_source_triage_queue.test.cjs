@@ -185,7 +185,7 @@ test("review CSV retains all source blockers and escapes hostile CSV text",()=>{
  const d=make();
  const csv=m.csvForReview(d);
  const lines=csv.trim().split("\n");
- assert.equal(lines.length,22);
+ assert.equal(lines.length,24);
  assert.match(csv,/FDA_ORIGINAL_APPROVAL_ACTION/);
  assert.match(csv,/FDA_SUPPLEMENTAL_APPROVAL_ACTION/);
  assert.match(csv,/ORIGINAL_FDA_AND_ISSUER_SOURCE_LEAD/);
