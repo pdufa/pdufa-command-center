@@ -116,7 +116,8 @@ class V2SourceReadinessTests(unittest.TestCase):
     def test_fail_closed_on_duplicate_old_directional_case_id(self):
         d=fixture()
         d["old_rows"].append(deepcopy([x for x in d["old_rows"]
-                                      if x["model_version"]=="FDA-DIRECTIONAL-100-V1.9"][0]))
+                                      if x["model_version"]=="FDA-DIRECTIONAL-100-V1.9" and
+                                      x["pdufa_date"]>"2026-11-03"][0]))
         with self.assertRaisesRegex(ValueError,"DUPLICATE_FUTURE_REVIEW_SOURCE_LEAD"):
             v2.compile_report(**d)
 
