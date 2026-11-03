@@ -71,6 +71,22 @@ function consolidate(input){
    throw Error("RAAS_FDA_ISSUER_CROSSWALK_INVALID");
   crosswalkById.set(r.fdaCandidateId,r);
  }
+ const crl=input.crlDiscovery;
+ if(!crl||crl.scope!=="FDA_ARCHIVED_CRL_OUTCOMES_2016_2025_DISCOVERY_ONLY"||
+  !Array.isArray(crl.cases)||crl.schemaVersion!==1||
+  crl.status!=="FDA_CRL_DOCUMENTS_RETRIEVED_INCOMPLETE_EVENT_DENOMINATOR")
+  throw Error("RAAS_FDA_CRL_ARCHIVE_INVALID");
+ const crlIds=new Set();
+ for(const x of crl.cases){
+  if(!x||!x.caseId||crlIds.has(x.caseId)||!day(x.letterDate)||
+   +x.letterDate.slice(0,4)<2016||+x.letterDate.slice(0,4)>2025||
+   x.actualFdaActionType!=="CRL"||
+   x.status!=="FDA_REDACTED_CRL_OUTCOME_RESEARCH_ONLY"||
+   !url(x.sourceUrl)||x.preDecisionInformationEligible!==false||
+   x.eligibleForRaasCalibration!==false)
+   throw Error("RAAS_FDA_CRL_ARCHIVE_INVALID");
+  crlIds.add(x.caseId);
+ }
  const candidates=[];
  for(const a of archive){
   const matched=leadByArchive.get(a.key);
@@ -115,6 +131,21 @@ function consolidate(input){
    remainingGates:["PUBLIC_COMPANY_IDENTITY","PDUFA_DATE_ORIGINAL_PUBLICATION","PHASE3_READOUT_PUBLICATION",
     "HISTORICAL_MARKET_CAP","CRL_AND_EXTENSION_DENOMINATOR"]});
  }
+ for(const c of crl.cases) {
+  candidates.push({source:"FDA_REDACTED_CRL_OUTCOME_DISCOVERY",
+   key:c.caseId,ticker:null,
+   historicalIssuerIdentityVerified:false,
+   archiveDate:null,actualFDAActionDate:c.letterDate,
+   application:c.applicationNumber,sponsor:c.companyName,
+   pdufaTargetDate:null,firstLocatedTargetDisclosureDate:null,
+   targetEvidenceUrl:null,actionEvidenceUrl:c.sourceUrl,
+   actualOutcome:"CRL",nctIds:[],historicalMarketCapAtEntryVerified:false,
+   preDecisionInformationEligible:false,
+   eligibleForCalibration:false,status:"INCOMPLETE_FDA_CRL_ARCHIVE_UNMATCHED_PDUFA",
+   remainingGates:["FIRST_PUBLIC_CRL_DISCLOSURE_DATE","PUBLIC_COMPANY_IDENTITY",
+    "FIRST_PUBLIC_PDUFA_TARGET","PHASE3_READOUT",
+    "HISTORICAL_MARKET_CAP","FULL_YEAR_OUTCOME_DENOMINATOR"]});
+ }
  for(const r of sourceOrphans)candidates.push({source:"LOCATED_PRIMARY_SOURCES_NO_ARCHIVE_JOIN",
   key:r.caseId,ticker:r.ticker,archiveDate:null,pdufaTargetDate:r.pdufaTargetDate,
   actualFDAActionDate:r.actualFDAActionDate,firstLocatedTargetDisclosureDate:r.targetAnnouncementDate,
@@ -126,12 +157,14 @@ function consolidate(input){
   archiveCandidates:archive.filter(r=>+r.archiveDate.slice(0,4)===y).length,
   fdaApprovalLeads:candidates.filter(r=>r.source==="FDA_ORIGINAL_APPROVAL_DISCOVERY"&&
    +r.actualFDAActionDate.slice(0,4)===y).length,
+  fdaArchivedCrlLeads:crl.cases.filter(r=>+r.letterDate.slice(0,4)===y).length,
   completePdufaCensus:false,verifiedHistoricalMarketCaps:0,
   calibratedRaasMetrics:0}]));
  return {scope:"RAAS_2016_2025_HISTORICAL_SOURCE_BACKFILL_WORKLIST",
   status:"INCOMPLETE_RESEARCH_UNIVERSE",
   summary:{archiveCandidates:archive.length,
    fdaApprovalLeads:candidates.filter(c=>c.source==="FDA_ORIGINAL_APPROVAL_DISCOVERY").length,
+   fdaCrlDocumentLeads:crl.cases.length,
    currentTickerNameMatchLeads:candidates.filter(c=>c.source==="FDA_ORIGINAL_APPROVAL_DISCOVERY"&&c.ticker).length,
    primaryTargetSourceLeads:leads.length,
    archiveDateNotTrueTarget:mismatches.length,
@@ -143,7 +176,7 @@ function consolidate(input){
    actualActionDate:c.actualFDAActionDate,sourceUrl:c.targetEvidenceUrl})),
   coverage,candidates,
   disclaimers:["FDA action date and announced PDUFA goal date must be held in independent fields.",
-    "FDA original approval discovery misses CRLs and withdrawals and does not establish PDUFA market eligibility.",
+    "FDA original approvals plus the incomplete, retrospectively published CRL archive are NOT all decisions: withdrawals, extensions, unpublished CRLs and other outcomes remain missing.",
     "Source records establish located issuer facts but are not complete first-ever public disclosure audits.",
     "No entry-day historical capitalization, adjusted/raw price reconciliation or issuer-disjoint RAAS validation is asserted.",
     "Never publish a numeric RAAS score based on unreviewed event candidates."]};
@@ -158,7 +191,10 @@ if(require.main===module){
   const crosswalkPath=process.env.RAAS_FDA_CROSSWALK_OUTPUT||
    path.join(root,"raas-fda-2016-2019-issuer-crosswalk.json");
   const issuerCrosswalk=JSON.parse(fs.readFileSync(crosswalkPath,"utf8"));
-  const result=consolidate({archiveCsv,primaryLeads,approvalDiscovery,issuerCrosswalk});
+  const crlPath=process.env.RAAS_FDA_CRL_OUTPUT||
+   path.join(root,"raas-fda-historical-crl-discovery.json");
+  const crlDiscovery=JSON.parse(fs.readFileSync(crlPath,"utf8"));
+  const result=consolidate({archiveCsv,primaryLeads,approvalDiscovery,issuerCrosswalk,crlDiscovery});
   const output=process.env.RAAS_EVENT_WORKLIST_OUTPUT||path.join(root,"raas-historical-event-worklist.json");
   fs.writeFileSync(output,JSON.stringify(result,null,2)+"\n");
   const summary={status:result.status,...result.summary,archiveTargetMismatches:result.archiveTargetMismatches};
