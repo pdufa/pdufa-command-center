@@ -31,6 +31,7 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           RAAS_SEC_SHARE_OUTPUT: ${{ runner.temp }}/raas-sec-historical-shares.json
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
         run: node scripts/raas_sec_historical_share_evidence.cjs
       - name: Save historical SEC as-of evidence worklist
         if: always()
