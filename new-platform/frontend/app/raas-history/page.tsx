@@ -19,6 +19,7 @@ import {parseAsOfEvidence,factsForRetrospectiveCase,measureAsOfFact} from "../..
 import {parseHistoricalFinance,financeForCase,financeReadiness} from "../../lib/raas-finance-reconciliation";
 import {parseShareBridge,bridgeForCase,bridgeSummary} from "../../lib/raas-share-bridge";
 import {parsePriceCrosschecks,priceAuditForCase,priceAuditSummary} from "../../lib/raas-price-crosschecks";
+import {analyzeRaasHistoricalReturns} from "../../lib/raas-historical-return-distribution";
 import {parseCorporateActions,corporateActionsForCase,corporateActionSummary} from "../../lib/raas-corporate-action-audit";
 import {parseFdaPrimaryOutcomes,fdaPrimaryOutcomeForCase,fdaPrimaryOutcomeSummary} from "../../lib/raas-fda-primary-outcomes";
 import {parseProspectiveSourceBaselines,prospectiveSourceSummary} from "../../lib/raas-prospective-source-baselines";
@@ -41,6 +42,7 @@ const shareResearch=parseShareBridge(shareBridgeResearch,pre,post);
 const sharesSummary=bridgeSummary(shareResearch,pre,post);
 const priceResearch=parsePriceCrosschecks(priceCrosscheckResearch,pre,post);
 const priceSummary=priceAuditSummary(priceResearch,pre,post);
+const historicalReturns=analyzeRaasHistoricalReturns(pre,post,priceResearch);
 const actionFeed=parseCorporateActions(corporateActionResearch);
 const actionSummary=corporateActionSummary(actionFeed,pre,post);
 const fdaPrimary=parseFdaPrimaryOutcomes(fdaPrimaryOutcomeData,post);
@@ -233,9 +235,53 @@ export default function RaasHistoricalAuditPage(){
      <div><strong>{summary.eligiblePredictions}</strong><span>Eligible original predictions · unvalidated historical cases excluded</span></div>
      <div><strong>{fdaPrimarySummary.crosschecked}/{fdaPrimarySummary.total}</strong><span>BOTTOM FDA actions matched to primary FDA pages · outcome only</span></div>
      <div><strong>{priceSummary.matchedPoints}/{priceSummary.quotedPoints}</strong><span>Second-source closing-price matches · adjustment pending</span></div>
-     <div><strong>{sharesSummary.separatelyReportedCapMatches}/{sharesSummary.caseCount}</strong><span>Vendor cap checks match; {sharesSummary.mismatchedVendorCaps} discrepancies remain · prices unverified</span></div>
+     <div><strong>{sharesSummary.separatelyReportedCapMatches}/{sharesSummary.caseCount}</strong><span>Vendor cap cross-checks match · prices unverified</span></div>
    </div>
-   <p className={css.disclaimer}>Five historical FDA actions are now separately cross-checked against primary FDA sources. These occurred after the selected historical exits and do not increase the count of valid backtested RAAS predictions. Corporate actions: {actionSummary.withPartialActionHistory} of {actionSummary.cases} study windows have some historical event evidence, but 0 have a completed corporate-action adjustment audit. Independent-provider research: {priceSummary.matchedPoints} of {priceSummary.quotedPoints} exact-date displayed historical closes agree; {priceSummary.bothClosesMatchedCases} of {priceSummary.caseCount} trade windows have both dates matched. Adjusted-return audits and approved predictions remain at zero. All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research ({sharesSummary.mismatchedVendorCaps} mismatches requiring issuer/vendor denominator review), but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
+   <p className={css.disclaimer}>Five historical FDA actions are now separately cross-checked against primary FDA sources. These occurred after the selected historical exits and do not increase the count of valid backtested RAAS predictions. Corporate actions: {actionSummary.withPartialActionHistory} of {actionSummary.cases} study windows have some historical event evidence, but 0 have a completed corporate-action adjustment audit. Independent-provider research: {priceSummary.matchedPoints} of {priceSummary.quotedPoints} exact-date displayed historical closes agree; {priceSummary.bothClosesMatchedCases} of {priceSummary.caseCount} trade windows have both dates matched. Adjusted-return audits and approved predictions remain at zero. All examples were selected after their historical outcomes and report gross vendor close-to-close price changes, excluding trading costs. {observedFactCount} dated clinical observations, {financeCount} sourced financing figures and {sharesSummary.withSecShareCount} SEC share-count cross-checks are available for research, but none is a RAAS grade or independently verified full valuation. Published links require independent audit. No retrospective simulation is an authentic prior prediction. As-of snapshot: {pre.sourceAsOf}.</p>
+   <section className={css.section} data-raas-return-cohort="retrospective-research-only" aria-labelledby="raas-returns-description">
+     <div className={css.sectionTitle}>
+       <h2 id="raas-returns-description">Historical price-window returns · calculated, not predicted</h2>
+       <span>{historicalReturns.windows.length} selected windows · {historicalReturns.totalUniqueIssuers} distinct issuers · {historicalReturns.yearRange}</span>
+     </div>
+     <p className={css.notice}><strong>Retrospectively selected cases — Not a validated return forecast.</strong> These observed changes were computed from previously sourced entry and exit closes, not from original RAAS trading signals. The sample is small and selected after outcomes. A mean cannot determine which time span is best, and the same companies appear in both stages.</p>
+     <div className={css.cohortScroll}>
+       <table className={css.cohortTable}>
+         <thead><tr>
+           <th>Stage</th><th>Historical windows</th><th>Winners</th>
+           <th>Mean gross</th><th>Mean with 1% round trip cost</th><th>Median gross</th><th>Median with 1% round trip cost</th>
+           <th>Range of gross returns</th><th>Mean after leaving out one case</th>
+           <th>Both closes second-source matched</th>
+         </tr></thead>
+         <tbody>
+           {([historicalReturns.top,historicalReturns.bottom] as const).map(s=><tr key={s.stage}>
+             <td>{s.stage==="pre"?"TOP · pre-readout":"BOTTOM · pre-PDUFA"}</td>
+             <td>{s.count}</td><td>{s.winCount}/{s.count}</td>
+             <td>{s.meanGrossPercent>0?"+":""}{s.meanGrossPercent.toFixed(2)}%</td>
+             <td>{s.meanAfterOnePercentCost>0?"+":""}{s.meanAfterOnePercentCost.toFixed(2)}%</td>
+             <td>{s.medianGrossPercent>0?"+":""}{s.medianGrossPercent.toFixed(2)}%</td>
+             <td>{s.medianAfterOnePercentCost>0?"+":""}{s.medianAfterOnePercentCost.toFixed(2)}%</td>
+             <td>{s.minimumGrossPercent.toFixed(2)}% to +{s.maximumGrossPercent.toFixed(2)}%</td>
+             <td>{s.leaveOneOutMeanRange? s.leaveOneOutMeanRange.min.toFixed(2)+"% to "+s.leaveOneOutMeanRange.max.toFixed(2)+"%":"Not calculable"}</td>
+             <td>{s.bothClosesSecondSourceMatched}/{s.count}</td>
+           </tr>)}
+         </tbody>
+       </table>
+     </div>
+     <details className={css.check} data-raas-return-windows>
+       <summary><span className={css.indicator}>◌</span><strong>All eight dated price windows · actual holding time, event buffer and gross return</strong>
+         <span className={css.status}>Expand case-level calculations</span></summary>
+       <div className={css.checkBody}>
+         {historicalReturns.windows.map(w=><div className={css.sourceFact} key={w.id}>
+           <strong>{w.stage==="pre"?"TOP":"BOTTOM"} · {w.ticker} · {w.entryDate} → {w.exitDate} · {w.grossReturnPercent>0?"+":""}{w.grossReturnPercent.toFixed(2)}% gross</strong>
+           <p>Held {w.holdingCalendarDays} calendar days · entry {w.daysEntryToScheduledEvent} days before {w.stage==="pre"?"public readout":"scheduled PDUFA"} · exit {w.daysExitToScheduledEvent} days before scheduled event.</p>
+           {w.daysExitToActualOutcome!==null&&<p>FDA outcome actually occurred {w.daysExitToActualOutcome} days after selected exit; future action date was not known at entry.</p>}
+           <p>Independent nominal price matches: entry {w.secondSourceEntryMatched?"yes":"missing"}, exit {w.secondSourceExitMatched?"yes":"missing"} · adjusted return audit: incomplete · original predictive RAAS score: none.</p>
+           <p>Illustrative after 1% round-trip cost assumption: {(w.grossReturnPercent-1)>0?"+":""}{(w.grossReturnPercent-1).toFixed(2)}%. This assumes a cost, not observed trade execution.</p>
+         </div>)}
+       </div>
+     </details>
+     <p className={css.disclaimer}><strong>Verification:</strong> {historicalReturns.nominalSecondSourcePointsMatched}/{historicalReturns.nominalPricePoints} nominal daily closing-price points agree with a second provider; adjusted total returns: {historicalReturns.adjustedTotalReturnVerified}; original RAAS predictions: {historicalReturns.originalRaasPredictions}; approved calibrations: {historicalReturns.eligibleCalibrations}. The assumed 1% cost is NOT sourced broker execution. This is not the requested 10-year 90-to-3-day optimized historical entry/exit study.</p>
+   </section>
    <section className={css.section} aria-labelledby="raas-prospective-sources">
      <div className={css.sectionTitle}>
        <h2 id="raas-prospective-sources">Prospective TOP · pre-readout evidence captured</h2>
