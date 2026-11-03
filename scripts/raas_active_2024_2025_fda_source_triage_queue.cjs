@@ -233,7 +233,15 @@ function csvForReview(data){
  const fields=["reviewPriority","year","yearBasis","reviewTrack","ticker","caseId","drug",
   "applicationNumber","originalPublicPdufaTargetDate","archiveSuggestedPdufaDate",
   "retrospectiveActionDate","actualOutcome","currentStage","blockers","sourceUrls"];
- const cell=x=>'"'+String(x??"").replaceAll('"','""')+'"';
+ const cell=x=>{
+  const raw=String(x??"");
+  // Quoting a CSV cell alone does NOT neutralize formulas in spreadsheets.
+  // Preserve the original text, but prefix a single apostrophe before
+  // strings beginning with = + - @ (including after leading whitespace).
+  const unsafe=/^[\s\u0000-\u001f]*[=+\-@]/u.test(raw);
+  const safe=unsafe?"'"+raw:raw;
+  return '"'+safe.replaceAll('"','""')+'"';
+ };
  return fields.join(",")+"\n"+
   data.reviewRows.map(r=>fields.map(f=>cell(Array.isArray(r[f])?r[f].join(" | "):r[f])).join(",")).join("\n")+"\n";
 }
