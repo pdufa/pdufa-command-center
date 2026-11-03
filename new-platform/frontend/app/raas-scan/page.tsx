@@ -3,14 +3,15 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import {executeRaasReadinessScan} from "../../lib/raas-readiness-scan";
 import {evaluateRaasInstallation} from "../../lib/raas-installation-gates";
-import tenYearIntake from "../../data/raas-ten-year-pdufa-intake.json";
+import activeTwoYearIntake from "../../data/raas-active-2024-2025-pdufa-intake.json";
+import activeStudyConfig from "../../data/raas-active-study-config.json";
 import css from "../raas-history/page.module.css";
 export const metadata:Metadata={
  title:"RAAS 60-Metric Scan Status | PDUFA",
  description:"Evidence-level RAAS scan, distinct from independent historical validation and release of numeric scores."
 };
 const report=executeRaasReadinessScan();
-const installation=evaluateRaasInstallation(report,tenYearIntake);
+const installation=evaluateRaasInstallation(report,activeTwoYearIntake);
 export default function RaasScanPage(){
  const s=report.summary;
  return <main className={css.root} data-raas-readiness-executed={report.scanExecution}>
@@ -31,7 +32,7 @@ export default function RaasScanPage(){
      <h2>Installation acceptance checks</h2>
      <span>{installation.completedGates}/{installation.totalGates} checks satisfied · {installation.state==="COMPLETE"?"release evidence present":"RAAS not ready"}</span>
     </div>
-    <p className={css.disclaimer}>The 60 metric definitions exist, but definitions and source scans are not validated predictive grades. The full 2016–2025 study requires evidence for each historical year and originally published PDUFA dates.</p>
+    <p className={css.disclaimer}>The 60 metric definitions exist, but definitions and source scans are not validated predictive grades. The active {activeStudyConfig.studyDurationYears}-year study covers {activeStudyConfig.years.join("–")}; earlier 2016–2025 research is archived. Original PDUFA disclosures and independent 2024/2025 outcome census audits are still required.</p>
     <div className={css.checks}>
      {installation.gates.map(g=><details className={css.check} key={g.id} data-raas-gate={g.id}>
       <summary>
@@ -42,8 +43,8 @@ export default function RaasScanPage(){
       <div className={css.checkBody}><p>{g.completed?"This check passed, but other independent checks remain required.":g.blocker}</p></div>
      </details>)}
     </div>
-    <p className={css.disclaimer}>Historical PDUFA census: {installation.eligibleSourceYears}/10 years independently audited. {installation.sourceYears.filter(y=>!y.verified).map(y=>y.year).join(", ")} are not yet certified as complete. A previously downloaded Alpaca price bar is not proof that the company met the historical market-cap and source-timing rules.</p>
-    <p><a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-alpaca-ten-year-study.yml" target="_blank" rel="noopener noreferrer">Open the Alpaca 10-year research workflow and its downloadable evidence-gap report</a></p>
+    <p className={css.disclaimer}>Active {activeStudyConfig.years.join("–")} PDUFA census: {installation.eligibleSourceYears}/{activeStudyConfig.studyDurationYears} years independently audited. {installation.sourceYears.filter(y=>!y.verified).map(y=>y.year).join(", ")} are not yet certified as complete. A previously downloaded Alpaca price bar is not proof that the company met the historical market-cap and source-timing rules.</p>
+    <p><a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-alpaca-active-two-year-study.yml" target="_blank" rel="noopener noreferrer">Open the active Alpaca 2024–2025 research workflow and its downloadable evidence-gap report</a></p>
    </section>
    <section className={css.section}>
     <div className={css.sectionTitle}><h2>Evidence actually recorded</h2><span>Research coverage only, not validated scores</span></div>

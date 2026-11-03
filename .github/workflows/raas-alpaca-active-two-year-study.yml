@@ -1,0 +1,58 @@
+name: RAAS ACTIVE 2024–2025 two-year PDUFA historical study
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/raas_active_two_year_study.cjs'
+      - 'tests/raas_active_two_year_study.test.cjs'
+      - 'new-platform/frontend/data/raas-active-study-config.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
+      - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
+      - '.github/workflows/raas-alpaca-active-two-year-study.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/raas_active_two_year_study.cjs'
+      - 'tests/raas_active_two_year_study.test.cjs'
+      - 'new-platform/frontend/data/raas-active-study-config.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
+      - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
+      - '.github/workflows/raas-alpaca-active-two-year-study.yml'
+permissions:
+  contents: read
+concurrency:
+  group: raas-active-two-year-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  research-2024-2025:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test two-year scope, SEC/PDUFA chronology, independent holdout and no false grading
+        run: |
+          node --test tests/raas_alpaca_historical_price_study.test.cjs
+          node --test tests/raas_alpaca_ten_year_study.test.cjs
+          node --test tests/raas_active_two_year_study.test.cjs
+      - name: Research 2024–2025 only using historical Alpaca SIP candidates (research, never approved trades)
+        if: github.event_name != 'pull_request'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          RAAS_TWO_YEAR_RESULT_PATH: ${{ runner.temp }}/raas-2024-2025-pdufa-research.json
+        run: node scripts/raas_active_two_year_study.cjs
+      - name: Save 2024–2025 source gaps and actual price research, not RAAS scores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-2024-2025-pdufa-research
+          path: ${{ runner.temp }}/raas-2024-2025-pdufa-research.json
+          retention-days: 30
+          if-no-files-found: ignore

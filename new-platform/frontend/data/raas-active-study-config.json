@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_ACTIVE_2024_2025_TWO_YEAR_PDUFA_STUDY",
+  "status": "RESEARCH_ONLY_NOT_VALIDATED",
+  "policyVersion": "2026-11-03",
+  "startDate": "2024-01-01",
+  "endDate": "2025-12-31",
+  "years": [
+    2024,
+    2025
+  ],
+  "trainYear": 2024,
+  "holdoutYear": 2025,
+  "studyDurationYears": 2,
+  "historicalMarketCapUsdMillionsMin": 300,
+  "historicalMarketCapUsdMillionsMax": 10000,
+  "entryLeadCalendarDaysMin": 4,
+  "entryLeadCalendarDaysMax": 90,
+  "exitLeadCalendarDaysMin": 3,
+  "minimumIndependentTrainIssuers": 30,
+  "minimumIndependentHoldoutIssuers": 30,
+  "requiredFullCensusYears": 2,
+  "universe": "US-listed publicly traded issuer at historical entry; Phase 3 results and FDA target publicly known before entry; exclude/non-US venue unresolved, early action censoring required",
+  "sourceIntake": "new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json",
+  "priorTenYearArchive": "new-platform/frontend/data/raas-ten-year-pdufa-intake.json",
+  "note": "Supersedes the 2016–2025 default RESEARCH STUDY window, not archival 2016–2025 source discoveries. Original source events outside 2024–2025 cannot count as observations, holdout issuers or calibrations in active study. No date-scope reduction relaxes original first-public PDUFA, real Phase 3, point-in-time share price/cap, independent issuer holdout or outcome completion audit. Zero RAAS metrics approved."
+}
