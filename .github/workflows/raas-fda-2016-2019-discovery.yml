@@ -13,6 +13,8 @@ on:
     paths:
       - 'scripts/raas_openfda_2016_2019_discovery.cjs'
       - 'tests/raas_openfda_2016_2019_discovery.test.cjs'
+      - 'scripts/raas_match_fda_2016_2019_sponsors.cjs'
+      - 'tests/raas_match_fda_2016_2019_sponsors.test.cjs'
       - '.github/workflows/raas-fda-2016-2019-discovery.yml'
 permissions:
   contents: read
