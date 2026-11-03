@@ -1,0 +1,71 @@
+"use strict";
+const test=require("node:test"),assert=require("node:assert/strict");
+const fs=require("node:fs"),path=require("node:path");
+const m=require("../scripts/raas_historical_raw_market_cap_research.cjs");
+const root=path.resolve(__dirname,"..");
+const lead=require("../new-platform/frontend/data/raas-2020-sec-cover-share-leads.json").records[0];
+const event=require("../new-platform/frontend/data/raas-historical-2020-primary-source-leads.json").records[0];
+function bars(close,from="2020-07-22",days=100) {
+ const out=[];let t=Date.parse(from+"T00:00:00Z");
+ for(let k=0;k<days;k++,t+=86400000){
+  const d=new Date(t),wd=d.getUTCDay();
+  if(wd!==0&&wd!==6)out.push({date:d.toISOString().slice(0,10),
+   open:close,close,high:close+0.1,low:close-0.1,volume:100});
+ }
+ return out;
+}
+test("real original SEC filing shows 56,059,865 shares only after its August 6 publication",()=>{
+ const a=m.checkedLead(lead,event);
+ assert.equal(a.sharesOutstanding,56059865);
+ assert.equal(a.sharesMeasurementDate,"2020-08-03");
+ assert.equal(a.filedDate,"2020-08-06");
+ assert.equal(a.firstConservativeEntryDate,"2020-08-07");
+ assert.equal(a.securityCurrency,"USD");
+ assert.equal(event.pdufaTargetDate,"2020-10-30");
+ assert.equal(event.actualFDAActionDate,"2020-10-26");
+});
+test("raw prices times historical shares, not split-adjusted vendor prices",()=>{
+ const raw=bars(8),adjusted=bars(800);
+ const x=m.examine(lead,event,raw,adjusted);
+ assert.equal(x.status,"RAW_MARKET_CAP_DIAGNOSTICS_NOT_PROVEN_TRADING_ELIGIBILITY");
+ const after=x.observations.find(r=>r.session==="2020-08-07");
+ const before=x.observations.find(r=>r.session==="2020-08-05");
+ assert.equal(before.historicMarketCapResearchMillions,null);
+ assert.equal(after.historicMarketCapResearchMillions,448.48);
+ assert.equal(after.within300mTo10bUnreviewed,true);
+ assert.equal(after.adjustedClose,800);
+ assert.equal(x.eventTradeCasesValidated,0);
+ assert.equal(x.approvedRaasRatings,0);
+ assert.ok(!x.observations.some(y=>y.session>="2020-10-26"&&
+   y.beforeActualFDAAction===true));
+});
+test("raw and adjusted price requests cannot be silently interchanged",async()=>{
+ let reads=[];
+ const request=async (u,options)=>{
+  const p=new URL(u);reads.push(p.searchParams.get("adjustment"));
+  assert.equal(p.searchParams.get("feed"),"sip");
+  assert.equal(p.searchParams.get("asof"),"2020-10-30");
+  assert.equal(options.headers["APCA-API-KEY-ID"],"test_key");
+  const adj=p.searchParams.get("adjustment"),c=adj==="raw"?8:800;
+  return {ok:true,status:200,headers:{get:()=> "application/json"},
+   text:async()=>JSON.stringify({symbol:"KALA",bars:[{t:"2020-08-07T00:00:00Z",
+    o:c,h:c+0.1,l:c-0.1,c,v:100}],next_page_token:null})};
+ };
+ const one=await m.fetchBars("KALA","2020-10-30","2020-07-22","2020-10-29","raw","test_key","secret",request);
+ const two=await m.fetchBars("KALA","2020-10-30","2020-07-22","2020-10-29","all","test_key","secret",request);
+ assert.deepEqual(reads,["raw","all"]);
+ assert.equal(one[0].close,8);
+ assert.equal(two[0].close,800);
+});
+test("unmatched share facts, dates, calendars and false currencies fail closed",()=>{
+ assert.throws(()=>m.checkedLead({...lead,sharesOutstanding:0},event),/RAAS_CAP_SOURCE/);
+ assert.throws(()=>m.checkedLead({...lead,firstConservativeEntryDate:"2020-08-06"},event),/RAAS_CAP_SOURCE/);
+ assert.throws(()=>m.checkedLead({...lead,rawCloseCurrency:"EUR"},event),/RAAS_CAP_SOURCE/);
+ assert.throws(()=>m.checkedLead({...lead,ticker:"FAKE"},event),/RAAS_CAP_SOURCE/);
+ assert.throws(()=>m.examine(lead,event,bars(8),bars(800,"2020-07-23")),/RAAS_CAP_PRICE_CALENDARS_MISMATCH/);
+});
+test("no credentials means no fabricated raw price or trading case",async()=>{
+ const r=await m.execute({key:"",secret:""});
+ assert.equal(r.status,"BLOCKED_MISSING_ALPACA_CREDENTIALS");
+ assert.equal(r.cases.length,0);
+});
