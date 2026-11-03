@@ -42,8 +42,8 @@ test("profiles remove irrelevant default columns independently, preserving full 
   const g=section=>headings(section).filter(x=>x.props["data-rating-group"]).map(x=>x.props["data-rating-group"]);
   assert.deepEqual(g(top),["M","A","C","D"]);
   assert.deepEqual(g(bottom),["M","A","B","C","D","E"]);
-  assert.equal(headings(top).length,13);
-  assert.equal(headings(bottom).length,15);
+  assert.equal(headings(top).length,14);
+  assert.equal(headings(bottom).length,16);
   assert.match(textOf(top),/11 relevant survey tests/);
   assert.match(textOf(bottom),/18 relevant survey tests/);
   await act(async()=>buttons(top,"Show additional surveys").props.onClick());
@@ -52,16 +52,16 @@ test("profiles remove irrelevant default columns independently, preserving full 
   assert.match(textOf(top),/20 relevant survey tests/);
   assert.match(textOf(bottom),/18 relevant survey tests/);
   await act(async()=>buttons(top,"Expand all ratings").props.onClick());
-  assert.equal(headings(top).length,35);
-  assert.equal(headings(bottom).length,15);
-  assert.equal(top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td").length,35);
+  assert.equal(headings(top).length,36);
+  assert.equal(headings(bottom).length,16);
+  assert.equal(top.findAllByType("tbody")[0].findAllByType("tr")[0].findAllByType("td").length,36);
   await act(async()=>buttons(top,"Use relevant surveys only").props.onClick());
-  assert.equal(headings(top).length,13);
+  assert.equal(headings(top).length,14);
   assert.deepEqual(g(bottom),["M","A","B","C","D","E"]);
   await act(async()=>buttons(bottom,"Show additional surveys").props.onClick());
   await act(async()=>buttons(bottom,"Expand all ratings").props.onClick());
-  assert.equal(headings(bottom).length,35);
-  assert.equal(headings(top).length,13);
+  assert.equal(headings(bottom).length,36);
+  assert.equal(headings(top).length,14);
  }finally{
   if(r)await act(async()=>r.unmount());
   global.fetch=oldFetch;
