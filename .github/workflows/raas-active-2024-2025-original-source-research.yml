@@ -6,6 +6,8 @@ on:
   pull_request:
     paths:
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json'
+      - 'tests/raas_active_2024_2025_expansion_source_leads.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
@@ -33,6 +35,8 @@ on:
     branches: [main]
     paths:
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json'
+      - 'tests/raas_active_2024_2025_expansion_source_leads.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
@@ -75,6 +79,7 @@ jobs:
           node --test tests/raas_active_2024_2025_window79_audit.test.cjs
           node --test tests/raas_active_2024_2025_full_90_3_grid.test.cjs
           node --test tests/raas_active_2024_2025_walkforward_selection_audit.test.cjs
+          node --test tests/raas_active_2024_2025_expansion_source_leads.test.cjs
           node --test tests/raas_active_2024_2025_window_robustness_audit.test.cjs
           node --test tests/raas_active_2024_2025_sec_cap_snapshot_sensitivity.test.cjs
           node --test tests/raas_2025_crl_candidate_inclusion_exclusion.test.cjs

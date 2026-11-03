@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_2024_2025_ADDITIONAL_PHASE3_FDA_SOURCE_LEADS_RESEARCH_ONLY",
+  "sourceAsOf": "2026-11-03",
+  "allResearchOnly": true,
+  "approvedAdditionsTo2024To2025Backtest": 0,
+  "independentlyVerifiedTradingCases": 0,
+  "fullFDAEventCensusCompleted": false,
+  "records": [
+    {
+      "caseId": "TVTX|FILSPARI_SPARSENTAN_IGAN|NDA216403_SCONVERSION|2024",
+      "ticker": "TVTX",
+      "application": "NDA 216403 conversion supplement",
+      "drug": "Filspari (sparsentan)",
+      "indication": "IgA nephropathy, traditional approval conversion",
+      "nctIds": [
+        "NCT03762850"
+      ],
+      "reviewCycleType": "SUPPLEMENTAL_ACCELERATED_TO_TRADITIONAL_APPROVAL",
+      "pdufaTargetDate": "2024-09-05",
+      "targetAnnouncementDate": "2024-05-06",
+      "targetAnnouncementSourceUrl": "https://ir.travere.com/press-releases/news-details/2024/Travere-Therapeutics-Reports-First-Quarter-2024-Financial-Results-05-06-2024/default.aspx",
+      "phase3EvidenceDate": "2023-09-21",
+      "phase3EvidenceSourceUrl": "https://ir.travere.com/press-releases/news-details/2023/Travere-Therapeutics-Announces-Confirmatory-Data-from-the-Phase-3-PROTECT-Study-of-FILSPARI-Demonstrating-Long-Term-Kidney-Function-Preservation-in-IgA-Nephropathy-Narrowly-Missing-eGFR-Total-Slope-Endpoint-versus-Active-Control--09-21-2023/default.aspx",
+      "actualFDAActionDate": "2024-09-05",
+      "actualFDAOutcome": "APPROVED",
+      "outcomeSourceUrl": "https://www.sec.gov/Archives/edgar/data/1438533/000143853324000035/tvtx-20240905.htm",
+      "asOfStatus": "SOURCE_DATES_RECORDED_MARKET_CAP_AND_PRICE_INDEPENDENT_CHECK_PENDING",
+      "postPhase3AtEntrySourceLead": true,
+      "historicalSECEntrySharesValidated": false,
+      "historicalEntryMarketCap300m10bValidated": false,
+      "adjustedPriceBarsIndependentlyReconciled": false,
+      "eligibleForApprovedTradingStudy": false,
+      "missingChecks": [
+        "FDA PDUFA goal date independently reconciled",
+        "SEC public share-count at each proposed entry and class/dilution actions",
+        "Alpaca daily raw and adjusted prices and an independent second adjusted price vendor",
+        "Classification check: full approval conversion supplement vs original NDA study scope"
+      ]
+    },
+    {
+      "caseId": "URGN|ZUSDURI_UGN102_LGIRNMIBC|NDA215793|2025",
+      "ticker": "URGN",
+      "application": "NDA 215793",
+      "drug": "ZUSDURI (mitomycin), formerly UGN-102",
+      "indication": "Recurrent low-grade intermediate-risk non-muscle-invasive bladder cancer",
+      "nctIds": [
+        "NCT05243550"
+      ],
+      "reviewCycleType": "ORIGINAL_NDA_PHASE3_ENVISION",
+      "pdufaTargetDate": "2025-06-13",
+      "targetAnnouncementDate": "2024-10-15",
+      "targetAnnouncementSourceUrl": "https://investors.urogen.com/news-releases/news-release-details/urogen-announces-fda-acceptance-its-new-drug-application-ugn-102",
+      "phase3EvidenceDate": "2024-06-13",
+      "phase3EvidenceSourceUrl": "https://investors.urogen.com/news-releases/news-release-details/urogen-announces-unprecedented-823-duration-response-12-months",
+      "actualFDAActionDate": "2025-06-12",
+      "actualFDAOutcome": "APPROVED",
+      "outcomeSourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-mitomycin-intravesical-solution-recurrent-low-grade-intermediate-risk-non-muscle",
+      "asOfStatus": "SOURCE_DATES_RECORDED_MARKET_CAP_AND_PRICE_INDEPENDENT_CHECK_PENDING",
+      "postPhase3AtEntrySourceLead": true,
+      "historicalSECEntrySharesValidated": false,
+      "historicalEntryMarketCap300m10bValidated": false,
+      "adjustedPriceBarsIndependentlyReconciled": false,
+      "eligibleForApprovedTradingStudy": false,
+      "missingChecks": [
+        "FDA action target and trial identity independently cross-reconciled",
+        "SEC publicly known shares as-of entry date and changes during window",
+        "Alpaca raw and adjusted SIP daily bars and independent adjusted price vendor parity",
+        "FDA full year census completeness and issuer-disjoint holdout eligibility"
+      ]
+    }
+  ]
+}
