@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility.",
+  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -45,6 +45,27 @@
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024090828/axsm-20240630.htm",
       "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1579428/0000950170-24-090828-index.htm",
       "originalSourceDescription": "Aug5 2024 SEC Q2 10-Q accepted 16:30:58 ET, original cover shows 48,000,205 common shares as of Jul29. First conservative Aug6; Q3 10-Q issued Nov12 adds 462,171 shares, no daily continuity inferred."
+    },
+    {
+      "caseId": "MDGL|REZDIFFRA|NDA217785|2024",
+      "ticker": "MDGL",
+      "cik": "0001157601",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 19742646,
+      "sharesMeasurementDate": "2023-11-01",
+      "filedDate": "2023-11-06",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2023-11-07",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523270803/d907859d10q.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1157601/000119312523270803/0001193125-23-270803-index.htm",
+      "originalSourceDescription": "Madrigal Q3 2023 10-Q filed Nov 6 2023 06:10 ET, cover shows 19,742,646 common shares as of November 1, 2023. Conservative first research entry November 7. Later FY2023 10-K filed February 28 2024 disclosed 19,897,425; no interpolation to earlier entry days."
     }
   ]
 }
