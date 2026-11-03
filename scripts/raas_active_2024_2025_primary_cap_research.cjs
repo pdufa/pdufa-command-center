@@ -9,6 +9,7 @@
  * 2024 GERN Rytelo original NDA: FDA acted ten days before target.
  * 2024 ARQT Zoryve 0.15% supplemental NDA: FDA acted 2 days AFTER target.
  * 2024 LXRX Zynquista: FDA issued a CRL ON target (older 2019 CRL is a different review).
+ * 2024 BBIO Attruby: FDA approved NDA 216540 seven days before Nov 29 original goal.
  * 2025 AXSM Symbravo: FDA acted 1 day BEFORE target.
  * 2025 SLNO Vykat XR: FDA granted three-month extension then acted one day before revised target.
  * 2025 SRRK apitegromab: FDA issued a manufacturing site CRL on its goal date.
@@ -32,8 +33,8 @@ const paths={
 const load=p=>JSON.parse(fs.readFileSync(path.join(root,p),"utf8"));
 function verify(events,shares,earlier,intake){
  const cases=validateSourceLeads(events);
- if(cases.length!==8||shares.records?.length!==8||
-  earlier.records?.length!==8||intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
+ if(cases.length!==9||shares.records?.length!==9||
+  earlier.records?.length!==9||intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
   intake.records.some(x=>cases.some(c=>x.caseId===c.caseId)))
   throw Error("RAAS_ACTIVE_SOURCE_LEADS_MUST_NOT_COUNT_AS_ACCEPTED_INTAKE");
  const order=cases.slice().sort((a,b)=>a.pdufaTargetDate.localeCompare(b.pdufaTargetDate));
@@ -41,8 +42,18 @@ function verify(events,shares,earlier,intake){
  const arqt=byTicker.get("ARQT"),axsm=byTicker.get("AXSM"),
   mdgl=byTicker.get("MDGL"),gern=byTicker.get("GERN"),
   slno=byTicker.get("SLNO"),lxrx=byTicker.get("LXRX"),
-  srrk=byTicker.get("SRRK"),cytk=byTicker.get("CYTK");
- if(byTicker.size!==8||
+  srrk=byTicker.get("SRRK"),cytk=byTicker.get("CYTK"),
+   bbio=byTicker.get("BBIO");
+ if(byTicker.size!==9||
+   bbio?.caseId!=="BBIO|ATTRUBY_ACORAMIDIS_ATTR_CM|NDA216540|2024"||
+   bbio.application!=="NDA 216540"||
+   bbio.pdufaTargetDate!=="2024-11-29"||
+   bbio.targetAnnouncementDate!=="2024-02-05"||
+   bbio.phase3ReadoutDate!=="2023-07-17"||
+   bbio.actualFDAActionDate!=="2024-11-22"||
+   bbio.actualFDAOutcome!=="APPROVED"||
+   bbio.fdaActionEarlierThanPdufaGoalDays!==7||
+   !bbio.nctIds.includes("NCT03860935")||
   cytk?.caseId!=="CYTK|AFICAMTEN_OHCM|NDA219083|2025"||
   cytk.application!=="NDA 219083"||
   cytk.pdufaTargetDate!=="2025-12-26"||
@@ -142,7 +153,12 @@ function verify(events,shares,earlier,intake){
    !now.needsShareContinuityAudit||!now.needsIndependentPriceCrosscheck)
    throw Error("RAAS_ACTIVE_SEC_COVER_SHARE_CHRONOLOGY_INVALID");
   const difference=now.sharesOutstanding-old.sharesOutstanding;
-  if(event.ticker==="CYTK"&&(
+  if(event.ticker==="BBIO"&&(
+    old.sharesOutstanding!==188032738||now.sharesOutstanding!==188989802||
+    old.firstConservativeEntryDate!=="2024-08-02"||
+    now.firstConservativeEntryDate!=="2024-11-13"||difference!==957064))
+    throw Error("RAAS_2024_BBIO_SECURITIES_DISCLOSURE_MISMATCH");
+   if(event.ticker==="CYTK"&&(
    old.sharesOutstanding!==119657156||now.sharesOutstanding!==122264929||
    old.firstConservativeEntryDate!=="2025-08-08"||
    now.firstConservativeEntryDate!=="2025-11-06"||difference!==2607773))
@@ -215,7 +231,7 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
   provisionalPrimaryWindowRows:0,provisionalEarlierShareWindows:0};
  const raw=await cap.execute({key,secret,request,events,shares});
  if(raw.status!=="UNVALIDATED_HISTORICAL_CAP_RESEARCH_ONLY"||
-  raw.cases?.length!==8||raw.historicallyEligibleTrades!==0||
+  raw.cases?.length!==9||raw.historicallyEligibleTrades!==0||
   raw.approvedRaasRatings!==0)
   throw Error("RAAS_ACTIVE_RAW_CAP_PRICE_RESEARCH_INVALID");
  const queue=assemble({primary:events,shares,rawCap:raw});
@@ -241,8 +257,9 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
    missingAudit:"SEC_SHARE_CONTINUITY_SPLITS_INDEPENDENT_PRICE_VENDOR_2024_2025_CENSUS"})),
   priceDataRawAndAdjusted:raw.cases,
   sourceQueue:queue.cases,
-  warnings:["Eight originally sourced programs (including 2024 and 2025 CRLs) out of the 2024–2025 discovery universe; NOT two complete FDA year censuses.",
+  warnings:["Nine originally sourced programs (including 2024 and 2025 CRLs) out of the 2024–2025 discovery universe; NOT two complete FDA year censuses.",
    "2024 ARQT FDA action July 9 occurred after the company-announced July 7 goal, without independently established formal extension.",
+   "2024 BBIO Attruby NDA 216540 FDA approved Nov 22 ahead of Nov 29 goal. Original source announcement Feb 5 and ATTRibute-CM July 2023 Phase 3 precede entry. SEC Q2 and Q3 cover shares have +957,064 difference, but no daily continuity or independently validated price.",
    "2025 AXSM FDA action Jan 30 occurred one day before Jan 31 goal; older 2022 manufacturing CRL was a separate review cycle.",
    "2024 LXRX FDA issued a December 20 CRL on its published PDUFA goal; prior March 2019 CRL was a separate cycle. Historical FDA PDF publication is retrospective and its content cannot be used as a predecision signal.",
    "2025 CYTK aficamten NDA219083 revised its publicly announced original Sep26 2025 goal to Dec26 2025 via a REMS major amendment reported May1 2025, before T-79 entry; FDA approved Dec19 2025, seven calendar days before revised goal. Do not use the historical FDA decision as an entry-time feature.",
