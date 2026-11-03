@@ -215,7 +215,7 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
   provisionalPrimaryWindowRows:0,provisionalEarlierShareWindows:0};
  const raw=await cap.execute({key,secret,request,events,shares});
  if(raw.status!=="UNVALIDATED_HISTORICAL_CAP_RESEARCH_ONLY"||
-  raw.cases?.length!==7||raw.historicallyEligibleTrades!==0||
+  raw.cases?.length!==8||raw.historicallyEligibleTrades!==0||
   raw.approvedRaasRatings!==0)
   throw Error("RAAS_ACTIVE_RAW_CAP_PRICE_RESEARCH_INVALID");
  const queue=assemble({primary:events,shares,rawCap:raw});
