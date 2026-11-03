@@ -7,6 +7,8 @@ on:
       - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
+      - 'scripts/raas_active_2024_2025_window79_audit.cjs'
+      - 'tests/raas_active_2024_2025_window79_audit.test.cjs'
       - 'tests/raas_active_2024_2025_primary_cap_research.test.cjs'
       - '.github/workflows/raas-active-2024-2025-original-source-research.yml'
   push:
@@ -16,6 +18,8 @@ on:
       - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
       - 'scripts/raas_active_2024_2025_primary_cap_research.cjs'
+      - 'scripts/raas_active_2024_2025_window79_audit.cjs'
+      - 'tests/raas_active_2024_2025_window79_audit.test.cjs'
       - 'tests/raas_active_2024_2025_primary_cap_research.test.cjs'
       - '.github/workflows/raas-active-2024-2025-original-source-research.yml'
 permissions:
@@ -34,6 +38,7 @@ jobs:
       - name: Verify actual 2024/2025 original FDA target dates, historical SEC shares, raw versus adjusted price rules
         run: |
           node --test tests/raas_active_2024_2025_primary_cap_research.test.cjs
+          node --test tests/raas_active_2024_2025_window79_audit.test.cjs
           node --test tests/raas_historical_raw_market_cap_research.test.cjs
           node --test tests/raas_historical_preentry_share_window_research.test.cjs
       - name: Gather active 2024/2025 original source case as-of RAW and adjusted Alpaca daily prices
@@ -43,11 +48,21 @@ jobs:
           APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
           RAAS_ACTIVE_SOURCE_RESEARCH_OUTPUT: ${{ runner.temp }}/raas-2024-2025-original-source-research.json
         run: node scripts/raas_active_2024_2025_primary_cap_research.cjs
+      - name: Verify and export T-79 to T-14 issuer-level provisional results with price/source audit
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_ACTIVE_SOURCE_RESEARCH_OUTPUT: ${{ runner.temp }}/raas-2024-2025-original-source-research.json
+          RAAS_T79_14_AUDIT_JSON: ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
+          RAAS_T79_14_AUDIT_CSV: ${{ runner.temp }}/raas-2024-2025-t79-14-audit.csv
+        run: node scripts/raas_active_2024_2025_window79_audit.cjs
       - name: Publish provisional case price and SEC share audit gaps, no validated scores
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: raas-2024-2025-original-source-research
-          path: ${{ runner.temp }}/raas-2024-2025-original-source-research.json
+          path: |
+            ${{ runner.temp }}/raas-2024-2025-original-source-research.json
+            ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
+            ${{ runner.temp }}/raas-2024-2025-t79-14-audit.csv
           if-no-files-found: ignore
           retention-days: 30
