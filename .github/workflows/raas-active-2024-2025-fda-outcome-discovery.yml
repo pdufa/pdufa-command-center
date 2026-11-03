@@ -84,7 +84,6 @@ jobs:
         run: |
           printf 'FDA source discovery inputs at commit %s\n' "$GITHUB_SHA" > "${{ runner.temp }}/raas-fda-discovery-provenance.txt"
           sha256sum "${{ runner.temp }}/raas-2024-2025-"*.json "${{ runner.temp }}/raas-2024-2025-"*.csv >> "${{ runner.temp }}/raas-fda-discovery-provenance.txt"
-          if-no-files-found: ignore
 
       - name: Preserve FDA source action candidates and completeness gaps (no trading scores)
         if: always()
@@ -101,3 +100,4 @@ jobs:
             ${{ runner.temp }}/raas-2024-2025-next-target-review.csv
             ${{ runner.temp }}/raas-fda-discovery-provenance.txt
           retention-days: 30
+          if-no-files-found: warn
