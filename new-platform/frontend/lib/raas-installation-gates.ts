@@ -42,9 +42,10 @@ export function evaluateRaasInstallation(
   new Set(metrics.map(m=>m.stage+"|"+m.id)).size!==60||
   report.categories.length!==12||
   !intake || intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
-  !Array.isArray(intake.yearAudits)||intake.yearAudits.length!==2||
-  !Array.isArray(intake.records))
+  !Array.isArray(intake.yearAudits)||!Array.isArray(intake.records))
   throw Error("RAAS_INSTALLATION_INPUT_INVALID");
+ if(intake.yearAudits.length!==2)
+  throw Error("RAAS_INSTALLATION_YEAR_CENSUS_INVALID");
  const entries=Array.from({length:lastYear-firstYear+1},(_,i)=>{
   const year=firstYear+i;
   const matching=intake.yearAudits!.filter(a=>a.year===year);
