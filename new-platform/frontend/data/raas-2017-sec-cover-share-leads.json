@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH",
+  "sourceAsOf": "2026-11-03",
+  "note": "2017 PTCT Q2 SEC 10-Q historical common cover-share fact; no daily diluted share continuity or independently verified raw price reconciliation.",
+  "records": [
+    {
+      "caseId": "PTCT|TRANSLARNA|NDA200896|2017",
+      "ticker": "PTCT",
+      "cik": "0001070081",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 41389046,
+      "sharesMeasurementDate": "2017-08-04",
+      "filedDate": "2017-08-09",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2017-08-10",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1070081/000107008117000117/ptct0630201710-q.htm",
+      "filingIndexUrl": "https://ir.ptcbio.com/sec-filings/sec-filing/10-q/0001070081-17-000117",
+      "originalSourceDescription": "PTC 2017 Q2 10-Q filed Aug 9, 2017, original SEC cover says 41,389,046 common shares outstanding as of Aug 4. Conservative use no earlier than Aug 10, 2017. Earlier Q1 cover 41,244,004 shares May 5; there was also a substantial EMFLAZA acquisition share issuance before this interval. Share continuity and capital eligibility remain unverified."
+    }
+  ]
+}
