@@ -12,6 +12,9 @@ on:
       - 'new-platform/frontend/scripts/raas-readiness-scan.cjs'
       - 'new-platform/frontend/scripts/raas-pdufa-goal-asof-metric-audit.cjs'
       - 'new-platform/frontend/tests/raas-pdufa-goal-asof-metric-audit.test.cjs'
+      - 'new-platform/frontend/lib/raas-historical-sec-entry-bridge.ts'
+      - 'new-platform/frontend/scripts/raas-historical-sec-entry-bridge.cjs'
+      - 'new-platform/frontend/tests/raas-historical-sec-entry-bridge.test.cjs'
       - 'new-platform/frontend/tests/raas-readiness-scan.test.cjs'
       - '.github/workflows/raas-readiness-scan.yml'
   pull_request:
@@ -21,6 +24,9 @@ on:
       - 'new-platform/frontend/scripts/raas-readiness-scan.cjs'
       - 'new-platform/frontend/scripts/raas-pdufa-goal-asof-metric-audit.cjs'
       - 'new-platform/frontend/tests/raas-pdufa-goal-asof-metric-audit.test.cjs'
+      - 'new-platform/frontend/lib/raas-historical-sec-entry-bridge.ts'
+      - 'new-platform/frontend/scripts/raas-historical-sec-entry-bridge.cjs'
+      - 'new-platform/frontend/tests/raas-historical-sec-entry-bridge.test.cjs'
       - 'new-platform/frontend/tests/raas-readiness-scan.test.cjs'
       - '.github/workflows/raas-readiness-scan.yml'
 
@@ -55,6 +61,7 @@ jobs:
           node --test tests/raas-readiness-scan.test.cjs
           node --test tests/raas-installation-gates.test.cjs
           node --test tests/raas-pdufa-goal-asof-metric-audit.test.cjs
+          node --test tests/raas-historical-sec-entry-bridge.test.cjs
       - name: Run actual read-only 60-metric scan and publish execution summary
         env:
           RAAS_SCAN_OUTPUT: ${{ runner.temp }}/raas-readiness-result.json
@@ -64,6 +71,11 @@ jobs:
           RAAS_GOAL_ASOF_OUTPUT_JSON: ${{ runner.temp }}/raas-2024-2025-pdufa-goal-version-asof.json
           RAAS_GOAL_ASOF_OUTPUT_CSV: ${{ runner.temp }}/raas-2024-2025-pdufa-goal-version-asof.csv
         run: node scripts/raas-pdufa-goal-asof-metric-audit.cjs
+      - name: Audit SEC cover shares as known at each proposed 2024-2025 T-79 entry (no validated cap or prices)
+        env:
+          RAAS_SEC_ASOF_JSON: ${{ runner.temp }}/raas-2024-2025-sec-cover-asof-entries.json
+          RAAS_SEC_ASOF_CSV: ${{ runner.temp }}/raas-2024-2025-sec-cover-asof-entries.csv
+        run: node scripts/raas-historical-sec-entry-bridge.cjs
       - name: Save complete per-metric evidence-gap report
         if: always()
         uses: actions/upload-artifact@v4
@@ -73,5 +85,7 @@ jobs:
             ${{ runner.temp }}/raas-readiness-result.json
             ${{ runner.temp }}/raas-2024-2025-pdufa-goal-version-asof.json
             ${{ runner.temp }}/raas-2024-2025-pdufa-goal-version-asof.csv
+            ${{ runner.temp }}/raas-2024-2025-sec-cover-asof-entries.json
+            ${{ runner.temp }}/raas-2024-2025-sec-cover-asof-entries.csv
           if-no-files-found: ignore
           retention-days: 30
