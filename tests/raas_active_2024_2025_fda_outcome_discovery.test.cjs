@@ -15,6 +15,7 @@ const AXSM=x("NDA215431","ORIG","1","20250130","SYMBRAVO");
 const GERN=x("NDA217779","ORIG","1","20240606","RYTELO");
 const SLNO=x("NDA216665","ORIG","1","20250326","VYKAT XR");
 const CYTK=x("NDA219083","ORIG","1","20251219","MYQORZO");
+const BBIO=x("NDA216540","ORIG","1","20241122","ATTRUBY");
 const crl=(date,app,file)=>({
  letter_type:"COMPLETE RESPONSE",letter_date:date,
  application_number:[app],company_name:"Issuer",file_name:file});
@@ -34,7 +35,7 @@ function request(url){
  const query=u.searchParams.get("search");
  assert.match(query,/submission_status:AP/);
  assert.doesNotMatch(query,/submission_type:ORIG/);
- if(query.includes("20240101 TO 20241231"))return Promise.resolve(payload([ARQT,MDGL,GERN],3));
+ if(query.includes("20240101 TO 20241231"))return Promise.resolve(payload([ARQT,MDGL,GERN,BBIO],4));
  if(query.includes("20250101 TO 20251231"))return Promise.resolve(payload([AXSM,SLNO,CYTK],3));
  throw Error("Unexpected FDA year query "+query);
 }
@@ -92,14 +93,21 @@ test("official FDA original and supplemental approval leads PLUS redacted CRLs r
  const result=await m.execute({request,sourceLeads:sources,intake});
  assert.equal(result.status,"SOURCE_DISCOVERY_COMPLETE_FOR_OFFICIAL_ENDPOINTS_NOT_PDUFA_DENOMINATOR");
  assert.deepEqual(result.studyYears,[2024,2025]);
- assert.equal(result.totalOriginalApprovalActions,5);
+ assert.equal(result.totalOriginalApprovalActions,6);
  assert.equal(result.totalSupplementalApprovalActions,1);
  assert.equal(result.totalRedactedArchiveCRLLetters,4);
  assert.equal(result.years[0].supplementalApprovalActions,1);
  assert.equal(result.years[1].originalApprovalActions,3);
  assert.equal(result.years[0].archivedCRLLetterLeads,2);
  assert.equal(result.years[1].archivedCRLLetterLeads,2);
- assert.equal(result.originalSourceLeadsCrosscheck.length,8);
+ assert.equal(result.originalSourceLeadsCrosscheck.length,9);
+ const bbio=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="BBIO");
+ assert.deepEqual(bbio.fdaApprovalDatabaseActionMatches,["NDA216540|ORIG|1|2024-11-22"]);
+ assert.deepEqual(bbio.fdaCrlArchiveLetterMatches,[]);
+ assert.equal(bbio.pdufaTargetDate,"2024-11-29");
+ assert.equal(bbio.actualFDAActionDate,"2024-11-22");
+ assert.equal(bbio.actualFDAOutcome,"APPROVED");
+ assert.equal(bbio.validatedTrade,false);
  const cytk=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="CYTK");
  assert.deepEqual(cytk.fdaApprovalDatabaseActionMatches,["NDA219083|ORIG|1|2025-12-19"]);
  assert.equal(cytk.pdufaTargetDate,"2025-12-26");
