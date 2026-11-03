@@ -10,6 +10,9 @@ on:
       - 'tests/raas_historical_candidate_review_queue.test.cjs'
       - 'scripts/raas_historical_provisional_window_grid.cjs'
       - 'tests/raas_historical_provisional_window_grid.test.cjs'
+      - 'scripts/raas_historical_preentry_share_window_research.cjs'
+      - 'tests/raas_historical_preentry_share_window_research.test.cjs'
+      - 'new-platform/frontend/data/raas-preentry-2020-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-2020-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-historical-2020-primary-source-leads.json'
       - '.github/workflows/raas-raw-historical-cap-research.yml'
@@ -21,6 +24,9 @@ on:
       - 'tests/raas_historical_candidate_review_queue.test.cjs'
       - 'scripts/raas_historical_provisional_window_grid.cjs'
       - 'tests/raas_historical_provisional_window_grid.test.cjs'
+      - 'scripts/raas_historical_preentry_share_window_research.cjs'
+      - 'tests/raas_historical_preentry_share_window_research.test.cjs'
+      - 'new-platform/frontend/data/raas-preentry-2020-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-2020-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-historical-2020-primary-source-leads.json'
       - '.github/workflows/raas-raw-historical-cap-research.yml'
@@ -62,6 +68,14 @@ jobs:
         run: |
           node --test tests/raas_historical_provisional_window_grid.test.cjs
           node scripts/raas_historical_provisional_window_grid.cjs
+      - name: Test and analyze earlier 2019 SEC cover-share facts for 2020 entry windows
+        if: always()
+        env:
+          RAAS_RAW_CAP_OUTPUT: ${{ runner.temp }}/raas-historical-raw-cap-research.json
+          RAAS_PREENTRY_OUTPUT: ${{ runner.temp }}/raas-supplemental-preentry-share-windows.json
+        run: |
+          node --test tests/raas_historical_preentry_share_window_research.test.cjs
+          node scripts/raas_historical_preentry_share_window_research.cjs
       - name: Save unapproved historical capitalization research
         if: always()
         uses: actions/upload-artifact@v4
@@ -71,5 +85,6 @@ jobs:
             ${{ runner.temp }}/raas-historical-raw-cap-research.json
             ${{ runner.temp }}/raas-historical-intake-review-queue.json
             ${{ runner.temp }}/raas-provisional-window-diagnostics.json
+            ${{ runner.temp }}/raas-supplemental-preentry-share-windows.json
           retention-days: 30
           if-no-files-found: ignore
