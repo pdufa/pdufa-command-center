@@ -10,6 +10,8 @@ on:
       - 'tests/test_raas_fda_decision_accuracy_audit.py'
       - 'scripts/raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
+      - 'tests/test_raas_v2_upcoming_2026_source_review.py'
+      - 'new-platform/frontend/data/raas-v2-upcoming-2026-cycle-source-research.json'
       - 'data/raas_fda_three_way_*.json'
       - 'data/prediction_engine_history.csv'
       - 'data/fda_directional_100pct_freezes.csv'
@@ -27,6 +29,8 @@ on:
       - 'tests/test_raas_fda_decision_accuracy_audit.py'
       - 'scripts/raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
+      - 'tests/test_raas_v2_upcoming_2026_source_review.py'
+      - 'new-platform/frontend/data/raas-v2-upcoming-2026-cycle-source-research.json'
       - 'data/raas_fda_three_way_*.json'
       - 'data/prediction_engine_history.csv'
       - 'data/fda_directional_100pct_freezes.csv'
@@ -64,6 +68,8 @@ jobs:
         run: node --test new-platform/frontend/tests/raas-v2-source-readiness-site.test.cjs
       - name: Verify V2 research candidate source triage, issuer grouping and zero forecast promotions
         run: python -m unittest discover -s tests -p 'test_raas_v2_prospective_source_readiness.py' -v
+      - name: Verify issuer first-cycle original goals, revised PDUFA dates and BLA/sNDA distinctions
+        run: python -m unittest discover -s tests -p 'test_raas_v2_upcoming_2026_source_review.py' -v
       - name: Compute retrospective baseline and prospective FDA decision audit
         env:
           RAAS_FDA_ACCURACY_JSON: ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
