@@ -79,7 +79,7 @@ test("Source and study-date falsification fails closed",()=>{
  const input=fullFixture();
  for(const corrupt of [
   {validatedTradingCases:1},{approvedBestEntryExitWindow:{entry:76,exit:63}},
-  {independentlyPriceVerified:true},{fullTwoYearFDACensus:true},
+  {independentlyPriceVerified:true},{completeTwoYearFDACensus:true},
   {researchWindowCount:999},
   {cohortSplitRule:"ORIGINAL_GOAL_YEAR"}
  ])assert.throws(()=>build({...input,...corrupt}),/RAAS_WALKFORWARD_/,
