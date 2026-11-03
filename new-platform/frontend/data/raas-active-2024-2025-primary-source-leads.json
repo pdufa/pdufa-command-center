@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated.",
+  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -187,6 +187,42 @@
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
       "notes": "SOLENO original priority-review FDA goal was 2024-12-27 announced 2024-08-27. The November 26 2024 Form 8-K/press release confirms a formal 3-month major-amendment review extension and revised target 2025-03-27. March 26 2025 FDA original NDA 216665 approval is one calendar day EARLY relative to revised goal; never misclassify it as unextended 2024 case. Initial C601 DESTINY PWS Phase 3 missed the primary endpoint; later C602 randomized withdrawal reported positive data September 26 2023. Do not collapse clinical evidence into an uncomplicated Phase 3 success. SEC Q3 2024 10-Q filed Nov 6 2024 after close shows 43,117,432 common shares as of Oct31; FY2024 10-K filed Feb28 2025 at 09:22 ET shows 45,857,291 as of Feb26. Increase 2,739,859; continuous shares, stock actions and entry cap remain unverified. Review only, not accepted trade."
+    },
+    {
+      "caseId": "LXRX|ZYNQUISTA_SOTAGLIFLOZIN|NDA210934|2024_CRL",
+      "ticker": "LXRX",
+      "programId": "LXRX_SOTAGLIFLOZIN_INTANDEM3_TYPE1_CKD_NDA_RESUBMISSION",
+      "nctIds": [
+        "NCT02531035"
+      ],
+      "drug": "ZYNQUISTA (sotagliflozin) oral tablets",
+      "indication": "adjunct to insulin therapy for glycemic control in adults with type 1 diabetes and chronic kidney disease",
+      "application": "NDA 210934",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2024-12-20",
+      "targetAnnouncementDate": "2024-07-16",
+      "targetAnnouncementSourceUrl": "https://www.globenewswire.com/news-release/2024/07/16/2913701/0/en/Lexicon-Pharmaceuticals-Receives-December-20-2024-PDUFA-Goal-Date-for-Sotagliflozin-Type-1-Diabetes-NDA-Resubmission.html",
+      "phase3ReadoutDate": "2017-06-09",
+      "phase3ReadoutSourceUrl": "https://www.prnewswire.com/news-releases/lexicon-pharmaceuticals-reports-positive-top-line-results-in-phase-3-intandem3-study-for-sotagliflozin-in-patients-with-type-1-diabetes-300471546.html",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT02531035",
+      "actualFDAActionDate": "2024-12-20",
+      "actualFDAActionSourceUrl": "https://download.open.fda.gov/crl/CRL_NDA210934_20241220.pdf",
+      "actualFDAOutcome": "CRL",
+      "firstPublicFDAActionAnnouncementDate": "2024-12-20",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.globenewswire.com/news-release/2024/12/20/3000869/0/en/Lexicon-Announces-Receipt-of-Complete-Response-Letter-for-Zynquista-sotagliflozin.html",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "previous2019CRLIsSeparateReviewCycle": true,
+      "priorCRLDate": "2019-03-22",
+      "fdaLetterRetrospectivelyPublishedAfterAction": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1062822/000106282224000046/lxrx-20240630.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "Lexicon original July 16 2024 announced review goal Dec 20 2024 following June 20 NDA 210934 resubmission. The 2019 CRL is a prior review cycle, not the Dec 2024 result. June 9 2017 inTandem3 Phase 3 met primary endpoint in broad T1D, but FDA Dec 2024 official letter found CKD-specific benefit-risk unfavorable due to DKA; phase-3 success does not establish favorable safety in the proposed population. Company publicly disclosed Dec 20 2024 CRL at 16:30 ET, and FDA PDF was published retrospectively, not available before CRL. Q2 SEC cover 361,492,295 as of Jul 30 2024, filed Aug 2; Q3 SEC cover same number as of Nov 8, filed Nov 13; equality of snapshots is NOT proof of daily continuity. FDA Oct 31 2024 advisory committee and issuer subsequent abandonment of launch preparations were pre-outcome public information and must not be erased. Research lead only; entry market cap and independent price returns remain unverified."
     }
   ]
 }
