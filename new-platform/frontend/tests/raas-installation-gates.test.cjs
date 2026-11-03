@@ -8,7 +8,7 @@ require.extensions[".ts"]=(mod,file)=>mod._compile(ts.transpileModule(
  }}).outputText,file);
 const {executeRaasReadinessScan}=require("../lib/raas-readiness-scan.ts");
 const {evaluateRaasInstallation}=require("../lib/raas-installation-gates.ts");
-const intake=require("../data/raas-ten-year-pdufa-intake.json");
+const intake=require("../data/raas-active-2024-2025-pdufa-intake.json");
 const report=executeRaasReadinessScan();
 test("all RAAS release gates report actual missing historical and calibration evidence",()=>{
  const r=evaluateRaasInstallation(report,intake);
@@ -18,7 +18,8 @@ test("all RAAS release gates report actual missing historical and calibration ev
  assert.equal(r.totalGates,6);
  assert.equal(r.remainingGates,5);
  assert.equal(r.eligibleSourceYears,0);
- assert.equal(r.sourceYears.length,10);
+ assert.equal(r.sourceYears.length,2);
+ assert.deepEqual(r.sourceYears.map(x=>x.year),[2024,2025]);
  assert.equal(r.gates.find(x=>x.id==="catalog").achieved,60);
  assert.equal(r.gates.find(x=>x.id==="top-calibration").achieved,0);
  assert.equal(r.gates.find(x=>x.id==="bottom-calibration").achieved,0);
@@ -30,11 +31,11 @@ test("source-years cannot be promoted without independently sourced audit record
  const allYears=intake.yearAudits.map(x=>({...x,status:"FULL_EVENT_CENSUS_AUDITED"}));
  const unlinked=evaluateRaasInstallation(report,{...intake,yearAudits:allYears});
  assert.equal(unlinked.eligibleSourceYears,0);
- const one=allYears.map(x=>x.year===2016?{...x,sourceUrl:"https://www.fda.gov/source/audit"}:x);
+ const one=allYears.map(x=>x.year===2024?{...x,sourceUrl:"https://www.fda.gov/source/audit"}:x);
  const partial=evaluateRaasInstallation(report,{...intake,yearAudits:one});
  assert.equal(partial.eligibleSourceYears,1);
  assert.equal(partial.state,"INCOMPLETE");
- const dup=[...intake.yearAudits,{year:2016,status:"NOT_AUDITED"}];
+ const dup=[...intake.yearAudits,{year:2024,status:"NOT_AUDITED"}];
  assert.throws(()=>evaluateRaasInstallation(report,{...intake,yearAudits:dup}),
   /RAAS_INSTALLATION_YEAR_CENSUS_INVALID/);
 });
@@ -62,6 +63,6 @@ test("UI shows RAAS proof-level checklist on the main scan page",()=>{
  assert.match(p,/data-raas-installation-gates/);
  assert.match(p,/data-raas-gate/);
  assert.match(p,/Installation acceptance checks/);
- assert.match(p,/2016–2025 study/);
- assert.match(p,/raas-alpaca-ten-year-study\.yml/);
+ assert.match(p,/active.*study covers/);
+ assert.match(p,/raas-alpaca-active-two-year-study\.yml/);
 });
