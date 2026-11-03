@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "Sage FY2018 SEC 10-K cover shares published Feb 19 2019; not daily diluted capital or approved valuation.",
+  "records": [
+    {
+      "caseId": "SAGE|ZULRESSO|NDA211371|2019",
+      "ticker": "SAGE",
+      "cik": "0001597553",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 47092657,
+      "sharesMeasurementDate": "2019-02-12",
+      "filedDate": "2019-02-19",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2019-02-20",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1597553/000156459019003191/sage-10k_20181231.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1597553/000156459019003191/0001564590-19-003191-index.htm",
+      "originalSourceDescription": "Sage FY2018 10-K submitted Feb 19 2019 at 07:33 ET, cover reports 47,092,657 outstanding common shares Feb 12. Conservative first use Feb 20. An additional older Q3 2018 published filing is required for T-79 entry because this annual filing came later."
+    }
+  ]
+}
