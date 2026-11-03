@@ -62,6 +62,15 @@ function consolidate(input){
   if(r.archivedEventKey && !leadByArchive.has(r.archivedEventKey))
    leadByArchive.set(r.archivedEventKey,r);
  }
+ const crosswalk=input.issuerCrosswalk;
+ if(!crosswalk || crosswalk.scope!=="FDA_2016_2019_APPROVAL_SPONSOR_CURRENT_REGISTRY_NAME_RESEARCH"||
+  !Array.isArray(crosswalk.rows))throw Error("RAAS_FDA_ISSUER_CROSSWALK_INVALID");
+ const crosswalkById=new Map();
+ for(const r of crosswalk.rows){
+  if(!r.fdaCandidateId||crosswalkById.has(r.fdaCandidateId))
+   throw Error("RAAS_FDA_ISSUER_CROSSWALK_INVALID");
+  crosswalkById.set(r.fdaCandidateId,r);
+ }
  const candidates=[];
  for(const a of archive){
   const matched=leadByArchive.get(a.key);
@@ -87,8 +96,16 @@ function consolidate(input){
   if(!c||c.status!=="FDA_APPROVAL_DISCOVERY_ONLY"||!day(c.actualApprovalDate)||
    +c.actualApprovalDate.slice(0,4)<2016||+c.actualApprovalDate.slice(0,4)>2019||
    !url(c.fdaRecordUrl))throw Error("RAAS_FDA_ARCHIVE_INVALID");
+  const issuerLead=crosswalkById.get(c.id);
+  const candidateTicker=issuerLead?.status==="EXACT_NAME_PUBLIC_REGISTRY_LEAD"&&
+   /^[A-Z][A-Z0-9.-]{0,11}$/.test(issuerLead.candidateTicker||"")?
+   issuerLead.candidateTicker:null;
   candidates.push({source:"FDA_ORIGINAL_APPROVAL_DISCOVERY",key:c.id,
-   ticker:null,archiveDate:null,actualFDAActionDate:c.actualApprovalDate,
+   ticker:candidateTicker,issuerStatus:candidateTicker?
+     "PRESENT_DAY_SPONSOR_NAME_MATCH_UNVERIFIED_HISTORIC_LISTING":
+     "ISSUER_IDENTITY_NOT_RESOLVED",
+   historicalIssuerIdentityVerified:false,
+   archiveDate:null,actualFDAActionDate:c.actualApprovalDate,
    application:c.applicationNumber,sponsor:c.sponsorName,
    pdufaTargetDate:null,firstLocatedTargetDisclosureDate:null,
    targetEvidenceUrl:null,actionEvidenceUrl:c.fdaRecordUrl,
@@ -115,6 +132,7 @@ function consolidate(input){
   status:"INCOMPLETE_RESEARCH_UNIVERSE",
   summary:{archiveCandidates:archive.length,
    fdaApprovalLeads:candidates.filter(c=>c.source==="FDA_ORIGINAL_APPROVAL_DISCOVERY").length,
+   currentTickerNameMatchLeads:candidates.filter(c=>c.source==="FDA_ORIGINAL_APPROVAL_DISCOVERY"&&c.ticker).length,
    primaryTargetSourceLeads:leads.length,
    archiveDateNotTrueTarget:mismatches.length,
    historicallyEligibleTrades:0,
@@ -137,7 +155,10 @@ if(require.main===module){
   const primaryLeads=JSON.parse(fs.readFileSync(path.join(root,
    "new-platform/frontend/data/raas-historical-2020-primary-source-leads.json"),"utf8"));
   const approvalDiscovery=JSON.parse(fs.readFileSync(approvalPath,"utf8"));
-  const result=consolidate({archiveCsv,primaryLeads,approvalDiscovery});
+  const crosswalkPath=process.env.RAAS_FDA_CROSSWALK_OUTPUT||
+   path.join(root,"raas-fda-2016-2019-issuer-crosswalk.json");
+  const issuerCrosswalk=JSON.parse(fs.readFileSync(crosswalkPath,"utf8"));
+  const result=consolidate({archiveCsv,primaryLeads,approvalDiscovery,issuerCrosswalk});
   const output=process.env.RAAS_EVENT_WORKLIST_OUTPUT||path.join(root,"raas-historical-event-worklist.json");
   fs.writeFileSync(output,JSON.stringify(result,null,2)+"\n");
   const summary={status:result.status,...result.summary,archiveTargetMismatches:result.archiveTargetMismatches};
