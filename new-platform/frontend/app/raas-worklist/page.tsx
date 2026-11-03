@@ -232,6 +232,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
    <Link href={hrefForTrial(trial,"pre")} aria-current={anchorStage==="pre"?"location":undefined}>TOP · 30 metrics</Link>
    <Link href={hrefForTrial(trial,"post")} aria-current={anchorStage==="post"?"location":undefined}>BOTTOM · 30 metrics</Link>
    <Link href="/raas-scan">Full 60-metric readiness scan</Link>
+   <Link href="#raas-fda-prediction-accuracy">FDA decision accuracy</Link>
   </nav>
   <FDAAccuracySection/>
   <FullRange903History/>
