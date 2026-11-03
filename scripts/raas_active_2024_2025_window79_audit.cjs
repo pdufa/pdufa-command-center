@@ -156,7 +156,7 @@ function build(research,sourceEvents){
   completedFDAFullCensusYears:0,independentlyValidatedTradingCases:0,
   approvedRaasMetrics:0,approvedOptimalWindow:null,
   warnings:["One row per source-backed issuer; overlapping grid windows are not independent trades.",
-   "These cases are source-selected approval examples; they are neither the two-year FDA outcome census nor an unbiased win/loss cohort.",
+   "These cases are source-selected approval and CRL examples; they are neither the two-year FDA outcome census nor an unbiased win/loss cohort.",
    "The net result deducts a hypothetical flat 1 percentage point, not verified historical execution costs.",
    "The SEC cover share snapshots and Alpaca raw/adjusted price arithmetic remain unvalidated for share continuity, actions and independent vendor consistency.",
    "SLNO's 2025 goal follows a 2024 formal extension; its revised date must have been public before the entry session.",

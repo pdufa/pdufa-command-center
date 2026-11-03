@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated.",
+  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -223,6 +223,42 @@
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
       "notes": "Lexicon original July 16 2024 announced review goal Dec 20 2024 following June 20 NDA 210934 resubmission. The 2019 CRL is a prior review cycle, not the Dec 2024 result. June 9 2017 inTandem3 Phase 3 met primary endpoint in broad T1D, but FDA Dec 2024 official letter found CKD-specific benefit-risk unfavorable due to DKA; phase-3 success does not establish favorable safety in the proposed population. Company publicly disclosed Dec 20 2024 CRL at 16:30 ET, and FDA PDF was published retrospectively, not available before CRL. Q2 SEC cover 361,492,295 as of Jul 30 2024, filed Aug 2; Q3 SEC cover same number as of Nov 8, filed Nov 13; equality of snapshots is NOT proof of daily continuity. FDA Oct 31 2024 advisory committee and issuer subsequent abandonment of launch preparations were pre-outcome public information and must not be erased. Research lead only; entry market cap and independent price returns remain unverified."
+    },
+    {
+      "caseId": "SRRK|APITEGROMAB_SMA|BLA761463|2025_CRL",
+      "ticker": "SRRK",
+      "programId": "SRRK_APITEGROMAB_SAPPHIRE_SMA_FIRST_BLA_2025_CRL",
+      "nctIds": [
+        "NCT05156320"
+      ],
+      "drug": "apitegromab (SRK-015)",
+      "indication": "spinal muscular atrophy (SMA) patients receiving SMN-targeted treatment",
+      "application": "BLA 761463",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2025-09-22",
+      "targetAnnouncementDate": "2025-03-25",
+      "targetAnnouncementSourceUrl": "https://investors.scholarrock.com/news-releases/news-release-details/fda-grants-priority-review-biologics-license-application-bla-and",
+      "phase3ReadoutDate": "2024-10-07",
+      "phase3ReadoutSourceUrl": "https://investors.scholarrock.com/news-releases/news-release-details/scholar-rock-reports-apitegromab-meets-primary-endpoint-phase-3",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT05156320",
+      "actualFDAActionDate": "2025-09-22",
+      "actualFDAActionSourceUrl": "https://download.open.fda.gov/crl/CRL_BLA761463_20250922.pdf",
+      "actualFDAOutcome": "CRL",
+      "firstPublicFDAActionAnnouncementDate": "2025-09-23",
+      "firstPublicFDAActionAnnouncementUrl": "https://investors.scholarrock.com/news-releases/news-release-details/fda-issues-complete-response-letter-crl-apitegromab-treatment/",
+      "fdaLetterRetrospectivelyPublishedAfterAction": true,
+      "primaryOutcomeReason": "THIRD_PARTY_FILL_FINISH_FACILITY_CGMP_DEFICIENCIES",
+      "phase3PrimaryEndpointMet": true,
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1727196/000155837025007655/srrk-20250331x10q.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "2025 Scholar Rock original BLA 761463 apitegromab for SMA, PDUFA Sept 22 2025 publicly announced March 25 2025. Positive pivotal Phase 3 SAPPHIRE NCT05156320 primary endpoint announced Oct 7 2024. Official FDA CRL electronically signed 2025-09-22 17:47:21 ET, whereas first located sponsor public CRL announcement was Sept 23 2025 at 07:00 ET. FDA CRL cited third-party Catalent Indiana fill-finish facility inspection/cGMP deficiencies, not a failed SAPPHIRE primary endpoint; note additional labeling edits and administrative requests but no efficacy/safety approvability issue reported. Archived FDA PDF is retrospective, not pre-CRL public information. SEC Q1 2025 10-Q filed May 14 07:20 ET cover shows 94,945,562 shares May 12; Q2 10-Q filed Aug 6 07:16 ET cover shows 96,127,265 shares Aug 1; increase 1,181,703 and significant outstanding pre-funded warrants imply cap/issuer financing continuity audit remains necessary. Later 2026 BLA resubmission is separate FDA review cycle, never 2025 approved outcome. Research only; no validated entry-day market cap or trade."
     }
   ]
 }

@@ -40,7 +40,7 @@ const discovery={
  years:[
   {year:2024,totalFdaApprovalActionLeads:3,archivedCRLLetterLeads:2,
    completePdufaEventCensus:false,approvedHistoricalTrades:0,calibratedRaasMetrics:0},
-  {year:2025,totalFdaApprovalActionLeads:3,archivedCRLLetterLeads:1,
+  {year:2025,totalFdaApprovalActionLeads:3,archivedCRLLetterLeads:2,
    completePdufaEventCensus:false,approvedHistoricalTrades:0,calibratedRaasMetrics:0}
  ],approvalActionLeads:[a,mdgl,gern,b,slno,c],crlLetterLeads:[crl("2024"),{
  caseId:"NDA 210934|2024-12-20|CRL_NDA210934_20241220.pdf|Lexicon Pharmaceuticals, Inc.",
@@ -49,7 +49,14 @@ const discovery={
  sourceUrl:"https://api.fda.gov/transparency/crl.json",actualFdaActionType:"CRL",
  originalPdufaTargetDate:null,originalPublicCRLDisclosureDate:null,
  preDecisionInformationEligible:false,eligibleForRaasCalibration:false
- },crl("2025")],
+ },crl("2025"),{
+ caseId:"BLA 761463|2025-09-22|CRL_BLA761463_20250922.pdf|Scholar Rock, Inc.",
+ applicationNumber:"BLA 761463",letterDate:"2025-09-22",year:2025,
+ letterType:"COMPLETE RESPONSE",companyName:"Scholar Rock, Inc.",
+ sourceUrl:"https://api.fda.gov/transparency/crl.json",actualFdaActionType:"CRL",
+ originalPdufaTargetDate:null,originalPublicCRLDisclosureDate:null,
+ preDecisionInformationEligible:false,eligibleForRaasCalibration:false
+ }],
  originalSourceLeadsCrosscheck:[],fullFDAEventCensusYearsAudited:0,
  approvedHistoricalTrades:0,approvedRaasCalibrations:0
 };
@@ -58,12 +65,12 @@ const make=overrides=>m.build({discovery,config,archiveCsv,known,intake,
 test("review queue enumerates all official original, supplemental and CRL actions without loss",()=>{
  const r=make();
  assert.equal(r.scope,"RAAS_ACTIVE_2024_2025_FDA_SOURCE_EVIDENCE_TRIAGE_QUEUE");
- assert.equal(r.totals.originalSourceLeads,6);
+ assert.equal(r.totals.originalSourceLeads,7);
  assert.equal(r.totals.archiveUnverifiedTargetDateLeads,2);
  assert.equal(r.totals.FDAApprovalActionLeads,6);
- assert.equal(r.totals.FDAArchivedCRLLetterLeads,3);
- assert.equal(r.totals.reviewRows,17);
- assert.deepEqual(r.reviewRows.map(x=>x.reviewPriority),[1,1,1,1,1,1,2,2,3,3,3,4,4,4,4,5,5]);
+ assert.equal(r.totals.FDAArchivedCRLLetterLeads,4);
+ assert.equal(r.totals.reviewRows,19);
+ assert.deepEqual(r.reviewRows.map(x=>x.reviewPriority),[1,1,1,1,1,1,1,2,2,3,3,3,3,4,4,4,4,5,5]);
  assert.equal(r.fullYearsAudited,0);
  assert.equal(r.validatedHistoricalTradingCases,0);
  assert.equal(r.approvedRaasCalibrations,0);
@@ -96,6 +103,16 @@ test("2024 Zoryve supplemental outcome and 2025 Symbravo original FDA action mat
  assert.equal(original.find(x=>x.ticker==="SLNO").firstLocatedTargetAnnouncementDate,"2024-11-26");
  assert.equal(original.find(x=>x.ticker==="SLNO").retrospectiveActionDate,"2025-03-26");
  assert.deepEqual(original.find(x=>x.ticker==="SLNO").matchedOfficialApprovalActionIds,[slno.id]);
+ const srrk=original.find(x=>x.ticker==="SRRK");
+ assert.equal(srrk.ticker,"SRRK");
+ assert.equal(srrk.year,2025);
+ assert.equal(srrk.originalPublicPdufaTargetDate,"2025-09-22");
+ assert.equal(srrk.firstLocatedTargetAnnouncementDate,"2025-03-25");
+ assert.equal(srrk.retrospectiveActionDate,"2025-09-22");
+ assert.equal(srrk.actualOutcome,"CRL");
+ assert.deepEqual(srrk.matchedOfficialApprovalActionIds,[]);
+ assert.equal(srrk.matchedOfficialCrlLetterIds.length,1);
+ assert.equal(srrk.crlOfficialPDFWasNotPublicAtTradeEntry,true);
  const lxrx=original.find(x=>x.ticker==="LXRX");
  assert.equal(lxrx.ticker,"LXRX");
  assert.equal(lxrx.actualOutcome,"CRL");
@@ -152,7 +169,7 @@ test("review CSV retains all source blockers and escapes hostile CSV text",()=>{
  const d=make();
  const csv=m.csvForReview(d);
  const lines=csv.trim().split("\n");
- assert.equal(lines.length,18);
+ assert.equal(lines.length,20);
  assert.match(csv,/FDA_ORIGINAL_APPROVAL_ACTION/);
  assert.match(csv,/FDA_SUPPLEMENTAL_APPROVAL_ACTION/);
  assert.match(csv,/ORIGINAL_FDA_AND_ISSUER_SOURCE_LEAD/);
@@ -184,5 +201,15 @@ test("FDA CRL matching is required for 2024 Lexicon original source; no archive 
  assert.throws(()=>make({discovery:bad}),/ORIGINAL_CRL_NOT_INDEPENDENTLY_MATCHED/);
  const wrong=structuredClone(known);
  wrong.records.find(x=>x.ticker==="LXRX").actualFDAOutcome="APPROVED";
+ assert.throws(()=>make({known:wrong}),/ORIGINAL_FDA_ACTION_NOT_INDEPENDENTLY_MATCHED/);
+});
+
+test("SRRK official manufacturing CRL must not be classified as FDA approval",()=>{
+ const bad=structuredClone(discovery);
+ bad.crlLetterLeads=bad.crlLetterLeads.filter(c=>c.applicationNumber!=="BLA 761463");
+ bad.years.find(y=>y.year===2025).archivedCRLLetterLeads=1;
+ assert.throws(()=>make({discovery:bad}),/ORIGINAL_CRL_NOT_INDEPENDENTLY_MATCHED/);
+ const wrong=structuredClone(known);
+ wrong.records.find(x=>x.ticker==="SRRK").actualFDAOutcome="APPROVED";
  assert.throws(()=>make({known:wrong}),/ORIGINAL_FDA_ACTION_NOT_INDEPENDENTLY_MATCHED/);
 });

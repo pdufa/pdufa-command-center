@@ -14,7 +14,9 @@ const targets={
  GERN:{entry:"2024-04-01",exit:"2024-05-31",gross:11.99,cap:1731.01,old:true},
  SLNO:{entry:"2025-01-07",exit:"2025-03-13",gross:6.08,cap:1992.89,old:true},
  // Synthetic regression-only return, never actual historical LXRX performance.
- LXRX:{entry:"2024-10-02",exit:"2024-12-06",gross:-20.00,cap:450,old:true}
+ LXRX:{entry:"2024-10-02",exit:"2024-12-06",gross:-20.00,cap:450,old:true},
+ // Synthetic 2025 manufacturing CRL regression-only return, not actual SRRK performance.
+ SRRK:{entry:"2025-07-07",exit:"2025-09-08",gross:-12,cap:2500,old:true}
 };
 function fixture(){
  const sourceLeads=[],caseResearch=[],priceDataRawAndAdjusted=[];
@@ -55,19 +57,19 @@ function fixture(){
   studyStartDate:"2024-01-01",studyEndDate:"2025-12-31",
   sourceLeadCount:events.records.length,sourceLeads,caseResearch,priceDataRawAndAdjusted};
 }
-test("Six source-backed cases, including one 2024 CRL, remain research-only and not trading approvals",()=>{
+test("Seven source-backed cases, including separate 2024 and 2025 CRLs, remain research-only and not trading approvals",()=>{
  const x=m.build(fixture(),events);
- assert.equal(x.sourceCaseCount,6);
- assert.equal(x.allProvisional.cases,6);
- assert.equal(x.allProvisional.provisionalMeanGrossPct,-2.45);
- assert.equal(x.allProvisional.provisionalMedianGrossPct,-3.04);
- assert.equal(x.allProvisional.hypotheticalMeanNetPct,-3.45);
+ assert.equal(x.sourceCaseCount,7);
+ assert.equal(x.allProvisional.cases,7);
+ assert.equal(x.allProvisional.provisionalMeanGrossPct,-3.82);
+ assert.equal(x.allProvisional.provisionalMedianGrossPct,-6.03);
+ assert.equal(x.allProvisional.hypotheticalMeanNetPct,-4.82);
  assert.equal(x.byYear[2024].cases,4);
- assert.equal(x.byYear[2025].cases,2);
- assert.equal(x.byOutcome.CRL.cases,1);
+ assert.equal(x.byYear[2025].cases,3);
+ assert.equal(x.byOutcome.CRL.cases,2);
  assert.equal(x.byOutcome.APPROVED.cases,5);
  assert.equal(x.rows.find(r=>r.ticker==="LXRX").actualFdaOutcomeRetrospective,"CRL");
- assert.equal(x.byYear[2025].provisionalMeanGrossPct,0.03);
+ assert.equal(x.byYear[2025].provisionalMeanGrossPct,-3.98);
  assert.equal(x.independentlyValidatedTradingCases,0);
  assert.equal(x.approvedOptimalWindow,null);
  assert.equal(x.approvedRaasMetrics,0);
@@ -98,14 +100,14 @@ test("A missing T79/14 price window is represented as blocked, never fabricated 
  const out=m.build(x,events);
  assert.equal(out.blockedCases,1);
  assert.equal(out.rows.find(x=>x.ticker==="ARQT").grossReturnPct,null);
- assert.equal(out.allProvisional.cases,5);
+ assert.equal(out.allProvisional.cases,6);
 });
 test("CSV output quotes source text and escapes formulas before spreadsheet opening",()=>{
  const result=m.build(fixture(),events);result.rows[0].ticker='=HYPERLINK("https://evil.test","x")';
  const csv=m.csv(result);
  assert.ok(csv.includes("'=HYPERLINK"));
  assert.ok(!csv.includes('"=HYPERLINK'));
- assert.equal(csv.trim().split("\n").length,7);
+ assert.equal(csv.trim().split("\n").length,8);
 });
 
 test("A CRL must stay a retrospectively known outcome, not be transformed into approval",()=>{
@@ -138,4 +140,20 @@ test("CSV negative gross and net returns are numeric cells, and formula text rem
  const contaminated=m.build(fixture(),events);
  contaminated.rows[0].grossReturnPct="=HYPERLINK(1,2)";
  assert.throws(()=>m.csv(contaminated),/EXPORT_NON_NUMERIC_RESULT/);
+});
+
+test("SRRK July-to-September 2025 synthetic CRL regression stays research only",()=>{
+ const r=m.build(fixture(),events);
+ const c=r.rows.find(x=>x.ticker==="SRRK");
+ assert.equal(c.actualFdaOutcomeRetrospective,"CRL");
+ assert.equal(c.entryDate,"2025-07-07");
+ assert.equal(c.exitDate,"2025-09-08");
+ assert.equal(c.revisedPdufaGoalDate,"2025-09-22");
+ assert.equal(c.grossReturnPct,-12);
+ assert.equal(c.validatedTradingCase,false);
+ assert.equal(r.completedFDAFullCensusYears,0);
+ assert.equal(r.approvedRaasMetrics,0);
+ const forged=fixture();
+ forged.caseResearch.find(x=>x.ticker==="SRRK").namedWindow79to14.actualEntryDate="2025-03-24";
+ assert.throws(()=>m.build(forged,events),/POINT_IN_TIME_OR_CAP_INVALID/);
 });
