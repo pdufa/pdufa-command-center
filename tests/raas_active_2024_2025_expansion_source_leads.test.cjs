@@ -56,7 +56,7 @@ test("Historical RAAS remains exactly nine selected research events with no extr
  assert.equal(source.records.length,9);
  assert.equal(expansion.approvedAdditionsTo2024To2025Backtest,0);
  const fullGrid=fs.readFileSync(path.join(root,"scripts/raas_active_2024_2025_full_90_3_grid.cjs"),"utf8");
- assert.match(fullGrid,/EVENTS|sourceCases|sourcePrograms/);
+ assert.match(fullGrid,/allSourceCases|goalVersionCaseSets/);
 });
 test("Mobile research page exposes backlog with citations and explicit missing validation",()=>{
  const page=fs.readFileSync(path.join(root,"new-platform/frontend/app/raas-worklist/page.tsx"),"utf8");
