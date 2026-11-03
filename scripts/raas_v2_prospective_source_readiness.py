@@ -318,6 +318,44 @@ def execute(asof=ASOF, data=DATA):
         as_of=asof)
     source=audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-top8-2026-source-intake.json")
     selected=validate_top8_source_intake(source,old_rows,asof)
+    # Use the EXISTING eight-source ledger, enriching the SAME nightly CSV
+    # rather than adding a conflicting calendar. No independent review claim.
+    findings={r["researchCaseKey"]:r for r in selected}
+    reviewed=0
+    revised=0
+    for entry in report["blockedSourceItems"]:
+        match=findings.get(entry["researchCaseKey"])
+        entry["issuerSourceFound"]=False
+        entry["issuerSourceLink"]=None
+        entry["applicationClassIssuerReported"]=None
+        entry["firstGoalForThisCycleIssuerReported"]=None
+        entry["knownRevisedGoalNotOriginalPrediction"]=False
+        entry["sourceResearchStatus"]="NOT_YET_SOURCE_REVIEWED"
+        entry["independentlyVerifiedApplicationCycle"]=False
+        if not match:
+            continue
+        reviewed+=1
+        first=audit.day(match["firstReportedReviewCycleGoalDate"])
+        listed=audit.day(entry["legacyGoalDateUnverified"])
+        assert_safe(first<=listed and match["issuerPublishedCurrentGoalDate"]==
+                    entry["legacyGoalDateUnverified"],
+                    "ISSUER_SOURCE_MISMATCH_WITH_LEGACY_CASE_GOAL")
+        is_revised=first<listed
+        entry["issuerSourceFound"]=True
+        entry["issuerSourceLink"]=match["issuerGoalSourceUrl"]
+        entry["applicationClassIssuerReported"]=match["applicationType"]
+        entry["firstGoalForThisCycleIssuerReported"]=first.isoformat()
+        entry["knownRevisedGoalNotOriginalPrediction"]=is_revised
+        entry["sourceResearchStatus"]=(
+            "REVISED_GOAL_MUST_NOT_COUNT_AS_FUTURE_ORIGINAL_DEADLINE"
+            if is_revised else "ISSUER_GOAL_LOCATED_EXACT_CYCLE_STILL_UNVERIFIED")
+        revised+=int(is_revised)
+    report["issuerSourceReviewedFutureDeadlineLeads"]=reviewed
+    report["sourceDocumentedFirstGoalStillFuture"]=reviewed-revised
+    report["knownRevisedDeadlineExcludedFromOriginalGoalCount"]=revised
+    report["unreviewedLegacyDeadlineLeads"]=report["sourceQueueCount"]-reviewed
+    report["unexcludedLegacyDeadlineLeadsNotIndependentlyVerified"]=(
+        report["sourceQueueCount"]-revised)
     report["newSourceIntakeStage"]="EIGHT_ISSUER_PUBLISHED_GOAL_SOURCES_FOUND_NOT_INDEPENDENTLY_CERTIFIED"
     report["issuerPublishedGoalSourceLeadsCount"]=len(selected)
     report["independentlyCertifiedOriginalGoalRecords"]=0
@@ -348,7 +386,11 @@ def export(report, json_out, csv_out):
           "originalGoalPrimarySourceVerified","exactApplicationReviewCycleVerified",
           "publicSourceTimelineVerified","independentCohortIssuerFamilyVerified",
           "immutablePreactionThreeWayProbabilityVector",
-          "independentFDAOriginalGoalOutcome","researchStatus"]
+          "independentFDAOriginalGoalOutcome","researchStatus",
+          "issuerSourceFound","applicationClassIssuerReported",
+          "firstGoalForThisCycleIssuerReported","knownRevisedGoalNotOriginalPrediction",
+          "sourceResearchStatus","issuerSourceLink",
+          "independentlyVerifiedApplicationCycle"]
     with path.open("w",encoding="utf-8",newline="") as f:
         w=csv.DictWriter(f,fieldnames=keys,extrasaction="ignore")
         w.writeheader()
@@ -365,7 +407,10 @@ def main():
            os.getenv("RAAS_V2_SOURCE_STATUS_CSV",str(ROOT/"raas-v2-prospective-source-review.csv")))
     brief={k:report[k] for k in
            ("status","version","sourceQueueCount","distinctLegacyIssuerTickers",
-            "byPriority","issuerPublishedGoalSourceLeadsCount","readyForThreeWayProspectiveFreeze",
+            "byPriority","issuerPublishedGoalSourceLeadsCount",
+            "issuerSourceReviewedFutureDeadlineLeads",
+            "knownRevisedDeadlineExcludedFromOriginalGoalCount",
+            "readyForThreeWayProspectiveFreeze",
             "verifiedProspectiveForecasts","approvedRAASMetricCalibrations")}
     print(json.dumps(brief,sort_keys=True))
     if os.getenv("GITHUB_STEP_SUMMARY"):

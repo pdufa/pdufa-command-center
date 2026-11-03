@@ -91,6 +91,7 @@ function V2CandidateReadiness(){
    <div><strong>{x.approvedMetricCalibrations} / 60</strong><span>Approved RAAS metric calibrations</span></div>
    <div><strong>V1</strong><span>Active RAAS foundation; V2 not released</span></div>
   </div>
+  <p className={css.notice}>Of {x.remainingLegacyFutureCaseSourceLeadsAtSnapshot} old future-dated binary case leads, {x.issuerDocumentedNearTermCycleSourceLeads} have issuer goal sources. <strong>{x.knownRevisedGoalExcludedFromOriginalDeadlineQueue} revised deadline</strong> (CAPR) is excluded from the future original-goal count; {x.legacyCasesStillUnreviewedByIssuerSources} cases still lack this source review. The remaining {x.remainingUnexcludedLegacyDateResearchLeads} are not independently certified original-goal forecasts.</p>
   <details id="raas-v2-source-verified-eight">
    <summary>{v2Top8Sources.goalSourceLeads} dated issuer source leads · original, supplemental, revised and licensed sponsor distinctions</summary>
    <p><strong>Contemporaneous issuer and SEC publications located; not independently certified FDA application identities or predictions.</strong> CAPR's first target already passed and was extended, CYTK is a supplemental NDA, CORT is a post-CRL resubmission, and ANAB receives financial rights to a Vanda-licensed program.</p>
