@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH",
+  "sourceAsOf": "2026-11-02",
+  "note": "AcelRx dated Q2 2018 SEC cover common stock snapshot published Aug2; post-July share issue risk, no verified daily capitalization.",
+  "records": [
+    {
+      "caseId": "ACRX|DSUVIA|NDA209128|2018",
+      "ticker": "ACRX",
+      "cik": "0001427925",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 60599914,
+      "sharesMeasurementDate": "2018-07-26",
+      "filedDate": "2018-08-02",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2018-08-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1427925/000143774918014328/acrx20180630_10q.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1427925/000143774918014328/0001437749-18-014328-index.htm",
+      "originalSourceDescription": "AcelRx Q2 2018 10-Q signed and filed August 2, 2018. Cover reports 60,599,914 common shares July 26. Conservative use August 3. Earlier May Q1 cover reports 51,320,598: substantial issuance and financing means no constant shares or verified market capitalization."
+    }
+  ]
+}
