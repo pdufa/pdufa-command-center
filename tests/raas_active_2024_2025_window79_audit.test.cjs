@@ -18,7 +18,9 @@ const targets={
  // Synthetic 2025 manufacturing CRL regression-only return, not actual SRRK performance.
  SRRK:{entry:"2025-07-07",exit:"2025-09-08",gross:-12,cap:2500,old:true},
  // Synthetic CYTK approval return for deterministic tests, not actual Alpaca history.
- CYTK:{entry:"2025-10-08",exit:"2025-12-12",gross:8,cap:6000,old:true}
+ CYTK:{entry:"2025-10-08",exit:"2025-12-12",gross:8,cap:6000,old:true},
+ // SYNTHETIC return and capitalization for tests; NOT BBIO historical results.
+ BBIO:{entry:"2024-09-11",exit:"2024-11-15",gross:3,cap:5500,old:true}
 };
 function fixture(){
  const sourceLeads=[],caseResearch=[],priceDataRawAndAdjusted=[];
@@ -59,17 +61,17 @@ function fixture(){
   studyStartDate:"2024-01-01",studyEndDate:"2025-12-31",
   sourceLeadCount:events.records.length,sourceLeads,caseResearch,priceDataRawAndAdjusted};
 }
-test("Eight source-backed cases, including separate 2024 and 2025 CRLs, remain research-only and not trading approvals",()=>{
+test("Nine source-backed cases, including separate 2024 and 2025 CRLs, remain research-only and not trading approvals",()=>{
  const x=m.build(fixture(),events);
- assert.equal(x.sourceCaseCount,8);
- assert.equal(x.allProvisional.cases,8);
- assert.equal(x.allProvisional.provisionalMeanGrossPct,-2.34);
- assert.equal(x.allProvisional.provisionalMedianGrossPct,-3.04);
- assert.equal(x.allProvisional.hypotheticalMeanNetPct,-3.34);
- assert.equal(x.byYear[2024].cases,4);
+ assert.equal(x.sourceCaseCount,9);
+ assert.equal(x.allProvisional.cases,9);
+ assert.equal(x.allProvisional.provisionalMeanGrossPct,-1.75);
+ assert.equal(x.allProvisional.provisionalMedianGrossPct,-0.05);
+ assert.equal(x.allProvisional.hypotheticalMeanNetPct,-2.75);
+ assert.equal(x.byYear[2024].cases,5);
  assert.equal(x.byYear[2025].cases,4);
  assert.equal(x.byOutcome.CRL.cases,2);
- assert.equal(x.byOutcome.APPROVED.cases,6);
+ assert.equal(x.byOutcome.APPROVED.cases,7);
  assert.equal(x.rows.find(r=>r.ticker==="LXRX").actualFdaOutcomeRetrospective,"CRL");
  assert.equal(x.byYear[2025].provisionalMeanGrossPct,-0.99);
  assert.equal(x.independentlyValidatedTradingCases,0);
@@ -102,14 +104,14 @@ test("A missing T79/14 price window is represented as blocked, never fabricated 
  const out=m.build(x,events);
  assert.equal(out.blockedCases,1);
  assert.equal(out.rows.find(x=>x.ticker==="ARQT").grossReturnPct,null);
- assert.equal(out.allProvisional.cases,7);
+ assert.equal(out.allProvisional.cases,8);
 });
 test("CSV output quotes source text and escapes formulas before spreadsheet opening",()=>{
  const result=m.build(fixture(),events);result.rows[0].ticker='=HYPERLINK("https://evil.test","x")';
  const csv=m.csv(result);
  assert.ok(csv.includes("'=HYPERLINK"));
  assert.ok(!csv.includes('"=HYPERLINK'));
- assert.equal(csv.trim().split("\n").length,9);
+ assert.equal(csv.trim().split("\n").length,10);
 });
 
 test("A CRL must stay a retrospectively known outcome, not be transformed into approval",()=>{
@@ -170,4 +172,24 @@ test("CYTK revised PDUFA goal must be public before October T-79 entry; no old-g
  const changed=structuredClone(events);
  changed.records.find(x=>x.ticker==="CYTK").fdaGoalExtensionAnnouncedDate="2025-10-09";
  assert.throws(()=>m.build(fixture(),changed),/GOAL_EXTENSION_CHRONOLOGY_INVALID|POINT_IN_TIME_OR_CAP_INVALID/);
+});
+
+test("BridgeBio 2024 ATTRuby original goal and as-of shares avoid lookahead in T-79/14 research",()=>{
+ const x=m.build(fixture(),events),r=x.rows.find(e=>e.ticker==="BBIO");
+ assert.equal(r.year,2024);
+ assert.equal(r.revisedPdufaGoalDate,"2024-11-29");
+ assert.equal(r.goalFirstPublicDate,"2024-02-05");
+ assert.equal(r.entryDate,"2024-09-11");
+ assert.equal(r.exitDate,"2024-11-15");
+ assert.equal(r.actualFdaActionDate,"2024-11-22");
+ assert.equal(r.actualFdaOutcomeRetrospective,"APPROVED");
+ assert.equal(r.grossReturnPct,3); // fabricated regression fixture, NOT market data
+ assert.equal(r.entryCapResearchMillions,5500);
+ assert.equal(r.independentlyVerifiedPrice,false);
+ const bad=fixture();
+ bad.caseResearch.find(e=>e.ticker==="BBIO").namedWindow79to14.actualEntryDate="2024-08-01";
+ assert.throws(()=>m.build(bad,events),/POINT_IN_TIME_OR_CAP_INVALID/);
+ const forged=structuredClone(events);
+ forged.records.find(e=>e.ticker==="BBIO").targetAnnouncementDate="2024-11-23";
+ assert.throws(()=>m.build(fixture(),forged),/POINT_IN_TIME_OR_CAP_INVALID/);
 });
