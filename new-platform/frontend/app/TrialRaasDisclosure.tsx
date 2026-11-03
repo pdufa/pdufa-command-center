@@ -1,5 +1,6 @@
 "use client";
 import {useState} from "react";
+import RaasLiveRegistryEvidence from "./RaasLiveRegistryEvidence";
 import type {ReadoutRow} from "../lib/phase3-public-readout";
 import type {BenefitFeed} from "../lib/benefit-assessments";
 import {exactReadoutBenefit} from "../lib/phase3-readout-sort";
@@ -157,6 +158,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
          {currentEvidence.mappedMetrics===0&&<p>No metric-specific issuer observations are in the saved RAAS intake for this NCT and ticker. The general trial row may have a dated public release, but that is not equivalent to graded clinical, market or risk evidence.</p>}
        </div>
      </details>
+     <RaasLiveRegistryEvidence nctId={row.nctId} stage={bucket}/>
      <div className={css.snapshots} aria-label={label+" score snapshots"}>
        {(["ENTRY","CURRENT","EXIT"] as const).map(period=>
          <button key={period} type="button" className={css.snapshotButton} aria-pressed={snapshot===period}
