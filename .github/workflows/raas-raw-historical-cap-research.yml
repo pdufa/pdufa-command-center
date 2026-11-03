@@ -8,6 +8,8 @@ on:
       - 'tests/raas_historical_raw_market_cap_research.test.cjs'
       - 'scripts/raas_historical_candidate_review_queue.cjs'
       - 'tests/raas_historical_candidate_review_queue.test.cjs'
+      - 'scripts/raas_historical_provisional_window_grid.cjs'
+      - 'tests/raas_historical_provisional_window_grid.test.cjs'
       - 'new-platform/frontend/data/raas-2020-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-historical-2020-primary-source-leads.json'
       - '.github/workflows/raas-raw-historical-cap-research.yml'
@@ -17,6 +19,8 @@ on:
       - 'tests/raas_historical_raw_market_cap_research.test.cjs'
       - 'scripts/raas_historical_candidate_review_queue.cjs'
       - 'tests/raas_historical_candidate_review_queue.test.cjs'
+      - 'scripts/raas_historical_provisional_window_grid.cjs'
+      - 'tests/raas_historical_provisional_window_grid.test.cjs'
       - 'new-platform/frontend/data/raas-2020-sec-cover-share-leads.json'
       - 'new-platform/frontend/data/raas-historical-2020-primary-source-leads.json'
       - '.github/workflows/raas-raw-historical-cap-research.yml'
@@ -50,6 +54,14 @@ jobs:
         run: |
           node --test tests/raas_historical_candidate_review_queue.test.cjs
           node scripts/raas_historical_candidate_review_queue.cjs
+      - name: Test and calculate provisional T-90 to T-3 entry/exit windows with action censoring
+        if: always()
+        env:
+          RAAS_RAW_CAP_OUTPUT: ${{ runner.temp }}/raas-historical-raw-cap-research.json
+          RAAS_WINDOW_RESEARCH_OUTPUT: ${{ runner.temp }}/raas-provisional-window-diagnostics.json
+        run: |
+          node --test tests/raas_historical_provisional_window_grid.test.cjs
+          node scripts/raas_historical_provisional_window_grid.cjs
       - name: Save unapproved historical capitalization research
         if: always()
         uses: actions/upload-artifact@v4
@@ -58,5 +70,6 @@ jobs:
           path: |
             ${{ runner.temp }}/raas-historical-raw-cap-research.json
             ${{ runner.temp }}/raas-historical-intake-review-queue.json
+            ${{ runner.temp }}/raas-provisional-window-diagnostics.json
           retention-days: 30
           if-no-files-found: ignore
