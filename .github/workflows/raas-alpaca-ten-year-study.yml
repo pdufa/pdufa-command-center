@@ -1,25 +1,11 @@
-name: RAAS Alpaca 2016-2025 source-gated PDUFA price research
+name: RAAS ARCHIVED 2016-2025 historical research (manual only)
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'scripts/raas_alpaca_ten_year_study.cjs'
-      - 'tests/raas_alpaca_ten_year_study.test.cjs'
-      - 'new-platform/frontend/data/raas-ten-year-pdufa-intake.json'
-      - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
-      - '.github/workflows/raas-alpaca-ten-year-study.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/raas_alpaca_ten_year_study.cjs'
-      - 'tests/raas_alpaca_ten_year_study.test.cjs'
-      - 'new-platform/frontend/data/raas-ten-year-pdufa-intake.json'
-      - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
-      - '.github/workflows/raas-alpaca-ten-year-study.yml'
+
 permissions:
   contents: read
 jobs:
-  ten-year-research:
+  archived-ten-year-research:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -29,11 +15,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test 10-year study source and look-ahead restrictions
+      - name: Test archived 2016-2025 study source and look-ahead restrictions
         run: |
           node --test tests/raas_alpaca_historical_price_study.test.cjs
           node --test tests/raas_alpaca_ten_year_study.test.cjs
-      - name: Research historic SIP adjusted bars (candidate prices are not validated trade opportunities)
+      - name: ARCHIVE only - Research 2016-2025 SIP adjusted bars (candidate prices are not validated trade opportunities)
         env:
           APCA_API_KEY_ID: ${{ github.event_name != 'pull_request' && secrets.APCA_API_KEY_ID || '' }}
           APCA_API_SECRET_KEY: ${{ github.event_name != 'pull_request' && secrets.APCA_API_SECRET_KEY || '' }}
@@ -41,7 +27,7 @@ jobs:
           ALPACA_SECRET_KEY: ${{ github.event_name != 'pull_request' && secrets.ALPACA_SECRET_KEY || '' }}
           RAAS_TEN_YEAR_RESULT_PATH: ${{ runner.temp }}/raas-ten-year-pdufa-research.json
         run: node scripts/raas_alpaca_ten_year_study.cjs
-      - name: Upload strict 10-year coverage and price diagnostics
+      - name: Upload legacy 10-year coverage and price diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
