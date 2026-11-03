@@ -82,11 +82,14 @@ test("TOP and BOTTOM both contain the real on-demand source scan control",()=>{
   assert.ok(pane.includes(marker),marker);
  }
  for(const marker of ["data-raas-live-registry","/api/tools-trial-evidence?nct=",
-  'cache:"no-store"',"auditLiveRegistryForRaas","Scan registry evidence now",
+  'cache:"no-store"',"auditLiveRegistryForRaas","Run registry scan again",
   "source-backed","No RAAS rating inferred"].filter(x=>x!=="source-backed")){
   assert.ok(component.includes(marker),marker);
  }
  assert.match(route,/clinicaltrials\.gov\/api\/v2\/studies\//);
+ assert.ok(pane.includes("onToggle={event=>setExpanded(event.currentTarget.open)}"));
+ assert.ok(pane.includes("expanded&&<RaasLiveRegistryEvidence"));
+ assert.ok(component.includes("useEffect(()=>{scan();},[nctId,stage])"));
  assert.match(route,/hasSession/);
  for(const rel of ["lib/raas-live-registry-audit.ts","app/RaasLiveRegistryEvidence.tsx",
    "app/TrialRaasDisclosure.tsx"]){
