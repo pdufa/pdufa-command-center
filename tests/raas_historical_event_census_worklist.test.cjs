@@ -16,6 +16,11 @@ const crlDiscovery={schemaVersion:1,
  applicationNumber:"NDA 209510",letterDate:"2018-10-05",
  companyName:"Acacia Pharma Ltd",sourceUrl:"https://api.fda.gov/transparency/crl.json?search=NDA",
  actualFdaActionType:"CRL",status:"FDA_REDACTED_CRL_OUTCOME_RESEARCH_ONLY",
+ preDecisionInformationEligible:false,eligibleForRaasCalibration:false},
+ {caseId:"NDA 211988|2020-06-26|htx011.pdf|HERON",
+ applicationNumber:"NDA 211988",letterDate:"2020-06-26",
+ companyName:"Heron Therapeutics",sourceUrl:"https://api.fda.gov/transparency/crl.json?search=211988",
+ actualFdaActionType:"CRL",status:"FDA_REDACTED_CRL_OUTCOME_RESEARCH_ONLY",
  preDecisionInformationEligible:false,eligibleForRaasCalibration:false}]};
 const fda={scope:"FDA_DRUGS_AT_FDA_2016_2019_APPROVAL_DISCOVERY_NOT_PDUFA_CENSUS",
  candidates:[{id:"NDA123456|ORIG|1|20180111",year:2018,
@@ -24,7 +29,7 @@ const fda={scope:"FDA_DRUGS_AT_FDA_2016_2019_APPROVAL_DISCOVERY_NOT_PDUFA_CENSUS
   fdaRecordUrl:"https://api.fda.gov/drug/drugsfda.json?search=NDA123456"}]};
 test("first-public source findings validate without promoting historical market-cap or scores",()=>{
  const a=m.validateSourceLeads(primary);
- assert.equal(a.length,2);
+ assert.equal(a.length,3);
  assert.ok(a.every(x=>x.historicalCapitalizationAtEntryVerified===false));
  assert.ok(a.every(x=>x.firstLocatedNotFirstEverPublicDisclosure===true));
  assert.ok(a.every(x=>x.nctIds.length>=1));
@@ -33,14 +38,15 @@ test("source-based event date mismatch is exposed for DBVT, without changing rea
  const r=m.consolidate({archiveCsv:archive,primaryLeads:primary,approvalDiscovery:fda,issuerCrosswalk,crlDiscovery});
  assert.equal(r.summary.archiveCandidates,126);
  assert.equal(r.summary.fdaApprovalLeads,1);
- assert.equal(r.summary.fdaCrlDocumentLeads,1);
+ assert.equal(r.summary.fdaCrlDocumentLeads,2);
+ assert.equal(r.summary.fdaCrlDocumentsWithLocatedProgramCrosslink,1);
  const crl=r.candidates.find(c=>c.source==="FDA_REDACTED_CRL_OUTCOME_DISCOVERY");
  assert.equal(crl.actualOutcome,"CRL");
  assert.equal(crl.pdufaTargetDate,null);
  assert.equal(crl.preDecisionInformationEligible,false);
  assert.equal(crl.eligibleForCalibration,false);
  assert.equal(r.coverage[2018].fdaArchivedCrlLeads,1);
- assert.equal(r.summary.primaryTargetSourceLeads,2);
+ assert.equal(r.summary.primaryTargetSourceLeads,3);
  const dbvt=r.archiveTargetMismatches.find(x=>x.ticker==="DBVT");
  assert.ok(dbvt);
  assert.equal(dbvt.previouslyLabeledDate,"2020-08-03");
@@ -50,6 +56,17 @@ test("source-based event date mismatch is exposed for DBVT, without changing rea
  assert.ok(kala);assert.equal(kala.pdufaTargetDate,"2020-10-30");
  assert.equal(kala.actualFDAActionDate,"2020-10-26");
  assert.equal(kala.firstLocatedTargetDisclosureDate,"2020-05-26");
+ const heron=r.candidates.find(x=>x.primarySourceCaseId?.startsWith("HRTX|HTX011"));
+ assert.ok(heron);
+ assert.equal(heron.pdufaTargetDate,"2020-06-26");
+ assert.equal(heron.actualFDAActionDate,"2020-06-26");
+ assert.equal(heron.firstLocatedTargetDisclosureDate,"2020-02-19");
+ assert.equal(heron.nctIds.length,2);
+ const crlLink=r.candidates.find(x=>x.key.startsWith("NDA 211988|2020-06-26|"));
+ assert.deepEqual(crlLink.relatedPrimarySourceCaseIds,["HRTX|HTX011|NDA211988|2020"]);
+ assert.deepEqual(crlLink.sameApplicationAndActionDateLeads,["HRTX|HTX011|NDA211988|2020"]);
+ assert.equal(crlLink.duplicateReviewCycleRisk,true);
+ assert.equal(crlLink.eligibleForCalibration,false);
  assert.equal(r.summary.approvedRaasMetrics,0);
  assert.equal(r.summary.historicallyEligibleTrades,0);
  assert.ok(r.candidates.every(x=>x.eligibleForCalibration===false));
@@ -81,7 +98,7 @@ test("incomplete CRL archive does not create source-complete years or ex ante ra
  assert.equal(r.summary.fullCensusYears,0);
  assert.equal(r.summary.historicallyEligibleTrades,0);
  assert.equal(r.summary.approvedRaasMetrics,0);
- assert.equal(r.candidates.filter(x=>x.source==="FDA_REDACTED_CRL_OUTCOME_DISCOVERY").length,1);
+ assert.equal(r.candidates.filter(x=>x.source==="FDA_REDACTED_CRL_OUTCOME_DISCOVERY").length,2);
  assert.ok(r.candidates.every(x=>x.eligibleForCalibration!==true));
  assert.throws(()=>m.consolidate({archiveCsv:archive,primaryLeads:primary,
   approvalDiscovery:fda,issuerCrosswalk,crlDiscovery:{...crlDiscovery,cases:[

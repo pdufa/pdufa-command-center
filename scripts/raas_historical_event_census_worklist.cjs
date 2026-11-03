@@ -131,8 +131,20 @@ function consolidate(input){
    remainingGates:["PUBLIC_COMPANY_IDENTITY","PDUFA_DATE_ORIGINAL_PUBLICATION","PHASE3_READOUT_PUBLICATION",
     "HISTORICAL_MARKET_CAP","CRL_AND_EXTENSION_DENOMINATOR"]});
  }
+ const manualByApp=new Map();
+ for(const source of leads){
+  const k=String(source.application||"").toUpperCase().replace(/\s+/g,"");
+  if(!/^(NDA|BLA)\d{5,7}$/.test(k))continue;
+  if(!manualByApp.has(k))manualByApp.set(k,[]);
+  manualByApp.get(k).push(source);
+ }
  for(const c of crl.cases) {
+  const joined=manualByApp.get(String(c.applicationNumber||"")
+   .toUpperCase().replace(/\s+/g,""))||[];
   candidates.push({source:"FDA_REDACTED_CRL_OUTCOME_DISCOVERY",
+   relatedPrimarySourceCaseIds:joined.map(x=>x.caseId),
+   sameApplicationAndActionDateLeads:joined.filter(x=>x.actualFDAActionDate===c.letterDate).map(x=>x.caseId),
+   duplicateReviewCycleRisk:joined.length>0,
    key:c.caseId,ticker:null,
    historicalIssuerIdentityVerified:false,
    archiveDate:null,actualFDAActionDate:c.letterDate,
@@ -165,6 +177,10 @@ function consolidate(input){
   summary:{archiveCandidates:archive.length,
    fdaApprovalLeads:candidates.filter(c=>c.source==="FDA_ORIGINAL_APPROVAL_DISCOVERY").length,
    fdaCrlDocumentLeads:crl.cases.length,
+   fdaCrlDocumentsWithLocatedProgramCrosslink:crl.cases.filter(c=>{
+    const app=String(c.applicationNumber||"").toUpperCase().replace(/\s+/g,"");
+    return manualByApp.has(app);
+   }).length,
    currentTickerNameMatchLeads:candidates.filter(c=>c.source==="FDA_ORIGINAL_APPROVAL_DISCOVERY"&&c.ticker).length,
    primaryTargetSourceLeads:leads.length,
    archiveDateNotTrueTarget:mismatches.length,

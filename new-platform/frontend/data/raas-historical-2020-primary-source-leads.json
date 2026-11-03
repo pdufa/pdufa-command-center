@@ -70,6 +70,43 @@
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
       "notes": "Historical archive labels August 3 (CRL action date) as event date, but published FDA target was August 5. Preserve both dates, never shift trade target to outcome date."
+    },
+    {
+      "caseId": "HRTX|HTX011|NDA211988|2020",
+      "ticker": "HRTX",
+      "programId": "HTX011_POSTOPERATIVE_PAIN_EPOCH",
+      "nctIds": [
+        "NCT03295721",
+        "NCT03237481"
+      ],
+      "drug": "HTX-011 (bupivacaine/meloxicam extended-release)",
+      "indication": "management of postoperative pain",
+      "application": "NDA 211988",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2020-06-26",
+      "targetAnnouncementDate": "2020-02-19",
+      "targetAnnouncementSourceUrl": "https://www.sec.gov/Archives/edgar/data/818033/000156459020005303/hrtx-ex991_6.htm",
+      "phase3ReadoutDate": "2018-03-19",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/818033/000119312518086721/d534167dex991.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT03295721",
+      "actualFDAActionDate": "2020-06-26",
+      "actualFDAActionSourceUrl": "https://www.sec.gov/Archives/edgar/data/818033/000156459020031058/hrtx-ex991_41.htm",
+      "actualFDAOutcome": "CRL",
+      "firstPublicFDAActionAnnouncementDate": "2020-06-29",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/818033/000156459020031058/hrtx-ex991_41.htm",
+      "priorCrLActionDate": "2019-04-30",
+      "priorCrLAnnouncementSourceUrl": "https://herontherapeutics.gcs-web.com/news-releases/news-release-details/heron-therapeutics-receives-complete-response-letter-htx-011",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/818033/000156459020005303/hrtx-ex991_6.htm",
+      "archivedEventKey": "HRTX|2020-06-26|htx-011",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "The 2019 CRL and 2020 CRL are different cycles of the same NDA. June 26 target was announced after a three-month extension on February 19, 2020; do not treat this issuer as two independent holdout cases or use post-CRL information as a prediction feature."
     }
   ]
 }

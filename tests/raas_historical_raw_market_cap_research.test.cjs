@@ -69,3 +69,26 @@ test("no credentials means no fabricated raw price or trading case",async()=>{
  assert.equal(r.status,"BLOCKED_MISSING_ALPACA_CREDENTIALS");
  assert.equal(r.cases.length,0);
 });
+
+test("Heron SEC cover shares yield independent RAW capitalization leads only after May 6",()=>{
+ const shares=require("../new-platform/frontend/data/raas-2020-sec-cover-share-leads.json").records;
+ const events=require("../new-platform/frontend/data/raas-historical-2020-primary-source-leads.json").records;
+ const h=shares.find(x=>x.ticker==="HRTX");
+ const e=events.find(x=>x.ticker==="HRTX");
+ assert.ok(h&&e);
+ assert.equal(h.sharesOutstanding,90642154);
+ assert.equal(h.sharesMeasurementDate,"2020-04-29");
+ assert.equal(h.filedDate,"2020-05-06");
+ assert.equal(h.firstConservativeEntryDate,"2020-05-07");
+ assert.equal(e.actualFDAActionDate,"2020-06-26");
+ assert.equal(m.checkedLead(h,e).ticker,"HRTX");
+ const result=m.examine(h,e,bars(10,"2020-04-25",61),
+  bars(1000,"2020-04-25",61));
+ assert.equal(result.observations.find(x=>x.session==="2020-05-06").historicMarketCapResearchMillions,null);
+ const after=result.observations.find(x=>x.session==="2020-05-07");
+ assert.equal(after.historicMarketCapResearchMillions,906.42);
+ assert.equal(after.adjustedClose,1000);
+ assert.equal(after.within300mTo10bUnreviewed,true);
+ assert.equal(result.eventTradeCasesValidated,0);
+ assert.equal(result.approvedRaasRatings,0);
+});
