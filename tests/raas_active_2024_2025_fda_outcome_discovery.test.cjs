@@ -18,6 +18,7 @@ const crl=(date,app,file)=>({
  letter_type:"COMPLETE RESPONSE",letter_date:date,
  application_number:[app],company_name:"Issuer",file_name:file});
 const crlRecords=[crl("08/07/2024","NDA 212345","a.pdf"),
+ crl("12/20/2024","NDA 210934","CRL_NDA210934_20241220.pdf"),
  crl("06/01/2025","BLA 123456","b.pdf"),
  crl("09/10/2023","NDA 211111","c.pdf")];
 const payload=(results,total)=>({ok:true,status:200,headers:{get:()=>"application/json"},
@@ -91,12 +92,20 @@ test("official FDA original and supplemental approval leads PLUS redacted CRLs r
  assert.deepEqual(result.studyYears,[2024,2025]);
  assert.equal(result.totalOriginalApprovalActions,4);
  assert.equal(result.totalSupplementalApprovalActions,1);
- assert.equal(result.totalRedactedArchiveCRLLetters,2);
+ assert.equal(result.totalRedactedArchiveCRLLetters,3);
  assert.equal(result.years[0].supplementalApprovalActions,1);
  assert.equal(result.years[1].originalApprovalActions,2);
- assert.equal(result.years[0].archivedCRLLetterLeads,1);
+ assert.equal(result.years[0].archivedCRLLetterLeads,2);
  assert.equal(result.years[1].archivedCRLLetterLeads,1);
- assert.equal(result.originalSourceLeadsCrosscheck.length,5);
+ assert.equal(result.originalSourceLeadsCrosscheck.length,6);
+ const lxrx=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="LXRX");
+ assert.deepEqual(lxrx.fdaApprovalDatabaseActionMatches,[]);
+ assert.deepEqual(lxrx.fdaCrlArchiveLetterMatches,
+  ["NDA 210934|2024-12-20|CRL_NDA210934_20241220.pdf|Issuer"]);
+ assert.equal(lxrx.actualFDAOutcome,"CRL");
+ assert.equal(lxrx.pdufaTargetDate,"2024-12-20");
+ assert.equal(lxrx.actualFDAActionDate,"2024-12-20");
+ assert.equal(lxrx.validatedTrade,false);
  const mdgl=result.originalSourceLeadsCrosscheck.find(x=>x.ticker==="MDGL");
  assert.deepEqual(mdgl.fdaApprovalDatabaseActionMatches,["NDA217785|ORIG|1|2024-03-14"]);
  assert.equal(mdgl.pdufaTargetDate,"2024-03-14");
@@ -148,4 +157,18 @@ test("reject fake census completion, partial FDA query years, and unauthorized C
    return {ok:false,status:403};
   return request(url);
  },sourceLeads:sources,intake}),/RAAS_CRL_HTTP_403/);
+});
+
+test("2024 LXRX CRL must remain matched to official CRL archive and cannot be mislabeled approved",async()=>{
+ await assert.rejects(m.execute({request:async url=>{
+  if(new URL(url).pathname==="/transparency/crl.json"){
+   const records=crlRecords.filter(x=>!x.application_number.includes("NDA 210934"));
+   return payload(records,records.length);
+  }
+  return request(url);
+ },sourceLeads:sources,intake}),/SOURCE_OUTCOME_NOT_MATCHED_TO_OFFICIAL_FDA/);
+ const forged=structuredClone(sources);
+ forged.records.find(x=>x.ticker==="LXRX").actualFDAOutcome="APPROVED";
+ await assert.rejects(m.execute({request,sourceLeads:forged,intake}),
+  /SOURCE_OUTCOME_NOT_MATCHED_TO_OFFICIAL_FDA/);
 });
