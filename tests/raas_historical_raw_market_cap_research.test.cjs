@@ -113,8 +113,8 @@ test("ESPR NDA 211616 and 211617 are distinct programs but one correlated issuer
   assert.equal(m.checkedLead(share,event).ticker,"ESPR");
  }
  const counts=m.issuerExposureDiagnostics(events);
- assert.equal(counts.researchPrograms,5);
- assert.equal(counts.distinctResearchIssuers,4);
+ assert.equal(counts.researchPrograms,6);
+ assert.equal(counts.distinctResearchIssuers,5);
  assert.equal(counts.overlappingSameIssuerPairs,1);
  assert.equal(counts.overlaps[0].ticker,"ESPR");
  assert.equal(counts.overlaps[0].targetGapDays,5);
@@ -133,4 +133,29 @@ test("ESPR 2019 SEC fact cannot be multiplied by raw prices before first public 
  assert.equal(after.adjustedClose,3800);
  assert.equal(x.eventTradeCasesValidated,0);
  assert.equal(x.approvedRaasRatings,0);
+});
+
+test("ICPT May 11 shares are post-close research only, never 2020 CRL leakage",()=>{
+ const shares=require("../new-platform/frontend/data/raas-2020-sec-cover-share-leads.json").records;
+ const events=require("../new-platform/frontend/data/raas-historical-2020-primary-source-leads.json").records;
+ const s=shares.find(x=>x.caseId==="ICPT|OCA_NASH|NDA212833|2020");
+ const e=events.find(x=>x.caseId===s?.caseId);
+ assert.ok(s&&e);
+ assert.equal(s.sharesOutstanding,32937431);
+ assert.equal(s.sharesMeasurementDate,"2020-03-31");
+ assert.equal(s.filedDate,"2020-05-11");
+ assert.equal(s.firstConservativeEntryDate,"2020-05-12");
+ assert.equal(s.acceptedAfterCloseET,true);
+ assert.equal(e.targetAnnouncementDate,"2020-01-17");
+ assert.equal(e.actualFDAActionDate,"2020-06-26");
+ assert.equal(m.checkedLead(s,e).ticker,"ICPT");
+ const result=m.examine(s,e,bars(55,"2020-04-27",65),bars(5500,"2020-04-27",65));
+ assert.equal(result.observations.find(x=>x.session==="2020-05-11").historicMarketCapResearchMillions,null);
+ const first=result.observations.find(x=>x.session==="2020-05-12");
+ assert.equal(first.historicMarketCapResearchMillions,1811.56);
+ assert.equal(first.adjustedClose,5500);
+ assert.equal(first.within300mTo10bUnreviewed,true);
+ assert.equal(result.eventTradeCasesValidated,0);
+ assert.equal(result.approvedRaasRatings,0);
+ assert.ok(result.observations.filter(x=>x.session>="2020-06-26").every(x=>!x.beforeActualFDAAction));
 });
