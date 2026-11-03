@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_THREE_WAY_CHRONOLOGIC_FROZEN_FORECASTS",
+  "sourceAsOf": "2026-11-03",
+  "immutableReceiptIndependentAuditComplete": false,
+  "records": [],
+  "note": "Only immutable dated three-way forecasts issued BEFORE a decision belong here. Existing 2020-2026 reconstructed predictions and old directional binary freezes are excluded."
+}

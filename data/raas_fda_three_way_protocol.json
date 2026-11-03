@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_THREE_WAY_VALIDATION_PROTOCOL",
+  "sourceAsOf": "2026-11-03",
+  "protocolVersion": "FDA_GOAL_DISPOSITION_V1",
+  "prospectiveEarliestFreezeUTC": "2026-11-03T00:00:00Z",
+  "predictionTarget": "FIRST_DISCLOSED_PDUFA_GOAL_DISPOSITION_AS_OF_OR_BEFORE_ORIGINAL_GOAL_DATE",
+  "classes": [
+    "PASS",
+    "CRL",
+    "EXTENSION"
+  ],
+  "definitions": {
+    "PASS": "FDA approval action for the specific application review cycle on or before the original publicly disclosed PDUFA goal; not simply absence of CRL",
+    "CRL": "FDA Complete Response Letter for the same review cycle on or before that goal",
+    "EXTENSION": "Formally communicated FDA PDUFA goal extension for the same cycle, known on or before the original goal; not ordinary delayed reporting or future ultimate approval"
+  },
+  "holdoutMethod": "PROSPECTIVE_FREEZE_DATE_AND_ISSUER_DISJOINT_ROSTER",
+  "minAdjudicatedProspectivePrograms": 30,
+  "minProgramsPerClass": 5,
+  "requiredIndependentChecks": [
+    "complete application and review-cycle cohort roster including no calls",
+    "contemporaneous immutable signed/archived forecast receipts",
+    "original PDUFA goal and each revision sourced by first publication date",
+    "source-fact availability prior to the forecast cutoff",
+    "independent outcome adjudication from FDA primary records",
+    "publisher-verified FDA action/extension disclosure dates",
+    "independent sponsor/application identity and issuer family disjointness",
+    "locked model and threshold version prior to holdout outcomes"
+  ],
+  "cohortCompleteVerified": false,
+  "immutableForecastReceiptAuditComplete": false,
+  "FDAOutcomeAdjudicationIndependentAuditComplete": false,
+  "issuerDisjointHoldoutIndependentAuditComplete": false,
+  "modelPreRegistrationIndependentAuditComplete": false,
+  "approvalOfHistoricalAccuracy": false,
+  "approvalOfCalibratedRAASMetrics": false,
+  "warnings": [
+    "A retrospective 146-case history is not a blind validation set.",
+    "The three-way target is original-goal disposition, not ultimate FDA approval after an extension.",
+    "An unverified extension cannot be inferred from an approval after its scheduled PDUFA target.",
+    "Research percentages are not accuracy claims until frozen prospective decisions and a complete eligible denominator are independently certified."
+  ]
+}

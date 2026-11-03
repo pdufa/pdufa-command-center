@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_THREE_WAY_PROSPECTIVE_ELIGIBLE_CASE_ROSTER",
+  "sourceAsOf": "2026-11-03",
+  "cohortCompletenessIndependentlyVerified": false,
+  "records": [],
+  "note": "No independently verified complete prospective review-cycle roster is installed. Do not infer a denominator from selected public news or frozen forecasts."
+}

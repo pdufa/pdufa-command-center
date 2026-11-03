@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_THREE_WAY_DECISION_ACCURACY_SITE_SNAPSHOT",
+  "snapshotAsOf": "2026-11-03",
+  "dataSource": "Historical 146-case prediction_engine_history.csv, directional freeze inventory, three-way source protocol",
+  "classes": [
+    "PASS",
+    "CRL",
+    "EXTENSION"
+  ],
+  "legacyRetrospectiveCases": 146,
+  "legacyCorrect": 102,
+  "legacyRetrospectiveAccuracyPct": 69.86,
+  "alwaysApproveCorrect": 106,
+  "alwaysApproveRetrospectiveAccuracyPct": 72.6,
+  "historicalCrLs": 40,
+  "historicalExtensions": 0,
+  "priorBinaryFreezeVersions": 10,
+  "priorBinaryCasesInLatestVersion": 40,
+  "predecisionThreeWayIndependentlyVerifiedForecasts": 0,
+  "certifiedFDAThreeWayPredictionAccuracyPct": null,
+  "approvedThreeWayFDAOutcomeModel": false,
+  "approvedRaasMetricCalibrations": 0,
+  "completeEligibleCohortIndependentlyVerified": false,
+  "independentOutcomeAdjudicationComplete": false,
+  "status": "NO_INDEPENDENT_THREE_WAY_ACCURACY_YET",
+  "workflowUrl": "https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-fda-decision-accuracy.yml",
+  "disclosures": [
+    "The 146-case legacy benchmark contains approval and CRL labels only; it cannot measure EXTENSION recall.",
+    "The 69.86% legacy accuracy and 72.60% always-approval baseline are retrospective and may reflect selected cases.",
+    "Forty pregoal directional freeze cases under the prior V1.9 model are NOT forty complete three-way forecasts.",
+    "The independent outcome ledger, complete prospective denominator, and freeze-receipt audit are not yet populated or approved.",
+    "Nightly execution updates a research artifact, not this dated static site snapshot and not the predictive model."
+  ]
+}
