@@ -3,6 +3,7 @@ const test=require("node:test"),assert=require("node:assert/strict");
 const fs=require("node:fs"),path=require("node:path");
 const dir=path.resolve(__dirname,"..");
 const d=require("../data/raas-v2-top8-2026-source-intake.json");
+const nov14=require("../data/raas-v2-nov14-review-cycle-triangulation.json");
 const source=fs.readFileSync(path.join(dir,"app/raas-worklist/page.tsx"),"utf8");
 
 test("Eight original issuer source leads are research, not certified FDA predictions",()=>{
@@ -77,4 +78,26 @@ test("Historical first-goal, supplemental, post-CRL and third-party license evid
  assert.equal(by.ANAB.clinicalSponsor,"Vanda Pharmaceuticals");
  assert.match(by.SMMT.issuerSourceUrl,/sec\.gov/);
  assert.equal(by.MLYS.sourcePublicationDate,"2026-03-09");
+});
+
+test("November 14 CYTK and SMMT have independent Phase 3 trial links but no certified current FDA cycle",()=>{
+ assert.equal(nov14.casesCrossChecked,2);
+ assert.equal(nov14.independentlyVerifiedCurrentApplicationCycleCount,0);
+ assert.equal(nov14.independentlyVerifiedFrozenThreeWayForecastCount,0);
+ const cases=Object.fromEntries(nov14.records.map(r=>[r.ticker,r]));
+ assert.equal(cases.CYTK.clinicalTrialsGovId,"NCT05767346");
+ assert.equal(cases.SMMT.clinicalTrialsGovId,"NCT06396065");
+ assert.equal(cases.CYTK.usFDAParentOriginalNdaNumber,"219083");
+ assert.equal(cases.CYTK.currentSupplementSequenceNumber,null);
+ assert.equal(cases.CYTK.currentSupplementSequenceIndependentlyVerified,false);
+ assert.equal(cases.SMMT.currentBlaNumber,null);
+ assert.equal(cases.SMMT.currentBlaNumberIndependentlyVerified,false);
+ assert.ok(nov14.records.every(x=>x.clinicalTrialsGovPhase==="PHASE_3" &&
+   x.clinicalTrialsGovPhaseAndSponsorCrossChecked===true &&
+   x.exactCurrentFDAReviewCycleIndependentlyCertified===false &&
+   x.approvedPipelineMarketCapAndPhase3Qualification===false &&
+   x.independentlyVerifiedThreeWayForecast===false));
+ assert.match(source,/raas-v2-nov14-cross-source-registry/);
+ assert.ok(source.includes("nov14Triangulation.records.map"));
+ assert.ok(source.includes("this does not verify the pending supplement number"));
 });
