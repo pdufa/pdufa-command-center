@@ -90,11 +90,69 @@ def validate_archive(archive):
     return archive
 
 
-def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, as_of):
+def verify_near_term_cycle_sources(feed):
+    """Issuer disclosures as research leads only; never independent NDA/BLA approval."""
+    assert_safe(type(feed) is dict and feed.get("schemaVersion")==1
+                and feed.get("scope")==
+                "RAAS_V2_2026_NEAR_TERM_ISSUER_ORIGINAL_GOAL_RESEARCH_EVIDENCE"
+                and feed.get("verifiedProspectiveFDADecisionForecasts")==0
+                and feed.get("independentlyAdjudicatedThreeWayOutcomes")==0
+                and feed.get("calibratedRAASMetrics")==0
+                and type(feed.get("records")) is list
+                and len(feed["records"])==3,
+                "NEAR_TERM_SOURCE_SCOPE_OR_APPROVAL_INVALID")
+    asof=audit.day(feed["sourceAsOf"])
+    rows={}
+    expected={"CYTK|MYQORZO_HCM_20261114",
+              "SMMT|IVONESCIMAB_20261114",
+              "CAPR|DERAMIOCEL_DMD_20261122"}
+    classes={"SUPPLEMENTAL_NDA","BLA_INITIAL_ACCEPTANCE","BLA_CLASS_2_RESUBMISSION"}
+    for r in feed["records"]:
+        assert_safe(type(r) is dict and
+                    r.get("legacyCaseKey") in expected and
+                    r["legacyCaseKey"] not in rows and
+                    r.get("issuerDocumentedApplicationClass") in classes and
+                    r.get("independentExactApplicationCycleVerified") is False and
+                    r.get("completeProspectiveCohortVerified") is False and
+                    r.get("preactionThreeWayForecastVerified") is False,
+                    "NEAR_TERM_UNVERIFIED_CYCLE_PROMOTION")
+        legacy=audit.day(r["legacyGoalDate"])
+        original=audit.day(r["firstAnnouncedGoalForThisReviewCycle"])
+        observed=audit.day(r["goalFirstObservedPublicDate"])
+        assert_safe(observed<=asof and observed<legacy and original<=legacy
+                    and isinstance(r.get("issuerGoalSourceUrl"),str) and
+                    r["issuerGoalSourceUrl"].startswith("https://")
+                    and isinstance(r.get("issuerSourceNotes"),str)
+                    and len(r["issuerSourceNotes"])>20,
+                    "NEAR_TERM_PUBLIC_SOURCE_TIME_INVALID")
+        revised=r.get("formallyRevisedGoal")
+        if revised is True:
+            assert_safe(r["ticker"]=="CAPR"
+                        and r["issuerDocumentedApplicationClass"]=="BLA_CLASS_2_RESUBMISSION"
+                        and original<legacy
+                        and audit.day(r["revisionDisclosedAt"])>=original
+                        and audit.day(r["revisionDisclosedAt"])<=asof
+                        and isinstance(r.get("revisionSourceUrl"),str)
+                        and r["revisionSourceUrl"].startswith("https://"),
+                        "NEAR_TERM_REVISED_GOAL_INVALID")
+        else:
+            assert_safe(revised is False and legacy==original
+                        and r.get("revisionDisclosedAt") is None
+                        and r.get("revisionSourceUrl") is None,
+                        "NEAR_TERM_UNEXPLAINED_ORIGINAL_GOAL_SHIFT")
+        rows[r["legacyCaseKey"]]=r
+    assert_safe(set(rows)==expected, "NEAR_TERM_SOURCE_RECORD_SET_INCOMPLETE")
+    return rows
+
+
+def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, as_of, near_term=None):
     """No acceptance of old directional calls as FDA 3-way forecasts."""
     as_of_dt=audit.utc(as_of)
     cutoff=as_of_dt.date()
     source=validate_archive(archive)
+    near_term_rows=verify_near_term_cycle_sources(
+        near_term if near_term is not None else
+        audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-upcoming-2026-cycle-source-research.json"))
     cases,preds,labels=audit.parse_prospective(protocol,roster,forecasts,outcomes)
     research=audit.legacy_future_source_queue(old_rows,as_of)
     seen=set()
@@ -133,6 +191,44 @@ def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, 
                                for c,t in STAGE_REQUIREMENTS],
             "researchStatus":"SOURCE_REVIEW_ONLY_NOT_THREE_WAY_PREDICTION",
         })
+    asof_near_term=audit.day(
+        (near_term if near_term is not None else
+         audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-upcoming-2026-cycle-source-research.json"))["sourceAsOf"])
+    source_reviewed=0
+    revised_future_mislabels=0
+    for entry in pending:
+        finding=near_term_rows.get(entry["researchCaseKey"])
+        entry["issuerCycleSourceResearchStatus"]="NOT_SOURCE_REVIEWED"
+        entry["originalCycleGoalResearchDate"]=None
+        entry["issuerApplicationTypeResearch"]=None
+        entry["issuerOriginalGoalDocumentUrl"]=None
+        entry["issuerGoalFirstObservedPublicAt"]=None
+        entry["originalCycleGoalAlreadyPassed"]=False
+        entry["futureOriginalGoalResearchEligible"]=False
+        entry["revisedPdufaGoalMisclassifiedAsOriginal"]=False
+        entry["independentlyVerifiedFDAOriginalGoalOutcome"]=False
+        if finding is None:
+            continue
+        assert_safe(finding["legacyGoalDate"]==entry["legacyGoalDateUnverified"]
+                    and finding["ticker"]==entry["ticker"],
+                    "NEAR_TERM_FINDING_WRONG_CASE_OR_GOAL")
+        if audit.day(finding["goalFirstObservedPublicDate"])>cutoff or asof_near_term>cutoff:
+            continue
+        source_reviewed+=1
+        first=audit.day(finding["firstAnnouncedGoalForThisReviewCycle"])
+        revised=first<audit.day(finding["legacyGoalDate"])
+        entry["issuerCycleSourceResearchStatus"]=finding["sourceReviewStatus"]
+        entry["originalCycleGoalResearchDate"]=first.isoformat()
+        entry["issuerApplicationTypeResearch"]=finding["issuerDocumentedApplicationClass"]
+        entry["issuerOriginalGoalDocumentUrl"]=finding["issuerGoalSourceUrl"]
+        entry["issuerGoalFirstObservedPublicAt"]=finding["goalFirstObservedPublicDate"]
+        entry["revisedPdufaGoalMisclassifiedAsOriginal"]=revised
+        entry["originalCycleGoalAlreadyPassed"]=first<=cutoff
+        entry["futureOriginalGoalResearchEligible"]=not revised and first>cutoff
+        entry["revisionFirstPublicDisclosure"]=finding["revisionDisclosedAt"]
+        entry["revisionSourceUrl"]=finding["revisionSourceUrl"]
+        if revised:
+            revised_future_mislabels+=1
     pending.sort(key=lambda r:(r["legacyGoalDateUnverified"],r["researchCaseKey"]))
     archive_summary=[]
     for x in source["records"]:
@@ -153,9 +249,18 @@ def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, 
     return {
         "schemaVersion":1,"scope":SCOPE,"version":VERSION,
         "modelVersionStillActive":"2026-11-02-foundation-v1",
+        "nearTermSourceDocumentedOnlyNotIndependentlyVerified":True,
         "evaluatedAtUTC":as_of,
         "status":"RESEARCH_V2_CANDIDATE_NOT_AN_APPROVED_MODEL",
         "sourceQueueCount":len(pending),
+        "nearTermIssuerGoalSourceReviewed":source_reviewed,
+        "revisedGoalResearchCasesNotFutureOriginalGoals":revised_future_mislabels,
+        "remainingLegacyGoalCasesWithoutIssuerSourceReview":len(pending)-source_reviewed,
+        "issuerDocumentedFutureOriginalGoalCases":sum(
+            int(x["futureOriginalGoalResearchEligible"]) for x in pending),
+        "issuerDocumentedSupplementalFutureGoals":sum(
+            int(x["issuerApplicationTypeResearch"]=="SUPPLEMENTAL_NDA"
+                and x["futureOriginalGoalResearchEligible"]) for x in pending),
         "distinctLegacyIssuerTickers":len(groups),
         "multipleLegacyEventsSameIssuer":
             {ticker:len(ids) for ticker,ids in sorted(groups.items()) if len(ids)>1},
@@ -196,6 +301,7 @@ def execute(asof=ASOF, data=DATA):
     report=compile_report(
         old_rows=audit.csv_rows(folder/"fda_directional_100pct_freezes.csv"),
         archive=audit.load_json(ROOT/"new-platform/frontend/data/raas-2025-nine-archived-goal-original-source-triage.json"),
+        near_term=audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-upcoming-2026-cycle-source-research.json"),
         protocol=audit.load_json(folder/"raas_fda_three_way_protocol.json"),
         roster=audit.load_json(folder/"raas_fda_three_way_eligible_cases.json"),
         forecasts=audit.load_json(folder/"raas_fda_three_way_frozen_forecasts.json"),
@@ -237,7 +343,9 @@ def main():
            os.getenv("RAAS_V2_SOURCE_STATUS_CSV",str(ROOT/"raas-v2-prospective-source-review.csv")))
     brief={k:report[k] for k in
            ("status","version","sourceQueueCount","distinctLegacyIssuerTickers",
-            "byPriority","readyForThreeWayProspectiveFreeze",
+            "byPriority","nearTermIssuerGoalSourceReviewed",
+            "revisedGoalResearchCasesNotFutureOriginalGoals",
+            "readyForThreeWayProspectiveFreeze",
             "verifiedProspectiveForecasts","approvedRAASMetricCalibrations")}
     print(json.dumps(brief,sort_keys=True))
     if os.getenv("GITHUB_STEP_SUMMARY"):
