@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_HISTORICAL_PRIMARY_PDUFA_EVENT_EVIDENCE_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated.",
+  "note": "Four source-linked active-period original FDA PDUFA research leads. Each remains SOURCE_LEADS_RESEARCH_ONLY; neither has independently approved entry-day cap, corporate action, exact return, full-census denominator or validated RAAS score. These records are NOT accepted intake. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -146,6 +146,47 @@
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
       "notes": "Original Geron August 22 2023 public PDUFA target of June 16 2024 for imetelstat NDA 217779; January 4 2023 IMerge Phase 3 readout was public before entry. FDA original NDA approval letter dated June 6 2024, 10 calendar days before target. Separate contemporaneous SEC 2023 annual cover 546,059,309 common shares as of Feb 23 2024, and Q1 2024 cover 593,132,540 shares as of Apr 26 2024. The 47,073,231 increase includes 2024 equity financing and must not be interpolated. 2024 source lead only, not a verified trade or complete FDA target-year census."
+    },
+    {
+      "caseId": "SLNO|VYKAT_XR_DCCR|NDA216665|2025",
+      "ticker": "SLNO",
+      "programId": "SLNO_DCCR_C601_FAILED_C602_RANDOMIZED_WITHDRAWAL_PWS",
+      "nctIds": [
+        "NCT03440814",
+        "NCT03714373"
+      ],
+      "drug": "VYKAT XR (diazoxide choline extended-release, DCCR)",
+      "indication": "hyperphagia in Prader-Willi syndrome ages 4 years and older",
+      "application": "NDA 216665",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2025-03-27",
+      "targetAnnouncementDate": "2024-11-26",
+      "targetAnnouncementSourceUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000119312524265687/d802129dex991.htm",
+      "originallyAnnouncedPdufaTargetDate": "2024-12-27",
+      "originalTargetAnnouncementDate": "2024-08-27",
+      "fdaGoalExtensionAnnouncedDate": "2024-11-26",
+      "fdaGoalExtensionDays": 90,
+      "formalGoalExtensionIndependentlyVerified": true,
+      "originalTargetAndRevisionSourceUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000119312524265687/d802129d8k.htm",
+      "phase3ReadoutDate": "2023-09-26",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000119312523241845/d486361dex991.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT03714373",
+      "actualFDAActionDate": "2025-03-26",
+      "actualFDAActionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/216665Orig1s000ltr.pdf",
+      "actualFDAOutcome": "APPROVED",
+      "fdaActionEarlierThanPdufaGoalDays": 1,
+      "firstPublicFDAActionAnnouncementDate": "2025-03-26",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000119312525064140/d833373d8k.htm",
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1484565/000095017024122276/slno-20240930.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "SOLENO original priority-review FDA goal was 2024-12-27 announced 2024-08-27. The November 26 2024 Form 8-K/press release confirms a formal 3-month major-amendment review extension and revised target 2025-03-27. March 26 2025 FDA original NDA 216665 approval is one calendar day EARLY relative to revised goal; never misclassify it as unextended 2024 case. Initial C601 DESTINY PWS Phase 3 missed the primary endpoint; later C602 randomized withdrawal reported positive data September 26 2023. Do not collapse clinical evidence into an uncomplicated Phase 3 success. SEC Q3 2024 10-Q filed Nov 6 2024 after close shows 43,117,432 common shares as of Oct31; FY2024 10-K filed Feb28 2025 at 09:22 ET shows 45,857,291 as of Feb26. Increase 2,739,859; continuous shares, stock actions and entry cap remain unverified. Review only, not accepted trade."
     }
   ]
 }
