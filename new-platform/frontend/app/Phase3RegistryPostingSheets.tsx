@@ -14,6 +14,8 @@ import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import {surveyMissingnessForPosting} from "../lib/phase3-survey-missingness";
 import {applyColumnFilters,activeColumnFilters,type ColumnFilterState} from "./TrialColumnFilterBar";
 import css from "./Phase3RegistryPostingSheets.module.css";
+import RaasSpreadsheetStatus from "./RaasSpreadsheetStatus";
+import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
 
 const PAGE_SIZE=50;
 const fmt=(n:number)=>n.toLocaleString("en-US");
@@ -42,12 +44,14 @@ function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:str
   const RATING_GROUPS=visiblePostingRatingGroups(kind,showAllSurveys);
   const headings=["Ticker","NCT trial","Company","Registry trial status",
     "Registry results posted","Results first-posted date","Registry classification","Registry checked on","ClinicalTrials.gov source",
+    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","RAAS validation status",
     ...RATING_GROUPS.flatMap(g=>[g.key+" "+g.name,...g.ingredients.map(f=>g.key+" "+f.key+" "+f.name)])];
   const records=rows.map(row=>[
     row.ticker,row.nctId,row.company,row.registryStatus,
     row.resultsCount>0?"YES":"NO",row.resultsFirstPostedDate||"",
     kind==="before"?"NO_REGISTRY_RESULTS_POSTED":"REGISTRY_RESULTS_POSTED",
     snapshotDate,row.sourceUrl,
+    ...raasSpreadsheetExport({nctId:row.nctId,ticker:row.ticker}),
     ...RATING_GROUPS.flatMap(group=>{
       const audit=audits.get(row.nctId)||postingRatingAudit(row);
       return [audit.group[group.key].label,...group.ingredients.map(x=>audit.ingredient[x.key].label)];
@@ -171,6 +175,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
             <th scope="col">#</th>
             <th scope="col" aria-sort={sorting("ticker")}>{sortable("ticker","Ticker")}</th>
             <th scope="col" aria-sort={sorting("nctId")}>{sortable("nctId","NCT / Trial")}</th>
+            <th scope="col" title="Registry results posting does not establish a public issuer readout">RAAS <small>Score / evidence</small></th>
             {ratingGroups.map(group=>{
               const open=expandedRatings.includes(group.key);
               return <Fragment key={group.key}>
@@ -207,6 +212,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
             </select></th>
             <th scope="col"><input type="search" aria-label={label+" filter NCT"} placeholder="Find NCT"
               value={filters.nctId} onChange={e=>changeFilter({nctId:e.target.value})} maxLength={40}/></th>
+            <th scope="col"><span className={css.filterPlaceholder}>Evidence status</span></th>
             {ratingGroups.map(group=>{
               const open=expandedRatings.includes(group.key);
               return <Fragment key={group.key}>
@@ -258,6 +264,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
           <td>{active*PAGE_SIZE+index+1}</td>
           <td><strong>{row.ticker}</strong></td>
           <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
+          <td><RaasSpreadsheetStatus trial={{nctId:row.nctId,ticker:row.ticker}}/></td>
           {ratingGroups.map(group=>{
             const audit=audits.get(row.nctId)||postingRatingAudit(row);
             const open=expandedRatings.includes(group.key);
@@ -279,7 +286,7 @@ function TrialSection({kind,rows,query,snapshotDate,surveyFeed,surveyFeedUnavail
           <td>{row.resultsFirstPostedDate||(row.resultsCount>0?"Legacy scan: date unavailable":"Not posted")}</td>
           <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov</a></td>
           <td>Not classified by this scan</td>
-        </tr>):<tr><td colSpan={9+extraColumns} className={css.empty}>No trials match these column filters or the overall search.</td></tr>}</tbody>
+        </tr>):<tr><td colSpan={10+extraColumns} className={css.empty}>No trials match these column filters or the overall search.</td></tr>}</tbody>
       </table>
     </div>
     <div className={css.pager}>
