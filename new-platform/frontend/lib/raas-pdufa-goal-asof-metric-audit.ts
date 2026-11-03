@@ -29,6 +29,7 @@ export type GoalAsOfCase={
  eventTargetDate:string;revised:boolean;
  initialGoalDate:string;initialGoalAnnouncementDate:string;
  initialGoalSourceUrl:string|null;
+ phase3ReadoutListedDate:string;phase3ReadoutSourceUrl:string;
  initialGoalIndependentOriginalSource:"URL_RECORDED"|"ORIGINAL_SOURCE_URL_MISSING";
  revisedGoalSourceUrl:string|null;revisedGoalAnnouncementDate:string|null;
  sourceShiftCalendarDays:number;
@@ -131,6 +132,8 @@ export function auditGoalVersionSource(input:unknown):GoalAsOfAudit{
    eventTargetDate:x.pdufaTargetDate,revised,
    initialGoalDate:initialGoal,initialGoalAnnouncementDate:firstPublic,
    initialGoalSourceUrl:initialSource,
+   phase3ReadoutListedDate:x.phase3ReadoutDate,
+   phase3ReadoutSourceUrl:x.phase3ReadoutSourceUrl,
    initialGoalIndependentOriginalSource:initialSource?"URL_RECORDED":"ORIGINAL_SOURCE_URL_MISSING",
    revisedGoalSourceUrl:revised?x.targetAnnouncementSourceUrl:null,
    revisedGoalAnnouncementDate:revised?x.targetAnnouncementDate:null,
