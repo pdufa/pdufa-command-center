@@ -36,7 +36,10 @@ test("per-trial TOP and BOTTOM RAAS begin closed with four-stage drilldown",()=>
  assert.match(raas,/ENTRY/);
  assert.match(raas,/CURRENT/);
  assert.match(raas,/EXIT/);
- assert.match(raas,/— \/ 100 · Not scored/);
+ assert.match(raas,/data-raas-current-scan=\{row.nctId\}/);
+ assert.match(raas,/currentEvidence.mappedMetrics/);
+ assert.match(raas,/Overall RAAS —\/100 · pending/);
+ assert.match(raas,/source-evidence scan/i);
  assert.match(raas,/name=\{groupName\}/);
  assert.match(raas,/name=\{"raas-metric-"/);
 });
