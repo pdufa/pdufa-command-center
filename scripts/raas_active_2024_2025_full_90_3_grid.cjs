@@ -77,6 +77,7 @@ function checkedBars(raw,e,last){
 function assess(e,g,w,bars,shareRows){
  const pe=day(g.goal,-w.entryLeadDays),px=day(g.goal,-w.exitLeadDays);
  const base={caseId:e.caseId,ticker:e.ticker,targetYear:+g.goal.slice(0,4),
+  cohortYear:+e.pdufaTargetDate.slice(0,4),
   targetVersion:g.version,entryLeadDays:w.entryLeadDays,exitLeadDays:w.exitLeadDays,
   plannedEntry:pe,plannedExit:px,entrySession:null,exitSession:null,
   provisionalCapUsdMillions:null,provisionalGrossReturnPct:null,
@@ -130,11 +131,13 @@ function build({primary,earlier,later,research=null}){
   allSourceCases:primary.records.length,comparisonWindowSelected:null,
   validatedMarketCapCases:0,validatedTradingCases:0,approvedRAASMetrics:0,
   approvedBestEntryExitWindow:null,completeTwoYearFDACensus:false,
+  cohortSplitRule:"FINAL_PUBLIC_PDUFA_GOAL_YEAR_REGARDLESS_OF_ORIGINAL_GOAL_VERSION",
   independentlyPriceVerified:false,
   warnings:[
    "T-79/T-14 is an ordinary window among 3828, not a preferred benchmark.",
    "Nine retrospectively selected 2024/2025 events are not a complete two-year FDA PDUFA census.",
    "2024 comparisons are exploratory training only; 2025 is separated as descriptive holdout, not validated out-of-sample.",
+   "2024/2025 cohorts follow the final target year, not a superseded original goal year; a 2025 case must never leak into 2024 training.",
    "Only historical source-available PDUFA goals, Phase 3 disclosure and SEC share counts can enter provisional eligibility; later dates are blocked.",
    "Retrospective FDA actions censor untraded exits, never enter a forecast feature.",
    "Raw Alpaca SIP prices for provisional market cap are not the adjusted=all SIP returns; independent vendor/corporate actions/unadjusted daily share-continuity audits remain missing.",
@@ -169,7 +172,7 @@ function build({primary,earlier,later,research=null}){
   const a=grouped.get(key);a.casesConsidered++;
   if(s.provisionalGrossReturnPct!==null){
    a.casesWithProvisionalReturns++;a.distinctIssuers.add(e.ticker);
-   a[s.targetYear===2024?"training2024":"holdout2025"].push(s.provisionalGrossReturnPct);
+   a[s.cohortYear===2024?"training2024":"holdout2025"].push(s.provisionalGrossReturnPct);
   }
  }
  function summary(v){
@@ -198,7 +201,7 @@ const stringifyCSV=(report)=>{
  if(report?.scope!==SCOPE||report.approvedBestEntryExitWindow!==null||
   report.approvedRAASMetrics!==0||report.validatedTradingCases!==0)
   fail("CSV_REPORT_INVALID");
- const cols=["ticker","targetYear","targetVersion","entryLeadDays","exitLeadDays",
+ const cols=["ticker","cohortYear","targetYear","targetVersion","entryLeadDays","exitLeadDays",
   "plannedEntry","plannedExit","entrySession","exitSession",
   "shareSourceAtEntry","provisionalCapUsdMillions","provisionalGrossReturnPct",
   "provisionalNetReturnPct","reason","verifiedTrade","approvedRAASScore"];
