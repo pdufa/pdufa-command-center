@@ -11,6 +11,7 @@ import expansionSource from "../../data/raas-2024-2025-expanded-candidate-source
 import expandedCoverShares from "../../data/raas-2024-2025-expanded-candidate-sec-snapshots.json";
 import fdaDecisionAccuracy from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
 import v2Readiness from "../../data/raas-v2-candidate-source-readiness-site-snapshot.json";
+import v2Top8Sources from "../../data/raas-v2-top8-2026-source-intake.json";
 import goal2025Research from "../../data/raas-2025-nine-archived-goal-original-source-triage.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
@@ -90,6 +91,18 @@ function V2CandidateReadiness(){
    <div><strong>{x.approvedMetricCalibrations} / 60</strong><span>Approved RAAS metric calibrations</span></div>
    <div><strong>V1</strong><span>Active RAAS foundation; V2 not released</span></div>
   </div>
+  <details id="raas-v2-source-verified-eight">
+   <summary>{v2Top8Sources.goalSourceLeads} dated issuer source leads · original, supplemental, revised and licensed sponsor distinctions</summary>
+   <p><strong>Contemporaneous issuer and SEC publications located; not independently certified FDA application identities or predictions.</strong> CAPR's first target already passed and was extended, CYTK is a supplemental NDA, CORT is a post-CRL resubmission, and ANAB receives financial rights to a Vanda-licensed program.</p>
+   <ul>{v2Top8Sources.records.map(r=><li key={r.legacyCaseKey}>
+    <strong>{r.ticker}</strong> · {r.drug} · currently listed goal {r.legacyGoalDate}
+    ; {r.applicationType.replaceAll("_"," ").toLowerCase()}
+    {r.formalGoalRevision?<>; original first-cycle goal <strong>{r.firstCycleGoalDate}</strong> → revised {r.formalGoalRevision.revisedGoalDate}</>:null}
+    {r.ticker==="ANAB"?<>; FDA-facing licensed sponsor <strong>{r.clinicalSponsor}</strong>, stock exposure: {r.stockExposure}</>:null}
+    ; source published {r.sourcePublicationDate} · <a href={r.issuerSourceUrl} target="_blank" rel="noopener noreferrer">Open original dated source</a>
+   </li>)}</ul>
+   <p className={css.notice}>These {v2Top8Sources.records.length} source leads remain research-only: no independent review-cycle certification, no immutable three-way forecast receipts, no approved V2 model.</p>
+  </details>
   <details>
    <summary>See the seven V2 research-to-validation gates</summary>
    <ol>
