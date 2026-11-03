@@ -7,6 +7,7 @@ import {buildRaasMetricValidationWorklist,raasDocumentedTrialOptions,type RaasWo
 import {activePdufaGoalAsOfAudit} from "../../lib/raas-pdufa-goal-asof-metric-audit";
 import {activeSECAsOfEntryShares} from "../../lib/raas-historical-sec-entry-bridge";
 import {raasFull903Overview} from "../../lib/raas-full-90-3-window-policy";
+import expansionSource from "../../data/raas-2024-2025-expanded-candidate-source-leads.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
 
@@ -54,6 +55,26 @@ function FullRange903History(){
   </div>
   <p className={css.notice}>Full pairwise research is generated in the 2024–2025 historical source workflow as JSON/CSV; the displayed counts represent configured comparisons, <strong>not verified profitable trades</strong>. Results use separate raw Alpaca prices for provisional $300 million–$10 billion capitalization and adjusted bars for provisional returns. Independent prices, stock split/share-continuity checks, the full FDA event census, trading costs, and out-of-sample replication remain required. <a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-active-2024-2025-original-source-research.yml" target="_blank" rel="noopener noreferrer">View historical comparison scan and artifacts</a>.</p>
   <p className={css.muted}>The T−79 to T−14 source-date entries further down this page are older single-window audit examples only. The full research configuration does not privilege or optimize around them.</p>
+ </section>;
+}
+/** Dated source research queue: neither counts as an approved stock backtest. */
+function ExpandedHistoricalCandidates(){
+ const x=expansionSource;
+ return <section id="raas-historical-expansion-candidates" className={css.context}
+  data-raas-expanded-candidates="source-leads-only">
+  <h2>Expand the historical 2024–2025 research sample</h2>
+  <p><strong>{x.records.length} additional Phase 3-linked FDA case leads</strong> are now recorded for independent eligibility review. They do not increase the nine-stock research results, the validated-trade count or the RAAS score.</p>
+  <div className={css.stats}>
+   <div><strong>{x.records.length}</strong><span>New dated FDA and Phase 3 case leads</span></div>
+   <div><strong>{x.approvedAdditionsTo2024To2025Backtest}</strong><span>Eligible cases added to the approved return sample</span></div>
+  </div>
+  {x.records.map(c=><details key={c.caseId} className={css.detail}>
+   <summary><strong>{c.ticker} · {c.drug}</strong> · {c.pdufaTargetDate} FDA target · source review only</summary>
+   <p>{c.indication}. Review type: {c.reviewCycleType}; trial {c.nctIds.join(", ")}.</p>
+   <p>Phase 3 source date: <strong>{c.phase3EvidenceDate}</strong> · PDUFA target publicly announced <strong>{c.targetAnnouncementDate}</strong> · recorded retrospective FDA action <strong>{c.actualFDAActionDate}</strong> ({c.actualFDAOutcome}).</p>
+   <p><a href={c.phase3EvidenceSourceUrl} target="_blank" rel="noopener noreferrer">Phase 3 readout source</a> · <a href={c.targetAnnouncementSourceUrl} target="_blank" rel="noopener noreferrer">Published PDUFA target</a> · <a href={c.outcomeSourceUrl} target="_blank" rel="noopener noreferrer">FDA outcome source</a>.</p>
+   <p className={css.notice}>Not yet approved for the $300M–$10B study. Missing: {c.missingChecks.join("; ")}. No adjusted price return or validated historical market cap has been computed for this candidate.</p>
+  </details>)}
  </section>;
 }
 function GoalAsOfHistory(){
@@ -173,6 +194,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
    <Link href="/raas-scan">Full 60-metric readiness scan</Link>
   </nav>
   <FullRange903History/>
+  <ExpandedHistoricalCandidates/>
   <GoalAsOfHistory/>
   <SECAsOfHistory/>
   <section className={css.context} aria-label="Trial source filter">
