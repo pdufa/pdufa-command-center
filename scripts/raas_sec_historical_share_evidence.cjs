@@ -99,11 +99,11 @@ async function execute({archiveCsv,registryCsv,request=fetch,userAgent=process.e
  const limit=Math.max(0,Math.min(150,Math.floor(maxIssuers)));
  const selected=symbols.filter(t=>index.map.has(t)).slice(0,limit);
  const factMap=new Map(),requests=[];
- const missingDeclaredContact=!validUserAgent(userAgent);
+ const missingDeclaredSecContact=!validUserAgent(userAgent);
  let consecutiveAccessDenied=0,accessDeniedCircuitOpen=false;
  for(const ticker of selected){
   const cik=index.map.get(ticker).cik;
-  if(missingDeclaredContact){
+  if(missingDeclaredSecContact){
    requests.push({ticker,cik,status:"NOT_ATTEMPTED_MISSING_SEC_CONTACT",
     reason:"SEC_DECLARED_USER_AGENT_CONTACT_REQUIRED",sourceUrl:urlFor(cik)});
    continue;
