@@ -71,11 +71,17 @@ function latestVisible(facts,entryDate) {
   historicShareClassVerified:false,adsRatioVerified:false,fullyDiluted:false,
   marketCapAtEntryVerified:false};
 }
-async function getFacts(cik,request=fetch){
+function validUserAgent(s){
+ return typeof s==="string" && s.length>=12 && s.length<=200 &&
+  !/[\r\n]/.test(s) && /^[^\x00-\x1f]+$/.test(s) &&
+  /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(s);
+}
+async function getFacts(cik,request=fetch,userAgent=process.env.SEC_USER_AGENT){
+ if(!validUserAgent(userAgent))throw Error("SEC_DECLARED_USER_AGENT_CONTACT_REQUIRED");
  const url=urlFor(cik);
  let resp;
  try {resp=await request(url,{
-  headers:{"User-Agent":"PDUFA-Command-Center research https://github.com/pdufa/pdufa-command-center","Accept":"application/json"},
+  headers:{"User-Agent":userAgent,"Accept":"application/json","Accept-Encoding":"gzip, deflate"},
   redirect:"error",signal:AbortSignal.timeout(18000)});
  } catch(e){throw Error("SEC_NETWORK_UNAVAILABLE");}
  if(!resp.ok)throw Error("SEC_HTTP_"+resp.status);
@@ -85,7 +91,7 @@ async function getFacts(cik,request=fetch){
  try{o=JSON.parse(t);}catch(e){throw Error("SEC_JSON_INVALID");}
  return sourceFacts(o,cik);
 }
-async function execute({archiveCsv,registryCsv,request=fetch,maxIssuers=150,pause=ms=>new Promise(ok=>setTimeout(ok,ms))}={}){
+async function execute({archiveCsv,registryCsv,request=fetch,userAgent=process.env.SEC_USER_AGENT,maxIssuers=150,pause=ms=>new Promise(ok=>setTimeout(ok,ms))}={}){
  if(!archiveCsv)archiveCsv=fs.readFileSync(path.join(root,"data/historical_assessed_decisions.csv"),"utf8");
  if(!registryCsv)registryCsv=fs.readFileSync(path.join(root,"data/company_registry.csv"),"utf8");
  const discovery=candidateQueue(archiveCsv);
@@ -93,15 +99,28 @@ async function execute({archiveCsv,registryCsv,request=fetch,maxIssuers=150,paus
  const limit=Math.max(0,Math.min(150,Math.floor(maxIssuers)));
  const selected=symbols.filter(t=>index.map.has(t)).slice(0,limit);
  const factMap=new Map(),requests=[];
+ let blockedReason=!validUserAgent(userAgent)?"SEC_DECLARED_USER_AGENT_CONTACT_REQUIRED":null;
  for(const ticker of selected){
+  if(blockedReason){
+   requests.push({ticker,cik:index.map.get(ticker).cik,
+    status:"NOT_REQUESTED_SEC_ACCESS_BLOCKED",reason:blockedReason,
+    sourceUrl:urlFor(index.map.get(ticker).cik)});
+   continue;
+  }
   const cik=index.map.get(ticker).cik;
   try{
-   const facts=await getFacts(cik,request);
+   const facts=await getFacts(cik,request,userAgent);
    factMap.set(ticker,facts);
    requests.push({ticker,cik,status:facts.length?"SHARE_FACTS_RECEIVED":"NO_USABLE_SEC_COVER_SHARES",
     facts:facts.length,sourceUrl:urlFor(cik)});
-  }catch(e){requests.push({ticker,cik,status:"SEC_SOURCE_UNAVAILABLE",reason:String(e.message),
-    sourceUrl:urlFor(cik)});}
+  }catch(e){
+   const reason=String(e.message);
+   requests.push({ticker,cik,status:"SEC_SOURCE_UNAVAILABLE",reason,
+    sourceUrl:urlFor(cik)});
+   // A 403 (or 429) is a fair-access or infrastructure restriction, not
+   // a data absence for this issuer. Stop immediately and report the block.
+   if(/^SEC_HTTP_(403|429)$/.test(reason))blockedReason=reason;
+  }
   await pause(550);
  }
  const cases=discovery.map(c=>{
@@ -125,6 +144,8 @@ async function execute({archiveCsv,registryCsv,request=fetch,maxIssuers=150,paus
   archivedEvents:discovery.length,archiveYears:[...new Set(discovery.map(x=>x.pdufaDate.slice(0,4)))].sort(),
   uniqueCurrentRegistryTickers:symbols.length,issuersQueried:requests.length,
   eventsWithShareFacts:found,datedAsOfShareLeads:asof,
+  secAccessStatus:blockedReason?"BLOCKED": "REQUESTS_COMPLETED",
+  secAccessBlockReason:blockedReason,
   requests,registryCikConflicts:index.conflicts,cases,
   notes:["A modern CIK mapping does not establish ownership, rights or historical listing.",
    "SEC cover-share facts must be reconciled to class, ADS ratio and split history before computing historical market cap.",
@@ -136,14 +157,17 @@ if(require.main===module){
  execute().then(x=>{
   const output=process.env.RAAS_SEC_SHARE_OUTPUT||path.join(root,"raas-sec-historical-shares.json");
   fs.writeFileSync(output,JSON.stringify(x,null,2)+"\n");
-  const h={status:x.status,archivedEvents:x.archivedEvents,issuersQueried:x.issuersQueried,
+  const h={status:x.status,secAccessStatus:x.secAccessStatus,
+   secAccessBlockReason:x.secAccessBlockReason,archivedEvents:x.archivedEvents,
+   issuersQueried:x.issuersQueried,
    eventsWithShareFacts:x.eventsWithShareFacts,datedAsOfShareLeads:x.datedAsOfShareLeads,
-   sourceErrors:x.requests.filter(x=>x.status==="SEC_SOURCE_UNAVAILABLE").length};
+   sourceErrors:x.requests.filter(x=>x.status==="SEC_SOURCE_UNAVAILABLE").length,
+   deferredIssuers:x.requests.filter(x=>x.status==="NOT_REQUESTED_SEC_ACCESS_BLOCKED").length};
   console.log(JSON.stringify(h));
   if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
    "### Historical SEC cover-share intake (not qualifying market cap)\n\n"+
    JSON.stringify(h)+"\n\nDownload artifact for as-of evidence and source gaps.\n");
-  if(h.sourceErrors===x.issuersQueried&&x.issuersQueried)process.exitCode=1;
+  if(x.secAccessStatus==="BLOCKED" || (h.sourceErrors===x.issuersQueried&&x.issuersQueried))process.exitCode=1;
  }).catch(e=>{console.error("RAAS_SEC_SHARES_FATAL_"+String(e.message));process.exitCode=1;});
 }
-module.exports={issuers,sourceFacts,latestVisible,getFacts,execute};
+module.exports={issuers,sourceFacts,latestVisible,validUserAgent,getFacts,execute};
