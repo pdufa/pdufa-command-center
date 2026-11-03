@@ -12,6 +12,7 @@ import expandedCoverShares from "../../data/raas-2024-2025-expanded-candidate-se
 import fdaDecisionAccuracy from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
 import v2Readiness from "../../data/raas-v2-candidate-source-readiness-site-snapshot.json";
 import v2Top8Sources from "../../data/raas-v2-top8-2026-source-intake.json";
+import nov14Triangulation from "../../data/raas-v2-nov14-review-cycle-triangulation.json";
 import goal2025Research from "../../data/raas-2025-nine-archived-goal-original-source-triage.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
@@ -92,6 +93,22 @@ function V2CandidateReadiness(){
    <div><strong>V1</strong><span>Active RAAS foundation; V2 not released</span></div>
   </div>
   <p className={css.notice}>Of {x.remainingLegacyFutureCaseSourceLeadsAtSnapshot} old future-dated binary case leads, {x.issuerDocumentedNearTermCycleSourceLeads} have issuer goal or formal-revision sources. <strong>{x.knownRevisedGoalExcludedFromOriginalDeadlineQueue} formally extended case dates</strong> (CAPR, SVRA, PRAX and EXEL) are excluded from the unresolved original-goal prediction count; {x.legacyCasesStillUnreviewedByIssuerSources} cases still lack this source review. The remaining {x.remainingUnexcludedLegacyDateResearchLeads} are not independently certified original-goal forecasts.</p>
+  <details id="raas-v2-nov14-cross-source-registry">
+   <summary>November 14 research · {nov14Triangulation.casesCrossChecked} Phase 3 trial registries cross-checked against issuer FDA dates</summary>
+   <p><strong>Verified study Phase 3, not verified FDA decision cycle.</strong> Trial registry identity and study phase are independently published by ClinicalTrials.gov. Issuer-reported goal dates are November 14, 2026; neither pending FDA review cycle has been independently certified or prospectively forecast.</p>
+   <ul>{nov14Triangulation.records.map(r=><li key={r.researchCaseKey}>
+    <strong>{r.ticker} · {r.drug}</strong> · {r.applicationClass.replaceAll("_"," ").toLowerCase()} · {r.underReview}
+    ; reported FDA action goal <strong>{r.issuerReportedFirstGoalDate}</strong>
+    ; Phase 3 <strong>{r.clinicalTrialsGovStudyName} · {r.clinicalTrialsGovId}</strong>
+    ; <a href={r.clinicalTrialsGovUrl} target="_blank" rel="noopener noreferrer">Independent trial registry</a>
+    ; <a href={r.issuerGoalSourceUrl} target="_blank" rel="noopener noreferrer">Issuer goal announcement</a>
+    {r.usFDAParentOriginalNdaNumber?<>; FDA-approved <strong>parent original NDA {r.usFDAParentOriginalNdaNumber}</strong>, approval {r.usFDAParentOriginalNdaApprovalDate}
+     ; <a href={r.usFDAParentOriginalApprovalLetterUrl!} target="_blank" rel="noopener noreferrer">FDA original NDA approval package</a>
+     ; <strong>this does not verify the pending supplement number</strong></>:<>; pending BLA number not independently verified</>}
+    ; current FDA review-cycle certification <strong>not complete</strong>
+   </li>)}</ul>
+   <p className={css.notice}>No PASS / CRL / EXTENSION probabilities were frozen, no FDA outcome was adjudicated and no eligibility for the $300M–$10B post-Phase-3 Pipeline or calibrated RAAS rating was inferred.</p>
+  </details>
   <details id="raas-v2-source-verified-eight">
    <summary>{v2Top8Sources.goalSourceLeads} dated issuer source leads · original, supplemental, revised and licensed sponsor distinctions</summary>
    <p><strong>Contemporaneous issuer and SEC publications located; not independently certified FDA application identities or predictions.</strong> CAPR's first target already passed and was extended, CYTK is a supplemental NDA, CORT is a post-CRL resubmission, and ANAB receives financial rights to a Vanda-licensed program.</p>
