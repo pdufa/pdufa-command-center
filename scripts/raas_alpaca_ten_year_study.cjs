@@ -210,6 +210,14 @@ async function execute({key,secret,request=fetch,
   blockedWindowRows:windowRows.length-eligible.length,
   priceSourceFailures:statuses.filter(x=>x.status==="PRICE_SOURCE_UNAVAILABLE").length,
   priceRetrievalStatuses:statuses,
+  // Retain auditable vendor observations without pretending discovery-only
+  // dates or unresolved market caps are validated trade-entry evidence.
+  historicalPriceRows:[...prices.entries()].flatMap(([eventKey,bars])=>
+   bars.map(b=>({eventKey,session:b.date,adjustedOpen:b.open,
+    adjustedClose:b.close,adjustedHigh:b.high,adjustedLow:b.low,
+    volume:b.volume,feed:"SIP",adjustment:"all",
+    sourceUrl:"https://data.alpaca.markets/v2/stocks/"+
+     encodeURIComponent(eventKey.split("|")[0])+"/bars"}))),
   selectedWindow:rank,
   windowResearch:windowRows,
   caveats:["Historical FDA event archive is NOT a verified pre-entry PDUFA announcement archive.",
