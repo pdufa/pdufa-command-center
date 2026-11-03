@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_THREE_WAY_INDEPENDENT_FDA_ACTIONS",
+  "sourceAsOf": "2026-11-03",
+  "independentFdaCensusAdjudicated": false,
+  "records": [],
+  "note": "FDA original-goal disposition labels must be independently linked to exactly one application review cycle. A delayed announcement is not automatically an EXTENSION."
+}
