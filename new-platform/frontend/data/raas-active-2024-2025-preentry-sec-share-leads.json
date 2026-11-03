@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
+  "sourceAsOf": "2026-11-03",
+  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility.",
+  "records": [
+    {
+      "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
+      "ticker": "ARQT",
+      "cik": "0001787306",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 96813363,
+      "sharesMeasurementDate": "2024-02-21",
+      "filedDate": "2024-02-27",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2024-02-28",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1787306/000178730624000031/arqt-20231231.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1787306/0001787306-24-000031-index.html",
+      "originalSourceDescription": "Feb27 2024 FY2023 annual 10-K 07:48 ET, cover original 96,813,363 common shares as of Feb21. During Q1 2024 company issued shares; Q1 10-Q May14 cover exceeds prior count by 18,950,801. Earlier cover count is only a known snapshot."
+    },
+    {
+      "caseId": "AXSM|SYMBRAVO|NDA215431|2025",
+      "ticker": "AXSM",
+      "cik": "0001579428",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 48000205,
+      "sharesMeasurementDate": "2024-07-29",
+      "filedDate": "2024-08-05",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2024-08-06",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024090828/axsm-20240630.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1579428/0000950170-24-090828-index.htm",
+      "originalSourceDescription": "Aug5 2024 SEC Q2 10-Q accepted 16:30:58 ET, original cover shows 48,000,205 common shares as of Jul29. First conservative Aug6; Q3 10-Q issued Nov12 adds 462,171 shares, no daily continuity inferred."
+    }
+  ]
+}
