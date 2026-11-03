@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_V2_CANDIDATE_PROSPECTIVE_SOURCE_READINESS_SITE_SNAPSHOT",
+  "sourceAsOf": "2026-11-03",
+  "candidateIteration": "V2_RESEARCH_CANDIDATE_STAGE_0",
+  "activeFoundationIteration": "2026-11-02-foundation-v1",
+  "status": "RESEARCH_CANDIDATE_NOT_A_CALIBRATED_PREDICTOR",
+  "remainingLegacyFutureCaseSourceLeadsAtSnapshot": 36,
+  "historicalArchiveResearchCases": 9,
+  "verifiedOriginalGoalProspectiveThreeWayForecasts": 0,
+  "independentlyValidatedThreeWayFdaAccuracy": null,
+  "approvedMetricCalibrations": 0,
+  "nightlySourceReadinessAuditUrl": "https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-fda-decision-accuracy.yml",
+  "nextGate": "Verify complete original-goal application identities, first-public sources and independent issuer-family cohort before freezing predecision probabilities.",
+  "disclosures": [
+    "36 are future-dated older binary prediction source leads at the dated snapshot, NOT 36 FDA V2 forecasts.",
+    "The nightly report updates the time-specific queue; this website snapshot does not auto-refresh from GitHub artifacts.",
+    "No calibration thresholds were changed; V1 remains installed and V2 is not an approved model."
+  ]
+}

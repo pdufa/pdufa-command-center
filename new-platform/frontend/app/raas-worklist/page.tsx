@@ -10,6 +10,7 @@ import {raasFull903Overview} from "../../lib/raas-full-90-3-window-policy";
 import expansionSource from "../../data/raas-2024-2025-expanded-candidate-source-leads.json";
 import expandedCoverShares from "../../data/raas-2024-2025-expanded-candidate-sec-snapshots.json";
 import fdaDecisionAccuracy from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
+import v2Readiness from "../../data/raas-v2-candidate-source-readiness-site-snapshot.json";
 import goal2025Research from "../../data/raas-2025-nine-archived-goal-original-source-triage.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
@@ -74,6 +75,35 @@ function FDAAccuracySection(){
    <p className={css.notice}>These source leads do not change the independent forecasting denominator, the verified three-class accuracy, or RAAS metric approvals.</p>
   </details>
   <p><a href={x.workflowUrl} target="_blank" rel="noopener noreferrer">Open daily FDA accuracy audit and downloadable report</a>. The site displays a dated snapshot; the GitHub Action's latest report is the refreshed audit.</p>
+ </section>;
+}
+/** V2 candidate is a research-only source intake; V1 remains the active score specification. */
+function V2CandidateReadiness(){
+ const x=v2Readiness;
+ return <section id="raas-v2-source-readiness" className={css.context}
+  data-raas-v2-status="RESEARCH_CANDIDATE_NOT_CALIBRATED">
+  <h2>RAAS V2 · prospective source-readiness candidate</h2>
+  <p><strong>Foundation V1 remains installed.</strong> V2 candidate stage 0 now checks which future FDA application leads can be sourced before their original deadlines. It does not manufacture PASS, CRL or EXTENSION probabilities or change the 60 research metric ratings.</p>
+  <div className={css.stats}>
+   <div><strong>{x.remainingLegacyFutureCaseSourceLeadsAtSnapshot}</strong><span>Future-dated legacy case source leads (snapshot {x.sourceAsOf})</span></div>
+   <div><strong>{x.verifiedOriginalGoalProspectiveThreeWayForecasts}</strong><span>Verified predecision three-way forecasts</span></div>
+   <div><strong>{x.approvedMetricCalibrations} / 60</strong><span>Approved RAAS metric calibrations</span></div>
+   <div><strong>V1</strong><span>Active RAAS foundation; V2 not released</span></div>
+  </div>
+  <details>
+   <summary>See the seven V2 research-to-validation gates</summary>
+   <ol>
+    <li>Verify original publicly disclosed PDUFA goal and all FDA revisions</li>
+    <li>Verify NDA or BLA application, drug, indication and exact review cycle</li>
+    <li>Verify efficacy, safety, manufacturing and regulatory sources predate the freeze</li>
+    <li>Verify complete application denominator and independent issuer-family identity</li>
+    <li>Freeze independent PASS / CRL / EXTENSION probabilities before FDA action</li>
+    <li>Independently adjudicate FDA actions or formally announced extensions</li>
+    <li>Beat prespecified baselines on untouched issuer-disjoint holdouts, calibration and coverage</li>
+   </ol>
+   <p className={css.notice}>Current status: source review only. The daily report lists unresolved cases by approaching deadline. No V2 FDA accuracy percentage can yet be reported.</p>
+  </details>
+  <p><a href={x.nightlySourceReadinessAuditUrl} target="_blank" rel="noopener noreferrer">Open the nightly V2 source readiness CSV and JSON report</a>. The website uses a dated snapshot; GitHub contains the current scan output.</p>
  </section>;
 }
 function FullRange903History(){
@@ -246,8 +276,10 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
    <Link href={hrefForTrial(trial,"post")} aria-current={anchorStage==="post"?"location":undefined}>BOTTOM · 30 metrics</Link>
    <Link href="/raas-scan">Full 60-metric readiness scan</Link>
    <Link href="#raas-fda-prediction-accuracy">FDA decision accuracy</Link>
+   <Link href="#raas-v2-source-readiness">V2 candidate readiness</Link>
   </nav>
   <FDAAccuracySection/>
+  <V2CandidateReadiness/>
   <FullRange903History/>
   <ExpandedHistoricalCandidates/>
   <GoalAsOfHistory/>
