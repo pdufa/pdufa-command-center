@@ -12,6 +12,7 @@
  * 2025 AXSM Symbravo: FDA acted 1 day BEFORE target.
  * 2025 SLNO Vykat XR: FDA granted three-month extension then acted one day before revised target.
  * 2025 SRRK apitegromab: FDA issued a manufacturing site CRL on its goal date.
+ * 2025 CYTK aficamten: FDA formally extended Sep 26 to Dec 26, approved Dec 19.
  * PDUFA target, Phase 3 readout, SEC share publication, FDA action
  * and previous application review cycle must remain separated.
  */
@@ -31,8 +32,8 @@ const paths={
 const load=p=>JSON.parse(fs.readFileSync(path.join(root,p),"utf8"));
 function verify(events,shares,earlier,intake){
  const cases=validateSourceLeads(events);
- if(cases.length!==7||shares.records?.length!==7||
-  earlier.records?.length!==7||intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
+ if(cases.length!==8||shares.records?.length!==8||
+  earlier.records?.length!==8||intake.scope!=="RAAS_2024_2025_PDUFA_POINT_IN_TIME_INTAKE"||
   intake.records.some(x=>cases.some(c=>x.caseId===c.caseId)))
   throw Error("RAAS_ACTIVE_SOURCE_LEADS_MUST_NOT_COUNT_AS_ACCEPTED_INTAKE");
  const order=cases.slice().sort((a,b)=>a.pdufaTargetDate.localeCompare(b.pdufaTargetDate));
@@ -40,8 +41,21 @@ function verify(events,shares,earlier,intake){
  const arqt=byTicker.get("ARQT"),axsm=byTicker.get("AXSM"),
   mdgl=byTicker.get("MDGL"),gern=byTicker.get("GERN"),
   slno=byTicker.get("SLNO"),lxrx=byTicker.get("LXRX"),
-  srrk=byTicker.get("SRRK");
- if(byTicker.size!==7||
+  srrk=byTicker.get("SRRK"),cytk=byTicker.get("CYTK");
+ if(byTicker.size!==8||
+  cytk?.caseId!=="CYTK|AFICAMTEN_OHCM|NDA219083|2025"||
+  cytk.application!=="NDA 219083"||
+  cytk.pdufaTargetDate!=="2025-12-26"||
+  cytk.originallyAnnouncedPdufaTargetDate!=="2025-09-26"||
+  cytk.originalTargetAnnouncementDate!=="2024-12-02"||
+  cytk.targetAnnouncementDate!=="2025-05-01"||
+  cytk.fdaGoalExtensionAnnouncedDate!=="2025-05-01"||
+  cytk.formalGoalExtensionIndependentlyVerified!==true||
+  cytk.phase3ReadoutDate!=="2023-12-27"||
+  cytk.actualFDAActionDate!=="2025-12-19"||
+  cytk.actualFDAOutcome!=="APPROVED"||
+  cytk.fdaActionEarlierThanPdufaGoalDays!==7||
+  !cytk.nctIds.includes("NCT05186818")||
   srrk?.caseId!=="SRRK|APITEGROMAB_SMA|BLA761463|2025_CRL"||
   srrk.application!=="BLA 761463"||
   srrk.pdufaTargetDate!=="2025-09-22"||
@@ -128,6 +142,11 @@ function verify(events,shares,earlier,intake){
    !now.needsShareContinuityAudit||!now.needsIndependentPriceCrosscheck)
    throw Error("RAAS_ACTIVE_SEC_COVER_SHARE_CHRONOLOGY_INVALID");
   const difference=now.sharesOutstanding-old.sharesOutstanding;
+  if(event.ticker==="CYTK"&&(
+   old.sharesOutstanding!==119657156||now.sharesOutstanding!==122264929||
+   old.firstConservativeEntryDate!=="2025-08-08"||
+   now.firstConservativeEntryDate!=="2025-11-06"||difference!==2607773))
+   throw Error("RAAS_2025_CYTK_SECURITIES_DISCLOSURE_MISMATCH");
   if(event.ticker==="SRRK"&&(
    old.sharesOutstanding!==94945562||now.sharesOutstanding!==96127265||
    old.firstConservativeEntryDate!=="2025-05-15"||
@@ -196,7 +215,7 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
   provisionalPrimaryWindowRows:0,provisionalEarlierShareWindows:0};
  const raw=await cap.execute({key,secret,request,events,shares});
  if(raw.status!=="UNVALIDATED_HISTORICAL_CAP_RESEARCH_ONLY"||
-  raw.cases?.length!==7||raw.historicallyEligibleTrades!==0||
+  raw.cases?.length!==8||raw.historicallyEligibleTrades!==0||
   raw.approvedRaasRatings!==0)
   throw Error("RAAS_ACTIVE_RAW_CAP_PRICE_RESEARCH_INVALID");
  const queue=assemble({primary:events,shares,rawCap:raw});
@@ -222,10 +241,11 @@ async function execute({events=load(paths.events),shares=load(paths.shares),
    missingAudit:"SEC_SHARE_CONTINUITY_SPLITS_INDEPENDENT_PRICE_VENDOR_2024_2025_CENSUS"})),
   priceDataRawAndAdjusted:raw.cases,
   sourceQueue:queue.cases,
-  warnings:["Seven originally sourced programs (including 2024 and 2025 CRLs) out of the 2024–2025 discovery universe; NOT two complete FDA year censuses.",
+  warnings:["Eight originally sourced programs (including 2024 and 2025 CRLs) out of the 2024–2025 discovery universe; NOT two complete FDA year censuses.",
    "2024 ARQT FDA action July 9 occurred after the company-announced July 7 goal, without independently established formal extension.",
    "2025 AXSM FDA action Jan 30 occurred one day before Jan 31 goal; older 2022 manufacturing CRL was a separate review cycle.",
    "2024 LXRX FDA issued a December 20 CRL on its published PDUFA goal; prior March 2019 CRL was a separate cycle. Historical FDA PDF publication is retrospective and its content cannot be used as a predecision signal.",
+   "2025 CYTK aficamten NDA219083 revised its publicly announced original Sep26 2025 goal to Dec26 2025 via a REMS major amendment reported May1 2025, before T-79 entry; FDA approved Dec19 2025, seven calendar days before revised goal. Do not use the historical FDA decision as an entry-time feature.",
    "2025 SRRK apitegromab BLA 761463 received a September 22 2025 manufacturing facility CRL despite positive Phase 3 SAPPHIRE; the company announced it Sept 23 and FDA archive PDF was retrospective, neither can be backdated as pre-decision evidence.",
    "2025 SLNO revised PDUFA March 27 followed Nov 26 2024 formal extension from original Dec 27 2024; FDA acted one day early. C601 Phase 3 primary endpoint failed before C602 randomized withdrawal positive result.",
    "SEC cover snapshots increased by 154,779 MDGL, 47,073,231 GERN, 18,950,801 ARQT, 462,171 AXSM and 2,739,859 SLNO, while LXRX snapshots differ by zero and SRRK increased by 1,181,703 shares, including unresolved pre-funded warrants (NOT proof of daily share continuity). Do not interpolate constant capitalization.",

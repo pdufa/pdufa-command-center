@@ -16,7 +16,9 @@ const targets={
  // Synthetic regression-only return, never actual historical LXRX performance.
  LXRX:{entry:"2024-10-02",exit:"2024-12-06",gross:-20.00,cap:450,old:true},
  // Synthetic 2025 manufacturing CRL regression-only return, not actual SRRK performance.
- SRRK:{entry:"2025-07-07",exit:"2025-09-08",gross:-12,cap:2500,old:true}
+ SRRK:{entry:"2025-07-07",exit:"2025-09-08",gross:-12,cap:2500,old:true},
+ // Synthetic CYTK approval return for deterministic tests, not actual Alpaca history.
+ CYTK:{entry:"2025-10-08",exit:"2025-12-12",gross:8,cap:6000,old:true}
 };
 function fixture(){
  const sourceLeads=[],caseResearch=[],priceDataRawAndAdjusted=[];
@@ -57,19 +59,19 @@ function fixture(){
   studyStartDate:"2024-01-01",studyEndDate:"2025-12-31",
   sourceLeadCount:events.records.length,sourceLeads,caseResearch,priceDataRawAndAdjusted};
 }
-test("Seven source-backed cases, including separate 2024 and 2025 CRLs, remain research-only and not trading approvals",()=>{
+test("Eight source-backed cases, including separate 2024 and 2025 CRLs, remain research-only and not trading approvals",()=>{
  const x=m.build(fixture(),events);
- assert.equal(x.sourceCaseCount,7);
- assert.equal(x.allProvisional.cases,7);
- assert.equal(x.allProvisional.provisionalMeanGrossPct,-3.82);
- assert.equal(x.allProvisional.provisionalMedianGrossPct,-6.03);
- assert.equal(x.allProvisional.hypotheticalMeanNetPct,-4.82);
+ assert.equal(x.sourceCaseCount,8);
+ assert.equal(x.allProvisional.cases,8);
+ assert.equal(x.allProvisional.provisionalMeanGrossPct,-2.34);
+ assert.equal(x.allProvisional.provisionalMedianGrossPct,-3.04);
+ assert.equal(x.allProvisional.hypotheticalMeanNetPct,-3.34);
  assert.equal(x.byYear[2024].cases,4);
- assert.equal(x.byYear[2025].cases,3);
+ assert.equal(x.byYear[2025].cases,4);
  assert.equal(x.byOutcome.CRL.cases,2);
- assert.equal(x.byOutcome.APPROVED.cases,5);
+ assert.equal(x.byOutcome.APPROVED.cases,6);
  assert.equal(x.rows.find(r=>r.ticker==="LXRX").actualFdaOutcomeRetrospective,"CRL");
- assert.equal(x.byYear[2025].provisionalMeanGrossPct,-3.98);
+ assert.equal(x.byYear[2025].provisionalMeanGrossPct,-0.99);
  assert.equal(x.independentlyValidatedTradingCases,0);
  assert.equal(x.approvedOptimalWindow,null);
  assert.equal(x.approvedRaasMetrics,0);
@@ -100,14 +102,14 @@ test("A missing T79/14 price window is represented as blocked, never fabricated 
  const out=m.build(x,events);
  assert.equal(out.blockedCases,1);
  assert.equal(out.rows.find(x=>x.ticker==="ARQT").grossReturnPct,null);
- assert.equal(out.allProvisional.cases,6);
+ assert.equal(out.allProvisional.cases,7);
 });
 test("CSV output quotes source text and escapes formulas before spreadsheet opening",()=>{
  const result=m.build(fixture(),events);result.rows[0].ticker='=HYPERLINK("https://evil.test","x")';
  const csv=m.csv(result);
  assert.ok(csv.includes("'=HYPERLINK"));
  assert.ok(!csv.includes('"=HYPERLINK'));
- assert.equal(csv.trim().split("\n").length,8);
+ assert.equal(csv.trim().split("\n").length,9);
 });
 
 test("A CRL must stay a retrospectively known outcome, not be transformed into approval",()=>{
@@ -156,4 +158,16 @@ test("SRRK July-to-September 2025 synthetic CRL regression stays research only",
  const forged=fixture();
  forged.caseResearch.find(x=>x.ticker==="SRRK").namedWindow79to14.actualEntryDate="2025-03-24";
  assert.throws(()=>m.build(forged,events),/POINT_IN_TIME_OR_CAP_INVALID/);
+});
+
+test("CYTK revised PDUFA goal must be public before October T-79 entry; no old-goal lookahead",()=>{
+ const x=fixture(),r=m.build(x,events),cytk=r.rows.find(x=>x.ticker==="CYTK");
+ assert.equal(cytk.revisedPdufaGoalDate,"2025-12-26");
+ assert.equal(cytk.entryDate,"2025-10-08");
+ assert.equal(cytk.exitDate,"2025-12-12");
+ assert.equal(cytk.actualFdaOutcomeRetrospective,"APPROVED");
+ assert.equal(cytk.validatedTradingCase,false);
+ const changed=structuredClone(events);
+ changed.records.find(x=>x.ticker==="CYTK").fdaGoalExtensionAnnouncedDate="2025-10-09";
+ assert.throws(()=>m.build(fixture(),changed),/GOAL_EXTENSION_CHRONOLOGY_INVALID|POINT_IN_TIME_OR_CAP_INVALID/);
 });
