@@ -51,6 +51,7 @@ test("PDUFA, Phase3 publication, exact historical cap and audit are all required
  assert.equal(m.validRecord({...good,reviewStatus:"DISCOVERY"}),false);
  assert.equal(m.validRecord({...good,nctIds:["BAD"]}),false);
  assert.equal(m.validRecord({...good,pdufaFirstPublicDate:null}),false);
+ assert.equal(m.validRecord({...good,historicalMarketCaps:[]}),false);
  assert.equal(m.validRecord({...good,historicalMarketCaps:[{
   ...good.historicalMarketCaps[0],sharesSourcePublishedAt:"2020-01-01"
  }]}),false);
