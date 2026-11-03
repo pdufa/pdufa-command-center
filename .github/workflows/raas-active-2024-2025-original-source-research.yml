@@ -15,6 +15,9 @@ on:
       - 'new-platform/frontend/data/raas-2025-adverse-candidate-inclusion-exclusion-leads.json'
       - 'scripts/raas_2025_crl_candidate_inclusion_exclusion.cjs'
       - 'tests/raas_2025_crl_candidate_inclusion_exclusion.test.cjs'
+      - 'new-platform/frontend/data/raas-2025-unanchored-crl-source-leads.json'
+      - 'scripts/raas_2025_crl_candidate_coverage_funnel.cjs'
+      - 'tests/raas_2025_crl_candidate_coverage_funnel.test.cjs'
       - 'tests/raas_active_2024_2025_window79_audit.test.cjs'
       - 'tests/raas_active_2024_2025_primary_cap_research.test.cjs'
       - '.github/workflows/raas-active-2024-2025-original-source-research.yml'
@@ -33,6 +36,9 @@ on:
       - 'new-platform/frontend/data/raas-2025-adverse-candidate-inclusion-exclusion-leads.json'
       - 'scripts/raas_2025_crl_candidate_inclusion_exclusion.cjs'
       - 'tests/raas_2025_crl_candidate_inclusion_exclusion.test.cjs'
+      - 'new-platform/frontend/data/raas-2025-unanchored-crl-source-leads.json'
+      - 'scripts/raas_2025_crl_candidate_coverage_funnel.cjs'
+      - 'tests/raas_2025_crl_candidate_coverage_funnel.test.cjs'
       - 'tests/raas_active_2024_2025_window79_audit.test.cjs'
       - 'tests/raas_active_2024_2025_primary_cap_research.test.cjs'
       - '.github/workflows/raas-active-2024-2025-original-source-research.yml'
@@ -56,6 +62,7 @@ jobs:
           node --test tests/raas_active_2024_2025_window_robustness_audit.test.cjs
           node --test tests/raas_active_2024_2025_sec_cap_snapshot_sensitivity.test.cjs
           node --test tests/raas_2025_crl_candidate_inclusion_exclusion.test.cjs
+          node --test tests/raas_2025_crl_candidate_coverage_funnel.test.cjs
           node --test tests/raas_historical_raw_market_cap_research.test.cjs
           node --test tests/raas_historical_preentry_share_window_research.test.cjs
       - name: Gather active 2024/2025 original source case as-of RAW and adjusted Alpaca daily prices
@@ -95,6 +102,14 @@ jobs:
           RAAS_CRL_CANDIDATE_AUDIT_JSON: ${{ runner.temp }}/raas-2025-crl-candidate-exclusions.json
           RAAS_CRL_CANDIDATE_AUDIT_CSV: ${{ runner.temp }}/raas-2025-crl-candidate-exclusions.csv
         run: node scripts/raas_2025_crl_candidate_inclusion_exclusion.cjs
+      - name: Build 2024/2025 FDA selected-case and unqualified-candidate coverage ledger (NOT a census)
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_T79_14_AUDIT_JSON: ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
+          RAAS_CRL_CANDIDATE_AUDIT_JSON: ${{ runner.temp }}/raas-2025-crl-candidate-exclusions.json
+          RAAS_CRL_FUNNEL_JSON: ${{ runner.temp }}/raas-2024-2025-crl-candidate-coverage-funnel.json
+          RAAS_CRL_FUNNEL_CSV: ${{ runner.temp }}/raas-2024-2025-crl-candidate-coverage-funnel.csv
+        run: node scripts/raas_2025_crl_candidate_coverage_funnel.cjs
       - name: Publish provisional case price and SEC share audit gaps, no validated scores
         if: always()
         uses: actions/upload-artifact@v4
@@ -110,5 +125,7 @@ jobs:
             ${{ runner.temp }}/raas-2024-2025-sec-cap-snapshot-sensitivity.csv
             ${{ runner.temp }}/raas-2025-crl-candidate-exclusions.json
             ${{ runner.temp }}/raas-2025-crl-candidate-exclusions.csv
+            ${{ runner.temp }}/raas-2024-2025-crl-candidate-coverage-funnel.json
+            ${{ runner.temp }}/raas-2024-2025-crl-candidate-coverage-funnel.csv
           if-no-files-found: ignore
           retention-days: 30
