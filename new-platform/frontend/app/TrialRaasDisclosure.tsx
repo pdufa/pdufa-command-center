@@ -123,6 +123,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
    },bucket,period,reviewedLedger.sourceAsOf,metricHistoryReview)
  }));
  const reviewed=scoreSnapshots.find(s=>s.period===snapshot)?.reviewed??null;
+ const currentOverallLabel=reviewed?`Overall RAAS ${reviewed.score.score}/100 · approved`:"Overall RAAS —/100 · pending";
  const grading=reviewed?.score??computeRaasScore({stage:bucket,snapshot,asOf:pilot.sourceAsOf,
    trial:{nctId:row.nctId,ticker:row.ticker},ratings:[],gates:[]});
  const missingChecklist=raasMissingMetricChecklist(bucket,record,grading.missing);
@@ -133,14 +134,15 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
    <summary className={css.summary} onClick={onResearchRequest}
      aria-label={label+" · "+row.ticker+" "+row.nctId+" · expand or collapse proposed score ingredients"}>
      <span className={css.summaryText}><strong>{label}</strong>
-       <small data-raas-current-scan={row.nctId}>{currentEvidence.mappedMetrics}/30 metric areas with sources</small>
-       <small>{currentEvidence.exploratoryTimingGrade?`Timing pilot ${currentEvidence.exploratoryTimingGrade.score}/100 · not RAAS`:"Overall RAAS —/100 · pending"}</small></span>
+       <small data-raas-current-scan={row.nctId}>Source coverage {Math.round(currentEvidence.mappedMetrics/30*100)}% · {currentEvidence.mappedMetrics}/30 areas</small>
+       <small>{currentOverallLabel}</small>
+       {currentEvidence.exploratoryTimingGrade&&<small>Timing pilot {currentEvidence.exploratoryTimingGrade.score}/100 · research only, not overall RAAS</small>}</span>
      <span className={css.chevron} aria-hidden="true">▸</span>
    </summary>
    <div className={css.panel}>
      <p className={css.disclaimer}><strong>Research specification {RAAS_SPEC_VERSION}.</strong> {RAAS_THRESHOLD_PROFILES.length} metric scoring profiles registered; {calibrationRegistry.entries.length} validated scoring calibrations approved. The dated pilot has {pilot.records.length} identified trials as of {pilot.sourceAsOf}. Exploratory grades are separate and <strong>never</strong> contribute to RAAS. The approved-grade ledger preserves exact-trial ENTRY / CURRENT / EXIT assessments without backfilling future evidence. Missing inputs are not zeros.</p>
      <details className={css.anchorDetails} data-raas-source-scan={row.nctId}>
-       <summary>Current source-evidence scan · {currentEvidence.mappedMetrics}/30 mapped metric areas · {currentEvidence.missingMetricCount} without sources ▸</summary>
+       <summary>Current source-evidence scan · {Math.round(currentEvidence.mappedMetrics/30*100)}% coverage · {currentEvidence.mappedMetrics}/30 mapped areas · {currentEvidence.missingMetricCount} without sources ▸</summary>
        <div className={css.historicalStatus}>
          <p><strong>Current saved evidence, dated {currentEvidence.asOf}:</strong> {currentEvidence.pilotObservations.length} pilot observations and {currentEvidence.prospectiveFacts.length} prospectively recorded issuer facts. Exact ticker + NCT + stage required; a source attached to a metric is a research lead, <strong>not</strong> a completed assessment of that metric.</p>
          <p><strong>Approved 0–100 RAAS:</strong> — /100. Missing metric ratings remain unknown rather than zero. These {currentEvidence.mappedMetrics} areas have evidence to review but 0 approved metric calibrations are available.</p>

@@ -44,7 +44,7 @@ function exportCsv(kind:Kind,rows:readonly RegistryPostingRow[],snapshotDate:str
   const RATING_GROUPS=visiblePostingRatingGroups(kind,showAllSurveys);
   const headings=["Ticker","NCT trial","Company","Registry trial status",
     "Registry results posted","Results first-posted date","Registry classification","Registry checked on","ClinicalTrials.gov source",
-    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","RAAS validation status",
+    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","Research source coverage % (NOT RAAS score)","Timing-only exploratory pilot (NOT RAAS score)","RAAS validation status",
     ...RATING_GROUPS.flatMap(g=>[g.key+" "+g.name,...g.ingredients.map(f=>g.key+" "+f.key+" "+f.name)])];
   const records=rows.map(row=>[
     row.ticker,row.nctId,row.company,row.registryStatus,

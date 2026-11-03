@@ -90,7 +90,7 @@ export function renderToolsSpreadsheetCsv(
     "Saved PDUFA target dates (application-level, not trial-level)",
     "PDUFA candidate source status","PDUFA application event keys","PDUFA record evidence links",
     "Pivotal/supporting study role",
-    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","RAAS validation status",
+    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","Research source coverage % (NOT RAAS score)","Timing-only exploratory pilot (NOT RAAS score)","RAAS validation status",
     ...stages.map(stage=>"Selected stage: "+stage),
     ...designations.map(key=>"Selected designation: "+(labels.get(key)||key)),
     ...designations.map(key=>"Evidence link: "+(labels.get(key)||key)),
