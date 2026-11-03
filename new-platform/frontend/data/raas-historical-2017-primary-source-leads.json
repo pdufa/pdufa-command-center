@@ -21,7 +21,7 @@
       "targetAnnouncementDate": "2017-03-06",
       "targetAnnouncementSourceUrl": "https://ir.ptcbio.com/news-releases/news-release-details/ptc-therapeutics-announces-fda-acknowledgment-new-drug?mobile=1",
       "phase3ReadoutDate": "2015-10-15",
-      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1070081/000107008115000122/a8-k101515.htm",
+      "phase3ReadoutSourceUrl": "https://ir.ptcbio.com/node/10111/html",
       "nctSourceUrl": "https://clinicaltrials.gov/study/NCT01826487",
       "actualFDAActionDate": "2017-10-25",
       "actualFDAOutcome": "CRL",
@@ -44,7 +44,8 @@
       "originalDayByDayListingComplete": false,
       "fullEventCycleReviewComplete": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
-      "notes": "PTC announced Oct 24 2017 PDUFA on March 6, after filing-over-protest from 2016 RTF; Phase 3 ACT DMD NCT01826487 Oct 15 2015 original SEC release reported ITT p=0.213 (negative primary), despite subgroup 300-400m p=0.007. PTC 2017-10-25 8-K announces 2017 CRL. The date of the original FDA letter has NOT been independently verified; 2017-10-25 in actualFDAActionDate is a placeholder for first public outcome evidence, not an exact audited action date, with all event trades and RAAS scores disallowed. Re-filing 2024/2026 history is different cycle and never prospective 2017 data."
+      "notes": "PTC announced Oct 24 2017 PDUFA on March 6, after filing-over-protest from 2016 RTF; Phase 3 ACT DMD NCT01826487 Oct 15 2015 original SEC release reported ITT p=0.213 (negative primary), despite subgroup 300-400m p=0.007. PTC 2017-10-25 8-K announces 2017 CRL. The date of the original FDA letter has NOT been independently verified; 2017-10-25 in actualFDAActionDate is a placeholder for first public outcome evidence, not an exact audited action date, with all event trades and RAAS scores disallowed. Re-filing 2024/2026 history is different cycle and never prospective 2017 data.",
+      "phase3ReadoutSourceCaveat": "Original 2015 Form 8-K as presented on the company's investor-relations SEC filing archive"
     }
   ]
 }
