@@ -10,6 +10,8 @@ on:
       - 'tests/test_raas_fda_decision_accuracy_audit.py'
       - 'scripts/raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
+      - 'tests/test_raas_v2_top8_source_intake.py'
+      - 'new-platform/frontend/data/raas-v2-top8-2026-source-intake.json'
       - 'data/raas_fda_three_way_*.json'
       - 'data/prediction_engine_history.csv'
       - 'data/fda_directional_100pct_freezes.csv'
@@ -20,6 +22,7 @@ on:
       - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
       - 'new-platform/frontend/data/raas-v2-candidate-source-readiness-site-snapshot.json'
       - 'new-platform/frontend/tests/raas-v2-source-readiness-site.test.cjs'
+      - 'new-platform/frontend/tests/raas-v2-top8-source-site.test.cjs'
       - '.github/workflows/raas-fda-decision-accuracy.yml'
   pull_request:
     paths:
@@ -27,6 +30,8 @@ on:
       - 'tests/test_raas_fda_decision_accuracy_audit.py'
       - 'scripts/raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
+      - 'tests/test_raas_v2_top8_source_intake.py'
+      - 'new-platform/frontend/data/raas-v2-top8-2026-source-intake.json'
       - 'data/raas_fda_three_way_*.json'
       - 'data/prediction_engine_history.csv'
       - 'data/fda_directional_100pct_freezes.csv'
@@ -37,6 +42,7 @@ on:
       - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
       - 'new-platform/frontend/data/raas-v2-candidate-source-readiness-site-snapshot.json'
       - 'new-platform/frontend/tests/raas-v2-source-readiness-site.test.cjs'
+      - 'new-platform/frontend/tests/raas-v2-top8-source-site.test.cjs'
       - '.github/workflows/raas-fda-decision-accuracy.yml'
 permissions:
   contents: read
@@ -64,6 +70,10 @@ jobs:
         run: node --test new-platform/frontend/tests/raas-v2-source-readiness-site.test.cjs
       - name: Verify V2 research candidate source triage, issuer grouping and zero forecast promotions
         run: python -m unittest discover -s tests -p 'test_raas_v2_prospective_source_readiness.py' -v
+      - name: Validate mobile RAAS eight-case sources and unapproved V2 status
+        run: node --test new-platform/frontend/tests/raas-v2-top8-source-site.test.cjs
+      - name: Validate eight 2026 source cases, CAPR prior goal and ANAB third-party rights
+        run: python -m unittest discover -s tests -p 'test_raas_v2_top8_source_intake.py' -v
       - name: Compute retrospective baseline and prospective FDA decision audit
         env:
           RAAS_FDA_ACCURACY_JSON: ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
