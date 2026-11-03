@@ -23,6 +23,9 @@ test("V2 source-readiness snapshot cannot pretend to be a calibrated model",()=>
  assert.equal(snapshot.additionalIssuerDocumentedFormallyExtendedCases,3);
  assert.equal(snapshot.additionalOriginalGoalIssuerSourceLeads,4);
  assert.equal(snapshot.pivotalPhase2SourceLeadsNotStrictPhase3Eligible,2);
+ assert.equal(snapshot.nov14IndependentPhase3RegistryCrossChecks,2);
+ assert.equal(snapshot.nov14NumberedCurrentFdaApplicationCyclesCertified,0);
+ assert.equal(snapshot.nov14FrozenThreeWayForecasts,0);
  assert.equal(snapshot.provenIndependentFirstGoalForecasts,0);
  assert.equal(existing.approvedRaasMetricCalibrations,0);
  assert.match(metricSpecs,/RAAS_SPEC_VERSION="2026-11-02-foundation-v1"/);
