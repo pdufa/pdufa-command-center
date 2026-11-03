@@ -230,7 +230,7 @@ function build({discovery,config,archiveCsv,known,intake,registryCsv}){
    "No validated trade, T-79/T-14 optimal return, or calibrated TOP/BOTTOM RAAS grade follows from this queue."]};
 }
 function csvForReview(data){
- const fields=["reviewPriority","year","yearBasis","reviewTrack","ticker","caseId",
+ const fields=["reviewPriority","year","yearBasis","reviewTrack","ticker","caseId","drug",
   "applicationNumber","originalPublicPdufaTargetDate","archiveSuggestedPdufaDate",
   "retrospectiveActionDate","actualOutcome","currentStage","blockers","sourceUrls"];
  const cell=x=>'"'+String(x??"").replaceAll('"','""')+'"';
