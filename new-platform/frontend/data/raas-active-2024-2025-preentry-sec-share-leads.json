@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated.",
+  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated. Added independent FDA 2025 MYQORZO NDA219083 CYTK original/revised target and dated SEC cover shares. Historical cap and returns NOT validated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -150,6 +150,27 @@
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1727196/000155837025007655/srrk-20250331x10q.htm",
       "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1727196/000155837025007655/0001558370-25-007655-index.html",
       "originalSourceDescription": "Scholar Rock Q1 2025 10-Q filed May 14 at 07:20:26 ET, 94,945,562 common shares outstanding as of May 12. Conservative first use May 15 calendar day. Pre-funded warrants, financing and full-share continuity not settled."
+    },
+    {
+      "caseId": "CYTK|AFICAMTEN_OHCM|NDA219083|2025",
+      "ticker": "CYTK",
+      "cik": "0001061983",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 119657156,
+      "sharesMeasurementDate": "2025-08-05",
+      "filedDate": "2025-08-07",
+      "acceptedAfterCloseET": true,
+      "firstConservativeEntryDate": "2025-08-08",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000095017025105108/cytk-20250630.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000095017025105108/0000950170-25-105108-index.html",
+      "originalSourceDescription": "2025 Q2 Cytokinetics 10-Q Aug 7 at 16:30:30 ET; original cover says 119,657,156 common shares outstanding as of Aug 5. Not usable before the Aug 7 after-close filing; conservative from Aug 8. No inference of stable shares, issuance, warrants or accurate market cap over every later trading session."
     }
   ]
 }
