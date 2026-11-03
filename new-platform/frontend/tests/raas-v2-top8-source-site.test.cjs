@@ -34,6 +34,23 @@ test("Website keeps review-cycle, revised-goal and third-party sponsor distincti
  assert.match(source,/V2 candidate/);
 });
 
+test("Four new distinct original-goal source leads preserve the Phase 3-only filter",()=>{
+ assert.equal(d.additionalOriginalGoalIssuerSourceLeads,4);
+ const rows=d.additionalOriginalGoalIssuerSourceCases;
+ assert.equal(rows.length,4);
+ const by=Object.fromEntries(rows.map(x=>[x.legacyCaseKey,x]));
+ assert.equal(by["COGT|BEZUCLASTINIB_GIST_20261130"].issuerReportedFirstGoalDate,"2026-11-30");
+ assert.equal(by["BEZUCLASTINIB_NONADVSM_US_20261230"].issuerReportedFirstGoalDate,"2026-12-30");
+ assert.equal(by["ANITOCEL_RRMM_US_20261223"].pivotalPhaseEvidence,"PIVOTAL_PHASE_2_REPORTED_IMMAGINE1");
+ assert.equal(by["BEZUCLASTINIB_NONADVSM_US_20261230"].pivotalPhaseEvidence,"PIVOTAL_PHASE_2_REPORTED_SUMMIT");
+ assert.ok(rows.every(x=>x.approvalForTradingModel===false &&
+   x.approvedPipelinePhase3Qualification===false &&
+   x.prospectivelyFrozenThreeWayProbabilities===false &&
+   x.exactReviewCycleIndependentlyVerified===false));
+ assert.match(source,/raas-v2-additional-original-goals/);
+ assert.match(source,/additionalOriginalGoalIssuerSourceCases\\.map/);
+});
+
 test("Additional SVRA PRAX EXEL source-led formal extensions cannot become forecasts",()=>{
  const by=Object.fromEntries(d.additionalFormalRevisionCases.map(r=>[r.ticker,r]));
  assert.deepEqual(Object.keys(by).sort(),["EXEL","PRAX","SVRA"]);
