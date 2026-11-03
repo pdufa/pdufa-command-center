@@ -77,6 +77,7 @@ test("systemic SEC HTTP 403 stops requests without disguising skipped issuers as
  const x=await m.execute({archiveCsv:arc.join("\n"),registryCsv:regs.join("\n"),request:req,pause:async()=>{}});
  assert.equal(attempts,3);
  assert.equal(x.accessDeniedCircuitOpen,true);
+ assert.equal(x.status,"BLOCKED_SEC_API_ACCESS_DENIED_403");
  assert.equal(x.issuersQueried,3);
  assert.equal(x.issuersSkippedByAccessDenied,5);
  assert.equal(x.requests.filter(v=>v.status==="SEC_SOURCE_UNAVAILABLE").length,3);
