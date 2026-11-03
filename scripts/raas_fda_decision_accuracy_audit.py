@@ -128,8 +128,9 @@ def parse_prospective(protocol, roster, forecasts, outcomes):
              isinstance(p.get("modelVersion"), str) and len(p["modelVersion"]) > 2,
              "PREDICTION_NOT_FROZEN_PREGOAL")
         facts = p.get("publicEvidence")
-        gate(type(facts) is list and 0 < len(facts) <= 100,
-             "FORECAST_EVIDENCE_REQUIRED")
+        gate(type(facts) is list and len(facts) <= 100 and
+             (bool(facts) or p.get("status") == "ABSTAIN"),
+             "FORECAST_EVIDENCE_REQUIRED_FOR_PREDICTION")
         for fact in facts:
             gate(type(fact) is dict and
                  LINK.fullmatch(fact.get("url", "")) and
@@ -333,12 +334,15 @@ def prospective_audit(protocol, roster, forecasts, outcomes, asof):
     cutoff=utc(asof)
     gate(cutoff.date()>=day(protocol["sourceAsOf"]), "REPORT_EARLIER_THAN_PROTOCOL")
     scored=[]
-    pending=unverified=unverified_receipt=abstained=not_frozen=decided=0
+    pending=matured_unresolved=unverified=unverified_receipt=abstained=not_frozen=decided=0
     statuses=[]
     for k,c in sorted(cases.items()):
         p=preds.get(k)
         o=labels.get(k)
-        if o is None or utc(o["firstPublicOutcomeAtUTC"])>cutoff:
+        if o is None and day(c["originalPdufaGoalDate"]) < cutoff.date():
+            status="MISSING_ORIGINAL_GOAL_OUTCOME_AFTER_DEADLINE"
+            matured_unresolved+=1
+        elif o is None or utc(o["firstPublicOutcomeAtUTC"])>cutoff:
             status="FDA_GOAL_OUTCOME_PENDING"
             pending+=1
         elif o["independentFDAReviewerVerified"] is not True:
@@ -379,7 +383,8 @@ def prospective_audit(protocol, roster, forecasts, outcomes, asof):
         "registeredEligibleCycleCount":len(cases),
         "frozenThreeClassPredictions":len(preds),
         "independentlyReviewedFDAOutcomes":decided,
-        "pendingOutcomes":pending,"unverifiedOutcomes":unverified,
+        "pendingOutcomes":pending,"maturedUnresolvedGoalOutcomes":matured_unresolved,
+        "unverifiedOutcomes":unverified,
         "noForecast":not_frozen,"abstained":abstained,
         "unverifiedFreezeReceipts":unverified_receipt,
         "coveredScoredCases":len(scored),
