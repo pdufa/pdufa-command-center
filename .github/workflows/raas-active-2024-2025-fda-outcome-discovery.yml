@@ -7,6 +7,8 @@ on:
       - 'tests/raas_active_2024_2025_fda_outcome_discovery.test.cjs'
       - 'scripts/raas_active_2024_2025_fda_source_triage_queue.cjs'
       - 'tests/raas_active_2024_2025_fda_source_triage_queue.test.cjs'
+      - 'scripts/raas_active_2024_2025_review_priority.cjs'
+      - 'tests/raas_active_2024_2025_review_priority.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
       - '.github/workflows/raas-active-2024-2025-fda-outcome-discovery.yml'
@@ -17,6 +19,8 @@ on:
       - 'tests/raas_active_2024_2025_fda_outcome_discovery.test.cjs'
       - 'scripts/raas_active_2024_2025_fda_source_triage_queue.cjs'
       - 'tests/raas_active_2024_2025_fda_source_triage_queue.test.cjs'
+      - 'scripts/raas_active_2024_2025_review_priority.cjs'
+      - 'tests/raas_active_2024_2025_review_priority.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
       - '.github/workflows/raas-active-2024-2025-fda-outcome-discovery.yml'
@@ -39,6 +43,7 @@ jobs:
           node --test tests/raas_openfda_2016_2019_discovery.test.cjs
           node --test tests/raas_openfda_historical_crl_discovery.test.cjs
           node --test tests/raas_active_2024_2025_fda_source_triage_queue.test.cjs
+          node --test tests/raas_active_2024_2025_review_priority.test.cjs
       - name: Discover official FDA 2024/2025 original and supplemental approval actions and incomplete CRL outcomes
         if: github.event_name != 'pull_request'
         env:
@@ -51,6 +56,13 @@ jobs:
           RAAS_TWO_YEAR_TRIAGE_RESULT: ${{ runner.temp }}/raas-2024-2025-source-review-queue.json
           RAAS_TWO_YEAR_TRIAGE_CSV: ${{ runner.temp }}/raas-2024-2025-source-review-queue.csv
         run: node scripts/raas_active_2024_2025_fda_source_triage_queue.cjs
+      - name: Prioritize the 2024/2025 original-source audit, keeping all 3197 research leads
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_TWO_YEAR_TRIAGE_RESULT: ${{ runner.temp }}/raas-2024-2025-source-review-queue.json
+          RAAS_REVIEW_PRIORITY_JSON: ${{ runner.temp }}/raas-2024-2025-prioritized-review.json
+          RAAS_REVIEW_PRIORITY_CSV: ${{ runner.temp }}/raas-2024-2025-prioritized-review.csv
+        run: node scripts/raas_active_2024_2025_review_priority.cjs
       - name: Preserve FDA source action candidates and completeness gaps (no trading scores)
         if: always()
         uses: actions/upload-artifact@v4
@@ -60,5 +72,7 @@ jobs:
             ${{ runner.temp }}/raas-2024-2025-official-fda-action-discovery.json
             ${{ runner.temp }}/raas-2024-2025-source-review-queue.json
             ${{ runner.temp }}/raas-2024-2025-source-review-queue.csv
+            ${{ runner.temp }}/raas-2024-2025-prioritized-review.json
+            ${{ runner.temp }}/raas-2024-2025-prioritized-review.csv
           retention-days: 30
           if-no-files-found: ignore
