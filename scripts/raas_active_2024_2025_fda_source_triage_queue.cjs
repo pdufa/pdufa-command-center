@@ -233,7 +233,13 @@ function csvForReview(data){
  const fields=["reviewPriority","year","yearBasis","reviewTrack","ticker","caseId","drug",
   "applicationNumber","originalPublicPdufaTargetDate","archiveSuggestedPdufaDate",
   "retrospectiveActionDate","actualOutcome","currentStage","blockers","sourceUrls"];
- const cell=x=>'"'+String(x??"").replaceAll('"','""')+'"';
+ const cell=x=>{
+  const raw=String(x??"");
+  // Source text can become an executable spreadsheet formula even in a
+  // quoted CSV cell. Prefix the dangerous leading characters before export.
+  const safe=/^[\\s\\u0000-\\u001f]*[=+\\-@]/.test(raw)?"'"+raw:raw;
+  return '"'+safe.replaceAll('"','""')+'"';
+ };
  return fields.join(",")+"\n"+
   data.reviewRows.map(r=>fields.map(f=>cell(Array.isArray(r[f])?r[f].join(" | "):r[f])).join(",")).join("\n")+"\n";
 }
