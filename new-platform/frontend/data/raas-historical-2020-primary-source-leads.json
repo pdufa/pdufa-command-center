@@ -173,6 +173,42 @@
       "archivedEventKey": "ESPR|2020-02-26|bempedoic-acid-ezetimibe",
       "sameIssuerFDAActionCluster": "ESPR|BEMPEDOIC_FRANCHISE|FEB2020",
       "notes": "NEXLIZET NDA 211617 PDUFA Feb 26; positive combination Phase 3 Study 053 Aug 27 2018. Same issuer exposure as NEXLETOL Feb 21 approval; exclude overlapping trade windows from independent sample count."
+    },
+    {
+      "caseId": "ICPT|OCA_NASH|NDA212833|2020",
+      "ticker": "ICPT",
+      "programId": "ICPT_OBETICHOLIC_ACID_NASH_REGENERATE",
+      "nctIds": [
+        "NCT02548351"
+      ],
+      "drug": "obeticholic acid (OCA)",
+      "indication": "liver fibrosis due to nonalcoholic steatohepatitis (NASH)",
+      "application": "NDA 212833",
+      "venue": "NASDAQ",
+      "securityClass": "Common stock",
+      "pdufaTargetDate": "2020-06-26",
+      "targetAnnouncementDate": "2020-01-17",
+      "targetAnnouncementSourceUrl": "https://www.sec.gov/Archives/edgar/data/1270073/000110465920004918/tm203659d1_8k.htm",
+      "initialPdufaTargetDate": "2020-03-26",
+      "revisedTargetFDACommunicationDate": "2020-01-15",
+      "phase3ReadoutDate": "2019-02-19",
+      "phase3ReadoutSourceUrl": "https://www.sec.gov/Archives/edgar/data/1270073/000114420419009885/tv514418_ex99-1.htm",
+      "nctSourceUrl": "https://clinicaltrials.gov/study/NCT02548351",
+      "actualFDAActionDate": "2020-06-26",
+      "actualFDAActionSourceUrl": "https://cdn.clinicaltrials.gov/large-docs/51/NCT02548351/SAP_001.pdf",
+      "actualFDAOutcome": "CRL",
+      "firstPublicFDAActionAnnouncementDate": "2020-06-29",
+      "firstPublicFDAActionAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/1270073/000110465920077691/tm2023625d1_ex99-1.htm",
+      "retrospectiveCRLActionDateSourcePublishedAfterEvent": true,
+      "firstLocatedNotFirstEverPublicDisclosure": true,
+      "contemporaneousTradingListingSourceUrl": "https://www.sec.gov/Archives/edgar/data/1270073/000110465920004918/tm203659d1_8k.htm",
+      "historicalSharesSourceVerified": false,
+      "historicalRawPriceAtEntryVerified": false,
+      "historicalCapitalizationAtEntryVerified": false,
+      "originalDayByDayListingComplete": false,
+      "fullEventCycleReviewComplete": false,
+      "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
+      "notes": "January 17 2020 SEC 8-K reports FDA's January 15 extension of original March 26 target to June 26. Phase 3 REGENERATE interim top-line February 19 2019. The 2023 study statistical analysis plan retrospectively dates CRL action June 26 2020; issuer first publicly announced CRL June 29, so do not pretend the later PDF was known to traders in 2020. Same NDA also underwent 2023 review; the 2023 archived case must not be matched to the June 2020 cycle. All price eligibility and predecision evidence timestamps remain unaudited."
     }
   ]
 }
