@@ -27,6 +27,7 @@ const b=action("NDA215431","ORIG","1","2025-01-30","AXSOME THERAPEUTICS INC");
 const gern=action("NDA217779","ORIG","1","2024-06-06","GERON CORP");
 const slno=action("NDA216665","ORIG","1","2025-03-26","SOLENO THERAPEUTICS INC");
 const cytk=action("NDA219083","ORIG","1","2025-12-19","CYTOKINETICS INC");
+const bbio=action("NDA216540","ORIG","1","2024-11-22","BRIDGEBIO PHARMA INC");
 const c=action("NDA333333","SUPPL","2","2025-06-03","ACME BIO");
 const crl=year=>({caseId:"NDA 33333|"+year,applicationNumber:"NDA 33333",
  letterDate:year+"-06-06",year,letterType:"COMPLETE RESPONSE",
@@ -39,11 +40,11 @@ const discovery={
  status:"SOURCE_DISCOVERY_COMPLETE_FOR_OFFICIAL_ENDPOINTS_NOT_PDUFA_DENOMINATOR",
  studyYears:[2024,2025],actionYearIsNotPdufaTargetYear:true,
  years:[
-  {year:2024,totalFdaApprovalActionLeads:3,archivedCRLLetterLeads:2,
+  {year:2024,totalFdaApprovalActionLeads:4,archivedCRLLetterLeads:2,
    completePdufaEventCensus:false,approvedHistoricalTrades:0,calibratedRaasMetrics:0},
   {year:2025,totalFdaApprovalActionLeads:4,archivedCRLLetterLeads:2,
    completePdufaEventCensus:false,approvedHistoricalTrades:0,calibratedRaasMetrics:0}
- ],approvalActionLeads:[a,mdgl,gern,b,slno,cytk,c],crlLetterLeads:[crl("2024"),{
+ ],approvalActionLeads:[a,mdgl,gern,bbio,b,slno,cytk,c],crlLetterLeads:[crl("2024"),{
  caseId:"NDA 210934|2024-12-20|CRL_NDA210934_20241220.pdf|Lexicon Pharmaceuticals, Inc.",
  applicationNumber:"NDA 210934",letterDate:"2024-12-20",year:2024,
  letterType:"COMPLETE RESPONSE",companyName:"Lexicon Pharmaceuticals, Inc.",
@@ -66,12 +67,12 @@ const make=overrides=>m.build({discovery,config,archiveCsv,known,intake,
 test("review queue enumerates all official original, supplemental and CRL actions without loss",()=>{
  const r=make();
  assert.equal(r.scope,"RAAS_ACTIVE_2024_2025_FDA_SOURCE_EVIDENCE_TRIAGE_QUEUE");
- assert.equal(r.totals.originalSourceLeads,8);
+ assert.equal(r.totals.originalSourceLeads,9);
  assert.equal(r.totals.archiveUnverifiedTargetDateLeads,2);
- assert.equal(r.totals.FDAApprovalActionLeads,7);
+ assert.equal(r.totals.FDAApprovalActionLeads,8);
  assert.equal(r.totals.FDAArchivedCRLLetterLeads,4);
- assert.equal(r.totals.reviewRows,21);
- assert.deepEqual(r.reviewRows.map(x=>x.reviewPriority),[1,1,1,1,1,1,1,1,2,2,3,3,3,3,4,4,4,4,4,5,5]);
+ assert.equal(r.totals.reviewRows,23);
+ assert.deepEqual(r.reviewRows.map(x=>x.reviewPriority),[1,1,1,1,1,1,1,1,1,2,2,3,3,3,3,4,4,4,4,4,4,5,5]);
  assert.equal(r.fullYearsAudited,0);
  assert.equal(r.validatedHistoricalTradingCases,0);
  assert.equal(r.approvedRaasCalibrations,0);
@@ -121,6 +122,13 @@ test("2024 Zoryve supplemental outcome and 2025 Symbravo original FDA action mat
  assert.deepEqual(lxrx.matchedOfficialApprovalActionIds,[]);
  assert.equal(lxrx.matchedOfficialCrlLetterIds.length,1);
  assert.equal(lxrx.crlOfficialPDFWasNotPublicAtTradeEntry,true);
+ const bb=original.find(x=>x.ticker==="BBIO");
+ assert.equal(bb.originalPublicPdufaTargetDate,"2024-11-29");
+ assert.equal(bb.firstLocatedTargetAnnouncementDate,"2024-02-05");
+ assert.equal(bb.retrospectiveActionDate,"2024-11-22");
+ assert.equal(bb.actualOutcome,"APPROVED");
+ assert.deepEqual(bb.matchedOfficialApprovalActionIds,[bbio.id]);
+ assert.deepEqual(bb.matchedOfficialCrlLetterIds,[]);
  const cyt=original.find(x=>x.ticker==="CYTK");
  assert.equal(cyt.originalPublicPdufaTargetDate,"2025-12-26");
  assert.equal(cyt.firstLocatedTargetAnnouncementDate,"2025-05-01");
