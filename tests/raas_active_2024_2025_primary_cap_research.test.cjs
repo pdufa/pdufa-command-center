@@ -13,11 +13,11 @@ function fakePrices(){
  const seen=[];
  const request=async(uri,headers)=>{
   const u=new URL(uri),ticker=u.pathname.split("/")[3],adjustment=u.searchParams.get("adjustment");
-  assert.ok(["ARQT","AXSM"].includes(ticker));
+  assert.ok(["ARQT","AXSM","MDGL"].includes(ticker));
   assert.ok(["raw","all"].includes(adjustment));
   assert.equal(u.searchParams.get("feed"),"sip");
   assert.equal(u.searchParams.get("timeframe"),"1Day");
-  assert.equal(u.searchParams.get("asof"),ticker==="ARQT"?"2024-07-07":"2025-01-31");
+  assert.equal(u.searchParams.get("asof"),ticker==="ARQT"?"2024-07-07":ticker==="MDGL"?"2024-03-14":"2025-01-31");
   assert.equal(headers.headers["APCA-API-KEY-ID"],"key");
   assert.equal(headers.headers["APCA-API-SECRET-KEY"],"secret");
   seen.push(ticker+"|"+adjustment);
@@ -25,7 +25,7 @@ function fakePrices(){
   const start=u.searchParams.get("start"),end=u.searchParams.get("end");
   for(let t=Date.parse(start+"T00:00:00Z");t<=Date.parse(end+"T00:00:00Z");t+=86400000){
    const d=new Date(t),dow=d.getUTCDay();if(dow===0||dow===6)continue;
-   const base=ticker==="ARQT"?7:92;
+   const base=ticker==="ARQT"?7:ticker==="MDGL"?230:92;
    const c=adjustment==="raw"?base:base+bars.length*.05;
    bars.push({t:d.toISOString().slice(0,10)+"T00:00:00Z",
     o:c-.05,h:c+.2,l:c-.2,c,v:250000});
@@ -35,16 +35,19 @@ function fakePrices(){
  };
  return {seen,request};
 }
-test("source queue contains exactly one original 2024 target and one original 2025 target, not eligible trades",()=>{
+test("source queue has two separately sourced 2024 targets and one 2025 target; none is a validated trade",()=>{
  const facts=m.verify(events,shares,earlier,intake);
- assert.deepEqual(facts.map(x=>x.year),[2024,2025]);
- assert.deepEqual(facts.map(x=>x.ticker),["ARQT","AXSM"]);
- assert.equal(facts[0].pdufaTargetDate,"2024-07-07");
- assert.equal(facts[0].actualFDAActionDate,"2024-07-09");
- assert.equal(facts[1].pdufaTargetDate,"2025-01-31");
- assert.equal(facts[1].actualFDAActionDate,"2025-01-30");
- assert.equal(facts[0].reportedCoverShareChange,18950801);
- assert.equal(facts[1].reportedCoverShareChange,462171);
+ assert.deepEqual(facts.map(x=>x.year),[2024,2024,2025]);
+ assert.deepEqual(facts.map(x=>x.ticker),["MDGL","ARQT","AXSM"]);
+ assert.equal(facts[0].pdufaTargetDate,"2024-03-14");
+ assert.equal(facts[0].actualFDAActionDate,"2024-03-14");
+ assert.equal(facts[0].reportedCoverShareChange,154779);
+ assert.equal(facts[1].pdufaTargetDate,"2024-07-07");
+ assert.equal(facts[1].actualFDAActionDate,"2024-07-09");
+ assert.equal(facts[2].pdufaTargetDate,"2025-01-31");
+ assert.equal(facts[2].actualFDAActionDate,"2025-01-30");
+ assert.equal(facts[1].reportedCoverShareChange,18950801);
+ assert.equal(facts[2].reportedCoverShareChange,462171);
  assert.ok(facts.every(x=>x.eligibleForApprovedTrading===false));
 });
 test("original FDA 2024 after-goal action and 2025 early approval remain distinct, including prior NDA review cycle",()=>{
@@ -62,13 +65,13 @@ test("historical Alpaca RAW plus separately adjusted prices remain research-only
  const fake=fakePrices();
  const r=await m.execute({events,shares,earlier,intake,key:"key",secret:"secret",
   request:fake.request});
- assert.deepEqual(fake.seen,["ARQT|raw","ARQT|all","AXSM|raw","AXSM|all"]);
+ assert.deepEqual(fake.seen,["ARQT|raw","ARQT|all","AXSM|raw","AXSM|all","MDGL|raw","MDGL|all"]);
  assert.equal(r.status,"2024_2025_SOURCE_LEADS_UNVALIDATED_PRICE_RESEARCH");
- assert.equal(r.sourceLeadCount,2);
+ assert.equal(r.sourceLeadCount,3);
  assert.deepEqual(r.sourceLeadYears,[2024,2025]);
  assert.equal(r.reviewedIntakeCases,0);
- assert.equal(r.plannedWindowPairsExamined,2*3828);
- assert.ok(r.rawHistoricalSessions>=130);
+ assert.equal(r.plannedWindowPairsExamined,3*3828);
+ assert.ok(r.rawHistoricalSessions>=195);
  assert.ok(r.provisionalCapIn300mTo10bResearchSessions>0);
  assert.ok(r.provisionalPrimaryWindowRows>0);
  assert.ok(r.provisionalEarlierShareWindows>0);
@@ -116,4 +119,20 @@ test("without Alpaca credentials the active original source study never fabricat
  assert.equal(r.plannedWindowPairsExamined,0);
  assert.equal(r.validatedTradingCases,0);
  assert.equal(r.approvedRaasMetrics,0);
+});
+
+test("MDGL 2024 NDA original approval and pre-2024 SEC cover shares cannot be forged",()=>{
+ const mdgl=cases.find(x=>x.ticker==="MDGL");
+ assert.equal(mdgl.application,"NDA 217785");
+ assert.equal(mdgl.pdufaTargetDate,"2024-03-14");
+ assert.equal(mdgl.phase3ReadoutDate,"2022-12-19");
+ assert.equal(mdgl.acceleratedApproval,true);
+ assert.equal(mdgl.confirmatoryEvidenceStillRequired,true);
+ assert.equal(m.verify(events,shares,earlier,intake).find(x=>x.ticker==="MDGL").reportedCoverShareChange,154779);
+ const changed=structuredClone(earlier);
+ changed.records.find(x=>x.ticker==="MDGL").sharesOutstanding=19897425;
+ assert.throws(()=>m.verify(events,shares,changed,intake),/2024_MDGL_SECURITIES_DISCLOSURE_MISMATCH/);
+ const premature=structuredClone(shares);
+ premature.records.find(x=>x.ticker==="MDGL").firstConservativeEntryDate="2024-02-28";
+ assert.throws(()=>m.verify(events,premature,earlier,intake),/2024_MDGL_SECURITIES_DISCLOSURE_MISMATCH|CAP_SOURCE/);
 });
