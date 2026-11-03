@@ -1,0 +1,49 @@
+name: RAAS ACTIVE 2024-2025 official FDA approval and CRL outcome discovery
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/raas_active_2024_2025_fda_outcome_discovery.cjs'
+      - 'tests/raas_active_2024_2025_fda_outcome_discovery.test.cjs'
+      - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
+      - '.github/workflows/raas-active-2024-2025-fda-outcome-discovery.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/raas_active_2024_2025_fda_outcome_discovery.cjs'
+      - 'tests/raas_active_2024_2025_fda_outcome_discovery.test.cjs'
+      - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
+      - '.github/workflows/raas-active-2024-2025-fda-outcome-discovery.yml'
+permissions:
+  contents: read
+jobs:
+  active-two-year-fda-action-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test FDA original and supplemental source pagination, independent CRL letter archive, and no grade promotion
+        run: |
+          node --test tests/raas_active_2024_2025_fda_outcome_discovery.test.cjs
+          node --test tests/raas_openfda_2016_2019_discovery.test.cjs
+          node --test tests/raas_openfda_historical_crl_discovery.test.cjs
+      - name: Discover official FDA 2024/2025 original and supplemental approval actions and incomplete CRL outcomes
+        if: github.event_name != 'pull_request'
+        env:
+          RAAS_ACTIVE_FDA_OUTCOME_DISCOVERY_OUTPUT: ${{ runner.temp }}/raas-2024-2025-official-fda-action-discovery.json
+        run: node scripts/raas_active_2024_2025_fda_outcome_discovery.cjs
+      - name: Preserve FDA source action candidates and completeness gaps (no trading scores)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-2024-2025-official-fda-outcomes
+          path: ${{ runner.temp }}/raas-2024-2025-official-fda-action-discovery.json
+          retention-days: 30
+          if-no-files-found: ignore
