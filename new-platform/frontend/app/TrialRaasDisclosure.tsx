@@ -1,5 +1,6 @@
 "use client";
 import {useState} from "react";
+import RaasLiveRegistryEvidence from "./RaasLiveRegistryEvidence";
 import type {ReadoutRow} from "../lib/phase3-public-readout";
 import type {BenefitFeed} from "../lib/benefit-assessments";
 import {exactReadoutBenefit} from "../lib/phase3-readout-sort";
@@ -109,6 +110,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const groups=RAAS_METRIC_CATALOG[bucket];
  const record=researchStatus==="ready"?exactReadoutBenefit(row,benefitFeed):null;
  const [snapshot,setSnapshot]=useState<Snapshot>("CURRENT");
+ const [expanded,setExpanded]=useState(false);
  const pilotFacts=snapshot==="CURRENT"?observationsForTrial(pilot,{
    nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
  },bucket,pilot.sourceAsOf):[];
@@ -126,7 +128,8 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const missingChecklist=raasMissingMetricChecklist(bucket,record,grading.missing);
  const groupName="raas-group-"+bucket+"-"+row.nctId;
  const currentEvidence=scanRaasCurrentEvidence(pilot,prospective,{nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug,indication:row.evidence?.indication},bucket,pilot.sourceAsOf);
- return <details className={css.raas} data-raas-phase={bucket} data-raas-trial={row.nctId}>
+ return <details className={css.raas} data-raas-phase={bucket} data-raas-trial={row.nctId}
+   onToggle={event=>setExpanded(event.currentTarget.open)}>
    <summary className={css.summary} onClick={onResearchRequest}
      aria-label={label+" · "+row.ticker+" "+row.nctId+" · expand or collapse proposed score ingredients"}>
      <span className={css.summaryText}><strong>{label}</strong>
@@ -157,6 +160,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
          {currentEvidence.mappedMetrics===0&&<p>No metric-specific issuer observations are in the saved RAAS intake for this NCT and ticker. The general trial row may have a dated public release, but that is not equivalent to graded clinical, market or risk evidence.</p>}
        </div>
      </details>
+     {expanded&&<RaasLiveRegistryEvidence nctId={row.nctId} stage={bucket}/> }
      <div className={css.snapshots} aria-label={label+" score snapshots"}>
        {(["ENTRY","CURRENT","EXIT"] as const).map(period=>
          <button key={period} type="button" className={css.snapshotButton} aria-pressed={snapshot===period}
