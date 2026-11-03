@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_V2_2026_NEAR_TERM_ISSUER_ORIGINAL_GOAL_RESEARCH_EVIDENCE",
+  "sourceAsOf": "2026-11-03",
+  "verifiedProspectiveFDADecisionForecasts": 0,
+  "independentlyAdjudicatedThreeWayOutcomes": 0,
+  "calibratedRAASMetrics": 0,
+  "records": [
+    {
+      "legacyCaseKey": "CYTK|MYQORZO_HCM_20261114",
+      "ticker": "CYTK",
+      "drug": "MYQORZO (aficamten) – MAPLE-HCM label update",
+      "issuerDocumentedApplicationClass": "SUPPLEMENTAL_NDA",
+      "legacyGoalDate": "2026-11-14",
+      "firstAnnouncedGoalForThisReviewCycle": "2026-11-14",
+      "goalFirstObservedPublicDate": "2026-05-05",
+      "issuerGoalSourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-First-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+      "issuerSourceNotes": "Supplemental NDA to incorporate MAPLE-HCM Phase 3 study into already approved MYQORZO label. Do not pool with new drug first-cycle applications.",
+      "formallyRevisedGoal": false,
+      "revisionDisclosedAt": null,
+      "revisionSourceUrl": null,
+      "independentExactApplicationCycleVerified": false,
+      "completeProspectiveCohortVerified": false,
+      "preactionThreeWayForecastVerified": false,
+      "sourceReviewStatus": "ISSUER_ORIGINAL_GOAL_DOCUMENTED_CYCLE_ID_PENDING"
+    },
+    {
+      "legacyCaseKey": "SMMT|IVONESCIMAB_20261114",
+      "ticker": "SMMT",
+      "drug": "ivonescimab plus chemotherapy – EGFR-mutant NSCLC after TKI",
+      "issuerDocumentedApplicationClass": "BLA_INITIAL_ACCEPTANCE",
+      "legacyGoalDate": "2026-11-14",
+      "firstAnnouncedGoalForThisReviewCycle": "2026-11-14",
+      "goalFirstObservedPublicDate": "2026-01-29",
+      "issuerGoalSourceUrl": "https://smmttx.com/news/press-releases/news-details/2026/Summit-Therapeutics-Announces-U-S--FDA-Acceptance-of-Biologics-License-Application-BLA-Seeking-Approval-for-Ivonescimab-in-Combination-with-Chemotherapy-in-Treatment-of-Patients-with-EGFRm-NSCLC-Post-TKI-Therapy/",
+      "issuerSourceNotes": "Initial BLA accepted for filing based on Phase 3 HARMONi; issuer release does not independently certify full exact BLA application number/review cycle.",
+      "formallyRevisedGoal": false,
+      "revisionDisclosedAt": null,
+      "revisionSourceUrl": null,
+      "independentExactApplicationCycleVerified": false,
+      "completeProspectiveCohortVerified": false,
+      "preactionThreeWayForecastVerified": false,
+      "sourceReviewStatus": "ISSUER_ORIGINAL_GOAL_DOCUMENTED_CYCLE_ID_PENDING"
+    },
+    {
+      "legacyCaseKey": "CAPR|DERAMIOCEL_DMD_20261122",
+      "ticker": "CAPR",
+      "drug": "deramiocel – DMD",
+      "issuerDocumentedApplicationClass": "BLA_CLASS_2_RESUBMISSION",
+      "legacyGoalDate": "2026-11-22",
+      "firstAnnouncedGoalForThisReviewCycle": "2026-08-22",
+      "goalFirstObservedPublicDate": "2026-03-10",
+      "issuerGoalSourceUrl": "https://www.capricor.com/investors/news-events/press-releases/detail/338/capricor-therapeutics-announces-establishment-of-new-pdufa",
+      "issuerSourceNotes": "Current BLA review cycle is a Class 2 resubmission after 2025 CRL; August 22 2026 was this resubmission's original goal. Nov 22 was a later three-month extension after major amendment, not a prospective first-goal prediction opportunity as of Nov 3.",
+      "formallyRevisedGoal": true,
+      "revisionDisclosedAt": "2026-08-24",
+      "revisionSourceUrl": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824x8k.htm",
+      "independentExactApplicationCycleVerified": false,
+      "completeProspectiveCohortVerified": false,
+      "preactionThreeWayForecastVerified": false,
+      "sourceReviewStatus": "EXCLUDE_REVISED_GOAL_FROM_FUTURE_ORIGINAL_GOAL_QUEUE"
+    }
+  ],
+  "warnings": [
+    "Original FDA goal is review-cycle-specific; a post-CRL resubmission is distinct from the first BLA review.",
+    "Issuer first-observed disclosure dates are NOT independently certified earliest public goal dates.",
+    "Do not promote a supplemental label update to an original NDA or use it in the original-only cohort.",
+    "CAPR 2026-11-22 is a revised PDUFA date; an original-goal forecast must have been frozen before the 2026-08-22 original goal/earlier FDA extension action.",
+    "Source tracing does not provide actual FDA action labels, historic market capitalization, independent price parity, or validated RAAS metric scores."
+  ]
+}
