@@ -23,11 +23,11 @@ export type RaasBulkSummary={
  approvedRaasScores:0;
  complete:boolean;
 };
-const nct=(v:string)=>/^NCT\\d{8}$/.test(v);
-const goodDate=(v:string)=>/^\\d{4}-\\d{2}-\\d{2}$/.test(v)&&
+const nct=(v:string)=>/^NCT\d{8}$/.test(v);
+const goodDate=(v:string)=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&
  !Number.isNaN(Date.parse(v+"T00:00:00Z"))&&
  new Date(v+"T00:00:00Z").toISOString().slice(0,10)===v;
-const url=(v:string)=>/^https:\\/\\/[^\\s/]+\\/\\S+/.test(v);
+const url=(v:string)=>/^https:\/\/[^\s/]+\/\S+/.test(v);
 function knownRows(rows:readonly ReadoutRow[],stage:"pre"|"post"):RaasClassifiedTrial[]{
  const kind=stage==="pre"?"PRE_AS_OF_CHECK":"POST_PUBLIC_READOUT";
  return rows.map(r=>{
