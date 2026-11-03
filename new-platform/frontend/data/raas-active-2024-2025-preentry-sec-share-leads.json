@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH",
   "sourceAsOf": "2026-11-03",
-  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated.",
+  "note": "Earlier original SEC cover shares before 2024 and 2025 PDUFA entry windows. Use only once filed; separate earlier/later disclosures, never lookahead and never approve trade eligibility. Added 2024 MDGL Rezdiffra original FDA/SEC as-of research lead Nov 3 2026, zero trade approvals. Added fourth original 2024 GERN RYTELO source case, unvalidated. Added 2025 SLNO VYKAT XR research case with original Dec 2024 goal, verified Nov 2024 extension to Mar 2025, dated SEC shares, and original 2025 FDA approval; remains unvalidated. Added 2024 LXRX ZYNQUISTA original target and official FDA December 2024 CRL as outcome-balanced research lead; earlier March 2019 CRL remains separate and all trading eligibility unvalidated. Added 2025 SRRK apitegromab BLA 761463 manufacturing-facility CRL with dated PDUFA, SAPPHIRE, FDA and SEC research sources; all trade/cap grades remain unvalidated.",
   "records": [
     {
       "caseId": "ARQT|ZORYVE015_AD|NDA215985_S007|2024",
@@ -129,6 +129,27 @@
       "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1062822/000106282224000046/lxrx-20240630.htm",
       "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1062822/0001062822-24-000046-index.htm",
       "originalSourceDescription": "Lexicon Q2 2024 10-Q filed Aug 2 2024 07:06:49 ET, original cover 361,492,295 shares on July 30. Conservative first use Aug 3 calendar day (first trading session Aug 5). Subsequent Nov 13 filing reported same number, not evidence of uninterrupted share continuity."
+    },
+    {
+      "caseId": "SRRK|APITEGROMAB_SMA|BLA761463|2025_CRL",
+      "ticker": "SRRK",
+      "cik": "0001727196",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 94945562,
+      "sharesMeasurementDate": "2025-05-12",
+      "filedDate": "2025-05-14",
+      "acceptedAfterCloseET": false,
+      "firstConservativeEntryDate": "2025-05-15",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1727196/000155837025007655/srrk-20250331x10q.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1727196/000155837025007655/0001558370-25-007655-index.html",
+      "originalSourceDescription": "Scholar Rock Q1 2025 10-Q filed May 14 at 07:20:26 ET, 94,945,562 common shares outstanding as of May 12. Conservative first use May 15 calendar day. Pre-funded warrants, financing and full-share continuity not settled."
     }
   ]
 }
