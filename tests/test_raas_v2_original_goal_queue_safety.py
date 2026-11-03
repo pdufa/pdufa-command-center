@@ -50,13 +50,13 @@ class OriginalGoalQueueSafetyTests(unittest.TestCase):
 
     def test_three_more_publicly_extended_deadlines_are_excluded_without_three_way_forecasts(self):
         r=v2.execute("2026-11-03T23:59:59Z")
-        case={x["ticker"]:x for x in r["blockedSourceItems"]}
-        for ticker,first,revised in (
-            ("SVRA","2026-08-22","2026-11-22"),
-            ("PRAX","2026-09-27","2026-12-27"),
-            ("EXEL","2026-12-03","2027-03-03"),
+        case={x["researchCaseKey"]:x for x in r["blockedSourceItems"]}
+        for key,first,revised in (
+            ("SVRA|MOLBREEVI_PAP_20261122","2026-08-22","2026-11-22"),
+            ("RELUTRIGINE_DEE_US_20261227","2026-09-27","2026-12-27"),
+            ("ZANZALINTINIB_CRC_US_20261203","2026-12-03","2027-03-03"),
         ):
-            x=case[ticker]
+            x=case[key]
             self.assertTrue(x["issuerSourceFound"])
             self.assertTrue(x["knownRevisedGoalNotOriginalPrediction"])
             self.assertEqual(x["firstGoalForThisCycleIssuerReported"],first)
@@ -64,8 +64,8 @@ class OriginalGoalQueueSafetyTests(unittest.TestCase):
             self.assertFalse(x["independentlyVerifiedApplicationCycle"])
             self.assertFalse(x["V2ForecastEligible"])
             self.assertFalse(x["immutablePreactionThreeWayProbabilityVector"])
-        self.assertEqual(case["EXEL"]["legacyGoalDateUnverified"],"2026-12-03")
-        self.assertEqual(case["EXEL"]["sourceResearchStatus"],
+        self.assertEqual(case["ZANZALINTINIB_CRC_US_20261203"]["legacyGoalDateUnverified"],"2026-12-03")
+        self.assertEqual(case["ZANZALINTINIB_CRC_US_20261203"]["sourceResearchStatus"],
                          "FORMAL_EXTENSION_KNOWN_ORIGINAL_DATE_NO_LONGER_UNRESOLVED")
         self.assertEqual(r["additionalFormallyExtendedSourceLeadsCount"],3)
         self.assertEqual(r["sourceDocumentedFirstGoalStillFuture"],7)
