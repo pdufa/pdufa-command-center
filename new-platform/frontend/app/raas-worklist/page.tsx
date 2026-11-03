@@ -68,7 +68,7 @@ function ExpandedHistoricalCandidates(){
    <div><strong>{x.records.length}</strong><span>New dated FDA and Phase 3 case leads</span></div>
    <div><strong>{x.approvedAdditionsTo2024To2025Backtest}</strong><span>Eligible cases added to the approved return sample</span></div>
   </div>
-  {x.records.map(c=><details key={c.caseId} className={css.detail}>
+  {x.records.map(c=><details key={c.caseId}>
    <summary><strong>{c.ticker} · {c.drug}</strong> · {c.pdufaTargetDate} FDA target · source review only</summary>
    <p>{c.indication}. Review type: {c.reviewCycleType}; trial {c.nctIds.join(", ")}.</p>
    <p>Phase 3 source date: <strong>{c.phase3EvidenceDate}</strong> · PDUFA target publicly announced <strong>{c.targetAnnouncementDate}</strong> · recorded retrospective FDA action <strong>{c.actualFDAActionDate}</strong> ({c.actualFDAOutcome}).</p>
