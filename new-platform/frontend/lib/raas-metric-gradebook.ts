@@ -7,6 +7,8 @@ import {parseRaasPilotFeed,observedCalculation} from "./raas-score-engine";
 import {parseProspectiveSourceBaselines} from "./raas-prospective-source-baselines";
 import {provisionalScoresForTrial} from "./raas-provisional-trial-scores";
 import type {ProvisionalMetricGrade} from "./raas-threshold-profiles";
+import {RAAS_PROVISIONAL_RUBRICS,provisionalStageCoverage,
+ type RaasProvisionalRubric} from "./raas-provisional-rubric-engine";
 import pilotData from "../data/raas-pilot-observations.json";
 import prospectiveData from "../data/raas-prospective-source-baselines.json";
 
@@ -21,6 +23,7 @@ export type MetricScoreStatus="EXPERIMENTAL_GRADE"|"SOURCE_LEADS_ONLY"|"EVIDENCE
 export type MetricGradebookRow={
  id:string;name:string;requiredEvidence:string;scoreRule:string;criticalRisk:string;
  status:MetricScoreStatus;grade:ProvisionalMetricGrade|null;
+ rubric:RaasProvisionalRubric;
  evidence:MetricEvidenceLead[];
 };
 export type MetricGradebookCategory={
@@ -31,6 +34,7 @@ export type MetricGradebookCategory={
 export type RaasTrialGradebook={
  nctId:string;ticker:string;stage:RaasStage;total:30;graded:number;
  mappedOnly:number;withoutEvidence:number;approvedOverallScore:null;
+ provisionalDiagnostic:ReturnType<typeof provisionalStageCoverage>;
  categories:MetricGradebookCategory[];
 };
 /** Full issuer/trial/therapy identity; the same ticker is never sufficient. */
@@ -74,8 +78,10 @@ export function buildRaasMetricGradebook(
    const grade=gradeMap.get(metric.id)||null;
    const status:MetricScoreStatus=grade?"EXPERIMENTAL_GRADE":
     evidence.length?"SOURCE_LEADS_ONLY":"EVIDENCE_MISSING";
+   const rubric=RAAS_PROVISIONAL_RUBRICS.find(r=>r.stage===stage&&r.metricId===metric.id);
+   if(!rubric)throw Error("RAAS_GRADEBOOK_RUBRIC_MISSING:"+metric.id);
    return {id:metric.id,name:metric.name,requiredEvidence:metric.requiredEvidence,
-    scoreRule:metric.scoreRule,criticalRisk:metric.criticalRisk,status,grade,evidence};
+    scoreRule:metric.scoreRule,criticalRisk:metric.criticalRisk,status,grade,evidence,rubric};
   });
   return {id:group.id,name:group.name,weight:group.weight,rows,
    graded:rows.filter(x=>x.grade!==null).length,
@@ -89,5 +95,6 @@ export function buildRaasMetricGradebook(
   graded:all.filter(x=>x.grade!==null).length,
   mappedOnly:all.filter(x=>x.status==="SOURCE_LEADS_ONLY").length,
   withoutEvidence:all.filter(x=>x.status==="EVIDENCE_MISSING").length,
-  approvedOverallScore:null,categories};
+  approvedOverallScore:null,categories,
+  provisionalDiagnostic:provisionalStageCoverage(stage,provisional.scoredMetrics)};
 }
