@@ -161,8 +161,32 @@ test("A later SEC filing corroborating an old goal cannot replace the original p
  assert.notEqual(source.originalGoalSourceCorroborationUrl,slno.initialGoalSourceUrl);
  assert.equal(slno.initialGoalAnnouncementDate,"2024-08-27");
  assert.equal(slno.initial.calendarEntryDate,"2024-10-09");
+ assert.equal(slno.originalGoalSourceCorroborationFirstPublicDate,"2024-11-06");
+ assert.equal(slno.originalGoalCorroborationPublicAtInitialEntry,false);
  assert.equal(slno.approvedRaasScore,null);
  assert.equal(slno.approvedMetricGrades,0);
  assert.equal(slno.historicalEntryCapitalizationVerified,false);
  assert.equal(r.validatedHistoricalTradingCases,0);
+});
+
+test("Corroboration requires a dated, safe source link and is not a public original goal",()=>{
+ const changes=[
+  x=>{delete x.originalGoalSourceCorroborationFirstPublicDate;},
+  x=>{x.originalGoalSourceCorroborationFirstPublicDate="2027-01-01";},
+  x=>{x.originalGoalSourceCorroborationFirstPublicDate="2024-13-31";},
+  x=>{x.originalGoalSourceCorroborationUrl="https://user@evil.invalid/no";},
+ ];
+ for(const change of changes){
+  const data=clone(),x=data.records.find(r=>r.ticker==="SLNO");
+  change(x);
+  assert.throws(()=>auditGoalVersionSource(data),/RAAS_GOAL_ASOF_CORROBORATION_INVALID/);
+ }
+ const linked=auditGoalVersionSource(clone());
+ assert.equal(linked.unverifiedOriginalGoalSourceUrls,0);
+ const slno=linked.cases.find(x=>x.ticker==="SLNO");
+ assert.equal(slno.originalGoalCorroborationPublicAtInitialEntry,false);
+ assert.equal(slno.approvedRaasScore,null);
+ const p=fs.readFileSync(path.resolve(__dirname,"../app/raas-worklist/page.tsx"),"utf8");
+ assert.match(p,/data-raas-original-goal-corroboration/);
+ assert.match(p,/NOT public by proposed original T/);
 });
