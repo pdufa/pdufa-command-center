@@ -108,6 +108,32 @@ class NightlyManifestTests(unittest.TestCase):
                     provenance.build_manifest(d,"pdufa/pdufa-command-center",
                                               RUN,SHA,ARCHIVED)
 
+    def test_dated_issuer_reiteration_cannot_claim_official_no_extension(self):
+        with TemporaryDirectory() as td:
+            d=sample(td)
+            p=d/"raas-v2-prospective-source-readiness.json"
+            original=json.loads(p.read_text("utf-8"))
+            for field,value in (
+                ("nov14IndependentlyCertifiedNoLaterFdaGoalRevisions",1),
+                ("nov14DatedIssuerSourcesPublicByAsOfCount",0),
+                ("nov14IssuerSourcesOlderThan30DaysCount",0),
+            ):
+                altered=deepcopy(original)
+                altered[field]=value
+                p.write_text(json.dumps(altered),encoding="utf-8")
+                with self.subTest(field=field),self.assertRaisesRegex(
+                    ValueError,"ISSUER_REITERATIONS_CANNOT_VERIFY_NO_LATER_FDA_EXTENSION"):
+                    provenance.build_manifest(d,"pdufa/pdufa-command-center",
+                                              RUN,SHA,ARCHIVED)
+            altered=deepcopy(original)
+            altered["nov14DatedIssuerGoalContinuityChecks"][0][
+                "currentlyIndependentlyCertifiedUnrevisedFdaDeadline"]=True
+            p.write_text(json.dumps(altered),encoding="utf-8")
+            with self.assertRaisesRegex(
+                ValueError,"ISSUER_REITERATIONS_CANNOT_VERIFY_NO_LATER_FDA_EXTENSION"):
+                provenance.build_manifest(d,"pdufa/pdufa-command-center",
+                                          RUN,SHA,ARCHIVED)
+
     def test_report_without_all_six_source_files_fails_closed(self):
         with TemporaryDirectory() as td:
             d=sample(td)

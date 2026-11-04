@@ -531,6 +531,122 @@ def validate_nov14_trial_registry_triangulation(dossier, intake, old_rows, as_of
     return sorted(checked,key=lambda r:r["ticker"])
 
 
+
+def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
+    """Dated issuer reiterations, not independent FDA no-extension verification.
+
+    The actual application submission period and its public announcement date
+    are distinct. Do not use documents published after an as-of cut.
+    """
+    assert_safe(type(doc) is dict and doc.get("schemaVersion")==1 and
+        doc.get("scope")==
+        "RAAS_V2_NOV14_DATED_ISSUER_GOAL_CONTINUITY_NOT_INDEPENDENT_FDA_CYCLE_VERIFICATION"
+        and doc.get("researchAsOf")=="2026-11-03" and
+        doc.get("latestDatedIssuerGoalContinuityCases")==2 and
+        doc.get("independentlyVerifiedCurrentFdaReviewCycleCount")==0 and
+        doc.get("independentlyVerifiedNoSubsequentGoalRevisionsCount")==0 and
+        doc.get("prospectivelyFrozenThreeWayForecastCount")==0 and
+        doc.get("approvedRAASMetricCalibrationCount")==0 and
+        type(doc.get("records")) is list and len(doc["records"])==2,
+        "NOV14_ISSUER_CONTINUITY_SCHEMA_OR_MODEL_PROMOTION")
+    expected={
+      "CYTK|MYQORZO_HCM_20261114":(
+        "CYTK","Cytokinetics","SUPPLEMENTAL_NDA","MAPLE-HCM",
+        "2026-08-06","SEC_10Q",
+        "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm",
+        "2026-01","2026-02-24","2026-05-05","SUBMISSION_PUBLIC_DISCLOSURE"),
+      "SMMT|IVONESCIMAB_20261114":(
+        "SMMT","Summit Therapeutics","ORIGINAL_BLA_REPORTED","HARMONi",
+        "2026-09-15","SEC_8K_EXHIBIT_99_1",
+        "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000081/a2026_prx0915xharmoniltf.htm",
+        "2025-Q4","2026-01-29","2026-01-29","FDA_ACCEPTANCE_PUBLIC_DISCLOSURE"),
+    }
+    legacy={x["fda_regulatory_case_id"]:x for x in old_rows
+        if x.get("model_version")=="FDA-DIRECTIONAL-100-V1.9"}
+    cutoff=audit.utc(as_of).date()
+    seen=set()
+    records=[]
+    for row in doc["records"]:
+        key=row.get("researchCaseKey")
+        assert_safe(key in expected and key not in seen,
+                    "NOV14_ISSUER_CONTINUITY_WRONG_CASE_OR_DUPLICATE")
+        seen.add(key)
+        ticker,issuer,cls,study,reported,kind,url,submonth,announcement,first_goal,update_kind=expected[key]
+        published=audit.day(row.get("issuerPublicSourceDate"))
+        public_submission=audit.day(row.get("firstSelectedIssuerPublicApplicationUpdateDate"))
+        public_goal=audit.day(row.get("nov14ReviewGoalSourceFirstLocatedAt"))
+        assert_safe(legacy[key]["ticker"]==ticker and
+            legacy[key]["pdufa_date"]=="2026-11-14" and
+            row.get("ticker")==ticker and row.get("issuerFamily")==issuer and
+            row.get("pendingApplicationClass")==cls and
+            row.get("reviewSpecificStudy")==study and
+            row.get("reportedGoalDate")=="2026-11-14" and
+            row.get("issuerPublicSourceDate")==reported and
+            row.get("issuerSourceType")==kind and
+            row.get("issuerPublicSourceUrl")==url and
+            row.get("issuerReportedActualApplicationSubmissionMonth")==submonth and
+            row.get("firstSelectedIssuerPublicApplicationUpdateDate")==announcement and
+            row.get("firstSelectedIssuerPublicApplicationUpdateType")==update_kind and
+            row.get("nov14ReviewGoalSourceFirstLocatedAt")==first_goal and
+            isinstance(row.get("firstSelectedIssuerPublicApplicationUpdateUrl"),str) and
+            row["firstSelectedIssuerPublicApplicationUpdateUrl"].startswith("https://") and
+            isinstance(row.get("nov14ReviewGoalSourceFirstLocatedUrl"),str) and
+            row["nov14ReviewGoalSourceFirstLocatedUrl"].startswith("https://") and
+            isinstance(row.get("issuerPublicFilingIndexUrl"),str) and
+            row["issuerPublicFilingIndexUrl"].startswith("https://www.sec.gov/") and
+            public_submission<=published and public_goal<=published and
+            published<audit.day("2026-11-14"),
+            "NOV14_ISSUER_GOAL_SUBMISSION_SOURCE_OR_TIMELINE_MISMATCH")
+        if ticker=="CYTK":
+            assert_safe(row.get("issuerReportPeriodEndDate")=="2026-06-30" and
+                audit.day("2026-06-30")<published and
+                row.get("fdaParentNdaKnown")=="219083" and
+                public_submission.month==2 and submonth=="2026-01" and
+                update_kind=="SUBMISSION_PUBLIC_DISCLOSURE" and
+                row.get("pendingSupplementSequenceNumberVerified") is False,
+                "CYTK_PUBLIC_PRESS_DATE_CANNOT_REPLACE_JAN_SUBMISSION")
+        else:
+            assert_safe(row.get("issuerReportPeriodEndDate") is None and
+                row.get("fdaParentNdaKnown") is None and
+                row.get("pendingBlaNumberVerified") is False and
+                update_kind=="FDA_ACCEPTANCE_PUBLIC_DISCLOSURE",
+                "SMMT_BLA_OR_REPORT_PERIOD_UNVERIFIED")
+        assert_safe(
+            row.get("originalNov14GoalStillListedByIssuerAtSourceDate") is True and
+            all(row.get(k) is False for k in (
+                "absenceOfLaterGoalChangeIndependentlyEstablished",
+                "fullDatedFDAActionCycleIndependentlyEstablished",
+                "immutablePredecisionThreeWayForecastMade",
+                "strictMarketCapPipelineQualificationEstablished")) and
+            isinstance(row.get("notes"),str) and row["notes"].strip(),
+            "NOV14_ISSUER_SOURCE_NOT_AN_FDA_OR_PREDICTION_CERTIFICATE")
+        public_by_asof=published<=cutoff
+        days_since=(cutoff-published).days if public_by_asof else None
+        records.append({
+            "researchCaseKey":key,"ticker":ticker,
+            "issuerContinuityDocumentDate":reported,
+            "issuerContinuityDocumentUrl":url,
+            "sourceIsPublicByAuditAsOf":public_by_asof,
+            "documentAtItsDateRepeatsNov14Goal":True,
+            "currentlyIndependentlyCertifiedUnrevisedFdaDeadline":False,
+            "daysSinceIssuerGoalReiteration":days_since,
+            "issuerGoalEvidenceOlderThan30DaysAtAudit":
+                days_since is not None and days_since>30,
+            "issuerSourceClockIsActualSubmissionDate":False,
+            "issuerReportedActualSubmissionPeriod":submonth,
+            "firstSelectedPublicApplicationUpdateDate":announcement,
+            "firstSelectedPublicApplicationUpdateType":update_kind,
+            "currentFDAApplicationNumberIndependentlyVerified":False,
+            "prospectivelyFrozenThreeWayForecast":False,
+            "evidenceStatus":(
+                "DATED_ISSUER_GOAL_REITERATION_NOT_INDEPENDENT_FDA_CYCLE"
+                if public_by_asof else "NOT_PUBLIC_AS_OF_EVALUATION_CUTOFF"),
+            "notes":row["notes"],
+        })
+    assert_safe(seen==set(expected),"NOV14_ISSUER_CONTINUITY_COVERAGE_INCOMPLETE")
+    return sorted(records,key=lambda r:r["ticker"])
+
+
 def compile_report(*, old_rows, archive, protocol, roster, forecasts, outcomes, as_of):
     """No acceptance of old directional calls as FDA 3-way forecasts."""
     as_of_dt=audit.utc(as_of)
@@ -650,6 +766,9 @@ def execute(asof=ASOF, data=DATA):
     nov14=validate_nov14_trial_registry_triangulation(
         audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json"),
         source,old_rows,asof)
+    continuity=validate_nov14_issuer_goal_continuity(
+        audit.load_json(ROOT/"new-platform/frontend/data/raas-v2-nov14-issuer-goal-continuity.json"),
+        old_rows,asof)
     # Use the EXISTING eight-source ledger, enriching the SAME nightly CSV
     # rather than adding a conflicting calendar. No independent review claim.
     findings={r["researchCaseKey"]:r for r in [*selected,*original]}
@@ -741,6 +860,38 @@ def execute(asof=ASOF, data=DATA):
     report["nov14ThirdPartyRegistryUpcomingCaseCount"]=near_term_in_live_queue
     report["nov14ExactCurrentFDAReviewCyclesIndependentlyCertified"]=0
     report["nov14FrozenThreeWayPredictionsIndependentlyVerified"]=0
+    continuity_by_case={r["researchCaseKey"]:r for r in continuity}
+    for entry in report["blockedSourceItems"]:
+        row=continuity_by_case.get(entry["researchCaseKey"])
+        entry["mostRecentLocatedIssuerGoalContinuityDocumentDate"]=None
+        entry["issuerGoalReiterationSourcePublicByAsOf"]=False
+        entry["issuerGoalReiterationOlderThan30Days"]=False
+        entry["issuerActualOriginalSubmissionPeriodNotPressDate"]=None
+        entry["issuerGoalReiterationConfirmsNoLaterFDAExtension"]=False
+        if row is None:
+            continue
+        assert_safe(entry["issuerSourceFound"] is True and
+            entry["firstGoalForThisCycleIssuerReported"]=="2026-11-14"
+            and entry["applicationClassIssuerReported"] in
+            ("SUPPLEMENTAL_NDA","ORIGINAL_BLA_REPORTED")
+            and not entry["V2ForecastEligible"],
+            "NOV14_LATE_ISSUER_SOURCE_PROMOTED_FORECAST")
+        entry["mostRecentLocatedIssuerGoalContinuityDocumentDate"]=(
+            row["issuerContinuityDocumentDate"] if
+            row["sourceIsPublicByAuditAsOf"] else None)
+        entry["issuerGoalReiterationSourcePublicByAsOf"]=(
+            row["sourceIsPublicByAuditAsOf"])
+        entry["issuerGoalReiterationOlderThan30Days"]=(
+            row["issuerGoalEvidenceOlderThan30DaysAtAudit"])
+        entry["issuerActualOriginalSubmissionPeriodNotPressDate"]=(
+            row["issuerReportedActualSubmissionPeriod"] if
+            row["sourceIsPublicByAuditAsOf"] else None)
+    report["nov14DatedIssuerGoalContinuityChecks"]=continuity
+    report["nov14DatedIssuerSourcesPublicByAsOfCount"]=sum(
+        r["sourceIsPublicByAuditAsOf"] for r in continuity)
+    report["nov14IssuerSourcesOlderThan30DaysCount"]=sum(
+        r["issuerGoalEvidenceOlderThan30DaysAtAudit"] for r in continuity)
+    report["nov14IndependentlyCertifiedNoLaterFdaGoalRevisions"]=0
     report["issuerSourceReviewedFutureDeadlineLeads"]=reviewed
     report["sourceDocumentedFirstGoalStillFuture"]=reviewed-revised
     report["knownRevisedDeadlineExcludedFromOriginalGoalCount"]=revised
@@ -797,6 +948,11 @@ def export(report, json_out, csv_out):
           "priorFDAApprovedS001RemsNotCurrentMapleHcm",
           "sponsorOSSignificanceRequirementEvidenceFound",
           "fdaCurrentReviewApplicationOrSupplementNumberVerified",
+          "mostRecentLocatedIssuerGoalContinuityDocumentDate",
+          "issuerGoalReiterationSourcePublicByAsOf",
+          "issuerGoalReiterationOlderThan30Days",
+          "issuerActualOriginalSubmissionPeriodNotPressDate",
+          "issuerGoalReiterationConfirmsNoLaterFDAExtension",
           "independentlyVerifiedApplicationCycle"]
     with path.open("w",encoding="utf-8",newline="") as f:
         w=csv.DictWriter(f,fieldnames=keys,extrasaction="ignore")

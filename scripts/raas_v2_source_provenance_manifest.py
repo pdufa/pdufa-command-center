@@ -73,6 +73,23 @@ def validate_research_json(fda, v2):
             and v2.get("independentlyVerifiedThreeWayAccuracyPct") is None
             and v2.get("approvedRAASMetricCalibrations") == 0,
             "V2_SOURCE_REPORT_UNAPPROVED_STATE_MISSING")
+    # Dated issuer reiteration and public-source staleness must not be
+    # mistaken for an official FDA statement ruling out a later extension.
+    latest=v2.get("nov14DatedIssuerGoalContinuityChecks")
+    require(type(latest) is list and len(latest)==2 and
+        type(v2.get("nov14DatedIssuerSourcesPublicByAsOfCount")) is int and
+        v2["nov14DatedIssuerSourcesPublicByAsOfCount"]==sum(
+            x.get("sourceIsPublicByAuditAsOf") is True for x in latest)
+        and type(v2.get("nov14IssuerSourcesOlderThan30DaysCount")) is int
+        and v2["nov14IssuerSourcesOlderThan30DaysCount"]==sum(
+            x.get("issuerGoalEvidenceOlderThan30DaysAtAudit") is True
+            for x in latest)
+        and v2.get("nov14IndependentlyCertifiedNoLaterFdaGoalRevisions")==0
+        and all(x.get("currentlyIndependentlyCertifiedUnrevisedFdaDeadline") is False
+            and x.get("currentFDAApplicationNumberIndependentlyVerified") is False
+            and x.get("prospectivelyFrozenThreeWayForecast") is False
+            for x in latest),
+        "ISSUER_REITERATIONS_CANNOT_VERIFY_NO_LATER_FDA_EXTENSION")
     pending=v2.get("blockedSourceItems")
     require(type(pending) is list
             and type(v2.get("sourceQueueCount")) is int

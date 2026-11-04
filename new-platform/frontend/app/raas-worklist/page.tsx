@@ -13,6 +13,7 @@ import fdaDecisionAccuracy from "../../data/raas-fda-three-way-accuracy-site-sna
 import v2Readiness from "../../data/raas-v2-candidate-source-readiness-site-snapshot.json";
 import v2Top8Sources from "../../data/raas-v2-top8-2026-source-intake.json";
 import nov14Triangulation from "../../data/raas-v2-nov14-review-cycle-triangulation.json";
+import nov14IssuerGoalContinuity from "../../data/raas-v2-nov14-issuer-goal-continuity.json";
 import goal2025Research from "../../data/raas-2025-nine-archived-goal-original-source-triage.json";
 import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
@@ -98,6 +99,21 @@ function V2CandidateReadiness(){
    <p><strong>Official FDA database sources:</strong> <a href="https://api.fda.gov/drug/drugsfda.json?search=application_number%3A%22NDA219083%22&amp;limit=1" target="_blank" rel="noopener noreferrer">CYTK NDA 219083 history</a> · <a href="https://api.fda.gov/drug/drugsfda.json?search=products.active_ingredients.name%3A%22IVONESCIMAB%22&amp;limit=25" target="_blank" rel="noopener noreferrer">SMMT ivonescimab ingredient search</a>. The nightly report records each source's status, dataset freshness, and any publicly indexed *candidate* applications, without certifying the exact pending FDA review cycle.</p>
    <p><strong>CYTK:</strong> The already-approved S-001 is a February REMS-only action, <strong>not</strong> the pending MAPLE-HCM efficacy supplement. Another FDA-listed supplement cannot be assigned to MAPLE-HCM without a matching FDA letter or label. <strong>SMMT:</strong> the public ingredient lookup may reveal a BLA candidate, but its sponsor, specific HARMONi review cycle, and November goal must be independently matched before it can be considered verified. Absence from the FDA public approvals database does not mean no pending BLA exists. The <a href="https://purplebooksearch.fda.gov/" target="_blank" rel="noopener noreferrer">FDA Purple Book</a> lists licensed biologics, not a census of pending applications.</p>
    <p className={css.notice}>Live results are in the <a href={x.nightlySourceReadinessAuditUrl} target="_blank" rel="noopener noreferrer">nightly GitHub RAAS FDA artifact</a>, not this dated website snapshot. A missing, delayed or failed public FDA lookup never proves an approval, CRL, extension or absence of an application. This does not freeze PASS / CRL / EXTENSION probabilities or approve RAAS V2.</p>
+  </details>
+  <details id="raas-v2-nov14-issuer-goal-continuity">
+   <summary>November 14 · {nov14IssuerGoalContinuity.latestDatedIssuerGoalContinuityCases} later issuer goal confirmations and source-age review</summary>
+   <p>These dated issuer records repeated the November 14, 2026 FDA target. They do <strong>not</strong> independently establish that the FDA never revised the deadline, identify the pending application number, or authorize a PASS/CRL/EXTENSION forecast. Both located confirmation documents are more than 30 days old as of the November 3 snapshot; newer sources require rechecking.</p>
+   <ul>{nov14IssuerGoalContinuity.records.map(r=><li key={r.researchCaseKey}>
+     <strong>{r.ticker} · {r.reviewSpecificStudy}</strong> — later issuer source <strong>{r.issuerPublicSourceDate}</strong>,
+     still lists <strong>{r.reportedGoalDate}</strong>;
+     <a href={r.issuerPublicSourceUrl} target="_blank" rel="noopener noreferrer">SEC issuer filing</a>;
+     publicly reported application update {r.firstSelectedIssuerPublicApplicationUpdateDate}
+     ({r.firstSelectedIssuerPublicApplicationUpdateType.replaceAll("_"," ").toLowerCase()})
+     versus actual application submission period <strong>{r.issuerReportedActualApplicationSubmissionMonth}</strong>
+     {r.ticker==="CYTK"?<> — January is the actual filing month, February 24 was the public announcement, not the filing date</>:null};
+     independently numbered current FDA cycle <strong>not verified</strong>
+   </li>)}</ul>
+   <p className={css.notice}>Source continuity is not a live FDA deadline guarantee. The nightly RAAS audit retains research-only dates and flags sources older than 30 days without treating the lack of a newer public filing as evidence of no extension.</p>
   </details>
   <details id="raas-v2-nov14-cross-source-registry">
    <summary>November 14 research · {nov14Triangulation.casesCrossChecked} Phase 3 trial registries cross-checked against issuer FDA dates</summary>
