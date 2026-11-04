@@ -68,7 +68,7 @@ class RaasPopulationCoverageAuditTests(unittest.TestCase):
             "scoreKind":"UNSCORED","score":None,
             "recordedAt":"2026-11-04T13:00:00.000Z",
             "metricGrades":[{"metricId":"pre-4-1", "score":50,
-                "ruleId":"timing-specificity-exploratory-v1",
+                "ruleId":"timing-specificity-exploratory-2026-11-02-v1",
                 "sourceDate":"2026-07-22",
                 "sourceUrl":"https://ir.example.com/issuer"}]
         }
@@ -93,6 +93,45 @@ class RaasPopulationCoverageAuditTests(unittest.TestCase):
                   "scope":"RAAS_TRIAL_SCORE_HISTORY","records":[event]}))
             changed={**stages,"NCT07363577":"BOTTOM"}
             self.assertEqual(mod.source_grades(path,changed),{})
+
+
+    def test_bottom_experimental_grades_are_separate_from_top_and_never_overall(self):
+        stages=mod.source_readouts(mod.READOUT,mod.parse_census(mod.PINNED))
+        event={
+            "eventId":"clinical","kind":"METRIC_SCORE_UPDATED",
+            "nctId":"NCT06445023","stage":"post",
+            "scoreKind":"UNSCORED","score":None,"sourceAsOf":"2026-11-02",
+            "recordedAt":"2026-11-04T15:00:00.000Z",
+            "metricGrades":[{
+                "metricId":id, "score":score,
+                "ruleId":"csu-placebo-contrast-heuristic-2026-11-04-v1",
+                "sourceDate":"2026-09-22",
+                "sourceUrl":"https://ir.celldex.com/node/16781/ixbrl-viewer"
+             } for id,score in (("post-1-1",100),("post-1-2",100))]
+        }
+        with tempfile.TemporaryDirectory() as td:
+            path=Path(td)/"history.json"
+            def save(e):
+                path.write_text(json.dumps({"schemaVersion":1,
+                 "scope":"RAAS_TRIAL_SCORE_HISTORY","records":[e]}))
+            save(event)
+            grades=mod.source_grades(path,stages)
+            snapshot=mod.coverage_snapshot(mod.parse_census(mod.PINNED),
+                mod.parse_census(mod.EVOLVING),stages,grades)
+            item=next(x for x in snapshot["historicalCensus"]["records"]
+                      if x["nctId"]=="NCT06445023")
+            self.assertEqual(item["metricGradesAvailable"],2)
+            self.assertEqual(item["metricGradesMissing"],28)
+            self.assertEqual([g["score"] for g in item["experimentalMetricGrades"]],[100,100])
+            self.assertIsNone(item["approvedOverallScore"])
+            event["metricGrades"][0]["metricId"]="post-3-5"
+            save(event)
+            with self.assertRaisesRegex(ValueError,"Unapproved"):
+                mod.source_grades(path,stages)
+            event["metricGrades"][0]["metricId"]="pre-4-1"
+            save(event)
+            with self.assertRaisesRegex(ValueError,"Unapproved"):
+                mod.source_grades(path,stages)
 
     def test_corrupted_or_duplicate_inventory_fails_closed(self):
         rows=list(mod.parse_census(mod.PINNED).values())
