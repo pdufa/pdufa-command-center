@@ -28,9 +28,13 @@ def study(nct="NCT06445023",posted=False):
         d["resultsSection"]={
            "outcomeMeasuresModule":{"outcomeMeasures":[{"type":"PRIMARY",
              "title":"Change in disease severity","timeFrame":"Week 12",
-             "unitOfMeasure":"points","classes":[{"categories":[{"measurements":[
+             "unitOfMeasure":"points",
+             "groups":[{"id":"OG000","title":"Treatment group"},{"id":"OG001","title":"Placebo group"}],
+             "classes":[{"categories":[{"measurements":[
                {"groupId":"OG000","value":"-22.5"},{"groupId":"OG001","value":"-13.5"}]}]}],
-             "analyses":[{"pValue":"0.0006","paramType":"MEAN_DIFFERENCE"}]}]},
+             "analyses":[{"pValue":"0.0006","paramType":"MEAN_DIFFERENCE",
+               "paramValue":"-9.0","ciPctValue":95,"ciLowerLimit":"-12.1",
+               "ciUpperLimit":"-5.9","groupIds":["OG000","OG001"]}]}]},
            "adverseEventsModule":{"seriousEvents":[{"term":"Adverse event",
               "stats":[{"groupId":"EG000","numAffected":1,"numAtRisk":200}]}]}
         }
@@ -71,6 +75,9 @@ class RegistryEvidenceTest(unittest.TestCase):
         result=mod.extract("NCT06445023","CLDX",study(posted=True),"2026-11-04T15:00:00Z")
         self.assertEqual(result["evidenceState"],"POSTED_RESULTS_UNGRADED")
         self.assertEqual(result["postedPrimaryOutcomeCount"],1)
+        self.assertEqual(result["primaryPostedEvidence"][0]["groups"][0]["title"],"Treatment group")
+        self.assertEqual(result["primaryPostedEvidence"][0]["analyses"][0]["groupIds"],["OG000","OG001"])
+        self.assertEqual(result["primaryPostedEvidence"][0]["analyses"][0]["ciLowerLimit"],"-12.1")
         self.assertEqual(result["primaryPostedEvidence"][0]["analyses"][0]["pValue"],"0.0006")
         self.assertEqual(result["primaryPostedEvidence"][0]["measurements"][1]["value"],"-13.5")
         self.assertEqual(result["seriousAdverseEventTermCount"],1)
