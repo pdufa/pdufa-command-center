@@ -303,14 +303,17 @@ export default function RaasFullUniverseScores(){
    <strong>Current cap-screened Phase 3 TOP scoring pilot:</strong>{" "}
    <a href="/raas-current-pipeline-pre-metric-audit.csv" download
     style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
-    Download TRVI OCEAN-1 and LBRX NOVA-2 trial-by-trial 30-metric scorecards (60-row CSV)
+    Download five current Phase 3 trial-by-trial 30-metric scorecards (150-row CSV)
    </a>.
-   Two separately source-checked listed $300M–$10B Phase 3 recruiting issuers, with
-   <strong> 10 provisional pre-readout metric reviews and 50 missing metric reviews</strong>.
+   Five source-checked $300M–$10B Phase 3 trial NCTs across <strong>three listed issuers
+   (TRVI, LBRX, CYTK)</strong>, including OCEAN-1, OCEAN-2, NOVA-2, NOVA-3 and COMET-HF,
+   with <strong>24 provisional pre-readout metric reviews and 126 missing metric reviews</strong>.
+   NOVA-3 is a 52-week open-label safety study; COMET-HF is event-driven.
+   Neither has a verified topline date, so the audit leaves that field blank.
    Capitalization snapshots are dated November 3, 2026 and become <strong>stale
    after seven calendar days</strong> without another verified quote.
-   These are two examples, <strong>not the complete current Pipeline</strong>.
-   Neither has an FDA-accepted NDA/BLA or source-verified PDUFA action date;
+   These are five sampled trials, <strong>not the complete current Pipeline</strong>.
+   No trial here has an FDA-accepted NDA/BLA or source-verified PDUFA action date;
    no full 30/30 score, FDA probability or trade recommendation is available.
   </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ten-trial-pilot-download="true">

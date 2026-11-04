@@ -31,16 +31,20 @@ class CurrentPipelineTests(unittest.TestCase):
         return audit.build(*(source if source is not None else self.raw),
                            as_of=as_of)
 
-    def test_two_recruiting_phase3_cap_qualified_sources_not_pdufa(self):
+    def test_five_phase3_cases_three_cap_qualified_issuers_not_pdufa(self):
         rows, s = self.run_audit()
-        self.assertEqual(len(rows), 60)
-        self.assertEqual(s["pilotTrialCount"], 2)
-        self.assertEqual(s["pilotMetricSlots"], 60)
-        self.assertEqual(s["provisionalAiReviewedMetricSlots"], 10)
-        self.assertEqual(s["missingMetricSlots"], 50)
+        self.assertEqual(len(rows), 150)
+        self.assertEqual(s["pilotTrialCount"], 5)
+        self.assertEqual(s["uniqueIssuers"], 3)
+        self.assertEqual(s["trialsWithoutVerifiedToplineWindow"], 2)
+        self.assertEqual(s["pilotMetricSlots"], 150)
+        self.assertEqual(s["provisionalAiReviewedMetricSlots"], 24)
+        self.assertEqual(s["missingMetricSlots"], 126)
         self.assertEqual(s["perTrialProvisionalReviewCount"],
-                         {"NCT07363577":5, "NCT07671911":5})
-        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"], 2)
+                         {"NCT07363577":5, "NCT07671911":5,
+                          "NCT07868419":5, "NCT07369154":4,
+                          "NCT06736574":5})
+        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"], 5)
         self.assertEqual(s["humanIndependentReviewedMetricSlots"], 0)
         self.assertEqual(s["complete30MetricRaasScores"], 0)
         self.assertEqual(s["confirmedPdufaTargets"], 0)
@@ -59,14 +63,14 @@ class CurrentPipelineTests(unittest.TestCase):
                                 and r["fdaPassCrlExtensionProbability"] == ""
                                 for r in matched))
 
-    def test_ten_real_clinical_financial_timing_grades_with_sources_and_fifty_na(self):
+    def test_twentyfour_source_backed_clinical_financial_design_regulatory_grades_with_missing(self):
         rows, _ = self.run_audit()
         rated = [r for r in rows if r["provisionalMetricScore"] != ""]
         na = [r for r in rows if r["provisionalMetricScore"] == ""]
-        self.assertEqual(len(rated),10)
-        self.assertEqual(len(na),50)
+        self.assertEqual(len(rated),24)
+        self.assertEqual(len(na),126)
         self.assertEqual({r["metricId"] for r in rated},
-                         {"pre-1-1","pre-1-2","pre-1-4","pre-3-2","pre-4-1"})
+                         {"pre-1-1","pre-1-2","pre-1-4","pre-1-5","pre-3-2","pre-4-1"})
         self.assertTrue(all(r["provisionalMetricScore"] in (0,25,50,75,100)
                             for r in rated))
         self.assertTrue(all(r["sourceDate"] and r["sourceUrl"].startswith("https://")
@@ -80,8 +84,8 @@ class CurrentPipelineTests(unittest.TestCase):
 
     def test_market_cap_and_status_sources_expire_instead_of_silent_requalification(self):
         rows, s = self.run_audit(as_of="2026-11-11")
-        self.assertEqual(len(rows),60)
-        self.assertEqual(s["provisionalAiReviewedMetricSlots"],10)
+        self.assertEqual(len(rows),150)
+        self.assertEqual(s["provisionalAiReviewedMetricSlots"],24)
         self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"],0)
         self.assertEqual(set(s["eligibilityByNct"].values()),
                          {"STALE_MARKET_CAP_REVERIFY"})
@@ -127,15 +131,55 @@ class CurrentPipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"FUTURE_ASSESSMENT"):
             self.run_audit(as_of="2026-11-02")
 
+    def test_missing_window_stays_absent_and_multiple_trials_one_cap(self):
+        rows, status=self.run_audit()
+        for nct in ("NCT06736574","NCT07369154"):
+            matches=[r for r in rows if r["nctId"]==nct]
+            self.assertEqual(len(matches),30)
+            self.assertTrue(all(r["readoutExpectedWindow"]=="" for r in matches))
+            self.assertTrue(all(r["readoutGuidancePublished"]=="" for r in matches))
+            self.assertTrue(all(r["readoutGuidanceUrl"]=="" for r in matches))
+            self.assertTrue(all(r["pdufaTarget"]=="" for r in matches))
+        issuer_caps={}
+        for row in rows:
+            issuer_caps.setdefault(row["ticker"],set()).add(row["marketCapUsdAsOfSource"])
+        self.assertEqual(len(issuer_caps),3)
+        self.assertTrue(all(len(caps)==1 for caps in issuer_caps.values()))
+        self.assertEqual(status["confirmedPdufaTargets"],0)
+        self.assertEqual(status["complete30MetricRaasScores"],0)
+
+    def test_missing_readout_window_must_not_be_invented(self):
+        snap,reviews,cohort,ledger=self.raw
+        bad=copy.deepcopy(snap)
+        nova3=next(r for r in bad["trialSnapshots"] if r["nctId"]=="NCT07369154")
+        nova3["readoutExpectedWindow"]="H1 2027"
+        with self.assertRaisesRegex(ValueError,"CASE_PROVENANCE"):
+            self.run_audit(source=(bad,reviews,cohort,ledger))
+        bad=copy.deepcopy(snap)
+        ocean2=next(r for r in bad["trialSnapshots"] if r["nctId"]=="NCT07868419")
+        ocean2["readoutGuidanceUrl"]=None
+        with self.assertRaisesRegex(ValueError,"CASE_PROVENANCE"):
+            self.run_audit(source=(bad,reviews,cohort,ledger))
+
+    def test_same_issuer_different_market_cap_quotes_are_rejected(self):
+        snap,reviews,cohort,ledger=self.raw
+        bad=copy.deepcopy(snap)
+        ocean2=next(r for r in bad["trialSnapshots"] if r["nctId"]=="NCT07868419")
+        ocean2["marketCapUsd"]+=100_000_000
+        with self.assertRaisesRegex(ValueError,"CONFLICTING_ISSUER_MARKET_CAP"):
+            self.run_audit(source=(bad,reviews,cohort,ledger))
+
     def test_quote_outside_allowed_range_not_verified_and_csv_excel_safe(self):
         snap,reviews,cohort,ledger = self.raw
         bad=copy.deepcopy(snap)
-        bad["trialSnapshots"][0]["marketCapUsd"]=299_999_999
+        for case in bad["trialSnapshots"]:
+            if case["ticker"]=="TRVI":
+                case["marketCapUsd"]=299_999_999
         _, s = self.run_audit(source=(bad,reviews,cohort,ledger))
-        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"],1)
+        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"],3)
         self.assertIn("OUTSIDE_MARKET_CAP_RESTRICTIONS",s["eligibilityByNct"].values())
         csv_text,json_text=audit.generate(*self.raw,as_of="2026-11-04")
-        self.assertEqual(len(list(csv.DictReader(io.StringIO(csv_text)))),60)
+        self.assertEqual(len(list(csv.DictReader(io.StringIO(csv_text)))),150)
         self.assertEqual(json.loads(json_text)["confirmedPdufaTargets"],0)
         self.assertEqual(audit.safe("=SUM(A1:A3)"),"'=SUM(A1:A3)")
         self.assertEqual(audit.safe(""),"")
