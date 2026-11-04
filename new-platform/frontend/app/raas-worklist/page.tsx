@@ -107,8 +107,9 @@ function V2CandidateReadiness(){
      <strong>{r.ticker} · {r.reviewSpecificStudy}</strong> — later issuer source <strong>{r.issuerPublicSourceDate}</strong>,
      still lists <strong>{r.reportedGoalDate}</strong>;
      <a href={r.issuerPublicSourceUrl} target="_blank" rel="noopener noreferrer">SEC issuer filing</a>;
-     publicly reported submission {r.firstSelectedIssuerPublicSubmissionAnnouncementDate}
-     versus actual submission period <strong>{r.issuerReportedActualApplicationSubmissionMonth}</strong>
+     publicly reported application update {r.firstSelectedIssuerPublicApplicationUpdateDate}
+     ({r.firstSelectedIssuerPublicApplicationUpdateType.replaceAll("_"," ").toLowerCase()})
+     versus actual application submission period <strong>{r.issuerReportedActualApplicationSubmissionMonth}</strong>
      {r.ticker==="CYTK"?<> — January is the actual filing month, February 24 was the public announcement, not the filing date</>:null};
      independently numbered current FDA cycle <strong>not verified</strong>
    </li>)}</ul>
