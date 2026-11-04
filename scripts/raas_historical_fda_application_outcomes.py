@@ -127,7 +127,7 @@ def export(cases, registry=None):
     writer=csv.DictWriter(buffer,fieldnames=FIELDS,lineterminator="\n")
     writer.writeheader()
     for row in rows:
-        writer.writerow({key:("'"+str(value) if str(value)[:1] in "=+@" else value)
+        writer.writerow({key:("'"+str(value) if str(value)[:1] in ("=", "+", "-", "@") else value)
                          for key,value in row.items()})
     return buffer.getvalue(),json.dumps(status,indent=2)+"\n"
 
