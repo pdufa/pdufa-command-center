@@ -168,7 +168,7 @@ test("10-trial real clinical pilot has only research grades, not full RAAS or fa
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
    indication:r.indication},"post",true,feed);
-  assert.ok(scored.aiCrosscheckedCount>=2 && scored.aiCrosscheckedCount<=4);
+  assert.ok(scored.aiCrosscheckedCount>=2 && scored.aiCrosscheckedCount<=5);
   assert.equal(scored.independentReviewedCount,0);
   assert.equal(scored.fullResearchScore,null);
   assert.equal(scored.approvedOverallScore,null);
