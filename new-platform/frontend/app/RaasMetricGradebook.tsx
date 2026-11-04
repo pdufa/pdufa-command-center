@@ -91,6 +91,10 @@ export default function RaasMetricGradebook({row,bucket}:{
       <span><strong>Overall RAAS: N/A</strong> · {stageVerified?"not validated":"stage unverified and not validated"}</span>
       <span><strong>{book.provisionalDiagnostic.weightCoveredPercent}%</strong> of RAAS model weight has any experimental component grade</span>
       <span><strong>{book.registrySourceLeadCount}</strong> newly mapped ClinicalTrials.gov research leads</span>
+      <span data-raas-quantitative-clinical-facts={row.nctId}>
+       <strong>{book.registryNumericObservationCount}</strong> trial-matched numerical clinical observations
+       {" "}· measured facts, not efficacy ratings
+      </span>
       <span data-raas-raw-design-diagnostic={row.nctId}>
        <strong>Raw design: {book.rawDesignDiagnostic?.score===null||!book.rawDesignDiagnostic?"N/A":book.rawDesignDiagnostic.score+"/100"}</strong>
        {" "}· {book.rawDesignDiagnostic?.knownFacets??0}/4 source-verified facets · NOT overall RAAS

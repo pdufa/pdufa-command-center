@@ -89,9 +89,8 @@ def compact_trial(row: dict, ticker: str) -> dict:
             sae.append({"term":string(item.get("term"),160),
                         "groups":[{
                             "groupId":string(g.get("groupId"),35),
-                            "numAffected":g.get("numAffected"),
-                            "numAtRisk":g.get("numAtRisk"),
-                            "numEvents":g.get("numEvents")}
+                            **{k:g[k] for k in ("numAffected","numAtRisk","numEvents")
+                               if g.get(k) is not None}}
                             for g in array(item.get("stats"))[:12] if isinstance(g,dict)]})
         if any(isinstance(g.get(k),bool) or not isinstance(g.get(k),int) or
                g.get(k)<0 or g.get(k)>1000000

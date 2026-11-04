@@ -38,7 +38,8 @@ export type RaasTrialGradebook={
  nctId:string;ticker:string;stage:RaasStage;total:30;graded:number;
  mappedOnly:number;withoutEvidence:number;approvedOverallScore:null;
  provisionalDiagnostic:ReturnType<typeof provisionalStageCoverage>;
- registrySourceLeadCount:number;rawDesignDiagnostic:RawDesignDiagnostic|null;
+ registrySourceLeadCount:number;registryNumericObservationCount:number;
+ rawDesignDiagnostic:RawDesignDiagnostic|null;
  categories:MetricGradebookCategory[];
 };
 /** Full issuer/trial/therapy identity; the same ticker is never sufficient. */
@@ -103,6 +104,7 @@ export function buildRaasMetricGradebook(
   mappedOnly:all.filter(x=>x.status==="SOURCE_LEADS_ONLY").length,
   withoutEvidence:all.filter(x=>x.status==="EVIDENCE_MISSING").length,
   approvedOverallScore:null,categories,registrySourceLeadCount:registryLeads.length,
+  registryNumericObservationCount:registryLeads.filter(x=>x.measurement!==null).length,
   rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial),
   provisionalDiagnostic:provisionalStageCoverage(stage,provisional.scoredMetrics)};
 }

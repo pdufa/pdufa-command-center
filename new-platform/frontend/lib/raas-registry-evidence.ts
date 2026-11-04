@@ -24,8 +24,8 @@ export type RegistryTrialEvidence={
  primaryDefinitions:{measure:string;timeFrame:string}[];
  postedResults:boolean;postedPrimaryOutcomeCount:number;postedOtherOutcomeCount:number;
  primaryResults:RegistryPrimaryResult[];seriousAdverseEventTermCount:number;
- seriousEventDetails?:{term:string;groups:{groupId:string;numAffected?:number;
-  numAtRisk?:number;numEvents?:number}[]}[];
+ seriousEventDetails?:{term:string;groups:{groupId:string;numAffected?:number|null;
+  numAtRisk?:number|null;numEvents?:number|null}[]}[];
  evidenceState:"PROTOCOL_ONLY"|"POSTED_RESULTS_UNGRADED";
 };
 export type RegistryEvidenceIndex={
@@ -39,7 +39,7 @@ export type RegistryEvidenceIndex={
 };
 export type RegistryMetricLead={
  id:string;kind:string;sourceDate:string;sourceUrl:string;
- description:string;measurement:null;metricIds:string[];
+ description:string;measurement:{label:string;value:number;unit:string}|null;metricIds:string[];
 };
 const exact=(a:string,b:string)=>a.trim().toLowerCase()===b.trim().toLowerCase();
 const nct=/^NCT\d{8}$/;
@@ -103,7 +103,7 @@ export function parseRegistryEvidenceIndex(raw:unknown):RegistryEvidenceIndex{
    for(const g of event.groups){
     if(["numAffected","numAtRisk","numEvents"].some(k=>{
      const n=g[k as "numAffected"|"numAtRisk"|"numEvents"];
-     return n!==undefined&&(!Number.isInteger(n)||n<0||n>1000000);
+     return n!==undefined&&n!==null&&(!Number.isInteger(n)||n<0||n>1000000);
     }))throw Error("RAAS_REGISTRY_INDEX_SAE_INVALID");
    }
   }
@@ -156,6 +156,12 @@ export function registryMetricLeads(
  if(!e||!sameTrial(e,trial))return [];
  const leads:RegistryMetricLead[]=[];
  const base={sourceUrl:e.sourceUrl,measurement:null as null};
+ const sourceDay=e.resultsFirstPosted||e.registryLastUpdated||e.retrievedAt.slice(0,10);
+ const parseNumber=(raw:unknown):number|null=>{
+  if(typeof raw!=="string"||!/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?$/i.test(raw.trim()))return null;
+  const n=Number(raw);return Number.isFinite(n)&&Math.abs(n)<=1e10?n:null;
+ };
+ const numeric=(label:string,value:number,unit:string)=>({label,value,unit});
  // A trial's registered design can inform the pre-readout DESIGN review,
  // but it cannot substantiate historical human efficacy or numerical scores.
  if(stage==="pre"&&e.primaryDefinitions.length){
@@ -179,6 +185,66 @@ export function registryMetricLeads(
     sourceDate:e.resultsFirstPosted||e.registryLastUpdated||e.retrievedAt.slice(0,10),
     description:"Registry primary outcome includes statistical analyses; full confidence intervals, "+
      "multiplicity plan and missing-data sensitivity are not established by analysis presence."});
+  }
+ }
+ // Quantitative source observations are NOT graded RAAS components. Never infer
+ // the preferred outcome direction or significance across different indications.
+ if(stage==="post"&&e.postedResults){
+  for(const [oi,outcome] of e.primaryResults.slice(0,5).entries()){
+   for(const [ai,analysis] of (outcome.comparisons||[]).slice(0,12).entries()){
+    if(!Array.isArray(analysis.groupIds)||analysis.groupIds.length<2)continue;
+    const effect=parseNumber(analysis.paramValue);
+    const method=analysis.method||"unreported method";
+    const pair=analysis.groupIds.join(" vs ");
+    if(effect!==null){
+     leads.push({metricIds:["post-1-1"],id:e.nctId+"-raw-primary-effect-"+oi+"-"+ai,
+      kind:"POSTED_PRIMARY_CONTRAST_RAW_MEASUREMENT",sourceUrl:e.sourceUrl,
+      sourceDate:sourceDay,
+      description:outcome.title+" · groups "+pair+" · "+method+
+       ". This is an unadjusted transcription of the reported analysis parameter, "+
+       "not a direction-adjusted efficacy score or independent comparator benchmark.",
+      measurement:numeric("Registry-reported "+(analysis.paramType||"analysis")+" contrast",
+       effect,outcome.unit||"reported parameter units")});
+    }
+    const lower=parseNumber(analysis.ciLowerLimit),
+      upper=parseNumber(analysis.ciUpperLimit);
+    if(lower!==null&&upper!==null&&upper>=lower){
+     leads.push({metricIds:["post-1-3"],id:e.nctId+"-raw-primary-ci-"+oi+"-"+ai,
+      kind:"POSTED_PRIMARY_CI_WIDTH_RAW_MEASUREMENT",sourceUrl:e.sourceUrl,
+      sourceDate:sourceDay,
+      description:outcome.title+" · groups "+pair+" · confidence level "+
+       (analysis.ciPctValue||"not reported")+"% · source interval ["+
+       lower+", "+upper+"]. Width alone cannot establish statistical robustness "+
+       "without prespecification, multiplicity and missing-data sensitivity review.",
+      measurement:numeric("Published CI width",upper-lower,outcome.unit||"reported parameter units")});
+    }
+    const p=parseNumber(analysis.pValue);
+    if(p!==null&&p>=0&&p<=1){
+     leads.push({metricIds:["post-1-3"],id:e.nctId+"-raw-primary-p-"+oi+"-"+ai,
+      kind:"POSTED_PRIMARY_P_VALUE_RAW_MEASUREMENT",sourceUrl:e.sourceUrl,
+      sourceDate:sourceDay,
+      description:outcome.title+" · groups "+pair+" · reported p-value; "+
+       "does not prove clinical importance or multiplicity-adjusted significance.",
+      measurement:numeric("Published p-value",p,"probability")});
+    }
+   }
+  }
+  // Rates are only matched to their own reported registry adverse-event group.
+  // ClinicalTrials.gov EG IDs cannot be assumed to correspond to OG group IDs.
+  for(const [ei,event] of (e.seriousEventDetails||[]).slice(0,8).entries()){
+   for(const [gi,g] of event.groups.slice(0,6).entries()){
+    const a=g.numAffected,n=g.numAtRisk;
+    if(a===undefined||n===undefined||a===null||n===null||
+      !Number.isInteger(a)||!Number.isInteger(n)||n<=0||a<0||a>n)continue;
+    const pct=Math.round(10000*a/n)/100;
+    leads.push({metricIds:["post-1-5"],id:e.nctId+"-raw-sae-rate-"+ei+"-"+gi,
+     kind:"POSTED_SAE_AFFECTED_RATE_RAW_MEASUREMENT",sourceUrl:e.sourceUrl,
+     sourceDate:sourceDay,
+     description:"Serious adverse event "+event.term+" · event group "+
+      g.groupId+" · "+a+"/"+n+" affected. Group identity, exposure duration, "+
+      "causality, events per patient and comparative clinical importance require review.",
+     measurement:numeric("Registry group serious-event affected rate",pct,"%")});
+   }
   }
  }
  if(stage==="post"&&e.postedResults&&e.seriousAdverseEventTermCount>0){

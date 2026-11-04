@@ -104,6 +104,17 @@ class IndexTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"UNPUBLISHED"):
             mod.compact_trial(p,"TEST")
 
+    def test_absent_safety_counts_are_omitted_not_zeroed(self):
+        p=sample(posted=True)
+        p["seriousAdverseEventEvidence"][0]["stats"].append({
+            "groupId":"EG002","numAffected":None,"numAtRisk":None,"numEvents":None})
+        out=mod.compact_trial(p,"TEST")
+        missing=out["seriousEventDetails"][0]["groups"][-1]
+        self.assertEqual(missing["groupId"],"EG002")
+        self.assertNotIn("numAffected",missing)
+        self.assertNotIn("numAtRisk",missing)
+        self.assertNotIn("numEvents",missing)
+
     def test_bad_safety_counts_are_rejected(self):
         p=sample(posted=True)
         p["seriousAdverseEventEvidence"][0]["stats"][0]["numAtRisk"]=-1
