@@ -20,6 +20,7 @@ const ARCHIVE="data/historical_assessed_decisions.csv";
 const VENUES="new-platform/frontend/data/raas-alpaca-venue-exceptions.json";
 const PRIMARY_LEADS="new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json";
 const SEC_EARLY="new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json";
+const SEC_EARLIEST="new-platform/frontend/data/raas-2024-2025-additional-earliest-sec-cover.json";
 const SEC_LATER="new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json";
 const EXPANDED_LEADS="new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json";
 const CENSUS_2025_LEADS="new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json";
@@ -179,7 +180,8 @@ function selectResearchWindow(rows,censusComplete,config){
 async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(INTAKE)),
  csv=read(ARCHIVE),venueExceptions=JSON.parse(read(VENUES)).records,
  key,secret,request=fetch,fetchDiscoveryPrices=true,researchLeads=[],
- sourceCapLeads=[],earlierSecCover=null,laterSecCover=null}={}){
+ sourceCapLeads=[],earlierSecCover=null,laterSecCover=null,
+ additionalEarliestSecCover=null}={}){
  const policy=verifyConfig(config),audit=reviewIntake(intake,policy);
  const candidates=discoveryQueue(csv,policy),byEvent=new Map(),statuses=[];
  const sourceLeads=priceOnlySourceLeads(researchLeads,policy);
@@ -256,6 +258,7 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
  const rawEntryCapResearch=sourceCapLeads.length?
   rawCap.auditRawEntryMarketCapResearch({
    leads:sourceCapLeads,earlier:earlierSecCover,later:laterSecCover,
+   additionalEarliest:additionalEarliestSecCover,
    adjustedBarsByEvent:priceData,rawBarsByEvent:rawPriceData,
    entryLeadTradingSessions:79
   }):null;
@@ -318,6 +321,7 @@ function main(){
  const primary=JSON.parse(read(PRIMARY_LEADS));
  execute({sourceCapLeads:primary.records,
   earlierSecCover:JSON.parse(read(SEC_EARLY)),
+  additionalEarliestSecCover:JSON.parse(read(SEC_EARLIEST)),
   laterSecCover:JSON.parse(read(SEC_LATER)),
   researchLeads:[
    ...primary.records,
