@@ -13,8 +13,14 @@ def row(nct,posted):
       "sourceSha256":"a"*64,"hasPostedResults":posted,
       "evidenceState":"POSTED_RESULTS_UNGRADED" if posted else "PROTOCOL_ONLY",
       "registeredPrimaryOutcomes":[{"measure":"Change in symptoms"}],
-      "primaryPostedEvidence":[{"analysesCount":2}] if posted else [],
+      "primaryPostedEvidence":[{"analysesCount":2,
+        "measurements":[{"groupId":"OG000","value":"-10.1"},
+                        {"groupId":"OG001","value":"-4.2"}],
+        "analyses":[{"groupIds":["OG000","OG001"],
+                     "pValue":"0.012","ciLowerLimit":"-8.1","ciUpperLimit":"-3.0"}]}] if posted else [],
       "seriousAdverseEventTermCount":3 if posted else 0,
+      "seriousAdverseEventEvidence":[{"term":"Infections",
+        "stats":[{"groupId":"EG000","numAffected":2,"numAtRisk":100}]}] if posted else [],
       "overallRaasScore":None}
 class ReceiptTests(unittest.TestCase):
     def test_real_results_are_distinguished_from_missing_and_protocol_only(self):
@@ -31,6 +37,10 @@ class ReceiptTests(unittest.TestCase):
         self.assertEqual(s["sourceRecordsStillMissing"],1)
         self.assertEqual(s["missingRecordsRecoveredFromOriginal35"],1)
         self.assertEqual(s["trialsWithPrimaryRegistryAnalyses"],1)
+        self.assertEqual(s["trialsWithPrimaryGroupMeasurements"],1)
+        self.assertEqual(s["trialsWithPrimaryComparisons"],1)
+        self.assertEqual(s["trialsWithPrimaryConfidenceIntervals"],1)
+        self.assertEqual(s["trialsWithSafetyRiskDenominators"],1)
         self.assertEqual(s["approvedOverallRaasScores"],0)
         self.assertEqual(r["pendingRegistryNctIds"],[c])
     def test_source_mismatch_duplicate_and_false_score_are_rejected(self):
