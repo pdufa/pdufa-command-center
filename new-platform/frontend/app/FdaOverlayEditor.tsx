@@ -2,6 +2,7 @@
 
 import {useCallback,useEffect,useMemo,useState} from "react";
 import AlpacaStockChart, {type FdaMilestone} from "./AlpacaStockChart";
+import {PDUFA_FEATURE_OPTIONS} from "./PdufaChartIntelligence";
 
 type CustomMarker = {
   id:string; date:string; label:string; chartLabel:string; detail:string; color:string;
@@ -13,6 +14,7 @@ type FdaCategory = { id:string; title:string; mode:string };
 type OverlayResponse = {
   programId:string; markers:CustomMarker[]; verifiedOverrides:VerifiedDisplayOverride[];
   enabledCategories:string[];
+  enabledFeatures:string[];
   version:number; updatedAt?:string|null;
 };
 const COLORS = [
@@ -43,6 +45,7 @@ export default function FdaOverlayEditor({
   const [markers,setMarkers]=useState<CustomMarker[]>([]);
   const [verifiedOverrides,setVerifiedOverrides]=useState<VerifiedDisplayOverride[]>([]);
   const [enabledCategories,setEnabledCategories]=useState<string[]>(categories.map(c=>c.id));
+  const [enabledFeatures,setEnabledFeatures]=useState<string[]>(PDUFA_FEATURE_OPTIONS.map(x=>x.id));
   const [version,setVersion]=useState<number|null>(null);
   const [status,setStatus]=useState("Loading saved annotations…");
   const [loading,setLoading]=useState(true);
@@ -61,12 +64,13 @@ export default function FdaOverlayEditor({
       const data:OverlayResponse=await response.json();
       if(data.programId!==programId||!Number.isSafeInteger(data.version)||
         !Array.isArray(data.markers)||!Array.isArray(data.verifiedOverrides)||
-        !Array.isArray(data.enabledCategories))
-        throw Error("Saved overlay categories or marker data do not match this program. Refresh the page.");
+        !Array.isArray(data.enabledCategories)||!Array.isArray(data.enabledFeatures))
+        throw Error("Saved overlay selections or marker data do not match this program. Refresh the page.");
       if(signal?.aborted)return;
       setMarkers(data.markers);
       setVerifiedOverrides(data.verifiedOverrides);
       setEnabledCategories(data.enabledCategories.filter((c:string)=>categories.some(k=>k.id===c)));
+      setEnabledFeatures(data.enabledFeatures.filter((x:string)=>PDUFA_FEATURE_OPTIONS.some(f=>f.id===x)));
       setVersion(data.version);
       setLastSaved(data.updatedAt||null);
       setStatus("FDA display edits and custom annotations loaded from persistent program storage.");
@@ -139,7 +143,7 @@ export default function FdaOverlayEditor({
     try{
       const response=await fetch(endpoint,{
         method:"PUT",headers:{"content-type":"application/json"},
-        body:JSON.stringify({version,markers,verifiedOverrides,enabledCategories}),cache:"no-store",
+        body:JSON.stringify({version,markers,verifiedOverrides,enabledCategories,enabledFeatures}),cache:"no-store",
       });
       const data=await response.json().catch(()=>({}));
       if(!response.ok)throw Error(response.status===409?
@@ -164,10 +168,17 @@ export default function FdaOverlayEditor({
       enabled?[...before.filter(x=>x!==id),id]:before.filter(x=>x!==id));
     setDirty(true);
   };
+  const toggleFeature=(id:string,enabled:boolean)=>{
+    setEnabledFeatures(before=>
+      enabled?[...before.filter(x=>x!==id),id]:before.filter(x=>x!==id));
+    setDirty(true);
+  };
 
   return <section aria-label="Alpaca chart with editable FDA overlays">
     <AlpacaStockChart ticker={ticker} programId={programId} milestones={combined}
-      onMoveMilestone={open&&version!==null?moveDate:undefined}/>
+      onMoveMilestone={open&&version!==null?moveDate:undefined}
+      pdufaIntelligence={{enabledFeatures,officialEvents:verifiedEvents}}
+    />
     <div style={{background:"#f6f9fc",padding:14,border:"1px solid #b6cbd6",borderRadius:10,margin:"12px 0"}}>
       <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
         <div><strong>FDA overlay editor</strong>
@@ -181,6 +192,38 @@ export default function FdaOverlayEditor({
           The verified original FDA date and source link are always preserved below. Edited dates are user adjustments, not new official FDA announcements.
           Change a date field or drag a visible event line on the chart. Click SAVE OVERLAY to persist your changes.
         </p>
+        <details open data-pdufa-feature-selector="true"
+          style={{padding:12,marginBottom:14,border:"1px solid #b6cbd6",borderRadius:8,background:"#fff"}}>
+          <summary style={{fontSize:14,fontWeight:750,cursor:"pointer"}}>
+            CHOOSE 7 PDUFA CHART FEATURES ({enabledFeatures.length} selected)
+          </summary>
+          <p style={{fontSize:12,color:"#445569",margin:"10px 0"}}>
+            Check only the panels you want displayed inside the stock chart. All seven are initially enabled,
+            and your choices are saved for this exact program. Features requiring unverified data show an
+            evidence gap rather than a made-up prediction, FDA decision, or price.
+          </p>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
+            <button type="button" style={action} disabled={version===null}
+              onClick={()=>{setEnabledFeatures(PDUFA_FEATURE_OPTIONS.map(x=>x.id));setDirty(true);}}>
+              SELECT ALL 7
+            </button>
+            <button type="button" style={action} disabled={version===null}
+              onClick={()=>{setEnabledFeatures([]);setDirty(true);}}>
+              CLEAR ALL 7
+            </button>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:8}}>
+            {PDUFA_FEATURE_OPTIONS.map((item,index)=><label key={item.id}
+              style={{display:"flex",gap:9,alignItems:"center",padding:10,
+                border:"1px solid #d5e0ea",borderRadius:7,fontSize:13}}>
+              <input type="checkbox" disabled={version===null}
+                checked={enabledFeatures.includes(item.id)}
+                onChange={ev=>toggleFeature(item.id,ev.target.checked)}
+                style={{width:18,height:18,flexShrink:0}}/>
+              <span><strong>{index+1}. {item.label}</strong></span>
+            </label>)}
+          </div>
+        </details>
         <details open style={{padding:12,marginBottom:14,border:"1px solid #b6cbd6",borderRadius:8,background:"#fff"}}>
           <summary style={{fontSize:14,fontWeight:750,cursor:"pointer"}}>
             CHOOSE FDA EVENT CATEGORIES ({enabledCategories.length} of {categories.length} selected)
