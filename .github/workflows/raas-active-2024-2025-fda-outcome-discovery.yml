@@ -15,6 +15,9 @@ on:
       - 'new-platform/frontend/data/raas-active-study-config.json'
       - 'tests/raas_active_2024_2025_review_priority.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json'
+      - 'new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json'
+      - 'new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
       - '.github/workflows/raas-active-2024-2025-fda-outcome-discovery.yml'
   push:
@@ -30,6 +33,9 @@ on:
       - 'new-platform/frontend/data/raas-active-study-config.json'
       - 'tests/raas_active_2024_2025_review_priority.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json'
+      - 'new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json'
+      - 'new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
       - '.github/workflows/raas-active-2024-2025-fda-outcome-discovery.yml'
 permissions:
