@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,50);
+ assert.equal(feed.records.length,56);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -161,7 +161,7 @@ test("10-trial real clinical pilot has only research grades, not full RAAS or fa
  const pilot=require("node:fs").readFileSync(require("node:path").join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8");
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
- const cases=new Set(feed.records.map(r=>r.nctId));
+ const cases=new Set(feed.records.filter(r=>r.stage==="post").map(r=>r.nctId));
  assert.equal(cases.size,10);
  assert.equal(feed.records.length,50);
  for(const nctId of cases){
@@ -218,5 +218,26 @@ test("Eight CI/multiplicity reviews and six shared-NDA filing/target metrics are
    assert.equal(result.fullResearchScore,null);
    assert.equal(result.approvedOverallScore,null);
   }
+ }
+});
+
+test("Two prospective, exact-trial TOP research cases have three AI source-checks each and never imply PDUFA dates",()=>{
+ const source=JSON.parse(fs.readFileSync(require("node:path").join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const feed=parseReviewedMetricFeed(source);
+ const cases=[
+  {nctId:"NCT07363577",ticker:"LBRX",drug:"LB-102 (100 mg tablet) | LB-102 (50 mg tablet)",indication:"schizophrenia"},
+  {nctId:"NCT07671911",ticker:"TRVI",drug:"NAL ER",indication:"Idiopathic Pulmonary Fibrosis"}
+ ];
+ assert.equal(feed.records.filter(r=>r.stage==="pre").length,6);
+ for(const t of cases){
+  const x=fullReviewedTrialCandidate(t,"pre",false,feed);
+  assert.equal(x.aiCrosscheckedCount,3);
+  assert.equal(x.independentReviewedCount,0);
+  assert.deepEqual(x.grades.map(g=>g.metricId).sort(),["pre-1-1","pre-1-2","pre-4-1"]);
+  assert.equal(x.missingMetricIds.length,27);
+  assert.equal(x.weightedCoveragePercent,13);
+  assert.equal(x.fullResearchScore,null);
+  assert.equal(x.approvedOverallScore,null);
  }
 });
