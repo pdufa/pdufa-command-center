@@ -7,6 +7,7 @@ import {parseRaasScreenedPhase3Csv,RAAS_RESTRICTED_PHASE3_CSV_QUERY,
 import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
 import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
 import {raasRegistryCoverage} from "../lib/raas-stage-source-coverage";
+import {rawRaasRegistryDesignDiagnostic} from "../lib/raas-raw-registry-design";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
@@ -105,7 +106,8 @@ export default function RaasFullUniverseScores(){
   const registry=registryTrialFor(registryIndex,trial);
   return {...x,registry,
    topRegistryCoverage:raasRegistryCoverage(trial,"pre",registry),
-   bottomRegistryCoverage:raasRegistryCoverage(trial,"post",registry)};
+   bottomRegistryCoverage:raasRegistryCoverage(trial,"post",registry),
+   rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial)};
  }),[assessments,registryIndex]);
  const stats=useMemo(()=>({
   top:assessments.filter(x=>x.stage==="pre").length,
@@ -113,6 +115,8 @@ export default function RaasFullUniverseScores(){
   unverified:assessments.filter(x=>x.stage===null).length,
   numericallyGraded:assessments.filter(x=>x.metricCount>0).length,
   fullOverall:assessments.filter(x=>x.overallScore!==null).length,
+  rawDesignGraded:indexed.filter(x=>x.rawDesignDiagnostic?.score!==null&&
+   x.rawDesignDiagnostic?.score!==undefined).length,
   postedRegistry:indexed.filter(x=>x.registry?.postedResults===true).length,
   protocolRegistry:indexed.filter(x=>x.registry?.postedResults===false).length,
   missingRegistry:indexed.filter(x=>!x.registry).length
@@ -185,6 +189,8 @@ export default function RaasFullUniverseScores(){
    <div><strong>{short(stats.numericallyGraded)}</strong><span>Trials with a source-backed experimental metric (not overall RAAS)</span></div>
    <div><strong>{short(stats.top)} / {short(stats.bottom)}</strong><span>Issuer-evidenced TOP / BOTTOM</span></div>
    <div><strong>{short(stats.unverified)}</strong><span>Unverified readout-stage trials · not assumed TOP</span></div>
+   <div data-raas-raw-design-graded="true"><strong>{short(stats.rawDesignGraded)}</strong>
+    <span>Trials with 0–100 experimental study-design grades; separate from overall RAAS</span></div>
   </div>
   <div className={css.stats} data-raas-registry-review-queues="true">
    <div><strong>{short(stats.postedRegistry)}</strong>
@@ -246,7 +252,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong>. Missing scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","TOP source coverage","BOTTOM source coverage","Registry facts","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","Raw trial-design grade","TOP source coverage","BOTTOM source coverage","Registry facts","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -269,6 +275,17 @@ export default function RaasFullUniverseScores(){
       rel="noopener noreferrer">Component source · {x.sourceDate}</a>:
       x.stage===null?"TOP and BOTTOM checklists available · public readout stage still unverified":
       "Source-backed rule and required inputs not yet available"}</td>
+     <td style={cell} data-raas-raw-design-grade={x.row.nctId}>
+      <strong>{x.rawDesignDiagnostic?.score===null||!x.rawDesignDiagnostic?"N/A":
+       x.rawDesignDiagnostic.score+"/100"}</strong>
+      <span style={{display:"block",fontSize:11}}>
+       {x.rawDesignDiagnostic?x.rawDesignDiagnostic.knownFacets+"/4 documented criteria":"Source unavailable"}
+       {" "}· study design only, NOT predictive RAAS
+      </span>
+      {x.rawDesignDiagnostic&&<span style={{display:"block",fontSize:11}}>
+       Missing-data range: {x.rawDesignDiagnostic.lowerBound}–{x.rawDesignDiagnostic.upperBound}
+      </span>}
+     </td>
      <td style={cell} data-raas-top-source-coverage={x.row.nctId}>
       <strong>{x.topRegistryCoverage===null?"N/A":x.topRegistryCoverage.sourceWeightPct+"%"}</strong>
       <span style={{display:"block",fontSize:11}}>Mapped source lead weights, not RAAS performance</span></td>

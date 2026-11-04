@@ -91,8 +91,30 @@ export default function RaasMetricGradebook({row,bucket}:{
       <span><strong>Overall RAAS: N/A</strong> · {stageVerified?"not validated":"stage unverified and not validated"}</span>
       <span><strong>{book.provisionalDiagnostic.weightCoveredPercent}%</strong> of RAAS model weight has any experimental component grade</span>
       <span><strong>{book.registrySourceLeadCount}</strong> newly mapped ClinicalTrials.gov research leads</span>
+      <span data-raas-raw-design-diagnostic={row.nctId}>
+       <strong>Raw design: {book.rawDesignDiagnostic?.score===null||!book.rawDesignDiagnostic?"N/A":book.rawDesignDiagnostic.score+"/100"}</strong>
+       {" "}· {book.rawDesignDiagnostic?.knownFacets??0}/4 source-verified facets · NOT overall RAAS
+      </span>
      </div>
-     <p style={{fontSize:13,lineHeight:1.5}}>
+     {book.rawDesignDiagnostic&&<details style={{border:"1px solid #bfd8c7",borderRadius:8,
+      padding:10,marginTop:12}}>
+      <summary style={{cursor:"pointer",fontWeight:700}}>
+       Raw clinical-trial design methodology · {book.rawDesignDiagnostic.score===null?
+        "N/A":book.rawDesignDiagnostic.score+"/100"} (not predictive RAAS)
+      </summary>
+      <p>A four-criterion registry study-design calculation, not the clinical evidence-quality
+       score, PDUFA outcome probability, or expected investment return.
+       {book.rawDesignDiagnostic.unknownFacets>0?
+        " Unknown criteria stay N/A, not zero.":""}
+       {" "}Conservative missing-data range: {book.rawDesignDiagnostic.lowerBound}–{book.rawDesignDiagnostic.upperBound}/100.
+       This diagnostic is excluded from the 30-metric weighted RAAS total.</p>
+      {book.rawDesignDiagnostic.facets.map(f=><p key={f.id} style={{fontSize:12}}>
+       <strong>{f.name}: </strong>{f.status.replaceAll("_"," ").toLowerCase()} · {f.evidence}
+      </p>)}
+      <a href={book.rawDesignDiagnostic.sourceUrl} target="_blank" rel="noopener noreferrer">
+       Trial-specific ClinicalTrials.gov record</a>
+     </details>}
+     <p style={{fontSize:13,lineHeight:1.5}}> 
       All 60 component rubrics have explicit 0, 25, 50, 75, and 100 research-only anchors.
       An anchor requires a trial-matched, dated source, independent benchmark, uncertainty
       assessment, and critical-risk review. The current available-only experimental average

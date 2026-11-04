@@ -16,7 +16,10 @@ def study(nct="NCT06445023",posted=False):
         "statusModule":{"overallStatus":"COMPLETED",
           "lastUpdatePostDateStruct":{"date":"2026-09-28"}},
         "sponsorCollaboratorsModule":{"leadSponsor":{"name":"Independent Sponsor"}},
-        "designModule":{"phases":["PHASE3"]},
+        "designModule":{"phases":["PHASE3"],"studyType":"INTERVENTIONAL",
+          "designInfo":{"allocation":"RANDOMIZED","interventionModel":"PARALLEL",
+            "maskingInfo":{"masking":"QUADRUPLE"}},
+          "enrollmentInfo":{"type":"ESTIMATED","count":420}},
         "armsInterventionsModule":{"interventions":[{"type":"DRUG","name":"Barzolvolimab"},{"type":"OTHER","name":"Placebo"}]},
         "outcomesModule":{"primaryOutcomes":[{"measure":"Change in observed disease severity",
                 "timeFrame":"Week 12"}],"secondaryOutcomes":[{"measure":"Quality of life"}]}}
@@ -54,6 +57,9 @@ class RegistryEvidenceTest(unittest.TestCase):
         result=mod.extract("NCT06445023","CLDX",study(),"2026-11-04T15:00:00Z")
         self.assertEqual(result["registeredPrimaryOutcomes"][0]["timeFrame"],"Week 12")
         self.assertEqual(result["registeredInterventions"],["Barzolvolimab","Placebo"])
+        self.assertEqual(result["registeredDesign"]["allocation"],"RANDOMIZED")
+        self.assertEqual(result["registeredDesign"]["masking"],"QUADRUPLE")
+        self.assertEqual(result["registeredDesign"]["enrollment"],420)
         self.assertFalse(result["hasPostedResults"])
         self.assertEqual(result["postedPrimaryOutcomeCount"],0)
         self.assertEqual(result["evidenceState"],"PROTOCOL_ONLY")

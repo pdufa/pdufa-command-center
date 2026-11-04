@@ -11,6 +11,11 @@ export type RegistryTrialEvidence={
  nctId:string;ticker:string;sourceUrl:string;sourceHash:string;
  retrievedAt:string;registryLastUpdated:string|null;resultsFirstPosted:string|null;
  registryStatus:string;registeredPhases:string[];
+ /** Optional to preserve compatibility with older primary registry source receipts. */
+ registeredDesign?:{
+  allocation:string;masking:string;interventionModel:string;studyType:string;
+  enrollment:number|null;enrollmentType:string
+ };
  registeredConditions:string[];registeredInterventions:string[];
  primaryDefinitions:{measure:string;timeFrame:string}[];
  postedResults:boolean;postedPrimaryOutcomeCount:number;postedOtherOutcomeCount:number;
@@ -62,6 +67,13 @@ export function parseRegistryEvidenceIndex(raw:unknown):RegistryEvidenceIndex{
    !hash.test(e.sourceHash)||typeof e.postedResults!=="boolean"||
    !Array.isArray(e.primaryDefinitions)||!Array.isArray(e.primaryResults)||
    !Array.isArray(e.registeredInterventions)||!Array.isArray(e.registeredConditions)||
+   (e.registeredDesign!==undefined&&(
+    !e.registeredDesign||typeof e.registeredDesign!=="object"||
+    !["allocation","masking","interventionModel","studyType","enrollmentType"].every(
+      k=>typeof (e.registeredDesign as unknown as Record<string,unknown>)[k]==="string")||
+    (e.registeredDesign.enrollment!==null&&
+      (!Number.isInteger(e.registeredDesign.enrollment)||e.registeredDesign.enrollment<=0))
+   ))||
    !Number.isInteger(e.postedPrimaryOutcomeCount)||
    !Number.isInteger(e.seriousAdverseEventTermCount)||
    e.seriousAdverseEventTermCount<0||e.postedPrimaryOutcomeCount<0||
