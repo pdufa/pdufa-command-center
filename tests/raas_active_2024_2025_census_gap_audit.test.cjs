@@ -140,3 +140,48 @@ test("BBIO Nov 29 archived target is now independently sourced and never double 
  assert.equal(r.byTargetYear[2024].sourceBackedDistinctTickers,5);
  assert.equal(r.byTargetYear[2024].actualIndependentlyValidatedIssuers,0);
 });
+
+test("six later source-linked 2024–2025 leads update census capacity, not verified trades",()=>{
+ const secondary=[
+  ...require("../new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json").records,
+  ...require("../new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json").records,
+  ...require("../new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json").records
+ ];
+ assert.equal(secondary.length,6);
+ const x=make({supplemental:secondary});
+ assert.equal(x.additionalSourceLinkedResearchLeadCount,6);
+ assert.equal(x.originalEventSourceCount,primary.records.length);
+ assert.equal(x.independentlyValidatedTradingCases,0);
+ assert.equal(x.annualTargetsAudited,0);
+ assert.equal(x.byTargetYear[2024].additionalSourceLinkedResearchCases,1);
+ assert.equal(x.byTargetYear[2025].additionalSourceLinkedResearchCases,5);
+ assert.equal(x.byTargetYear[2024].combinedKnownSourceLinkedDistinctTickers,6);
+ assert.equal(x.byTargetYear[2025].combinedKnownSourceLinkedDistinctTickers,9);
+ assert.equal(x.byTargetYear[2024].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,8);
+ assert.equal(x.byTargetYear[2025].bestCaseDistinctTickerNamesInCurrentlyLocatedTargetQueue,11);
+ assert.ok(x.additionalSourceLinkedResearchLeads.every(x=>
+  x.validatedTrade===false&&x.completeCensus===false&&x.approvedRaasMetric===false));
+ const fake={...secondary[0],targetAnnouncementDate:secondary[0].pdufaTargetDate};
+ assert.throws(()=>make({supplemental:[fake]}),/ADDITIONAL_SOURCE_INVALID_OR_DUPLICATED/);
+ assert.throws(()=>make({supplemental:[secondary[0],secondary[0]]}),/ADDITIONAL_SOURCE_INVALID_OR_DUPLICATED/);
+});
+test("a 2025 archive goal already linked to supplemental CORT evidence remains research-only",()=>{
+ const cort=require("../new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json").records[0];
+ const queue=fixture();
+ const archive={
+  id:"ARCHIVE|NEW|CORT|2025-12-30",year:2025,
+  yearBasis:"UNVERIFIED_ARCHIVE_PDUFA_TARGET_YEAR",
+  reviewTrack:"ARCHIVE_TARGET_DATE_TO_VERIFY",reviewPriority:2,
+  ticker:"CORT",originalPublicPdufaTargetDate:null,archiveSuggestedPdufaDate:"2025-12-30",
+  blockers:["REVIEW_SOURCE"],historicallyValidatedTrade:false,approvedRaasMetric:false
+ };
+ queue.reviewRows.push(archive);
+ queue.totals.reviewRows++;
+ queue.totals.archiveUnverifiedTargetDateLeads++;
+ const x=make({queue,supplemental:[cort]});
+ const match=x.previouslySourcedArchiveOverlaps.find(e=>e.id===archive.id);
+ assert.ok(match);
+ assert.equal(match.classification,"ADDITIONAL_SOURCE_LINKED_PENDING_INDEPENDENT_FDA_MATCH");
+ assert.equal(x.unsourcedArchivedTargetReviewTasks,5);
+ assert.equal(x.independentlyValidatedTradingCases,0);
+});
