@@ -287,6 +287,20 @@ export default function RaasFullUniverseScores(){
    zero; a Phase 3 registration does not verify current PIPELINE eligibility,
    readout stage or prospective FDA PASS/CRL/extension probabilities.
   </p>
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-current-phase3-top-pilot-download="true">
+   <strong>Current cap-screened Phase 3 TOP scoring pilot:</strong>{" "}
+   <a href="/raas-current-pipeline-pre-metric-audit.csv" download
+    style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
+    Download TRVI OCEAN-1 and LBRX NOVA-2 trial-by-trial 30-metric scorecards (60-row CSV)
+   </a>.
+   Two separately source-checked listed $300M–$10B Phase 3 recruiting issuers, with
+   <strong> 10 provisional pre-readout metric reviews and 50 missing metric reviews</strong>.
+   Capitalization snapshots are dated November 3, 2026 and become <strong>stale
+   after seven calendar days</strong> without another verified quote.
+   These are two examples, <strong>not the complete current Pipeline</strong>.
+   Neither has an FDA-accepted NDA/BLA or source-verified PDUFA action date;
+   no full 30/30 score, FDA probability or trade recommendation is available.
+  </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ten-trial-pilot-download="true">
    <strong>10-trial, 30-metric retrospective RAAS pilot:</strong>{" "}
    <a href="/raas-ten-trial-metric-pilot.csv" download
