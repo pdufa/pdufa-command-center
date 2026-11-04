@@ -111,7 +111,7 @@ class ActiveScreenTests(unittest.TestCase):
             mod.build(index(x), roster(rows), cs, reviews())
         x = copy.deepcopy(rows)
         x.append(copy.deepcopy(x[0]))
-        with self.assertRaisesRegex(ValueError, "TRIAL_IDENTITY"):
+        with self.assertRaisesRegex(ValueError, "RAAS_ACTIVE_ROSTER_IDENTITY"):
             mod.build(index(x), roster(x), cs, reviews())
 
     def test_missing_cap_never_implies_under_300m_and_future_quote_not_fresh(self):
