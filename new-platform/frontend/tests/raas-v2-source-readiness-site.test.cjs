@@ -26,6 +26,10 @@ test("V2 source-readiness snapshot cannot pretend to be a calibrated model",()=>
  assert.equal(snapshot.nov14IndependentPhase3RegistryCrossChecks,2);
  assert.equal(snapshot.nov14NumberedCurrentFdaApplicationCyclesCertified,0);
  assert.equal(snapshot.nov14FrozenThreeWayForecasts,0);
+ assert.equal(snapshot.nightlySecNewIssuerFilingReviewWatch,
+   "CYTK_SMMT_OFFICIAL_8K_10Q_10K_RESEARCH_LEADS_NOT_FDA_OUTCOMES");
+ assert.equal(snapshot.secNewIssuerFilingWatchLastReviewedGoalDates.CYTK,"2026-08-06");
+ assert.equal(snapshot.secNewIssuerFilingWatchLastReviewedGoalDates.SMMT,"2026-10-21");
  assert.equal(snapshot.nov14AdditionalDatedIssuerGoalContinuityCases,2);
  assert.equal(snapshot.nov14LocatedIssuerGoalSourcesOver30DaysOldAtSnapshot,1);
  assert.equal(snapshot.nov14SmmtLatestIssuerDeadlineReiterationDate,"2026-10-21");
@@ -103,4 +107,13 @@ test("Latest SMMT issuer HARMONi goal is an Oct 21 EA2251 background item, not t
  assert.match(source,/not<\/strong> HARMONi \(NCT06396065\)/);
  assert.match(source,/November 14 date is repeated only in the HARMONi background/);
  assert.match(source,/while SMMT's October 21 issuer background paragraph is more recent/);
+});
+
+test("SEC recent issuer filings can only initiate manual source review",()=>{
+ assert.match(source,/raas-v2-sec-recent-issuer-filings/);
+ assert.match(source,/data\.sec\.gov\/submissions\/CIK0001061983/);
+ assert.match(source,/data\.sec\.gov\/submissions\/CIK0001599298/);
+ assert.match(source,/A new SEC filing is only a document to inspect/);
+ assert.match(source,/SEC HTTP 403/);
+ assert.match(source,/not an automatically refreshed filing list/);
 });
