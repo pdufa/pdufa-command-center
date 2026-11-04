@@ -34,7 +34,8 @@ test("all 741 research-census NCTs evaluated; five pilots are not the universe",
  }).filter(Boolean);
  assert.equal(graded.length,5);
  assert.deepEqual(graded.filter(x=>x.metricGrades.length).map(x=>[x.trial,x.nctId,x.metricGrades[0].score]),[
-  ["LBRX","NCT07363577",50],["TRVI","NCT07671911",50]
+  ["LBRX","NCT07363577",50],["TRVI","NCT07671911",50],
+  ["CLDX","NCT06445023",75],["CLDX","NCT06455202",75]
  ]);
  assert.ok(all.every(row=>row.nctId.startsWith("NCT")));
 });
