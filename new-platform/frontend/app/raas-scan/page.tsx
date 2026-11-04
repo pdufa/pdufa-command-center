@@ -4,6 +4,7 @@ import Link from "next/link";
 import {executeRaasReadinessScan} from "../../lib/raas-readiness-scan";
 import {evaluateRaasInstallation} from "../../lib/raas-installation-gates";
 import {auditRaasSurveyAccuracy} from "../../lib/raas-self-accuracy-audit";
+import RaasSelfAuditHistoryButton from "./RaasSelfAuditHistoryButton";
 import activeTwoYearIntake from "../../data/raas-active-2024-2025-pdufa-intake.json";
 import activeStudyConfig from "../../data/raas-active-study-config.json";
 import fdaAccuracySnapshot from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
@@ -35,6 +36,7 @@ export default function RaasScanPage(){
      <h2>RAAS accuracy audit · how accurate is RAAS itself?</h2>
      <span>{selfAudit.raasGatesPassed}/{selfAudit.raasGatesRequired} evidence gates satisfied</span>
     </div>
+    <RaasSelfAuditHistoryButton audit={selfAudit}/>
     <div className={css.stats}>
      <div><strong>{selfAudit.status==="NOT_MEASURABLE"?"Not measurable":"Under review"}</strong>
       <span>Independent RAAS predictive reliability rating</span></div>
