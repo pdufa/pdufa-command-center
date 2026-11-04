@@ -189,13 +189,13 @@ def inspect_atom_company(ticker,body,status,detail,clock):
             if form not in REVIEW_FORMS:
                 # Older EDGAR Atom variants put the form in the title.
                 title=entry.findtext(ATOM_NS+"title") or ""
-                match=re.match(r"^(8-K/A|8-K|10-Q/A|10-Q|10-K/A|10-K)(?:\\s|\\s*[-:])",title)
+                match=re.match(r"^(8-K/A|8-K|10-Q/A|10-Q|10-K/A|10-K)(?:\s|\s*[-:])",title)
                 form=match.group(1) if match else None
             if form not in REVIEW_FORMS:
                 continue
             stamp=entry.findtext(ATOM_NS+"updated")
             require(isinstance(stamp,str) and
-                    re.match(r"^\\d{4}-\\d{2}-\\d{2}T",stamp),
+                    re.match(r"^\d{4}-\d{2}-\d{2}T",stamp),
                     "ATOM_FILING_TIMESTAMP_INVALID")
             try:
                 filed=dt.date.fromisoformat(stamp[:10])
@@ -216,7 +216,7 @@ def inspect_atom_company(ticker,body,status,detail,clock):
                 # another issuer with the same agent-accession prefix.
                 if not re.fullmatch(
                     r"/Archives/edgar/data/"+str(int(cik))+
-                    r"/\\d{18}/[A-Za-z0-9_.-]{1,160}",parsed.path):
+                    r"/\d{18}/[A-Za-z0-9_.-]{1,160}",parsed.path):
                     continue
                 valid.append(link)
             require(len(valid)>0,"ATOM_FILING_LINK_CIK_IDENTITY_NOT_CONFIRMED")
