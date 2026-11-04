@@ -1,0 +1,85 @@
+name: RAAS ClinicalTrials.gov Evidence Backfill
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '26 11 * * *'
+  pull_request:
+    paths:
+      - scripts/raas_registry_evidence_harvest.py
+      - tests/test_raas_registry_evidence_harvest.py
+      - data/raas_registry_missing_backfill.json
+      - .github/workflows/raas-clinical-evidence-backfill.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/raas_registry_evidence_harvest.py
+      - data/raas_registry_missing_backfill.json
+      - .github/workflows/raas-clinical-evidence-backfill.yml
+permissions:
+  contents: write
+concurrency:
+  group: raas-ctgov-evidence-publisher
+  cancel-in-progress: false
+jobs:
+  collect:
+    name: Verify and collect trial-specific registry source evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate NCT identity, evidence flags and fail-closed records
+        run: |
+          python -m unittest discover -s tests -p test_raas_registry_evidence_harvest.py -v
+          python -m py_compile scripts/raas_registry_evidence_harvest.py
+      - name: Fetch all current research NCTs, including 35 gaps
+        if: github.event_name != 'pull_request'
+        run: python scripts/raas_registry_evidence_harvest.py --scope all
+      - name: Publish retrieved evidence with unchanged missingness
+        if: always() && github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=data/raas_registry_live_evidence.json
+          if [ ! -s "$file" ]; then
+            echo "::error::No registry evidence receipt was created"
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path("data/raas_registry_live_evidence.json").read_text())
+          s=x["summary"]
+          assert x["scope"]=="RAAS_CT_GOV_LIVE_EVIDENCE"
+          assert s["researchTrials"]==762
+          assert s["registrySourceRecordsStored"]>0
+          assert s["completeRaasScores"]==0
+          assert all(r["overallRaasScore"] is None for r in x["records"])
+          print("Audited exact NCT evidence:",s)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/raas_registry_live_evidence.json
+          if git diff --cached --quiet; then
+            echo "No new ClinicalTrials.gov evidence captured."
+            exit 0
+          fi
+          git commit -m "Record refreshed exact-NCT ClinicalTrials.gov evidence receipts"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Published source-backed registry outcome and safety evidence."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Evidence publication could not be confirmed"
+          exit 1
+      - uses: actions/upload-artifact@v4
+        if: always() && github.event_name != 'pull_request'
+        with:
+          name: raas-clinical-evidence-${{ github.run_id }}
+          path: data/raas_registry_live_evidence.json
+          if-no-files-found: warn
+          retention-days: 30
