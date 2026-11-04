@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_CURRENT_FDA_ACCEPTED_APPLICATIONS_RESTRICTED_BY_PIVOTAL_PHASE",
+  "sourceAsOf": "2026-11-04",
+  "issuer": {
+    "ticker": "COGT",
+    "name": "Cogent Biosciences Inc.",
+    "exchange": "NASDAQ",
+    "marketCapUsd": 5390000000,
+    "marketCapAsOf": "2026-11-03",
+    "marketCapSourceUrl": "https://stockanalysis.com/stocks/cogt/statistics/"
+  },
+  "warning": "Source evidence is from public sponsor announcements, crosschecked against registry/SEC context; a reported accepted NDA/PDUFA date does NOT constitute FDA approval or a calibrated probability. Every application has unique indication and separate target. Only one of the three Cogent NDAs meets the user's minimum Phase 3 pivotal-evidence restriction. All as-of-Nov4 facts must be refreshed after later action or target amendments. No existing user Pipeline restriction was silently relaxed.",
+  "applications": [
+    {
+      "applicationKey": "COGT-BEZUCLASTINIB-GIST-2026",
+      "drug": "bezuclastinib plus sunitinib",
+      "indication": "Gastrointestinal Stromal Tumors after imatinib",
+      "pathway": "NDA",
+      "phaseOfPivotalEvidence": 3,
+      "trialName": "PEAK",
+      "trialNctId": "NCT05208047",
+      "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05208047",
+      "applicationAcceptedDate": "2026-05-28",
+      "applicationAcceptedSourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+      "pdufaTargetDate": "2026-11-30",
+      "reviewDesignation": "PRIORITY_REVIEW",
+      "additionalSponsorReportedDesignations": [
+        "BREAKTHROUGH_THERAPY",
+        "REAL_TIME_ONCOLOGY_REVIEW",
+        "ORPHAN_DRUG"
+      ],
+      "outcomeAsOf": "NO_VERIFIED_DECISION_AS_OF_SNAPSHOT",
+      "scoreResearchStage": "post",
+      "outcomeData": "PEAK sponsor-reported Phase 3 randomized active-controlled median PFS 16.5 vs 9.2 months, HR 0.50 (95% CI 0.39-0.65) p<0.0001, no confirmed regulatory outcome in as-of-Nov4 sources.",
+      "outcomeEvidenceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3"
+    },
+    {
+      "applicationKey": "COGT-BEZUCLASTINIB-NONADVSM-2026",
+      "drug": "bezuclastinib",
+      "indication": "Nonadvanced Systemic Mastocytosis",
+      "pathway": "NDA",
+      "phaseOfPivotalEvidence": 2,
+      "trialName": "SUMMIT",
+      "trialNctId": "NCT05186753",
+      "trialSourceUrl": "https://clinicaltrials.gov/study/NCT05186753",
+      "applicationAcceptedDate": "2026-03-16",
+      "applicationAcceptedSourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-application",
+      "pdufaTargetDate": "2026-12-30",
+      "reviewDesignation": "SPONSOR_DID_NOT_STATE_PRIORITY",
+      "additionalSponsorReportedDesignations": [],
+      "outcomeAsOf": "NO_VERIFIED_DECISION_AS_OF_SNAPSHOT",
+      "scoreResearchStage": null,
+      "outcomeData": "SUMMIT is registration-directed randomized Phase 2, not user-required minimum Phase 3 despite accepted NDA. A positive sponsor-reported study is NOT proof of FDA approval.",
+      "outcomeEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526342393/cogt-20260630.htm"
+    },
+    {
+      "applicationKey": "COGT-BEZUCLASTINIB-ADVSM-2027",
+      "drug": "bezuclastinib",
+      "indication": "Advanced Systemic Mastocytosis",
+      "pathway": "NDA",
+      "phaseOfPivotalEvidence": 2,
+      "trialName": "APEX",
+      "trialNctId": "NCT04996875",
+      "trialSourceUrl": "https://clinicaltrials.gov/study/NCT04996875",
+      "applicationAcceptedDate": "2026-09-15",
+      "applicationAcceptedSourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-1",
+      "pdufaTargetDate": "2027-06-29",
+      "reviewDesignation": "SPONSOR_DID_NOT_STATE_PRIORITY",
+      "additionalSponsorReportedDesignations": [],
+      "outcomeAsOf": "NO_VERIFIED_DECISION_AS_OF_SNAPSHOT",
+      "scoreResearchStage": null,
+      "outcomeData": "APEX registration-directed open-label Phase 2; does not satisfy user's minimum Phase 3 restriction. FDA acceptance and target date do not establish adequate benefit-risk or eventual approval.",
+      "outcomeEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526342393/cogt-20260630.htm"
+    }
+  ]
+}
