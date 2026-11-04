@@ -59,16 +59,16 @@ export type RaasProvisionalReviewedGrade={
  explanation:string;benchmarkSourceUrl:string;reviewMethod:string;
  approvedForComposite:false;
 };
-const isoDay=(x:string)=>/^\\d{4}-\\d{2}-\\d{2}$/.test(x)&&
+const isoDay=(x:string)=>/^\d{4}-\d{2}-\d{2}$/.test(x)&&
  !Number.isNaN(Date.parse(x+"T00:00:00Z"))&&new Date(x+"T00:00:00Z").toISOString().slice(0,10)===x;
-const secure=(s:string)=>typeof s==="string"&&/^https:\\/\\/[^\\s/@?#]+\\.[^\\s/@?#]+\\/\\S+$/.test(s);
+const secure=(s:string)=>typeof s==="string"&&/^https:\/\/[^\s/@?#]+\.[^\s/@?#]+\/\S+$/.test(s);
 const exact=(a:string,b:string)=>a.trim().toLowerCase()===b.trim().toLowerCase();
 const explicit=(x:string)=>typeof x==="string"&&x.trim().length>=12&&x.length<=5000;
 export function provisionalReviewedGrade(
  trial:{nctId:string;ticker:string;drug:string;indication:string},stage:RaasStage,
  review:RaasProvisionalReview,asOf:string
 ):RaasProvisionalReviewedGrade|null{
- if(!/^NCT\\d{8}$/.test(trial.nctId)||!isoDay(asOf))return null;
+ if(!/^NCT\d{8}$/.test(trial.nctId)||!isoDay(asOf))return null;
  const rubric=RAAS_PROVISIONAL_RUBRICS.find(x=>x.stage===stage&&x.metricId===review.metricId);
  if(!rubric||review.nctId!==trial.nctId||!exact(review.ticker,trial.ticker)||
   !exact(review.drug,trial.drug)||!exact(review.indication,trial.indication)||
