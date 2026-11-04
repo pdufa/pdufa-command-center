@@ -17,7 +17,8 @@ export type ReviewedMetricFeed={
 };
 export type ReviewedTrialCandidate={
  nctId:string;ticker:string;stage:RaasStage;
- reviewedCount:number;missingMetricIds:string[];
+ reviewedCount:number;independentReviewedCount:number;aiCrosscheckedCount:number;
+ missingMetricIds:string[];
  weightedCoveragePercent:number;observedMean:number|null;
  /** Only a full, exact-trial, explicitly reviewed 30/30 and stage-verification. */
  fullResearchScore:number|null;
@@ -70,14 +71,17 @@ export function fullReviewedTrialCandidate(
  const ids=new Set(valid.map(g=>g.metricId));
  if(valid.length!==ids.size||valid.some(g=>!permitted.has(g.metricId)))
   throw Error("RAAS_REVIEWED_SCORE_DUPLICATE_OR_WRONG_STAGE");
+ const independentReviewedCount=valid.filter(g=>g.reviewClass==="INDEPENDENT_REVIEW").length;
+ const aiCrosscheckedCount=valid.filter(g=>g.reviewClass==="AI_SOURCE_CROSSCHECKED").length;
  const diagnostic=provisionalStageCoverage(stage,valid);
  if(diagnostic.rejected.length)throw Error("RAAS_REVIEWED_SCORE_INVALID_GRADE");
  return {nctId:trial.nctId,ticker:trial.ticker,stage,
-  reviewedCount:valid.length,
+  reviewedCount:valid.length,independentReviewedCount,aiCrosscheckedCount,
   missingMetricIds:[...permitted].filter(id=>!ids.has(id)),
   weightedCoveragePercent:diagnostic.weightCoveredPercent,
   observedMean:diagnostic.observedComponentMean,
-  fullResearchScore:stageVerified?diagnostic.fullyCoveredProvisionalScore:null,
+  fullResearchScore:stageVerified&&independentReviewedCount===30?
+   diagnostic.fullyCoveredProvisionalScore:null,
   approvedOverallScore:null,
   type:"UNVALIDATED_REVIEWED_RESEARCH_SCORE_NOT_FDA_PROBABILITY",
   grades:valid};
