@@ -37,7 +37,7 @@ export const cytkEvents: FdaMilestone[] = [
     detail: "Future FDA target action date, not a guaranteed decision date or predicted approval.",
     source: "https://www.sec.gov/Archives/edgar/data/1061983/000119312526206360/cytk-ex99_1.htm",
     planned: true
-  }
+  },
   ...(fdaAutoEvents.events as FdaMilestone[])
 ];
 export const cytkCategories = fdaAutoEvents.categories;
