@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_EXPLICIT_METRIC_REVIEWS_RESEARCH_ONLY",
   "sourceAsOf": "2026-11-04",
-  "note": "Four AI-assisted, source-and-independent-benchmark CROSSCHECKS only; no external clinical, financial or human independent reviewer signed off. These are partial research-only 0-100 metric bands, not full 30/30 stage scores, FDA probabilities or investments signals. Future fully independent review remains separately required.",
+  "note": "Six AI-assisted source-and-independent-benchmark crosschecks for two exact-identity CLDX Phase 3 trials. post-1-4 reviews examine sponsor-reported repeatability and 24-week durability, not independent human/clinical adjudication. No external clinician, statistician, regulator or independent human reviewer signed off. These provisional research 0-100 metric bands do not establish complete 30/30 RAAS scores, FDA probabilities, treatment superiority or investment decisions.",
   "records": [
     {
       "nctId": "NCT06445023",
@@ -83,6 +83,46 @@
       "uncertaintyReview": "Complete absence of itch and hives is a patient-important responder endpoint, but confidence intervals, missing-data sensitivity, validated QoL outcomes and population-adjusted comparisons to active therapies need independent assessment.",
       "criticalRiskReview": "Cross-trial response comparisons are vulnerable to differing baseline severity, eligibility and concomitant therapies; no clinical ranking against omalizumab or chance of approval is justified.",
       "reviewerMethod": "AI-assisted exact-NCT sponsor SEC exhibit extraction and independent peer-reviewed historical CSU response reference; no external human adjudication or full clinical grade. Research-only provisional mixed band."
+    },
+    {
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "assessedAt": "2026-11-04",
+      "sourceDate": "2026-09-22",
+      "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "metricId": "post-1-4",
+      "finding": "MIXED_EVIDENCE",
+      "benchmarkSourceUrl": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/demonstrating-substantial-evidence-effectiveness-human-drug-and-biological-products",
+      "benchmarkId": "FDA June 2026 draft guidance on substantial evidence and replication; not an approval assessment",
+      "benchmarkContext": "FDA's 2026 draft efficacy guidance discusses confirmatory or replicated findings, prospective design and robustness of evidence. It is nonbinding guidance and does not establish that either trial or future BLA meets the FDA standard.",
+      "uncertaintyReview": "Both results are sponsor-reported top-line data. Week 24 responder rates are available, but 52-week outcomes, the full statistical analysis plan, multiplicity-adjustment documentation, prespecified subgroup interaction tests, patient attrition, missingness and independently adjudicated safety remain incomplete.",
+      "criticalRiskReview": "Two pivotal studies of the same product strengthen consistency but do not count as independent external validation of the treatment effect. Do not substitute two studies for peer-reviewed readout, compare naively to another therapy, or assume application acceptance and FDA approval.",
+      "reviewerMethod": "AI-assisted fact crosscheck of the September 22, 2026 Celldex SEC exhibit showing 2 pivotal Phase 3 results against dated FDA June 2026 draft evidence guidance. No independent human clinician or regulator independently reviewed this grade. Provisional mixed band only; no clinical PDUFA probability.",
+      "nctId": "NCT06445023",
+      "observedResult": "In EMBARQ-CSU1 (NCT06445023), company-reported 150 mg Q4W Week-12 UAS7=0 complete response was 42.4% vs 9.3% placebo and Week-24 complete response 49% vs 15.4% placebo. The distinct companion pivotal NCT06455202 reported positive UAS7 primary findings at Week 12 as well. This is observed consistency across two sponsor-reported Phase 3 trials and 24-week within-trial durability; not 52-week durability or external replication."
+    },
+    {
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "assessedAt": "2026-11-04",
+      "sourceDate": "2026-09-22",
+      "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "metricId": "post-1-4",
+      "finding": "MIXED_EVIDENCE",
+      "benchmarkSourceUrl": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/demonstrating-substantial-evidence-effectiveness-human-drug-and-biological-products",
+      "benchmarkId": "FDA June 2026 draft guidance on substantial evidence and replication; not an approval assessment",
+      "benchmarkContext": "FDA's 2026 draft efficacy guidance discusses confirmatory or replicated findings, prospective design and robustness of evidence. It is nonbinding guidance and does not establish that either trial or future BLA meets the FDA standard.",
+      "uncertaintyReview": "Both results are sponsor-reported top-line data. Week 24 responder rates are available, but 52-week outcomes, the full statistical analysis plan, multiplicity-adjustment documentation, prespecified subgroup interaction tests, patient attrition, missingness and independently adjudicated safety remain incomplete.",
+      "criticalRiskReview": "Two pivotal studies of the same product strengthen consistency but do not count as independent external validation of the treatment effect. Do not substitute two studies for peer-reviewed readout, compare naively to another therapy, or assume application acceptance and FDA approval.",
+      "reviewerMethod": "AI-assisted fact crosscheck of the September 22, 2026 Celldex SEC exhibit showing 2 pivotal Phase 3 results against dated FDA June 2026 draft evidence guidance. No independent human clinician or regulator independently reviewed this grade. Provisional mixed band only; no clinical PDUFA probability.",
+      "nctId": "NCT06455202",
+      "observedResult": "In EMBARQ-CSU2 (NCT06455202), company-reported 150 mg Q4W Week-12 UAS7=0 complete response was 45.7% vs 12.6% placebo and Week-24 complete response 54% vs 17.6% placebo. The distinct companion pivotal NCT06445023 reported positive UAS7 primary findings at Week 12 as well. This is observed consistency across two sponsor-reported Phase 3 trials and 24-week within-trial durability; not 52-week durability or external replication."
     }
   ]
 }
