@@ -7,6 +7,7 @@ import {parseRaasPilotFeed,observedCalculation} from "./raas-score-engine";
 import {parseProspectiveSourceBaselines} from "./raas-prospective-source-baselines";
 import {provisionalScoresForTrial} from "./raas-provisional-trial-scores";
 import type {ProvisionalMetricGrade} from "./raas-threshold-profiles";
+import {provisionalRule,type ProvisionalRule} from "./raas-provisional-policy";
 import pilotData from "../data/raas-pilot-observations.json";
 import prospectiveData from "../data/raas-prospective-source-baselines.json";
 
@@ -20,7 +21,7 @@ export type MetricEvidenceLead={
 export type MetricScoreStatus="EXPERIMENTAL_GRADE"|"SOURCE_LEADS_ONLY"|"EVIDENCE_MISSING";
 export type MetricGradebookRow={
  id:string;name:string;requiredEvidence:string;scoreRule:string;criticalRisk:string;
- status:MetricScoreStatus;grade:ProvisionalMetricGrade|null;
+ status:MetricScoreStatus;grade:ProvisionalMetricGrade|null;policy:ProvisionalRule;
  evidence:MetricEvidenceLead[];
 };
 export type MetricGradebookCategory={
@@ -63,8 +64,8 @@ export function buildRaasMetricGradebook(
   leads.push({id:o.id,metricIds:o.metricIds,kind:o.kind,sourceDate:o.sourcePublishedAt,
    sourceUrl:o.sourceUrl,description:o.valueText,measurement:null});
  }
- // The only currently implemented numerical rule is TOP readout-window
- // specificity. It is experimental, not an approval, efficacy or return rating.
+ // Narrow source-backed pilots are research-only, not complete clinical or
+ // financial adjudications and never an approved RAAS aggregate.
  const provisional=provisionalScoresForTrial(trial,stage);
  const gradeMap=new Map(provisional.scoredMetrics.map(g=>[g.metricId,g]));
  const categories=RAAS_METRIC_CATALOG[stage].map(group=>{
@@ -72,10 +73,12 @@ export function buildRaasMetricGradebook(
    const evidence=leads.filter(lead=>lead.metricIds.includes(metric.id))
     .map(({metricIds,...lead})=>lead);
    const grade=gradeMap.get(metric.id)||null;
+   const policy=provisionalRule(stage,metric.id);
+   if(!policy)throw Error("RAAS_GRADEBOOK_POLICY_MISSING:"+metric.id);
    const status:MetricScoreStatus=grade?"EXPERIMENTAL_GRADE":
     evidence.length?"SOURCE_LEADS_ONLY":"EVIDENCE_MISSING";
    return {id:metric.id,name:metric.name,requiredEvidence:metric.requiredEvidence,
-    scoreRule:metric.scoreRule,criticalRisk:metric.criticalRisk,status,grade,evidence};
+    scoreRule:metric.scoreRule,criticalRisk:metric.criticalRisk,status,grade,evidence,policy};
   });
   return {id:group.id,name:group.name,weight:group.weight,rows,
    graded:rows.filter(x=>x.grade!==null).length,
