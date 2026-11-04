@@ -13,6 +13,7 @@ const fs=require("node:fs"),path=require("node:path");
 const legacy=require("./raas_alpaca_ten_year_study.cjs");
 const prior=require("./raas_alpaca_historical_price_study.cjs");
 const rawCap=require("./raas_raw_entry_cap_research.cjs");
+const secondClose=require("./raas_independent_entry_close_research.cjs");
 const root=path.resolve(__dirname,"..");
 const CONFIG="new-platform/frontend/data/raas-active-study-config.json";
 const INTAKE="new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json";
@@ -21,6 +22,7 @@ const VENUES="new-platform/frontend/data/raas-alpaca-venue-exceptions.json";
 const PRIMARY_LEADS="new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json";
 const SEC_EARLY="new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json";
 const SEC_EARLIEST="new-platform/frontend/data/raas-2024-2025-additional-earliest-sec-cover.json";
+const SECOND_ENTRY_CLOSE="new-platform/frontend/data/raas-active-2024-2025-independent-entry-close-leads.json";
 const SEC_LATER="new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json";
 const EXPANDED_LEADS="new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json";
 const CENSUS_2025_LEADS="new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json";
@@ -181,7 +183,8 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
  csv=read(ARCHIVE),venueExceptions=JSON.parse(read(VENUES)).records,
  key,secret,request=fetch,fetchDiscoveryPrices=true,researchLeads=[],
  sourceCapLeads=[],earlierSecCover=null,laterSecCover=null,
- additionalEarliestSecCover=null}={}){
+ additionalEarliestSecCover=null,
+ independentEntryCloseFeed=JSON.parse(read(SECOND_ENTRY_CLOSE))}={}){
  const policy=verifyConfig(config),audit=reviewIntake(intake,policy);
  const candidates=discoveryQueue(csv,policy),byEvent=new Map(),statuses=[];
  const sourceLeads=priceOnlySourceLeads(researchLeads,policy);
@@ -262,6 +265,8 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
    adjustedBarsByEvent:priceData,rawBarsByEvent:rawPriceData,
    entryLeadTradingSessions:79
   }):null;
+ const independentEntryCloseResearch=rawEntryCapResearch?
+  secondClose.auditIndependentEntryCloses(rawEntryCapResearch,independentEntryCloseFeed):null;
  const arithmetic=grid.filter(w=>w.status==="POINT_IN_TIME_PRICE_RESEARCH");
  const ranking=selectResearchWindow(grid,audit.complete,policy);
  const years=Object.fromEntries(policy.years.map(y=>[y,{
@@ -285,10 +290,16 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
   sourceLeadsExamined:sourceLeads.length,
   additionalSourceLeadPriceCandidates:additionalSourceLeads.length,
   sourceReviewedIntakeCases:audit.accepted.length,rejectedIntake:audit.rejected,
-  rawEntryCapResearch,rawPriceResearchEventsCollected:rawPriceData.size,
+  rawEntryCapResearch,independentEntryCloseResearch,
+  rawPriceResearchEventsCollected:rawPriceData.size,
   rawAdjustedSameSessionPairs:rawEntryCapResearch?.sameSessionRawAdjustedPricePairs??0,
   provisionalHistoricalEntryCaps:rawEntryCapResearch?.provisionalCapEstimates??0,
   independentlyVerifiedHistoricalEntryCaps:0,
+  nominalIndependentEntryPriceMatches:independentEntryCloseResearch?.matchingIndependentNominalCloses??0,
+  independentAdjustedPriceVerifiedPairs:0,
+  secCoverOlderThan30DaysAtEntry:rawEntryCapResearch?.secCoverOlderThan30DaysAtEntry??0,
+  secCoverOlderThan90DaysAtEntry:rawEntryCapResearch?.secCoverOlderThan90DaysAtEntry??0,
+  subsequentSECShareCountChanges:rawEntryCapResearch?.laterSECShareCountChangeObserved??0,
   fullYearCensusAudited:audit.years.filter(x=>x.complete).length,
   requiredFullYearCensusAudits:2,
   independentTradingCasesValidated:0,approvedRaasMetricCalibrations:0,
@@ -315,6 +326,7 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
    "Unverifiable vendor prices, delisted tickers, and foreign venues are explicit coverage gaps, never zero or positive returns.",
    "Source-linked additional price fetches DO NOT count as source-reviewed intake, full event census or eligible PDUFA trading cases.",
    "Alpaca raw and adjusted SIP data are one vendor: raw close times SEC cover shares is a provisional cap estimate, never independently certified capitalization or adjusted return.",
+   "Independent nominal third-party closing-price matches do not audit adjusted performance or corporate actions, even when the quote agrees with the raw Alpaca close.",
    "The selection algorithm never approves any RAAS numerical metric or a trading optimum without the complete cohort and additional independent statistical/corporate-action review."]};
 }
 function main(){
@@ -341,6 +353,11 @@ function main(){
    rawSameSessionPairs:r.rawAdjustedSameSessionPairs,
    provisionalEntryCaps:r.provisionalHistoricalEntryCaps,
    independentlyVerifiedEntryCaps:r.independentlyVerifiedHistoricalEntryCaps,
+   nominalIndependentPriceMatches:r.nominalIndependentEntryPriceMatches,
+   independentlyVerifiedAdjustedPricePairs:r.independentAdjustedPriceVerifiedPairs,
+   secCoverOlderThan30Days:r.secCoverOlderThan30DaysAtEntry,
+   secCoverOlderThan90Days:r.secCoverOlderThan90DaysAtEntry,
+   laterSECShareChanges:r.subsequentSECShareCountChanges,
    provisionalGridRows:r.provisionalWindowArithmeticRows,
    validatedTrades:r.independentTradingCasesValidated,
    approvedRaasScores:r.approvedRaasMetricCalibrations,

@@ -52,6 +52,39 @@ test("historical raw close and SEC point-in-time shares produce only a provision
  assert.match(s.status,/PROVISIONAL_CAP_ONLY/);
  assert.equal(x.rows.filter(r=>r.rawCloseAlpaca===null).length,8);
 });
+test("SEC share-date staleness and later share-count differences are diagnostics only",()=>{
+ const x=run();
+ const slnoCase=x.rows.find(r=>r.ticker==="SLNO");
+ assert.ok(slnoCase.secShareObservationAgeDaysAtEntry>=0);
+ assert.ok(["WITHIN_30_DAYS","OVER_30_DAYS","OVER_90_DAYS"].includes(
+  slnoCase.secShareObservationAgeBucket));
+ assert.equal(slnoCase.sameVendorRawAndAllCloseEqualAtEntry,false);
+ assert.equal(slnoCase.laterSECShareObservationsExcludedAtEntry.length,1);
+ const future=slnoCase.laterSECShareObservationsExcludedAtEntry[0];
+ assert.equal(future.firstUsableDate,"2025-03-01");
+ assert.equal(future.sharesOutstanding,45857291);
+ assert.equal(future.changeFromEntryCoverPct,6.35);
+ assert.equal(future.knowledgeTiming,"NOT_PUBLIC_AT_ENTRY_AUDIT_ONLY");
+ assert.equal(slnoCase.laterSECShareChangeFromEntrySnapshotPresent,true);
+ assert.equal(slnoCase.largestAbsoluteLaterCoverShareDeltaPct,6.35);
+ assert.equal(slnoCase.eligibleForValidatedRaasTradingCase,false);
+ assert.equal(x.laterSECShareCountChangeObserved,1);
+ assert.equal(x.sameVendorRawAdjustedEntryPriceMatches,0);
+ assert.equal(x.independentlyValidatedEntryMarketCaps,0);
+ assert.equal(x.approvedRaasScores,0);
+});
+test("SEC source age and postentry differences never substitute for a verified cap",()=>{
+ const age=run({rawBarsByEvent:new Map([[key,bars()]]),adjustedBarsByEvent:new Map([[key,bars()]])});
+ const r=age.rows.find(x=>x.ticker==="SLNO");
+ assert.equal(r.sameVendorRawAndAllCloseEqualAtEntry,true);
+ assert.equal(age.sameVendorRawAdjustedEntryPriceMatches,1);
+ assert.ok(r.secShareObservationAgeDaysAtEntry>0);
+ assert.equal(r.marketCap300MTo10BIndependentlyVerified,false);
+ assert.equal(r.corporateActionReconciliationVerified,false);
+ assert.equal(r.independentAdjustedPriceVendorVerified,false);
+ assert.equal(age.independentlyReconciledAdjustedPricePairs,0);
+ assert.equal(age.validatedTradingCases,0);
+});
 test("missing same-session raw bar can never borrow an adjusted close",()=>{
  const r=run({rawBarsByEvent:new Map([[key,bars(undefined,"2024-11-15",10)]])});
  const s=r.rows.find(x=>x.ticker==="SLNO");
@@ -134,6 +167,9 @@ test("active 2024–2025 Alpaca research includes raw cap output, never approved
  assert.equal(result.rawPriceResearchEventsCollected,1);
  assert.equal(result.rawAdjustedSameSessionPairs,1);
  assert.equal(result.provisionalHistoricalEntryCaps,1);
+ assert.equal(typeof result.rawEntryCapResearch.secCoverOlderThan30DaysAtEntry,"number");
+ assert.equal(typeof result.rawEntryCapResearch.laterSECShareCountChangeObserved,"number");
+ assert.equal(typeof result.rawEntryCapResearch.sameVendorRawAdjustedEntryPriceMatches,"number");
  assert.equal(result.independentlyVerifiedHistoricalEntryCaps,0);
  assert.equal(result.sourceReviewedIntakeCases,0);
  assert.equal(result.fullYearCensusAudited,0);
