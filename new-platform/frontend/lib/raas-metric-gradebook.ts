@@ -8,6 +8,8 @@ import {parseProspectiveSourceBaselines} from "./raas-prospective-source-baselin
 import {provisionalScoresForTrial} from "./raas-provisional-trial-scores";
 import type {ProvisionalMetricGrade} from "./raas-threshold-profiles";
 import {registryMetricLeads,type RegistryTrialEvidence} from "./raas-registry-evidence";
+import {rawRaasRegistryDesignDiagnostic,
+ type RawDesignDiagnostic} from "./raas-raw-registry-design";
 import {RAAS_PROVISIONAL_RUBRICS,provisionalStageCoverage,
  type RaasProvisionalRubric} from "./raas-provisional-rubric-engine";
 import pilotData from "../data/raas-pilot-observations.json";
@@ -36,7 +38,8 @@ export type RaasTrialGradebook={
  nctId:string;ticker:string;stage:RaasStage;total:30;graded:number;
  mappedOnly:number;withoutEvidence:number;approvedOverallScore:null;
  provisionalDiagnostic:ReturnType<typeof provisionalStageCoverage>;
- registrySourceLeadCount:number;categories:MetricGradebookCategory[];
+ registrySourceLeadCount:number;rawDesignDiagnostic:RawDesignDiagnostic|null;
+ categories:MetricGradebookCategory[];
 };
 /** Full issuer/trial/therapy identity; the same ticker is never sufficient. */
 function unique<T extends {nctId:string;ticker:string;drug:string;indication:string;stage:RaasStage}>(
@@ -100,5 +103,6 @@ export function buildRaasMetricGradebook(
   mappedOnly:all.filter(x=>x.status==="SOURCE_LEADS_ONLY").length,
   withoutEvidence:all.filter(x=>x.status==="EVIDENCE_MISSING").length,
   approvedOverallScore:null,categories,registrySourceLeadCount:registryLeads.length,
+  rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial),
   provisionalDiagnostic:provisionalStageCoverage(stage,provisional.scoredMetrics)};
 }
