@@ -93,7 +93,7 @@ export default function RaasTrialHistoryButton({row,bucket}:{
         <p><strong>Rule:</strong> {researchTiming.explanation}</p>
         <p><strong>Source:</strong> <a href={researchTiming.sourceUrl} target="_blank" rel="noopener noreferrer">Issuer evidence ↗</a> · {researchTiming.sourceDate}</p>
         <p><strong>Overall RAAS remains —/100.</strong> This is timing specificity only, not clinical success, expected stock returns, or an approved RAAS grade.</p>
-       </div>
+       </div>}
        {!history.length?<p className={css.empty}>No historical score or evidence-change snapshots have been captured for this trial.
         A current exploratory component rating, if displayed above, is NOT a saved past prediction or an overall RAAS score.
         Captures begin when the connected nightly journal records changes.
