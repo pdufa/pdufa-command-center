@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,36);
+ assert.equal(feed.records.length,50);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -163,12 +163,12 @@ test("10-trial real clinical pilot has only research grades, not full RAAS or fa
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
  const cases=new Set(feed.records.map(r=>r.nctId));
  assert.equal(cases.size,10);
- assert.equal(feed.records.length,36);
+ assert.equal(feed.records.length,50);
  for(const nctId of cases){
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
    indication:r.indication},"post",true,feed);
-  assert.ok(scored.aiCrosscheckedCount>=2 && scored.aiCrosscheckedCount<=5);
+  assert.ok(scored.aiCrosscheckedCount>=2 && scored.aiCrosscheckedCount<=9);
   assert.equal(scored.independentReviewedCount,0);
   assert.equal(scored.fullResearchScore,null);
   assert.equal(scored.approvedOverallScore,null);
@@ -194,5 +194,29 @@ test("Actual trial-specific safety and pre-action CMC findings remain distinct f
   assert.equal(score.fullResearchScore,null);
   assert.equal(score.approvedOverallScore,null);
   assert.equal(score.independentReviewedCount,0);
+ }
+});
+
+test("Eight CI/multiplicity reviews and six shared-NDA filing/target metrics are genuine, explicitly historical and unvalidated",()=>{
+ const p=require("node:path"),src=JSON.parse(fs.readFileSync(p.join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const feed=parseReviewedMetricFeed(src);
+ const ci=feed.records.filter(r=>r.metricId==="post-1-3");
+ assert.equal(ci.length,8);
+ assert.ok(ci.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"&&
+  r.benchmarkSourceUrl.includes("fda.gov")&&r.observedResult.includes("CI")));
+ const expected=["post-3-1","post-3-5","post-6-1"];
+ for(const id of expected){
+  const rows=feed.records.filter(r=>r.metricId===id);
+  assert.equal(rows.length,2);
+  assert.deepEqual(rows.map(r=>r.nctId).sort(),["NCT04576949","NCT05206370"]);
+  for(const r of rows){
+   assert.match(r.criticalRiskReview,/NDA|PDUFA|target/i);
+   const result=fullReviewedTrialCandidate({nctId:r.nctId,
+    ticker:r.ticker,drug:r.drug,indication:r.indication},"post",true,feed);
+   assert.equal(result.independentReviewedCount,0);
+   assert.equal(result.fullResearchScore,null);
+   assert.equal(result.approvedOverallScore,null);
+  }
  }
 });
