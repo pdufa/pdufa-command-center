@@ -88,6 +88,11 @@ def extract(nct, ticker, study, fetched_at):
     ident = protocol.get("identificationModule") or {}
     sponsor = protocol.get("sponsorCollaboratorsModule") or {}
     design = protocol.get("designModule") or {}
+    design_info = design.get("designInfo") or {}
+    masking_info = design_info.get("maskingInfo") or {}
+    enroll_info = design.get("enrollmentInfo") or {}
+    if not isinstance(design_info, dict) or not isinstance(masking_info, dict) or not isinstance(enroll_info, dict):
+        raise ValueError("CT_GOV_DESIGN_INFO_INVALID")
     arms = protocol.get("armsInterventionsModule") or {}
     outcomes = protocol.get("outcomesModule") or {}
     if not isinstance(arms, dict):
@@ -142,6 +147,14 @@ def extract(nct, ticker, study, fetched_at):
         "registryTitle": trim(ident.get("briefTitle"), 450),
         "leadSponsor": trim((sponsor.get("leadSponsor") or {}).get("name"), 200),
         "registeredPhases": design.get("phases") or [],
+        "registeredDesign": {
+            "allocation": trim(design_info.get("allocation"), 35),
+            "masking": trim(masking_info.get("masking"), 35),
+            "interventionModel": trim(design_info.get("interventionModel"), 55),
+            "studyType": trim(design.get("studyType"), 45),
+            "enrollment": enroll_info.get("count") if isinstance(enroll_info.get("count"), int) and not isinstance(enroll_info.get("count"), bool) and 0 < enroll_info["count"] <= 1000000 else None,
+            "enrollmentType": trim(enroll_info.get("type"), 30)
+        },
         "registeredInterventions": [trim(x.get("name"), 180)
             for x in interventions[:30] if isinstance(x, dict) and trim(x.get("name"), 180)],
         "registeredPrimaryOutcomes": [{"measure":trim(x.get("measure"),350),
