@@ -275,6 +275,17 @@ export default function RaasFullUniverseScores(){
    and explicit N/A for missing full RAAS scores. The design diagnostic is
    <strong> not </strong> an FDA probability or complete RAAS rating.
   </p>
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-prospective-top-pilot-download="true">
+   <strong>Prospective Phase 3 TOP RAAS pilot:</strong>{" "}
+   <a href="/raas-prospective-top-metric-pilot.csv" download
+    style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
+    Download LBRX NOVA-2 and TRVI OCEAN-1 source-checked scorecards (60 metric rows)
+   </a>. Each trial has 30 explicit TOP metrics, with clinical efficacy, pivotal design
+   and issuer readout timing each independently identified by a source and provisional
+   research band. All missing metrics are N/A. Half-year readout guidance is not a
+   confirmed date, FDA PASS/CRL/extension prediction or completed investment RAAS.
+   Vendor market-cap observations do not independently verify current PIPELINE eligibility.
+  </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-all-trials-reviewed-partial="true">
    <strong>Source-reviewed RAAS metric ratings for every NCT:</strong>{" "}
    <a href="/raas-all-trials-partial-metric-ratings.csv" download
