@@ -46,7 +46,9 @@ test("trial-specific BOTTOM clinical measurements are visible but NEVER called R
  assert.deepEqual(measured(c2,"post-1-2"),[8.8,33.1]);
  assert.deepEqual(measured(m,"post-1-1"),[42.1]);
  assert.deepEqual(measured(m,"post-4-2"),[537]);
- assert.equal(m.graded,0);assert.equal(c1.graded,2);assert.equal(c2.graded,2);
+ assert.equal(m.graded,0);assert.equal(c1.graded,3);assert.equal(c2.graded,3);
+ assert.equal(byId(c1,"post-1-4").grade.score,50);
+ assert.equal(byId(c2,"post-1-4").status,"AI_SOURCE_CROSSCHECKED_GRADE");
  assert.equal(c1.approvedOverallScore,null);assert.equal(c2.approvedOverallScore,null);
  assert.equal(c1.provisionalDiagnostic.fullyCoveredProvisionalScore,null);
 });
