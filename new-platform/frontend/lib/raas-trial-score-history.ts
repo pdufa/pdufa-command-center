@@ -49,9 +49,9 @@ export function parseRaasTrialHistory(input:unknown):RaasTrialHistoryLedger{
      !Number.isInteger(r.metricCoverage)||r.metricCoverage<0||r.metricCoverage>30||
      !Array.isArray(r.metricIds)||r.metricIds.length!==r.metricCoverage||
      new Set(r.metricIds).size!==r.metricIds.length||
-     r.metricIds.some(x=>typeof x!=="string"||!x.startsWith(r.stage==="pre"?"pre-":"post-"))||
+     r.metricIds.some((x:string)=>typeof x!=="string"||!x.startsWith(r.stage==="pre"?"pre-":"post-"))||
      !Array.isArray(r.sourceUrls)||r.sourceUrls.length>100||
-     r.sourceUrls.some(x=>typeof x!=="string"||!validUrl(x))||
+     r.sourceUrls.some((x:string)=>typeof x!=="string"||!validUrl(x))||
      !/^[a-f0-9]{64}$/.test(r.evidenceFingerprint))
     throw Error("RAAS_HISTORY_EVENT_INVALID:"+r?.eventId);
   ids.add(r.eventId);prev=r.recordedAt;
