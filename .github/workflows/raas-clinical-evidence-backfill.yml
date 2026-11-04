@@ -18,6 +18,7 @@ on:
     paths:
       - scripts/raas_registry_evidence_harvest.py
       - scripts/raas_registry_evidence_summary.py
+      - scripts/raas_registry_evidence_index.py
       - tests/test_raas_registry_evidence_summary.py
       - data/raas_registry_missing_backfill.json
       - .github/workflows/raas-clinical-evidence-backfill.yml
