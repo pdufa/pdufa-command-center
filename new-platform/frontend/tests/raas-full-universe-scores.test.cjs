@@ -81,10 +81,10 @@ test("full trial UI does not hardcode the five pilot identities or round off mis
  assert.match(ui,/RaasTrialHistoryButton row=\{x\.row\} bucket=\{x\.stage\}/);
  assert.match(ui,/Not scored/);
  assert.match(ui,/No missing input scored as zero/);
- assert.match(ui,/source.*unavailable|source unavailable/i);
+ assert.match(ui,/setLiveState\("unavailable"\)/);
  assert.match(ui,/PAGE_SIZE=50/);
  assert.match(ui,/raasSpreadsheetSummary/);
- assert.match(helper,/qualification/);
+ assert.match(helper,/pipelineQualification:null/);
  for(const [source,name] of [[ui,"RaasFullUniverseScores.tsx"],[page,"raas-scan/page.tsx"],[helper,"raas-full-universe-roster.ts"]]){
   const out=ts.transpileModule(source,{fileName:name,reportDiagnostics:true,
    compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}});
