@@ -94,12 +94,10 @@ export default function RaasTrialHistoryButton({row,bucket}:{
         <p><strong>Source:</strong> <a href={researchTiming.sourceUrl} target="_blank" rel="noopener noreferrer">Issuer evidence ↗</a> · {researchTiming.sourceDate}</p>
         <p><strong>Overall RAAS remains —/100.</strong> This is timing specificity only, not clinical success, expected stock returns, or an approved RAAS grade.</p>
        </div>
-       <div className={css.cards}>
-       </div>
-       {!history.length?<p className={css.empty}>No score or evidence-change snapshots have been captured for this trial.
-        The button is ready; a source check is not a 0/100 rating.
-        Captures begin when the connected nightly journal observes saved research evidence.
-        Earlier results cannot be backdated into genuine predictions.</p>:
+       {!history.length?<p className={css.empty}>No historical score or evidence-change snapshots have been captured for this trial.
+        A current exploratory component rating, if displayed above, is NOT a saved past prediction or an overall RAAS score.
+        Captures begin when the connected nightly journal records changes.
+        Earlier research cannot be backdated into genuine predictions.</p>:
         <div className={css.history}>
          <div className={css.eventList} role="group" aria-label="Saved TOP and BOTTOM score events">
           {[...history].reverse().map((e,index)=><button key={e.eventId} type="button"
