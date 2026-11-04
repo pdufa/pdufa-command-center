@@ -26,6 +26,11 @@ def string(value, limit=240):
 def array(value):
     return value if isinstance(value, list) else []
 
+def observation_text(value, limit=65):
+    if isinstance(value, bool) or not isinstance(value, (str, int, float)):
+        return ""
+    return str(value).strip()[:limit]
+
 def compact_trial(row: dict, ticker: str) -> dict:
     nct = row.get("nctId")
     if not isinstance(nct, str) or not ID.fullmatch(nct) or row.get("ticker") != ticker:
@@ -56,20 +61,20 @@ def compact_trial(row: dict, ticker: str) -> dict:
             "groups": [{"id": string(g.get("id"), 35), "title": string(g.get("title"), 150)}
                        for g in array(obj.get("groups"))[:14] if isinstance(g, dict)],
             "measurements": [
-                {k:string(m.get(k), 55) for k in
+                {k:observation_text(m.get(k), 55) for k in
                  ("groupId", "value", "spread", "lowerLimit", "upperLimit")
                  if m.get(k) is not None}
                 for m in array(obj.get("measurements"))[:24] if isinstance(m, dict)
             ],
             "comparisons": [
                 {"groupIds":[string(g,35) for g in array(a.get("groupIds"))[:6]],
-                 "pValue":string(a.get("pValue"),40),
+                 "pValue":observation_text(a.get("pValue"),40),
                  "method":string(a.get("method"),100),
                  "paramType":string(a.get("paramType"),60),
-                 "paramValue":string(a.get("paramValue"),50),
-                 "ciPctValue":string(a.get("ciPctValue"),25),
-                 "ciLowerLimit":string(a.get("ciLowerLimit"),45),
-                 "ciUpperLimit":string(a.get("ciUpperLimit"),45)}
+                 "paramValue":observation_text(a.get("paramValue"),50),
+                 "ciPctValue":observation_text(a.get("ciPctValue"),25),
+                 "ciLowerLimit":observation_text(a.get("ciLowerLimit"),45),
+                 "ciUpperLimit":observation_text(a.get("ciUpperLimit"),45)}
                 for a in analyses[:12] if isinstance(a,dict)
             ],
         })
@@ -149,7 +154,8 @@ def build_index(payload: dict, roster: dict[str, str]) -> dict:
         raise ValueError("REGISTRY_INDEX_INCOMPLETE_COHORT")
     results = [records[k] for k in sorted(records)]
     count = sum(r["postedResults"] for r in results)
-    comparison = sum(any(out["comparisons"] for out in r["primaryResults"]) for r in results)
+    comparison = sum(any(any(len(a["groupIds"])>=2 for a in out["comparisons"])
+                       for out in r["primaryResults"]) for r in results)
     effects = sum(any(out["measurements"] for out in r["primaryResults"]) for r in results)
     interval = sum(any(a["ciLowerLimit"] and a["ciUpperLimit"]
                        for out in r["primaryResults"] for a in out["comparisons"]) for r in results)
