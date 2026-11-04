@@ -6,6 +6,12 @@ on:
       - 'scripts/raas_research_workflow_receipt.cjs'
       - 'tests/raas_research_workflow_receipt.test.cjs'
       - 'scripts/raas_active_two_year_study.cjs'
+      - 'scripts/raas_raw_entry_cap_research.cjs'
+      - 'scripts/raas_alpaca_historical_price_study.cjs'
+      - 'tests/raas_raw_entry_cap_research.test.cjs'
+      - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
       - 'tests/raas_active_two_year_study.test.cjs'
       - 'new-platform/frontend/data/raas-active-study-config.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
@@ -18,6 +24,12 @@ on:
       - 'scripts/raas_research_workflow_receipt.cjs'
       - 'tests/raas_research_workflow_receipt.test.cjs'
       - 'scripts/raas_active_two_year_study.cjs'
+      - 'scripts/raas_raw_entry_cap_research.cjs'
+      - 'scripts/raas_alpaca_historical_price_study.cjs'
+      - 'tests/raas_raw_entry_cap_research.test.cjs'
+      - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
       - 'tests/raas_active_two_year_study.test.cjs'
       - 'new-platform/frontend/data/raas-active-study-config.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
@@ -47,6 +59,7 @@ jobs:
           node --test tests/raas_alpaca_historical_price_study.test.cjs
           node --test tests/raas_alpaca_ten_year_study.test.cjs
           node --test tests/raas_active_two_year_study.test.cjs
+          node --test tests/raas_raw_entry_cap_research.test.cjs
       - name: Research 2024–2025 only using historical Alpaca SIP candidates (research, never approved trades)
         if: github.event_name != 'pull_request'
         env:
