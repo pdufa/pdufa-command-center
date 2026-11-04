@@ -227,3 +227,47 @@ test("research candidate chronology rejects Phase 3 post-action or missing first
  assert.equal(m.priceOnlySourceLeads([{...d,targetAnnouncementDate:"2025-04-03"}],config).length,0);
  assert.equal(m.priceOnlySourceLeads([{...d,phase3ReadoutSourceUrl:null}],config).length,0);
 });
+
+test("CORT 2025 original PDUFA and Phase 3 GRACE stay point-in-time source-only",()=>{
+ const j=require("../new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json");
+ assert.equal(j.scope,"RAAS_2025_CORCEPT_RELACORILANT_FDA_PHASE3_PRICE_ONLY_SOURCE_LEAD");
+ assert.equal(j.records.length,1);
+ const c=j.records[0];
+ assert.equal(c.ticker,"CORT");
+ assert.equal(c.pdufaTargetDate,"2025-12-30");
+ assert.equal(c.targetAnnouncementDate,"2025-03-03");
+ assert.equal(c.phase3ReadoutDate,"2024-05-28");
+ assert.equal(c.actualFDAActionDate,"2025-12-30");
+ assert.equal(c.firstPublicOutcomeDate,"2025-12-31");
+ assert.equal(c.actualFDAOutcome,"CRL");
+ assert.ok(c.targetAnnouncementDate>c.phase3ReadoutDate);
+ assert.ok(c.targetAnnouncementDate<c.pdufaTargetDate);
+ assert.ok(c.nctIds.includes("NCT03697109"));
+ assert.equal(c.historicalCapitalizationAtEntryVerified,false);
+ assert.equal(c.approvedAsTradingCase,false);
+ const priceOnly=m.priceOnlySourceLeads(j.records,config);
+ assert.equal(priceOnly.length,1);
+ assert.equal(priceOnly[0].evidenceStatus,"SOURCE_LEAD_PRICE_RESEARCH_ONLY");
+ // The 2025 CRL and later 2026 resubmission/oncology review are distinct cycles.
+ assert.equal(c.distinct2026CyclesExcluded,true);
+ assert.equal(c.preentrySECCoverShareResearch.length,2);
+ assert.deepEqual(c.preentrySECCoverShareResearch.map(x=>x.sharesOutstanding),[105371729,105188217]);
+ assert.equal(c.preentryShareSnapshotDifference,-183512);
+ assert.deepEqual(c.preentrySECCoverShareResearch.map(x=>x.firstConservativeUseTradingSession),
+  ["2025-08-01","2025-11-05"]);
+ assert.ok(c.preentrySECCoverShareResearch.every(x=>
+  x.firstConservativeUseTradingSession>x.filedDate &&
+  x.asOfDate<=x.filedDate &&
+  x.status==="DATED_SEC_COVER_SHARE_RESEARCH_ONLY"));
+ assert.equal(c.shareContinuityBetweenFilingsVerified,false);
+ assert.equal(c.historicalEntryDayMarketCapValidated,false);
+ // Even a contemporaneous source-linked 2025 goal is NOT market-cap qualified.
+ assert.equal(m.reviewIntake(intake,config).accepted.length,0);
+ assert.equal(j.verifiedTradingCases,0);
+ assert.equal(j.fullFDA2025CensusAudited,false);
+ // Missing/late critical source dates must never pass the price discovery gate.
+ assert.equal(m.priceOnlySourceLeads([{...c,phase3ReadoutDate:"2026-01-01"}],config).length,0);
+ assert.equal(m.priceOnlySourceLeads([{...c,targetAnnouncementDate:null}],config).length,0);
+ assert.equal(m.priceOnlySourceLeads([{...c,targetAnnouncementDate:"2025-12-31"}],config).length,0);
+ assert.equal(m.priceOnlySourceLeads([{...c,targetAnnouncementSourceUrl:null}],config).length,0);
+});
