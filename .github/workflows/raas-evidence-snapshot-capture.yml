@@ -1,0 +1,132 @@
+name: RAAS Source Coverage and Score History Capture
+# Deliberately independent of Google Sheets editor permissions and of the
+# conditional post-source workflow. It captures only committed, dated facts.
+on:
+  pull_request:
+    paths:
+      - .github/workflows/raas-evidence-snapshot-capture.yml
+      - scripts/check_phase3_original_registry_pilot.py
+      - scripts/raas_population_coverage_audit.py
+      - tests/test_raas_population_coverage_audit.py
+  workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * *'
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/raas-evidence-snapshot-capture.yml
+permissions:
+  contents: read
+concurrency:
+  group: raas-committed-evidence-publisher
+  cancel-in-progress: false
+
+jobs:
+  pull-request-validation:
+    name: Check historical census, evolving source and full-population RAAS coverage
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Strict source reconciliation and RAAS population tests
+        run: |
+          python -m unittest discover -s tests -p 'test_phase3_original_registry_pilot.py' -v
+          python -m unittest discover -s tests -p 'test_raas_population_coverage_audit.py' -v
+          python -m py_compile scripts/raas_population_coverage_audit.py
+          node --check scripts/raas_trial_provisional_metric_capture.cjs
+
+  verified-capture:
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
+    name: Audit full NCT populations and append real RAAS observations
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout reviewed main evidence and scripts
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Python without additional provider credentials
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate all historical and evolving NCT source populations
+        run: |
+          python -m unittest discover -s tests -p 'test_phase3_original_registry_pilot.py' -v
+          python -m unittest discover -s tests -p 'test_raas_population_coverage_audit.py' -v
+      - name: Check source capture scripts
+        run: |
+          node --check scripts/raas_trial_history_capture.cjs
+          node --check scripts/raas_trial_provisional_metric_capture.cjs
+          node --check scripts/raas_self_audit_history_capture.cjs
+      - name: Preserve genuine stage-independent trial evidence change history
+        run: node scripts/raas_trial_history_capture.cjs
+      - name: Preserve timestamped research-only numerical component changes
+        run: node scripts/raas_trial_provisional_metric_capture.cjs
+      - name: Preserve RAAS system validation-source history separately
+        run: node scripts/raas_self_audit_history_capture.cjs
+      - name: Audit EVERY source NCT and reconcile 741 against evolving census
+        run: python scripts/raas_population_coverage_audit.py
+      - name: Validate output has no fabricated overall RAAS ratings
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("data/raas_population_coverage_audit.json")
+          a=json.loads(p.read_text())
+          h=json.loads(Path("new-platform/frontend/data/raas-trial-score-history.json").read_text())
+          s=json.loads(Path("new-platform/frontend/data/raas-self-audit-history.json").read_text())
+          assert a["historicalCensus"]["trials"]==741
+          assert len(a["historicalCensus"]["records"])==741
+          assert a["historicalCensus"]["approvedOverallScored"]==0
+          assert len(a["evolvingResearch"]["records"])==a["evolvingResearch"]["trials"]
+          assert all(r["approvedOverallScore"] is None and r["pdufaQualified"] is None
+                     for r in a["evolvingResearch"]["records"])
+          assert h["scope"]=="RAAS_TRIAL_SCORE_HISTORY" and len(h["records"])>=5
+          assert all(r.get("score") is None for r in h["records"] if r["kind"]=="METRIC_SCORE_UPDATED")
+          assert sum(r["kind"]=="METRIC_SCORE_UPDATED" for r in h["records"])>=2
+          assert s["scope"]=="RAAS_SELF_AUDIT_HISTORY" and len(s["records"])>=1
+          print("VERIFIED: no invented overall RAAS ratings; complete source population coverage and nonempty dated history.")
+          PY
+      - name: Commit only changed histories and source-coverage receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- new-platform/frontend/data/raas-trial-score-history.json \
+            new-platform/frontend/data/raas-self-audit-history.json \
+            data/raas_population_coverage_audit.json
+          if git diff --cached --quiet; then
+            echo "No new source, research grades or score-history changes."
+            exit 0
+          fi
+          git commit -m "Capture actual RAAS research metrics and reconciled NCT coverage"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Published auditable RAAS source changes and unscored NCT receipts."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::RAAS source audit could not be safely published"
+          exit 1
+      - name: Archive independently reviewable source coverage result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-verified-source-coverage-${{ github.run_id }}
+          path: |
+            data/raas_population_coverage_audit.json
+            new-platform/frontend/data/raas-trial-score-history.json
+            new-platform/frontend/data/raas-self-audit-history.json
+          if-no-files-found: warn
+          retention-days: 30

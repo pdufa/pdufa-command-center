@@ -21,7 +21,10 @@ import sys
 import urllib.error
 import urllib.request
 
-SOURCE_CSV = Path(__file__).resolve().parents[1] / "data/phase3_all_years_300m_10b_trials.csv"
+# The 741-trial Oct 26 research sample is pinned and immutable. The separate
+# all-years market-cap research feed can legitimately gain/lose NCT rows; never
+# break this historical identity-control test when that evolving source changes.
+SOURCE_CSV = Path(__file__).resolve().parents[1] / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
 STATUSES = (
     "RECRUITING", "ACTIVE_NOT_RECRUITING", "ENROLLING_BY_INVITATION",
     "NOT_YET_RECRUITING", "COMPLETED", "TERMINATED", "WITHDRAWN", "UNKNOWN",
