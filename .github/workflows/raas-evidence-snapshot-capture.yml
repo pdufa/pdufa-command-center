@@ -10,7 +10,7 @@ on:
       - scripts/raas_trial_clinical_metric_capture.cjs
       - scripts/raas_provisional_validation_readiness.cjs
       - new-platform/frontend/lib/raas-provisional-clinical.ts
-      - new-platform/frontend/lib/raas-provisional-policy.ts
+      - new-platform/frontend/lib/raas-provisional-rubric-engine.ts
       - tests/test_raas_population_coverage_audit.py
   workflow_dispatch:
   schedule:
