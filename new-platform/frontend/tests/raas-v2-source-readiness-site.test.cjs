@@ -56,7 +56,10 @@ test("Mobile nightly official FDA lookup is explicitly separate from a scored fo
  assert.match(source,/S-001 is a February REMS-only action/);
  assert.match(source,/the pending MAPLE-HCM efficacy supplement/);
  assert.ok(source.includes("<strong>not</strong>"));
- assert.match(source,/the numbered pending BLA remains unverified/);
+ assert.match(source,/SMMT ivonescimab ingredient search/);
+ assert.match(source,/any BLA candidate/);
+ assert.match(source,/FDA Purple Book/);
+ assert.match(snapshot.nightlyPublicFDAApplicationHistoryWatchScope,/SMMT ivonescimab public ingredient search/);
  assert.match(source,/Live results are in the/);
  assert.match(source,/not this dated website snapshot/);
 });
