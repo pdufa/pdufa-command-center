@@ -12,9 +12,14 @@ require.extensions[".ts"]=(mod,file)=>{
  mod._compile(output.outputText,file);
 };
 const {executeRaasReadinessScan}=require("../lib/raas-readiness-scan.ts");
+const {evaluateRaasInstallation}=require("../lib/raas-installation-gates.ts");
+const {auditRaasSurveyAccuracy}=require("../lib/raas-self-accuracy-audit.ts");
+const activeIntake=require("../data/raas-active-2024-2025-pdufa-intake.json");
+const fdaAccuracy=require("../data/raas-fda-three-way-accuracy-site-snapshot.json");
 const report=executeRaasReadinessScan();
+const selfAccuracyAudit=auditRaasSurveyAccuracy(report,evaluateRaasInstallation(report,activeIntake),fdaAccuracy);
 const generatedAtUtc=new Date().toISOString();
-const output={...report,generatedAtUtc,gitSha:process.env.GITHUB_SHA||null};
+const output={...report,selfAccuracyAudit,generatedAtUtc,gitSha:process.env.GITHUB_SHA||null};
 const target=process.env.RAAS_SCAN_OUTPUT||path.join(process.cwd(),"raas-readiness-result.json");
 fs.mkdirSync(path.dirname(target),{recursive:true});
 fs.writeFileSync(target,JSON.stringify(output,null,2)+"\n");
@@ -32,6 +37,8 @@ const message=[
  "Pre-entry SEC share bridges: "+s.secShareBridgeCases+"/"+s.retrospectiveResearchWindows,
  "Primary FDA post-exit checks: "+s.fdaPrimaryCrosschecks,
  "Final numerical RAAS validation: "+report.finalScoring,
+ "RAAS survey self-accuracy audit: "+selfAccuracyAudit.status+"; "+selfAccuracyAudit.raasGatesPassed+"/"+selfAccuracyAudit.raasGatesRequired+" research proof gates",
+ "Independent FDA PASS / CRL / EXTENSION forecast accuracy: unavailable; legacy historical benchmark difference "+selfAccuracyAudit.retrospectiveBaselineDifferencePctPoints+" percentage points (not validated)",
  "",
  "This result audits committed dated sources. Success means the audit executed, NOT that scores were validated."
 ];
