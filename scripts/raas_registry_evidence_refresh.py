@@ -26,7 +26,7 @@ def today_utc():
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z")
 
 def validate_manifest(manifest:dict)->list[dict]:
-    if(manifest.get("schemaVersion")!=1 or manifest.get("scope")!="RAAS_REGISTRY_EVIDENCE_SOURCE_CENSUS" or not isinstance(manifest.get("records"),list):
+    if(manifest.get("schemaVersion")!=1 or manifest.get("scope")!="RAAS_REGISTRY_EVIDENCE_SOURCE_CENSUS" or not isinstance(manifest.get("records"),list)):
         raise ValueError("RAAS_REGISTRY_CENSUS_INVALID")
     rows=manifest["records"]
     if len(rows)!=762 or len({r.get("nctId") for r in rows})!=762 or any(
