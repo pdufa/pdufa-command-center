@@ -151,6 +151,13 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
             (has_window and iso(rec.get("readoutWindowEnd")) <= iso(snapshot["asOf"]))):
             raise ValueError("CURRENT_TOP_CASE_PROVENANCE")
         case_map[nct] = rec
+    issuer_quote = {}
+    for rec in case_map.values():
+        quote = (rec["marketCapUsd"], rec["marketCapAsOf"], rec["marketCapSourceUrl"],
+                 rec["publicMarket"])
+        prior = issuer_quote.setdefault(rec["ticker"], quote)
+        if prior != quote:
+            raise ValueError("CURRENT_TOP_CONFLICTING_ISSUER_MARKET_CAP_SNAPSHOT")
     if len(case_map) < 2 or len(case_map) > 100 or not {"NCT07671911", "NCT07363577"}.issubset(case_map):
         raise ValueError("CURRENT_TOP_NONEXHAUSTIVE_PILOT_IDENTITIES")
     all_r = {}
