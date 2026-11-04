@@ -250,6 +250,17 @@ test("CORT 2025 original PDUFA and Phase 3 GRACE stay point-in-time source-only"
  assert.equal(priceOnly[0].evidenceStatus,"SOURCE_LEAD_PRICE_RESEARCH_ONLY");
  // The 2025 CRL and later 2026 resubmission/oncology review are distinct cycles.
  assert.equal(c.distinct2026CyclesExcluded,true);
+ assert.equal(c.preentrySECCoverShareResearch.length,2);
+ assert.deepEqual(c.preentrySECCoverShareResearch.map(x=>x.sharesOutstanding),[105371729,105188217]);
+ assert.equal(c.preentryShareSnapshotDifference,-183512);
+ assert.deepEqual(c.preentrySECCoverShareResearch.map(x=>x.firstConservativeUseTradingSession),
+  ["2025-08-01","2025-11-05"]);
+ assert.ok(c.preentrySECCoverShareResearch.every(x=>
+  x.firstConservativeUseTradingSession>x.filedDate &&
+  x.asOfDate<=x.filedDate &&
+  x.status==="DATED_SEC_COVER_SHARE_RESEARCH_ONLY"));
+ assert.equal(c.shareContinuityBetweenFilingsVerified,false);
+ assert.equal(c.historicalEntryDayMarketCapValidated,false);
  // Even a contemporaneous source-linked 2025 goal is NOT market-cap qualified.
  assert.equal(m.reviewIntake(intake,config).accepted.length,0);
  assert.equal(j.verifiedTradingCases,0);
