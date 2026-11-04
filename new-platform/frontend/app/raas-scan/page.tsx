@@ -8,6 +8,7 @@ import RaasSelfAuditHistoryButton from "./RaasSelfAuditHistoryButton";
 import activeTwoYearIntake from "../../data/raas-active-2024-2025-pdufa-intake.json";
 import activeStudyConfig from "../../data/raas-active-study-config.json";
 import fdaAccuracySnapshot from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
+import registryEvidence from "../../data/raas-registry-evidence-status.json";
 import RaasFullUniverseScores from "../RaasFullUniverseScores";
 import css from "../raas-history/page.module.css";
 export const metadata:Metadata={
@@ -33,6 +34,43 @@ export default function RaasScanPage(){
     <div><strong>{s.historicalAcceptedCases}</strong><span>Accepted historical event-window trades</span></div>
    </div>
    <p className={css.disclaimer}><strong>SCAN EXECUTED · FINAL RAAS NOT VALIDATED.</strong> The audit inspected every definition and available evidence record. It did not create a price forecast, set missing scores to zero, import unpublished trial outcomes, or claim that a source lead has been calibrated. Underlying source snapshot: {report.sourceAsOf}; metric specification: {report.specVersion}.</p>
+   <section className={css.section} data-raas-collected-registry-evidence="true">
+    <div className={css.sectionTitle}>
+     <h2>Collected ClinicalTrials.gov evidence · full research pool</h2>
+     <span>Captured {registryEvidence.collectedAsOf} · source records, NOT RAAS scores</span>
+    </div>
+    <div className={css.stats}>
+     <div><strong>{registryEvidence.summary.sourceRecordsStored}/{registryEvidence.summary.researchTrials}</strong>
+      <span>Unique registry records retrieved for the research pool</span></div>
+     <div><strong>{registryEvidence.summary.missingRecordsRecoveredFromOriginal35}/35</strong>
+      <span>Previously missing mirror records recovered</span></div>
+     <div><strong>{registryEvidence.summary.postedRegistryResults}</strong>
+      <span>Trials with ClinicalTrials.gov posted results</span></div>
+     <div><strong>{registryEvidence.summary.trialsWithPrimaryRegistryAnalyses}</strong>
+      <span>Trials with primary endpoint analyses reported in registry</span></div>
+     <div><strong>{registryEvidence.summary.trialsWithSeriousAdverseEventEvidence}</strong>
+      <span>Trials with serious-adverse-event evidence</span></div>
+     <div><strong>{registryEvidence.summary.sourceRecordsStillMissing}</strong>
+      <span>Missing primary registry records in this collection</span></div>
+    </div>
+    <p className={css.disclaimer}>
+     ClinicalTrials.gov registry protocols and posted results are recorded as dated
+     source evidence, not as confirmed TOP/BOTTOM classifications, FDA PASS / CRL /
+     EXTENSION predictions, or calibrated RAAS ratings. The original 35 missing
+     records were missing from the connected mirror, not necessarily from the public registry.
+     FDA, SEC, market-price, comparator and independent statistical evidence remain
+     separate requirements. Source error count: {registryEvidence.summary.sourceFetchErrorsInLatestRun}.
+    </p>
+    <details className={css.check} data-raas-original-gaps-recovered="true">
+     <summary><strong>View recovered original NCT source IDs</strong>
+      <span className={css.status}>{registryEvidence.recoveredFromOriginalGaps.length} source records · links to official registry</span>
+     </summary>
+     <div className={css.checkBody} style={{display:"flex",flexWrap:"wrap",gap:12}}>
+      {registryEvidence.recoveredFromOriginalGaps.map(id=>
+       <a key={id} href={"https://clinicaltrials.gov/study/"+id} target="_blank" rel="noopener noreferrer">{id}</a>)}
+     </div>
+    </details>
+   </section>
    <RaasFullUniverseScores/>
    <section className={css.section} data-raas-self-audit={selfAudit.status}>
     <div className={css.sectionTitle}>
