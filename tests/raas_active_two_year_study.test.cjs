@@ -36,6 +36,9 @@ test("2024–2025 is the entire active two-year scope while prior years stay arc
  assert.equal(config.minimumIndependentTrainIssuers,30);
  assert.equal(config.minimumIndependentHoldoutIssuers,30);
  assert.equal(config.historicalMarketCapUsdMillionsMin,300);
+ assert.equal(config.leadUnit,"TRADING_SESSIONS");
+ assert.equal(config.entryLeadTradingSessionsMax,90);
+ assert.equal(config.exitLeadTradingSessionsMin,3);
  assert.equal(config.historicalMarketCapUsdMillionsMax,10000);
  const q=m.discoveryQueue(csv,config);
  assert.ok(q.length>0);
@@ -64,7 +67,7 @@ test("2024 training and 2025 holdout require 30 distinct nonoverlapping issuers 
  assert.equal(m.selectResearchWindow([],true,config).status,
   "BLOCKED_INSUFFICIENT_2024_2025_ISSUER_DISJOINT_HOLDOUT");
  const example=(year,ticker)=>({caseId:year+"|"+ticker,year,ticker,
-  entryDate:year+"-04-22",entryLeadDays:79,exitLeadDays:14,
+  entryDate:year+"-04-22",entryLeadTradingSessions:79,exitLeadTradingSessions:14,
   netReturnPct:8,status:"POINT_IN_TIME_PRICE_RESEARCH"});
  const data=[...Array.from({length:30},(_,i)=>example(2024,"T"+i)),
   ...Array.from({length:30},(_,i)=>example(2025,"H"+i))];
@@ -139,4 +142,29 @@ test("refuses to turn duplicate, weak or future-source claims into reviewed trad
  const invalid=m.reviewIntake({...intake,records:[forgery]},config);
  assert.equal(invalid.accepted.length,0);
  assert.equal(invalid.rejected.length,1);
+});
+
+test("T-minus uses pre-PDUFA trading sessions, not calendar-day offsets",()=>{
+ const e=event(2024,"TEST");
+ const before=e.bars.filter(b=>b.date<e.pdufaDate);
+ const win={...e,bars:undefined};
+ const result=m.sessionWindow(win,e.bars,60,14);
+ assert.equal(result.leadUnit,"TRADING_SESSIONS");
+ assert.equal(result.entryDate,before[before.length-60].date);
+ assert.equal(result.exitDate,before[before.length-14].date);
+ assert.equal(result.status,"POINT_IN_TIME_PRICE_RESEARCH");
+ const tooShort=m.sessionWindow(win,e.bars.slice(-70),79,14);
+ assert.equal(tooShort.status,"BLOCKED");
+ assert.equal(tooShort.reason,"MISSING_PRE_PDUFA_TRADING_SESSIONS");
+ assert.equal(m.tradingSessionGrid(win,e.bars).length,3828);
+});
+test("early FDA action and same-day public announcements fail closed",()=>{
+ const e=event(2025,"FAIL");
+ const win={...e,bars:undefined};
+ const normal=m.sessionWindow(win,e.bars,60,14);
+ assert.equal(normal.status,"POINT_IN_TIME_PRICE_RESEARCH");
+ const early=m.sessionWindow({...win,actualFDAActionDate:normal.exitDate},e.bars,60,14);
+ assert.equal(early.reason,"FDA_ACTION_EARLIER_THAN_EXIT");
+ const sameDay=m.sessionWindow({...win,phase3ReadoutDate:normal.entryDate},e.bars,60,14);
+ assert.equal(sameDay.reason,"EVENT_NOT_PUBLIC_BEFORE_ENTRY_SESSION");
 });
