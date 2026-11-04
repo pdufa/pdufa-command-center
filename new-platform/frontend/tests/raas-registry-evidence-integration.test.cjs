@@ -48,6 +48,14 @@ test("protocol is a TOP study-design lead only, not a BOTTOM result",()=>{
  assert.equal(registry.registryMetricLeads(e,"post",trial).length,0);
  assert.equal(registry.registryMetricLeads(e,"pre",{...trial,drug:"Other therapy"}).length,0);
 });
+test("older intervention-omitting receipts map only NCT-level factual leads",()=>{
+ const e={...sample(),registeredInterventions:[]};
+ const trial={nctId:e.nctId,ticker:e.ticker,drug:"Other therapy"};
+ const leads=registry.registryMetricLeads(e,"pre",trial);
+ assert.deepEqual(leads.map(x=>x.metricIds),[["pre-1-2"]]);
+ assert.ok(leads.every(x=>x.measurement===null&&!Object.hasOwn(x,"score")));
+ assert.equal(registry.registryMetricLeads(e,"post",trial).length,0);
+});
 test("posted primary results, analyses and adverse terms stay source leads",()=>{
  const e=sample("NCT12345678",true);
  const trial={nctId:e.nctId,ticker:e.ticker,drug:"Test treatment"};
