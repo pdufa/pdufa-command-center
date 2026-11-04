@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_SOURCE_DOCUMENTATION_AND_QUANTITATIVE_FACTS_NOT_OVERALL_RATINGS",
+  "sourceAsOf": "2026-11-04T21:46:17+00:00",
+  "researchTrials": 762,
+  "trialsWithPostedResults": 337,
+  "trialsWithExperimentalReportingDiagnostic": 337,
+  "trialsWithPrimaryGroupComparisons": 170,
+  "trialsWithConfidenceIntervalData": 143,
+  "trialsWithObservedSafetyGroupRates": 306,
+  "primaryGroupComparisonRows": 290,
+  "observedSeriousEventGroupRateRows": 8686,
+  "fullValidatedRaasScores": 0,
+  "warning": "Five-feature completeness grade rates SOURCE REPORTING, not benefit or risk. The arm contrasts and serious-event rates are raw per-group facts, not drug-versus-placebo effects. No cohort entry gains a validated FDA, safety, clinical success or full 30/30 RAAS score."
+}
