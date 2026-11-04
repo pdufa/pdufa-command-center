@@ -184,5 +184,5 @@ test("extra SEC snapshot cannot backdate a later filing or overwrite the origina
  const wrong=clone(earliest);wrong.records[0].cik="0000000000";
  assert.throws(()=>run({additionalEarliest:wrong}),/RAAS_RAW_CAP_CASE_IDENTITY_OR_SEQUENCE_INVALID/);
  const future=clone(earliest);future.records[0].filedDate="2024-03-01";
- assert.throws(()=>run({additionalEarliest:future}),/RAAS_RAW_CAP_CASE_IDENTITY_OR_SEQUENCE_INVALID/);
+ assert.throws(()=>run({additionalEarliest:future}),/RAAS_RAW_CAP_SEC_RECORD_INVALID/);
 });
