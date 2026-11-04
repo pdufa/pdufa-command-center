@@ -1,0 +1,82 @@
+name: FDA Source-Verified Chart Overlay Watch
+
+on:
+  schedule:
+    # 8:17 PM Pacific in summer/winter. The guard prevents double runs at DST.
+    - cron: '17 3 * * *'
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fda-source-verified-chart-watch.yml'
+      - 'scripts/fda_nightly_chart_watcher.py'
+      - 'tests/test_fda_nightly_chart_watcher.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fda-source-verified-chart-watch-main
+  cancel-in-progress: false
+
+jobs:
+  verify-and-publish:
+    name: Verify dated actions on exact FDA application, then publish chart markers
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Match nightly Pacific 8 PM slot
+        id: clock
+        shell: bash
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          local = datetime.now(ZoneInfo("America/Los_Angeles"))
+          requested = os.environ["GITHUB_EVENT_NAME"] != "schedule"
+          # Allow GH schedule delays within same evening.
+          run = requested or (local.hour in (20, 21))
+          print("Pacific check date:", local.isoformat(), "source watch enabled:", run)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write("run=" + ("true" if run else "false") + "\n")
+          PY
+      - name: Validate parser cannot invent an FDA event
+        if: steps.clock.outputs.run == 'true'
+        run: python -m unittest discover -s tests -p 'test_fda_nightly_chart_watcher.py' -v
+      - name: Fetch exact FDA application and publish only source-dated actions
+        if: steps.clock.outputs.run == 'true'
+        run: python scripts/fda_nightly_chart_watcher.py
+      - name: Commit source-linked FDA overlay updates only after successful check
+        if: steps.clock.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=new-platform/frontend/app/alpaca-cytk/fda-auto-events.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$file"
+          if git diff --cached --quiet; then
+            echo "FDA source checked; no changes to publish."
+            exit 0
+          fi
+          git commit -m "Publish verified FDA submission overlay status for CYTK"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Source-verified FDA chart data published, with action dates preserved."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Source data was verified but could not be published."
+          exit 1
