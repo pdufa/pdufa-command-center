@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_MISSING_REGISTRY_BACKFILL",
+  "asOf": "2026-11-04",
+  "sourceCohort": "data/phase3_all_years_300m_10b_trials.csv",
+  "sourceMirror": "public.full_trial_records",
+  "researchPopulationCount": 762,
+  "registryRecordsFound": 727,
+  "registryRecordsMissing": 35,
+  "important": "Not in mirror does not mean not registered. This list does not determine PDUFA eligibility or clinical outcome.",
+  "missing": [
+    {
+      "nctId": "NCT00128479",
+      "ticker": "CORT",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00128479",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00128505",
+      "ticker": "CORT",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00128505",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00130676",
+      "ticker": "CORT",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00130676",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00141323",
+      "ticker": "LGND",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00141323",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00146523",
+      "ticker": "CORT",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00146523",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00163137",
+      "ticker": "LGND",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00163137",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00208156",
+      "ticker": "CORT",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00208156",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00226759",
+      "ticker": "OMER",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00226759",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00226772",
+      "ticker": "OMER",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00226772",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00245271",
+      "ticker": "OMER",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00245271",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00251095",
+      "ticker": "ACHV",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00251095",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00332826",
+      "ticker": "MNKD",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00332826",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00366145",
+      "ticker": "MESO",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00366145",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00482092",
+      "ticker": "MESO",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00482092",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00539890",
+      "ticker": "MNKD",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00539890",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00543374",
+      "ticker": "MESO",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00543374",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00562497",
+      "ticker": "MESO",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00562497",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT00624845",
+      "ticker": "OMER",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT00624845",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01064024",
+      "ticker": "AMRX",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01064024",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01083615",
+      "ticker": "ACHV",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01083615",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01188187",
+      "ticker": "ACHV",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01188187",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01233960",
+      "ticker": "MESO",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01233960",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01436032",
+      "ticker": "ALKS",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01436032",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01483898",
+      "ticker": "VCEL",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01483898",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01507857",
+      "ticker": "SVA",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01507857",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01578655",
+      "ticker": "ACHV",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01578655",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01636245",
+      "ticker": "SVA",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01636245",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01650051",
+      "ticker": "AMRX",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01650051",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01779947",
+      "ticker": "AMRX",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01779947",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT01925092",
+      "ticker": "CORT",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01925092",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT02072954",
+      "ticker": "AMRX",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02072954",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT02103322",
+      "ticker": "AMRX",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02103322",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT02110368",
+      "ticker": "AMRX",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02110368",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT02125253",
+      "ticker": "AMRX",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02125253",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    },
+    {
+      "nctId": "NCT02670720",
+      "ticker": "BCRX",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02670720",
+      "reason": "NOT_IN_CONNECTED_RECORD_MIRROR"
+    }
+  ]
+}

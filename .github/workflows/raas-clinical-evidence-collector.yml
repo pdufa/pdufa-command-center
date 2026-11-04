@@ -1,0 +1,99 @@
+name: RAAS ClinicalTrials.gov Primary Evidence Backfill
+on:
+  pull_request:
+    paths:
+      - .github/workflows/raas-clinical-evidence-collector.yml
+      - scripts/raas_collect_registry_evidence.py
+      - tests/test_raas_collect_registry_evidence.py
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/raas-clinical-evidence-collector.yml
+      - scripts/raas_collect_registry_evidence.py
+  workflow_dispatch:
+  schedule:
+    - cron: '43 11 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: raas-public-primary-source-backfill
+  cancel-in-progress: false
+jobs:
+  validate-source-collector:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assert missing data and exact NCT identity are protected
+        run: |
+          python -m unittest discover -s tests -p 'test_raas_collect_registry_evidence.py' -v
+          python -m py_compile scripts/raas_collect_registry_evidence.py
+  collect-external-registrations:
+    if: github.event_name != 'pull_request'
+    needs: validate-source-collector
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout reviewed source cohort
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify source cohort and collector
+        run: |
+          python -m unittest discover -s tests -p 'test_raas_collect_registry_evidence.py' -v
+      - name: Fetch official ClinicalTrials.gov records for every research NCT
+        run: python scripts/raas_collect_registry_evidence.py --workers 8 --max-age-days 7
+      - name: Assert every source record is accounted for without synthetic RAAS scores
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("data/raas_clinical_evidence_inventory.json")
+          j=json.loads(p.read_text())
+          rows=j["records"]
+          s=j["summary"]
+          assert j["scope"]=="RAAS_PUBLIC_CLINICALTRIALS_EVIDENCE_INVENTORY"
+          assert len(rows)==s["totalNctIds"]==len(set(r["nctId"] for r in rows))
+          assert s["usableRegistryRecords"]+s["unavailableSourceRecords"]==len(rows)
+          assert all(r["raasOverallScore"] is None and r["verifiedPipeline"] is None for r in rows)
+          assert all(r["evidenceState"]!="POSTED_RESULTS" or r["postedResults"] is True for r in rows)
+          assert all(r["evidenceState"]!="REGISTRY_PROTOCOL_ONLY" or r["postedResults"] is False for r in rows)
+          print("Verified exact-NCT receipts",s)
+          PY
+      - name: Store reproducible evidence inventory as a workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-public-clinical-evidence-${{ github.run_id }}
+          path: data/raas_clinical_evidence_inventory.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Publish audited primary-source facts without changing numeric RAAS scores
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/raas_clinical_evidence_inventory.json
+          if git diff --cached --quiet; then
+            echo "No public registry updates to publish."
+            exit 0
+          fi
+          git commit -m "Capture audited public ClinicalTrials.gov evidence inventory"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Published new exact-NCT source evidence without modifying RAAS ratings."
+              exit 0
+            fi
+            sleep 7
+          done
+          echo "::error::Could not safely publish verified source evidence"
+          exit 1
