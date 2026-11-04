@@ -57,7 +57,7 @@ test("Mobile nightly official FDA lookup is explicitly separate from a scored fo
  assert.match(source,/the pending MAPLE-HCM efficacy supplement/);
  assert.ok(source.includes("<strong>not</strong>"));
  assert.match(source,/SMMT ivonescimab ingredient search/);
- assert.match(source,/any BLA candidate/);
+ assert.match(source,/may reveal a BLA candidate/);
  assert.match(source,/FDA Purple Book/);
  assert.match(snapshot.nightlyPublicFDAApplicationHistoryWatchScope,/SMMT ivonescimab public ingredient search/);
  assert.match(source,/Live results are in the/);
