@@ -75,7 +75,7 @@ test("Nov14 mobile issuer-goal panel distinguishes actual January sNDA filing fr
  assert.match(source,/nov14IssuerGoalContinuity\.records\.map/);
  assert.match(source,/January is the actual filing month/);
  assert.match(source,/February 24 was the public announcement/);
- assert.match(source,/more than 30 days old/);
+ assert.match(source,/CYTK\x27s August source is over 30 days old/);
  assert.match(source,/not a live FDA deadline guarantee/);
  const d=require("../data/raas-v2-nov14-issuer-goal-continuity.json");
  assert.equal(d.latestDatedIssuerGoalContinuityCases,2);
