@@ -36,7 +36,8 @@ NCT = re.compile(r"NCT\d{8}\Z")
 TICKER = re.compile(r"[A-Z]{1,7}(?:[.-][A-Z]{1,3})?\Z")
 FIELDS = (
     "nctId", "ticker", "company", "registrySourceUrl",
-    "registryResearchStatus", "registryResearchPhase",
+    "registryResearchStatus", "rosterOriginallyRecordedStatus",
+    "registrySourceStatusChanged", "registryResearchPhase",
     "registrySnapshotAsOf", "registryCurrentActive",
     "sourceRegisteredPhase3", "marketCapSourceStatus",
     "marketCapSourceUrl", "marketCapCheckedAt",
@@ -138,12 +139,11 @@ def build(
         ids.add(nct)
         c = caps.get(ticker)
         status = (e.get("registryStatus") or "").strip().upper()
-        if status and roster[nct]["status"] != status:
-            # Registry index is refreshed nightly; do not silently substitute
-            # the older roster's status, even when classifications differ.
-            research_status = status
-        else:
-            research_status = roster[nct]["status"]
+        original_status = roster[nct]["status"]
+        research_status = status or original_status
+        source_status_changed = bool(status and original_status != status)
+        # The dated CT.gov source supersedes the historical roster status,
+        # while the discrepancy remains explicit per NCT.
         phase3 = "PHASE3" in (e.get("registeredPhases") or [])
         active = research_status in ACTIVE_STATUSES
         cap_status = c["status"] if c else "NO_VERIFIED_MARKET_CAP"
@@ -167,12 +167,16 @@ def build(
             ]
             if not interventions or not conditions:
                 missing.append("REGISTRY_DRUG_OR_INDICATION_UNIDENTIFIED")
+            if source_status_changed:
+                missing.append("ORIGINAL_ROSTER_STATUS_DIFFERS_FROM_CURRENT_REGISTRY")
             stage = "SOURCE_ACTIVE_PHASE3_CAP_SCREENED_NOT_FDA_ELIGIBLE"
             priority = "1_SOURCE_CONFIRMED_PHASE3_CAP_PENDING_FDA_AND_SCIENCE"
         else:
             missing = []
             if not active:
                 missing.append("REGISTRY_TRIAL_NOT_IN_ACTIVE_STAGE")
+            if source_status_changed:
+                missing.append("ORIGINAL_ROSTER_STATUS_DIFFERS_FROM_CURRENT_REGISTRY")
             if not phase3:
                 missing.append("EXACT_REGISTRY_PHASE3_NOT_VERIFIED")
             if not fresh:
@@ -189,6 +193,8 @@ def build(
             "nctId": nct, "ticker": ticker, "company": roster[nct]["company"],
             "registrySourceUrl": e["sourceUrl"],
             "registryResearchStatus": research_status,
+            "rosterOriginallyRecordedStatus": original_status,
+            "registrySourceStatusChanged": source_status_changed,
             "registryResearchPhase": ";".join(e.get("registeredPhases") or []),
             "registrySnapshotAsOf": index["sourceAsOf"],
             "registryCurrentActive": active,
@@ -230,6 +236,10 @@ def build(
         "minMarketCapUsd": MIN_CAP, "maxMarketCapUsd": MAX_CAP,
         "researchTrials": len(records),
         "registryActiveTrials": sum(r["registryCurrentActive"] for r in records),
+        "historicalRosterActiveTrialCount": sum(
+            r["rosterOriginallyRecordedStatus"] in ACTIVE_STATUSES for r in records),
+        "registryStatusChangesSinceOriginalRoster": sum(
+            r["registrySourceStatusChanged"] for r in records),
         "sourcePhase3Trials": sum(r["sourceRegisteredPhase3"] for r in records),
         "freshVerifiedCapInRangeTrials": sum(r["marketCapIn300mTo10bRange"] for r in records),
         "sourceActivePhase3CapResearchCandidates": len(qualified),
@@ -250,7 +260,9 @@ def build(
             "pathway, exact drug-indication/application identity, live PDUFA "
             "or 30/30 RAAS validation. Unknown or stale cap is N/A, not an "
             "exclusion based on clinical merit. The full historical universe "
-            "is preserved including inactive and out-of-scope NCTs."
+            "is preserved including inactive and out-of-scope NCTs. "
+            "Changes versus the older roster status are flagged explicitly; "
+            "dated registry source status takes precedence."
         ),
     }
     return records, summary
