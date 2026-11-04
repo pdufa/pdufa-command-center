@@ -101,3 +101,20 @@ test("November 14 CYTK and SMMT have independent Phase 3 trial links but no cert
  assert.ok(source.includes("nov14Triangulation.records.map"));
  assert.ok(source.includes("this does not verify the pending supplement number"));
 });
+
+test("FDA S-001 REMS approval is not the pending MAPLE-HCM FDA outcome",()=>{
+ const by=Object.fromEntries(nov14.records.map(r=>[r.ticker,r]));
+ assert.equal(by.CYTK.fdaPreviouslyApprovedUnrelatedSupplementNumber,"S-001");
+ assert.equal(by.CYTK.fdaPreviouslyApprovedUnrelatedSupplementApprovalDate,"2026-02-05");
+ assert.equal(by.CYTK.fdaPreviouslyApprovedUnrelatedSupplementPurpose,"REMS_MODIFICATION_NOT_MAPLE_HCM");
+ assert.equal(by.CYTK.fdaPreviouslyApprovedS001IsNov14PendingMapleHcmSupplement,false);
+ assert.equal(by.CYTK.fdaPreviouslyApprovedS001EstablishesNov14FDAOutcome,false);
+ assert.equal(by.CYTK.specificPendingMAPLESupplementNumberIndependentlyVerified,false);
+ assert.equal(by.SMMT.fdaOSStatisticalSignificanceRequirementReportedBySponsor,true);
+ assert.equal(by.SMMT.pivotalPrimaryOverallSurvivalStatisticallySignificantAtPrimaryAnalysis,false);
+ assert.equal(by.SMMT.pivotalPrimaryOverallSurvivalReportedPValue,0.057);
+ assert.equal(by.SMMT.fdaOSRequirementAndStudyDataAutomaticallyEstablishCRL,false);
+ assert.match(source,/CYTK FDA mismatch guard/);
+ assert.match(source,/SMMT FDA evidence gap/);
+ assert.match(source,/not a CRL forecast or FDA outcome/);
+});
