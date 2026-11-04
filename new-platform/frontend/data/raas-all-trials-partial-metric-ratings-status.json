@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "RAAS_ALL_NCTS_PARTIAL_BENCHMARK_REVIEWED_METRICS_NOT_FDA_PREDICTIONS",
-  "registrySourceAsOf": "2026-11-04T23:13:43+00:00",
+  "registrySourceAsOf": "2026-11-04T23:23:51+00:00",
   "reviewSourceAsOf": "2026-11-04",
   "researchTrials": 762,
   "trialStageRows": 1524,
