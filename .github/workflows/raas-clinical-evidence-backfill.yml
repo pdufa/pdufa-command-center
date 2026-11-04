@@ -42,6 +42,9 @@ jobs:
           python -m unittest discover -s tests -p test_raas_registry_evidence_harvest.py -v
           python -m py_compile scripts/raas_registry_evidence_harvest.py scripts/raas_registry_evidence_summary.py scripts/raas_registry_evidence_index.py
           python -m unittest discover -s tests -p test_raas_registry_evidence_index.py -v
+      - name: Verify real committed source receipts generate complete RAAS index
+        if: github.event_name == 'pull_request'
+        run: python scripts/raas_registry_evidence_index.py
           python -m unittest discover -s tests -p test_raas_registry_evidence_summary.py -v
       - name: Fetch all current research NCTs, including 35 gaps
         if: github.event_name != 'pull_request'
