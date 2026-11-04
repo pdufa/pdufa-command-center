@@ -9,8 +9,10 @@ on:
       - scripts/raas_registry_evidence_summary.py
       - scripts/raas_registry_evidence_index.py
       - scripts/raas_review_worklist.py
+      - scripts/raas_trial_score_ledger.py
       - tests/test_raas_registry_evidence_summary.py
       - tests/test_raas_review_worklist.py
+      - tests/test_raas_trial_score_ledger.py
       - tests/test_raas_registry_evidence_index.py
       - tests/test_raas_registry_evidence_harvest.py
       - data/raas_registry_missing_backfill.json
@@ -22,8 +24,10 @@ on:
       - scripts/raas_registry_evidence_summary.py
       - scripts/raas_registry_evidence_index.py
       - scripts/raas_review_worklist.py
+      - scripts/raas_trial_score_ledger.py
       - tests/test_raas_registry_evidence_summary.py
       - tests/test_raas_review_worklist.py
+      - tests/test_raas_trial_score_ledger.py
       - data/raas_registry_missing_backfill.json
       - .github/workflows/raas-clinical-evidence-backfill.yml
 permissions:
@@ -44,14 +48,16 @@ jobs:
       - name: Validate NCT identity, evidence flags and fail-closed records
         run: |
           python -m unittest discover -s tests -p test_raas_registry_evidence_harvest.py -v
-          python -m py_compile scripts/raas_registry_evidence_harvest.py scripts/raas_registry_evidence_summary.py scripts/raas_registry_evidence_index.py scripts/raas_review_worklist.py
+          python -m py_compile scripts/raas_registry_evidence_harvest.py scripts/raas_registry_evidence_summary.py scripts/raas_registry_evidence_index.py scripts/raas_review_worklist.py scripts/raas_trial_score_ledger.py
           python -m unittest discover -s tests -p test_raas_registry_evidence_index.py -v
           python -m unittest discover -s tests -p test_raas_review_worklist.py -v
+          python -m unittest discover -s tests -p test_raas_trial_score_ledger.py -v
       - name: Verify real committed source receipts generate complete RAAS index
         if: github.event_name == 'pull_request'
         run: |
           python scripts/raas_registry_evidence_index.py
           python scripts/raas_review_worklist.py
+          python scripts/raas_trial_score_ledger.py
           python -m unittest discover -s tests -p test_raas_registry_evidence_summary.py -v
       - name: Fetch all current research NCTs, including 35 gaps
         if: github.event_name != 'pull_request'
@@ -69,6 +75,7 @@ jobs:
           python scripts/raas_registry_evidence_summary.py
           python scripts/raas_registry_evidence_index.py
           python scripts/raas_review_worklist.py
+          python scripts/raas_trial_score_ledger.py
           python - <<'PY'
           import json
           from pathlib import Path
@@ -83,7 +90,7 @@ jobs:
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- data/raas_registry_live_evidence.json new-platform/frontend/data/raas-registry-evidence-status.json new-platform/frontend/public/raas-registry-evidence-index.json new-platform/frontend/public/raas-source-review-worklist.csv new-platform/frontend/data/raas-source-review-worklist-status.json
+          git add -- data/raas_registry_live_evidence.json new-platform/frontend/data/raas-registry-evidence-status.json new-platform/frontend/public/raas-registry-evidence-index.json new-platform/frontend/public/raas-source-review-worklist.csv new-platform/frontend/data/raas-source-review-worklist-status.json new-platform/frontend/public/raas-trial-score-ledger.csv new-platform/frontend/data/raas-trial-score-ledger-status.json
           if git diff --cached --quiet; then
             echo "No new ClinicalTrials.gov evidence captured."
             exit 0
@@ -108,5 +115,7 @@ jobs:
             new-platform/frontend/public/raas-registry-evidence-index.json
             new-platform/frontend/public/raas-source-review-worklist.csv
             new-platform/frontend/data/raas-source-review-worklist-status.json
+            new-platform/frontend/public/raas-trial-score-ledger.csv
+            new-platform/frontend/data/raas-trial-score-ledger-status.json
           if-no-files-found: warn
           retention-days: 30
