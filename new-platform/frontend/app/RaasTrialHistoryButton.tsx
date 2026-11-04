@@ -12,7 +12,8 @@ const ledger=parseRaasTrialHistory(savedHistory);
 const stageName=(s:RaasStage)=>s==="pre"?"TOP":"BOTTOM";
 const kindName=(k:string)=>({
  FIRST_CAPTURE:"First saved evidence",EVIDENCE_UPDATED:"Evidence updated",
- STAGE_ADDED:"Trial entered another stage",SCORE_UPDATED:"Score updated"
+ STAGE_ADDED:"Trial entered another stage",SCORE_UPDATED:"Overall score updated",
+ METRIC_SCORE_UPDATED:"Experimental component score updated"
 } as Record<string,string>)[k]||k;
 
 export default function RaasTrialHistoryButton({row,bucket}:{
