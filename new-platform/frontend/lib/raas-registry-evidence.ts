@@ -90,8 +90,11 @@ export function registryTrialFor(
  const found=index.records.find(x=>x.nctId===trial.nctId);
  return found&&sameTrial(found,trial)?found:null;
 }
-export function registryMetricLeads(e:RegistryTrialEvidence|null,stage:RaasStage):RegistryMetricLead[]{
- if(!e)return [];
+export function registryMetricLeads(
+ e:RegistryTrialEvidence|null,stage:RaasStage,
+ trial:{nctId:string;ticker:string;drug?:string}
+):RegistryMetricLead[]{
+ if(!e||!sameTrial(e,trial))return [];
  const leads:RegistryMetricLead[]=[];
  const base={sourceUrl:e.sourceUrl,measurement:null as null};
  // A trial's registered design can inform the pre-readout DESIGN review,
