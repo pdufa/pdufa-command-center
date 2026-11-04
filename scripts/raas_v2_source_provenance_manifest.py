@@ -29,6 +29,7 @@ EXPECTED_FILES = (
     "raas-v2-prospective-source-readiness.json",
     "raas-v2-prospective-source-review.csv",
     "raas-v2-openfda-application-identity-watch.json",
+    "raas-v2-sec-nov14-new-filing-review-leads.json",
 )
 
 
@@ -184,16 +185,62 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
                 for c in watch["smmt"]["approvedProductIngredientSearch"][
                     "matchingPublishedBlaCandidatesNeedIndependentReview"]),
             "PUBLIC_FDA_WATCH_CANNOT_PROMOTE_RESEARCH")
+    sec=json.loads((root/"raas-v2-sec-nov14-new-filing-review-leads.json").read_text("utf-8"))
+    require(isinstance(sec,dict) and sec.get("scope")==
+        "RAAS_V2_SEC_NOV14_ISSUER_RECENT_FILINGS_LEADS_NOT_FDA_DECISIONS"
+        and sec.get("status")==
+        "ISSUER_FILING_LEADS_ONLY_NO_PDUFA_EXTENSION_VERIFICATION"
+        and sec.get("monitoredIssuerFamilies")==2
+        and sec.get("independentlyVerifiedNoFurtherFDAExtensions")==0
+        and sec.get("independentlyVerifiedCurrentFDAApplicationCycles")==0
+        and sec.get("newThreeWayForecastsFromFilings")==0
+        and sec.get("approvedRAASMetricCalibrations")==0
+        and type(sec.get("rows")) is list and len(sec["rows"])==2
+        and {x.get("ticker") for x in sec["rows"]}=={"CYTK","SMMT"}
+        and type(sec.get("sourceAvailableCount")) is int
+        and sec["sourceAvailableCount"]==sum(x.get("sourceStatus")=="AVAILABLE"
+            for x in sec["rows"])
+        and sec.get("sourceCoverageStatus")==(
+            "TWO_ISSUER_SOURCES_AVAILABLE" if sec["sourceAvailableCount"]==2
+            else "PARTIAL_ISSUER_SOURCE_ACCESS" if sec["sourceAvailableCount"]==1
+            else "ISSUER_SOURCES_UNAVAILABLE_NOT_ZERO_NEW_FILINGS")
+        and type(sec.get("potentialNewFilingReviewCandidates")) is int
+        and sec["potentialNewFilingReviewCandidates"]==sum(
+            x.get("newerRelevantFormFilingCount",0) for x in sec["rows"])
+        and all(
+            x.get("sourceStatus") in {
+                "AVAILABLE","HTTP_404_NO_PUBLIC_RECORD",
+                "SOURCE_UNAVAILABLE","MALFORMED_RESPONSE"}
+            and x.get("newFilingAutomaticallyMeansPdufaChange") is False
+            and x.get("absenceOfNewFilingProvesNoFDAExtension") is False
+            and x.get("independentlyVerifiedCurrentFDAApplicationCycle") is False
+            and x.get("certifiedFDADeadlineRevision") is False
+            and x.get("newThreeWayPredictionFrozen") is False
+            and type(x.get("newerFilingReviewCandidates")) is list
+            and x.get("newerRelevantFormFilingCount",0)>=len(
+                x["newerFilingReviewCandidates"])
+            and all(
+                z.get("newerThanLastSelectedIssuerGoalSource") is True
+                and z.get("documentReviewedForPdufaGoal") is False
+                and z.get("fdaDeadlineRevisionConfirmed") is False
+                and z.get("pendingFdaApplicationNumberConfirmed") is False
+                and z.get("fdaActionOrPredictionConfirmed") is False
+                for z in x["newerFilingReviewCandidates"])
+            for x in sec["rows"]),
+        "SEC_FILINGS_CANNOT_CERTIFY_FDA_REVIEW_OR_PREDICTIONS")
     t_fda=timestamp(fda["asOfUTC"])
     t_v2=timestamp(v2["evaluatedAtUTC"])
     t_watch=timestamp(watch["checkedAtUTC"])
+    t_sec=timestamp(sec["checkedAtUTC"])
     require(t_fda <= archive_clock and t_v2 <= archive_clock and
-            t_watch <= archive_clock and
+            t_watch <= archive_clock and t_sec <= archive_clock and
             abs((t_fda-t_v2).total_seconds()) <= 600
             and abs((t_watch-t_v2).total_seconds()) <= 3600
             and (archive_clock-t_fda).total_seconds() <= 3600
             and (archive_clock-t_v2).total_seconds() <= 3600
-            and (archive_clock-t_watch).total_seconds() <= 3600,
+            and (archive_clock-t_watch).total_seconds() <= 3600
+            and (archive_clock-t_sec).total_seconds() <= 3600
+            and abs((t_sec-t_v2).total_seconds()) <= 3600,
             "OUTPUT_CLOCK_OR_ORDER_INCONSISTENT")
     with (root/"raas-v2-prospective-source-review.csv").open(newline="",encoding="utf-8") as f:
         csv_rows=list(csv.DictReader(f))
@@ -223,10 +270,13 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
         "independentlyValidatedFDAAccuracyPct":None,
         "approvedRAASMetricCalibrations":0,
         "publicFdaWatchSourceStatus":watch["openFdaSourceStatus"],
+        "secNewIssuerFilingSourceAvailabilityCount":sec["sourceAvailableCount"],
+        "secNewIssuerFilingReviewCandidatesCount":sec["potentialNewFilingReviewCandidates"],
+        "secNewIssuerFilingsConfirmFDARevision":False,
         "publicFdaWatchCurrentMapleSupplementIndependentlyVerified":False,
         "publicFdaWatchCurrentSummitBlaIndependentlyVerified":False,
         "fileDigests":contents,
-        "warning":"This checksum detects post-upload changes to the six output files, but the GitHub Actions artifact can expire or be deleted. It does not independently attest source authenticity, freeze a predicted class, establish FDA outcomes or authorize RAAS V2.",
+        "warning":"This checksum detects post-upload changes to the seven output files, but the GitHub Actions artifact can expire or be deleted. It does not independently attest source authenticity, freeze a predicted class, establish FDA outcomes or authorize RAAS V2.",
     }
 
 
@@ -258,7 +308,7 @@ def main():
         with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
             f.write("\n### RAAS V2 daily research source checksums (NOT frozen forecasts)\n\n"
                     +f"Archived at {stamp} from commit {m['sourceCommitSHA']}.\n\n"
-                    +"6 source files hashed. These are NOT signed prediction receipts.\n")
+                    +"7 source files hashed. These are NOT signed prediction receipts.\n")
 
 
 if __name__=="__main__":
