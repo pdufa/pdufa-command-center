@@ -294,6 +294,12 @@ function GoalAsOfHistory(){
      <p className={css.muted}><strong>Original source:</strong> {c.initialGoalSourceUrl?
       <a href={c.initialGoalSourceUrl} target="_blank" rel="noopener noreferrer">Open dated original announcement</a>:
       "No separate original announcement URL retained; historical attribution not independently verified."}</p>
+     {c.originalGoalSourceCorroborationUrl&&<p className={css.muted} data-raas-original-goal-corroboration={c.ticker}>
+      <strong>Later SEC corroboration:</strong> <a href={c.originalGoalSourceCorroborationUrl} target="_blank" rel="noopener noreferrer">Open dated SEC filing</a>
+      {" "}· first public {c.originalGoalSourceCorroborationFirstPublicDate} ·
+      {" "}<strong>{c.originalGoalCorroborationPublicAtInitialEntry?"Already public at proposed original entry":"NOT public by proposed original T−79 entry"}</strong>.
+      This source must never be backdated into an earlier forecast.
+     </p>}
      {c.revised&&c.revisedGoalSourceUrl&&<p className={css.muted}><strong>Target revision:</strong> <a href={c.revisedGoalSourceUrl} target="_blank" rel="noopener noreferrer">Open dated revised target source</a> · originally announced target moved {c.sourceShiftCalendarDays} calendar days.</p>}
      <p className={css.muted}><strong>Phase 3 public-result source listed:</strong> {c.phase3ReadoutListedDate} · <a href={c.phase3ReadoutSourceUrl} target="_blank" rel="noopener noreferrer">Original clinical source</a>. Independently audited source publication chronology: <strong>not complete</strong>.</p>
      {(c.current.entryIsWeekend||c.current.exitIsWeekend)&&<p className={css.notice}>At least one proposed T−79/T−14 date is a weekend. Exact trading-session normalization, real price verification and slippage are required before any return claim.</p>}
