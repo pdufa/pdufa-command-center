@@ -54,7 +54,10 @@ test("trial-specific BOTTOM clinical measurements are visible but NEVER called R
 });
 test("wrong NCT, ticker or therapy cannot inherit other trial evidence",()=>{
  const exact=get("NCT07363577","LBRX","pre","LB-102 (100 mg tablet) | LB-102 (50 mg tablet)","Schizophrenia");
- assert.equal(exact.graded,1);
+ assert.equal(exact.graded,5);
+ assert.deepEqual(["pre-1-1","pre-1-2","pre-1-4","pre-3-2","pre-4-1"].map(id=>byId(exact,id).status),
+  Array(5).fill("AI_SOURCE_CROSSCHECKED_GRADE"));
+ assert.equal(exact.approvedOverallScore,null);
  const spoof=get("NCT07363577","LBRX","pre","unrelated therapy","Schizophrenia");
  assert.equal(spoof.categories.flatMap(x=>x.rows).filter(x=>x.evidence.length).length,0);
  assert.equal(spoof.graded,0);
