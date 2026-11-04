@@ -43,7 +43,7 @@ function createReceipt(env=process.env){
   runId:env.GITHUB_RUN_ID||null,
   event,
   status:state,
-  liveSourceCollectionAttempted:!isPR,
+  liveResearchStepsEligible:!isPR,
   outputArtifactCount:found.length,
   expectedArtifacts:files,
   missingRequiredArtifacts:isPR?[]:missingRequired,
