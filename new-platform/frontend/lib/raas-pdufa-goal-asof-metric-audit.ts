@@ -216,7 +216,7 @@ export function auditGoalVersionSource(input:unknown):GoalAsOfAudit{
    "The initial PDUFA goal and later revised goal create different T-79/T-14 windows. The revised window is only source-eligible when the revision was already publicly announced at its own entry.",
    "Calendar T-79/T-14 marks may fall on weekends or holidays; proposed next-entry/prior-exit regular-session dates use a dated Nasdaq closure schedule and are not verified executable prices, bars or trades.",
    "Early-close trading sessions and unscheduled closures must be checked against broker bars independently; January 9, 2025 is excluded as an exchange closure, not a valid trade date.",
-   "Some originally announced targets lack a separately saved contemporary original-goal URL; those references are not independently verified.",
+   "Original-goal URLs are retained for all nine selected historical examples, but link presence is not independent evidence validation, complete FDA census coverage or approved RAAS grading.",
    "Even two FDA target and timing metric source candidates do not establish a risk score: statistical holdout, FDA census, adjusted-price checks, capitalization and source completeness remain blocked.",
    "Historical approval counts and RAAS calibrated metric grades remain zero."
   ]};
