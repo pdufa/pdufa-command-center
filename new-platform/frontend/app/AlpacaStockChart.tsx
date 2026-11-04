@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {chartStudiesForWtChecks,WT_CHART_NAMES,type WtChartStudy} from "../lib/wt-chart-indicator-map";
 type Bar={date:string;open:number;high:number;low:number;close:number;volume:number};
-export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source?:string;planned?:boolean;custom?:boolean;id?:string;color?:string};
+export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source?:string;planned?:boolean;custom?:boolean;id?:string;color?:string;visible?:boolean;edited?:boolean;originalDate?:string};
 type Market={provider:string;programId:string;ticker:string;feed:string;coverage:string;status:string;bars:Bar[];asOf:string|null;message:string;researchOnly:boolean};
 type Range="1M"|"3M"|"6M"|"1Y"|"ALL";
 type ChartSeries=WtChartStudy|"ema10"|"ema20"|"ema50"|"macd";
@@ -55,7 +55,7 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[],onMove
  // Reserve proportional calendar space for future FDA deadlines (no invented future prices).
  const timestamp=(date:string)=>Date.parse(date+"T00:00:00Z");
  const firstDate=timestamp(bars[0].date),lastPriceDate=timestamp(bars[bars.length-1].date);
- const visibleMilestones=milestones.filter(m=>/^\d{4}-\d{2}-\d{2}$/.test(m.date)&&timestamp(m.date)>=firstDate&&Number.isFinite(timestamp(m.date)));
+ const visibleMilestones=milestones.filter(m=>m.visible!==false&&/^\d{4}-\d{2}-\d{2}$/.test(m.date)&&timestamp(m.date)>=firstDate&&Number.isFinite(timestamp(m.date)));
  const chartEnd=Math.max(lastPriceDate,...visibleMilestones.map(m=>timestamp(m.date)));
  const dateSpan=Math.max(86400000,chartEnd-firstDate);
  const xDate=(date:string)=>L+(timestamp(date)-firstDate)/dateSpan*span;
@@ -167,7 +167,7 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[],onMove
          fontSize="10" fontWeight="750" fill={ink} stroke="white" strokeWidth="3" paintOrder="stroke">
          {event.chartLabel}
        </text>
-       <title>{event.date+" · "+event.label+" · "+event.detail}</title>
+       <title>{event.date+" · "+event.label+" · "+(event.edited?"USER-EDITED DISPLAY · Original sourced date "+event.originalDate+" · ":"")+event.detail}</title>
      </g>;
    })}
    {finalLabels.map(({name,color,value,fromY,at})=><g key={"name-"+name}
@@ -220,7 +220,7 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[],onMove
      onPointerDown={ev=>{
        if(!onMoveMilestone)return;
        const at=pxForEvent(ev);if(at===null)return;
-       const hit=visibleMilestones.find(e=>e.custom&&e.id&&Math.abs(xDate(e.date)-at)<12);
+       const hit=[...visibleMilestones].reverse().find(e=>e.id&&Math.abs(xDate(e.date)-at)<12);
        if(hit?.id){setDragId(hit.id);setDragX(at);ev.currentTarget.setPointerCapture(ev.pointerId);}
      }}
      onPointerUp={ev=>{
@@ -303,11 +303,12 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
      <p>{error||state?.message||"Requesting market bars from Alpaca. No TradingView, Yahoo or synthetic fallback."}</p></div>}
   {showMilestones&&milestones.length>0&&<div style={{padding:"12px",borderTop:"1px solid #cadde8",background:"#faf8fe"}}>
     <strong>FDA &amp; clinical event markers · source-linked events and separate custom notes</strong>
-    <p style={{fontSize:11,margin:"5px 0 8px"}}>Purple: historical events. Amber dashed: future PDUFA target. Custom annotations use their selected colors and are not verified FDA announcements. When editing, drag a custom marker line horizontally to change its date. Events outside the selected price range remain listed below.</p>
+    <p style={{fontSize:11,margin:"5px 0 8px"}}>Purple: sourced historical events; amber: planned FDA action. Edited display dates and labels do not replace sourced records. In editing mode, drag any visible event line to move its chart date, or use the date field below. A hidden marker stays in this list.</p>
     <ul style={{margin:"0",paddingLeft:18,fontSize:12,lineHeight:1.6}}>
-      {milestones.map(m=><li key={m.date+"|"+m.label}>
+      {milestones.map(m=><li key={m.id||m.date+"|"+m.label}>
         <strong>{m.date}</strong> · {m.source?<a href={m.source} target="_blank" rel="noopener noreferrer">{m.label}</a>:<span>{m.label} <em>(custom, unverified)</em></span>}
-        {m.planned?" · Scheduled target":""}
+        {m.planned?" · Scheduled target":""}{m.visible===false?" · Hidden from plot":""}
+        {m.edited&&m.originalDate&&<div style={{fontSize:11,color:"#a44311"}}>User-edited display; source-verified original date: {m.originalDate}</div>}
         <div style={{color:"#5b6473",fontSize:11}}>{m.detail}</div>
       </li>)}
     </ul>
