@@ -7,6 +7,7 @@ on:
       - .github/workflows/raas-evidence-snapshot-capture.yml
       - scripts/check_phase3_original_registry_pilot.py
       - scripts/raas_population_coverage_audit.py
+      - scripts/raas_post_clinical_provisional_capture.cjs
       - tests/test_raas_population_coverage_audit.py
   workflow_dispatch:
   schedule:
@@ -15,6 +16,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/raas-evidence-snapshot-capture.yml
+      - scripts/raas_post_clinical_provisional_capture.cjs
 permissions:
   contents: read
 concurrency:
@@ -40,6 +42,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_raas_population_coverage_audit.py' -v
           python -m py_compile scripts/raas_population_coverage_audit.py
           node --check scripts/raas_trial_provisional_metric_capture.cjs
+          node --check scripts/raas_post_clinical_provisional_capture.cjs
 
   verified-capture:
     if: github.event_name != 'pull_request'
@@ -66,10 +69,13 @@ jobs:
           node --check scripts/raas_trial_history_capture.cjs
           node --check scripts/raas_trial_provisional_metric_capture.cjs
           node --check scripts/raas_self_audit_history_capture.cjs
+          node --check scripts/raas_post_clinical_provisional_capture.cjs
       - name: Preserve genuine stage-independent trial evidence change history
         run: node scripts/raas_trial_history_capture.cjs
       - name: Preserve timestamped research-only numerical component changes
         run: node scripts/raas_trial_provisional_metric_capture.cjs
+      - name: Capture independent BOTTOM source-supported experimental clinical contrast grades
+        run: node scripts/raas_post_clinical_provisional_capture.cjs
       - name: Preserve RAAS system validation-source history separately
         run: node scripts/raas_self_audit_history_capture.cjs
       - name: Audit EVERY source NCT and reconcile 741 against evolving census
