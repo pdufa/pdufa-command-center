@@ -25,6 +25,12 @@ SEARCH = 'application_number:"NDA219083"'
 URL = "https://api.fda.gov/drug/drugsfda.json?" + urllib.parse.urlencode(
     {"search": SEARCH, "limit": "1"}
 )
+# A second public search finds approved/publicly indexed ingredient matches.
+# It does NOT index confidential pending BLA submissions or identify a cycle.
+SMMT_SEARCH = 'products.active_ingredients.name:"IVONESCIMAB"'
+SMMT_URL = "https://api.fda.gov/drug/drugsfda.json?" + urllib.parse.urlencode(
+    {"search": SMMT_SEARCH, "limit": "25"}
+)
 MAX_BYTES = 2_000_000
 
 
@@ -80,10 +86,105 @@ def date_string(raw: object) -> str | None:
         return None
 
 
+
+def inspect_smmt_public_ingredient(payload: dict | None, as_of: dt.date,
+                                   source_status: str, detail: str | None) -> dict:
+    """Source candidates only. An absent/returned BLA never proves pending status."""
+    require(source_status in {
+        "AVAILABLE", "HTTP_404_NO_PUBLIC_RECORD", "SOURCE_UNAVAILABLE",
+        "MALFORMED_RESPONSE", "NOT_QUERIED"}, "SMMT_SOURCE_STATUS_INVALID")
+    require(source_status == "AVAILABLE" or payload is None,
+            "SMMT_SOURCE_STATUS_PAYLOAD_MISMATCH")
+    candidates = []
+    total = None
+    last_updated = None
+    result_count = 0
+    if source_status == "AVAILABLE":
+        require(isinstance(payload, dict) and
+                isinstance(payload.get("results"), list) and
+                len(payload["results"]) <= 25,
+                "SMMT_INGREDIENT_RESPONSE_SCHEMA_INVALID")
+        meta = payload.get("meta")
+        if isinstance(meta, dict):
+            last_updated = str(meta.get("last_updated") or "")[:100] or None
+            rs = meta.get("results")
+            if isinstance(rs, dict) and type(rs.get("total")) is int:
+                total = rs["total"]
+        rows = payload["results"]
+        result_count = len(rows)
+        for row in rows:
+            require(isinstance(row, dict), "SMMT_INGREDIENT_ROW_NOT_OBJECT")
+            products = row.get("products")
+            require(isinstance(products, list), "SMMT_INGREDIENT_PRODUCTS_MISSING")
+            ingredient_match = False
+            for product in products:
+                require(isinstance(product, dict), "SMMT_INGREDIENT_PRODUCT_NOT_OBJECT")
+                active = product.get("active_ingredients", [])
+                require(isinstance(active, list), "SMMT_ACTIVE_INGREDIENTS_NOT_LIST")
+                for ingredient in active:
+                    require(isinstance(ingredient, dict), "SMMT_INGREDIENT_NOT_OBJECT")
+                    name = ingredient.get("name")
+                    if isinstance(name, str) and name.strip().upper() == "IVONESCIMAB":
+                        ingredient_match = True
+            if not ingredient_match:
+                # Fuzzy/aggregated source search is not a license identifier.
+                continue
+            application_number = row.get("application_number")
+            # Only a syntactically plausible *published* BLA is shown as
+            # research evidence; it still needs original FDA documents.
+            if not isinstance(application_number, str) or not re.fullmatch(
+                    r"BLA[0-9]{6}", application_number):
+                continue
+            submissions = row.get("submissions", [])
+            require(isinstance(submissions, list),
+                    "SMMT_INGREDIENT_SUBMISSIONS_NOT_LIST")
+            dates = []
+            for x in submissions:
+                require(isinstance(x, dict),
+                        "SMMT_INGREDIENT_SUBMISSION_NOT_OBJECT")
+                dated = date_string(x.get("submission_status_date"))
+                if dated is not None and dated <= as_of.isoformat():
+                    dates.append(dated)
+            candidates.append({
+                "applicationNumberPubliclyIndexed": application_number,
+                "fdaIndexedSponsorName": str(row.get("sponsor_name") or "")[:120],
+                "matchedActiveIngredient": "IVONESCIMAB",
+                "latestPublicSubmissionStatusDateNotIndependentlyAdjudicated":
+                    max(dates) if dates else None,
+                "pendingSMMTBlaNumberIndependentlyVerified": False,
+                "sameEGFRmNSCLCHarmonIReviewCycleVerified": False,
+                "fdaOutcomeFromPublicProductIndexVerified": False,
+            })
+    candidates.sort(key=lambda x:x["applicationNumberPubliclyIndexed"])
+    require(len(candidates) <= 25, "SMMT_CANDIDATE_OVERFLOW")
+    return {
+        "ingredientQueryUrl": SMMT_URL,
+        "publicSourceStatus": source_status,
+        "publicSourceDetail": (detail or "")[:250],
+        "publicDatasetLastUpdatedAsReported": last_updated,
+        "resultsReturnedByFDA": result_count,
+        "fdaReportedTotalMatches": total,
+        "fdaResultPageMayBeTruncated": total is not None and total > result_count,
+        "matchingPublishedBlaCandidatesNeedIndependentReview": candidates,
+        "fdaPendingBlaAbsentFromPublicIndexProvesNoSubmission": False,
+        "fdaPublicIndexedCandidateIndependentlyMatchesSummitHARMONi": False,
+        "fdaOriginalBlaCycleAndGoalVerified": False,
+        "fdaApprovalCrlOrExtensionVerifiedFromIngredientSearch": False,
+        "warning": "Publicly indexed licensed-product ingredient searches may lag, "
+                   "omit pending BLA numbers or return unrelated companies/cycles. "
+                   "Even a matching drug name and BLA number is an unverified "
+                   "document lead, not evidence of this Summit HARMONi review "
+                   "or a prospective FDA prediction.",
+    }
+
+
 def inspect_response(payload: dict | None, checked_at: str,
                      source_status: str = "AVAILABLE",
                      source_detail: str | None = None,
-                     dossier: dict | None = None) -> dict:
+                     dossier: dict | None = None,
+                     smmt_payload: dict | None = None,
+                     smmt_status: str = "NOT_QUERIED",
+                     smmt_detail: str | None = None) -> dict:
     """Fail closed on malformed FDA responses and never auto-identify MAPLE."""
     now = observed_date(checked_at)
     d = dossier or json.loads(DOSSIER.read_text("utf-8"))
@@ -142,6 +243,8 @@ def inspect_response(payload: dict | None, checked_at: str,
                 if not x["isPreviouslyApprovedUnrelatedRemsS001"]]
     sm = items["SMMT|IVONESCIMAB_20261114"]
     cy = items["CYTK|MYQORZO_HCM_20261114"]
+    smmt_public = inspect_smmt_public_ingredient(
+        smmt_payload, now, smmt_status, smmt_detail)
     return {
         "schemaVersion": 1,
         "scope": SCOPE,
@@ -149,6 +252,7 @@ def inspect_response(payload: dict | None, checked_at: str,
         "checkedAtUTC": checked_at,
         "issuerReportedGoalDate": "2026-11-14",
         "openFdaQueryUrl": URL,
+        "smmtPublicIngredientQueryUrl": SMMT_URL,
         "openFdaSourceStatus": state,
         "openFdaErrorOrDetail": (source_detail or "")[:400],
         "openFdaLastUpdatedAsReported": str(meta.get("last_updated") or "")[:100] or None,
@@ -172,6 +276,7 @@ def inspect_response(payload: dict | None, checked_at: str,
             "fdaPublicOpenFdaNoMatchingApprovedBlaProvesNoPendingBla": False,
             "independentFdaOriginalCycleOrExtensionHistoryVerified": False,
             "sourceForNov14IssuerGoal": sm["issuerGoalSourceUrl"],
+            "approvedProductIngredientSearch": smmt_public,
             "note": "Without an independently published numbered pending BLA, the "
                     "approved-product index cannot certify Summit's current "
                     "original review cycle; absence is not negative evidence.",
@@ -190,8 +295,9 @@ def inspect_response(payload: dict | None, checked_at: str,
     }
 
 
-def fetch_public_parent() -> tuple[dict | None, str, str | None]:
-    request = urllib.request.Request(URL, headers={
+def fetch_public_parent(url: str = URL) -> tuple[dict | None, str, str | None]:
+    require(url in {URL, SMMT_URL}, "FDA_URL_NOT_IN_ALLOWLIST")
+    request = urllib.request.Request(url, headers={
         "User-Agent": "RAAS-source-readiness/1.0 (research-only; GitHub Actions)",
         "Accept": "application/json"})
     try:
@@ -213,7 +319,11 @@ def fetch_public_parent() -> tuple[dict | None, str, str | None]:
 def main() -> None:
     now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     payload, status, detail = fetch_public_parent()
-    result = inspect_response(payload, now, status, detail)
+    smmt_payload, smmt_status, smmt_detail = fetch_public_parent(SMMT_URL)
+    result = inspect_response(
+        payload, now, status, detail,
+        smmt_payload=smmt_payload, smmt_status=smmt_status,
+        smmt_detail=smmt_detail)
     path = Path(os.environ.get("RAAS_OPENFDA_APPLICATION_WATCH_JSON",
         "raas-v2-openfda-application-identity-watch.json"))
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -221,6 +331,7 @@ def main() -> None:
                     encoding="utf-8")
     print(json.dumps({k: result[k] for k in
         ("status", "checkedAtUTC", "openFdaSourceStatus",
+         "smmtPublicIngredientQueryUrl",
          "independentlyCertifiedCurrentFdaReviewCycles",
          "independentlyAdjudicatedNov14FdaActions",
          "newImmutableThreeWayPredictions")}, sort_keys=True))
