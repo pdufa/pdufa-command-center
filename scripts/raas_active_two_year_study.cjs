@@ -14,6 +14,7 @@ const legacy=require("./raas_alpaca_ten_year_study.cjs");
 const prior=require("./raas_alpaca_historical_price_study.cjs");
 const rawCap=require("./raas_raw_entry_cap_research.cjs");
 const secondClose=require("./raas_independent_entry_close_research.cjs");
+const adjustmentFactors=require("./raas_adjustment_factor_window_audit.cjs");
 const root=path.resolve(__dirname,"..");
 const CONFIG="new-platform/frontend/data/raas-active-study-config.json";
 const INTAKE="new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json";
@@ -267,6 +268,11 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
   }):null;
  const independentEntryCloseResearch=rawEntryCapResearch?
   secondClose.auditIndependentEntryCloses(rawEntryCapResearch,independentEntryCloseFeed):null;
+ const adjustmentFactorWindowAudit=sourceCapLeads.length?
+  adjustmentFactors.auditWindowFactors({
+   leads:sourceCapLeads,adjustedBarsByEvent:priceData,rawBarsByEvent:rawPriceData,
+   entryLeadTradingSessions:79,exitLeadTradingSessions:14
+  }):null;
  const arithmetic=grid.filter(w=>w.status==="POINT_IN_TIME_PRICE_RESEARCH");
  const ranking=selectResearchWindow(grid,audit.complete,policy);
  const years=Object.fromEntries(policy.years.map(y=>[y,{
@@ -290,13 +296,18 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
   sourceLeadsExamined:sourceLeads.length,
   additionalSourceLeadPriceCandidates:additionalSourceLeads.length,
   sourceReviewedIntakeCases:audit.accepted.length,rejectedIntake:audit.rejected,
-  rawEntryCapResearch,independentEntryCloseResearch,
+  rawEntryCapResearch,independentEntryCloseResearch,adjustmentFactorWindowAudit,
   rawPriceResearchEventsCollected:rawPriceData.size,
   rawAdjustedSameSessionPairs:rawEntryCapResearch?.sameSessionRawAdjustedPricePairs??0,
   provisionalHistoricalEntryCaps:rawEntryCapResearch?.provisionalCapEstimates??0,
   independentlyVerifiedHistoricalEntryCaps:0,
   nominalIndependentEntryPriceMatches:independentEntryCloseResearch?.matchingIndependentNominalCloses??0,
   independentAdjustedPriceVerifiedPairs:0,
+  sameVendorCompleteAdjustmentWindows:adjustmentFactorWindowAudit?.casesWithCompleteSameVendorPriceWindow??0,
+  sameVendorAlignedWindowSessions:adjustmentFactorWindowAudit?.pairedSessionsInSelectedWindows??0,
+  adjustmentFactorCandidateSteps:adjustmentFactorWindowAudit?.totalFactorStepCandidates??0,
+  missingRawSessionsInsideWindow:adjustmentFactorWindowAudit?.missingRawSessionsInSelectedWindows??0,
+  independentlyVerifiedCorporateActionHistories:0,
   secCoverOlderThan30DaysAtEntry:rawEntryCapResearch?.secCoverOlderThan30DaysAtEntry??0,
   secCoverOlderThan90DaysAtEntry:rawEntryCapResearch?.secCoverOlderThan90DaysAtEntry??0,
   subsequentSECShareCountChanges:rawEntryCapResearch?.laterSECShareCountChangeObserved??0,
@@ -327,6 +338,7 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
    "Source-linked additional price fetches DO NOT count as source-reviewed intake, full event census or eligible PDUFA trading cases.",
    "Alpaca raw and adjusted SIP data are one vendor: raw close times SEC cover shares is a provisional cap estimate, never independently certified capitalization or adjusted return.",
    "Independent nominal third-party closing-price matches do not audit adjusted performance or corporate actions, even when the quote agrees with the raw Alpaca close.",
+   "Full T-79 to T-14 Alpaca raw/all factor ratios are heuristic investigation leads only; flat ratios do not certify the absence of corporate actions.",
    "The selection algorithm never approves any RAAS numerical metric or a trading optimum without the complete cohort and additional independent statistical/corporate-action review."]};
 }
 function main(){
@@ -358,6 +370,11 @@ function main(){
    secCoverOlderThan30Days:r.secCoverOlderThan30DaysAtEntry,
    secCoverOlderThan90Days:r.secCoverOlderThan90DaysAtEntry,
    laterSECShareChanges:r.subsequentSECShareCountChanges,
+   fullSameVendorAdjustmentWindows:r.sameVendorCompleteAdjustmentWindows,
+   rawAdjustedWindowSessionPairs:r.sameVendorAlignedWindowSessions,
+   potentialFactorAdjustmentSteps:r.adjustmentFactorCandidateSteps,
+   missingRawSessionsInWindow:r.missingRawSessionsInsideWindow,
+   corporateActionHistoriesIndependentlyVerified:r.independentlyVerifiedCorporateActionHistories,
    provisionalGridRows:r.provisionalWindowArithmeticRows,
    validatedTrades:r.independentTradingCasesValidated,
    approvedRaasScores:r.approvedRaasMetricCalibrations,
