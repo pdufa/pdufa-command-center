@@ -31,7 +31,7 @@ export default function RaasMetricGradebook({row,bucket}:{
  const book=useMemo(()=>open?buildRaasMetricGradebook({
   nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication
- },activeStage,registry):null,[open,activeStage,registry,row.nctId,row.ticker,row.evidence?.drug,row.evidence?.indication]);
+ },activeStage,registry,stageVerified):null,[open,activeStage,registry,stageVerified,row.nctId,row.ticker,row.evidence?.drug,row.evidence?.indication]);
  useEffect(()=>{
   if(!open)return;
   const handler=(event:KeyboardEvent)=>{if(event.key==="Escape")setOpen(false);};
@@ -94,6 +94,11 @@ export default function RaasMetricGradebook({row,bucket}:{
       <span data-raas-quantitative-clinical-facts={row.nctId}>
        <strong>{book.registryNumericObservationCount}</strong> trial-matched numerical clinical observations
        {" "}· measured facts, not efficacy ratings
+      </span>
+      <span data-raas-full-reviewed-score={row.nctId}>
+       <strong>{book.reviewedCandidate.fullResearchScore===null?"N/A":book.reviewedCandidate.fullResearchScore+"/100"}</strong>
+       {" "}· Full 30-metric research RAAS candidate · {book.reviewedCandidate.reviewedCount}/30
+       {" "}source-reviewed grades · not independently validated, not an FDA probability
       </span>
       <span data-raas-raw-design-diagnostic={row.nctId}>
        <strong>Raw design: {book.rawDesignDiagnostic?.score===null||!book.rawDesignDiagnostic?"N/A":book.rawDesignDiagnostic.score+"/100"}</strong>
