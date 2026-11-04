@@ -74,6 +74,10 @@ def summarize(payload, roster, gap_ids):
     summary={
         "researchTrials":len(roster),
         "sourceRecordsStored":len(observed),
+        "trialsWithRegisteredConditions":sum(bool(r.get("registeredConditions")) for r in observed.values()),
+        "trialsWithRegisteredInterventionsAndConditions":sum(
+            bool(r.get("registeredInterventions")) and bool(r.get("registeredConditions"))
+            for r in observed.values()),
         "postedRegistryResults":posted,
         "protocolOnly":len(observed)-posted,
         "trialsWithPrimaryRegistryAnalyses":posted_analyses,
