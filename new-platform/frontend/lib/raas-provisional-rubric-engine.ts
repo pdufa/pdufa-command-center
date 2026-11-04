@@ -50,7 +50,7 @@ export type RaasProvisionalReview={
  assessedAt:string;sourceDate:string;sourceUrl:string;
  benchmarkSourceUrl:string;benchmarkId:string;benchmarkContext:string;
  observedResult:string;uncertaintyReview:string;criticalRiskReview:string;
- reviewerMethod:string;independentReview:"PASSED";
+ reviewerMethod:string;independentReview:"PASSED"|"AI_SOURCE_CROSSCHECKED";
 };
 export type RaasProvisionalReviewedGrade={
  metricId:string;stage:RaasStage;score:0|25|50|75|100;
@@ -58,6 +58,7 @@ export type RaasProvisionalReviewedGrade={
  sourceUrl:string;sourceDate:string;assessedAt:string;
  explanation:string;benchmarkSourceUrl:string;reviewMethod:string;
  approvedForComposite:false;
+ reviewClass:"INDEPENDENT_REVIEW"|"AI_SOURCE_CROSSCHECKED";
 };
 const isoDay=(x:string)=>/^\d{4}-\d{2}-\d{2}$/.test(x)&&
  !Number.isNaN(Date.parse(x+"T00:00:00Z"))&&new Date(x+"T00:00:00Z").toISOString().slice(0,10)===x;
@@ -73,7 +74,7 @@ export function provisionalReviewedGrade(
  if(!rubric||review.nctId!==trial.nctId||!exact(review.ticker,trial.ticker)||
   !exact(review.drug,trial.drug)||!exact(review.indication,trial.indication)||
   review.stage!==stage||!(review.finding in RAAS_PROVISIONAL_FINDINGS)||
-  review.independentReview!=="PASSED"||!isoDay(review.assessedAt)||
+  !["PASSED","AI_SOURCE_CROSSCHECKED"].includes(review.independentReview)||!isoDay(review.assessedAt)||
   !isoDay(review.sourceDate)||review.sourceDate>review.assessedAt||
   review.assessedAt>asOf||!secure(review.sourceUrl)||!secure(review.benchmarkSourceUrl)||
   !explicit(review.benchmarkId)||!explicit(review.benchmarkContext)||
@@ -87,7 +88,8 @@ export function provisionalReviewedGrade(
   benchmarkSourceUrl:review.benchmarkSourceUrl,reviewMethod:review.reviewerMethod,
   explanation:review.observedResult+" | Benchmark: "+review.benchmarkContext+
    " | Uncertainty: "+review.uncertaintyReview+" | Critical risks: "+review.criticalRiskReview,
-  approvedForComposite:false};
+  approvedForComposite:false,
+  reviewClass:review.independentReview==="PASSED"?"INDEPENDENT_REVIEW":"AI_SOURCE_CROSSCHECKED"};
 }
 /** An experimental completeness diagnostic. NOT an overall RAAS, not a
  * point-in-time investment recommendation. Null unless every metric is graded.
