@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {chartStudiesForWtChecks,WT_CHART_NAMES,type WtChartStudy} from "../lib/wt-chart-indicator-map";
 type Bar={date:string;open:number;high:number;low:number;close:number;volume:number};
-export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source:string;planned?:boolean};
+export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source?:string;planned?:boolean;custom?:boolean;id?:string;color?:string};
 type Market={provider:string;programId:string;ticker:string;feed:string;coverage:string;status:string;bars:Bar[];asOf:string|null;message:string;researchOnly:boolean};
 type Range="1M"|"3M"|"6M"|"1Y"|"ALL";
 type ChartSeries=WtChartStudy|"ema10"|"ema20"|"ema50"|"macd";
@@ -35,8 +35,10 @@ function compute(raw:Bar[]):Enhanced[]{
    macd:i>=26?macd:null,signal:i>=34?sign:null,atr:i>=13?atr:null};
  });
 }
-export function StockPlot({bars,large,candle,visibleStudies,milestones=[]}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>;milestones?:readonly FdaMilestone[]}){
+export function StockPlot({bars,large,candle,visibleStudies,milestones=[],onMoveMilestone}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>;milestones?:readonly FdaMilestone[];onMoveMilestone?:(id:string,date:string)=>void}){
  const [hover,setHover]=useState<number|null>(null);
+ const [dragId,setDragId]=useState<string|null>(null);
+ const [dragX,setDragX]=useState<number|null>(null);
  // Reserve an inner right gutter for labels attached to the actual plotted lines.
  // A dedicated internal gutter keeps SVG labels visible even with clipping.
  const W=710,L=53,R=164,T=12,B=large?296:164;
@@ -58,6 +60,16 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[]}:{bars
  const dateSpan=Math.max(86400000,chartEnd-firstDate);
  const xDate=(date:string)=>L+(timestamp(date)-firstDate)/dateSpan*span;
  const x=(i:number)=>xDate(bars[i].date);
+ const pxForEvent=(ev:React.PointerEvent<SVGRectElement>)=>{
+   const svg=ev.currentTarget.ownerSVGElement;
+   if(!svg)return null;
+   const box=svg.getBoundingClientRect();
+   return Math.max(L,Math.min(W-R,(ev.clientX-box.left)/box.width*W));
+ };
+ const dateAtX=(px:number)=>{
+   const ms=firstDate+((px-L)/span)*dateSpan;
+   return new Date(Math.round(ms/86400000)*86400000).toISOString().slice(0,10);
+ };
  const y=(v:number)=>T+(hi-v)/(hi-lo)*(B-T);
  const barWidth=Math.max(.8,Math.min(10,(span/bars.length)*.7));
  const maxVol=Math.max(1,...bars.map(b=>b.volume));
@@ -146,7 +158,7 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[]}:{bars
     </>}
    {visibleMilestones.map((event,i)=>{
      const px=xDate(event.date),nearRight=px>W-R-100;
-     const ink=event.planned?"#b66a08":"#6846a8";
+     const ink=event.color || (event.planned?"#b66a08":"#6846a8");
      return <g key={event.date+"|"+event.chartLabel}>
        <line x1={px} x2={px} y1={T} y2={B}
          stroke={ink} strokeWidth="1.7" strokeDasharray={event.planned?"6 3":"3 3"} opacity=".95"/>
@@ -204,9 +216,28 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[]}:{bars
    {Array.from({length:Math.min(6,bars.length)},(_,k)=>{const i=Math.round(k*(bars.length-1)/Math.max(1,Math.min(6,bars.length)-1));return <text
        key={k} x={x(i)} y={H-9} textAnchor="middle" fontSize="10" fill="#647483">{bars[i].date.slice(5)}</text>})}
    <rect x={L} y={T} width={span} height={volBottom-T} fill="transparent"
-     onPointerMove={ev=>{const svg=ev.currentTarget.ownerSVGElement;if(!svg)return;const box=svg.getBoundingClientRect();
+     style={{touchAction:onMoveMilestone?"none":"auto",cursor:onMoveMilestone?"crosshair":"auto"}}
+     onPointerDown={ev=>{
+       if(!onMoveMilestone)return;
+       const at=pxForEvent(ev);if(at===null)return;
+       const hit=visibleMilestones.find(e=>e.custom&&e.id&&Math.abs(xDate(e.date)-at)<12);
+       if(hit?.id){setDragId(hit.id);setDragX(at);ev.currentTarget.setPointerCapture(ev.pointerId);}
+     }}
+     onPointerUp={ev=>{
+       if(!dragId||!onMoveMilestone)return;
+       const at=pxForEvent(ev);
+       if(at!==null)onMoveMilestone(dragId,dateAtX(at));
+       setDragId(null);setDragX(null);
+       if(ev.currentTarget.hasPointerCapture(ev.pointerId))ev.currentTarget.releasePointerCapture(ev.pointerId);
+     }}
+     onPointerCancel={()=>{setDragId(null);setDragX(null);}}
+     onPointerMove={ev=>{if(dragId)setDragX(pxForEvent(ev));const svg=ev.currentTarget.ownerSVGElement;if(!svg)return;const box=svg.getBoundingClientRect();
        const at=(ev.clientX-box.left)/box.width*W;setHover(Math.max(0,Math.min(bars.length-1,Math.floor((at-L)/span*bars.length))));}}
-     onPointerLeave={()=>setHover(null)}/>
+     onPointerLeave={()=>{if(!dragId)setHover(null);}}/>
+   {dragId&&dragX!==null&&<g pointerEvents="none">
+     <line x1={dragX} x2={dragX} y1={T} y2={B} stroke="#db2777" strokeWidth="2.5" strokeDasharray="4 3"/>
+     <text x={Math.min(W-R-60,Math.max(L+5,dragX+5))} y={T+30} fontSize="12" fill="#db2777" fontWeight="800">{dateAtX(dragX)}</text>
+   </g>}
   </svg>
   <div className="alpaca-line-key" aria-label="Labels for the lines actually shown on the Alpaca chart">
     {lineKey.map(item=><span key={item.name} className="alpaca-line-key-item"
@@ -216,7 +247,7 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[]}:{bars
   </div>
   {target&&<div className="alpaca-plot-tooltip">{target.date} | O {fixed(target.open)} H {fixed(target.high)} L {fixed(target.low)} C {fixed(target.close)} · Vol {short(target.volume)}</div>}</div>;
 }
-export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys,milestones=[]}:{programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[];milestones?:readonly FdaMilestone[]}){
+export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys,milestones=[],onMoveMilestone}:{programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[];milestones?:readonly FdaMilestone[];onMoveMilestone?:(id:string,date:string)=>void}){
  const [range,setRange]=useState<Range>("6M"),[state,setState]=useState<Market|null>(null);
  const [error,setError]=useState(""),[expanded,setExpanded]=useState(!compact);
  const [showMilestones,setShowMilestones]=useState(true);
@@ -264,18 +295,18 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
     aria-pressed={range===r} onClick={()=>setRange(r)}>{r}</button>)}
     <span>{latest?"Last Alpaca session "+latest.date+" | Close $"+fixed(latest.close):"Alpaca source awaiting verification"}</span></div>
   {state?.status==="OK"&&visibleBars.length?
-    <><StockPlot bars={visibleBars} large={expanded} candle={candle} visibleStudies={visibleStudies} milestones={showMilestones?milestones:[]}/>
+    <><StockPlot bars={visibleBars} large={expanded} candle={candle} visibleStudies={visibleStudies} milestones={showMilestones?milestones:[]} onMoveMilestone={onMoveMilestone}/>
      {expanded&&visibleReadouts.length>0&&<div className="alpaca-values">{visibleReadouts.map(([key,label,value])=>
        <span key={key}>{label}: {fixed(value,2)}</span>)}</div>}
     </>:
     <div className="alpaca-missing" role="status"><strong>ALPACA · {error?"ERROR":state?.status||"LOADING"}</strong>
      <p>{error||state?.message||"Requesting market bars from Alpaca. No TradingView, Yahoo or synthetic fallback."}</p></div>}
   {showMilestones&&milestones.length>0&&<div style={{padding:"12px",borderTop:"1px solid #cadde8",background:"#faf8fe"}}>
-    <strong>FDA &amp; clinical event markers · source verified</strong>
-    <p style={{fontSize:11,margin:"5px 0 8px"}}>Purple: historical event or disclosure. Amber dashed: future PDUFA target, not an approval prediction. Events outside the selected price range remain listed below.</p>
+    <strong>FDA &amp; clinical event markers · source-linked events and separate custom notes</strong>
+    <p style={{fontSize:11,margin:"5px 0 8px"}}>Purple: historical events. Amber dashed: future PDUFA target. Custom annotations use their selected colors and are not verified FDA announcements. When editing, drag a custom marker line horizontally to change its date. Events outside the selected price range remain listed below.</p>
     <ul style={{margin:"0",paddingLeft:18,fontSize:12,lineHeight:1.6}}>
       {milestones.map(m=><li key={m.date+"|"+m.label}>
-        <strong>{m.date}</strong> · <a href={m.source} target="_blank" rel="noopener noreferrer">{m.label}</a>
+        <strong>{m.date}</strong> · {m.source?<a href={m.source} target="_blank" rel="noopener noreferrer">{m.label}</a>:<span>{m.label} <em>(custom, unverified)</em></span>}
         {m.planned?" · Scheduled target":""}
         <div style={{color:"#5b6473",fontSize:11}}>{m.detail}</div>
       </li>)}
