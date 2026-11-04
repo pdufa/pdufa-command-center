@@ -7,6 +7,7 @@ import {parseRaasPilotFeed,observedCalculation} from "./raas-score-engine";
 import {parseProspectiveSourceBaselines} from "./raas-prospective-source-baselines";
 import {provisionalScoresForTrial} from "./raas-provisional-trial-scores";
 import type {ProvisionalMetricGrade} from "./raas-threshold-profiles";
+import {registryMetricLeads,type RegistryTrialEvidence} from "./raas-registry-evidence";
 import {RAAS_PROVISIONAL_RUBRICS,provisionalStageCoverage,
  type RaasProvisionalRubric} from "./raas-provisional-rubric-engine";
 import pilotData from "../data/raas-pilot-observations.json";
@@ -35,7 +36,7 @@ export type RaasTrialGradebook={
  nctId:string;ticker:string;stage:RaasStage;total:30;graded:number;
  mappedOnly:number;withoutEvidence:number;approvedOverallScore:null;
  provisionalDiagnostic:ReturnType<typeof provisionalStageCoverage>;
- categories:MetricGradebookCategory[];
+ registrySourceLeadCount:number;categories:MetricGradebookCategory[];
 };
 /** Full issuer/trial/therapy identity; the same ticker is never sufficient. */
 function unique<T extends {nctId:string;ticker:string;drug:string;indication:string;stage:RaasStage}>(
@@ -47,7 +48,8 @@ function unique<T extends {nctId:string;ticker:string;drug:string;indication:str
  return hits.length===1?hits[0]:null;
 }
 export function buildRaasMetricGradebook(
- trial:{nctId:string;ticker:string;drug?:string;indication?:string},stage:RaasStage
+ trial:{nctId:string;ticker:string;drug?:string;indication?:string},stage:RaasStage,
+ registry:RegistryTrialEvidence|null=null
 ):RaasTrialGradebook{
  if(stage!=="pre"&&stage!=="post")throw Error("RAAS_GRADEBOOK_STAGE_REQUIRED");
  if(!/^NCT\d{8}$/.test(trial.nctId)||!trial.ticker?.trim())
@@ -67,8 +69,10 @@ export function buildRaasMetricGradebook(
   leads.push({id:o.id,metricIds:o.metricIds,kind:o.kind,sourceDate:o.sourcePublishedAt,
    sourceUrl:o.sourceUrl,description:o.valueText,measurement:null});
  }
- // The only currently implemented numerical rule is TOP readout-window
- // specificity. It is experimental, not an approval, efficacy or return rating.
+ const registryLeads=registryMetricLeads(registry,stage,trial);
+ leads.push(...registryLeads);
+ // Numeric component scoring is only enabled for narrowly source-gated pilot
+ // rules, never inferred from a registry endpoint definition or a p-value.
  const provisional=provisionalScoresForTrial(trial,stage);
  const gradeMap=new Map(provisional.scoredMetrics.map(g=>[g.metricId,g]));
  const categories=RAAS_METRIC_CATALOG[stage].map(group=>{
@@ -95,6 +99,6 @@ export function buildRaasMetricGradebook(
   graded:all.filter(x=>x.grade!==null).length,
   mappedOnly:all.filter(x=>x.status==="SOURCE_LEADS_ONLY").length,
   withoutEvidence:all.filter(x=>x.status==="EVIDENCE_MISSING").length,
-  approvedOverallScore:null,categories,
+  approvedOverallScore:null,categories,registrySourceLeadCount:registryLeads.length,
   provisionalDiagnostic:provisionalStageCoverage(stage,provisional.scoredMetrics)};
 }
