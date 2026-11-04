@@ -91,7 +91,10 @@ def source_grades(path: Path, readouts: dict) -> dict:
         for grade in event["metricGrades"]:
             metric_id = grade.get("metricId")
             score = grade.get("score")
-            if metric_id != "pre-4-1" or score not in (0, 25, 50, 75, 100):
+            eligible_metrics = {"pre-4-1"} if stage == "TOP" else {"post-1-1", "post-1-2"}
+            if (metric_id not in eligible_metrics or score not in (0, 25, 50, 75, 100)
+                    or not str(grade.get("ruleId", "")).strip()
+                    or not str(grade.get("sourceUrl", "")).startswith("https://")):
                 raise ValueError("Unapproved numerical RAAS metric")
             key = (nct, metric_id)
             if key not in grades or event["recordedAt"] > grades[key]["recordedAt"]:
@@ -116,17 +119,17 @@ def coverage_snapshot(original: dict, evolving: dict, readouts: dict, grades: di
         for nct in sorted(rows):
             row=rows[nct]
             stage=readouts.get(nct, "UNVERIFIED")
-            rating=grades.get((nct, "pre-4-1"))
-            if stage != "TOP":
-                rating = None
+            ids = (["pre-4-1"] if stage == "TOP" else
+                   ["post-1-1", "post-1-2"] if stage == "BOTTOM" else [])
+            ratings = [grades[(nct, metric)] for metric in ids if (nct, metric) in grades]
             output.append({
                 "nctId": nct, "ticker": row["ticker"], "registryStatus": row["status"],
                 "readoutStage": stage, "approvedOverallScore": None,
-                "experimentalMetricGrades": [rating] if rating else [],
-                "metricGradesAvailable": 1 if rating else 0,
-                "metricGradesMissing": 29 if rating else (30 if stage != "UNVERIFIED" else None),
+                "experimentalMetricGrades": ratings,
+                "metricGradesAvailable": len(ratings),
+                "metricGradesMissing": 30-len(ratings) if stage != "UNVERIFIED" else None,
                 "missingReason": "CLASSIFICATION_REQUIRED" if stage == "UNVERIFIED"
-                    else (None if rating else "NO_ELIGIBLE_NUMERICAL_METRIC_INPUTS"),
+                    else (None if ratings else "NO_ELIGIBLE_NUMERICAL_METRIC_INPUTS"),
                 "pdufaQualified": None, "sourceUrl": row["source_url"]
             })
         return {
