@@ -22,7 +22,8 @@
     "CYTK and SMMT Nov 14 original issuer goals are corroborated with distinct ClinicalTrials.gov Phase 3 study records. FDA independently confirms CYTK original NDA 219083 approval in 2025; this does not certify the 2026 sNDA supplement number or original-goal cycle. SMMT's current BLA number is unverified.",
     "FDA letter approving CYTK NDA 219083/S-001 on Feb 5, 2026 concerns REMS modification, not the Nov 14 MAPLE-HCM review. It is a negative-control known past action and must not be mistaken for the upcoming supplement decision.",
     "Summit 2026 SEC filings disclose that FDA considered statistically significant OS necessary and original HARMONi OS p=0.057 missed statistical significance; follow-up evidence and any regulatory questions do not permit inferring a CRL or freezing unapproved probabilities.",
-    "The nightly FDA audit now queries the FDA's publicly available Drugs@FDA application history for NDA219083 and checks supplement identities; a result with an FDA supplement number is NOT automatically assigned to MAPLE-HCM. SMMT's pending BLA may not yet be publicly indexed. Errors, missing records and FDA publication delays do not prove regulatory outcomes."
+    "The nightly FDA audit now queries the FDA's publicly available Drugs@FDA application history for NDA219083 and checks supplement identities; a result with an FDA supplement number is NOT automatically assigned to MAPLE-HCM. SMMT's pending BLA may not yet be publicly indexed. Errors, missing records and FDA publication delays do not prove regulatory outcomes.",
+    "Nightly FDA watch searches both the CYTK parent NDA and any publicly indexed ivonescimab ingredient applications. Even an indexed BLA match cannot certify Summit's HARMONi NDA/BLA cycle or target; the FDA Purple Book is an approved-biologics index, not pending application coverage."
   ],
   "issuerDocumentedNearTermCycleSourceLeads": 15,
   "knownRevisedGoalExcludedFromOriginalDeadlineQueue": 4,
@@ -38,5 +39,5 @@
   "nov14KnownUnrelatedAlreadyApprovedFdaSupplementRemsControls": 1,
   "nov14IssuerReportedOSRequirementPrimaryNonsignificantCases": 1,
   "nightlyPublicFDAApplicationHistoryWatch": "RESEARCH_ONLY_MONITOR_SOURCE_STATUS_ARTIFACT_NOT_SITE_LIVE",
-  "nightlyPublicFDAApplicationHistoryWatchScope": "NDA219083 parent and unrelated S-001 negative control; SMMT BLA pending identifier unresolved"
+  "nightlyPublicFDAApplicationHistoryWatchScope": "CYTK parent NDA 219083 submissions and SMMT ivonescimab public ingredient search; pending MAPLE supplement and SMMT BLA numbers remain unverified"
 }
