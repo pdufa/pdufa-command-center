@@ -282,9 +282,13 @@ export default function RaasFullUniverseScores(){
     Download actual graded metrics and every missing item (300-row CSV)
    </a>.
    This is a deliberately chosen <strong>historical trial sample</strong>, not current
-   PIPELINE eligibility or a holdout prediction test. Six earlier CLDX reviews plus
-   additional source-checked clinical metrics are individually graded. All other
-   cells remain unscored, and no complete 30/30 RAAS or FDA probability is claimed.
+   PIPELINE eligibility or a holdout prediction test. The source-checked clinical,
+   safety, and pre-decision manufacturing-risk metrics are individually graded.
+   All other cells remain unscored, and no complete 30/30 RAAS or FDA probability is claimed.
+   {" "}· <a href="/raas-historical-fda-application-outcomes.csv" download>
+    Download historical FDA application outcomes (one event per NDA, not per trial)
+   </a>. Known historical approval and CRL outcomes are NEVER used to claim
+   prospective model prediction accuracy.
   </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-clinical-evidence-download="true">
    <a href="/raas-clinical-evidence-components.csv" download>Download clinical source-documentation grades</a>

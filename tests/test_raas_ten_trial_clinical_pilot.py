@@ -39,8 +39,8 @@ class PilotTests(unittest.TestCase):
         self.assertEqual(len(rows), 300)
         self.assertEqual(summary["pilotNctCount"], 10)
         self.assertEqual(summary["metricSlots"], 300)
-        self.assertEqual(summary["aiSourceReviewedMetricSlots"], 26)
-        self.assertEqual(summary["unscoredMetricSlots"], 274)
+        self.assertEqual(summary["aiSourceReviewedMetricSlots"], 36)
+        self.assertEqual(summary["unscoredMetricSlots"], 264)
         self.assertEqual(summary["humanIndependentReviewedMetricSlots"], 0)
         self.assertEqual(summary["complete30MetricTrials"], 0)
         self.assertEqual(summary["calibratedFdaPredictions"], 0)
@@ -62,8 +62,8 @@ class PilotTests(unittest.TestCase):
         rows, _ = mod.build(self.idx, self.reviews)
         scored = [r for r in rows if r["provisionalMetricScore"] != ""]
         missing = [r for r in rows if r["provisionalMetricScore"] == ""]
-        self.assertEqual(len(scored), 26)
-        self.assertEqual(len(missing), 274)
+        self.assertEqual(len(scored), 36)
+        self.assertEqual(len(missing), 264)
         self.assertTrue(all(r["provisionalMetricScore"] in (0, 25, 50, 75, 100)
                             for r in scored))
         self.assertTrue(all(r["sourceUrl"].startswith("https://") and
@@ -82,6 +82,24 @@ class PilotTests(unittest.TestCase):
                 e["ticker"] = "WRONG"
         with self.assertRaisesRegex(ValueError, "INVALID_REVIEW"):
             mod.build(altered, self.reviews)
+
+    def test_historical_safety_and_shared_CMC_risks_are_reviewed_not_fake_predictions(self):
+        self.require_sources()
+        rows, _ = mod.build(self.idx, self.reviews)
+        sae = [r for r in rows if r["metricId"] == "post-1-5"
+               and r["provisionalMetricScore"] != ""]
+        cmc = [r for r in rows if r["metricId"] == "post-3-4"
+               and r["provisionalMetricScore"] != ""]
+        self.assertEqual(len(sae), 8)
+        self.assertEqual(len(cmc), 2)
+        self.assertEqual({r["nctId"] for r in cmc}, {"NCT04576949", "NCT05206370"})
+        self.assertTrue(all(r["provisionalMetricScore"] == 0 for r in cmc))
+        self.assertTrue(all(r["sourceDate"] == "2026-05-12" for r in cmc))
+        self.assertTrue(all(r["humanIndependentReview"] is False for r in sae+cmc))
+        self.assertTrue(all(r["fdaPassCrlExtensionProbability"] == ""
+                            and r["full30of30Score"] == "" for r in sae+cmc))
+        self.assertTrue(all(r["sourceUrl"] and r["benchmarkSourceUrl"]
+                            for r in sae+cmc))
 
     def test_duplicate_or_forged_metric_review_rejected(self):
         self.require_sources()
@@ -102,7 +120,7 @@ class PilotTests(unittest.TestCase):
                                     "nctId": "NCT99999999"})
         rows, result = mod.build(self.idx, altered)
         self.assertEqual(len(rows), 300)
-        self.assertEqual(result["aiSourceReviewedMetricSlots"], 26)
+        self.assertEqual(result["aiSourceReviewedMetricSlots"], 36)
 
     def test_pilot_csv_is_excel_safe_and_contains_300_rows(self):
         self.require_sources()
