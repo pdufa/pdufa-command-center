@@ -234,6 +234,17 @@ export default function RaasFullUniverseScores(){
    <div><strong>{short(stats.missingRegistry)}</strong>
     <span>Outside current registry evidence snapshot · needs separate source collection</span></div>
   </div>
+  {registryIndex?.summary.trialsWithPrimaryGroupMeasurements!==undefined&&<div className={css.stats}
+   data-raas-quantitative-clinical-evidence="true">
+   <div><strong>{short(registryIndex.summary.trialsWithPrimaryGroupMeasurements)}</strong>
+    <span>Trials with actual primary-outcome arm measurements (ungraded)</span></div>
+   <div><strong>{short(registryIndex.summary.trialsWithPrimaryComparisons??0)}</strong>
+    <span>Trials with documented identified-group statistical contrasts (ungraded)</span></div>
+   <div><strong>{short(registryIndex.summary.trialsWithPrimaryConfidenceIntervals??0)}</strong>
+    <span>Trials with published primary-analysis confidence limits (ungraded)</span></div>
+   <div><strong>{short(registryIndex.summary.trialsWithSafetyRiskDenominators??0)}</strong>
+    <span>Trials with serious-event affected/at-risk counts (ungraded)</span></div>
+  </div>}
   <p style={{fontSize:12,lineHeight:1.5,margin:"6px 0"}}>
    <strong>TOP/BOTTOM registry source coverage is calculated across every matched NCT.</strong>
    Percentages measure the share of 30 metric research weights with a mapped
