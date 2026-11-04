@@ -31,8 +31,9 @@ function verifyConfig(config){
   config.requiredFullCensusYears!==2||
   config.historicalMarketCapUsdMillionsMin!==300||
   config.historicalMarketCapUsdMillionsMax!==10000||
-  config.entryLeadCalendarDaysMin!==4||config.entryLeadCalendarDaysMax!==90||
-  config.exitLeadCalendarDaysMin!==3||
+  config.leadUnit!=="TRADING_SESSIONS"||
+  config.entryLeadTradingSessionsMin!==4||config.entryLeadTradingSessionsMax!==90||
+  config.exitLeadTradingSessionsMin!==3||
   config.minimumIndependentTrainIssuers!==30||
   config.minimumIndependentHoldoutIssuers!==30||
   config.sourceIntake!==INTAKE||config.priorTenYearArchive!==
@@ -78,6 +79,43 @@ function reviewIntake(intake,config){
  }
  return {years,complete:years.every(y=>y.complete),accepted,rejected};
 }
+/** Exact trading-session offsets, not calendar-day approximations.
+ * Only sessions BEFORE PDUFA are indexed: T-1 = last dated bar before target.
+ * Missing bars, cap evidence, or source chronology fail closed.
+ * Missing exchange sessions/corporate actions still require independent audit.
+ */
+function sessionWindow(win,bars,e,x) {
+ if(!Number.isInteger(e)||!Number.isInteger(x)||e<4||e>90||x<3||x>=e)
+  throw Error("RAAS_SESSION_WINDOW_OUT_OF_RANGE");
+ const before=bars.filter(b=>b.date<win.pdufaDate).sort((a,b)=>a.date.localeCompare(b.date));
+ const entry=before[before.length-e],exit=before[before.length-x];
+ const base={caseId:win.caseId,ticker:win.ticker,programId:win.programId,
+  year:+win.pdufaDate.slice(0,4),entryLeadTradingSessions:e,exitLeadTradingSessions:x,
+  leadUnit:"TRADING_SESSIONS",entryDate:entry?.date??null,exitDate:exit?.date??null,
+  status:"BLOCKED",reason:null,grossReturnPct:null,netReturnPct:null};
+ if(!entry||!exit)return {...base,reason:"MISSING_PRE_PDUFA_TRADING_SESSIONS"};
+ if(entry.date>=exit.date)return {...base,reason:"ENTRY_NOT_BEFORE_EXIT"};
+ // Conservatively avoid same-day publication timing ambiguity.
+ if(entry.date<=win.pdufaFirstPublicDate||entry.date<=win.phase3ReadoutDate)
+  return {...base,reason:"EVENT_NOT_PUBLIC_BEFORE_ENTRY_SESSION"};
+ if(exit.date>=win.actualFDAActionDate)
+  return {...base,reason:"FDA_ACTION_EARLIER_THAN_EXIT"};
+ const cap=win.historicalMarketCaps.find(c=>c.session===entry.date);
+ if(!cap)return {...base,reason:"MISSING_ENTRY_DAY_HISTORICAL_MARKET_CAP"};
+ if(cap.usdMillions<300||cap.usdMillions>10000)
+  return {...base,reason:"HISTORICAL_CAP_OUT_OF_300M_10B_RANGE"};
+ const round=n=>Math.round((n+Number.EPSILON)*100)/100;
+ const gross=round((exit.close/entry.close-1)*100);
+ return {...base,status:"POINT_IN_TIME_PRICE_RESEARCH",
+  reason:"NEEDS_EXCHANGE_CALENDAR_CORPORATE_ACTION_AND_EXECUTION_AUDIT",
+  marketCapAtEntryMillions:cap.usdMillions,grossReturnPct:gross,netReturnPct:round(gross-1)};
+}
+function tradingSessionGrid(win,bars) {
+ const out=[];
+ for(let e=90;e>=4;e--)for(let x=3;x<e;x++)
+  out.push(sessionWindow(win,bars,e,x));
+ return out;
+}
 function selectResearchWindow(rows,censusComplete,config){
  verifyConfig(config);
  const eligible=rows.filter(x=>x.status==="POINT_IN_TIME_PRICE_RESEARCH");
@@ -86,16 +124,16 @@ function selectResearchWindow(rows,censusComplete,config){
  for(const r of eligible){
   if(![config.trainYear,config.holdoutYear].includes(r.year))
    throw Error("RAAS_TWO_YEAR_WINDOW_OUT_OF_SCOPE");
-  const key=r.entryLeadDays+"|"+r.exitLeadDays;
+  const key=r.entryLeadTradingSessions+"|"+r.exitLeadTradingSessions;
   if(!cells.has(key))cells.set(key,{train:[],holdout:[]});
   if(r.year===config.trainYear&&!holdoutIssuers.has(r.ticker))cells.get(key).train.push(r);
   if(r.year===config.holdoutYear)cells.get(key).holdout.push(r);
  }
  const compared=[...cells.entries()].map(([k,v])=>{
-  const [entryLeadDays,exitLeadDays]=k.split("|").map(Number);
+  const [entryLeadTradingSessions,exitLeadTradingSessions]=k.split("|").map(Number);
   const train=legacy.summary(legacy.independent(v.train));
   const holdout=legacy.summary(legacy.independent(v.holdout));
-  return {entryLeadDays,exitLeadDays,train,holdout,
+  return {entryLeadTradingSessions,exitLeadTradingSessions,leadUnit:"TRADING_SESSIONS",train,holdout,
    enoughIndependentIssuers:train.n>=config.minimumIndependentTrainIssuers&&
     holdout.n>=config.minimumIndependentHoldoutIssuers};
  }).sort((a,b)=>Number(b.enoughIndependentIssuers)-Number(a.enoughIndependentIssuers)||
@@ -137,7 +175,7 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
    try{
     const bars=await prior.downloadBars({ticker:event.ticker,
      scheduledEventDate:event.pdufaDate,
-     firstBarDate:prior.minusDays(event.pdufaDate,100),
+     firstBarDate:prior.minusDays(event.pdufaDate,160),
      lastBarDate:event.pdufaDate},key,secret,request);
     if(bars.length<20)throw Error("RAAS_TWO_YEAR_INSUFFICIENT_BARS");
     priceData.set(eventKey,bars);
@@ -153,8 +191,19 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
  const grid=[];
  for(const caseRecord of audit.accepted){
   const bars=priceData.get(caseRecord.ticker+"|"+caseRecord.pdufaDate);
-  if(bars)grid.push(...legacy.grid(caseRecord,bars));
+  if(bars)grid.push(...tradingSessionGrid(caseRecord,bars));
  }
+ const priceCoverage=[...priceData.entries()].map(([eventKey,bars])=>{
+  const [ticker,pdufaDate]=eventKey.split("|");
+  const before=bars.filter(b=>b.date<pdufaDate).sort((a,b)=>a.date.localeCompare(b.date));
+  return {ticker,pdufaDate,leadUnit:"TRADING_SESSIONS",
+   prePdufaDailyPriceBars:before.length,earliestPriceDate:before[0]?.date??null,
+   t79EntryDate:before.length>=79?before[before.length-79].date:null,
+   t14ExitDate:before.length>=14?before[before.length-14].date:null,
+   t90EntryDate:before.length>=90?before[before.length-90].date:null,
+   t79T14PriceCoverageOnly:before.length>=79,
+   eligibleForValidatedTrade:false};
+ });
  const arithmetic=grid.filter(w=>w.status==="POINT_IN_TIME_PRICE_RESEARCH");
  const ranking=selectResearchWindow(grid,audit.complete,policy);
  const years=Object.fromEntries(policy.years.map(y=>[y,{
@@ -171,6 +220,7 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
   researchOnly:true,finalValidation:"NOT_VALIDATED",
   archiveOutsideActiveScope:"2016-2023_RESEARCH_PRESERVED_EXCLUDED_FROM_ACTIVE_COHORT",
   dataFeed:"ALPACA_SIP_1DAY_ADJUSTMENT_ALL_DISCOVERY_ONLY",
+  leadUnit:"TRADING_SESSIONS",
   source:"data/historical_assessed_decisions.csv (candidate events; dates unverified)",
   discoveryCandidates:candidates.length,
   sourceReviewedIntakeCases:audit.accepted.length,rejectedIntake:audit.rejected,
@@ -179,6 +229,8 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
   independentTradingCasesValidated:0,approvedRaasMetricCalibrations:0,
   approvedTradingWindow:null,
   priceResearchEventsCollected:priceData.size,
+  coverageT79PriceOnlyEvents:priceCoverage.filter(r=>r.t79T14PriceCoverageOnly).length,
+  priceCoverage,
   historicAdjustedPriceBarsCollected:[...priceData.values()].reduce((n,x)=>n+x.length,0),
   provisionalWindowArithmeticRows:arithmetic.length,
   blockedWindowRows:grid.length-arithmetic.length,
@@ -192,6 +244,7 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
   selection:ranking,
   caveats:["2024–2025 is the ACTIVE two-year window; legacy 2016–2025 evidence remains in archived workflows only.",
    "A two-year sample is faster to gather, but has less statistical power and may miss regulatory regimes and cycles.",
+   "T-minus offsets mean observed US equity trading sessions before target, not calendar days; missing exchange sessions must be audited before validation.",
    "Historical FDA events are retrospective discovery leads: original date-of-announcement, Phase 3 and entire outcome denominator are not established by an archive row.",
    "Only accepted original issuer+FDA+SEC research can be compared, and daily market cap must be established independently at every entry.",
    "Unverifiable vendor prices, delisted tickers, and foreign venues are explicit coverage gaps, never zero or positive returns.",
@@ -207,7 +260,7 @@ function main(){
   const headline={status:r.status,period:r.studyStartDate+" to "+r.studyEndDate,
    discoveryCandidates:r.discoveryCandidates,reviewed:r.sourceReviewedIntakeCases,
    yearsAudited:r.fullYearCensusAudited,
-   priceSessions:r.historicAdjustedPriceBarsCollected,
+   priceSessions:r.historicAdjustedPriceBarsCollected,coverageT79PriceOnlyEvents:r.coverageT79PriceOnlyEvents,
    provisionalGridRows:r.provisionalWindowArithmeticRows,
    validatedTrades:r.independentTradingCasesValidated,
    approvedRaasScores:r.approvedRaasMetricCalibrations,
@@ -223,4 +276,4 @@ function main(){
  });
 }
 if(require.main===module)main();
-module.exports={verifyConfig,discoveryQueue,reviewIntake,selectResearchWindow,execute};
+module.exports={verifyConfig,discoveryQueue,reviewIntake,sessionWindow,tradingSessionGrid,selectResearchWindow,execute};
