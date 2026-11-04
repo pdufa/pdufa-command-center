@@ -12,7 +12,7 @@ const inputs=()=>({
  reviewed:load("new-platform/frontend/data/raas-reviewed-snapshots.json"),
  historical:load("new-platform/frontend/data/raas-historical-cases.json"),
  fda:load("new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json"),
- policySource:fs.readFileSync(path.join(front,"lib/raas-provisional-policy.ts"),"utf8")
+ policySource:fs.readFileSync(path.join(front,"lib/raas-provisional-rubric-engine.ts"),"utf8")
 });
 test("numeric pilot metrics never become validated RAAS or FDA predictive accuracy",()=>{
  const result=gate.readiness(inputs());
