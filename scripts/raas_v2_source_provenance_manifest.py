@@ -192,6 +192,10 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
         and type(sec.get("sourceAvailableCount")) is int
         and sec["sourceAvailableCount"]==sum(x.get("sourceStatus")=="AVAILABLE"
             for x in sec["rows"])
+        and sec.get("sourceCoverageStatus")==(
+            "TWO_ISSUER_SOURCES_AVAILABLE" if sec["sourceAvailableCount"]==2
+            else "PARTIAL_ISSUER_SOURCE_ACCESS" if sec["sourceAvailableCount"]==1
+            else "ISSUER_SOURCES_UNAVAILABLE_NOT_ZERO_NEW_FILINGS")
         and type(sec.get("potentialNewFilingReviewCandidates")) is int
         and sec["potentialNewFilingReviewCandidates"]==sum(
             x.get("newerRelevantFormFilingCount",0) for x in sec["rows"])
