@@ -93,7 +93,7 @@ class ProspectiveSourceOnlyTests(unittest.TestCase):
         for r in x["records"]:
             if r["nctId"] == "NCT07671911" and r["metricId"] == "pre-4-1":
                 r["sourceDate"] = "2026-11-05"
-        with self.assertRaisesRegex(ValueError, "REVIEW_IDENTITY"):
+        with self.assertRaisesRegex(ValueError, "RAAS_PARTIAL_REVIEW_EVIDENCE_INVALID"):
             mod.generate(self.baselines, self.registry, x, self.catalog)
         x = copy.deepcopy(self.baselines)
         x["records"][1]["observations"] = [
