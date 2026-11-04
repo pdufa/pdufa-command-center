@@ -130,6 +130,7 @@ jobs:
       - name: Query SEC EDGAR CYTK and SMMT filings newer than last reviewed issuer goal source
         env:
           RAAS_SEC_NOV14_REVIEW_JSON: ${{ runner.temp }}/raas-v2-sec-nov14-new-filing-review-leads.json
+          RAAS_SEC_USER_AGENT: ${{ vars.RAAS_SEC_USER_AGENT }}
         run: python scripts/raas_v2_sec_nov14_filing_watch.py
       - name: Create GitHub-run-bound checksum manifest for V2 research sources only
         env:
