@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_FDA_APPLICATION_OUTCOMES_NOT_MODEL_PREDICTIONS",
+  "sourceAsOf": "2026-11-04",
+  "caution": "Outcome evidence may post-date clinical trial scoring and is NEVER permitted as input to a historical blind or point-in-time forecast. Count one application decision, not one decision per linked NCT.",
+  "records": [
+    {
+      "applicationId": "ACHV-CYTISINICLINE-SMOKING-CESSATION-NDA-2025",
+      "ticker": "ACHV",
+      "drug": "cytisinicline",
+      "indication": "smoking cessation in adults",
+      "kind": "NDA",
+      "trialNcts": [
+        "NCT04576949",
+        "NCT05206370"
+      ],
+      "applicationAcceptedDate": "2025-09-03",
+      "applicationAcceptanceSource": "https://ir.achievelifesciences.com/news-events/press-releases/detail/238/achieve-life-sciences-announces-fda-acceptance-of-cytisinicline-new-drug-application-for-treatment-of-nicotine-dependence-for-smoking-cessation",
+      "pdufaTargetDate": "2026-06-20",
+      "preActionSourceDate": "2026-05-12",
+      "preActionSource": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-218177/achv-20260331.htm",
+      "preActionFinding": "Issuer disclosed third-party manufacturing OAI inspection classification and warning letter before June 20 target and explicitly expected a CRL; assessment is retrospective and cannot be credited as a blind model forecast.",
+      "actualOutcome": "COMPLETE_RESPONSE_LETTER",
+      "actualOutcomePublicDate": "2026-06-22",
+      "actualDecisionDate": null,
+      "actualOutcomeSource": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+      "outcomeReason": "Third-party manufacturer cGMP observations and incomplete final labeling, per sponsor disclosure; sponsor says FDA cited no clinical efficacy or clinical safety deficiency.",
+      "predictionIssuedBeforeDecision": false,
+      "calibratedPredictionEligible": false
+    },
+    {
+      "applicationId": "ACAD-TROFINETIDE-RETT-NDA-217026",
+      "ticker": "ACAD",
+      "drug": "trofinetide",
+      "indication": "Rett syndrome",
+      "kind": "NDA",
+      "trialNcts": [
+        "NCT04181723"
+      ],
+      "applicationAcceptedDate": null,
+      "applicationAcceptanceSource": null,
+      "pdufaTargetDate": null,
+      "preActionSourceDate": null,
+      "preActionSource": null,
+      "preActionFinding": null,
+      "actualOutcome": "APPROVAL",
+      "actualOutcomePublicDate": "2023-03-10",
+      "actualDecisionDate": "2023-03-10",
+      "actualOutcomeSource": "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-first-treatment-rett-syndrome",
+      "outcomeReason": "FDA approved original Daybue (trofinetide) indication for Rett syndrome in adults and children age 2 and older; Phase 3 NCT04181723 named in agency efficacy and safety record.",
+      "predictionIssuedBeforeDecision": false,
+      "calibratedPredictionEligible": false
+    }
+  ]
+}
