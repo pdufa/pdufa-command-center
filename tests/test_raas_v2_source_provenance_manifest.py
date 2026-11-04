@@ -31,7 +31,7 @@ def sample(path):
     research=public_watch.inspect_response(
         None,ASOF,"SOURCE_UNAVAILABLE","Offline test: no FDA API fetch")
     (d/"raas-v2-openfda-application-identity-watch.json").write_text(
-        json.dumps(research)+"\\n",encoding="utf-8")
+        json.dumps(research)+"\n",encoding="utf-8")
     return d
 
 
