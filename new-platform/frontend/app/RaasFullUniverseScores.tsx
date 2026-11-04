@@ -5,6 +5,7 @@ import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from 
 import {parseRaasScreenedPhase3Csv,RAAS_RESTRICTED_PHASE3_CSV_QUERY,
  type RaasScreenedTrialRoster} from "../lib/raas-full-universe-roster";
 import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
+import type {ProvisionalMetricGrade} from "../lib/raas-threshold-profiles";
 import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
@@ -12,6 +13,7 @@ import RaasMetricGradebook from "./RaasMetricGradebook";
 import css from "./raas-history/page.module.css";
 
 type Assessment={row:ReadoutRow;stage:RaasStage|null;timing:number|null;
+ grades:readonly ProvisionalMetricGrade[];
  metricCount:number;overallScore:number|null;sourceUrl:string|null;sourceDate:string|null};
 const PAGE_SIZE=50;
 const cell={padding:"9px 8px",borderBottom:"1px solid #d9e5dd",verticalAlign:"top" as const};
@@ -20,7 +22,7 @@ const stageLabel=(s:RaasStage|null)=>s==="pre"?"TOP":s==="post"?"BOTTOM":"UNVERI
 function assess(row:ReadoutRow):Assessment{
  const stage=row.evidence?.kind==="PRE_AS_OF_CHECK"?"pre":
   row.evidence?.kind==="POST_PUBLIC_READOUT"?"post":null;
- if(!stage)return {row,stage:null,timing:null,metricCount:0,overallScore:null,sourceUrl:null,sourceDate:null};
+ if(!stage)return {row,stage:null,timing:null,grades:[],metricCount:0,overallScore:null,sourceUrl:null,sourceDate:null};
  const a=provisionalScoresForTrial({
   nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication
@@ -31,9 +33,9 @@ function assess(row:ReadoutRow):Assessment{
   drug:row.evidence?.drug,indication:row.evidence?.indication,
   classifiedStage:stage
  });
- return {row,stage,timing:grade?.score??null,metricCount:a.scoredOf30,
+ return {row,stage,timing:grade?.score??null,grades:a.scoredMetrics,metricCount:a.scoredOf30,
   overallScore:reviewed.approvedScore,
-  sourceUrl:grade?.sourceUrl??null,sourceDate:grade?.sourceDate??null};
+  sourceUrl:a.scoredMetrics[0]?.sourceUrl??null,sourceDate:a.scoredMetrics[0]?.sourceDate??null};
 }
 export default function RaasFullUniverseScores(){
  const [classified,setClassified]=useState<ReadoutClassification|null>(null);
@@ -194,7 +196,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong>. Missing scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Provisional component","Metrics graded","Source / missing evidence","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Provisional components","Metrics graded","Source / missing evidence","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -205,13 +207,15 @@ export default function RaasFullUniverseScores(){
        {x.stage?"Issuer readout evidence":"Source classification required"}</span></td>
      <td style={cell}><strong>{x.overallScore===null?"— /100":x.overallScore+"/100"}</strong>
       <span style={{display:"block",fontSize:11}}>{x.overallScore===null?"Not validated":"Approved / reviewed"}</span></td>
-     <td style={cell}>{x.timing!==null?<><strong>{x.timing}/100</strong>
-      <span style={{display:"block",fontSize:11}}>Timing specificity only</span></>:
-      <span>Not scored</span>}</td>
+     <td style={cell}>{x.grades.length?x.grades.map(g=>
+       <div key={g.metricId} style={{marginBottom:4}}>
+        <strong>{g.metricId}: {g.score}/100</strong>
+        <span style={{display:"block",fontSize:11}}>{g.label} · experimental</span>
+       </div>):<span>Not scored</span>}</td>
      <td style={cell}><strong>{x.stage?x.metricCount+"/30":"—/30"}</strong>
       <span style={{display:"block",fontSize:11}}>No missing input scored as zero</span></td>
      <td style={cell}>{x.sourceUrl?<a href={x.sourceUrl} target="_blank"
-      rel="noopener noreferrer">Timing source · {x.sourceDate}</a>:
+      rel="noopener noreferrer">Experimental source · {x.sourceDate}</a>:
       x.stage===null?"Verify public Phase 3 readout stage first":
       "Source-backed rule and required inputs not yet available"}</td>
      <td style={cell}><RaasMetricGradebook row={x.row} bucket={x.stage}/></td>
