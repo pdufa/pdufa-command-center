@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "RAAS_ALL_762_ACTIVE_PHASE3_MARKET_CAP_SOURCE_PRE_SCREEN_NOT_FDA_PIPELINE",
-  "registrySourceAsOf": "2026-11-04T23:26:36+00:00",
+  "registrySourceAsOf": "2026-11-04T23:33:23+00:00",
   "marketCapMaxAgeDays": 7,
   "minMarketCapUsd": 300000000,
   "maxMarketCapUsd": 10000000000,
@@ -13,7 +13,7 @@
   "freshVerifiedCapInRangeTrials": 761,
   "sourceActivePhase3CapResearchCandidates": 257,
   "sourceActivePhase3CapIssuers": 111,
-  "candidatesWithNonemptyTrialInterventionsAndConditions": 0,
+  "candidatesWithNonemptyTrialInterventionsAndConditions": 257,
   "candidatesWithSourceReviewedTopMetrics": 5,
   "candidatesWithSourceReviewedBottomMetrics": 4,
   "fullyIndependentlyReviewedOverallRaasRatings": 0,
