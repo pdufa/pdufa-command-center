@@ -131,7 +131,33 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
             and watch["cytk"].get("newFdaMapleHcmApprovalIndependentlyAdjudicated") is False
             and isinstance(watch.get("smmt"),dict)
             and watch["smmt"].get("fdaCurrentBlaNumberIndependentlyVerified") is False
-            and watch["smmt"].get("fdaPublicOpenFdaNoMatchingApprovedBlaProvesNoPendingBla") is False,
+            and watch["smmt"].get("fdaPublicOpenFdaNoMatchingApprovedBlaProvesNoPendingBla") is False
+            and isinstance(watch["smmt"].get("approvedProductIngredientSearch"),dict)
+            and watch["smmt"]["approvedProductIngredientSearch"].get("publicSourceStatus") in {
+                "NOT_QUERIED","AVAILABLE","HTTP_404_NO_PUBLIC_RECORD",
+                "SOURCE_UNAVAILABLE","MALFORMED_RESPONSE"}
+            and watch.get("smmtOpenFdaSourceStatus")==
+                watch["smmt"]["approvedProductIngredientSearch"]["publicSourceStatus"]
+            and type(watch.get("smmtPublicIndexedBlaCandidateCount")) is int
+            and isinstance(watch["smmt"]["approvedProductIngredientSearch"].get(
+                "matchingPublishedBlaCandidatesNeedIndependentReview"),list)
+            and watch["smmtPublicIndexedBlaCandidateCount"]==len(
+                watch["smmt"]["approvedProductIngredientSearch"][
+                    "matchingPublishedBlaCandidatesNeedIndependentReview"])
+            and watch["smmt"]["approvedProductIngredientSearch"].get(
+                "fdaPendingBlaAbsentFromPublicIndexProvesNoSubmission") is False
+            and watch["smmt"]["approvedProductIngredientSearch"].get(
+                "fdaPublicIndexedCandidateIndependentlyMatchesSummitHARMONi") is False
+            and watch["smmt"]["approvedProductIngredientSearch"].get(
+                "fdaOriginalBlaCycleAndGoalVerified") is False
+            and watch["smmt"]["approvedProductIngredientSearch"].get(
+                "fdaApprovalCrlOrExtensionVerifiedFromIngredientSearch") is False
+            and all(isinstance(c,dict) and
+                c.get("pendingSMMTBlaNumberIndependentlyVerified") is False and
+                c.get("sameEGFRmNSCLCHarmonIReviewCycleVerified") is False and
+                c.get("fdaOutcomeFromPublicProductIndexVerified") is False
+                for c in watch["smmt"]["approvedProductIngredientSearch"][
+                    "matchingPublishedBlaCandidatesNeedIndependentReview"]),
             "PUBLIC_FDA_WATCH_CANNOT_PROMOTE_RESEARCH")
     t_fda=timestamp(fda["asOfUTC"])
     t_v2=timestamp(v2["evaluatedAtUTC"])

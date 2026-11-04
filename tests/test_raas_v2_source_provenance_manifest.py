@@ -83,6 +83,31 @@ class NightlyManifestTests(unittest.TestCase):
                 provenance.build_manifest(d,"pdufa/pdufa-command-center",
                                           RUN,SHA,ARCHIVED)
 
+    def test_public_ingredient_candidate_alone_cannot_claim_verified_Summit_BLA(self):
+        with TemporaryDirectory() as td:
+            d=sample(td)
+            p=d/"raas-v2-openfda-application-identity-watch.json"
+            original=json.loads(p.read_text("utf-8"))
+            candidate={
+                "applicationNumberPubliclyIndexed":"BLA761999",
+                "pendingSMMTBlaNumberIndependentlyVerified":False,
+                "sameEGFRmNSCLCHarmonIReviewCycleVerified":False,
+                "fdaOutcomeFromPublicProductIndexVerified":False,
+            }
+            for flag in ("pendingSMMTBlaNumberIndependentlyVerified",
+                         "sameEGFRmNSCLCHarmonIReviewCycleVerified",
+                         "fdaOutcomeFromPublicProductIndexVerified"):
+                tampered=deepcopy(original)
+                tampered["smmtPublicIndexedBlaCandidateCount"]=1
+                tampered["smmt"]["approvedProductIngredientSearch"][
+                    "matchingPublishedBlaCandidatesNeedIndependentReview"]=[
+                        dict(candidate,**{flag:True})]
+                p.write_text(json.dumps(tampered),encoding="utf-8")
+                with self.subTest(flag=flag),self.assertRaisesRegex(
+                        ValueError,"PUBLIC_FDA_WATCH_CANNOT_PROMOTE_RESEARCH"):
+                    provenance.build_manifest(d,"pdufa/pdufa-command-center",
+                                              RUN,SHA,ARCHIVED)
+
     def test_report_without_all_six_source_files_fails_closed(self):
         with TemporaryDirectory() as td:
             d=sample(td)

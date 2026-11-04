@@ -114,6 +114,78 @@ class FDAApplicationWatchTests(unittest.TestCase):
             with self.subTest(ticker=ticker,field=field),self.assertRaises(ValueError):
                 watch.inspect_response(response(),ASOF,dossier=modified)
 
+    def test_public_ingredient_BLA_candidate_does_not_validate_Summit_pending_BLA(self):
+        possible={"meta":{"results":{"total":1},"last_updated":"2026-11-02"},
+                  "results":[{
+                    "application_number":"BLA761999",
+                    "sponsor_name":"SAMPLE FDA PUBLIC LICENSING SPONSOR",
+                    "products":[{"active_ingredients":[{"name":"IVONESCIMAB"}]}],
+                    "submissions":[{"submission_type":"ORIG",
+                        "submission_status":"AP","submission_status_date":"20261028"}]}]}
+        r=watch.inspect_response(response(),ASOF,
+                                 smmt_payload=possible,smmt_status="AVAILABLE")
+        self.assertEqual(r["smmtOpenFdaSourceStatus"],"AVAILABLE")
+        self.assertEqual(r["smmtPublicIndexedBlaCandidateCount"],1)
+        sm=r["smmt"]["approvedProductIngredientSearch"]
+        self.assertEqual(sm["publicDatasetLastUpdatedAsReported"],"2026-11-02")
+        self.assertFalse(sm["fdaPublicIndexedCandidateIndependentlyMatchesSummitHARMONi"])
+        self.assertFalse(sm["fdaApprovalCrlOrExtensionVerifiedFromIngredientSearch"])
+        self.assertFalse(sm["fdaOriginalBlaCycleAndGoalVerified"])
+        self.assertFalse(sm["fdaPendingBlaAbsentFromPublicIndexProvesNoSubmission"])
+        candidate=sm["matchingPublishedBlaCandidatesNeedIndependentReview"][0]
+        self.assertEqual(candidate["applicationNumberPubliclyIndexed"],"BLA761999")
+        self.assertFalse(candidate["pendingSMMTBlaNumberIndependentlyVerified"])
+        self.assertFalse(candidate["sameEGFRmNSCLCHarmonIReviewCycleVerified"])
+        self.assertFalse(candidate["fdaOutcomeFromPublicProductIndexVerified"])
+        self.assertFalse(r["smmt"]["fdaCurrentBlaNumberIndependentlyVerified"])
+        self.assertFalse(r["canPromoteToFdaPredictionAccuracy"])
+
+    def test_no_indexed_ingredient_source_or_http_error_never_proves_no_bla(self):
+        for status in ("HTTP_404_NO_PUBLIC_RECORD",
+                       "SOURCE_UNAVAILABLE","MALFORMED_RESPONSE","NOT_QUERIED"):
+            r=watch.inspect_response(response(),ASOF,smmt_status=status,
+                                     smmt_detail="simulated FDA condition")
+            self.assertEqual(r["smmtPublicIndexedBlaCandidateCount"],0)
+            sm=r["smmt"]["approvedProductIngredientSearch"]
+            self.assertEqual(sm["publicSourceStatus"],status)
+            self.assertFalse(sm["fdaPendingBlaAbsentFromPublicIndexProvesNoSubmission"])
+            self.assertFalse(sm["fdaOriginalBlaCycleAndGoalVerified"])
+            self.assertEqual(r["independentlyCertifiedCurrentFdaReviewCycles"],0)
+        r=watch.inspect_response(response(),ASOF,
+                 smmt_payload={"results":[],"meta":{"results":{"total":0}}},
+                 smmt_status="AVAILABLE")
+        self.assertEqual(r["smmtPublicIndexedBlaCandidateCount"],0)
+        self.assertFalse(r["smmt"]["approvedProductIngredientSearch"][
+            "fdaPendingBlaAbsentFromPublicIndexProvesNoSubmission"])
+
+    def test_fda_ingredient_search_unrelated_or_truncated_results_never_promote(self):
+        payload={"meta":{"results":{"total":55}},
+                 "results":[{
+                    "application_number":"BLA761900",
+                    "products":[{"active_ingredients":[{"name":"SOME OTHER BIOLOGIC"}]}]}]}
+        r=watch.inspect_response(response(),ASOF,
+                                 smmt_payload=payload,smmt_status="AVAILABLE")
+        self.assertEqual(r["smmtPublicIndexedBlaCandidateCount"],0)
+        self.assertTrue(r["smmt"]["approvedProductIngredientSearch"][
+            "fdaResultPageMayBeTruncated"])
+        self.assertFalse(r["smmt"]["fdaCurrentBlaNumberIndependentlyVerified"])
+
+    def test_malformed_fda_ingredient_response_rejected_without_approval_claim(self):
+        for payload in (
+            {"results":"not a list"},
+            {"results":[{"application_number":"BLA761999",
+                         "products":"not a product array"}]},
+            {"results":[{"products":[{"active_ingredients":"not a list"}]}]},
+            {"results":[{"products":[{"active_ingredients":[None]}]}]},
+            {"results":[{"products":None}]},
+        ):
+            with self.subTest(payload=payload),self.assertRaises(ValueError):
+                watch.inspect_response(response(),ASOF,
+                    smmt_payload=payload,smmt_status="AVAILABLE")
+        with self.assertRaises(ValueError):
+            watch.inspect_response(response(),ASOF,
+                smmt_payload={"results":[]},smmt_status="SOURCE_UNAVAILABLE")
+
     def test_asof_date_must_be_parseable(self):
         for bad in ("2026-11-03","2026-13-03T23:59:59Z","not a date",None):
             with self.assertRaises(ValueError):
