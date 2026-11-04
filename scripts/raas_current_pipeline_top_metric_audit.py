@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dated, explicitly non-exhaustive 2-NCT CURRENT Phase 3 TOP RAAS audit.
+"""Dated, explicitly non-exhaustive source-verified CURRENT Phase 3 TOP RAAS audit.
 
 Unlike the 10-trial retrospective post-readout pilot this reads genuinely
 recruiting Phase 3 trials and separately source-dated issuer market caps.
@@ -75,7 +75,7 @@ def cap_state(record: dict, as_of: date, registry_status: str,
         return "STALE_REGISTRY_STATUS_REVERIFY"
     if not 300_000_000 <= record["marketCapUsd"] <= 10_000_000_000:
         return "OUTSIDE_MARKET_CAP_RESTRICTIONS"
-    if as_of > iso(record["readoutWindowEnd"]):
+    if record.get("readoutWindowEnd") is not None and as_of > iso(record["readoutWindowEnd"]):
         return "HISTORICAL_OR_EXPIRED_READOUT_WINDOW"
     return "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA"
 
@@ -121,6 +121,7 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
         if not isinstance(nct, str) or not NCT.fullmatch(nct) or nct in case_map:
             raise ValueError("CURRENT_TOP_DUPLICATE_CASE")
         c, r = c_map.get(nct), reg_map.get(nct)
+        has_window = rec.get("readoutExpectedWindow") is not None
         if (not c or not r or
             c["ticker"] != rec.get("ticker") or r["ticker"] != rec.get("ticker") or
             rec.get("researchStage") != "pre" or rec.get("phase") != "PHASE3" or
@@ -132,18 +133,25 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
             rec["marketCapUsd"] < 0 or
             not all(secure(rec.get(k)) for k in (
                 "clinicalRegistryUrl","issuerTrialSourceUrl",
-                "marketCapSourceUrl","readoutGuidanceUrl")) or
+                "marketCapSourceUrl")) or
+            (has_window and (not secure(rec.get("readoutGuidanceUrl")) or
+                             not isinstance(rec.get("readoutExpectedWindow"), str) or
+                             rec.get("readoutWindowEnd") is None or
+                             rec.get("readoutGuidancePublished") is None)) or
+            (not has_window and (rec.get("readoutGuidanceUrl") is not None or
+                                 rec.get("readoutWindowEnd") is not None or
+                                 rec.get("readoutGuidancePublished") is not None)) or
             rec["clinicalRegistryUrl"] != "https://clinicaltrials.gov/study/" + nct or
             r["sourceUrl"] != rec["clinicalRegistryUrl"] or
             r.get("registryResultsPosted") not in ("False", "True") or
             rec.get("registryReportedStatus") != "RECRUITING" or
-            iso(rec.get("readoutGuidancePublished")) > iso(snapshot["asOf"]) or
+            (has_window and iso(rec.get("readoutGuidancePublished")) > iso(snapshot["asOf"])) or
             iso(rec.get("marketCapAsOf")) > iso(snapshot["asOf"]) or
             iso(rec.get("registryStatusCheckedAt")) > iso(snapshot["asOf"]) or
-            iso(rec.get("readoutWindowEnd")) <= iso(snapshot["asOf"])):
+            (has_window and iso(rec.get("readoutWindowEnd")) <= iso(snapshot["asOf"]))):
             raise ValueError("CURRENT_TOP_CASE_PROVENANCE")
         case_map[nct] = rec
-    if set(case_map) != {"NCT07671911", "NCT07363577"}:
+    if len(case_map) < 2 or len(case_map) > 100 or not {"NCT07671911", "NCT07363577"}.issubset(case_map):
         raise ValueError("CURRENT_TOP_NONEXHAUSTIVE_PILOT_IDENTITIES")
     all_r = {}
     for r in reviews["records"]:
@@ -192,9 +200,9 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
                 "marketCapUsdAsOfSource":case["marketCapUsd"],
                 "marketCapAsOf":case["marketCapAsOf"],
                 "marketCapSourceUrl":case["marketCapSourceUrl"],
-                "readoutExpectedWindow":case["readoutExpectedWindow"],
-                "readoutGuidancePublished":case["readoutGuidancePublished"],
-                "readoutGuidanceUrl":case["readoutGuidanceUrl"],
+                "readoutExpectedWindow":case.get("readoutExpectedWindow") or "",
+                "readoutGuidancePublished":case.get("readoutGuidancePublished") or "",
+                "readoutGuidanceUrl":case.get("readoutGuidanceUrl") or "",
                 "currentSourceQualification":state,
                 "metricId":metric,
                 "metricReviewStatus":"AI_SOURCE_CROSSCHECKED_PROVISIONAL" if r else "NOT_SCORED",
@@ -218,11 +226,13 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
     count = sum(1 for r in rows if r["provisionalMetricScore"] != "")
     status = {
         "schemaVersion":1,
-        "scope":"RAAS_DATED_TWO_CURRENT_PHASE3_TOP_TRIAL_PARTIAL_METRICS_NO_PDUFA",
+        "scope":"RAAS_DATED_CURRENT_PHASE3_TOP_TRIAL_PARTIAL_METRICS_NO_PDUFA",
         "sourceAsOf":as_of,
         "snapshotSourceAsOf":snapshot["asOf"],
         "pilotPhase3TrialNcts":list(sorted(case_map)),
         "pilotTrialCount":len(case_map),
+        "uniqueIssuers":len({r["ticker"] for r in case_map.values()}),
+        "trialsWithoutVerifiedToplineWindow":sum(r.get("readoutExpectedWindow") is None for r in case_map.values()),
         "pilotMetricSlots":len(rows),
         "provisionalAiReviewedMetricSlots":count,
         "missingMetricSlots":len(rows)-count,
@@ -235,7 +245,7 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
         "complete30MetricRaasScores":0,
         "confirmedPdufaTargets":0,
         "calibratedFdaPredictions":0,
-        "warning":"Two sampled current source-checked trials, not a comprehensive screen of the active $300M-$10B public Phase 3 universe. A cap quote becomes stale after seven calendar days and trial-status source after 30 days; no new price/status is invented. Both are pre-readout, and neither has an accepted NDA/BLA or verified PDUFA date. 0–100 figures are research-only metric bands, never complete 30/30, FDA PASS/CRL/extension probabilities or trade signals."
+        "warning":"Sampled source-checked Phase 3 trials across unique issuers are NOT a comprehensive screen of the $300M–$10B current Pipeline. Multiple trials of one issuer must not double count issuer market cap/cash and open-label safety studies do not validate efficacy. Quotes become stale after 7 calendar days, registry after 30. Absent source-verified topline date is N/A, not invented. No current accepted NDA/BLA or PDUFA action target, complete 30/30 RAAS, FDA pass/CRL/extension forecast or trading signal."
     }
     return rows, status
 
