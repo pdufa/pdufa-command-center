@@ -554,12 +554,12 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
         "CYTK","Cytokinetics","SUPPLEMENTAL_NDA","MAPLE-HCM",
         "2026-08-06","SEC_10Q",
         "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm",
-        "2026-01","2026-02-24","2026-05-05"),
+        "2026-01","2026-02-24","2026-05-05","SUBMISSION_PUBLIC_DISCLOSURE"),
       "SMMT|IVONESCIMAB_20261114":(
         "SMMT","Summit Therapeutics","ORIGINAL_BLA_REPORTED","HARMONi",
         "2026-09-15","SEC_8K_EXHIBIT_99_1",
         "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000081/a2026_prx0915xharmoniltf.htm",
-        "2025-Q4","2026-01-29","2026-01-29"),
+        "2025-Q4","2026-01-29","2026-01-29","FDA_ACCEPTANCE_PUBLIC_DISCLOSURE"),
     }
     legacy={x["fda_regulatory_case_id"]:x for x in old_rows
         if x.get("model_version")=="FDA-DIRECTIONAL-100-V1.9"}
@@ -571,9 +571,9 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
         assert_safe(key in expected and key not in seen,
                     "NOV14_ISSUER_CONTINUITY_WRONG_CASE_OR_DUPLICATE")
         seen.add(key)
-        ticker,issuer,cls,study,reported,kind,url,submonth,announcement,first_goal=expected[key]
+        ticker,issuer,cls,study,reported,kind,url,submonth,announcement,first_goal,update_kind=expected[key]
         published=audit.day(row.get("issuerPublicSourceDate"))
-        public_submission=audit.day(row.get("firstSelectedIssuerPublicSubmissionAnnouncementDate"))
+        public_submission=audit.day(row.get("firstSelectedIssuerPublicApplicationUpdateDate"))
         public_goal=audit.day(row.get("nov14ReviewGoalSourceFirstLocatedAt"))
         assert_safe(legacy[key]["ticker"]==ticker and
             legacy[key]["pdufa_date"]=="2026-11-14" and
@@ -585,10 +585,11 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
             row.get("issuerSourceType")==kind and
             row.get("issuerPublicSourceUrl")==url and
             row.get("issuerReportedActualApplicationSubmissionMonth")==submonth and
-            row.get("firstSelectedIssuerPublicSubmissionAnnouncementDate")==announcement and
+            row.get("firstSelectedIssuerPublicApplicationUpdateDate")==announcement and
+            row.get("firstSelectedIssuerPublicApplicationUpdateType")==update_kind and
             row.get("nov14ReviewGoalSourceFirstLocatedAt")==first_goal and
-            isinstance(row.get("firstSelectedIssuerPublicSubmissionAnnouncementUrl"),str) and
-            row["firstSelectedIssuerPublicSubmissionAnnouncementUrl"].startswith("https://") and
+            isinstance(row.get("firstSelectedIssuerPublicApplicationUpdateUrl"),str) and
+            row["firstSelectedIssuerPublicApplicationUpdateUrl"].startswith("https://") and
             isinstance(row.get("nov14ReviewGoalSourceFirstLocatedUrl"),str) and
             row["nov14ReviewGoalSourceFirstLocatedUrl"].startswith("https://") and
             isinstance(row.get("issuerPublicFilingIndexUrl"),str) and
@@ -601,12 +602,14 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
                 audit.day("2026-06-30")<published and
                 row.get("fdaParentNdaKnown")=="219083" and
                 public_submission.month==2 and submonth=="2026-01" and
+                update_kind=="SUBMISSION_PUBLIC_DISCLOSURE" and
                 row.get("pendingSupplementSequenceNumberVerified") is False,
                 "CYTK_PUBLIC_PRESS_DATE_CANNOT_REPLACE_JAN_SUBMISSION")
         else:
             assert_safe(row.get("issuerReportPeriodEndDate") is None and
                 row.get("fdaParentNdaKnown") is None and
-                row.get("pendingBlaNumberVerified") is False,
+                row.get("pendingBlaNumberVerified") is False and
+                update_kind=="FDA_ACCEPTANCE_PUBLIC_DISCLOSURE",
                 "SMMT_BLA_OR_REPORT_PERIOD_UNVERIFIED")
         assert_safe(
             row.get("originalNov14GoalStillListedByIssuerAtSourceDate") is True and
@@ -631,7 +634,8 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
                 days_since is not None and days_since>30,
             "issuerSourceClockIsActualSubmissionDate":False,
             "issuerReportedActualSubmissionPeriod":submonth,
-            "firstSelectedPublicSubmissionAnnouncementDate":announcement,
+            "firstSelectedPublicApplicationUpdateDate":announcement,
+            "firstSelectedPublicApplicationUpdateType":update_kind,
             "currentFDAApplicationNumberIndependentlyVerified":False,
             "prospectivelyFrozenThreeWayForecast":False,
             "evidenceStatus":(
