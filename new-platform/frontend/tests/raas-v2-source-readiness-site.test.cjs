@@ -26,6 +26,14 @@ test("V2 source-readiness snapshot cannot pretend to be a calibrated model",()=>
  assert.equal(snapshot.nov14IndependentPhase3RegistryCrossChecks,2);
  assert.equal(snapshot.nov14NumberedCurrentFdaApplicationCyclesCertified,0);
  assert.equal(snapshot.nov14FrozenThreeWayForecasts,0);
+ assert.equal(snapshot.nightlyOfficialIssuerNewsFallback,
+   "CYTK_AND_SMMT_PUBLIC_ISSUER_NEWS_RESEARCH_LINKS_NOT_SEC_OR_FDA_VERIFICATION");
+ assert.equal(snapshot.secEdgarRunnerStatus,
+   "ACCESS_BLOCKED_HTTP_403_SOURCE_UNAVAILABLE_NOT_ZERO_FILINGS");
+ assert.equal(snapshot.currentCYTKPendingMAPLESupplementNumber,
+   "UNVERIFIED_NOT_PUBLICLY_ATTESTED");
+ assert.equal(snapshot.currentSMMTOriginalHARMONIBLANumber,
+   "UNVERIFIED_NOT_PUBLICLY_ATTESTED");
  assert.equal(snapshot.nightlySecNewIssuerFilingReviewWatch,
    "CYTK_SMMT_OFFICIAL_8K_10Q_10K_RESEARCH_LEADS_NOT_FDA_OUTCOMES");
  assert.equal(snapshot.secNewIssuerFilingWatchLastReviewedGoalDates.CYTK,"2026-08-06");
@@ -116,4 +124,13 @@ test("SEC recent issuer filings can only initiate manual source review",()=>{
  assert.match(source,/A new SEC filing is only a document to inspect/);
  assert.match(source,/SEC HTTP 403/);
  assert.match(source,/not an automatically refreshed filing list/);
+});
+
+test("Issuer official news fallback does not mislabel SEC denial as restored",()=>{
+ assert.match(source,/raas-v2-official-issuer-news-fallback/);
+ assert.match(source,/ir\.cytokinetics\.com\/press-releases/);
+ assert.match(source,/smmttx\.com\/investor-information/);
+ assert.match(source,/SEC source unavailable/);
+ assert.match(source,/not a complete SEC filing feed/);
+ assert.match(source,/both remain unverified/);
 });

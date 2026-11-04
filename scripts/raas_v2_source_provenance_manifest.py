@@ -30,6 +30,7 @@ EXPECTED_FILES = (
     "raas-v2-prospective-source-review.csv",
     "raas-v2-openfda-application-identity-watch.json",
     "raas-v2-sec-nov14-new-filing-review-leads.json",
+    "raas-v2-issuer-news-fallback-research-leads.json",
 )
 
 
@@ -228,19 +229,61 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
                 for z in x["newerFilingReviewCandidates"])
             for x in sec["rows"]),
         "SEC_FILINGS_CANNOT_CERTIFY_FDA_REVIEW_OR_PREDICTIONS")
+    news=json.loads((root/"raas-v2-issuer-news-fallback-research-leads.json").read_text("utf-8"))
+    require(isinstance(news,dict) and news.get("scope")==
+        "RAAS_V2_OFFICIAL_ISSUER_NEWS_FALLBACK_SOURCE_LEADS_NOT_FDA_OR_SEC_CENSUS"
+        and news.get("status")==
+        "ISSUER_NEWS_FALLBACK_RESEARCH_ONLY_NOT_SEC_OR_FDA_COVERAGE"
+        and news.get("officialIssuerNewsPagesChecked")==2
+        and news.get("secOfficialFilingsAccessRestoredByFallback") is False
+        and news.get("newCurrentPendingApplicationNumbersIndependentlyVerified")==0
+        and news.get("independentlyVerifiedFdaDeadlineRevisions")==0
+        and news.get("newThreeWayPredictionsFromIssuerNews")==0
+        and news.get("approvedRAASMetricCalibrations")==0
+        and type(news.get("rows")) is list
+        and len(news["rows"])==2
+        and {x.get("ticker") for x in news["rows"]}=={"CYTK","SMMT"}
+        and type(news.get("officialIssuerNewsPagesAccessible")) is int
+        and news["officialIssuerNewsPagesAccessible"]==sum(
+            x.get("pageAccessible") is True for x in news["rows"])
+        and type(news.get("issuerNewsResearchLinkCandidatesFound")) is int
+        and news["issuerNewsResearchLinkCandidatesFound"]==sum(
+            x.get("issuerArticleLinksFound",0) for x in news["rows"])
+        and all(x.get("sourceStatus") in {
+            "AVAILABLE","SOURCE_UNAVAILABLE","HTTP_404_NO_PUBLIC_RECORD",
+            "MALFORMED_RESPONSE"}
+            and x.get("pageAccessible") is (x.get("sourceStatus")=="AVAILABLE")
+            and x.get("issuerNewsPageAccessibleButNoArticlesParsedIsNoNews") is False
+            and x.get("issuerNewsIsComprehensiveSECDisclosureFeed") is False
+            and x.get("issuerArticleLinkCertifiesFdaDeadlineOrApplicationNumber") is False
+            and x.get("sec403FixedByThisIssuerNewsSource") is False
+            and type(x.get("listedResearchLinkCandidates")) is list
+            and type(x.get("issuerArticleLinksFound")) is int
+            and x["issuerArticleLinksFound"]>=len(x["listedResearchLinkCandidates"])
+            and all(z.get("verifiedPublishedAfterLastReviewedGoalSource") is False
+                and z.get("articleContentReviewedForPdufaChange") is False
+                and z.get("pendingFdaApplicationNumberVerified") is False
+                and z.get("officialFdaActionOrExtensionVerified") is False
+                for z in x["listedResearchLinkCandidates"])
+            for x in news["rows"]),
+        "ISSUER_NEWS_CANNOT_CERTIFY_SEC_FDA_OR_FORECAST")
     t_fda=timestamp(fda["asOfUTC"])
     t_v2=timestamp(v2["evaluatedAtUTC"])
     t_watch=timestamp(watch["checkedAtUTC"])
     t_sec=timestamp(sec["checkedAtUTC"])
+    t_news=timestamp(news["checkedAtUTC"])
     require(t_fda <= archive_clock and t_v2 <= archive_clock and
             t_watch <= archive_clock and t_sec <= archive_clock and
+            t_news <= archive_clock and
             abs((t_fda-t_v2).total_seconds()) <= 600
             and abs((t_watch-t_v2).total_seconds()) <= 3600
             and (archive_clock-t_fda).total_seconds() <= 3600
             and (archive_clock-t_v2).total_seconds() <= 3600
             and (archive_clock-t_watch).total_seconds() <= 3600
             and (archive_clock-t_sec).total_seconds() <= 3600
-            and abs((t_sec-t_v2).total_seconds()) <= 3600,
+            and abs((t_sec-t_v2).total_seconds()) <= 3600
+            and (archive_clock-t_news).total_seconds() <= 3600
+            and abs((t_news-t_v2).total_seconds()) <= 3600,
             "OUTPUT_CLOCK_OR_ORDER_INCONSISTENT")
     with (root/"raas-v2-prospective-source-review.csv").open(newline="",encoding="utf-8") as f:
         csv_rows=list(csv.DictReader(f))
@@ -273,10 +316,13 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
         "secNewIssuerFilingSourceAvailabilityCount":sec["sourceAvailableCount"],
         "secNewIssuerFilingReviewCandidatesCount":sec["potentialNewFilingReviewCandidates"],
         "secNewIssuerFilingsConfirmFDARevision":False,
+        "officialIssuerNewsPagesAccessible":news["officialIssuerNewsPagesAccessible"],
+        "officialIssuerNewsLinksNotFDAOrSECCensus":news["issuerNewsResearchLinkCandidatesFound"],
+        "officialIssuerNewsRestoresSECAccess":False,
         "publicFdaWatchCurrentMapleSupplementIndependentlyVerified":False,
         "publicFdaWatchCurrentSummitBlaIndependentlyVerified":False,
         "fileDigests":contents,
-        "warning":"This checksum detects post-upload changes to the seven output files, but the GitHub Actions artifact can expire or be deleted. It does not independently attest source authenticity, freeze a predicted class, establish FDA outcomes or authorize RAAS V2.",
+        "warning":"This checksum detects post-upload changes to the eight output files, but the GitHub Actions artifact can expire or be deleted. It does not independently attest source authenticity, freeze a predicted class, establish FDA outcomes or authorize RAAS V2.",
     }
 
 
@@ -308,7 +354,7 @@ def main():
         with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
             f.write("\n### RAAS V2 daily research source checksums (NOT frozen forecasts)\n\n"
                     +f"Archived at {stamp} from commit {m['sourceCommitSHA']}.\n\n"
-                    +"7 source files hashed. These are NOT signed prediction receipts.\n")
+                    +"8 source files hashed. These are NOT signed prediction receipts.\n")
 
 
 if __name__=="__main__":

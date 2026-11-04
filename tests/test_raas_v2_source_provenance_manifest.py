@@ -13,6 +13,7 @@ import raas_v2_prospective_source_readiness as v2
 import raas_v2_source_provenance_manifest as provenance
 import raas_v2_openfda_application_watch as public_watch
 import raas_v2_sec_nov14_filing_watch as issuer_watch
+import raas_v2_issuer_news_fallback as issuer_news
 
 SHA="a"*40
 RUN="41735573512"
@@ -39,16 +40,22 @@ def sample(path):
         {"CYTK":"offline fixture","SMMT":"offline fixture"},ASOF)
     (d/"raas-v2-sec-nov14-new-filing-review-leads.json").write_text(
         json.dumps(sec)+"\n",encoding="utf-8")
+    news=issuer_news.inspect_report(
+        {"CYTK":None,"SMMT":None},
+        {"CYTK":"SOURCE_UNAVAILABLE","SMMT":"SOURCE_UNAVAILABLE"},
+        {"CYTK":"offline fixture","SMMT":"offline fixture"},ASOF)
+    (d/"raas-v2-issuer-news-fallback-research-leads.json").write_text(
+        json.dumps(news)+"\n",encoding="utf-8")
     return d
 
 
 class NightlyManifestTests(unittest.TestCase):
-    def test_seven_files_hashed_and_tied_to_run_without_becoming_prediction_receipt(self):
+    def test_eight_files_hashed_and_tied_to_run_without_becoming_prediction_receipt(self):
         with TemporaryDirectory() as td:
             d=sample(td)
             m=provenance.build_manifest(d,"pdufa/pdufa-command-center",
                                         RUN,SHA,ARCHIVED)
-            self.assertEqual(len(m["fileDigests"]),7)
+            self.assertEqual(len(m["fileDigests"]),8)
             self.assertEqual(m["githubWorkflowRunId"],RUN)
             self.assertEqual(m["sourceCommitSHA"],SHA)
             self.assertEqual(m["sourceResearchCases"],36)
@@ -89,6 +96,25 @@ class NightlyManifestTests(unittest.TestCase):
                                         "PUBLIC_FDA_WATCH_CANNOT_PROMOTE_RESEARCH"):
                 provenance.build_manifest(d,"pdufa/pdufa-command-center",
                                           RUN,SHA,ARCHIVED)
+
+    def test_official_issuer_news_does_not_promote_fda_or_sec_identity(self):
+        with TemporaryDirectory() as td:
+            d=sample(td)
+            path=d/"raas-v2-issuer-news-fallback-research-leads.json"
+            original=json.loads(path.read_text("utf-8"))
+            for field,bad in (
+                ("secOfficialFilingsAccessRestoredByFallback",True),
+                ("newCurrentPendingApplicationNumbersIndependentlyVerified",1),
+                ("independentlyVerifiedFdaDeadlineRevisions",1),
+                ("newThreeWayPredictionsFromIssuerNews",1),
+            ):
+                w=deepcopy(original)
+                w[field]=bad
+                path.write_text(json.dumps(w),encoding="utf-8")
+                with self.subTest(field=field),self.assertRaisesRegex(
+                    ValueError,"ISSUER_NEWS_CANNOT_CERTIFY_SEC_FDA_OR_FORECAST"):
+                    provenance.build_manifest(d,"pdufa/pdufa-command-center",
+                                              RUN,SHA,ARCHIVED)
 
     def test_sec_filing_lead_tampering_does_not_certify_fda_action(self):
         with TemporaryDirectory() as td:
@@ -167,7 +193,7 @@ class NightlyManifestTests(unittest.TestCase):
                 provenance.build_manifest(d,"pdufa/pdufa-command-center",
                                           RUN,SHA,ARCHIVED)
 
-    def test_report_without_all_seven_source_files_fails_closed(self):
+    def test_report_without_all_eight_source_files_fails_closed(self):
         with TemporaryDirectory() as td:
             d=sample(td)
             (d/"raas-v2-prospective-source-review.csv").unlink()
