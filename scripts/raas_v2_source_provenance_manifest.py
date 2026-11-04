@@ -85,6 +85,14 @@ def validate_research_json(fda, v2):
             x.get("issuerGoalEvidenceOlderThan30DaysAtAudit") is True
             for x in latest)
         and v2.get("nov14IndependentlyCertifiedNoLaterFdaGoalRevisions")==0
+        and {x.get("researchCaseKey") for x in latest}=={
+            "CYTK|MYQORZO_HCM_20261114","SMMT|IVONESCIMAB_20261114"}
+        and next(x for x in latest if x.get("ticker")=="SMMT").get(
+            "laterIssuerReportMainSubjectIsDifferentTrial") is True
+        and next(x for x in latest if x.get("ticker")=="SMMT").get(
+            "laterIssuerReportSeparateTrialId")=="NCT07765433"
+        and next(x for x in latest if x.get("ticker")=="SMMT").get(
+            "pendingRegulatoryApplicationPivotalTrialId")=="NCT06396065"
         and all(x.get("currentlyIndependentlyCertifiedUnrevisedFdaDeadline") is False
             and x.get("currentFDAApplicationNumberIndependentlyVerified") is False
             and x.get("prospectivelyFrozenThreeWayForecast") is False
