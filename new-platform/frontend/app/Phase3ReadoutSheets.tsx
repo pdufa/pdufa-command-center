@@ -21,6 +21,10 @@ import {checkPhase3PublishedArithmetic} from "../lib/phase3-published-arithmetic
 import {phase3RegistryConcordance} from "../lib/phase3-registry-concordance";
 import protocolRegistry from "../data/phase3-protocol-registry-checks.json";
 import {surveyScoringAssessments,surveyScoringGateLabel} from "../lib/final-survey-scoring-protocol";
+import topRetrospectiveResearch from "../data/raas-retrospective-top-cases.json";
+import raasApprovedCalibrations from "../data/raas-approved-calibrations.json";
+import raasHistoricalCases from "../data/raas-historical-cases.json";
+import raasLegacyFDAAccuracy from "../data/raas-fda-three-way-accuracy-site-snapshot.json";
 
 type Bucket="pre"|"post"|"unverified";
 /** Reversible visibility-only feature; existing trial data and research sources are unchanged. */
@@ -687,7 +691,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
         {sortedHeader("nctId","NCT / trial")}
         {sortedHeader("company","Company")}
         {bucket==="post"&&sortedHeader("factorP","Factor P · p-value","Sort by reported numeric p-value threshold, not FDA approval probability")}
-        <th scope="col" title="Proposed phase-specific risk-adjusted appreciation score; grade not yet validated">{bucket==="pre"?"TOP-RAAS":"BOTTOM-RAAS"}</th>
+        <th scope="col" title="Proposed phase-specific risk-adjusted appreciation score; grade not yet validated">{bucket==="pre"?<><span>TOP-RAAS</span><TopRaasAccuracyButton/></>:<span>BOTTOM-RAAS</span>}</th>
         {showSurveys&&sortedHeader("survey","Survey Ratings","Sort by count of verified research inputs; not clinical quality")}
         {showSynthesis&&sortedHeader("synthesis","SURVEY","Sort by evidence-readiness gates; not expected stock appreciation")}
         {sortedHeader("drug","Drug / therapy")}
@@ -734,6 +738,50 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
     </table>
   </div>;
 }
+/** Phase-specific survey accuracy disclosure. The legacy 146-case binary
+ * accuracy benchmark is NOT a TOP survey accuracy estimate.
+ * Keep new TOP grades null until independently validated.
+ */
+function TopRaasAccuracyButton(){
+ const [open,setOpen]=useState(false);
+ const topCases=topRetrospectiveResearch.records.length;
+ const topApprovedMetrics=(raasApprovedCalibrations.entries as readonly {stage:string}[]).filter(x=>x.stage==="pre").length;
+ const topValidatedCases=(raasHistoricalCases.cases as readonly {stage:string}[]).filter(x=>x.stage==="pre").length;
+ const benchmark=raasLegacyFDAAccuracy;
+ const difference=benchmark.legacyRetrospectiveAccuracyPct-
+  benchmark.alwaysApproveRetrospectiveAccuracyPct;
+ return <div className={css.topRaasAccuracyRow} data-raas-top-survey-accuracy="UNVERIFIED"
+   data-raas-accuracy-scope="TOP_ONLY_NOT_LEGACY_COMBINED" role="group"
+   aria-label="TOP RAAS survey accuracy details">
+   <button type="button" className={css.topRaasAccuracyButton} aria-expanded={open}
+     aria-controls="top-raas-accuracy-breakdown"
+     onClick={()=>setOpen(value=>!value)}>
+     <span>TOP Accuracy · N/A</span>
+     <span className={css.topRaasAccuracyCaret} aria-hidden="true">{open?"◂":"▸"}</span>
+     <small>Not independently validated</small>
+   </button>
+   {open&&<div id="top-raas-accuracy-breakdown" className={css.topRaasAccuracyDetails}
+      data-raas-top-accuracy-expanded="true">
+     <strong>TOP survey · actual readings</strong>
+     <dl>
+       <div><dt>TOP research examples</dt><dd>{topCases}</dd></div>
+       <div><dt>Validated TOP cases</dt><dd>{topValidatedCases}</dd></div>
+       <div><dt>Calibrated TOP metrics</dt><dd>{topApprovedMetrics}/30</dd></div>
+       <div><dt>TOP prediction accuracy</dt><dd>N/A</dd></div>
+     </dl>
+     <strong>Separate legacy FDA benchmark · not TOP</strong>
+     <dl>
+       <div><dt>Legacy model</dt><dd>{benchmark.legacyRetrospectiveAccuracyPct.toFixed(2)}% · {benchmark.legacyCorrect}/{benchmark.legacyRetrospectiveCases}</dd></div>
+       <div><dt>Approval baseline</dt><dd>{benchmark.alwaysApproveRetrospectiveAccuracyPct.toFixed(2)}% · {benchmark.alwaysApproveCorrect}/{benchmark.legacyRetrospectiveCases}</dd></div>
+       <div><dt>Difference</dt><dd>{difference.toFixed(2)} pp</dd></div>
+     </dl>
+     <p>The {topCases} TOP cases are retrospectively selected examples, not
+       frozen RAAS predictions. The legacy 146-case reading combines a different
+       binary FDA task and must not be used as TOP survey accuracy.</p>
+   </div>}
+ </div>;
+}
+
 function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurveyOpen,
  benefitFeed,researchStatus,onResearchSort}:{
  bucket:"pre"|"post";rows:ReadoutRow[];query:string;caption:string;
