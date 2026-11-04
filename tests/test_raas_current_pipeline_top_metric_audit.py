@@ -31,20 +31,20 @@ class CurrentPipelineTests(unittest.TestCase):
         return audit.build(*(source if source is not None else self.raw),
                            as_of=as_of)
 
-    def test_five_phase3_cases_three_cap_qualified_issuers_not_pdufa(self):
+    def test_six_phase3_cases_four_cap_qualified_issuers_not_pdufa(self):
         rows, s = self.run_audit()
-        self.assertEqual(len(rows), 150)
-        self.assertEqual(s["pilotTrialCount"], 5)
-        self.assertEqual(s["uniqueIssuers"], 3)
+        self.assertEqual(len(rows), 180)
+        self.assertEqual(s["pilotTrialCount"], 6)
+        self.assertEqual(s["uniqueIssuers"], 4)
         self.assertEqual(s["trialsWithoutVerifiedToplineWindow"], 2)
-        self.assertEqual(s["pilotMetricSlots"], 150)
-        self.assertEqual(s["provisionalAiReviewedMetricSlots"], 24)
-        self.assertEqual(s["missingMetricSlots"], 126)
+        self.assertEqual(s["pilotMetricSlots"], 180)
+        self.assertEqual(s["provisionalAiReviewedMetricSlots"], 27)
+        self.assertEqual(s["missingMetricSlots"], 153)
         self.assertEqual(s["perTrialProvisionalReviewCount"],
                          {"NCT07363577":5, "NCT07671911":5,
                           "NCT07868419":5, "NCT07369154":4,
-                          "NCT06736574":5})
-        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"], 5)
+                          "NCT06736574":5, "NCT06641089":3})
+        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"], 6)
         self.assertEqual(s["humanIndependentReviewedMetricSlots"], 0)
         self.assertEqual(s["complete30MetricRaasScores"], 0)
         self.assertEqual(s["confirmedPdufaTargets"], 0)
@@ -54,7 +54,8 @@ class CurrentPipelineTests(unittest.TestCase):
             matched = [r for r in rows if r["nctId"] == nct]
             self.assertEqual(len(matched),30)
             self.assertEqual({r["metricId"] for r in matched},expected)
-            self.assertEqual({r["registryStatus"] for r in matched},{"RECRUITING"})
+            self.assertTrue({r["registryStatus"] for r in matched}.issubset(
+                            {"RECRUITING","ACTIVE_NOT_RECRUITING"}))
             self.assertTrue(all(r["currentSourceQualification"] ==
                                 "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA"
                                 for r in matched))
@@ -63,12 +64,12 @@ class CurrentPipelineTests(unittest.TestCase):
                                 and r["fdaPassCrlExtensionProbability"] == ""
                                 for r in matched))
 
-    def test_twentyfour_source_backed_clinical_financial_design_regulatory_grades_with_missing(self):
+    def test_twentyseven_source_backed_clinical_financial_design_regulatory_grades_with_missing(self):
         rows, _ = self.run_audit()
         rated = [r for r in rows if r["provisionalMetricScore"] != ""]
         na = [r for r in rows if r["provisionalMetricScore"] == ""]
-        self.assertEqual(len(rated),24)
-        self.assertEqual(len(na),126)
+        self.assertEqual(len(rated),27)
+        self.assertEqual(len(na),153)
         self.assertEqual({r["metricId"] for r in rated},
                          {"pre-1-1","pre-1-2","pre-1-4","pre-1-5","pre-3-2","pre-4-1"})
         self.assertTrue(all(r["provisionalMetricScore"] in (0,25,50,75,100)
@@ -84,8 +85,8 @@ class CurrentPipelineTests(unittest.TestCase):
 
     def test_market_cap_and_status_sources_expire_instead_of_silent_requalification(self):
         rows, s = self.run_audit(as_of="2026-11-11")
-        self.assertEqual(len(rows),150)
-        self.assertEqual(s["provisionalAiReviewedMetricSlots"],24)
+        self.assertEqual(len(rows),180)
+        self.assertEqual(s["provisionalAiReviewedMetricSlots"],27)
         self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"],0)
         self.assertEqual(set(s["eligibilityByNct"].values()),
                          {"STALE_MARKET_CAP_REVERIFY"})
@@ -143,10 +144,27 @@ class CurrentPipelineTests(unittest.TestCase):
         issuer_caps={}
         for row in rows:
             issuer_caps.setdefault(row["ticker"],set()).add(row["marketCapUsdAsOfSource"])
-        self.assertEqual(len(issuer_caps),3)
+        self.assertEqual(len(issuer_caps),4)
         self.assertTrue(all(len(caps)==1 for caps in issuer_caps.values()))
         self.assertEqual(status["confirmedPdufaTargets"],0)
         self.assertEqual(status["complete30MetricRaasScores"],0)
+
+    def test_moonlake_izar2_phase3_id_readout_and_partial_uncertainty(self):
+        rows,s=self.run_audit()
+        trial=[r for r in rows if r["nctId"]=="NCT06641089"]
+        self.assertEqual(len(trial),30)
+        self.assertTrue(all(r["ticker"]=="MLTX" and
+                            r["registryStatus"]=="ACTIVE_NOT_RECRUITING" and
+                            r["readoutExpectedWindow"]=="Q1 2027 (Week 16)" and
+                            r["pdufaTarget"]=="" and
+                            r["fdaPassCrlExtensionProbability"]==""
+                            for r in trial))
+        scored=[r for r in trial if r["provisionalMetricScore"]!=""]
+        self.assertEqual({r["metricId"] for r in scored},
+                         {"pre-1-2","pre-3-2","pre-4-1"})
+        self.assertEqual(len(scored),3)
+        self.assertEqual(s["perTrialProvisionalReviewCount"]["NCT06641089"],3)
+        self.assertEqual(s["confirmedPdufaTargets"],0)
 
     def test_missing_readout_window_must_not_be_invented(self):
         snap,reviews,cohort,ledger=self.raw
@@ -176,10 +194,10 @@ class CurrentPipelineTests(unittest.TestCase):
             if case["ticker"]=="TRVI":
                 case["marketCapUsd"]=299_999_999
         _, s = self.run_audit(source=(bad,reviews,cohort,ledger))
-        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"],3)
+        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"],4)
         self.assertIn("OUTSIDE_MARKET_CAP_RESTRICTIONS",s["eligibilityByNct"].values())
         csv_text,json_text=audit.generate(*self.raw,as_of="2026-11-04")
-        self.assertEqual(len(list(csv.DictReader(io.StringIO(csv_text)))),150)
+        self.assertEqual(len(list(csv.DictReader(io.StringIO(csv_text)))),180)
         self.assertEqual(json.loads(json_text)["confirmedPdufaTargets"],0)
         self.assertEqual(audit.safe("=SUM(A1:A3)"),"'=SUM(A1:A3)")
         self.assertEqual(audit.safe(""),"")

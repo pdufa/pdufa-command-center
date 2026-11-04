@@ -303,18 +303,32 @@ export default function RaasFullUniverseScores(){
    <strong>Current cap-screened Phase 3 TOP scoring pilot:</strong>{" "}
    <a href="/raas-current-pipeline-pre-metric-audit.csv" download
     style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
-    Download five current Phase 3 trial-by-trial 30-metric scorecards (150-row CSV)
+    Download six current Phase 3 TOP trial-by-trial 30-metric scorecards (180-row CSV)
    </a>.
-   Five source-checked $300M–$10B Phase 3 trial NCTs across <strong>three listed issuers
-   (TRVI, LBRX, CYTK)</strong>, including OCEAN-1, OCEAN-2, NOVA-2, NOVA-3 and COMET-HF,
-   with <strong>24 provisional pre-readout metric reviews and 126 missing metric reviews</strong>.
+   Six source-checked $300M–$10B Phase 3 pre-readout trial NCTs across <strong>four listed issuers
+   (TRVI, LBRX, CYTK, MLTX)</strong>, including OCEAN-1, OCEAN-2, NOVA-2, NOVA-3, COMET-HF and IZAR-2,
+   with <strong>27 provisional TOP metric reviews and 153 missing metric reviews</strong>.
    NOVA-3 is a 52-week open-label safety study; COMET-HF is event-driven.
    Neither has a verified topline date, so the audit leaves that field blank.
    Capitalization snapshots are dated November 3, 2026 and become <strong>stale
    after seven calendar days</strong> without another verified quote.
-   These are five sampled trials, <strong>not the complete current Pipeline</strong>.
+   These are six sampled TOP trials, <strong>not the complete current Pipeline</strong>.
    No trial here has an FDA-accepted NDA/BLA or source-verified PDUFA action date;
    no full 30/30 score, FDA probability or trade recommendation is available.
+  </p>
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-accepted-nda-pdufa-source-tracker="true">
+   <strong>Source-confirmed FDA-accepted applications and PDUFA dates:</strong>{" "}
+   <a href="/raas-current-accepted-fda-applications.csv" download
+    style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
+    Download COGT's three separate NDA events with exact PDUFA targets (CSV)
+   </a>. GIST (PEAK Phase 3) has a <strong>November 30, 2026</strong> PDUFA target.
+   Nonadvanced systemic mastocytosis (SUMMIT Phase 2) has <strong>December 30, 2026</strong>,
+   and advanced systemic mastocytosis (APEX Phase 2) has <strong>June 29, 2027</strong>.
+   Both Phase 2 pivotal studies are <strong>excluded</strong> from the required minimum
+   Phase 3 Pipeline, but retained in a separate FDA-calendar reference.
+   The tracker documents acceptance announcements, <strong>not an FDA approval,
+   complete RAAS rating, or validated PASS/CRL/extension forecast</strong>.
+   Cap quotes expire after seven calendar days without reverification.
   </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ten-trial-pilot-download="true">
    <strong>10-trial, 30-metric retrospective RAAS pilot:</strong>{" "}

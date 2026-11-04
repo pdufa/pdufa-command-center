@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_CURRENT_SOURCE_VERIFIED_PHASE3_CAP_SNAPSHOT_NOT_FDA_PDUFA",
   "asOf": "2026-11-04",
-  "notes": "Five explicitly and non-exhaustively source-checked current Phase 3 trial NCTs across TRVI, LBRX and CYTK, with $300M–$10B publicly traded issuer cap snapshot Nov 3 2026. Multiple NCTs per issuer share a single capitalization and cash figure and are NOT independent drug applications. Two studies (NOVA-3 and COMET-HF) have NO confirmed Phase 3 topline window: null (not 0, not an invented date). Cap quote expires after 7 calendar days, registry status after 30. All five are Phase 3 clinical research not FDA-accepted application/PDUFA decision.",
+  "notes": "Six source-checked current pre-readout Phase 3 NCTs across four publicly traded issuers TRVI LBRX CYTK MLTX, Nov3 2026 cap snapshot range $300M-$10B. Also separate accepted original Cogent GIST FDA NDA application tracked elsewhere (Phase3 PEAK NCT05208047), with mastocytosis Phase2 cases excluded by user's minimum Phase3 filter. Same issuer cash/cap must not be double-counted. Null future topline dates are never guessed. Cap stale after 7d, registry after 30d. IZAR-2 future Week16 results Q1 2027 distinct from IZAR-1 partial disclosure; no active accepted NDA or PDUFA assigned to IZAR-2.",
   "trialSnapshots": [
     {
       "nctId": "NCT07671911",
@@ -133,6 +133,32 @@
       "fdaApplicationAccepted": false,
       "pdufaTarget": null,
       "warnings": "Event-driven confirmatory 1,800-patient trial; no exact sponsor-verified topline date. Historical 2023 FDA CRL for previous omecamtiv NDA does NOT imply an FDA review or PDUFA target for COMET-HF. FDA required more efficacy evidence."
+    },
+    {
+      "nctId": "NCT06641089",
+      "ticker": "MLTX",
+      "company": "MoonLake Immunotherapeutics",
+      "drug": "sonelokimab",
+      "indication": "Psoriatic Arthritis",
+      "trialName": "IZAR-2",
+      "researchStage": "pre",
+      "clinicalRegistryUrl": "https://clinicaltrials.gov/study/NCT06641089",
+      "registryReportedStatus": "ACTIVE_NOT_RECRUITING",
+      "registryStatusCheckedAt": "2026-11-04",
+      "issuerTrialSourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "marketCapUsd": 995750000,
+      "marketCapAsOf": "2026-11-03",
+      "marketCapSourceUrl": "https://stockanalysis.com/stocks/mltx/statistics/",
+      "publicMarket": "NASDAQ",
+      "phase": "PHASE3",
+      "readoutExpectedWindow": "Q1 2027 (Week 16)",
+      "readoutWindowEnd": "2027-03-31",
+      "readoutGuidancePublished": "2026-11-04",
+      "readoutGuidanceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "phase3OutcomeAlreadyPublic": false,
+      "fdaApplicationAccepted": false,
+      "pdufaTarget": null,
+      "warnings": "Trial IZAR-2 active/not recruiting, anti-TNF inadequate responders. Q1 2027 Week-16 INITIAL TOPLINE expected. Week-52 Q4 2027 is distinct. IZAR-1 Week-16 42.1% ACR50 is SINGLE-ARM preliminarily unblinded bio-naive group with placebo comparisons still blinded; must not be assigned to IZAR-2. The sonelokimab HS BLA submitted Sep 30 is another indication and NOT accepted/PDUFA as of Nov 4."
     }
   ]
 }
