@@ -35,6 +35,10 @@ const sameTrial=(e:RegistryTrialEvidence,t:{nctId:string;ticker:string;drug?:str
  if(e.nctId!==t.nctId||!exact(e.ticker,t.ticker))return false;
  const drug=t.drug?.trim().toLowerCase();
  if(!drug)return true;
+ // Early registry receipts omitted the intervention list. Exact NCT + ticker
+ // still identify this TRIAL as a source lead, but NEVER establish a drug-level
+ // causal result or authorize a numerical grade. New receipts preserve names.
+ if(e.registeredInterventions.length===0)return true;
  // Do not attach a source to a different drug in a multi-asset issuer.
  const names=drug.split(/[|;]/).map(x=>x.replace(/\([^)]*\)/g,"").trim()).filter(Boolean);
  if(!names.length)return false;

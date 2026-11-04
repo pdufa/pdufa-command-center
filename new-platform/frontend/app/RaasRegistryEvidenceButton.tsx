@@ -75,6 +75,8 @@ export default function RaasRegistryEvidenceButton({row}:{row:ReadoutRow}){
         "Registry-posted results present; require metric-specific review before scoring":
         "Not posted in the source snapshot — protocol information only"}.
         {" "}First result publication: {evidence.resultsFirstPosted||"Not verified"}.</p>
+       <p><strong>Registered interventions:</strong> {evidence.registeredInterventions.length?
+        evidence.registeredInterventions.join(", "):"Not in this source snapshot — program-specific attribution requires review"}.</p>
        <details open>
         <summary style={{fontWeight:700,cursor:"pointer"}}>Registered primary outcome definitions</summary>
         {evidence.primaryDefinitions.length?evidence.primaryDefinitions.map((x,i)=>

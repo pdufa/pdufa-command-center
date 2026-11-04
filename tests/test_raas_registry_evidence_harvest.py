@@ -17,6 +17,7 @@ def study(nct="NCT06445023",posted=False):
           "lastUpdatePostDateStruct":{"date":"2026-09-28"}},
         "sponsorCollaboratorsModule":{"leadSponsor":{"name":"Independent Sponsor"}},
         "designModule":{"phases":["PHASE3"]},
+        "armsInterventionsModule":{"interventions":[{"type":"DRUG","name":"Barzolvolimab"},{"type":"OTHER","name":"Placebo"}]},
         "outcomesModule":{"primaryOutcomes":[{"measure":"Change in observed disease severity",
                 "timeFrame":"Week 12"}],"secondaryOutcomes":[{"measure":"Quality of life"}]}}
       ,"hasResults":posted}
@@ -52,6 +53,7 @@ class RegistryEvidenceTest(unittest.TestCase):
     def test_protocol_only_evidence_never_assigned_outcome_or_score(self):
         result=mod.extract("NCT06445023","CLDX",study(),"2026-11-04T15:00:00Z")
         self.assertEqual(result["registeredPrimaryOutcomes"][0]["timeFrame"],"Week 12")
+        self.assertEqual(result["registeredInterventions"],["Barzolvolimab","Placebo"])
         self.assertFalse(result["hasPostedResults"])
         self.assertEqual(result["postedPrimaryOutcomeCount"],0)
         self.assertEqual(result["evidenceState"],"PROTOCOL_ONLY")
