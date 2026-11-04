@@ -68,7 +68,7 @@
       ],
       "pdufaTargetDate": "2025-09-25",
       "targetAnnouncementDate": "2024-12-09",
-      "targetAnnouncementSourceUrl": "https://crinetics.com/press-releases/crinetics-announces-fda-acceptance-of-new-drug-application-for-paltusotine-for-adult-patients-with-acromegaly/",
+      "targetAnnouncementSourceUrl": "https://www.sec.gov/Archives/edgar/data/1658247/000095017024134342/crnx-ex99_1.htm",
       "phase3ReadoutDate": "2024-03-19",
       "phase3ReadoutSourceUrl": "https://ir.crinetics.com/news/news-details/2024/CRINETICS-ONCE-DAILY-ORAL-PALTUSOTINE-ACHIEVED-THE-PRIMARY-AND-ALL-SECONDARY-ENDPOINTS-IN-THE-PHASE-3-PATHFNDR-2-STUDY-IN-ACROMEGALY-PATIENTS-03-19-2024/default.aspx",
       "firstPhase3ReadoutDate": "2023-09-10",
@@ -83,7 +83,8 @@
       "historicalCapitalizationAtEntryVerified": false,
       "phase3RegistryStudyIdentityVerified": true,
       "approvedAsTradingCase": false,
-      "reviewNotes": "Two Phase 3 trials dated before 2025 PDUFA target announcement; Palsonify approved on target date. Historical entry-day capitalization, price crosscheck, and full case chronology remain unverified."
+      "reviewNotes": "Two Phase 3 trials dated before 2025 PDUFA target announcement; Palsonify approved on target date. Historical entry-day capitalization, price crosscheck, and full case chronology remain unverified.",
+      "targetAnnouncementIndependentConfirmationUrl": "https://ir.crinetics.com/news/news-details/2024/CRINETICS-ANNOUNCES-FDA-ACCEPTANCE-OF-NEW-DRUG-APPLICATION-FOR-PALTUSOTINE-FOR-ADULT-PATIENTS-WITH-ACROMEGALY-12-09-2024/default.aspx"
     }
   ],
   "excludedRecords": [
