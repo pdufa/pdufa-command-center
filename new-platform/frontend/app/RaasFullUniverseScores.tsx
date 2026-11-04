@@ -287,6 +287,18 @@ export default function RaasFullUniverseScores(){
    zero; a Phase 3 registration does not verify current PIPELINE eligibility,
    readout stage or prospective FDA PASS/CRL/extension probabilities.
   </p>
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-active-phase3-cap-screen-download="true">
+   <strong>All-trial active Phase 3 and market-cap prescreen:</strong>{" "}
+   <a href="/raas-active-phase3-source-screen.csv" download
+    style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
+    Download all 762 NCTs, source-based eligibility flags and missing FDA pathway checks
+   </a>. Flags combine exact ClinicalTrials.gov registry Phase 3, current active
+   enrollment status, and Nasdaq-sourced $300M–$10B cap observed within seven days.
+   Each trial keeps its TOP/BOTTOM reviewed metric count and missing regulatory
+   requirements. <strong>These are science-review candidates, not verified PDUFA
+   applicants or FDA approval predictions.</strong> Registered interventions may
+   include comparators and still need exact drug/indication review.
+  </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-current-phase3-top-pilot-download="true">
    <strong>Current cap-screened Phase 3 TOP scoring pilot:</strong>{" "}
    <a href="/raas-current-pipeline-pre-metric-audit.csv" download
