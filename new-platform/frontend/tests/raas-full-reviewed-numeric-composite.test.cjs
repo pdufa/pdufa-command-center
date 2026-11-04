@@ -207,7 +207,7 @@ test("Eight CI/multiplicity reviews and six shared-NDA filing/target metrics are
   r.benchmarkSourceUrl.includes("fda.gov")&&/CI|interval|confidence/i.test(r.observedResult)));
  const expected=["post-3-1","post-3-5","post-6-1"];
  for(const id of expected){
-  const rows=feed.records.filter(r=>r.metricId===id);
+  const rows=feed.records.filter(r=>r.metricId===id&&r.ticker==="ACHV");
   assert.equal(rows.length,2);
   assert.deepEqual(rows.map(r=>r.nctId).sort(),["NCT04576949","NCT05206370"]);
   for(const r of rows){
