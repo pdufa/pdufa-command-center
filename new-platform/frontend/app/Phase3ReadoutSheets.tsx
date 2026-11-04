@@ -5,6 +5,7 @@ import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import css from "./Phase3ReadoutSheets.module.css";
 import TrialRaasDisclosure from "./TrialRaasDisclosure";
+import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
 import RaasAllClassifiedLiveReview from "./RaasAllClassifiedLiveReview";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
@@ -758,6 +759,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
         </td>}<td>
           <TrialRaasDisclosure row={row} bucket={bucket} researchStatus={researchStatus}
             coverage={researchFor(row)} benefitFeed={benefitFeed} onResearchRequest={onRaasOpen}/>
+          <RaasTrialHistoryButton row={row} bucket={bucket}/>
         </td>{showSurveys&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"details")}
             aria-label={(bucket==="pre"?"Explore TOP pre-readout":"Explore BOTTOM post-readout")+" survey ingredients and shared five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>

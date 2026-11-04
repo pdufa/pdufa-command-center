@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_TRIAL_SCORE_HISTORY",
+  "note": "Append-only, trial-centred, cross-stage capture journal. First capture date is when the system saved an observation, never a reconstructed prediction timestamp. Historical TOP entries remain when the same NCT+drug+indication moves to BOTTOM. Evidence-only updates are UNSCORED, not zero; validated and provisional 0-100 ratings require separately versioned evidence-backed score events.",
+  "records": []
+}
