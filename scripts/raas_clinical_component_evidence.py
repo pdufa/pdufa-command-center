@@ -37,7 +37,8 @@ COMPONENT_FIELDS = (
 COMPARE_FIELDS = (
     "nctId", "ticker", "sourceUrl", "registrySourceAsOf", "outcomeIndex",
     "outcomeTitle", "outcomeTimeFrame", "outcomeUnit", "analysisIndex",
-    "groupIdsAsReported", "analysisMethod", "parameterType", "parameterValueAsReported",
+    "groupIdsAsReported", "groupTitlesAsReported", "groupTitleResolution",
+    "analysisMethod", "parameterType", "parameterValueAsReported",
     "pValueAsReported", "confidenceLevelAsReported", "confidenceLowerAsReported",
     "confidenceUpperAsReported", "interpretation"
 )
@@ -88,6 +89,7 @@ def build_components(index: dict) -> tuple[list[dict], list[dict], list[dict], d
         raise ValueError("RAAS_CLINICAL_COMPONENT_SOURCE_DATE_MISSING")
     components, comparisons, safety = [], [], []
     ids = set()
+    comparison_titles_resolved = 0
     for e in sorted(index["records"], key=lambda r: (r.get("ticker", ""), r.get("nctId", ""))):
         nct, ticker = e.get("nctId"), e.get("ticker")
         if (not isinstance(nct, str) or not NCT.fullmatch(nct) or
@@ -108,6 +110,16 @@ def build_components(index: dict) -> tuple[list[dict], list[dict], list[dict], d
                 if not isinstance(outcome, dict):
                     raise ValueError("RAAS_CLINICAL_COMPONENT_BAD_OUTCOME")
                 measured |= bool(outcome.get("measurements"))
+                title_index = {}
+                ambiguous_ids = set()
+                for group in outcome.get("groups") or []:
+                    gid, title = group.get("id"), group.get("title")
+                    if not isinstance(gid, str) or not gid.strip():
+                        continue
+                    title = title.strip() if isinstance(title, str) else ""
+                    if gid in title_index and title_index[gid] != title:
+                        ambiguous_ids.add(gid)
+                    title_index[gid] = title
                 for ai, a in enumerate(outcome.get("comparisons") or [], 1):
                     gids = a.get("groupIds") or []
                     # Without two explicitly identified groups, a numeric
@@ -117,6 +129,12 @@ def build_components(index: dict) -> tuple[list[dict], list[dict], list[dict], d
                     ):
                         continue
                     contrasted = True
+                    group_titles = [
+                        "" if gid in ambiguous_ids else title_index.get(gid, "")
+                        for gid in gids
+                    ]
+                    titles_resolved = all(bool(title) for title in group_titles)
+                    comparison_titles_resolved += int(titles_resolved)
                     intervals |= _safe_interval(a)
                     statistics |= bool(str(a.get("pValue") or "").strip() or
                                        _numeric_string(a.get("paramValue")))
@@ -127,6 +145,10 @@ def build_components(index: dict) -> tuple[list[dict], list[dict], list[dict], d
                         "outcomeTimeFrame": outcome.get("timeFrame", ""),
                         "outcomeUnit": outcome.get("unit", ""),
                         "analysisIndex": ai, "groupIdsAsReported": ";".join(gids),
+                        "groupTitlesAsReported": " | ".join(group_titles),
+                        "groupTitleResolution": (
+                            "ALL_EXACT_SOURCE_TITLES" if titles_resolved
+                            else "NOT_ALL_TITLES_SOURCE_RESOLVED"),
                         "analysisMethod": a.get("method") or "",
                         "parameterType": a.get("paramType") or "",
                         "parameterValueAsReported": a.get("paramValue") or "",
@@ -192,6 +214,7 @@ def build_components(index: dict) -> tuple[list[dict], list[dict], list[dict], d
         "trialsWithObservedSafetyGroupRates": sum(
             bool(r["safetyRateDenominatorsDocumented"]) for r in components),
         "primaryGroupComparisonRows": len(comparisons),
+        "comparisonRowsWithExactSourceGroupTitles": comparison_titles_resolved,
         "observedSeriousEventGroupRateRows": len(safety),
         "fullValidatedRaasScores": 0,
         "warning": "Five-feature completeness grade rates SOURCE REPORTING, not benefit or risk. The arm contrasts and serious-event rates are raw per-group facts, not drug-versus-placebo effects. No cohort entry gains a validated FDA, safety, clinical success or full 30/30 RAAS score."
