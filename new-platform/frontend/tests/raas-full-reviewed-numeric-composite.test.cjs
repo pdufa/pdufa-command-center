@@ -88,3 +88,49 @@ test("unfilled source intake truthfully contains no numerical reviewed composite
  assert.equal(result.fullResearchScore,null);
  assert.equal(result.missingMetricIds.length,30);
 });
+test("AI source crosschecks do not count as independent 30-of-30 reviews even when all 30 have grades",()=>{
+ const feed=makeFeed("post");
+ const ai=parseReviewedMetricFeed({...feed,records:feed.records.map(r=>({
+  ...r,independentReview:"AI_SOURCE_CROSSCHECKED",
+  reviewerMethod:"AI model source and independent literature crosscheck, no external human reviewer"
+ }))});
+ const result=fullReviewedTrialCandidate(trial,"post",true,ai);
+ assert.equal(result.reviewedCount,30);
+ assert.equal(result.aiCrosscheckedCount,30);
+ assert.equal(result.independentReviewedCount,0);
+ assert.equal(result.fullResearchScore,null);
+ assert.equal(result.approvedOverallScore,null);
+});
+test("live exact-trial Celldex source checks contain four provisional grades and zero human independent reviews",()=>{
+ const path=require("node:path");
+ const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const feed=parseReviewedMetricFeed(raw);
+ assert.equal(feed.records.length,4);
+ assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
+ for(const nctId of ["NCT06445023","NCT06455202"]){
+  const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
+   indication:"chronic spontaneous urticaria"},"post",true,feed);
+  assert.equal(x.aiCrosscheckedCount,2);
+  assert.equal(x.independentReviewedCount,0);
+  assert.deepEqual(x.grades.map(g=>g.metricId).sort(),["post-1-1","post-1-2"]);
+  assert.equal(x.fullResearchScore,null);
+  assert.equal(x.missingMetricIds.length,28);
+  assert.ok(x.grades.every(g=>g.reviewClass==="AI_SOURCE_CROSSCHECKED"));
+ }
+});
+test("AI clinical score does not leak to another drug, indication or readout stage",()=>{
+ const raw=JSON.parse(fs.readFileSync(require("node:path").join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const feed=parseReviewedMetricFeed(raw);
+ const t={nctId:"NCT06445023",ticker:"CLDX",drug:"barzolvolimab",
+  indication:"chronic spontaneous urticaria"};
+ for(const bad of [{...t,ticker:"OTHER"},{...t,drug:"wrong drug"},
+  {...t,indication:"wrong indication"}]){
+  const x=fullReviewedTrialCandidate(bad,"post",true,feed);
+  assert.equal(x.aiCrosscheckedCount,0);
+  assert.equal(x.fullResearchScore,null);
+ }
+ const pre=fullReviewedTrialCandidate(t,"pre",true,feed);
+ assert.equal(pre.aiCrosscheckedCount,0);
+});
