@@ -176,14 +176,24 @@ VERIFIED_FDA_IDS_BY_PROGRAM = {
 }
 
 
+FDA_CHART_CATEGORIES = frozenset(["original-approval","supplement-approval","tentative-action","crl","adcom","pdufa-extension","inspection","label","rems","designation","submission","review-letter","resubmission"])
+FDA_CATEGORY_ROW_ID = "overlay-category-selection-v1"
+
+
 class CustomFdaOverlayPayload(BaseModel):
     version: int = Field(ge=0)
     markers: list[CustomFdaMarker] = Field(default_factory=list, max_length=40)
     verifiedOverrides: list[VerifiedFdaDisplayOverride] = Field(default_factory=list, max_length=20)
+    enabledCategories: list[str] | None = Field(default=None, max_length=20)
 
     def canonical(self, program_id: str) -> list[dict]:
         from datetime import date as caldate
         allowed_colors = {"#7c3aed", "#0d9488", "#db2777", "#2563eb", "#d97706"}
+        if self.enabledCategories is not None and (
+            len(set(self.enabledCategories)) != len(self.enabledCategories)
+            or any(cat not in FDA_CHART_CATEGORIES for cat in self.enabledCategories)
+        ):
+            raise HTTPException(status_code=422, detail="Unknown or repeated FDA chart category")
         ids = [m.id for m in self.markers] + [o.id for o in self.verifiedOverrides]
         if len(ids) != len(set(ids)):
             raise HTTPException(status_code=422, detail="Duplicate marker IDs")
@@ -216,6 +226,9 @@ class CustomFdaOverlayPayload(BaseModel):
                     chartLabel=o.chartLabel.strip(), color=o.color,
                     visible=o.visible, kind="verified_override")
                for o in self.verifiedOverrides]
+            + ([dict(id=FDA_CATEGORY_ROW_ID, kind="category_selection",
+                     enabledCategories=sorted(self.enabledCategories))]
+               if self.enabledCategories is not None else [])
         )
 
 
@@ -1226,6 +1239,18 @@ def get_fda_chart_overlay(program_id: str):
                                   or (program_id == "PDUFA-000069" and
                                       re.fullmatch(r"verified-openfda-nda219083-suppl-[0-9]{1,5}",
                                                    str(m.get("id",""))) is not None))] if row else [],
+            "enabledCategories": next((
+                m.get("enabledCategories") for m in (row.markers or [])
+                if isinstance(m, dict) and m.get("id") == FDA_CATEGORY_ROW_ID
+                and m.get("kind") == "category_selection"
+                and isinstance(m.get("enabledCategories"), list)
+            ), sorted(FDA_CHART_CATEGORIES)) if row else sorted(FDA_CHART_CATEGORIES),
+            "categorySourceCoverage": {
+                "automatic": ["original-approval", "supplement-approval", "tentative-action"],
+                "awaiting_separate_source": sorted(FDA_CHART_CATEGORIES - {
+                    "original-approval", "supplement-approval", "tentative-action",
+                }),
+            },
             "version": row.version if row else 0,
             "updatedAt": row.updated_at if row else None,
             "scope": "CUSTOM_AND_DISPLAY_OVERRIDES",
@@ -1245,6 +1270,9 @@ def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
         if not session.get(ProgramIdentity, int(program_id[6:])):
             raise HTTPException(status_code=404, detail="Unknown permanent Program ID")
         if payload.version == 0:
+            if payload.enabledCategories is None:
+                markers.append(dict(id=FDA_CATEGORY_ROW_ID, kind="category_selection",
+                                    enabledCategories=sorted(FDA_CHART_CATEGORIES)))
             session.add(FdaChartOverlay(
                 program_id=program_id, markers=markers, version=1, updated_at=now,
             ))
@@ -1254,6 +1282,14 @@ def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
                 session.rollback()
                 raise HTTPException(status_code=409, detail="Overlay changed elsewhere; reload first") from None
             return {"saved": True, "programId": program_id, "version": 1, "updatedAt": now}
+        if payload.enabledCategories is None:
+            prior = session.get(FdaChartOverlay, program_id)
+            category = next((m for m in (prior.markers or []) if isinstance(m, dict)
+                             and m.get("id") == FDA_CATEGORY_ROW_ID), None) if prior else None
+            markers.append(category or dict(
+                id=FDA_CATEGORY_ROW_ID, kind="category_selection",
+                enabledCategories=sorted(FDA_CHART_CATEGORIES),
+            ))
         result = session.execute(
             update(FdaChartOverlay)
             .where(FdaChartOverlay.program_id == program_id, FdaChartOverlay.version == payload.version)
