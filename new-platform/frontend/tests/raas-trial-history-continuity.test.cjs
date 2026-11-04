@@ -20,10 +20,14 @@ const source=(stage,sourceId,metricId,drug="Drug X")=>({sourceAsOf:"2026-11-03",
  records:[{nctId:"NCT12345678",ticker:"ABCD",drug,indication:"Condition Y",stage,
  observations:[{id:sourceId,sourceUrl:"https://example.org/"+sourceId,metricIds:[metricId]}]}]});
 const date1="2026-11-03T21:00:00.000Z",date2="2026-11-03T22:00:00.000Z";
-test("saved history schema starts empty; no fictitious RAAS score",()=>{
+test("persisted source history is preserved and contains no invented overall RAAS scores",()=>{
  const d=JSON.parse(read("data/raas-trial-score-history.json"));
- assert.equal(d.records.length,0);
- assert.equal(history.parseRaasTrialHistory(d).records.length,0);
+ assert.ok(d.records.length>=7);
+ const parsed=history.parseRaasTrialHistory(d);
+ assert.equal(parsed.records.length,d.records.length);
+ assert.ok(parsed.records.every(x=>x.score===null&&x.scoreKind==="UNSCORED"));
+ assert.ok(parsed.records.some(x=>x.kind==="METRIC_SCORE_UPDATED"));
+ assert.equal(new Set(parsed.records.map(x=>x.eventId)).size,parsed.records.length);
 });
 test("first saved evidence event is timestamped and not numeric",()=>{
  const candidates=capture.collectSourceCandidates([source("pre","a","pre-1-1")]);
