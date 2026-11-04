@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
-import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
+import {parsePhase3CensusCsv,type Phase3CensusRegistryStatus} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import {parseRaasScreenedPhase3Csv,RAAS_RESTRICTED_PHASE3_CSV_QUERY,
  type RaasScreenedTrialRoster} from "../lib/raas-full-universe-roster";
@@ -47,7 +47,7 @@ export default function RaasFullUniverseScores(){
  const [live,setLive]=useState<RaasScreenedTrialRoster|null>(null);
  const [liveState,setLiveState]=useState<"loading"|"ready"|"unavailable">("loading");
  const [liveError,setLiveError]=useState("");
- const [scope,setScope]=useState<"cap"|"historical">("cap");
+ const [scope,setScope]=useState<"cap"|"historical"|"registry">("registry");
  const [query,setQuery]=useState("");
  const [stage,setStage]=useState<"all"|"pre"|"post"|"unverified">("all");
  const [rating,setRating]=useState<"all"|"scored"|"missing">("all");
@@ -97,9 +97,24 @@ export default function RaasFullUniverseScores(){
  const historical=useMemo(()=>classified?
   [...classified.pre,...classified.post,...classified.unverified].sort(
    (a,b)=>a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId)):[],[classified]);
+ const registryResearchRows=useMemo(()=>{
+  if(!classified||!registryIndex)return [];
+  const documented=new Map([...classified.pre,...classified.post].map(x=>[x.nctId,x]));
+  const validStatuses=new Set(["RECRUITING","ACTIVE_NOT_RECRUITING","ENROLLING_BY_INVITATION",
+   "NOT_YET_RECRUITING","COMPLETED","TERMINATED","WITHDRAWN"]);
+  return registryIndex.records.map(entry=>{
+   const prior=documented.get(entry.nctId);
+   const matched=prior&&prior.ticker===entry.ticker?prior:null;
+   return {nctId:entry.nctId,ticker:entry.ticker,
+    company:matched?matched.company:"Issuer name not in this registry source",
+    status:(validStatuses.has(entry.registryStatus)?entry.registryStatus:"UNKNOWN") as Phase3CensusRegistryStatus,
+    sourceUrl:entry.sourceUrl,pipelineQualification:null,fdaPdufaVerification:false as const,
+    evidence:matched?matched.evidence:null};
+  }).sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId));
+ },[classified,registryIndex]);
  const effectiveLive=scope==="cap"&&liveState==="ready"&&live!==null;
  const fallback=scope==="cap"&&!effectiveLive;
- const universe=effectiveLive?live!.rows:historical;
+ const universe=scope==="registry"?registryResearchRows:effectiveLive?live!.rows:historical;
  const assessments=useMemo(()=>universe.map(assess),[universe]);
  const indexed=useMemo(()=>assessments.map(x=>{
   const trial={nctId:x.row.nctId,ticker:x.row.ticker,drug:x.row.evidence?.drug};
@@ -137,8 +152,12 @@ export default function RaasFullUniverseScores(){
  if(censusError)return <section className={css.section} role="alert">
   <h2>All-trial RAAS assessment</h2><p>{censusError}. No trial counts asserted.</p></section>;
  if(!classified)return <section className={css.section} role="status">Loading the full Phase 3 source census and readout classifications…</section>;
+ if(scope==="registry"&&!registryIndex)return <section className={css.section} role="status">
+  Loading all 762 unique ClinicalTrials.gov research records and raw design grades…
+ </section>;
  return <section className={css.section} data-raas-all-trials="true"
-  data-raas-roster-scope={effectiveLive?"cap-screened":"historical-census"}>
+  data-raas-roster-scope={scope==="registry"?"registry-762-research":
+   effectiveLive?"cap-screened":"historical-census"}>
   <div className={css.sectionTitle}>
    <h2>RAAS assessment · all available Phase 3 trial rows</h2>
    <span>{short(assessments.length)} trials in selected source · no five-trial cap</span>
@@ -153,6 +172,13 @@ export default function RaasFullUniverseScores(){
    Use the Registry facts button
    on every row, including UNVERIFIED, to inspect newly collected evidence.</p>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",margin:"12px 0"}}>
+   <button type="button" aria-pressed={scope==="registry"}
+    data-raas-full-source-roster="true" onClick={()=>{setScope("registry");setPage(0)}}
+    style={{padding:"9px 12px",fontWeight:700,
+     background:scope==="registry"?"#dceddf":"#f8fbf8",
+     border:"1px solid #a9c8b3",borderRadius:7,color:"#144e32"}}>
+    All 762 registry research trials · raw grades
+   </button>
    <button type="button" aria-pressed={scope==="cap"}
     onClick={()=>{setScope("cap");setPage(0)}}
     style={{padding:"9px 12px",fontWeight:700,
@@ -176,11 +202,19 @@ export default function RaasFullUniverseScores(){
   {fallback&&<p className={css.disclaimer} role="status"><strong>Screened source {liveState==="loading"?"loading":"unavailable"}.</strong>
    {liveError?" "+liveError+".":""} Showing the <strong>741-trial historical research census as a labeled fallback</strong>,
    not substituting it for the complete current PIPELINE.</p>}
-  {!fallback&&<p className={css.disclaimer} role="status">
+  {scope==="cap"&&!fallback&&<p className={css.disclaimer} role="status">
    <strong>Screened-source snapshot:</strong> {live!.sourceAsOf}.
    This is the available $300M–$10B issuer-cap-screened Phase 3/Phase 3 Results
    subset from the existing TOOLS source. It is <strong>not</strong> proof
    of current capitalization, active study, lead-program status or FDA PDUFA eligibility.</p>}
+  {scope==="registry"&&registryIndex&&<p className={css.disclaimer}
+   data-raas-registry-full-762-status="true">
+   Complete exact-NCT ClinicalTrials.gov research population: {registryIndex.records.length}
+   trials, source snapshot {registryIndex.sourceAsOf}. This research inventory
+   is not independently confirmed to be current $300M–$10B PIPELINE, or issuer-evidenced
+   TOP/BOTTOM status. The raw 0–100 study-design diagnostic is separate from
+   validated 30-metric RAAS scores and cannot predict efficacy, FDA decisions or returns.
+  </p>}
   {scope==="historical"&&<p className={css.disclaimer}>
    Historical research census dated {classified.censusDate}; classification sources last checked
    {classified.sourceAsOf}. These 741 NCTs are not the full currently qualified PIPELINE.</p>}
