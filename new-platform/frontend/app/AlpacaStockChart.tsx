@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {chartStudiesForWtChecks,WT_CHART_NAMES,type WtChartStudy} from "../lib/wt-chart-indicator-map";
 type Bar={date:string;open:number;high:number;low:number;close:number;volume:number};
-export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source?:string;planned?:boolean;custom?:boolean;id?:string;color?:string;visible?:boolean;edited?:boolean;originalDate?:string};
+export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source?:string;planned?:boolean;custom?:boolean;id?:string;color?:string;visible?:boolean;edited?:boolean;originalDate?:string;category?:string};
 type Market={provider:string;programId:string;ticker:string;feed:string;coverage:string;status:string;bars:Bar[];asOf:string|null;message:string;researchOnly:boolean};
 type Range="1M"|"3M"|"6M"|"1Y"|"ALL";
 type ChartSeries=WtChartStudy|"ema10"|"ema20"|"ema50"|"macd";
