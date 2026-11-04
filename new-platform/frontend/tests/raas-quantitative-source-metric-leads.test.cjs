@@ -71,6 +71,19 @@ test("malformed numeric values, absent matched pair, and impossible adverse rate
  assert.equal(xs.filter(x=>x.kind==="POSTED_PRIMARY_P_VALUE_RAW_MEASUREMENT").length,0);
  assert.equal(xs.filter(x=>x.kind==="POSTED_SAE_AFFECTED_RATE_RAW_MEASUREMENT").length,1);
 });
+test("null source serious-event cells remain missing and never become zero or false rates",()=>{
+ const e=sample();
+ e.seriousEventDetails[0].groups.push({groupId:"EG002",numAffected:null,numAtRisk:null,numEvents:null});
+ const ix={schemaVersion:1,scope:"RAAS_REGISTRY_TRIAL_EVIDENCE_INDEX",source:"ClinicalTrials.gov API v2",
+  sourceAsOf:"2026-11-04",summary:{researchNcts:1,registryRecords:1,
+   postedRegistryResults:1,protocolOnly:0,approvedOverallRaasScores:0},
+  records:[e]};
+ assert.equal(registry.parseRegistryEvidenceIndex(ix).records.length,1);
+ const f=registry.registryMetricLeads(e,"post",trial(e))
+  .filter(x=>x.kind==="POSTED_SAE_AFFECTED_RATE_RAW_MEASUREMENT");
+ assert.equal(f.length,2);
+ assert.ok(f.every(x=>x.measurement.value>0));
+});
 test("source numerical observations are rendered under the existing 30-metric evidence, not overall RAAS",()=>{
  const book=fs.readFileSync(path.join(root,"lib/raas-metric-gradebook.ts"),"utf8");
  const panel=fs.readFileSync(path.join(root,"app/RaasMetricGradebook.tsx"),"utf8");
