@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import AlpacaStockChart, { type FdaMilestone } from "../AlpacaStockChart";
+import type { FdaMilestone } from "../AlpacaStockChart";
+import FdaOverlayEditor from "../FdaOverlayEditor";
 
 export const metadata: Metadata = {
   title: "CYTK — Alpaca Chart | PDUFA Command Center",
@@ -52,7 +53,7 @@ export default function CytkAlpacaPage() {
       <p><Link href="/">PDUFA Dashboard / Sign in</Link></p>
       <h1>CYTK — Alpaca Stock Price Chart</h1>
       <p>Read-only, authenticated Alpaca market data. Exact registered PDUFA program: <strong>PDUFA-000069</strong>.</p>
-      <AlpacaStockChart ticker="CYTK" programId="PDUFA-000069" milestones={cytkEvents} />
+      <FdaOverlayEditor ticker="CYTK" programId="PDUFA-000069" verifiedEvents={cytkEvents} />
       <section className="panel" style={{marginTop: 14}}>
         <h2>PDUFA milestone</h2>
         <p><strong>November 14, 2026:</strong> recorded FDA target date for the MYQORZO (aficamten) HCM application. This target is shown on the chart as an <strong>amber dashed FDA milestone</strong> when Alpaca returns the price history. Purple markers show past source-backed events. Dates and source links remain listed even if the market feed is unavailable.</p>
