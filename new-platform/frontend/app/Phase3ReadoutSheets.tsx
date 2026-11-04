@@ -1106,11 +1106,12 @@ export default function Phase3ReadoutSheets(){
         </TrialColumnFilterBar>
         <div className={css.tableScroll} role="region" aria-label="Unverified Phase 3 readout research queue" tabIndex={0}>
           <table className={css.table}>
-            <thead><tr><th>NCT</th><th>Ticker</th><th>Company</th><th>Registry status</th><th>Public readout</th></tr></thead>
+            <thead><tr><th>NCT</th><th>Ticker</th><th>Company</th><th>Registry status</th><th>Public readout</th><th>RAAS History</th></tr></thead>
             <tbody>{unknown.slice(activePage*LIMIT,(activePage+1)*LIMIT).map(row=><tr key={row.nctId}>
               <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
               <td>{row.ticker}</td><td>{row.company}</td><td>{row.status.replaceAll("_"," ")}</td>
               <td>Not verified — research required</td>
+              <td><RaasTrialHistoryButton row={row} bucket={null}/></td>
             </tr>)}</tbody>
           </table>
         </div>
