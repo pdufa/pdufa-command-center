@@ -45,6 +45,7 @@ export type RaasSpreadsheetSummary={
  sourceCoveragePercent:number|null;
  /** Narrow sponsor timing-specificity research pilot only, not a composite score. */
  exploratoryTimingScore:number|null;sourceFactCount:number|null;
+ experimentalMetricCount:number|null;experimentalGrades:string|null;
  sourceAsOf:string;approvedMetrics:number;
  state:"INVALID_IDENTITY"|"STAGE_UNVERIFIED"|"PENDING_VALIDATION"|"APPROVED";
 };
@@ -52,6 +53,7 @@ export function raasSpreadsheetSummary(trial:RaasSpreadsheetTrial):RaasSpreadshe
  const base={
   stage:null,approvedScore:null,mappedAreas:null,missingAreas:null,
   sourceCoveragePercent:null,exploratoryTimingScore:null,sourceFactCount:null,
+  experimentalMetricCount:null,experimentalGrades:null,
   sourceAsOf:pilot.sourceAsOf,approvedMetrics:calibrations.entries.length
  } as const;
  if(!/^NCT\d{8}$/.test(trial.nctId)||!trial.ticker?.trim())
@@ -77,11 +79,13 @@ export function raasSpreadsheetSummary(trial:RaasSpreadsheetTrial):RaasSpreadshe
    indication:trial.indication!
  },stage,"CURRENT",reviewed.sourceAsOf,diagnostics):null;
  const score=review?.score.score??null;
- const pilotTiming=provisionalScoresForTrial(trial,stage).scoredMetrics
-  .find(grade=>grade.metricId==="pre-4-1")??null;
+ const experiment=provisionalScoresForTrial(trial,stage);
+ const pilotTiming=experiment.scoredMetrics.find(g=>g.metricId==="pre-4-1")??null;
  return {stage,approvedScore:score,mappedAreas:mapped,
   missingAreas:30-mapped,sourceCoveragePercent:Math.round(mapped/30*100),
   exploratoryTimingScore:pilotTiming?.score??null,
+  experimentalMetricCount:experiment.scoredOf30,
+  experimentalGrades:experiment.scoredMetrics.map(g=>g.metricId+"="+g.score+"/100").join("; ")||null,
   sourceFactCount:evidence?(evidence.pilotObservations.length+evidence.prospectiveFacts.length):0,
   sourceAsOf:pilot.sourceAsOf,
   approvedMetrics:calibrations.entries.filter(x=>x.stage===stage).length,
@@ -94,5 +98,7 @@ export function raasSpreadsheetExport(trial:RaasSpreadsheetTrial){
   s.mappedAreas===null?"":String(s.mappedAreas),
   s.sourceCoveragePercent===null?"":String(s.sourceCoveragePercent),
   s.exploratoryTimingScore===null?"":String(s.exploratoryTimingScore),
+  s.experimentalMetricCount===null?"":String(s.experimentalMetricCount),
+  s.experimentalGrades??"",
   s.state] as const;
 }
