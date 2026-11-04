@@ -53,9 +53,47 @@ def compact_trial(row: dict, ticker: str) -> dict:
             "analysisCount": int(obj.get("analysesCount") or 0),
             "pValues": [string(a.get("pValue"), 40) for a in analyses
                         if isinstance(a, dict) and string(a.get("pValue"), 40)][:5],
+            "groups": [{"id": string(g.get("id"), 35), "title": string(g.get("title"), 150)}
+                       for g in array(obj.get("groups"))[:14] if isinstance(g, dict)],
+            "measurements": [
+                {k:string(m.get(k), 55) for k in
+                 ("groupId", "value", "spread", "lowerLimit", "upperLimit")
+                 if m.get(k) is not None}
+                for m in array(obj.get("measurements"))[:24] if isinstance(m, dict)
+            ],
+            "comparisons": [
+                {"groupIds":[string(g,35) for g in array(a.get("groupIds"))[:6]],
+                 "pValue":string(a.get("pValue"),40),
+                 "method":string(a.get("method"),100),
+                 "paramType":string(a.get("paramType"),60),
+                 "paramValue":string(a.get("paramValue"),50),
+                 "ciPctValue":string(a.get("ciPctValue"),25),
+                 "ciLowerLimit":string(a.get("ciLowerLimit"),45),
+                 "ciUpperLimit":string(a.get("ciUpperLimit"),45)}
+                for a in analyses[:12] if isinstance(a,dict)
+            ],
         })
-    if not posted and (primary or row.get("postedPrimaryOutcomeCount", 0)):
+    if not posted and (primary or row.get("postedPrimaryOutcomeCount", 0) or
+                       row.get("seriousAdverseEventTermCount", 0)):
         raise ValueError("REGISTRY_INDEX_UNPUBLISHED_OUTCOMES")
+    sae = []
+    if posted:
+        for item in array(row.get("seriousAdverseEventEvidence"))[:16]:
+            if not isinstance(item, dict):
+                raise ValueError("REGISTRY_INDEX_SAE_SHAPE")
+            sae.append({"term":string(item.get("term"),160),
+                        "groups":[{
+                            "groupId":string(g.get("groupId"),35),
+                            "numAffected":g.get("numAffected"),
+                            "numAtRisk":g.get("numAtRisk"),
+                            "numEvents":g.get("numEvents")}
+                            for g in array(item.get("stats"))[:12] if isinstance(g,dict)]})
+        if any(isinstance(g.get(k),bool) or not isinstance(g.get(k),int) or
+               g.get(k)<0 or g.get(k)>1000000
+               for event in sae for g in event["groups"]
+               for k in ("numAffected","numAtRisk","numEvents")
+               if g.get(k) is not None):
+            raise ValueError("REGISTRY_INDEX_SAE_COUNT_INVALID")
     definitions = []
     for obj in array(row.get("registeredPrimaryOutcomes"))[:4]:
         if isinstance(obj, dict):
@@ -89,6 +127,7 @@ def compact_trial(row: dict, ticker: str) -> dict:
         "postedOtherOutcomeCount": int(row.get("postedOtherOutcomeCount") or 0),
         "primaryResults": primary,
         "seriousAdverseEventTermCount": int(row.get("seriousAdverseEventTermCount") or 0),
+        "seriousEventDetails": sae,
         "evidenceState": row["evidenceState"],
     }
 
@@ -110,6 +149,14 @@ def build_index(payload: dict, roster: dict[str, str]) -> dict:
         raise ValueError("REGISTRY_INDEX_INCOMPLETE_COHORT")
     results = [records[k] for k in sorted(records)]
     count = sum(r["postedResults"] for r in results)
+    comparison = sum(any(out["comparisons"] for out in r["primaryResults"]) for r in results)
+    effects = sum(any(out["measurements"] for out in r["primaryResults"]) for r in results)
+    interval = sum(any(a["ciLowerLimit"] and a["ciUpperLimit"]
+                       for out in r["primaryResults"] for a in out["comparisons"]) for r in results)
+    safety = sum(any(any(isinstance(g.get("numAtRisk"), int) and
+                         g["numAtRisk"]>0 and isinstance(g.get("numAffected"), int)
+                         for g in event["groups"])
+                     for event in r["seriousEventDetails"]) for r in results)
     if int(payload.get("summary", {}).get("registrySourceRecordsStored", -1)) != len(results):
         raise ValueError("REGISTRY_INDEX_SUMMARY_MISMATCH")
     if int(payload.get("summary", {}).get("hasPostedRegistryResults", -1)) != count:
@@ -120,6 +167,10 @@ def build_index(payload: dict, roster: dict[str, str]) -> dict:
         "caution":"ClinicalTrials.gov protocol/results presence only: not an independently verified PDUFA date, source-timed TOP/BOTTOM assignment, predictive accuracy, or a numeric RAAS score.",
         "summary":{"researchNcts":len(results),"registryRecords":len(results),
                    "postedRegistryResults":count,"protocolOnly":len(results)-count,
+                   "trialsWithPrimaryComparisons":comparison,
+                   "trialsWithPrimaryGroupMeasurements":effects,
+                   "trialsWithPrimaryConfidenceIntervals":interval,
+                   "trialsWithSafetyRiskDenominators":safety,
                    "approvedOverallRaasScores":0},
         "records":results}
 
