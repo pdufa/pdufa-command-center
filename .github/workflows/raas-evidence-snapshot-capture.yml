@@ -7,6 +7,8 @@ on:
       - .github/workflows/raas-evidence-snapshot-capture.yml
       - scripts/check_phase3_original_registry_pilot.py
       - scripts/raas_population_coverage_audit.py
+      - scripts/raas_provisional_validation_readiness.cjs
+      - new-platform/frontend/tests/raas-validation-readiness.test.cjs
       - scripts/raas_post_clinical_provisional_capture.cjs
       - tests/test_raas_population_coverage_audit.py
   workflow_dispatch:
@@ -17,6 +19,7 @@ on:
     paths:
       - .github/workflows/raas-evidence-snapshot-capture.yml
       - scripts/raas_post_clinical_provisional_capture.cjs
+      - scripts/raas_provisional_validation_readiness.cjs
 permissions:
   contents: read
 concurrency:
@@ -43,6 +46,7 @@ jobs:
           python -m py_compile scripts/raas_population_coverage_audit.py
           node --check scripts/raas_trial_provisional_metric_capture.cjs
           node --check scripts/raas_post_clinical_provisional_capture.cjs
+          node --check scripts/raas_provisional_validation_readiness.cjs
 
   verified-capture:
     if: github.event_name != 'pull_request'
@@ -80,6 +84,8 @@ jobs:
         run: node scripts/raas_self_audit_history_capture.cjs
       - name: Audit EVERY source NCT and reconcile 741 against evolving census
         run: python scripts/raas_population_coverage_audit.py
+      - name: Publish independent RAAS validation readiness, not invented accuracy
+        run: node scripts/raas_provisional_validation_readiness.cjs
       - name: Validate output has no fabricated overall RAAS ratings
         shell: bash
         run: |
@@ -100,6 +106,10 @@ jobs:
           assert all(r.get("score") is None for r in h["records"] if r["kind"]=="METRIC_SCORE_UPDATED")
           assert sum(r["kind"]=="METRIC_SCORE_UPDATED" for r in h["records"])>=2
           assert s["scope"]=="RAAS_SELF_AUDIT_HISTORY" and len(s["records"])>=1
+          v=json.loads(Path("data/raas_provisional_validation_readiness.json").read_text())
+          assert v["scope"]=="RAAS_PROVISIONAL_VALIDATION_READINESS"
+          assert v["validatedRaasAccuracy"] is None and v["validatedFdaThreeWayAccuracy"] is None
+          assert v["proposedMetrics"]==60
           print("VERIFIED: no invented overall RAAS ratings; complete source population coverage and nonempty dated history.")
           PY
       - name: Commit only changed histories and source-coverage receipts
@@ -110,7 +120,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- new-platform/frontend/data/raas-trial-score-history.json \
             new-platform/frontend/data/raas-self-audit-history.json \
-            data/raas_population_coverage_audit.json
+            data/raas_population_coverage_audit.json \\
+            data/raas_provisional_validation_readiness.json
           if git diff --cached --quiet; then
             echo "No new source, research grades or score-history changes."
             exit 0
@@ -132,6 +143,7 @@ jobs:
           name: raas-verified-source-coverage-${{ github.run_id }}
           path: |
             data/raas_population_coverage_audit.json
+            data/raas_provisional_validation_readiness.json
             new-platform/frontend/data/raas-trial-score-history.json
             new-platform/frontend/data/raas-self-audit-history.json
           if-no-files-found: warn
