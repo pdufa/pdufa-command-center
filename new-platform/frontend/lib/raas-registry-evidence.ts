@@ -24,8 +24,8 @@ export type RegistryTrialEvidence={
  primaryDefinitions:{measure:string;timeFrame:string}[];
  postedResults:boolean;postedPrimaryOutcomeCount:number;postedOtherOutcomeCount:number;
  primaryResults:RegistryPrimaryResult[];seriousAdverseEventTermCount:number;
- seriousEventDetails?:{term:string;groups:{groupId:string;numAffected?:number;
-  numAtRisk?:number;numEvents?:number}[]}[];
+ seriousEventDetails?:{term:string;groups:{groupId:string;numAffected?:number|null;
+  numAtRisk?:number|null;numEvents?:number|null}[]}[];
  evidenceState:"PROTOCOL_ONLY"|"POSTED_RESULTS_UNGRADED";
 };
 export type RegistryEvidenceIndex={
@@ -103,7 +103,7 @@ export function parseRegistryEvidenceIndex(raw:unknown):RegistryEvidenceIndex{
    for(const g of event.groups){
     if(["numAffected","numAtRisk","numEvents"].some(k=>{
      const n=g[k as "numAffected"|"numAtRisk"|"numEvents"];
-     return n!==undefined&&(!Number.isInteger(n)||n<0||n>1000000);
+     return n!==undefined&&n!==null&&(!Number.isInteger(n)||n<0||n>1000000);
     }))throw Error("RAAS_REGISTRY_INDEX_SAE_INVALID");
    }
   }
@@ -234,8 +234,8 @@ export function registryMetricLeads(
   for(const [ei,event] of (e.seriousEventDetails||[]).slice(0,8).entries()){
    for(const [gi,g] of event.groups.slice(0,6).entries()){
     const a=g.numAffected,n=g.numAtRisk;
-    if(!Number.isInteger(a)||!Number.isInteger(n)||n===undefined||
-      a===undefined||n<=0||a<0||a>n)continue;
+    if(a===undefined||n===undefined||a===null||n===null||
+      !Number.isInteger(a)||!Number.isInteger(n)||n<=0||a<0||a>n)continue;
     const pct=Math.round(10000*a/n)/100;
     leads.push({metricIds:["post-1-5"],id:e.nctId+"-raw-sae-rate-"+ei+"-"+gi,
      kind:"POSTED_SAE_AFFECTED_RATE_RAW_MEASUREMENT",sourceUrl:e.sourceUrl,
