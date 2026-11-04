@@ -19,6 +19,7 @@ const ARCHIVE="data/historical_assessed_decisions.csv";
 const VENUES="new-platform/frontend/data/raas-alpaca-venue-exceptions.json";
 const PRIMARY_LEADS="new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json";
 const EXPANDED_LEADS="new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json";
+const CENSUS_2025_LEADS="new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json";
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const validUrl=s=>typeof s==="string"&&/^https:\/\/[^\s/]+\.[^\s/]+/i.test(s);
 const date=s=>typeof s==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&
@@ -280,7 +281,8 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
 function main(){
  execute({researchLeads:[
    ...JSON.parse(read(PRIMARY_LEADS)).records,
-   ...JSON.parse(read(EXPANDED_LEADS)).records
+   ...JSON.parse(read(EXPANDED_LEADS)).records,
+   ...JSON.parse(read(CENSUS_2025_LEADS)).records
   ],key:process.env.APCA_API_KEY_ID||process.env.ALPACA_API_KEY_ID||process.env.ALPACA_API_KEY,
   secret:process.env.APCA_API_SECRET_KEY||process.env.ALPACA_SECRET_KEY}).then(r=>{
   const dest=process.env.RAAS_TWO_YEAR_RESULT_PATH||
