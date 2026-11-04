@@ -19,6 +19,7 @@ import {raasMissingMetricChecklist} from "../lib/raas-missing-metric-checklist";
 import {parseProspectiveSourceBaselines} from "../lib/raas-prospective-source-baselines";
 import {scanRaasCurrentEvidence} from "../lib/raas-current-evidence-scan";
 import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
+import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
 import reviewedSnapshots from "../data/raas-reviewed-snapshots.json";
 import approvedCalibrations from "../data/raas-approved-calibrations.json";
 import {parseRaasCalibrations,parseRaasReviewedLedger,reviewedScoreForTrial} from "../lib/raas-reviewed-score-ledger";
@@ -107,6 +108,9 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const comparableTopResearch=bucket==="pre"?retrospectiveTopWindows:[];
  const historyMetrics=metricHistoryReview.filter(m=>m.stage===bucket);
  const label=isTop?"TOP-RAAS":"BOTTOM-RAAS";
+ const trialPilot=provisionalScoresForTrial({nctId:row.nctId,ticker:row.ticker,
+  drug:row.evidence?.drug,indication:row.evidence?.indication},bucket);
+ const pilotTiming=trialPilot.scoredMetrics.find(g=>g.metricId==="pre-4-1")??null;
  const groups=RAAS_METRIC_CATALOG[bucket];
  const record=researchStatus==="ready"?exactReadoutBenefit(row,benefitFeed):null;
  const [snapshot,setSnapshot]=useState<Snapshot>("CURRENT");
@@ -136,7 +140,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
      <span className={css.summaryText}><strong>{label}</strong>
        <small data-raas-current-scan={row.nctId}>Source coverage {Math.round(currentEvidence.mappedMetrics/30*100)}% · {currentEvidence.mappedMetrics}/30 areas</small>
        <small>{currentOverallLabel}</small>
-       {currentEvidence.exploratoryTimingGrade&&<small>Timing pilot {currentEvidence.exploratoryTimingGrade.score}/100 · research only, not overall RAAS</small>}</span>
+       {pilotTiming&&<small data-raas-provisional-component={row.nctId}>Experimental timing metric {pilotTiming.score}/100 · 1/30 graded · NOT overall RAAS</small>}</span>
      <span className={css.chevron} aria-hidden="true">▸</span>
    </summary>
    <div className={css.panel}>
@@ -146,7 +150,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
        <div className={css.historicalStatus}>
          <p><strong>Current saved evidence, dated {currentEvidence.asOf}:</strong> {currentEvidence.pilotObservations.length} pilot observations and {currentEvidence.prospectiveFacts.length} prospectively recorded issuer facts. Exact ticker + NCT + stage required; a source attached to a metric is a research lead, <strong>not</strong> a completed assessment of that metric.</p>
          <p><strong>Approved 0–100 RAAS:</strong> — /100. Missing metric ratings remain unknown rather than zero. These {currentEvidence.mappedMetrics} areas have evidence to review but 0 approved metric calibrations are available.</p>
-         {currentEvidence.exploratoryTimingGrade&&<p><strong>Existing exploratory timing-only grade: {currentEvidence.exploratoryTimingGrade.score}/100.</strong> {currentEvidence.exploratoryTimingGrade.explanation} Not an expected return, clinical success probability, or overall RAAS score. <a href={currentEvidence.exploratoryTimingGrade.sourceUrl} target="_blank" rel="noopener noreferrer">Dated source</a>.</p>}
+         {pilotTiming&&<p><strong>Calculated experimental TOP timing metric: {pilotTiming.score}/100.</strong> {pilotTiming.explanation} This is 1/30 TOP metrics, not an overall RAAS score or investment prediction. <a href={pilotTiming.sourceUrl} target="_blank" rel="noopener noreferrer">Dated source · {pilotTiming.sourceDate}</a>.</p>}
          <div className={css.evidenceScanGrid}>
            {currentEvidence.categories.map(g=><div key={g.id}>
              <strong>{g.name}: {g.mapped}/5 areas</strong>
