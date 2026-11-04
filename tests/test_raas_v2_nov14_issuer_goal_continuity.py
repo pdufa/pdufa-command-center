@@ -28,9 +28,11 @@ class Nov14IssuerContinuityTests(unittest.TestCase):
         by={x["ticker"]:x for x in rows}
         self.assertEqual(by["CYTK"]["issuerContinuityDocumentDate"],"2026-08-06")
         self.assertEqual(by["CYTK"]["issuerReportedActualSubmissionPeriod"],"2026-01")
-        self.assertEqual(by["CYTK"]["firstSelectedPublicSubmissionAnnouncementDate"],"2026-02-24")
+        self.assertEqual(by["CYTK"]["firstSelectedPublicApplicationUpdateDate"],"2026-02-24")
         self.assertFalse(by["CYTK"]["issuerSourceClockIsActualSubmissionDate"])
         self.assertEqual(by["SMMT"]["issuerContinuityDocumentDate"],"2026-09-15")
+        self.assertEqual(by["CYTK"]["firstSelectedPublicApplicationUpdateType"],"SUBMISSION_PUBLIC_DISCLOSURE")
+        self.assertEqual(by["SMMT"]["firstSelectedPublicApplicationUpdateType"],"FDA_ACCEPTANCE_PUBLIC_DISCLOSURE")
         self.assertEqual(by["SMMT"]["issuerReportedActualSubmissionPeriod"],"2025-Q4")
         self.assertTrue(all(x["sourceIsPublicByAuditAsOf"] for x in rows))
         self.assertTrue(all(x["documentAtItsDateRepeatsNov14Goal"] for x in rows))
@@ -89,12 +91,13 @@ class Nov14IssuerContinuityTests(unittest.TestCase):
         for i,field,value in (
             (0,"issuerPublicSourceDate","2026-07-28"),
             (0,"issuerReportedActualApplicationSubmissionMonth","2026-02"),
-            (0,"firstSelectedIssuerPublicSubmissionAnnouncementDate","2026-01-12"),
+            (0,"firstSelectedIssuerPublicApplicationUpdateDate","2026-01-12"),
             (0,"issuerPublicSourceUrl","https://invalid.test"),
             (0,"fdaParentNdaKnown","219084"),
             (1,"reportedGoalDate","2026-12-14"),
             (1,"issuerPublicSourceDate","2026-11-20"),
             (1,"pendingBlaNumberVerified",True),
+            (1,"firstSelectedIssuerPublicApplicationUpdateType","SUBMISSION_PUBLIC_DISCLOSURE"),
             (1,"absenceOfLaterGoalChangeIndependentlyEstablished",True),
             (1,"immutablePredecisionThreeWayForecastMade",True),
             (1,"strictMarketCapPipelineQualificationEstablished",True),
