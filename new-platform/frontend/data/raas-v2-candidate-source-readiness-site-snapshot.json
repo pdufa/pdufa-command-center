@@ -26,7 +26,8 @@
     "Nightly FDA watch searches both the CYTK parent NDA and any publicly indexed ivonescimab ingredient applications. Even an indexed BLA match cannot certify Summit's HARMONi NDA/BLA cycle or target; the FDA Purple Book is an approved-biologics index, not pending application coverage.",
     "CYTK August 6 SEC 10-Q explicitly says the MAPLE-HCM label sNDA was submitted in January 2026; its February 24 issuer release is the public disclosure date, not the actual filing date. The 10-Q still listed November 14, 2026 as the standard-review PDUFA date.",
     "Summit September 15 issuer/SEC exhibit repeated the November 14, 2026 HARMONi BLA goal alongside additional OS follow-up; no subsequent FDA review-cycle identifier, no-extension proof, or official outcome was independently verified. That September Summit source has now been superseded as latest located reiteration by its October 21 announcement; Cytokinetics' August 6 issuer source alone is older than 30 days as of this dated website snapshot.",
-    "October 21 Summit press release principally announces EA2251 (NCT07765433), a biliary tract cancer study; its background separately repeats the November 14 PDUFA date for HARMONi (NCT06396065) in EGFR-mutated NSCLC. This is a company reiteration, not independent FDA review-cycle confirmation or an FDA decision."
+    "October 21 Summit press release principally announces EA2251 (NCT07765433), a biliary tract cancer study; its background separately repeats the November 14 PDUFA date for HARMONi (NCT06396065) in EGFR-mutated NSCLC. This is a company reiteration, not independent FDA review-cycle confirmation or an FDA decision.",
+    "The nightly RAAS FDA audit separately screens official SEC issuer filings after the last reviewed dated goal statements (CYTK August 6 and SMMT October 21). New filings are research leads only; SEC access may return 403, which means unavailable, not zero new filings. No filing or lack of one proves a changed or unchanged FDA goal."
   ],
   "issuerDocumentedNearTermCycleSourceLeads": 15,
   "knownRevisedGoalExcludedFromOriginalDeadlineQueue": 4,
@@ -47,5 +48,10 @@
   "nov14LocatedIssuerGoalSourcesOver30DaysOldAtSnapshot": 1,
   "nov14IssuerGoalContinuityIndependentlyRulesOutFurtherRevisions": 0,
   "nov14SmmtLatestIssuerDeadlineReiterationDate": "2026-10-21",
-  "nov14SmmtLatestSourceMainTrial": "EA2251_BILIARY_TRACT_NCT07765433_NOT_HARMONI"
+  "nov14SmmtLatestSourceMainTrial": "EA2251_BILIARY_TRACT_NCT07765433_NOT_HARMONI",
+  "nightlySecNewIssuerFilingReviewWatch": "CYTK_SMMT_OFFICIAL_8K_10Q_10K_RESEARCH_LEADS_NOT_FDA_OUTCOMES",
+  "secNewIssuerFilingWatchLastReviewedGoalDates": {
+    "CYTK": "2026-08-06",
+    "SMMT": "2026-10-21"
+  }
 }
