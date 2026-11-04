@@ -28,7 +28,8 @@
     "Summit September 15 issuer/SEC exhibit repeated the November 14, 2026 HARMONi BLA goal alongside additional OS follow-up; no subsequent FDA review-cycle identifier, no-extension proof, or official outcome was independently verified. That September Summit source has now been superseded as latest located reiteration by its October 21 announcement; Cytokinetics' August 6 issuer source alone is older than 30 days as of this dated website snapshot.",
     "October 21 Summit press release principally announces EA2251 (NCT07765433), a biliary tract cancer study; its background separately repeats the November 14 PDUFA date for HARMONi (NCT06396065) in EGFR-mutated NSCLC. This is a company reiteration, not independent FDA review-cycle confirmation or an FDA decision.",
     "The nightly RAAS FDA audit separately screens official SEC issuer filings after the last reviewed dated goal statements (CYTK August 6 and SMMT October 21). New filings are research leads only; SEC access may return 403, which means unavailable, not zero new filings. No filing or lack of one proves a changed or unchanged FDA goal.",
-    "A separate nightly official investor-news fallback now checks Cytokinetics and Summit public issuer pages for article links when SEC EDGAR returns HTTP 403. This is supplemental source discovery only, not a complete SEC EDGAR record feed or an FDA cycle certification. Public original NDA219083/S-001 REMS approval and missing Summit BLA listings do not disclose the pending MAPLE-HCM supplement or Summit HARMONi BLA number."
+    "A separate nightly official investor-news fallback now checks Cytokinetics and Summit public issuer pages for article links when SEC EDGAR returns HTTP 403. This is supplemental source discovery only, not a complete SEC EDGAR record feed or an FDA cycle certification. Public original NDA219083/S-001 REMS approval and missing Summit BLA listings do not disclose the pending MAPLE-HCM supplement or Summit HARMONi BLA number.",
+    "The nightly SEC review now checks the official SEC company-specific Atom feed if an SEC JSON lookup fails. This is an independent official access route, not a claimed REST API repair. The as-of archived audit records each channel status and accepts only issuer-CIK-scoped filing links. A zero-match result or 403 from either route cannot prove no FDA deadline revision."
   ],
   "issuerDocumentedNearTermCycleSourceLeads": 15,
   "knownRevisedGoalExcludedFromOriginalDeadlineQueue": 4,
@@ -58,5 +59,6 @@
   "nightlyOfficialIssuerNewsFallback": "CYTK_AND_SMMT_PUBLIC_ISSUER_NEWS_RESEARCH_LINKS_NOT_SEC_OR_FDA_VERIFICATION",
   "secEdgarRunnerStatus": "ACCESS_BLOCKED_HTTP_403_SOURCE_UNAVAILABLE_NOT_ZERO_FILINGS",
   "currentCYTKPendingMAPLESupplementNumber": "UNVERIFIED_NOT_PUBLICLY_ATTESTED",
-  "currentSMMTOriginalHARMONIBLANumber": "UNVERIFIED_NOT_PUBLICLY_ATTESTED"
+  "currentSMMTOriginalHARMONIBLANumber": "UNVERIFIED_NOT_PUBLICLY_ATTESTED",
+  "nightlyOfficialSecAtomFallback": "EDGAR_COMPANY_ATOM_AFTER_JSON_DENIAL_OFFICIAL_SOURCE_SEPARATE_ACCESS_STATUS"
 }

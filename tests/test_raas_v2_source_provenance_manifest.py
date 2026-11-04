@@ -116,6 +116,32 @@ class NightlyManifestTests(unittest.TestCase):
                     provenance.build_manifest(d,"pdufa/pdufa-command-center",
                                               RUN,SHA,ARCHIVED)
 
+    def test_atom_source_candidate_cannot_promote_regulatory_action(self):
+        with TemporaryDirectory() as td:
+            d=sample(td)
+            path=d/"raas-v2-sec-nov14-new-filing-review-leads.json"
+            original=json.loads(path.read_text("utf-8"))
+            for field,bad in (
+                ("atomFeedAloneVerifiesCompleteIssuerSECFileHistory",True),
+                ("absenceFromAtomFeedProvesNoFdaDeadlineChange",True),
+                ("aFilingLinkIdentifiesCurrentPendingBlaOrSNda",True),
+                ("atomFeedAccessNotTheSameAsRestApiAccess",False),
+            ):
+                tampered=deepcopy(original)
+                tampered["rows"][0]["alternativeOfficialSecAtomFeed"][field]=bad
+                path.write_text(json.dumps(tampered),encoding="utf-8")
+                with self.subTest(field=field),self.assertRaisesRegex(
+                    ValueError,"SEC_ATOM_CANNOT_CERTIFY_FDA_OR_RESTORE_REST_ACCESS"):
+                    provenance.build_manifest(d,"pdufa/pdufa-command-center",
+                                              RUN,SHA,ARCHIVED)
+            tampered=deepcopy(original)
+            tampered["effectiveOfficialSecFilingSourceCoverageCount"]=2
+            path.write_text(json.dumps(tampered),encoding="utf-8")
+            with self.assertRaisesRegex(ValueError,
+                "SEC_ATOM_CANNOT_CERTIFY_FDA_OR_RESTORE_REST_ACCESS"):
+                provenance.build_manifest(d,"pdufa/pdufa-command-center",
+                                          RUN,SHA,ARCHIVED)
+
     def test_sec_filing_lead_tampering_does_not_certify_fda_action(self):
         with TemporaryDirectory() as td:
             d=sample(td)

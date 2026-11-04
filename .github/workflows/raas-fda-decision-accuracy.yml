@@ -15,6 +15,7 @@ on:
       - 'scripts/raas_v2_issuer_news_fallback.py'
       - 'tests/test_raas_v2_issuer_news_fallback.py'
       - 'tests/test_raas_v2_sec_nov14_filing_watch.py'
+      - 'tests/test_raas_v2_sec_atom_fallback.py'
       - 'tests/test_raas_v2_openfda_application_watch.py'
       - 'new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json'
       - 'new-platform/frontend/data/raas-v2-nov14-issuer-goal-continuity.json'
@@ -48,6 +49,7 @@ on:
       - 'scripts/raas_v2_issuer_news_fallback.py'
       - 'tests/test_raas_v2_issuer_news_fallback.py'
       - 'tests/test_raas_v2_sec_nov14_filing_watch.py'
+      - 'tests/test_raas_v2_sec_atom_fallback.py'
       - 'tests/test_raas_v2_openfda_application_watch.py'
       - 'new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json'
       - 'new-platform/frontend/data/raas-v2-nov14-issuer-goal-continuity.json'
@@ -106,6 +108,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_raas_v2_source_provenance_manifest.py' -v
       - name: Validate recent SEC issuer filings are evidence leads, never automatically FDA deadline changes
         run: python -m unittest discover -s tests -p 'test_raas_v2_sec_nov14_filing_watch.py' -v
+      - name: Verify SEC company Atom feed is a separate evidence lead and never an FDA outcome
+        run: python -m unittest discover -s tests -p 'test_raas_v2_sec_atom_fallback.py' -v
       - name: Test issuer-public-news alternative never claims SEC or FDA application verification
         run: python -m unittest discover -s tests -p 'test_raas_v2_issuer_news_fallback.py' -v
       - name: Validate FDA public application watch against S-001 false positives, 404 uncertainty and future status rows
