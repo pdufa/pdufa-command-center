@@ -14,6 +14,8 @@ const date=s=>typeof s==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&
 const secUrl=s=>typeof s==="string"&&
  /^https:\/\/www\.sec\.gov\/Archives\/edgar\/data\/[0-9]+\/[A-Za-z0-9./_-]+$/.test(s);
 const int=n=>Number.isSafeInteger(n)&&n>0;
+const dayGap=(later,earlier)=>(Date.parse(later+"T00:00:00Z")-Date.parse(earlier+"T00:00:00Z"))/86400000;
+const pctDelta=(base,next)=>Math.round((next/base-1)*10000)/100;
 const asEntries=m=>m instanceof Map?m:new Map();
 function asSECMap(feed,scope) {
  if(!feed||feed.scope!==scope||feed.schemaVersion!==1||!date(feed.sourceAsOf)||
@@ -95,6 +97,22 @@ function auditRawEntryMarketCapResearch({
   const rawAtEntry=entry?unchecked.find(x=>x.date===entry.date):null;
   const sources=[s0,s1,s2].filter(s=>s&&entry&&s.firstConservativeEntryDate<=entry.date);
   const selected=sources.length?sources[sources.length-1]:null;
+  // These LATER publications are ex-post REVIEW GAPS ONLY. They must never
+  // enter a score, entry-day cap, or feature available at a historical entry.
+  const laterPublished=[s0,s1,s2].filter(s=>s&&entry&&
+   s.firstConservativeEntryDate>entry.date);
+  const observationAge=selected&&entry?
+   dayGap(entry.date,selected.sharesMeasurementDate):null;
+  const laterChanges=selected?laterPublished.map(s=>({
+   firstUsableDate:s.firstConservativeEntryDate,
+   measurementDate:s.sharesMeasurementDate,
+   sharesOutstanding:s.sharesOutstanding,
+   changeFromEntryCoverPct:pctDelta(selected.sharesOutstanding,s.sharesOutstanding),
+   sourceUrl:s.sourceUrl,
+   knowledgeTiming:"NOT_PUBLIC_AT_ENTRY_AUDIT_ONLY"
+  })):[];
+  const largestLaterChange=laterChanges.length?
+   Math.round(Math.max(...laterChanges.map(s=>Math.abs(s.changeFromEntryCoverPct)))*100)/100:null;
   let reason="PROVISIONAL_CAP_ONLY_NOT_A_VALIDATED_MARKET_CAP";
   if(!entry)reason="MISSING_ADJUSTED_T79_SESSION";
   else if(!rawAtEntry)reason="MISSING_RAW_PRICE_FOR_SAME_T79_SESSION";
@@ -117,6 +135,15 @@ function auditRawEntryMarketCapResearch({
    secSharesMeasurementDate:selected?.sharesMeasurementDate??null,
    secFirstConservativeUse:selected?.firstConservativeEntryDate??null,
    secSourceUrl:selected?.sourceUrl??null,
+   secShareObservationAgeDaysAtEntry:observationAge,
+   secShareObservationAgeBucket:observationAge===null?"NO_PUBLIC_SOURCE":
+    observationAge>90?"OVER_90_DAYS":observationAge>30?"OVER_30_DAYS":"WITHIN_30_DAYS",
+   laterSECShareObservationsExcludedAtEntry:laterChanges,
+   laterSECShareChangeFromEntrySnapshotPresent:
+    laterChanges.some(s=>s.changeFromEntryCoverPct!==0),
+   largestAbsoluteLaterCoverShareDeltaPct:largestLaterChange,
+   sameVendorRawAndAllCloseEqualAtEntry:validPair?
+    Math.abs(entry.close-rawAtEntry.close)<0.000001:null,
    provisionalRawPriceTimesDatedSecCoverCapUsdMillions:cap,
    studyMarketCapFloorUsdMillions:300,studyMarketCapCeilingUsdMillions:10000,
    marketCap300MTo10BIndependentlyVerified:false,
@@ -135,6 +162,10 @@ function auditRawEntryMarketCapResearch({
   caseCount:rows.length,
   sameSessionRawAdjustedPricePairs:rows.filter(x=>x.rawCloseAlpaca!==null).length,
   provisionalCapEstimates:rows.filter(x=>x.provisionalRawPriceTimesDatedSecCoverCapUsdMillions!==null).length,
+  secCoverOlderThan30DaysAtEntry:rows.filter(x=>x.secShareObservationAgeDaysAtEntry>30).length,
+  secCoverOlderThan90DaysAtEntry:rows.filter(x=>x.secShareObservationAgeDaysAtEntry>90).length,
+  laterSECShareCountChangeObserved:rows.filter(x=>x.laterSECShareChangeFromEntrySnapshotPresent).length,
+  sameVendorRawAdjustedEntryPriceMatches:rows.filter(x=>x.sameVendorRawAndAllCloseEqualAtEntry===true).length,
   independentlyValidatedEntryMarketCaps:0,
   independentlyReconciledAdjustedPricePairs:0,
   validatedTradingCases:0,approvedRaasScores:0,
@@ -143,6 +174,8 @@ function auditRawEntryMarketCapResearch({
    "A raw close and SEC cover-share count establish only a provisional arithmetic cap, not a validated entry-day capitalization or fully diluted ownership.",
    "Alpaca raw and all-adjusted prices originate from the same vendor; independent adjusted-price vendor parity and split/dividend/spin-off adjustment audits remain missing.",
    "A cover share count may be stale by the entry session and does not establish issuance, warrants, ADS conversion or corporate-action continuity.",
+   "Age of the SEC cover observation is an audit priority, not an invalidation threshold; a later share-count difference is known only after its later publication and cannot backfill an entry price or score.",
+   "Matching Alpaca raw and adjusted closes on one entry session do not prove no splits, dividends, spin-offs or other corporate actions across a trade window.",
    "Only SEC filings conservatively available by each proposed trading entry may contribute shares; future filings cannot be backdated.",
    "The 2024–2025 full FDA event census, $300M–$10B qualification, issuer-disjoint training/holdout and RAAS score approvals are still blocked."
   ]
