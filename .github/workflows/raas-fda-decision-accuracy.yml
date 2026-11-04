@@ -13,6 +13,8 @@ on:
       - 'scripts/raas_v2_openfda_application_watch.py'
       - 'tests/test_raas_v2_openfda_application_watch.py'
       - 'new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json'
+      - 'new-platform/frontend/data/raas-v2-nov14-issuer-goal-continuity.json'
+      - 'tests/test_raas_v2_nov14_issuer_goal_continuity.py'
       - 'tests/test_raas_v2_nov14_registry_triangulation.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_source_provenance_manifest.py'
@@ -40,6 +42,8 @@ on:
       - 'scripts/raas_v2_openfda_application_watch.py'
       - 'tests/test_raas_v2_openfda_application_watch.py'
       - 'new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json'
+      - 'new-platform/frontend/data/raas-v2-nov14-issuer-goal-continuity.json'
+      - 'tests/test_raas_v2_nov14_issuer_goal_continuity.py'
       - 'tests/test_raas_v2_nov14_registry_triangulation.py'
       - 'tests/test_raas_v2_prospective_source_readiness.py'
       - 'tests/test_raas_v2_source_provenance_manifest.py'
@@ -96,6 +100,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_raas_v2_openfda_application_watch.py' -v
       - name: Confirm November 14 NCT trials and unrelated FDA S-001 REMS review are never auto-predictions
         run: python -m unittest discover -s tests -p 'test_raas_v2_nov14_registry_triangulation.py' -v
+      - name: Confirm November 14 issuer goal reiterations and actual CYTK January filing are date-aware
+        run: python -m unittest discover -s tests -p 'test_raas_v2_nov14_issuer_goal_continuity.py' -v
       - name: Compute retrospective baseline and prospective FDA decision audit
         env:
           RAAS_FDA_ACCURACY_JSON: ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
