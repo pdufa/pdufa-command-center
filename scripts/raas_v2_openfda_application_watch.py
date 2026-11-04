@@ -12,6 +12,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import re
 from pathlib import Path
 import urllib.error
 import urllib.parse
@@ -131,7 +132,7 @@ def inspect_response(payload: dict | None, checked_at: str,
                 "submissionClassCode": code,
                 "classDescription": description,
                 "isPreviouslyApprovedUnrelatedRemsS001": (
-                    typ == "SUPPL" and number.lstrip("0") == "1"
+                    typ == "SUPPL" and re.fullmatch(r"(?:S-?)?0*1", number.upper()) is not None
                 ),
                 "isMapleHcmPendingSupplementIndependentlyIdentified": False,
                 "isApprovedMapleHcmOutcomeIndependentlyAdjudicated": False,
