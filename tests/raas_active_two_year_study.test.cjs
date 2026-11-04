@@ -172,6 +172,7 @@ test("early FDA action and same-day public announcements fail closed",()=>{
 test("extra dated issuer source lead fetches prices but cannot enter validated event intake",async()=>{
  const e=event(2025,"NEW");
  const lead={ticker:"NEW",caseId:"NEW|2025",pdufaTargetDate:e.pdufaDate,
+  targetAnnouncementDate:"2024-09-10",phase3ReadoutDate:"2024-08-01",
   targetAnnouncementSourceUrl:"https://example.org/issuer-pdufa-announcement",
   phase3ReadoutSourceUrl:"https://example.org/issuer-phase3",
   reviewStatus:"SOURCE_LEADS_RESEARCH_ONLY"};
@@ -193,4 +194,36 @@ test("extra dated issuer source lead fetches prices but cannot enter validated e
  assert.equal(r.provisionalWindowArithmeticRows,0);
  assert.equal(r.approvedTradingWindow,null);
  assert.equal(r.priceCoverage[0].extraSourceLeadPriceResearchOnly,true);
+});
+
+test("2025 additional sourced FDA candidates stay price-only and exclusions never count",()=>{
+ const data=require("../new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json");
+ assert.equal(data.scope,"RAAS_2025_ADDITIONAL_PHASE3_COMPLETED_FDA_DECISION_PRICE_RESEARCH");
+ assert.equal(data.records.length,3);
+ assert.deepEqual(data.records.map(x=>x.ticker).sort(),["ALDX","CRNX","MIST"]);
+ assert.ok(data.records.every(x=>
+   x.pdufaTargetDate.startsWith("2025-")&&
+   x.targetAnnouncementDate<x.pdufaTargetDate&&
+   x.phase3ReadoutDate<x.pdufaTargetDate&&
+   x.approvedAsTradingCase===false&&
+   x.historicalCapitalizationAtEntryVerified===false
+ ));
+ assert.equal(data.excludedRecords.length,3);
+ assert.deepEqual(data.excludedRecords.map(x=>x.ticker).sort(),["BHVN","CAPR","REPL"]);
+ assert.ok(data.excludedRecords.every(x=>x.status.startsWith("EXCLUDE_")||x.status.startsWith("BLOCK_")));
+ const valid=m.priceOnlySourceLeads(data.records,config);
+ assert.equal(valid.length,3);
+ assert.deepEqual(valid.map(x=>x.ticker).sort(),["ALDX","CRNX","MIST"]);
+ assert.ok(valid.every(x=>x.evidenceStatus==="SOURCE_LEAD_PRICE_RESEARCH_ONLY"));
+ assert.equal(m.priceOnlySourceLeads(data.excludedRecords,config).length,0);
+ assert.equal(m.reviewIntake(intake,config).accepted.length,0);
+ assert.equal(data.verifiedTradingCases,0);
+ assert.equal(data.completeFDA2025Census,false);
+});
+test("research candidate chronology rejects Phase 3 post-action or missing first-public FDA goal",()=>{
+ const d=require("../new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json").records[0];
+ assert.equal(m.priceOnlySourceLeads([{...d,phase3ReadoutDate:"2025-12-03"}],config).length,0);
+ assert.equal(m.priceOnlySourceLeads([{...d,targetAnnouncementDate:null}],config).length,0);
+ assert.equal(m.priceOnlySourceLeads([{...d,targetAnnouncementDate:"2025-04-03"}],config).length,0);
+ assert.equal(m.priceOnlySourceLeads([{...d,phase3ReadoutSourceUrl:null}],config).length,0);
 });
