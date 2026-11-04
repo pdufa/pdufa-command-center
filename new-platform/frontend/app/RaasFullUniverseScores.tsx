@@ -42,7 +42,9 @@ function assess(row:ReadoutRow):Assessment{
   drug:row.evidence?.drug,indication:row.evidence?.indication,
   classifiedStage:stage
  });
- return {row,stage,timing:grade?.score??null,metricCount:a.scoredOf30,
+ const metricIds=new Set([...a.scoredMetrics.map(x=>x.metricId),
+  ...candidate.grades.map(x=>x.metricId)]);
+ return {row,stage,timing:grade?.score??null,metricCount:metricIds.size,
   overallScore:reviewed.approvedScore,
   sourceUrl:grade?.sourceUrl??null,sourceDate:grade?.sourceDate??null,
   aiSourceCrosschecks:candidate.aiCrosscheckedCount,

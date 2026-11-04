@@ -101,21 +101,21 @@ test("AI source crosschecks do not count as independent 30-of-30 reviews even wh
  assert.equal(result.fullResearchScore,null);
  assert.equal(result.approvedOverallScore,null);
 });
-test("live exact-trial Celldex source checks contain four provisional grades and zero human independent reviews",()=>{
+test("live exact-trial Celldex source checks contain six provisional grades and zero human independent reviews",()=>{
  const path=require("node:path");
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,4);
+ assert.equal(feed.records.length,6);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
    indication:"chronic spontaneous urticaria"},"post",true,feed);
-  assert.equal(x.aiCrosscheckedCount,2);
+  assert.equal(x.aiCrosscheckedCount,3);
   assert.equal(x.independentReviewedCount,0);
-  assert.deepEqual(x.grades.map(g=>g.metricId).sort(),["post-1-1","post-1-2"]);
+  assert.deepEqual(x.grades.map(g=>g.metricId).sort(),["post-1-1","post-1-2","post-1-4"]);
   assert.equal(x.fullResearchScore,null);
-  assert.equal(x.missingMetricIds.length,28);
+  assert.equal(x.missingMetricIds.length,27);
   assert.ok(x.grades.every(g=>g.reviewClass==="AI_SOURCE_CROSSCHECKED"));
  }
 });
@@ -133,4 +133,26 @@ test("AI clinical score does not leak to another drug, indication or readout sta
  }
  const pre=fullReviewedTrialCandidate(t,"pre",true,feed);
  assert.equal(pre.aiCrosscheckedCount,0);
+});
+
+test("dual pivotal replicated and durable Week-24 responses are source-checked but do not imply approval or complete RAAS",()=>{
+ const p=require("node:path");
+ const source=JSON.parse(fs.readFileSync(p.join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const feed=parseReviewedMetricFeed(source);
+ const x=feed.records.filter(r=>r.metricId==="post-1-4");
+ assert.equal(x.length,2);
+ assert.deepEqual(x.map(r=>r.nctId).sort(),["NCT06445023","NCT06455202"]);
+ for(const r of x){
+  assert.equal(r.finding,"MIXED_EVIDENCE");
+  assert.equal(r.independentReview,"AI_SOURCE_CROSSCHECKED");
+  assert.match(r.observedResult,/Week-24 complete response/);
+  assert.match(r.uncertaintyReview,/52-week outcomes/);
+  assert.match(r.benchmarkSourceUrl,/fda.gov/);
+  const grade=fullReviewedTrialCandidate({nctId:r.nctId,
+   ticker:r.ticker,drug:r.drug,indication:r.indication},"post",true,feed);
+  assert.equal(grade.independentReviewedCount,0);
+  assert.equal(grade.aiCrosscheckedCount,3);
+  assert.equal(grade.fullResearchScore,null);
+ }
 });

@@ -9,6 +9,7 @@ on:
       - scripts/raas_registry_evidence_summary.py
       - scripts/raas_registry_evidence_index.py
       - scripts/raas_review_worklist.py
+      - new-platform/frontend/data/raas-reviewed-metric-assessments.json
       - scripts/raas_trial_score_ledger.py
       - scripts/raas_clinical_component_evidence.py
       - tests/test_raas_registry_evidence_summary.py
@@ -26,6 +27,7 @@ on:
       - scripts/raas_registry_evidence_summary.py
       - scripts/raas_registry_evidence_index.py
       - scripts/raas_review_worklist.py
+      - new-platform/frontend/data/raas-reviewed-metric-assessments.json
       - scripts/raas_trial_score_ledger.py
       - scripts/raas_clinical_component_evidence.py
       - tests/test_raas_registry_evidence_summary.py
