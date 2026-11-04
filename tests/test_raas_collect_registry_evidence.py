@@ -58,8 +58,8 @@ class ClinicalSourceCollectorTests(unittest.TestCase):
     def test_strict_population_input_and_duplicate_rejection(self):
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/"cohort.csv"
-            line="nct_id,ticker,company,status,source_url\\n"
-            record="NCT12345678,TEST,Test Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT12345678\\n"
+            line="nct_id,ticker,company,status,source_url\n"
+            record="NCT12345678,TEST,Test Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT12345678\n"
             path.write_text(line+record)
             self.assertEqual(len(mod.load_cohort(path)),1)
             path.write_text(line+record+record)
