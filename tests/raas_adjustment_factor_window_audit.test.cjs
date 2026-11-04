@@ -103,8 +103,12 @@ test("nightly live-study integration keeps adjusted windows and missing validati
  const study=require("../scripts/raas_active_two_year_study.cjs");
  const source=require("../new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json");
  const src=source.records[0];
+ const earlier=require("../new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json");
+ const later=require("../new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json");
+ const earliest=require("../new-platform/frontend/data/raas-2024-2025-additional-earliest-sec-cover.json");
  const x=await study.execute({csv:"event_key,ticker,pdufa_date\n",
   venueExceptions:[],researchLeads:[],sourceCapLeads:source.records,
+  earlierSecCover:earlier,laterSecCover:later,additionalEarliestSecCover:earliest,
   key:"",secret:"",request:async()=>{throw Error("should never fetch");}});
  assert.equal(x.adjustmentFactorWindowAudit.caseCount,9);
  assert.equal(x.adjustmentFactorWindowAudit.casesWithCompleteSameVendorPriceWindow,0);
