@@ -12,7 +12,10 @@ test("Exact trial with documented pilot maps sources but never a fabricated tota
  assert.equal(top.missingAreas,25);assert.equal(top.approvedScore,null);
  assert.equal(top.sourceCoveragePercent,17);
  assert.ok([null,25,50,75,100].includes(top.exploratoryTimingScore));
- assert.ok(top.sourceFactCount>0);
+ assert.equal(top.exploratoryTimingScore,50); assert.ok(top.sourceFactCount>0);
+ const trvi=raasSpreadsheetSummary({nctId:"NCT07671911",ticker:"TRVI",classifiedStage:"pre"});
+ assert.equal(trvi.exploratoryTimingScore,50);
+ assert.equal(trvi.approvedScore,null);
  assert.equal(top.approvedMetrics,0);assert.equal(top.state,"PENDING_VALIDATION");
  const bottom=raasSpreadsheetSummary({nctId:"NCT06445023",ticker:"CLDX"});
  assert.equal(bottom.stage,"post");assert.equal(bottom.mappedAreas,3);

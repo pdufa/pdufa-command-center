@@ -4,7 +4,13 @@
  */
 import type {RaasStage} from "./raas-metric-specs";
 export type RaasHistoryScoreKind="UNSCORED"|"PROVISIONAL"|"VALIDATED";
-export type RaasHistoryEventKind="FIRST_CAPTURE"|"EVIDENCE_UPDATED"|"STAGE_ADDED"|"SCORE_UPDATED";
+export type RaasHistoryEventKind="FIRST_CAPTURE"|"EVIDENCE_UPDATED"|"STAGE_ADDED"|"SCORE_UPDATED"|"METRIC_SCORE_UPDATED";
+export type RaasProvisionalMetricHistoryGrade={
+ readonly metricId:string;readonly score:0|25|50|75|100;
+ readonly ruleId:string;readonly observationId:string;
+ readonly sourceUrl:string;readonly sourceDate:string;
+ readonly label:string;readonly inputs:string;readonly explanation:string;
+};
 export type RaasTrialHistoryEvent={
  readonly eventId:string;readonly nctId:string;readonly ticker:string;
  readonly drug:string;readonly indication:string;readonly stage:RaasStage;
@@ -14,6 +20,7 @@ export type RaasTrialHistoryEvent={
  readonly scoreVersion:string|null;readonly metricCoverage:number;
  readonly metricIds:readonly string[];readonly sourceUrls:readonly string[];
  readonly evidenceFingerprint:string;
+ readonly metricGrades?:readonly RaasProvisionalMetricHistoryGrade[];
 };
 export type RaasTrialHistoryLedger={
  readonly schemaVersion:1;readonly scope:"RAAS_TRIAL_SCORE_HISTORY";
@@ -40,7 +47,7 @@ export function parseRaasTrialHistory(input:unknown):RaasTrialHistoryLedger{
      !r.drug?.trim()||!r.indication?.trim()||
      (r.stage!=="pre"&&r.stage!=="post")||!iso(r.recordedAt)||!day(r.sourceAsOf)||
      r.sourceAsOf>r.recordedAt.slice(0,10)||r.recordedAt<prev||
-     !["FIRST_CAPTURE","EVIDENCE_UPDATED","STAGE_ADDED","SCORE_UPDATED"].includes(r.kind)||
+     !["FIRST_CAPTURE","EVIDENCE_UPDATED","STAGE_ADDED","SCORE_UPDATED","METRIC_SCORE_UPDATED"].includes(r.kind)||
      !r.summary?.trim()||
      !["UNSCORED","PROVISIONAL","VALIDATED"].includes(r.scoreKind)||
      (r.scoreKind==="UNSCORED"?(r.score!==null||r.scoreVersion!==null):
@@ -52,7 +59,18 @@ export function parseRaasTrialHistory(input:unknown):RaasTrialHistoryLedger{
      r.metricIds.some((x:string)=>typeof x!=="string"||!x.startsWith(r.stage==="pre"?"pre-":"post-"))||
      !Array.isArray(r.sourceUrls)||r.sourceUrls.length>100||
      r.sourceUrls.some((x:string)=>typeof x!=="string"||!validUrl(x))||
-     !/^[a-f0-9]{64}$/.test(r.evidenceFingerprint))
+     !/^[a-f0-9]{64}$/.test(r.evidenceFingerprint)||
+     (r.kind==="METRIC_SCORE_UPDATED"?(
+       r.score!==null||r.scoreKind!=="UNSCORED"||r.scoreVersion!==null||
+       !Array.isArray(r.metricGrades)||r.metricGrades.length<1||
+       r.metricGrades.length>30||r.metricGrades.length!==r.metricCoverage||
+       r.metricGrades.some((g:RaasProvisionalMetricHistoryGrade)=>!g||!r.metricIds.includes(g.metricId)||
+         ![0,25,50,75,100].includes(g.score)||
+         !g.ruleId?.trim()||!g.observationId?.trim()||
+         !day(g.sourceDate)||g.sourceDate>r.sourceAsOf||
+         !validUrl(g.sourceUrl)||!r.sourceUrls.includes(g.sourceUrl)||
+         !g.label?.trim()||!g.inputs?.trim()||!g.explanation?.trim())):
+       r.metricGrades!==undefined))
     throw Error("RAAS_HISTORY_EVENT_INVALID:"+r?.eventId);
   ids.add(r.eventId);prev=r.recordedAt;
  }
@@ -94,4 +112,18 @@ export function comparableScoreDelta(
  const before=p.reverse().find(e=>e.stage===selected.stage&&
    e.scoreKind===selected.scoreKind&&e.scoreVersion===selected.scoreVersion&&e.score!==null);
  return before?.score===undefined||before.score===null?null:selected.score-before.score;
+}
+
+/** A pilot metric grade is not an overall RAAS score. Never return it through
+ * currentHistoryScore or merge it into validated/provisional composites.
+ */
+export function currentResearchMetricGrade(history:readonly RaasTrialHistoryEvent[],
+ stage:RaasStage,metricId:string):
+ {event:RaasTrialHistoryEvent;grade:RaasProvisionalMetricHistoryGrade}|null{
+ for(const event of [...history].reverse()){
+  if(event.stage!==stage||event.kind!=="METRIC_SCORE_UPDATED")continue;
+  const grade=event.metricGrades?.find(g=>g.metricId===metricId);
+  if(grade)return {event,grade};
+ }
+ return null;
 }

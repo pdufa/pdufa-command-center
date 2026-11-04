@@ -8,6 +8,8 @@ import RaasSelfAuditHistoryButton from "./RaasSelfAuditHistoryButton";
 import activeTwoYearIntake from "../../data/raas-active-2024-2025-pdufa-intake.json";
 import activeStudyConfig from "../../data/raas-active-study-config.json";
 import fdaAccuracySnapshot from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
+import pilotObservations from "../../data/raas-pilot-observations.json";
+import {provisionalScoresForTrial} from "../../lib/raas-provisional-trial-scores";
 import css from "../raas-history/page.module.css";
 export const metadata:Metadata={
  title:"RAAS 60-Metric Scan Status | PDUFA",
@@ -16,6 +18,11 @@ export const metadata:Metadata={
 const report=executeRaasReadinessScan();
 const installation=evaluateRaasInstallation(report,activeTwoYearIntake);
 const selfAudit=auditRaasSurveyAccuracy(report,installation,fdaAccuracySnapshot);
+const provisionalTrials=pilotObservations.records.map(record=>({
+ record,assessment:provisionalScoresForTrial({
+  nctId:record.nctId,ticker:record.ticker,drug:record.drug,indication:record.indication
+ },record.stage==="pre"?"pre":"post")
+}));
 export default function RaasScanPage(){
  const s=report.summary;
  return <main className={css.root} data-raas-readiness-executed={report.scanExecution}>
@@ -31,6 +38,40 @@ export default function RaasScanPage(){
     <div><strong>{s.historicalAcceptedCases}</strong><span>Accepted historical event-window trades</span></div>
    </div>
    <p className={css.disclaimer}><strong>SCAN EXECUTED · FINAL RAAS NOT VALIDATED.</strong> The audit inspected every definition and available evidence record. It did not create a price forecast, set missing scores to zero, import unpublished trial outcomes, or claim that a source lead has been calibrated. Underlying source snapshot: {report.sourceAsOf}; metric specification: {report.specVersion}.</p>
+   <section className={css.section} data-raas-provisional-trial-scores="pilot">
+    <div className={css.sectionTitle}>
+     <h2>Current trial pilot scores · exploratory metric ratings only</h2>
+     <span>{provisionalTrials.filter(x=>x.assessment.scoredOf30>0).length}/{provisionalTrials.length} trials have a numerically scored component</span>
+    </div>
+    <p className={css.disclaimer}>A displayed 50/100 below is a <strong>single TOP timing-specificity metric</strong> out of 30, not an overall RAAS rating, prediction of trial success, FDA decision, or expected stock return. Scores are based on currently committed dated issuer facts, not historic pre-commit forecasts. Every overall RAAS score remains unavailable until enough independently calibrated evidence exists.</p>
+    <div style={{overflowX:"auto"}}>
+     <table style={{width:"100%",borderCollapse:"collapse",minWidth:660,fontSize:12}} aria-label="Current source-supported RAAS research metric grades for pilot trials">
+      <thead><tr>
+       {["Ticker / NCT","Spreadsheet stage","Overall RAAS","Exploratory 0–100 component score","Numeric grades","Source"].map(label=>
+        <th key={label} scope="col" style={{textAlign:"left",padding:"9px 8px",borderBottom:"2px solid #b3d0bc"}}>{label}</th>)}
+      </tr></thead>
+      <tbody>{provisionalTrials.map(({record,assessment})=>{
+       const timing=assessment.scoredMetrics.find(g=>g.metricId==="pre-4-1");
+       return <tr key={record.nctId}>
+        <td style={{padding:"9px 8px",borderBottom:"1px solid #d9e5dd"}}>
+         <strong>{record.ticker}</strong> · <a href={"https://clinicaltrials.gov/study/"+record.nctId} target="_blank" rel="noopener noreferrer">{record.nctId}</a>
+         <span style={{display:"block",fontSize:11,color:"#597565"}}>{record.drug}</span>
+        </td>
+        <td style={{padding:"9px 8px",borderBottom:"1px solid #d9e5dd"}}>{record.stage==="pre"?"TOP":"BOTTOM"}</td>
+        <td style={{padding:"9px 8px",borderBottom:"1px solid #d9e5dd"}}><strong>—/100</strong> · pending</td>
+        <td style={{padding:"9px 8px",borderBottom:"1px solid #d9e5dd"}}>
+         {timing?<><strong>{timing.score}/100</strong> · timing only</>:"No eligible metric score"}
+        </td>
+        <td style={{padding:"9px 8px",borderBottom:"1px solid #d9e5dd"}}>{assessment.scoredOf30}/30</td>
+        <td style={{padding:"9px 8px",borderBottom:"1px solid #d9e5dd"}}>
+         {timing?<a href={timing.sourceUrl} target="_blank" rel="noopener noreferrer">Issuer evidence · {timing.sourceDate}</a>:"Scoring rule and calibration pending"}
+        </td>
+       </tr>;
+      })}</tbody>
+     </table>
+    </div>
+    <p className={css.disclaimer}>The same partial scores appear in corresponding TOP/BOTTOM trial panels and their History buttons when exact trial identity can be confirmed. The nightly history captures future changes; the original evidence dates are not treated as dates of earlier RAAS predictions.</p>
+   </section>
    <section className={css.section} data-raas-self-audit={selfAudit.status}>
     <div className={css.sectionTitle}>
      <h2>RAAS accuracy audit · how accurate is RAAS itself?</h2>

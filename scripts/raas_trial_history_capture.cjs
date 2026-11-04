@@ -64,7 +64,8 @@ function appendSourceCaptures(ledger,candidates,recordedAt){
  let added=0;
  for(const c of candidates){
   if(c.sourceAsOf>recordedAt.slice(0,10))throw Error("RAAS_HISTORY_FUTURE_SOURCE");
-  const matches=result.records.filter(x=>eventKey(x)===eventKey(c));
+  const matches=result.records.filter(x=>eventKey(x)===eventKey(c)&&
+   ["FIRST_CAPTURE","EVIDENCE_UPDATED","STAGE_ADDED"].includes(x.kind));
   const last=matches.at(-1);
   if(last?.evidenceFingerprint===c.evidenceFingerprint)continue;
   const migrated=!last&&result.records.some(x=>programKey(x)===programKey(c)&&x.stage!==c.stage);
