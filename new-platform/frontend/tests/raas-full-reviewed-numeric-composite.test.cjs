@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,60);
+ assert.equal(feed.records.length,74);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -163,7 +163,7 @@ test("10-trial real clinical pilot has only research grades, not full RAAS or fa
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
  const cases=new Set(feed.records.filter(r=>r.stage==="post").map(r=>r.nctId));
  assert.equal(cases.size,10);
- assert.equal(feed.records.length,60);
+ assert.equal(feed.records.length,74);
  for(const nctId of cases){
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
@@ -225,7 +225,7 @@ test("Two source-checked current Phase 3 TOP trial research grades are exact-ide
  const path=require("node:path"),raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.filter(r=>r.stage==="pre").length,10);
+ assert.equal(feed.records.filter(r=>r.stage==="pre").length,24);
  const trials=[
   {nctId:"NCT07671911",ticker:"TRVI",drug:"NAL ER",
    indication:"Idiopathic Pulmonary Fibrosis"},
@@ -247,4 +247,36 @@ test("Two source-checked current Phase 3 TOP trial research grades are exact-ide
   const notPost=fullReviewedTrialCandidate(trial,"post",true,feed);
   assert.equal(notPost.reviewedCount,0);
  }
+});
+
+
+test("additional TOP NCTs keep prior response, open-label safety, and previous FDA CRL distinct",()=>{
+ const path=require("node:path"),raw=JSON.parse(fs.readFileSync(path.join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const feed=parseReviewedMetricFeed(raw);
+ const cases=[
+  {nctId:"NCT07868419",ticker:"TRVI",drug:"NAL ER",
+   indication:"Idiopathic Pulmonary Fibrosis",metricIds:["pre-1-1","pre-1-2","pre-1-4","pre-3-2","pre-4-1"]},
+  {nctId:"NCT07369154",ticker:"LBRX",drug:"LB-102",
+   indication:"Schizophrenia",metricIds:["pre-1-1","pre-1-2","pre-1-4","pre-3-2"]},
+  {nctId:"NCT06736574",ticker:"CYTK",drug:"omecamtiv mecarbil",
+   indication:"Heart Failure With Reduced Ejection Fraction",
+   metricIds:["pre-1-1","pre-1-2","pre-1-4","pre-1-5","pre-3-2"]}
+ ];
+ for(const c of cases){
+  const result=fullReviewedTrialCandidate(c,"pre",true,feed);
+  assert.equal(result.aiCrosscheckedCount,c.metricIds.length);
+  assert.deepEqual(result.grades.map(x=>x.metricId).sort(),c.metricIds);
+  assert.equal(result.independentReviewedCount,0);
+  assert.equal(result.missingMetricIds.length,30-c.metricIds.length);
+  assert.equal(result.fullResearchScore,null);
+  assert.equal(result.approvedOverallScore,null);
+  assert.equal(fullReviewedTrialCandidate(c,"post",true,feed).reviewedCount,0);
+  assert.equal(fullReviewedTrialCandidate({...c,drug:"unrelated drug"},"pre",true,feed).reviewedCount,0);
+ }
+ const fda=feed.records.find(x=>x.nctId==="NCT06736574"&&x.metricId==="pre-1-5");
+ assert.equal(fda.finding,"BELOW_BENCHMARK");
+ assert.match(fda.observedResult,/2023/);
+ assert.match(fda.criticalRiskReview,/2023/);
+ assert.equal(fda.independentReview,"AI_SOURCE_CROSSCHECKED");
 });
