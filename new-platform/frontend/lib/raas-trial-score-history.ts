@@ -64,7 +64,7 @@ export function parseRaasTrialHistory(input:unknown):RaasTrialHistoryLedger{
        r.score!==null||r.scoreKind!=="UNSCORED"||r.scoreVersion!==null||
        !Array.isArray(r.metricGrades)||r.metricGrades.length<1||
        r.metricGrades.length>30||r.metricGrades.length!==r.metricCoverage||
-       r.metricGrades.some(g=>!g||!r.metricIds.includes(g.metricId)||
+       r.metricGrades.some((g:RaasProvisionalMetricHistoryGrade)=>!g||!r.metricIds.includes(g.metricId)||
          ![0,25,50,75,100].includes(g.score)||
          !g.ruleId?.trim()||!g.observationId?.trim()||
          !day(g.sourceDate)||g.sourceDate>r.sourceAsOf||
