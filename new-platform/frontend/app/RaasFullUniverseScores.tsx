@@ -275,6 +275,17 @@ export default function RaasFullUniverseScores(){
    and explicit N/A for missing full RAAS scores. The design diagnostic is
    <strong> not </strong> an FDA probability or complete RAAS rating.
   </p>
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ten-trial-pilot-download="true">
+   <strong>10-trial, 30-metric retrospective RAAS pilot:</strong>{" "}
+   <a href="/raas-ten-trial-metric-pilot.csv" download
+    style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
+    Download actual graded metrics and every missing item (300-row CSV)
+   </a>.
+   This is a deliberately chosen <strong>historical trial sample</strong>, not current
+   PIPELINE eligibility or a holdout prediction test. Six earlier CLDX reviews plus
+   additional source-checked clinical metrics are individually graded. All other
+   cells remain unscored, and no complete 30/30 RAAS or FDA probability is claimed.
+  </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-clinical-evidence-download="true">
    <a href="/raas-clinical-evidence-components.csv" download>Download clinical source-documentation grades</a>
    {" "}· <a href="/raas-primary-comparisons.csv" download>Primary statistical comparisons</a>
