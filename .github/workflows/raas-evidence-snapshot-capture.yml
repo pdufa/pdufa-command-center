@@ -7,6 +7,9 @@ on:
       - .github/workflows/raas-evidence-snapshot-capture.yml
       - scripts/check_phase3_original_registry_pilot.py
       - scripts/raas_population_coverage_audit.py
+      - scripts/raas_trial_clinical_metric_capture.cjs
+      - new-platform/frontend/lib/raas-provisional-clinical.ts
+      - new-platform/frontend/lib/raas-provisional-policy.ts
       - tests/test_raas_population_coverage_audit.py
   workflow_dispatch:
   schedule:
@@ -40,6 +43,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_raas_population_coverage_audit.py' -v
           python -m py_compile scripts/raas_population_coverage_audit.py
           node --check scripts/raas_trial_provisional_metric_capture.cjs
+          node --check scripts/raas_trial_clinical_metric_capture.cjs
 
   verified-capture:
     if: github.event_name != 'pull_request'
@@ -70,6 +74,8 @@ jobs:
         run: node scripts/raas_trial_history_capture.cjs
       - name: Preserve timestamped research-only numerical component changes
         run: node scripts/raas_trial_provisional_metric_capture.cjs
+      - name: Capture narrow source-backed BOTTOM endpoint proxy grades and genuine timestamps
+        run: node scripts/raas_trial_clinical_metric_capture.cjs
       - name: Preserve RAAS system validation-source history separately
         run: node scripts/raas_self_audit_history_capture.cjs
       - name: Audit EVERY source NCT and reconcile 741 against evolving census
