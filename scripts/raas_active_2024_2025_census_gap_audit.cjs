@@ -22,7 +22,7 @@ function safeCsv(x){
  const safe=/^[\s\u0000-\u001f]*[=+\-@]/u.test(s)?"'"+s:s;
  return '"'+safe.replaceAll('"','""')+'"';
 }
-function build({queue,config,primary}={}){
+function build({queue,config,primary,supplemental=[]}={}){
  if(!queue||queue.scope!==SRC||
   queue.status!=="ALL_OFFICIAL_ACTIONS_AND_ARCHIVE_LEADS_QUEUED_NOT_QUALIFIED_TRADES"||
   JSON.stringify(queue.studyYears)!=="[2024,2025]"||
@@ -40,7 +40,8 @@ function build({queue,config,primary}={}){
   !Number.isInteger(queue.totals.originalSourceLeads)||
   !Number.isInteger(queue.totals.archiveUnverifiedTargetDateLeads)||
   !Number.isInteger(queue.totals.FDAApprovalActionLeads)||
-  !Number.isInteger(queue.totals.FDAArchivedCRLLetterLeads))
+  !Number.isInteger(queue.totals.FDAArchivedCRLLetterLeads)||
+  !Array.isArray(supplemental))
   throw Error("RAAS_CENSUS_GAP_STUDY_OR_QUEUE_INVALID");
  const tracks={
   ORIGINAL_FDA_AND_ISSUER_SOURCE_LEAD:[],
@@ -87,6 +88,30 @@ function build({queue,config,primary}={}){
    throw Error("RAAS_CENSUS_GAP_DUPLICATED_ORIGINAL_GOAL");
   goalsByYear.get(y).set(k,e.caseId);
  }
+ // Supplemental source-linked issuer notices are research leads, not cases
+ // independently matched by the official FDA action crosswalk above.
+ const pendingByGoal=new Map(),pendingByCase=new Map();
+ for(const e of supplemental){
+  const k=key(e?.ticker,e?.pdufaTargetDate),y=+String(e?.pdufaTargetDate||"").slice(0,4);
+  const phase3=e?.phase3ReadoutDate||e?.phase3EvidenceDate;
+  const outcome=e?.actualFDAActionSourceUrl||e?.outcomeSourceUrl;
+  const src=x=>typeof x==="string"&&x.startsWith("https://");
+  if(!e||!ticker(e.ticker)||!e.caseId||![2024,2025].includes(y)||
+   !day(e.pdufaTargetDate)||!day(e.targetAnnouncementDate)||
+   e.targetAnnouncementDate>=e.pdufaTargetDate||
+   !day(phase3)||phase3>=e.pdufaTargetDate||
+   !day(e.actualFDAActionDate)||!src(e.targetAnnouncementSourceUrl)||
+   !src(e.phase3ReadoutSourceUrl||e.phase3EvidenceSourceUrl)||!src(outcome)||
+   !["SOURCE_LEADS_RESEARCH_ONLY",
+     "SOURCE_DATES_RECORDED_MARKET_CAP_AND_PRICE_INDEPENDENT_CHECK_PENDING"].includes(e.reviewStatus||e.asOfStatus)||
+   e.historicalCapitalizationAtEntryVerified===true||
+   e.historicalEntryMarketCap300m10bValidated===true||
+   e.approvedAsTradingCase===true||pendingByGoal.has(k)||pendingByCase.has(e.caseId)||
+   originalByCase.has(e.caseId)||goalsByYear.get(y).has(k))
+   throw Error("RAAS_CENSUS_GAP_ADDITIONAL_SOURCE_INVALID_OR_DUPLICATED");
+  pendingByGoal.set(k,e);pendingByCase.set(e.caseId,e);
+  goalsByYear.get(y).set(k,e.caseId);
+ }
  const originalTickers=new Map([[2024,new Set()],[2025,new Set()]]);
  for(const r of originals){
   const e=originalByCase.get(r.caseId);
@@ -100,6 +125,7 @@ function build({queue,config,primary}={}){
    throw Error("RAAS_CENSUS_GAP_PRIMARY_SOURCE_CROSSWALK_FAILED");
   originalTickers.get(r.year).add(r.ticker);
  }
+ for(const e of pendingByGoal.values())originalTickers.get(+e.pdufaTargetDate.slice(0,4)).add(e.ticker);
  const archivedGoalKeys=new Set();
  const duplicates=[],unverified=[];
  for(const r of archived){
@@ -114,7 +140,9 @@ function build({queue,config,primary}={}){
   if(match){
    duplicates.push({id:r.id,year:y,ticker:r.ticker,
     archiveSuggestedPdufaDate:r.archiveSuggestedPdufaDate,
-    matchedOriginalCaseId:match,classification:"ALREADY_SOURCED_SAME_TICKER_AND_TARGET"});
+    matchedOriginalCaseId:match,classification:pendingByGoal.has(k)?
+     "ADDITIONAL_SOURCE_LINKED_PENDING_INDEPENDENT_FDA_MATCH":
+     "ALREADY_SOURCED_SAME_TICKER_AND_TARGET"});
   } else {
    const repeated=archivedGoalKeys.has(k);
    archivedGoalKeys.add(k);
@@ -141,15 +169,20 @@ function build({queue,config,primary}={}){
   [2025,config.minimumIndependentHoldoutIssuers]]){
   const orig=originals.filter(r=>r.year===y);
   const sourceKeys=new Set(orig.map(r=>r.ticker));
+  const pending=[...pendingByGoal.values()].filter(e=>+e.pdufaTargetDate.slice(0,4)===y);
+  const pendingKeys=new Set(pending.map(e=>e.ticker));
   const a=archived.filter(r=>r.year===y);
   const dup=duplicates.filter(r=>r.year===y);
   const un=unverified.filter(r=>r.year===y);
-  const notYet=new Set(un.map(r=>r.ticker).filter(t=>!sourceKeys.has(t)));
-  const all=new Set([...sourceKeys,...notYet]);
+  const notYet=new Set(un.map(r=>r.ticker).filter(t=>!sourceKeys.has(t)&&!pendingKeys.has(t)));
+  const all=new Set([...sourceKeys,...pendingKeys,...notYet]);
   years[y]={
    role:y===2024?"TRAIN":"ISSUER_DISJOINT_HOLDOUT",
    sourceBackedTargetEvents:orig.length,
    sourceBackedDistinctTickers:sourceKeys.size,
+   additionalSourceLinkedResearchCases:pending.length,
+   additionalSourceLinkedResearchDistinctTickers:pendingKeys.size,
+   combinedKnownSourceLinkedDistinctTickers:new Set([...sourceKeys,...pendingKeys]).size,
    archivedTargetDateRows:a.length,
    archiveRowsAlreadySameGoalSourced:dup.length,
    archivedUnverifiedDateRows:un.length,
@@ -170,7 +203,8 @@ function build({queue,config,primary}={}){
  for(const y of [2024,2025]){
   const tickers=new Set([
    ...originals.filter(r=>r.year===y).map(r=>r.ticker),
-   ...unverified.filter(r=>r.year===y).map(r=>r.ticker)
+   ...unverified.filter(r=>r.year===y).map(r=>r.ticker),
+   ...[...pendingByGoal.values()].filter(e=>+e.pdufaTargetDate.slice(0,4)===y).map(e=>e.ticker)
   ]);
   for(const t of tickers){
    if(!byTickerYears.has(t))byTickerYears.set(t,new Set());
@@ -185,6 +219,8 @@ function build({queue,config,primary}={}){
   for(const x of [...originals.filter(r=>r.year===y).map(r=>({
     ticker:r.ticker,date:r.originalPublicPdufaTargetDate,
     reviewId:r.id
+   })),...[...pendingByGoal.values()].filter(e=>+e.pdufaTargetDate.slice(0,4)===y).map(e=>({
+    ticker:e.ticker,date:e.pdufaTargetDate,reviewId:"SOURCE_LINKED|"+e.caseId
    })),...unverified.filter(r=>r.year===y).map(r=>({
     ticker:r.ticker,date:r.archiveSuggestedPdufaDate,reviewId:r.id
    }))]){
@@ -211,6 +247,13 @@ function build({queue,config,primary}={}){
   status:"INCOMPLETE_PDUFA_TARGET_CENSUS_RESEARCH_ONLY",
   trainYear:2024,holdoutYear:2025,
   originalEventSourceCount:originals.length,
+  additionalSourceLinkedResearchLeadCount:pendingByGoal.size,
+  additionalSourceLinkedResearchLeads:[...pendingByGoal.values()].map(e=>({
+   caseId:e.caseId,ticker:e.ticker,pdufaTargetDate:e.pdufaTargetDate,
+   studyYear:+e.pdufaTargetDate.slice(0,4),
+   status:"SOURCE_LINKED_PENDING_FDA_MATCH_MARKET_CAP_AND_CENSUS_AUDIT",
+   validatedTrade:false,completeCensus:false,approvedRaasMetric:false
+  })),
   annualTargetsAudited:0,independentlyValidatedTradingCases:0,
   calibratedRaasMetrics:0,approvedOptimalWindow:null,
   queueSourceActionRows:queue.totals.reviewRows,
@@ -258,10 +301,17 @@ function main(){
    path.join(root,"raas-2024-2025-census-gap-audit.json");
   const csvPath=process.env.RAAS_CENSUS_GAP_CSV||
    path.join(root,"raas-2024-2025-next-target-review.csv");
+  const extraPaths=[
+   "new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json",
+   "new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json",
+   "new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json"];
+  const supplemental=extraPaths.flatMap(p=>
+   JSON.parse(fs.readFileSync(path.join(root,p),"utf8")).records);
   const r=build({
    queue:JSON.parse(fs.readFileSync(queuePath,"utf8")),
    config:JSON.parse(fs.readFileSync(cfgPath,"utf8")),
-   primary:JSON.parse(fs.readFileSync(srcPath,"utf8"))
+   primary:JSON.parse(fs.readFileSync(srcPath,"utf8")),
+   supplemental
   });
   for(const out of [jsonPath,csvPath])fs.mkdirSync(path.dirname(out),{recursive:true});
   fs.writeFileSync(jsonPath,JSON.stringify(r,null,2)+"\n");
@@ -271,6 +321,7 @@ function main(){
     r.actionYearRowsNotCountedAsTargetYearDenominator,
    archivedLeads:r.archivedTargetDateLeadRows,
    alreadySourcedArchiveDuplicate:r.archiveSameGoalDuplicatedSourceRows,
+   additionalSourceLinkedResearchLeads:r.additionalSourceLinkedResearchLeadCount,
    unsourcedArchiveReviewTasks:r.unsourcedArchivedTargetReviewTasks,
    train:r.byTargetYear[2024],holdout:r.byTargetYear[2025],
    validatedTradingCases:r.independentlyValidatedTradingCases,approvedRaasMetrics:0};
