@@ -10,7 +10,7 @@
   },
   "historicalCensus": {
     "trials": 741,
-    "componentScored": 2,
+    "componentScored": 4,
     "approvedOverallScored": 0,
     "top": 2,
     "bottom": 3,
@@ -7354,10 +7354,29 @@
         "registryStatus": "ACTIVE_NOT_RECRUITING",
         "readoutStage": "BOTTOM",
         "approvedOverallScore": null,
-        "experimentalMetricGrades": [],
-        "metricGradesAvailable": 0,
-        "metricGradesMissing": 30,
-        "missingReason": "NO_ELIGIBLE_NUMERICAL_METRIC_INPUTS",
+        "experimentalMetricGrades": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "scoreType": "EXPERIMENTAL_NOT_VALIDATED",
+            "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+            "sourceDate": "2026-09-22",
+            "recordedAt": "2026-11-04T15:04:53.423Z"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 100,
+            "scoreType": "EXPERIMENTAL_NOT_VALIDATED",
+            "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+            "sourceDate": "2026-09-22",
+            "recordedAt": "2026-11-04T15:04:53.423Z"
+          }
+        ],
+        "metricGradesAvailable": 2,
+        "metricGradesMissing": 28,
+        "missingReason": null,
         "pdufaQualified": null,
         "sourceUrl": "https://clinicaltrials.gov/study/NCT06445023"
       },
@@ -7367,10 +7386,29 @@
         "registryStatus": "ACTIVE_NOT_RECRUITING",
         "readoutStage": "BOTTOM",
         "approvedOverallScore": null,
-        "experimentalMetricGrades": [],
-        "metricGradesAvailable": 0,
-        "metricGradesMissing": 30,
-        "missingReason": "NO_ELIGIBLE_NUMERICAL_METRIC_INPUTS",
+        "experimentalMetricGrades": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "scoreType": "EXPERIMENTAL_NOT_VALIDATED",
+            "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+            "sourceDate": "2026-09-22",
+            "recordedAt": "2026-11-04T15:04:53.423Z"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 100,
+            "scoreType": "EXPERIMENTAL_NOT_VALIDATED",
+            "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+            "sourceDate": "2026-09-22",
+            "recordedAt": "2026-11-04T15:04:53.423Z"
+          }
+        ],
+        "metricGradesAvailable": 2,
+        "metricGradesMissing": 28,
+        "missingReason": null,
         "pdufaQualified": null,
         "sourceUrl": "https://clinicaltrials.gov/study/NCT06455202"
       },
@@ -9673,7 +9711,7 @@
   },
   "evolvingResearch": {
     "trials": 762,
-    "componentScored": 2,
+    "componentScored": 4,
     "approvedOverallScored": 0,
     "top": 2,
     "bottom": 3,
@@ -17225,10 +17263,29 @@
         "registryStatus": "ACTIVE_NOT_RECRUITING",
         "readoutStage": "BOTTOM",
         "approvedOverallScore": null,
-        "experimentalMetricGrades": [],
-        "metricGradesAvailable": 0,
-        "metricGradesMissing": 30,
-        "missingReason": "NO_ELIGIBLE_NUMERICAL_METRIC_INPUTS",
+        "experimentalMetricGrades": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "scoreType": "EXPERIMENTAL_NOT_VALIDATED",
+            "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+            "sourceDate": "2026-09-22",
+            "recordedAt": "2026-11-04T15:04:53.423Z"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 100,
+            "scoreType": "EXPERIMENTAL_NOT_VALIDATED",
+            "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+            "sourceDate": "2026-09-22",
+            "recordedAt": "2026-11-04T15:04:53.423Z"
+          }
+        ],
+        "metricGradesAvailable": 2,
+        "metricGradesMissing": 28,
+        "missingReason": null,
         "pdufaQualified": null,
         "sourceUrl": "https://clinicaltrials.gov/study/NCT06445023"
       },
@@ -17238,10 +17295,29 @@
         "registryStatus": "ACTIVE_NOT_RECRUITING",
         "readoutStage": "BOTTOM",
         "approvedOverallScore": null,
-        "experimentalMetricGrades": [],
-        "metricGradesAvailable": 0,
-        "metricGradesMissing": 30,
-        "missingReason": "NO_ELIGIBLE_NUMERICAL_METRIC_INPUTS",
+        "experimentalMetricGrades": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "scoreType": "EXPERIMENTAL_NOT_VALIDATED",
+            "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+            "sourceDate": "2026-09-22",
+            "recordedAt": "2026-11-04T15:04:53.423Z"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 100,
+            "scoreType": "EXPERIMENTAL_NOT_VALIDATED",
+            "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+            "sourceDate": "2026-09-22",
+            "recordedAt": "2026-11-04T15:04:53.423Z"
+          }
+        ],
+        "metricGradesAvailable": 2,
+        "metricGradesMissing": 28,
+        "missingReason": null,
         "pdufaQualified": null,
         "sourceUrl": "https://clinicaltrials.gov/study/NCT06455202"
       },
@@ -19644,5 +19720,5 @@
     "preservedOriginalNctCount": 741,
     "evolvingNctCount": 762
   },
-  "fingerprint": "e8e3b5c326a3237e809f8f20a093975cc77c352b1cec6497ba3ed2dbc737ed49"
+  "fingerprint": "0a69805fdab078740aa68216ecffc8fb7e59b4faff60ee76ccaff51999ca8a68"
 }

@@ -213,6 +213,150 @@
           "explanation": "Predeclared exploratory window bins: year 25; half-year 50; quarter 75; single month 100. Sponsor precision is not the probability of meeting a date."
         }
       ]
+    },
+    {
+      "eventId": "071cb263eff1cf6f65aa12ae595b3ee4b11814bf36a576d432c9e236e80b0c4d",
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "recordedAt": "2026-11-04T15:04:53.423Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "METRIC_SCORE_UPDATED",
+      "summary": "Research-only post-1-2 descriptive clinical contrast 100/100. Clinical efficacy/return probabilities and overall RAAS remain unscored.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 1,
+      "metricIds": [
+        "post-1-2"
+      ],
+      "sourceUrls": [
+        "https://ir.celldex.com/node/16781/ixbrl-viewer"
+      ],
+      "evidenceFingerprint": "6ddc74bca408a6ce6cec52bfbc3d2585903177ece2a64a0b9cdcf59618b62dec",
+      "metricGrades": [
+        {
+          "metricId": "post-1-2",
+          "score": 100,
+          "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+          "observationId": "c1-response",
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+          "sourceDate": "2026-09-22",
+          "label": "Placebo-adjusted complete response (research only)",
+          "inputs": "Placebo-adjusted UAS7=0 complete-response difference 33.1 percentage points, 150 mg Q4W, Week 12",
+          "explanation": "Exploratory response contrast bands: nonpositive=0; positive <10pp=25; 10–<20pp=50; 20–<30pp=75; >=30pp=100. No comparison with active alternatives. Company-announced outcomes, not independent clinical adjudication."
+        }
+      ]
+    },
+    {
+      "eventId": "154fd6cf653e522d345ea294c100227b03c53a24617dcf1c44abb1b39b6730c9",
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "recordedAt": "2026-11-04T15:04:53.423Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "METRIC_SCORE_UPDATED",
+      "summary": "Research-only post-1-1 descriptive clinical contrast 75/100. Clinical efficacy/return probabilities and overall RAAS remain unscored.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 1,
+      "metricIds": [
+        "post-1-1"
+      ],
+      "sourceUrls": [
+        "https://ir.celldex.com/node/16781/ixbrl-viewer"
+      ],
+      "evidenceFingerprint": "197c54b1a63501247c1aa51ddfc6847e0743e10b8fd2c83c5c63e0c9e08804d0",
+      "metricGrades": [
+        {
+          "metricId": "post-1-1",
+          "score": 75,
+          "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+          "observationId": "c1-effect",
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+          "sourceDate": "2026-09-22",
+          "label": "Placebo-adjusted UAS7 effect (research only)",
+          "inputs": "Placebo-adjusted LS mean UAS7 change 9.5 points, 150 mg Q4W, Week 12",
+          "explanation": "Exploratory contrast bands: nonpositive=0; positive <2=25; 2–<5=50; 5–<10=75; >=10=100. Not a validated clinical minimum important between-group difference. Company-announced outcomes, not independent clinical adjudication."
+        }
+      ]
+    },
+    {
+      "eventId": "4f7caab87c305568c7bdd75cbd1c54ac70bb5b42fe526fb4b1fbb458ef348911",
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "recordedAt": "2026-11-04T15:04:53.423Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "METRIC_SCORE_UPDATED",
+      "summary": "Research-only post-1-1 descriptive clinical contrast 75/100. Clinical efficacy/return probabilities and overall RAAS remain unscored.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 1,
+      "metricIds": [
+        "post-1-1"
+      ],
+      "sourceUrls": [
+        "https://ir.celldex.com/node/16781/ixbrl-viewer"
+      ],
+      "evidenceFingerprint": "733f162b19cabb959d62ef67c0dacb80e078cec90844ec44da921bf52a1fab4d",
+      "metricGrades": [
+        {
+          "metricId": "post-1-1",
+          "score": 75,
+          "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+          "observationId": "c2-effect",
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+          "sourceDate": "2026-09-22",
+          "label": "Placebo-adjusted UAS7 effect (research only)",
+          "inputs": "Placebo-adjusted LS mean UAS7 change 8.8 points, 150 mg Q4W, Week 12",
+          "explanation": "Exploratory contrast bands: nonpositive=0; positive <2=25; 2–<5=50; 5–<10=75; >=10=100. Not a validated clinical minimum important between-group difference. Company-announced outcomes, not independent clinical adjudication."
+        }
+      ]
+    },
+    {
+      "eventId": "c362b42361c85e863a54c2d7b9c504d79abc40e78d6c16d519812eccb27008d0",
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "recordedAt": "2026-11-04T15:04:53.423Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "METRIC_SCORE_UPDATED",
+      "summary": "Research-only post-1-2 descriptive clinical contrast 100/100. Clinical efficacy/return probabilities and overall RAAS remain unscored.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 1,
+      "metricIds": [
+        "post-1-2"
+      ],
+      "sourceUrls": [
+        "https://ir.celldex.com/node/16781/ixbrl-viewer"
+      ],
+      "evidenceFingerprint": "1b377339feaae5c188435a61f6b6b6d7399be5cb7202708834383843fc9e4011",
+      "metricGrades": [
+        {
+          "metricId": "post-1-2",
+          "score": 100,
+          "ruleId": "uas7-placebo-contrast-descriptive-2026-11-04-v1",
+          "observationId": "c2-response",
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+          "sourceDate": "2026-09-22",
+          "label": "Placebo-adjusted complete response (research only)",
+          "inputs": "Placebo-adjusted UAS7=0 complete-response difference 33.1 percentage points, 150 mg Q4W, Week 12",
+          "explanation": "Exploratory response contrast bands: nonpositive=0; positive <10pp=25; 10–<20pp=50; 20–<30pp=75; >=30pp=100. No comparison with active alternatives. Company-announced outcomes, not independent clinical adjudication."
+        }
+      ]
     }
   ]
 }
