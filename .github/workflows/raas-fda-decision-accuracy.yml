@@ -11,6 +11,8 @@ on:
       - 'scripts/raas_v2_prospective_source_readiness.py'
       - 'scripts/raas_v2_source_provenance_manifest.py'
       - 'scripts/raas_v2_openfda_application_watch.py'
+      - 'scripts/raas_v2_sec_nov14_filing_watch.py'
+      - 'tests/test_raas_v2_sec_nov14_filing_watch.py'
       - 'tests/test_raas_v2_openfda_application_watch.py'
       - 'new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json'
       - 'new-platform/frontend/data/raas-v2-nov14-issuer-goal-continuity.json'
@@ -40,6 +42,8 @@ on:
       - 'scripts/raas_v2_prospective_source_readiness.py'
       - 'scripts/raas_v2_source_provenance_manifest.py'
       - 'scripts/raas_v2_openfda_application_watch.py'
+      - 'scripts/raas_v2_sec_nov14_filing_watch.py'
+      - 'tests/test_raas_v2_sec_nov14_filing_watch.py'
       - 'tests/test_raas_v2_openfda_application_watch.py'
       - 'new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json'
       - 'new-platform/frontend/data/raas-v2-nov14-issuer-goal-continuity.json'
@@ -94,8 +98,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_raas_v2_top8_source_intake.py' -v
       - name: Test V2 nightly original-deadline queue excludes revised goals and preserves source-only tags
         run: python -m unittest discover -s tests -p 'test_raas_v2_original_goal_queue_safety.py' -v
-      - name: Verify six-file source snapshots cannot promote FDA application candidates or forecasts
+      - name: Verify seven-file research source checksums cannot promote FDA filings or application candidates
         run: python -m unittest discover -s tests -p 'test_raas_v2_source_provenance_manifest.py' -v
+      - name: Validate recent SEC issuer filings are evidence leads, never automatically FDA deadline changes
+        run: python -m unittest discover -s tests -p 'test_raas_v2_sec_nov14_filing_watch.py' -v
       - name: Validate FDA public application watch against S-001 false positives, 404 uncertainty and future status rows
         run: python -m unittest discover -s tests -p 'test_raas_v2_openfda_application_watch.py' -v
       - name: Confirm November 14 NCT trials and unrelated FDA S-001 REMS review are never auto-predictions
@@ -121,6 +127,10 @@ jobs:
         env:
           RAAS_OPENFDA_APPLICATION_WATCH_JSON: ${{ runner.temp }}/raas-v2-openfda-application-identity-watch.json
         run: python scripts/raas_v2_openfda_application_watch.py
+      - name: Query SEC EDGAR CYTK and SMMT filings newer than last reviewed issuer goal source
+        env:
+          RAAS_SEC_NOV14_REVIEW_JSON: ${{ runner.temp }}/raas-v2-sec-nov14-new-filing-review-leads.json
+        run: python scripts/raas_v2_sec_nov14_filing_watch.py
       - name: Create GitHub-run-bound checksum manifest for V2 research sources only
         env:
           RAAS_SOURCE_REPORTS_DIRECTORY: ${{ runner.temp }}
@@ -139,5 +149,6 @@ jobs:
             ${{ runner.temp }}/raas-v2-prospective-source-review.csv
             ${{ runner.temp }}/raas-v2-source-research-provenance.json
             ${{ runner.temp }}/raas-v2-openfda-application-identity-watch.json
+            ${{ runner.temp }}/raas-v2-sec-nov14-new-filing-review-leads.json
           if-no-files-found: warn
           retention-days: 90
