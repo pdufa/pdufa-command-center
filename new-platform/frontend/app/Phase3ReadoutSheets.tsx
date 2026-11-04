@@ -91,7 +91,7 @@ function csvCell(v:string|number){
 }
 function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
   const fields=["NCT","Ticker","Company",...(bucket==="post"?["Factor P (Phase 3 primary endpoint p-value)"]:[]),"ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication","Release evidence","Registry link",
-    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","Research source coverage % (NOT RAAS score)","Timing-only exploratory pilot (NOT RAAS score)","RAAS validation status"];
+    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","Research source coverage % (NOT RAAS score)","Timing-only exploratory pilot (NOT RAAS score)","Experimental metrics graded (of 30)","Experimental metric grades (NOT overall RAAS)","RAAS validation status"];
   const table=[fields,...rows.map(row=>[
     row.nctId,row.ticker,row.company,...(bucket==="post"?[row.evidence?.primaryEndpointP?.display||"Not reported"]:[]),row.status,
     bucket==="pre"?"No public issuer release verified as of source check":
