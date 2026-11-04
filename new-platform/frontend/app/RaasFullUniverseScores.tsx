@@ -6,6 +6,7 @@ import {parseRaasScreenedPhase3Csv,RAAS_RESTRICTED_PHASE3_CSV_QUERY,
  type RaasScreenedTrialRoster} from "../lib/raas-full-universe-roster";
 import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
 import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
+import {raasRegistryCoverage} from "../lib/raas-stage-source-coverage";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
@@ -99,9 +100,13 @@ export default function RaasFullUniverseScores(){
  const fallback=scope==="cap"&&!effectiveLive;
  const universe=effectiveLive?live!.rows:historical;
  const assessments=useMemo(()=>universe.map(assess),[universe]);
- const indexed=useMemo(()=>assessments.map(x=>({...x,
-  registry:registryTrialFor(registryIndex,{nctId:x.row.nctId,ticker:x.row.ticker})
- })),[assessments,registryIndex]);
+ const indexed=useMemo(()=>assessments.map(x=>{
+  const trial={nctId:x.row.nctId,ticker:x.row.ticker,drug:x.row.evidence?.drug};
+  const registry=registryTrialFor(registryIndex,trial);
+  return {...x,registry,
+   topRegistryCoverage:raasRegistryCoverage(trial,"pre",registry),
+   bottomRegistryCoverage:raasRegistryCoverage(trial,"post",registry)};
+ }),[assessments,registryIndex]);
  const stats=useMemo(()=>({
   top:assessments.filter(x=>x.stage==="pre").length,
   bottom:assessments.filter(x=>x.stage==="post").length,
@@ -189,6 +194,13 @@ export default function RaasFullUniverseScores(){
    <div><strong>{short(stats.missingRegistry)}</strong>
     <span>Outside current registry evidence snapshot · needs separate source collection</span></div>
   </div>
+  <p style={{fontSize:12,lineHeight:1.5,margin:"6px 0"}}>
+   <strong>TOP/BOTTOM registry source coverage is calculated across every matched NCT.</strong>
+   Percentages measure the share of 30 metric research weights with a mapped
+   ClinicalTrials.gov source lead, not clinical success probability, stock return,
+   or a numerical overall RAAS grade.
+  </p>
+ 
   <div style={{display:"flex",gap:9,alignItems:"end",flexWrap:"wrap",margin:"12px 0"}}>
    <label style={{display:"flex",flexDirection:"column",gap:3,fontSize:12}}>
     Search all selected trials
@@ -234,7 +246,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong>. Missing scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","Registry facts","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","TOP source coverage","BOTTOM source coverage","Registry facts","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -257,6 +269,12 @@ export default function RaasFullUniverseScores(){
       rel="noopener noreferrer">Component source · {x.sourceDate}</a>:
       x.stage===null?"TOP and BOTTOM checklists available · public readout stage still unverified":
       "Source-backed rule and required inputs not yet available"}</td>
+     <td style={cell} data-raas-top-source-coverage={x.row.nctId}>
+      <strong>{x.topRegistryCoverage===null?"N/A":x.topRegistryCoverage.sourceWeightPct+"%"}</strong>
+      <span style={{display:"block",fontSize:11}}>Mapped source lead weights, not RAAS performance</span></td>
+     <td style={cell} data-raas-bottom-source-coverage={x.row.nctId}>
+      <strong>{x.bottomRegistryCoverage===null?"N/A":x.bottomRegistryCoverage.sourceWeightPct+"%"}</strong>
+      <span style={{display:"block",fontSize:11}}>Posted primary/safety evidence, not RAAS performance</span></td>
      <td style={cell}><RaasRegistryEvidenceButton row={x.row}/></td>
      <td style={cell}><RaasMetricGradebook row={x.row} bucket={x.stage}/></td>
      <td style={cell}><RaasTrialHistoryButton row={x.row} bucket={x.stage}/></td>
