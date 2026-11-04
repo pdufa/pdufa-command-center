@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,74);
+ assert.equal(feed.records.length,82);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -163,7 +163,7 @@ test("10-trial real clinical pilot has only research grades, not full RAAS or fa
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
  const cases=new Set(feed.records.filter(r=>r.stage==="post").map(r=>r.nctId));
  assert.equal(cases.size,10);
- assert.equal(feed.records.length,74);
+ assert.equal(feed.records.length,82);
  for(const nctId of cases){
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
@@ -225,7 +225,7 @@ test("Two source-checked current Phase 3 TOP trial research grades are exact-ide
  const path=require("node:path"),raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.filter(r=>r.stage==="pre").length,24);
+ assert.equal(feed.records.filter(r=>r.stage==="pre").length,27);
  const trials=[
   {nctId:"NCT07671911",ticker:"TRVI",drug:"NAL ER",
    indication:"Idiopathic Pulmonary Fibrosis"},
@@ -279,4 +279,30 @@ test("additional TOP NCTs keep prior response, open-label safety, and previous F
  assert.match(fda.observedResult,/2023/);
  assert.match(fda.criticalRiskReview,/2023/);
  assert.equal(fda.independentReview,"AI_SOURCE_CROSSCHECKED");
+});
+
+test("MLTX IZAR-2 reviewed as separate PRE trial and COGT GIST PEAK as POST accepted NDA, no invented odds",()=>{
+ const path=require("node:path"),raw=JSON.parse(fs.readFileSync(path.join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const feed=parseReviewedMetricFeed(raw);
+ const izar={nctId:"NCT06641089",ticker:"MLTX",drug:"sonelokimab",
+  indication:"Psoriatic Arthritis"};
+ const peak={nctId:"NCT05208047",ticker:"COGT",
+  drug:"bezuclastinib plus sunitinib",indication:"Gastrointestinal Stromal Tumors"};
+ const a=fullReviewedTrialCandidate(izar,"pre",true,feed);
+ assert.equal(a.aiCrosscheckedCount,3);
+ assert.deepEqual(a.grades.map(x=>x.metricId).sort(),["pre-1-2","pre-3-2","pre-4-1"]);
+ assert.equal(a.independentReviewedCount,0);
+ assert.equal(a.fullResearchScore,null);
+ assert.equal(a.approvedOverallScore,null);
+ assert.equal(fullReviewedTrialCandidate(izar,"post",true,feed).reviewedCount,0);
+ const b=fullReviewedTrialCandidate(peak,"post",true,feed);
+ assert.equal(b.aiCrosscheckedCount,5);
+ assert.deepEqual(b.grades.map(x=>x.metricId).sort(),
+  ["post-1-1","post-1-2","post-1-3","post-3-1","post-6-1"]);
+ assert.equal(b.independentReviewedCount,0);
+ assert.equal(b.fullResearchScore,null);
+ assert.equal(b.approvedOverallScore,null);
+ assert.equal(fullReviewedTrialCandidate(peak,"pre",true,feed).reviewedCount,0);
+ assert.equal(fullReviewedTrialCandidate({...peak,drug:"bezuclastinib"},"post",true,feed).reviewedCount,0);
 });
