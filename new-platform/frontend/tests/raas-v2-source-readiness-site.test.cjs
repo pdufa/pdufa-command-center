@@ -26,6 +26,9 @@ test("V2 source-readiness snapshot cannot pretend to be a calibrated model",()=>
  assert.equal(snapshot.nov14IndependentPhase3RegistryCrossChecks,2);
  assert.equal(snapshot.nov14NumberedCurrentFdaApplicationCyclesCertified,0);
  assert.equal(snapshot.nov14FrozenThreeWayForecasts,0);
+ assert.equal(snapshot.nov14AdditionalDatedIssuerGoalContinuityCases,2);
+ assert.equal(snapshot.nov14LocatedIssuerGoalSourcesOver30DaysOldAtSnapshot,2);
+ assert.equal(snapshot.nov14IssuerGoalContinuityIndependentlyRulesOutFurtherRevisions,0);
  assert.equal(snapshot.nightlyPublicFDAApplicationHistoryWatch,
    "RESEARCH_ONLY_MONITOR_SOURCE_STATUS_ARTIFACT_NOT_SITE_LIVE");
  assert.equal(snapshot.nov14KnownUnrelatedAlreadyApprovedFdaSupplementRemsControls,1);
@@ -62,4 +65,24 @@ test("Mobile nightly official FDA lookup is explicitly separate from a scored fo
  assert.match(snapshot.nightlyPublicFDAApplicationHistoryWatchScope,/SMMT ivonescimab public ingredient search/);
  assert.match(source,/Live results are in the/);
  assert.match(source,/not this dated website snapshot/);
+});
+
+test("Nov14 mobile issuer-goal panel distinguishes actual January sNDA filing from Feb public release",()=>{
+ assert.match(source,/import nov14IssuerGoalContinuity from/);
+ assert.match(source,/raas-v2-nov14-issuer-goal-continuity/);
+ assert.match(source,/nov14IssuerGoalContinuity\.records\.map/);
+ assert.match(source,/January is the actual filing month/);
+ assert.match(source,/February 24 was the public announcement/);
+ assert.match(source,/more than 30 days old/);
+ assert.match(source,/not a live FDA deadline guarantee/);
+ const d=require("../data/raas-v2-nov14-issuer-goal-continuity.json");
+ assert.equal(d.latestDatedIssuerGoalContinuityCases,2);
+ assert.equal(d.independentlyVerifiedNoSubsequentGoalRevisionsCount,0);
+ assert.equal(d.prospectivelyFrozenThreeWayForecastCount,0);
+ assert.equal(d.approvedRAASMetricCalibrationCount,0);
+ assert.deepEqual(d.records.map(r=>r.ticker),["CYTK","SMMT"]);
+ assert.ok(d.records.every(r=>r.reportedGoalDate==="2026-11-14" &&
+   r.originalNov14GoalStillListedByIssuerAtSourceDate===true &&
+   r.absenceOfLaterGoalChangeIndependentlyEstablished===false &&
+   r.fullDatedFDAActionCycleIndependentlyEstablished===false));
 });
