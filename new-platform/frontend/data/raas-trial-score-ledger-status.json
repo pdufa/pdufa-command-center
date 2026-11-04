@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "scope": "RAAS_ALL_TRIAL_SOURCE_SCORE_LEDGER_NOT_FULL_RATINGS",
-  "sourceAsOf": "2026-11-04T21:46:17+00:00",
+  "sourceAsOf": "2026-11-04T22:08:47+00:00",
   "researchTrials": 762,
   "trialsWithNumericSourceDesignDiagnostic": 757,
   "trialsWithoutSufficientSourceDesignFacets": 5,
   "trialStageReviewRows": 1524,
-  "aiSourceCrosscheckedMetricReviews": 4,
+  "aiSourceCrosscheckedMetricReviews": 6,
   "independentMetricReviews": 0,
   "fullyValidatedRaasScoresInLedger": 0,
   "warning": "Numeric design diagnostics are observational trial-design facts only. They are NOT complete RAAS 30/30 ratings, FDA approval probabilities, efficacy, benefit-risk or financial predictions. Missing metrics remain N/A. This ledger does not independently verify TOP/BOTTOM or current $300M-$10B PIPELINE eligibility."
