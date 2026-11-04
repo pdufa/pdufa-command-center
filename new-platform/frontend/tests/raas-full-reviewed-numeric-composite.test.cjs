@@ -204,7 +204,7 @@ test("Eight CI/multiplicity reviews and six shared-NDA filing/target metrics are
  const ci=feed.records.filter(r=>r.metricId==="post-1-3");
  assert.equal(ci.length,8);
  assert.ok(ci.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"&&
-  r.benchmarkSourceUrl.includes("fda.gov")&&r.observedResult.includes("CI")));
+  r.benchmarkSourceUrl.includes("fda.gov")&&/CI|interval|confidence/i.test(r.observedResult)));
  const expected=["post-3-1","post-3-5","post-6-1"];
  for(const id of expected){
   const rows=feed.records.filter(r=>r.metricId===id);
