@@ -11,6 +11,13 @@ import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
 import css from "./raas-history/page.module.css";
 
+type RegistrySourceRow={nctId:string;ticker:string;captureStatus:string;capturedAt:string|null;
+ registryUpdatedAt:string|null;registryStatus:string|null;hasPostedResults:boolean|null;
+ analysisCount:number|null;primaryOutcomeCount:number|null;firstPrimaryEndpoint:string|null;
+ sourceUrl:string;issuerReadoutStage:null;approvedRaasScore:null};
+type RegistrySourceFeed={sourceAsOf:string;counts:{total:number;cachedRegistry:number;missingRegistry:number;
+ postedResults:number;resultAnalyses:number;primaryOutcomeDefined:number};
+ rows:RegistrySourceRow[]};
 type Assessment={row:ReadoutRow;stage:RaasStage|null;timing:number|null;
  metricCount:number;overallScore:number|null;sourceUrl:string|null;sourceDate:string|null};
 const PAGE_SIZE=50;
@@ -37,6 +44,8 @@ function assess(row:ReadoutRow):Assessment{
 }
 export default function RaasFullUniverseScores(){
  const [classified,setClassified]=useState<ReadoutClassification|null>(null);
+ const [registry,setRegistry]=useState<RegistrySourceFeed|null>(null);
+ const [registryError,setRegistryError]=useState(false);
  const [censusError,setCensusError]=useState("");
  const [live,setLive]=useState<RaasScreenedTrialRoster|null>(null);
  const [liveState,setLiveState]=useState<"loading"|"ready"|"unavailable">("loading");
@@ -82,6 +91,20 @@ export default function RaasFullUniverseScores(){
    });
   return ()=>ctrl.abort();
  },[classified,refresh]);
+ useEffect(()=>{
+  const ctrl=new AbortController();
+  void fetch("/api/raas-registry-evidence",{cache:"no-store",signal:ctrl.signal})
+   .then(async response=>{
+    if(!response.ok)throw Error("RAAS registry evidence unavailable");
+    const feed=await response.json() as RegistrySourceFeed;
+    if(feed.counts?.total!==762||!Array.isArray(feed.rows)||feed.rows.length!==762)
+     throw Error("RAAS registry evidence census failed validation");
+    return feed;
+   }).then(feed=>{if(!ctrl.signal.aborted)setRegistry(feed);})
+   .catch(()=>{if(!ctrl.signal.aborted){setRegistry(null);setRegistryError(true);}});
+  return ()=>ctrl.abort();
+ },[]);
+ const registryByNct=useMemo(()=>new Map(registry?.rows.map(x=>[x.nctId,x])||[]),[registry]);
  const historical=useMemo(()=>classified?
   [...classified.pre,...classified.post,...classified.unverified].sort(
    (a,b)=>a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId)):[],[classified]);
@@ -154,6 +177,15 @@ export default function RaasFullUniverseScores(){
   {scope==="historical"&&<p className={css.disclaimer}>
    Historical research census dated {classified.censusDate}; classification sources last checked
    {classified.sourceAsOf}. These 741 NCTs are not the full currently qualified PIPELINE.</p>}
+  <p className={css.disclaimer} data-raas-registry-source-coverage="true">
+   <strong>Official registry source evidence:</strong>{" "}
+   {registry?<>{short(registry.counts.cachedRegistry)}/{short(registry.counts.total)} NCTs with captured records;{" "}
+    {short(registry.counts.missingRegistry)} without captured registry evidence;{" "}
+    {short(registry.counts.postedResults)} with posted registry results and{" "}
+    {short(registry.counts.resultAnalyses)} with source-reported statistical analyses.
+    Registry evidence as of {registry.sourceAsOf}. These facts do not establish issuer readout stage, FDA eligibility or RAAS grades.</>:
+    registryError?"Source census unavailable; no registry counts asserted.":"Loading source evidence census…"}
+  </p>
   <div className={css.stats} data-raas-universe-summary="true">
    <div><strong>{short(assessments.length)}</strong><span>Unique NCTs evaluated for available score rules</span></div>
    <div><strong>{short(stats.numericallyGraded)}</strong><span>Trials with a source-backed experimental metric (not overall RAAS)</span></div>
@@ -194,7 +226,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong>. Missing scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","Registry evidence","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -214,6 +246,23 @@ export default function RaasFullUniverseScores(){
       rel="noopener noreferrer">Component source · {x.sourceDate}</a>:
       x.stage===null?"Verify public Phase 3 readout stage first":
       "Source-backed rule and required inputs not yet available"}</td>
+     <td style={cell}>{(()=>{
+       const rg=registryByNct.get(x.row.nctId);
+       if(!rg||rg.ticker!==x.row.ticker)return "Not in saved source census";
+       const captured=rg.captureStatus!=="REGISTRY_NOT_IN_CACHE";
+       return <><strong>{captured?"Registry captured":"Registry evidence missing"}</strong>
+        <span style={{display:"block",fontSize:11}}>
+         {captured?(rg.hasPostedResults===true?"Registry results posted · NOT issuer-readout classification":
+          rg.hasPostedResults===false?"No posted registry results":"Results status unverified"):
+          "Official source refresh pending"}
+        </span>
+        {captured&&<span style={{display:"block",fontSize:11}}>
+         {rg.primaryOutcomeCount??0} protocol primary outcomes · {rg.analysisCount??0} statistical analyses
+        </span>}
+        {rg.registryUpdatedAt&&<span style={{display:"block",fontSize:11}}>Registry updated {rg.registryUpdatedAt}</span>}
+        <a href={rg.sourceUrl} target="_blank" rel="noopener noreferrer">Open official registry</a>
+       </>;
+      })()}</td>
      <td style={cell}><RaasMetricGradebook row={x.row} bucket={x.stage}/></td>
      <td style={cell}><RaasTrialHistoryButton row={x.row} bucket={x.stage}/></td>
     </tr>)}</tbody>
