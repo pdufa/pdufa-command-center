@@ -46,7 +46,7 @@ export function buildRaasMetricGradebook(
  trial:{nctId:string;ticker:string;drug?:string;indication?:string},stage:RaasStage
 ):RaasTrialGradebook{
  if(stage!=="pre"&&stage!=="post")throw Error("RAAS_GRADEBOOK_STAGE_REQUIRED");
- if(!/^NCT\\d{8}$/.test(trial.nctId)||!trial.ticker?.trim())
+ if(!/^NCT\d{8}$/.test(trial.nctId)||!trial.ticker?.trim())
   throw Error("RAAS_GRADEBOOK_IDENTITY_INVALID");
  const sourcePilot=unique(pilot.records,trial,stage);
  const sourceProspective=unique(prospective.records,trial,stage);
