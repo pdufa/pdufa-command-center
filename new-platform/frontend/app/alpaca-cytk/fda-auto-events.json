@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "programId": "PDUFA-000069",
+  "applicationNumber": "NDA219083",
+  "source": "https://open.fda.gov/apis/drug/drugsfda/",
+  "checkedAt": null,
+  "status": "AWAITING_FIRST_OFFICIAL_FDA_CHECK",
+  "eventCount": 0,
+  "categories": [
+    {
+      "id": "original-approval",
+      "title": "Initial FDA approval",
+      "mode": "official_drugsfda"
+    },
+    {
+      "id": "supplement-approval",
+      "title": "Supplement approvals",
+      "mode": "official_drugsfda"
+    },
+    {
+      "id": "tentative-action",
+      "title": "Tentative submission actions",
+      "mode": "official_drugsfda"
+    },
+    {
+      "id": "crl",
+      "title": "Complete Response Letter",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "adcom",
+      "title": "Advisory committee meetings and votes",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "pdufa-extension",
+      "title": "PDUFA date changes or extensions",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "inspection",
+      "title": "Manufacturing inspections",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "label",
+      "title": "Label revisions and boxed warnings",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "rems",
+      "title": "REMS approval or modifications",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "designation",
+      "title": "Orphan, Breakthrough, Priority and Fast Track designations",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "submission",
+      "title": "NDA/sNDA submissions and acceptance",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "review-letter",
+      "title": "FDA review letters and information requests",
+      "mode": "separate_source_required"
+    },
+    {
+      "id": "resubmission",
+      "title": "CRL resubmissions and withdrawal",
+      "mode": "separate_source_required"
+    }
+  ],
+  "events": [],
+  "limitations": "Only Drugs@FDA approved/tentative supplementary submissions auto-plot. A public record can arrive after the FDA action. Other categories stay armed for separate official-source integration and produce no invented dates. NDA-level supplement approval is not proof of MAPLE-HCM-specific approval."
+}
