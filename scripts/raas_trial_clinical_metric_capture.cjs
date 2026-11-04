@@ -84,6 +84,7 @@ function appendClinicalEvents(ledger,candidates,recordedAt,sourceAsOf){
     !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(recordedAt)||
     new Date(recordedAt).toISOString()!==recordedAt||
     sourceAsOf>recordedAt.slice(0,10))throw Error("RAAS_CLINICAL_LEDGER_INVALID");
+ if(ledger.records.some(e=>e.recordedAt>recordedAt))throw Error("RAAS_CLINICAL_BACKDATING");
  const updated={...ledger,records:[...ledger.records]};let added=0;
  for(const item of candidates){
   if(item.stage!=="post"||!/^NCT\d{8}$/.test(item.nctId)||
