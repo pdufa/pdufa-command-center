@@ -112,6 +112,22 @@ export function parseRegistryEvidenceIndex(raw:unknown):RegistryEvidenceIndex{
  if(posted!==j.summary.postedRegistryResults||
   posted+j.summary.protocolOnly!==j.summary.researchNcts)
   throw Error("RAAS_REGISTRY_INDEX_COUNT_INVALID");
+ const counts={
+  trialsWithPrimaryComparisons:j.records.filter(r=>r.primaryResults.some(
+   out=>out.comparisons?.some(a=>a.groupIds?.length>=2))).length,
+  trialsWithPrimaryGroupMeasurements:j.records.filter(r=>r.primaryResults.some(
+   out=>(out.measurements?.length||0)>0)).length,
+  trialsWithPrimaryConfidenceIntervals:j.records.filter(r=>r.primaryResults.some(
+   out=>out.comparisons?.some(a=>!!a.ciLowerLimit&&!!a.ciUpperLimit))).length,
+  trialsWithSafetyRiskDenominators:j.records.filter(r=>r.seriousEventDetails?.some(
+   ev=>ev.groups.some(g=>typeof g.numAffected==="number"&&
+    typeof g.numAtRisk==="number"&&g.numAtRisk>0))).length
+ };
+ for(const key of Object.keys(counts) as (keyof typeof counts)[]){
+  const n=j.summary[key];
+  if(n!==undefined&&(!Number.isInteger(n)||n!==counts[key]))
+   throw Error("RAAS_REGISTRY_INDEX_SOURCE_COVERAGE_MISMATCH");
+ }
  return j;
 }
 let cached:Promise<RegistryEvidenceIndex|null>|null=null;
