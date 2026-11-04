@@ -4,17 +4,31 @@ import {createPortal} from "react-dom";
 import type {ReadoutRow} from "../lib/phase3-public-readout";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import {buildRaasMetricGradebook} from "../lib/raas-metric-gradebook";
+import {loadRegistryEvidenceIndex,registryTrialFor,
+ type RegistryTrialEvidence} from "../lib/raas-registry-evidence";
 
 /** A horizontal, scrollable score-detail panel, loaded only when the user opens it. */
 export default function RaasMetricGradebook({row,bucket}:{
  row:ReadoutRow;bucket:RaasStage|null
 }){
  const [open,setOpen]=useState(false);
+ const [registry,setRegistry]=useState<RegistryTrialEvidence|null>(null);
  const trigger=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{
+  if(!open)return;
+  let active=true;
+  setRegistry(null);
+  void loadRegistryEvidenceIndex().then(index=>{
+   if(active)setRegistry(registryTrialFor(index,{
+    nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug
+   }));
+  });
+  return ()=>{active=false;};
+ },[open,row.nctId,row.ticker,row.evidence?.drug]);
  const book=useMemo(()=>open&&bucket?buildRaasMetricGradebook({
   nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication
- },bucket):null,[open,bucket,row.nctId,row.ticker,row.evidence?.drug,row.evidence?.indication]);
+ },bucket,registry):null,[open,bucket,registry,row.nctId,row.ticker,row.evidence?.drug,row.evidence?.indication]);
  useEffect(()=>{
   if(!open)return;
   const handler=(event:KeyboardEvent)=>{if(event.key==="Escape")setOpen(false);};
@@ -56,6 +70,7 @@ export default function RaasMetricGradebook({row,bucket}:{
       <span><strong>{book.withoutEvidence}</strong> without mapped evidence</span>
       <span><strong>Overall RAAS: N/A</strong> · not validated</span>
       <span><strong>{book.provisionalDiagnostic.weightCoveredPercent}%</strong> of RAAS model weight has any experimental component grade</span>
+      <span><strong>{book.registrySourceLeadCount}</strong> newly mapped ClinicalTrials.gov research leads</span>
      </div>
      <p style={{fontSize:13,lineHeight:1.5}}>
       All 60 component rubrics have explicit 0, 25, 50, 75, and 100 research-only anchors.
@@ -64,7 +79,8 @@ export default function RaasMetricGradebook({row,bucket}:{
       is {book.provisionalDiagnostic.observedComponentMean===null?"N/A":book.provisionalDiagnostic.observedComponentMean+"/100"}
       over {book.provisionalDiagnostic.weightCoveredPercent}% of model weight — NOT an overall RAAS,
       prediction, or trial-ranking signal.
-      A source lead is not a completed grade. A clinical effect, responder rate or
+      Registry protocol and posted-result source leads are displayed only after an exact-NCT,
+      ticker and drug match. A source lead is not a completed grade. A clinical effect, responder rate or
       cash balance is a factual measurement, not a 0–100 clinical success or investment
       score. No missing score is replaced with zero. Trial history remains keyed to
       the same NCT if it moves between TOP and BOTTOM.
