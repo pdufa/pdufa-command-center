@@ -27,6 +27,11 @@ function readiness({pilot,readout,history,calibrations,reviewed,historical,fda,p
      !/^NCT\d{8}$/.test(e.nctId)||!["pre","post"].includes(e.stage))
    throw Error("RAAS_CALIBRATION_HISTORY_UNSAFE");
   for(const g of e.metricGrades){
+   const pilotRule={"pre-4-1":"timing-specificity-exploratory-2026-11-02-v1",
+    "post-1-1":"csu-placebo-contrast-heuristic-2026-11-04-v1",
+    "post-1-2":"csu-placebo-contrast-heuristic-2026-11-04-v1"};
+   if(g.ruleId!==pilotRule[g.metricId]||!pilotRule[g.metricId])
+    throw Error("RAAS_CALIBRATION_UNAPPROVED_EXPERIMENTAL_METRIC");
    if(![0,25,50,75,100].includes(g.score)||
       !g.metricId?.startsWith(e.stage+"-")||!g.ruleId||!g.sourceUrl?.startsWith("https://"))
     throw Error("RAAS_CALIBRATION_GRADE_INVALID");
