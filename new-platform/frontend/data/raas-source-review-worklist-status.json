@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_TRIAL_STAGE_SOURCE_REVIEW_WORKLIST_NOT_SCORES",
+  "sourceAsOf": "2026-11-04T20:57:31+00:00",
+  "researchTrials": 762,
+  "trialStageReviewRows": 1524,
+  "submittedMetricReviewRecords": 0,
+  "stageRowsWithThirtySubmittedReviews": 0,
+  "sourceReviewPriorityOneRows": 164,
+  "unambiguousProgramReviewRows": 0,
+  "caution": "Priorities identify collected evidence for review. No row asserts independently verified TOP/BOTTOM stage or validated numeric RAAS/PDUFA probability."
+}
