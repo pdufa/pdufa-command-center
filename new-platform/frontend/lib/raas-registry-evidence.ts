@@ -158,7 +158,7 @@ export function registryMetricLeads(
  const base={sourceUrl:e.sourceUrl,measurement:null as null};
  const sourceDay=e.resultsFirstPosted||e.registryLastUpdated||e.retrievedAt.slice(0,10);
  const parseNumber=(raw:unknown):number|null=>{
-  if(typeof raw!=="string"||!/^[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:e[-+]?\\d+)?$/i.test(raw.trim()))return null;
+  if(typeof raw!=="string"||!/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?$/i.test(raw.trim()))return null;
   const n=Number(raw);return Number.isFinite(n)&&Math.abs(n)<=1e10?n:null;
  };
  const numeric=(label:string,value:number,unit:string)=>({label,value,unit});
