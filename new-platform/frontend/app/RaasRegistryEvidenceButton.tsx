@@ -91,9 +91,51 @@ export default function RaasRegistryEvidenceButton({row}:{row:ReadoutRow}){
           <p>Time frame: {x.timeFrame||"Not specified"} · Unit: {x.unit||"Not specified"}</p>
           <p>Reported analysis entries: {x.analysisCount}.
            {" "}Reported p-values: {x.pValues.length?x.pValues.join(", "):"Not displayed"}</p>
-          <p>A p-value alone is not an effect size or clinically meaningful RAAS grade.</p>
+          {(x.groups?.length||0)>0&&<p><strong>Registered result groups:</strong>{" "}
+           {x.groups!.map(g=>g.id+" = "+g.title).join("; ")}</p>}
+          {(x.measurements?.length||0)>0&&<details data-raas-registry-primary-group-values="true">
+           <summary>Reported primary outcome group measurements · {x.measurements!.length} entries</summary>
+           <table style={{width:"100%",fontSize:12,borderCollapse:"collapse"}}>
+            <thead><tr>{["Group ID","Value","Spread","Lower limit","Upper limit"].map(h=>
+             <th key={h} style={{textAlign:"left",borderBottom:"1px solid #abc"}}>{h}</th>)}</tr></thead>
+            <tbody>{x.measurements!.map((m,j)=><tr key={j}>
+             {[m.groupId,m.value,m.spread,m.lowerLimit,m.upperLimit].map((v,k)=>
+              <td key={k} style={{padding:4,borderBottom:"1px solid #dde"}}>{v||"—"}</td>)}
+            </tr>)}</tbody>
+           </table>
+          </details>}
+          {(x.comparisons?.length||0)>0&&<details data-raas-registry-primary-statistics="true">
+           <summary>Original statistical contrasts · {x.comparisons!.length} entries</summary>
+           {x.comparisons!.map((a,j)=><div key={j} style={{padding:"7px 0",borderBottom:"1px solid #dde"}}>
+            <p><strong>Compared group IDs:</strong> {a.groupIds.join(" vs ")||"Not recorded"}
+             {" "}· <strong>p:</strong> {a.pValue||"Not reported"}
+             {" "}· <strong>Method:</strong> {a.method||"Not reported"}</p>
+            <p><strong>Effect statistic:</strong> {a.paramType||"Unspecified"}{" "}
+             {a.paramValue||"N/A"}; CI {a.ciPctValue||"unspecified"}%{" "}
+             [{a.ciLowerLimit||"?"}, {a.ciUpperLimit||"?"}]</p>
+           </div>)}
+          </details>}
+          <p>A p-value alone is not an effect size or clinically meaningful RAAS grade.
+           These are source-reported values, not adjusted or harmonized across indications.</p>
          </div>):
          <p>Registry marks results posted, but primary outcome detail is not available in this summary.</p>}
+       </details>}
+       {evidence.postedResults&&(evidence.seriousEventDetails?.length||0)>0&&<details
+        data-raas-registry-serious-event-numerators="true">
+        <summary style={{cursor:"pointer",fontWeight:700}}>Serious adverse-event counts with reported group denominators</summary>
+        {evidence.seriousEventDetails!.map((term,i)=><div key={i}
+         style={{borderTop:"1px solid #dde",padding:"8px 0"}}>
+         <strong>{term.term||"Unspecified serious event"}</strong>
+         {term.groups.length?<table style={{fontSize:12,width:"100%"}}>
+          <thead><tr><th>Group ID</th><th>Affected</th><th>At risk</th><th>Events</th></tr></thead>
+          <tbody>{term.groups.map((g,j)=><tr key={j}>
+           <td>{g.groupId}</td><td>{g.numAffected??"—"}</td>
+           <td>{g.numAtRisk??"—"}</td><td>{g.numEvents??"—"}</td>
+          </tr>)}</tbody>
+         </table>:<p>Group-specific counts were not available in this receipt.</p>}
+        </div>)}
+        <p>Raw adverse-event numerators and denominators are not a risk score.
+         Exposure duration, comparison arm, adjudication and clinical context are required.</p>
        </details>}
        <p><strong>Source hash:</strong> <code>{evidence.sourceHash.slice(0,18)}…</code>
         {" "}· <strong>Retrieved:</strong> {evidence.retrievedAt}</p>
