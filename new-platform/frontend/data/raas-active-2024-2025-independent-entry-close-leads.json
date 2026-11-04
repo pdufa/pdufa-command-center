@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_2024_2025_SECOND_PROVIDER_ENTRY_NOMINAL_CLOSE_RESEARCH",
+  "sourceAsOf": "2026-11-03",
+  "note": "Historical second-source nominal close comparisons. The first recorded GERN February 23, 2024 observation is a Friday weekly price-series point shown by FinanceCharts; this is not a methodology-verified adjusted close, intraday execution, pre-entry forecast, corporate-action audit, or approved market cap. Future records must be source linked and retain exact ticker/case/date identity.",
+  "observations": [
+    {
+      "caseId": "GERN|RYTELO_IMETELSTAT|NDA217779|2024",
+      "ticker": "GERN",
+      "session": "2024-02-23",
+      "nominalCloseUsd": 1.96,
+      "secondaryProvider": "FinanceCharts",
+      "sourceUrl": "https://www.financecharts.com/stocks/GERN/summary/price",
+      "quoteGranularity": "WEEKLY_FRIDAY_CLOSE",
+      "priceAdjustmentBasis": "NOMINAL_CLOSE_ADJUSTMENTS_UNCONFIRMED",
+      "sourceInspectedDate": "2026-11-03",
+      "note": "The public price-history series lists Friday February 23, 2024 at $1.96, agreeing with Alpaca SIP raw close for proposed T-79 session. FinanceCharts is separate from Alpaca, but this quote alone neither audits split/dividend/spin-off adjustments nor proves a pre-entry share ledger or total return."
+    }
+  ]
+}
