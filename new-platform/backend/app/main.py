@@ -89,6 +89,18 @@ class ProgramWatchTrade(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class FdaChartOverlay(Base):
+    """User-authored chart notes keyed by the immutable registered program ID.
+    Source-backed FDA dates remain separate and immutable.
+    """
+    __tablename__ = "fda_chart_overlays"
+
+    program_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    markers: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class FullTrialRecord(Base):
     """Every ClinicalTrials.gov field, retained losslessly by exact NCT ID."""
     __tablename__ = "full_trial_records"
@@ -130,6 +142,40 @@ class FullTrialDownload(Base):
 
 
 PROGRAM_ID_PATTERN = re.compile(r"^PDUFA-[0-9]{6,}$")
+
+
+class CustomFdaMarker(BaseModel):
+    id: str = Field(min_length=8, max_length=64, pattern=r"^manual-[a-z0-9-]{1,57}$")
+    date: str = Field(min_length=10, max_length=10, pattern=r"^\\d{4}-\\d{2}-\\d{2}$")
+    label: str = Field(min_length=1, max_length=100)
+    chartLabel: str = Field(min_length=1, max_length=30)
+    detail: str = Field(default="", max_length=500)
+    color: str = Field(default="#7c3aed")
+
+
+class CustomFdaOverlayPayload(BaseModel):
+    version: int = Field(ge=0)
+    markers: list[CustomFdaMarker] = Field(default_factory=list, max_length=40)
+
+    def canonical(self) -> list[dict]:
+        from datetime import date as caldate
+        allowed_colors = {"#7c3aed", "#0d9488", "#db2777", "#2563eb", "#d97706"}
+        ids = [m.id for m in self.markers]
+        if len(ids) != len(set(ids)):
+            raise HTTPException(status_code=422, detail="Duplicate custom marker IDs")
+        for item in self.markers:
+            try:
+                if caldate.fromisoformat(item.date).isoformat() != item.date:
+                    raise ValueError()
+            except ValueError:
+                raise HTTPException(status_code=422, detail="Invalid calendar date") from None
+            if item.color not in allowed_colors:
+                raise HTTPException(status_code=422, detail="Unsupported marker color")
+            if not item.label.strip() or not item.chartLabel.strip():
+                raise HTTPException(status_code=422, detail="Marker names must not be blank")
+        return [dict(id=m.id, date=m.date,
+            label=m.label.strip(), chartLabel=m.chartLabel.strip(),
+            detail=m.detail.strip(), color=m.color) for m in self.markers]
 
 
 class ProgramWatchTradePayload(BaseModel):
@@ -1192,3 +1238,56 @@ def save_program_checklist(program_id: str, stage: str, payload: ChecklistPayloa
         session.commit()
         return {"saved": True, "programId": program_id,
                 "version": payload.version + 1, "updated_at": now}
+
+
+@app.get("/api/fda-overlay/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def get_fda_chart_overlay(program_id: str):
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid permanent Program ID")
+    with Session(ENGINE) as session:
+        if not session.get(ProgramIdentity, int(program_id[6:])):
+            raise HTTPException(status_code=404, detail="Unknown permanent Program ID")
+        row = session.get(FdaChartOverlay, program_id)
+        return {
+            "programId": program_id,
+            "markers": list(row.markers) if row else [],
+            "version": row.version if row else 0,
+            "updatedAt": row.updated_at if row else None,
+            "scope": "CUSTOM_MARKERS_ONLY",
+        }
+
+
+@app.put("/api/fda-overlay/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled),
+])
+def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
+    """Persist user annotations only, never amend canonical FDA evidence."""
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid permanent Program ID")
+    markers = payload.canonical()
+    now = datetime.now(timezone.utc)
+    with Session(ENGINE) as session:
+        if not session.get(ProgramIdentity, int(program_id[6:])):
+            raise HTTPException(status_code=404, detail="Unknown permanent Program ID")
+        if payload.version == 0:
+            session.add(FdaChartOverlay(
+                program_id=program_id, markers=markers, version=1, updated_at=now,
+            ))
+            try:
+                session.commit()
+            except IntegrityError:
+                session.rollback()
+                raise HTTPException(status_code=409, detail="Overlay changed elsewhere; reload first") from None
+            return {"saved": True, "programId": program_id, "version": 1, "updatedAt": now}
+        result = session.execute(
+            update(FdaChartOverlay)
+            .where(FdaChartOverlay.program_id == program_id, FdaChartOverlay.version == payload.version)
+            .values(markers=markers, version=payload.version + 1, updated_at=now)
+        )
+        if result.rowcount != 1:
+            session.rollback()
+            raise HTTPException(status_code=409, detail="Overlay changed elsewhere; reload first")
+        session.commit()
+        return {"saved": True, "programId": program_id, "version": payload.version + 1, "updatedAt": now}
