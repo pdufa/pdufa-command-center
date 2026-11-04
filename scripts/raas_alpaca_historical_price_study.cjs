@@ -91,7 +91,9 @@ function parseBars(payload,ticker,range){
  }
  return data.sort((a,b)=>a.date.localeCompare(b.date));
 }
-async function downloadBars(win,key,secret,request=fetch){
+async function downloadBars(win,key,secret,request=fetch,adjustment="all"){
+ if(!["all","raw"].includes(adjustment))
+  throw Error("RAAS_ALPACA_ADJUSTMENT_UNSUPPORTED");
  const out=[],seen=new Set();
  let pageToken=null,page=0;
  do{
@@ -101,7 +103,7 @@ async function downloadBars(win,key,secret,request=fetch){
   url.searchParams.set("start",win.firstBarDate);
   url.searchParams.set("end",win.lastBarDate);
   url.searchParams.set("limit","1000");
-  url.searchParams.set("adjustment","all");
+  url.searchParams.set("adjustment",adjustment);
   url.searchParams.set("asof",win.eventDate||win.scheduledEventDate);
   url.searchParams.set("feed","sip");
   url.searchParams.set("sort","asc");
