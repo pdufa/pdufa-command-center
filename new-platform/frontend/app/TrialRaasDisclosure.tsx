@@ -18,7 +18,7 @@ import {parseRaasPilotFeed,observationsForTrial,observedCalculation,computeRaasS
 import {raasMissingMetricChecklist} from "../lib/raas-missing-metric-checklist";
 import {parseProspectiveSourceBaselines} from "../lib/raas-prospective-source-baselines";
 import {scanRaasCurrentEvidence} from "../lib/raas-current-evidence-scan";
-import {RAAS_THRESHOLD_PROFILES,thresholdProfile,provisionalGradesForTrial} from "../lib/raas-threshold-profiles";
+import {RAAS_THRESHOLD_PROFILES,thresholdProfile} from "../lib/raas-threshold-profiles";
 import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
 import reviewedSnapshots from "../data/raas-reviewed-snapshots.json";
 import approvedCalibrations from "../data/raas-approved-calibrations.json";
@@ -118,9 +118,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
  const pilotFacts=snapshot==="CURRENT"?observationsForTrial(pilot,{
    nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
  },bucket,pilot.sourceAsOf):[];
- const pilotGrades=provisionalGradesForTrial(pilot,{
-   nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
- },bucket,snapshot,pilot.sourceAsOf);
+ const pilotGrades=snapshot==="CURRENT"?[...trialPilot.scoredMetrics]:[];
  const scoreSnapshots=(["ENTRY","CURRENT","EXIT"] as const).map(period=>({
    period,reviewed:reviewedScoreForTrial(reviewedLedger,calibrationRegistry,{
      nctId:row.nctId,ticker:row.ticker,drug:row.evidence?.drug||"",indication:row.evidence?.indication||""
