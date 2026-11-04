@@ -58,7 +58,7 @@ export function rawRaasRegistryDesignDiagnostic(
  const yes=facets.filter(x=>x.status==="OBSERVED_FAVORABLE").length;
  const known=facets.filter(x=>x.status!=="UNKNOWN").length;
  const unknown=4-known;
- const score=known>=2?
+ const score=known>=3?
   (Math.round(yes/known*4)*25 as 0|25|50|75|100):null;
  return {nctId:trial.nctId,ticker:trial.ticker,sourceUrl:registry.sourceUrl,
   retrievedAt:registry.retrievedAt,ruleVersion:"raas-registry-design-v1",
