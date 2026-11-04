@@ -50,6 +50,17 @@ test("posted primary arm measurements and contrasts retain exact NCT and raw unc
  assert.equal(Object.hasOwn(e,"overallRaasScore"),false);
  assert.equal(registryTrialFor(index,{nctId:nct,ticker:"BAD"}),null);
 });
+test("quantitative counts are audited against actual source rows, not trusted metadata",()=>{
+ const base=wrap([row(true)]);
+ base.summary.trialsWithPrimaryComparisons=1;
+ base.summary.trialsWithPrimaryGroupMeasurements=1;
+ base.summary.trialsWithPrimaryConfidenceIntervals=1;
+ base.summary.trialsWithSafetyRiskDenominators=1;
+ assert.equal(parseRegistryEvidenceIndex(base).records.length,1);
+ const invalid=structuredClone(base);
+ invalid.summary.trialsWithPrimaryComparisons=2;
+ assert.throws(()=>parseRegistryEvidenceIndex(invalid),/RAAS_REGISTRY_INDEX_SOURCE_COVERAGE_MISMATCH/);
+});
 test("protocol-only source cannot inject unpublished analyses, endpoints or SAE counts",()=>{
  const good=row(false);
  assert.deepEqual(parseRegistryEvidenceIndex(wrap([good])).records[0].primaryResults,[]);
