@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import AlpacaStockChart from "./AlpacaStockChart";
+import FdaOverlayEditor from "./FdaOverlayEditor";
+import {cytkEvents,cytkCategories,unconnectedFdaCategories} from "../lib/cytk-fda-overlay";
 
 export type TradingTicker = {
   programId: string;
@@ -101,6 +103,7 @@ function validStored(value: unknown): ChartSlot[] {
 
 export default function TradingDashboard({tickers, tagsReady}: {tickers: readonly TradingTicker[]; tagsReady:boolean}) {
   const [charts,setCharts]=useState<ChartSlot[]>([blank(1)]);
+  const [fdaChartSlots,setFdaChartSlots]=useState<ReadonlySet<number>>(()=>new Set());
   const [restored,setRestored]=useState(false);
   const nextId=useRef(2);
   useEffect(()=>{
@@ -209,7 +212,23 @@ export default function TradingDashboard({tickers, tagsReady}: {tickers: readonl
             }))}>CLEAR {chart.stage.toUpperCase()} INDICATORS</button>
           </details>
           {record?<div className="trading-price-area">
-            <AlpacaStockChart key={record.programId} ticker={record.ticker} programId={record.programId} wtIndicatorKeys={chartKeys}/>
+            <div style={{display:"flex",gap:8,alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",marginBottom:8}}>
+              <span className="subtle small">Ticker supplied by app: <strong>{record.ticker}</strong> · {record.programId}</span>
+              <button type="button" className="secondary" aria-pressed={fdaChartSlots.has(chart.id)}
+                onClick={()=>setFdaChartSlots(previous=>{
+                  const next=new Set(previous);
+                  if(next.has(chart.id))next.delete(chart.id);else next.add(chart.id);
+                  return next;
+                })}>
+                {fdaChartSlots.has(chart.id)?"STANDARD STOCK CHART":"FDA OVERLAY / EDIT"}
+              </button>
+            </div>
+            {fdaChartSlots.has(chart.id)?
+              <FdaOverlayEditor key={record.programId} ticker={record.ticker} programId={record.programId}
+                wtIndicatorKeys={chartKeys}
+                verifiedEvents={record.programId==="PDUFA-000069"&&record.ticker==="CYTK"?cytkEvents:[]}
+                categories={record.programId==="PDUFA-000069"&&record.ticker==="CYTK"?cytkCategories:unconnectedFdaCategories}/>:
+              <AlpacaStockChart key={record.programId} ticker={record.ticker} programId={record.programId} wtIndicatorKeys={chartKeys}/>}
           </div>:<div className="trading-empty-chart">
             <strong>{tagsReady&&options.length===0?"No W/T tickers currently tagged":"Choose a ticker to display its chart"}</strong>
             <span>{tagsReady?"Select an exact W/T program above to load its Alpaca chart.":"Loading W/T program choices…"}</span>
