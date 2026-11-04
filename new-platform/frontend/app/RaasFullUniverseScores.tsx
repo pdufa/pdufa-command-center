@@ -275,6 +275,18 @@ export default function RaasFullUniverseScores(){
    and explicit N/A for missing full RAAS scores. The design diagnostic is
    <strong> not </strong> an FDA probability or complete RAAS rating.
   </p>
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-all-trials-reviewed-partial="true">
+   <strong>Source-reviewed RAAS metric ratings for every NCT:</strong>{" "}
+   <a href="/raas-all-trials-partial-metric-ratings.csv" download
+    style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
+    Download all 762 trials · TOP/BOTTOM partial metric ratings and coverage (CSV)
+   </a>. Two stage-specific research rows per NCT show independently counted
+   AI source-checks, reviewed-metric-only mean out of 100, weighted 30-metric
+   coverage, missing metric IDs and actual research findings. <strong>An observed
+   partial mean is not a complete RAAS score.</strong> Missing metrics never become
+   zero; a Phase 3 registration does not verify current PIPELINE eligibility,
+   readout stage or prospective FDA PASS/CRL/extension probabilities.
+  </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ten-trial-pilot-download="true">
    <strong>10-trial, 30-metric retrospective RAAS pilot:</strong>{" "}
    <a href="/raas-ten-trial-metric-pilot.csv" download
