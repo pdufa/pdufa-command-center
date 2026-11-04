@@ -27,7 +27,9 @@ test("V2 source-readiness snapshot cannot pretend to be a calibrated model",()=>
  assert.equal(snapshot.nov14NumberedCurrentFdaApplicationCyclesCertified,0);
  assert.equal(snapshot.nov14FrozenThreeWayForecasts,0);
  assert.equal(snapshot.nov14AdditionalDatedIssuerGoalContinuityCases,2);
- assert.equal(snapshot.nov14LocatedIssuerGoalSourcesOver30DaysOldAtSnapshot,2);
+ assert.equal(snapshot.nov14LocatedIssuerGoalSourcesOver30DaysOldAtSnapshot,1);
+ assert.equal(snapshot.nov14SmmtLatestIssuerDeadlineReiterationDate,"2026-10-21");
+ assert.equal(snapshot.nov14SmmtLatestSourceMainTrial,"EA2251_BILIARY_TRACT_NCT07765433_NOT_HARMONI");
  assert.equal(snapshot.nov14IssuerGoalContinuityIndependentlyRulesOutFurtherRevisions,0);
  assert.equal(snapshot.nightlyPublicFDAApplicationHistoryWatch,
    "RESEARCH_ONLY_MONITOR_SOURCE_STATUS_ARTIFACT_NOT_SITE_LIVE");
@@ -85,4 +87,20 @@ test("Nov14 mobile issuer-goal panel distinguishes actual January sNDA filing fr
    r.originalNov14GoalStillListedByIssuerAtSourceDate===true &&
    r.absenceOfLaterGoalChangeIndependentlyEstablished===false &&
    r.fullDatedFDAActionCycleIndependentlyEstablished===false));
+});
+
+test("Latest SMMT issuer HARMONi goal is an Oct 21 EA2251 background item, not trial conflation",()=>{
+ const evidence=require("../data/raas-v2-nov14-issuer-goal-continuity.json");
+ const by=Object.fromEntries(evidence.records.map(x=>[x.ticker,x]));
+ assert.equal(by.SMMT.issuerPublicSourceDate,"2026-10-21");
+ assert.equal(by.SMMT.sourceMainSubject,"EA2251_BILIARY_TRACT_CANCER_NOT_HARMONI");
+ assert.equal(by.SMMT.sourceMainSubjectClinicalTrialId,"NCT07765433");
+ assert.equal(by.SMMT.pendingBlaPivotalTrialId,"NCT06396065");
+ assert.equal(by.SMMT.sourceMainSubjectIsPendingHarmoniBlaStudy,false);
+ assert.equal(by.SMMT.harmoniNov14PdufaGoalExplicitlyRepeatedInBackground,true);
+ assert.equal(by.SMMT.absenceOfLaterGoalChangeIndependentlyEstablished,false);
+ assert.match(source,/EA2251 \(NCT07765433\), biliary tract cancer/);
+ assert.match(source,/not<\/strong> HARMONi \(NCT06396065\)/);
+ assert.match(source,/November 14 date is repeated only in the HARMONi background/);
+ assert.match(source,/while SMMT's October 21 issuer background paragraph is more recent/);
 });
