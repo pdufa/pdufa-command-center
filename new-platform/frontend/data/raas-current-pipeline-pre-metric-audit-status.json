@@ -1,28 +1,39 @@
 {
   "schemaVersion": 1,
-  "scope": "RAAS_DATED_TWO_CURRENT_PHASE3_TOP_TRIAL_PARTIAL_METRICS_NO_PDUFA",
+  "scope": "RAAS_DATED_CURRENT_PHASE3_TOP_TRIAL_PARTIAL_METRICS_NO_PDUFA",
   "sourceAsOf": "2026-11-04",
   "snapshotSourceAsOf": "2026-11-04",
   "pilotPhase3TrialNcts": [
+    "NCT06736574",
     "NCT07363577",
-    "NCT07671911"
+    "NCT07369154",
+    "NCT07671911",
+    "NCT07868419"
   ],
-  "pilotTrialCount": 2,
-  "pilotMetricSlots": 60,
-  "provisionalAiReviewedMetricSlots": 10,
-  "missingMetricSlots": 50,
+  "pilotTrialCount": 5,
+  "uniqueIssuers": 3,
+  "trialsWithoutVerifiedToplineWindow": 2,
+  "pilotMetricSlots": 150,
+  "provisionalAiReviewedMetricSlots": 24,
+  "missingMetricSlots": 126,
   "perTrialProvisionalReviewCount": {
+    "NCT06736574": 5,
     "NCT07363577": 5,
-    "NCT07671911": 5
+    "NCT07369154": 4,
+    "NCT07671911": 5,
+    "NCT07868419": 5
   },
-  "currentCapAndPhase3SourceVerifiedAsOf": 2,
+  "currentCapAndPhase3SourceVerifiedAsOf": 5,
   "eligibilityByNct": {
+    "NCT06736574": "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA",
     "NCT07363577": "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA",
-    "NCT07671911": "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA"
+    "NCT07369154": "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA",
+    "NCT07671911": "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA",
+    "NCT07868419": "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA"
   },
   "humanIndependentReviewedMetricSlots": 0,
   "complete30MetricRaasScores": 0,
   "confirmedPdufaTargets": 0,
   "calibratedFdaPredictions": 0,
-  "warning": "Two sampled current source-checked trials, not a comprehensive screen of the active $300M-$10B public Phase 3 universe. A cap quote becomes stale after seven calendar days and trial-status source after 30 days; no new price/status is invented. Both are pre-readout, and neither has an accepted NDA/BLA or verified PDUFA date. 0\u2013100 figures are research-only metric bands, never complete 30/30, FDA PASS/CRL/extension probabilities or trade signals."
+  "warning": "Sampled source-checked Phase 3 trials across unique issuers are NOT a comprehensive screen of the $300M\u2013$10B current Pipeline. Multiple trials of one issuer must not double count issuer market cap/cash and open-label safety studies do not validate efficacy. Quotes become stale after 7 calendar days, registry after 30. Absent source-verified topline date is N/A, not invented. No current accepted NDA/BLA or PDUFA action target, complete 30/30 RAAS, FDA pass/CRL/extension forecast or trading signal."
 }
