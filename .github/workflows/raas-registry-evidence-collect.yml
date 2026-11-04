@@ -1,0 +1,72 @@
+name: RAAS Official Registry Evidence Census
+on:
+  pull_request:
+    paths:
+      - scripts/raas_registry_evidence_refresh.py
+      - tests/test_raas_registry_evidence_refresh.py
+      - new-platform/frontend/data/raas-registry-evidence-census.json
+      - .github/workflows/raas-registry-evidence-collect.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/raas_registry_evidence_refresh.py
+      - new-platform/frontend/data/raas-registry-evidence-census.json
+      - .github/workflows/raas-registry-evidence-collect.yml
+  workflow_dispatch:
+  schedule:
+    - cron: '43 10 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: raas-official-registry-refresh
+  cancel-in-progress: false
+
+jobs:
+  test-and-refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: ${{ github.event_name != 'pull_request' }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify 762-trial intake integrity and evidence source isolation
+        run: |
+          python -m unittest discover -s tests -p 'test_raas_registry_evidence_refresh.py' -v
+          python -m py_compile scripts/raas_registry_evidence_refresh.py
+      - name: Collect latest registry evidence for full research population
+        if: github.event_name != 'pull_request'
+        run: python scripts/raas_registry_evidence_refresh.py
+      - name: Publish only verified registry evidence changes
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- new-platform/frontend/data/raas-registry-evidence-census.json
+          if git diff --cached --quiet; then
+            echo "No source evidence changes to publish"
+            exit 0
+          fi
+          git commit -m "Update dated ClinicalTrials.gov source evidence for all 762 research NCTs"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Published complete source-coverage evidence snapshot"
+              exit 0
+            fi
+            sleep 6
+          done
+          echo "::error::Could not safely publish ClinicalTrials.gov evidence snapshot"
+          exit 1
+      - name: Archive registry source coverage manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-registry-evidence-${{ github.run_id }}
+          path: new-platform/frontend/data/raas-registry-evidence-census.json
+          retention-days: 30
