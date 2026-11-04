@@ -26,6 +26,8 @@ test("V2 source-readiness snapshot cannot pretend to be a calibrated model",()=>
  assert.equal(snapshot.nov14IndependentPhase3RegistryCrossChecks,2);
  assert.equal(snapshot.nov14NumberedCurrentFdaApplicationCyclesCertified,0);
  assert.equal(snapshot.nov14FrozenThreeWayForecasts,0);
+ assert.equal(snapshot.nightlyOfficialSecAtomFallback,
+   "EDGAR_COMPANY_ATOM_AFTER_JSON_DENIAL_OFFICIAL_SOURCE_SEPARATE_ACCESS_STATUS");
  assert.equal(snapshot.nightlyOfficialIssuerNewsFallback,
    "CYTK_AND_SMMT_PUBLIC_ISSUER_NEWS_RESEARCH_LINKS_NOT_SEC_OR_FDA_VERIFICATION");
  assert.equal(snapshot.secEdgarRunnerStatus,
@@ -133,4 +135,13 @@ test("Issuer official news fallback does not mislabel SEC denial as restored",()
  assert.match(source,/SEC source unavailable/);
  assert.match(source,/not a complete SEC filing feed/);
  assert.match(source,/both remain unverified/);
+});
+
+test("Official SEC Atom recovery source is separate from denied JSON and only unreviewed filing leads",()=>{
+ assert.match(source,/New: Official SEC Atom alternate feed/);
+ assert.match(source,/browse-edgar\?action=getcompany&amp;CIK=0001061983/);
+ assert.match(source,/browse-edgar\?action=getcompany&amp;CIK=0001599298/);
+ assert.match(source,/Only CIK-matched 8-K, 10-Q and 10-K filing links/);
+ assert.match(source,/An Atom error is also marked/);
+ assert.match(source,/not zero filings/);
 });
