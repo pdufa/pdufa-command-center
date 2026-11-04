@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_DATED_TWO_CURRENT_PHASE3_TOP_TRIAL_PARTIAL_METRICS_NO_PDUFA",
+  "sourceAsOf": "2026-11-04",
+  "snapshotSourceAsOf": "2026-11-04",
+  "pilotPhase3TrialNcts": [
+    "NCT07363577",
+    "NCT07671911"
+  ],
+  "pilotTrialCount": 2,
+  "pilotMetricSlots": 60,
+  "provisionalAiReviewedMetricSlots": 10,
+  "missingMetricSlots": 50,
+  "perTrialProvisionalReviewCount": {
+    "NCT07363577": 5,
+    "NCT07671911": 5
+  },
+  "currentCapAndPhase3SourceVerifiedAsOf": 2,
+  "eligibilityByNct": {
+    "NCT07363577": "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA",
+    "NCT07671911": "CURRENT_CAP_AND_PHASE3_SOURCE_VERIFIED_NO_PDUFA"
+  },
+  "humanIndependentReviewedMetricSlots": 0,
+  "complete30MetricRaasScores": 0,
+  "confirmedPdufaTargets": 0,
+  "calibratedFdaPredictions": 0,
+  "warning": "Two sampled current source-checked trials, not a comprehensive screen of the active $300M-$10B public Phase 3 universe. A cap quote becomes stale after seven calendar days and trial-status source after 30 days; no new price/status is invented. Both are pre-readout, and neither has an accepted NDA/BLA or verified PDUFA date. 0\u2013100 figures are research-only metric bands, never complete 30/30, FDA PASS/CRL/extension probabilities or trade signals."
+}
