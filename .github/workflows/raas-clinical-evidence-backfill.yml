@@ -8,6 +8,7 @@ on:
       - scripts/raas_registry_evidence_harvest.py
       - scripts/raas_registry_publish_summary.py
       - tests/test_raas_registry_evidence_harvest.py
+      - tests/test_raas_registry_publish_summary.py
       - data/raas_registry_missing_backfill.json
       - .github/workflows/raas-clinical-evidence-backfill.yml
   push:
@@ -35,6 +36,7 @@ jobs:
       - name: Validate NCT identity, evidence flags and fail-closed records
         run: |
           python -m unittest discover -s tests -p test_raas_registry_evidence_harvest.py -v
+          python -m unittest discover -s tests -p test_raas_registry_publish_summary.py -v
           python -m py_compile scripts/raas_registry_evidence_harvest.py scripts/raas_registry_publish_summary.py
       - name: Fetch all current research NCTs, including 35 gaps
         if: github.event_name != 'pull_request'
