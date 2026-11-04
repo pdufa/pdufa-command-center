@@ -140,7 +140,7 @@ test("dual pivotal replicated and durable Week-24 responses are source-checked b
  const source=JSON.parse(fs.readFileSync(p.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(source);
- const x=feed.records.filter(r=>r.metricId==="post-1-4");
+ const x=feed.records.filter(r=>r.metricId==="post-1-4"&&r.ticker==="CLDX");
  assert.equal(x.length,2);
  assert.deepEqual(x.map(r=>r.nctId).sort(),["NCT06445023","NCT06455202"]);
  for(const r of x){
