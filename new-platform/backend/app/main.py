@@ -153,19 +153,46 @@ class CustomFdaMarker(BaseModel):
     color: str = Field(default="#7c3aed")
 
 
+class VerifiedFdaDisplayOverride(BaseModel):
+    """Only a user-adjusted chart display; does not change original FDA evidence."""
+    id: str = Field(min_length=8, max_length=64, pattern=r"^verified-[a-z0-9-]{1,55}$")
+    date: str = Field(min_length=10, max_length=10, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    label: str = Field(min_length=1, max_length=100)
+    chartLabel: str = Field(min_length=1, max_length=30)
+    color: str
+    visible: bool = True
+
+
+# Source-linked events are defined immutably by the frontend. This allowlist
+# prevents user edits masquerading as official events or spoofing other programs.
+VERIFIED_FDA_IDS_BY_PROGRAM = {
+    "PDUFA-000069": {
+        "verified-cytk-2025-approval",
+        "verified-cytk-2026-snda",
+        "verified-cytk-2026-maple-data",
+        "verified-cytk-2026-pdufa",
+    },
+}
+
+
 class CustomFdaOverlayPayload(BaseModel):
     version: int = Field(ge=0)
     markers: list[CustomFdaMarker] = Field(default_factory=list, max_length=40)
+    verifiedOverrides: list[VerifiedFdaDisplayOverride] = Field(default_factory=list, max_length=20)
 
-    def canonical(self) -> list[dict]:
+    def canonical(self, program_id: str) -> list[dict]:
         from datetime import date as caldate
         allowed_colors = {"#7c3aed", "#0d9488", "#db2777", "#2563eb", "#d97706"}
-        ids = [m.id for m in self.markers]
+        ids = [m.id for m in self.markers] + [o.id for o in self.verifiedOverrides]
         if len(ids) != len(set(ids)):
-            raise HTTPException(status_code=422, detail="Duplicate custom marker IDs")
-        for item in self.markers:
+            raise HTTPException(status_code=422, detail="Duplicate marker IDs")
+        allowed_verified = VERIFIED_FDA_IDS_BY_PROGRAM.get(program_id, set())
+        if any(o.id not in allowed_verified for o in self.verifiedOverrides):
+            raise HTTPException(status_code=422, detail="Not a recognized source-linked event for this program")
+        for item in [*self.markers, *self.verifiedOverrides]:
             try:
-                if caldate.fromisoformat(item.date).isoformat() != item.date:
+                if (caldate.fromisoformat(item.date).isoformat() != item.date
+                        or not "2000-01-01" <= item.date <= "2100-12-31"):
                     raise ValueError()
             except ValueError:
                 raise HTTPException(status_code=422, detail="Invalid calendar date") from None
@@ -173,9 +200,15 @@ class CustomFdaOverlayPayload(BaseModel):
                 raise HTTPException(status_code=422, detail="Unsupported marker color")
             if not item.label.strip() or not item.chartLabel.strip():
                 raise HTTPException(status_code=422, detail="Marker names must not be blank")
-        return [dict(id=m.id, date=m.date,
-            label=m.label.strip(), chartLabel=m.chartLabel.strip(),
-            detail=m.detail.strip(), color=m.color) for m in self.markers]
+        return (
+            [dict(id=m.id, date=m.date, label=m.label.strip(),
+                  chartLabel=m.chartLabel.strip(), detail=m.detail.strip(),
+                  color=m.color) for m in self.markers]
+            + [dict(id=o.id, date=o.date, label=o.label.strip(),
+                    chartLabel=o.chartLabel.strip(), color=o.color,
+                    visible=o.visible, kind="verified_override")
+               for o in self.verifiedOverrides]
+        )
 
 
 class ProgramWatchTradePayload(BaseModel):
@@ -1252,10 +1285,14 @@ def get_fda_chart_overlay(program_id: str):
         row = session.get(FdaChartOverlay, program_id)
         return {
             "programId": program_id,
-            "markers": list(row.markers) if row else [],
+            "markers": [m for m in (row.markers or []) if isinstance(m, dict)
+                        and str(m.get("id", "")).startswith("manual-")] if row else [],
+            "verifiedOverrides": [m for m in (row.markers or []) if isinstance(m, dict)
+                                  and m.get("kind") == "verified_override"
+                                  and m.get("id") in VERIFIED_FDA_IDS_BY_PROGRAM.get(program_id, set())] if row else [],
             "version": row.version if row else 0,
             "updatedAt": row.updated_at if row else None,
-            "scope": "CUSTOM_MARKERS_ONLY",
+            "scope": "CUSTOM_AND_DISPLAY_OVERRIDES",
         }
 
 
@@ -1266,7 +1303,7 @@ def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
     """Persist user annotations only, never amend canonical FDA evidence."""
     if not PROGRAM_ID_PATTERN.fullmatch(program_id):
         raise HTTPException(status_code=422, detail="Invalid permanent Program ID")
-    markers = payload.canonical()
+    markers = payload.canonical(program_id)
     now = datetime.now(timezone.utc)
     with Session(ENGINE) as session:
         if not session.get(ProgramIdentity, int(program_id[6:])):
