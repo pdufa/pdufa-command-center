@@ -55,8 +55,15 @@ export default function RaasMetricGradebook({row,bucket}:{
       <span><strong>{book.mappedOnly}</strong> evidence-lead-only metrics</span>
       <span><strong>{book.withoutEvidence}</strong> without mapped evidence</span>
       <span><strong>Overall RAAS: N/A</strong> · not validated</span>
+      <span><strong>{book.provisionalDiagnostic.weightCoveredPercent}%</strong> of RAAS model weight has any experimental component grade</span>
      </div>
      <p style={{fontSize:13,lineHeight:1.5}}>
+      All 60 component rubrics have explicit 0, 25, 50, 75, and 100 research-only anchors.
+      An anchor requires a trial-matched, dated source, independent benchmark, uncertainty
+      assessment, and critical-risk review. The current available-only experimental average
+      is {book.provisionalDiagnostic.observedComponentMean===null?"N/A":book.provisionalDiagnostic.observedComponentMean+"/100"}
+      over {book.provisionalDiagnostic.weightCoveredPercent}% of model weight — NOT an overall RAAS,
+      prediction, or trial-ranking signal.
       A source lead is not a completed grade. A clinical effect, responder rate or
       cash balance is a factual measurement, not a 0–100 clinical success or investment
       score. No missing score is replaced with zero. Trial history remains keyed to
@@ -95,6 +102,18 @@ export default function RaasMetricGradebook({row,bucket}:{
              Primary source · {lead.sourceDate}
             </a>
            </div>)}
+          <details style={{fontSize:12,marginTop:7,padding:6,border:"1px solid #d4e3d7",borderRadius:6}}>
+           <summary style={{cursor:"pointer",fontWeight:700}}>Provisional 0–100 grading rule ▸</summary>
+           <p><strong>Primary inputs:</strong> {metric.rubric.requiredEvidence}</p>
+           <p><strong>Benchmark required:</strong> {metric.rubric.benchmarkRequirement}</p>
+           <p><strong>Metric weight:</strong> {metric.rubric.metricWeightPercent}% of full stage score</p>
+           {metric.rubric.bands.map(band=><p key={band.score}>
+            <strong>{band.score}/100:</strong> {band.definition}
+           </p>)}
+           <p><strong>Gate:</strong> primary source, comparator benchmark, uncertainty and
+            critical-risk review. These are provisional decision rules, not validated clinical thresholds.
+            No grade without complete evidence.</p>
+          </details>
           <p style={{fontSize:12,marginBottom:3}}><strong>Needed for scoring:</strong> {metric.requiredEvidence}</p>
           <p style={{fontSize:12,marginBottom:3}}><strong>Grading basis:</strong> {metric.scoreRule}</p>
           <p style={{fontSize:12,marginBottom:0}}><strong>Risk to check:</strong> {metric.criticalRisk}</p>
