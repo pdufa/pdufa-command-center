@@ -25,7 +25,7 @@ function assess(row:ReadoutRow):Assessment{
   nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication
  },stage);
- const grade=a.scoredMetrics.find(g=>g.metricId==="pre-4-1");
+ const grade=a.scoredMetrics[0];
  const reviewed=raasSpreadsheetSummary({
   nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication,
@@ -194,7 +194,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong>. Missing scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Provisional component","Metrics graded","Source / missing evidence","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -206,12 +206,12 @@ export default function RaasFullUniverseScores(){
      <td style={cell}><strong>{x.overallScore===null?"— /100":x.overallScore+"/100"}</strong>
       <span style={{display:"block",fontSize:11}}>{x.overallScore===null?"Not validated":"Approved / reviewed"}</span></td>
      <td style={cell}>{x.timing!==null?<><strong>{x.timing}/100</strong>
-      <span style={{display:"block",fontSize:11}}>Timing specificity only</span></>:
+      <span style={{display:"block",fontSize:11}}>{x.stage==="pre"?"Timing specificity only":"Clinical contrast pilot only"}</span></>:
       <span>Not scored</span>}</td>
      <td style={cell}><strong>{x.stage?x.metricCount+"/30":"—/30"}</strong>
       <span style={{display:"block",fontSize:11}}>No missing input scored as zero</span></td>
      <td style={cell}>{x.sourceUrl?<a href={x.sourceUrl} target="_blank"
-      rel="noopener noreferrer">Timing source · {x.sourceDate}</a>:
+      rel="noopener noreferrer">Component source · {x.sourceDate}</a>:
       x.stage===null?"Verify public Phase 3 readout stage first":
       "Source-backed rule and required inputs not yet available"}</td>
      <td style={cell}><RaasMetricGradebook row={x.row} bucket={x.stage}/></td>

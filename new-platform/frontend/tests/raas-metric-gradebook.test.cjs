@@ -29,8 +29,10 @@ test("all 30 metrics and six categories are audited separately for both stages",
  assert.equal(byId(top,"pre-4-1").status,"EXPERIMENTAL_GRADE");
  assert.equal(byId(top,"pre-3-2").status,"SOURCE_LEADS_ONLY");
  assert.equal(byId(top,"pre-1-1").status,"EVIDENCE_MISSING");
- assert.equal(bottom.graded,0);
- assert.equal(byId(bottom,"post-1-1").status,"SOURCE_LEADS_ONLY");
+ assert.equal(bottom.graded,2);
+ assert.equal(byId(bottom,"post-1-1").status,"EXPERIMENTAL_GRADE");
+ assert.equal(byId(bottom,"post-1-1").grade.score,75);
+ assert.equal(byId(bottom,"post-1-2").grade.score,100);
  assert.equal(byId(bottom,"post-3-5").status,"EVIDENCE_MISSING");
 });
 test("trial-specific BOTTOM clinical measurements are visible but NEVER called RAAS scores",()=>{
@@ -44,7 +46,9 @@ test("trial-specific BOTTOM clinical measurements are visible but NEVER called R
  assert.deepEqual(measured(c2,"post-1-2"),[8.8,33.1]);
  assert.deepEqual(measured(m,"post-1-1"),[42.1]);
  assert.deepEqual(measured(m,"post-4-2"),[537]);
- assert.equal(m.graded,0);assert.equal(c1.graded,0);assert.equal(c2.graded,0);
+ assert.equal(m.graded,0);assert.equal(c1.graded,2);assert.equal(c2.graded,2);
+ assert.equal(c1.approvedOverallScore,null);assert.equal(c2.approvedOverallScore,null);
+ assert.equal(c1.provisionalDiagnostic.fullyCoveredProvisionalScore,null);
 });
 test("wrong NCT, ticker or therapy cannot inherit other trial evidence",()=>{
  const exact=get("NCT07363577","LBRX","pre","LB-102 (100 mg tablet) | LB-102 (50 mg tablet)","Schizophrenia");
