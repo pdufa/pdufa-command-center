@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_TEN_HISTORICAL_TRIAL_30_METRIC_PARTIAL_SCORES_NOT_PREDICTIONS",
+  "reviewSourceAsOf": "2026-11-04",
+  "registrySourceAsOf": "2026-11-04T22:38:07+00:00",
+  "pilotNctCount": 10,
+  "metricSlots": 300,
+  "aiSourceReviewedMetricSlots": 26,
+  "humanIndependentReviewedMetricSlots": 0,
+  "unscoredMetricSlots": 274,
+  "complete30MetricTrials": 0,
+  "calibratedFdaPredictions": 0,
+  "pilotTrialNcts": [
+    "NCT06445023",
+    "NCT06455202",
+    "NCT04576949",
+    "NCT05206370",
+    "NCT03687372",
+    "NCT03691831",
+    "NCT04770753",
+    "NCT04770779",
+    "NCT04181723",
+    "NCT03325556"
+  ],
+  "warning": "Historical purposively chosen clinical studies, not the current capital-screened Pipeline. No holdout validation. Some historical FDA outcomes are already known. Provisional metric numbers cannot be averaged to produce 30/30 RAAS, probability of FDA approval, CRL/extension, or financial return. All missing inputs are N/A, not 0."
+}

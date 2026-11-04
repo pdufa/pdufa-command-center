@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "scope": "RAAS_TRIAL_STAGE_SOURCE_REVIEW_WORKLIST_NOT_SCORES",
-  "sourceAsOf": "2026-11-04T22:13:32+00:00",
+  "sourceAsOf": "2026-11-04T22:38:07+00:00",
   "researchTrials": 762,
   "trialStageReviewRows": 1524,
-  "submittedMetricReviewRecords": 6,
-  "aiSourceCrosscheckedGradeRecords": 6,
+  "submittedMetricReviewRecords": 26,
+  "aiSourceCrosscheckedGradeRecords": 26,
   "independentMetricReviewRecords": 0,
   "stageRowsWithThirtyIndependentReviews": 0,
   "stageRowsWithThirtySubmittedReviews": 0,
   "sourceReviewPriorityOneRows": 164,
-  "unambiguousProgramReviewRows": 2,
+  "unambiguousProgramReviewRows": 10,
   "caution": "Priorities identify collected evidence for review. No row asserts independently verified TOP/BOTTOM stage or validated numeric RAAS/PDUFA probability."
 }
