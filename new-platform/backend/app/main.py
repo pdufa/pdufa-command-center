@@ -187,7 +187,14 @@ class CustomFdaOverlayPayload(BaseModel):
         if len(ids) != len(set(ids)):
             raise HTTPException(status_code=422, detail="Duplicate marker IDs")
         allowed_verified = VERIFIED_FDA_IDS_BY_PROGRAM.get(program_id, set())
-        if any(o.id not in allowed_verified for o in self.verifiedOverrides):
+        # FDA-sourced supplemental action annotations may be edited only for
+        # the fixed, correctly linked CYTK parent NDA. An edited display never
+        # changes the source evidence record or asserts MAPLE-HCM equivalence.
+        auto_pattern = re.compile(r"^verified-openfda-nda219083-suppl-[0-9]{1,5}$")
+        def allowed_id(event_id: str) -> bool:
+            return (event_id in allowed_verified or
+                    (program_id == "PDUFA-000069" and auto_pattern.fullmatch(event_id) is not None))
+        if any(not allowed_id(o.id) for o in self.verifiedOverrides):
             raise HTTPException(status_code=422, detail="Not a recognized source-linked event for this program")
         for item in [*self.markers, *self.verifiedOverrides]:
             try:
@@ -1289,7 +1296,10 @@ def get_fda_chart_overlay(program_id: str):
                         and str(m.get("id", "")).startswith("manual-")] if row else [],
             "verifiedOverrides": [m for m in (row.markers or []) if isinstance(m, dict)
                                   and m.get("kind") == "verified_override"
-                                  and m.get("id") in VERIFIED_FDA_IDS_BY_PROGRAM.get(program_id, set())] if row else [],
+                                  and (m.get("id") in VERIFIED_FDA_IDS_BY_PROGRAM.get(program_id, set())
+                                  or (program_id == "PDUFA-000069" and
+                                      re.fullmatch(r"verified-openfda-nda219083-suppl-[0-9]{1,5}",
+                                                   str(m.get("id",""))) is not None))] if row else [],
             "version": row.version if row else 0,
             "updatedAt": row.updated_at if row else None,
             "scope": "CUSTOM_AND_DISPLAY_OVERRIDES",
