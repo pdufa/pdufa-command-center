@@ -8,6 +8,7 @@ import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
 import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
+import RaasMetricGradebook from "./RaasMetricGradebook";
 import css from "./raas-history/page.module.css";
 
 type Assessment={row:ReadoutRow;stage:RaasStage|null;timing:number|null;
@@ -193,7 +194,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong>. Missing scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Provisional component","Metrics graded","Source / missing evidence","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Provisional component","Metrics graded","Source / missing evidence","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -213,6 +214,7 @@ export default function RaasFullUniverseScores(){
       rel="noopener noreferrer">Timing source · {x.sourceDate}</a>:
       x.stage===null?"Verify public Phase 3 readout stage first":
       "Source-backed rule and required inputs not yet available"}</td>
+     <td style={cell}><RaasMetricGradebook row={x.row} bucket={x.stage}/></td>
      <td style={cell}><RaasTrialHistoryButton row={x.row} bucket={x.stage}/></td>
     </tr>)}</tbody>
    </table>
