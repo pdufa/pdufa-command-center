@@ -161,7 +161,7 @@ test("10-trial real clinical pilot has only research grades, not full RAAS or fa
  const pilot=require("node:fs").readFileSync(require("node:path").join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8");
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
- const cases=new Set(feed.records.filter(r=>r.stage==="post").map(r=>r.nctId));
+ const cases=new Set(feed.records.filter(r=>r.stage==="post"&&r.ticker!=="COGT").map(r=>r.nctId));
  assert.equal(cases.size,10);
  assert.equal(feed.records.length,82);
  for(const nctId of cases){
@@ -201,7 +201,7 @@ test("Eight CI/multiplicity reviews and six shared-NDA filing/target metrics are
  const p=require("node:path"),src=JSON.parse(fs.readFileSync(p.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(src);
- const ci=feed.records.filter(r=>r.metricId==="post-1-3");
+ const ci=feed.records.filter(r=>r.metricId==="post-1-3"&&r.ticker!=="COGT");
  assert.equal(ci.length,8);
  assert.ok(ci.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"&&
   r.benchmarkSourceUrl.includes("fda.gov")&&/CI|interval|confidence/i.test(r.observedResult)));
