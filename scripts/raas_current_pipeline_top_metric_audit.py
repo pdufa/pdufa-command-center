@@ -144,7 +144,7 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
             rec["clinicalRegistryUrl"] != "https://clinicaltrials.gov/study/" + nct or
             r["sourceUrl"] != rec["clinicalRegistryUrl"] or
             r.get("registryResultsPosted") not in ("False", "True") or
-            rec.get("registryReportedStatus") != "RECRUITING" or
+            rec.get("registryReportedStatus") not in ("RECRUITING", "ACTIVE_NOT_RECRUITING") or
             (has_window and iso(rec.get("readoutGuidancePublished")) > iso(snapshot["asOf"])) or
             iso(rec.get("marketCapAsOf")) > iso(snapshot["asOf"]) or
             iso(rec.get("registryStatusCheckedAt")) > iso(snapshot["asOf"]) or
