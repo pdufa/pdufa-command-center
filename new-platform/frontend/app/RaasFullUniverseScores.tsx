@@ -8,6 +8,7 @@ import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
 import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
 import {raasRegistryCoverage} from "../lib/raas-stage-source-coverage";
 import {rawRaasRegistryDesignDiagnostic} from "../lib/raas-raw-registry-design";
+import {raasClinicalReportingDiagnostic} from "../lib/raas-clinical-reporting-diagnostic";
 import {fullReviewedTrialCandidate} from "../lib/raas-reviewed-full-score";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
@@ -129,7 +130,8 @@ export default function RaasFullUniverseScores(){
   return {...x,registry,
    topRegistryCoverage:raasRegistryCoverage(trial,"pre",registry),
    bottomRegistryCoverage:raasRegistryCoverage(trial,"post",registry),
-   rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial)};
+   rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial),
+   clinicalReportingDiagnostic:raasClinicalReportingDiagnostic(registry,trial)};
  }),[assessments,registryIndex]);
  const stats=useMemo(()=>({
   top:assessments.filter(x=>x.stage==="pre").length,
@@ -141,6 +143,8 @@ export default function RaasFullUniverseScores(){
   fullOverall:assessments.filter(x=>x.overallScore!==null).length,
   rawDesignGraded:indexed.filter(x=>x.rawDesignDiagnostic?.score!==null&&
    x.rawDesignDiagnostic?.score!==undefined).length,
+  clinicalReportingGraded:indexed.filter(x=>x.clinicalReportingDiagnostic?.score!==null&&
+   x.clinicalReportingDiagnostic?.score!==undefined).length,
   postedRegistry:indexed.filter(x=>x.registry?.postedResults===true).length,
   protocolRegistry:indexed.filter(x=>x.registry?.postedResults===false).length,
   missingRegistry:indexed.filter(x=>!x.registry).length
@@ -236,6 +240,8 @@ export default function RaasFullUniverseScores(){
    <div><strong>{short(stats.unverified)}</strong><span>Unverified readout-stage trials · not assumed TOP</span></div>
    <div data-raas-raw-design-graded="true"><strong>{short(stats.rawDesignGraded)}</strong>
     <span>Trials with 0–100 experimental study-design grades; separate from overall RAAS</span></div>
+   <div data-raas-clinical-reporting-graded="true"><strong>{short(stats.clinicalReportingGraded)}</strong>
+    <span>Posted-result trials with numerical source-documentation grades (NOT efficacy or RAAS)</span></div>
   </div>
   <div className={css.stats} data-raas-registry-review-queues="true">
    <div><strong>{short(stats.postedRegistry)}</strong>
@@ -266,6 +272,13 @@ export default function RaasFullUniverseScores(){
    source-lead weights, separately counted AI/independent metric reviews,
    and explicit N/A for missing full RAAS scores. The design diagnostic is
    <strong> not </strong> an FDA probability or complete RAAS rating.
+  </p>
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-clinical-evidence-download="true">
+   <a href="/raas-clinical-evidence-components.csv" download>Download clinical source-documentation grades</a>
+   {" "}· <a href="/raas-primary-comparisons.csv" download>Primary statistical comparisons</a>
+   {" "}· <a href="/raas-serious-event-rates.csv" download>Observed serious-event group rates</a>.
+   These are trial-matched facts and reporting completeness, never treatment-vs-placebo
+   clinical grades or validated 30/30 RAAS ratings.
   </p>
   <p style={{fontSize:12,lineHeight:1.5,margin:"6px 0"}}>
    <strong>TOP/BOTTOM registry source coverage is calculated across every matched NCT.</strong>
@@ -319,7 +332,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong> · {stats.aiSourceCrosschecks} AI source checks (not approved). Missing full scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","AI benchmark checks","Source / missing evidence","Raw trial-design grade","TOP source coverage","BOTTOM source coverage","Registry facts","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","AI benchmark checks","Source / missing evidence","Raw trial-design grade","Clinical reporting grade","TOP source coverage","BOTTOM source coverage","Registry facts","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -356,6 +369,15 @@ export default function RaasFullUniverseScores(){
       {x.rawDesignDiagnostic&&<span style={{display:"block",fontSize:11}}>
        Missing-data range: {x.rawDesignDiagnostic.lowerBound}–{x.rawDesignDiagnostic.upperBound}
       </span>}
+     </td>
+     <td style={cell} data-raas-clinical-reporting-grade={x.row.nctId}>
+      <strong>{x.clinicalReportingDiagnostic?.score==null?"N/A":
+       x.clinicalReportingDiagnostic.score+"/100"}</strong>
+      <span style={{display:"block",fontSize:11}}>
+       {x.clinicalReportingDiagnostic?.documentedOf5==null?
+        "No posted results or source available":x.clinicalReportingDiagnostic.documentedOf5+"/5 reporting criteria"}
+       {" "}· documentation only, NOT RAAS efficacy
+      </span>
      </td>
      <td style={cell} data-raas-top-source-coverage={x.row.nctId}>
       <strong>{x.topRegistryCoverage===null?"N/A":x.topRegistryCoverage.sourceWeightPct+"%"}</strong>
