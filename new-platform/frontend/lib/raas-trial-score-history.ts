@@ -89,8 +89,8 @@ export function comparableScoreDelta(
  history:readonly RaasTrialHistoryEvent[],selected:RaasTrialHistoryEvent
 ):number|null{
  if(selected.score===null)return null;
- const p=[...history].filter(e=>e.recordedAt<selected.recordedAt||
-   (e.recordedAt===selected.recordedAt&&e.eventId!==selected.eventId));
+ // Snapshots saved at the same instant have no reliable within-batch order.
+ const p=[...history].filter(e=>e.recordedAt<selected.recordedAt);
  const before=p.reverse().find(e=>e.stage===selected.stage&&
    e.scoreKind===selected.scoreKind&&e.scoreVersion===selected.scoreVersion&&e.score!==null);
  return before?.score===undefined||before.score===null?null:selected.score-before.score;
