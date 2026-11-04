@@ -745,8 +745,8 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
 function TopRaasAccuracyButton(){
  const [open,setOpen]=useState(false);
  const topCases=topRetrospectiveResearch.records.length;
- const topApprovedMetrics=raasApprovedCalibrations.entries.filter(x=>x.stage==="pre").length;
- const topValidatedCases=raasHistoricalCases.cases.filter(x=>x.stage==="pre").length;
+ const topApprovedMetrics=(raasApprovedCalibrations.entries as readonly {stage:string}[]).filter(x=>x.stage==="pre").length;
+ const topValidatedCases=(raasHistoricalCases.cases as readonly {stage:string}[]).filter(x=>x.stage==="pre").length;
  const benchmark=raasLegacyFDAAccuracy;
  const difference=benchmark.legacyRetrospectiveAccuracyPct-
   benchmark.alwaysApproveRetrospectiveAccuracyPct;
