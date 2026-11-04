@@ -86,6 +86,7 @@ export default function RaasMetricGradebook({row,bucket}:{
      <div role="status" style={{display:"flex",gap:16,flexWrap:"wrap",
       padding:"12px 0",borderBottom:"1px solid #d3e4d8"}}>
       <span><strong>{book.graded}/30</strong> experimental metrics graded</span>
+      <span data-raas-ai-crosschecks={row.nctId}><strong>{book.reviewedCandidate.aiCrosscheckedCount}</strong> AI-assisted source and benchmark checks · not independently adjudicated</span>
       <span><strong>{book.mappedOnly}</strong> evidence-lead-only metrics</span>
       <span><strong>{book.withoutEvidence}</strong> without mapped evidence</span>
       <span><strong>Overall RAAS: N/A</strong> · {stageVerified?"not validated":"stage unverified and not validated"}</span>
@@ -97,8 +98,8 @@ export default function RaasMetricGradebook({row,bucket}:{
       </span>
       <span data-raas-full-reviewed-score={row.nctId}>
        <strong>{book.reviewedCandidate.fullResearchScore===null?"N/A":book.reviewedCandidate.fullResearchScore+"/100"}</strong>
-       {" "}· Full 30-metric research RAAS candidate · {book.reviewedCandidate.reviewedCount}/30
-       {" "}source-reviewed grades · not independently validated, not an FDA probability
+       {" "}· Full 30-metric research RAAS candidate · {book.reviewedCandidate.independentReviewedCount}/30
+       {" "}independently reviewed grades · {book.reviewedCandidate.aiCrosscheckedCount} AI source checks not eligible for full-score completion · not an FDA probability
       </span>
       <span data-raas-raw-design-diagnostic={row.nctId}>
        <strong>Raw design: {book.rawDesignDiagnostic?.score===null||!book.rawDesignDiagnostic?"N/A":book.rawDesignDiagnostic.score+"/100"}</strong>
@@ -152,7 +153,7 @@ export default function RaasMetricGradebook({row,bucket}:{
           style={{borderTop:"1px solid #d6e5dc",padding:"12px 0",lineHeight:1.4}}>
           <strong>{metric.id} · {metric.name}</strong>
           <div style={{fontWeight:700,margin:"5px 0"}}>
-           {metric.grade?metric.grade.score+"/100 · experimental only":
+           {metric.grade?metric.grade.score+"/100 · "+(metric.status==="AI_SOURCE_CROSSCHECKED_GRADE"?"AI-assisted source crosscheck, not independently approved":"experimental only"):
             metric.status==="SOURCE_LEADS_ONLY"?"N/A · evidence available, grading incomplete":
             "N/A · missing required evidence"}
           </div>

@@ -54,6 +54,8 @@ class ReviewWorklistTests(unittest.TestCase):
         self.assertEqual(status["researchTrials"], 2)
         self.assertEqual(status["trialStageReviewRows"], 4)
         self.assertEqual(status["submittedMetricReviewRecords"], 0)
+        self.assertEqual(status["aiSourceCrosscheckedGradeRecords"], 0)
+        self.assertEqual(status["independentMetricReviewRecords"], 0)
         self.assertTrue(all(r["submittedMetricReviews"] == 0 and
                             r["missingMetricReviewCount"] == 30 and
                             r["stageIndependentlyVerified"] == "NOT_ASSESSED_IN_REGISTRY"
@@ -70,7 +72,7 @@ class ReviewWorklistTests(unittest.TestCase):
 
     def test_submitted_review_is_never_mislabeled_validated_score(self):
         row = {"nctId": "NCT00000001", "ticker": "AAA", "stage": "post",
-               "metricId": "post-1-1", "drug": "Example intervention",
+               "metricId": "post-1-1", "independentReview": "AI_SOURCE_CROSSCHECKED", "drug": "Example intervention",
                "indication": "Example indication"}
         csv_text, receipt = mod.generate(index([trial("NCT00000001", "AAA", True)]),
                                          reviews([row]))
@@ -78,6 +80,8 @@ class ReviewWorklistTests(unittest.TestCase):
         bottom = next(r for r in parsed if r["researchStage"] == "BOTTOM_RESEARCH_ONLY")
         top = next(r for r in parsed if r["researchStage"] == "TOP_RESEARCH_ONLY")
         self.assertEqual(bottom["submittedMetricReviews"], "1")
+        self.assertEqual(bottom["aiSourceCrosscheckedGrades"], "1")
+        self.assertEqual(bottom["independentMetricReviews"], "0")
         self.assertEqual(bottom["missingMetricReviewCount"], "29")
         self.assertEqual(top["submittedMetricReviews"], "0")
         self.assertNotIn("fullResearchScore", receipt)
@@ -85,7 +89,7 @@ class ReviewWorklistTests(unittest.TestCase):
 
     def test_duplicate_or_cross_trial_reviews_rejected(self):
         row = {"nctId": "NCT00000001", "ticker": "BAD", "stage": "pre",
-               "metricId": "pre-1-1", "drug": "Test", "indication": "Test"}
+               "metricId": "pre-1-1", "independentReview": "PASSED", "drug": "Test", "indication": "Test"}
         with self.assertRaisesRegex(ValueError, "CROSS_TRIAL"):
             mod.build_worklist(index([trial("NCT00000001", "AAA")]), reviews([row]))
         row["ticker"] = "AAA"
@@ -94,7 +98,7 @@ class ReviewWorklistTests(unittest.TestCase):
 
     def test_same_nct_different_drug_is_not_automatically_combined(self):
         a = {"nctId": "NCT00000001", "ticker": "AAA", "stage": "post",
-             "metricId": "post-1-1", "drug": "Drug A", "indication": "Condition"}
+             "metricId": "post-1-1", "independentReview": "PASSED", "drug": "Drug A", "indication": "Condition"}
         b = {**a, "drug": "Drug B", "metricId": "post-1-2"}
         rows, _ = mod.build_worklist(index([trial("NCT00000001", "AAA", True)]),
                                       reviews([a, b]))

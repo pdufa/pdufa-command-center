@@ -27,7 +27,8 @@ FIELDS = ("nctId", "ticker", "researchStage", "stageIndependentlyVerified",
           "registryEvidenceState", "sourceUrl", "hasPrimaryDefinitions",
           "hasPostedResults", "hasPrimaryMeasurements", "hasGroupComparisons",
           "hasConfidenceIntervals", "hasSafetyDenominators",
-          "submittedMetricReviews", "missingMetricReviewCount",
+          "submittedMetricReviews", "aiSourceCrosscheckedGrades",
+          "independentMetricReviews", "missingMetricReviewCount",
           "missingMetricIds", "reviewIdentityState", "sourceReviewPriority",
           "nextReviewAction")
 
@@ -59,12 +60,15 @@ def build_worklist(index: dict, reviews: dict) -> tuple[list[dict], dict]:
     # Submitted reviews are an INPUT COUNT, not independent validation. Only
     # one unambiguous drug+indication identity may contribute to a row count.
     grouped = defaultdict(lambda: defaultdict(set))
+    ai_grouped = defaultdict(lambda: defaultdict(set))
+    independent_grouped = defaultdict(lambda: defaultdict(set))
     for review in entries:
         nct = review.get("nctId")
         stage = review.get("stage")
         metric = review.get("metricId")
         ticker = review.get("ticker")
         if (nct not in roster or ticker != roster[nct]["ticker"] or
+            review.get("independentReview") not in ("PASSED", "AI_SOURCE_CROSSCHECKED") or
             stage not in STAGES or metric not in METRICS[stage] or
             not str(review.get("drug") or "").strip() or
             not str(review.get("indication") or "").strip()):
@@ -74,6 +78,9 @@ def build_worklist(index: dict, reviews: dict) -> tuple[list[dict], dict]:
         if metric in grouped[(nct, stage)][program]:
             raise ValueError("RAAS_WORKLIST_DUPLICATE_REVIEW")
         grouped[(nct, stage)][program].add(metric)
+        target = (independent_grouped if review["independentReview"] == "PASSED"
+                  else ai_grouped)
+        target[(nct, stage)][program].add(metric)
 
     rows = []
     for nct in sorted(roster):
@@ -98,6 +105,9 @@ def build_worklist(index: dict, reviews: dict) -> tuple[list[dict], dict]:
             programs = grouped.get((nct, stage), {})
             ambiguous = len(programs) > 1
             submitted = next(iter(programs.values())) if len(programs) == 1 else set()
+            program = next(iter(programs)) if len(programs) == 1 else None
+            ai = ai_grouped.get((nct, stage), {}).get(program, set())
+            independent = independent_grouped.get((nct, stage), {}).get(program, set())
             missing = [m for m in METRICS[stage] if m not in submitted]
             if stage == "post" and e["postedResults"] and contrasted and safety:
                 priority = "1_POSTED_COMPARISON_AND_SAFETY_REVIEW"
@@ -126,6 +136,8 @@ def build_worklist(index: dict, reviews: dict) -> tuple[list[dict], dict]:
                 "hasConfidenceIntervals": bool(intervals),
                 "hasSafetyDenominators": bool(safety),
                 "submittedMetricReviews": len(submitted),
+                "aiSourceCrosscheckedGrades": len(ai),
+                "independentMetricReviews": len(independent),
                 "missingMetricReviewCount": len(missing),
                 "missingMetricIds": ";".join(missing),
                 "reviewIdentityState": ("AMBIGUOUS_PROGRAM" if ambiguous else
@@ -143,6 +155,12 @@ def build_worklist(index: dict, reviews: dict) -> tuple[list[dict], dict]:
         "researchTrials": len(roster),
         "trialStageReviewRows": len(rows),
         "submittedMetricReviewRecords": len(entries),
+        "aiSourceCrosscheckedGradeRecords": sum(
+            r["aiSourceCrosscheckedGrades"] for r in rows),
+        "independentMetricReviewRecords": sum(
+            r["independentMetricReviews"] for r in rows),
+        "stageRowsWithThirtyIndependentReviews": sum(
+            r["independentMetricReviews"] == 30 for r in rows),
         "stageRowsWithThirtySubmittedReviews": sum(
             r["submittedMetricReviews"] == 30 for r in rows),
         "sourceReviewPriorityOneRows": sum(

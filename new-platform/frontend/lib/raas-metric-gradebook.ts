@@ -23,7 +23,7 @@ export type MetricEvidenceLead={
  id:string;kind:string;sourceDate:string;sourceUrl:string;description:string;
  measurement:{label:string;value:number;unit:string}|null;
 };
-export type MetricScoreStatus="EXPERIMENTAL_GRADE"|"REVIEWED_PROVISIONAL_GRADE"|"SOURCE_LEADS_ONLY"|"EVIDENCE_MISSING";
+export type MetricScoreStatus="EXPERIMENTAL_GRADE"|"REVIEWED_PROVISIONAL_GRADE"|"AI_SOURCE_CROSSCHECKED_GRADE"|"SOURCE_LEADS_ONLY"|"EVIDENCE_MISSING";
 export type MetricGradebookRow={
  id:string;name:string;requiredEvidence:string;scoreRule:string;criticalRisk:string;
  status:MetricScoreStatus;grade:ProvisionalMetricGrade|null;
@@ -92,19 +92,21 @@ export function buildRaasMetricGradebook(
   score:g.score,ruleId:g.ruleVersion,kind:"RESEARCH_ONLY_NOT_VALIDATED",
   observationId:"documented-review-"+g.metricId+"-"+g.assessedAt,
   sourceUrl:g.sourceUrl,sourceDate:g.sourceDate,
-  label:"Documented source-and-benchmark review; research only",
+  label:g.reviewClass==="AI_SOURCE_CROSSCHECKED"?"AI-assisted source crosscheck (not independent clinical review)":"Documented independent research review",
   inputs:g.explanation,explanation:g.explanation,
   limitations:"Not validated against out-of-sample FDA outcomes; does not establish an approval probability."
  }));
  const gradeMap=new Map(provisional.scoredMetrics.map(g=>[g.metricId,g]));
  for(const g of reviewedGrades)gradeMap.set(g.metricId,g);
- const reviewedIds=new Set(reviewedGrades.map(g=>g.metricId));
+ const reviewedIds=new Set(reviewedCandidate.grades.filter(g=>g.reviewClass==="INDEPENDENT_REVIEW").map(g=>g.metricId));
+ const aiIds=new Set(reviewedCandidate.grades.filter(g=>g.reviewClass==="AI_SOURCE_CROSSCHECKED").map(g=>g.metricId));
  const categories=RAAS_METRIC_CATALOG[stage].map(group=>{
   const rows=group.metrics.map(metric=>{
    const evidence=leads.filter(lead=>lead.metricIds.includes(metric.id))
     .map(({metricIds,...lead})=>lead);
    const grade=gradeMap.get(metric.id)||null;
    const status:MetricScoreStatus=reviewedIds.has(metric.id)?"REVIEWED_PROVISIONAL_GRADE":
+    aiIds.has(metric.id)?"AI_SOURCE_CROSSCHECKED_GRADE":
     grade?"EXPERIMENTAL_GRADE":
     evidence.length?"SOURCE_LEADS_ONLY":"EVIDENCE_MISSING";
    const rubric=RAAS_PROVISIONAL_RUBRICS.find(r=>r.stage===stage&&r.metricId===metric.id);
@@ -128,5 +130,5 @@ export function buildRaasMetricGradebook(
   registryNumericObservationCount:registryLeads.filter(x=>x.measurement!==null).length,
   rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial),
   reviewedCandidate,
-  provisionalDiagnostic:provisionalStageCoverage(stage,provisional.scoredMetrics)};
+  provisionalDiagnostic:provisionalStageCoverage(stage,[...gradeMap.values()])};
 }
