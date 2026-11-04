@@ -79,8 +79,10 @@ export default function RaasMetricGradebook({row,bucket}:{
       is {book.provisionalDiagnostic.observedComponentMean===null?"N/A":book.provisionalDiagnostic.observedComponentMean+"/100"}
       over {book.provisionalDiagnostic.weightCoveredPercent}% of model weight — NOT an overall RAAS,
       prediction, or trial-ranking signal.
-      Registry protocol and posted-result source leads are displayed only after an exact-NCT,
-      ticker and drug match. A source lead is not a completed grade. A clinical effect, responder rate or
+      Registry protocol and posted-result leads require exact NCT and ticker identity;
+      where the public intervention list is present it is also cross-checked against the drug.
+      Earlier source receipts without intervention names are trial-level research leads only,
+      not proof of a particular drug effect. A source lead is not a completed grade. A clinical effect, responder rate or
       cash balance is a factual measurement, not a 0–100 clinical success or investment
       score. No missing score is replaced with zero. Trial history remains keyed to
       the same NCT if it moves between TOP and BOTTOM.
