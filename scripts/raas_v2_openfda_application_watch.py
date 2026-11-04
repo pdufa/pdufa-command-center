@@ -253,6 +253,9 @@ def inspect_response(payload: dict | None, checked_at: str,
         "issuerReportedGoalDate": "2026-11-14",
         "openFdaQueryUrl": URL,
         "smmtPublicIngredientQueryUrl": SMMT_URL,
+        "smmtOpenFdaSourceStatus": smmt_status,
+        "smmtPublicIndexedBlaCandidateCount": len(
+            smmt_public["matchingPublishedBlaCandidatesNeedIndependentReview"]),
         "openFdaSourceStatus": state,
         "openFdaErrorOrDetail": (source_detail or "")[:400],
         "openFdaLastUpdatedAsReported": str(meta.get("last_updated") or "")[:100] or None,
@@ -331,7 +334,8 @@ def main() -> None:
                     encoding="utf-8")
     print(json.dumps({k: result[k] for k in
         ("status", "checkedAtUTC", "openFdaSourceStatus",
-         "smmtPublicIngredientQueryUrl",
+         "smmtOpenFdaSourceStatus",
+         "smmtPublicIndexedBlaCandidateCount",
          "independentlyCertifiedCurrentFdaReviewCycles",
          "independentlyAdjudicatedNov14FdaActions",
          "newImmutableThreeWayPredictions")}, sort_keys=True))
