@@ -70,9 +70,9 @@ def validate_dossier(d):
 def filing_url(cik,accession,document):
     require(re.fullmatch(r"\d{10}-\d{2}-\d{6}",accession) is not None
         and re.fullmatch(r"[A-Za-z0-9_.-]{1,150}",document) is not None
-        and ".." not in document and accession.startswith(cik+"-"),
+        and ".." not in document,
         "UNSAFE_EDGAR_FILING_PATH")
-    return ("https://www.sec.gov/Archives/edgar/data/"+
+    # The accession prefix may identify the filing agent, not the issuer CIK.\n    return ("https://www.sec.gov/Archives/edgar/data/"+
             str(int(cik))+"/"+accession.replace("-","")+"/"+document)
 
 
