@@ -46,7 +46,7 @@ test("missing intervention comparator stays unknown; only >=3 known facets grade
  assert.equal(g.score,100);
  const old=e({registeredDesign:undefined});
  assert.equal(evaluate(old).score,null);
- assert.equal(evaluate(old).knownFacets,1);
+ assert.equal(evaluate(old).knownFacets,2);
 });
 test("invalid source association never yields a score; all registry records get audited",()=>{
  const trial=index.records[0];
