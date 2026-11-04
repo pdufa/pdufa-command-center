@@ -5,6 +5,8 @@ on:
     - cron: '30 7 * * *'
   pull_request:
     paths:
+      - 'scripts/raas_research_workflow_receipt.cjs'
+      - 'tests/raas_research_workflow_receipt.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
       - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json'
       - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-sec-snapshots.json'
@@ -37,6 +39,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/raas_research_workflow_receipt.cjs'
+      - 'tests/raas_research_workflow_receipt.test.cjs'
       - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
       - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json'
       - 'new-platform/frontend/data/raas-2024-2025-expanded-candidate-sec-snapshots.json'
@@ -79,6 +83,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Test research execution receipts are not confused with validation
+        run: node --test tests/raas_research_workflow_receipt.test.cjs
       - name: Verify actual 2024/2025 original FDA target dates, historical SEC shares, raw versus adjusted price rules
         run: |
           node --test tests/raas_active_2024_2025_primary_cap_research.test.cjs
@@ -160,12 +166,22 @@ jobs:
           RAAS_CRL_FUNNEL_JSON: ${{ runner.temp }}/raas-2024-2025-crl-candidate-coverage-funnel.json
           RAAS_CRL_FUNNEL_CSV: ${{ runner.temp }}/raas-2024-2025-crl-candidate-coverage-funnel.csv
         run: node scripts/raas_2025_crl_candidate_coverage_funnel.cjs
+      - name: Record whether research really ran and ensure required live evidence artifact exists
+        if: always()
+        env:
+          RAAS_RECEIPT_SCOPE: ACTIVE_2024_2025_ORIGINAL_SOURCE_RESEARCH
+          RAAS_RECEIPT_EXPECTED: raas-2024-2025-original-source-research.json,raas-2024-2025-t79-14-audit.json,raas-2024-2025-full-t90-t3-grid.json
+          RAAS_RECEIPT_REQUIRED: raas-2024-2025-original-source-research.json
+          RAAS_RECEIPT_OUTPUT: ${{ runner.temp }}/raas-2024-2025-research-execution-receipt.json
+        run: node scripts/raas_research_workflow_receipt.cjs
       - name: Publish provisional case price and SEC share audit gaps, no validated scores
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: raas-2024-2025-original-source-research
+          # This receipt is emitted even when a pull request intentionally skips all live data collection.
           path: |
+            ${{ runner.temp }}/raas-2024-2025-research-execution-receipt.json
             ${{ runner.temp }}/raas-2024-2025-original-source-research.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-audit.json
             ${{ runner.temp }}/raas-2024-2025-t79-14-audit.csv
@@ -183,5 +199,5 @@ jobs:
             ${{ runner.temp }}/raas-2025-crl-candidate-exclusions.csv
             ${{ runner.temp }}/raas-2024-2025-crl-candidate-coverage-funnel.json
             ${{ runner.temp }}/raas-2024-2025-crl-candidate-coverage-funnel.csv
-          if-no-files-found: ignore
+          if-no-files-found: warn
           retention-days: 30
