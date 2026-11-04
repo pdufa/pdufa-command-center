@@ -256,6 +256,17 @@ export default function RaasFullUniverseScores(){
    <div><strong>{short(registryIndex.summary.trialsWithSafetyRiskDenominators??0)}</strong>
     <span>Trials with serious-event affected/at-risk counts (ungraded)</span></div>
   </div>}
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ledger-download="true">
+   <a href="/raas-trial-score-ledger.csv" download
+    style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
+    Download all-trial RAAS source-score ledger (CSV)
+   </a>
+   {" "}· one row per registry NCT with numerical trial-design diagnostic where
+   source facts are sufficient, observed and missing design facets, TOP/BOTTOM
+   source-lead weights, separately counted AI/independent metric reviews,
+   and explicit N/A for missing full RAAS scores. The design diagnostic is
+   <strong> not </strong> an FDA probability or complete RAAS rating.
+  </p>
   <p style={{fontSize:12,lineHeight:1.5,margin:"6px 0"}}>
    <strong>TOP/BOTTOM registry source coverage is calculated across every matched NCT.</strong>
    Percentages measure the share of 30 metric research weights with a mapped
