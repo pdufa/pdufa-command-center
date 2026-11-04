@@ -229,6 +229,48 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
                 for z in x["newerFilingReviewCandidates"])
             for x in sec["rows"]),
         "SEC_FILINGS_CANNOT_CERTIFY_FDA_REVIEW_OR_PREDICTIONS")
+    require(
+        type(sec.get("alternativeOfficialSecAtomAvailableCount")) is int
+        and sec["alternativeOfficialSecAtomAvailableCount"]==sum(
+            r.get("alternativeOfficialSecAtomFeed",{}).get("sourceStatus")
+                =="AVAILABLE" for r in sec["rows"])
+        and type(sec.get("effectiveOfficialSecFilingSourceCoverageCount")) is int
+        and sec["effectiveOfficialSecFilingSourceCoverageCount"]==sum(
+            r.get("sourceStatus")=="AVAILABLE" or
+            r.get("alternativeOfficialSecAtomFeed",{}).get("sourceStatus")
+                =="AVAILABLE" for r in sec["rows"])
+        and type(sec.get("officialSecAtomResearchFilingCandidateCount")) is int
+        and sec["officialSecAtomResearchFilingCandidateCount"]==sum(
+            r.get("alternativeOfficialSecAtomFeed",{}).get(
+                "newerRelevantFormFilingCount",0) for r in sec["rows"])
+        and all(isinstance(r.get("alternativeOfficialSecAtomFeed"),dict)
+            and r["alternativeOfficialSecAtomFeed"].get("sourceStatus") in {
+                "NOT_QUERIED","AVAILABLE","SOURCE_UNAVAILABLE",
+                "HTTP_404_NO_PUBLIC_RECORD","MALFORMED_RESPONSE"}
+            and r["alternativeOfficialSecAtomFeed"].get(
+                "atomFeedAloneVerifiesCompleteIssuerSECFileHistory") is False
+            and r["alternativeOfficialSecAtomFeed"].get(
+                "absenceFromAtomFeedProvesNoFdaDeadlineChange") is False
+            and r["alternativeOfficialSecAtomFeed"].get(
+                "aFilingLinkIdentifiesCurrentPendingBlaOrSNda") is False
+            and r["alternativeOfficialSecAtomFeed"].get(
+                "atomFeedAccessNotTheSameAsRestApiAccess") is True
+            and type(r["alternativeOfficialSecAtomFeed"].get(
+                "newerRelevantFormFilingCount")) is int
+            and type(r["alternativeOfficialSecAtomFeed"].get(
+                "newerFilingReviewCandidates")) is list
+            and r["alternativeOfficialSecAtomFeed"]["newerRelevantFormFilingCount"]
+                >=len(r["alternativeOfficialSecAtomFeed"][
+                    "newerFilingReviewCandidates"])
+            and all(c.get("documentReviewedForPdufaGoal") is False
+                and c.get("fdaDeadlineRevisionConfirmed") is False
+                and c.get("pendingFdaApplicationNumberConfirmed") is False
+                and c.get("fdaActionOrPredictionConfirmed") is False
+                for c in r["alternativeOfficialSecAtomFeed"][
+                    "newerFilingReviewCandidates"])
+            for r in sec["rows"]),
+        "SEC_ATOM_CANNOT_CERTIFY_FDA_OR_RESTORE_REST_ACCESS")
+
     news=json.loads((root/"raas-v2-issuer-news-fallback-research-leads.json").read_text("utf-8"))
     require(isinstance(news,dict) and news.get("scope")==
         "RAAS_V2_OFFICIAL_ISSUER_NEWS_FALLBACK_SOURCE_LEADS_NOT_FDA_OR_SEC_CENSUS"
@@ -316,6 +358,13 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
         "secNewIssuerFilingSourceAvailabilityCount":sec["sourceAvailableCount"],
         "secNewIssuerFilingReviewCandidatesCount":sec["potentialNewFilingReviewCandidates"],
         "secNewIssuerFilingsConfirmFDARevision":False,
+        "alternativeOfficialSecAtomAvailableCount":
+            sec["alternativeOfficialSecAtomAvailableCount"],
+        "effectiveOfficialSecFilingSourceCoverageCount":
+            sec["effectiveOfficialSecFilingSourceCoverageCount"],
+        "officialSecAtomResearchFilingCandidateCount":
+            sec["officialSecAtomResearchFilingCandidateCount"],
+        "atomFilingLinksDoNotVerifyFdaDecisions":True,
         "officialIssuerNewsPagesAccessible":news["officialIssuerNewsPagesAccessible"],
         "officialIssuerNewsLinksNotFDAOrSECCensus":news["issuerNewsResearchLinkCandidatesFound"],
         "officialIssuerNewsRestoresSECAccess":False,
