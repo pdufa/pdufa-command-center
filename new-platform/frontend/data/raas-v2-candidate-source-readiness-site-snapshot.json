@@ -25,7 +25,8 @@
     "The nightly FDA audit now queries the FDA's publicly available Drugs@FDA application history for NDA219083 and checks supplement identities; a result with an FDA supplement number is NOT automatically assigned to MAPLE-HCM. SMMT's pending BLA may not yet be publicly indexed. Errors, missing records and FDA publication delays do not prove regulatory outcomes.",
     "Nightly FDA watch searches both the CYTK parent NDA and any publicly indexed ivonescimab ingredient applications. Even an indexed BLA match cannot certify Summit's HARMONi NDA/BLA cycle or target; the FDA Purple Book is an approved-biologics index, not pending application coverage.",
     "CYTK August 6 SEC 10-Q explicitly says the MAPLE-HCM label sNDA was submitted in January 2026; its February 24 issuer release is the public disclosure date, not the actual filing date. The 10-Q still listed November 14, 2026 as the standard-review PDUFA date.",
-    "Summit September 15 issuer/SEC exhibit repeated the November 14, 2026 HARMONi BLA goal alongside additional OS follow-up; no subsequent FDA review-cycle identifier, no-extension proof, or official outcome was independently verified. Both latest located issuer deadline-repetition sources are older than 30 days as of this dated website snapshot."
+    "Summit September 15 issuer/SEC exhibit repeated the November 14, 2026 HARMONi BLA goal alongside additional OS follow-up; no subsequent FDA review-cycle identifier, no-extension proof, or official outcome was independently verified. That September Summit source has now been superseded as latest located reiteration by its October 21 announcement; Cytokinetics' August 6 issuer source alone is older than 30 days as of this dated website snapshot.",
+    "October 21 Summit press release principally announces EA2251 (NCT07765433), a biliary tract cancer study; its background separately repeats the November 14 PDUFA date for HARMONi (NCT06396065) in EGFR-mutated NSCLC. This is a company reiteration, not independent FDA review-cycle confirmation or an FDA decision."
   ],
   "issuerDocumentedNearTermCycleSourceLeads": 15,
   "knownRevisedGoalExcludedFromOriginalDeadlineQueue": 4,
@@ -43,6 +44,8 @@
   "nightlyPublicFDAApplicationHistoryWatch": "RESEARCH_ONLY_MONITOR_SOURCE_STATUS_ARTIFACT_NOT_SITE_LIVE",
   "nightlyPublicFDAApplicationHistoryWatchScope": "CYTK parent NDA 219083 submissions and SMMT ivonescimab public ingredient search; pending MAPLE supplement and SMMT BLA numbers remain unverified",
   "nov14AdditionalDatedIssuerGoalContinuityCases": 2,
-  "nov14LocatedIssuerGoalSourcesOver30DaysOldAtSnapshot": 2,
-  "nov14IssuerGoalContinuityIndependentlyRulesOutFurtherRevisions": 0
+  "nov14LocatedIssuerGoalSourcesOver30DaysOldAtSnapshot": 1,
+  "nov14IssuerGoalContinuityIndependentlyRulesOutFurtherRevisions": 0,
+  "nov14SmmtLatestIssuerDeadlineReiterationDate": "2026-10-21",
+  "nov14SmmtLatestSourceMainTrial": "EA2251_BILIARY_TRACT_NCT07765433_NOT_HARMONI"
 }

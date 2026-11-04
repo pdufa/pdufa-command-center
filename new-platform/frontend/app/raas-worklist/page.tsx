@@ -102,15 +102,16 @@ function V2CandidateReadiness(){
   </details>
   <details id="raas-v2-nov14-issuer-goal-continuity">
    <summary>November 14 · {nov14IssuerGoalContinuity.latestDatedIssuerGoalContinuityCases} later issuer goal confirmations and source-age review</summary>
-   <p>These dated issuer records repeated the November 14, 2026 FDA target. They do <strong>not</strong> independently establish that the FDA never revised the deadline, identify the pending application number, or authorize a PASS/CRL/EXTENSION forecast. Both located confirmation documents are more than 30 days old as of the November 3 snapshot; newer sources require rechecking.</p>
+   <p>These dated issuer records repeated the November 14, 2026 FDA target. They do <strong>not</strong> independently establish that the FDA never revised the deadline, identify the pending application number, or authorize a PASS/CRL/EXTENSION forecast. As of the November 3 snapshot, CYTK's August source is over 30 days old, while SMMT's October 21 issuer background paragraph is more recent. Neither guarantees the FDA has not changed the goal since publication.</p>
    <ul>{nov14IssuerGoalContinuity.records.map(r=><li key={r.researchCaseKey}>
      <strong>{r.ticker} · {r.reviewSpecificStudy}</strong> — later issuer source <strong>{r.issuerPublicSourceDate}</strong>,
      still lists <strong>{r.reportedGoalDate}</strong>;
-     <a href={r.issuerPublicSourceUrl} target="_blank" rel="noopener noreferrer">SEC issuer filing</a>;
+     <a href={r.issuerPublicSourceUrl} target="_blank" rel="noopener noreferrer">{r.ticker==="SMMT"?"Summit company release":"SEC issuer filing"}</a>;
      publicly reported application update {r.firstSelectedIssuerPublicApplicationUpdateDate}
      ({r.firstSelectedIssuerPublicApplicationUpdateType.replaceAll("_"," ").toLowerCase()})
      versus actual application submission period <strong>{r.issuerReportedActualApplicationSubmissionMonth}</strong>
-     {r.ticker==="CYTK"?<> — January is the actual filing month, February 24 was the public announcement, not the filing date</>:null};
+     {r.ticker==="CYTK"?<> — January is the actual filing month, February 24 was the public announcement, not the filing date</>:null}
+     {r.ticker==="SMMT"?<> — this announcement's main study is <strong>EA2251 (NCT07765433), biliary tract cancer</strong>, which is <strong>not</strong> HARMONi (NCT06396065); the November 14 date is repeated only in the HARMONi background</>:null};
      independently numbered current FDA cycle <strong>not verified</strong>
    </li>)}</ul>
    <p className={css.notice}>Source continuity is not a live FDA deadline guarantee. The nightly RAAS audit retains research-only dates and flags sources older than 30 days without treating the lack of a newer public filing as evidence of no extension.</p>

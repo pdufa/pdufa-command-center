@@ -557,8 +557,8 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
         "2026-01","2026-02-24","2026-05-05","SUBMISSION_PUBLIC_DISCLOSURE"),
       "SMMT|IVONESCIMAB_20261114":(
         "SMMT","Summit Therapeutics","ORIGINAL_BLA_REPORTED","HARMONi",
-        "2026-09-15","SEC_8K_EXHIBIT_99_1",
-        "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000081/a2026_prx0915xharmoniltf.htm",
+        "2026-10-21","ISSUER_PRESS_RELEASE_BACKGROUND_HARMONI_GOAL",
+        "https://smmttx.com/news/press-releases/news-details/2026/Summit-Therapeutics-and-ECOG-ACRIN-Cancer-Research-Group-Enter-into-Phase-II--III-Clinical-Trial-Collaboration-to-Evaluate-Ivonescimab-in-First-Line-Biliary-Tract-Cancer/default.aspx",
         "2025-Q4","2026-01-29","2026-01-29","FDA_ACCEPTANCE_PUBLIC_DISCLOSURE"),
     }
     legacy={x["fda_regulatory_case_id"]:x for x in old_rows
@@ -592,8 +592,11 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
             row["firstSelectedIssuerPublicApplicationUpdateUrl"].startswith("https://") and
             isinstance(row.get("nov14ReviewGoalSourceFirstLocatedUrl"),str) and
             row["nov14ReviewGoalSourceFirstLocatedUrl"].startswith("https://") and
-            isinstance(row.get("issuerPublicFilingIndexUrl"),str) and
-            row["issuerPublicFilingIndexUrl"].startswith("https://www.sec.gov/") and
+            ((
+                ticker=="CYTK" and
+                isinstance(row.get("issuerPublicFilingIndexUrl"),str) and
+                row["issuerPublicFilingIndexUrl"].startswith("https://www.sec.gov/")
+             ) or (ticker=="SMMT" and row.get("issuerPublicFilingIndexUrl") is None)) and
             public_submission<=published and public_goal<=published and
             published<audit.day("2026-11-14"),
             "NOV14_ISSUER_GOAL_SUBMISSION_SOURCE_OR_TIMELINE_MISMATCH")
@@ -609,8 +612,17 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
             assert_safe(row.get("issuerReportPeriodEndDate") is None and
                 row.get("fdaParentNdaKnown") is None and
                 row.get("pendingBlaNumberVerified") is False and
-                update_kind=="FDA_ACCEPTANCE_PUBLIC_DISCLOSURE",
-                "SMMT_BLA_OR_REPORT_PERIOD_UNVERIFIED")
+                update_kind=="FDA_ACCEPTANCE_PUBLIC_DISCLOSURE" and
+                row.get("previousDatedHarmoniGoalSourceDate")=="2026-09-15" and
+                row.get("previousDatedHarmoniGoalSourceUrl")==
+                    "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000081/a2026_prx0915xharmoniltf.htm" and
+                audit.day(row["previousDatedHarmoniGoalSourceDate"])<published and
+                row.get("sourceMainSubject")=="EA2251_BILIARY_TRACT_CANCER_NOT_HARMONI" and
+                row.get("sourceMainSubjectClinicalTrialId")=="NCT07765433" and
+                row.get("pendingBlaPivotalTrialId")=="NCT06396065" and
+                row.get("sourceMainSubjectIsPendingHarmoniBlaStudy") is False and
+                row.get("harmoniNov14PdufaGoalExplicitlyRepeatedInBackground") is True,
+                "SMMT_NEW_TRIAL_MUST_NOT_BE_CONFUSED_WITH_HARMONI_BLA")
         assert_safe(
             row.get("originalNov14GoalStillListedByIssuerAtSourceDate") is True and
             all(row.get(k) is False for k in (
@@ -634,6 +646,12 @@ def validate_nov14_issuer_goal_continuity(doc, old_rows, as_of):
                 days_since is not None and days_since>30,
             "issuerSourceClockIsActualSubmissionDate":False,
             "issuerReportedActualSubmissionPeriod":submonth,
+            "laterIssuerReportMainSubjectIsDifferentTrial":ticker=="SMMT",
+            "laterIssuerReportSeparateTrialId":(
+                "NCT07765433" if ticker=="SMMT" and public_by_asof else None),
+            "pendingRegulatoryApplicationPivotalTrialId":(
+                "NCT06396065" if ticker=="SMMT" and public_by_asof else
+                "NCT05767346" if ticker=="CYTK" and public_by_asof else None),
             "firstSelectedPublicApplicationUpdateDate":announcement,
             "firstSelectedPublicApplicationUpdateType":update_kind,
             "currentFDAApplicationNumberIndependentlyVerified":False,
@@ -868,6 +886,8 @@ def execute(asof=ASOF, data=DATA):
         entry["issuerGoalReiterationOlderThan30Days"]=False
         entry["issuerActualOriginalSubmissionPeriodNotPressDate"]=None
         entry["issuerGoalReiterationConfirmsNoLaterFDAExtension"]=False
+        entry["issuerGoalReiterationIsBackgroundInDifferentTrialAnnouncement"]=False
+        entry["issuerGoalReiterationMainSubjectTrialId"]=None
         if row is None:
             continue
         assert_safe(entry["issuerSourceFound"] is True and
@@ -885,6 +905,12 @@ def execute(asof=ASOF, data=DATA):
             row["issuerGoalEvidenceOlderThan30DaysAtAudit"])
         entry["issuerActualOriginalSubmissionPeriodNotPressDate"]=(
             row["issuerReportedActualSubmissionPeriod"] if
+            row["sourceIsPublicByAuditAsOf"] else None)
+        entry["issuerGoalReiterationIsBackgroundInDifferentTrialAnnouncement"]=(
+            row["laterIssuerReportMainSubjectIsDifferentTrial"] if
+            row["sourceIsPublicByAuditAsOf"] else False)
+        entry["issuerGoalReiterationMainSubjectTrialId"]=(
+            row["laterIssuerReportSeparateTrialId"] if
             row["sourceIsPublicByAuditAsOf"] else None)
     report["nov14DatedIssuerGoalContinuityChecks"]=continuity
     report["nov14DatedIssuerSourcesPublicByAsOfCount"]=sum(
@@ -953,6 +979,8 @@ def export(report, json_out, csv_out):
           "issuerGoalReiterationOlderThan30Days",
           "issuerActualOriginalSubmissionPeriodNotPressDate",
           "issuerGoalReiterationConfirmsNoLaterFDAExtension",
+          "issuerGoalReiterationIsBackgroundInDifferentTrialAnnouncement",
+          "issuerGoalReiterationMainSubjectTrialId",
           "independentlyVerifiedApplicationCycle"]
     with path.open("w",encoding="utf-8",newline="") as f:
         w=csv.DictWriter(f,fieldnames=keys,extrasaction="ignore")

@@ -30,14 +30,18 @@ class Nov14IssuerContinuityTests(unittest.TestCase):
         self.assertEqual(by["CYTK"]["issuerReportedActualSubmissionPeriod"],"2026-01")
         self.assertEqual(by["CYTK"]["firstSelectedPublicApplicationUpdateDate"],"2026-02-24")
         self.assertFalse(by["CYTK"]["issuerSourceClockIsActualSubmissionDate"])
-        self.assertEqual(by["SMMT"]["issuerContinuityDocumentDate"],"2026-09-15")
+        self.assertEqual(by["SMMT"]["issuerContinuityDocumentDate"],"2026-10-21")
         self.assertEqual(by["CYTK"]["firstSelectedPublicApplicationUpdateType"],"SUBMISSION_PUBLIC_DISCLOSURE")
         self.assertEqual(by["SMMT"]["firstSelectedPublicApplicationUpdateType"],"FDA_ACCEPTANCE_PUBLIC_DISCLOSURE")
         self.assertEqual(by["SMMT"]["issuerReportedActualSubmissionPeriod"],"2025-Q4")
         self.assertTrue(all(x["sourceIsPublicByAuditAsOf"] for x in rows))
         self.assertTrue(all(x["documentAtItsDateRepeatsNov14Goal"] for x in rows))
-        self.assertTrue(all(x["issuerGoalEvidenceOlderThan30DaysAtAudit"] for x in rows))
-        self.assertTrue(all(x["daysSinceIssuerGoalReiteration"]>30 for x in rows))
+        self.assertTrue(by["CYTK"]["issuerGoalEvidenceOlderThan30DaysAtAudit"])
+        self.assertFalse(by["SMMT"]["issuerGoalEvidenceOlderThan30DaysAtAudit"])
+        self.assertTrue(by["SMMT"]["laterIssuerReportMainSubjectIsDifferentTrial"])
+        self.assertEqual(by["SMMT"]["laterIssuerReportSeparateTrialId"],"NCT07765433")
+        self.assertEqual(by["SMMT"]["pendingRegulatoryApplicationPivotalTrialId"],"NCT06396065")
+        self.assertEqual(by["SMMT"]["daysSinceIssuerGoalReiteration"],13)
         self.assertTrue(all(not x["currentlyIndependentlyCertifiedUnrevisedFdaDeadline"]
                            and not x["currentFDAApplicationNumberIndependentlyVerified"]
                            and not x["prospectivelyFrozenThreeWayForecast"] for x in rows))
@@ -56,13 +60,16 @@ class Nov14IssuerContinuityTests(unittest.TestCase):
         self.assertFalse(by["SMMT"]["sourceIsPublicByAuditAsOf"])
         by={x["ticker"]:x for x in v2.validate_nov14_issuer_goal_continuity(
             data,legacy,"2026-09-16T12:00:00Z")}
+        self.assertFalse(by["SMMT"]["sourceIsPublicByAuditAsOf"])
+        by={x["ticker"]:x for x in v2.validate_nov14_issuer_goal_continuity(
+            data,legacy,"2026-10-22T12:00:00Z")}
         self.assertTrue(by["SMMT"]["sourceIsPublicByAuditAsOf"])
 
     def test_nightly_report_exports_correct_clocks_and_blocks_forecasts(self):
         report=v2.execute(ASOF)
         self.assertEqual(len(report["nov14DatedIssuerGoalContinuityChecks"]),2)
         self.assertEqual(report["nov14DatedIssuerSourcesPublicByAsOfCount"],2)
-        self.assertEqual(report["nov14IssuerSourcesOlderThan30DaysCount"],2)
+        self.assertEqual(report["nov14IssuerSourcesOlderThan30DaysCount"],1)
         self.assertEqual(report["nov14IndependentlyCertifiedNoLaterFdaGoalRevisions"],0)
         self.assertEqual(report["readyForThreeWayProspectiveFreeze"],0)
         self.assertEqual(report["verifiedProspectiveForecasts"],0)
@@ -72,7 +79,11 @@ class Nov14IssuerContinuityTests(unittest.TestCase):
         self.assertEqual(cy["issuerActualOriginalSubmissionPeriodNotPressDate"],"2026-01")
         self.assertEqual(sm["issuerActualOriginalSubmissionPeriodNotPressDate"],"2025-Q4")
         self.assertEqual(cy["mostRecentLocatedIssuerGoalContinuityDocumentDate"],"2026-08-06")
-        self.assertEqual(sm["mostRecentLocatedIssuerGoalContinuityDocumentDate"],"2026-09-15")
+        self.assertEqual(sm["mostRecentLocatedIssuerGoalContinuityDocumentDate"],"2026-10-21")
+        self.assertFalse(sm["issuerGoalReiterationOlderThan30Days"])
+        self.assertTrue(cy["issuerGoalReiterationOlderThan30Days"])
+        self.assertTrue(sm["issuerGoalReiterationIsBackgroundInDifferentTrialAnnouncement"])
+        self.assertEqual(sm["issuerGoalReiterationMainSubjectTrialId"],"NCT07765433")
         self.assertFalse(cy["issuerGoalReiterationConfirmsNoLaterFDAExtension"])
         self.assertFalse(sm["issuerGoalReiterationConfirmsNoLaterFDAExtension"])
         self.assertFalse(cy["V2ForecastEligible"])
@@ -85,6 +96,8 @@ class Nov14IssuerContinuityTests(unittest.TestCase):
                 "issuerActualOriginalSubmissionPeriodNotPressDate"],"2026-01")
             self.assertEqual(csv_rows["SMMT|IVONESCIMAB_20261114"][
                 "issuerGoalReiterationConfirmsNoLaterFDAExtension"],"False")
+            self.assertEqual(csv_rows["SMMT|IVONESCIMAB_20261114"][
+                "issuerGoalReiterationMainSubjectTrialId"],"NCT07765433")
 
     def test_fake_later_goal_source_or_fda_confirmation_fails_closed(self):
         data,legacy=fixture()
@@ -95,6 +108,11 @@ class Nov14IssuerContinuityTests(unittest.TestCase):
             (0,"issuerPublicSourceUrl","https://invalid.test"),
             (0,"fdaParentNdaKnown","219084"),
             (1,"reportedGoalDate","2026-12-14"),
+            (1,"sourceMainSubjectIsPendingHarmoniBlaStudy",True),
+            (1,"sourceMainSubjectClinicalTrialId","NCT06396065"),
+            (1,"pendingBlaPivotalTrialId","NCT07765433"),
+            (1,"harmoniNov14PdufaGoalExplicitlyRepeatedInBackground",False),
+            (1,"previousDatedHarmoniGoalSourceDate","2026-11-02"),
             (1,"issuerPublicSourceDate","2026-11-20"),
             (1,"pendingBlaNumberVerified",True),
             (1,"firstSelectedIssuerPublicApplicationUpdateType","SUBMISSION_PUBLIC_DISCLOSURE"),
