@@ -76,7 +76,23 @@ async function finalSurveyTest(page,label){
     await sheet.waitFor({state:"visible",timeout:90000});
     await sheet.locator(":scope > details > summary").click();
     await sheet.getByRole("button",{name:/Trial rows/}).click();
-    const open=sheet.locator('button[aria-label^="Open SURVEY combined assessment for"]').first();
+    // Verify each stage's per-NCT control without asserting fabricated numbers.
+    const scoreHistory=sheet.locator("button[data-raas-trial-history-button]").first();
+    await scoreHistory.waitFor({state:"visible",timeout:60000});
+    const historyNct=await scoreHistory.getAttribute("data-raas-trial-history-button");
+    await scoreHistory.click();
+    const unified=page.getByRole("dialog",{name:/RAAS trial history across TOP and BOTTOM/});
+    await unified.waitFor({state:"visible",timeout:15000});
+    check((await unified.getAttribute("data-raas-unified-history"))===historyNct,
+      "History panel must belong to the selected exact trial");
+    check((await unified.innerText()).includes("No overall score yet")||
+      (await unified.innerText()).includes("Validated")||
+      (await unified.innerText()).includes("Provisional"),
+      "No uncalibrated overall score may be asserted");
+    await unified.getByRole("button",{name:"Close RAAS trial history"}).click();
+    await unified.waitFor({state:"hidden",timeout:15000});
+    const open=sheet.locator('button[aria-label^="Open '+
+      (bucket==="pre"?"TOP":"BOTTOM")+' SURVEY combined assessment"]').first();
     await open.waitFor({state:"visible",timeout:60000});
     await open.click();
     const dialog=page.getByRole("dialog",{name:/SURVEY synthesis for/});
