@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {chartStudiesForWtChecks,WT_CHART_NAMES,type WtChartStudy} from "../lib/wt-chart-indicator-map";
 type Bar={date:string;open:number;high:number;low:number;close:number;volume:number};
+export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source:string;planned?:boolean};
 type Market={provider:string;programId:string;ticker:string;feed:string;coverage:string;status:string;bars:Bar[];asOf:string|null;message:string;researchOnly:boolean};
 type Range="1M"|"3M"|"6M"|"1Y"|"ALL";
 type ChartSeries=WtChartStudy|"ema10"|"ema20"|"ema50"|"macd";
@@ -34,7 +35,7 @@ function compute(raw:Bar[]):Enhanced[]{
    macd:i>=26?macd:null,signal:i>=34?sign:null,atr:i>=13?atr:null};
  });
 }
-export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>}){
+export function StockPlot({bars,large,candle,visibleStudies,milestones=[]}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>;milestones?:readonly FdaMilestone[]}){
  const [hover,setHover]=useState<number|null>(null);
  // Reserve an inner right gutter for labels attached to the actual plotted lines.
  // A dedicated internal gutter keeps SVG labels visible even with clipping.
@@ -49,7 +50,14 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
  const H=volBottom+panels.length*88+25;
  const span=W-L-R,min=Math.min(...bars.map(b=>b.low)),max=Math.max(...bars.map(b=>b.high));
  const padding=Math.max((max-min)*.08,0.001),lo=min-padding,hi=max+padding;
- const x=(i:number)=>L+(i+.5)/bars.length*span;
+ // Reserve proportional calendar space for future FDA deadlines (no invented future prices).
+ const timestamp=(date:string)=>Date.parse(date+"T00:00:00Z");
+ const firstDate=timestamp(bars[0].date),lastPriceDate=timestamp(bars[bars.length-1].date);
+ const visibleMilestones=milestones.filter(m=>/^\d{4}-\d{2}-\d{2}$/.test(m.date)&&timestamp(m.date)>=firstDate&&Number.isFinite(timestamp(m.date)));
+ const chartEnd=Math.max(lastPriceDate,...visibleMilestones.map(m=>timestamp(m.date)));
+ const dateSpan=Math.max(86400000,chartEnd-firstDate);
+ const xDate=(date:string)=>L+(timestamp(date)-firstDate)/dateSpan*span;
+ const x=(i:number)=>xDate(bars[i].date);
  const y=(v:number)=>T+(hi-v)/(hi-lo)*(B-T);
  const barWidth=Math.max(.8,Math.min(10,(span/bars.length)*.7));
  const maxVol=Math.max(1,...bars.map(b=>b.volume));
@@ -136,6 +144,20 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
      <line x1={L} x2={W-R} y1={y(rangeHigh)} y2={y(rangeHigh)} stroke="#aa4f9c" strokeDasharray="5 3" strokeWidth="1.5"/>
      <line x1={L} x2={W-R} y1={y(rangeLow)} y2={y(rangeLow)} stroke="#257d76" strokeDasharray="5 3" strokeWidth="1.5"/>
     </>}
+   {visibleMilestones.map((event,i)=>{
+     const px=xDate(event.date),nearRight=px>W-R-100;
+     const ink=event.planned?"#b66a08":"#6846a8";
+     return <g key={event.date+"|"+event.chartLabel}>
+       <line x1={px} x2={px} y1={T} y2={B}
+         stroke={ink} strokeWidth="1.7" strokeDasharray={event.planned?"6 3":"3 3"} opacity=".95"/>
+       <circle cx={px} cy={T+5} r="4" fill={ink} stroke="white" strokeWidth="1"/>
+       <text x={px+(nearRight?-5:5)} y={T+19+(i%3)*13} textAnchor={nearRight?"end":"start"}
+         fontSize="10" fontWeight="750" fill={ink} stroke="white" strokeWidth="3" paintOrder="stroke">
+         {event.chartLabel}
+       </text>
+       <title>{event.date+" · "+event.label+" · "+event.detail}</title>
+     </g>;
+   })}
    {finalLabels.map(({name,color,value,fromY,at})=><g key={"name-"+name}
       aria-label={name+" "+fixed(value)}>
       <path d={"M"+endpoint+","+fromY+" L"+(labelStart-5)+","+at}
@@ -194,9 +216,10 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
   </div>
   {target&&<div className="alpaca-plot-tooltip">{target.date} | O {fixed(target.open)} H {fixed(target.high)} L {fixed(target.low)} C {fixed(target.close)} · Vol {short(target.volume)}</div>}</div>;
 }
-export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys}:{programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[]}){
+export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys,milestones=[]}:{programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[];milestones?:readonly FdaMilestone[]}){
  const [range,setRange]=useState<Range>("6M"),[state,setState]=useState<Market|null>(null);
  const [error,setError]=useState(""),[expanded,setExpanded]=useState(!compact);
+ const [showMilestones,setShowMilestones]=useState(true);
  const [candle,setCandle]=useState(!compact),[studies,setStudies]=useState(true);
  const [visible,setVisible]=useState(false),surface=useRef<HTMLDivElement>(null);
  const wtControlled=wtIndicatorKeys!==undefined;
@@ -234,18 +257,30 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
     {compact&&<button type="button" onClick={()=>setExpanded(v=>!v)}>{expanded?"HIDE FULL CHART":"FULL CHART"}</button>}
     <button type="button" onClick={()=>setCandle(v=>!v)}>{candle?"LINE":"CANDLES"}</button>
     {!wtControlled&&<button type="button" onClick={()=>setStudies(v=>!v)}>{studies?"HIDE STUDIES":"SHOW STUDIES"}</button>}
+    {milestones.length>0&&<button type="button" onClick={()=>setShowMilestones(v=>!v)} aria-pressed={showMilestones}>{showMilestones?"HIDE FDA":"SHOW FDA"}</button>}
    </div></header>
   {wtControlled&&<div className="alpaca-wt-indicator-status" role="status">WT checkbox chart controls · {visibleStudies.size?([...visibleStudies].map(key=>key in WT_CHART_NAMES?WT_CHART_NAMES[key as WtChartStudy]:key).join(" · ")):"No studies selected — price chart only"} · Research only</div>}
   <div className="alpaca-range">{ranges.map(r=><button key={r} type="button" className={range===r?"active":""}
     aria-pressed={range===r} onClick={()=>setRange(r)}>{r}</button>)}
     <span>{latest?"Last Alpaca session "+latest.date+" | Close $"+fixed(latest.close):"Alpaca source awaiting verification"}</span></div>
   {state?.status==="OK"&&visibleBars.length?
-    <><StockPlot bars={visibleBars} large={expanded} candle={candle} visibleStudies={visibleStudies}/>
+    <><StockPlot bars={visibleBars} large={expanded} candle={candle} visibleStudies={visibleStudies} milestones={showMilestones?milestones:[]}/>
      {expanded&&visibleReadouts.length>0&&<div className="alpaca-values">{visibleReadouts.map(([key,label,value])=>
        <span key={key}>{label}: {fixed(value,2)}</span>)}</div>}
     </>:
     <div className="alpaca-missing" role="status"><strong>ALPACA · {error?"ERROR":state?.status||"LOADING"}</strong>
      <p>{error||state?.message||"Requesting market bars from Alpaca. No TradingView, Yahoo or synthetic fallback."}</p></div>}
+  {showMilestones&&milestones.length>0&&<div style={{padding:"12px",borderTop:"1px solid #cadde8",background:"#faf8fe"}}>
+    <strong>FDA &amp; clinical event markers · source verified</strong>
+    <p style={{fontSize:11,margin:"5px 0 8px"}}>Purple: historical event or disclosure. Amber dashed: future PDUFA target, not an approval prediction. Events outside the selected price range remain listed below.</p>
+    <ul style={{margin:"0",paddingLeft:18,fontSize:12,lineHeight:1.6}}>
+      {milestones.map(m=><li key={m.date+"|"+m.label}>
+        <strong>{m.date}</strong> · <a href={m.source} target="_blank" rel="noopener noreferrer">{m.label}</a>
+        {m.planned?" · Scheduled target":""}
+        <div style={{color:"#5b6473",fontSize:11}}>{m.detail}</div>
+      </li>)}
+    </ul>
+  </div>}
   <footer className="alpaca-footer"><strong>Provider: Alpaca Market Data {state?.feed||""}</strong>
     <span>{state?.feed==="IEX"?"IEX only; price/volume are not consolidated SIP.":state?.coverage||"Strict Alpaca source"}</span>
     <span>Raw daily OHLCV · research only · no broker orders</span></footer>
