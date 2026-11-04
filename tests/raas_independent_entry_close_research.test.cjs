@@ -38,6 +38,15 @@ test("historical third-party GERN closing-price source corroborates only NOMINAL
  assert.equal(gern.eligibleForValidatedRaasTradingCase,false);
  assert.equal(gern.approvedRaasScore,null);
 });
+test("a recorded outside quote remains research evidence if Alpaca session was never fetched",()=>{
+ const c=cases();c.rows[0].proposedEntrySession=null;c.rows[0].rawCloseAlpaca=null;
+ const r=audit(c,ledger);
+ assert.equal(r.secondSourcePriceLeads,1);
+ assert.equal(r.matchingIndependentNominalCloses,0);
+ assert.equal(r.rows[0].status,"ALPACA_ENTRY_SESSION_UNAVAILABLE");
+ assert.equal(r.rows[0].differenceUsd,null);
+ assert.equal(r.approvedRaasScores,0);
+});
 test("a second-source disagreement is retained as mismatch not assigned success",()=>{
  const d=clone(ledger);d.observations[0].nominalCloseUsd=1.91;
  const r=audit(cases(),d);
