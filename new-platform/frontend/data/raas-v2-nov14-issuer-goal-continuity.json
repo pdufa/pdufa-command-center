@@ -22,8 +22,6 @@
       "issuerPublicSourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm",
       "issuerPublicFilingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/0001193125-26-338217-index.htm",
       "issuerReportedActualApplicationSubmissionMonth": "2026-01",
-      "firstSelectedIssuerPublicSubmissionAnnouncementDate": "2026-02-24",
-      "firstSelectedIssuerPublicSubmissionAnnouncementUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-Fourth-Quarter-2025-Financial-Results-and-Provides-Business-Update/default.aspx",
       "nov14ReviewGoalSourceFirstLocatedAt": "2026-05-05",
       "nov14ReviewGoalSourceFirstLocatedUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526206360/cytk-ex99_1.htm",
       "fdaParentNdaKnown": "219083",
@@ -33,7 +31,10 @@
       "fullDatedFDAActionCycleIndependentlyEstablished": false,
       "immutablePredecisionThreeWayForecastMade": false,
       "strictMarketCapPipelineQualificationEstablished": false,
-      "notes": "SEC Q2 10-Q filed August 6 states the MAPLE-HCM label sNDA was SUBMITTED in January 2026 and accepted, with standard review and November 14 FDA goal. February 24 is when this submission was publicly reported in a selected press release, not the actual January submission date. Prior FDA S-001 REMS approval is unrelated. No current supplement number or FDA confirmation of unrevised goal is identified."
+      "notes": "SEC Q2 10-Q filed August 6 states the MAPLE-HCM label sNDA was SUBMITTED in January 2026 and accepted, with standard review and November 14 FDA goal. February 24 is when this submission was publicly reported in a selected press release, not the actual January submission date. Prior FDA S-001 REMS approval is unrelated. No current supplement number or FDA confirmation of unrevised goal is identified.",
+      "firstSelectedIssuerPublicApplicationUpdateDate": "2026-02-24",
+      "firstSelectedIssuerPublicApplicationUpdateUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-Fourth-Quarter-2025-Financial-Results-and-Provides-Business-Update/default.aspx",
+      "firstSelectedIssuerPublicApplicationUpdateType": "SUBMISSION_PUBLIC_DISCLOSURE"
     },
     {
       "researchCaseKey": "SMMT|IVONESCIMAB_20261114",
@@ -49,8 +50,6 @@
       "issuerPublicSourceUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000081/a2026_prx0915xharmoniltf.htm",
       "issuerPublicFilingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000081/0001599298-26-000081-index.html",
       "issuerReportedActualApplicationSubmissionMonth": "2025-Q4",
-      "firstSelectedIssuerPublicSubmissionAnnouncementDate": "2026-01-29",
-      "firstSelectedIssuerPublicSubmissionAnnouncementUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000006/smmt-20260129.htm",
       "nov14ReviewGoalSourceFirstLocatedAt": "2026-01-29",
       "nov14ReviewGoalSourceFirstLocatedUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000006/smmt-20260129.htm",
       "fdaParentNdaKnown": null,
@@ -60,7 +59,10 @@
       "fullDatedFDAActionCycleIndependentlyEstablished": false,
       "immutablePredecisionThreeWayForecastMade": false,
       "strictMarketCapPipelineQualificationEstablished": false,
-      "notes": "Summit's Sept 15, 2026 HARMONi follow-up SEC exhibit still identifies Nov 14 BLA PDUFA target. Q2 10-Q says the original BLA was submitted in Q4 2025 and formally accepted January 2026; later OS trend is evidence, not automatic PASS, CRL, or extension. No independently published numbered current BLA, guarantee that no later extension occurred, or FDA adjudication."
+      "notes": "Summit's Sept 15, 2026 HARMONi follow-up SEC exhibit still identifies Nov 14 BLA PDUFA target. Q2 10-Q says the original BLA was submitted in Q4 2025 and accepted January 2026; the January 29 release publicly announced FDA BLA acceptance, not the original Q4 2025 submission; later OS trend is evidence, not automatic PASS, CRL, or extension. No independently published numbered current BLA, guarantee that no later extension occurred, or FDA adjudication.",
+      "firstSelectedIssuerPublicApplicationUpdateDate": "2026-01-29",
+      "firstSelectedIssuerPublicApplicationUpdateUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000006/smmt-20260129.htm",
+      "firstSelectedIssuerPublicApplicationUpdateType": "FDA_ACCEPTANCE_PUBLIC_DISCLOSURE"
     }
   ],
   "warnings": [
