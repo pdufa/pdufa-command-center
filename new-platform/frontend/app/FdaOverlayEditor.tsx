@@ -9,8 +9,10 @@ type CustomMarker = {
 type VerifiedDisplayOverride = {
   id:string; date:string; label:string; chartLabel:string; color:string; visible:boolean;
 };
+type FdaCategory = { id:string; title:string; mode:string };
 type OverlayResponse = {
   programId:string; markers:CustomMarker[]; verifiedOverrides:VerifiedDisplayOverride[];
+  enabledCategories:string[];
   version:number; updatedAt?:string|null;
 };
 const COLORS = [
@@ -32,13 +34,15 @@ const newMarker=():CustomMarker=>({
 });
 
 export default function FdaOverlayEditor({
-  programId,ticker,verifiedEvents
+  programId,ticker,verifiedEvents,categories=[]
 }:{
   programId:string;ticker:string;verifiedEvents:readonly FdaMilestone[];
+  categories?:readonly FdaCategory[];
 }) {
   const [open,setOpen]=useState(false);
   const [markers,setMarkers]=useState<CustomMarker[]>([]);
   const [verifiedOverrides,setVerifiedOverrides]=useState<VerifiedDisplayOverride[]>([]);
+  const [enabledCategories,setEnabledCategories]=useState<string[]>(categories.map(c=>c.id));
   const [version,setVersion]=useState<number|null>(null);
   const [status,setStatus]=useState("Loading saved annotations…");
   const [loading,setLoading]=useState(true);
@@ -56,11 +60,13 @@ export default function FdaOverlayEditor({
         "Cannot load saved markers (HTTP "+response.status+").");
       const data:OverlayResponse=await response.json();
       if(data.programId!==programId||!Number.isSafeInteger(data.version)||
-        !Array.isArray(data.markers)||!Array.isArray(data.verifiedOverrides))
-        throw Error("Saved markers do not match this exact Program ID or are on an older backend.");
+        !Array.isArray(data.markers)||!Array.isArray(data.verifiedOverrides)||
+        !Array.isArray(data.enabledCategories))
+        throw Error("Saved overlay categories or marker data do not match this program. Refresh the page.");
       if(signal?.aborted)return;
       setMarkers(data.markers);
       setVerifiedOverrides(data.verifiedOverrides);
+      setEnabledCategories(data.enabledCategories.filter((c:string)=>categories.some(k=>k.id===c)));
       setVersion(data.version);
       setLastSaved(data.updatedAt||null);
       setStatus("FDA display edits and custom annotations loaded from persistent program storage.");
@@ -70,7 +76,7 @@ export default function FdaOverlayEditor({
       setStatus(e instanceof Error?e.message:"Annotation storage unavailable.");
       setVersion(null);
     }finally{if(!signal?.aborted)setLoading(false);}
-  },[endpoint,programId]);
+  },[endpoint,programId,categories]);
 
   useEffect(()=>{
     const ctrl=new AbortController();
@@ -99,14 +105,15 @@ export default function FdaOverlayEditor({
     setDirty(true);
   };
   const combined=useMemo<FdaMilestone[]>(()=>[
-    ...verifiedEvents.map(event=>{
+    ...verifiedEvents.filter(event=>!event.category||enabledCategories.includes(event.category))
+      .map(event=>{
       const override=verifiedOverrides.find(o=>o.id===event.id);
       return override?{
         ...event,...override,edited:true,originalDate:event.date,custom:false,
       }:{...event,visible:true};
     }),
     ...markers.map(m=>({...m,custom:true,source:undefined}))
-  ],[verifiedEvents,verifiedOverrides,markers]);
+  ],[verifiedEvents,verifiedOverrides,markers,enabledCategories]);
 
   const edit=(id:string,field:keyof CustomMarker,value:string)=>{
     if(field==="id")return;
@@ -132,7 +139,7 @@ export default function FdaOverlayEditor({
     try{
       const response=await fetch(endpoint,{
         method:"PUT",headers:{"content-type":"application/json"},
-        body:JSON.stringify({version,markers,verifiedOverrides}),cache:"no-store",
+        body:JSON.stringify({version,markers,verifiedOverrides,enabledCategories}),cache:"no-store",
       });
       const data=await response.json().catch(()=>({}));
       if(!response.ok)throw Error(response.status===409?
@@ -152,6 +159,11 @@ export default function FdaOverlayEditor({
     borderRadius:6,padding:"8px 9px",fontSize:14,minHeight:40,width:"100%",boxSizing:"border-box"};
   const action:React.CSSProperties={padding:"9px 12px",border:"1px solid #8a99a9",
     background:"#f8fbfd",color:"#163650",borderRadius:6,fontSize:13,fontWeight:700};
+  const toggleCategory=(id:string,enabled:boolean)=>{
+    setEnabledCategories(before=>
+      enabled?[...before.filter(x=>x!==id),id]:before.filter(x=>x!==id));
+    setDirty(true);
+  };
 
   return <section aria-label="Alpaca chart with editable FDA overlays">
     <AlpacaStockChart ticker={ticker} programId={programId} milestones={combined}
@@ -169,6 +181,41 @@ export default function FdaOverlayEditor({
           The verified original FDA date and source link are always preserved below. Edited dates are user adjustments, not new official FDA announcements.
           Change a date field or drag a visible event line on the chart. Click SAVE OVERLAY to persist your changes.
         </p>
+        <details open style={{padding:12,marginBottom:14,border:"1px solid #b6cbd6",borderRadius:8,background:"#fff"}}>
+          <summary style={{fontSize:14,fontWeight:750,cursor:"pointer"}}>
+            CHOOSE FDA EVENT CATEGORIES ({enabledCategories.length} of {categories.length} selected)
+          </summary>
+          <p style={{fontSize:12,color:"#445569",margin:"10px 0"}}>
+            Checked categories display any verified matching dates automatically. Unchecked categories remain
+            monitored and retained in history but are hidden from your chart. Categories marked
+            “Source needed” cannot auto-populate until an authoritative source is connected.
+            Individual source-linked events can also be hidden below.
+          </p>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
+            <button type="button" style={action} disabled={version===null}
+              onClick={()=>{setEnabledCategories(categories.map(c=>c.id));setDirty(true);}}>
+              SELECT ALL
+            </button>
+            <button type="button" style={action} disabled={version===null}
+              onClick={()=>{setEnabledCategories([]);setDirty(true);}}>
+              CLEAR ALL
+            </button>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:8}}>
+            {categories.map(item=><label key={item.id}
+              style={{display:"flex",alignItems:"flex-start",gap:9,padding:10,border:"1px solid #d5e0ea",borderRadius:7,fontSize:13}}>
+              <input type="checkbox" disabled={version===null}
+                checked={enabledCategories.includes(item.id)}
+                onChange={ev=>toggleCategory(item.id,ev.target.checked)}
+                style={{width:18,height:18,marginTop:2,flexShrink:0}} />
+              <span><strong>{item.title}</strong>
+                <small style={{display:"block",color:"#657487",marginTop:3}}>
+                  {item.mode==="official_drugsfda"?"Automatic FDA submission feed":"Source needed before auto-markers"}
+                </small>
+              </span>
+            </label>)}
+          </div>
+        </details>
         <div style={{display:"flex",gap:9,flexWrap:"wrap",alignItems:"center",marginBottom:12}}>
           <button type="button" style={action} disabled={version===null||markers.length>=40}
             onClick={()=>{setMarkers(a=>[...a,newMarker()]);setDirty(true);}}>+ ADD CUSTOM MARKER</button>
