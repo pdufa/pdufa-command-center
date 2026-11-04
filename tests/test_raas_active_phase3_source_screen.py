@@ -114,6 +114,21 @@ class ActiveScreenTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "RAAS_ACTIVE_ROSTER_IDENTITY"):
             mod.build(index(x), roster(x), cs, reviews())
 
+    def test_newer_live_registry_status_overrides_old_roster_but_discloses_drift(self):
+        old = [trial("NCT00000001", "AAA", active="COMPLETED")]
+        now = [trial("NCT00000001", "AAA", active="RECRUITING")]
+        quotes = caps([("AAA", 500_000_000, "2026-11-04T04:00:00+00:00")])
+        rows, status = mod.build(index(now), roster(old), quotes, reviews())
+        self.assertTrue(rows[0]["sourceActivePhase3CapScreen"])
+        self.assertEqual(rows[0]["rosterOriginallyRecordedStatus"], "COMPLETED")
+        self.assertEqual(rows[0]["registryResearchStatus"], "RECRUITING")
+        self.assertTrue(rows[0]["registrySourceStatusChanged"])
+        self.assertIn("ORIGINAL_ROSTER_STATUS_DIFFERS_FROM_CURRENT_REGISTRY",
+                      rows[0]["missingSourceChecks"])
+        self.assertEqual(status["registryStatusChangesSinceOriginalRoster"], 1)
+        self.assertEqual(status["historicalRosterActiveTrialCount"], 0)
+        self.assertEqual(status["registryActiveTrials"], 1)
+
     def test_missing_cap_never_implies_under_300m_and_future_quote_not_fresh(self):
         rows = [trial("NCT00000001", "AAA")]
         out, _ = mod.build(index(rows), roster(rows), caps([]), reviews())
