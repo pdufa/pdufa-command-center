@@ -75,6 +75,7 @@ export function screenProvisionalAnchor(
  if(!rule)return {accepted:false,reason:"RULE_NOT_FOUND"};
  const same=(a:string,b:string)=>a.trim().toLowerCase()===b.trim().toLowerCase();
  const date=(s:string)=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&
+  Number.isFinite(Date.parse(s+"T00:00:00Z"))&&
   new Date(s+"T00:00:00Z").toISOString().slice(0,10)===s;
  const url=(s:string)=>/^https:\/\/[^\s/@:?#]+\/[^\s]+$/.test(s)&&!s.includes("@");
  if(!/^NCT\d{8}$/.test(entry.nctId)||entry.nctId!==trial.nctId||
