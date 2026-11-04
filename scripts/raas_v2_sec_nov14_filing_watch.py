@@ -162,6 +162,12 @@ def inspect_watch(payloads,statuses,details,checked_at,dossier=None):
         "checkedAtUTC":checked_at,
         "monitoredIssuerFamilies":2,
         "sourceAvailableCount":sum(r["sourceStatus"]=="AVAILABLE" for r in rows),
+        "sourceCoverageStatus":(
+            "TWO_ISSUER_SOURCES_AVAILABLE"
+            if all(r["sourceStatus"]=="AVAILABLE" for r in rows)
+            else "PARTIAL_ISSUER_SOURCE_ACCESS"
+            if any(r["sourceStatus"]=="AVAILABLE" for r in rows)
+            else "ISSUER_SOURCES_UNAVAILABLE_NOT_ZERO_NEW_FILINGS"),
         "issuerFamiliesWithNewerFilings":sum(
             r["newerRelevantFormFilingCount"]>0 for r in rows),
         "potentialNewFilingReviewCandidates":sum(
@@ -183,7 +189,7 @@ def fetch_company(ticker):
     require(ticker in CASES,"UNKNOWN_CIK_FETCH")
     cik=CASES[ticker][0]
     url="https://data.sec.gov/submissions/CIK"+cik+".json"
-    agent=os.environ.get("RAAS_SEC_USER_AGENT",CONTACT_AGENT).strip()
+    agent=(os.environ.get("RAAS_SEC_USER_AGENT") or CONTACT_AGENT).strip()
     require(len(agent)>=15 and len(agent)<=350,"BAD_SEC_USER_AGENT")
     req=urllib.request.Request(url,headers={
         "User-Agent":agent,"Accept":"application/json"})
@@ -214,7 +220,7 @@ def main():
     out.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n",
                    encoding="utf-8")
     print(json.dumps({k:report[k] for k in (
-        "checkedAtUTC","sourceAvailableCount",
+        "checkedAtUTC","sourceAvailableCount","sourceCoverageStatus",
         "issuerFamiliesWithNewerFilings",
         "potentialNewFilingReviewCandidates",
         "newThreeWayForecastsFromFilings")},sort_keys=True))
