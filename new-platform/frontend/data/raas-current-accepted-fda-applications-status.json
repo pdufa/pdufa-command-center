@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_THREE_SOURCE_VERIFIED_COGT_FDA_TARGETS_ONE_PHASE3_QUALIFIER",
+  "sourceAsOf": "2026-11-04",
+  "generatedAsOf": "2026-11-04",
+  "uniquePublicIssuers": 1,
+  "acceptedNdaApplications": 3,
+  "minimumPhase3EligibleApplications": 1,
+  "phase2RegistrationApplicationsExcluded": 2,
+  "currentCapVerifiedEligiblePhase3Applications": 1,
+  "issuedBeforeTargetDates": 3,
+  "aiSourceReviewedPhase3MetricRecords": 5,
+  "independentReviewed30MetricScores": 0,
+  "validatedFdaPassCrlExtensionPredictions": 0,
+  "verifiedFdaOutcomes": 0,
+  "fdaApplicationTargets": [
+    {
+      "applicationKey": "COGT-BEZUCLASTINIB-GIST-2026",
+      "pdufaTargetDate": "2026-11-30",
+      "minimumPhase3Eligible": true
+    },
+    {
+      "applicationKey": "COGT-BEZUCLASTINIB-NONADVSM-2026",
+      "pdufaTargetDate": "2026-12-30",
+      "minimumPhase3Eligible": false
+    },
+    {
+      "applicationKey": "COGT-BEZUCLASTINIB-ADVSM-2027",
+      "pdufaTargetDate": "2027-06-29",
+      "minimumPhase3Eligible": false
+    }
+  ],
+  "warning": "Application-level sources are sponsor acceptance statements, not original FDA letters. One COGT ticker, three separate NDAs; only Phase3 GIST matches strict user Pipeline phase restriction. Two Phase2 pivotal cases are reference-only. A PDUFA TARGET is not a guaranteed decision date. No FDA outcome or model probability is inferred. After source-date, reverify FDA actions and issuer market cap."
+}
