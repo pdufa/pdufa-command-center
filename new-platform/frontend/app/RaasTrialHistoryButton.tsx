@@ -27,7 +27,7 @@ export default function RaasTrialHistoryButton({row,bucket}:{
  const score=bucket?currentHistoryScore(history,bucket):null;
  const provisional=bucket?provisionalScoresForTrial({nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication},bucket):null;
- const researchTiming=provisional?.scoredMetrics.find(g=>g.metricId==="pre-4-1")??null;
+ const researchGrades=provisional?.scoredMetrics??[];
  const stageEntries=history.filter(e=>e.stage===bucket);
  const lastForStage=stageEntries.at(-1);
  const earlierStageEntries=history.filter(e=>e.stage!==bucket);
@@ -51,7 +51,7 @@ export default function RaasTrialHistoryButton({row,bucket}:{
    onClick={()=>{setSelected(0);setOpen(true);}}>
    <strong>{score?score.score+"/100":"—/100"}</strong>
    <span>History <span aria-hidden="true">▸</span></span>
-   {researchTiming&&<small title="Single exploratory metric only, NOT overall RAAS">Timing pilot {researchTiming.score}/100</small>}
+   {researchGrades.length>0&&<small title="Exploratory components only; NOT overall RAAS">{researchGrades.length}/30 experimental metrics</small>}
    <small>{history.length} captured</small>
   </button>
   {open&&createPortal(
@@ -71,7 +71,7 @@ export default function RaasTrialHistoryButton({row,bucket}:{
        <small>{row.ticker} · {row.nctId}</small>
        <small>{label} spreadsheet</small>
        <small>{history.length} saved events</small>
-       {researchTiming&&<small>Timing-only pilot {researchTiming.score}/100 · 1/30 metrics</small>}
+       {researchGrades.length>0&&<small>{researchGrades.length}/30 research-only component grades</small>}
       </div>
       <div className={css.right}>
        <header className={css.head}>
@@ -87,13 +87,15 @@ export default function RaasTrialHistoryButton({row,bucket}:{
         <div><small>Other stage retained</small><strong>{earlierStageEntries.length}</strong></div>
         <div><small>Latest evidence areas</small><strong>{lastForStage?lastForStage.metricCoverage+"/30":"N/A"}</strong></div>
        </div>
-       {researchTiming&&<div className={css.eventDetail} data-raas-current-provisional-metric={row.nctId}>
-        <h4>Current exploratory metric · {researchTiming.score}/100</h4>
-        <p><strong>{researchTiming.label}</strong> · {researchTiming.metricId} · 1 of 30 metrics graded</p>
-        <p><strong>Input:</strong> {researchTiming.inputs}</p>
-        <p><strong>Rule:</strong> {researchTiming.explanation}</p>
-        <p><strong>Source:</strong> <a href={researchTiming.sourceUrl} target="_blank" rel="noopener noreferrer">Issuer evidence ↗</a> · {researchTiming.sourceDate}</p>
-        <p><strong>Overall RAAS remains —/100.</strong> This is timing specificity only, not clinical success, expected stock returns, or an approved RAAS grade.</p>
+       {researchGrades.length>0&&<div className={css.eventDetail} data-raas-current-provisional-metric={row.nctId}>
+        <h4>Current experimental components · {researchGrades.length}/30 graded</h4>
+        {researchGrades.map(grade=><div key={grade.metricId} style={{margin:"10px 0"}}>
+         <p><strong>{grade.label} · {grade.metricId} · {grade.score}/100</strong></p>
+         <p><strong>Input:</strong> {grade.inputs}</p>
+         <p><strong>Rule:</strong> {grade.explanation}</p>
+         <p><strong>Source:</strong> <a href={grade.sourceUrl} target="_blank" rel="noopener noreferrer">Issuer evidence ↗</a> · {grade.sourceDate}</p>
+        </div>)}
+        <p><strong>Overall RAAS remains —/100.</strong> Experimental timing and clinical component proxies do not establish efficacy, FDA success, investment returns, or an approved RAAS rating.</p>
        </div>}
        {!history.length?<p className={css.empty}>No historical score or evidence-change snapshots have been captured for this trial.
         A current exploratory component rating, if displayed above, is NOT a saved past prediction or an overall RAAS score.
