@@ -4,6 +4,7 @@ import {createPortal} from "react-dom";
 import type {ReadoutRow} from "../lib/phase3-public-readout";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import {parseRaasTrialHistory,historyForTrial,currentHistoryScore,comparableScoreDelta} from "../lib/raas-trial-score-history";
+import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
 import savedHistory from "../data/raas-trial-score-history.json";
 import css from "./RaasTrialHistoryButton.module.css";
 
@@ -23,6 +24,9 @@ export default function RaasTrialHistoryButton({row,bucket}:{
  const history=historyForTrial(ledger,{nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication});
  const score=bucket?currentHistoryScore(history,bucket):null;
+ const provisional=bucket?provisionalScoresForTrial({nctId:row.nctId,ticker:row.ticker,
+  drug:row.evidence?.drug,indication:row.evidence?.indication},bucket):null;
+ const researchTiming=provisional?.scoredMetrics.find(g=>g.metricId==="pre-4-1")??null;
  const stageEntries=history.filter(e=>e.stage===bucket);
  const lastForStage=stageEntries.at(-1);
  const earlierStageEntries=history.filter(e=>e.stage!==bucket);
@@ -46,6 +50,7 @@ export default function RaasTrialHistoryButton({row,bucket}:{
    onClick={()=>{setSelected(0);setOpen(true);}}>
    <strong>{score?score.score+"/100":"—/100"}</strong>
    <span>History <span aria-hidden="true">▸</span></span>
+   {researchTiming&&<small title="Single exploratory metric only, NOT overall RAAS">Timing pilot {researchTiming.score}/100</small>}
    <small>{history.length} captured</small>
   </button>
   {open&&createPortal(
@@ -65,6 +70,7 @@ export default function RaasTrialHistoryButton({row,bucket}:{
        <small>{row.ticker} · {row.nctId}</small>
        <small>{label} spreadsheet</small>
        <small>{history.length} saved events</small>
+       {researchTiming&&<small>Timing-only pilot {researchTiming.score}/100 · 1/30 metrics</small>}
       </div>
       <div className={css.right}>
        <header className={css.head}>
@@ -80,6 +86,16 @@ export default function RaasTrialHistoryButton({row,bucket}:{
         <div><small>Other stage retained</small><strong>{earlierStageEntries.length}</strong></div>
         <div><small>Latest evidence areas</small><strong>{lastForStage?lastForStage.metricCoverage+"/30":"N/A"}</strong></div>
        </div>
+       {researchTiming&&<div className={css.eventDetail} data-raas-current-provisional-metric={row.nctId}>
+        <h4>Current exploratory metric · {researchTiming.score}/100</h4>
+        <p><strong>{researchTiming.label}</strong> · {researchTiming.metricId} · 1 of 30 metrics graded</p>
+        <p><strong>Input:</strong> {researchTiming.inputs}</p>
+        <p><strong>Rule:</strong> {researchTiming.explanation}</p>
+        <p><strong>Source:</strong> <a href={researchTiming.sourceUrl} target="_blank" rel="noopener noreferrer">Issuer evidence ↗</a> · {researchTiming.sourceDate}</p>
+        <p><strong>Overall RAAS remains —/100.</strong> This is timing specificity only, not clinical success, expected stock returns, or an approved RAAS grade.</p>
+       </div>
+       <div className={css.cards}>
+       </div>
        {!history.length?<p className={css.empty}>No score or evidence-change snapshots have been captured for this trial.
         The button is ready; a source check is not a 0/100 rating.
         Captures begin when the connected nightly journal observes saved research evidence.
@@ -91,7 +107,10 @@ export default function RaasTrialHistoryButton({row,bucket}:{
             onClick={()=>setSelected(index)} aria-pressed={selected===index}>
              <strong>{new Date(e.recordedAt).toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"})} · {stageName(e.stage)}</strong>
              <span>{kindName(e.kind)}</span>
-             <small>{e.score===null?"Evidence only · unscored":e.score+"/100 · "+e.scoreKind}</small>
+             <small>{e.kind==="METRIC_SCORE_UPDATED"?
+              "Exploratory "+(e.metricGrades?.map(g=>g.metricId+" "+g.score+"/100").join(", ")||"metric")+
+              " · overall unscored":
+              e.score===null?"Evidence only · unscored":e.score+"/100 · "+e.scoreKind}</small>
              <span className={css.caret} aria-hidden="true">▸</span>
             </button>)}
          </div>
@@ -107,6 +126,13 @@ export default function RaasTrialHistoryButton({row,bucket}:{
           <p><strong>Why recorded:</strong> {event.summary}</p>
           <p><strong>Evidence leads:</strong> {event.metricCoverage}/30 metric areas</p>
           <p><strong>Calculation version:</strong> {event.scoreVersion||"No calculated score"}</p>
+          {event.metricGrades?.map(g=><div key={g.metricId} className={css.eventDetail}
+             data-raas-historical-component-grade={g.metricId}>
+           <p><strong>Experimental metric {g.metricId}: {g.score}/100</strong> · NOT overall RAAS</p>
+           <p>{g.label}: {g.inputs}</p>
+           <p>{g.explanation}</p>
+           <p><strong>Rule:</strong> {g.ruleId} · <strong>Source date:</strong> {g.sourceDate}</p>
+          </div>)}
           {event.sourceUrls.length>0&&<div className={css.links}>
            <strong>Source documents</strong>
            {event.sourceUrls.map((url,i)=><a key={url} href={url} target="_blank"
