@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 const cytkEvents: FdaMilestone[] = [
   {
     id: "verified-cytk-2025-approval",
+    category: "original-approval",
     date: "2025-12-19",
     label: "Initial FDA approval — MYQORZO (SEQUOIA-HCM)",
     chartLabel: "FDA approval 12/19",
@@ -27,6 +28,7 @@ const cytkEvents: FdaMilestone[] = [
   },
   {
     id: "verified-cytk-2026-snda",
+    category: "submission",
     date: "2026-05-05",
     label: "MAPLE-HCM supplemental NDA acceptance disclosed",
     chartLabel: "FDA sNDA 5/5",
@@ -62,6 +64,7 @@ export default function CytkAlpacaPage() {
         ticker="CYTK"
         programId="PDUFA-000069"
         verifiedEvents={[...cytkEvents,...(fdaAutoEvents.events as FdaMilestone[])]}
+        categories={fdaAutoEvents.categories}
       />
       <section className="panel" style={{marginTop:12,padding:14}}>
         <h2>Automatic FDA milestone watcher</h2>
