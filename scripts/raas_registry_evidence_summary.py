@@ -52,21 +52,24 @@ def summarize(payload, roster, gap_ids):
     posted_analyses=sum(any(a.get("analysesCount",0)>0
         for a in r.get("primaryPostedEvidence",[])) for r in observed.values())
     severe=sum(r.get("seriousAdverseEventTermCount",0)>0 for r in observed.values())
-    primary_arms=sum(any(o.get("measurements") for o in r.get("primaryPostedEvidence",[]))
+    primary_arms=sum(any(o.get("measurements") for o in r.get("primaryPostedEvidence",[])[:5])
                      for r in observed.values())
     group_comparisons=sum(any(any(len(a.get("groupIds") or [])>=2
-                                   for a in o.get("analyses",[]))
-                              for o in r.get("primaryPostedEvidence",[]))
+                                   for a in o.get("analyses",[])[:12])
+                              for o in r.get("primaryPostedEvidence",[])[:5])
                           for r in observed.values())
-    primary_intervals=sum(any(any(a.get("ciLowerLimit") is not None and
-                                   a.get("ciUpperLimit") is not None
-                                   for a in o.get("analyses",[]))
-                              for o in r.get("primaryPostedEvidence",[]))
+    primary_intervals=sum(any(any(a.get("ciLowerLimit") not in (None,"") and
+                                   a.get("ciUpperLimit") not in (None,"")
+                                   for a in o.get("analyses",[])[:12])
+                              for o in r.get("primaryPostedEvidence",[])[:5])
                           for r in observed.values())
     serious_denominators=sum(any(any(isinstance(g.get("numAffected"),int) and
+                                    not isinstance(g.get("numAffected"),bool) and
                                     isinstance(g.get("numAtRisk"),int) and
-                                    g.get("numAtRisk")>0 for g in event.get("stats",[]))
-                                for event in r.get("seriousAdverseEventEvidence",[]))
+                                    not isinstance(g.get("numAtRisk"),bool) and
+                                    g.get("numAtRisk")>0
+                                    for g in event.get("stats",[])[:12])
+                                for event in r.get("seriousAdverseEventEvidence",[])[:16])
                              for r in observed.values())
     summary={
         "researchTrials":len(roster),
