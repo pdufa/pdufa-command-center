@@ -6,6 +6,7 @@ import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from 
 import css from "./Phase3ReadoutSheets.module.css";
 import TrialRaasDisclosure from "./TrialRaasDisclosure";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
+import RaasMetricGradebook from "./RaasMetricGradebook";
 import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
 import RaasAllClassifiedLiveReview from "./RaasAllClassifiedLiveReview";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
@@ -759,6 +760,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
         </td>}<td>
           <TrialRaasDisclosure row={row} bucket={bucket} researchStatus={researchStatus}
             coverage={researchFor(row)} benefitFeed={benefitFeed} onResearchRequest={onRaasOpen}/>
+          <RaasMetricGradebook row={row} bucket={bucket}/>
           <RaasTrialHistoryButton row={row} bucket={bucket}/>
         </td>{showSurveys&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"details")}
