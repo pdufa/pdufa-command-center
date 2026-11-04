@@ -2,6 +2,12 @@ name: RAAS Source Coverage and Score History Capture
 # Deliberately independent of Google Sheets editor permissions and of the
 # conditional post-source workflow. It captures only committed, dated facts.
 on:
+  pull_request:
+    paths:
+      - .github/workflows/raas-evidence-snapshot-capture.yml
+      - scripts/check_phase3_original_registry_pilot.py
+      - scripts/raas_population_coverage_audit.py
+      - tests/test_raas_population_coverage_audit.py
   workflow_dispatch:
   schedule:
     - cron: '17 10 * * *'
@@ -10,13 +16,35 @@ on:
     paths:
       - .github/workflows/raas-evidence-snapshot-capture.yml
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: raas-committed-evidence-publisher
   cancel-in-progress: false
 
 jobs:
+  pull-request-validation:
+    name: Check historical census, evolving source and full-population RAAS coverage
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Strict source reconciliation and RAAS population tests
+        run: |
+          python -m unittest discover -s tests -p 'test_phase3_original_registry_pilot.py' -v
+          python -m unittest discover -s tests -p 'test_raas_population_coverage_audit.py' -v
+          python -m py_compile scripts/raas_population_coverage_audit.py
+          node --check scripts/raas_trial_provisional_metric_capture.cjs
+
   verified-capture:
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: write
     name: Audit full NCT populations and append real RAAS observations
     runs-on: ubuntu-latest
     timeout-minutes: 12
