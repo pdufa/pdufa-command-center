@@ -23,6 +23,7 @@ on:
       - scripts/nightly_scoring_audit.py
       - scripts/raas_trial_history_capture.cjs
       - scripts/raas_trial_provisional_metric_capture.cjs
+      - scripts/raas_post_clinical_provisional_capture.cjs
       - scripts/raas_self_audit_history_capture.cjs
       - scripts/post_scan_repair.py
       - scripts/scan_recovery_triage.py
@@ -141,6 +142,8 @@ jobs:
       - name: Capture source-verified experimental RAAS metric changes without composites
         # The method is only a pilot, not an approved 30-metric investment score.
         run: node scripts/raas_trial_provisional_metric_capture.cjs
+      - name: Capture source-restricted BOTTOM clinical contrast pilot grades
+        run: node scripts/raas_post_clinical_provisional_capture.cjs
       - name: Append separate RAAS methodology self-audit evidence snapshots
         # Audit progress only: never infer predictive accuracy from raw counts.
         run: node scripts/raas_self_audit_history_capture.cjs
