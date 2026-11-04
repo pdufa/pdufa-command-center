@@ -161,12 +161,22 @@ class CurrentPipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"CASE_PROVENANCE"):
             self.run_audit(source=(bad,reviews,cohort,ledger))
 
+    def test_same_issuer_different_market_cap_quotes_are_rejected(self):
+        snap,reviews,cohort,ledger=self.raw
+        bad=copy.deepcopy(snap)
+        ocean2=next(r for r in bad["trialSnapshots"] if r["nctId"]=="NCT07868419")
+        ocean2["marketCapUsd"]+=100_000_000
+        with self.assertRaisesRegex(ValueError,"CONFLICTING_ISSUER_MARKET_CAP"):
+            self.run_audit(source=(bad,reviews,cohort,ledger))
+
     def test_quote_outside_allowed_range_not_verified_and_csv_excel_safe(self):
         snap,reviews,cohort,ledger = self.raw
         bad=copy.deepcopy(snap)
-        bad["trialSnapshots"][0]["marketCapUsd"]=299_999_999
+        for case in bad["trialSnapshots"]:
+            if case["ticker"]=="TRVI":
+                case["marketCapUsd"]=299_999_999
         _, s = self.run_audit(source=(bad,reviews,cohort,ledger))
-        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"],4)
+        self.assertEqual(s["currentCapAndPhase3SourceVerifiedAsOf"],3)
         self.assertIn("OUTSIDE_MARKET_CAP_RESTRICTIONS",s["eligibilityByNct"].values())
         csv_text,json_text=audit.generate(*self.raw,as_of="2026-11-04")
         self.assertEqual(len(list(csv.DictReader(io.StringIO(csv_text)))),150)
