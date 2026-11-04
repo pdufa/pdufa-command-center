@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_PROVISIONAL_VALIDATION_READINESS",
+  "sourceAsOf": "2026-11-02",
+  "policy": "raas-provisional-review-v1",
+  "proposedMetrics": 60,
+  "sourceConfirmedReadoutTrials": 5,
+  "experimentalHistoryEvents": 6,
+  "experimentalTrialsWithMetrics": 4,
+  "distinctSourceGradedMetricSlots": 6,
+  "approvedMetricCalibrations": 0,
+  "reviewedOverallTrialSnapshots": 0,
+  "auditedEventReturnCases": 0,
+  "predecisionIndependentThreeWayForecasts": 0,
+  "independentFdaOutcomesConfirmed": false,
+  "readyToValidateOverallRaas": false,
+  "validatedRaasAccuracy": null,
+  "validatedFdaThreeWayAccuracy": null,
+  "note": "Experimental component bins are NOT validated predictive ratings. Accuracy remains N/A until a frozen, complete prospective cohort and independently verified outcomes pass all gates. Eligibility counts are necessary, not sufficient, for out-of-sample validation.",
+  "blockers": [
+    "Need independently held-out calibration for all 60 metrics",
+    "Need at least 30 independently reviewed full RAAS trial snapshots",
+    "Need at least 30 fully audited prospective entry/exit outcome cases",
+    "Need at least 30 independently frozen, predecision three-way forecasts",
+    "Independent FDA PASS/CRL/EXTENSION outcome adjudication is incomplete"
+  ]
+}
