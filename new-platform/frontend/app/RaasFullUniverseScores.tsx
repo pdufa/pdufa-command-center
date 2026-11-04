@@ -104,12 +104,12 @@ export default function RaasFullUniverseScores(){
    "NOT_YET_RECRUITING","COMPLETED","TERMINATED","WITHDRAWN"]);
   return registryIndex.records.map(entry=>{
    const prior=documented.get(entry.nctId);
-   const matches=prior?.ticker===entry.ticker;
+   const matched=prior&&prior.ticker===entry.ticker?prior:null;
    return {nctId:entry.nctId,ticker:entry.ticker,
-    company:matches?prior.company:"Issuer name not in this registry source",
+    company:matched?matched.company:"Issuer name not in this registry source",
     status:(validStatuses.has(entry.registryStatus)?entry.registryStatus:"UNKNOWN") as Phase3CensusRegistryStatus,
     sourceUrl:entry.sourceUrl,pipelineQualification:null,fdaPdufaVerification:false as const,
-    evidence:matches?prior.evidence:null};
+    evidence:matched?matched.evidence:null};
   }).sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId));
  },[classified,registryIndex]);
  const effectiveLive=scope==="cap"&&liveState==="ready"&&live!==null;
