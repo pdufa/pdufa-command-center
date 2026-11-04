@@ -49,6 +49,9 @@ export function auditRaasSurveyAccuracy(
  fda:FDAAccuracyEvidence
 ):RaasSelfAccuracyAudit{
  const s=report.summary;
+ const topGate=installation.gates.find(g=>g.id==="top-calibration");
+ const bottomGate=installation.gates.find(g=>g.id==="bottom-calibration");
+ if(!topGate||!bottomGate)throw Error("RAAS_SELF_AUDIT_MISSING_CALIBRATION_GATES");
  if(report.scope!=="RAAS_EXECUTED_READINESS_AUDIT" ||
     report.finalScoring!=="NOT_VALIDATED" ||
     report.metrics.length!==60 ||
@@ -62,8 +65,7 @@ export function auditRaasSurveyAccuracy(
     installation.sourceYears.length!==2 ||
     installation.eligibleSourceYears!==installation.sourceYears.filter(y=>y.verified).length ||
     installation.gates.find(g=>g.id==="historical-trades")?.achieved!==s.historicalAcceptedCases ||
-    installation.gates.find(g=>g.id==="top-calibration")?.achieved+
-     installation.gates.find(g=>g.id==="bottom-calibration")?.achieved!==s.approvedMetricCalibrations)
+    topGate.achieved+bottomGate.achieved!==s.approvedMetricCalibrations)
   throw Error("RAAS_SELF_AUDIT_SOURCE_INCONSISTENT");
  if(fda.scope!=="RAAS_FDA_THREE_WAY_DECISION_ACCURACY_SITE_SNAPSHOT" ||
     !Array.isArray(fda.classes) || fda.classes.join("|")!=="PASS|CRL|EXTENSION" ||
