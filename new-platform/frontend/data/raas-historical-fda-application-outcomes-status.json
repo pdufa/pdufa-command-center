@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_APPLICATION_LEVEL_HISTORICAL_GROUND_TRUTH_NO_BLIND_PREDICTIONS",
+  "sourceAsOf": "2026-11-04",
+  "uniqueApplicationDecisions": 2,
+  "linkedTrialNcts": 3,
+  "approvals": 1,
+  "completeResponseLetters": 1,
+  "extensions": 0,
+  "independentPreActionModelPredictions": 0,
+  "validatedPredictionAccuracy": null,
+  "warning": "Two historical FDA application outcomes are source-verified, not prediction calibration. Cytisinicline ORCA-2 and ORCA-3 are ONE NDA event, not two independent CRLs. A postaction outcome cannot be used as a model feature at an earlier cutoff."
+}
