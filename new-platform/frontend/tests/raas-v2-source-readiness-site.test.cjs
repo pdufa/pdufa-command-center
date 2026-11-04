@@ -26,6 +26,8 @@ test("V2 source-readiness snapshot cannot pretend to be a calibrated model",()=>
  assert.equal(snapshot.nov14IndependentPhase3RegistryCrossChecks,2);
  assert.equal(snapshot.nov14NumberedCurrentFdaApplicationCyclesCertified,0);
  assert.equal(snapshot.nov14FrozenThreeWayForecasts,0);
+ assert.equal(snapshot.nightlyPublicFDAApplicationHistoryWatch,
+   "RESEARCH_ONLY_MONITOR_SOURCE_STATUS_ARTIFACT_NOT_SITE_LIVE");
  assert.equal(snapshot.nov14KnownUnrelatedAlreadyApprovedFdaSupplementRemsControls,1);
  assert.equal(snapshot.nov14IssuerReportedOSRequirementPrimaryNonsignificantCases,1);
  assert.equal(snapshot.provenIndependentFirstGoalForecasts,0);
@@ -47,4 +49,13 @@ test("Mobile site distinguishes V1 active foundation and V2 source candidate and
  assert.match(source,/x\.knownRevisedGoalExcludedFromOriginalDeadlineQueue/);
  assert.match(source,/x\.legacyCasesStillUnreviewedByIssuerSources/);
  assert.match(source,/The remaining \{x\.remainingUnexcludedLegacyDateResearchLeads\} are not independently certified original-goal forecasts/);
+});
+
+test("Mobile nightly official FDA lookup is explicitly separate from a scored forecast",()=>{
+ assert.match(source,/raas-v2-daily-openfda-application-watch/);
+ assert.match(source,/S-001 is a February REMS-only action/);
+ assert.match(source,/not the pending MAPLE-HCM efficacy supplement/);
+ assert.match(source,/the numbered pending BLA remains unverified/);
+ assert.match(source,/Live results are in the/);
+ assert.match(source,/not this dated website snapshot/);
 });
