@@ -11,6 +11,7 @@ sys.path.insert(0,str(ROOT/"scripts"))
 import raas_fda_decision_accuracy_audit as audit
 import raas_v2_prospective_source_readiness as v2
 import raas_v2_source_provenance_manifest as provenance
+import raas_v2_openfda_application_watch as public_watch
 
 SHA="a"*40
 RUN="41735573512"
@@ -27,16 +28,20 @@ def sample(path):
     v2.export(v2.execute(asof=ASOF),
               d/"raas-v2-prospective-source-readiness.json",
               d/"raas-v2-prospective-source-review.csv")
+    research=public_watch.inspect_response(
+        None,ASOF,"SOURCE_UNAVAILABLE","Offline test: no FDA API fetch")
+    (d/"raas-v2-openfda-application-identity-watch.json").write_text(
+        json.dumps(research)+"\\n",encoding="utf-8")
     return d
 
 
 class NightlyManifestTests(unittest.TestCase):
-    def test_five_files_hashed_and_tied_to_run_without_becoming_prediction_receipt(self):
+    def test_six_files_hashed_and_tied_to_run_without_becoming_prediction_receipt(self):
         with TemporaryDirectory() as td:
             d=sample(td)
             m=provenance.build_manifest(d,"pdufa/pdufa-command-center",
                                         RUN,SHA,ARCHIVED)
-            self.assertEqual(len(m["fileDigests"]),5)
+            self.assertEqual(len(m["fileDigests"]),6)
             self.assertEqual(m["githubWorkflowRunId"],RUN)
             self.assertEqual(m["sourceCommitSHA"],SHA)
             self.assertEqual(m["sourceResearchCases"],36)
@@ -52,7 +57,33 @@ class NightlyManifestTests(unittest.TestCase):
             provenance.write_manifest(m,target)
             self.assertEqual(json.loads(target.read_text())["sourceCommitSHA"],SHA)
 
-    def test_report_without_all_five_source_files_fails_closed(self):
+    def test_public_fda_watch_tampering_or_fake_decision_fails_closed(self):
+        with TemporaryDirectory() as td:
+            d=sample(td)
+            p=d/"raas-v2-openfda-application-identity-watch.json"
+            for key,bad in (
+                ("newImmutableThreeWayPredictions",1),
+                ("independentlyAdjudicatedNov14FdaActions",1),
+                ("canPromoteToFdaPredictionAccuracy",True),
+            ):
+                w=json.loads(p.read_text("utf-8"))
+                w[key]=bad
+                p.write_text(json.dumps(w),encoding="utf-8")
+                with self.assertRaisesRegex(ValueError,
+                                            "PUBLIC_FDA_WATCH_CANNOT_PROMOTE_RESEARCH"):
+                    provenance.build_manifest(d,"pdufa/pdufa-command-center",
+                                              RUN,SHA,ARCHIVED)
+                w[key]=0 if key!="canPromoteToFdaPredictionAccuracy" else False
+                p.write_text(json.dumps(w),encoding="utf-8")
+            w=json.loads(p.read_text("utf-8"))
+            w["cytk"]["fdaApprovedFebruaryRemsS001IsNovemberMapleHcm"]=True
+            p.write_text(json.dumps(w),encoding="utf-8")
+            with self.assertRaisesRegex(ValueError,
+                                        "PUBLIC_FDA_WATCH_CANNOT_PROMOTE_RESEARCH"):
+                provenance.build_manifest(d,"pdufa/pdufa-command-center",
+                                          RUN,SHA,ARCHIVED)
+
+    def test_report_without_all_six_source_files_fails_closed(self):
         with TemporaryDirectory() as td:
             d=sample(td)
             (d/"raas-v2-prospective-source-review.csv").unlink()
