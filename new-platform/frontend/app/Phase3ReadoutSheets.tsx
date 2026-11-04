@@ -173,17 +173,17 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
        {" "}<strong>Not graded</strong> until source-backed scoring rules are validated.
        Missing research never equals clinical failure or a zero score. A VERIFIED source input confirms an issuer-disclosed observation matched to this trial; it is not independent adjudication of efficacy or safety.</p>
      <div className={css.surveyOverview}>
-       <div><small>Groups</small><strong>5</strong></div>
-       <div><small>Surveys</small><strong>20</strong></div>
-       <div><small>Questions</small><strong>{SURVEY_QUESTION_IDS.length}</strong></div>
+       <div><small>Level 1 · Groups</small><strong>5</strong></div>
+       <div><small>Level 2 · Surveys</small><strong>20</strong></div>
+       <div><small>Level 3 · Questions</small><strong>{SURVEY_QUESTION_IDS.length}</strong></div>
        <div><small>Verified inputs</small><strong>{record?all.verified+" / 38":"Not assessed"}</strong></div>
      </div>
      {researchStatus==="loading"&&<p role="status" className={css.surveyStatus}>Checking exact-NCT survey evidence…</p>}
      {researchStatus==="unavailable"&&<p role="status" className={css.surveyStatus}>Research feed unavailable. Questions remain visible without scores.</p>}
      {researchStatus==="ready"&&!record&&<p role="status" className={css.surveyStatus}>No unambiguous NCT + ticker + therapy + indication research match. Missing percentages and trial scores are not assumed.</p>}
      {record&&<p role="status" className={css.surveyStatus}>Matched research inputs: {all.verified} verified · {all.modeled} modeled · {all.gaps} unrecorded. This is evidence coverage, not medical merit.</p>}
-     <h4 className={css.surveyLabel}>1 · Survey groups</h4>
-     <div className={css.surveyGroupRail} role="group" aria-label="Five survey groups">
+     <h4 className={css.surveyLabel}>Level 1 · Five survey groups</h4>
+     <div className={css.surveyGroupRail} role="group" aria-label="Level 1: Five survey groups">
        {SURVEY_SECTIONS.map(g=>{
          const groupSurveys=BENEFIT_GROUPS.filter(x=>x.number>=g.min&&x.number<=g.max);
          const fields=groupSurveys.flatMap(x=>x.fields),c=coverage(fields);
@@ -196,7 +196,7 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
        })}
      </div>
      <div className={css.surveyLabelRow}>
-       <h4 className={css.surveyLabel}>2 · {section.name}</h4>
+       <h4 className={css.surveyLabel}>Level 2 · {section.name} surveys</h4>
        <span>{surveys.length} surveys · {groupFields.length} questions</span>
      </div>
      <div className={css.surveyCoverage}>
@@ -208,7 +208,8 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
        <span>Survey {surveyRank||"—"} · {Math.max(0,currentIndex)+1}/{surveys.length}</span>
        <button type="button" disabled={currentIndex>=surveys.length-1} onClick={()=>moveSurvey(1)}>Next →</button>
      </div>
-     <div className={css.surveyRail} role="region" aria-label="Surveys and horizontally expanding questions" tabIndex={0}>
+     <h4 className={css.surveyLabel}>Level 3 · Individual survey questions</h4>
+     <div className={css.surveyRail} role="region" aria-label="Level 3: Questions expand to the right of their selected survey" tabIndex={0}>
        {surveys.map(survey=>{
          const selected=survey.number===surveyRank;
          const questions=survey.fields.filter(f=>!gapsOnly||!fact(f.id));

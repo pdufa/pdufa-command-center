@@ -105,3 +105,12 @@ test("Phase 3 source endpoint is authenticated, independent from Pipeline and us
  assert.match(source,/not independent adjudication of efficacy or safety/);
  assert.doesNotMatch(route,/benefitsFromPipeline/);
 });
+
+test("iPhone survey explorer visibly labels all three levels without inventing a score",()=>{
+ assert.match(source,/Level 1 · Five survey groups/);
+ assert.match(source,/Level 2 · \{section\.name\} surveys/);
+ assert.match(source,/Level 3 · Individual survey questions/);
+ assert.match(source,/Level 3: Questions expand to the right/);
+ assert.match(source,/Scores remain/);
+ assert.match(source,/Not graded/);
+});
