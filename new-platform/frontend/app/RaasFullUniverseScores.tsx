@@ -10,6 +10,8 @@ import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
 import RaasRegistryEvidenceButton from "./RaasRegistryEvidenceButton";
+import {loadRegistryEvidenceIndex,registryTrialFor,
+ type RegistryEvidenceIndex} from "../lib/raas-registry-evidence";
 import css from "./raas-history/page.module.css";
 
 type Assessment={row:ReadoutRow;stage:RaasStage|null;timing:number|null;
@@ -38,6 +40,7 @@ function assess(row:ReadoutRow):Assessment{
 }
 export default function RaasFullUniverseScores(){
  const [classified,setClassified]=useState<ReadoutClassification|null>(null);
+ const [registryIndex,setRegistryIndex]=useState<RegistryEvidenceIndex|null>(null);
  const [censusError,setCensusError]=useState("");
  const [live,setLive]=useState<RaasScreenedTrialRoster|null>(null);
  const [liveState,setLiveState]=useState<"loading"|"ready"|"unavailable">("loading");
@@ -46,8 +49,14 @@ export default function RaasFullUniverseScores(){
  const [query,setQuery]=useState("");
  const [stage,setStage]=useState<"all"|"pre"|"post"|"unverified">("all");
  const [rating,setRating]=useState<"all"|"scored"|"missing">("all");
+ const [registryFilter,setRegistryFilter]=useState<"all"|"posted"|"protocol"|"unavailable">("all");
  const [page,setPage]=useState(0);
  const [refresh,setRefresh]=useState(0);
+ useEffect(()=>{
+  let active=true;
+  void loadRegistryEvidenceIndex().then(result=>{if(active)setRegistryIndex(result);});
+  return ()=>{active=false;};
+ },[]);
  useEffect(()=>{
   const ctrl=new AbortController();
   Promise.all([
@@ -90,21 +99,29 @@ export default function RaasFullUniverseScores(){
  const fallback=scope==="cap"&&!effectiveLive;
  const universe=effectiveLive?live!.rows:historical;
  const assessments=useMemo(()=>universe.map(assess),[universe]);
+ const indexed=useMemo(()=>assessments.map(x=>({...x,
+  registry:registryTrialFor(registryIndex,{nctId:x.row.nctId,ticker:x.row.ticker})
+ })),[assessments,registryIndex]);
  const stats=useMemo(()=>({
   top:assessments.filter(x=>x.stage==="pre").length,
   bottom:assessments.filter(x=>x.stage==="post").length,
   unverified:assessments.filter(x=>x.stage===null).length,
   numericallyGraded:assessments.filter(x=>x.metricCount>0).length,
-  fullOverall:assessments.filter(x=>x.overallScore!==null).length
- }),[assessments]);
+  fullOverall:assessments.filter(x=>x.overallScore!==null).length,
+  postedRegistry:indexed.filter(x=>x.registry?.postedResults===true).length,
+  protocolRegistry:indexed.filter(x=>x.registry?.postedResults===false).length,
+  missingRegistry:indexed.filter(x=>!x.registry).length
+ }),[assessments,indexed]);
  const filtered=useMemo(()=>{
   const q=query.trim().toLowerCase();
-  return assessments.filter(x=>
+  return indexed.filter(x=>
    (stage==="all"||(stage==="unverified"?x.stage===null:x.stage===stage))&&
    (rating==="all"||(rating==="scored"?x.metricCount>0:x.metricCount===0))&&
+   (registryFilter==="all"||(registryFilter==="posted"?x.registry?.postedResults===true:
+    registryFilter==="protocol"?x.registry?.postedResults===false:!x.registry))&&
    (!q||[x.row.nctId,x.row.ticker,x.row.company,
     x.row.evidence?.drug||"",x.row.evidence?.indication||""].some(v=>v.toLowerCase().includes(q))));
- },[assessments,stage,rating,query]);
+ },[indexed,stage,rating,registryFilter,query]);
  const pageCount=Math.ceil(filtered.length/PAGE_SIZE);
  const currentPage=Math.min(page,Math.max(0,pageCount-1));
  const visible=filtered.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE);
@@ -122,7 +139,9 @@ export default function RaasFullUniverseScores(){
    research-only grading rules. No source evidence means <strong>Not scored</strong>,
    never 0/100. This view does not independently verify PIPELINE or PDUFA eligibility.
    TOP/BOTTOM are assigned only from separately documented issuer readouts; registry
-   stage names alone do not establish public results. Use the Registry facts button
+   stage names alone do not establish public results. Every trial can now open both
+   TOP and BOTTOM 30-metric evidence reviews while classification is unresolved.
+   Use the Registry facts button
    on every row, including UNVERIFIED, to inspect newly collected evidence.</p>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",margin:"12px 0"}}>
    <button type="button" aria-pressed={scope==="cap"}
@@ -162,6 +181,14 @@ export default function RaasFullUniverseScores(){
    <div><strong>{short(stats.top)} / {short(stats.bottom)}</strong><span>Issuer-evidenced TOP / BOTTOM</span></div>
    <div><strong>{short(stats.unverified)}</strong><span>Unverified readout-stage trials · not assumed TOP</span></div>
   </div>
+  <div className={css.stats} data-raas-registry-review-queues="true">
+   <div><strong>{short(stats.postedRegistry)}</strong>
+    <span>Registry-posted results · BOTTOM evidence review candidates, not verified BOTTOM</span></div>
+   <div><strong>{short(stats.protocolRegistry)}</strong>
+    <span>Registry protocol only · TOP evidence review candidates, not verified TOP</span></div>
+   <div><strong>{short(stats.missingRegistry)}</strong>
+    <span>Outside current registry evidence snapshot · needs separate source collection</span></div>
+  </div>
   <div style={{display:"flex",gap:9,alignItems:"end",flexWrap:"wrap",margin:"12px 0"}}>
    <label style={{display:"flex",flexDirection:"column",gap:3,fontSize:12}}>
     Search all selected trials
@@ -188,7 +215,18 @@ export default function RaasFullUniverseScores(){
      <option value="missing">No numeric metric yet</option>
     </select>
    </label>
-   <button type="button" onClick={()=>{setQuery("");setStage("all");setRating("all");setPage(0)}}
+   <label style={{display:"flex",flexDirection:"column",gap:3,fontSize:12}}>
+    Registry evidence review queue
+    <select aria-label="Filter registry source evidence" value={registryFilter}
+     onChange={e=>{setRegistryFilter(e.target.value as typeof registryFilter);setPage(0)}}
+     style={{padding:8}}>
+     <option value="all">All registry evidence states</option>
+     <option value="posted">Results posted · BOTTOM review candidate</option>
+     <option value="protocol">Protocol only · TOP review candidate</option>
+     <option value="unavailable">Not in current registry snapshot</option>
+    </select>
+   </label>
+   <button type="button" onClick={()=>{setQuery("");setStage("all");setRating("all");setRegistryFilter("all");setPage(0)}}
     style={{padding:"9px 12px",border:"1px solid #a9c8b3",borderRadius:7}}>Clear filters</button>
   </div>
   <p style={{fontSize:12,color:"#456f54"}} role="status">{short(filtered.length)} matching trial rows;
@@ -204,17 +242,20 @@ export default function RaasFullUniverseScores(){
       <span style={{display:"block",color:"#507763",fontSize:11}}>{x.row.company}</span></td>
      <td style={cell}><strong>{stageLabel(x.stage)}</strong>
       <span style={{display:"block",fontSize:11}}>
-       {x.stage?"Issuer readout evidence":"Source classification required"}</span></td>
+       {x.stage?"Issuer readout evidence":"Stage source verification required"}</span>
+      <span style={{display:"block",fontSize:11}}>
+       {x.registry?.postedResults===true?"Registry results posted":
+        x.registry?.postedResults===false?"Registry protocol only":"No current registry match"}</span></td>
      <td style={cell}><strong>{x.overallScore===null?"— /100":x.overallScore+"/100"}</strong>
       <span style={{display:"block",fontSize:11}}>{x.overallScore===null?"Not validated":"Approved / reviewed"}</span></td>
      <td style={cell}>{x.timing!==null?<><strong>{x.timing}/100</strong>
       <span style={{display:"block",fontSize:11}}>{x.stage==="pre"?"Timing specificity only":"Clinical contrast pilot only"}</span></>:
       <span>Not scored</span>}</td>
-     <td style={cell}><strong>{x.stage?x.metricCount+"/30":"—/30"}</strong>
+     <td style={cell}><strong>{x.stage?x.metricCount+"/30":"0 verified / 30"}</strong>
       <span style={{display:"block",fontSize:11}}>No missing input scored as zero</span></td>
      <td style={cell}>{x.sourceUrl?<a href={x.sourceUrl} target="_blank"
       rel="noopener noreferrer">Component source · {x.sourceDate}</a>:
-      x.stage===null?"Verify public Phase 3 readout stage first":
+      x.stage===null?"TOP and BOTTOM checklists available · public readout stage still unverified":
       "Source-backed rule and required inputs not yet available"}</td>
      <td style={cell}><RaasRegistryEvidenceButton row={x.row}/></td>
      <td style={cell}><RaasMetricGradebook row={x.row} bucket={x.stage}/></td>
