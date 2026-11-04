@@ -8,6 +8,7 @@ import RaasSelfAuditHistoryButton from "./RaasSelfAuditHistoryButton";
 import activeTwoYearIntake from "../../data/raas-active-2024-2025-pdufa-intake.json";
 import activeStudyConfig from "../../data/raas-active-study-config.json";
 import fdaAccuracySnapshot from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
+import registryEvidenceReceipt from "../../data/raas-registry-evidence-status.json";
 import RaasFullUniverseScores from "../RaasFullUniverseScores";
 import css from "../raas-history/page.module.css";
 export const metadata:Metadata={
@@ -20,6 +21,7 @@ const selfAudit=auditRaasSurveyAccuracy(report,installation,fdaAccuracySnapshot)
 
 export default function RaasScanPage(){
  const s=report.summary;
+ const registry=registryEvidenceReceipt.summary;
  return <main className={css.root} data-raas-readiness-executed={report.scanExecution}>
    <header className={css.header}>
     <Link className={css.back} href="/tools">← Back to TOOLS</Link>
@@ -33,6 +35,27 @@ export default function RaasScanPage(){
     <div><strong>{s.historicalAcceptedCases}</strong><span>Accepted historical event-window trades</span></div>
    </div>
    <p className={css.disclaimer}><strong>SCAN EXECUTED · FINAL RAAS NOT VALIDATED.</strong> The audit inspected every definition and available evidence record. It did not create a price forecast, set missing scores to zero, import unpublished trial outcomes, or claim that a source lead has been calibrated. Underlying source snapshot: {report.sourceAsOf}; metric specification: {report.specVersion}.</p>
+   <section className={css.section} data-raas-registry-source-coverage={registryEvidenceReceipt.scope}>
+     <div className={css.sectionTitle}>
+       <h2>ClinicalTrials.gov evidence collection · full research population</h2>
+       <span>{registry.sourceRecordsStored}/{registry.researchTrials} exact NCT records retrieved</span>
+     </div>
+     <div className={css.stats}>
+       <div><strong>{registry.sourceRecordsStored}/{registry.researchTrials}</strong><span>Registry records collected</span></div>
+       <div><strong>{registry.missingRecordsRecoveredFromOriginal35}/35</strong><span>Previously missing records recovered</span></div>
+       <div><strong>{registry.postedRegistryResults}</strong><span>Registry results published · not yet graded</span></div>
+       <div><strong>{registry.trialsWithPrimaryRegistryAnalyses}</strong><span>Trials with reported primary statistical analyses</span></div>
+       <div><strong>{registry.trialsWithSeriousAdverseEventEvidence}</strong><span>Trials with serious adverse-event evidence</span></div>
+       <div><strong>{registry.protocolOnly}</strong><span>Protocol-only records · no posted results</span></div>
+     </div>
+     <p className={css.disclaimer}><strong>Source collection is complete for the recorded cohort, not full RAAS scoring.</strong>
+       {" "}Unresolved registry records: {registry.sourceRecordsStillMissing}; latest fetch errors: {registry.sourceFetchErrorsInLatestRun}.
+       {" "}Results, study designs, endpoints and safety observations are linked to exact NCTs; they do not automatically establish sponsor readout status, FDA approval likelihood, or score thresholds.
+       Additional SEC, FDA, market and independent clinical reference evidence remains necessary.
+       {" "}Last collection attempt: {registryEvidenceReceipt.collectedAsOf||"not recorded"}.</p>
+     <p><a href="https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/data/raas-registry-evidence-status.json" target="_blank" rel="noopener noreferrer">Open signed source-count receipt</a>
+      {" · "}<a href="https://github.com/pdufa/pdufa-command-center/blob/main/data/raas_registry_live_evidence.json" target="_blank" rel="noopener noreferrer">Open exact-NCT outcomes, analyses and safety source records</a></p>
+   </section>
    <RaasFullUniverseScores/>
    <section className={css.section} data-raas-self-audit={selfAudit.status}>
     <div className={css.sectionTitle}>
