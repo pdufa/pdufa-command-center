@@ -6,8 +6,12 @@ import AlpacaStockChart, {type FdaMilestone} from "./AlpacaStockChart";
 type CustomMarker = {
   id:string; date:string; label:string; chartLabel:string; detail:string; color:string;
 };
+type VerifiedDisplayOverride = {
+  id:string; date:string; label:string; chartLabel:string; color:string; visible:boolean;
+};
 type OverlayResponse = {
-  programId:string; markers:CustomMarker[]; version:number; updatedAt?:string|null;
+  programId:string; markers:CustomMarker[]; verifiedOverrides:VerifiedDisplayOverride[];
+  version:number; updatedAt?:string|null;
 };
 const COLORS = [
   {name:"Purple",value:"#7c3aed"},
@@ -34,6 +38,7 @@ export default function FdaOverlayEditor({
 }) {
   const [open,setOpen]=useState(false);
   const [markers,setMarkers]=useState<CustomMarker[]>([]);
+  const [verifiedOverrides,setVerifiedOverrides]=useState<VerifiedDisplayOverride[]>([]);
   const [version,setVersion]=useState<number|null>(null);
   const [status,setStatus]=useState("Loading saved annotations…");
   const [loading,setLoading]=useState(true);
@@ -50,13 +55,15 @@ export default function FdaOverlayEditor({
         "Sign in to the PDUFA dashboard, then reload annotations.":
         "Cannot load saved markers (HTTP "+response.status+").");
       const data:OverlayResponse=await response.json();
-      if(data.programId!==programId||!Number.isSafeInteger(data.version)||!Array.isArray(data.markers))
-        throw Error("Saved markers do not match this exact Program ID.");
+      if(data.programId!==programId||!Number.isSafeInteger(data.version)||
+        !Array.isArray(data.markers)||!Array.isArray(data.verifiedOverrides))
+        throw Error("Saved markers do not match this exact Program ID or are on an older backend.");
       if(signal?.aborted)return;
       setMarkers(data.markers);
+      setVerifiedOverrides(data.verifiedOverrides);
       setVersion(data.version);
       setLastSaved(data.updatedAt||null);
-      setStatus("Custom annotations loaded from persistent program storage.");
+      setStatus("FDA display edits and custom annotations loaded from persistent program storage.");
       setDirty(false);
     }catch(e){
       if(signal?.aborted)return;
@@ -71,10 +78,35 @@ export default function FdaOverlayEditor({
     return ()=>ctrl.abort();
   },[load]);
 
+  const originalDisplay=(event:FdaMilestone):VerifiedDisplayOverride=>({
+    id:event.id||"", date:event.date, label:event.label, chartLabel:event.chartLabel,
+    color:event.color||(event.planned?"#d97706":"#7c3aed"), visible:true,
+  });
+  const getDisplay=(event:FdaMilestone):VerifiedDisplayOverride=>
+    verifiedOverrides.find(o=>o.id===event.id)||originalDisplay(event);
+  const editVerified=(id:string,patch:Partial<Omit<VerifiedDisplayOverride,"id">>)=>{
+    const source=verifiedEvents.find(event=>event.id===id);
+    if(!source)return;
+    setVerifiedOverrides(old=>{
+      const existing=old.find(v=>v.id===id);
+      const updated={...(existing||originalDisplay(source)),...patch,id};
+      return existing?old.map(v=>v.id===id?updated:v):[...old,updated];
+    });
+    setDirty(true);
+  };
+  const resetVerified=(id:string)=>{
+    setVerifiedOverrides(old=>old.filter(v=>v.id!==id));
+    setDirty(true);
+  };
   const combined=useMemo<FdaMilestone[]>(()=>[
-    ...verifiedEvents,
+    ...verifiedEvents.map(event=>{
+      const override=verifiedOverrides.find(o=>o.id===event.id);
+      return override?{
+        ...event,...override,edited:true,originalDate:event.date,custom:false,
+      }:{...event,visible:true};
+    }),
     ...markers.map(m=>({...m,custom:true,source:undefined}))
-  ],[verifiedEvents,markers]);
+  ],[verifiedEvents,verifiedOverrides,markers]);
 
   const edit=(id:string,field:keyof CustomMarker,value:string)=>{
     if(field==="id")return;
@@ -82,19 +114,25 @@ export default function FdaOverlayEditor({
     setDirty(true);
   };
   const moveDate=(id:string,date:string)=>{
-    if(markerDateOk(date))edit(id,"date",date);
+    if(!markerDateOk(date)||date<"2000-01-01"||date>"2100-12-31")return;
+    if(id.startsWith("verified-"))editVerified(id,{date});
+    else edit(id,"date",date);
   };
   const save=async()=>{
     if(version===null||loading||saving)return;
     if(markers.length>40){setStatus("Limit: 40 custom markers per program.");return;}
-    if(markers.some(m=>!markerDateOk(m.date)||!m.label.trim()||!m.chartLabel.trim())){
+    if([...markers,...verifiedOverrides].some(m=>!markerDateOk(m.date)||
+      m.date<"2000-01-01"||m.date>"2100-12-31"||!m.label.trim()||!m.chartLabel.trim())){
       setStatus("Correct the date, title and short chart label for every marker.");return;
     }
-    setSaving(true);setStatus("Saving custom annotations to persistent storage…");
+    if(verifiedOverrides.some(o=>!verifiedEvents.some(e=>e.id===o.id))){
+      setStatus("Unrecognized verified event in edits. Reload first.");return;
+    }
+    setSaving(true);setStatus("Saving FDA display edits and custom annotations…");
     try{
       const response=await fetch(endpoint,{
         method:"PUT",headers:{"content-type":"application/json"},
-        body:JSON.stringify({version,markers}),cache:"no-store",
+        body:JSON.stringify({version,markers,verifiedOverrides}),cache:"no-store",
       });
       const data=await response.json().catch(()=>({}));
       if(!response.ok)throw Error(response.status===409?
@@ -105,7 +143,7 @@ export default function FdaOverlayEditor({
       setVersion(data.version);
       setLastSaved(data.updatedAt||null);
       setDirty(false);
-      setStatus("Saved successfully for "+programId+". Changes will appear when you reopen the chart.");
+      setStatus("FDA overlay saved for "+programId+". Your display edits will remain when you reopen the chart.");
     }catch(e){setStatus(e instanceof Error?e.message:"Save failed.");}
     finally{setSaving(false);}
   };
@@ -121,14 +159,15 @@ export default function FdaOverlayEditor({
     <div style={{background:"#f6f9fc",padding:14,border:"1px solid #b6cbd6",borderRadius:10,margin:"12px 0"}}>
       <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center",flexWrap:"wrap"}}>
         <div><strong>FDA overlay editor</strong>
-          <div style={{fontSize:12,color:"#435569"}}>{verifiedEvents.length} sourced events locked · {markers.length} custom markers</div></div>
+          <div style={{fontSize:12,color:"#435569"}}>{verifiedEvents.length} sourced events editable on chart · {verifiedOverrides.length} display overrides · {markers.length} custom markers</div></div>
         <button type="button" onClick={()=>setOpen(v=>!v)} style={action}
           aria-expanded={open}>{open?"CLOSE EDITOR":"EDIT FDA OVERLAY"}</button>
       </div>
       {open&&<div style={{marginTop:14}}>
         <p style={{fontSize:13,margin:"0 0 12px",color:"#334155"}}>
-          Verified FDA milestones and their original dates are locked. Custom markers are personal research notes, not official FDA events.
-          Change the date field or drag a custom marker on the visible chart to move it.
+          You can edit every existing FDA marker's chart date, label, color and visibility.
+          The verified original FDA date and source link are always preserved below. Edited dates are user adjustments, not new official FDA announcements.
+          Change a date field or drag a visible event line on the chart. Click SAVE OVERLAY to persist your changes.
         </p>
         <div style={{display:"flex",gap:9,flexWrap:"wrap",alignItems:"center",marginBottom:12}}>
           <button type="button" style={action} disabled={version===null||markers.length>=40}
@@ -142,6 +181,52 @@ export default function FdaOverlayEditor({
           {status} {dirty?"· UNSAVED CHANGES":""}
           {lastSaved&&!dirty?" · Last saved "+new Date(lastSaved).toLocaleString():""}
         </div>
+        <details open style={{margin:"12px 0",padding:12,border:"1px solid #9db7ca",borderRadius:8,background:"#fff"}}>
+          <summary style={{fontSize:14,fontWeight:750,cursor:"pointer"}}>EDIT EXISTING FDA MARKERS ({verifiedEvents.length})</summary>
+          {verifiedEvents.map(event=>{
+            const o=getDisplay(event),isEdited=verifiedOverrides.some(v=>v.id===event.id);
+            return <fieldset key={event.id||event.date}
+              style={{margin:"12px 0",padding:12,border:"1px solid #bfcddb",borderRadius:8,minWidth:0}}>
+              <legend style={{fontSize:13,fontWeight:700,padding:"0 5px"}}>{event.chartLabel}{isEdited?" · USER-EDITED":""}</legend>
+              <div style={{fontSize:12,marginBottom:10,color:"#445369"}}>
+                <strong>Verified original:</strong> {event.date} · {event.label} ·
+                {event.source&&<a style={{marginLeft:5}} href={event.source} target="_blank" rel="noopener noreferrer">View original source</a>}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:10}}>
+                <label style={{fontSize:12,fontWeight:600}}>Displayed date (editable)
+                  <input style={controls} type="date" value={o.date}
+                    min="2000-01-01" max="2100-12-31"
+                    onChange={e=>editVerified(o.id,{date:e.target.value})} />
+                </label>
+                <label style={{fontSize:12,fontWeight:600}}>Displayed event label
+                  <input style={controls} maxLength={100} value={o.label}
+                    onChange={e=>editVerified(o.id,{label:e.target.value})}/>
+                </label>
+                <label style={{fontSize:12,fontWeight:600}}>Short chart label
+                  <input style={controls} maxLength={30} value={o.chartLabel}
+                    onChange={e=>editVerified(o.id,{chartLabel:e.target.value})}/>
+                </label>
+                <label style={{fontSize:12,fontWeight:600}}>Line color
+                  <select style={controls} value={o.color}
+                    onChange={e=>editVerified(o.id,{color:e.target.value})}>
+                    {COLORS.map(color=><option key={color.value} value={color.value}>{color.name}</option>)}
+                  </select>
+                </label>
+              </div>
+              <label style={{fontSize:13,display:"flex",alignItems:"center",gap:8,marginTop:12}}>
+                <input type="checkbox" checked={o.visible}
+                  onChange={e=>editVerified(o.id,{visible:e.target.checked})}
+                  style={{width:18,height:18}}/>
+                Show this FDA marker on chart
+              </label>
+              {isEdited&&<p style={{fontSize:12,color:"#99550c",margin:"8px 0 0"}}>
+                User-adjusted chart display · Original sourced date remains {event.date}.
+              </p>}
+              <button type="button" style={{...action,marginTop:9}} onClick={()=>resetVerified(o.id)}
+                disabled={!isEdited}>RESTORE ORIGINAL MARKER</button>
+            </fieldset>;
+          })}
+        </details>
         {markers.map((m,index)=><fieldset key={m.id}
           style={{margin:"12px 0",padding:12,border:"1px solid #9db7ca",borderRadius:8,background:"#fff",minWidth:0}}>
           <legend style={{fontSize:13,fontWeight:700,padding:"0 5px"}}>Custom marker {index+1} · Unverified</legend>
@@ -170,12 +255,10 @@ export default function FdaOverlayEditor({
             DELETE CUSTOM MARKER
           </button>
         </fieldset>)}
-        <details style={{marginTop:12}}>
-          <summary style={{fontWeight:700,cursor:"pointer",fontSize:13}}>View locked FDA source milestones ({verifiedEvents.length})</summary>
-          <ul style={{fontSize:12,paddingLeft:18}}>
-            {verifiedEvents.map(e=><li key={e.date+e.label}>{e.date} · {e.label} · Locked source record</li>)}
-          </ul>
-        </details>
+        <p style={{fontSize:12,marginTop:12,color:"#435569"}}>
+          The <strong>verified source records are never overwritten</strong>. Only your chart presentation settings
+          and separate custom annotations are saved. Changes to official FDA dates require new verified source evidence.
+        </p>
       </div>}
     </div>
   </section>;
