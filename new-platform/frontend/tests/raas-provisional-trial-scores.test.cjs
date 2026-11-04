@@ -3,6 +3,7 @@ const test=require("node:test"),assert=require("node:assert/strict"),fs=require(
 const frontend=path.resolve(__dirname,".."),repo=path.resolve(frontend,"../..");
 const read=p=>fs.readFileSync(path.join(frontend,p),"utf8");
 const get=n=>JSON.parse(read("data/"+n));
+const emptyHistory=()=>({...get("raas-trial-score-history.json"),records:[]});
 const score=require(path.join(repo,"scripts/raas_trial_provisional_metric_capture.cjs"));
 const historySource=read("lib/raas-trial-score-history.ts");
 const out=ts.transpileModule(historySource,{fileName:"raas-trial-score-history.ts",reportDiagnostics:true,
@@ -13,6 +14,12 @@ const history=m.exports;
 const candidates=()=>score.deriveCandidates(get("raas-pilot-observations.json"),
  get("raas-prospective-source-baselines.json"));
 const time1="2026-11-04T05:20:00.000Z",time2="2026-11-04T05:21:00.000Z";
+test("persisted RAAS history retains real source captures and experimental grades",()=>{
+ const ledger=history.parseRaasTrialHistory(get("raas-trial-score-history.json"));
+ assert.ok(ledger.records.length>=7);
+ assert.ok(ledger.records.filter(x=>x.kind==="METRIC_SCORE_UPDATED").length>=2);
+ assert.ok(ledger.records.every(x=>x.score===null&&x.scoreKind==="UNSCORED"));
+});
 test("two TOP trial timing-only grades are calculated from actual saved research, not arbitrary overall RAAS",()=>{
  const c=candidates();
  assert.equal(c.length,2);
@@ -33,7 +40,7 @@ test("first-sentence parser excludes another trial's OCEAN-2 timing",()=>{
  assert.equal(score.timingGrade("Unspecified 2027"),null);
 });
 test("history stores 1/30 experimental metric scores without overall composite",()=>{
- const initial=get("raas-trial-score-history.json");
+ const initial=emptyHistory();
  const a=score.appendProvisionalMetricEvents(initial,candidates(),time1,"2026-11-02");
  assert.equal(a.added,2);
  const h=history.parseRaasTrialHistory(a.ledger);
@@ -55,7 +62,7 @@ test("history stores 1/30 experimental metric scores without overall composite",
  }
 });
 test("same facts do not append duplicate ratings; new source timing appends",()=>{
- const initial=get("raas-trial-score-history.json");
+ const initial=emptyHistory();
  const a=score.appendProvisionalMetricEvents(initial,candidates(),time1,"2026-11-02");
  const b=score.appendProvisionalMetricEvents(a.ledger,candidates(),time2,"2026-11-02");
  assert.equal(b.added,0);
@@ -67,7 +74,7 @@ test("same facts do not append duplicate ratings; new source timing appends",()=
  assert.equal(history.parseRaasTrialHistory(c.ledger).records.length,3);
 });
 test("malformed metric events cannot be mistaken for validated overall scores",()=>{
- const a=score.appendProvisionalMetricEvents(get("raas-trial-score-history.json"),candidates(),time1,"2026-11-02");
+ const a=score.appendProvisionalMetricEvents(emptyHistory(),candidates(),time1,"2026-11-02");
  const ev=a.ledger.records[0];
  for(const patch of [{score:50},{scoreKind:"VALIDATED"},{metricGrades:[]},
   {metricGrades:[{...ev.metricGrades[0],sourceDate:"2027-01-01"}]}]){
@@ -78,7 +85,7 @@ test("nightly source audit remains idempotent after metric grade was appended",(
  const sources=require(path.join(repo,"scripts/raas_trial_history_capture.cjs"));
  const readout=sources.collectSourceCandidates([get("raas-pilot-observations.json"),
   get("raas-prospective-source-baselines.json")]);
- const sourceHistory=sources.appendSourceCaptures(get("raas-trial-score-history.json"),
+ const sourceHistory=sources.appendSourceCaptures(emptyHistory(),
   readout,time1).ledger;
  const grades=score.appendProvisionalMetricEvents(sourceHistory,candidates(),
   time2,"2026-11-02").ledger;
