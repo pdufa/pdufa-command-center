@@ -127,6 +127,9 @@ def extract(nct, ticker, study, fetched_at):
             "type": out.get("type"), "title": trim(out.get("title"), 450),
             "timeFrame": trim(out.get("timeFrame"), 150),
             "unit": trim(out.get("unitOfMeasure"), 130),
+            "groups": [{"id":trim(g.get("id"), 35),
+                        "title":trim(g.get("title"), 180)}
+                       for g in (out.get("groups") or [])[:30] if isinstance(g, dict)],
             "measurements": measures[:60],
             "analyses": [{k:a.get(k) for k in (
                 "pValue", "pValueComment", "method", "paramType",

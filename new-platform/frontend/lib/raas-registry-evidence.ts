@@ -6,6 +6,10 @@
 import type {RaasStage} from "./raas-metric-specs";
 export type RegistryPrimaryResult={
  title:string;timeFrame:string;unit:string;analysisCount:number;pValues:string[];
+ groups?:{id:string;title:string}[];
+ measurements?:{groupId?:string;value?:string;spread?:string;lowerLimit?:string;upperLimit?:string}[];
+ comparisons?:{groupIds:string[];pValue:string;method:string;paramType:string;
+   paramValue:string;ciPctValue:string;ciLowerLimit:string;ciUpperLimit:string}[];
 };
 export type RegistryTrialEvidence={
  nctId:string;ticker:string;sourceUrl:string;sourceHash:string;
@@ -20,13 +24,17 @@ export type RegistryTrialEvidence={
  primaryDefinitions:{measure:string;timeFrame:string}[];
  postedResults:boolean;postedPrimaryOutcomeCount:number;postedOtherOutcomeCount:number;
  primaryResults:RegistryPrimaryResult[];seriousAdverseEventTermCount:number;
+ seriousEventDetails?:{term:string;groups:{groupId:string;numAffected?:number;
+  numAtRisk?:number;numEvents?:number}[]}[];
  evidenceState:"PROTOCOL_ONLY"|"POSTED_RESULTS_UNGRADED";
 };
 export type RegistryEvidenceIndex={
  schemaVersion:1;scope:"RAAS_REGISTRY_TRIAL_EVIDENCE_INDEX";source:string;
  sourceAsOf:string;summary:{
   researchNcts:number;registryRecords:number;postedRegistryResults:number;
-  protocolOnly:number;approvedOverallRaasScores:0
+  protocolOnly:number;approvedOverallRaasScores:0;
+  trialsWithPrimaryComparisons?:number;trialsWithPrimaryGroupMeasurements?:number;
+  trialsWithPrimaryConfidenceIntervals?:number;trialsWithSafetyRiskDenominators?:number
  };records:RegistryTrialEvidence[];
 };
 export type RegistryMetricLead={
@@ -66,6 +74,7 @@ export function parseRegistryEvidenceIndex(raw:unknown):RegistryEvidenceIndex{
    e.sourceUrl!=="https://clinicaltrials.gov/study/"+e.nctId||
    !hash.test(e.sourceHash)||typeof e.postedResults!=="boolean"||
    !Array.isArray(e.primaryDefinitions)||!Array.isArray(e.primaryResults)||
+   (e.seriousEventDetails!==undefined&&!Array.isArray(e.seriousEventDetails))||
    !Array.isArray(e.registeredInterventions)||!Array.isArray(e.registeredConditions)||
    (e.registeredDesign!==undefined&&(
     !e.registeredDesign||typeof e.registeredDesign!=="object"||
@@ -80,11 +89,45 @@ export function parseRegistryEvidenceIndex(raw:unknown):RegistryEvidenceIndex{
    e.postedResults!==(e.evidenceState==="POSTED_RESULTS_UNGRADED")||
    (!e.postedResults&&(e.primaryResults.length>0||e.postedPrimaryOutcomeCount>0)))
    throw Error("RAAS_REGISTRY_INDEX_ROW_INVALID");
+  for(const out of e.primaryResults){
+   if((out.groups!==undefined&&(!Array.isArray(out.groups)||out.groups.length>14))||
+      (out.measurements!==undefined&&(!Array.isArray(out.measurements)||out.measurements.length>24))||
+      (out.comparisons!==undefined&&(!Array.isArray(out.comparisons)||out.comparisons.length>12)))
+    throw Error("RAAS_REGISTRY_INDEX_RESULT_DETAILS_INVALID");
+  }
+  if(!e.postedResults&&((e.seriousEventDetails?.length||0)>0||
+    e.primaryResults.some(x=>(x.measurements?.length||0)>0||(x.comparisons?.length||0)>0)))
+   throw Error("RAAS_REGISTRY_INDEX_UNPUBLISHED_DETAILS");
+  for(const event of e.seriousEventDetails||[]){
+   if(!Array.isArray(event.groups)||event.groups.length>12)throw Error("RAAS_REGISTRY_INDEX_SAE_INVALID");
+   for(const g of event.groups){
+    if(["numAffected","numAtRisk","numEvents"].some(k=>{
+     const n=g[k as "numAffected"|"numAtRisk"|"numEvents"];
+     return n!==undefined&&(!Number.isInteger(n)||n<0||n>1000000);
+    }))throw Error("RAAS_REGISTRY_INDEX_SAE_INVALID");
+   }
+  }
   ids.add(e.nctId);if(e.postedResults)posted++;
  }
  if(posted!==j.summary.postedRegistryResults||
   posted+j.summary.protocolOnly!==j.summary.researchNcts)
   throw Error("RAAS_REGISTRY_INDEX_COUNT_INVALID");
+ const counts={
+  trialsWithPrimaryComparisons:j.records.filter(r=>r.primaryResults.some(
+   out=>out.comparisons?.some(a=>a.groupIds?.length>=2))).length,
+  trialsWithPrimaryGroupMeasurements:j.records.filter(r=>r.primaryResults.some(
+   out=>(out.measurements?.length||0)>0)).length,
+  trialsWithPrimaryConfidenceIntervals:j.records.filter(r=>r.primaryResults.some(
+   out=>out.comparisons?.some(a=>!!a.ciLowerLimit&&!!a.ciUpperLimit))).length,
+  trialsWithSafetyRiskDenominators:j.records.filter(r=>r.seriousEventDetails?.some(
+   ev=>ev.groups.some(g=>typeof g.numAffected==="number"&&
+    typeof g.numAtRisk==="number"&&g.numAtRisk>0))).length
+ };
+ for(const key of Object.keys(counts) as (keyof typeof counts)[]){
+  const n=j.summary[key];
+  if(n!==undefined&&(!Number.isInteger(n)||n!==counts[key]))
+   throw Error("RAAS_REGISTRY_INDEX_SOURCE_COVERAGE_MISMATCH");
+ }
  return j;
 }
 let cached:Promise<RegistryEvidenceIndex|null>|null=null;
