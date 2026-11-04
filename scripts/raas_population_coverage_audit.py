@@ -105,7 +105,7 @@ def source_grades(path: Path, readouts: dict) -> dict:
                     or grade.get("ruleId") != allowed_rules[stage][metric_id]
                     or score not in (0, 25, 50, 75, 100)
                     or not isinstance(source_date, str)
-                    or not re.fullmatch(r"20\\d{2}-\\d{2}-\\d{2}", source_date)
+                    or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}", source_date)
                     or source_date > event.get("sourceAsOf", "9999-99-99")
                     or not str(grade.get("sourceUrl", "")).startswith("https://")):
                 raise ValueError("Unapproved numerical RAAS metric")
