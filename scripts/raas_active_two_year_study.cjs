@@ -17,6 +17,8 @@ const CONFIG="new-platform/frontend/data/raas-active-study-config.json";
 const INTAKE="new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json";
 const ARCHIVE="data/historical_assessed_decisions.csv";
 const VENUES="new-platform/frontend/data/raas-alpaca-venue-exceptions.json";
+const PRIMARY_LEADS="new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json";
+const EXPANDED_LEADS="new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json";
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const validUrl=s=>typeof s==="string"&&/^https:\/\/[^\s/]+\.[^\s/]+/i.test(s);
 const date=s=>typeof s==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&
@@ -84,6 +86,23 @@ function reviewIntake(intake,config){
  * Missing bars, cap evidence, or source chronology fail closed.
  * Missing exchange sessions/corporate actions still require independent audit.
  */
+/** Primary-source leads can justify a price fetch, NEVER trade eligibility.
+ * The active point-in-time intake remains the ONLY path to comparable returns.
+ */
+function priceOnlySourceLeads(leads,config) {
+ verifyConfig(config);
+ if(!Array.isArray(leads))throw Error("RAAS_TWO_YEAR_PRICE_LEADS_INVALID");
+ return leads.filter(r=>r&&
+   /^[A-Z][A-Z0-9.-]{0,11}$/.test(r.ticker||"")&&
+   date(r.pdufaTargetDate)&&r.pdufaTargetDate>=config.startDate&&
+   r.pdufaTargetDate<=config.endDate&&
+   validUrl(r.targetAnnouncementSourceUrl)&&
+   validUrl(r.phase3ReadoutSourceUrl||r.phase3EvidenceSourceUrl)&&
+   (r.reviewStatus==="SOURCE_LEADS_RESEARCH_ONLY"||
+    r.asOfStatus==="SOURCE_DATES_RECORDED_MARKET_CAP_AND_PRICE_INDEPENDENT_CHECK_PENDING")
+ ).map(r=>({ticker:r.ticker,pdufaDate:r.pdufaTargetDate,
+   caseId:r.caseId,evidenceStatus:"SOURCE_LEAD_PRICE_RESEARCH_ONLY"}));
+}
 function sessionWindow(win,bars,e,x) {
  if(!Number.isInteger(e)||!Number.isInteger(x)||e<4||e>90||x<3||x>=e)
   throw Error("RAAS_SESSION_WINDOW_OUT_OF_RANGE");
@@ -151,10 +170,13 @@ function selectResearchWindow(rows,censusComplete,config){
 }
 async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(INTAKE)),
  csv=read(ARCHIVE),venueExceptions=JSON.parse(read(VENUES)).records,
- key,secret,request=fetch,fetchDiscoveryPrices=true}={}){
+ key,secret,request=fetch,fetchDiscoveryPrices=true,researchLeads=[]}={}){
  const policy=verifyConfig(config),audit=reviewIntake(intake,policy);
  const candidates=discoveryQueue(csv,policy),byEvent=new Map(),statuses=[];
- for(const c of [...candidates,...audit.accepted]){
+ const sourceLeads=priceOnlySourceLeads(researchLeads,policy);
+ const archiveKeys=new Set(candidates.map(c=>c.ticker+"|"+c.pdufaDate));
+ const additionalSourceLeads=sourceLeads.filter(c=>!archiveKeys.has(c.ticker+"|"+c.pdufaDate));
+ for(const c of [...candidates,...audit.accepted,...sourceLeads]){
   const k=c.ticker+"|"+(c.pdufaDate||"");
   if(!byEvent.has(k))byEvent.set(k,{ticker:c.ticker,pdufaDate:c.pdufaDate});
  }
@@ -202,6 +224,7 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
    t14ExitDate:before.length>=14?before[before.length-14].date:null,
    t90EntryDate:before.length>=90?before[before.length-90].date:null,
    t79T14PriceCoverageOnly:before.length>=79,
+   extraSourceLeadPriceResearchOnly:additionalSourceLeads.some(l=>l.ticker===ticker&&l.pdufaDate===pdufaDate),
    eligibleForValidatedTrade:false};
  });
  const arithmetic=grid.filter(w=>w.status==="POINT_IN_TIME_PRICE_RESEARCH");
@@ -210,6 +233,7 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
   archiveCandidates:candidates.filter(x=>x.pdufaDate.startsWith(String(y))).length,
   auditedComplete:audit.years.find(x=>x.year===y)?.complete??false,
   sourceReviewedCases:audit.accepted.filter(x=>x.pdufaDate.startsWith(String(y))).length,
+  addedPriceOnlySourceLeads:additionalSourceLeads.filter(x=>x.pdufaDate.startsWith(String(y))).length,
   provisionalPriceWindows:arithmetic.filter(x=>x.year===y).length
  }]));
  const status=!key||!secret?"BLOCKED_MISSING_ALPACA_CREDENTIALS":
@@ -223,6 +247,8 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
   leadUnit:"TRADING_SESSIONS",
   source:"data/historical_assessed_decisions.csv (candidate events; dates unverified)",
   discoveryCandidates:candidates.length,
+  sourceLeadsExamined:sourceLeads.length,
+  additionalSourceLeadPriceCandidates:additionalSourceLeads.length,
   sourceReviewedIntakeCases:audit.accepted.length,rejectedIntake:audit.rejected,
   fullYearCensusAudited:audit.years.filter(x=>x.complete).length,
   requiredFullYearCensusAudits:2,
@@ -248,17 +274,21 @@ async function execute({config=JSON.parse(read(CONFIG)),intake=JSON.parse(read(I
    "Historical FDA events are retrospective discovery leads: original date-of-announcement, Phase 3 and entire outcome denominator are not established by an archive row.",
    "Only accepted original issuer+FDA+SEC research can be compared, and daily market cap must be established independently at every entry.",
    "Unverifiable vendor prices, delisted tickers, and foreign venues are explicit coverage gaps, never zero or positive returns.",
+   "Source-linked additional price fetches DO NOT count as source-reviewed intake, full event census or eligible PDUFA trading cases.",
    "The selection algorithm never approves any RAAS numerical metric or a trading optimum without the complete cohort and additional independent statistical/corporate-action review."]};
 }
 function main(){
- execute({key:process.env.APCA_API_KEY_ID||process.env.ALPACA_API_KEY_ID||process.env.ALPACA_API_KEY,
+ execute({researchLeads:[
+   ...JSON.parse(read(PRIMARY_LEADS)).records,
+   ...JSON.parse(read(EXPANDED_LEADS)).records
+  ],key:process.env.APCA_API_KEY_ID||process.env.ALPACA_API_KEY_ID||process.env.ALPACA_API_KEY,
   secret:process.env.APCA_API_SECRET_KEY||process.env.ALPACA_SECRET_KEY}).then(r=>{
   const dest=process.env.RAAS_TWO_YEAR_RESULT_PATH||
    path.join(root,"raas-2024-2025-pdufa-research.json");
   fs.mkdirSync(path.dirname(dest),{recursive:true});
   fs.writeFileSync(dest,JSON.stringify(r,null,2)+"\n");
   const headline={status:r.status,period:r.studyStartDate+" to "+r.studyEndDate,
-   discoveryCandidates:r.discoveryCandidates,reviewed:r.sourceReviewedIntakeCases,
+   discoveryCandidates:r.discoveryCandidates,extraSourceLeadPriceCandidates:r.additionalSourceLeadPriceCandidates,reviewed:r.sourceReviewedIntakeCases,
    yearsAudited:r.fullYearCensusAudited,
    priceSessions:r.historicAdjustedPriceBarsCollected,coverageT79PriceOnlyEvents:r.coverageT79PriceOnlyEvents,
    provisionalGridRows:r.provisionalWindowArithmeticRows,
@@ -276,4 +306,4 @@ function main(){
  });
 }
 if(require.main===module)main();
-module.exports={verifyConfig,discoveryQueue,reviewIntake,sessionWindow,tradingSessionGrid,selectResearchWindow,execute};
+module.exports={verifyConfig,discoveryQueue,reviewIntake,priceOnlySourceLeads,sessionWindow,tradingSessionGrid,selectResearchWindow,execute};

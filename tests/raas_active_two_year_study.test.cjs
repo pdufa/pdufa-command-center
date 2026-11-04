@@ -168,3 +168,29 @@ test("early FDA action and same-day public announcements fail closed",()=>{
  const sameDay=m.sessionWindow({...win,phase3ReadoutDate:normal.entryDate},e.bars,60,14);
  assert.equal(sameDay.reason,"EVENT_NOT_PUBLIC_BEFORE_ENTRY_SESSION");
 });
+
+test("extra dated issuer source lead fetches prices but cannot enter validated event intake",async()=>{
+ const e=event(2025,"NEW");
+ const lead={ticker:"NEW",caseId:"NEW|2025",pdufaTargetDate:e.pdufaDate,
+  targetAnnouncementSourceUrl:"https://example.org/issuer-pdufa-announcement",
+  phase3ReadoutSourceUrl:"https://example.org/issuer-phase3",
+  reviewStatus:"SOURCE_LEADS_RESEARCH_ONLY"};
+ assert.equal(m.priceOnlySourceLeads([lead],config).length,1);
+ assert.equal(m.priceOnlySourceLeads([{...lead,targetAnnouncementSourceUrl:""}],config).length,0);
+ const r=await m.execute({config,intake,csv:"event_key,ticker,pdufa_date\\n",
+  venueExceptions:[],researchLeads:[lead],key:"test",secret:"test",
+  request:async(url)=>{
+   const u=new URL(url);
+   assert.equal(u.searchParams.get("feed"),"sip");
+   assert.equal(u.searchParams.get("adjustment"),"all");
+   assert.ok(u.searchParams.get("start")<"2025-04-01"); // 160d lookback.
+   return response("NEW",e.bars);
+  }});
+ assert.equal(r.additionalSourceLeadPriceCandidates,1);
+ assert.equal(r.priceResearchEventsCollected,1);
+ assert.equal(r.sourceReviewedIntakeCases,0);
+ assert.equal(r.independentTradingCasesValidated,0);
+ assert.equal(r.provisionalWindowArithmeticRows,0);
+ assert.equal(r.approvedTradingWindow,null);
+ assert.equal(r.priceCoverage[0].extraSourceLeadPriceResearchOnly,true);
+});
