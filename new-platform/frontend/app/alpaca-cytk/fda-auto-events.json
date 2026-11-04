@@ -1,78 +1,94 @@
 {
-  "schemaVersion": 1,
-  "programId": "PDUFA-000069",
   "applicationNumber": "NDA219083",
-  "source": "https://open.fda.gov/apis/drug/drugsfda/",
-  "checkedAt": null,
-  "status": "AWAITING_FIRST_OFFICIAL_FDA_CHECK",
-  "eventCount": 0,
   "categories": [
     {
       "id": "original-approval",
-      "title": "Initial FDA approval",
-      "mode": "official_drugsfda"
+      "mode": "official_drugsfda",
+      "title": "Initial FDA approval"
     },
     {
       "id": "supplement-approval",
-      "title": "Supplement approvals",
-      "mode": "official_drugsfda"
+      "mode": "official_drugsfda",
+      "title": "Supplement approvals"
     },
     {
       "id": "tentative-action",
-      "title": "Tentative submission actions",
-      "mode": "official_drugsfda"
+      "mode": "official_drugsfda",
+      "title": "Tentative submission actions"
     },
     {
       "id": "crl",
-      "title": "Complete Response Letter",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "Complete Response Letter"
     },
     {
       "id": "adcom",
-      "title": "Advisory committee meetings and votes",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "Advisory committee meetings and votes"
     },
     {
       "id": "pdufa-extension",
-      "title": "PDUFA date changes or extensions",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "PDUFA date changes or extensions"
     },
     {
       "id": "inspection",
-      "title": "Manufacturing inspections",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "Manufacturing inspections"
     },
     {
       "id": "label",
-      "title": "Label revisions and boxed warnings",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "Label revisions and boxed warnings"
     },
     {
       "id": "rems",
-      "title": "REMS approval or modifications",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "REMS approval or modifications"
     },
     {
       "id": "designation",
-      "title": "Orphan, Breakthrough, Priority and Fast Track designations",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "Orphan, Breakthrough, Priority and Fast Track designations"
     },
     {
       "id": "submission",
-      "title": "NDA/sNDA submissions and acceptance",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "NDA/sNDA submissions and acceptance"
     },
     {
       "id": "review-letter",
-      "title": "FDA review letters and information requests",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "FDA review letters and information requests"
     },
     {
       "id": "resubmission",
-      "title": "CRL resubmissions and withdrawal",
-      "mode": "separate_source_required"
+      "mode": "separate_source_required",
+      "title": "CRL resubmissions and withdrawal"
     }
   ],
-  "events": [],
-  "limitations": "Only Drugs@FDA approved/tentative supplementary submissions auto-plot. A public record can arrive after the FDA action. Other categories stay armed for separate official-source integration and produce no invented dates. NDA-level supplement approval is not proof of MAPLE-HCM-specific approval."
+  "checkedAt": "2026-11-04T19:19:46.330835+00:00",
+  "eventCount": 1,
+  "events": [
+    {
+      "category": "supplement-approval",
+      "chartLabel": "FDA S-001 AP",
+      "date": "2026-02-05",
+      "detail": "FDA Drugs@FDA submission status AP. Exact supplement-to-MAPLE-HCM identity has not been independently verified; this marker represents the parent NDA submission only. Status date is not the source publication date.",
+      "id": "verified-openfda-nda219083-suppl-1",
+      "label": "FDA supplement approval (NDA 219083, S-001)",
+      "planned": false,
+      "source": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083",
+      "sourceApplication": "NDA219083",
+      "sourceDataset": "https://open.fda.gov/apis/drug/drugsfda/",
+      "submissionNumber": "1",
+      "submissionStatus": "AP",
+      "submissionType": "SUPPL"
+    }
+  ],
+  "limitations": "Only Drugs@FDA approved/tentative supplementary submissions auto-plot. A public record can arrive after the FDA action. Other categories stay armed for separate official-source integration and produce no invented dates. NDA-level supplement approval is not proof of MAPLE-HCM-specific approval.",
+  "programId": "PDUFA-000069",
+  "schemaVersion": 1,
+  "source": "https://open.fda.gov/apis/drug/drugsfda/",
+  "status": "SOURCE_CHECK_SUCCEEDED"
 }
