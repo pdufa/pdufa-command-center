@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,26);
+ assert.equal(feed.records.length,36);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -163,15 +163,36 @@ test("10-trial real clinical pilot has only research grades, not full RAAS or fa
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
  const cases=new Set(feed.records.map(r=>r.nctId));
  assert.equal(cases.size,10);
- assert.equal(feed.records.length,26);
+ assert.equal(feed.records.length,36);
  for(const nctId of cases){
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
    indication:r.indication},"post",true,feed);
-  assert.ok(scored.aiCrosscheckedCount>=2 && scored.aiCrosscheckedCount<=3);
+  assert.ok(scored.aiCrosscheckedCount>=2 && scored.aiCrosscheckedCount<=4);
   assert.equal(scored.independentReviewedCount,0);
   assert.equal(scored.fullResearchScore,null);
   assert.equal(scored.approvedOverallScore,null);
   assert.equal(scored.missingMetricIds.length,30-scored.aiCrosscheckedCount);
+ }
+});
+
+test("Actual trial-specific safety and pre-action CMC findings remain distinct from full 30-metric RAAS",()=>{
+ const fs=require("node:fs"),p=require("node:path");
+ const j=JSON.parse(fs.readFileSync(p.join(__dirname,"../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const x=parseReviewedMetricFeed(j),safety=x.records.filter(r=>r.metricId==="post-1-5");
+ const cmc=x.records.filter(r=>r.metricId==="post-3-4");
+ assert.equal(safety.length,8);
+ assert.equal(cmc.length,2);
+ assert.deepEqual(cmc.map(r=>r.nctId).sort(),["NCT04576949","NCT05206370"]);
+ for(const r of cmc){
+  assert.equal(r.finding,"MATERIAL_ADVERSE");
+  assert.equal(r.sourceDate,"2026-05-12");
+  assert.equal(r.independentReview,"AI_SOURCE_CROSSCHECKED");
+  assert.ok(!r.sourceUrl.includes("20260630"));
+  const score=fullReviewedTrialCandidate({nctId:r.nctId,ticker:r.ticker,
+   drug:r.drug,indication:r.indication},"post",true,x);
+  assert.equal(score.fullResearchScore,null);
+  assert.equal(score.approvedOverallScore,null);
+  assert.equal(score.independentReviewedCount,0);
  }
 });
