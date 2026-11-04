@@ -62,7 +62,7 @@ test("missing same-session raw bar can never borrow an adjusted close",()=>{
 test("SEC cover published after entry is unavailable even when later price matches",()=>{
  const a=clone(earlier),b=clone(later);
  const s=a.records.find(x=>x.ticker==="SLNO");
- s.firstConservativeEntryDate="2025-03-02"; // before later source but AFTER proposed T-79
+ s.firstConservativeEntryDate="2025-01-15"; // before later source but AFTER proposed T-79
  const r=run({earlier:a,later:b});
  const row=r.rows.find(x=>x.ticker==="SLNO");
  assert.equal(row.secSharesOutstanding,null);
