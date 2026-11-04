@@ -6,6 +6,7 @@ import type {RaasStage} from "./raas-metric-specs";
 import {parseRaasPilotFeed} from "./raas-score-engine";
 import {parseProspectiveSourceBaselines} from "./raas-prospective-source-baselines";
 import {scanRaasCurrentEvidence} from "./raas-current-evidence-scan";
+import {provisionalScoresForTrial} from "./raas-provisional-trial-scores";
 import {parseRaasCalibrations,parseRaasReviewedLedger,reviewedScoreForTrial}
  from "./raas-reviewed-score-ledger";
 import {parseHistoricalFeed,evaluateHistoricalFeed} from "./raas-historical-backtest";
@@ -76,9 +77,11 @@ export function raasSpreadsheetSummary(trial:RaasSpreadsheetTrial):RaasSpreadshe
    indication:trial.indication!
  },stage,"CURRENT",reviewed.sourceAsOf,diagnostics):null;
  const score=review?.score.score??null;
+ const pilotTiming=provisionalScoresForTrial(trial,stage).scoredMetrics
+  .find(grade=>grade.metricId==="pre-4-1")??null;
  return {stage,approvedScore:score,mappedAreas:mapped,
   missingAreas:30-mapped,sourceCoveragePercent:Math.round(mapped/30*100),
-  exploratoryTimingScore:evidence?.exploratoryTimingGrade?.score??null,
+  exploratoryTimingScore:pilotTiming?.score??null,
   sourceFactCount:evidence?(evidence.pilotObservations.length+evidence.prospectiveFacts.length):0,
   sourceAsOf:pilot.sourceAsOf,
   approvedMetrics:calibrations.entries.filter(x=>x.stage===stage).length,
