@@ -23,6 +23,8 @@ def trial(nct="NCT00000001", *, posted=True):
         "postedPrimaryOutcomeCount": 1 if posted else 0,
         "primaryResults": [{
             "title": "Symptom improvement", "timeFrame": "Week 12", "unit": "points",
+            "groups": [{"id": "GX", "title": "Study Drug 20 mg"},
+                       {"id": "GY", "title": "Placebo"}],
             "measurements": [{"groupId": "GX", "value": "10.1"},
                              {"groupId": "GY", "value": "7.4"}],
             "comparisons": [{
@@ -55,6 +57,9 @@ class ComponentTests(unittest.TestCase):
         self.assertEqual(status["fullValidatedRaasScores"], 0)
         self.assertEqual(len(comparisons), 1)
         self.assertEqual(comparisons[0]["groupIdsAsReported"], "GX;GY")
+        self.assertEqual(comparisons[0]["groupTitlesAsReported"], "Study Drug 20 mg | Placebo")
+        self.assertEqual(comparisons[0]["groupTitleResolution"], "ALL_EXACT_SOURCE_TITLES")
+        self.assertEqual(status["comparisonRowsWithExactSourceGroupTitles"], 1)
         self.assertEqual(comparisons[0]["parameterValueAsReported"], "2.7")
         self.assertEqual(len(safety), 2)
         self.assertEqual(safety[0]["observedAffectedRatePercent"], 7.5)
@@ -95,6 +100,20 @@ class ComponentTests(unittest.TestCase):
         self.assertFalse(components[0]["safetyRateDenominatorsDocumented"])
         self.assertFalse(components[0]["statisticalResultDocumented"])
         self.assertEqual(components[0]["reportingCompletenessDiagnosticScore"], 20)
+
+    def test_group_labels_fail_closed_on_missing_or_conflicting_id(self):
+        t = trial()
+        t["primaryResults"][0]["groups"] = [{"id":"GX","title":"Drug A"},
+                                             {"id":"GX","title":"Drug B"},
+                                             {"id":"GY","title":"Placebo"}]
+        _, comparisons, _, status = mod.build_components(index([t]))
+        self.assertEqual(comparisons[0]["groupTitleResolution"], "NOT_ALL_TITLES_SOURCE_RESOLVED")
+        self.assertEqual(comparisons[0]["groupTitlesAsReported"], " | Placebo")
+        self.assertEqual(status["comparisonRowsWithExactSourceGroupTitles"], 0)
+        t["primaryResults"][0]["groups"] = []
+        _, comparisons, _, status = mod.build_components(index([t]))
+        self.assertEqual(comparisons[0]["groupTitlesAsReported"], " | ")
+        self.assertEqual(status["comparisonRowsWithExactSourceGroupTitles"], 0)
 
     def test_missing_confidence_limits_are_not_imputed_from_p_value(self):
         t = trial()
