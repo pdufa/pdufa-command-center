@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - 'scripts/raas_research_workflow_receipt.cjs'
+      - 'tests/raas_research_workflow_receipt.test.cjs'
       - 'scripts/raas_active_two_year_study.cjs'
       - 'tests/raas_active_two_year_study.test.cjs'
       - 'new-platform/frontend/data/raas-active-study-config.json'
@@ -13,6 +15,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/raas_research_workflow_receipt.cjs'
+      - 'tests/raas_research_workflow_receipt.test.cjs'
       - 'scripts/raas_active_two_year_study.cjs'
       - 'tests/raas_active_two_year_study.test.cjs'
       - 'new-platform/frontend/data/raas-active-study-config.json'
@@ -36,6 +40,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Test research execution receipts are not confused with validation
+        run: node --test tests/raas_research_workflow_receipt.test.cjs
       - name: Test two-year scope, SEC/PDUFA chronology, independent holdout and no false grading
         run: |
           node --test tests/raas_alpaca_historical_price_study.test.cjs
@@ -50,11 +56,21 @@ jobs:
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
           RAAS_TWO_YEAR_RESULT_PATH: ${{ runner.temp }}/raas-2024-2025-pdufa-research.json
         run: node scripts/raas_active_two_year_study.cjs
+      - name: Record whether research really ran and ensure required live evidence artifact exists
+        if: always()
+        env:
+          RAAS_RECEIPT_SCOPE: ACTIVE_2024_2025_ALPACA_STUDY
+          RAAS_RECEIPT_EXPECTED: raas-2024-2025-pdufa-research.json
+          RAAS_RECEIPT_REQUIRED: raas-2024-2025-pdufa-research.json
+          RAAS_RECEIPT_OUTPUT: ${{ runner.temp }}/raas-2024-2025-research-execution-receipt.json
+        run: node scripts/raas_research_workflow_receipt.cjs
       - name: Save 2024–2025 source gaps and actual price research, not RAAS scores
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: raas-2024-2025-pdufa-research
-          path: ${{ runner.temp }}/raas-2024-2025-pdufa-research.json
+          path: |
+            ${{ runner.temp }}/raas-2024-2025-pdufa-research.json
+            ${{ runner.temp }}/raas-2024-2025-research-execution-receipt.json
           retention-days: 30
-          if-no-files-found: ignore
+          if-no-files-found: warn

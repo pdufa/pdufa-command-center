@@ -5,6 +5,8 @@ on:
     - cron: '05 8 * * *'
   pull_request:
     paths:
+      - 'scripts/raas_research_workflow_receipt.cjs'
+      - 'tests/raas_research_workflow_receipt.test.cjs'
       - 'scripts/raas_active_2024_2025_fda_outcome_discovery.cjs'
       - 'tests/raas_active_2024_2025_fda_outcome_discovery.test.cjs'
       - 'scripts/raas_active_2024_2025_fda_source_triage_queue.cjs'
@@ -23,6 +25,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/raas_research_workflow_receipt.cjs'
+      - 'tests/raas_research_workflow_receipt.test.cjs'
       - 'scripts/raas_active_2024_2025_fda_outcome_discovery.cjs'
       - 'tests/raas_active_2024_2025_fda_outcome_discovery.test.cjs'
       - 'scripts/raas_active_2024_2025_fda_source_triage_queue.cjs'
@@ -51,6 +55,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Test research execution receipts are not confused with validation
+        run: node --test tests/raas_research_workflow_receipt.test.cjs
       - name: Test FDA original and supplemental source pagination, independent CRL letter archive, and no grade promotion
         run: |
           node --test tests/raas_active_2024_2025_fda_outcome_discovery.test.cjs
@@ -91,12 +97,22 @@ jobs:
           printf 'FDA source discovery inputs at commit %s\n' "$GITHUB_SHA" > "${{ runner.temp }}/raas-fda-discovery-provenance.txt"
           sha256sum "${{ runner.temp }}/raas-2024-2025-"*.json "${{ runner.temp }}/raas-2024-2025-"*.csv >> "${{ runner.temp }}/raas-fda-discovery-provenance.txt"
 
+      - name: Record whether research really ran and ensure required live evidence artifact exists
+        if: always()
+        env:
+          RAAS_RECEIPT_SCOPE: ACTIVE_2024_2025_FDA_OUTCOME_DISCOVERY
+          RAAS_RECEIPT_EXPECTED: raas-2024-2025-official-fda-action-discovery.json,raas-2024-2025-source-review-queue.json,raas-2024-2025-census-gap-audit.json
+          RAAS_RECEIPT_REQUIRED: raas-2024-2025-official-fda-action-discovery.json
+          RAAS_RECEIPT_OUTPUT: ${{ runner.temp }}/raas-2024-2025-research-execution-receipt.json
+        run: node scripts/raas_research_workflow_receipt.cjs
       - name: Preserve FDA source action candidates and completeness gaps (no trading scores)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: raas-2024-2025-official-fda-outcomes
+          # This receipt is emitted even when a pull request intentionally skips all live data collection.
           path: |
+            ${{ runner.temp }}/raas-2024-2025-research-execution-receipt.json
             ${{ runner.temp }}/raas-2024-2025-official-fda-action-discovery.json
             ${{ runner.temp }}/raas-2024-2025-source-review-queue.json
             ${{ runner.temp }}/raas-2024-2025-source-review-queue.csv
