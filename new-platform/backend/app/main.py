@@ -146,7 +146,7 @@ PROGRAM_ID_PATTERN = re.compile(r"^PDUFA-[0-9]{6,}$")
 
 class CustomFdaMarker(BaseModel):
     id: str = Field(min_length=8, max_length=64, pattern=r"^manual-[a-z0-9-]{1,57}$")
-    date: str = Field(min_length=10, max_length=10, pattern=r"^\\d{4}-\\d{2}-\\d{2}$")
+    date: str = Field(min_length=10, max_length=10, pattern=r"^\d{4}-\d{2}-\d{2}$")
     label: str = Field(min_length=1, max_length=100)
     chartLabel: str = Field(min_length=1, max_length=30)
     detail: str = Field(default="", max_length=500)
