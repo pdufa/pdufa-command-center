@@ -1007,6 +1007,7 @@ export default function Phase3ReadoutSheets(){
       <h2>Phase 3 · Public Data Release</h2>
       <p>Open only the section you want to work with. All segments start collapsed.</p>
       <p><a href="/raas-worklist" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>Open TOP + BOTTOM · all 60 RAAS metric validation steps, missing evidence and approval status</a></p>
+      <p><a href="/raas-scan" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>RAAS rating-system accuracy and expandable history · global self-audit</a></p>
     </div>
     <details className={css.topSegment} data-segment="phase3-overview">
       <summary className={css.topSegmentSummary}>Research overview &amp; source checks
