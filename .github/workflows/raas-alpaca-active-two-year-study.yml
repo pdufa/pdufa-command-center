@@ -8,6 +8,7 @@ on:
       - 'new-platform/frontend/data/raas-active-study-config.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
       - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
+      - 'new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json'
       - '.github/workflows/raas-alpaca-active-two-year-study.yml'
   push:
     branches: [main]
@@ -17,6 +18,7 @@ on:
       - 'new-platform/frontend/data/raas-active-study-config.json'
       - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
       - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
+      - 'new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json'
       - '.github/workflows/raas-alpaca-active-two-year-study.yml'
 permissions:
   contents: read
