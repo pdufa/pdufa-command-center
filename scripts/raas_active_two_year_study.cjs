@@ -97,6 +97,9 @@ function priceOnlySourceLeads(leads,config) {
    /^[A-Z][A-Z0-9.-]{0,11}$/.test(r.ticker||"")&&
    date(r.pdufaTargetDate)&&r.pdufaTargetDate>=config.startDate&&
    r.pdufaTargetDate<=config.endDate&&
+   date(r.targetAnnouncementDate)&&r.targetAnnouncementDate<r.pdufaTargetDate&&
+   date(r.phase3ReadoutDate||r.phase3EvidenceDate)&&
+   (r.phase3ReadoutDate||r.phase3EvidenceDate)<r.pdufaTargetDate&&
    validUrl(r.targetAnnouncementSourceUrl)&&
    validUrl(r.phase3ReadoutSourceUrl||r.phase3EvidenceSourceUrl)&&
    (r.reviewStatus==="SOURCE_LEADS_RESEARCH_ONLY"||
