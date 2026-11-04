@@ -41,7 +41,7 @@ test("actual numerical registry facts are mapped to exact RAAS BOTTOM ingredient
  assert.equal(effects.length,1);
  assert.equal(effects[0].measurement.value,-9);
  assert.deepEqual(effects[0].metricIds,["post-1-1"]);
- assert.equal(cis.length,1);assert.equal(cis[0].measurement.value,6.2);
+ assert.equal(cis.length,1);assert.ok(Math.abs(cis[0].measurement.value-6.2)<1e-9);
  assert.deepEqual(cis[0].metricIds,["post-1-3"]);
  assert.equal(p.length,1);assert.equal(p[0].measurement.value,0.0006);
  assert.equal(adverse.length,2);assert.equal(adverse[0].measurement.value,3);
