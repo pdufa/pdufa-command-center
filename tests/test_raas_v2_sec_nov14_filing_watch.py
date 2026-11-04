@@ -50,6 +50,7 @@ class SecGoalSourceFreshnessTests(unittest.TestCase):
         r=self.call(both(company("CYTK",rows),company("SMMT",summit)))
         self.assertEqual(r["monitoredIssuerFamilies"],2)
         self.assertEqual(r["sourceAvailableCount"],2)
+        self.assertEqual(r["sourceCoverageStatus"],"TWO_ISSUER_SOURCES_AVAILABLE")
         self.assertEqual(r["issuerFamiliesWithNewerFilings"],2)
         self.assertEqual(r["potentialNewFilingReviewCandidates"],2)
         a,b=r["rows"]
@@ -74,6 +75,8 @@ class SecGoalSourceFreshnessTests(unittest.TestCase):
             s={"CYTK":status,"SMMT":status}
             r=self.call(p,s)
             self.assertEqual(r["sourceAvailableCount"],0)
+            self.assertEqual(r["sourceCoverageStatus"],
+                             "ISSUER_SOURCES_UNAVAILABLE_NOT_ZERO_NEW_FILINGS")
             self.assertEqual(r["potentialNewFilingReviewCandidates"],0)
             self.assertTrue(all(x["absenceOfNewFilingProvesNoFDAExtension"] is False
                                 for x in r["rows"]))
