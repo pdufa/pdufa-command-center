@@ -10,6 +10,7 @@ import type {ProvisionalMetricGrade} from "./raas-threshold-profiles";
 import {registryMetricLeads,type RegistryTrialEvidence} from "./raas-registry-evidence";
 import {rawRaasRegistryDesignDiagnostic,
  type RawDesignDiagnostic} from "./raas-raw-registry-design";
+import {fullReviewedTrialCandidate,type ReviewedTrialCandidate} from "./raas-reviewed-full-score";
 import {RAAS_PROVISIONAL_RUBRICS,provisionalStageCoverage,
  type RaasProvisionalRubric} from "./raas-provisional-rubric-engine";
 import pilotData from "../data/raas-pilot-observations.json";
@@ -22,7 +23,7 @@ export type MetricEvidenceLead={
  id:string;kind:string;sourceDate:string;sourceUrl:string;description:string;
  measurement:{label:string;value:number;unit:string}|null;
 };
-export type MetricScoreStatus="EXPERIMENTAL_GRADE"|"SOURCE_LEADS_ONLY"|"EVIDENCE_MISSING";
+export type MetricScoreStatus="EXPERIMENTAL_GRADE"|"REVIEWED_PROVISIONAL_GRADE"|"SOURCE_LEADS_ONLY"|"EVIDENCE_MISSING";
 export type MetricGradebookRow={
  id:string;name:string;requiredEvidence:string;scoreRule:string;criticalRisk:string;
  status:MetricScoreStatus;grade:ProvisionalMetricGrade|null;
@@ -40,6 +41,7 @@ export type RaasTrialGradebook={
  provisionalDiagnostic:ReturnType<typeof provisionalStageCoverage>;
  registrySourceLeadCount:number;registryNumericObservationCount:number;
  rawDesignDiagnostic:RawDesignDiagnostic|null;
+ reviewedCandidate:ReviewedTrialCandidate;
  categories:MetricGradebookCategory[];
 };
 /** Full issuer/trial/therapy identity; the same ticker is never sufficient. */
@@ -53,7 +55,7 @@ function unique<T extends {nctId:string;ticker:string;drug:string;indication:str
 }
 export function buildRaasMetricGradebook(
  trial:{nctId:string;ticker:string;drug?:string;indication?:string},stage:RaasStage,
- registry:RegistryTrialEvidence|null=null
+ registry:RegistryTrialEvidence|null=null,stageVerified=false
 ):RaasTrialGradebook{
  if(stage!=="pre"&&stage!=="post")throw Error("RAAS_GRADEBOOK_STAGE_REQUIRED");
  if(!/^NCT\d{8}$/.test(trial.nctId)||!trial.ticker?.trim())
@@ -75,16 +77,35 @@ export function buildRaasMetricGradebook(
  }
  const registryLeads=registryMetricLeads(registry,stage,trial);
  leads.push(...registryLeads);
+ const reviewedCandidate=fullReviewedTrialCandidate(trial,stage,stageVerified);
+ for(const r of reviewedCandidate.grades){
+  leads.push({id:r.metricId+"-documented-review-"+r.assessedAt,
+   metricIds:[r.metricId],kind:"SOURCE_GATED_DOCUMENTED_PROVISIONAL_REVIEW",
+   sourceDate:r.sourceDate,sourceUrl:r.sourceUrl,description:r.explanation,
+   measurement:null});
+ }
  // Numeric component scoring is only enabled for narrowly source-gated pilot
  // rules, never inferred from a registry endpoint definition or a p-value.
  const provisional=provisionalScoresForTrial(trial,stage);
+ const reviewedGrades:ProvisionalMetricGrade[]=reviewedCandidate.grades.map(g=>({
+  metricId:g.metricId,stage:g.stage,snapshot:"CURRENT",
+  score:g.score,ruleId:g.ruleVersion,kind:"RESEARCH_ONLY_NOT_VALIDATED",
+  observationId:"documented-review-"+g.metricId+"-"+g.assessedAt,
+  sourceUrl:g.sourceUrl,sourceDate:g.sourceDate,
+  label:"Documented source-and-benchmark review; research only",
+  inputs:g.explanation,explanation:g.explanation,
+  limitations:"Not validated against out-of-sample FDA outcomes; does not establish an approval probability."
+ }));
  const gradeMap=new Map(provisional.scoredMetrics.map(g=>[g.metricId,g]));
+ for(const g of reviewedGrades)gradeMap.set(g.metricId,g);
+ const reviewedIds=new Set(reviewedGrades.map(g=>g.metricId));
  const categories=RAAS_METRIC_CATALOG[stage].map(group=>{
   const rows=group.metrics.map(metric=>{
    const evidence=leads.filter(lead=>lead.metricIds.includes(metric.id))
     .map(({metricIds,...lead})=>lead);
    const grade=gradeMap.get(metric.id)||null;
-   const status:MetricScoreStatus=grade?"EXPERIMENTAL_GRADE":
+   const status:MetricScoreStatus=reviewedIds.has(metric.id)?"REVIEWED_PROVISIONAL_GRADE":
+    grade?"EXPERIMENTAL_GRADE":
     evidence.length?"SOURCE_LEADS_ONLY":"EVIDENCE_MISSING";
    const rubric=RAAS_PROVISIONAL_RUBRICS.find(r=>r.stage===stage&&r.metricId===metric.id);
    if(!rubric)throw Error("RAAS_GRADEBOOK_RUBRIC_MISSING:"+metric.id);
@@ -106,5 +127,6 @@ export function buildRaasMetricGradebook(
   approvedOverallScore:null,categories,registrySourceLeadCount:registryLeads.length,
   registryNumericObservationCount:registryLeads.filter(x=>x.measurement!==null).length,
   rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial),
+  reviewedCandidate,
   provisionalDiagnostic:provisionalStageCoverage(stage,provisional.scoredMetrics)};
 }
