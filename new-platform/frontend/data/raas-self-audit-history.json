@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_SELF_AUDIT_HISTORY",
+  "note": "Immutable snapshots of RAAS system evidence/validation progress, separate from per-trial rating histories. These snapshots record objective source counters and captured timestamps, not estimated predictive accuracy. No historical self-score or self-accuracy rate is backfilled.",
+  "records": []
+}

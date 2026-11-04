@@ -1007,6 +1007,7 @@ export default function Phase3ReadoutSheets(){
       <h2>Phase 3 · Public Data Release</h2>
       <p>Open only the section you want to work with. All segments start collapsed.</p>
       <p><a href="/raas-worklist" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>Open TOP + BOTTOM · all 60 RAAS metric validation steps, missing evidence and approval status</a></p>
+      <p><a href="/raas-scan" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>RAAS rating-system accuracy and expandable history · global self-audit</a></p>
     </div>
     <details className={css.topSegment} data-segment="phase3-overview">
       <summary className={css.topSegmentSummary}>Research overview &amp; source checks
@@ -1106,11 +1107,12 @@ export default function Phase3ReadoutSheets(){
         </TrialColumnFilterBar>
         <div className={css.tableScroll} role="region" aria-label="Unverified Phase 3 readout research queue" tabIndex={0}>
           <table className={css.table}>
-            <thead><tr><th>NCT</th><th>Ticker</th><th>Company</th><th>Registry status</th><th>Public readout</th></tr></thead>
+            <thead><tr><th>NCT</th><th>Ticker</th><th>Company</th><th>Registry status</th><th>Public readout</th><th>RAAS History</th></tr></thead>
             <tbody>{unknown.slice(activePage*LIMIT,(activePage+1)*LIMIT).map(row=><tr key={row.nctId}>
               <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
               <td>{row.ticker}</td><td>{row.company}</td><td>{row.status.replaceAll("_"," ")}</td>
               <td>Not verified — research required</td>
+              <td><RaasTrialHistoryButton row={row} bucket={null}/></td>
             </tr>)}</tbody>
           </table>
         </div>

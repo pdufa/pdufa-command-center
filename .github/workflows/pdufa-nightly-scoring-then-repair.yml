@@ -22,6 +22,7 @@ on:
       - score_input_audit.py
       - scripts/nightly_scoring_audit.py
       - scripts/raas_trial_history_capture.cjs
+      - scripts/raas_self_audit_history_capture.cjs
       - scripts/post_scan_repair.py
       - scripts/scan_recovery_triage.py
       - tests/test_nightly_scoring_audit.py
@@ -136,13 +137,16 @@ jobs:
       - name: Append unified TOP/BOTTOM RAAS research history on saved evidence changes
         # Unscored research captures only; no invented historical score or FDA probability.
         run: node scripts/raas_trial_history_capture.cjs
+      - name: Append separate RAAS methodology self-audit evidence snapshots
+        # Audit progress only: never infer predictive accuracy from raw counts.
+        run: node scripts/raas_self_audit_history_capture.cjs
       - name: Publish latest scoring-input findings on dashboard
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/nightly_scoring_audit.json new-platform/frontend/data/raas-trial-score-history.json
+          git add data/nightly_scoring_audit.json new-platform/frontend/data/raas-trial-score-history.json new-platform/frontend/data/raas-self-audit-history.json
           if ! git diff --cached --quiet; then
             git commit -m "Publish nightly scoring input audit"
             for attempt in 1 2 3; do
