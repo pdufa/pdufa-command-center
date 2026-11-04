@@ -9,6 +9,7 @@ import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
+import RaasRegistryEvidenceButton from "./RaasRegistryEvidenceButton";
 import css from "./raas-history/page.module.css";
 
 type Assessment={row:ReadoutRow;stage:RaasStage|null;timing:number|null;
@@ -121,7 +122,8 @@ export default function RaasFullUniverseScores(){
    research-only grading rules. No source evidence means <strong>Not scored</strong>,
    never 0/100. This view does not independently verify PIPELINE or PDUFA eligibility.
    TOP/BOTTOM are assigned only from separately documented issuer readouts; registry
-   stage names alone do not establish public results.</p>
+   stage names alone do not establish public results. Use the Registry facts button
+   on every row, including UNVERIFIED, to inspect newly collected evidence.</p>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",margin:"12px 0"}}>
    <button type="button" aria-pressed={scope==="cap"}
     onClick={()=>{setScope("cap");setPage(0)}}
@@ -194,7 +196,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong>. Missing scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","Source / missing evidence","Registry facts","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -214,6 +216,7 @@ export default function RaasFullUniverseScores(){
       rel="noopener noreferrer">Component source · {x.sourceDate}</a>:
       x.stage===null?"Verify public Phase 3 readout stage first":
       "Source-backed rule and required inputs not yet available"}</td>
+     <td style={cell}><RaasRegistryEvidenceButton row={x.row}/></td>
      <td style={cell}><RaasMetricGradebook row={x.row} bucket={x.stage}/></td>
      <td style={cell}><RaasTrialHistoryButton row={x.row} bucket={x.stage}/></td>
     </tr>)}</tbody>
