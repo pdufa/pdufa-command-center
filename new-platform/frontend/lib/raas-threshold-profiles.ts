@@ -39,7 +39,7 @@ export const RAAS_THRESHOLD_PROFILES:readonly RaasThresholdProfile[]=
   const def=evidenceByCategory[sectionKey(stage,index)];
   return cat.metrics.map(metric=>({
    metricId:metric.id,stage,category:cat.name,
-   status:metric.id==="pre-4-1"?"PROVISIONAL_NOT_CALIBRATED" as const:"BENCHMARK_REQUIRED" as const,
+   status:["pre-4-1","post-1-1","post-1-2"].includes(metric.id)?"PROVISIONAL_NOT_CALIBRATED" as const:"BENCHMARK_REQUIRED" as const,
    minimumInputs:metric.requiredEvidence+"; "+def.minimumInputs,
    benchmarkRequired:metric.scoreRule+"; "+def.benchmarkRequired,
    direction:def.direction,
