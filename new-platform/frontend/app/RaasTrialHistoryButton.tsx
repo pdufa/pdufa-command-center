@@ -15,19 +15,19 @@ const kindName=(k:string)=>({
 } as Record<string,string>)[k]||k;
 
 export default function RaasTrialHistoryButton({row,bucket}:{
- row:ReadoutRow;bucket:RaasStage
+ row:ReadoutRow;bucket:RaasStage|null
 }){
  const [open,setOpen]=useState(false);
  const [selected,setSelected]=useState(0);
  const buttonRef=useRef<HTMLButtonElement>(null);
  const history=historyForTrial(ledger,{nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication});
- const score=currentHistoryScore(history,bucket);
+ const score=bucket?currentHistoryScore(history,bucket):null;
  const stageEntries=history.filter(e=>e.stage===bucket);
  const lastForStage=stageEntries.at(-1);
  const earlierStageEntries=history.filter(e=>e.stage!==bucket);
  const event=[...history].reverse()[selected]||null;
- const label=stageName(bucket);
+ const label=bucket?stageName(bucket):"UNVERIFIED";
  const controlId="raas-trial-history-"+row.nctId+"-"+bucket;
  useEffect(()=>{
   if(!open)return;
@@ -70,12 +70,13 @@ export default function RaasTrialHistoryButton({row,bucket}:{
        <header className={css.head}>
         <div><h3>{row.ticker} · Trial RAAS score history</h3>
          <p>One NCT + therapy history follows the trial from TOP to BOTTOM.
-          TOP scores are never reused as BOTTOM ratings.</p></div>
+          TOP scores are never reused as BOTTOM ratings. In UNVERIFIED, history remains visible
+          while the public readout classification is unresolved.</p></div>
         <span className={css.tag}>{label} now</span>
        </header>
        <div className={css.cards}>
-        <div><small>Current {label} score</small><strong>{score?score.score+"/100":"Not scored"}</strong></div>
-        <div><small>{label} captures</small><strong>{stageEntries.length}</strong></div>
+        <div><small>Current {label} score</small><strong>{score?score.score+"/100":bucket?"Not scored":"Stage unverified"}</strong></div>
+        <div><small>{label} captures</small><strong>{bucket?stageEntries.length:"Not classified"}</strong></div>
         <div><small>Other stage retained</small><strong>{earlierStageEntries.length}</strong></div>
         <div><small>Latest evidence areas</small><strong>{lastForStage?lastForStage.metricCoverage+"/30":"N/A"}</strong></div>
        </div>
