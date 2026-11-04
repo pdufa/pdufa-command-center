@@ -1,12 +1,14 @@
 /** Current, explicitly exploratory RAAS *component* rating engine.
  * Does not generate overall RAAS, clinical probabilities, investment signals
  * or retroactive forecasts. Missing metrics are NEVER assigned a number.
- * The only defensible numeric pilot rule is sponsor readout-window specificity.
+ * Source-specific exploratory pilots: sponsor-window specificity and exact
+ * placebo-controlled barzolvolimab UAS7/complete-response differences.
  */
 import {parseRaasPilotFeed,type RaasObservation} from "./raas-score-engine";
 import {parseProspectiveSourceBaselines} from "./raas-prospective-source-baselines";
 import {provisionalTimingSpecificity,type ProvisionalMetricGrade} from "./raas-threshold-profiles";
 import {RAAS_METRIC_CATALOG,type RaasStage} from "./raas-metric-specs";
+import {provisionalUas7Contrast} from "./raas-provisional-clinical-signal";
 import pilotData from "../data/raas-pilot-observations.json";
 import prospectiveData from "../data/raas-prospective-source-baselines.json";
 
@@ -92,7 +94,10 @@ export function provisionalScoresForTrial(
    }
   }
  }
- // All other 59 metrics lack predeclared source-validated numeric rules.
+ if(stage==="post"&&p){
+  grades.push(...provisionalUas7Contrast(p,p.observations,pilot.sourceAsOf));
+ }
+ // Other metrics remain unscored pending adequate independent benchmark reviews.
  const dedup=[...new Map(grades.map(g=>[g.metricId,g])).values()];
  const valid=new Set(RAAS_METRIC_CATALOG[stage].flatMap(g=>g.metrics.map(m=>m.id)));
  const scoredMetrics=dedup.filter(g=>valid.has(g.metricId));
