@@ -1,25 +1,25 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-03T04:21:52.498202+00:00",
+  "started_at": "2026-11-04T04:21:02.737773+00:00",
   "registry_companies": 717,
   "pages": 4,
-  "studies_checked": 3965,
-  "matched_posted_results": 101,
+  "studies_checked": 3964,
+  "matched_posted_results": 103,
   "new_records": 1,
   "new_record_details": [
     {
-      "ticker": "NVO",
-      "drug": "Placebo (Semaglutide) | Semaglutide",
-      "nct_id": "NCT04916470",
-      "results_posted_at": "2026-11-02",
-      "source_url": "https://clinicaltrials.gov/study/NCT04916470",
+      "ticker": "APMD",
+      "drug": "AD109 | Placebo",
+      "nct_id": "NCT05811247",
+      "results_posted_at": "2026-11-03",
+      "source_url": "https://clinicaltrials.gov/study/NCT05811247",
       "verification_status": "DRUG_IDENTITY_REVIEW"
     }
   ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-03T04:21:59.521051+00:00",
-  "stored_results": 2495,
+  "finished_at": "2026-11-04T04:21:15.650839+00:00",
+  "stored_results": 2496,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
