@@ -56,12 +56,15 @@ def secure(v: object) -> bool:
     return isinstance(v, str) and re.fullmatch(r"https://[^\s<>\"']+", v) is not None
 
 
-def cap_state(record: dict, as_of: date, registry_status: str) -> str:
+def cap_state(record: dict, as_of: date, registry_status: str,
+              results_posted: bool) -> str:
     cap_age = (as_of - iso(record["marketCapAsOf"])).days
     trial_age = (as_of - iso(record["registryStatusCheckedAt"])).days
     if registry_status not in {"RECRUITING", "NOT_YET_RECRUITING",
                                "ACTIVE_NOT_RECRUITING", "ENROLLING_BY_INVITATION"}:
         return "NOT_ACTIVE_IN_CURRENT_REGISTRY"
+    if results_posted:
+        return "REGISTRY_RESULTS_POSTED_REVERIFY_READOUT"
     if record.get("phase3OutcomeAlreadyPublic") is not False:
         return "READOUT_STATUS_NOT_VERIFIED_PRE"
     if cap_age < 0 or trial_age < 0:
@@ -132,8 +135,8 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
                 "marketCapSourceUrl","readoutGuidanceUrl")) or
             rec["clinicalRegistryUrl"] != "https://clinicaltrials.gov/study/" + nct or
             r["sourceUrl"] != rec["clinicalRegistryUrl"] or
-            r.get("registryResultsPosted") != "False" or
-            rec.get("registryReportedStatus") != r.get("registryStatus") or
+            r.get("registryResultsPosted") not in ("False", "True") or
+            rec.get("registryReportedStatus") != "RECRUITING" or
             iso(rec.get("readoutGuidancePublished")) > iso(snapshot["asOf"]) or
             iso(rec.get("marketCapAsOf")) > iso(snapshot["asOf"]) or
             iso(rec.get("registryStatusCheckedAt")) > iso(snapshot["asOf"]) or
@@ -170,7 +173,8 @@ def build(snapshot: dict, reviews: dict, cohort_csv: str, ledger_csv: str,
     for nct in sorted(case_map):
         case = case_map[nct]
         reg = reg_map[nct]
-        state = cap_state(case, day, reg["registryStatus"])
+        state = cap_state(case, day, reg["registryStatus"],
+                          reg["registryResultsPosted"] == "True")
         states[nct] = state
         by_trial[nct] = 0
         for metric in METRIC_IDS:
