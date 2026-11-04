@@ -116,7 +116,7 @@ class PartialMetricRatingsTests(unittest.TestCase):
 
     def test_mismatched_ticker_and_source_rejected(self):
         row = trial()
-        with self.assertRaisesRegex(ValueError, "REVIEW_EVIDENCE"):
+        with self.assertRaisesRegex(ValueError, "REVIEW_CROSS_TRIAL"):
             mod.build(index([row]), feed([{**review(), "ticker": "FAKE"}]), self.spec)
         with self.assertRaisesRegex(ValueError, "REVIEW_EVIDENCE"):
             mod.build(index([row]), feed([{**review(), "sourceUrl": "not-a-url"}]), self.spec)
