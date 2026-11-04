@@ -79,11 +79,15 @@ def source_grades(path: Path, readouts: dict) -> dict:
             continue
         nct = event.get("nctId")
         stage = "TOP" if event.get("stage") == "pre" else "BOTTOM"
-        if (nct not in readouts or readouts[nct] != stage
+        if (nct not in readouts
                 or event.get("score") is not None
                 or event.get("scoreKind") != "UNSCORED"
                 or not isinstance(event.get("metricGrades"), list)):
             raise ValueError("Cross-trial or composite score in experimental ledger")
+        if readouts[nct] != stage:
+            # A TOP grade remains in the permanent ledger after a later BOTTOM
+            # classification; only current-stage grades appear in this audit.
+            continue
         for grade in event["metricGrades"]:
             metric_id = grade.get("metricId")
             score = grade.get("score")
