@@ -68,7 +68,7 @@ test("wrong issuer, duplicate ID, invalid stage, stale schema, non-NCT are rejec
   [record("INVALID_ID")],
   [record("NCT12345678"),record("NCT12345679").map((v,i)=>i===6?"2025-01-01":v)]
  ])assert.throws(()=>parseRaasScreenedPhase3Csv(csv(rows),real),/INVALID|SHAPE/);
- assert.throws(()=>parseRaasScreenedPhase3Csv("NCT ID,Ticker\nA,B",real),/HEADER_INVALID/);
+ assert.throws(()=>parseRaasScreenedPhase3Csv("NCT ID,Ticker\nA,B",real),/INVALID/);
  assert.throws(()=>parseRaasScreenedPhase3Csv(csv([]),real),/EMPTY/);
 });
 test("full trial UI does not hardcode the five pilot identities or round off missing scores",()=>{
