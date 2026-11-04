@@ -55,7 +55,7 @@ test("Mobile nightly official FDA lookup is explicitly separate from a scored fo
  assert.match(source,/raas-v2-daily-openfda-application-watch/);
  assert.match(source,/S-001 is a February REMS-only action/);
  assert.match(source,/the pending MAPLE-HCM efficacy supplement/);
- assert.match(source,/<strong>not<\\/strong>/);
+ assert.ok(source.includes("<strong>not</strong>"));
  assert.match(source,/the numbered pending BLA remains unverified/);
  assert.match(source,/Live results are in the/);
  assert.match(source,/not this dated website snapshot/);
