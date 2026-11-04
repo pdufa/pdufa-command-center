@@ -7,10 +7,13 @@ const capture=require(path.join(repo,"scripts/raas_self_audit_history_capture.cj
 const read=p=>fs.readFileSync(path.join(frontend,p),"utf8");
 const inputs=()=>Object.fromEntries(capture.sources.map(f=>[f,read(f)]));
 const first="2026-11-04T05:30:00.000Z",second="2026-11-04T05:31:00.000Z";
-test("RAAS system history begins empty with no fabricated numeric accuracy",()=>{
+test("saved RAAS system history retains dated source inventories without invented accuracy",()=>{
  const d=JSON.parse(read("data/raas-self-audit-history.json"));
  assert.equal(d.scope,"RAAS_SELF_AUDIT_HISTORY");
- assert.deepEqual(d.records,[]);
+ assert.ok(d.records.length>=1);
+ assert.ok(d.records.every(x=>x.accuracyScore===null&&x.accuracyPercent===null));
+ assert.ok(d.records.every(x=>x.status==="NOT_INDEPENDENTLY_RATED"));
+ assert.equal(new Set(d.records.map(x=>x.eventId)).size,d.records.length);
 });
 test("system snapshot contains auditable source counts, not a score",()=>{
  const snap=capture.makeAuditSnapshot(inputs(),first);
@@ -25,7 +28,7 @@ test("system snapshot contains auditable source counts, not a score",()=>{
  assert.match(snap.note,/not accepted historical returns/);
 });
 test("system audit events append only when tracked source changes",()=>{
- const e=JSON.parse(read("data/raas-self-audit-history.json"));
+ const e={schemaVersion:1,scope:"RAAS_SELF_AUDIT_HISTORY",note:"isolated fixture",records:[]};
  const x=capture.makeAuditSnapshot(inputs(),first);
  const a=capture.appendAuditSnapshot(e,x);
  assert.equal(a.added,1);
