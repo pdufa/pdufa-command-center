@@ -95,6 +95,17 @@ export default function RaasMetricGradebook({row,bucket}:{
              Primary source · {lead.sourceDate}
             </a>
            </div>)}
+          <details style={{fontSize:12,margin:"8px 0",border:"1px solid #d4e4da",
+           borderRadius:6,padding:6}}>
+           <summary style={{cursor:"pointer",fontWeight:600}}>
+            Experimental five-band review rubric · {metric.policy.method==="AUTOMATED_NARROW_PILOT"?
+             "narrow source-based pilot":"full evidence review required"}
+           </summary>
+           {([0,25,50,75,100] as const).map(band=>
+            <p key={band} style={{margin:"5px 0"}}><strong>{band}/100</strong> — {metric.policy.anchors[band]}</p>)}
+           <p><strong>Reference needed:</strong> {metric.policy.benchmarkRequired}</p>
+           <p>Neither a band definition nor a mapped source is an approved score.</p>
+          </details>
           <p style={{fontSize:12,marginBottom:3}}><strong>Needed for scoring:</strong> {metric.requiredEvidence}</p>
           <p style={{fontSize:12,marginBottom:3}}><strong>Grading basis:</strong> {metric.scoreRule}</p>
           <p style={{fontSize:12,marginBottom:0}}><strong>Risk to check:</strong> {metric.criticalRisk}</p>
