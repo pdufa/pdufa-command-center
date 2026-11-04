@@ -39,8 +39,8 @@ class PilotTests(unittest.TestCase):
         self.assertEqual(len(rows), 300)
         self.assertEqual(summary["pilotNctCount"], 10)
         self.assertEqual(summary["metricSlots"], 300)
-        self.assertEqual(summary["aiSourceReviewedMetricSlots"], 36)
-        self.assertEqual(summary["unscoredMetricSlots"], 264)
+        self.assertEqual(summary["aiSourceReviewedMetricSlots"], 50)
+        self.assertEqual(summary["unscoredMetricSlots"], 250)
         self.assertEqual(summary["humanIndependentReviewedMetricSlots"], 0)
         self.assertEqual(summary["complete30MetricTrials"], 0)
         self.assertEqual(summary["calibratedFdaPredictions"], 0)
@@ -62,8 +62,8 @@ class PilotTests(unittest.TestCase):
         rows, _ = mod.build(self.idx, self.reviews)
         scored = [r for r in rows if r["provisionalMetricScore"] != ""]
         missing = [r for r in rows if r["provisionalMetricScore"] == ""]
-        self.assertEqual(len(scored), 36)
-        self.assertEqual(len(missing), 264)
+        self.assertEqual(len(scored), 50)
+        self.assertEqual(len(missing), 250)
         self.assertTrue(all(r["provisionalMetricScore"] in (0, 25, 50, 75, 100)
                             for r in scored))
         self.assertTrue(all(r["sourceUrl"].startswith("https://") and
@@ -101,6 +101,39 @@ class PilotTests(unittest.TestCase):
         self.assertTrue(all(r["sourceUrl"] and r["benchmarkSourceUrl"]
                             for r in sae+cmc))
 
+    def test_statistical_credibility_and_dated_NDA_milestones_retain_asof(self):
+        self.require_sources()
+        rows, status = mod.build(self.idx, self.reviews)
+        statistical = [r for r in rows if r["metricId"] == "post-1-3"
+                       and r["provisionalMetricScore"] != ""]
+        self.assertEqual(len(statistical), 8)
+        self.assertEqual({r["nctId"] for r in statistical},
+                         set(mod.TRIALS) - {"NCT06445023","NCT06455202"})
+        self.assertEqual({r["provisionalMetricScore"] for r in statistical},
+                         {25,50})
+        self.assertTrue(all(r["benchmarkSourceUrl"].startswith("https://www.fda.gov/")
+                            and r["sourceUrl"] and r["uncertaintyReview"]
+                            for r in statistical))
+        shared = [r for r in rows if r["metricId"] in
+                  ("post-3-1","post-3-5","post-6-1") and r["provisionalMetricScore"] != ""]
+        self.assertEqual(len(shared), 6)
+        self.assertEqual({r["nctId"] for r in shared},
+                         {"NCT04576949","NCT05206370"})
+        per = {}
+        for r in shared:
+            per.setdefault(r["metricId"], []).append(r)
+            self.assertFalse(r["humanIndependentReview"])
+            self.assertEqual(r["fdaPassCrlExtensionProbability"], "")
+            self.assertEqual(r["full30of30Score"], "")
+        self.assertEqual(set(per),{"post-3-1","post-3-5","post-6-1"})
+        self.assertEqual({r["sourceDate"] for r in per["post-3-1"]},{"2025-09-03"})
+        self.assertEqual({r["sourceDate"] for r in per["post-3-5"]},{"2026-05-12"})
+        self.assertEqual({r["sourceDate"] for r in per["post-6-1"]},{"2025-09-03"})
+        self.assertTrue(all("HISTORICAL" in r["purpose"] or
+                            "RETROSPECTIVE" in r["purpose"] for r in shared))
+        self.assertEqual(status["complete30MetricTrials"],0)
+        self.assertEqual(status["calibratedFdaPredictions"],0)
+
     def test_duplicate_or_forged_metric_review_rejected(self):
         self.require_sources()
         duplicated = copy.deepcopy(self.reviews)
@@ -120,7 +153,7 @@ class PilotTests(unittest.TestCase):
                                     "nctId": "NCT99999999"})
         rows, result = mod.build(self.idx, altered)
         self.assertEqual(len(rows), 300)
-        self.assertEqual(result["aiSourceReviewedMetricSlots"], 36)
+        self.assertEqual(result["aiSourceReviewedMetricSlots"], 50)
 
     def test_pilot_csv_is_excel_safe_and_contains_300_rows(self):
         self.require_sources()
