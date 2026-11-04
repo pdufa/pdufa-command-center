@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_EXPLICIT_METRIC_REVIEWS_RESEARCH_ONLY",
   "sourceAsOf": "2026-11-04",
-  "note": "34 individual research-only provisional metric assessments across the historical 10-NCT pilot, including 8 additional trial-specific randomized-arm safety/tolerability comparisons with adverse events, denominators, independently linked context, missingness and critical risks. Zero human independent adjudications. Retrospective historical examples, not qualifying current Pipeline or point-in-time FDA forecasts; no complete 30/30 scores. Missing remains N/A.",
+  "note": "36 AI-assisted provisional historical research reviews across 10 Phase 3 trials: 26 original clinical, eight safety/tolerability randomized-comparator assessments, and two pre-action CMC observations referring to ONE ACHV NDA (not separate FDA events). Zero independent human reviews or full 30/30 overall scores, zero validated predictions. Retrospective, not the currently eligible $300M–$10B PIPELINE; no hindsight is allowed in a prospective model.",
   "records": [
     {
       "nctId": "NCT06445023",
@@ -682,6 +682,46 @@
       "uncertaintyReview": "Randomized withdrawal among responders excludes many open-label nonresponders, and trial stopped early. Similar short-term AE percentages do not remove the boxed-warning class risk or provide definitive mortality estimates.",
       "criticalRiskReview": "The clinically relevant antipsychotic boxed warning and QT prolongation risk prevent inferred safety superiority or broad dementia approval from a relapse-response result alone.",
       "reviewerMethod": "AI-assisted, dated source-and-independent-benchmark review of actual same-trial safety event rates and the matched randomized control arm, with explicit limitations for unmatched medical peers. Not externally adjudicated; not approved, calibrated, prospective or a complete 30/30 clinical, FDA, or financial RAAS prediction.",
+      "independentReview": "AI_SOURCE_CROSSCHECKED"
+    },
+    {
+      "nctId": "NCT04576949",
+      "ticker": "ACHV",
+      "drug": "cytisinicline",
+      "indication": "smoking cessation",
+      "stage": "post",
+      "metricId": "post-3-4",
+      "finding": "MATERIAL_ADVERSE",
+      "assessedAt": "2026-11-04",
+      "sourceDate": "2026-05-12",
+      "sourceUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-218177/achv-20260331.htm",
+      "benchmarkSourceUrl": "https://www.fda.gov/drugs/investigational-new-drug-application-ind/drug-development-and-review-definitions",
+      "benchmarkId": "FDA preapproval manufacturing compliance/inspection requirement, crosschecked 2026-05-12 pre-action disclosure",
+      "benchmarkContext": "FDA explains that significant CGMP or preapproval inspection issues can cause the reviewing division to withhold approval. It is an agency manufacturing-readiness requirement, not a mathematical probability of CRL.",
+      "observedResult": "Achieve 2026-05-12 SEC quarterly disclosure BEFORE its June 20 cytisinicline NDA target said the named third-party finished-dose manufacturer's separate CGMP inspection had resulted in OAI classification and a warning letter. The issuer explicitly expected a CRL on or before the June 20 target and had engaged a replacement manufacturer. This identical NDA-level warning applies to ORCA-2 and ORCA-3, not two independent FDA events.",
+      "uncertaintyReview": "This is a retrospective assessment of a dated pre-decision public filing as of May 12, 2026, not a prospective blind prediction. The regulatory issue is not an adverse efficacy or safety finding and was attributed to a third-party facility; it could be resolved through a future resubmission. Subsequent outcome news must not enter pre-decision evidence or model training features.",
+      "criticalRiskReview": "Confirmed OAI, warning letter and issuer-forecast CRL were material present-tense CMC readiness deficiencies before the June 2026 target despite two positive clinical trials. A current open refiled NDA must be assessed as a distinct future review cycle.",
+      "reviewerMethod": "AI-assisted pre-action source-timestamped research crosscheck of exact cytisinicline NDA-level CMC disclosure and FDA inspection requirements. No independent human adjudication, no retrospective 'prediction' credit, no probability. Both NCTs share a SINGLE application-level deficiency.",
+      "independentReview": "AI_SOURCE_CROSSCHECKED"
+    },
+    {
+      "nctId": "NCT05206370",
+      "ticker": "ACHV",
+      "drug": "cytisinicline",
+      "indication": "smoking cessation",
+      "stage": "post",
+      "metricId": "post-3-4",
+      "finding": "MATERIAL_ADVERSE",
+      "assessedAt": "2026-11-04",
+      "sourceDate": "2026-05-12",
+      "sourceUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-218177/achv-20260331.htm",
+      "benchmarkSourceUrl": "https://www.fda.gov/drugs/investigational-new-drug-application-ind/drug-development-and-review-definitions",
+      "benchmarkId": "FDA preapproval manufacturing compliance/inspection requirement, crosschecked 2026-05-12 pre-action disclosure",
+      "benchmarkContext": "FDA explains that significant CGMP or preapproval inspection issues can cause the reviewing division to withhold approval. It is an agency manufacturing-readiness requirement, not a mathematical probability of CRL.",
+      "observedResult": "Achieve 2026-05-12 SEC quarterly disclosure BEFORE its June 20 cytisinicline NDA target said the named third-party finished-dose manufacturer's separate CGMP inspection had resulted in OAI classification and a warning letter. The issuer explicitly expected a CRL on or before the June 20 target and had engaged a replacement manufacturer. This identical NDA-level warning applies to ORCA-2 and ORCA-3, not two independent FDA events.",
+      "uncertaintyReview": "This is a retrospective assessment of a dated pre-decision public filing as of May 12, 2026, not a prospective blind prediction. The regulatory issue is not an adverse efficacy or safety finding and was attributed to a third-party facility; it could be resolved through a future resubmission. Subsequent outcome news must not enter pre-decision evidence or model training features.",
+      "criticalRiskReview": "Confirmed OAI, warning letter and issuer-forecast CRL were material present-tense CMC readiness deficiencies before the June 2026 target despite two positive clinical trials. A current open refiled NDA must be assessed as a distinct future review cycle.",
+      "reviewerMethod": "AI-assisted pre-action source-timestamped research crosscheck of exact cytisinicline NDA-level CMC disclosure and FDA inspection requirements. No independent human adjudication, no retrospective 'prediction' credit, no probability. Both NCTs share a SINGLE application-level deficiency.",
       "independentReview": "AI_SOURCE_CROSSCHECKED"
     }
   ]
