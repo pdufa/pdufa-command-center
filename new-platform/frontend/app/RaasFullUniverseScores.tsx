@@ -5,12 +5,13 @@ import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from 
 import {parseRaasScreenedPhase3Csv,RAAS_RESTRICTED_PHASE3_CSV_QUERY,
  type RaasScreenedTrialRoster} from "../lib/raas-full-universe-roster";
 import {provisionalScoresForTrial} from "../lib/raas-provisional-trial-scores";
+import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import css from "./raas-history/page.module.css";
 
 type Assessment={row:ReadoutRow;stage:RaasStage|null;timing:number|null;
- metricCount:number;sourceUrl:string|null;sourceDate:string|null};
+ metricCount:number;overallScore:number|null;sourceUrl:string|null;sourceDate:string|null};
 const PAGE_SIZE=50;
 const cell={padding:"9px 8px",borderBottom:"1px solid #d9e5dd",verticalAlign:"top" as const};
 const short=(n:number)=>n.toLocaleString("en-US");
@@ -18,13 +19,19 @@ const stageLabel=(s:RaasStage|null)=>s==="pre"?"TOP":s==="post"?"BOTTOM":"UNVERI
 function assess(row:ReadoutRow):Assessment{
  const stage=row.evidence?.kind==="PRE_AS_OF_CHECK"?"pre":
   row.evidence?.kind==="POST_PUBLIC_READOUT"?"post":null;
- if(!stage)return {row,stage:null,timing:null,metricCount:0,sourceUrl:null,sourceDate:null};
+ if(!stage)return {row,stage:null,timing:null,metricCount:0,overallScore:null,sourceUrl:null,sourceDate:null};
  const a=provisionalScoresForTrial({
   nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication
  },stage);
  const grade=a.scoredMetrics.find(g=>g.metricId==="pre-4-1");
+ const reviewed=raasSpreadsheetSummary({
+  nctId:row.nctId,ticker:row.ticker,
+  drug:row.evidence?.drug,indication:row.evidence?.indication,
+  classifiedStage:stage
+ });
  return {row,stage,timing:grade?.score??null,metricCount:a.scoredOf30,
+  overallScore:reviewed.approvedScore,
   sourceUrl:grade?.sourceUrl??null,sourceDate:grade?.sourceDate??null};
 }
 export default function RaasFullUniverseScores(){
@@ -86,7 +93,7 @@ export default function RaasFullUniverseScores(){
   bottom:assessments.filter(x=>x.stage==="post").length,
   unverified:assessments.filter(x=>x.stage===null).length,
   numericallyGraded:assessments.filter(x=>x.metricCount>0).length,
-  fullOverall:0
+  fullOverall:assessments.filter(x=>x.overallScore!==null).length
  }),[assessments]);
  const filtered=useMemo(()=>{
   const q=query.trim().toLowerCase();
@@ -183,7 +190,7 @@ export default function RaasFullUniverseScores(){
   </div>
   <p style={{fontSize:12,color:"#456f54"}} role="status">{short(filtered.length)} matching trial rows;
    {stats.numericallyGraded} of {assessments.length} have any numeric experimental metric;
-   <strong> 0 complete 30-metric overall scores</strong>. Missing scores are N/A.</p>
+   <strong> {stats.fullOverall} approved overall scores</strong>. Missing scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
     <thead><tr>{["Trial · company","Classification","Overall RAAS","Provisional component","Metrics graded","Source / missing evidence","History"].map(c=>
@@ -195,7 +202,8 @@ export default function RaasFullUniverseScores(){
      <td style={cell}><strong>{stageLabel(x.stage)}</strong>
       <span style={{display:"block",fontSize:11}}>
        {x.stage?"Issuer readout evidence":"Source classification required"}</span></td>
-     <td style={cell}><strong>— /100</strong><span style={{display:"block",fontSize:11}}>Not validated</span></td>
+     <td style={cell}><strong>{x.overallScore===null?"— /100":x.overallScore+"/100"}</strong>
+      <span style={{display:"block",fontSize:11}}>{x.overallScore===null?"Not validated":"Approved / reviewed"}</span></td>
      <td style={cell}>{x.timing!==null?<><strong>{x.timing}/100</strong>
       <span style={{display:"block",fontSize:11}}>Timing specificity only</span></>:
       <span>Not scored</span>}</td>
