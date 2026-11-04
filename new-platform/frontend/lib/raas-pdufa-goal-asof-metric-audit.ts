@@ -15,6 +15,8 @@ export type GoalSourceCandidate={
  originalTargetAnnouncementSourceUrl?:string;
  fdaGoalExtensionAnnouncedDate?:string;formalGoalExtensionIndependentlyVerified?:boolean;
  originalTargetAndRevisionSourceUrl?:string;
+ originalGoalSourceCorroborationUrl?:string;
+ originalGoalSourceCorroborationFirstPublicDate?:string;
 };
 export type GoalAsOfWindow={
  targetVersion:"ORIGINAL_PUBLIC_GOAL"|"REVISED_PUBLIC_GOAL";
@@ -35,6 +37,9 @@ export type GoalAsOfCase={
  initialGoalSourceUrl:string|null;
  phase3ReadoutListedDate:string;phase3ReadoutSourceUrl:string;
  initialGoalIndependentOriginalSource:"URL_RECORDED"|"ORIGINAL_SOURCE_URL_MISSING";
+ originalGoalSourceCorroborationUrl:string|null;
+ originalGoalSourceCorroborationFirstPublicDate:string|null;
+ originalGoalCorroborationPublicAtInitialEntry:boolean|null;
  revisedGoalSourceUrl:string|null;revisedGoalAnnouncementDate:string|null;
  sourceShiftCalendarDays:number;
  initial:GoalAsOfWindow;current:GoalAsOfWindow;
@@ -139,6 +144,14 @@ export function auditGoalVersionSource(input:unknown):GoalAsOfAudit{
    !dateOK(x.phase3ReadoutDate)||x.phase3ReadoutDate>d.sourceAsOf||
    !urlOK(x.phase3ReadoutSourceUrl))
    throw Error("RAAS_GOAL_ASOF_CASE_INVALID");
+  // Later SEC corroboration does not belong in an earlier PDUFA prediction source clock.
+  const corroborationPresent=x.originalGoalSourceCorroborationUrl!==undefined||
+   x.originalGoalSourceCorroborationFirstPublicDate!==undefined;
+  if(corroborationPresent&&(
+   !urlOK(x.originalGoalSourceCorroborationUrl)||
+   !dateOK(x.originalGoalSourceCorroborationFirstPublicDate)||
+   x.originalGoalSourceCorroborationFirstPublicDate>d.sourceAsOf))
+   throw Error("RAAS_GOAL_ASOF_CORROBORATION_INVALID");
   seen.add(x.caseId);
   const revised=x.originallyAnnouncedPdufaTargetDate!==undefined;
   if(revised){
@@ -179,6 +192,10 @@ export function auditGoalVersionSource(input:unknown):GoalAsOfAudit{
    phase3ReadoutListedDate:x.phase3ReadoutDate,
    phase3ReadoutSourceUrl:x.phase3ReadoutSourceUrl,
    initialGoalIndependentOriginalSource:initialSource?"URL_RECORDED":"ORIGINAL_SOURCE_URL_MISSING",
+   originalGoalSourceCorroborationUrl:x.originalGoalSourceCorroborationUrl??null,
+   originalGoalSourceCorroborationFirstPublicDate:x.originalGoalSourceCorroborationFirstPublicDate??null,
+   originalGoalCorroborationPublicAtInitialEntry:corroborationPresent?
+    x.originalGoalSourceCorroborationFirstPublicDate!<=initial.calendarEntryDate:null,
    revisedGoalSourceUrl:revised?x.targetAnnouncementSourceUrl:null,
    revisedGoalAnnouncementDate:revised?x.targetAnnouncementDate:null,
    sourceShiftCalendarDays:daysBetween(initialGoal,x.pdufaTargetDate),
