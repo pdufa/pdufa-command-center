@@ -8,6 +8,7 @@ import RaasSelfAuditHistoryButton from "./RaasSelfAuditHistoryButton";
 import activeTwoYearIntake from "../../data/raas-active-2024-2025-pdufa-intake.json";
 import activeStudyConfig from "../../data/raas-active-study-config.json";
 import fdaAccuracySnapshot from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
+import registryStatus from "../../data/raas-registry-evidence-status.json";
 import RaasFullUniverseScores from "../RaasFullUniverseScores";
 import css from "../raas-history/page.module.css";
 export const metadata:Metadata={
@@ -33,6 +34,28 @@ export default function RaasScanPage(){
     <div><strong>{s.historicalAcceptedCases}</strong><span>Accepted historical event-window trades</span></div>
    </div>
    <p className={css.disclaimer}><strong>SCAN EXECUTED · FINAL RAAS NOT VALIDATED.</strong> The audit inspected every definition and available evidence record. It did not create a price forecast, set missing scores to zero, import unpublished trial outcomes, or claim that a source lead has been calibrated. Underlying source snapshot: {report.sourceAsOf}; metric specification: {report.specVersion}.</p>
+   <section className={css.section} data-raas-registry-collection={registryStatus.scope}>
+    <div className={css.sectionTitle}>
+     <h2>Collected public trial evidence · source coverage</h2>
+     <span>ClinicalTrials.gov snapshot {registryStatus.collectedAsOf}</span>
+    </div>
+    <div className={css.stats}>
+     <div><strong>{registryStatus.summary.sourceRecordsStored}/{registryStatus.summary.researchTrials}</strong>
+      <span>Exact-NCT registry documents retrieved</span></div>
+     <div><strong>{registryStatus.summary.missingRecordsRecoveredFromOriginal35}/35</strong>
+      <span>Previously missing registry records recovered</span></div>
+     <div><strong>{registryStatus.summary.postedRegistryResults}</strong>
+      <span>Trials with posted registry results, not automatically verified BOTTOM</span></div>
+     <div><strong>{registryStatus.summary.trialsWithPrimaryRegistryAnalyses}</strong>
+      <span>Trials with primary analysis source leads, not completed RAAS grades</span></div>
+    </div>
+    <p className={css.disclaimer}><strong>New evidence is accessible trial by trial.</strong>
+     {" "}Open Registry facts on the all-trial table, including rows with unverified readout stage.
+     The separately collected outcomes and safety information provide primary-source
+     research leads; dated issuer readout verification, program-specific scientific
+     benchmarks, SEC/FDA disclosures and prospective validation are still required
+     before complete ratings. Source retrieval does not create retroactive forecasts.</p>
+   </section>
    <RaasFullUniverseScores/>
    <section className={css.section} data-raas-self-audit={selfAudit.status}>
     <div className={css.sectionTitle}>
