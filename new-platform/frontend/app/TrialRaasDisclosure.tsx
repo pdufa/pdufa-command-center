@@ -138,7 +138,9 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
      <span className={css.summaryText}><strong>{label}</strong>
        <small data-raas-current-scan={row.nctId}>Source coverage {Math.round(currentEvidence.mappedMetrics/30*100)}% · {currentEvidence.mappedMetrics}/30 areas</small>
        <small>{currentOverallLabel}</small>
-       {pilotTiming&&<small data-raas-provisional-component={row.nctId}>Experimental timing metric {pilotTiming.score}/100 · 1/30 graded · NOT overall RAAS</small>}</span>
+       {trialPilot.scoredOf30>0&&<small data-raas-provisional-component={row.nctId}>
+       Experimental components: {trialPilot.scoredMetrics.map(g=>g.metricId+" "+g.score+"/100").join(" · ")}
+       {" "}· {trialPilot.scoredOf30}/30 graded · NOT overall RAAS</small>}</span>
      <span className={css.chevron} aria-hidden="true">▸</span>
    </summary>
    <div className={css.panel}>
@@ -148,7 +150,12 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
        <div className={css.historicalStatus}>
          <p><strong>Current saved evidence, dated {currentEvidence.asOf}:</strong> {currentEvidence.pilotObservations.length} pilot observations and {currentEvidence.prospectiveFacts.length} prospectively recorded issuer facts. Exact ticker + NCT + stage required; a source attached to a metric is a research lead, <strong>not</strong> a completed assessment of that metric.</p>
          <p><strong>Approved 0–100 RAAS:</strong> — /100. Missing metric ratings remain unknown rather than zero. These {currentEvidence.mappedMetrics} areas have evidence to review but 0 approved metric calibrations are available.</p>
-         {pilotTiming&&<p><strong>Calculated experimental TOP timing metric: {pilotTiming.score}/100.</strong> {pilotTiming.explanation} This is 1/30 TOP metrics, not an overall RAAS score or investment prediction. <a href={pilotTiming.sourceUrl} target="_blank" rel="noopener noreferrer">Dated source · {pilotTiming.sourceDate}</a>.</p>}
+         {trialPilot.scoredMetrics.map(g=><p key={g.metricId}>
+          <strong>Experimental {g.metricId}: {g.score}/100.</strong>
+          {" "}{g.label}. {g.explanation}
+          {" "}This is one narrow metric proxy, NOT overall RAAS or a prediction of FDA success.
+          {" "}<a href={g.sourceUrl} target="_blank" rel="noopener noreferrer">Dated issuer source · {g.sourceDate}</a>
+         </p>)}
          <div className={css.evidenceScanGrid}>
            {currentEvidence.categories.map(g=><div key={g.id}>
              <strong>{g.name}: {g.mapped}/5 areas</strong>
@@ -309,7 +316,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
                  <p><strong>Source input:</strong> {exploratory.inputs} · {exploratory.sourceDate}</p>
                  <p>{exploratory.explanation}</p>
                  <p><strong>Limitations:</strong> {exploratory.limitations}</p>
-                 <a href={exploratory.sourceUrl} target="_blank" rel="noopener noreferrer">Source for timing guidance</a>
+                 <a href={exploratory.sourceUrl} target="_blank" rel="noopener noreferrer">Source for experimental component</a>
                </div>}
                <div className={css.requirement}><strong>Metric-specific threshold calibration</strong>
                  <p>{profile?.status==="PROVISIONAL_NOT_CALIBRATED"?"Provisional nonvalidated research rule; excluded from RAAS":"BENCHMARK REQUIRED · No calibrated numeric score"}</p>
