@@ -39,7 +39,32 @@
       "phase3RegistryStudyIdentityVerified": false,
       "approvedAsTradingCase": false,
       "reviewStatus": "SOURCE_LEADS_RESEARCH_ONLY",
-      "reviewNotes": "The March 3 2025 original public goal and May 28 2024 GRACE primary endpoint are contemporaneous; the CRL was issued on the goal Dec 30 and publicly announced Dec 31. Application number is retrospectively documented by corrected Jan 2026 FDA letter and must never be treated as pre-entry information without an earlier disclosure. Historical entry day capitalization and daily security continuity remain unverified. The company has a DIFFERENT 2026 resubmission and DIFFERENT ovarian cancer NDA; exclude both from this 2025 case."
+      "reviewNotes": "The March 3 2025 original public goal and May 28 2024 GRACE primary endpoint are contemporaneous; the CRL was issued on the goal Dec 30 and publicly announced Dec 31. Application number is retrospectively documented by corrected Jan 2026 FDA letter and must never be treated as pre-entry information without an earlier disclosure. Historical entry day capitalization and daily security continuity remain unverified. The company has a DIFFERENT 2026 resubmission and DIFFERENT ovarian cancer NDA; exclude both from this 2025 case. SEC Q2 cover has 105,371,729 shares as of July 24, filed after-market July 31, first conservative use August 1; SEC Q3 cover has 105,188,217 as of October 23, filed after-market Nov 4, first conservative use Nov 5. Never apply Nov 2025 shares retrospectively to September entry. Shares changed by -183,512; require price and capital-action audit.",
+      "preentrySECCoverShareResearch": [
+        {
+          "sharesOutstanding": 105371729,
+          "asOfDate": "2025-07-24",
+          "filedDate": "2025-07-31",
+          "acceptedTimestampET": "2025-07-31 16:10:44",
+          "firstConservativeUseTradingSession": "2025-08-01",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025037005/R1.htm",
+          "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025037005/0001628280-25-037005-index.htm",
+          "status": "DATED_SEC_COVER_SHARE_RESEARCH_ONLY"
+        },
+        {
+          "sharesOutstanding": 105188217,
+          "asOfDate": "2025-10-23",
+          "filedDate": "2025-11-04",
+          "acceptedTimestampET": "2025-11-04 16:12:58",
+          "firstConservativeUseTradingSession": "2025-11-05",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/R1.htm",
+          "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828025048841/0001628280-25-048841-index.html",
+          "status": "DATED_SEC_COVER_SHARE_RESEARCH_ONLY"
+        }
+      ],
+      "preentryShareSnapshotDifference": -183512,
+      "shareContinuityBetweenFilingsVerified": false,
+      "historicalEntryDayMarketCapValidated": false
     }
   ]
 }
