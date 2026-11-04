@@ -12,7 +12,10 @@ export default function RaasMetricGradebook({row,bucket}:{
  row:ReadoutRow;bucket:RaasStage|null
 }){
  const [open,setOpen]=useState(false);
+ const [reviewStage,setReviewStage]=useState<RaasStage>("pre");
  const [registry,setRegistry]=useState<RegistryTrialEvidence|null>(null);
+ const activeStage=bucket??reviewStage;
+ const stageVerified=bucket!==null;
  const trigger=useRef<HTMLButtonElement>(null);
  useEffect(()=>{
   if(!open)return;
@@ -25,25 +28,25 @@ export default function RaasMetricGradebook({row,bucket}:{
   });
   return ()=>{active=false;};
  },[open,row.nctId,row.ticker,row.evidence?.drug]);
- const book=useMemo(()=>open&&bucket?buildRaasMetricGradebook({
+ const book=useMemo(()=>open?buildRaasMetricGradebook({
   nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication
- },bucket,registry):null,[open,bucket,registry,row.nctId,row.ticker,row.evidence?.drug,row.evidence?.indication]);
+ },activeStage,registry):null,[open,activeStage,registry,row.nctId,row.ticker,row.evidence?.drug,row.evidence?.indication]);
  useEffect(()=>{
   if(!open)return;
   const handler=(event:KeyboardEvent)=>{if(event.key==="Escape")setOpen(false);};
   document.addEventListener("keydown",handler);
   return ()=>{document.removeEventListener("keydown",handler);trigger.current?.focus();};
  },[open]);
- if(!bucket)return <span style={{fontSize:11}}>Stage unverified</span>;
- const label=bucket==="pre"?"TOP":"BOTTOM";
+ const label=activeStage==="pre"?"TOP":"BOTTOM";
  return <>
   <button ref={trigger} type="button" aria-expanded={open}
-   aria-label={"Expand "+label+" all 30 RAAS metric scores for "+row.ticker+" "+row.nctId}
+   aria-label={"Expand "+(stageVerified?label:"unverified TOP and BOTTOM research")+
+    " all 30 RAAS metric evidence checks for "+row.ticker+" "+row.nctId}
    data-raas-metric-gradebook-trigger={row.nctId}
    style={{border:"1px solid #91bba3",borderRadius:7,padding:"7px 10px",
     background:"#eff8f0",color:"#15472f",fontWeight:700,cursor:"pointer"}}
-   onClick={()=>setOpen(v=>!v)}>30 metrics <span aria-hidden="true">▸</span></button>
+   onClick={()=>setOpen(v=>!v)}>{stageVerified?"30 metrics":"TOP / BOTTOM review"} <span aria-hidden="true">▸</span></button>
   {open&&book&&createPortal(
    <div role="presentation" onClick={e=>{if(e.target===e.currentTarget)setOpen(false);}}
     style={{position:"fixed",inset:0,zIndex:1200,background:"rgba(7,28,20,.65)",
@@ -53,7 +56,8 @@ export default function RaasMetricGradebook({row,bucket}:{
      style={{width:"min(1050px,96vw)",maxHeight:"100%",overflowY:"auto",
       background:"#fff",borderRadius:12,padding:"18px 20px",color:"#173b29",
       boxShadow:"0 18px 65px rgba(0,0,0,.3)"}}>
-     <header style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"start",flexWrap:"wrap"}}>
+     <header data-raas-stage-source={stageVerified?"ISSUER_VERIFIED":"RESEARCH_PREVIEW_ONLY"}
+      style={{display:"flex",justifyContent:"space-between",gap:12,alignItems:"start",flexWrap:"wrap"}}>
       <div>
        <strong style={{fontSize:19}}>{label} · {row.ticker} · {row.nctId}</strong>
        <p style={{margin:"6px 0"}}>All 30 RAAS ingredients · current source-evidence gradebook</p>
@@ -63,12 +67,28 @@ export default function RaasMetricGradebook({row,bucket}:{
        Close ✕
       </button>
      </header>
+     {!stageVerified&&<div data-raas-unverified-stage-review="true"
+      style={{margin:"12px 0",padding:12,border:"1px solid #cbbd81",borderRadius:8}}>
+       <strong>Stage NOT verified — research-only checklist</strong>
+       <p style={{margin:"6px 0"}}>Review both TOP and BOTTOM evidence requirements for this NCT.
+        Choosing a checklist does not classify the trial, record a historical forecast,
+        or assign a numeric RAAS score. Registry results alone cannot confirm a dated issuer readout.</p>
+       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+        {(["pre","post"] as const).map(value=><button key={value} type="button"
+         data-raas-whatif-stage={value} aria-pressed={activeStage===value}
+         onClick={()=>setReviewStage(value)}
+         style={{padding:"8px 12px",border:"1px solid #91bba3",borderRadius:7,
+          background:activeStage===value?"#d9ecd9":"white",color:"#15472f",fontWeight:700}}>
+         {value==="pre"?"TOP · 30 requirements":"BOTTOM · 30 requirements"}
+        </button>)}
+       </div>
+      </div>}
      <div role="status" style={{display:"flex",gap:16,flexWrap:"wrap",
       padding:"12px 0",borderBottom:"1px solid #d3e4d8"}}>
       <span><strong>{book.graded}/30</strong> experimental metrics graded</span>
       <span><strong>{book.mappedOnly}</strong> evidence-lead-only metrics</span>
       <span><strong>{book.withoutEvidence}</strong> without mapped evidence</span>
-      <span><strong>Overall RAAS: N/A</strong> · not validated</span>
+      <span><strong>Overall RAAS: N/A</strong> · {stageVerified?"not validated":"stage unverified and not validated"}</span>
       <span><strong>{book.provisionalDiagnostic.weightCoveredPercent}%</strong> of RAAS model weight has any experimental component grade</span>
       <span><strong>{book.registrySourceLeadCount}</strong> newly mapped ClinicalTrials.gov research leads</span>
      </div>
