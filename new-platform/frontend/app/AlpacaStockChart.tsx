@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {chartStudiesForWtChecks,WT_CHART_NAMES,type WtChartStudy} from "../lib/wt-chart-indicator-map";
+import PdufaChartIntelligence, {type PdufaVerifiedTargetOutcome,type RaasFrozenSnapshot} from "./PdufaChartIntelligence";
 type Bar={date:string;open:number;high:number;low:number;close:number;volume:number};
 export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source?:string;planned?:boolean;custom?:boolean;id?:string;color?:string;visible?:boolean;edited?:boolean;originalDate?:string;category?:string};
 type Market={provider:string;programId:string;ticker:string;feed:string;coverage:string;status:string;bars:Bar[];asOf:string|null;message:string;researchOnly:boolean};
@@ -247,7 +248,12 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[],onMove
   </div>
   {target&&<div className="alpaca-plot-tooltip">{target.date} | O {fixed(target.open)} H {fixed(target.high)} L {fixed(target.low)} C {fixed(target.close)} · Vol {short(target.volume)}</div>}</div>;
 }
-export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys,milestones=[],onMoveMilestone}:{programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[];milestones?:readonly FdaMilestone[];onMoveMilestone?:(id:string,date:string)=>void}){
+export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys,milestones=[],onMoveMilestone,pdufaIntelligence}:{
+ programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[];
+ milestones?:readonly FdaMilestone[];onMoveMilestone?:(id:string,date:string)=>void;
+ pdufaIntelligence?:{enabledFeatures:readonly string[];officialEvents:readonly FdaMilestone[];
+   verifiedTargetOutcome?:PdufaVerifiedTargetOutcome;raasSnapshot?:RaasFrozenSnapshot};
+}){
  const [range,setRange]=useState<Range>("6M"),[state,setState]=useState<Market|null>(null);
  const [error,setError]=useState(""),[expanded,setExpanded]=useState(!compact);
  const [showMilestones,setShowMilestones]=useState(true);
@@ -294,6 +300,12 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
   <div className="alpaca-range">{ranges.map(r=><button key={r} type="button" className={range===r?"active":""}
     aria-pressed={range===r} onClick={()=>setRange(r)}>{r}</button>)}
     <span>{latest?"Last Alpaca session "+latest.date+" | Close $"+fixed(latest.close):"Alpaca source awaiting verification"}</span></div>
+  {pdufaIntelligence&&<PdufaChartIntelligence
+    programId={programId} ticker={ticker} enabledFeatures={pdufaIntelligence.enabledFeatures}
+    officialEvents={pdufaIntelligence.officialEvents} bars={all}
+    marketStatus={state?.status} verifiedTargetOutcome={pdufaIntelligence.verifiedTargetOutcome}
+    raasSnapshot={pdufaIntelligence.raasSnapshot}
+  />}
   {state?.status==="OK"&&visibleBars.length?
     <><StockPlot bars={visibleBars} large={expanded} candle={candle} visibleStudies={visibleStudies} milestones={showMilestones?milestones:[]} onMoveMilestone={onMoveMilestone}/>
      {expanded&&visibleReadouts.length>0&&<div className="alpaca-values">{visibleReadouts.map(([key,label,value])=>
