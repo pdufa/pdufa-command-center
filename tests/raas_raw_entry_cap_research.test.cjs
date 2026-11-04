@@ -3,6 +3,7 @@ const test=require("node:test"),assert=require("node:assert/strict");
 const primary=require("../new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json");
 const earlier=require("../new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json");
 const later=require("../new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json");
+const earliest=require("../new-platform/frontend/data/raas-2024-2025-additional-earliest-sec-cover.json");
 const study=require("../scripts/raas_active_two_year_study.cjs");
 const prior=require("../scripts/raas_alpaca_historical_price_study.cjs");
 const {auditRawEntryMarketCapResearch:cap}=require("../scripts/raas_raw_entry_cap_research.cjs");
@@ -141,4 +142,47 @@ test("active 2024–2025 Alpaca research includes raw cap output, never approved
  assert.equal(result.approvedTradingWindow,null);
  assert.equal(result.rawEntryCapResearch.rows.length,9);
  assert.equal(result.status,"INCOMPLETE_2024_2025_CENSUS_RESEARCH_ONLY");
+});
+
+test("earlier 2023 SEC cover source is available for GERN's 2024-02 T-79 before 2024-02 10-K was published",()=>{
+ const gern=primary.records.find(x=>x.ticker==="GERN");
+ const event=gern.ticker+"|"+gern.pdufaTargetDate;
+ const extraAdjusted=adjusted(),extraRaw=raw();
+ extraAdjusted.set(event,bars("2024-02-01","2024-06-14",1.96));
+ extraRaw.set(event,bars("2024-02-01","2024-06-14",1.96));
+ const x=run({
+  additionalEarliest:earliest,
+  adjustedBarsByEvent:extraAdjusted,rawBarsByEvent:extraRaw
+ });
+ assert.equal(x.sameSessionRawAdjustedPricePairs,2);
+ assert.equal(x.provisionalCapEstimates,2);
+ const r=x.rows.find(y=>y.ticker==="GERN");
+ assert.equal(r.proposedEntrySession,"2024-02-27");
+ assert.equal(r.rawCloseAlpaca,1.96);
+ assert.equal(r.secSharesOutstanding,543063950);
+ assert.equal(r.secSharesMeasurementDate,"2023-10-31");
+ assert.equal(r.secFirstConservativeUse,"2023-11-03");
+ assert.equal(r.provisionalRawPriceTimesDatedSecCoverCapUsdMillions,1064.41);
+ assert.equal(r.marketCap300MTo10BIndependentlyVerified,false);
+ assert.equal(r.independentAdjustedPriceVendorVerified,false);
+ assert.equal(r.approvedRaasScore,null);
+ const without=run({adjustedBarsByEvent:extraAdjusted,rawBarsByEvent:extraRaw});
+ assert.equal(without.rows.find(y=>y.ticker==="GERN").status,
+  "NO_SEC_COVER_PUBLIC_BY_ENTRY");
+});
+test("extra SEC snapshot cannot backdate a later filing or overwrite the original SEC chain",()=>{
+ const event="GERN|"+primary.records.find(x=>x.ticker==="GERN").pdufaTargetDate;
+ const a=adjusted(),b=raw();
+ a.set(event,bars("2024-02-01","2024-06-14",1.96));
+ b.set(event,bars("2024-02-01","2024-06-14",1.96));
+ const laterEarliest=clone(earliest);
+ laterEarliest.records[0].firstConservativeEntryDate="2024-02-28";
+ const r=run({additionalEarliest:laterEarliest,adjustedBarsByEvent:a,rawBarsByEvent:b});
+ assert.equal(r.rows.find(x=>x.ticker==="GERN").status,"NO_SEC_COVER_PUBLIC_BY_ENTRY");
+ const corrupt=clone(earliest);corrupt.records[0].sharesOutstanding=0;
+ assert.throws(()=>run({additionalEarliest:corrupt}),/RAAS_RAW_CAP_SEC_RECORD_INVALID/);
+ const wrong=clone(earliest);wrong.records[0].cik="0000000000";
+ assert.throws(()=>run({additionalEarliest:wrong}),/RAAS_RAW_CAP_CASE_IDENTITY_OR_SEQUENCE_INVALID/);
+ const future=clone(earliest);future.records[0].filedDate="2024-03-01";
+ assert.throws(()=>run({additionalEarliest:future}),/RAAS_RAW_CAP_SEC_RECORD_INVALID/);
 });

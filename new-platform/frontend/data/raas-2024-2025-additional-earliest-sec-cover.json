@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_ADDITIONAL_EARLIEST_PRE_ENTRY_SEC_COVER_RESEARCH",
+  "sourceAsOf": "2026-11-03",
+  "note": "Additional earlier SEC cover-share snapshots where the saved later 10-K/Q share count is not yet public at T-79 trading-session entry. Source is independently dated; each share count is only a point-in-time cover disclosure, never a daily share ledger or approved market cap. Does not overwrite the existing earlier/later SEC sources.",
+  "records": [
+    {
+      "caseId": "GERN|RYTELO_IMETELSTAT|NDA217779|2024",
+      "ticker": "GERN",
+      "cik": "0000886744",
+      "venue": "NASDAQ",
+      "shareClass": "NASDAQ US common stock",
+      "securityCurrency": "USD",
+      "rawCloseCurrency": "USD",
+      "needsShareContinuityAudit": true,
+      "needsStockSplitAndDilutionAudit": true,
+      "needsIndependentPriceCrosscheck": true,
+      "status": "COVER_SHARE_RESEARCH_ONLY",
+      "sharesOutstanding": 543063950,
+      "sharesMeasurementDate": "2023-10-31",
+      "filedDate": "2023-11-02",
+      "acceptedTimeET": "08:03:50",
+      "firstConservativeEntryDate": "2023-11-03",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/886744/000095017023057760/gern-20230930.htm",
+      "filingIndexUrl": "https://www.sec.gov/Archives/edgar/data/886744/0000950170-23-057760-index.htm",
+      "originalSourceDescription": "Geron Form 10-Q filed 2023-11-02 08:03:50 ET for 2023-09-30 quarter states 543,063,950 common shares outstanding at 2023-10-31. Conservative first next session use Nov 3. The subsequent 2024-02-28 10-K was not published for proposed 2024-02-23 T-79 price entry; never backdate later cover counts or imply continuous shares, same-day capitalization, or approved RAAS eligibility."
+    }
+  ]
+}

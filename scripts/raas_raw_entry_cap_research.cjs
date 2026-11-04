@@ -48,7 +48,7 @@ function validatedBarArray(bars,expectedBefore) {
  return sorted;
 }
 function auditRawEntryMarketCapResearch({
- leads,earlier,later,adjustedBarsByEvent,rawBarsByEvent,
+ leads,earlier,later,additionalEarliest=null,adjustedBarsByEvent,rawBarsByEvent,
  entryLeadTradingSessions=79
 }) {
  if(!Array.isArray(leads)||leads.length===0||
@@ -57,7 +57,11 @@ function auditRawEntryMarketCapResearch({
   throw Error("RAAS_RAW_CAP_INPUT_INVALID");
  const a=asSECMap(earlier,"RAAS_MANUALLY_LOCATED_PRE_ENTRY_SEC_SHARES_RESEARCH");
  const b=asSECMap(later,"RAAS_MANUALLY_LOCATED_SEC_HISTORIC_COMMON_SHARE_RESEARCH");
- if(earlier.sourceAsOf!==later.sourceAsOf||
+ const additional=additionalEarliest?asSECMap(additionalEarliest,
+  "RAAS_ADDITIONAL_EARLIEST_PRE_ENTRY_SEC_COVER_RESEARCH"):new Map();
+ if((additionalEarliest&&additionalEarliest.sourceAsOf!==earlier.sourceAsOf)||
+  [...additional.keys()].some(k=>!a.has(k))||
+  earlier.sourceAsOf!==later.sourceAsOf||
   leads.length!==a.size||leads.length!==b.size)
   throw Error("RAAS_RAW_CAP_SOURCE_COVERAGE_INVALID");
  const adjusted=asEntries(adjustedBarsByEvent),raw=asEntries(rawBarsByEvent);
@@ -70,11 +74,17 @@ function auditRawEntryMarketCapResearch({
    !date(lead.targetAnnouncementDate)||!date(lead.phase3ReadoutDate))
    throw Error("RAAS_RAW_CAP_GOAL_INVALID");
   seen.add(lead.caseId);
-  const s1=a.get(lead.caseId),s2=b.get(lead.caseId);
+  const s0=additional.get(lead.caseId),
+   s1=a.get(lead.caseId),s2=b.get(lead.caseId);
   if(!s1||!s2||s1.ticker!==lead.ticker||s2.ticker!==lead.ticker||
    s1.cik!==s2.cik||s1.shareClass!==s2.shareClass||
    s1.sharesMeasurementDate>=s2.sharesMeasurementDate||
-   s1.firstConservativeEntryDate>=s2.firstConservativeEntryDate)
+   s1.firstConservativeEntryDate>=s2.firstConservativeEntryDate||
+   (s0&&(s0.ticker!==lead.ticker||s0.cik!==s1.cik||
+    s0.shareClass!==s1.shareClass||
+    s0.sharesMeasurementDate>=s1.sharesMeasurementDate||
+    s0.filedDate>=s1.filedDate||
+    s0.firstConservativeEntryDate>=s1.firstConservativeEntryDate)))
    throw Error("RAAS_RAW_CAP_CASE_IDENTITY_OR_SEQUENCE_INVALID");
   const key=lead.ticker+"|"+lead.pdufaTargetDate;
   const adj=validatedBarArray(adjusted.get(key),lead.pdufaTargetDate);
@@ -83,7 +93,7 @@ function auditRawEntryMarketCapResearch({
   const entry=prior.length>=entryLeadTradingSessions?
    prior[prior.length-entryLeadTradingSessions]:null;
   const rawAtEntry=entry?unchecked.find(x=>x.date===entry.date):null;
-  const sources=[s1,s2].filter(s=>entry&&s.firstConservativeEntryDate<=entry.date);
+  const sources=[s0,s1,s2].filter(s=>s&&entry&&s.firstConservativeEntryDate<=entry.date);
   const selected=sources.length?sources[sources.length-1]:null;
   let reason="PROVISIONAL_CAP_ONLY_NOT_A_VALIDATED_MARKET_CAP";
   if(!entry)reason="MISSING_ADJUSTED_T79_SESSION";
