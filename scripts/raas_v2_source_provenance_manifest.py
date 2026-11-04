@@ -28,6 +28,7 @@ EXPECTED_FILES = (
     "raas-fda-upcoming-original-goal-review-queue.csv",
     "raas-v2-prospective-source-readiness.json",
     "raas-v2-prospective-source-review.csv",
+    "raas-v2-openfda-application-identity-watch.json",
 )
 
 
@@ -111,14 +112,39 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
     fda=json.loads((root/EXPECTED_FILES[0]).read_text("utf-8"))
     v2=json.loads((root/EXPECTED_FILES[3]).read_text("utf-8"))
     cases=validate_research_json(fda,v2)
+    watch=json.loads((root/"raas-v2-openfda-application-identity-watch.json").read_text("utf-8"))
+    require(isinstance(watch,dict) and
+            watch.get("scope")=="RAAS_V2_OPENFDA_NOV14_APPLICATION_IDENTITY_WATCH_NOT_VALIDATED"
+            and watch.get("status")==
+                "PUBLIC_DATABASE_MONITOR_ONLY_NOT_AN_FDA_CYCLE_OR_PREDICTION"
+            and watch.get("openFdaSourceStatus") in {
+                "AVAILABLE","HTTP_404_NO_PUBLIC_RECORD","SOURCE_UNAVAILABLE",
+                "MALFORMED_RESPONSE"}
+            and watch.get("independentlyCertifiedCurrentFdaReviewCycles")==0
+            and watch.get("independentlyAdjudicatedNov14FdaActions")==0
+            and watch.get("newImmutableThreeWayPredictions")==0
+            and watch.get("approvedMetricCalibrations")==0
+            and watch.get("canPromoteToFdaPredictionAccuracy") is False
+            and isinstance(watch.get("cytk"),dict)
+            and watch["cytk"].get("fdaApprovedFebruaryRemsS001IsNovemberMapleHcm") is False
+            and watch["cytk"].get("mapleHcmCurrentSupplementNumberIndependentlyVerified") is False
+            and watch["cytk"].get("newFdaMapleHcmApprovalIndependentlyAdjudicated") is False
+            and isinstance(watch.get("smmt"),dict)
+            and watch["smmt"].get("fdaCurrentBlaNumberIndependentlyVerified") is False
+            and watch["smmt"].get("fdaPublicOpenFdaNoMatchingApprovedBlaProvesNoPendingBla") is False,
+            "PUBLIC_FDA_WATCH_CANNOT_PROMOTE_RESEARCH")
     t_fda=timestamp(fda["asOfUTC"])
     t_v2=timestamp(v2["evaluatedAtUTC"])
+    t_watch=timestamp(watch["checkedAtUTC"])
     require(t_fda <= archive_clock and t_v2 <= archive_clock and
+            t_watch <= archive_clock and
             abs((t_fda-t_v2).total_seconds()) <= 600
+            and abs((t_watch-t_v2).total_seconds()) <= 3600
             and (archive_clock-t_fda).total_seconds() <= 3600
-            and (archive_clock-t_v2).total_seconds() <= 3600,
+            and (archive_clock-t_v2).total_seconds() <= 3600
+            and (archive_clock-t_watch).total_seconds() <= 3600,
             "OUTPUT_CLOCK_OR_ORDER_INCONSISTENT")
-    with (root/EXPECTED_FILES[-1]).open(newline="",encoding="utf-8") as f:
+    with (root/"raas-v2-prospective-source-review.csv").open(newline="",encoding="utf-8") as f:
         csv_rows=list(csv.DictReader(f))
     require(len(csv_rows)==len(cases) and
             {r.get("researchCaseKey") for r in csv_rows} ==
@@ -145,8 +171,11 @@ def build_manifest(directory, repo, run_id, sha, archived_at):
         "independentlyCertifiedThreeWayForecasts":0,
         "independentlyValidatedFDAAccuracyPct":None,
         "approvedRAASMetricCalibrations":0,
+        "publicFdaWatchSourceStatus":watch["openFdaSourceStatus"],
+        "publicFdaWatchCurrentMapleSupplementIndependentlyVerified":False,
+        "publicFdaWatchCurrentSummitBlaIndependentlyVerified":False,
         "fileDigests":contents,
-        "warning":"This checksum detects post-upload changes to the five output files, but the GitHub Actions artifact can expire or be deleted. It does not independently attest source authenticity, freeze a predicted class, establish FDA outcomes or authorize RAAS V2.",
+        "warning":"This checksum detects post-upload changes to the six output files, but the GitHub Actions artifact can expire or be deleted. It does not independently attest source authenticity, freeze a predicted class, establish FDA outcomes or authorize RAAS V2.",
     }
 
 
@@ -178,7 +207,7 @@ def main():
         with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
             f.write("\n### RAAS V2 daily research source checksums (NOT frozen forecasts)\n\n"
                     +f"Archived at {stamp} from commit {m['sourceCommitSHA']}.\n\n"
-                    +"5 source files hashed. These are NOT signed prediction receipts.\n")
+                    +"6 source files hashed. These are NOT signed prediction receipts.\n")
 
 
 if __name__=="__main__":
