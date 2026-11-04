@@ -1,12 +1,13 @@
 /** Current, explicitly exploratory RAAS *component* rating engine.
  * Does not generate overall RAAS, clinical probabilities, investment signals
  * or retroactive forecasts. Missing metrics are NEVER assigned a number.
- * The only defensible numeric pilot rule is sponsor readout-window specificity.
+ * Automated experimental pilots: sponsor timing and two narrow CSU endpoint proxies.
  */
 import {parseRaasPilotFeed,type RaasObservation} from "./raas-score-engine";
 import {parseProspectiveSourceBaselines} from "./raas-prospective-source-baselines";
 import {provisionalTimingSpecificity,type ProvisionalMetricGrade} from "./raas-threshold-profiles";
 import {RAAS_METRIC_CATALOG,type RaasStage} from "./raas-metric-specs";
+import {provisionalCsuMagnitudeGrade} from "./raas-provisional-clinical";
 import pilotData from "../data/raas-pilot-observations.json";
 import prospectiveData from "../data/raas-prospective-source-baselines.json";
 
@@ -92,7 +93,15 @@ export function provisionalScoresForTrial(
    }
   }
  }
- // All other 59 metrics lack predeclared source-validated numeric rules.
+ if(stage==="post"&&p){
+  for(const obs of p.observations){
+   if(obs.assessmentDate>pilot.sourceAsOf)continue;
+   const grade=provisionalCsuMagnitudeGrade(obs,p.indication);
+   if(grade)grades.push(grade);
+  }
+ }
+ // All other metrics require additional dated evidence and review.
+ // Clinical proxies are NOT full efficacy/multiplicity/safety adjudications.
  const dedup=[...new Map(grades.map(g=>[g.metricId,g])).values()];
  const valid=new Set(RAAS_METRIC_CATALOG[stage].flatMap(g=>g.metrics.map(m=>m.id)));
  const scoredMetrics=dedup.filter(g=>valid.has(g.metricId));
