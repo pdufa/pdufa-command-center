@@ -7,7 +7,9 @@ on:
     paths:
       - scripts/raas_registry_evidence_harvest.py
       - scripts/raas_registry_evidence_summary.py
+      - scripts/raas_registry_evidence_index.py
       - tests/test_raas_registry_evidence_summary.py
+      - tests/test_raas_registry_evidence_index.py
       - tests/test_raas_registry_evidence_harvest.py
       - data/raas_registry_missing_backfill.json
       - .github/workflows/raas-clinical-evidence-backfill.yml
@@ -16,6 +18,7 @@ on:
     paths:
       - scripts/raas_registry_evidence_harvest.py
       - scripts/raas_registry_evidence_summary.py
+      - scripts/raas_registry_evidence_index.py
       - tests/test_raas_registry_evidence_summary.py
       - data/raas_registry_missing_backfill.json
       - .github/workflows/raas-clinical-evidence-backfill.yml
@@ -37,7 +40,8 @@ jobs:
       - name: Validate NCT identity, evidence flags and fail-closed records
         run: |
           python -m unittest discover -s tests -p test_raas_registry_evidence_harvest.py -v
-          python -m py_compile scripts/raas_registry_evidence_harvest.py scripts/raas_registry_evidence_summary.py
+          python -m py_compile scripts/raas_registry_evidence_harvest.py scripts/raas_registry_evidence_summary.py scripts/raas_registry_evidence_index.py
+          python -m unittest discover -s tests -p test_raas_registry_evidence_index.py -v
           python -m unittest discover -s tests -p test_raas_registry_evidence_summary.py -v
       - name: Fetch all current research NCTs, including 35 gaps
         if: github.event_name != 'pull_request'
@@ -53,6 +57,7 @@ jobs:
             exit 1
           fi
           python scripts/raas_registry_evidence_summary.py
+          python scripts/raas_registry_evidence_index.py
           python - <<'PY'
           import json
           from pathlib import Path
@@ -67,7 +72,7 @@ jobs:
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- data/raas_registry_live_evidence.json new-platform/frontend/data/raas-registry-evidence-status.json
+          git add -- data/raas_registry_live_evidence.json new-platform/frontend/data/raas-registry-evidence-status.json new-platform/frontend/public/raas-registry-evidence-index.json
           if git diff --cached --quiet; then
             echo "No new ClinicalTrials.gov evidence captured."
             exit 0
@@ -89,5 +94,6 @@ jobs:
           path: |
             data/raas_registry_live_evidence.json
             new-platform/frontend/data/raas-registry-evidence-status.json
+            new-platform/frontend/public/raas-registry-evidence-index.json
           if-no-files-found: warn
           retention-days: 30
