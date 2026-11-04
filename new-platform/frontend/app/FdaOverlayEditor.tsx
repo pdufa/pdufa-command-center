@@ -36,10 +36,11 @@ const newMarker=():CustomMarker=>({
 });
 
 export default function FdaOverlayEditor({
-  programId,ticker,verifiedEvents,categories=[]
+  programId,ticker,verifiedEvents,categories=[],wtIndicatorKeys
 }:{
   programId:string;ticker:string;verifiedEvents:readonly FdaMilestone[];
   categories?:readonly FdaCategory[];
+  wtIndicatorKeys?:readonly string[];
 }) {
   const [open,setOpen]=useState(false);
   const [markers,setMarkers]=useState<CustomMarker[]>([]);
@@ -175,7 +176,7 @@ export default function FdaOverlayEditor({
   };
 
   return <section aria-label="Alpaca chart with editable FDA overlays">
-    <AlpacaStockChart ticker={ticker} programId={programId} milestones={combined}
+    <AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={wtIndicatorKeys} milestones={combined}
       onMoveMilestone={open&&version!==null?moveDate:undefined}
       pdufaIntelligence={{enabledFeatures,officialEvents:verifiedEvents}}
     />
