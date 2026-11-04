@@ -341,3 +341,46 @@
  .topRaasAccuracyButton{flex-basis:156px;padding-left:8px}
  .topRaasAccuracyDetails{flex-basis:270px;min-width:270px;padding:9px}
 }
+
+/* TOP and BOTTOM share the research-question intake, NOT the RAAS ingredients.
+ * These are distinct six-category, 30-metric stage-specific requirements.
+ * When expanded, metric ingredients open to the right, with a border around
+ * the selected group and its supporting details.
+ */
+.stageSurveyIngredients{display:flex;flex-direction:column;gap:9px;padding:11px;
+ margin:0 0 14px;background:#f5fbf7;border:2px solid #8bb9a0;border-radius:11px}
+.stageSurveyHeading{display:flex;flex-direction:column;gap:5px}
+.stageSurveyHeading>strong{font-size:15px;color:#174a34}
+.stageSurveyHeading>p{font-size:12px;line-height:1.45;color:#395c47;margin:0}
+.stageSurveyHeading>small{font-size:11px;color:#567562}
+.stageSurveyGroups{display:flex;flex-direction:column;gap:6px}
+.stageSurveyGroup{border:1px solid #bcd8c7;border-radius:8px;background:#fff;overflow:hidden}
+.stageSurveyGroup>summary{list-style:none}
+.stageSurveyGroup>summary::-webkit-details-marker{display:none}
+.stageSurveyGroup>summary::marker{content:""}
+.stageSurveyGroupHeading{box-sizing:border-box;display:flex;align-items:center;
+ justify-content:space-between;gap:12px;padding:9px 10px;min-height:46px;
+ cursor:pointer;touch-action:manipulation;color:#16472e;background:#edf7f0}
+.stageSurveyGroupHeading>span:first-child{display:flex;flex-direction:column;gap:3px;min-width:0}
+.stageSurveyGroupHeading strong{font-size:12px;line-height:1.3}
+.stageSurveyGroupHeading small{font-size:11px;color:#4b7159}
+.stageSurveyChevron{font-size:18px;color:#1c6c43;font-weight:900;flex:0 0 auto}
+.stageSurveyGroup[open]{display:flex;align-items:stretch;border:2px solid #22734a;background:#f8fcf9}
+.stageSurveyGroup[open]>.stageSurveyGroupHeading{flex:0 0 32%;max-width:32%;
+ border-right:1px solid #bfd8c8;background:#dff1e5}
+.stageSurveyGroup[open] .stageSurveyChevron{transform:rotate(180deg)}
+.stageSurveyGroupIngredients{display:flex;gap:7px;flex:1;min-width:0;
+ overflow-x:auto;overscroll-behavior-inline:contain;padding:7px}
+.stageSurveyGroupIngredients article{box-sizing:border-box;flex:0 0 225px;min-width:225px;
+ border:1px solid #cbded1;border-radius:6px;background:#fff;padding:9px;
+ font-size:11px;line-height:1.45;color:#395747;overflow-wrap:anywhere}
+.stageSurveyGroupIngredients article>strong{display:block;font-size:12px;color:#175239}
+.stageSurveyGroupIngredients article p{margin:6px 0}
+.stageSurveyGroupIngredients article small{font-size:10px;color:#607566}
+.stageSurveyFootnote{margin:1px 0 0;font-size:11px;line-height:1.55;color:#526c5b}
+.stageSurveyGroupHeading:focus-visible{outline:3px solid #2263ac;outline-offset:-3px}
+@media(max-width:640px){
+ .stageSurveyIngredients{padding:8px}
+ .stageSurveyGroup[open]>.stageSurveyGroupHeading{flex:0 0 36%;max-width:36%;padding:8px}
+ .stageSurveyGroupIngredients article{flex-basis:205px;min-width:205px}
+}

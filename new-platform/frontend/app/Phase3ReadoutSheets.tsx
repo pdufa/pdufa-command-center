@@ -21,6 +21,7 @@ import {checkPhase3PublishedArithmetic} from "../lib/phase3-published-arithmetic
 import {phase3RegistryConcordance} from "../lib/phase3-registry-concordance";
 import protocolRegistry from "../data/phase3-protocol-registry-checks.json";
 import {surveyScoringAssessments,surveyScoringGateLabel} from "../lib/final-survey-scoring-protocol";
+import {RAAS_METRIC_CATALOG,type RaasStage} from "../lib/raas-metric-specs";
 import topRetrospectiveResearch from "../data/raas-retrospective-top-cases.json";
 import raasApprovedCalibrations from "../data/raas-approved-calibrations.json";
 import raasHistoricalCases from "../data/raas-historical-cases.json";
@@ -108,6 +109,50 @@ function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
   window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
+/** The 38-question base research intake is common to both cohorts, but the
+ * actual RAAS decision ingredients are phase-specific: 30 pre-readout metrics
+ * vs 30 post-readout metrics, each grouped into 6 distinct categories.
+ * These are requirements, NOT sourced or calibrated 0-100 ratings.
+ */
+function StageSurveyIngredients({bucket}:{bucket:RaasStage}){
+ const isTop=bucket==="pre";
+ const groups=RAAS_METRIC_CATALOG[bucket];
+ return <section className={css.stageSurveyIngredients}
+   data-raas-stage-survey-ingredients={bucket}
+   aria-label={isTop?"TOP pre-readout survey ingredients":"BOTTOM post-readout survey ingredients"}>
+   <div className={css.stageSurveyHeading}>
+     <strong>{isTop?"TOP · pre-readout prediction ingredients":
+       "BOTTOM · post-readout assessment ingredients"}</strong>
+     <p>{isTop?
+       "Before Phase 3 results: evaluate earlier efficacy, trial design, probability of a successful readout, valuation, downside, and pre-readout exit timing.":
+       "After Phase 3 results: evaluate reported efficacy, effect sizes, FDA and manufacturing risks, remaining valuation upside, financing, and PDUFA exit timing."}</p>
+     <small>6 stage-specific RAAS categories · 30 distinct metrics · no independently calibrated ratings yet</small>
+   </div>
+   <div className={css.stageSurveyGroups}>
+     {groups.map((group,i)=><details className={css.stageSurveyGroup} key={group.id}>
+       <summary className={css.stageSurveyGroupHeading}>
+         <span><strong>{i+1}. {group.name}</strong>
+           <small>{group.weight}% specification weight · {group.metrics.length} ingredients</small></span>
+         <span className={css.stageSurveyChevron} aria-hidden="true">▸</span>
+       </summary>
+       <div className={css.stageSurveyGroupIngredients}>
+         {group.metrics.map((metric,j)=><article key={metric.id}>
+           <strong>{j+1}. {metric.name}</strong>
+           <p><b>Evidence:</b> {metric.requiredEvidence}</p>
+           <p><b>Evaluation:</b> {metric.scoreRule}</p>
+           <p><b>Risk:</b> {metric.criticalRisk}</p>
+           <small>Not graded · {metric.id}</small>
+         </article>)}
+       </div>
+     </details>)}
+   </div>
+   <p className={css.stageSurveyFootnote}>The original 5 groups / 20 surveys / 38 questions below
+     are a common research intake for TOP and BOTTOM, not two independent
+     RAAS scorecards. The phase-specific ingredients above are different
+     and cannot be scored until independently verified.</p>
+ </section>;
+}
+
 /** Source-backed survey navigator. A recorded research input is not a rating or stock forecast. */
 function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
  row:ReadoutRow;bucket:"pre"|"post";feed:BenefitFeed|null;
@@ -166,13 +211,14 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
    <div className={css.surveyDialogHead}>
      <div>
        <p className={css.surveyEyebrow}>{bucket==="pre"?"UPPER · 3 · PHASE 3 BEFORE READOUT":"LOWER · P · PHASE 3 AFTER READOUT"}</p>
-       <h3>Survey Ratings · {row.ticker}</h3>
+       <h3>{bucket==="pre"?"TOP Surveys":"BOTTOM Surveys"} · {row.ticker}</h3>
        <p>{row.company} · {row.nctId}</p>
      </div>
      <button type="button" className={css.surveyClose} onClick={onClose} autoFocus>Close ✕</button>
    </div>
    <div className={css.surveyDialogBody}>
-     <p className={css.surveyClarification}><strong>Research coverage, not a numerical rating.</strong>
+     <StageSurveyIngredients bucket={bucket}/>
+     <p className={css.surveyClarification}><strong>Shared 38-question research intake · not a numerical rating.</strong>
        {" "}All 5 groups, 20 surveys and 38 questions are included. Scores remain
        {" "}<strong>Not graded</strong> until source-backed scoring rules are validated.
        Missing research never equals clinical failure or a zero score. A VERIFIED source input confirms an issuer-disclosed observation matched to this trial; it is not independent adjudication of efficacy or safety.</p>
@@ -374,10 +420,11 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
       tabIndex={-1} aria-label={"SURVEY synthesis for "+row.ticker+" "+row.nctId}>
      <div className={css.surveyDialogHead}>
        <div><p className={css.surveyEyebrow}>{bucket==="pre"?"UPPER · 3 · BEFORE DATA RELEASE":"LOWER · P · AFTER DATA RELEASE"}</p>
-         <h3>SURVEY · {row.ticker}</h3><p>{row.company} · {row.nctId}</p></div>
+         <h3>{bucket==="pre"?"TOP SURVEY":"BOTTOM SURVEY"} · {row.ticker}</h3><p>{row.company} · {row.nctId}</p></div>
        <button className={css.surveyClose} type="button" onClick={onClose}>Close ✕</button>
      </div>
      <div className={css.surveyDialogBody}>
+       <StageSurveyIngredients bucket={bucket}/>
        <section className={css.conjunctionSection} aria-label="Combined survey conclusion">
          <p className={css.surveyEyebrow}>CONJUNCTIVE SURVEY SUMMARY</p>
          <h4>{bucket==="pre"?"Readout research readiness":"Post-readout research readiness"}</h4>
@@ -713,15 +760,15 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
             coverage={researchFor(row)} benefitFeed={benefitFeed} onResearchRequest={onRaasOpen}/>
         </td>{showSurveys&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"details")}
-            aria-label={"Explore five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
-            Surveys <span aria-hidden="true">→</span>
+            aria-label={(bucket==="pre"?"Explore TOP pre-readout":"Explore BOTTOM post-readout")+" survey ingredients and shared five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
+            {bucket==="pre"?"TOP Surveys":"BOTTOM Surveys"} <span aria-hidden="true">→</span>
           </button>
           <small>{researchStatus==="loading"?"Loading verified inputs":
             researchFor(row)?researchFor(row)!.verified+" verified / 38":"Not assessed · 5 groups"}</small>
         </td>}{showSynthesis&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"synthesis")}
-            aria-label={"Open SURVEY combined assessment for "+row.ticker+" "+row.nctId}>
-            SURVEY <span aria-hidden="true">→</span>
+            aria-label={"Open "+(bucket==="pre"?"TOP":"BOTTOM")+" SURVEY combined assessment and stage-specific RAAS ingredients for "+row.ticker+" "+row.nctId}>
+            {bucket==="pre"?"TOP SURVEY":"BOTTOM SURVEY"} <span aria-hidden="true">→</span>
           </button>
           <small>{researchFor(row)?
             (researchFor(row)!.ready?"Ready for evidence review":
