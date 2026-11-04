@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_EXPLICIT_METRIC_REVIEWS_RESEARCH_ONLY",
+  "sourceAsOf": "2026-11-04",
+  "note": "No independently reviewed complete metric input records currently exist. This file is an append-only reviewed evidence intake for future 30/30 stage scoring; do not seed invented records or retroactively fabricate forecasts. A full research score is unvalidated even if 30 metrics are eventually reviewed.",
+  "records": []
+}
