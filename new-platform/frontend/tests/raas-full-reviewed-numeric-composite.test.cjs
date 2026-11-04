@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,6);
+ assert.equal(feed.records.length,26);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -140,7 +140,7 @@ test("dual pivotal replicated and durable Week-24 responses are source-checked b
  const source=JSON.parse(fs.readFileSync(p.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(source);
- const x=feed.records.filter(r=>r.metricId==="post-1-4");
+ const x=feed.records.filter(r=>r.metricId==="post-1-4"&&r.ticker==="CLDX");
  assert.equal(x.length,2);
  assert.deepEqual(x.map(r=>r.nctId).sort(),["NCT06445023","NCT06455202"]);
  for(const r of x){
@@ -154,5 +154,24 @@ test("dual pivotal replicated and durable Week-24 responses are source-checked b
   assert.equal(grade.independentReviewedCount,0);
   assert.equal(grade.aiCrosscheckedCount,3);
   assert.equal(grade.fullResearchScore,null);
+ }
+});
+
+test("10-trial real clinical pilot has only research grades, not full RAAS or fabricated FDA probabilities",()=>{
+ const pilot=require("node:fs").readFileSync(require("node:path").join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8");
+ const feed=parseReviewedMetricFeed(JSON.parse(pilot));
+ const cases=new Set(feed.records.map(r=>r.nctId));
+ assert.equal(cases.size,10);
+ assert.equal(feed.records.length,26);
+ for(const nctId of cases){
+  const r=feed.records.find(x=>x.nctId===nctId);
+  const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
+   indication:r.indication},"post",true,feed);
+  assert.ok(scored.aiCrosscheckedCount>=2 && scored.aiCrosscheckedCount<=3);
+  assert.equal(scored.independentReviewedCount,0);
+  assert.equal(scored.fullResearchScore,null);
+  assert.equal(scored.approvedOverallScore,null);
+  assert.equal(scored.missingMetricIds.length,30-scored.aiCrosscheckedCount);
  }
 });
