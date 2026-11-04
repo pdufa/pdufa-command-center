@@ -27,7 +27,8 @@ function auditIndependentEntryCloses(cap,feed){
  for(const x of feed.observations){
   const c=cases.get(x?.caseId);
   if(!c||seen.has(x.caseId)||x.ticker!==c.ticker||
-   x.session!==c.proposedEntrySession||!date(x.session)||
+   (c.proposedEntrySession!==null&&x.session!==c.proposedEntrySession)||
+   !date(x.session)||
    !Number.isFinite(x.nominalCloseUsd)||x.nominalCloseUsd<=0||
    x.priceAdjustmentBasis!=="NOMINAL_CLOSE_ADJUSTMENTS_UNCONFIRMED"||
    !["DAILY_SESSION_CLOSE","WEEKLY_FRIDAY_CLOSE"].includes(x.quoteGranularity)||
@@ -45,7 +46,7 @@ function auditIndependentEntryCloses(cap,feed){
  const rows=cap.rows.map(c=>{
   const v=observations.get(c.caseId);
   const raw=c.rawCloseAlpaca;
-  const gap=raw!==null&&v?
+  const gap=raw!==null&&v&&c.proposedEntrySession===v.session?
    Math.round((v.nominalCloseUsd-raw)*10000)/10000:null;
   const matches=gap!==null&&Math.abs(gap)<=0.005;
   return {
@@ -56,6 +57,7 @@ function auditIndependentEntryCloses(cap,feed){
    independentPriceGranularity:v?.quoteGranularity??null,
    differenceUsd:gap,
    status:!v?"NO_SECOND_SOURCE_RECORDED":
+    c.proposedEntrySession===null?"ALPACA_ENTRY_SESSION_UNAVAILABLE":
     raw===null?"ALPACA_RAW_PRICE_MISSING":
     matches?"INDEPENDENT_NOMINAL_CLOSE_MATCH_ADJUSTMENTS_UNAUDITED":
     "INDEPENDENT_NOMINAL_CLOSE_DISAGREEMENT",
