@@ -20,6 +20,7 @@ def study(nct="NCT06445023",posted=False):
           "designInfo":{"allocation":"RANDOMIZED","interventionModel":"PARALLEL",
             "maskingInfo":{"masking":"QUADRUPLE"}},
           "enrollmentInfo":{"type":"ESTIMATED","count":420}},
+        "conditionsModule":{"conditions":["Chronic Spontaneous Urticaria"]},
         "armsInterventionsModule":{"interventions":[{"type":"DRUG","name":"Barzolvolimab"},{"type":"OTHER","name":"Placebo"}]},
         "outcomesModule":{"primaryOutcomes":[{"measure":"Change in observed disease severity",
                 "timeFrame":"Week 12"}],"secondaryOutcomes":[{"measure":"Quality of life"}]}}
@@ -60,6 +61,7 @@ class RegistryEvidenceTest(unittest.TestCase):
     def test_protocol_only_evidence_never_assigned_outcome_or_score(self):
         result=mod.extract("NCT06445023","CLDX",study(),"2026-11-04T15:00:00Z")
         self.assertEqual(result["registeredPrimaryOutcomes"][0]["timeFrame"],"Week 12")
+        self.assertEqual(result["registeredConditions"],["Chronic Spontaneous Urticaria"])
         self.assertEqual(result["registeredInterventions"],["Barzolvolimab","Placebo"])
         self.assertEqual(result["registeredDesign"]["allocation"],"RANDOMIZED")
         self.assertEqual(result["registeredDesign"]["masking"],"QUADRUPLE")
@@ -70,6 +72,20 @@ class RegistryEvidenceTest(unittest.TestCase):
         self.assertIsNone(result["overallRaasScore"])
         self.assertTrue(result["sourceSha256"])
         self.assertEqual(result["sourceUrl"],"https://clinicaltrials.gov/study/NCT06445023")
+
+    def test_source_condition_names_missing_and_malformed_are_not_invented(self):
+        without = study()
+        del without["protocolSection"]["conditionsModule"]
+        result = mod.extract("NCT06445023","CLDX",without,"2026-11-04T15:00:00Z")
+        self.assertEqual(result["registeredConditions"], [])
+        bad = study()
+        bad["protocolSection"]["conditionsModule"] = {"conditions": "not a list"}
+        with self.assertRaisesRegex(ValueError,"CONDITIONS_INVALID"):
+            mod.extract("NCT06445023","CLDX",bad,"2026-11-04T15:00:00Z")
+        bad = study()
+        bad["protocolSection"]["conditionsModule"] = ["Bad"]
+        with self.assertRaisesRegex(ValueError,"CONDITIONS_MODULE_INVALID"):
+            mod.extract("NCT06445023","CLDX",bad,"2026-11-04T15:00:00Z")
 
     def test_posted_primary_endpoint_analysis_and_serious_events_are_retained(self):
         result=mod.extract("NCT06445023","CLDX",study(posted=True),"2026-11-04T15:00:00Z")
