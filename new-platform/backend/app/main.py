@@ -178,6 +178,11 @@ VERIFIED_FDA_IDS_BY_PROGRAM = {
 
 FDA_CHART_CATEGORIES = frozenset(["original-approval","supplement-approval","tentative-action","crl","adcom","pdufa-extension","inspection","label","rems","designation","submission","review-letter","resubmission"])
 FDA_CATEGORY_ROW_ID = "overlay-category-selection-v1"
+PDUFA_CHART_FEATURES = frozenset({
+    "countdown", "decision", "date-history", "review-progress",
+    "safety", "raas-snapshot", "market-reaction",
+})
+PDUFA_FEATURE_ROW_ID = "pdufa-chart-feature-selection-v1"
 
 
 class CustomFdaOverlayPayload(BaseModel):
@@ -185,6 +190,7 @@ class CustomFdaOverlayPayload(BaseModel):
     markers: list[CustomFdaMarker] = Field(default_factory=list, max_length=40)
     verifiedOverrides: list[VerifiedFdaDisplayOverride] = Field(default_factory=list, max_length=20)
     enabledCategories: list[str] | None = Field(default=None, max_length=20)
+    enabledFeatures: list[str] | None = Field(default=None, max_length=7)
 
     def canonical(self, program_id: str) -> list[dict]:
         from datetime import date as caldate
@@ -194,6 +200,11 @@ class CustomFdaOverlayPayload(BaseModel):
             or any(cat not in FDA_CHART_CATEGORIES for cat in self.enabledCategories)
         ):
             raise HTTPException(status_code=422, detail="Unknown or repeated FDA chart category")
+        if self.enabledFeatures is not None and (
+            len(set(self.enabledFeatures)) != len(self.enabledFeatures)
+            or any(feature not in PDUFA_CHART_FEATURES for feature in self.enabledFeatures)
+        ):
+            raise HTTPException(status_code=422, detail="Unknown or repeated PDUFA chart feature")
         ids = [m.id for m in self.markers] + [o.id for o in self.verifiedOverrides]
         if len(ids) != len(set(ids)):
             raise HTTPException(status_code=422, detail="Duplicate marker IDs")
@@ -229,6 +240,9 @@ class CustomFdaOverlayPayload(BaseModel):
             + ([dict(id=FDA_CATEGORY_ROW_ID, kind="category_selection",
                      enabledCategories=sorted(self.enabledCategories))]
                if self.enabledCategories is not None else [])
+            + ([dict(id=PDUFA_FEATURE_ROW_ID, kind="feature_selection",
+                     enabledFeatures=sorted(self.enabledFeatures))]
+               if self.enabledFeatures is not None else [])
         )
 
 
@@ -1245,6 +1259,12 @@ def get_fda_chart_overlay(program_id: str):
                 and m.get("kind") == "category_selection"
                 and isinstance(m.get("enabledCategories"), list)
             ), sorted(FDA_CHART_CATEGORIES)) if row else sorted(FDA_CHART_CATEGORIES),
+            "enabledFeatures": next((
+                m.get("enabledFeatures") for m in (row.markers or [])
+                if isinstance(m, dict) and m.get("id") == PDUFA_FEATURE_ROW_ID
+                and m.get("kind") == "feature_selection"
+                and isinstance(m.get("enabledFeatures"), list)
+            ), sorted(PDUFA_CHART_FEATURES)) if row else sorted(PDUFA_CHART_FEATURES),
             "categorySourceCoverage": {
                 "automatic": ["original-approval", "supplement-approval", "tentative-action"],
                 "awaiting_separate_source": sorted(FDA_CHART_CATEGORIES - {
@@ -1273,6 +1293,9 @@ def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
             if payload.enabledCategories is None:
                 markers.append(dict(id=FDA_CATEGORY_ROW_ID, kind="category_selection",
                                     enabledCategories=sorted(FDA_CHART_CATEGORIES)))
+            if payload.enabledFeatures is None:
+                markers.append(dict(id=PDUFA_FEATURE_ROW_ID, kind="feature_selection",
+                                    enabledFeatures=sorted(PDUFA_CHART_FEATURES)))
             session.add(FdaChartOverlay(
                 program_id=program_id, markers=markers, version=1, updated_at=now,
             ))
@@ -1290,6 +1313,12 @@ def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
                 id=FDA_CATEGORY_ROW_ID, kind="category_selection",
                 enabledCategories=sorted(FDA_CHART_CATEGORIES),
             ))
+        if payload.enabledFeatures is None:
+            prior = session.get(FdaChartOverlay, program_id)
+            feature_row = next((m for m in (prior.markers or []) if isinstance(m, dict)
+                                and m.get("id") == PDUFA_FEATURE_ROW_ID), None) if prior else None
+            markers.append(feature_row or dict(id=PDUFA_FEATURE_ROW_ID,
+                kind="feature_selection", enabledFeatures=sorted(PDUFA_CHART_FEATURES)))
         result = session.execute(
             update(FdaChartOverlay)
             .where(FdaChartOverlay.program_id == program_id, FdaChartOverlay.version == payload.version)
