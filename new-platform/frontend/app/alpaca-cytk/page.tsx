@@ -17,6 +17,7 @@ export const metadata: Metadata = {
  */
 const cytkEvents: FdaMilestone[] = [
   {
+    id: "verified-cytk-2025-approval",
     date: "2025-12-19",
     label: "Initial FDA approval — MYQORZO (SEQUOIA-HCM)",
     chartLabel: "FDA approval 12/19",
@@ -24,6 +25,7 @@ const cytkEvents: FdaMilestone[] = [
     source: "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Announces-FDA-Approval-of-MYQORZO-aficamten-for-the-Treatment-of-Adults-with-Symptomatic-Obstructive-Hypertrophic-Cardiomyopathy-to-Improve-Functional-Capacity-and-Symptoms/"
   },
   {
+    id: "verified-cytk-2026-snda",
     date: "2026-05-05",
     label: "MAPLE-HCM supplemental NDA acceptance disclosed",
     chartLabel: "FDA sNDA 5/5",
@@ -31,6 +33,7 @@ const cytkEvents: FdaMilestone[] = [
     source: "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-First-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx"
   },
   {
+    id: "verified-cytk-2026-maple-data",
     date: "2026-08-29",
     label: "MAPLE-HCM additional trial analysis released",
     chartLabel: "MAPLE data 8/29",
@@ -38,6 +41,7 @@ const cytkEvents: FdaMilestone[] = [
     source: "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Results-from-ACACIA-HCM-and-MAPLE-HCM-Presented-in-Late-Breaking-Clinical-Trial-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026/default.aspx"
   },
   {
+    id: "verified-cytk-2026-pdufa",
     date: "2026-11-14",
     label: "MAPLE-HCM sNDA — scheduled FDA PDUFA target",
     chartLabel: "PDUFA 11/14",
