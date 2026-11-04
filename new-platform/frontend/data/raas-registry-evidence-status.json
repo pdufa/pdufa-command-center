@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_CT_GOV_EVIDENCE_COLLECTION_STATUS",
   "source": "ClinicalTrials.gov API v2",
-  "collectedAsOf": "2026-11-04T22:51:47+00:00",
+  "collectedAsOf": "2026-11-04T22:56:44+00:00",
   "note": "Direct registry evidence, not PDUFA eligibility, independently verified TOP/BOTTOM classification or validated 0-100 RAAS prediction. Some metrics need additional SEC, FDA, market and independent clinical benchmarks.",
   "summary": {
     "researchTrials": 762,

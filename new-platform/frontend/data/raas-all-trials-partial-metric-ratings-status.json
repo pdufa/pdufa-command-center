@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_ALL_NCTS_PARTIAL_BENCHMARK_REVIEWED_METRICS_NOT_FDA_PREDICTIONS",
+  "registrySourceAsOf": "2026-11-04T22:56:44+00:00",
+  "reviewSourceAsOf": "2026-11-04",
+  "researchTrials": 762,
+  "trialStageRows": 1524,
+  "reviewedMetricRecords": 36,
+  "trialStageRowsWithActualProvisionalMetricScores": 10,
+  "uniqueNctsWithActualProvisionalMetricScores": 10,
+  "totalAiCrosscheckedMetricReviews": 36,
+  "totalIndependentMetricReviews": 0,
+  "fullValidatedRaasScores": 0,
+  "calibratedFdaPredictions": 0,
+  "warning": "Observed mean is calculated only over the 1-30 individually reviewed ordinal metric findings. Weighted coverage is the fraction of the 30-metric specification covered by these reviews, not probability. A mean of 75 with 5% covered is NOT an overall RAAS of 75. No missing metrics imputed as zero, neutral or favorable. All registry stages and $300M-$10B current PDUFA Pipeline eligibility remain separately unverified. No FDA PASS/CRL/extension forecast."
+}
