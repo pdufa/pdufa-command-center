@@ -2,5 +2,31 @@
   "schemaVersion": 1,
   "scope": "RAAS_SELF_AUDIT_HISTORY",
   "note": "Immutable snapshots of RAAS system evidence/validation progress, separate from per-trial rating histories. These snapshots record objective source counters and captured timestamps, not estimated predictive accuracy. No historical self-score or self-accuracy rate is backfilled.",
-  "records": []
+  "records": [
+    {
+      "eventId": "b6e1830bab88e8debac622d9a384da652a7b0484e4179b3790acb1fea6e05fa4",
+      "recordedAt": "2026-11-04T13:53:53.053Z",
+      "evidenceFingerprint": "00be6336b28b0c11869b9694539a5c40ba7ab6142b8dcab3b3f5acf1aa7fc77b",
+      "metricDefinitions": 60,
+      "verifiedYearAudits": 0,
+      "rawHistoricalTradeRows": 0,
+      "rawHistoricalMetricRows": 0,
+      "rawCalibrationRegistryEntries": 0,
+      "rawReviewedTrialSnapshots": 0,
+      "claimedPredecisionThreeWayForecasts": 0,
+      "accuracyScore": null,
+      "accuracyPercent": null,
+      "status": "NOT_INDEPENDENTLY_RATED",
+      "note": "Source inventory only. Raw records are not accepted historical returns, approved calibrations, or independently checked outcomes. No predictive accuracy may be inferred.",
+      "sourceDigests": {
+        "lib/raas-metric-specs.ts": "9a8b8aa49a689d2303cc65530a47dea420c4855b38c08df6225202433c5a6004",
+        "data/raas-active-2024-2025-pdufa-intake.json": "65d01801038573fc2c04b495b3cb4201e4809ed70c072b20db7490ce1c0fdab5",
+        "data/raas-historical-cases.json": "c2e2659b03dc0b16a9fc06c7f4d4e3243c23954972667abfbbdba6a51d718ee4",
+        "data/raas-historical-metric-snapshots.json": "30f400060a27c4e7932a323513ce5c4630f69cc13ead104ea2ba536afd2d6158",
+        "data/raas-approved-calibrations.json": "53ce482defca5ad9d8c018200b66b384194c0dcaa0ee37fbd3bcd41e1dfbe12f",
+        "data/raas-reviewed-snapshots.json": "8f9b684f28476db6467deea075d6cfcb272d06d1e6f54a77a24cb487127a0752",
+        "data/raas-fda-three-way-accuracy-site-snapshot.json": "bdfaed705074393b192ba7dc52b5457338e07aae675a69e0876dae2a98596e6b"
+      }
+    }
+  ]
 }

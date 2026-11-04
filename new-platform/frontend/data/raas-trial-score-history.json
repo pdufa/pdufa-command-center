@@ -2,5 +2,217 @@
   "schemaVersion": 1,
   "scope": "RAAS_TRIAL_SCORE_HISTORY",
   "note": "Append-only, trial-centred, cross-stage capture journal. First capture date is when the system saved an observation, never a reconstructed prediction timestamp. Historical TOP entries remain when the same NCT+drug+indication moves to BOTTOM. Evidence-only updates are UNSCORED, not zero; validated and provisional 0-100 ratings require separately versioned evidence-backed score events.",
-  "records": []
+  "records": [
+    {
+      "eventId": "3222c1e65f507ba22d463d2613d8f7cfe80950960c67eb4a539c7221d56aa86c",
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "recordedAt": "2026-11-04T13:53:52.943Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "FIRST_CAPTURE",
+      "summary": "First captured source-backed trial research. 3/30 RAAS metric areas have source leads; no overall RAAS score calculated.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 3,
+      "metricIds": [
+        "post-1-1",
+        "post-1-2",
+        "post-5-2"
+      ],
+      "sourceUrls": [
+        "https://ir.celldex.com/node/16781/ixbrl-viewer"
+      ],
+      "evidenceFingerprint": "865c92264b091bf3916fdaa30d41ac60c6e06e2a7d4ea803911aaef211f73f38"
+    },
+    {
+      "eventId": "61289de8c7c8c25c110343972c78250ff3167de93ee2530483d8b26621162174",
+      "nctId": "NCT07671911",
+      "ticker": "TRVI",
+      "drug": "NAL ER",
+      "indication": "Idiopathic Pulmonary Fibrosis",
+      "stage": "pre",
+      "recordedAt": "2026-11-04T13:53:52.943Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "FIRST_CAPTURE",
+      "summary": "First captured source-backed trial research. 7/30 RAAS metric areas have source leads; no overall RAAS score calculated.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 7,
+      "metricIds": [
+        "pre-1-1",
+        "pre-1-2",
+        "pre-1-4",
+        "pre-3-2",
+        "pre-3-3",
+        "pre-4-1",
+        "pre-4-2"
+      ],
+      "sourceUrls": [
+        "https://ir.trevitherapeutics.com/news-releases/news-release-details/trevi-therapeutics-reports-fourth-quarter-and-year-end-2025-0",
+        "https://trevitherapeutics.com/active-clinical-trials/",
+        "https://www.sec.gov/Archives/edgar/data/1563880/000119312525132890/d949267d8k.htm",
+        "https://www.sec.gov/Archives/edgar/data/1563880/000119312526337974/trvi-ex99_1.htm"
+      ],
+      "evidenceFingerprint": "6a6434ea760a8bec1453618cf58fc4b35b9ea20bf73aba7cc5841b6f718dee5f"
+    },
+    {
+      "eventId": "aea2f4bb8789969fa73d4cd3af23b16ff71c4cddfbbf54cc33d10ad5eb98dee7",
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "stage": "post",
+      "recordedAt": "2026-11-04T13:53:52.943Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "FIRST_CAPTURE",
+      "summary": "First captured source-backed trial research. 3/30 RAAS metric areas have source leads; no overall RAAS score calculated.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 3,
+      "metricIds": [
+        "post-1-1",
+        "post-1-2",
+        "post-5-2"
+      ],
+      "sourceUrls": [
+        "https://ir.celldex.com/node/16781/ixbrl-viewer"
+      ],
+      "evidenceFingerprint": "b5a6fd34719886c6b741367d635e48fbd322550efabb973602d5d279234e999b"
+    },
+    {
+      "eventId": "f87a29dd4a6fe5f9732a0d07e010468b013b20a0ccd37622531f60c9806ed4f0",
+      "nctId": "NCT06641076",
+      "ticker": "MLTX",
+      "drug": "sonelokimab",
+      "indication": "psoriatic arthritis",
+      "stage": "post",
+      "recordedAt": "2026-11-04T13:53:52.943Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "FIRST_CAPTURE",
+      "summary": "First captured source-backed trial research. 3/30 RAAS metric areas have source leads; no overall RAAS score calculated.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 3,
+      "metricIds": [
+        "post-1-1",
+        "post-1-2",
+        "post-4-2"
+      ],
+      "sourceUrls": [
+        "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial"
+      ],
+      "evidenceFingerprint": "7cb7b2aa49778edf62e7cd536c1f7db2d32bbb542ecdd02f0d8d421327ad5901"
+    },
+    {
+      "eventId": "f9900a4d1a2db70b654d5b8957237d28c183833693c244c3b01702f077d7c6ec",
+      "nctId": "NCT07363577",
+      "ticker": "LBRX",
+      "drug": "LB-102 (100 mg tablet) | LB-102 (50 mg tablet)",
+      "indication": "Schizophrenia",
+      "stage": "pre",
+      "recordedAt": "2026-11-04T13:53:52.943Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "FIRST_CAPTURE",
+      "summary": "First captured source-backed trial research. 5/30 RAAS metric areas have source leads; no overall RAAS score calculated.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 5,
+      "metricIds": [
+        "pre-1-2",
+        "pre-3-2",
+        "pre-3-3",
+        "pre-4-1",
+        "pre-4-2"
+      ],
+      "sourceUrls": [
+        "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-announces-accelerated-timing-of-topline-results-from-the-phase-3-nova-2-trial-of-lb-102-in-schizophrenia/",
+        "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-reports-second-quarter-2026-financial-results-and-provides-corporate-update/",
+        "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/",
+        "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-initiates-pivotal-phase-3-trial-nova-2-for-lb-102-in-patients-with-schizophrenia/",
+        "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-reports-second-quarter-2026-financial-results-and-provides-corporate-update/",
+        "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/"
+      ],
+      "evidenceFingerprint": "bacd5fdfed8e9ae3affb50099d5308e2f7274633c689e546bf69f0e8bb83fb90"
+    },
+    {
+      "eventId": "14d278da4a87b56d3953beb046863a27d24c4d778063a9250724e0bdb3c4e38e",
+      "nctId": "NCT07363577",
+      "ticker": "LBRX",
+      "drug": "LB-102 (100 mg tablet) | LB-102 (50 mg tablet)",
+      "indication": "Schizophrenia",
+      "stage": "pre",
+      "recordedAt": "2026-11-04T13:53:53.012Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "METRIC_SCORE_UPDATED",
+      "summary": "New research-only timing specificity component 50/100 from source dated 2026-10-27. 1/30 metric grades; overall RAAS not scored.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 1,
+      "metricIds": [
+        "pre-4-1"
+      ],
+      "sourceUrls": [
+        "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/"
+      ],
+      "evidenceFingerprint": "bdf21512921ee6fe0c5f3bc629c4502186337a16cabb8475a6a201d61d75cda7",
+      "metricGrades": [
+        {
+          "metricId": "pre-4-1",
+          "score": 50,
+          "ruleId": "timing-specificity-exploratory-2026-11-02-v1",
+          "observationId": "l-guidance",
+          "sourceUrl": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/",
+          "sourceDate": "2026-10-27",
+          "label": "Readout window specificity (research only)",
+          "inputs": "First half of 2027",
+          "explanation": "Predeclared exploratory window bins: year 25; half-year 50; quarter 75; single month 100. Sponsor precision is not the probability of meeting a date."
+        }
+      ]
+    },
+    {
+      "eventId": "f854f4dc82a71a7877e299813b439785984c5874ecf6e53675c6c323006870be",
+      "nctId": "NCT07671911",
+      "ticker": "TRVI",
+      "drug": "NAL ER",
+      "indication": "Idiopathic Pulmonary Fibrosis",
+      "stage": "pre",
+      "recordedAt": "2026-11-04T13:53:53.012Z",
+      "sourceAsOf": "2026-11-02",
+      "kind": "METRIC_SCORE_UPDATED",
+      "summary": "New research-only timing specificity component 50/100 from source dated 2026-08-06. 1/30 metric grades; overall RAAS not scored.",
+      "scoreKind": "UNSCORED",
+      "score": null,
+      "scoreVersion": null,
+      "metricCoverage": 1,
+      "metricIds": [
+        "pre-4-1"
+      ],
+      "sourceUrls": [
+        "https://www.sec.gov/Archives/edgar/data/1563880/000119312526337974/trvi-ex99_1.htm"
+      ],
+      "evidenceFingerprint": "e2e38d9d7f77ef01620b29ebb1a6268781d21cf3571e23da516f3425caa3b5b9",
+      "metricGrades": [
+        {
+          "metricId": "pre-4-1",
+          "score": 50,
+          "ruleId": "timing-specificity-exploratory-2026-11-02-v1",
+          "observationId": "trvi-ocean1-readout-guidance",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1563880/000119312526337974/trvi-ex99_1.htm",
+          "sourceDate": "2026-08-06",
+          "label": "Readout window specificity (research only)",
+          "inputs": "first half of 2028",
+          "explanation": "Predeclared exploratory window bins: year 25; half-year 50; quarter 75; single month 100. Sponsor precision is not the probability of meeting a date."
+        }
+      ]
+    }
+  ]
 }
