@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,50);
+ assert.equal(feed.records.length,60);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -161,9 +161,9 @@ test("10-trial real clinical pilot has only research grades, not full RAAS or fa
  const pilot=require("node:fs").readFileSync(require("node:path").join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8");
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
- const cases=new Set(feed.records.map(r=>r.nctId));
+ const cases=new Set(feed.records.filter(r=>r.stage==="post").map(r=>r.nctId));
  assert.equal(cases.size,10);
- assert.equal(feed.records.length,50);
+ assert.equal(feed.records.length,60);
  for(const nctId of cases){
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
@@ -218,5 +218,33 @@ test("Eight CI/multiplicity reviews and six shared-NDA filing/target metrics are
    assert.equal(result.fullResearchScore,null);
    assert.equal(result.approvedOverallScore,null);
   }
+ }
+});
+
+test("Two source-checked current Phase 3 TOP trial research grades are exact-identity and never FDA probabilities",()=>{
+ const path=require("node:path"),raw=JSON.parse(fs.readFileSync(path.join(__dirname,
+  "../data/raas-reviewed-metric-assessments.json"),"utf8"));
+ const feed=parseReviewedMetricFeed(raw);
+ assert.equal(feed.records.filter(r=>r.stage==="pre").length,10);
+ const trials=[
+  {nctId:"NCT07671911",ticker:"TRVI",drug:"NAL ER",
+   indication:"Idiopathic Pulmonary Fibrosis"},
+  {nctId:"NCT07363577",ticker:"LBRX",
+   drug:"LB-102 (100 mg tablet) | LB-102 (50 mg tablet)",
+   indication:"Schizophrenia"}
+ ];
+ const ids=["pre-1-1","pre-1-2","pre-1-4","pre-3-2","pre-4-1"];
+ for(const trial of trials){
+  const current=fullReviewedTrialCandidate(trial,"pre",true,feed);
+  assert.equal(current.aiCrosscheckedCount,5);
+  assert.equal(current.independentReviewedCount,0);
+  assert.deepEqual(current.grades.map(g=>g.metricId).sort(),ids);
+  assert.equal(current.missingMetricIds.length,25);
+  assert.equal(current.fullResearchScore,null);
+  assert.equal(current.approvedOverallScore,null);
+  const wrong=fullReviewedTrialCandidate({...trial,drug:"WRONG DRUG"},"pre",true,feed);
+  assert.equal(wrong.reviewedCount,0);
+  const notPost=fullReviewedTrialCandidate(trial,"post",true,feed);
+  assert.equal(notPost.reviewedCount,0);
  }
 });

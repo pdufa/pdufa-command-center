@@ -96,7 +96,9 @@ test("trial gradebook exposes all 30 rubrics and does not promote timing to full
  const all=book.categories.flatMap(x=>x.rows);
  assert.equal(all.length,30);
  assert.ok(all.every(x=>x.rubric.metricId===x.id&&x.rubric.bands.length===5));
- assert.equal(book.provisionalDiagnostic.weightCoveredPercent,3);
+ assert.equal(book.provisionalDiagnostic.scored,5);
+ assert.equal(book.provisionalDiagnostic.weightCoveredPercent,22);
+ assert.equal(book.provisionalDiagnostic.missing,25);
  assert.equal(book.provisionalDiagnostic.fullyCoveredProvisionalScore,null);
  assert.equal(book.approvedOverallScore,null);
  const ml=buildRaasMetricGradebook({nctId:"NCT06641076",ticker:"MLTX",
