@@ -279,8 +279,9 @@ export default function RaasFullUniverseScores(){
    <a href="/raas-clinical-evidence-components.csv" download>Download clinical source-documentation grades</a>
    {" "}· <a href="/raas-primary-comparisons.csv" download>Primary statistical comparisons</a>
    {" "}· <a href="/raas-serious-event-rates.csv" download>Observed serious-event group rates</a>.
-   These are trial-matched facts and reporting completeness, never treatment-vs-placebo
-   clinical grades or validated 30/30 RAAS ratings.
+   Primary comparisons now include group titles exactly as reported by ClinicalTrials.gov,
+   with unresolved names marked, not guessed. These are trial-matched facts and reporting
+   completeness, never treatment-vs-placebo clinical grades or validated 30/30 RAAS ratings.
   </p>
   <p style={{fontSize:12,lineHeight:1.5,margin:"6px 0"}}>
    <strong>TOP/BOTTOM registry source coverage is calculated across every matched NCT.</strong>
