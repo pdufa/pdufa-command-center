@@ -74,6 +74,19 @@ test("malformed metric events cannot be mistaken for validated overall scores",(
   assert.throws(()=>history.parseRaasTrialHistory({...a.ledger,records:[{...ev,...patch},a.ledger.records[1]]}),/INVALID/);
  }
 });
+test("nightly source audit remains idempotent after metric grade was appended",()=>{
+ const sources=require(path.join(repo,"scripts/raas_trial_history_capture.cjs"));
+ const readout=sources.collectSourceCandidates([get("raas-pilot-observations.json"),
+  get("raas-prospective-source-baselines.json")]);
+ const sourceHistory=sources.appendSourceCaptures(get("raas-trial-score-history.json"),
+  readout,time1).ledger;
+ const grades=score.appendProvisionalMetricEvents(sourceHistory,candidates(),
+  time2,"2026-11-02").ledger;
+ const reread=sources.appendSourceCaptures(grades,readout,"2026-11-04T05:22:00.000Z");
+ assert.equal(reread.added,0);
+ assert.deepEqual(reread.ledger.records,grades.records);
+ history.parseRaasTrialHistory(reread.ledger);
+});
 test("pilot score UI is labeled as partial and non-validated, and nightly capture persists it",()=>{
  const scoreSource=read("lib/raas-provisional-trial-scores.ts");
  const summary=read("app/TrialRaasDisclosure.tsx");
