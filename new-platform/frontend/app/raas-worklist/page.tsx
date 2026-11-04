@@ -263,7 +263,7 @@ function GoalAsOfHistory(){
    <div><strong>{audit.calendarWeekendEntryCases}</strong><span>Calendar T−79 entries falling on weekends</span></div>
    <div><strong>{audit.calendarWeekendExitCases}</strong><span>Calendar T−14 exits falling on weekends</span></div>
   </div>
-  <p className={css.notice}>Calendar offsets and proposed next-entry / prior-exit Nasdaq sessions are not executable trading sessions, verified prices, or independent historical returns. Market closures include the exceptional January 9, 2025 shutdown; <a href="https://classic.nasdaqtrader.com/TraderNews.aspx?id=ETA2025-1" target="_blank" rel="noopener noreferrer">Nasdaq closure notice</a>. Issuer announcements do not independently validate FDA chronology or capitalization. No 0–100 RAAS grade is approved. SLNO's separately saved original announcement URL remains missing.</p>
+  <p className={css.notice}>Calendar offsets and proposed next-entry / prior-exit Nasdaq sessions are not executable trading sessions, verified prices, or independent historical returns. Market closures include the exceptional January 9, 2025 shutdown; <a href="https://classic.nasdaqtrader.com/TraderNews.aspx?id=ETA2025-1" target="_blank" rel="noopener noreferrer">Nasdaq closure notice</a>. Issuer announcements do not independently validate FDA chronology or capitalization. No 0–100 RAAS grade is approved. SLNO's original August 27, 2024 announcement URL is now recorded; a later SEC corroboration must not be used as if known before its filing date.</p>
   {audit.cases.map(c=><details key={c.caseId} className={css.group}
     data-raas-goal-asof-case={c.ticker}>
     <summary><strong>{c.ticker} · {c.application}</strong>
@@ -294,6 +294,12 @@ function GoalAsOfHistory(){
      <p className={css.muted}><strong>Original source:</strong> {c.initialGoalSourceUrl?
       <a href={c.initialGoalSourceUrl} target="_blank" rel="noopener noreferrer">Open dated original announcement</a>:
       "No separate original announcement URL retained; historical attribution not independently verified."}</p>
+     {c.originalGoalSourceCorroborationUrl&&<p className={css.muted} data-raas-original-goal-corroboration={c.ticker}>
+      <strong>Later SEC corroboration:</strong> <a href={c.originalGoalSourceCorroborationUrl} target="_blank" rel="noopener noreferrer">Open dated SEC filing</a>
+      {" "}· first public {c.originalGoalSourceCorroborationFirstPublicDate} ·
+      {" "}<strong>{c.originalGoalCorroborationPublicAtInitialEntry?"Already public at proposed original entry":"NOT public by proposed original T−79 entry"}</strong>.
+      This source must never be backdated into an earlier forecast.
+     </p>}
      {c.revised&&c.revisedGoalSourceUrl&&<p className={css.muted}><strong>Target revision:</strong> <a href={c.revisedGoalSourceUrl} target="_blank" rel="noopener noreferrer">Open dated revised target source</a> · originally announced target moved {c.sourceShiftCalendarDays} calendar days.</p>}
      <p className={css.muted}><strong>Phase 3 public-result source listed:</strong> {c.phase3ReadoutListedDate} · <a href={c.phase3ReadoutSourceUrl} target="_blank" rel="noopener noreferrer">Original clinical source</a>. Independently audited source publication chronology: <strong>not complete</strong>.</p>
      {(c.current.entryIsWeekend||c.current.exitIsWeekend)&&<p className={css.notice}>At least one proposed T−79/T−14 date is a weekend. Exact trading-session normalization, real price verification and slippage are required before any return claim.</p>}

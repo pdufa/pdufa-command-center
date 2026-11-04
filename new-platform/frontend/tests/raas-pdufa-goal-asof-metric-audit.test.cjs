@@ -15,7 +15,7 @@ test("All nine 2024/25 research sources have dated T-79 target inputs; none have
  assert.equal(r.sourceCases,9);
  assert.deepEqual(r.reviewYears,{2024:5,2025:4});
  assert.equal(r.revisedGoalCases,2);
- assert.equal(r.unverifiedOriginalGoalSourceUrls,1);
+ assert.equal(r.unverifiedOriginalGoalSourceUrls,0);
  assert.equal(r.finalGoalPublishedBeforeFinalEntryCases,9);
  assert.equal(r.calendarWeekendEntryCases,1);
  assert.equal(r.calendarWeekendExitCases,2);
@@ -69,7 +69,12 @@ test("Revised goal is NOT applied retroactively to the original T-79 calendar wi
  assert.equal(slno.initial.calendarEntryDate,"2024-10-09");
  assert.equal(slno.current.calendarEntryDate,"2025-01-07");
  assert.equal(slno.sourceShiftCalendarDays,90);
- assert.equal(slno.initialGoalSourceUrl,null); // original contemporary URL needs separate sourcing
+ assert.equal(slno.initialGoalSourceUrl,
+  "https://investors.soleno.life/news-releases/news-release-details/soleno-therapeutics-announces-us-fda-acceptance-filing-and");
+ assert.equal(slno.initial.targetWasPublishedByCalendarEntry,true);
+ assert.equal(slno.current.targetWasPublishedByCalendarEntry,true);
+ assert.equal(slno.initial.indicativeEntrySessionDate,"2024-10-09");
+ assert.equal(slno.initialGoalIndependentOriginalSource,"URL_RECORDED");
  const cytk=r.cases.find(x=>x.ticker==="CYTK");
  assert.equal(cytk.initialGoalDate,"2025-09-26");
  assert.equal(cytk.eventTargetDate,"2025-12-26");
@@ -145,4 +150,43 @@ test("The 60-metric worklist exposes historical target source audit, not a fabri
   assert.deepEqual((out.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error)
    .map(x=>ts.flattenDiagnosticMessageText(x.messageText," ")),[],file);
  }
+});
+
+test("A later SEC filing corroborating an old goal cannot replace the original public source or create approved RAAS cases",()=>{
+ const r=activePdufaGoalAsOfAudit();
+ const slno=r.cases.find(x=>x.ticker==="SLNO");
+ const source=primary.records.find(x=>x.ticker==="SLNO");
+ assert.match(source.originalGoalSourceCorroborationUrl,/^https:\/\/www\.sec\.gov\/Archives\/edgar\/data\/1484565\//);
+ assert.ok(slno.initialGoalSourceUrl.includes("investors.soleno.life"));
+ assert.notEqual(source.originalGoalSourceCorroborationUrl,slno.initialGoalSourceUrl);
+ assert.equal(slno.initialGoalAnnouncementDate,"2024-08-27");
+ assert.equal(slno.initial.calendarEntryDate,"2024-10-09");
+ assert.equal(slno.originalGoalSourceCorroborationFirstPublicDate,"2024-11-06");
+ assert.equal(slno.originalGoalCorroborationPublicAtInitialEntry,false);
+ assert.equal(slno.approvedRaasScore,null);
+ assert.equal(slno.approvedMetricGrades,0);
+ assert.equal(slno.historicalEntryCapitalizationVerified,false);
+ assert.equal(r.validatedHistoricalTradingCases,0);
+});
+
+test("Corroboration requires a dated, safe source link and is not a public original goal",()=>{
+ const changes=[
+  x=>{delete x.originalGoalSourceCorroborationFirstPublicDate;},
+  x=>{x.originalGoalSourceCorroborationFirstPublicDate="2027-01-01";},
+  x=>{x.originalGoalSourceCorroborationFirstPublicDate="2024-13-31";},
+  x=>{x.originalGoalSourceCorroborationUrl="https://user@evil.invalid/no";},
+ ];
+ for(const change of changes){
+  const data=clone(),x=data.records.find(r=>r.ticker==="SLNO");
+  change(x);
+  assert.throws(()=>auditGoalVersionSource(data),/RAAS_GOAL_ASOF_CORROBORATION_INVALID/);
+ }
+ const linked=auditGoalVersionSource(clone());
+ assert.equal(linked.unverifiedOriginalGoalSourceUrls,0);
+ const slno=linked.cases.find(x=>x.ticker==="SLNO");
+ assert.equal(slno.originalGoalCorroborationPublicAtInitialEntry,false);
+ assert.equal(slno.approvedRaasScore,null);
+ const p=fs.readFileSync(path.resolve(__dirname,"../app/raas-worklist/page.tsx"),"utf8");
+ assert.match(p,/data-raas-original-goal-corroboration/);
+ assert.match(p,/NOT public by proposed original T/);
 });
