@@ -142,9 +142,12 @@ class PartialMetricRatingsTests(unittest.TestCase):
         status = json.loads(status_text)
         self.assertEqual(len(rows), 2 * idx["summary"]["researchNcts"])
         self.assertEqual(status["reviewedMetricRecords"], len(reviewed["records"]))
-        self.assertEqual(status["trialStageRowsWithActualProvisionalMetricScores"], 10)
-        self.assertEqual(status["uniqueNctsWithActualProvisionalMetricScores"], 10)
-        self.assertEqual(status["reviewedMetricRecords"], 26)
+        unique_ncts = {r["nctId"] for r in reviewed["records"]}
+        unique_stage_rows = {(r["nctId"], r["stage"]) for r in reviewed["records"]}
+        self.assertEqual(status["uniqueNctsWithActualProvisionalMetricScores"], len(unique_ncts))
+        self.assertEqual(status["trialStageRowsWithActualProvisionalMetricScores"], len(unique_stage_rows))
+        self.assertEqual(status["reviewedMetricRecords"], len(reviewed["records"]))
+        self.assertGreaterEqual(status["reviewedMetricRecords"], 36)
         self.assertEqual(status["totalIndependentMetricReviews"], 0)
         self.assertEqual(status["fullValidatedRaasScores"], 0)
         self.assertTrue(all(x["full30MetricRaasScore"] == "" for x in rows))
