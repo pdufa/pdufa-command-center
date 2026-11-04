@@ -88,7 +88,13 @@ def extract(nct, ticker, study, fetched_at):
     ident = protocol.get("identificationModule") or {}
     sponsor = protocol.get("sponsorCollaboratorsModule") or {}
     design = protocol.get("designModule") or {}
+    arms = protocol.get("armsInterventionsModule") or {}
     outcomes = protocol.get("outcomesModule") or {}
+    if not isinstance(arms, dict):
+        raise ValueError("CT_GOV_INTERVENTIONS_MODULE_INVALID")
+    interventions = arms.get("interventions") or []
+    if not isinstance(interventions, list):
+        raise ValueError("CT_GOV_INTERVENTIONS_INVALID")
     results = study.get("resultsSection") or {}
     reported = (results.get("outcomeMeasuresModule") or {}).get("outcomeMeasures") or []
     serious = (results.get("adverseEventsModule") or {}).get("seriousEvents") or []
@@ -136,6 +142,8 @@ def extract(nct, ticker, study, fetched_at):
         "registryTitle": trim(ident.get("briefTitle"), 450),
         "leadSponsor": trim((sponsor.get("leadSponsor") or {}).get("name"), 200),
         "registeredPhases": design.get("phases") or [],
+        "registeredInterventions": [trim(x.get("name"), 180)
+            for x in interventions[:30] if isinstance(x, dict) and trim(x.get("name"), 180)],
         "registeredPrimaryOutcomes": [{"measure":trim(x.get("measure"),350),
             "timeFrame":trim(x.get("timeFrame"),140)} for x in primary],
         "registeredSecondaryOutcomeCount": len(outcomes.get("secondaryOutcomes") or []),
