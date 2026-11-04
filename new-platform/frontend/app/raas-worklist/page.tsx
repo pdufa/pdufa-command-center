@@ -263,7 +263,7 @@ function GoalAsOfHistory(){
    <div><strong>{audit.calendarWeekendEntryCases}</strong><span>Calendar T−79 entries falling on weekends</span></div>
    <div><strong>{audit.calendarWeekendExitCases}</strong><span>Calendar T−14 exits falling on weekends</span></div>
   </div>
-  <p className={css.notice}>Calendar offsets and proposed next-entry / prior-exit Nasdaq sessions are not executable trading sessions, verified prices, or independent historical returns. Market closures include the exceptional January 9, 2025 shutdown; <a href="https://classic.nasdaqtrader.com/TraderNews.aspx?id=ETA2025-1" target="_blank" rel="noopener noreferrer">Nasdaq closure notice</a>. Issuer announcements do not independently validate FDA chronology or capitalization. No 0–100 RAAS grade is approved. SLNO's separately saved original announcement URL remains missing.</p>
+  <p className={css.notice}>Calendar offsets and proposed next-entry / prior-exit Nasdaq sessions are not executable trading sessions, verified prices, or independent historical returns. Market closures include the exceptional January 9, 2025 shutdown; <a href="https://classic.nasdaqtrader.com/TraderNews.aspx?id=ETA2025-1" target="_blank" rel="noopener noreferrer">Nasdaq closure notice</a>. Issuer announcements do not independently validate FDA chronology or capitalization. No 0–100 RAAS grade is approved. SLNO's original August 27, 2024 announcement URL is now recorded; a later SEC corroboration must not be used as if known before its filing date.</p>
   {audit.cases.map(c=><details key={c.caseId} className={css.group}
     data-raas-goal-asof-case={c.ticker}>
     <summary><strong>{c.ticker} · {c.application}</strong>
