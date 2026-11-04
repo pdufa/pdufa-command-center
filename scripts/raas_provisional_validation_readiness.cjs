@@ -17,7 +17,7 @@ function readiness({pilot,readout,history,calibrations,reviewed,historical,fda,p
     !Array.isArray(history.records)||!Array.isArray(calibrations.entries)||
     !Array.isArray(reviewed.records)||!Array.isArray(historical.cases))
   throw Error("RAAS_CALIBRATION_EVIDENCE_INVALID");
- const metrics=(metricSpecSource.match(/"id": "(?:pre|post)-\\d+-\\d+"/g)||[]).length;
+ const metrics=(metricSpecSource.match(/"id": "(?:pre|post)-\d+-\d+"/g)||[]).length;
  if(metrics!==60||!policySource.includes("RAAS_PROVISIONAL_RUBRICS"))
   throw Error("RAAS_CALIBRATION_RULES_UNVERIFIED");
  const experimentalHistory=history.records.filter(e=>e.kind==="METRIC_SCORE_UPDATED");
