@@ -1,0 +1,110 @@
+name: GEM Alpaca Daily Entry Exit Monitor
+
+on:
+  schedule:
+    # After US regular close: 9 PM ET / 6 PM PT in EDT,
+    # 8 PM ET / 5 PM PT in EST; UTC Tue-Sat = US Mon-Fri.
+    - cron: '0 1 * * 2-6'
+  workflow_dispatch:
+  push:
+    paths:
+      - scripts/alpaca_gem_daily_monitor.py
+      - scripts/alpaca_gem_watchlist.py
+      - alpaca_gem_provider.py
+      - gem_reference_dashboard.py
+      - tests/test_alpaca_gem_provider.py
+      - tests/test_alpaca_gem_daily_monitor.py
+      - .github/workflows/gem-alpaca-daily-monitor.yml
+  pull_request:
+    paths:
+      - scripts/alpaca_gem_daily_monitor.py
+      - scripts/alpaca_gem_watchlist.py
+      - alpaca_gem_provider.py
+      - gem_reference_dashboard.py
+      - tests/test_alpaca_gem_provider.py
+      - tests/test_alpaca_gem_daily_monitor.py
+      - .github/workflows/gem-alpaca-daily-monitor.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gem-alpaca-daily-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate daily monitor without brokerage credentials
+        run: |
+          python -m unittest discover -s tests -p 'test_alpaca_gem_daily_monitor.py' -v
+          python -m unittest discover -s tests -p 'test_alpaca_gem_provider.py' -v
+          python scripts/alpaca_gem_daily_monitor.py --help > /dev/null
+          python scripts/alpaca_gem_watchlist.py --help > /dev/null
+
+  daily-paper-watchlist:
+    needs: regression
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ALPACA_PAPER: 'true'
+      ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+      ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Guard against missing connection
+        id: keys
+        shell: bash
+        run: |
+          if [[ -n "$ALPACA_API_KEY" && -n "$ALPACA_SECRET_KEY" ]]; then
+            echo "connected=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "connected=false" >> "$GITHUB_OUTPUT"
+            echo "## GEM monitor skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "GitHub Actions paper Alpaca secrets are missing. Streamlit secrets are separate." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Read active GEM/GEM JR programs, paper positions, and SIP daily bars
+        if: steps.keys.outputs.connected == 'true'
+        run: |
+          python scripts/alpaca_gem_daily_monitor.py \
+            --universe stages \
+            --feed sip \
+            --output output/gem_alpaca_daily.json
+          python - <<'PY'
+          import json, os
+          with open("output/gem_alpaca_daily.json", encoding="utf-8") as f:
+              report=json.load(f)
+          lines=[
+              "## Alpaca GEM after-close entry/exit monitoring",
+              "",
+              "**Research only; no orders. Historical SIP consolidated EOD feed; clinical and financing sources required.**",
+              "",
+              "| Ticker | Stage | Signal | Explanation |",
+              "|---|---|---|---|",
+          ]
+          for r in report.get("signals",[]):
+              fields=[str(r.get(k,"")) for k in ("ticker","stage","alert","reason")]
+              fields=[v.replace("|","/").replace("\n"," ") for v in fields]
+              lines.append("| "+" | ".join(fields)+" |")
+          lines.extend(["","Market cap filter: OFF. Clinical and financing evidence "
+                        "remain mandatory for any entry setup."])
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
+              f.write("\n".join(lines)+"\n")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: steps.keys.outputs.connected == 'true'
+        with:
+          name: gem-alpaca-daily-monitor-report
+          path: output/gem_alpaca_daily.json
+          retention-days: 30
+          if-no-files-found: warn
