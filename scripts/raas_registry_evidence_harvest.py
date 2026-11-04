@@ -213,6 +213,14 @@ def harvest(by_id, subset, now=None, fetch=request_batch):
                     errors[n] = "SOURCE_FETCH_FAILED:"+type(error).__name__
     return observed, errors
 
+def verify_source_condition_coverage(observed: dict, requested_count: int) -> int:
+    """Catch silently dropped indication fields on a full-cohort refresh."""
+    covered = sum(bool(row.get("registeredConditions")) for row in observed.values())
+    if requested_count >= 100 and (not observed or covered < 0.8 * len(observed)):
+        raise ValueError("CT_GOV_CONDITION_COVERAGE_INCOMPLETE")
+    return covered
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--scope",choices=["missing","all"],default="all")
@@ -226,6 +234,8 @@ def main():
     else:
         ids=list(by_id)
     observed,errors=harvest(by_id,ids)
+    conditions_covered=verify_source_condition_coverage(observed,len(ids))
+    print("CT_GOV_SOURCE_CONDITIONS_DOCUMENTED",conditions_covered,"of",len(observed))
     old={}
     if DEST.exists():
         source=json.loads(DEST.read_text())

@@ -108,6 +108,18 @@ class RegistryEvidenceTest(unittest.TestCase):
         self.assertEqual(errors.get("NCT06455202"),"NOT_RETURNED_BY_REGISTRY_SEARCH")
         self.assertNotIn("NCT06455202",got)
 
+    def test_full_cohort_missing_conditions_fails_instead_of_silent_zero(self):
+        complete = {"NCT%08d" % i: {"registeredConditions": ["Known condition"]}
+                    for i in range(100)}
+        self.assertEqual(mod.verify_source_condition_coverage(complete,100),100)
+        missing = {"NCT%08d" % i: {"registeredConditions": []}
+                   for i in range(100)}
+        with self.assertRaisesRegex(ValueError, "CONDITION_COVERAGE_INCOMPLETE"):
+            mod.verify_source_condition_coverage(missing,100)
+        # Small targeted backfills may legitimately have no matching condition,
+        # without invalidating the entire source corpus.
+        self.assertEqual(mod.verify_source_condition_coverage(missing,2),0)
+
     def test_registry_results_inconsistent_source_is_rejected(self):
         bad=study(posted=True)
         bad["hasResults"]=False

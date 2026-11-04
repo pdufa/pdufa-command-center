@@ -111,7 +111,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: python scripts/raas_registry_evidence_harvest.py --scope all
       - name: Publish retrieved evidence with unchanged missingness
-        if: always() && github.event_name != 'pull_request'
+        if: success() && github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -138,6 +138,7 @@ jobs:
           assert x["scope"]=="RAAS_CT_GOV_LIVE_EVIDENCE"
           assert s["researchTrials"]==762
           assert s["registrySourceRecordsStored"]>0
+          assert sum(bool(r.get("registeredConditions")) for r in x["records"])>=int(.8*len(x["records"])), "CTgov condition names unexpectedly missing"
           assert s["completeRaasScores"]==0
           assert all(r["overallRaasScore"] is None for r in x["records"])
           print("Audited exact NCT evidence:",s)
