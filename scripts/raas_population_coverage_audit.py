@@ -78,7 +78,9 @@ def source_grades(path: Path, readouts: dict) -> dict:
         if event.get("kind") != "METRIC_SCORE_UPDATED":
             continue
         nct = event.get("nctId")
-        stage = "TOP" if event.get("stage") == "pre" else "BOTTOM"
+        if event.get("stage") not in ("pre", "post"):
+            raise ValueError("Unrecognized RAAS metric stage")
+        stage = "TOP" if event["stage"] == "pre" else "BOTTOM"
         if (nct not in readouts
                 or event.get("score") is not None
                 or event.get("scoreKind") != "UNSCORED"
@@ -88,10 +90,24 @@ def source_grades(path: Path, readouts: dict) -> dict:
             # A TOP grade remains in the permanent ledger after a later BOTTOM
             # classification; only current-stage grades appear in this audit.
             continue
+        allowed_rules = {
+            "TOP": {"pre-4-1": "timing-specificity-exploratory-2026-11-02-v1"},
+            "BOTTOM": {
+                "post-1-1": "csu-placebo-contrast-heuristic-2026-11-04-v1",
+                "post-1-2": "csu-placebo-contrast-heuristic-2026-11-04-v1"
+            },
+        }
         for grade in event["metricGrades"]:
             metric_id = grade.get("metricId")
             score = grade.get("score")
-            if metric_id != "pre-4-1" or score not in (0, 25, 50, 75, 100):
+            source_date = grade.get("sourceDate")
+            if (metric_id not in allowed_rules[stage]
+                    or grade.get("ruleId") != allowed_rules[stage][metric_id]
+                    or score not in (0, 25, 50, 75, 100)
+                    or not isinstance(source_date, str)
+                    or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}", source_date)
+                    or source_date > event.get("sourceAsOf", "9999-99-99")
+                    or not str(grade.get("sourceUrl", "")).startswith("https://")):
                 raise ValueError("Unapproved numerical RAAS metric")
             key = (nct, metric_id)
             if key not in grades or event["recordedAt"] > grades[key]["recordedAt"]:
@@ -116,17 +132,20 @@ def coverage_snapshot(original: dict, evolving: dict, readouts: dict, grades: di
         for nct in sorted(rows):
             row=rows[nct]
             stage=readouts.get(nct, "UNVERIFIED")
-            rating=grades.get((nct, "pre-4-1"))
-            if stage != "TOP":
-                rating = None
+            ratings = sorted(
+                (g for (trial, metric), g in grades.items()
+                 if trial == nct and ((stage == "TOP" and metric.startswith("pre-"))
+                                      or (stage == "BOTTOM" and metric.startswith("post-")))),
+                key=lambda g: g["metricId"]
+            )
             output.append({
                 "nctId": nct, "ticker": row["ticker"], "registryStatus": row["status"],
                 "readoutStage": stage, "approvedOverallScore": None,
-                "experimentalMetricGrades": [rating] if rating else [],
-                "metricGradesAvailable": 1 if rating else 0,
-                "metricGradesMissing": 29 if rating else (30 if stage != "UNVERIFIED" else None),
+                "experimentalMetricGrades": ratings,
+                "metricGradesAvailable": len(ratings),
+                "metricGradesMissing": 30 - len(ratings) if stage != "UNVERIFIED" else None,
                 "missingReason": "CLASSIFICATION_REQUIRED" if stage == "UNVERIFIED"
-                    else (None if rating else "NO_ELIGIBLE_NUMERICAL_METRIC_INPUTS"),
+                    else (None if ratings else "NO_ELIGIBLE_NUMERICAL_METRIC_INPUTS"),
                 "pdufaQualified": None, "sourceUrl": row["source_url"]
             })
         return {
