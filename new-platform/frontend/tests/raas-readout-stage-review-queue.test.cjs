@@ -18,18 +18,18 @@ const census=parsePhase3CensusCsv(source("public/phase3-census-2026-10-26.csv"))
 const evidence=JSON.parse(source("public/phase3-public-readout-evidence-2026-11-01.json"));
 const data=classifyPhase3Readouts(evidence,census.rows);
 
-test("741 exact Phase 3 census NCTs reconcile to 2 TOP + 3 BOTTOM + 736 source-unverified",()=>{
+test("741 exact Phase 3 census NCTs reconcile to 2 TOP + 8 BOTTOM + 731 source-unverified",()=>{
  const a=queue(data);
  assert.equal(a.summary.totalSourceCensusNcts,741);
  assert.equal(a.summary.sourceClassifiedTopNcts,2);
- assert.equal(a.summary.sourceClassifiedBottomNcts,3);
- assert.equal(a.summary.awaitingStageVerification,736);
+ assert.equal(a.summary.sourceClassifiedBottomNcts,8);
+ assert.equal(a.summary.awaitingStageVerification,731);
  assert.equal(a.summary.raasRatingsAssignedByQueue,0);
  assert.equal(a.summary.sourceCensusDate,"2026-10-26");
  assert.equal(a.summary.issuerReadoutEvidenceAsOf,"2026-11-01");
- assert.equal(a.rows.length,736);
- assert.equal(new Set(a.rows.map(r=>r.nctId)).size,736);
- assert.equal(a.csv.trimEnd().split("\r\n").length,737);
+ assert.equal(a.rows.length,731);
+ assert.equal(new Set(a.rows.map(r=>r.nctId)).size,731);
+ assert.equal(a.csv.trimEnd().split("\r\n").length,732);
 });
 test("every unclassified row is a research task with no assigned stage or RAAS grade",()=>{
  const a=queue(data);
@@ -84,8 +84,8 @@ test("unverified CSV preserves source roster, contains explicit review tasks and
  assert.ok(columns.includes("requiredProof"));
  assert.ok(columns.includes("nextAction"));
  assert.ok(!columns.includes("approvedOverallRaasScore"));
- assert.equal((a.csv.match(/UNVERIFIED/g)||[]).length,736);
- assert.equal((a.csv.match(/NEEDS_ISSUER/g)||[]).length,736);
+ assert.equal((a.csv.match(/UNVERIFIED/g)||[]).length,731);
+ assert.equal((a.csv.match(/NEEDS_ISSUER/g)||[]).length,731);
 });
 test("direct TOP and BOTTOM route is primary, while POOL and 762 stay separated",()=>{
  const page=source("app/raas-top-bottom/page.tsx");
