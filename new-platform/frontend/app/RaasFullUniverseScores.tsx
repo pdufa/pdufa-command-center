@@ -440,8 +440,8 @@ export default function RaasFullUniverseScores(){
      <td style={cell}><strong>{x.stage?x.metricCount+"/30":"0 verified / 30"}</strong>
       <span style={{display:"block",fontSize:11}}>No missing input scored as zero</span></td>
      <td style={cell} data-raas-row-ai-crosschecks={x.row.nctId}>
-      <strong>{x.aiSourceCrosschecks}/30</strong>
-      <span style={{display:"block",fontSize:11}}>AI source crosschecks; {x.independentReviewedCount} independently reviewed; not a full RAAS score</span>
+      <strong>{(x.researchTop?.aiCrosscheckedCount??0)+(x.researchBottom?.aiCrosscheckedCount??0)} provisional</strong>
+      <span style={{display:"block",fontSize:11}}>AI source crosschecks across distinct TOP/BOTTOM research reviews; {(x.researchTop?.independentReviewedCount??0)+(x.researchBottom?.independentReviewedCount??0)} independent; not overall RAAS</span>
      </td>
      <td style={cell}>{x.sourceUrl?<a href={x.sourceUrl} target="_blank"
       rel="noopener noreferrer">Component source · {x.sourceDate}</a>:
