@@ -20,8 +20,8 @@ const result=classifyPhase3Readouts(evidence,parsePhase3CensusCsv(csv).rows);
 test("strictly classified TOP/BOTTOM spreadsheets generate exactly 30 metric requirements each",()=>{
  assert.equal(result.total,741);
  assert.equal(result.pre.length,2);
- assert.equal(result.post.length,3);
- assert.equal(result.unverified.length,736);
+ assert.equal(result.post.length,8);
+ assert.equal(result.unverified.length,731);
  for(const [stage,rows,label] of [["pre",result.pre,"TOP"],
   ["post",result.post,"BOTTOM"]]){
   const x=worklist(stage,rows);
