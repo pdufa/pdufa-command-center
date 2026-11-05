@@ -6,6 +6,8 @@ import phase3 from "../../data/raas-current-pipeline-pre-candidate-snapshots.jso
 import allTrial from "../../data/raas-all-trials-partial-metric-ratings-status.json";
 import accuracy from "../../data/raas-fda-three-way-accuracy-site-snapshot.json";
 import {buildRaasPredictionQueue,summarizeRaasPredictionQueue} from "../../lib/raas-prediction-queue";
+import {buildThreeWayFDAFreezePreflightPlan}
+ from "../../lib/raas-fda-three-way-freeze-preflight";
 
 export const metadata:Metadata={
  title:"RAAS Predictions — FDA PASS / CRL / EXTENSION | PDUFA",
@@ -13,6 +15,8 @@ export const metadata:Metadata={
 };
 const queue=buildRaasPredictionQueue(accepted.applications,leads.records,accepted.issuer.ticker);
 const summary=summarizeRaasPredictionQueue(queue);
+const freezePreflight=buildThreeWayFDAFreezePreflightPlan();
+const preflightByCase=new Map(freezePreflight.records.map(x=>[x.caseKey,x]));
 const panel={border:"1px solid #c6d7cc",background:"#fff",borderRadius:10,padding:"14px"} as const;
 const muted={fontSize:13,color:"#455c50",lineHeight:1.5} as const;
 const stats={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:10,margin:"15px 0"} as const;
@@ -43,6 +47,16 @@ export default function PredictionsPage(){
    <p style={muted}>Dated sources: accepted-application research {accepted.sourceAsOf}; issuer-goal lead research {leads.asOf}.
     This is a saved research snapshot, not a verified live FDA outcome feed.
     A ticker may have multiple separate applications. No provisional numbers are substituted for a missing probability.</p>
+   <p data-raas-fda-threeway-freeze-preflight="unsigned" style={muted}>
+    <strong>Original-deadline forecast preflight:</strong> {freezePreflight.total} exact
+    application/cycle research records; {freezePreflight.phase2Excluded} Phase 2
+    exclusions; {freezePreflight.originalGoalElapsed} original deadlines already elapsed
+    in the saved evidence snapshot; {freezePreflight.unverifiedApplicationOrCycle}
+    unverified review-cycle leads. The remaining
+    {" "}{freezePreflight.needsExactCycleAndCalibration} Phase 3 source lead(s) still
+    lack independent FDA-cycle and model calibration proof.
+    Every forecast is ABSTAIN. This is a dated source audit, not a live FDA check.
+   </p>
    <div style={stats}>
     <Fact value={summary.phase3SourceEligible} label="Accepted NDA with Phase 3 supporting trial in this source"/>
     <Fact value={summary.phase2Excluded} label="Accepted NDAs excluded under Phase 3 minimum"/>
@@ -61,6 +75,38 @@ export default function PredictionsPage(){
        <p><strong>Exact key:</strong> <code>{r.key}</code></p>
        <p><strong>Study:</strong> {r.trialName??"Not linked to an exact verified trial in this queue"}{r.trialNctId&&<>
         {" · "}<Link href={"/trial/"+r.trialNctId}>{r.trialNctId}</Link></>}</p>
+       {preflightByCase.has(r.key)&&<div data-raas-fda-exact-freeze-preflight={r.key}
+        style={{border:"1px solid #d6e5dc",borderRadius:8,padding:11,margin:"10px 0"}}>
+        <p style={{margin:"0 0 8px"}}><strong>Original-goal freeze preflight:</strong>{" "}
+         {preflightByCase.get(r.key)!.preflightStatus.replaceAll("_"," ").toLowerCase()}.
+         {" "}First announced goal {preflightByCase.get(r.key)!.originalFirstGoalDate};
+         listed goal {preflightByCase.get(r.key)!.listedTargetDate}.
+         {preflightByCase.get(r.key)!.goalHasFormalRevision?
+          " Formal goal revision exists; do not freeze against the revised date as if it were a new original cycle.":""}
+        </p>
+        <p style={{margin:"0 0 8px"}}>
+         <a href={"/api/raas-fda-threeway-preflight?"+
+          new URLSearchParams({case:r.key}).toString()} download>
+          Download this case’s unsigned seven-check forecast preflight (JSON)
+         </a>
+        </p>
+        <details>
+         <summary style={{cursor:"pointer",fontWeight:700}}>Show seven source and calibration requirements</summary>
+         <ul style={{paddingLeft:20}}>
+          {preflightByCase.get(r.key)!.requiredProof.map(proof=>
+           <li key={proof.id} style={{margin:"7px 0"}}>
+            <strong>{proof.label}</strong>
+            {" "}· {proof.status.replaceAll("_"," ").toLowerCase()}.
+            {" "}{proof.note}
+           </li>)}
+         </ul>
+         <p style={muted}>
+          This is not a frozen prediction. All PASS/CRL/EXTENSION fields are null;
+          no independent calibration, FDA outcome adjudication, or trading signal
+          has been approved.
+         </p>
+        </details>
+       </div>}
        <p><strong>Blockers and why RAAS abstains:</strong></p>
        <ul style={{paddingLeft:22}}>{r.blockers.map(b=><li key={b} style={{marginBottom:5}}>{b}</li>)}</ul>
        <p style={muted}><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">Original application or deadline disclosure</a>
