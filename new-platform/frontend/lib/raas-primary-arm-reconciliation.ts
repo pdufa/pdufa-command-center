@@ -66,7 +66,7 @@ const halfRoundingUnit=(raw:string):number=>{
 /** Participant counts cannot be subtracted to check a proportion estimate. */
 const countProportion=(unit:string,title:string)=>
  /^participants?$/i.test(unit.trim())&&
- /\b(proportion|percentage|percent|rate|responder)\b/i.test(title);
+ /\b(proportions?|percentages?|percent|rates?|responders?)\b/i.test(title);
 
 export function buildPrimaryContrastReconciliationLedger(raw:unknown):
  PrimaryContrastReconciliationLedger{
