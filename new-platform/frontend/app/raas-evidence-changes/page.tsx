@@ -210,9 +210,22 @@ export default async function RegistryChangeHistoryPage({
        {" "}Results first posted: {event.after.resultsFirstPosted||"not stated"}.
       </p>
       <p><strong>Candidate metrics for research recheck:</strong>{" "}
-       {event.candidateResearchMetricIds.join(", ")||"No specific metrics assigned"}.
-       These are prompts to review evidence, not changes to stored grades.
+       {event.candidateResearchMetricIds.length===0?
+        "No specific metrics assigned":
+        event.candidateResearchMetricIds.map(metricId=>
+         <span key={metricId} style={{display:"inline-block",marginRight:10}}>
+          <Link href={"/raas-trial-review?"+new URLSearchParams({
+           nctId:event.nctId,ticker:event.ticker,metricId
+          })}>Open {metricId} details</Link>
+         </span>)}
+       These are source-review prompts, not changes to stored grades.
       </p>
+      {event.candidateResearchMetricIds.length>0&&<p>
+       <Link href={"/raas-review-queue?"+new URLSearchParams({
+        nctId:event.nctId
+       })+"#raas-source-change-review-inbox"}>
+        Open all this NCT’s registry-change metric review alerts</Link>
+      </p>}
       <p>{event.note}</p>
       <p><a href={event.sourceUrl} target="_blank" rel="noopener noreferrer">
        Open original official ClinicalTrials.gov record</a>

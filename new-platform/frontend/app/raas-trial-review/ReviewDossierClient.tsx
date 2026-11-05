@@ -5,12 +5,16 @@ import type {TrialMetricReviewDossier,TrialMetricReview}
  from "../../lib/raas-trial-metric-review-dossier";
 import css from "./ReviewDossierClient.module.css";
 type EvidenceFilter="all"|"provisional"|"source"|"missing";
-export default function ReviewDossierClient({dossier}:{
- dossier:TrialMetricReviewDossier
+export default function ReviewDossierClient({
+ dossier,initialMetricId=""
+}:{
+ dossier:TrialMetricReviewDossier;initialMetricId?:string
 }){
- const [stage,setStage]=useState<RaasStage>(
-  dossier.trial.stage==="post"?"post":"pre");
- const [selected,setSelected]=useState("pre-1-1");
+ const initialStage:RaasStage=initialMetricId.startsWith("post-")?"post":
+  initialMetricId.startsWith("pre-")?"pre":
+  dossier.trial.stage==="post"?"post":"pre";
+ const [stage,setStage]=useState<RaasStage>(initialStage);
+ const [selected,setSelected]=useState(initialMetricId||initialStage+"-1-1");
  const [filter,setFilter]=useState<EvidenceFilter>("all");
  const data=dossier.perStage[stage];
  const categories=useMemo(()=>data.categories.map(category=>({
@@ -90,7 +94,7 @@ export default function ReviewDossierClient({dossier}:{
      {stage.toUpperCase()} · {categories.reduce((a,c)=>a+c.metrics.length,0)}
      {" "}matching metric requirements · choose a row to open details at right
     </p>
-    {categories.map((category,i)=><details key={category.id} open={filter!=="all"||i===0}
+    {categories.map((category,i)=><details key={category.id} open={filter!=="all"||i===0||category.metrics.some(m=>m.metricId===metric?.metricId)}
      className={css.category}>
      <summary>{category.name} · category weight {category.weight}%
       {" "}· {category.metrics.length} matching

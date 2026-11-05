@@ -88,7 +88,9 @@ test("ALEC repeated 96-week class/time measurements are not a single last-arm pa
 test("five-case investigation is tied to exact source hashes and never a human signoff",()=>{
  assert.equal(five.schemaVersion,1);
  assert.equal(five.cases.length,5);
- assert.equal(five.sourceAsOf,index.sourceAsOf);
+ assert.ok(Date.parse(five.sourceAsOf)<=Date.parse(index.sourceAsOf),
+  "Frozen historical five-case triage must not claim a later registry source time");
+ assert.equal(five.triagedOn,five.sourceAsOf.slice(0,10));
  assert.equal(five.disposition,"AUTOMATED_SCIENTIFIC_SOURCE_REVIEW_ONLY_PENDING_HUMAN_VALIDATION");
  const expected=new Set(["NCT00803205","NCT02040090","NCT02362672",
   "NCT03687372","NCT04374136"]);

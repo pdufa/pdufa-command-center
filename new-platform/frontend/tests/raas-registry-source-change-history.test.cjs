@@ -8,16 +8,25 @@ require.extensions[".ts"]=(mod,file)=>mod._compile(ts.transpileModule(
  fs.readFileSync(file,"utf8"),{fileName:file,compilerOptions:{
   target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,
   esModuleInterop:true,jsx:ts.JsxEmit.ReactJSX}}).outputText,file);
-test("seed correctly states no nightly change comparison has been performed",()=>{
+test("source audit status and immutable history agree across pre- and post-scan states",()=>{
  assert.equal(history.schemaVersion,1);
  assert.equal(history.scope,"RAAS_EXACT_NCT_REGISTRY_SOURCE_CHANGE_HISTORY_UNGRADED");
- assert.deepEqual(history.events,[]);
+ assert.ok(Array.isArray(history.events));
  assert.equal(status.scope,"RAAS_NIGHTLY_REGISTRY_CHANGE_AUDIT_RESEARCH_ONLY");
- assert.equal(status.auditState,"AWAITING_FIRST_COMPARATIVE_SCAN");
  assert.equal(status.trackedResearchNcts,762);
- assert.equal(status.recordedAt,null);
+ assert.equal(status.totalRetainedHistoricalEvents,history.events.length);
  assert.equal(status.approvedRaasScoreUpdates,0);
  assert.equal(status.calibratedFdaForecastUpdates,0);
+ if(status.auditState==="AWAITING_FIRST_COMPARATIVE_SCAN"){
+  assert.equal(status.recordedAt,null);
+  assert.equal(history.events.length,0);
+ }else{
+  assert.ok(["COMPLETE","COMPLETED_WITH_SOURCE_ERRORS"].includes(status.auditState));
+  assert.match(status.recordedAt,/^\d{4}-\d{2}-\d{2}T/);
+  assert.ok(status.latestSourceAsOf);
+  assert.equal(status.sourceFetchAttempted,
+   status.sourceFetchSucceeded+status.sourceFetchFailed);
+ }
 });
 test("CSV export is guarded from spreadsheet formulas and labels both scores N/A",async()=>{
  const {GET}=require("../app/api/raas-registry-evidence-changes/route.ts");
