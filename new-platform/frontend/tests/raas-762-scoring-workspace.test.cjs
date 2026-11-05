@@ -142,3 +142,25 @@ test("missing registry source worklist exposes exact gap NCTs without fake grade
  assert.ok(withoutEndpoints.every(x=>x.postedPrimaryOutcomeCount===0));
  assert.ok(withoutEndpoints.every(x=>x.registeredConditions.length>0));
 });
+
+test("six historically sourced registry-gap cases retain exact identity and no automated grades",()=>{
+ const data=JSON.parse(source("data/raas-historical-six-gap-source-leads.json"));
+ const code=source("app/Raas762ScoringWorkspace.tsx");
+ const ids=["NCT00017407","NCT00033904","NCT00039000","NCT00048113",
+  "NCT00048295","NCT00486980"].sort();
+ assert.equal(data.scope,"RAAS_HISTORICAL_SIX_REGISTRY_SOURCE_GAP_RESEARCH_ONLY");
+ assert.equal(data.records.length,6);
+ assert.deepEqual(data.records.map(r=>r.nctId).sort(),ids);
+ assert.equal(new Set(data.records.map(r=>r.nctId)).size,6);
+ assert.ok(data.records.every(r=>r.scoreEligible===false));
+ assert.ok(data.records.every(r=>r.nextAction&&r.identityBasis));
+ assert.equal(data.records.filter(r=>r.evidenceType==="PROGRAM_LEVEL_SPONSOR_LEAD_UNMAPPED").length,2);
+ assert.equal(data.records.filter(r=>r.evidenceType==="EXACT_NCT_PUBLICATION_LEAD").length,1);
+ assert.equal(data.records.filter(r=>r.evidenceType==="SOURCE_SEARCH_PENDING").length,1);
+ assert.equal(data.records.filter(r=>r.evidenceType==="EXACT_REGISTRY_WITHDRAWAL_NO_ENROLMENT").length,1);
+ assert.match(code,/historicalSixGapSources\.records/);
+ assert.match(code,/historicalSourceByNct\.get\(x\.trial\.nctId\)/);
+ assert.match(code,/Historical source investigation \(unscored\)/);
+ assert.match(code,/Numeric RAAS grade: N\/A/);
+ assert.match(code,/historical.*source/i);
+});
