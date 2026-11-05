@@ -9,8 +9,10 @@ import type {ReadoutRow} from "../lib/phase3-public-readout";
 import type {Phase3CensusRegistryStatus} from "../lib/phase3-census-rows";
 import RaasMetricGradebook from "./RaasMetricGradebook";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
+import historicalSixGapSources from "../data/raas-historical-six-gap-source-leads.json";
 
 const PAGE_SIZE=50;
+const historicalSourceByNct=new Map(historicalSixGapSources.records.map(x=>[x.nctId,x]));
 type EvidenceFilter="all"|"posted"|"protocol";
 type ScoreFilter="all"|"partial"|"unscored";
 type LeadFilter="all"|"has-leads"|"no-leads";
@@ -139,6 +141,8 @@ export default function Raas762ScoringWorkspace(){
    </summary>
    <p style={{fontSize:13,lineHeight:1.5}}>
     These trials have no metric-specific lead in the saved registry extract.
+    Some have separately documented historical research leads below, but those
+    require exact NCT and protocol crosschecks before any metric can be reviewed.
     They are not scored as failures. First recover the dated primary endpoint,
     trial protocol and reported results from the registry, sponsor disclosures,
     publications or original FDA materials. Verify the exact drug, indication and
@@ -178,6 +182,25 @@ export default function Raas762ScoringWorkspace(){
       <td style={cell}>Locate dated protocol/endpoint and any sponsor or
        published readout. Match exact NCT, drug and indication;
        independently assess efficacy, risk and comparators.
+       {historicalSourceByNct.get(x.trial.nctId)&&<details style={{marginTop:6}}>
+        <summary style={{cursor:"pointer",color:"#135c45"}}>
+         Historical source investigation (unscored)
+        </summary>
+        {(()=>{const lead=historicalSourceByNct.get(x.trial.nctId)!;return <div
+         style={{padding:"7px 0",fontSize:12,lineHeight:1.5}}>
+         <strong>{lead.evidenceType.replaceAll("_"," ")}</strong>
+         <p>Source identity: {lead.identityBasis}</p>
+         {lead.sourceUrl&&<a href={lead.sourceUrl}
+          target="_blank" rel="noopener noreferrer">
+          {lead.sourceTitle||"Open historical source"}</a>}
+         {lead.sourceDate&&<small style={{display:"block"}}>
+          Source dated {lead.sourceDate}</small>}
+         <p>{lead.summary}</p>
+         <strong>Next verification:</strong> {lead.nextAction}
+         <p><strong>Numeric RAAS grade: N/A</strong> · Historical lead does not
+          change registry posting classification or authorize FDA predictions.</p>
+        </div>})()}
+       </details>}
       </td>
      </tr>)}</tbody>
     </table>
