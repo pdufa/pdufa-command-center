@@ -1,6 +1,6 @@
-/** Exact NCT, unsigned 60-metric reviewer worksheet download.
+/** Download a fillable reviewer worksheet for exact NCT, with 60 unsigned metrics.
  * Source evidence and expected CSV columns share the validation contract.
- * No submissions, authenticated approvals or predictions are created.
+ * EXTERNAL_AUTHENTICATION_REQUIRED on every row. No submissions, authenticated approvals or predictions are created.
  */
 import registry from "../../../public/raas-registry-evidence-index.json";
 import {buildTrialMetricReviewDossier}
