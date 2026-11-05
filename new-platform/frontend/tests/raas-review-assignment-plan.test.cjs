@@ -104,7 +104,7 @@ test("iPhone review queue includes accessible grouped assignment and no auto app
  const component=fs.readFileSync(path.join(root,
   "app/raas-review-queue/RaasReviewAssignmentBoard.tsx"),"utf8");
  assert.match(page,/buildRaasReviewAssignmentPlan\(queue\)/);
- assert.match(page,/<RaasReviewAssignmentBoard plan=\{assignmentPlan\}\/>/);
+ assert.match(page,/<RaasReviewAssignmentBoard plan=\{assignmentPlan\} sourceGates=\{sourceGates\}\/>/);
  assert.match(component,/data-raas-review-assignment-board/);
  assert.match(component,/Download all/);
  assert.match(component,/Filter RAAS external review assignments by priority/);

@@ -5,6 +5,8 @@ import type {RaasReviewAssignmentPlan}
  from "../../lib/raas-review-assignment-plan";
 import type {RaasReviewPriority}
  from "../../lib/raas-independent-review-queue";
+import type {RaasReviewSourceGateSummary}
+ from "../../lib/raas-review-source-alert-gate";
 
 const control={border:"1px solid #bcd4c4",borderRadius:7,
  padding:"9px 11px",color:"#174e33",background:"#fff",fontSize:12} as const;
@@ -14,8 +16,8 @@ const rankLabel:Record<RaasReviewPriority,string>={
  OTHER_RESEARCH:"Historical / other research"
 };
 export default function RaasReviewAssignmentBoard({
- plan
-}:{plan:RaasReviewAssignmentPlan}){
+ plan,sourceGates
+}:{plan:RaasReviewAssignmentPlan;sourceGates:RaasReviewSourceGateSummary}){
  const [priority,setPriority]=useState<"all"|RaasReviewPriority>("all");
  const [search,setSearch]=useState("");
  const groups=useMemo(()=>plan.groups.filter(group=>
@@ -25,6 +27,7 @@ export default function RaasReviewAssignmentBoard({
    value.toLowerCase().includes(search.trim().toLowerCase())))
  ),[plan.groups,priority,search]);
  const packets=groups.reduce((n,g)=>n+g.provisionalMetrics,0);
+ const sourceGateById=new Map(sourceGates.gates.map(g=>[g.programId,g]));
  return <section data-raas-review-assignment-board="unsigned-source-frozen"
   style={{display:"grid",gap:12,margin:"20px 0"}}>
   <header>
@@ -51,6 +54,14 @@ export default function RaasReviewAssignmentBoard({
      <span style={{fontSize:11}}>{label}</span>
     </div>)}
   </div>
+  <p data-raas-revision-review-handoff-gates="unapproved" style={{fontSize:12,margin:0,lineHeight:1.6}}>
+   <strong>Source-change preflight:</strong>{" "}
+   {sourceGates.needRevisionRecheck} program(s) with unresolved clinical registry
+   metric alerts; {sourceGates.sourceAuditUnconfirmed} with unconfirmed audit
+   coverage; {sourceGates.noRecordedMetricRevisions} without recorded
+   metric-level revisions in the saved comparison. A clean saved comparison
+   does not establish clinical accuracy or real-time freshness.
+  </p>
   <div style={{display:"flex",gap:9,flexWrap:"wrap",alignItems:"end"}}>
    <label style={{display:"grid",gap:3,fontSize:11,fontWeight:700}}>
     Worklist priority
@@ -97,6 +108,13 @@ export default function RaasReviewAssignmentBoard({
       <strong>{group.provisionalMetrics}/30 provisional metric packets</strong>
       <small>{group.remainingStageMetrics} unreviewed metric requirements · N/A, not zero</small>
       <small>{group.receiptPending} receipt(s) pending identity authentication · {group.receiptBlocked} blocked</small>
+      <small data-raas-exact-program-source-gate={sourceGateById.get(group.id)?.status??"MISSING"}>
+       {sourceGateById.get(group.id)?.status==="RECHECK_SOURCE_REVISIONS"?
+        "Registry changed — independently recheck affected metrics":
+        sourceGateById.get(group.id)?.status==="SOURCE_AUDIT_INCOMPLETE_OR_UNSYNCED"?
+        "Registry audit not confirmed — reconcile first":
+        "No recorded metric revision in saved source audit (not certified)"}
+      </small>
      </span>
      <strong style={{fontSize:11}}>View evidence packets ▸</strong>
     </summary>
@@ -109,6 +127,14 @@ export default function RaasReviewAssignmentBoard({
       {group.remainingStageMetrics} missing-evidence entries (N/A, not zero).
       A source fingerprint establishes file identity, not scientific
       correctness. No authenticated reviewer assignment or stage rating exists.
+     </p>
+     <p style={{fontSize:12,margin:0}}>
+      <strong>Registry source-change check:</strong>{" "}
+      {sourceGateById.get(group.id)?.explanation??"Not available."}
+      {" "}Latest saved registry audit: {sourceGateById.get(group.id)?.registryAsOf??"unavailable"}.
+      {sourceGateById.get(group.id)?.sourceChangedMetricIds.length?
+       " Affected metric IDs: "+sourceGateById.get(group.id)?.sourceChangedMetricIds.join(", ")+".":""}
+      {" "}<Link href="/raas-evidence-changes">Source-change history</Link>
      </p>
      <div style={{display:"flex",gap:10,flexWrap:"wrap",fontSize:12}}>
       <a href={"/api/raas-exact-program-review-bundle?"+

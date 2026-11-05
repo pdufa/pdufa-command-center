@@ -7,6 +7,8 @@ import {buildRaasIndependentReviewQueue} from "../../lib/raas-independent-review
 import {currentReviewIntakeAudit} from "../../lib/raas-external-review-intake";
 import {buildRaasReviewAssignmentPlan}
  from "../../lib/raas-review-assignment-plan";
+import {auditRaasReviewProgramSourceGates}
+ from "../../lib/raas-review-source-alert-gate";
 import {buildRaasRegistryRevisionReviewInbox}
  from "../../lib/raas-registry-revision-review-inbox";
 import savedRegistry from "../../public/raas-registry-evidence-index.json";
@@ -26,6 +28,8 @@ const receiptAudit=currentReviewIntakeAudit();
 const assignmentPlan=buildRaasReviewAssignmentPlan(queue);
 const revisionInbox=buildRaasRegistryRevisionReviewInbox(
  savedHistory,savedChangeStatus,savedRegistry,queue);
+const sourceGates=auditRaasReviewProgramSourceGates(
+ assignmentPlan,revisionInbox,savedRegistry);
 type Params={nctId?:string|string[];metricId?:string|string[];
  reviewNctId?:string|string[];reviewMetricId?:string|string[]};
 const first=(x:string|string[]|undefined)=>typeof x==="string"?x:"";
@@ -95,7 +99,7 @@ export default async function IndependentMetricReviewQueuePage({
     This website does not accept public review uploads or automatically release scores.
    </p>
   </section>
-  <RaasReviewAssignmentBoard plan={assignmentPlan}/>
+  <RaasReviewAssignmentBoard plan={assignmentPlan} sourceGates={sourceGates}/>
   <p className={css.notice}>To expand from these 82 already source-checked metric
    research tasks to every registered study, open
    {" "}<Link href="/raas-evidence-backlog">the complete 762-trial evidence-gap queue</Link>.
