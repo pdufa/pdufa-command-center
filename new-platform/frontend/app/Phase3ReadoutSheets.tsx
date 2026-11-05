@@ -8,6 +8,7 @@ import TrialRaasDisclosure from "./TrialRaasDisclosure";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
 import RaasClassifiedComponentsCell from "./RaasClassifiedComponentsCell";
+import RaasTopBottomCompletionPanel from "./RaasTopBottomCompletionPanel";
 import {exactClassifiedRaasComponentGrades}
  from "../lib/raas-classified-component-grades";
 import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
@@ -1134,6 +1135,7 @@ export default function Phase3ReadoutSheets(){
       is automatically scored.
      </p>
     </section>
+    <RaasTopBottomCompletionPanel data={data}/>
     <RaasAllClassifiedLiveReview data={data}/>
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
