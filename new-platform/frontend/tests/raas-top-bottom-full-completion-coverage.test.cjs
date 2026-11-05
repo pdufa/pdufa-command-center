@@ -98,27 +98,19 @@ test("unverified inventory and duplicate/incorrect stage data fail closed rather
  assert.throws(()=>build({...classified,total:762}),
   /RAAS_TOP_BOTTOM_COMPLETION_INVALID_CLASSIFICATION/);
 });
-test("iPhone TOP/BOTTOM UI shows full coverage and exports without scoring the unverified queue",()=>{
+test("iPhone TOP/BOTTOM page shows five-factor RAAS, source export, and missing evidence without guessing",()=>{
  const page=fs.readFileSync(path.join(root,"app/Phase3ReadoutSheets.tsx"),"utf8");
- const panel=fs.readFileSync(path.join(root,"app/RaasTopBottomCompletionPanel.tsx"),"utf8");
- const module=fs.readFileSync(path.join(root,"lib/raas-top-bottom-completion.ts"),"utf8");
- assert.match(page,/<RaasTopBottomCompletionPanel data=\{data\}\/>/);
- assert.match(panel,/data-raas-top-bottom-metric-completion/);
- assert.match(panel,/data-raas-missing-review-csv/);
- assert.match(panel,/data-raas-all-150-score-status-csv/);
- assert.match(panel,/data-raas-independent-review-handoff/);
- assert.match(panel,/data-raas-missing-tasks-expand/);
- assert.match(panel,/source-backed|source-classified|source review/i);
- assert.match(panel,/showAll\|\|t\.numericProvisionalGrade===null/);
- assert.match(panel,/task\.numericProvisionalGrade===null\?"Grade N\/A/);
- assert.match(panel,/role="status"/);
- assert.match(module,/buildRaasTopBottomCompletion/);
- assert.match(module,/RAAS_TOP_BOTTOM_UNVERIFIED_LEAKED_INTO_CLASSIFIED/);
- const compiled=ts.transpileModule(panel,{
-  fileName:"RaasTopBottomCompletionPanel.tsx",reportDiagnostics:true,
-  compilerOptions:{module:ts.ModuleKind.ESNext,
-   target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}
- });
+ const panel=fs.readFileSync(path.join(root,"app/RaasClinicalFiveCompletionPanel.tsx"),"utf8");
+ assert.match(page,/<RaasClinicalFiveCompletionPanel data=\{data\}\/>/);
+ assert.match(panel,/data-raas-five-completion="true"/);
+ assert.match(panel,/Export five-factor grades and evidence/);
+ assert.match(panel,/report\.cells\.filter\(x=>!missingOnly\|\|x\.grade===null\)/);
+ assert.match(panel,/data\.unverified\.length/);
+ assert.match(panel,/sourceUrl/);
+ assert.doesNotMatch(page,/<RaasTopBottomCompletionPanel data=\{data\}\/>/);
+ const compiled=ts.transpileModule(panel,{fileName:"RaasClinicalFiveCompletionPanel.tsx",
+  compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX},
+  reportDiagnostics:true});
  assert.equal((compiled.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
 });
 

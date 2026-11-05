@@ -66,20 +66,18 @@ test("wrong NCT, ticker or therapy cannot inherit other trial evidence",()=>{
  assert.throws(()=>get("BAD","LBRX","pre"),/IDENTITY_INVALID/);
  assert.throws(()=>get("NCT07363577","LBRX","invalid"),/STAGE_REQUIRED/);
 });
-test("full-universe trial table integrates lazy expandable TOP/BOTTOM scorecards",()=>{
+test("full-universe trial table displays five-factor clinical scorecards and historical NCT timeline",()=>{
  const ui=read("app/RaasFullUniverseScores.tsx");
- const detail=read("app/RaasMetricGradebook.tsx");
- assert.match(ui,/import RaasMetricGradebook/);
- assert.match(ui,/RaasMetricGradebook row=\{x\.row\} bucket=\{x\.stage\}/);
+ const detail=read("app/RaasClinicalFiveCell.tsx");
+ assert.match(ui,/import RaasClinicalFiveCell/);
+ assert.match(ui,/RaasClinicalFiveCell row=\{x\.row\} bucket=\{x\.stage\}/);
  assert.match(ui,/RaasTrialHistoryButton row=\{x\.row\} bucket=\{x\.stage\}/);
- assert.match(detail,/data-raas-metric-gradebook=\{row\.nctId\}/);
- assert.match(detail,/aria-expanded=\{open\}/);
- assert.match(detail,/buildRaasMetricGradebook/);
- assert.match(detail,/Source dates identify publications/);
- assert.match(detail,/Overall RAAS: N\/A/);
- for(const [text,file] of [[ui,"RaasFullUniverseScores.tsx"],[detail,"RaasMetricGradebook.tsx"]]){
-  const result=ts.transpileModule(text,{fileName:file,reportDiagnostics:true,
-   compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}});
-  assert.deepEqual((result.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCategory.Error),[]);
- }
+ assert.match(detail,/data-raas-clinical-five-expand=\{row\.nctId\}/);
+ assert.match(detail,/clinicalFiveForTrial/);
+ assert.match(detail,/sourceUrl/);
+ assert.match(detail,/N\/A/);
+ const out=ts.transpileModule(detail,{fileName:"RaasClinicalFiveCell.tsx",
+  compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022},
+  reportDiagnostics:true});
+ assert.equal((out.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
 });

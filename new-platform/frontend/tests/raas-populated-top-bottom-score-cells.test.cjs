@@ -101,22 +101,17 @@ test("the matching therapy cannot borrow another trial's or another stage's prov
  assert.equal(output.missingMetrics,30);
  assert.ok(output.provisionalGrades.every(x=>x.grade===null));
 });
-test("the visible TOP/BOTTOM sheets and their exported CSV both populate the exact metrics",()=>{
+test("TOP/BOTTOM active table and downloads publish only five clinical factors",()=>{
  const s=fs.readFileSync(path.join(root,"app/Phase3ReadoutSheets.tsx"),"utf8");
- const c=fs.readFileSync(path.join(root,"app/RaasClassifiedComponentsCell.tsx"),"utf8");
- assert.match(s,/<RaasClassifiedComponentsCell row=\{row\} bucket=\{bucket\}\/>/);
+ const c=fs.readFileSync(path.join(root,"app/RaasClinicalFiveCell.tsx"),"utf8");
+ assert.match(s,/<RaasClinicalFiveCell row=\{row\} bucket=\{bucket\}\/>/);
  assert.match(s,/documentedRaasStageExportFields\(bucket,row\)/);
- assert.match(s,/report\.provisionalGrades\.map\(metric=>metric\.grade===null\?""\:metric\.grade\)/);
- assert.match(s,/bucket==="unverified"\?\[\]\:documentedRaasStageExportFields/);
- assert.match(c,/data-raas-classified-nct-score-populated/);
- assert.match(c,/data-raas-classified-stage/);
- assert.match(c,/data-raas-metric-grade-expansion/);
- assert.match(c,/m\.grade===null\?"N\/A"\:m\.grade\+"\/100"/);
- assert.match(c,/m\.sourceUrl/);
- assert.match(c,/m\.benchmarkSourceUrl/);
- assert.match(c,/full RAAS: not validated/);
- const compiled=ts.transpileModule(c,{fileName:"RaasClassifiedComponentsCell.tsx",
-  reportDiagnostics:true,compilerOptions:{module:ts.ModuleKind.ESNext,
-   target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}});
- assert.equal((compiled.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
+ assert.match(s,/clinicalFiveDefinitions\(bucket\)/);
+ assert.match(s,/report\.factors\.map\(f=>f\.grade===null\?"":f\.grade\)/);
+ assert.doesNotMatch(s,/<RaasClassifiedComponentsCell row=/);
+ assert.doesNotMatch(s,/<RaasMetricGradebook row=/);
+ assert.match(c,/data-raas-clinical-five-expand/);
+ assert.match(c,/five clinical assessments/i);
+ assert.match(c,/f\.sourceUrl/);
+ assert.match(c,/f\.benchmarkSourceUrl/);
 });

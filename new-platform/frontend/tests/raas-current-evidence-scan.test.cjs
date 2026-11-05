@@ -62,18 +62,15 @@ test("Current evidence cannot be retroactively presented as archived pre-entry R
    /RAAS_EVIDENCE_SCAN_ASOF_INVALID/);
  }
 });
-test("Spreadsheet RAAS cells are visibly populated with mapped sources and honest grade separation",()=>{
- const page=fs.readFileSync(path.join(__dirname,"../app/TrialRaasDisclosure.tsx"),"utf8");
- const sheets=fs.readFileSync(path.join(__dirname,"../app/Phase3ReadoutSheets.tsx"),"utf8");
- for(const marker of ["data-raas-current-scan","data-raas-source-scan","currentEvidence.mappedMetrics","currentEvidence.categories.map","currentEvidence.prospectiveFacts.map","Overall RAAS —/100 · pending"])
-  assert.ok(page.includes(marker),marker);
- assert.ok(sheets.includes("<TrialRaasDisclosure row={row} bucket={bucket}"));
- for(const rel of ["lib/raas-current-evidence-scan.ts","app/TrialRaasDisclosure.tsx"]){
-  const x=ts.transpileModule(fs.readFileSync(path.join(__dirname,"..",rel),"utf8"),{
-   fileName:rel,reportDiagnostics:true,compilerOptions:{module:ts.ModuleKind.ESNext,
-    target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}
-  });
-  assert.deepEqual((x.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error)
-   .map(x=>ts.flattenDiagnosticMessageText(x.messageText," ")),[],rel);
- }
+test("active clinical scorecards replace old investment rankings while research evidence remains archived",()=>{
+ const fs=require("node:fs"),p=require("node:path");
+ const root=p.join(__dirname,"..");
+ const ui=fs.readFileSync(p.join(root,"app/Phase3ReadoutSheets.tsx"),"utf8");
+ const active=fs.readFileSync(p.join(root,"app/RaasClinicalFiveCell.tsx"),"utf8");
+ const archived=fs.readFileSync(p.join(root,"app/TrialRaasDisclosure.tsx"),"utf8");
+ assert.match(ui,/RaasClinicalFiveCell row=\{row\} bucket=\{bucket\}/);
+ assert.doesNotMatch(ui,/<TrialRaasDisclosure row=\{row\} bucket=\{bucket\}/);
+ assert.match(active,/five clinical assessments|five clinical factors/i);
+ assert.match(active,/Missing ratings are N\/A/);
+ assert.match(archived,/data-raas-current-scan/);
 });

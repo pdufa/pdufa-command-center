@@ -12,18 +12,18 @@ const specs=fs.readFileSync(path.join(root,"lib/raas-metric-specs.ts"),"utf8");
 const catalogJson=specs.split('export const RAAS_METRIC_CATALOG:Readonly<Record<RaasStage,readonly RaasCategory[]>>=')[1];
 assert.ok(catalogJson,"RAAS canonical metric catalog must be present");
 const catalog=JSON.parse(catalogJson.trim().replace(/;\s*$/,""));
-test("both documented release spreadsheets place RAAS before Surveys and SURVEY",()=>{
+test("TOP/BOTTOM spreadsheets place active five-factor clinical RAAS before optional research surveys",()=>{
  const headerAt=table.indexOf('<th scope="col" title="Proposed phase-specific risk-adjusted appreciation score');
- const surveysAt=table.indexOf('sortedHeader("survey","Survey Ratings"',headerAt);
- const synthesisAt=table.indexOf('sortedHeader("synthesis","SURVEY"',surveysAt);
- assert.ok(headerAt>0&&surveysAt>headerAt&&synthesisAt>surveysAt);
- const raasAt=table.indexOf("<TrialRaasDisclosure row={row}");
+ const surveyAt=table.indexOf('sortedHeader("survey","Survey Ratings"',headerAt);
+ const synthesisAt=table.indexOf('sortedHeader("synthesis","SURVEY"',surveyAt);
+ assert.ok(headerAt>0&&surveyAt>headerAt&&synthesisAt>surveyAt);
+ const raasAt=table.indexOf("<RaasClinicalFiveCell row={row}");
  const surveyButtonAt=table.indexOf('onSurveyOpen(row,"details")',raasAt);
  const synthesisButtonAt=table.indexOf('onSurveyOpen(row,"synthesis")',surveyButtonAt);
  assert.ok(raasAt>0&&surveyButtonAt>raasAt&&synthesisButtonAt>surveyButtonAt);
- assert.match(table,/benefitFeed=\{benefitFeed\} onResearchRequest=\{onRaasOpen\}/);
- assert.match(table,/colSpan=\{\(bucket==="post"\?11:10\)/);
+ assert.doesNotMatch(table,/<TrialRaasDisclosure row=\{row\} bucket=\{bucket\}/);
 });
+
 test("per-trial TOP and BOTTOM RAAS begin closed with four-stage drilldown",()=>{
  assert.match(raas,/const label=isTop\?"TOP-RAAS":"BOTTOM-RAAS"/);
  assert.match(raas,/data-raas-phase=\{bucket\} data-raas-trial=\{row.nctId\}/);

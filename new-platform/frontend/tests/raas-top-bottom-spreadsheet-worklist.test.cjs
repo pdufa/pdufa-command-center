@@ -69,11 +69,12 @@ test("no duplicates, wrong ticker/identity, or absent issuer evidence are allowe
   ...row.evidence,kind:"POST_PUBLIC_READOUT"
  }}]),/RAAS_STAGE_SHEET_UNVERIFIED_OR_MISMATCHED_ROW/);
 });
-test("stage-specific UI only exposes RAAS export under TOP and BOTTOM sheets",()=>{
+test("stage-specific active CSV export includes exactly the five clinical factors",()=>{
  const s=fs.readFileSync(path.join(root,"app/Phase3ReadoutSheets.tsx"),"utf8");
- assert.match(s,/buildTopBottomRaasMetricWorklist\(bucket,rows\)/);
+ assert.match(s,/function downloadTopBottomRaasWorklist\(bucket:"pre"\|"post"/);
+ assert.match(s,/clinicalFiveForTrial/);
  assert.match(s,/data-raas-stage-only-export=/);
  assert.match(s,/downloadTopBottomRaasWorklist\(bucket,matched\)/);
- assert.match(s,/No new RAAS score: not in either verified TOP or BOTTOM spreadsheet/);
+ assert.match(s,/five-clinical-assessments\.csv/);
  assert.doesNotMatch(s,/downloadTopBottomRaasWorklist\("unverified"/);
 });

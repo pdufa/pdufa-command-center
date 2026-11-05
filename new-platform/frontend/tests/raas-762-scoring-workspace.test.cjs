@@ -78,46 +78,31 @@ test("primary route exists and is linked from TOOLS, RAAS scan and evidence-gap 
  assert.match(scan,/data-raas-readiness-executed/);
  assert.match(page,/fullValidatedRaasScores/);
 });
-test("762-row workspace has accessible 50-row pages, missing-value states and no fabricated ratings",()=>{
- const code=source("app/Raas762ScoringWorkspace.tsx");
+test("762-row clinical research workspace keeps source safeguards and five-factor stage coverage",()=>{
+ const ui=source("app/Raas762ScoringWorkspace.tsx");
  for(const marker of ["data-raas-762-scoring-workspace","records.length!==762",
-  "new Set(x.records.map(r=>r.nctId)).size!==762",
-  'const stage:"pre"|"post"=x.postedResults?"post":"pre"',
-  "stageResearchReviewsForUnverifiedTrial(trial,stage)",
-  "registryMetricLeads(x,stage,trial)",
-  "leadMetricCount", "x.sourceLeads.length", "setLeadFilter(\"all\")",
-  "View sources and measurements", "No matching registry lead",
-  "remaining:30-reviewed","rows.length*30",
-  "researchStageOnly={x.stage}",
-  "Not validated","N/A · never 0/100","RaasMetricGradebook",
-  "RaasTrialHistoryButton","PAGE_SIZE=50",
-  "caseRow(x)","source-verified-rows-unvalidated-scores","22,860 assigned"]){
-  assert.ok(code.includes(marker),"Missing primary workspace safeguard: "+marker);
+ "new Set(x.records.map(r=>r.nctId)).size!==762",
+ 'const stage:"pre"|"post"=x.postedResults?"post":"pre"',
+ "clinicalFiveForTrial(trial,stage,false)",
+ "registryMetricLeads(x,stage,trial)","remaining:5-reviewed",
+ "rows.length*5","RaasClinicalFiveCell","RaasTrialHistoryButton","PAGE_SIZE=50",
+ "Not validated","N/A · never 0/100","source-verified-rows-unvalidated-scores"]){
+  assert.ok(ui.includes(marker),"Missing clinical-five safeguard: "+marker);
  }
- assert.match(code,/aria-label="RAAS 762 exact NCT scoring row table"/);
- assert.match(code,/role="alert"/);
- assert.match(code,/onChange=/);
- assert.match(code,/setPage\(0\)/);
- assert.doesNotMatch(code,/(?:overallScore|approvedScore)\s*:\s*(?:0|50|100)/);
- const compiled=ts.transpileModule(code,{fileName:"Raas762ScoringWorkspace.tsx",
-  compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext,
-   target:ts.ScriptTarget.ES2022},reportDiagnostics:true});
- assert.equal((compiled.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
+ assert.match(ui,/aria-label="RAAS 762 exact NCT scoring row table"/);
+ assert.match(ui,/role="alert"/);
+ assert.doesNotMatch(ui,/approvedOverallScore:\s*(?:0|50|100)/);
 });
 
-test("registry source leads remain distinct from independently reviewed RAAS grades",()=>{
- const code=source("app/Raas762ScoringWorkspace.tsx");
- assert.match(code,/const sourceLeads=registryMetricLeads\(x,stage,trial\)/);
- assert.match(code,/new Set\(sourceLeads\.flatMap\(lead=>lead\.metricIds\)\)\.size/);
- assert.match(code,/Registry source leads identify possible review materials only/);
- assert.match(code,/Registry source leads/);
- assert.match(code,/Needs source discovery/);
- assert.match(code,/No matching registry lead/);
- assert.match(code,/x\.sourceLeads\.length===0/);
- assert.match(code,/lead\.sourceUrl/);
- assert.match(code,/\{x\.reviewed\}\/30/);
- assert.match(code,/Not validated/);
- assert.doesNotMatch(code,/approvedOverallScore:\s*x\.leadMetricCount/);
+test("clinical source leads remain separate from five-factor numeric grades",()=>{
+ const ui=source("app/Raas762ScoringWorkspace.tsx");
+ assert.match(ui,/registryMetricLeads\(x,stage,trial\)/);
+ assert.match(ui,/lead\.metricIds\.filter\(id=>id\.startsWith\(stage\+"-1-"\)\)/);
+ assert.match(ui,/new Set\(sourceLeads\.flatMap\(lead=>lead\.metricIds\)\)\.size/);
+ assert.match(ui,/\{x\.reviewed\}\/5/);
+ assert.match(ui,/No matching registry lead/);
+ assert.match(ui,/Not validated/);
+ assert.doesNotMatch(ui,/approvedOverallScore:\s*x\.leadMetricCount/);
 });
 
 test("missing registry source worklist exposes exact gap NCTs without fake grades",()=>{

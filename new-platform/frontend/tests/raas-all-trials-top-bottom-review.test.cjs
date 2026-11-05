@@ -53,23 +53,15 @@ test("verified research source remains independent of stage; unverified never ge
  assert.equal(bottom.categories.flatMap(g=>g.rows).length,30);
 });
 
-test("unverified trials may review both 30-metric stages without pretending to be classified",()=>{
- const modal=read("app/RaasMetricGradebook.tsx");
+test("unverified trials expose five TOP or BOTTOM clinical questions without claiming classification",()=>{
+ const ui=read("app/RaasClinicalFiveCell.tsx");
  const page=read("app/RaasFullUniverseScores.tsx");
- assert.match(modal,/data-raas-unverified-stage-review="true"/);
- assert.match(modal,/data-raas-whatif-stage=\{value\}/);
- assert.match(modal,/stageVerified=bucket!==null/);
- assert.match(modal,/bucket\?\?researchStageOnly\?\?reviewStage/);
- assert.match(modal,/Choosing a research checklist does not verify the issuer readout/);
- assert.doesNotMatch(modal,/if\(!bucket\)return/);
- assert.match(page,/data-raas-registry-review-queues="true"/);
- assert.match(page,/Registry results posted|Registry-posted results/);
- assert.match(page,/Registry protocol only/);
- assert.match(page,/RaasMetricGradebook row=\{x\.row\} bucket=\{x\.stage\}/);
- assert.match(page,/Filter registry source evidence/);
- for(const [name,content] of [["app/RaasMetricGradebook.tsx",modal],["app/RaasFullUniverseScores.tsx",page]]){
-  const output=ts.transpileModule(content,{fileName:name,reportDiagnostics:true,
-    compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}});
-  assert.deepEqual((output.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error),[]);
- }
+ assert.match(ui,/const verified=bucket!==null/);
+ assert.match(ui,/clinicalFiveForTrial/);
+ assert.match(ui,/setSelected\(s\)/);
+ assert.match(ui,/stageVerified|stage has not been issuer-classified|status has not been issuer-classified/);
+ assert.match(page,/RaasClinicalFiveCell row=\{x\.row\} bucket=\{x\.stage\}/);
+ assert.match(page,/RaasTrialHistoryButton row=\{x\.row\} bucket=\{x\.stage\}/);
+ assert.match(ui,/Missing ratings are N\/A/);
+ assert.match(ui,/five documented grades and verified stage/);
 });

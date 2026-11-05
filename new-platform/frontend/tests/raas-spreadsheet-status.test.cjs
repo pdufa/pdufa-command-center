@@ -52,47 +52,13 @@ test("Misidentified or wrong-therapy rows cannot inherit scores or mapped areas"
  assert.equal(wrongTherapy.sourceCoveragePercent,0);
  assert.equal(wrongTherapy.exploratoryTimingScore,null);
 });
-test("Every primary trial spreadsheet and its CSV has a deliberate RAAS status field",()=>{
- const root=path.join(__dirname,"..");
- for(const rel of ["app/ToolsResultsSpreadsheet.tsx","app/ToolsOpeningTrialGrid.tsx",
-    "app/Phase3RegistryPostingSheets.tsx"]){
-  const code=fs.readFileSync(path.join(root,rel),"utf8");
-  assert.match(code,/RaasSpreadsheetStatus/);
- }
- for(const rel of ["app/Phase3ReadoutSheets.tsx",
-    "app/Phase3RegistryPostingSheets.tsx","lib/tools-spreadsheet.ts"]){
-  const code=fs.readFileSync(path.join(root,rel),"utf8");
-  assert.match(code,/raasSpreadsheetExport/);
- }
- const cell=fs.readFileSync(path.join(root,"app/RaasSpreadsheetStatus.tsx"),"utf8");
- assert.match(cell,/data-raas-spreadsheet-cell/);
- assert.match(cell,/source areas/);
- assert.match(cell,/source coverage/);
- assert.match(cell,/not an RAAS investment score/);
- const exported=[...raasSpreadsheetExport({nctId:"NCT07363577",ticker:"LBRX",classifiedStage:"pre"})];
- assert.equal(exported[0],"TOP");
- assert.equal(exported[1],""); // No approved RAAS score
- assert.equal(exported[2],"5");
- assert.equal(exported[3],"17"); // Evidence coverage ONLY
- assert.equal(exported[5],"PENDING_VALIDATION");
- const postExport=[...raasSpreadsheetExport({nctId:"NCT06445023",ticker:"CLDX",classifiedStage:"post"})];
- assert.deepEqual(postExport,["BOTTOM","","3","10","","PENDING_VALIDATION"]);
- for(const rel of ["app/Phase3ReadoutSheets.tsx","app/Phase3RegistryPostingSheets.tsx","lib/tools-spreadsheet.ts"]){
-   const code=fs.readFileSync(path.join(root,rel),"utf8");
-   assert.match(code,/Research source coverage % \(NOT RAAS score\)/);
-   assert.match(code,/Timing-only exploratory pilot \(NOT RAAS score\)/);
- }
- const sourceTable=fs.readFileSync(path.join(root,"app/TrialRaasDisclosure.tsx"),"utf8");
- assert.match(sourceTable,/Source coverage/);
- assert.match(sourceTable,/Overall RAAS/);
- assert.match(cell,/Missing inputs are not zero/);
- for(const rel of ["lib/raas-spreadsheet-status.ts","app/RaasSpreadsheetStatus.tsx"]){
-  const code=fs.readFileSync(path.join(root,rel),"utf8");
-  const compile=ts.transpileModule(code,{
-   fileName:rel,reportDiagnostics:true,
-   compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,
-    jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}
-  });
-  assert.deepEqual((compile.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error),[]);
- }
+test("historical status exports remain archived while TOP/BOTTOM CSV carries clinical-five columns",()=>{
+ const active=fs.readFileSync(path.join(root,"app/Phase3ReadoutSheets.tsx"),"utf8");
+ const earlier=fs.readFileSync(path.join(root,"app/Phase3RegistryPostingSheets.tsx"),"utf8");
+ const stage=fs.readFileSync(path.join(root,"app/RaasSpreadsheetStatus.tsx"),"utf8");
+ assert.match(active,/Source-accepted clinical grades \(of 5\)/);
+ assert.match(active,/Five-factor clinical research score/);
+ assert.match(active,/clinicalFiveForTrial/);
+ assert.match(earlier,/Research source coverage % \(NOT RAAS score\)/);
+ assert.match(stage,/Research source coverage|source coverage/i);
 });

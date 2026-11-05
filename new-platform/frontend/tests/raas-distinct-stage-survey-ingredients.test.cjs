@@ -24,35 +24,30 @@ test("TOP and BOTTOM have genuinely different scientific and timing ingredients"
  assert.ok(aNames.some(x=>/readout window/i.test(x)));
  assert.ok(bNames.some(x=>/PDUFA/i.test(x)));
 });
-test("survey ingredient renderer receives exact pre or post stage, not a pooled catalog",()=>{
- assert.match(sheet,/import \{RAAS_METRIC_CATALOG,type RaasStage\}/);
+test("active stage survey shows exactly five clinical specifications, preserving separate source stages",()=>{
  assert.match(sheet,/function StageSurveyIngredients\(\{bucket\}:\{bucket:RaasStage\}\)/);
- assert.match(sheet,/const groups=RAAS_METRIC_CATALOG\[bucket\]/);
+ assert.match(sheet,/const factors=clinicalFiveDefinitions\(bucket\)/);
  assert.equal(sheet.split("<StageSurveyIngredients bucket={bucket}/>").length-1,2);
  assert.match(sheet,/data-raas-stage-survey-ingredients=\{bucket\}/);
- assert.match(sheet,/TOP · pre-readout prediction ingredients/);
- assert.match(sheet,/BOTTOM · post-readout assessment ingredients/);
- assert.match(sheet,/metric.requiredEvidence/);
- assert.match(sheet,/metric.scoreRule/);
- assert.match(sheet,/metric.criticalRisk/);
+ assert.match(sheet,/TOP · before Phase 3 results/);
+ assert.match(sheet,/BOTTOM · after Phase 3 results/);
+ assert.match(sheet,/f\.requiredEvidence/);
+ assert.match(sheet,/f\.scoreRule/);
+ assert.match(sheet,/f\.criticalRisk/);
  assert.match(sheet,/TOP Surveys/);
  assert.match(sheet,/BOTTOM Surveys/);
- assert.match(sheet,/TOP SURVEY/);
- assert.match(sheet,/BOTTOM SURVEY/);
 });
-test("separate stage ingredients expand horizontally with a distinct border and preserve shared questions",()=>{
+
+test("five clinical sections expand horizontally while historical general survey remains distinct",()=>{
  assert.match(style,/\.stageSurveyGroup\[open\]\{display:flex;align-items:stretch;border:2px/);
- assert.match(style,/\.stageSurveyGroup\[open\]>.stageSurveyGroupHeading\{flex:0 0 32%/);
  assert.match(style,/\.stageSurveyGroupIngredients\{display:flex;gap:7px;flex:1;min-width:0/);
- assert.match(style,/\.stageSurveyGroupIngredients article\{box-sizing:border-box;flex:0 0 225px/);
- assert.match(style,/\.stageSurveyGroupHeading:focus-visible/);
- assert.match(sheet,/The original 5 groups \/ 20 surveys \/ 38 questions below/);
- assert.match(sheet,/SURVEY_QUESTION_IDS.length/);
- assert.match(sheet,/BENEFIT_GROUPS.filter/);
+ assert.match(sheet,/factors\.map\(\(f,i\)=>/);
+ assert.match(sheet,/SURVEY_QUESTION_IDS\.length/);
+ assert.match(sheet,/BENEFIT_GROUPS\.filter/);
  assert.match(sheet,/finalSurveyReadiness\(groups,rules/);
- assert.match(sheet,/const rules=bucket==="pre"\?/);
  assert.doesNotMatch(sheet,/RAAS_METRIC_CATALOG\["pre"\].*RAAS_METRIC_CATALOG\["post"\]/);
 });
+
 test("survey and synthesis TSX still parse after separate TOP/BOTTOM drill-down",()=>{
  const result=ts.transpileModule(sheet,{fileName:"Phase3ReadoutSheets.tsx",
   reportDiagnostics:true,compilerOptions:{jsx:ts.JsxEmit.ReactJSX,

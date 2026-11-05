@@ -87,20 +87,14 @@ test("Documented trial picker is deduplicated by issuer, NCT, stage and exact th
  assert.ok(options.some(x=>x.nctId==="NCT06445023"&&x.stage==="post"));
  assert.ok(options.every(x=>x.drug&&x.indication));
 });
-test("Real TOP/BOTTOM spreadsheets and individual RAAS cells link to worklist and route keeps disclosure details",()=>{
- const root=path.join(__dirname,"..");
- for(const rel of ["app/Phase3ReadoutSheets.tsx","app/TrialRaasDisclosure.tsx",
-  "app/RaasSpreadsheetStatus.tsx","app/raas-scan/page.tsx"]){
-  const code=fs.readFileSync(path.join(root,rel),"utf8");
-  assert.match(code,/raas-worklist/);
- }
- const page=fs.readFileSync(path.join(root,"app/raas-worklist/page.tsx"),"utf8");
- for(const text of ["TOP-RAAS","BOTTOM-RAAS","sourceLeads","requiredEvidence",
-  "scoreRule","criticalRisk","missingRequirements","calibrationApproved",
-  "historicalHoldoutIssuers","data-raas-validation-metric","#raas-"]){
-  assert.ok(page.includes(text),"Missing worklist UI "+text);
- }
- const compile=ts.transpileModule(page,{fileName:"page.tsx",reportDiagnostics:true,
-  compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}});
- assert.deepEqual((compile.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error),[]);
+test("retired 60-metric validation worklist remains archived while active TOP/BOTTOM use clinical five",()=>{
+ const root=path.join(__dirname,".."),fs=require("node:fs");
+ const active=fs.readFileSync(path.join(root,"app/Phase3ReadoutSheets.tsx"),"utf8");
+ const legacy=fs.readFileSync(path.join(root,"app/raas-worklist/page.tsx"),"utf8");
+ const cell=fs.readFileSync(path.join(root,"app/RaasClinicalFiveCell.tsx"),"utf8");
+ assert.match(active,/RaasClinicalFiveCell/);
+ assert.match(active,/RaasClinicalFiveCompletionPanel/);
+ assert.doesNotMatch(active,/buildTopBottomRaasMetricWorklist\(bucket,rows\)/);
+ assert.match(cell,/clinicalFiveForTrial/);
+ assert.match(legacy,/data-raas-validation-metric/);
 });

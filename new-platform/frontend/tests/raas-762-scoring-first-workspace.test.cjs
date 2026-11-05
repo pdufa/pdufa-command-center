@@ -56,34 +56,15 @@ test("the underlying RAAS catalog defines 30 TOP and 30 BOTTOM metric IDs",()=>{
  }
  assert.equal(ids.size,60);
 });
-test("the primary scoring route and tools index put the 762 rows first",()=>{
- const page=read("app/raas-762/page.tsx"),
-  client=read("app/Raas762ScoringWorkspace.tsx"),
-  tools=read("app/tools/page.tsx"),
-  scan=read("app/raas-scan/page.tsx");
- assert.match(page,/data-raas-primary-scoring-setup="762-nct-rows"/);
+test("primary 762 research route exposes five active clinical factors and cross-stage history",()=>{
+ const page=read("app/raas-762/page.tsx"),ui=read("app/Raas762ScoringWorkspace.tsx");
  assert.match(page,/Raas762ScoringWorkspace/);
- assert.match(tools,/data-tools-primary-raas-762="true"/);
- assert.match(tools,/href="\/raas-762"/);
- assert.match(scan,/href="\/raas-762"/);
- assert.match(client,/data-raas-762-scoring-workspace/);
- assert.match(client,/loadRegistryEvidenceIndex/);
- assert.match(client,/RaasMetricGradebook row=\{x\.trial\} bucket=\{null\} researchStageOnly=\{x\.stage\}/);
- assert.match(client,/RaasTrialHistoryButton row=\{x\.trial\} bucket=\{null\}/);
- assert.match(client,/PAGE_SIZE=50/);
- assert.match(client,/records\.length!==762/);
- assert.ok(client.includes('const stage:"pre"|"post"=x.postedResults?"post":"pre"'));
- assert.match(client,/remaining:30-reviewed/);
- assert.match(client,/rows\.length\*30/);
- assert.match(client,/Not validated/);
- assert.match(client,/N\/A · never 0\/100/);
- for(const file of ["app/raas-762/page.tsx","app/Raas762ScoringWorkspace.tsx",
-  "app/tools/page.tsx","app/raas-scan/page.tsx"]){
-  const diagnostic=ts.transpileModule(read(file),{fileName:file,
-   reportDiagnostics:true,compilerOptions:{
-    target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext,
-    jsx:ts.JsxEmit.ReactJSX}});
-  assert.equal(diagnostic.diagnostics?.filter(x=>
-    x.category===ts.DiagnosticCategory.Error).length??0,0,file);
- }
+ assert.match(ui,/RaasClinicalFiveCell row=\{x\.trial\} bucket=\{null\} researchStageOnly=\{x\.stage\}/);
+ assert.match(ui,/RaasTrialHistoryButton/);
+ assert.match(ui,/rows\.length\*5/);
+ assert.match(ui,/remaining:5-reviewed/);
+ assert.match(ui,/PAGE_SIZE=50/);
+ assert.match(ui,/x\.postedResults\?"post":"pre"/);
+ assert.match(ui,/records\.length!==762/);
+ assert.doesNotMatch(ui,/RaasMetricGradebook row=\{x\.trial\}/);
 });

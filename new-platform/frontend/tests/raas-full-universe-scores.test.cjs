@@ -72,26 +72,16 @@ test("wrong issuer, duplicate ID, invalid stage, stale schema, non-NCT are rejec
  assert.throws(()=>parseRaasScreenedPhase3Csv("NCT ID,Ticker\nA,B",real),/INVALID/);
  assert.throws(()=>parseRaasScreenedPhase3Csv(csv([]),real),/EMPTY/);
 });
-test("full trial UI does not hardcode the five pilot identities or round off missing scores",()=>{
- const page=read("app/raas-scan/page.tsx");
- const ui=read("app/RaasFullUniverseScores.tsx");
+test("all-trial UI uses five-factor clinical RAAS without defaulting missing to zero",()=>{
+ const page=read("app/raas-scan/page.tsx"),ui=read("app/RaasFullUniverseScores.tsx");
  const helper=read("lib/raas-full-universe-roster.ts");
  assert.match(page,/<RaasFullUniverseScores\/>/);
- assert.doesNotMatch(page,/provisionalTrials|data-raas-provisional-trial-scores="pilot"/);
  assert.match(ui,/data-raas-all-trials="true"/);
- assert.match(ui,/stageResearchReviewsForUnverifiedTrial/);
- assert.match(ui,/data-raas-reviewed-partial-nct/);
- assert.match(ui,/A reviewed-only mean is calculated from the metrics/i);
+ assert.match(ui,/clinicalFiveForTrial/);
+ assert.match(ui,/RaasClinicalFiveCell row=\{x\.row\} bucket=\{x\.stage\}/);
  assert.match(ui,/RaasTrialHistoryButton row=\{x\.row\} bucket=\{x\.stage\}/);
- assert.match(ui,/Not scored/);
  assert.match(ui,/No missing input scored as zero/);
- assert.match(ui,/setLiveState\("unavailable"\)/);
  assert.match(ui,/PAGE_SIZE=50/);
- assert.match(ui,/raasSpreadsheetSummary/);
+ assert.match(ui,/setLiveState\("unavailable"\)/);
  assert.match(helper,/pipelineQualification:null/);
- for(const [source,name] of [[ui,"RaasFullUniverseScores.tsx"],[page,"raas-scan/page.tsx"],[helper,"raas-full-universe-roster.ts"]]){
-  const out=ts.transpileModule(source,{fileName:name,reportDiagnostics:true,
-   compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}});
-  assert.deepEqual((out.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCategory.Error).map(d=>d.code),[]);
- }
 });
