@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
-import {loadRegistryEvidenceIndex,type RegistryEvidenceIndex,type RegistryTrialEvidence}
+import {loadRegistryEvidenceIndex,registryMetricLeads,type RegistryEvidenceIndex,
+ type RegistryMetricLead,type RegistryTrialEvidence}
  from "../lib/raas-registry-evidence";
 import {stageResearchReviewsForUnverifiedTrial}
  from "../lib/raas-reviewed-full-score";
@@ -12,6 +13,7 @@ import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 const PAGE_SIZE=50;
 type EvidenceFilter="all"|"posted"|"protocol";
 type ScoreFilter="all"|"partial"|"unscored";
+type LeadFilter="all"|"has-leads"|"no-leads";
 const statuses=new Set<string>([
  "RECRUITING","ACTIVE_NOT_RECRUITING","ENROLLING_BY_INVITATION",
  "NOT_YET_RECRUITING","COMPLETED","TERMINATED","WITHDRAWN","UNKNOWN"
@@ -31,7 +33,8 @@ type ScoringRow={
  evidence:RegistryTrialEvidence;trial:ReadoutRow;
  /** Research-only category from exact registry posting; NOT issuer readout. */
  stage:"pre"|"post";reviewed:number;independentReviews:number;
- hasPartial:boolean;remaining:number
+ hasPartial:boolean;remaining:number;
+ sourceLeads:RegistryMetricLead[];leadMetricCount:number
 };
 function setupRows(index:RegistryEvidenceIndex):ScoringRow[]{
  return index.records.map(x=>{
@@ -39,9 +42,11 @@ function setupRows(index:RegistryEvidenceIndex):ScoringRow[]{
   const stage:"pre"|"post"=x.postedResults?"post":"pre";
   const review=stageResearchReviewsForUnverifiedTrial(trial,stage);
   const reviewed=review?.reviewedCount??0;
+  const sourceLeads=registryMetricLeads(x,stage,trial);
+  const leadMetricCount=new Set(sourceLeads.flatMap(lead=>lead.metricIds)).size;
   return {evidence:x,trial:caseRow(x),stage,reviewed,
    independentReviews:review?.independentReviewedCount??0,
-   hasPartial:reviewed>0,remaining:30-reviewed
+   hasPartial:reviewed>0,remaining:30-reviewed,sourceLeads,leadMetricCount
   };
  }).sort((a,b)=>Number(b.hasPartial)-Number(a.hasPartial)||
   Number(b.evidence.postedResults)-Number(a.evidence.postedResults)||
@@ -54,6 +59,7 @@ export default function Raas762ScoringWorkspace(){
  const [search,setSearch]=useState("");
  const [evidenceFilter,setEvidenceFilter]=useState<EvidenceFilter>("all");
  const [scoreFilter,setScoreFilter]=useState<ScoreFilter>("all");
+ const [leadFilter,setLeadFilter]=useState<LeadFilter>("all");
  const [page,setPage]=useState(0);
  useEffect(()=>{
   let alive=true;
@@ -71,10 +77,13 @@ export default function Raas762ScoringWorkspace(){
  const rows=useMemo(()=>index?setupRows(index):[],[index]);
  const partial=useMemo(()=>rows.filter(r=>r.hasPartial).length,[rows]);
  const posted=useMemo(()=>rows.filter(r=>r.evidence.postedResults).length,[rows]);
+ const withLeads=useMemo(()=>rows.filter(r=>r.sourceLeads.length>0).length,[rows]);
  const filtered=useMemo(()=>{
   const q=search.trim().toLowerCase();
   return rows.filter(x=>
    (scoreFilter==="all"||(scoreFilter==="partial"?x.hasPartial:!x.hasPartial))&&
+   (leadFilter==="all"||(leadFilter==="has-leads"?x.sourceLeads.length>0:
+    x.sourceLeads.length===0))&&
    (evidenceFilter==="all"||(evidenceFilter==="posted"?x.evidence.postedResults:
     !x.evidence.postedResults))&&
    (!q||[x.trial.nctId,x.trial.ticker,x.evidence.registryStatus,
@@ -82,7 +91,7 @@ export default function Raas762ScoringWorkspace(){
     ...x.evidence.registeredInterventions.slice(0,10)]
     .some(v=>v.toLowerCase().includes(q)))
   );
- },[rows,search,scoreFilter,evidenceFilter]);
+ },[rows,search,scoreFilter,leadFilter,evidenceFilter]);
  const pages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
  const currentPage=Math.min(page,pages-1);
  const shown=filtered.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE);
@@ -103,6 +112,7 @@ export default function Raas762ScoringWorkspace(){
     {value:posted,label:"Past · registry results posted"},
     {value:rows.length*30,label:"Assigned 30-metric review slots"},
     {value:partial,label:"Rows with provisional reviews in assigned category"},
+    {value:withLeads,label:"Rows with ungraded registry source leads"},
     {value:0,label:"Full independently validated RAAS scores"}
    ].map(x=><div key={x.label} style={{background:"#fff",border:"1px solid #bfd6c7",
     borderRadius:9,padding:12}}>
@@ -118,6 +128,8 @@ export default function Raas762ScoringWorkspace(){
    changes remain in the same NCT history. Registry posting does NOT independently
    verify issuer readout timing, a calibrated score or FDA eligibility.
    Missing metric grades remain N/A, never invented zero or neutral values.
+   Registry source leads identify possible review materials only; they do not count
+   as scored or independently reviewed metrics.
   </p>
   <div style={{display:"flex",flexWrap:"wrap",gap:12,margin:"14px 0",fontSize:13}}>
    <a href="/raas-trial-score-ledger.csv" download>Export 762 rows · trial ledger (CSV)</a>
@@ -152,8 +164,18 @@ export default function Raas762ScoringWorkspace(){
      <option value="protocol">Before · results not posted</option>
     </select>
    </label>
+   <label style={{display:"flex",flexDirection:"column",gap:4,fontSize:12}}>
+    Registry source leads
+    <select aria-label="Filter registry source leads" value={leadFilter}
+     onChange={e=>{setLeadFilter(e.target.value as LeadFilter);setPage(0)}}
+     style={control}>
+     <option value="all">All source states</option>
+     <option value="has-leads">Has ungraded source leads</option>
+     <option value="no-leads">Needs source discovery</option>
+    </select>
+   </label>
    <button type="button" style={control}
-    onClick={()=>{setSearch("");setEvidenceFilter("all");setScoreFilter("all");setPage(0)}}>
+    onClick={()=>{setSearch("");setEvidenceFilter("all");setScoreFilter("all");setLeadFilter("all");setPage(0)}}>
     Clear all filters
    </button>
   </div>
@@ -166,7 +188,7 @@ export default function Raas762ScoringWorkspace(){
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:750,fontSize:13}}>
     <thead style={{background:"#eaf4ed",color:"#19452c"}}>
      <tr>
-      {["NCT / ticker","Spreadsheet category","Reviewed metrics","Awaiting review",
+      {["NCT / ticker","Spreadsheet category","Registry source leads","Reviewed metrics","Awaiting review",
        "Overall RAAS","30-metric score details","Cross-stage history"].map(h=>
        <th key={h} scope="col" style={{...cell,textAlign:"left",fontSize:12}}>{h}</th>)}
      </tr>
@@ -184,6 +206,29 @@ export default function Raas762ScoringWorkspace(){
       <small style={{display:"block",color:"#52705c"}}>
        {x.evidence.postedResults?"Results posted":"Results not posted"}
       </small>
+     </td>
+     <td style={cell}>
+      <strong>{x.leadMetricCount}/30 possible metric areas</strong>
+      <small style={{display:"block"}}>{x.sourceLeads.length} ungraded source leads</small>
+      {x.sourceLeads.length>0&&<details style={{marginTop:5}}>
+       <summary style={{cursor:"pointer",color:"#135c45"}}>View sources and measurements</summary>
+       <div style={{maxHeight:280,overflowY:"auto",minWidth:240}}>
+        {x.sourceLeads.map(lead=><div key={lead.id}
+         style={{padding:"8px 0",borderBottom:"1px solid #dce8dc",fontSize:12}}>
+         <strong>{lead.metricIds.join(", ")}</strong>
+         <small style={{display:"block"}}>{lead.kind} · {lead.sourceDate}</small>
+         <span style={{display:"block"}}>{lead.description}</span>
+         {lead.measurement&&<small style={{display:"block"}}>
+          Recorded {lead.measurement.label}: {lead.measurement.value} {lead.measurement.unit}
+         </small>}
+         <a href={lead.sourceUrl} target="_blank" rel="noopener noreferrer">
+          Open primary registry record</a>
+        </div>)}
+       </div>
+      </details>}
+      {x.sourceLeads.length===0&&<small style={{display:"block"}}>
+       No matching registry lead; additional primary-source research needed
+      </small>}
      </td>
      <td style={cell}><strong>{x.reviewed}/30</strong>
       <small style={{display:"block"}}>Provisional review only</small></td>
