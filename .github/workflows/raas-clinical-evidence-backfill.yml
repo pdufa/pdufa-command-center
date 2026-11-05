@@ -8,6 +8,8 @@ on:
       - scripts/raas_registry_evidence_harvest.py
       - scripts/raas_registry_evidence_summary.py
       - scripts/raas_registry_evidence_index.py
+      - scripts/raas_registry_evidence_change_audit.py
+      - tests/test_raas_registry_evidence_change_audit.py
       - scripts/raas_review_worklist.py
       - new-platform/frontend/data/raas-reviewed-metric-assessments.json
       - scripts/raas_trial_score_ledger.py
@@ -44,6 +46,8 @@ on:
       - scripts/raas_registry_evidence_harvest.py
       - scripts/raas_registry_evidence_summary.py
       - scripts/raas_registry_evidence_index.py
+      - scripts/raas_registry_evidence_change_audit.py
+      - tests/test_raas_registry_evidence_change_audit.py
       - scripts/raas_review_worklist.py
       - new-platform/frontend/data/raas-reviewed-metric-assessments.json
       - scripts/raas_trial_score_ledger.py
@@ -92,6 +96,8 @@ jobs:
           python -m unittest discover -s tests -p test_raas_registry_evidence_harvest.py -v
           python -m py_compile scripts/raas_registry_evidence_harvest.py scripts/raas_registry_evidence_summary.py scripts/raas_registry_evidence_index.py scripts/raas_review_worklist.py scripts/raas_trial_score_ledger.py scripts/raas_clinical_component_evidence.py scripts/raas_ten_trial_clinical_pilot.py scripts/raas_all_trial_partial_metric_ratings.py scripts/raas_active_phase3_source_screen.py scripts/raas_historical_fda_application_outcomes.py scripts/raas_current_pipeline_top_metric_audit.py scripts/raas_current_accepted_fda_applications.py
           python -m unittest discover -s tests -p test_raas_registry_evidence_index.py -v
+          python -m unittest discover -s tests -p test_raas_registry_evidence_change_audit.py -v
+          python -m py_compile scripts/raas_registry_evidence_change_audit.py
           python -m unittest discover -s tests -p test_raas_review_worklist.py -v
           python -m unittest discover -s tests -p test_raas_trial_score_ledger.py -v
           python -m unittest discover -s tests -p test_raas_clinical_component_evidence.py -v
@@ -115,6 +121,9 @@ jobs:
           python scripts/raas_current_accepted_fda_applications.py
           python scripts/raas_historical_fda_application_outcomes.py
           python -m unittest discover -s tests -p test_raas_registry_evidence_summary.py -v
+      - name: Freeze the prior committed source snapshot before retrieving updates
+        if: github.event_name != 'pull_request'
+        run: cp new-platform/frontend/public/raas-registry-evidence-index.json "$RUNNER_TEMP/raas-prior-registry-index.json"
       - name: Fetch all current research NCTs, including 35 gaps
         if: github.event_name != 'pull_request'
         run: python scripts/raas_registry_evidence_harvest.py --scope all
@@ -130,6 +139,7 @@ jobs:
           fi
           python scripts/raas_registry_evidence_summary.py
           python scripts/raas_registry_evidence_index.py
+          python scripts/raas_registry_evidence_change_audit.py --before "$RUNNER_TEMP/raas-prior-registry-index.json" --after new-platform/frontend/public/raas-registry-evidence-index.json
           python scripts/raas_review_worklist.py
           python scripts/raas_trial_score_ledger.py
           python scripts/raas_clinical_component_evidence.py
@@ -154,7 +164,7 @@ jobs:
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- data/raas_registry_live_evidence.json new-platform/frontend/data/raas-registry-evidence-status.json new-platform/frontend/public/raas-registry-evidence-index.json new-platform/frontend/public/raas-source-review-worklist.csv new-platform/frontend/data/raas-source-review-worklist-status.json new-platform/frontend/public/raas-trial-score-ledger.csv new-platform/frontend/data/raas-trial-score-ledger-status.json new-platform/frontend/public/raas-clinical-evidence-components.csv new-platform/frontend/public/raas-primary-comparisons.csv new-platform/frontend/public/raas-serious-event-rates.csv new-platform/frontend/data/raas-clinical-evidence-components-status.json new-platform/frontend/public/raas-ten-trial-metric-pilot.csv new-platform/frontend/data/raas-ten-trial-metric-pilot-status.json new-platform/frontend/public/raas-all-trials-partial-metric-ratings.csv new-platform/frontend/data/raas-all-trials-partial-metric-ratings-status.json new-platform/frontend/public/raas-active-phase3-source-screen.csv new-platform/frontend/data/raas-active-phase3-source-screen-status.json new-platform/frontend/public/raas-current-pipeline-pre-metric-audit.csv new-platform/frontend/data/raas-current-pipeline-pre-metric-audit-status.json new-platform/frontend/public/raas-current-accepted-fda-applications.csv new-platform/frontend/data/raas-current-accepted-fda-applications-status.json new-platform/frontend/public/raas-historical-fda-application-outcomes.csv new-platform/frontend/data/raas-historical-fda-application-outcomes-status.json
+          git add -- new-platform/frontend/data/raas-registry-evidence-change-history.json new-platform/frontend/data/raas-registry-evidence-change-status.json data/raas_registry_live_evidence.json new-platform/frontend/data/raas-registry-evidence-status.json new-platform/frontend/public/raas-registry-evidence-index.json new-platform/frontend/public/raas-source-review-worklist.csv new-platform/frontend/data/raas-source-review-worklist-status.json new-platform/frontend/public/raas-trial-score-ledger.csv new-platform/frontend/data/raas-trial-score-ledger-status.json new-platform/frontend/public/raas-clinical-evidence-components.csv new-platform/frontend/public/raas-primary-comparisons.csv new-platform/frontend/public/raas-serious-event-rates.csv new-platform/frontend/data/raas-clinical-evidence-components-status.json new-platform/frontend/public/raas-ten-trial-metric-pilot.csv new-platform/frontend/data/raas-ten-trial-metric-pilot-status.json new-platform/frontend/public/raas-all-trials-partial-metric-ratings.csv new-platform/frontend/data/raas-all-trials-partial-metric-ratings-status.json new-platform/frontend/public/raas-active-phase3-source-screen.csv new-platform/frontend/data/raas-active-phase3-source-screen-status.json new-platform/frontend/public/raas-current-pipeline-pre-metric-audit.csv new-platform/frontend/data/raas-current-pipeline-pre-metric-audit-status.json new-platform/frontend/public/raas-current-accepted-fda-applications.csv new-platform/frontend/data/raas-current-accepted-fda-applications-status.json new-platform/frontend/public/raas-historical-fda-application-outcomes.csv new-platform/frontend/data/raas-historical-fda-application-outcomes-status.json
           if git diff --cached --quiet; then
             echo "No new ClinicalTrials.gov evidence captured."
             exit 0
@@ -177,6 +187,8 @@ jobs:
             data/raas_registry_live_evidence.json
             new-platform/frontend/data/raas-registry-evidence-status.json
             new-platform/frontend/public/raas-registry-evidence-index.json
+            new-platform/frontend/data/raas-registry-evidence-change-history.json
+            new-platform/frontend/data/raas-registry-evidence-change-status.json
             new-platform/frontend/public/raas-source-review-worklist.csv
             new-platform/frontend/data/raas-source-review-worklist-status.json
             new-platform/frontend/public/raas-trial-score-ledger.csv
