@@ -5,6 +5,12 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import {buildRaasIndependentReviewQueue} from "../../lib/raas-independent-review-queue";
 import {currentReviewIntakeAudit} from "../../lib/raas-external-review-intake";
+import {buildRaasRegistryRevisionReviewInbox}
+ from "../../lib/raas-registry-revision-review-inbox";
+import savedRegistry from "../../public/raas-registry-evidence-index.json";
+import savedHistory from "../../data/raas-registry-evidence-change-history.json";
+import savedChangeStatus from "../../data/raas-registry-evidence-change-status.json";
+import RegistryRevisionInboxClient from "./RegistryRevisionInboxClient";
 import ReviewQueueClient from "./ReviewQueueClient";
 import css from "../raas-history/page.module.css";
 
@@ -14,7 +20,23 @@ export const metadata:Metadata={
 };
 const queue=buildRaasIndependentReviewQueue();
 const receiptAudit=currentReviewIntakeAudit();
-export default function IndependentMetricReviewQueuePage(){
+const revisionInbox=buildRaasRegistryRevisionReviewInbox(
+ savedHistory,savedChangeStatus,savedRegistry,queue);
+type Params={nctId?:string|string[];metricId?:string|string[];
+ reviewNctId?:string|string[];reviewMetricId?:string|string[]};
+const first=(x:string|string[]|undefined)=>typeof x==="string"?x:"";
+export default async function IndependentMetricReviewQueuePage({
+ searchParams
+}:{searchParams:Promise<Params>}){
+ const params=await searchParams;
+ const initialNctId=/^NCT\\d{8}$/.test(first(params.nctId))?
+  first(params.nctId):"";
+ const initialMetricId=/^(pre|post)-[1-6]-[1-5]$/.test(first(params.metricId))?
+  first(params.metricId):"";
+ const existingNctId=/^NCT\\d{8}$/.test(first(params.reviewNctId))?
+  first(params.reviewNctId):"";
+ const existingMetricId=/^(pre|post)-[1-6]-[1-5]$/.test(first(params.reviewMetricId))?
+  first(params.reviewMetricId):"";
  return <main className={css.root} data-raas-independent-review-queue="source-reviewed-pending">
   <header className={css.header}>
    <Link className={css.back} href="/raas-scan">← Back to RAAS scores</Link>
@@ -73,7 +95,30 @@ export default function IndependentMetricReviewQueuePage(){
    research tasks to every registered study, open
    {" "}<Link href="/raas-evidence-backlog">the complete 762-trial evidence-gap queue</Link>.
    It identifies the next source task without inventing scores.</p>
-  <ReviewQueueClient queue={queue}/>
+  <section className={css.section} aria-label="Nightly source-change metric review intake">
+   <div className={css.sectionTitle}>
+    <h2>Registry source revisions · independent metric recheck inbox</h2>
+    <span>New research alerts, separate from provisional scores</span>
+   </div>
+   <p className={css.notice}>
+    When the nightly ClinicalTrials.gov scan detects a changed original source,
+    source-identity checks route affected TOP or BOTTOM candidate metrics to this
+    review inbox. Historical reviews remain immutable. Alerts require exact
+    NCT, ticker, and human drug/indication reconciliation; a protocol or registry
+    result does not determine a confirmed readout stage.
+    {" "}<Link href="/raas-evidence-changes">Open dated source-change history</Link>.
+   </p>
+   <RegistryRevisionInboxClient inbox={revisionInbox}
+    initialNctId={initialNctId} initialMetricId={initialMetricId}/>
+  </section>
+  <section className={css.section} id="raas-existing-source-checked-review-packets">
+   <div className={css.sectionTitle}>
+    <h2>Existing {queue.total} provisional review research packets</h2>
+    <span>Independent sign-off still required</span>
+   </div>
+   <ReviewQueueClient queue={queue} initialNctId={existingNctId}
+    initialMetricId={existingMetricId}/>
+  </section>
   <p className={css.foot} style={{marginTop:20}}>
    The queue is re-derived from the checked-in research ledger on deployment.
    It does not amend the ledger, alter TOP/BOTTOM histories, or reactivate
