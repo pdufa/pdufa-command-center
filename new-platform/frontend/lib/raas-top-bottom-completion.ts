@@ -10,6 +10,12 @@ import {RAAS_METRIC_CATALOG,type RaasStage} from "./raas-metric-specs";
 import {RAAS_PROVISIONAL_RUBRICS} from "./raas-provisional-rubric-engine";
 import publishedMetricLeads from "../data/raas-classified-published-metric-leads.json";
 
+export type RaasPublishedMetricLead={
+ nctId:string;ticker:string;stage:"TOP"|"BOTTOM";drug:string;metricId:string;
+ sourceType:string;sourceUrl:string;sourceTitle:string;
+ reportedResult:string;referenceUrl:string;referenceContext:string;
+ reviewNeeded:string;approvedNumericGrade:null;
+};
 export type RaasClassifiedCompletionTask={
  nctId:string;ticker:string;stage:"TOP"|"BOTTOM";metricId:string;
  category:string;categoryWeightPct:number;metricName:string;
@@ -86,13 +92,13 @@ function buildIndependentReviewHandoffCsv(
 ):{csv:string;publishedLeads:number;missingWithoutLead:number}{
  const rows=new Map([...data.pre,...data.post].map(r=>[r.nctId,r]));
  const byTask=new Map(tasks.map(t=>[t.nctId+"|"+t.metricId,t]));
- type PublishedLead=(typeof publishedMetricLeads.records)[number];
+ type PublishedLead=RaasPublishedMetricLead;
  const sourceMap=new Map<string,PublishedLead>();
  if(publishedMetricLeads.schemaVersion!==1||
   publishedMetricLeads.scope!==
    "RAAS_EXACT_CLASSIFIED_PUBLISHED_CLINICAL_EVIDENCE_LEADS_UNGRADED")
   throw Error("RAAS_REVIEW_HANDOFF_UNVERIFIED_SOURCE_FEED");
- for(const lead of publishedMetricLeads.records){
+ for(const lead of publishedMetricLeads.records as PublishedLead[]){
   const key=lead.nctId+"|"+lead.metricId;
   const task=byTask.get(key),row=rows.get(lead.nctId);
   if(sourceMap.has(key)||!task||!row?.evidence||
