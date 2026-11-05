@@ -60,6 +60,8 @@ export function buildPrimaryContrastReconciliationLedger(raw:unknown):
    const measured=new Map((outcome.measurements||[]).map(m=>
     [m.groupId,number(m.value)] as const));
    for(const [ci,c] of (outcome.comparisons||[]).entries()){
+    // Single-group analyses are not treatment-arm comparisons.
+    if((c.groupIds||[]).length<2)continue;
     const id=r.nctId+"|primary-"+oi+"|comparison-"+ci;
     if(seen.has(id))throw Error("RAAS_ARM_RECONCILIATION_DUPLICATE_COMPARISON");
     seen.add(id);trialIds.add(r.nctId);
