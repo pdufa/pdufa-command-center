@@ -86,3 +86,23 @@ export function fullReviewedTrialCandidate(
   type:"UNVALIDATED_REVIEWED_RESEARCH_SCORE_NOT_FDA_PROBABILITY",
   grades:valid};
 }
+/** Surface exact-NCT stage-specific research reviews even before readout stage is
+ * independently established. Never auto-classify TOP/BOTTOM or promote an observed
+ * reviewed-only mean to an approved overall RAAS score.
+ * Fail closed for one NCT used by multiple drug/indication programs.
+ */
+export function stageResearchReviewsForUnverifiedTrial(
+ trial:{nctId:string;ticker:string},stage:RaasStage,
+ feed:ReviewedMetricFeed=savedReviews
+):ReviewedTrialCandidate|null{
+ if(!/^NCT\d{8}$/.test(trial.nctId)||!trial.ticker?.trim())return null;
+ const candidates=feed.records.filter(r=>r.nctId===trial.nctId&&
+  same(r.ticker,trial.ticker)&&r.stage===stage);
+ if(!candidates.length)return null;
+ const programKeys=new Set(candidates.map(r=>JSON.stringify([norm(r.drug),norm(r.indication)])));
+ if(programKeys.size!==1)return null;
+ const first=candidates[0];
+ return fullReviewedTrialCandidate({
+  nctId:trial.nctId,ticker:trial.ticker,drug:first.drug,indication:first.indication
+ },stage,false,feed);
+}
