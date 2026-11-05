@@ -88,6 +88,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Telegram RAAS audit started (scheduled/manual only)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scripts/telegram_scan_alert.py --event raas-start --details 'FDA PASS/CRL/Extension evidence and accuracy audit launched; no trading actions.' --url "$RUN_URL"
       - name: Verify iPhone research-panel truthfulness and prospective ledger gates
         run: node --test new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs
       - name: Verify original PDUFA goals and formal extension source leads (never approved trading or FDA metrics)
@@ -168,3 +176,12 @@ jobs:
             ${{ runner.temp }}/raas-v2-issuer-news-fallback-research-leads.json
           if-no-files-found: warn
           retention-days: 90
+      - name: Telegram RAAS accuracy result after reporting
+        if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          JOB_STATUS: ${{ job.status }}
+        run: python scripts/telegram_scan_alert.py --event raas-end --status "$JOB_STATUS" --details 'Check attached report and evidence gaps; job success does not establish valid live forecasts.' --url "$RUN_URL"
