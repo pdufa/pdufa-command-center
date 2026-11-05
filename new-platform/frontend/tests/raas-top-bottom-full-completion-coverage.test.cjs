@@ -58,7 +58,7 @@ test("each missing source task carries exact-trial issuer, registry, metric comp
   assert.ok(task.requiredSourceEvidence.length>10);
   assert.ok(task.requiredIndependentBenchmark.length>5);
   assert.ok(task.criticalRisk.length>5);
-  assert.ok(task.nextAction.includes("independent reviewer"));
+  assert.ok(task.nextAction.includes("without a separate human signoff"));
   assert.match(task.issuerDisclosureUrl,/^https:\/\//);
   assert.equal(task.registrySourceUrl,"https://clinicaltrials.gov/study/"+task.nctId);
   assert.equal(task.reviewedPrimarySourceUrl,null);
