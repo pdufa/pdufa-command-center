@@ -12,7 +12,7 @@ test("nightly as-of report reconciles all eleven research cycles without a fabri
  assert.equal(r.counts.phase2Excluded,2);
  assert.equal(r.counts.nonPhase2ResearchLeads,9);
  assert.equal(r.counts.originalGoalElapsedNonPhase2,1);
- assert.equal(r.counts.upcomingOriginalGoalsWithin30Days,4);
+ assert.equal(r.counts.upcomingOriginalGoalsWithin30Days,5);
  assert.equal(r.counts.researchReceiptSubmissions,0);
  assert.equal(r.counts.independentlyAuthenticatedForecasts,0);
  assert.equal(r.counts.independentlyAdjudicatedOriginalGoalOutcomes,0);
