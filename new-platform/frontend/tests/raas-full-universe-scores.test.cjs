@@ -79,6 +79,9 @@ test("full trial UI does not hardcode the five pilot identities or round off mis
  assert.match(page,/<RaasFullUniverseScores\/>/);
  assert.doesNotMatch(page,/provisionalTrials|data-raas-provisional-trial-scores="pilot"/);
  assert.match(ui,/data-raas-all-trials="true"/);
+ assert.match(ui,/stageResearchReviewsForUnverifiedTrial/);
+ assert.match(ui,/data-raas-reviewed-partial-nct/);
+ assert.match(ui,/a reviewed-only mean is not a complete RAAS score/i);
  assert.match(ui,/RaasTrialHistoryButton row=\{x\.row\} bucket=\{x\.stage\}/);
  assert.match(ui,/Not scored/);
  assert.match(ui,/No missing input scored as zero/);
