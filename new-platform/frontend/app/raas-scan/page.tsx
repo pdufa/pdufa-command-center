@@ -82,6 +82,15 @@ export default function RaasScanPage(){
      It cannot itself approve any grade or predict PASS/CRL/EXTENSION.</p>
     <p><Link href="/raas-review-queue">Open individual independent review assignments and CSV export</Link></p>
    </section>
+   <section className={css.section} data-raas-762-gap-queue-link="true">
+    <div className={css.sectionTitle}><h2>Evidence gaps for the entire registry research pool</h2>
+     <span>Trial-by-trial source and independent review requirements</span></div>
+    <p className={css.notice}>The clinical trial registry contains 762 source records,
+     but only 17 NCTs have source-checked provisional metric research.
+     Search and prioritize all trial evidence gaps without granting missing
+     TOP/BOTTOM ratings or claiming current Pipeline eligibility.</p>
+    <p><Link href="/raas-evidence-backlog">Open 762-trial evidence-gap queue and CSV export</Link></p>
+   </section>
    <RaasFullUniverseScores/>
    <section className={css.section} data-raas-self-audit={selfAudit.status}>
     <div className={css.sectionTitle}>
