@@ -8,6 +8,7 @@ import type {ReadoutClassification,ReadoutRow} from "./phase3-public-readout";
 import {exactClassifiedRaasComponentGrades} from "./raas-classified-component-grades";
 import {RAAS_METRIC_CATALOG,type RaasStage} from "./raas-metric-specs";
 import {RAAS_PROVISIONAL_RUBRICS} from "./raas-provisional-rubric-engine";
+import publishedMetricLeads from "../data/raas-classified-published-metric-leads.json";
 
 export type RaasClassifiedCompletionTask={
  nctId:string;ticker:string;stage:"TOP"|"BOTTOM";metricId:string;
@@ -36,9 +37,10 @@ export type RaasTopBottomCompletion={
   provisionalMetricGrades:number;missingMetricGrades:number;
   independentFullScores:0;calibratedFdaProbabilities:0;
   gradingSetupReady:true;allNumericGradesFinished:false;
+  publishedUngradedMetricLeads:number;missingWithoutPublishedMetricLead:number;
  };
  trials:TrialSummary[];tasks:RaasClassifiedCompletionTask[];
- allCsv:string;missingOnlyCsv:string;
+ allCsv:string;missingOnlyCsv:string;independentReviewHandoffCsv:string;
 };
 const columns=[
  "nctId","ticker","stage","metricId","category","categoryWeightPct",
@@ -71,6 +73,78 @@ function exportCsv(rows:readonly RaasClassifiedCompletionTask[]){
   ]));
  }
  return csv.join("\r\n")+"\r\n";
+}
+
+/** Complete 300-item external reviewer worksheet. Published observations must be
+ * bound to the same issuer-classified NCT, drug, stage and currently missing metric.
+ * No reviewer identity, approval, signature, or metric score is fabricated.
+ * Filling this CSV is a human handoff, not an automatically certified rating.
+ */
+function buildIndependentReviewHandoffCsv(
+ data:ReadoutClassification,tasks:readonly RaasClassifiedCompletionTask[]
+):{csv:string;publishedLeads:number;missingWithoutLead:number}{
+ const rows=new Map([...data.pre,...data.post].map(r=>[r.nctId,r]));
+ const byTask=new Map(tasks.map(t=>[t.nctId+"|"+t.metricId,t]));
+ type PublishedLead=(typeof publishedMetricLeads.records)[number];
+ const sourceMap=new Map<string,PublishedLead>();
+ if(publishedMetricLeads.schemaVersion!==1||
+  publishedMetricLeads.scope!==
+   "RAAS_EXACT_CLASSIFIED_PUBLISHED_CLINICAL_EVIDENCE_LEADS_UNGRADED")
+  throw Error("RAAS_REVIEW_HANDOFF_UNVERIFIED_SOURCE_FEED");
+ for(const lead of publishedMetricLeads.records){
+  const key=lead.nctId+"|"+lead.metricId;
+  const task=byTask.get(key),row=rows.get(lead.nctId);
+  if(sourceMap.has(key)||!task||!row?.evidence||
+   task.numericProvisionalGrade!==null||lead.approvedNumericGrade!==null||
+   task.ticker!==lead.ticker||task.stage!==lead.stage||
+   row.evidence.drug!==lead.drug||
+   !/^https:\/\/[^\\s]+$/.test(lead.sourceUrl)||
+   !/^https:\/\/[^\\s]+$/.test(lead.referenceUrl)||
+   !lead.reportedResult||!lead.reviewNeeded)
+   throw Error("RAAS_REVIEW_HANDOFF_SOURCE_CROSSWALK_FAILED");
+  sourceMap.set(key,lead);
+ }
+ const fields=[
+  "reviewPriority","nctId","ticker","stage","drug","indication","metricId",
+  "category","metricName","currentResearchStatus","provisionalMetricGrade",
+  "provisionalPrimarySource","provisionalComparatorSource",
+  "publishedMetricSourceTitle","publishedMetricSourceUrl","publishedReportedResult",
+  "publishedComparatorOrContextUrl","publishedComparatorOrContext",
+  "publishedReviewNeeded","issuerEvidenceUrl","registryNctUrl",
+  "requiredPrimaryEvidence","requiredBenchmark","criticalRisk","scoreRule",
+  "reviewerIdentity","reviewerOrganization","reviewDate","reviewDecision",
+  "independentlyAdjudicatedMetricGrade","confirmedPrimarySourceUrl",
+  "confirmedComparatorSourceUrl","signatureOrAuditReceiptId","disagreementNotes"
+ ];
+ const csv=[fields.join(",")];
+ let missingWithoutLead=0;
+ for(const task of tasks){
+  const row=rows.get(task.nctId),lead=sourceMap.get(task.nctId+"|"+task.metricId);
+  if(!row?.evidence)throw Error("RAAS_REVIEW_HANDOFF_MISSING_TRIAL_IDENTITY");
+  const rated=task.numericProvisionalGrade!==null;
+  if(!rated&&!lead)missingWithoutLead++;
+  const priority=rated?"1_RECHECK_PROVISIONAL":lead?
+   "2_REVIEW_PUBLISHED_SOURCE":"3_DISCOVER_REQUIRED_SOURCES";
+  const values:(string|number|null)[]=[
+   priority,task.nctId,task.ticker,task.stage,row.evidence.drug,
+   row.evidence.indication,task.metricId,task.category,task.metricName,
+   rated?"PROVISIONAL_NOT_INDEPENDENTLY_VERIFIED":lead?
+    "PUBLISHED_UNGRADED_LEAD":"UNSCORED_MISSING_EVIDENCE",
+   task.numericProvisionalGrade,task.reviewedPrimarySourceUrl,
+   task.reviewedComparatorSourceUrl,lead?.sourceTitle??null,
+   lead?.sourceUrl??null,lead?.reportedResult??null,lead?.referenceUrl??null,
+   lead?.referenceContext??null,lead?.reviewNeeded??null,
+   task.issuerDisclosureUrl,task.registrySourceUrl,
+   task.requiredSourceEvidence,task.requiredIndependentBenchmark,
+   task.criticalRisk,task.scoreRule,
+   // External reviewer fields intentionally blank; no inferred attestation.
+   null,null,null,null,null,null,null,null,null
+  ];
+  if(values.length!==fields.length)throw Error("RAAS_REVIEW_HANDOFF_COLUMN_MISMATCH");
+  csv.push(csvRow(values));
+ }
+ return {csv:csv.join("\\r\\n")+"\\r\\n",
+  publishedLeads:sourceMap.size,missingWithoutLead};
 }
 
 export function buildRaasTopBottomCompletion(data:ReadoutClassification):
@@ -155,6 +229,9 @@ export function buildRaasTopBottomCompletion(data:ReadoutClassification):
   tasks.some(t=>t.approvedOverallScore!==null||
    t.calibratedFdaApprovalProbability!==null))
   throw Error("RAAS_TOP_BOTTOM_COMPLETION_RECONCILIATION_FAILED");
+ const handoff=buildIndependentReviewHandoffCsv(data,tasks);
+ if(handoff.publishedLeads+handoff.missingWithoutLead!==missing.length)
+  throw Error("RAAS_REVIEW_HANDOFF_UNGRADED_RECONCILIATION_FAILED");
  tasks.sort((a,b)=>
   a.stage.localeCompare(b.stage)||
   b.categoryWeightPct-a.categoryWeightPct||
@@ -175,8 +252,11 @@ export function buildRaasTopBottomCompletion(data:ReadoutClassification):
    provisionalMetricGrades:reviewedCount,
    missingMetricGrades:missing.length,
    independentFullScores:0,calibratedFdaProbabilities:0,
-   gradingSetupReady:true,allNumericGradesFinished:false
+   gradingSetupReady:true,allNumericGradesFinished:false,
+   publishedUngradedMetricLeads:handoff.publishedLeads,
+   missingWithoutPublishedMetricLead:handoff.missingWithoutLead
   },
-  trials,tasks,allCsv:exportCsv(tasks),missingOnlyCsv:exportCsv(missing)
+  trials,tasks,allCsv:exportCsv(tasks),missingOnlyCsv:exportCsv(missing),
+  independentReviewHandoffCsv:handoff.csv
  };
 }
