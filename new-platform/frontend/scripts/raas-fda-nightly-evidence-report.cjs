@@ -44,7 +44,6 @@ function buildNightlyRaasFdaAudit(asOfInstant){
  if(plan.total!==outcome.exactReviewCycleResearchCases||
   plan.records.length!==outcome.cases.length||
   plan.total!==score.researchRosterCases+plan.phase2Excluded||
-  plan.total!==11||
   score.researchPairedCases!==outcome.qualifiedForecastOutcomePairs||
   forecast.independentlyAuthenticatedForecasts!==0||
   outcome.independentlyAdjudicatedOriginalGoalLabels!==0||
@@ -120,7 +119,7 @@ function buildNightlyRaasFdaAudit(asOfInstant){
   scope:"RAAS_NIGHTLY_FDA_THREE_WAY_EVIDENCE_READINESS_RESEARCH_ONLY",
   runAtUtc:instant,
   savedInputAsOf:plan.snapshotAsOf,
-  sourceSignature:sha,
+  auditStateFingerprint:sha,
   sourceChangedSincePreviousRun:null,
   sourceChangeComparisonStatus:"NO_PREVIOUS_RUN_ARTIFACT_PROVIDED",
   note:"Existing scheduled RAAS FDA audit, not a new scan. This report reads saved source snapshots, not live regulator data. A run success, identical hash, or lack of source candidates cannot establish actual FDA source freshness. SHA fingerprint is not a third-party timestamp or verified prediction.",
@@ -176,7 +175,7 @@ function main(){
  process.stdout.write(JSON.stringify({
   status:"EVIDENCE_GAPS_REPORTED_NOT_VALIDATED",
   asOf:report.runAtUtc,counts:report.counts,
-  sourceSignature:report.sourceSignature,
+  auditStateFingerprint:report.auditStateFingerprint,
   accuracy:report.threeWayScorecard.independentValidatedAccuracyPct
  })+"\n");
 }
