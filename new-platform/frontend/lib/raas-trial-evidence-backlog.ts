@@ -37,7 +37,6 @@ export type TrialEvidenceBacklog={
  trialsWithComparativeRegistryEvidence:number;trialsWithConfidenceIntervals:number;
  independentReviewedMetrics:0;approvedScores:0;calibratedFdaPredictions:0;
 };
-const unique=<T,>(values:readonly T[])=>new Set(values).size;
 const stageMetricIds={
  pre:RAAS_METRIC_CATALOG.pre.flatMap(c=>c.metrics.map(m=>m.id)),
  post:RAAS_METRIC_CATALOG.post.flatMap(c=>c.metrics.map(m=>m.id))
@@ -126,9 +125,6 @@ export function buildTrialEvidenceBacklog(rawIndex:unknown):TrialEvidenceBacklog
  items.sort((a,b)=>rank[a.priority]-rank[b.priority]||
   (b.reviewedTop+b.reviewedBottom)-(a.reviewedTop+a.reviewedBottom)||
   a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId));
- const exactReviewNcts=new Set(registry.records.map(x=>x.nctId));
- const inRegistryReviews=review.records.filter(x=>exactReviewNcts.has(x.nctId)&&
-  registry.records.some(y=>y.nctId===x.nctId&&y.ticker===x.ticker));
  const effectiveReviewed=items.reduce((s,x)=>s+x.reviewedTop+x.reviewedBottom,0);
  return {scope:"RAAS_762_REGISTRY_RESEARCH_TRIAGE_NOT_APPROVED_SCORES",
   sourceAsOf:registry.sourceAsOf,reviewSourceAsOf:review.sourceAsOf,items,
