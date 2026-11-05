@@ -15,31 +15,32 @@ const census=parsePhase3CensusCsv(csv);
 const release=require("../public/phase3-public-readout-evidence-2026-11-01.json");
 const actual=classifyPhase3Readouts(release,census.rows);
 const known=classifiedRaasTrials(actual);
-test("All five real issuer-classified 741-census trials are present, remaining 736 unclassified",()=>{
+test("All ten source-classified census NCTs have exactly sourced TOP/BOTTOM identity, remaining 731 unclassified",()=>{
  assert.equal(actual.total,741);
  assert.equal(actual.pre.length,2);
- assert.equal(actual.post.length,3);
- assert.equal(actual.unverified.length,736);
- assert.equal(known.length,5);
+ assert.equal(actual.post.length,8);
+ assert.equal(actual.unverified.length,731);
+ assert.equal(known.length,10);
  assert.deepEqual(known.map(x=>x.ticker+"|"+x.stage).sort(),[
-  "CLDX|post","CLDX|post","LBRX|pre","MLTX|post","TRVI|pre"
+  "CLDX|post","CLDX|post","CORT|post","CORT|post",
+  "CYTK|post","CYTK|post","CYTK|post","LBRX|pre","MLTX|post","TRVI|pre"
  ]);
- assert.equal(new Set(known.map(x=>x.nctId)).size,5);
+ assert.equal(new Set(known.map(x=>x.nctId)).size,10);
  assert.ok(known.every(x=>x.evidenceDate<="2026-11-01"));
 });
-test("Summary is explicit that 0 of 5 have an approved overall RAAS score",()=>{
+test("Summary is explicit that 0 of 10 have an approved overall RAAS score",()=>{
  const p=summarizeBulkRaasSources(actual,[]);
  assert.equal(p.totalCensus,741);
- assert.equal(p.classified,5);
+ assert.equal(p.classified,10);
  assert.equal(p.top,2);
- assert.equal(p.bottom,3);
- assert.equal(p.unverified,736);
+ assert.equal(p.bottom,8);
+ assert.equal(p.unverified,731);
  assert.equal(p.approvedRaasScores,0);
  assert.equal(p.complete,false);
  const rows=known.map(trial=>({trial,result:null,state:"SOURCE_UNAVAILABLE",
   problem:"No source available"}));
  const e=summarizeBulkRaasSources(actual,rows);
- assert.equal(e.failed,5);
+ assert.equal(e.failed,10);
  assert.equal(e.fetched,0);
  assert.equal(e.registryPosted,0);
  assert.equal(e.approvedRaasScores,0);

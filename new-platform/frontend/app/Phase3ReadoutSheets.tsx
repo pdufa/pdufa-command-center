@@ -796,7 +796,15 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
       </tr></thead>
       <tbody>{rows.length?rows.map((row,i)=><tr key={row.nctId}>
         <td>{originalNumbers.get(row.nctId)??i+1}</td><td><strong>{row.ticker}</strong></td>
-        <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
+        <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a>
+          {row.evidence?.issuerTrialName&&row.evidence.registryTrialUrl&&
+           <small data-raas-dual-source-acronym={row.nctId}
+            style={{display:"block",marginTop:3}}>
+            {row.evidence.issuerTrialName} ·{" "}
+            <a href={row.evidence.registryTrialUrl}
+             target="_blank" rel="noopener noreferrer">registry match</a>
+           </small>}
+         </td>
         <td><span>{row.company}</span>{" "}<span className={`${css.stageBadge} ${bucket==="pre"?css.stageThree:css.stageP}`} title={bucket==="pre"?"3 · Phase 3 public results not identified at the dated source check":"P · Public Phase 3 results released; a PDUFA date is not implied"} aria-label={bucket==="pre"?"Phase 3 pre-release as last checked":"Post Phase 3 public readout confirmed"}>{bucket==="pre"?"3":"P"}</span></td>
         {bucket==="post"&&<td className={css.factorPCell}>
           {row.evidence?.primaryEndpointP

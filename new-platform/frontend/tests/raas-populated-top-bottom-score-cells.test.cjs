@@ -20,8 +20,8 @@ const result=classifyPhase3Readouts(evidence,parsePhase3CensusCsv(census).rows);
 test("all actual source-classified TOP/BOTTOM rows have 30 populated slots, never guessed overall scores",()=>{
  assert.equal(result.total,741);
  assert.equal(result.pre.length,2);
- assert.equal(result.post.length,3);
- assert.equal(result.unverified.length,736);
+ assert.equal(result.post.length,8);
+ assert.equal(result.unverified.length,731);
  let count=0,graded=0,missing=0;
  const byCase=new Map();
  for(const [stage,rows] of [["pre",result.pre],["post",result.post]]){
@@ -64,12 +64,14 @@ test("all actual source-classified TOP/BOTTOM rows have 30 populated slots, neve
   assert.equal(worklist.summary.reviewMissingRows,rows.length*30-stageGrades);
   assert.equal(worklist.summary.approvedOverallRaasScores,0);
  }
- assert.equal(count,5);
+ assert.equal(count,10);
  assert.equal(graded,16);
- assert.equal(missing,134);
+ assert.equal(missing,284);
  assert.deepEqual(Object.fromEntries(byCase),{
   NCT07363577:5,NCT07671911:5,
-  NCT06445023:3,NCT06455202:3,NCT06641076:0
+  NCT06445023:3,NCT06455202:3,NCT06641076:0,
+  NCT05186818:0,NCT05767346:0,NCT06081894:0,
+  NCT03697109:0,NCT04308590:0
  });
 });
 test("NO stage, no issuer source, cross-therapy or cross-NCT identities cannot generate a scorecard",()=>{

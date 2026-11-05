@@ -5,10 +5,66 @@
   "scope": "HISTORICAL_US_LISTED_300M_10B_PHASE3_LEAD_SPONSOR_RESEARCH",
   "sourceFiles": [
     "data/phase3_pre_readout_evidence.csv",
-    "data/post_phase3_discoveries.csv"
+    "data/post_phase3_discoveries.csv",
+    "data/phase3_issuer_readout_additions_2026-11-05.json"
   ],
-  "note": "PRE_AS_OF_CHECK is historical negative finding at the source check date, not a current unreleased guarantee. POST_PUBLIC_READOUT is an issuer readout announcement, not registry results posting or successful FDA qualification. All other census NCTs are UNVERIFIED; neither a missing registry posting nor trial status establishes pre-release.",
+  "note": "Original as-of 2026-11-01 issuer-source snapshot with five source-backed 2023-2026 Phase 3 readouts recovered/reviewed on 2026-11-05. The paired issuer-release and exact-NCT registry URLs document POST only; not FDA actions or independently calibrated RAAS ratings. The two PRE_AS_OF_CHECK sources remain historical October 11 negative checks and do not mean still unreleased today. ClinicalTrials.gov results posting or COMPLETED status alone never establishes any readout stage.",
   "entries": [
+    {
+      "nctId": "NCT03697109",
+      "ticker": "CORT",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2024-05-28",
+      "evidenceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-announces-primary-endpoint-met-pivotal-phase-3-grace",
+      "drug": "relacorilant",
+      "indication": "endogenous hypercortisolism (Cushing's syndrome)",
+      "issuerTrialName": "GRACE",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT03697109"
+    },
+    {
+      "nctId": "NCT04308590",
+      "ticker": "CORT",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2024-10-30",
+      "evidenceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3",
+      "drug": "relacorilant",
+      "indication": "hypercortisolism caused by cortisol-secreting adrenal adenomas or hyperplasia",
+      "issuerTrialName": "GRADIENT",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT04308590"
+    },
+    {
+      "nctId": "NCT05186818",
+      "ticker": "CYTK",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2023-12-27",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2023/Cytokinetics-Announces-Positive-Results-From-SEQUOIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-With-Obstructive-Hypertrophic-Cardiomyopathy-12-27-2023/default.aspx",
+      "drug": "aficamten",
+      "indication": "symptomatic obstructive hypertrophic cardiomyopathy",
+      "issuerTrialName": "SEQUOIA-HCM",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT05186818"
+    },
+    {
+      "nctId": "NCT05767346",
+      "ticker": "CYTK",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2025-05-13",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Announces-Positive-Topline-Results-From-MAPLE-HCM-05-13-2025/default.aspx",
+      "drug": "aficamten",
+      "indication": "symptomatic obstructive hypertrophic cardiomyopathy",
+      "issuerTrialName": "MAPLE-HCM",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT05767346"
+    },
+    {
+      "nctId": "NCT06081894",
+      "ticker": "CYTK",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2026-05-05",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+      "drug": "aficamten",
+      "indication": "symptomatic non-obstructive hypertrophic cardiomyopathy",
+      "issuerTrialName": "ACACIA-HCM",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT06081894"
+    },
     {
       "nctId": "NCT06445023",
       "ticker": "CLDX",
@@ -64,5 +120,6 @@
       "drug": "NAL ER",
       "indication": "Idiopathic Pulmonary Fibrosis"
     }
-  ]
+  ],
+  "recoveryReviewAt": "2026-11-05"
 }
