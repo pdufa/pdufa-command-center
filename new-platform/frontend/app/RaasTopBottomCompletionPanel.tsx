@@ -1,6 +1,7 @@
 "use client";
 import {useMemo,useState} from "react";
 import publishedClinicalLeads from "../data/raas-classified-published-metric-leads.json";
+import sourcePolicy from "../data/raas-source-acceptance-policy.json";
 import type {ReadoutClassification} from "../lib/phase3-public-readout";
 import {buildRaasTopBottomCompletion,type RaasClassifiedCompletionTask}
  from "../lib/raas-top-bottom-completion";
@@ -84,14 +85,22 @@ export default function RaasTopBottomCompletionPanel({
   <h2 style={{fontSize:18,margin:"0 0 9px",color:"#16492b"}}>
    TOP + BOTTOM RAAS · metric completion tracker
   </h2>
+  <p data-raas-user-accepted-source-policy="true"
+   style={{fontSize:13,lineHeight:1.5,margin:"6px 0 12px",color:"#295239"}}>
+   <strong>Source acceptance active · {sourcePolicy.effectiveDate}.</strong>{" "}
+   Published and documented evidence is trusted for internal RAAS research scoring.
+   A separate human source-verification signature is not required to grade a
+   metric or complete a 30/30 research score. Missing metrics stay N/A; this
+   does not represent independent certification or calibrated FDA predictions.
+  </p>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(135px,1fr))",
    gap:9,marginBottom:11}}>
    {[
     {n:summary.classifiedTrialRows,label:"Trials in TOP/BOTTOM"},
     {n:summary.allMetricSlots,label:"Exact metric slots set up"},
-    {n:summary.provisionalMetricGrades,label:"Source-checked provisional grades"},
-    {n:publishedCount,label:"Published metric evidence leads · ungraded"},
-    {n:summary.missingMetricGrades,label:"Missing numerical metric reviews"},
+    {n:summary.provisionalMetricGrades,label:"Source-accepted research grades"},
+    {n:publishedCount,label:"Published evidence leads · need rubric grade"},
+    {n:summary.missingMetricGrades,label:"Missing numerical metric grades"},
     {n:summary.missingWithoutPublishedMetricLead,
      label:"Missing grades requiring more source discovery"},
     {n:summary.independentFullScores,label:"Independently validated full RAAS scores"}
@@ -103,11 +112,11 @@ export default function RaasTopBottomCompletionPanel({
   </div>
   <p style={{fontSize:13,lineHeight:1.5,color:"#395d44"}}>
    <strong>All rows and metric requirements are set up.</strong> Numerical
-   scores are filled only where an exact-trial, same-therapy, dated source
-   review exists. Missing ratings stay N/A—not zero, 50, or a fabricated
-   30/30 total. Published trial observations are linked to their exact
-   metric tasks but remain ungraded until comparator, uncertainty and
-   independent-review requirements are met. No metric grade alone verifies an FDA PASS/CRL/EXTENSION
+   scores are filled only where exact-trial, same-therapy documentary evidence
+   supports a rubric grade. Missing ratings stay N/A—not zero, 50, or a fabricated
+   30/30 total. Published clinical observations are attached to exact tasks;
+   their metric grades still need a supported benchmark and uncertainty assessment,
+   but no external reviewer is required to proceed. No individual grade establishes an FDA PASS/CRL/EXTENSION
    prediction. The 11,000+ POOL and unclassified trial roster are excluded.
   </p>
   <h3 style={{fontSize:15,margin:"14px 0 9px"}}>Coverage by trial</h3>
@@ -128,7 +137,8 @@ export default function RaasTopBottomCompletionPanel({
      <td style={{padding:"8px 6px"}}>{t.reviewed}/30</td>
      <td style={{padding:"8px 6px"}}>{t.missing}</td>
      <td style={{padding:"8px 6px"}}>{[...publishedByMetric.keys()].filter(k=>k.startsWith(t.nctId+"|")).length}</td>
-     <td style={{padding:"8px 6px"}}>N/A · not validated</td>
+     <td style={{padding:"8px 6px"}}>{t.sourceAcceptedResearchScore===null?
+      "N/A · 30 metrics incomplete":t.sourceAcceptedResearchScore+"/100 · research only"}</td>
     </tr>)}</tbody>
    </table>
   </div>
@@ -136,7 +146,7 @@ export default function RaasTopBottomCompletionPanel({
    <button type="button" style={buttonStyle}
     data-raas-independent-review-handoff="300-source-linked-tasks"
     onClick={()=>exportList("handoff")}>
-    Download full independent-review handoff · {summary.allMetricSlots} metrics
+    Download optional external-review worksheet · {summary.allMetricSlots} metrics
    </button>
    <button type="button" style={buttonStyle} data-raas-missing-review-csv="true"
     onClick={()=>exportList("missing")}>
@@ -148,14 +158,12 @@ export default function RaasTopBottomCompletionPanel({
    </button>
   </div>
   <p style={{fontSize:12,color:"#496454"}}>
-   The complete handoff includes {summary.provisionalMetricGrades} provisional
-   grades needing independent recheck, {summary.publishedUngradedMetricLeads}
-   published source leads not yet graded, and {summary.missingWithoutPublishedMetricLead}
-   missing grades requiring further source research. It preserves primary-source
-   and comparator links, metric requirements and critical risks. Reviewer identity,
-   signature, adjudication and date fields are deliberately blank. This is a
-   reviewer worksheet, <strong>not</strong> independent certification, a validated
-   RAAS 0–100 composite, or an FDA probability.
+   The optional review export includes {summary.provisionalMetricGrades} accepted
+   research grades, {summary.publishedUngradedMetricLeads} published leads still
+   requiring a rubric assessment, and {summary.missingWithoutPublishedMetricLead}
+   grades requiring additional evidence. A human signoff is optional for research
+   scoring, and the worksheet leaves external reviewer fields blank. None of this
+   implies independent validation or a calibrated FDA probability.
   </p>
   <button type="button" aria-expanded={expanded}
    data-raas-missing-tasks-expand="true"
@@ -201,7 +209,7 @@ export default function RaasTopBottomCompletionPanel({
       <p style={{fontSize:12,margin:"6px 0"}}>{task.metricName}</p>
       <p style={{fontSize:12,margin:"6px 0",fontWeight:700}}>
        {task.numericProvisionalGrade===null?"Grade N/A — not reviewed":
-        "Provisional "+task.numericProvisionalGrade+"/100 — independent review pending"}
+        "Source-accepted research grade "+task.numericProvisionalGrade+"/100"}
       </p>
       <details style={{fontSize:12}}>
        <summary style={{cursor:"pointer",fontWeight:650}}>
