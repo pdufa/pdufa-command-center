@@ -14,5 +14,14 @@
   "currentCapEligibility": "UNVERIFIED_FOR_ALL_HISTORICAL_ROWS",
   "note": "Unclassified NCTs each have five research fields available but no assumed TOP/BOTTOM stage and no overall numerical score. Financial/FDA-regulatory/commercial/investment-risk rankings are retired; FDA/PDUFA facts tracked separately.",
   "newClinicalSourceAcceptedMetricReviews": 19,
-  "researchCoverageStatus": "8 newly source-assessed research factors; 5 remain missing (3 safety and 2 MLTX statistical/safety), not imputed."
+  "researchCoverageStatus": "8 newly source-assessed research factors; 5 remain missing (3 safety and 2 MLTX statistical/safety), not imputed.",
+  "registryResearchPreview": {
+    "sourceAsOf": "2026-11-05",
+    "unclassifiedWithPostedResults": 325,
+    "unclassifiedWithoutPostedResults": 404,
+    "unclassifiedMissingFromSavedIndex": 2,
+    "issuerStageStillUnclassified": 731,
+    "warning": "Registry results posting is a research-only rubric cue, not proof of an issuer-announced Phase 3 readout."
+  },
+  "oneRowPerTrialMatrixUrl": "/raas-741-five-clinical-score-matrix.csv"
 }
