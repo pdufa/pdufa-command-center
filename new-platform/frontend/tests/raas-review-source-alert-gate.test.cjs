@@ -42,7 +42,7 @@ test("saved registry source audit maps exactly to all 18 program-stage review ha
   assert.match(g.explanation,/source|registry|comparison/i);
  }
  assert.equal(gates.needRevisionRecheck+gates.sourceAuditUnconfirmed+
-  gates.noRecordedMetricRevisions,18);
+  gates.noRecordedMetricRevisions,20);
 });
 test("a newly flagged clinical revision stops a clean source assertion for only its exact stage",()=>{
  const co=plan.groups.find(x=>x.nctId==="NCT05208047");
