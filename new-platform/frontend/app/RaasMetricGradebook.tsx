@@ -9,13 +9,13 @@ import {loadRegistryEvidenceIndex,registryTrialFor,
  type RegistryTrialEvidence} from "../lib/raas-registry-evidence";
 
 /** A horizontal, scrollable score-detail panel, loaded only when the user opens it. */
-export default function RaasMetricGradebook({row,bucket}:{
- row:ReadoutRow;bucket:RaasStage|null
+export default function RaasMetricGradebook({row,bucket,researchStageOnly}:{
+ row:ReadoutRow;bucket:RaasStage|null;researchStageOnly?:RaasStage
 }){
  const [open,setOpen]=useState(false);
- const [reviewStage,setReviewStage]=useState<RaasStage>("pre");
+ const [reviewStage,setReviewStage]=useState<RaasStage>(researchStageOnly??"pre");
  const [registry,setRegistry]=useState<RegistryTrialEvidence|null>(null);
- const activeStage=bucket??reviewStage;
+ const activeStage=bucket??researchStageOnly??reviewStage;
  const stageVerified=bucket!==null;
  // Some registry-only NCTs have a unique exact-trial research review but
  // no issuer-verified TOP/BOTTOM stage. Display those documented metric
@@ -56,12 +56,14 @@ export default function RaasMetricGradebook({row,bucket}:{
  const label=activeStage==="pre"?"TOP":"BOTTOM";
  return <>
   <button ref={trigger} type="button" aria-expanded={open}
-   aria-label={"Expand "+(stageVerified?label:"unverified TOP and BOTTOM research")+
+   aria-label={"Expand "+(stageVerified?label:researchStageOnly?
+    "unverified "+label+" registry research":"unverified TOP and BOTTOM research")+
     " all 30 RAAS metric evidence checks for "+row.ticker+" "+row.nctId}
    data-raas-metric-gradebook-trigger={row.nctId}
    style={{border:"1px solid #91bba3",borderRadius:7,padding:"7px 10px",
     background:"#eff8f0",color:"#15472f",fontWeight:700,cursor:"pointer"}}
-   onClick={()=>setOpen(v=>!v)}>{stageVerified?"30 metrics":"TOP / BOTTOM review"} <span aria-hidden="true">▸</span></button>
+   onClick={()=>setOpen(v=>!v)}>{stageVerified?"30 metrics":researchStageOnly?
+    label+" · 30 research metrics":"TOP / BOTTOM review"} <span aria-hidden="true">▸</span></button>
   {open&&book&&createPortal(
    <div role="presentation" onClick={e=>{if(e.target===e.currentTarget)setOpen(false);}}
     style={{position:"fixed",inset:0,zIndex:1200,background:"rgba(7,28,20,.65)",
@@ -85,10 +87,10 @@ export default function RaasMetricGradebook({row,bucket}:{
      {!stageVerified&&<div data-raas-unverified-stage-review="true"
       style={{margin:"12px 0",padding:12,border:"1px solid #cbbd81",borderRadius:8}}>
        <strong>Stage NOT verified — research-only checklist</strong>
-       <p style={{margin:"6px 0"}}>Review both TOP and BOTTOM evidence requirements for this NCT.
-        Choosing a checklist does not classify the trial, record a historical forecast,
-        or assign a numeric RAAS score. Registry results alone cannot confirm a dated issuer readout.</p>
-       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+       <p style={{margin:"6px 0"}}>{researchStageOnly?
+        "This 30-metric research checklist matches the trial's current Before/Past registry-results-posting spreadsheet. Registry posting does not establish the dated issuer-readout stage or authorize a validated RAAS score.":
+        "Review TOP and BOTTOM evidence requirements for this NCT. Choosing a research checklist does not verify the issuer readout, record a historical forecast or assign an overall RAAS score."}</p>
+       {!researchStageOnly&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
         {(["pre","post"] as const).map(value=><button key={value} type="button"
          data-raas-whatif-stage={value} aria-pressed={activeStage===value}
          onClick={()=>setReviewStage(value)}
@@ -96,7 +98,7 @@ export default function RaasMetricGradebook({row,bucket}:{
           background:activeStage===value?"#d9ecd9":"white",color:"#15472f",fontWeight:700}}>
          {value==="pre"?"TOP · 30 requirements":"BOTTOM · 30 requirements"}
         </button>)}
-       </div>
+       </div>}
       </div>}
      <div role="status" style={{display:"flex",gap:16,flexWrap:"wrap",
       padding:"12px 0",borderBottom:"1px solid #d3e4d8"}}>
