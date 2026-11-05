@@ -12,13 +12,13 @@
       "outcomeIndex": 1,
       "comparisonIndex": 0,
       "sourceHash": "011649b0c5756df1652800308032737c61c29c9aa3ec9affe4e448a72c0e1919",
-      "category": "MODEL_ESTIMAND_RECONCILIATION_OPEN",
+      "category": "ADJUSTED_LS_MEAN_VS_RAW_ARM_DIFFERENCE_DOCUMENTED",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00803205",
-      "corroborationUrl": "https://pubmed.ncbi.nlm.nih.gov/24836205/",
+      "corroborationUrl": "https://www.clinicaltrialsregister.eu/ctr-search/trial/2008-003924-52/results",
       "title": "Ataluren vs placebo — Week 48 percent-predicted FEV1",
-      "rawObservation": "Recorded arm changes -2.534 and -5.500 imply a simple difference of 2.966; the saved reported contrast is 2.7540 (95% CI -0.756 to 6.264, p=0.1235). The 2014 trial publication rounds group values to -2.5% and -5.5% and the difference to 3.0%.",
-      "interpretation": "The difference is small relative to the published interval, but the saved registry does not preserve enough analysis-population/model detail to establish why 2.754 differs from 2.966. Do not call it a registry error or efficacy success.",
-      "neededBeforeClosure": "Inspect the original primary analysis/SAP and the exact analysis population, adjusted estimand, missing-data approach and rounding before marking the numerical contrast reconciled."
+      "rawObservation": "Saved trial arm means -2.534 and -5.500 yield unadjusted subtraction 2.966; reported 2.7540 (95% CI -0.756 to 6.264; p=0.1235) is a least-squares adjusted effect. The matching official EU clinical-trial results identify an MMRM adjusted for baseline FEV1, treatment, visit, treatment-by-visit, baseline-by-visit and stratification factors.",
+      "interpretation": "The original EU registry results explicitly distinguish raw means from the least-squares mixed-model estimate. Subtracting unadjusted arms is therefore not a direct reconstruction of the modeled 2.754 contrast; the observed 0.212 gap is not evidence of a registry arithmetic error or a favorable clinical outcome. Exact model replication from patient-level data remains unavailable.",
+      "neededBeforeClosure": "For independent signoff, verify the EU and ClinicalTrials.gov source identity, MMRM specification, intention-to-treat population, missing-data treatment and adjusted estimand. The source supports a method-based explanation, not an authenticated RAAS grade."
     },
     {
       "nctId": "NCT02040090",
