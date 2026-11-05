@@ -52,6 +52,15 @@ export type RaasRegistryRevisionReviewInbox={
 const nct=/^NCT\d{8}$/;
 const sha=/^[a-f0-9]{64}$/;
 const eventId=/^[a-f0-9]{64}$/;
+const routing:Record<string,readonly string[]>={
+ RESULTS_FIRST_POSTED:["post-1-1","post-1-3","post-1-5"],
+ RESULTS_POSTING_REVERSED:["post-1-1","post-1-3","post-1-5"],
+ PRIMARY_OUTCOME_RESULTS_CHANGED:["post-1-1","post-1-3"],
+ SERIOUS_ADVERSE_EVENT_RESULTS_CHANGED:["post-1-5"],
+ PRIMARY_ENDPOINT_PROTOCOL_CHANGED:["pre-1-2"],
+ TRIAL_DESIGN_CHANGED:["pre-1-2"],
+ TRIAL_CONTEXT_CHANGED:["pre-1-2"]
+};
 const instant=(s:string):number=>{
  const t=Date.parse(s);
  if(!s||!Number.isFinite(t)||!/(Z|[+-]\d\d:\d\d)$/.test(s))
@@ -120,6 +129,12 @@ export function buildRaasRegistryRevisionReviewInbox(
   const ids=new Set(event.candidateResearchMetricIds);
   if(ids.size!==event.candidateResearchMetricIds.length)
    throw Error("RAAS_REVISION_INBOX_DUPLICATE_METRIC_IDS");
+  const expected=new Set(event.changeCategories.flatMap(x=>[...(routing[x]??[])]));
+  if(ids.size!==expected.size||[...ids].some(x=>!expected.has(x)))
+   throw Error("RAAS_REVISION_INBOX_CATEGORY_METRIC_ROUTING_MISMATCH");
+  if(event.reviewFlag==="CLINICAL_OR_DESIGN_REVIEW_REQUIRED"&&
+   expected.size===0)
+   throw Error("RAAS_REVISION_INBOX_REVIEW_EVENT_WITHOUT_METRIC");
   if(event.reviewFlag==="OTHER_OFFICIAL_REGISTRY_UPDATE"&&ids.size>0)
    throw Error("RAAS_REVISION_INBOX_ADMIN_EVENT_CANNOT_GRADE_METRIC");
   if(event.reviewFlag==="CLINICAL_OR_DESIGN_REVIEW_REQUIRED"){
