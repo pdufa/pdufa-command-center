@@ -340,6 +340,10 @@ export default function EvidenceBacklogClient(){
        style={{fontWeight:750}}>Download raw clinical evidence packet (JSON)</a>
       {x.stageSourceUrl&&<a href={x.stageSourceUrl} target="_blank" rel="noopener noreferrer">Dated stage source</a>}
       <Link href="/raas-review-queue">Source-reviewed metric packets</Link>
+      <Link href={"/raas-trial-review?"+new URLSearchParams({
+       nctId:x.nctId,ticker:x.ticker}).toString()}
+       data-raas-open-60-metric-review={x.nctId}>
+       Open this trial’s 60-metric review workspace</Link>
       <Link href="/raas-worklist">60-metric source requirements</Link>
      </div>
      <p style={{margin:0,fontSize:11,color:"#6b705b"}}>
