@@ -1,5 +1,6 @@
 "use client";
 import {useMemo,useState} from "react";
+import publishedClinicalLeads from "../data/raas-classified-published-metric-leads.json";
 import type {ReadoutClassification} from "../lib/phase3-public-readout";
 import {buildRaasTopBottomCompletion,type RaasClassifiedCompletionTask}
  from "../lib/raas-top-bottom-completion";
@@ -25,6 +26,26 @@ export default function RaasTopBottomCompletionPanel({
   try{return buildRaasTopBottomCompletion(data)}
   catch{return null}
  },[data]);
+ // Scholarly outcome measurements are review leads, not gradebook entries.
+ // Fail closed on mismatched NCT, drug, ticker, stage, or already rated metric.
+ const publishedByMetric=useMemo(()=>{
+  const keyed=new Map<string,typeof publishedClinicalLeads.records>();
+  if(!plan)return keyed;
+  const rows=new Map([...data.pre,...data.post].map(x=>[x.nctId,x]));
+  const tasks=new Map(plan.tasks.map(t=>[t.nctId+"|"+t.metricId,t]));
+  for(const lead of publishedClinicalLeads.records){
+   const row=rows.get(lead.nctId),task=tasks.get(lead.nctId+"|"+lead.metricId);
+   if(!row||!row.evidence||!task||task.numericProvisionalGrade!==null||
+    row.ticker!==lead.ticker||row.evidence.drug!==lead.drug||
+    task.stage!==lead.stage||lead.approvedNumericGrade!==null||
+    !lead.sourceUrl.startsWith("https://")||
+    !lead.referenceUrl.startsWith("https://"))continue;
+   const key=lead.nctId+"|"+lead.metricId;
+   keyed.set(key,[...(keyed.get(key)||[]),lead]);
+  }
+  return keyed;
+ },[data,plan]);
+ const publishedCount=[...publishedByMetric.values()].reduce((n,a)=>n+a.length,0);
  const filtered=useMemo(()=>{
   if(!plan)return [];
   const query=needle.trim().toLowerCase();
@@ -67,6 +88,7 @@ export default function RaasTopBottomCompletionPanel({
     {n:summary.classifiedTrialRows,label:"Trials in TOP/BOTTOM"},
     {n:summary.allMetricSlots,label:"Exact metric slots set up"},
     {n:summary.provisionalMetricGrades,label:"Source-checked provisional grades"},
+    {n:publishedCount,label:"Published metric evidence leads · ungraded"},
     {n:summary.missingMetricGrades,label:"Missing numerical metric reviews"},
     {n:summary.independentFullScores,label:"Independently validated full RAAS scores"}
    ].map(x=><div key={x.label} style={{border:"1px solid #c1dcc6",
@@ -79,14 +101,16 @@ export default function RaasTopBottomCompletionPanel({
    <strong>All rows and metric requirements are set up.</strong> Numerical
    scores are filled only where an exact-trial, same-therapy, dated source
    review exists. Missing ratings stay N/A—not zero, 50, or a fabricated
-   30/30 total. No metric grade alone verifies an FDA PASS/CRL/EXTENSION
+   30/30 total. Published trial observations are linked to their exact
+   metric tasks but remain ungraded until comparator, uncertainty and
+   independent-review requirements are met. No metric grade alone verifies an FDA PASS/CRL/EXTENSION
    prediction. The 11,000+ POOL and unclassified trial roster are excluded.
   </p>
   <h3 style={{fontSize:15,margin:"14px 0 9px"}}>Coverage by trial</h3>
   <div style={{overflowX:"auto"}}>
    <table style={{borderCollapse:"collapse",width:"100%",fontSize:13}}>
     <thead><tr>
-     {["Trial","Spreadsheet","Reviewed metrics","Awaiting review","Overall RAAS"].map(t=>
+     {["Trial","Spreadsheet","Reviewed metrics","Awaiting review","Published leads","Overall RAAS"].map(t=>
       <th key={t} scope="col" style={{textAlign:"left",padding:"8px 6px",
        borderBottom:"1px solid #bfdac7"}}>{t}</th>)}
     </tr></thead>
@@ -99,6 +123,7 @@ export default function RaasTopBottomCompletionPanel({
      <td style={{padding:"8px 6px"}}>{t.stage}</td>
      <td style={{padding:"8px 6px"}}>{t.reviewed}/30</td>
      <td style={{padding:"8px 6px"}}>{t.missing}</td>
+     <td style={{padding:"8px 6px"}}>{[...publishedByMetric.keys()].filter(k=>k.startsWith(t.nctId+"|")).length}</td>
      <td style={{padding:"8px 6px"}}>N/A · not validated</td>
     </tr>)}</tbody>
    </table>
@@ -173,6 +198,18 @@ export default function RaasTopBottomCompletionPanel({
        <p><strong>Comparator:</strong> {task.requiredIndependentBenchmark}</p>
        <p><strong>Critical risk:</strong> {task.criticalRisk}</p>
        <p><strong>Next:</strong> {task.nextAction}</p>
+       {(publishedByMetric.get(task.nctId+"|"+task.metricId)||[]).map(lead=>
+        <div key={lead.sourceUrl} data-raas-published-ungraded-lead={task.nctId+"|"+task.metricId}
+         style={{padding:"8px 0",borderTop:"1px solid #d7e8dc"}}>
+         <strong>Published clinical source · not a RAAS grade</strong>
+         <p>{lead.reportedResult}</p>
+         <p><strong>Comparator context:</strong> {lead.referenceContext}</p>
+         <p><strong>Before grading:</strong> {lead.reviewNeeded}</p>
+         <a href={lead.sourceUrl} target="_blank" rel="noopener noreferrer">
+          Open exact-trial published evidence</a>{" · "}
+         <a href={lead.referenceUrl} target="_blank" rel="noopener noreferrer">
+          Open comparator or context source</a>
+        </div>)}
        <p><a href={task.issuerDisclosureUrl} target="_blank"
         rel="noopener noreferrer">Issuer-source research starting point</a>
         {" · "}<a href={task.registrySourceUrl} target="_blank"
