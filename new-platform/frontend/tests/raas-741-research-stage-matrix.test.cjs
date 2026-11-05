@@ -13,6 +13,6 @@ test("registry results research stage is not mislabeled issuer-verified Phase3 o
  assert.equal(v.registryResearchPreview.unclassifiedWithoutPostedResults,404);
  assert.equal(v.registryResearchPreview.unclassifiedMissingFromSavedIndex,2);
  assert.equal(v.registryResearchPreview.issuerStageStillUnclassified,731);
- assert.equal(v.classifiedSourceAcceptedGrades,45);
- assert.equal(v.classifiedMissingGrades,5);
+ assert.equal(v.classifiedSourceAcceptedGrades,46);
+ assert.equal(v.classifiedMissingGrades,4);
 });

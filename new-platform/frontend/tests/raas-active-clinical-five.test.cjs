@@ -33,7 +33,7 @@ test("ten classified trials have exactly 50 active clinical slots and 26 documen
   }
  }
  assert.equal(classified.pre.length,2);assert.equal(classified.post.length,8);
- assert.equal(graded,45);assert.equal(missing,5);assert.equal(full,6);
+ assert.equal(graded,46);assert.equal(missing,4);assert.equal(full,7);
 });
 test("741 historical trials have five displayed research fields, without assuming eligible capitalization or stage",()=>{
  const csv=fs.readFileSync(path.join(root,"public/raas-741-active-five-clinical.csv"),"utf8");
@@ -49,8 +49,8 @@ test("741 historical trials have five displayed research fields, without assumin
  const status=JSON.parse(fs.readFileSync(path.join(root,"data/raas-active-741-coverage.json"),"utf8"));
  assert.equal(status.issuerStageClassifiedTrials,10);
  assert.equal(status.stageUnverifiedTrials,731);
- assert.equal(status.classifiedSourceAcceptedGrades,45);
- assert.equal(status.classifiedMissingGrades,5);
+ assert.equal(status.classifiedSourceAcceptedGrades,46);
+ assert.equal(status.classifiedMissingGrades,4);
  assert.equal(status.currentCapEligibility,"UNVERIFIED_FOR_ALL_HISTORICAL_ROWS");
 });
 test("unverified stage never produces a full clinical score, nor reinterprets missing as zero",()=>{

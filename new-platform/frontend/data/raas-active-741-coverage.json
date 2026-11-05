@@ -7,13 +7,13 @@
   "issuerStageClassifiedTrials": 10,
   "stageUnverifiedTrials": 731,
   "classifedClinicalSlotCount": 50,
-  "classifiedSourceAcceptedGrades": 45,
-  "classifiedMissingGrades": 5,
-  "completeClassifiedClinicalScores": 6,
+  "classifiedSourceAcceptedGrades": 46,
+  "classifiedMissingGrades": 4,
+  "completeClassifiedClinicalScores": 7,
   "old30MetricDataPreserved": true,
   "currentCapEligibility": "UNVERIFIED_FOR_ALL_HISTORICAL_ROWS",
   "note": "Unclassified NCTs each have five research fields available but no assumed TOP/BOTTOM stage and no overall numerical score. Financial/FDA-regulatory/commercial/investment-risk rankings are retired; FDA/PDUFA facts tracked separately.",
-  "newClinicalSourceAcceptedMetricReviews": 19,
+  "newClinicalSourceAcceptedMetricReviews": 20,
   "researchCoverageStatus": "8 newly source-assessed research factors; 5 remain missing (3 safety and 2 MLTX statistical/safety), not imputed.",
   "registryResearchPreview": {
     "sourceAsOf": "2026-11-05",
@@ -23,5 +23,27 @@
     "issuerStageStillUnclassified": 731,
     "warning": "Registry results posting is a research-only rubric cue, not proof of an issuer-announced Phase 3 readout."
   },
-  "oneRowPerTrialMatrixUrl": "/raas-741-five-clinical-score-matrix.csv"
+  "oneRowPerTrialMatrixUrl": "/raas-741-five-clinical-score-matrix.csv",
+  "remainingClassifiedClinicalGradeGaps": [
+    {
+      "nctId": "NCT06445023",
+      "metricId": "post-1-5",
+      "reason": "Sponsor reports favorable safety, but exact arm-level Phase3 adverse-event and discontinuation data for CSU1 not reported in the available release."
+    },
+    {
+      "nctId": "NCT06455202",
+      "metricId": "post-1-5",
+      "reason": "Exact Phase3 CSU2 arm-level adverse-event and discontinuation counts are unavailable in the disclosed topline."
+    },
+    {
+      "nctId": "NCT06641076",
+      "metricId": "post-1-3",
+      "reason": "IZAR-1 remains blinded; numerical placebo contrast, p-value/confidence interval and multiplicity sensitivity details not released."
+    },
+    {
+      "nctId": "NCT06641076",
+      "metricId": "post-1-5",
+      "reason": "IZAR-1 comparative treatment-arm adverse event rates and denominators remain undisclosed in topline."
+    }
+  ]
 }

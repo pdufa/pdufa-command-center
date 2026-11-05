@@ -384,7 +384,27 @@
       "criticalRiskReview": "Do not transfer GRACE benefit to GRADIENT adrenal population or treat glucose/weight secondary signals as replicated BP-primary success.",
       "reviewerMethod": "Mixed 50 for heterogeneous same-drug clinical observations; failed GRADIENT primary and absent same-etiology replicated durability are major limitations.",
       "independentReview": "AI_SOURCE_CROSSCHECKED"
+    },
+    {
+      "nctId": "NCT04308590",
+      "ticker": "CORT",
+      "drug": "relacorilant",
+      "indication": "hypercortisolism caused by cortisol-secreting adrenal adenomas or hyperplasia",
+      "stage": "post",
+      "metricId": "post-1-5",
+      "finding": "MIXED_EVIDENCE",
+      "assessedAt": "2026-11-05",
+      "sourceDate": "2025-09-04",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04308590",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+      "benchmarkId": "Direct GRADIENT placebo safety arm; GRACE is same-molecule distinct-population context only",
+      "benchmarkContext": "The direct adverse-event comparison is within GRADIENT NCT04308590: relacorilant n=68 versus placebo n=69, not a cross-trial efficacy or safety comparison. The linked GRACE source concerns another hypercortisolism population and cannot be pooled or treated as an approved medical peer comparator.",
+      "observedResult": "ClinicalTrials.gov posted GRADIENT NCT04308590 results reported treatment-emergent adverse events through week 26 in 67 of 68 relacorilant patients (98.5%) versus 60 of 69 placebo patients (87.0%). Serious-adverse-event term tables include dyspnoea 2/68 versus 0/69 and acute myocardial infarction 1/68 versus 1/69; these counts are term-level and cannot be summed as unique patients with serious events.",
+      "uncertaintyReview": "The higher frequency of any TEAE on active treatment is recorded, but treatment causality cannot be established from aggregate event counts. The published source lacks an indication-matched active-treatment peer head-to-head, full per-patient attribution and sufficiently long follow-up to exclude rare harms.",
+      "criticalRiskReview": "Cardiovascular and infection or tumor-related events require case-by-case adjudication rather than automatic attribution; earlier comparisons are not proof of long-term safety superiority. This is not an FDA safety determination.",
+      "reviewerMethod": "Source-accepted primary registry arm-level data graded mixed 50 for substantial adverse-event burden and treatment-arm imbalance with limited attribution and matched-peer evidence; historical research only.",
+      "independentReview": "AI_SOURCE_CROSSCHECKED"
     }
   ],
-  "newlyAcceptedClinicalCount": 19
+  "newlyAcceptedClinicalCount": 20
 }
