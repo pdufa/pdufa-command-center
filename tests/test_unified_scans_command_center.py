@@ -105,10 +105,10 @@ class DispatchRoutingTests(unittest.TestCase):
     def test_each_section_maps_to_a_real_specific_workflow(self):
         self.assertEqual(workflow_request("PIPELINE", "FULL"),
                          ("pdufa-individual-clinical-scan.yml", {"section": "PIPELINE", "scan_mode": "FULL"}))
-        self.assertEqual(workflow_request("GEM JR", "DELTA"),
-                         ("pdufa-individual-clinical-scan.yml", {"section": "GEM_JR", "scan_mode": "DELTA"}))
-        self.assertEqual(workflow_request("GEM", "FULL"),
-                         ("gem-research-quality.yml", {"action": "RESCAN_ALL"}))
+        with self.assertRaises(ValueError):
+            workflow_request("GEM JR", "DELTA")
+        with self.assertRaises(ValueError):
+            workflow_request("GEM", "FULL")
         for source in ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER"):
             workflow, args = workflow_request(source, "DELTA")
             self.assertEqual(workflow, "pdufa-individual-source-scan.yml")
@@ -117,7 +117,7 @@ class DispatchRoutingTests(unittest.TestCase):
                          ("pdufa-adhoc-error-check.yml", {}))
         self.assertEqual(workflow_request("SCAN ALL", "FULL"),
                          ("pdufa-overnight-sequential.yml", {
-                             "scan_mode": "FULL", "gem_action": "RESCAN_ALL"}))
+                             "scan_mode": "FULL"}))
         with self.assertRaises(ValueError):
             workflow_request("GEM; evil", "FULL")
         with self.assertRaises(ValueError):
