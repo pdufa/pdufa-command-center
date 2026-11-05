@@ -22,6 +22,8 @@ export type ClassifiedRaasComponents={
  sourceUrl:string;sourceAsOf:string;
  totalMetrics:30;gradedMetrics:number;missingMetrics:number;
  provisionalGrades:ClassifiedRaasComponentMetric[];
+ /** Research-only complete score; available only when 30 exact-source metrics exist. */
+ sourceAcceptedResearchScore:number|null;
  approvedOverallRaasScore:null;
  fdaPassCrlExtensionProbability:null;
  independentFullRaasValidation:false;
@@ -50,9 +52,8 @@ export function exactClassifiedRaasComponentGrades(
  const reviewed=fullReviewedTrialCandidate({
   nctId:row.nctId,ticker:row.ticker,
   drug:e.drug,indication:e.indication
- },stage,false);
- if(reviewed.fullResearchScore!==null||
-  reviewed.approvedOverallScore!==null)
+ },stage,true);
+ if(reviewed.approvedOverallScore!==null)
   throw Error("RAAS_CLASSIFIED_COMPONENT_NEVER_FULL_OR_APPROVED");
  const byId=new Map(reviewed.grades.map(g=>[g.metricId,g]));
  if(byId.size!==reviewed.reviewedCount)
@@ -81,6 +82,7 @@ export function exactClassifiedRaasComponentGrades(
   totalMetrics:30,gradedMetrics:reviewed.reviewedCount,
   missingMetrics:30-reviewed.reviewedCount,
   provisionalGrades:metrics,
+  sourceAcceptedResearchScore:reviewed.fullResearchScore,
   approvedOverallRaasScore:null,
   fdaPassCrlExtensionProbability:null,
   independentFullRaasValidation:false
