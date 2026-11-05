@@ -210,6 +210,8 @@ export default function Raas762ScoringWorkspace(){
    <a href="/raas-trial-score-ledger.csv" download>Export 762 rows · trial ledger (CSV)</a>
    <a href="/raas-active-phase3-source-screen.csv" download>
     Export current Phase 3 source prescreen (CSV)</a>
+   <a href="/api/raas-762-review-queue" download>
+    Export all 22,860 assigned metric review tasks (CSV)</a>
   </div>
   <div style={{display:"flex",gap:9,flexWrap:"wrap",alignItems:"end",margin:"18px 0"}}>
    <label style={{display:"flex",flexDirection:"column",gap:4,fontSize:12}}>
