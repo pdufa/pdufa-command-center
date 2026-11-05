@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_FORECAST_FREEZE_RECEIPTS_UNAUTHENTICATED_INTAKE",
+  "note": "Append-only public metadata references only. Do not commit confidential signed documents, private reviewer identities or raw records. No forecasts have been submitted or independently validated. A source checksum and apparent timestamp do not authenticate a past freeze. Original-goal chronology and exact FDA review cycle must be independently verified before inclusion in accuracy metrics.",
+  "records": []
+}
