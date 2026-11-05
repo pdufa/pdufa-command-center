@@ -14,6 +14,8 @@ import {currentRaasFdaOriginalGoalOutcomeAudit}
  from "../../lib/raas-fda-original-goal-outcome-audit";
 import {currentRaasFdaThreeWayResearchScorecard}
  from "../../lib/raas-fda-three-way-research-scorecard";
+import {currentRaasFdaDocumentedOtherCycleExclusions}
+ from "../../lib/raas-fda-public-other-cycle-review";
 
 export const metadata:Metadata={
  title:"RAAS Predictions — FDA PASS / CRL / EXTENSION | PDUFA",
@@ -27,6 +29,8 @@ const receiptAudit=currentRaasFdaForecastFreezeReceiptAudit();
 const originalGoalAudit=currentRaasFdaOriginalGoalOutcomeAudit();
 const outcomeCaseByKey=new Map(originalGoalAudit.cases.map(x=>[x.caseKey,x]));
 const threeWayScorecard=currentRaasFdaThreeWayResearchScorecard();
+const knownOtherCycleAudit=currentRaasFdaDocumentedOtherCycleExclusions();
+const otherCycleByCase=new Map(knownOtherCycleAudit.records.map(r=>[r.caseKey,r]));
 const panel={border:"1px solid #c6d7cc",background:"#fff",borderRadius:10,padding:"14px"} as const;
 const muted={fontSize:13,color:"#455c50",lineHeight:1.5} as const;
 const stats={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:10,margin:"15px 0"} as const;
@@ -124,6 +128,42 @@ export default function PredictionsPage(){
     No website entry, unsigned template, or recorded checksum proves a
     historical prediction was actually published before a decision.
    </p>
+  </section>
+  <section style={{...panel,marginBottom:15}}
+   data-raas-fda-historical-other-cycle-source-guards="REVIEW_REQUIRED">
+   <h2>FDA historical approval vs. pending review · source safeguards</h2>
+   <p style={muted}>
+    FDA public product records document earlier approvals for two drugs, but
+    those approvals relate to a different indication or an earlier original
+    NDA cycle. Do not record them as PASS for the upcoming original-goal
+    CYTK MAPLE-HCM or CORT Cushing’s review.
+   </p>
+   <div style={stats}>
+    <Fact value={knownOtherCycleAudit.documentedOtherCycleExclusions}
+     label="Historical FDA application records excluded as current outcomes"/>
+    <Fact value={knownOtherCycleAudit.independentlyMatchedCurrentReviewCycles}
+     label="Exact pending review cycles independently confirmed"/>
+   </div>
+   {knownOtherCycleAudit.records.map(x=><details key={x.caseKey}
+    data-raas-fda-other-cycle-document-guard={x.caseKey}
+    style={{border:"1px solid #d5e4da",borderRadius:8,padding:"11px",marginBottom:9}}>
+    <summary style={{cursor:"pointer",fontWeight:700}}>
+     {x.ticker} · {x.publiclyIndexedApplicationNumber} · historical FDA action
+     {" "}is NOT a current-cycle decision
+    </summary>
+    <p><strong>Historical approved use:</strong> {x.publicHistoricalIndication}</p>
+    <p><strong>Historical FDA action:</strong> {x.historicalFdaActionDate}</p>
+    <p><strong>Upcoming cycle to verify:</strong> {x.researchTargetCycle};
+     {" "}original goal {x.originalFirstGoalDate}.</p>
+    <p>{x.distinction}</p>
+    <p style={muted}><a href={x.historicalFdaSourceUrl}
+     target="_blank" rel="noopener noreferrer">FDA historical approval source</a>
+     {" · "}<a href={x.targetCycleIssuerSourceUrl}
+      target="_blank" rel="noopener noreferrer">
+      Separate upcoming-cycle issuer disclosure</a></p>
+    <p style={muted}>Current-cycle PASS / CRL / EXTENSION: not independently
+     adjudicated. No authenticated RAAS forecast or trading signal.</p>
+   </details>)}
   </section>
   <section style={{...panel,marginBottom:15}}
    data-raas-fda-original-goal-outcome-audit="UNADJUDICATED">
@@ -239,6 +279,12 @@ export default function PredictionsPage(){
          {" "}Even a sourced candidate cannot automatically validate an FDA
          action or previously unsigned RAAS forecast.</p>
        </div>}
+       {otherCycleByCase.has(r.key)&&<p
+        data-raas-fda-per-case-other-cycle-exclusion={r.key}>
+        <strong>FDA unrelated prior/other-indication approval detected:</strong>{" "}
+        {otherCycleByCase.get(r.key)!.publiclyIndexedApplicationNumber} is not
+        proof of this PDUFA review cycle or its outcome.
+       </p>}
        <p><strong>Blockers and why RAAS abstains:</strong></p>
        <ul style={{paddingLeft:22}}>{r.blockers.map(b=><li key={b} style={{marginBottom:5}}>{b}</li>)}</ul>
        <p style={muted}><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">Original application or deadline disclosure</a>
