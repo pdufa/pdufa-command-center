@@ -107,6 +107,9 @@ export default function ReviewQueueClient({queue}:{queue:RaasIndependentReviewQu
      <p style={{margin:0}}><strong>Critical risk:</strong> {x.criticalRiskReview}</p>
      <p style={{margin:0}}><strong>Original research method:</strong> {x.reviewerMethod}</p>
      <div style={{display:"flex",flexWrap:"wrap",gap:14}}>
+      <a href={"/api/raas-independent-review-packet?"+new URLSearchParams({task:x.id}).toString()}
+       download data-raas-source-frozen-packet={x.id}
+       style={{fontWeight:750}}>Download source-frozen unsigned review packet (JSON)</a>
       <a href={x.sourceUrl} target="_blank" rel="noopener noreferrer">Primary evidence</a>
       <a href={x.benchmarkSourceUrl} target="_blank" rel="noopener noreferrer">Independent benchmark</a>
       <a href={"https://clinicaltrials.gov/study/"+x.nctId}
@@ -127,6 +130,12 @@ export default function ReviewQueueClient({queue}:{queue:RaasIndependentReviewQu
        <li>Attach an attributable independent reviewer identity, signed date, source references and conflict-of-interest declaration before any approval request.</li>
        <li>Validate full 30/30 stage evidence and holdout calibration separately; retain no FDA PASS/CRL/EXTENSION probability until independent prospective validation.</li>
       </ol>
+      <p><strong>Reviewer packet handoff:</strong> download the evidence-frozen JSON,
+       complete the unsigned receipt template and have an external reviewer provide
+       an attributable signed document in a restricted archive. A receipt submitted through
+       a reviewed repository change remains unverified until identity, independence,
+       signature and scientific conclusions are independently adjudicated.
+       Do not publish personal contact details or signed documents to GitHub.</p>
       <p><strong>Current status:</strong> {x.reviewState.replaceAll("_"," ").toLowerCase()}.
        This read-only page cannot approve scores or capture signatures. Signed reviews must
        be reconciled into the authoritative metric ledger with a separate audit trail.</p>
