@@ -14,7 +14,10 @@ from pathlib import Path
 import re
 import sys
 
-from telegram_scan_alert import main as send_telegram
+if __package__:
+    from .telegram_scan_alert import main as send_telegram
+else:
+    from telegram_scan_alert import main as send_telegram
 
 SCOPE = "RAAS_NIGHTLY_FDA_THREE_WAY_EVIDENCE_READINESS_RESEARCH_ONLY"
 COMPARED = "COMPARED_SAVED_SOURCE_AND_INTAKE_METADATA_ONLY"
