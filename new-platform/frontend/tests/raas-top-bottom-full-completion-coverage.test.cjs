@@ -28,6 +28,8 @@ test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 16 rated, 284
  assert.equal(s.allMetricSlots,300);
  assert.equal(s.provisionalMetricGrades,16);
  assert.equal(s.missingMetricGrades,284);
+ assert.equal(s.publishedUngradedMetricLeads,4);
+ assert.equal(s.missingWithoutPublishedMetricLead,280);
  assert.equal(s.independentFullScores,0);
  assert.equal(s.calibratedFdaProbabilities,0);
  assert.equal(s.gradingSetupReady,true);
@@ -104,6 +106,7 @@ test("iPhone TOP/BOTTOM UI shows full coverage and exports without scoring the u
  assert.match(panel,/data-raas-top-bottom-metric-completion/);
  assert.match(panel,/data-raas-missing-review-csv/);
  assert.match(panel,/data-raas-all-150-score-status-csv/);
+ assert.match(panel,/data-raas-independent-review-handoff/);
  assert.match(panel,/data-raas-missing-tasks-expand/);
  assert.match(panel,/source-backed|source-classified|source review/i);
  assert.match(panel,/showAll\|\|t\.numericProvisionalGrade===null/);
@@ -148,4 +151,27 @@ test("published clinical primary-study leads are exact classified NCT metric res
  assert.ok(panel.includes("lead.approvedNumericGrade!==null"));
  assert.match(panel,/data-raas-published-ungraded-lead/);
  assert.match(panel,/Published clinical source · not a RAAS grade/);
+});
+
+test("external human reviewer handoff contains all 300 exact-NCT metrics with four ungraded published leads",()=>{
+ const result=build(classified);
+ const csv=result.independentReviewHandoffCsv;
+ const rows=csv.trimEnd().split("\\r\\n");
+ assert.equal(rows.length,301);
+ assert.match(rows[0],/signatureOrAuditReceiptId/);
+ assert.match(rows[0],/reviewerIdentity/);
+ assert.match(rows[0],/independentlyAdjudicatedMetricGrade/);
+ assert.equal(rows.filter(x=>x.includes("PROVISIONAL_NOT_INDEPENDENTLY_VERIFIED")).length,16);
+ assert.equal(rows.filter(x=>x.includes("PUBLISHED_UNGRADED_LEAD")).length,4);
+ assert.equal(rows.filter(x=>x.includes("UNSCORED_MISSING_EVIDENCE")).length,280);
+ assert.equal(rows.filter(x=>x.includes("2_REVIEW_PUBLISHED_SOURCE")).length,4);
+ assert.match(csv,/NCT05186818/);
+ assert.match(csv,/pubmed\.ncbi\.nlm\.nih\.gov\/38739079/);
+ assert.match(csv,/NCT03697109/);
+ assert.match(csv,/41730814/);
+ assert.doesNotMatch(csv,/CERTIFIED_INDEPENDENT_APPROVED/);
+ // Every reviewer decision/identity/receipt remains intentionally blank.
+ for(const row of rows.slice(1)){
+  assert.match(row,/,{9}$/, "No prefilled human reviewer attestation");
+ }
 });
