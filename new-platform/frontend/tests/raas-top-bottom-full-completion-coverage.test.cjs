@@ -175,3 +175,35 @@ test("external human reviewer handoff contains all 300 exact-NCT metrics with th
   assert.match(row,/,{9}$/, "No prefilled human reviewer attestation");
  }
 });
+
+test("GRACE peer-reviewed efficacy mixed grade is one provisional BOTTOM component, with matching research exports",()=>{
+ const feed=JSON.parse(sourceText("data/raas-reviewed-metric-assessments.json"));
+ const grade=feed.records.filter(x=>x.nctId==="NCT03697109"&&x.metricId==="post-1-1");
+ assert.equal(grade.length,1);
+ assert.equal(grade[0].finding,"MIXED_EVIDENCE");
+ assert.equal(grade[0].independentReview,"AI_SOURCE_CROSSCHECKED");
+ assert.equal(grade[0].sourceUrl,"https://pubmed.ncbi.nlm.nih.gov/41730814/");
+ assert.notEqual(grade[0].sourceUrl,grade[0].benchmarkSourceUrl);
+ const completion=build(classified);
+ const trial=completion.trials.find(x=>x.nctId==="NCT03697109");
+ assert.ok(trial);
+ assert.equal(trial.reviewed,1);
+ assert.equal(trial.missing,29);
+ assert.equal(trial.approvedOverallScore,null);
+ const task=completion.tasks.find(x=>x.nctId==="NCT03697109"&&x.metricId==="post-1-1");
+ assert.equal(task.numericProvisionalGrade,50);
+ assert.equal(task.independentValidationStatus,"NOT_COMPLETED");
+ const stageCsv=sourceText("public/raas-all-trials-partial-metric-ratings.csv").trimEnd().split(/\\r?\\n/);
+ const post=stageCsv.filter(x=>x.startsWith("NCT03697109,CORT,")&&x.includes(",POST_RESEARCH_ONLY,"));
+ assert.equal(post.length,1);
+ const cells=post[0].split(",");
+ assert.equal(cells[7],"1");assert.equal(cells[8],"1");
+ assert.equal(cells[14],"post-1-1:50");assert.equal(cells[15],"29");
+ assert.equal(cells[16],"");assert.equal(cells[17],"");
+ const ledger=sourceText("public/raas-trial-score-ledger.csv").trimEnd().split(/\\r?\\n/);
+ const record=ledger.filter(x=>x.startsWith("NCT03697109,CORT,"));
+ assert.equal(record.length,1);
+ assert.equal(record[0].split(",")[14],"1");
+ assert.equal(record[0].split(",")[17],"");
+ assert.equal(record[0].split(",")[18],"INCOMPLETE_30_METRIC_INDEPENDENT_REVIEW");
+});
