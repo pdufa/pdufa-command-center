@@ -1,25 +1,25 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-04T04:21:02.737773+00:00",
+  "started_at": "2026-11-05T04:21:24.193765+00:00",
   "registry_companies": 717,
   "pages": 4,
-  "studies_checked": 3964,
-  "matched_posted_results": 103,
+  "studies_checked": 3982,
+  "matched_posted_results": 99,
   "new_records": 1,
   "new_record_details": [
     {
-      "ticker": "APMD",
-      "drug": "AD109 | Placebo",
-      "nct_id": "NCT05811247",
-      "results_posted_at": "2026-11-03",
-      "source_url": "https://clinicaltrials.gov/study/NCT05811247",
+      "ticker": "NVO",
+      "drug": "KBP-5074 | Placebo",
+      "nct_id": "NCT04968184",
+      "results_posted_at": "2026-11-04",
+      "source_url": "https://clinicaltrials.gov/study/NCT04968184",
       "verification_status": "DRUG_IDENTITY_REVIEW"
     }
   ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-04T04:21:15.650839+00:00",
-  "stored_results": 2496,
+  "finished_at": "2026-11-05T04:21:29.858655+00:00",
+  "stored_results": 2497,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
