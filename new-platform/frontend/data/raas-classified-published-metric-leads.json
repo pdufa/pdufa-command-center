@@ -2,52 +2,6 @@
   "schemaVersion": 1,
   "scope": "RAAS_EXACT_CLASSIFIED_PUBLISHED_CLINICAL_EVIDENCE_LEADS_UNGRADED",
   "reviewedAsOf": "2026-11-05",
-  "warning": "Exact-NCT published observations are research leads only, not independent metric assessments or valid 0-100 grades, FDA probabilities, or a matched peer efficacy ranking. Do not infer clinical benefit from p values alone. The previously ungraded GRACE post-1-1 lead is now tracked in the 2026-11-05 AI source-crosschecked provisional metric feed (NOT independently validated).",
-  "records": [
-    {
-      "nctId": "NCT05186818",
-      "ticker": "CYTK",
-      "stage": "BOTTOM",
-      "drug": "aficamten",
-      "metricId": "post-1-1",
-      "sourceType": "PEER_REVIEWED_PRIMARY_TRIAL",
-      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38739079/",
-      "sourceTitle": "SEQUOIA-HCM primary randomized Phase 3 publication",
-      "reportedResult": "282 randomized; 24-week peak oxygen uptake least-squares mean placebo-adjusted difference +1.7 mL/kg/min; 95% CI +1.0 to +2.4; P<0.001.",
-      "referenceUrl": "https://pubmed.ncbi.nlm.nih.gov/42624353/",
-      "referenceContext": "Later anchor-based clinical-importance analysis includes SEQUOIA-HCM and MAPLE-HCM, but a patient-level minimal important change cannot be treated as a calibrated RAAS benchmark or historical forecast.",
-      "reviewNeeded": "Recheck endpoint prespecification and SAP, estimate clinical relevance, inspect missing data, subgroup interactions and safety; lock an independent comparator before any provisional grade.",
-      "approvedNumericGrade": null
-    },
-    {
-      "nctId": "NCT05186818",
-      "ticker": "CYTK",
-      "stage": "BOTTOM",
-      "drug": "aficamten",
-      "metricId": "post-1-2",
-      "sourceType": "PEER_REVIEWED_P3_PATIENT_REPORTED_OUTCOMES",
-      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39217569/",
-      "sourceTitle": "SEQUOIA-HCM KCCQ and health status results",
-      "reportedResult": "282 randomized; at 24 weeks placebo-adjusted KCCQ-OSS mean difference +7.9 points, 95% CI +4.8 to +11.0, P<0.001; 29.7% on aficamten versus 12.4% placebo had >=20-point improvement.",
-      "referenceUrl": "https://pubmed.ncbi.nlm.nih.gov/39546393/",
-      "referenceContext": "An independent patient-level meta-analysis notes group-mean KCCQ differences and individual minimal-important-change thresholds require care; do not infer individual response from group means alone.",
-      "reviewNeeded": "Verify analysis population and missing PRO data, the clinical meaning of the group effect and trial-specific KCCQ interpretation. No automatic grade based on a single threshold.",
-      "approvedNumericGrade": null
-    },
-    {
-      "nctId": "NCT05767346",
-      "ticker": "CYTK",
-      "stage": "BOTTOM",
-      "drug": "aficamten",
-      "metricId": "post-1-1",
-      "sourceType": "PEER_REVIEWED_PRIMARY_TRIAL",
-      "sourceUrl": "https://www.nejm.org/doi/10.1056/NEJMoa2504654",
-      "sourceTitle": "MAPLE-HCM randomized aficamten versus metoprolol Phase 3 results",
-      "reportedResult": "175 randomized; 24-week peak oxygen uptake between-group difference +2.3 mL/kg/min (95% CI +1.5 to +3.1), P<0.001, versus metoprolol.",
-      "referenceUrl": "https://pubmed.ncbi.nlm.nih.gov/38739079/",
-      "referenceContext": "SEQUOIA-HCM is a separate placebo-controlled trial of the same therapy and obstructive HCM but is not a head-to-head comparison of the MAPLE active control or a calibrated effect-size cutoff.",
-      "reviewNeeded": "Reconcile MAPLE protocol, active comparator, missing data, multiplicity and safety; avoid pooling placebo and metoprolol controls as equivalent.",
-      "approvedNumericGrade": null
-    }
-  ]
+  "warning": "All three original direct clinical evidence leads were source-accepted and assessed under RAAS provisional research rubric as of 2026-11-05. No ungraded direct evidence leads currently tracked here. Source acceptance does not certify FDA forecasts or validate full RAAS composites.",
+  "records": []
 }
