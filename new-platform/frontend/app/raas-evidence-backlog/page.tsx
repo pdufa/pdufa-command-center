@@ -25,6 +25,14 @@ export default function RaasEvidenceBacklogPage(){
    Every unknown metric stays ungraded until a same-program primary source,
    independent benchmark and source-date review are recorded.
   </p>
+  <p className={css.notice} style={{marginTop:18}}>
+   <strong>Nightly source revisions:</strong> The dedicated change-history
+   monitor distinguishes new posted results, revised primary or safety
+   evidence, and administrative registry updates, with exact NCT source
+   hashes and manual-review flags.
+   {" "}<Link href="/raas-evidence-changes">Open the source change history</Link>.
+   Source changes never auto-update RAAS grades or historical predictions.
+  </p>
   <EvidenceBacklogClient/>
   <p className={css.foot} style={{marginTop:25}}>
    <Link href="/raas-review-queue">Review existing 82 independently pending metric packets</Link>.
