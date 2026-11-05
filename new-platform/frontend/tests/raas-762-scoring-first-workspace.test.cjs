@@ -68,10 +68,13 @@ test("the primary scoring route and tools index put the 762 rows first",()=>{
  assert.match(scan,/href="\/raas-762"/);
  assert.match(client,/data-raas-762-scoring-workspace/);
  assert.match(client,/loadRegistryEvidenceIndex/);
- assert.match(client,/RaasMetricGradebook row=\{x\.trial\} bucket=\{null\}/);
+ assert.match(client,/RaasMetricGradebook row=\{x\.trial\} bucket=\{null\} researchStageOnly=\{x\.stage\}/);
  assert.match(client,/RaasTrialHistoryButton row=\{x\.trial\} bucket=\{null\}/);
  assert.match(client,/PAGE_SIZE=50/);
  assert.match(client,/records\.length!==762/);
+ assert.match(client,/const stage=x\.postedResults\?"post":"pre"/);
+ assert.match(client,/remaining:30-reviewed/);
+ assert.match(client,/rows\.length\*30/);
  assert.match(client,/Not validated/);
  assert.match(client,/N\/A · never 0\/100/);
  for(const file of ["app/raas-762/page.tsx","app/Raas762ScoringWorkspace.tsx",
