@@ -14,7 +14,10 @@ import re
 import sys
 import urllib.request
 
-from telegram_scan_alert import main as notify
+if __package__:
+    from .telegram_scan_alert import main as notify
+else:
+    from telegram_scan_alert import main as notify
 
 REPO = "pdufa/pdufa-command-center"
 API = "https://api.github.com/repos/" + REPO + "/actions/runs?per_page=100&page="
