@@ -29,10 +29,11 @@ export type WorksheetPreflight={
  approvedRaasScores:0;calibratedFdaPredictions:0;
  issues:WorksheetIssue[];metrics:WorksheetMetricPreflight[];
 };
+function escapedSheetText(str:string):string{
+ return /^\s*[=+@-]/.test(str)?"'"+str:str;
+}
 function safeCell(value:unknown):string{
- const str=String(value??"");
- const safe=/^\s*[=+@-]/.test(str)?"'"+str:str;
- return '"'+safe.replaceAll('"','""')+'"';
+ return '"'+escapedSheetText(String(value??"")).replaceAll('"','""')+'"';
 }
 export function expectedReviewerRows(dossier:TrialMetricReviewDossier):string[][]{
  const rows=(["pre","post"] as const).flatMap(stage=>
@@ -133,7 +134,7 @@ export function auditReviewerWorksheetCsv(
   receivedIds.add(rawId);
   if(canonical&&row.length===headings.length){
    for(let i=0;i<headings.length;i++){
-    if(!EDITABLE_REVIEW_COLUMNS.has(i)&&row[i]!==canonical[i]){
+    if(!EDITABLE_REVIEW_COLUMNS.has(i)&&row[i]!==escapedSheetText(canonical[i])){
      addIssue(problems,metricId,"SOURCE_OR_CATALOG_MODIFIED",
       "Protected value changed: "+headings[i]+". Redownload the exact trial worksheet.");
     }
