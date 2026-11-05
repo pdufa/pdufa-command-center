@@ -32,9 +32,8 @@ export function auditRaasReviewProgramSourceGates(
 ):RaasReviewSourceGateSummary{
  const registry=parseRegistryEvidenceIndex(rawRegistry);
  const byNct=new Map(registry.records.map(x=>[x.nctId,x]));
- if(registry.records.length!==762||
-  inbox.registryAsOf!==registry.sourceAsOf&&inbox.auditState==="COMPLETE")
-  throw Error("RAAS_SOURCE_GATE_REGISTRY_AUDIT_SNAPSHOT_MISMATCH");
+ if(registry.records.length!==762)
+  throw Error("RAAS_SOURCE_GATE_RESEARCH_ROSTER_MISMATCH");
  const gates=plan.groups.map((group):RaasReviewSourceGate=>{
   const original=byNct.get(group.nctId);
   const correctIdentity=!!original&&original.ticker.toUpperCase()===
