@@ -14,32 +14,34 @@ const census=fs.readFileSync(path.join(root,"public/phase3-census-2026-10-26.csv
 const evidence=JSON.parse(fs.readFileSync(path.join(root,
  "public/phase3-public-readout-evidence-2026-11-01.json"),"utf8"));
 const classified=classifyPhase3Readouts(evidence,parsePhase3CensusCsv(census).rows);
-test("all five exact TOP/BOTTOM NCTs reconcile 150 metric statuses: 16 rated, 134 absent",()=>{
+test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 16 rated, 284 absent",()=>{
  const result=build(classified),s=result.summary;
  assert.equal(s.scoredScope,"SOURCE_CLASSIFIED_TOP_BOTTOM_ONLY");
  assert.equal(s.researchSourceCensus,741);
- assert.equal(s.unclassifiedResearchRows,736);
- assert.equal(s.classifiedTrialRows,5);
+ assert.equal(s.unclassifiedResearchRows,731);
+ assert.equal(s.classifiedTrialRows,10);
  assert.equal(s.topTrials,2);
- assert.equal(s.bottomTrials,3);
+ assert.equal(s.bottomTrials,8);
  assert.equal(s.topMetricSlots,60);
- assert.equal(s.bottomMetricSlots,90);
- assert.equal(s.allMetricSlots,150);
+ assert.equal(s.bottomMetricSlots,240);
+ assert.equal(s.allMetricSlots,300);
  assert.equal(s.provisionalMetricGrades,16);
- assert.equal(s.missingMetricGrades,134);
+ assert.equal(s.missingMetricGrades,284);
  assert.equal(s.independentFullScores,0);
  assert.equal(s.calibratedFdaProbabilities,0);
  assert.equal(s.gradingSetupReady,true);
  assert.equal(s.allNumericGradesFinished,false);
- assert.equal(result.tasks.length,150);
- assert.equal(result.trials.length,5);
+ assert.equal(result.tasks.length,300);
+ assert.equal(result.trials.length,10);
  assert.deepEqual(Object.fromEntries(result.trials.map(x=>[x.nctId,[x.reviewed,x.missing]])),{
   NCT06445023:[3,27],NCT06455202:[3,27],
-  NCT06641076:[0,30],NCT07363577:[5,25],NCT07671911:[5,25]
+  NCT06641076:[0,30],NCT07363577:[5,25],NCT07671911:[5,25],
+  NCT05186818:[0,30],NCT05767346:[0,30],NCT06081894:[0,30],
+  NCT03697109:[0,30],NCT04308590:[0,30]
  });
- assert.equal(new Set(result.tasks.map(t=>t.nctId+"|"+t.stage+"|"+t.metricId)).size,150);
+ assert.equal(new Set(result.tasks.map(t=>t.nctId+"|"+t.stage+"|"+t.metricId)).size,300);
  assert.equal(result.tasks.filter(x=>x.status==="SOURCE_CHECKED_PROVISIONAL_ONLY").length,16);
- assert.equal(result.tasks.filter(x=>x.status==="NO_SOURCE_REVIEWED_GRADE").length,134);
+ assert.equal(result.tasks.filter(x=>x.status==="NO_SOURCE_REVIEWED_GRADE").length,284);
  assert.ok(result.tasks.every(t=>t.independentValidationStatus==="NOT_COMPLETED"&&
   t.approvedOverallScore===null&&t.calibratedFdaApprovalProbability===null));
 });
@@ -67,8 +69,8 @@ test("each missing source task carries exact-trial issuer, registry, metric comp
  assert.ok(reviewed.every(x=>x.reviewedComparatorSourceUrl?.startsWith("https://")));
  const all=plan.allCsv.trimEnd().split("\r\n");
  const missing=plan.missingOnlyCsv.trimEnd().split("\r\n");
- assert.equal(all.length,151);
- assert.equal(missing.length,135);
+ assert.equal(all.length,301);
+ assert.equal(missing.length,285);
  assert.equal(missing[0],all[0]);
  assert.ok(missing.slice(1).every(x=>x.includes("NO_SOURCE_REVIEWED_GRADE")));
  assert.ok(!plan.allCsv.includes("NCT00000000"));
