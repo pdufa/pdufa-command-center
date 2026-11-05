@@ -98,8 +98,8 @@ function buildIndependentReviewHandoffCsv(
    task.numericProvisionalGrade!==null||lead.approvedNumericGrade!==null||
    task.ticker!==lead.ticker||task.stage!==lead.stage||
    row.evidence.drug!==lead.drug||
-   !/^https:\/\/[^\\s]+$/.test(lead.sourceUrl)||
-   !/^https:\/\/[^\\s]+$/.test(lead.referenceUrl)||
+   !/^https:\/\/[^\s]+$/.test(lead.sourceUrl)||
+   !/^https:\/\/[^\s]+$/.test(lead.referenceUrl)||
    !lead.reportedResult||!lead.reviewNeeded)
    throw Error("RAAS_REVIEW_HANDOFF_SOURCE_CROSSWALK_FAILED");
   sourceMap.set(key,lead);
@@ -143,7 +143,7 @@ function buildIndependentReviewHandoffCsv(
   if(values.length!==fields.length)throw Error("RAAS_REVIEW_HANDOFF_COLUMN_MISMATCH");
   csv.push(csvRow(values));
  }
- return {csv:csv.join("\\r\\n")+"\\r\\n",
+ return {csv:csv.join("\r\n")+"\r\n",
   publishedLeads:sourceMap.size,missingWithoutLead};
 }
 
