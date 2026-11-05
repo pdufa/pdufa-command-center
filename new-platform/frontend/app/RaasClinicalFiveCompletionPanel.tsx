@@ -48,6 +48,14 @@ export default function RaasClinicalFiveCompletionPanel({data}:{
   </p>
   <p style={{fontSize:13}}><a href="/raas-741-active-five-clinical.csv" download
    style={{fontWeight:700,color:"#145e37",textDecoration:"underline"}}>Download all 741 historical trials · five clinical assessment fields each (CSV)</a></p>
+  <p style={{fontSize:13}}>
+   <a href="/raas-741-five-clinical-score-matrix.csv" download
+    style={{fontWeight:750,color:"#145e37",textDecoration:"underline"}}>
+    Download 741-trial matrix · five clinical score columns (CSV)
+   </a>
+   {" · "}Registry-posting research-stage previews are labeled separately
+   from verified issuer TOP/BOTTOM classifications. Missing scores remain blank.
+  </p>
   <div style={{display:"flex",gap:15,flexWrap:"wrap",fontSize:13,margin:"12px 0"}}>
    <strong>{report.cells.length} classified clinical slots</strong>
    <strong>{report.graded} graded</strong><strong>{report.missing} N/A</strong>
