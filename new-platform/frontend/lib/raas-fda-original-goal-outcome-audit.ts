@@ -129,7 +129,7 @@ export function auditRaasFdaOriginalGoalOutcomes(
     blockers.push("INVALID_ACTION_OR_EVIDENCE_TIMING");
    else {
     if(r.claimedActionEffectiveDate>r.sourcePublishedDate||
-       r.sourcePublishedDate>r.capturedAt.slice(0,10))
+       Date.parse(r.capturedAt)<Date.parse(r.sourcePublishedDate+"T00:00:00Z"))
      blockers.push("ACTION_SOURCE_OR_CAPTURE_CHRONOLOGY_INCONSISTENT");
     if(r.claimedActionEffectiveDate>item.originalFirstGoalDate)
      blockers.push("AFTER_ORIGINAL_GOAL_ACTION_NOT_AUTOMATIC_ORIGINAL_DISPOSITION");
