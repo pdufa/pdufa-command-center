@@ -1,5 +1,5 @@
 import type {Phase3CensusTrial} from "./phase3-census-rows";
-import addedSource from "../data/phase3_issuer_readout_additions_2026-11-05.json";
+import * as addedSource from "../data/phase3_issuer_readout_additions_2026-11-05.json";
 
 /** Exact-NCT, dated release evidence. Registry results postings do not enter this gate. */
 export type ReadoutKind="PRE_AS_OF_CHECK"|"POST_PUBLIC_READOUT";
@@ -48,7 +48,8 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
   const provenance=addedSource.records;
   const expectedCrosswalk=new Map(provenance.map(x=>[x.nctId,x]));
   if(hasManualReview&&
-     (addedSource.schemaVersion!==1||
+     (entries.length!==10||
+      addedSource.schemaVersion!==1||
       addedSource.scope!=="RAAS_PHASE3_ISSUER_AND_REGISTRY_DUAL_SOURCE_READOUT_CROSSWALK_RESEARCH_ONLY"||
       addedSource.classifiedIssuerEvidenceSnapshotAsOf!==sourceAsOf||
       expectedCrosswalk.size!==5||
