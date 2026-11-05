@@ -88,7 +88,7 @@ test("unfilled source intake truthfully contains no numerical reviewed composite
  assert.equal(result.fullResearchScore,null);
  assert.equal(result.missingMetricIds.length,30);
 });
-test("AI source crosschecks do not count as independent 30-of-30 reviews even when all 30 have grades",()=>{
+test("complete research score from all 30 documented metrics remains unvalidated",()=>{
  const feed=makeFeed("post");
  const ai=parseReviewedMetricFeed({...feed,records:feed.records.map(r=>({
   ...r,independentReview:"AI_SOURCE_CROSSCHECKED",
@@ -98,7 +98,7 @@ test("AI source crosschecks do not count as independent 30-of-30 reviews even wh
  assert.equal(result.reviewedCount,30);
  assert.equal(result.aiCrosscheckedCount,30);
  assert.equal(result.independentReviewedCount,0);
- assert.equal(result.fullResearchScore,null);
+ assert.ok(Number.isFinite(result.fullResearchScore));
  assert.equal(result.approvedOverallScore,null);
 });
 test("live exact-trial Celldex source checks contain six provisional grades and zero human independent reviews",()=>{
