@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "activeRaasVersion": "CLINICAL_FIVE_2026_11_05",
+  "effectiveDate": "2026-11-05",
+  "activeFactorCount": 5,
+  "activeFactors": [
+    "efficacy",
+    "clinicalBenefit",
+    "statistics",
+    "reproducibility",
+    "safety"
+  ],
+  "removedFromActiveRankings": [
+    "financial-valuation",
+    "fda-regulatory",
+    "commercial",
+    "investment-risk",
+    "liquidity-and-trading"
+  ],
+  "historicalMetricFeed": "ARCHIVED_READ_ONLY_RESEARCH_PROVENANCE",
+  "historicalDataDeleted": false,
+  "missingScorePolicy": "N_A_NO_IMPUTATION",
+  "activeScoreRequirement": "FIVE_EXACT_TRIAL_STAGE_REVIEWED_SCIENTIFIC_FACTORS",
+  "stageUnverifiedPolicy": "SHOW_FIVE_RESEARCH_QUESTIONS_NO_OVERALL_SCORE",
+  "fdaPdufaTracking": "PRESERVE_FACTUAL_DATES_AND_OUTCOMES_NOT_RATING_INPUTS",
+  "predictionCalibration": "SEPARATE_NOT_CLAIMED"
+}
