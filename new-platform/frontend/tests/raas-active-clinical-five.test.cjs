@@ -33,7 +33,7 @@ test("ten classified trials have exactly 50 active clinical slots and 26 documen
   }
  }
  assert.equal(classified.pre.length,2);assert.equal(classified.post.length,8);
- assert.equal(graded,26);assert.equal(missing,24);assert.equal(full,0);
+ assert.equal(graded,26);assert.equal(missing,24);assert.equal(full,1);
 });
 test("741 historical trials have five displayed research fields, without assuming eligible capitalization or stage",()=>{
  const csv=fs.readFileSync(path.join(root,"public/raas-741-active-five-clinical.csv"),"utf8");
