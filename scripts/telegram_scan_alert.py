@@ -51,7 +51,7 @@ def main(argv=None):
     chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
     if not token or not chat_id:
         print("::warning::Telegram not configured; set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID as GitHub Actions secrets.")
-        return 0  # Must never block the clinical or RAAS data pipeline.
+        return 1 if args.event == "test" else 0  # Manual test fails, scans never block.
     data = json.dumps({"chat_id": chat_id, "text": msg, "disable_web_page_preview": True}).encode("utf-8")
     req = urllib.request.Request(
         "https://api.telegram.org/bot" + token + "/sendMessage",
