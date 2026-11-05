@@ -21,6 +21,7 @@ export default function TrialPrimaryArmReconciliations({
     the original ClinicalTrials.gov <strong>OG</strong> outcome group names
     and numbers. Where applicable, we show the numerical first-arm-minus-second-arm
     difference alongside the reported estimate, allowing either effect direction.
+    Source rows with repeated OG IDs are <strong>not reduced to the final row</strong>.
     Mismatch is only a <strong>review signal</strong>: adjusted models, time points,
     differing estimands, and rounding can explain differences. No automatic
     efficacy judgment, treatment ranking, statistical conclusion or RAAS score.</p>
@@ -39,7 +40,10 @@ export default function TrialPrimaryArmReconciliations({
      unit: {x.outcomeUnit||"unspecified"}</div>
     {x.groupIds.map((g,i)=><div key={g}>
      <strong>{g}</strong> · {x.groupNames[i]} ·
-     source arm measurement {pretty(x.groupValues[i])} {x.outcomeUnit}
+     {x.groupMeasurementSeries[i]?.length>1?
+      "multiple source rows ("+x.groupMeasurementSeries[i].join(", ")+
+       ") — time point/category not retained in compact index":
+      "source arm measurement "+pretty(x.groupValues[i])+" "+x.outcomeUnit}
     </div>)}
     <div>Reported statistic: {x.reportedStatisticType||"not identified"}
      {" "}· {x.reportedStatisticRaw||"not numeric"}
@@ -51,7 +55,14 @@ export default function TrialPrimaryArmReconciliations({
      {" "}· units as recorded. This is not necessarily the reported adjusted
      treatment effect.</div>}
     <div><strong>Reconciliation:</strong>{" "}
-     {x.signal==="ARM_DELTA_DISCREPANCY_NEEDS_ESTIMAND_REVIEW"?
+
+     {x.signal==="AMBIGUOUS_MULTIPLE_GROUP_MEASUREMENTS"?
+      "Multiple outcome rows share the same OG identifiers; the compact source loses their time-point/category labels. No arbitrary last or first value can be used as the primary analysis statistic.":
+      x.signal==="COUNT_ENDPOINT_REQUIRES_PROPORTION_DENOMINATORS"?
+      "Endpoint reports participant responder counts, while its contrast is a difference in proportions. Use exact per-arm efficacy denominators, not count subtraction.":
+      x.signal==="ROUNDING_COMPATIBLE_MEAN_DIFFERENCE_STILL_UNREVIEWED"?
+      "The displayed arm values are rounded; their last-decimal rounding uncertainty can account for the numerical difference. Confirm the model before final review.":
+      x.signal==="ARM_DELTA_DISCREPANCY_NEEDS_ESTIMAND_REVIEW"?
       "Raw arm difference differs from the reported mean-difference statistic; check model, estimand, arm order and source precision.":
       x.signal==="ARM_DELTA_NEAR_REPORTED_VALUE_STILL_UNREVIEWED"?
       "Reported estimate numerically resembles an arm difference in either direction; clinical review still required.":
@@ -61,7 +72,8 @@ export default function TrialPrimaryArmReconciliations({
       "Reported numeric contrast is unavailable; do not infer it from group measurements.":
       "Exact two-arm numeric reconstruction is unavailable; validate the full original registry tables."}
      {x.absoluteGapToEitherDirection!==null?
-      " Absolute gap to either direction: "+pretty(x.absoluteGapToEitherDirection)+"; screening tolerance: "+pretty(x.gapThreshold)+".":""}
+      " Absolute gap to either direction: "+pretty(x.absoluteGapToEitherDirection)+"; screening tolerance: "+pretty(x.gapThreshold)+
+      (x.roundingUncertainty!==null?"; rounding uncertainty: "+pretty(x.roundingUncertainty):"")+".":""}
     </div>
     <div>Source results first posted: {x.resultsFirstPosted||"unverified"}
      {" "}· source snapshot: {x.sourceAsOf}</div>
