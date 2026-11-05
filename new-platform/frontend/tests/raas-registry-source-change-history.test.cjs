@@ -22,7 +22,7 @@ test("source audit status and immutable history agree across pre- and post-scan 
   assert.equal(history.events.length,0);
  }else{
   assert.ok(["COMPLETE","COMPLETED_WITH_SOURCE_ERRORS"].includes(status.auditState));
-  assert.match(status.recordedAt,/^\\d{4}-\\d{2}-\\d{2}T/);
+  assert.match(status.recordedAt,/^\d{4}-\d{2}-\d{2}T/);
   assert.ok(status.latestSourceAsOf);
   assert.equal(status.sourceFetchAttempted,
    status.sourceFetchSucceeded+status.sourceFetchFailed);
