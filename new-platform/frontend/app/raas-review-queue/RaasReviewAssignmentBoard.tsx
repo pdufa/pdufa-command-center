@@ -104,10 +104,18 @@ export default function RaasReviewAssignmentBoard({
      <p style={{fontSize:12,margin:0}}>
       <strong>Source snapshot:</strong> {group.sourceAsOf}.
       {group.applicationKey?" FDA application "+group.applicationKey+".":""}
-      {" "}A source fingerprint establishes file identity, not scientific
+      {" "}The one-file expert handoff includes all 30 stage requirements:
+      {group.provisionalMetrics} unapproved prior research packets and
+      {group.remainingStageMetrics} missing-evidence entries (N/A, not zero).
+      A source fingerprint establishes file identity, not scientific
       correctness. No authenticated reviewer assignment or stage rating exists.
      </p>
      <div style={{display:"flex",gap:10,flexWrap:"wrap",fontSize:12}}>
+      <a href={"/api/raas-exact-program-review-bundle?"+
+       new URLSearchParams({task:group.tasks[0].taskId}).toString()}
+       download data-raas-complete-stage-review-handoff="30-metrics">
+       Download one expert handoff · all 30 {group.stage==="pre"?"TOP":"BOTTOM"} metrics
+      </a>
       <Link href={"/raas-trial-review?"+new URLSearchParams({
        nctId:group.nctId,ticker:group.ticker
       })}>Open 60-metric review worksheet</Link>
