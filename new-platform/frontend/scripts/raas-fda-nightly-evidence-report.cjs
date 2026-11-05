@@ -6,6 +6,7 @@
 const fs=require("node:fs"),path=require("node:path");
 const {createHash}=require("node:crypto");
 const ts=require("typescript");
+const {compareNightlyReports}=require("./raas-fda-nightly-compare.cjs");
 require.extensions[".ts"]=(mod,file)=>mod._compile(ts.transpileModule(
  fs.readFileSync(file,"utf8"),{fileName:file,
  compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,
@@ -114,7 +115,7 @@ function buildNightlyRaasFdaAudit(asOfInstant){
   status:r.status,receiptCount:r.researchReceiptCount,
   outcomeCandidates:r.outcomeSourceCandidateCount
  })));
- return {
+ return compareNightlyReports({
   schemaVersion:1,
   scope:"RAAS_NIGHTLY_FDA_THREE_WAY_EVIDENCE_READINESS_RESEARCH_ONLY",
   runAtUtc:instant,
@@ -147,7 +148,7 @@ function buildNightlyRaasFdaAudit(asOfInstant){
    approvedPredictionModel:false
   },
   records
- };
+ },null);
 }
 function csvEscape(x){
  const s=String(x??"");
@@ -167,8 +168,20 @@ function main(){
  const csv=process.env.RAAS_FDA_NIGHTLY_REPORT_CSV;
  if(!out||!csv||path.resolve(out)===path.resolve(csv))
   throw Error("RAAS_FDA_NIGHTLY_REPORT_DESTINATIONS_REQUIRED");
- const report=buildNightlyRaasFdaAudit(
+ let report=buildNightlyRaasFdaAudit(
   process.env.RAAS_FDA_EVALUATION_AS_OF_UTC||new Date().toISOString());
+ const previousPath=process.env.RAAS_FDA_NIGHTLY_PREVIOUS_JSON;
+ if(previousPath){
+  try{
+   if(fs.statSync(previousPath).size>3_000_000)
+    throw Error("PREVIOUS_RESEARCH_REPORT_TOO_LARGE");
+   const previous=JSON.parse(fs.readFileSync(previousPath,"utf8"));
+   report=compareNightlyReports(report,previous);
+  }catch(error){
+   if(error.code!=="ENOENT")
+    report=compareNightlyReports(report,{});
+  }
+ }
  for(const file of [out,csv])fs.mkdirSync(path.dirname(file),{recursive:true});
  fs.writeFileSync(out,JSON.stringify(report,null,2)+"\n");
  fs.writeFileSync(csv,rowsCsv(report));
@@ -176,6 +189,10 @@ function main(){
   status:"EVIDENCE_GAPS_REPORTED_NOT_VALIDATED",
   asOf:report.runAtUtc,counts:report.counts,
   auditStateFingerprint:report.auditStateFingerprint,
+  savedSourceEvidenceFingerprint:report.savedSourceEvidenceFingerprint,
+  comparisonStatus:report.sourceChangeComparisonStatus,
+  changedSavedSourceCases:report.savedSourceChanges?.length??null,
+  calendarDeadlineTransitions:report.calendarDeadlineTransitions?.length??null,
   accuracy:report.threeWayScorecard.independentValidatedAccuracyPct
  })+"\n");
 }
