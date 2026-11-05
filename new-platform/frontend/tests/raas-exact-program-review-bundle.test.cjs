@@ -16,7 +16,7 @@ const {GET}=require("../app/api/raas-exact-program-review-bundle/route.ts");
 
 test("every expert handoff has precisely 30 TOP/BOTTOM metric requirements and exact identity",()=>{
  const groups=buildRaasReviewAssignmentPlan().groups;
- assert.equal(groups.length,17);
+ assert.equal(groups.length,18);
  for(const group of groups){
   const bundle=build(group.tasks[0].taskId);
   assert.equal(bundle.schemaVersion,1);
