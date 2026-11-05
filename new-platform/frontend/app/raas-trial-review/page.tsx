@@ -11,7 +11,7 @@ export const metadata:Metadata={
  title:"RAAS · Exact Trial 60-Metric Review | PDUFA",
  description:"Trial-specific TOP and BOTTOM research review workbench with original NCT source links, provisional work and independent review gaps."
 };
-type Query={nctId?:string|string[];ticker?:string|string[]};
+type Query={nctId?:string|string[];ticker?:string|string[];metricId?:string|string[]};
 export default async function RaasTrialReviewPage({
  searchParams
 }:{searchParams:Promise<Query>}){
@@ -19,6 +19,12 @@ export default async function RaasTrialReviewPage({
  const nctId=typeof p.nctId==="string"?p.nctId:"";
  const ticker=typeof p.ticker==="string"?p.ticker:"";
  const dossier=buildTrialMetricReviewDossier(registry,nctId,ticker);
+ const metricId=typeof p.metricId==="string"&&/^(pre|post)-[1-6]-[1-5]$/.test(p.metricId)?
+  p.metricId:"";
+ const availableMetric=dossier&&(["pre","post"] as const)
+  .flatMap(stage=>dossier.perStage[stage].categories.flatMap(c=>c.metrics))
+  .some(m=>m.metricId===metricId);
+ const initialMetricId=availableMetric?metricId:"";
  return <main className={css.root} data-raas-trial-metric-review-workspace="unapproved">
   <header className={css.header}>
    <Link className={css.back} href="/raas-evidence-backlog">
@@ -48,7 +54,7 @@ export default async function RaasTrialReviewPage({
     new URLSearchParams({nctId,ticker}).toString()}
     data-raas-review-worksheet-download="true">
     Download editable 60-metric review worksheet (CSV)</a></p>
-  </section><RaasWorksheetPreflight key={dossier.trial.nctId+":"+dossier.trial.ticker} dossier={dossier}/><ReviewDossierClient dossier={dossier}/></>:
+  </section><RaasWorksheetPreflight key={dossier.trial.nctId+":"+dossier.trial.ticker} dossier={dossier}/><ReviewDossierClient dossier={dossier} initialMetricId={initialMetricId}/></>:
    <section className={css.notice} role="alert">
     The requested NCT/ticker combination has no exact matching saved
     research record. No alternative program or trial was substituted.
