@@ -39,6 +39,8 @@ on:
       - 'new-platform/frontend/data/raas-fda-original-goal-outcome-candidates.json'
       - 'new-platform/frontend/scripts/raas-fda-nightly-evidence-report.cjs'
       - 'new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs'
+      - 'new-platform/frontend/scripts/raas-fda-nightly-compare.cjs'
+      - 'new-platform/frontend/tests/raas-fda-nightly-compare.test.cjs'
       - 'new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json'
       - 'new-platform/frontend/app/raas-worklist/page.tsx'
       - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
@@ -81,6 +83,8 @@ on:
       - 'new-platform/frontend/data/raas-fda-original-goal-outcome-candidates.json'
       - 'new-platform/frontend/scripts/raas-fda-nightly-evidence-report.cjs'
       - 'new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs'
+      - 'new-platform/frontend/scripts/raas-fda-nightly-compare.cjs'
+      - 'new-platform/frontend/tests/raas-fda-nightly-compare.test.cjs'
       - 'new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json'
       - 'new-platform/frontend/app/raas-worklist/page.tsx'
       - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
@@ -107,7 +111,17 @@ jobs:
       - name: Install locked frontend dependencies for read-only RAAS FDA evidence audit
         run: npm ci --prefix new-platform/frontend --no-audit --no-fund
       - name: Verify nightly original-goal FDA evidence report and no false forecasts
-        run: node --test new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs
+        run: |
+          node --test new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs
+          node --test new-platform/frontend/tests/raas-fda-nightly-compare.test.cjs
+      - name: Restore last completed nightly RAAS saved research baseline (scheduled/manual only)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/raas-fda-last-nightly-readiness.json
+          key: raas-fda-nightly-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            raas-fda-nightly-evidence-
       - name: Telegram RAAS audit started (scheduled/manual only)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
@@ -158,6 +172,7 @@ jobs:
         env:
           RAAS_FDA_NIGHTLY_REPORT_JSON: ${{ runner.temp }}/raas-fda-threeway-nightly-readiness.json
           RAAS_FDA_NIGHTLY_REPORT_CSV: ${{ runner.temp }}/raas-fda-threeway-nightly-case-worklist.csv
+          RAAS_FDA_NIGHTLY_PREVIOUS_JSON: .cache/raas-fda-last-nightly-readiness.json
         run: |
           export RAAS_FDA_EVALUATION_AS_OF_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           node new-platform/frontend/scripts/raas-fda-nightly-evidence-report.cjs
@@ -205,6 +220,17 @@ jobs:
             ${{ runner.temp }}/raas-v2-issuer-news-fallback-research-leads.json
           if-no-files-found: warn
           retention-days: 90
+      - name: Preserve completed RAAS research baseline for the next nightly comparison
+        if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        run: |
+          mkdir -p .cache
+          cp "${{ runner.temp }}/raas-fda-threeway-nightly-readiness.json" .cache/raas-fda-last-nightly-readiness.json
+      - name: Cache completed RAAS source comparison baseline (non-secret)
+        if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/raas-fda-last-nightly-readiness.json
+          key: raas-fda-nightly-evidence-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Telegram RAAS accuracy result after reporting
         if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         continue-on-error: true
