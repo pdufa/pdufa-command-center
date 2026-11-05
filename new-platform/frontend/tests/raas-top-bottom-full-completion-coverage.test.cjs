@@ -126,7 +126,7 @@ test("published clinical primary-study leads are exact classified NCT metric res
  const source=JSON.parse(sourceText("data/raas-classified-published-metric-leads.json"));
  assert.equal(source.schemaVersion,1);
  assert.equal(source.scope,"RAAS_EXACT_CLASSIFIED_PUBLISHED_CLINICAL_EVIDENCE_LEADS_UNGRADED");
- assert.equal(source.records.length,4);
+ assert.equal(source.records.length,3);
  const plan=build(classified);
  const byTask=new Map(plan.tasks.map(x=>[x.nctId+"|"+x.metricId,x]));
  const byTrial=new Map([...classified.pre,...classified.post].map(x=>[x.nctId,x]));
@@ -153,7 +153,7 @@ test("published clinical primary-study leads are exact classified NCT metric res
  assert.match(panel,/Published clinical source · not a RAAS grade/);
 });
 
-test("external human reviewer handoff contains all 300 exact-NCT metrics with four ungraded published leads",()=>{
+test("external human reviewer handoff contains all 300 exact-NCT metrics with three ungraded published leads",()=>{
  const result=build(classified);
  const csv=result.independentReviewHandoffCsv;
  const rows=csv.trimEnd().split("\r\n");
@@ -162,9 +162,9 @@ test("external human reviewer handoff contains all 300 exact-NCT metrics with fo
  assert.match(rows[0],/reviewerIdentity/);
  assert.match(rows[0],/independentlyAdjudicatedMetricGrade/);
  assert.equal(rows.filter(x=>x.includes("PROVISIONAL_NOT_INDEPENDENTLY_VERIFIED")).length,17);
- assert.equal(rows.filter(x=>x.includes("PUBLISHED_UNGRADED_LEAD")).length,4);
+ assert.equal(rows.filter(x=>x.includes("PUBLISHED_UNGRADED_LEAD")).length,3);
  assert.equal(rows.filter(x=>x.includes("UNSCORED_MISSING_EVIDENCE")).length,280);
- assert.equal(rows.filter(x=>x.includes("2_REVIEW_PUBLISHED_SOURCE")).length,4);
+ assert.equal(rows.filter(x=>x.includes("2_REVIEW_PUBLISHED_SOURCE")).length,3);
  assert.match(csv,/NCT05186818/);
  assert.match(csv,/pubmed\.ncbi\.nlm\.nih\.gov\/38739079/);
  assert.match(csv,/NCT03697109/);
