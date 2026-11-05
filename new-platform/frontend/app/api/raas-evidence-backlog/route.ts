@@ -7,7 +7,9 @@ export const dynamic="force-dynamic";
 const fields=[
  "nctId","ticker","priority","stage","trialName","registeredStatus",
  "postedResults","postedPrimaryOutcomeCount","hasPrimaryComparisons",
- "hasConfidenceIntervals","hasSeriousEventDenominators","reviewedTop",
+ "hasConfidenceIntervals","hasSeriousEventDenominators",
+ "primaryContrastCount","primaryNumericCICount","saeDenominatorGroupCount",
+ "sourceIntegrityIssueCount","sourceIntegrityIssueCodes","reviewedTop",
  "reviewedBottom","stageEvidenceDate","acceptedPdufaGoal",
  "applicationKey","sourceDate","sourceUrl","nextEvidenceAction"
 ] as const;
