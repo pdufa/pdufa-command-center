@@ -21,6 +21,15 @@ export default function Raas762Page(){
     30 BOTTOM metric slots, missing-review status and unified trial history
     are accessible directly in the scoring table below.</p>
   </header>
+  <p className={css.notice} data-raas-stage-application-boundary="top-bottom-only">
+   <strong>RAAS scoring scope:</strong> Only the two TOP/BOTTOM issuer-readout
+   spreadsheets receive stage-specific RAAS metric assessments.
+   This 762-NCT registry table prepares research evidence and missing-metric
+   checklists. Appearing here does not classify a trial, authorize scoring,
+   or add the 11,000+ POOL to RAAS.{" "}
+   <Link href="/tools#raas-top-bottom-sheets">
+    Open the TOP/BOTTOM Phase 3 spreadsheets</Link>.
+  </p>
   <Raas762ScoringWorkspace/>
   <p className={css.disclaimer}>
    <strong>Current score audit:</strong> {status.uniqueNctsWithActualProvisionalMetricScores}
