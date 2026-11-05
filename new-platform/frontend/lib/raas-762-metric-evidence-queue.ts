@@ -1,5 +1,6 @@
-/** Audit-ready research worklist: ALL 762 unique NCT records x 60 defined
- * TOP/BOTTOM metrics (45,720 exact-NCT metric slots).
+/** Audit-ready research worklist: ONLY the two phase-3 research spreadsheets: one checklist per NCT.
+ * TOP (registry not posted) 425 rows; BOTTOM (registry posted) 337 rows,
+ * for 22,860 distinct metric slots in the current dated research snapshot.
  *
  * The only numerical values carried forward are existing, dated,
  * source-checked provisional review grades. A registry protocol, a
@@ -17,7 +18,9 @@ import {registryMetricLeads,type RegistryEvidenceIndex,type RegistryTrialEvidenc
  from "./raas-registry-evidence";
 
 export type Raas762MetricQueueSummary={
- exactNcts:762;stageResearchRows:1524;metricSlots:45720;
+ exactNcts:762;stageResearchRows:762;metricSlots:22860;
+ topTrialRows:number;bottomTrialRows:number;
+ otherStageReviewsPreserved:number;
  provisionalReviewSlots:number;independentlyReviewedMetricSlots:number;
  registryLeadOnlySlots:number;metricSlotsRequiringReviewedGrades:number;
  noMappedEvidenceSlots:number;
@@ -64,6 +67,7 @@ export function buildRaas762MetricEvidenceQueue(index:RegistryEvidenceIndex):{
  const rows:string[]=[names.join(",")];
  const ids=new Set<string>();
  let provisional=0,independent=0,registryLeadsOnly=0,noMapped=0;
+ let top=0,bottom=0,otherStageReviewsPreserved=0;
  for(const record of [...index.records].sort((a,b)=>a.nctId.localeCompare(b.nctId))){
   const {nctId,ticker}=record;
   if(!/^NCT\d{8}$/.test(nctId)||!ticker?.trim()||
@@ -71,7 +75,16 @@ export function buildRaas762MetricEvidenceQueue(index:RegistryEvidenceIndex):{
    ids.has(nctId))
    throw Error("RAAS_762_METRIC_QUEUE_INVALID_SOURCE_IDENTITY");
   ids.add(nctId);
-  for(const stage of ["pre","post"] as const){
+  if(typeof record.postedResults!=="boolean")
+   throw Error("RAAS_TOP_BOTTOM_STAGE_SOURCE_UNKNOWN");
+  const stage:RaasStage=record.postedResults?"post":"pre";
+  if(stage==="pre")top++;else bottom++;
+  // Preserve different-stage historical evidence as history. It does NOT
+  // become a grade on the currently selected research spreadsheet.
+  const otherStage=stage==="pre"?"post":"pre";
+  otherStageReviewsPreserved+=
+   stageResearchReviewsForUnverifiedTrial({nctId,ticker},otherStage)?.reviewedCount??0;
+  {
    const reviewed=stageResearchReviewsForUnverifiedTrial({nctId,ticker},stage);
    const reviewedById=new Map(reviewed?.grades.map(x=>[x.metricId,x])??[]);
    if(reviewedById.size!==(reviewed?.reviewedCount??0))
@@ -125,14 +138,15 @@ export function buildRaas762MetricEvidenceQueue(index:RegistryEvidenceIndex):{
    }
   }
  }
- if(ids.size!==762||rows.length!==45721||
-  provisional+registryLeadsOnly+noMapped!==45720)
+ if(ids.size!==762||top+bottom!==762||rows.length!==22861||
+  provisional+registryLeadsOnly+noMapped!==22860)
   throw Error("RAAS_762_METRIC_QUEUE_COMPLETENESS_MISMATCH");
  const summary:Raas762MetricQueueSummary={
-  exactNcts:762,stageResearchRows:1524,metricSlots:45720,
+  exactNcts:762,stageResearchRows:762,metricSlots:22860,
+  topTrialRows:top,bottomTrialRows:bottom,otherStageReviewsPreserved,
   provisionalReviewSlots:provisional,independentlyReviewedMetricSlots:independent,
   registryLeadOnlySlots:registryLeadsOnly,
-  metricSlotsRequiringReviewedGrades:45720-provisional,
+  metricSlotsRequiringReviewedGrades:22860-provisional,
   noMappedEvidenceSlots:noMapped,
   researchOnly:true,fullyValidatedRaasScores:0,calibratedFdaPredictions:0
  };
