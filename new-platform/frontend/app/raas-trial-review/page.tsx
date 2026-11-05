@@ -35,7 +35,19 @@ export default async function RaasTrialReviewPage({
    or composite RAAS score is approved here. Missing metrics are N/A,
    not zero. FDA PASS / CRL / EXTENSION probabilities remain unvalidated.
   </p>
-  {dossier?<ReviewDossierClient dossier={dossier}/>:
+  {dossier?<><section className={css.notice}
+   data-raas-expert-review-worksheet="unsigned-editable-csv">
+   <strong>60-metric independent reviewer worksheet</strong>
+   <p>Download the exact-trial editable worksheet, with 30 TOP and
+    30 BOTTOM requirements, dated registry source leads, and blank
+    fields for benchmark, source, uncertainty and critical-risk findings.
+    Complete it offline and retain it separately. A filled worksheet
+    is not an authenticated expert sign-off or an approved RAAS score.</p>
+   <p><a href={"/api/raas-unsigned-review-worksheet?"+
+    new URLSearchParams({nctId,ticker}).toString()}
+    data-raas-review-worksheet-download="true">
+    Download editable 60-metric review worksheet (CSV)</a></p>
+  </section><ReviewDossierClient dossier={dossier}/></>:
    <section className={css.notice} role="alert">
     The requested NCT/ticker combination has no exact matching saved
     research record. No alternative program or trial was substituted.
