@@ -15,7 +15,7 @@ const census=fs.readFileSync(path.join(root,"public/phase3-census-2026-10-26.csv
 const evidence=JSON.parse(fs.readFileSync(path.join(root,
  "public/phase3-public-readout-evidence-2026-11-01.json"),"utf8"));
 const classified=classifyPhase3Readouts(evidence,parsePhase3CensusCsv(census).rows);
-test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 17 rated, 283 absent",()=>{
+test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 20 rated, 280 absent",()=>{
  const result=build(classified),s=result.summary;
  assert.equal(s.scoredScope,"SOURCE_CLASSIFIED_TOP_BOTTOM_ONLY");
  assert.equal(s.researchSourceCensus,741);
@@ -26,9 +26,9 @@ test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 17 rated, 283
  assert.equal(s.topMetricSlots,60);
  assert.equal(s.bottomMetricSlots,240);
  assert.equal(s.allMetricSlots,300);
- assert.equal(s.provisionalMetricGrades,17);
- assert.equal(s.missingMetricGrades,283);
- assert.equal(s.publishedUngradedMetricLeads,3);
+ assert.equal(s.provisionalMetricGrades,20);
+ assert.equal(s.missingMetricGrades,280);
+ assert.equal(s.publishedUngradedMetricLeads,0);
  assert.equal(s.missingWithoutPublishedMetricLead,280);
  assert.equal(s.independentFullScores,0);
  assert.equal(s.calibratedFdaProbabilities,0);
@@ -39,12 +39,12 @@ test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 17 rated, 283
  assert.deepEqual(Object.fromEntries(result.trials.map(x=>[x.nctId,[x.reviewed,x.missing]])),{
   NCT06445023:[3,27],NCT06455202:[3,27],
   NCT06641076:[0,30],NCT07363577:[5,25],NCT07671911:[5,25],
-  NCT05186818:[0,30],NCT05767346:[0,30],NCT06081894:[0,30],
+  NCT05186818:[2,28],NCT05767346:[1,29],NCT06081894:[0,30],
   NCT03697109:[1,29],NCT04308590:[0,30]
  });
  assert.equal(new Set(result.tasks.map(t=>t.nctId+"|"+t.stage+"|"+t.metricId)).size,300);
- assert.equal(result.tasks.filter(x=>x.status==="SOURCE_CHECKED_PROVISIONAL_ONLY").length,17);
- assert.equal(result.tasks.filter(x=>x.status==="NO_SOURCE_REVIEWED_GRADE").length,283);
+ assert.equal(result.tasks.filter(x=>x.status==="SOURCE_CHECKED_PROVISIONAL_ONLY").length,20);
+ assert.equal(result.tasks.filter(x=>x.status==="NO_SOURCE_REVIEWED_GRADE").length,280);
  assert.ok(result.tasks.every(t=>t.independentValidationStatus==="NOT_COMPLETED"&&
   t.approvedOverallScore===null&&t.calibratedFdaApprovalProbability===null));
 });
@@ -73,7 +73,7 @@ test("each missing source task carries exact-trial issuer, registry, metric comp
  const all=plan.allCsv.trimEnd().split("\r\n");
  const missing=plan.missingOnlyCsv.trimEnd().split("\r\n");
  assert.equal(all.length,301);
- assert.equal(missing.length,284);
+ assert.equal(missing.length,281);
  assert.equal(missing[0],all[0]);
  assert.ok(missing.slice(1).every(x=>x.includes("NO_SOURCE_REVIEWED_GRADE")));
  assert.ok(!plan.allCsv.includes("NCT00000000"));
@@ -122,11 +122,11 @@ test("iPhone TOP/BOTTOM UI shows full coverage and exports without scoring the u
  assert.equal((compiled.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
 });
 
-test("published clinical primary-study leads are exact classified NCT metric research, not imputed grades",()=>{
+test("previously published clinical leads are graded, and no ungraded leads remain",()=>{
  const source=JSON.parse(sourceText("data/raas-classified-published-metric-leads.json"));
  assert.equal(source.schemaVersion,1);
  assert.equal(source.scope,"RAAS_EXACT_CLASSIFIED_PUBLISHED_CLINICAL_EVIDENCE_LEADS_UNGRADED");
- assert.equal(source.records.length,3);
+ assert.equal(source.records.length,0);
  const plan=build(classified);
  const byTask=new Map(plan.tasks.map(x=>[x.nctId+"|"+x.metricId,x]));
  const byTrial=new Map([...classified.pre,...classified.post].map(x=>[x.nctId,x]));
@@ -153,7 +153,7 @@ test("published clinical primary-study leads are exact classified NCT metric res
  assert.match(panel,/Published clinical source · not a RAAS grade/);
 });
 
-test("external human reviewer handoff contains all 300 exact-NCT metrics with three ungraded published leads",()=>{
+test("external review remains optional for all 300 exact-NCT metrics",()=>{
  const result=build(classified);
  const csv=result.independentReviewHandoffCsv;
  const rows=csv.trimEnd().split("\r\n");
@@ -161,12 +161,12 @@ test("external human reviewer handoff contains all 300 exact-NCT metrics with th
  assert.match(rows[0],/signatureOrAuditReceiptId/);
  assert.match(rows[0],/reviewerIdentity/);
  assert.match(rows[0],/independentlyAdjudicatedMetricGrade/);
- assert.equal(rows.filter(x=>x.includes("PROVISIONAL_NOT_INDEPENDENTLY_VERIFIED")).length,17);
- assert.equal(rows.filter(x=>x.includes("PUBLISHED_UNGRADED_LEAD")).length,3);
+ assert.equal(rows.filter(x=>x.includes("PROVISIONAL_NOT_INDEPENDENTLY_VERIFIED")).length,20);
+ assert.equal(rows.filter(x=>x.includes("PUBLISHED_UNGRADED_LEAD")).length,0);
  assert.equal(rows.filter(x=>x.includes("UNSCORED_MISSING_EVIDENCE")).length,280);
- assert.equal(rows.filter(x=>x.includes("2_REVIEW_PUBLISHED_SOURCE")).length,3);
+ assert.equal(rows.filter(x=>x.includes("2_REVIEW_PUBLISHED_SOURCE")).length,0);
  assert.match(csv,/NCT05186818/);
- assert.match(csv,/pubmed\.ncbi\.nlm\.nih\.gov\/38739079/);
+ assert.match(csv,/NEJMoa2401424/);
  assert.match(csv,/NCT03697109/);
  assert.match(csv,/41730814/);
  assert.doesNotMatch(csv,/CERTIFIED_INDEPENDENT_APPROVED/);
@@ -206,4 +206,22 @@ test("GRACE peer-reviewed efficacy mixed grade is one provisional BOTTOM compone
  assert.equal(record[0].split(",")[14],"1");
  assert.equal(record[0].split(",")[17],"");
  assert.equal(record[0].split(",")[18],"INCOMPLETE_30_METRIC_INDEPENDENT_REVIEW");
+});
+
+
+test("accepted CYTK trial publications become three exact-NCT source-backed research grades without FDA odds",()=>{
+ const completion=build(classified);
+ const expected=[["NCT05186818","post-1-1"],["NCT05186818","post-1-2"],["NCT05767346","post-1-1"]];
+ for(const [nctId,metricId] of expected){
+  const task=completion.tasks.find(x=>x.nctId===nctId&&x.metricId===metricId);
+  assert.ok(task);
+  assert.equal(task.numericProvisionalGrade,75);
+  assert.equal(task.independentValidationStatus,"NOT_COMPLETED");
+  assert.ok(task.reviewedPrimarySourceUrl?.startsWith("https://"));
+  assert.equal(task.approvedOverallScore,null);
+  assert.equal(task.calibratedFdaApprovalProbability,null);
+ }
+ assert.equal(completion.summary.provisionalMetricGrades,20);
+ assert.equal(completion.summary.missingMetricGrades,280);
+ assert.equal(completion.summary.publishedUngradedMetricLeads,0);
 });

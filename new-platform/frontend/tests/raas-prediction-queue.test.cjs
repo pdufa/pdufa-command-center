@@ -28,7 +28,7 @@ test("never transforms preliminary clinical evidence into FDA probabilities",()=
  assert.ok(queue.every(x=>["PASS","CRL","EXTENSION"].every(kind=>x.probabilities[kind]===null)));
  assert.equal(accuracy.predecisionThreeWayIndependentlyVerifiedForecasts,0);
  assert.equal(partial.fullValidatedRaasScores,0);
- assert.equal(partial.uniqueNctsWithActualProvisionalMetricScores,18);
+ assert.equal(partial.uniqueNctsWithActualProvisionalMetricScores,20);
 });
 test("formal FDA target revision is not a new original review cycle",()=>{
  const revisions=queue.filter(x=>x.blockers.some(y=>y.includes("formal date revision")));

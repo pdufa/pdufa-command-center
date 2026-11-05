@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,83);
+ assert.equal(feed.records.length,86);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -162,8 +162,8 @@ test("11-trial real clinical pilot has only research grades, not full RAAS or fa
   "../data/raas-reviewed-metric-assessments.json"),"utf8");
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
  const cases=new Set(feed.records.filter(r=>r.stage==="post"&&r.ticker!=="COGT").map(r=>r.nctId));
- assert.equal(cases.size,11);
- assert.equal(feed.records.length,83);
+ assert.equal(cases.size,13);
+ assert.equal(feed.records.length,86);
  for(const nctId of cases){
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,

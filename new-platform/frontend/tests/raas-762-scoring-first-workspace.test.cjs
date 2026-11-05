@@ -19,7 +19,7 @@ test("the one-row-per-trial RAAS setup has exactly 762 uniquely identified NCTs"
  assert.equal(new Set(ncts).size,762);
  assert.equal(status.researchTrials,762);
  assert.equal(status.fullValidatedRaasScores,0);
- assert.equal(status.uniqueNctsWithActualProvisionalMetricScores,18);
+ assert.equal(status.uniqueNctsWithActualProvisionalMetricScores,20);
  for(const line of lines){
   assert.ok(/NCT\d{8}/.test(line.split(",")[0]));
   assert.ok(line.includes("INCOMPLETE_30_METRIC_INDEPENDENT_REVIEW"));

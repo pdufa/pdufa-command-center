@@ -34,7 +34,7 @@ const receipt=(item=first)=>({
 });
 test("83 pre-reviewed metrics get unique source-frozen packet hashes, never full scores",()=>{
  const fingerprints=items.map(sourceFrozenFingerprint);
- assert.equal(items.length,83);
+ assert.equal(items.length,86);
  assert.equal(new Set(fingerprints).size,items.length);
  assert.ok(fingerprints.every(x=>/^[a-f0-9]{64}$/.test(x)));
  assert.equal(sourceFrozenFingerprint(first),sourceFrozenFingerprint({...first}));

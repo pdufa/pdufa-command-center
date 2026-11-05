@@ -58,19 +58,19 @@ test("all actual source-classified TOP/BOTTOM rows have 30 populated slots, neve
    stageGrades+=output.gradedMetrics;
    missing+=output.missingMetrics;
   }
-  assert.equal(stageGrades,stage==="pre"?10:7);
+  assert.equal(stageGrades,stage==="pre"?10:10);
   const worklist=exportWorklist(stage,rows);
   assert.equal(worklist.summary.existingProvisionalGrades,stageGrades);
   assert.equal(worklist.summary.reviewMissingRows,rows.length*30-stageGrades);
   assert.equal(worklist.summary.approvedOverallRaasScores,0);
  }
  assert.equal(count,10);
- assert.equal(graded,17);
- assert.equal(missing,283);
+ assert.equal(graded,20);
+ assert.equal(missing,280);
  assert.deepEqual(Object.fromEntries(byCase),{
   NCT07363577:5,NCT07671911:5,
   NCT06445023:3,NCT06455202:3,NCT06641076:0,
-  NCT05186818:0,NCT05767346:0,NCT06081894:0,
+  NCT05186818:2,NCT05767346:1,NCT06081894:0,
   NCT03697109:1,NCT04308590:0
  });
 });

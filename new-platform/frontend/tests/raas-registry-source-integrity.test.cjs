@@ -24,8 +24,8 @@ test("all 762 exact registry records are integrity-audited with source-only fact
  assert.equal(audit.trialsWithNumericCI,149);
  assert.equal(audit.trialsWithSaeDenominators,306);
  assert.equal(backlog.totalTrials,762);
- assert.equal(backlog.trialsWithAnyProvisionalMetrics,18);
- assert.equal(backlog.provisionalMetricReviews,83);
+ assert.equal(backlog.trialsWithAnyProvisionalMetrics,20);
+ assert.equal(backlog.provisionalMetricReviews,86);
  assert.equal(backlog.approvedScores,0);
  assert.equal(backlog.calibratedFdaPredictions,0);
  assert.equal(audit.flaggedFindings,

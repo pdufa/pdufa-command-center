@@ -21,9 +21,9 @@ const inbox=buildRaasRegistryRevisionReviewInbox(history,status,registry,queue);
 
 test("saved registry source audit maps exactly to all 18 program-stage review handoffs",()=>{
  const gates=audit(plan,inbox,registry);
- assert.equal(gates.totalPrograms,18);
+ assert.equal(gates.totalPrograms,20);
  assert.equal(gates.gates.length,plan.groups.length);
- assert.equal(new Set(gates.gates.map(g=>g.programId)).size,18);
+ assert.equal(new Set(gates.gates.map(g=>g.programId)).size,20);
  assert.equal(gates.approvedRaasScores,0);
  assert.equal(gates.calibratedFdaForecasts,0);
  for(const g of gates.gates){

@@ -16,15 +16,15 @@ const queue=buildRaasIndependentReviewQueue();
 
 test("every provisional metric has one exact-trial source-frozen unsigned assignment packet",()=>{
  const plan=build(queue);
- assert.equal(plan.totalPackets,83);
- assert.equal(plan.distinctPrograms,18);
+ assert.equal(plan.totalPackets,86);
+ assert.equal(plan.distinctPrograms,20);
  assert.equal(plan.fdaAcceptedPhase3Packets,5);
  assert.equal(plan.currentPhase3TopPackets,27);
- assert.equal(plan.otherResearchPackets,51);
- assert.equal(plan.groups.reduce((total,g)=>total+g.provisionalMetrics,0),83);
+ assert.equal(plan.otherResearchPackets,54);
+ assert.equal(plan.groups.reduce((total,g)=>total+g.provisionalMetrics,0),86);
  assert.equal(new Set(plan.groups.map(g=>g.id)).size,plan.groups.length);
  const tasks=plan.groups.flatMap(group=>group.tasks);
- assert.equal(new Set(tasks.map(t=>t.taskId)).size,83);
+ assert.equal(new Set(tasks.map(t=>t.taskId)).size,86);
  const originals=new Map(queue.items.map(t=>[t.id,t]));
  for(const group of plan.groups){
   assert.ok(group.provisionalMetrics>0&&group.provisionalMetrics<=30);
@@ -63,13 +63,13 @@ test("exact FDA-accepted Phase 3 program is first and Phase 2 events are exclude
  assert.equal(high[0].provisionalMetrics,5);
  assert.equal(plan.groups[0].id,high[0].id);
  assert.equal(plan.groups.filter(g=>g.priority==="CURRENT_PHASE3_TOP").length,6);
- assert.equal(plan.groups.filter(g=>g.priority==="OTHER_RESEARCH").length,11);
+ assert.equal(plan.groups.filter(g=>g.priority==="OTHER_RESEARCH").length,13);
  for(const wrongNct of ["NCT05186753","NCT04996875"]){
   assert.ok(!high.some(g=>g.nctId===wrongNct));
  }
 });
 test("source frozen packet identity, per-program stage and duplicate task safety",()=>{
- const duplicate={...queue,items:[...queue.items,queue.items[0]],total:84};
+ const duplicate={...queue,items:[...queue.items,queue.items[0]],total:87};
  assert.throws(()=>build(duplicate),/RAAS_ASSIGNMENT_DUPLICATE_EXACT_TASK/);
  const altered={...queue,items:queue.items.map((x,i)=>i===1?
   {...x,id:x.id+"-changed",metricId:queue.items[0].metricId,
@@ -86,7 +86,7 @@ test("CSV manifest exports 83 checksum-linked, unsigned assignments with no raw 
  assert.match(response.headers.get("Cache-Control"),/no-store/);
  const csv=await response.text();
  const lines=csv.trim().split("\r\n");
- assert.equal(lines.length,84);
+ assert.equal(lines.length,87);
  assert.match(lines[0],/sourceFingerprint/);
  assert.match(lines[0],/exactPacketDownloadPath/);
  assert.match(csv,/NCT05208047/);
