@@ -53,13 +53,17 @@ def verified_research_delta_summary(report: object) -> str | None:
     records = report.get("records")
     if not isinstance(records, list) or len(records) > 10000:
         return None
-    if report.get("threeWayScorecard", {}).get("independentValidatedAccuracyPct") is not None:
+    score = report.get("threeWayScorecard")
+    counts = report.get("counts")
+    if not isinstance(score, dict) or not isinstance(counts, dict):
         return None
-    if report.get("counts", {}).get("independentlyAuthenticatedForecasts") != 0:
+    if score.get("independentValidatedAccuracyPct") is not None:
         return None
-    if report.get("counts", {}).get("qualifiedForecastOutcomePairs") != 0:
+    if counts.get("independentlyAuthenticatedForecasts") != 0:
         return None
-    if report.get("counts", {}).get("approvedTradingSignals") != 0:
+    if counts.get("qualifiedForecastOutcomePairs") != 0:
+        return None
+    if counts.get("approvedTradingSignals") != 0:
         return None
     fingerprints = (report.get("savedSourceEvidenceFingerprint"), report.get(
         "auditStateFingerprint"))
