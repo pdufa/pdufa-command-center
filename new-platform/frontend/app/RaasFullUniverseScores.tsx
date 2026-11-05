@@ -9,10 +9,10 @@ import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
 import {raasRegistryCoverage} from "../lib/raas-stage-source-coverage";
 import {rawRaasRegistryDesignDiagnostic} from "../lib/raas-raw-registry-design";
 import {raasClinicalReportingDiagnostic} from "../lib/raas-clinical-reporting-diagnostic";
-import {fullReviewedTrialCandidate,stageResearchReviewsForUnverifiedTrial} from "../lib/raas-reviewed-full-score";
+import {clinicalFiveForTrial} from "../lib/raas-clinical-five";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
-import RaasMetricGradebook from "./RaasMetricGradebook";
+import RaasClinicalFiveCell from "./RaasClinicalFiveCell";
 import RaasRegistryEvidenceButton from "./RaasRegistryEvidenceButton";
 import {loadRegistryEvidenceIndex,registryTrialFor,
  type RegistryEvidenceIndex} from "../lib/raas-registry-evidence";
@@ -35,20 +35,12 @@ function assess(row:ReadoutRow):Assessment{
   drug:row.evidence?.drug,indication:row.evidence?.indication
  },stage);
  const grade=a.scoredMetrics[0];
- const candidate=fullReviewedTrialCandidate({nctId:row.nctId,ticker:row.ticker,
+ const clinical=clinicalFiveForTrial({nctId:row.nctId,ticker:row.ticker,
   drug:row.evidence?.drug,indication:row.evidence?.indication},stage,true);
- const reviewed=raasSpreadsheetSummary({
-  nctId:row.nctId,ticker:row.ticker,
-  drug:row.evidence?.drug,indication:row.evidence?.indication,
-  classifiedStage:stage
- });
- const metricIds=new Set([...a.scoredMetrics.map(x=>x.metricId),
-  ...candidate.grades.map(x=>x.metricId)]);
- return {row,stage,timing:grade?.score??null,metricCount:metricIds.size,
-  overallScore:reviewed.approvedScore,
+ return {row,stage,timing:grade?.score??null,metricCount:clinical.graded,
+  overallScore:clinical.researchScore,
   sourceUrl:grade?.sourceUrl??null,sourceDate:grade?.sourceDate??null,
-  aiSourceCrosschecks:candidate.aiCrosscheckedCount,
-  independentReviewedCount:candidate.independentReviewedCount};
+  aiSourceCrosschecks:clinical.graded,independentReviewedCount:0};
 }
 export default function RaasFullUniverseScores(){
  const [classified,setClassified]=useState<ReadoutClassification|null>(null);
@@ -130,8 +122,18 @@ export default function RaasFullUniverseScores(){
   const trial={nctId:x.row.nctId,ticker:x.row.ticker,drug:x.row.evidence?.drug};
   const registry=registryTrialFor(registryIndex,trial);
   return {...x,registry,
-   researchTop:stageResearchReviewsForUnverifiedTrial(trial,"pre"),
-   researchBottom:stageResearchReviewsForUnverifiedTrial(trial,"post"),
+   researchTop:(()=>{
+    const c=clinicalFiveForTrial(trial,"pre",false);
+    return {reviewedCount:c.graded,aiCrosscheckedCount:c.graded,
+     independentReviewedCount:0,weightedCoveragePercent:c.graded*20,
+     observedMean:c.researchScore};
+   })(),
+   researchBottom:(()=>{
+    const c=clinicalFiveForTrial(trial,"post",false);
+    return {reviewedCount:c.graded,aiCrosscheckedCount:c.graded,
+     independentReviewedCount:0,weightedCoveragePercent:c.graded*20,
+     observedMean:c.researchScore};
+   })(),
    topRegistryCoverage:raasRegistryCoverage(trial,"pre",registry),
    bottomRegistryCoverage:raasRegistryCoverage(trial,"post",registry),
    rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial),
@@ -191,7 +193,7 @@ export default function RaasFullUniverseScores(){
    never 0/100. This view does not independently verify PIPELINE or PDUFA eligibility.
    TOP/BOTTOM are assigned only from separately documented issuer readouts; registry
    stage names alone do not establish public results. Every trial can now open both
-   TOP and BOTTOM 30-metric evidence reviews while classification is unresolved.
+   TOP and BOTTOM five-factor clinical evidence reviews while classification is unresolved.
    Use the Registry facts button
    on every row, including UNVERIFIED, to inspect newly collected evidence.</p>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",margin:"12px 0"}}>
@@ -236,7 +238,7 @@ export default function RaasFullUniverseScores(){
    trials, source snapshot {registryIndex.sourceAsOf}. This research inventory
    is not independently confirmed to be current $300M–$10B PIPELINE, or issuer-evidenced
    TOP/BOTTOM status. The raw 0–100 study-design diagnostic is separate from
-   validated 30-metric RAAS scores and cannot predict efficacy, FDA decisions or returns.
+   a validated five-factor clinical RAAS score and cannot predict efficacy, FDA decisions or returns.
   </p>}
   {scope==="historical"&&<p className={css.disclaimer}>
    Historical research census dated {classified.censusDate}; classification sources last checked
@@ -245,7 +247,7 @@ export default function RaasFullUniverseScores(){
    <div><strong>{short(assessments.length)}</strong><span>Unique NCTs evaluated for available score rules</span></div>
    <div><strong>{short(stats.numericallyGraded)}</strong><span>Trials with a source-backed experimental metric (not overall RAAS)</span></div>
    <div data-raas-ai-source-crosschecks="true"><strong>{short(stats.aiSourceCrosschecks)}</strong><span>AI source-crosschecked TOP/BOTTOM provisional metric reviews · not approved predictions</span></div>
-   <div data-raas-independent-reviews="true"><strong>{short(stats.independentMetricReviews)}</strong><span>Independently adjudicated metric reviews · full RAAS still requires 30/30 per stage</span></div>
+   <div data-raas-independent-reviews="true"><strong>{short(stats.independentMetricReviews)}</strong><span>Independently adjudicated metric reviews · archived external review only; active RAAS requires five clinical grades</span></div>
    <div><strong>{short(stats.top)} / {short(stats.bottom)}</strong><span>Issuer-evidenced TOP / BOTTOM</span></div>
    <div><strong>{short(stats.unverified)}</strong><span>Unverified readout-stage trials · not assumed TOP</span></div>
    <div data-raas-raw-design-graded="true"><strong>{short(stats.rawDesignGraded)}</strong>
@@ -277,7 +279,7 @@ export default function RaasFullUniverseScores(){
    TOP and BOTTOM research reviews remain separate even when readout stage is UNVERIFIED.
    A reviewed-only mean is calculated from the metrics that have sources and benchmarks;
    the remaining metric inputs stay N/A and no overall RAAS score is inferred.
-   Open <strong>30 metrics</strong> for the right-side detailed review.
+   Open the <strong>five clinical factors</strong> for the active source-backed review.
   </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ledger-download="true">
    <a href="/raas-trial-score-ledger.csv" download
@@ -318,7 +320,7 @@ export default function RaasFullUniverseScores(){
    <strong>Current cap-screened Phase 3 TOP scoring pilot:</strong>{" "}
    <a href="/raas-current-pipeline-pre-metric-audit.csv" download
     style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
-    Download six current Phase 3 TOP trial-by-trial 30-metric scorecards (180-row CSV)
+    Download legacy 30-metric source archive (180-row CSV, not active RAAS)
    </a>.
    Six source-checked $300M–$10B Phase 3 pre-readout trial NCTs across <strong>four listed issuers
    (TRVI, LBRX, CYTK, MLTX)</strong>, including OCEAN-1, OCEAN-2, NOVA-2, NOVA-3, COMET-HF and IZAR-2,
@@ -346,7 +348,7 @@ export default function RaasFullUniverseScores(){
    Cap quotes expire after seven calendar days without reverification.
   </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ten-trial-pilot-download="true">
-   <strong>10-trial, 30-metric retrospective RAAS pilot:</strong>{" "}
+   <strong>Historical 30-metric retrospective research archive (not active RAAS):</strong>{" "}
    <a href="/raas-ten-trial-metric-pilot.csv" download
     style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
     Download actual graded metrics and every missing item (300-row CSV)
@@ -370,7 +372,7 @@ export default function RaasFullUniverseScores(){
   </p>
   <p style={{fontSize:12,lineHeight:1.5,margin:"6px 0"}}>
    <strong>TOP/BOTTOM registry source coverage is calculated across every matched NCT.</strong>
-   Percentages measure the share of 30 metric research weights with a mapped
+   The legacy source-coverage percentages measure the share of archival 30-metric weights with a mapped
    ClinicalTrials.gov source lead, not clinical success probability, stock return,
    or a numerical overall RAAS grade.
   </p>
@@ -420,7 +422,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong> · {stats.aiSourceCrosschecks} AI source checks (not approved). Missing full scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","AI benchmark checks","Source / missing evidence","Reviewed-only TOP / BOTTOM research","Raw trial-design grade","Clinical reporting grade","TOP source coverage","BOTTOM source coverage","Registry facts","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","AI benchmark checks","Source / missing evidence","Clinical-only TOP / BOTTOM research","Raw trial-design grade","Clinical reporting grade","TOP source coverage","BOTTOM source coverage","Registry facts","Five clinical factors","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -437,7 +439,7 @@ export default function RaasFullUniverseScores(){
      <td style={cell}>{x.timing!==null?<><strong>{x.timing}/100</strong>
       <span style={{display:"block",fontSize:11}}>{x.stage==="pre"?"Timing specificity only":"Clinical contrast pilot only"}</span></>:
       <span>Not scored</span>}</td>
-     <td style={cell}><strong>{x.stage?x.metricCount+"/30":"0 verified / 30"}</strong>
+     <td style={cell}><strong>{x.stage?x.metricCount+"/5":"0 verified / 5"}</strong>
       <span style={{display:"block",fontSize:11}}>No missing input scored as zero</span></td>
      <td style={cell} data-raas-row-ai-crosschecks={x.row.nctId}>
       <strong>{(x.researchTop?.aiCrosscheckedCount??0)+(x.researchBottom?.aiCrosscheckedCount??0)} provisional</strong>
@@ -491,7 +493,7 @@ export default function RaasFullUniverseScores(){
       <strong>{x.bottomRegistryCoverage===null?"N/A":x.bottomRegistryCoverage.sourceWeightPct+"%"}</strong>
       <span style={{display:"block",fontSize:11}}>Posted primary/safety evidence, not RAAS performance</span></td>
      <td style={cell}><RaasRegistryEvidenceButton row={x.row}/></td>
-     <td style={cell}><RaasMetricGradebook row={x.row} bucket={x.stage}/></td>
+     <td style={cell}><RaasClinicalFiveCell row={x.row} bucket={x.stage}/></td>
      <td style={cell}><RaasTrialHistoryButton row={x.row} bucket={x.stage}/></td>
     </tr>)}</tbody>
    </table>
