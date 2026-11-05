@@ -60,13 +60,15 @@ export default function RaasTopBottomCompletionPanel({
  const pages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
  const currentPage=Math.min(page,pages-1);
  const displayed=filtered.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE);
- function exportList(kind:"all"|"missing"){
+ function exportList(kind:"all"|"missing"|"handoff"){
   if(!plan)return;
-  const csv=kind==="all"?plan.allCsv:plan.missingOnlyCsv;
+  const csv=kind==="all"?plan.allCsv:kind==="missing"?
+   plan.missingOnlyCsv:plan.independentReviewHandoffCsv;
   const blob=new Blob(["\uFEFF",csv],{type:"text/csv;charset=utf-8"});
   const uri=URL.createObjectURL(blob);
   const a=document.createElement("a");
-  a.download="raas-TOP-BOTTOM-"+(kind==="all"?"all-metric-status":"missing-evidence-review")+".csv";
+  a.download="raas-TOP-BOTTOM-"+(kind==="all"?"all-metric-status":
+    kind==="missing"?"missing-evidence-review":"independent-review-handoff")+".csv";
   a.href=uri;document.body.appendChild(a);a.click();a.remove();
   window.setTimeout(()=>URL.revokeObjectURL(uri),1500);
  }
@@ -90,6 +92,8 @@ export default function RaasTopBottomCompletionPanel({
     {n:summary.provisionalMetricGrades,label:"Source-checked provisional grades"},
     {n:publishedCount,label:"Published metric evidence leads · ungraded"},
     {n:summary.missingMetricGrades,label:"Missing numerical metric reviews"},
+    {n:summary.missingWithoutPublishedMetricLead,
+     label:"Missing grades requiring more source discovery"},
     {n:summary.independentFullScores,label:"Independently validated full RAAS scores"}
    ].map(x=><div key={x.label} style={{border:"1px solid #c1dcc6",
     background:"white",borderRadius:8,padding:10}}>
@@ -129,6 +133,11 @@ export default function RaasTopBottomCompletionPanel({
    </table>
   </div>
   <div style={{display:"flex",flexWrap:"wrap",gap:9,margin:"13px 0"}}>
+   <button type="button" style={buttonStyle}
+    data-raas-independent-review-handoff="300-source-linked-tasks"
+    onClick={()=>exportList("handoff")}>
+    Download full independent-review handoff · {summary.allMetricSlots} metrics
+   </button>
    <button type="button" style={buttonStyle} data-raas-missing-review-csv="true"
     onClick={()=>exportList("missing")}>
     Export {summary.missingMetricGrades} exact missing-grade evidence tasks
@@ -139,10 +148,14 @@ export default function RaasTopBottomCompletionPanel({
    </button>
   </div>
   <p style={{fontSize:12,color:"#496454"}}>
-   The downloaded review list identifies the issuer/registry source,
-   required metric-specific evidence, comparator benchmark, and critical
-   risks. Those links are <strong>starting sources for review</strong>,
-   not proof that the missing metric has been graded.
+   The complete handoff includes {summary.provisionalMetricGrades} provisional
+   grades needing independent recheck, {summary.publishedUngradedMetricLeads}
+   published source leads not yet graded, and {summary.missingWithoutPublishedMetricLead}
+   missing grades requiring further source research. It preserves primary-source
+   and comparator links, metric requirements and critical risks. Reviewer identity,
+   signature, adjudication and date fields are deliberately blank. This is a
+   reviewer worksheet, <strong>not</strong> independent certification, a validated
+   RAAS 0–100 composite, or an FDA probability.
   </p>
   <button type="button" aria-expanded={expanded}
    data-raas-missing-tasks-expand="true"
