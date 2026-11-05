@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "scope": "RAAS_EXPLICIT_METRIC_REVIEWS_RESEARCH_ONLY",
-  "sourceAsOf": "2026-11-04",
-  "note": "Now 82 AI-assisted provisional metric reviews: 50 retrospective POST records on 10 historical NCTs, 27 current PRE records on six Phase3 NCTs (4 issuers), 5 new POST metrics for currently FDA-accepted Phase3 COGT GIST PEAK NCT05208047. Three separate COGT PDUFA applications are in the distinct current FDA action tracker; only PEAK GIST has Phase3 evidence. Do not pool issuer capitalization, presume regulatory outcomes, or treat nonadvanced/advanced mastocytosis Phase2 registration studies as meeting user Phase3 minimum. No human independent metric reviews, full RAAS 30/30 or calibrated FDA probabilities.",
+  "sourceAsOf": "2026-11-05",
+  "note": "83 AI-assisted source-crosschecked provisional component reviews, including a new GRACE NCT03697109 BOTTOM post-1-1 mixed evidence component. Previously 82: 50 retrospective POST records on ten historical NCTs, 27 PRE on six current Phase 3 NCTs, 5 PEAK GIST POST. New GRACE component is retrospective, not a frozen forecast. No independent human approvals, full RAAS 30/30, calibrated FDA probabilities, or stock recommendations.",
   "records": [
     {
       "nctId": "NCT06445023",
@@ -1642,6 +1642,26 @@
       "uncertaintyReview": "Date sourced to issuer filing acceptance public announcement; no live FDA or sponsor post-May target amendment confirmed in this single dated source. Reverify before transaction, and do not turn an exact PDUFA date into a numerical PASS/CRL/extension probability.",
       "criticalRiskReview": "An FDA agency action can occur early, late or change via review extension; an accepted target does not guarantee approval or a scheduled publicly tradable announcement.",
       "reviewerMethod": "AI-assisted primary-source crosscheck dated 2026-11-04 with clinical/FDA methodological benchmark; not an independent human clinical or regulatory review. Partial per-metric research grade only, no full 30/30, no FDA approval/CRL/extension probability, no trade recommendation or prospective accuracy claim.",
+      "independentReview": "AI_SOURCE_CROSSCHECKED"
+    },
+    {
+      "nctId": "NCT03697109",
+      "ticker": "CORT",
+      "drug": "relacorilant",
+      "indication": "endogenous hypercortisolism (Cushing's syndrome)",
+      "stage": "post",
+      "metricId": "post-1-1",
+      "finding": "MIXED_EVIDENCE",
+      "assessedAt": "2026-11-05",
+      "sourceDate": "2026-02-20",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41730814/",
+      "benchmarkSourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22466348/",
+      "benchmarkId": "Prior 2012 SEISMIC Cushing hypertension context, not a matched active-control superiority benchmark",
+      "benchmarkContext": "Published SEISMIC mifepristone Cushing cohort (2012) reported diastolic blood-pressure response in approximately 38% but was open-label, nonrandomized and assessed treatment response, not randomized withdrawal. It establishes patient-important blood-pressure relevance only; no between-program causal superiority comparison or pre-frozen RAAS success threshold is valid.",
+      "observedResult": "GRACE NCT03697109 randomized-withdrawal efficacy (published 2026-02-20): among hypertension responders, loss of blood-pressure response occurred in 11/21 (52%) continuing relacorilant versus 19/22 (86%) receiving placebo at week 12. Difference -34 percentage points, OR 0.17 (95% CI 0.04-0.77), P=0.022. The prespecified primary hypertension endpoint was met, but the prespecified design target was a 50 percentage-point contrast; secondary hyperglycemia analyses were not statistically significant.",
+      "uncertaintyReview": "Randomized-withdrawal population was response enriched following 22 weeks of open-label treatment: 62 randomized overall, 43 evaluable for hypertension endpoint. Missing endpoint values classified as lost response (roughly 23% missing across arms); modified ITT and per-protocol sensitivity analyses still favored relacorilant. Wide OR confidence limits, selection/generalizability, protocol revisions, and unknown longer-term durability prevent strong efficacy calibration.",
+      "criticalRiskReview": "Clinical improvement is supported for maintenance of hypertension control among responders, not for all initially enrolled Cushing patients or glycemic control. Mifepristone historic comparison differs by endpoints and population. No regulatory probability, cross-trial ranking, financial upside or 30-metric composite should be inferred. Explicitly retrospective, not a frozen pre-2024 forecast.",
+      "reviewerMethod": "AI source crosscheck on 2026-11-05 of exact-NCT peer-reviewed randomized-withdrawal GRACE trial versus independent 2012 SEISMIC Cushing hypertension context. Explicit mixed/intermediate component grade for positive primary endpoint offset by responder-enriched small trial, wide CI, missing data, and null glycemic secondary. This is NOT an independent human review, calibrated threshold or validated full RAAS rating.",
       "independentReview": "AI_SOURCE_CROSSCHECKED"
     }
   ]
