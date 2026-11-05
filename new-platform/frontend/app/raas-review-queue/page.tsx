@@ -69,6 +69,10 @@ export default function IndependentMetricReviewQueuePage(){
     This website does not accept public review uploads or automatically release scores.
    </p>
   </section>
+  <p className={css.notice}>To expand from these 82 already source-checked metric
+   research tasks to every registered study, open
+   {" "}<Link href="/raas-evidence-backlog">the complete 762-trial evidence-gap queue</Link>.
+   It identifies the next source task without inventing scores.</p>
   <ReviewQueueClient queue={queue}/>
   <p className={css.foot} style={{marginTop:20}}>
    The queue is re-derived from the checked-in research ledger on deployment.
