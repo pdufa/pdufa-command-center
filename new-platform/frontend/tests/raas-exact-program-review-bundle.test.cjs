@@ -114,3 +114,16 @@ test("mobile RAAS review board offers single file handoff for each exact stage",
   }});
  assert.equal((parsed.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCategory.Error).length,0);
 });
+
+test("valid ClinicalTrials.gov NCT IDs survive both RAAS review page deep-link filters",()=>{
+ const page=fs.readFileSync(path.join(root,"app/raas-review-queue/page.tsx"),"utf8");
+ const terms=[...page.matchAll(/const (?:initialNctId|existingNctId)=(\\/[^/]+\\/)\\.test/g)];
+ assert.equal(terms.length,2);
+ for(const [,literal] of terms){
+  const rx=new RegExp(literal.slice(1,-1));
+  assert.equal(rx.test("NCT05208047"),true);
+  assert.equal(rx.test("NCT0520804"),false);
+  assert.equal(rx.test("NCT052080470"),false);
+  assert.equal(rx.test("nct05208047"),false);
+ }
+});
