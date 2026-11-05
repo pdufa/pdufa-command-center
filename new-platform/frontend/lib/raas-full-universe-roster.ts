@@ -8,10 +8,19 @@ const TICKER=/^[A-Z]{1,7}(?:[.-][A-Z]{1,3})?$/;
 const STAGES=new Set(["Phase 3","Phase 3 Results"]);
 export type RaasScreenedTrialRoster={
  rows:ReadoutRow[];sourceAsOf:string;source:"MARKET_CAP_RESTRICTED_PHASE3_POOL";
+ details:ReadonlyMap<string,{drug:string;indication:string;recordedStage:"Phase 3"|"Phase 3 Results"}>;
 };
 export const RAAS_RESTRICTED_PHASE3_CSV_QUERY=
  "/api/scope-funnel?view=pool&tools=1&recordKind=trials&stages="+
  encodeURIComponent("Phase 3,Phase 3 Results")+
+ "&offset=0&limit=50&format=csv";
+/** Only source-recorded Phase 3 (not Phase 3 Results), within dated
+ * verified $300M–$10B Nasdaq/NYSE issuer-cap restriction.
+ * Endpoint emits all matches in one exact-NCT CSV (no 50-row truncation).
+ */
+export const RAAS_RESTRICTED_TOP_PHASE3_CSV_QUERY=
+ "/api/scope-funnel?view=pool&tools=1&recordKind=trials&stages="+
+ encodeURIComponent("Phase 3")+
  "&offset=0&limit=50&format=csv";
 /** RFC-4180 fields, with bounded file and row sizes. Explicitly rejects
  * corrupt/mixed schemas instead of inventing a trial universe count.
@@ -62,7 +71,9 @@ export function parseRaasScreenedPhase3Csv(
  if(new Set(head).size!==head.length||headers.some(h=>locate(h)<0)||
   head.length<20||head.length>60)throw Error("RAAS_ROSTER_HEADER_INVALID");
  const known=new Map([...classified.pre,...classified.post].map(r=>[r.nctId,r]));
- const ids=new Set<string>();const result:ReadoutRow[]=[];let sourceAsOf="";
+ const ids=new Set<string>();const result:ReadoutRow[]=[];
+ const details=new Map<string,{drug:string;indication:string;recordedStage:"Phase 3"|"Phase 3 Results"}>();
+ let sourceAsOf="";
  for(const values of parsed.slice(1)){
   if(values.length!==head.length)throw Error("RAAS_ROSTER_ROW_SHAPE_INVALID");
   const pick=(n:typeof headers[number])=>values[locate(n)].trim();
@@ -75,6 +86,7 @@ export function parseRaasScreenedPhase3Csv(
      (sourceAsOf&&asOf!==sourceAsOf))
     throw Error("RAAS_ROSTER_ROW_INVALID");
   sourceAsOf=asOf;ids.add(id);
+  details.set(id,{drug,indication,recordedStage:stage as "Phase 3"|"Phase 3 Results"});
   const verified=known.get(id);
   // Use only direct dated issuer evidence from the verified classification;
   // phase/status names in a source registry are not readout evidence.
@@ -83,5 +95,5 @@ export function parseRaasScreenedPhase3Csv(
    status:"UNKNOWN",pipelineQualification:null,fdaPdufaVerification:false,
    evidence:evidence||null});
  }
- return {rows:result,sourceAsOf,source:"MARKET_CAP_RESTRICTED_PHASE3_POOL"};
+ return {rows:result,sourceAsOf,source:"MARKET_CAP_RESTRICTED_PHASE3_POOL",details};
 }

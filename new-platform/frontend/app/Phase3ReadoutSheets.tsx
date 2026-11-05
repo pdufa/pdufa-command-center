@@ -8,6 +8,7 @@ import TrialRaasDisclosure from "./TrialRaasDisclosure";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasClinicalFiveCell from "./RaasClinicalFiveCell";
 import RaasClinicalFiveCompletionPanel from "./RaasClinicalFiveCompletionPanel";
+import CapScreenedTopPhase3Spreadsheet from "./CapScreenedTopPhase3Spreadsheet";
 import {clinicalFiveForTrial,clinicalFiveDefinitions}
  from "../lib/raas-clinical-five";
 import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
@@ -873,11 +874,12 @@ function TopRaasAccuracyButton(){
 }
 
 function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurveyOpen,
- benefitFeed,researchStatus,onResearchSort}:{
+ benefitFeed,researchStatus,onResearchSort,classification}:{
  bucket:"pre"|"post";rows:ReadoutRow[];query:string;caption:string;
  showSurveys:boolean;showSynthesis:boolean;benefitFeed:BenefitFeed|null;
  researchStatus:"idle"|"loading"|"ready"|"unavailable";onResearchSort:()=>void;
  onSurveyOpen:(row:ReadoutRow,view:"details"|"synthesis")=>void;
+ classification?:ReadoutClassification;
 }){
   const [sort,setSort]=useState<Phase3ReadoutSortKey>("ticker");
   const [desc,setDesc]=useState(false);
@@ -924,6 +926,7 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
           {number(rows.length)} documented trials · {number(matched.length)} matching
         </strong>
       </summary>
+      {pre&&classification&&<CapScreenedTopPhase3Spreadsheet classification={classification} query={query}/>}
       <div className={css.sheetPanelActions}>
         <button type="button" onClick={()=>downloadCsv(bucket,matched)} disabled={!matched.length}>
           Export matching CSV</button>
@@ -1130,12 +1133,12 @@ export default function Phase3ReadoutSheets(){
     </section>
     <RaasClinicalFiveCompletionPanel data={data}/>
     <RaasAllClassifiedLiveReview data={data}/>
-    <Spreadsheet bucket="pre" rows={data.pre} query={query}
+    <Spreadsheet bucket="pre" rows={data.pre} query={query} classification={data}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
       benefitFeed={benefitFeed} researchStatus={researchStatus}
       onResearchSort={()=>setResearchSortRequested(true)}
       onSurveyOpen={(row,view)=>setActiveSurvey({row,bucket:"pre",view})}
-      caption="Trials without a documented issuer public release at their source-check date. Each row retains the check date and issuer link."/>
+      caption="Cap-screened Phase 3 TOP intake plus separately source-checked historical TOP trials. Readout-unverified candidates are labeled."/>
     <Spreadsheet bucket="post" rows={data.post} query={query}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
       benefitFeed={benefitFeed} researchStatus={researchStatus}

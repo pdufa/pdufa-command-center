@@ -12,14 +12,17 @@ export default function RaasTopBottomPage(){
   <header className={css.header}>
    <Link className={css.back} href="/tools">← TOOLS</Link>
    <h1>RAAS · TOP and BOTTOM spreadsheets</h1>
-   <p><strong>Only source-classified trials in these two spreadsheets
-    receive TOP/BOTTOM RAAS research metric assessments.</strong>
-    Each stage has five clinical-science assessments. Expanded ingredients,
-    history and stage-specific CSV exports stay with the trial.</p>
-   <p><strong>Not scored here:</strong> the 11,000+ trial POOL;
-    unclassified Phase 3 trials; and the 762-NCT registry-only research
-    inventory. Those sources may supply candidates and evidence, but cannot
-    establish the correct readout stage.</p>
+   <p><strong>TOP now includes the current $300M–$10B,
+    source-recorded Phase 3 candidate universe.</strong>
+    Unverified readout statuses are clearly labeled and receive research-only
+    five-factor checklists, not invented classified TOP scores.
+    The issuer-classified TOP and BOTTOM sheets keep their dated evidence,
+    five clinical factors and trial history.</p>
+   <p><strong>TOP cap screening:</strong> only Phase 3 records with a dated,
+    source-verified listed-issuer cap between $300 million and $10 billion
+    are included; known Phase 3 public readouts are excluded.
+    The wider 11,000+ trial POOL and unverified market-cap records are not
+    automatically included.</p>
   </header>
   <Phase3ReadoutSheets/>
   <p className={css.disclaimer}>
