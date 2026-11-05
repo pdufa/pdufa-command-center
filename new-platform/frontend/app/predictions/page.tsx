@@ -12,6 +12,8 @@ import {currentRaasFdaForecastFreezeReceiptAudit}
  from "../../lib/raas-fda-forecast-freeze-receipt-audit";
 import {currentRaasFdaOriginalGoalOutcomeAudit}
  from "../../lib/raas-fda-original-goal-outcome-audit";
+import {currentRaasFdaThreeWayResearchScorecard}
+ from "../../lib/raas-fda-three-way-research-scorecard";
 
 export const metadata:Metadata={
  title:"RAAS Predictions — FDA PASS / CRL / EXTENSION | PDUFA",
@@ -24,6 +26,7 @@ const preflightByCase=new Map(freezePreflight.records.map(x=>[x.caseKey,x]));
 const receiptAudit=currentRaasFdaForecastFreezeReceiptAudit();
 const originalGoalAudit=currentRaasFdaOriginalGoalOutcomeAudit();
 const outcomeCaseByKey=new Map(originalGoalAudit.cases.map(x=>[x.caseKey,x]));
+const threeWayScorecard=currentRaasFdaThreeWayResearchScorecard();
 const panel={border:"1px solid #c6d7cc",background:"#fff",borderRadius:10,padding:"14px"} as const;
 const muted={fontSize:13,color:"#455c50",lineHeight:1.5} as const;
 const stats={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:10,margin:"15px 0"} as const;
@@ -49,6 +52,51 @@ export default function PredictionsPage(){
    <Fact value={allTrial.fullValidatedRaasScores} label="Fully validated 30/30 RAAS scores"/>
    <Fact value={accuracy.predecisionThreeWayIndependentlyVerifiedForecasts} label="Independently verified three-way forecasts"/>
   </div>
+  <section style={{...panel,marginBottom:15}}
+   data-raas-fda-threeway-scorecard="UNVALIDATED">
+   <h2>Prospective FDA three-way accuracy · independent scorecard</h2>
+   <div style={stats}>
+    <Fact value={threeWayScorecard.researchPairedCases}
+     label="Original-goal forecast/outcome research pairs"/>
+    <Fact value={threeWayScorecard.researchRosterCases}
+     label="Tracked research application leads, excluding Phase 2"/>
+    <Fact value={threeWayScorecard.researchStatistics?
+     threeWayScorecard.researchStatistics.topClassAccuracyPct+"%":"Not measurable"}
+     label="Three-way descriptive accuracy (not a certified rating)"/>
+    <Fact value={threeWayScorecard.independentValidatedAccuracyPct===null?
+     "Not validated":threeWayScorecard.independentValidatedAccuracyPct+"%"}
+     label="Independent FDA PASS / CRL / EXTENSION model accuracy"/>
+   </div>
+   <p style={muted}>
+    A forecast can be measured only after it was independently witnessed
+    before the original deadline and paired to the correct FDA review-cycle
+    outcome. The research calculator supports confusion matrices, balanced
+    accuracy, multiclass Brier score, log loss, calibration error, and a
+    same-cohort always-PASS comparison. No missing predictions or outcomes are
+    counted as incorrect: the accuracy rate remains unavailable.
+   </p>
+   <details>
+    <summary style={{cursor:"pointer",fontWeight:700}}>
+     Show {threeWayScorecard.readinessGates.length} measurement gates
+    </summary>
+    <ul style={{paddingLeft:21}}>
+     {threeWayScorecard.readinessGates.map(g=><li key={g.id}
+      style={{marginBottom:8}}>
+      <strong>{g.passed?"Research gate satisfied":"Evidence missing"}</strong>
+      {" "}· {g.description} ({g.achieved}/{g.required})
+     </li>)}
+    </ul>
+    <p style={muted}>Passing these structural research gates
+     would still require independent authentication of actual evidence
+     and does not automatically approve a forecast model.</p>
+   </details>
+   <p style={muted}>
+    <a href="/api/raas-fda-threeway-scorecard">
+     Open FDA three-way research scorecard (JSON)</a>.
+    Research holdout results are never automatically certified, and
+    no RAAS trading signal is released by this audit.
+   </p>
+  </section>
   <section style={{...panel,marginBottom:15}}
    data-raas-fda-freeze-receipt-audit="PENDING_INDEPENDENT_VALIDATION">
    <h2>Prospective forecast freeze receipt audit</h2>
