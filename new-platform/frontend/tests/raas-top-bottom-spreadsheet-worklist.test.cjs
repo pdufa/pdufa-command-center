@@ -74,6 +74,6 @@ test("stage-specific UI only exposes RAAS export under TOP and BOTTOM sheets",()
  assert.match(s,/buildTopBottomRaasMetricWorklist\(bucket,rows\)/);
  assert.match(s,/data-raas-stage-only-export=/);
  assert.match(s,/downloadTopBottomRaasWorklist\(bucket,matched\)/);
- assert.match(s,/No RAAS score assigned: not in either verified TOP or BOTTOM spreadsheet/);
+ assert.match(s,/No new RAAS score: not in either verified TOP or BOTTOM spreadsheet/);
  assert.doesNotMatch(s,/downloadTopBottomRaasWorklist\("unverified"/);
 });
