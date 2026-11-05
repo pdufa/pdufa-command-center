@@ -115,7 +115,7 @@ test("registry source leads remain distinct from independently reviewed RAAS gra
  assert.match(code,/No matching registry lead/);
  assert.match(code,/x\.sourceLeads\.length===0/);
  assert.match(code,/lead\.sourceUrl/);
- assert.match(code,/x\.reviewed\/30/);
+ assert.match(code,/\{x\.reviewed\}\/30/);
  assert.match(code,/Not validated/);
  assert.doesNotMatch(code,/approvedOverallScore:\s*x\.leadMetricCount/);
 });
