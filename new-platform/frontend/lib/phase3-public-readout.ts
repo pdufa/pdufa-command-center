@@ -41,6 +41,10 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
   const censusIds=new Map(census.map(row=>[row.nctId,row]));
   if(censusIds.size!==741||census.length!==741)return fail();
   const hasManualReview=sourceFiles.includes(NEW_SOURCE);
+  // New issuer/registry dual-source identities must never remain classifiable
+  // if the provenance ledger was accidentally dropped from the manifest.
+  if(!hasManualReview&&entries.some(item=>item&&typeof item==="object"&&
+    ("issuerTrialName" in item||"registryTrialUrl" in item)))return fail();
   const provenance=addedSource.records;
   const expectedCrosswalk=new Map(provenance.map(x=>[x.nctId,x]));
   if(hasManualReview&&
