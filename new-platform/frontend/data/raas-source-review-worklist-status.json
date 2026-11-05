@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "RAAS_TRIAL_STAGE_SOURCE_REVIEW_WORKLIST_NOT_SCORES",
-  "sourceAsOf": "2026-11-04T23:44:45+00:00",
+  "sourceAsOf": "2026-11-05T02:44:48+00:00",
   "researchTrials": 762,
   "trialStageReviewRows": 1524,
   "submittedMetricReviewRecords": 82,

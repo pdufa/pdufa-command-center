@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "scope": "RAAS_NIGHTLY_REGISTRY_CHANGE_AUDIT_RESEARCH_ONLY",
-  "auditState": "AWAITING_FIRST_COMPARATIVE_SCAN",
-  "previousSourceAsOf": null,
-  "latestSourceAsOf": null,
-  "recordedAt": null,
+  "auditState": "COMPLETE",
+  "previousSourceAsOf": "2026-11-04T23:44:45+00:00",
+  "latestSourceAsOf": "2026-11-05T02:44:48+00:00",
+  "recordedAt": "2026-11-05T02:44:49+00:00",
   "trackedResearchNcts": 762,
-  "sourceFetchAttempted": 0,
-  "sourceFetchSucceeded": 0,
+  "sourceFetchAttempted": 762,
+  "sourceFetchSucceeded": 762,
   "sourceFetchFailed": 0,
   "sourceFetchFailureNcts": [],
   "sourceHashChangedNcts": 0,
@@ -21,5 +21,5 @@
   "totalRetainedHistoricalEvents": 0,
   "approvedRaasScoreUpdates": 0,
   "calibratedFdaForecastUpdates": 0,
-  "scopeNote": "Seeded tracker, not yet a performed source comparison. The next successful nightly ClinicalTrials.gov collection can establish a first dated change audit; no historical updates are inferred."
+  "scopeNote": "Research-only ClinicalTrials.gov before/after source audit. A source update is not a dated public Phase 3 readout, FDA action, validated clinical result, RAAS 0-100 score, or automatic rating revision. Prior source hashes and all historical event records are retained."
 }

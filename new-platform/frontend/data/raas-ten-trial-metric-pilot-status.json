@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_TEN_HISTORICAL_TRIAL_30_METRIC_PARTIAL_SCORES_NOT_PREDICTIONS",
   "reviewSourceAsOf": "2026-11-04",
-  "registrySourceAsOf": "2026-11-04T23:44:45+00:00",
+  "registrySourceAsOf": "2026-11-05T02:44:48+00:00",
   "pilotNctCount": 10,
   "metricSlots": 300,
   "aiSourceReviewedMetricSlots": 50,
