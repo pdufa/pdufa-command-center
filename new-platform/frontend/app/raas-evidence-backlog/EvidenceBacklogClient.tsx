@@ -9,6 +9,10 @@ import {buildRaasRegistryClinicalFactLedger,
  type RaasRegistryClinicalFactLedger,type RaasRegistryClinicalFact}
  from "../../lib/raas-registry-clinical-fact-ledger";
 import TrialClinicalEvidenceFacts from "./TrialClinicalEvidenceFacts";
+import {buildPrimaryContrastReconciliationLedger,
+ type PrimaryContrastReconciliationLedger,type PrimaryContrastReconciliation}
+ from "../../lib/raas-primary-arm-reconciliation";
+import TrialPrimaryArmReconciliations from "./TrialPrimaryArmReconciliations";
 
 const priorities:Record<EvidenceBacklogPriority,string>={
  FDA_ACCEPTED_PHASE3:"FDA-accepted Phase 3 · verify action",
@@ -31,6 +35,7 @@ const count=25;
 export default function EvidenceBacklogClient(){
  const [backlog,setBacklog]=useState<TrialEvidenceBacklog|null>(null);
  const [clinicalLedger,setClinicalLedger]=useState<RaasRegistryClinicalFactLedger|null>(null);
+ const [comparators,setComparators]=useState<PrimaryContrastReconciliationLedger|null>(null);
  const [error,setError]=useState("");
  const [q,setQ]=useState("");
  const [priority,setPriority]=useState<"all"|EvidenceBacklogPriority>("all");
@@ -39,6 +44,8 @@ export default function EvidenceBacklogClient(){
  const [reviewed,setReviewed]=useState<"all"|"has"|"none">("all");
  const [integrity,setIntegrity]=useState<"all"|"flagged"|"not-flagged">("all");
  const [rawFacts,setRawFacts]=useState<"all"|"numeric"|"contrast"|"sae"|"none">("all");
+ const [comparisonState,setComparisonState]=useState<
+  "all"|"has"|"raw-check"|"estimand-review"|"none">("all");
  const [page,setPage]=useState(0);
  useEffect(()=>{
   let alive=true;
@@ -50,7 +57,12 @@ export default function EvidenceBacklogClient(){
     const clinical=buildRaasRegistryClinicalFactLedger(index);
     if(next.totalTrials!==clinical.registryNcts||
        next.sourceAsOf!==clinical.sourceAsOf)throw Error("RAAS_SOURCE_FACT_BACKLOG_MISMATCH");
-    setClinicalLedger(clinical);setBacklog(next);
+    const originalArms=buildPrimaryContrastReconciliationLedger(index);
+    if(originalArms.registryNcts!==next.totalTrials||
+       originalArms.sourceAsOf!==next.sourceAsOf)
+      throw Error("RAAS_EXACT_ARM_SOURCE_OUT_OF_SYNC");
+    setClinicalLedger(clinical);
+    setComparators(originalArms);setBacklog(next);
    }
    catch(e){setError(e instanceof Error?e.message:"Evidence sources failed verification");}
   });return ()=>{alive=false;};
@@ -63,6 +75,14 @@ export default function EvidenceBacklogClient(){
   }
   return mapped;
  },[clinicalLedger]);
+ const comparisonsByNct=useMemo(()=>{
+  const mapped=new Map<string,PrimaryContrastReconciliation[]>();
+  for(const x of comparators?.records??[]){
+   const a=mapped.get(x.nctId)??[];
+   a.push(x);mapped.set(x.nctId,a);
+  }
+  return mapped;
+ },[comparators]);
  const filtered=useMemo(()=>{
   const text=q.toLowerCase().trim();
   return (backlog?.items??[]).filter(x=>
@@ -73,6 +93,13 @@ export default function EvidenceBacklogClient(){
     (results==="comparison"&&x.hasPrimaryComparisons))&&
    (reviewed==="all"||(x.reviewedTop+x.reviewedBottom>0)===(reviewed==="has"))&&
    (integrity==="all"||(x.sourceIntegrityIssueCount>0)===(integrity==="flagged"))&&
+   (comparisonState==="all"||(()=>{
+    const comparisons=comparisonsByNct.get(x.nctId)??[];
+    return comparisonState==="none"?comparisons.length===0:
+     comparisonState==="has"?comparisons.length>0:
+     comparisonState==="raw-check"?comparisons.some(c=>c.rawDifferenceEligible):
+     comparisons.some(c=>c.signal==="ARM_DELTA_DISCREPANCY_NEEDS_ESTIMAND_REVIEW");
+   })())&&
    (rawFacts==="all"||(()=>{
     const facts=factsByNct.get(x.nctId)??[];
     if(rawFacts==="none")return facts.length===0;
@@ -85,7 +112,8 @@ export default function EvidenceBacklogClient(){
     x.nctId,x.ticker,x.trialName||"",...x.conditions,...x.interventions,
     x.applicationKey||""
    ].some(v=>v.toLowerCase().includes(text))));
- },[backlog,q,priority,stage,results,reviewed,integrity,rawFacts,factsByNct]);
+ },[backlog,q,priority,stage,results,reviewed,integrity,rawFacts,
+  factsByNct,comparisonState,comparisonsByNct]);
  const pages=Math.max(1,Math.ceil(filtered.length/count));
  const current=Math.min(page,pages-1);
  const shown=filtered.slice(current*count,(current+1)*count);
@@ -105,7 +133,9 @@ export default function EvidenceBacklogClient(){
     [backlog.trialsWithComparativeRegistryEvidence,"Trials with source-reported primary comparisons"],
     [backlog.sourceIntegrityFlaggedTrials,"Registry trials with source-interpretation flags"],
     [clinicalLedger?.totalSourceFacts??0,"Source-linked clinical fact records (ungraded)"],
-    [clinicalLedger?.rawNumericFacts??0,"Raw numeric efficacy, precision and safety observations"]
+    [clinicalLedger?.rawNumericFacts??0,"Raw numeric efficacy, precision and safety observations"],
+    [comparators?.comparisons??0,"Original primary statistical contrasts with named arms"],
+    [comparators?.rawArmDiscrepancies??0,"Raw arm difference discrepancies requiring estimand review"]
    ].map(([v,label])=><div key={label} style={{...base,padding:14,background:"#f5faf6"}}>
     <strong style={{display:"block",fontSize:25}}>{v}</strong>
     <span style={{fontSize:11,lineHeight:1.5}}>{label}</span>
@@ -119,6 +149,9 @@ export default function EvidenceBacklogClient(){
    required stage. The two stages must never be combined into a 60-point rating.
    Source-interpretation flags highlight observations to check against original
    ClinicalTrials.gov result tables; they are not findings of source error.
+   Original source primary comparisons also preserve named OG arm groups,
+   source-reported numeric contrasts and model-specific reconciliation
+   warnings; those warnings do not prove the original source is wrong.
    Separately mapped clinical source facts retain exact NCT, original
    observation, source date and source checksum, but are NOT independently
    adjudicated scores or historical point-in-time predictions.
@@ -188,10 +221,26 @@ export default function EvidenceBacklogClient(){
      <option value="none">No extractable source fact</option>
     </select>
    </label>
+   <label style={{display:"grid",gap:5,fontSize:12,fontWeight:700}}>
+    Primary comparison reconstruction
+    <select value={comparisonState} aria-label="Filter source arm reconciliation"
+     onChange={e=>{setComparisonState(e.target.value as typeof comparisonState);reset();}} style={base}>
+     <option value="all">All source comparison checks</option>
+     <option value="has">Any original primary contrast</option>
+     <option value="raw-check">Can compare raw arm mean difference</option>
+     <option value="estimand-review">Raw arm vs reported contrast discrepancy</option>
+     <option value="none">No saved primary comparison</option>
+    </select>
+   </label>
    <button type="button" style={base} onClick={()=>{
     setQ("");setPriority("all");setStage("all");setResults("all");
-    setReviewed("all");setIntegrity("all");setRawFacts("all");reset();
+    setReviewed("all");setIntegrity("all");setRawFacts("all");
+    setComparisonState("all");reset();
    }}>Clear selections</button>
+   <a href="/api/raas-primary-arm-reconciliation" download
+    style={{...base,fontWeight:700}}>
+    Export original-arm reconciliation (CSV)
+   </a>
    <a href="/api/raas-registry-clinical-facts" download
     style={{...base,fontWeight:700}}>
     Export original clinical source facts (CSV)
@@ -269,6 +318,10 @@ export default function EvidenceBacklogClient(){
       </p>
      </details>}
      <TrialClinicalEvidenceFacts facts={factsByNct.get(x.nctId)??[]} nctId={x.nctId}/>
+     <TrialPrimaryArmReconciliations
+      nctId={x.nctId} records={comparisonsByNct.get(x.nctId)??[]}
+      summary={{eligibleRawArmChecks:comparators?.eligibleRawArmChecks??0,
+       rawArmDiscrepancies:comparators?.rawArmDiscrepancies??0}}/>
      <p style={{margin:0}}><strong>Unreviewed potential metric IDs:</strong>
       {" "}TOP {x.missingTopMetricIds.length}/30
       {" "}({x.missingTopMetricIds.slice(0,7).join(", ")}{x.missingTopMetricIds.length>7?", …":""});
