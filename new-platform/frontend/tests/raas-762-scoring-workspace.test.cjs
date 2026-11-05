@@ -119,3 +119,26 @@ test("registry source leads remain distinct from independently reviewed RAAS gra
  assert.match(code,/Not validated/);
  assert.doesNotMatch(code,/approvedOverallScore:\s*x\.leadMetricCount/);
 });
+
+test("missing registry source worklist exposes exact gap NCTs without fake grades",()=>{
+ const code=source("app/Raas762ScoringWorkspace.tsx");
+ for(const marker of [
+  'data-raas-registry-source-gap-queue="requires-primary-source-research"',
+  'const sourceGaps=useMemo(()=>rows.filter(r=>r.sourceLeads.length===0)',
+  'Source discovery worklist',
+  'x.evidence.registeredInterventions',
+  'x.evidence.registryLastUpdated',
+  'x.evidence.primaryDefinitions.length===0',
+  'setLeadFilter("no-leads")',
+  'A trial shown as completed does not establish successful efficacy'
+ ])assert.ok(code.includes(marker),"Missing registry gap queue safeguard: "+marker);
+ const registryIndex=JSON.parse(source("public/raas-registry-evidence-index.json"));
+ const withoutEndpoints=registryIndex.records.filter(x=>
+  !x.postedResults&&x.primaryDefinitions.length===0);
+ assert.deepEqual(withoutEndpoints.map(x=>x.nctId).sort(),[
+  "NCT00017407","NCT00033904","NCT00039000",
+  "NCT00048113","NCT00048295","NCT00486980"
+ ].sort());
+ assert.ok(withoutEndpoints.every(x=>x.postedPrimaryOutcomeCount===0));
+ assert.ok(withoutEndpoints.every(x=>x.registeredConditions.length>0));
+});
