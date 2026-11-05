@@ -1,3 +1,3 @@
-"""Legacy entry point: checklist controls now live in each GEM stage tab."""
+"""Retired GEM/GEM JR scan entrypoint; historical data remains archived."""
 import streamlit as st
-st.info("The scan checklist and its button have moved to the GEM JR and GEM tabs in the main PDUFA dashboard. The SCANS tab is for progress only.")
+st.info("GEM JR and GEM scans are retired. Open PIPELINE or RAAS for active analyses.")
