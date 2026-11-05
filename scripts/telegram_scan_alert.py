@@ -16,6 +16,7 @@ LABELS = {
     "pipeline-end": "✅ PDUFA PIPELINE — COMPLETED",
     "raas-start": "▶️ RAAS ACCURACY — STARTED",
     "raas-end": "✅ RAAS ACCURACY — COMPLETED",
+    "raas-evidence-change": "📄 RAAS — SAVED RESEARCH EVIDENCE CHANGED",
     "system-edit": "🛠 PDUFA SYSTEM — CODE UPDATED",
     "prediction-change": "📈 RAAS — VERIFIED PREDICTION CHANGE",
     "scan-start": "▶️ PDUFA / RAAS — SCAN STARTED",
