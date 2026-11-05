@@ -55,6 +55,8 @@ def _discovery(root, signature, pacific_day):
 
 
 def render_gem_scans(root="data"):
+    st.info("GEM scanning is retired. Use PIPELINE and RAAS for active research; historical data is preserved.")
+    return
     st.markdown("## GEM — MASTER STOCK LIST")
     st.caption(
         "Successful source-verified Phase 3 for the exact program is the "

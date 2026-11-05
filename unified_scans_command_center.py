@@ -15,18 +15,15 @@ import pandas as pd
 import streamlit as st
 
 from scan_status_ui import current_job_steps, recent_github_runs, pacific_time
-from gem_scan_block_ui import published_gem_block_report
 from overnight_status_ui import pacific_schedule_for, run_delay_minutes
 
 REPO = "pdufa/pdufa-command-center"
 API = "https://api.github.com/repos/" + REPO
 RAW = "https://raw.githubusercontent.com/" + REPO + "/main/data/individual_source_scans/"
 SOURCE_NAMES = ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER")
-SECTIONS = ("PIPELINE", "GEM JR", "GEM", *SOURCE_NAMES, "SCAN HEALTH")
+SECTIONS = ("PIPELINE", *SOURCE_NAMES, "SCAN HEALTH")
 WORKFLOWS = {
     "PIPELINE": "pdufa-individual-clinical-scan.yml",
-    "GEM JR": "pdufa-individual-clinical-scan.yml",
-    "GEM": "gem-research-quality.yml",
     **{k: "pdufa-individual-source-scan.yml" for k in SOURCE_NAMES},
     "SCAN ALL": "pdufa-overnight-sequential.yml",
     "SCAN HEALTH": "pdufa-adhoc-error-check.yml",
@@ -300,13 +297,11 @@ def workflow_request(section, mode):
     if section not in WORKFLOWS or mode not in ("DELTA", "FULL"):
         raise ValueError("Invalid scan section or mode")
     if section == "SCAN ALL":
-        args = {"scan_mode": mode, "gem_action": (
-            "RESCAN_ALL" if mode == "FULL" else "REVERIFY_PARTIAL")}
+        args = {"scan_mode": mode}
     elif section in SOURCE_NAMES:
         args = {"source": section, "scan_mode": mode}
-    elif section in ("PIPELINE", "GEM JR"):
-        args = {"section": "GEM_JR" if section == "GEM JR" else "PIPELINE",
-                "scan_mode": mode}
+    elif section == "PIPELINE":
+        args = {"section": "PIPELINE", "scan_mode": mode}
     elif section == "SCAN HEALTH":
         args = {}  # Standalone Gmail/GitHub status audit (not a collector).
     else:
@@ -388,7 +383,7 @@ def latest_section_run(runs, section):
         ):
             continue
         if section == "SCAN ALL" and (run.get("event") != "workflow_dispatch"
-                                      or title != "ALL + GEM — PDUFA overnight"):
+                                      or title != "POOL + PIPELINE — PDUFA overnight"):
             continue
         return run
     return {}
@@ -422,26 +417,25 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
     clinical, note = clinical_loader()
     clinical = clinical if isinstance(clinical, dict) else {}
     sources = sources_loader() or {}
-    gem = published_gem_block_report() or {}
+    gem = {}  # GEM/GEM JR are retired; historical reports stay archived.
     runs, error = recent_github_runs()
     candidates = [x for x in runs if isinstance(x, dict) and
                   str(x.get("path") or "").split("/")[-1] ==
                   "pdufa-overnight-sequential.yml" and
-                  x.get("display_title") == "ALL + GEM — PDUFA overnight"]
+                  x.get("display_title") == "POOL + PIPELINE — PDUFA overnight"]
     latest = (max(candidates, key=lambda x: str(x.get("created_at") or ""))
               if candidates else latest_night_loader() or {})
-    # Do not present a clinical-only fallback as the complete ALL + GEM chain.
+    # Do not present a clinical-only fallback as the complete Pipeline chain.
     if (str(latest.get("path") or "").split("/")[-1] !=
             "pdufa-overnight-sequential.yml"):
         latest = {}
     run_id = latest.get("id")
     jobs = current_job_steps(run_id) if isinstance(run_id, int) else []
     standalone = {name: individual_snapshot(name) for name in SOURCE_NAMES}
-    clinical_standalone = {
-        "PIPELINE": individual_clinical_snapshot("PIPELINE"),
-        "GEM JR": individual_clinical_snapshot("GEM JR"),
-    }
-    cards = collect_cards(clinical, sources, gem, jobs, standalone, clinical_standalone)
+    clinical_standalone = {"PIPELINE": individual_clinical_snapshot("PIPELINE")}
+    cards = [card for card in collect_cards(clinical, sources, gem, jobs,
+                                           standalone, clinical_standalone)
+             if card["name"] not in ("GEM JR", "GEM")]
     scoreable = [r for r in cards if r["score"] is not None and r["name"] in SOURCE_NAMES]
     due = sum(r["due"] for r in scoreable)
     cleared = sum(r["due"] - r["outstanding"] for r in scoreable)
@@ -473,7 +467,7 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                                            "FULL — refresh entire configured scope"),
                     key="unified_scan_mode")
     running_all = recent_active(runs, "SCAN ALL")
-    if st.button("SCAN ALL — PIPELINE → GEM JR → GEM → FDA / SEC / FINANCIAL / MARKET / ISSUER",
+    if st.button("SCAN ALL — PIPELINE → FDA / SEC / FINANCIAL / MARKET / ISSUER",
                  key="unified_scan_all", use_container_width=True,
                  type="primary", disabled=not authorized or bool(running_all)):
         _submit("SCAN ALL", mode, token, clinical_loader, sources_loader)
@@ -546,7 +540,7 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                     elif name == "SCAN HEALTH":
                         st.caption("Gmail/GitHub error audit only")
                     else:
-                        st.caption("Individual clinical/GEM run")
+                        st.caption("Individual clinical run")
                     if last:
                         conclusion = (str(last.get("conclusion") or "UNKNOWN").upper()
                                       if last.get("status") == "completed"
