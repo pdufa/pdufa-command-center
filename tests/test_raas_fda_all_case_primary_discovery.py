@@ -14,7 +14,10 @@ SIG = "a" * 64
 
 def row(ticker, i):
     return {
-        "caseKey": f"{ticker}-CASE-{i}",
+        "caseKey": {
+            "CYTK": "CYTK|MYQORZO_HCM_20261114",
+            "CORT": "RELACORILANT_CUSHINGS_US_20261217",
+        }.get(ticker, f"{ticker}-CASE-{i}"),
         "ticker": ticker,
         "sourceFingerprint": SIG,
         "originalFirstGoalDate": "2026-11-30",
