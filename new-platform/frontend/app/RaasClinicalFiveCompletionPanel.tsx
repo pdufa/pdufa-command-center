@@ -46,7 +46,7 @@ export default function RaasClinicalFiveCompletionPanel({data}:{
    Historical 30-metric finance, FDA-regulatory, market and risk assessments
    are archived and excluded from active RAAS.
   </p>
-  <div style={{display:"flex",gap:15,flexWrap:"wrap",fontSize:13,margin:"12px 0"}}>
+  <p style={{fontSize:13}}><a href="/raas-741-active-five-clinical.csv" download\n   style={{fontWeight:700,color:"#145e37",textDecoration:"underline"}}>Download all 741 historical trials · five clinical assessment fields each (CSV)</a></p>\n  <div style={{display:"flex",gap:15,flexWrap:"wrap",fontSize:13,margin:"12px 0"}}>
    <strong>{report.cells.length} classified clinical slots</strong>
    <strong>{report.graded} graded</strong><strong>{report.missing} N/A</strong>
    <strong>{report.complete} complete five-factor research scores</strong>
