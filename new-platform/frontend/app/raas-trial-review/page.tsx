@@ -54,7 +54,7 @@ export default async function RaasTrialReviewPage({
     research record. No alternative program or trial was substituted.
     {" "}<Link href="/raas-evidence-backlog">Find a trial in the evidence queue</Link>.
    </section>}
-  <p className={css.foot}><Link href="/raas-review-queue">
+  <p className={css.foot}><Link href="/raas-evidence-changes">Check latest exact-trial source changes</Link> · {" "}<Link href="/raas-review-queue">
    Existing source-reviewed metric assignments</Link> ·
    {" "}<Link href="/raas-worklist">All 60 RAAS metric definitions</Link>.
    This workflow does not activate retired GEM or GEM JR scans.
