@@ -2,6 +2,10 @@ name: PDUFA Telegram send test
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-telegram-send-test.yml'
 
 permissions:
   contents: read
