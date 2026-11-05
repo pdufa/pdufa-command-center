@@ -17,11 +17,11 @@ const real=classifyPhase3Readouts(
  parsePhase3CensusCsv(read("public/phase3-census-2026-10-26.csv")).rows
 );
 const all=[...real.pre,...real.post,...real.unverified];
-test("all 741 research-census NCTs evaluated; five pilots are not the universe",()=>{
+test("all 741 research-census NCTs evaluated; ten classified NCTs are not the universe",()=>{
  assert.equal(real.total,741);
  assert.equal(new Set(all.map(x=>x.nctId)).size,741);
- assert.equal(real.pre.length,2);assert.equal(real.post.length,3);
- assert.equal(real.unverified.length,736);
+ assert.equal(real.pre.length,2);assert.equal(real.post.length,8);
+ assert.equal(real.unverified.length,731);
  const graded=all.map(row=>{
   const stage=row.evidence?.kind==="PRE_AS_OF_CHECK"?"pre":
    row.evidence?.kind==="POST_PUBLIC_READOUT"?"post":null;
@@ -32,7 +32,7 @@ test("all 741 research-census NCTs evaluated; five pilots are not the universe",
     drug:row.evidence?.drug,indication:row.evidence?.indication
    },stage).scoredMetrics}:null;
  }).filter(Boolean);
- assert.equal(graded.length,5);
+ assert.equal(graded.length,10);
  assert.deepEqual(graded.filter(x=>x.metricGrades.length).map(x=>[x.trial,x.nctId,x.metricGrades[0].score]),[
   ["LBRX","NCT07363577",50],["TRVI","NCT07671911",50],
   ["CLDX","NCT06445023",75],["CLDX","NCT06455202",75]
