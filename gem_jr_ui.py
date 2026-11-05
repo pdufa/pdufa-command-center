@@ -18,6 +18,8 @@ from stage_wt_tables import render_stage_wt_tables
 
 
 def render_gem_jr(root="data"):
+    st.info("GEM JR scanning is retired. Use PIPELINE and RAAS for active research; historical data is preserved.")
+    return
     st.markdown("## GEM JR — RESEARCH & QUALIFICATION QUEUE")
     st.caption(
         "PIPELINE → GEM JR → GEM. This is a source review queue, not an entry signal. "
