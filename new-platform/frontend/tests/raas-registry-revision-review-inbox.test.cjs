@@ -72,7 +72,7 @@ test("source revision becomes two specific candidate research metrics, not anoth
 });
 
 test("two sequential revisions remain in history, one actionable latest task per exact metric",()=>{
- const prior=alternate(trial.sourceHash),first=prior[0]==="b"?"c".repeat(64):"b".repeat(64);
+ const prior=alternate(trial.sourceHash),first=["a","b","c"].find(x=>!([prior[0],trial.sourceHash[0]].includes(x))).repeat(64);
  const events=[
   makeEvent("d",t1,first,prior),
   makeEvent("e",t2,trial.sourceHash,first)
