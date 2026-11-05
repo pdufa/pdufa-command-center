@@ -1,8 +1,9 @@
 /** Stage-specific full 30-metric RAAS research-score calculator.
  * This is NOT an FDA approval probability, trading forecast or externally
- * validated RAAS model. A provisional score appears ONLY after all 30 metrics
- * have separately documented primary sources, independent comparator reviews,
- * uncertainty and critical-risk reviews, and the readout stage is verified.
+ * validated RAAS model. Under the 2026-11-05 source-acceptance policy,
+ * documented primary and benchmark sources are accepted for research grading
+ * without an external human signoff. A complete research score still requires
+ * all 30 exact-program metric assessments and a source-classified stage.
  * Unknown metrics are null; never impute 0, 50 or an average as a full score.
  */
 import {RAAS_METRIC_CATALOG,type RaasStage} from "./raas-metric-specs";
@@ -10,6 +11,7 @@ import {provisionalReviewedGrade,provisionalStageCoverage,
  type RaasProvisionalReview,type RaasProvisionalReviewedGrade}
  from "./raas-provisional-rubric-engine";
 import reviewData from "../data/raas-reviewed-metric-assessments.json";
+import sourcePolicy from "../data/raas-source-acceptance-policy.json";
 
 export type ReviewedMetricFeed={
  schemaVersion:1;scope:"RAAS_EXPLICIT_METRIC_REVIEWS_RESEARCH_ONLY";
@@ -73,6 +75,10 @@ export function fullReviewedTrialCandidate(
   throw Error("RAAS_REVIEWED_SCORE_DUPLICATE_OR_WRONG_STAGE");
  const independentReviewedCount=valid.filter(g=>g.reviewClass==="INDEPENDENT_REVIEW").length;
  const aiCrosscheckedCount=valid.filter(g=>g.reviewClass==="AI_SOURCE_CROSSCHECKED").length;
+ if(sourcePolicy.scope!=="RAAS_RESEARCH_SOURCE_ACCEPTANCE_POLICY"||
+  sourcePolicy.externalHumanReviewerRequiredForCompleteResearchScore!==false||
+  sourcePolicy.missingMetricPolicy!=="N_A_NO_IMPUTATION")
+  throw Error("RAAS_SOURCE_ACCEPTANCE_POLICY_INVALID");
  const diagnostic=provisionalStageCoverage(stage,valid);
  if(diagnostic.rejected.length)throw Error("RAAS_REVIEWED_SCORE_INVALID_GRADE");
  return {nctId:trial.nctId,ticker:trial.ticker,stage,
@@ -80,7 +86,7 @@ export function fullReviewedTrialCandidate(
   missingMetricIds:[...permitted].filter(id=>!ids.has(id)),
   weightedCoveragePercent:diagnostic.weightCoveredPercent,
   observedMean:diagnostic.observedComponentMean,
-  fullResearchScore:stageVerified&&independentReviewedCount===30?
+  fullResearchScore:stageVerified&&valid.length===30?
    diagnostic.fullyCoveredProvisionalScore:null,
   approvedOverallScore:null,
   type:"UNVALIDATED_REVIEWED_RESEARCH_SCORE_NOT_FDA_PROBABILITY",
