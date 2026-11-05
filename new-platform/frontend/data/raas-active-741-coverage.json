@@ -51,5 +51,17 @@
   "unverifiedResearchFiveOfFiveRows": 4,
   "unverifiedResearchStageMismatchCount": 1,
   "recordedClinicalGradesAcross741": 96,
-  "recoveredResearchScoresSource": "EXISTING_EXACT_PROGRAM_REVIEW_FEED_NOT_NEW_ISSUER_READOUTS"
+  "recoveredResearchScoresSource": "EXISTING_EXACT_PROGRAM_REVIEW_FEED_NOT_NEW_ISSUER_READOUTS",
+  "registryEvidenceLeadCensus": {
+    "sourceAsOf": "2026-11-05",
+    "postedResultsTrials": 329,
+    "unclassifiedPosted": 325,
+    "unclassifiedProtocolOnly": 404,
+    "missingRegistrySnapshot": 2,
+    "primaryComparisonResearchLeads": 180,
+    "primaryConfidenceIntervalResearchLeads": 77,
+    "safetyArmDenominatorResearchLeads": 243,
+    "note": "Trial-level research evidence leads overlap. They are not clinical RAAS grades or independent treatment efficacy reviews."
+  },
+  "researchReadinessCsv": "/raas-741-trial-source-readiness.csv"
 }

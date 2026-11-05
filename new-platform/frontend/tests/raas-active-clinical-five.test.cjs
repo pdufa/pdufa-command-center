@@ -83,3 +83,21 @@ test("previously saved research-only grades appear for 13 unclassified NCTs with
  assert.equal(coverage.issuerStageClassifiedTrials,10);
  assert.equal(coverage.stageUnverifiedTrials,731);
 });
+
+test("all 741 research source queue keeps stage separate from registry posting and contains no invented numerical clinical grade",()=>{
+ const csv=fs.readFileSync(path.join(root,"public/raas-741-trial-source-readiness.csv"),"utf8");
+ const lines=csv.trim().split(/\r?\n/);
+ assert.equal(lines.length,742);
+ assert.match(lines[0],/primaryComparisonCount/);
+ assert.match(lines[0],/safetyTermsWithArmDenominators/);
+ assert.match(lines[0],/clinicalRAASDisclaimer/);
+ const rows=lines.slice(1).map(line=>line.slice(1,-1).split('","'));
+ assert.equal(new Set(rows.map(r=>r[0])).size,741);
+ assert.equal(rows.filter(r=>r[4]==="UNVERIFIED").length,731);
+ assert.equal(rows.filter(r=>r[7]==="YES").length,329);
+ assert.equal(rows.filter(r=>r[5]==="UNAVAILABLE").length,2);
+ assert.ok(rows.every(r=>r[19].includes("NOT a numerical clinical grade")));
+ const c=JSON.parse(fs.readFileSync(path.join(root,"data/raas-active-741-coverage.json"),"utf8"));
+ assert.equal(c.registryEvidenceLeadCensus.primaryComparisonResearchLeads,180);
+ assert.equal(c.registryEvidenceLeadCensus.safetyArmDenominatorResearchLeads,243);
+});

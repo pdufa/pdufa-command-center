@@ -48,6 +48,14 @@ export default function RaasClinicalFiveCompletionPanel({data}:{
   </p>
   <p style={{fontSize:13}}><a href="/raas-741-active-five-clinical.csv" download
    style={{fontWeight:700,color:"#145e37",textDecoration:"underline"}}>Download all 741 historical trials · five clinical assessment fields each (CSV)</a></p>
+  <p style={{fontSize:13}} data-raas-741-source-readiness="true">
+   <a href="/raas-741-trial-source-readiness.csv" download
+    style={{fontWeight:750,color:"#145e37",textDecoration:"underline"}}>
+    Download evidence-readiness queue for all 741 trials (CSV)</a>.
+   The published registry identifies 180 trials with primary comparison
+   data and 243 with safety-arm denominators.
+   These are source leads, not verified treatment-benefit grades.
+  </p>
   <p style={{fontSize:13}} data-raas-recovered-unclassified-clinical-reviews="true">
    <strong>50 additional historical research-only clinical grades</strong> are now
    visible for 13 source-reviewed NCTs in the all-trial matrix
