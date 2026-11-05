@@ -27,6 +27,8 @@ import urllib.request
 SCOPE = "RAAS_FDA_ALL_CASE_OPENFDA_PUBLIC_PRODUCT_DISCOVERY_RESEARCH_ONLY"
 INPUT_SCOPE = "RAAS_NIGHTLY_FDA_THREE_WAY_EVIDENCE_READINESS_RESEARCH_ONLY"
 API = "https://api.fda.gov/drug/drugsfda.json"
+OTHER_CYCLE_SOURCE = (Path(__file__).resolve().parents[1] /
+    "new-platform/frontend/data/raas-fda-historical-other-cycle-exclusions.json")
 MAX_BYTES = 2_000_000
 LIMIT = 25
 SEARCH_TERMS = {
@@ -197,6 +199,55 @@ def parse_public_ingredient(
     }
 
 
+def load_documented_other_cycles(as_of: str) -> dict[str, dict]:
+    """Sourced prior/other indication actions. These NEVER adjudicate the target."""
+    source = json.loads(OTHER_CYCLE_SOURCE.read_text(encoding="utf-8"))
+    guard(isinstance(source, dict) and source.get("schemaVersion") == 1 and
+          source.get("scope") ==
+          "RAAS_FDA_DOCUMENTED_OTHER_INDICATION_OR_PRIOR_CYCLE_RESEARCH_EXCLUSIONS",
+          "OTHER_CYCLE_SOURCE_SCHEMA")
+    rows = source.get("records")
+    guard(isinstance(rows, list) and len(rows) == 2,
+          "OTHER_CYCLE_SOURCE_ROSTER")
+    expected = {
+        "CYTK|MYQORZO_HCM_20261114": ("CYTK", "AFICAMTEN", "NDA219083",
+                                       "2026-11-14"),
+        "RELACORILANT_CUSHINGS_US_20261217":
+            ("CORT", "RELACORILANT", "NDA220641", "2026-12-17"),
+    }
+    by_key = {}
+    for row in rows:
+        guard(isinstance(row, dict) and row.get("caseKey") in expected,
+              "OTHER_CYCLE_UNEXPECTED_CASE")
+        key = row["caseKey"]
+        guard(key not in by_key, "OTHER_CYCLE_DUPLICATE")
+        guard(tuple(row.get(k) for k in
+            ("ticker", "ingredient", "publiclyIndexedApplicationNumber",
+             "originalFirstGoalDate")) == expected[key],
+              "OTHER_CYCLE_EXACT_IDENTITY")
+        guard(row.get("classification") in {
+            "PARENT_ORIGINAL_NDA_NOT_PENDING_EFFICACY_SUPPLEMENT",
+            "DIFFERENT_INDICATION_ORIGINAL_APPROVAL_NOT_CUSHINGS_RESUBMISSION",
+        } and row.get("historicalFdaActionDate") <= as_of and
+              isinstance(row.get("historicalFdaActionDate"), str) and
+              re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}",
+                           row["historicalFdaActionDate"]) is not None,
+              "OTHER_CYCLE_CHRONOLOGY")
+        guard(isinstance(row.get("historicalFdaSourceUrl"), str) and
+              row["historicalFdaSourceUrl"].startswith("https://www.fda.gov/") and
+              isinstance(row.get("targetCycleIssuerSourceUrl"), str) and
+              row["targetCycleIssuerSourceUrl"].startswith("https://") and
+              all(row.get(field) is False for field in (
+                  "exactPendingReviewCycleIndependentlyVerified",
+                  "targetOriginalGoalDispositionIndependentlyAdjudicated",
+                  "verifiedThreeWayPrediction",
+                  "validHistoricalActionForTargetCycle",
+              )), "OTHER_CYCLE_NOT_ALLOWED_AS_TARGET_APPROVAL")
+        by_key[key] = row
+    guard(set(by_key) == set(expected), "OTHER_CYCLE_INCOMPLETE")
+    return by_key
+
+
 def validate_saved_worklist(report: dict, as_of: str) -> list[dict]:
     guard(isinstance(report, dict) and report.get("schemaVersion") == 1 and
           report.get("scope") == INPUT_SCOPE, "RESEARCH_WORKLIST_INVALID")
@@ -229,6 +280,7 @@ def assemble_discovery(
 ) -> dict:
     as_of = observed_at(checked_at).date().isoformat()
     rows = validate_saved_worklist(report, as_of)
+    known_other_cycles = load_documented_other_cycles(as_of)
     needed = {SEARCH_TERMS[r["ticker"]][0] for r in rows}
     guard(set(observed) == needed, "INCOMPLETE_INGREDIENT_QUERY_SET")
     evidence = {}
@@ -247,6 +299,7 @@ def assemble_discovery(
     for r in sorted(rows, key=lambda x: x["caseKey"]):
         term, sponsor_alias = SEARCH_TERMS[r["ticker"]]
         source = evidence[term]
+        other_cycle = known_other_cycles.get(r["caseKey"])
         raw_candidates = source["publicCandidates"]
         # Sponsor substring helps prioritize manual review but does not
         # independently identify or prove the exact FDA cycle.
@@ -255,6 +308,15 @@ def assemble_discovery(
             "sponsorNameStringMentionsExpectedClinicalSponsor":
                 sponsor_alias in c["fdaSponsorName"].upper(),
             "sameOriginalGoalIndicationAndCycleIndependentlyVerified": False,
+            "documentedDifferentHistoricalIndicationOrCycle":
+                bool(other_cycle and
+                     c["publiclyIndexedApplicationNumber"] ==
+                     other_cycle["publiclyIndexedApplicationNumber"]),
+            "knownOtherCycleClassification":
+                other_cycle["classification"] if other_cycle and
+                     c["publiclyIndexedApplicationNumber"] ==
+                     other_cycle["publiclyIndexedApplicationNumber"] else None,
+            "mayBeCountedAsTargetPdufaPassCrlExtension": False,
         } for c in raw_candidates]
         records.append({
             "caseKey": r["caseKey"],
@@ -272,6 +334,10 @@ def assemble_discovery(
             "sourceResponseMayBeTruncated": source["publicTotalMayBeTruncated"],
             "matchingPublishedApplicationLeads": candidates,
             "publishedApplicationLeadCount": len(candidates),
+            "knownOtherCycleHistoricalFdaDocument": other_cycle,
+            "knownOtherCyclePublishedLeadCount":
+                sum(c["documentedDifferentHistoricalIndicationOrCycle"]
+                    for c in candidates),
             "exactFDAApplicationAndReviewCycleIndependentlyCertified": False,
             "officialOriginalGoalPassCrlExtensionIndependentlyAdjudicated": False,
             "authenticatedPredecisionForecast": False,
@@ -295,6 +361,9 @@ def assemble_discovery(
         "savedResearchCaseCount": len(records),
         "publicApplicationLeadCountByCaseSum":
             sum(r["publishedApplicationLeadCount"] for r in records),
+        "documentedOtherCycleHistoricalContexts": len(known_other_cycles),
+        "observedOtherCyclePublishedLeads": sum(
+            r["knownOtherCyclePublishedLeadCount"] for r in records),
         "independentlyCertifiedPendingReviewCycles": 0,
         "independentlyAdjudicatedOriginalGoalFdaOutcomes": 0,
         "independentlyAuthenticatedProspectiveForecasts": 0,
@@ -336,6 +405,10 @@ def main() -> None:
             report["independentlyAdjudicatedOriginalGoalFdaOutcomes"],
         "verifiedForecasts":
             report["independentlyAuthenticatedProspectiveForecasts"],
+        "documentedOtherCycleHistoricalContexts":
+            report["documentedOtherCycleHistoricalContexts"],
+        "observedOtherCyclePublishedLeads":
+            report["observedOtherCyclePublishedLeads"],
     }, sort_keys=True))
 
 
