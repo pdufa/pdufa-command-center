@@ -58,8 +58,9 @@ test("unverified stage never produces a full clinical score, nor reinterprets mi
  const unverified=clinicalFiveForTrial(trial,"pre",false);
  assert.equal(unverified.factors.length,5);
  assert.equal(unverified.researchScore,null);
- assert.equal(unverified.graded,3);
- assert.equal(unverified.missing,2);
+ assert.equal(unverified.graded,5);
+ assert.equal(unverified.missing,0);
+ // Five research grades do not imply confirmed issuer readout or FDA validation.
  const source=JSON.parse(fs.readFileSync(path.join(root,"data/raas-reviewed-metric-assessments.json"),"utf8"));
  assert.equal(source.records.length,96);
 });
