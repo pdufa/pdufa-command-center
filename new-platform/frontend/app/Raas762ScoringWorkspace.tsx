@@ -112,7 +112,7 @@ export default function Raas762ScoringWorkspace(){
    </div>)}
   </div>
   <p style={{fontSize:13,lineHeight:1.55,margin:"12px 0",color:"#385944"}}>
-   <strong>Scoring setup, not predicted results.</strong> Every one of the 762
+   <strong>Research preparation only. RAAS ratings belong to TOP/BOTTOM spreadsheets, never the 11,000+ POOL.</strong> Every one of the 762
    NCTs has one row; each row opens separate TOP and BOTTOM 30-metric checklists,
    so all 60 metric slots are available without inventing values. Metrics
    requiring evidence remain N/A, not zero or neutral. A partially reviewed

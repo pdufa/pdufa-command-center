@@ -23,7 +23,7 @@ export default function ToolsPage(){
       <p style={{margin:"0 0 12px",fontSize:13,lineHeight:1.5}}>
        Open one row per NCT, the 30 TOP + 30 BOTTOM scoring checklists,
        missing evidence, provisional review status and expandable history.
-       Incomplete scores stay N/A; this is separate from FDA prediction research.
+       Incomplete scores stay N/A; this is separate from FDA prediction research. RAAS grading is restricted to the source-classified TOP and BOTTOM spreadsheets; the full 11,000+ trial POOL is for screening only.
       </p>
       <Link href="/raas-762" style={{display:"inline-flex",padding:"11px 16px",
        borderRadius:8,border:"1px solid #6ea582",background:"#deefdf",
@@ -39,7 +39,7 @@ export default function ToolsPage(){
         <PoolStageExplorer/>
       </div>
     </details>
-    <details data-tools-segment="phase3" style={{margin:"12px 0",border:"1px solid #a5c7b2",borderRadius:10,background:"#f9fcfa"}}>
+    <details data-tools-segment="phase3" id="raas-top-bottom-sheets" style={{margin:"12px 0",border:"1px solid #a5c7b2",borderRadius:10,background:"#f9fcfa"}}>
       <summary style={{cursor:"pointer",padding:"15px 12px",fontWeight:800,color:"#164f35",minHeight:48}}>
         Phase 3 · Public Data Release — TOP 3 and BOTTOM P
       </summary>

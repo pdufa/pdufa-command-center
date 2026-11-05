@@ -8,6 +8,8 @@ import TrialRaasDisclosure from "./TrialRaasDisclosure";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
 import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
+import {buildTopBottomRaasMetricWorklist}
+ from "../lib/raas-top-bottom-spreadsheet-worklist";
 import RaasAllClassifiedLiveReview from "./RaasAllClassifiedLiveReview";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
@@ -88,6 +90,19 @@ function csvCell(v:string|number){
   const value=String(v??"");
   const safe=/^[=+@-]/.test(value)?"'"+value:value;
   return '"'+safe.replace(/"/g,'""')+'"';
+}
+/** RAAS metric worklists are exclusive to TOP and BOTTOM issuer-readout
+ * spreadsheets, never the 11k POOL or unverified registry research rows.
+ */
+function downloadTopBottomRaasWorklist(bucket:"pre"|"post",rows:ReadoutRow[]){
+ const report=buildTopBottomRaasMetricWorklist(bucket,rows);
+ const blob=new Blob(["\ufeff",report.csv],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download="raas-"+(bucket==="pre"?"TOP":"BOTTOM")+"-stage-only-metric-reviews.csv";
+ document.body.appendChild(a);a.click();a.remove();
+ window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
   const fields=["NCT","Ticker","Company",...(bucket==="post"?["Factor P (Phase 3 primary endpoint p-value)"]:[]),"ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication","Release evidence","Registry link",
@@ -888,6 +903,11 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
       <div className={css.sheetPanelActions}>
         <button type="button" onClick={()=>downloadCsv(bucket,matched)} disabled={!matched.length}>
           Export matching CSV</button>
+        <button type="button" disabled={!matched.length}
+          data-raas-stage-only-export={bucket==="pre"?"TOP":"BOTTOM"}
+          onClick={()=>downloadTopBottomRaasWorklist(bucket,matched)}>
+          Export {bucket==="pre"?"TOP":"BOTTOM"} RAAS · 30 metrics per classified trial
+        </button>
         <button type="button" className={css.sheetSegmentAllButton}
           onClick={toggleAllSegments}
           aria-label={(allSegmentsOpen?"Collapse all":"Expand all")+" "+(pre?"TOP":"BOTTOM")+" spreadsheet segments"}>
@@ -1110,12 +1130,12 @@ export default function Phase3ReadoutSheets(){
         </TrialColumnFilterBar>
         <div className={css.tableScroll} role="region" aria-label="Unverified Phase 3 readout research queue" tabIndex={0}>
           <table className={css.table}>
-            <thead><tr><th>NCT</th><th>Ticker</th><th>Company</th><th>Registry status</th><th>Public readout</th><th>RAAS History</th></tr></thead>
+            <thead><tr><th>NCT</th><th>Ticker</th><th>Company</th><th>Registry status</th><th>Public readout</th><th>RAAS scoring scope</th></tr></thead>
             <tbody>{unknown.slice(activePage*LIMIT,(activePage+1)*LIMIT).map(row=><tr key={row.nctId}>
               <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
               <td>{row.ticker}</td><td>{row.company}</td><td>{row.status.replaceAll("_"," ")}</td>
               <td>Not verified — research required</td>
-              <td><RaasTrialHistoryButton row={row} bucket={null}/></td>
+              <td>No new RAAS score: not in either verified TOP or BOTTOM spreadsheet. <RaasTrialHistoryButton row={row} bucket={null}/></td>
             </tr>)}</tbody>
           </table>
         </div>
