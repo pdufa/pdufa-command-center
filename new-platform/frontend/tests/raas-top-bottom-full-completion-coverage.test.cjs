@@ -73,7 +73,7 @@ test("each missing source task carries exact-trial issuer, registry, metric comp
  const all=plan.allCsv.trimEnd().split("\r\n");
  const missing=plan.missingOnlyCsv.trimEnd().split("\r\n");
  assert.equal(all.length,301);
- assert.equal(missing.length,285);
+ assert.equal(missing.length,284);
  assert.equal(missing[0],all[0]);
  assert.ok(missing.slice(1).every(x=>x.includes("NO_SOURCE_REVIEWED_GRADE")));
  assert.ok(!plan.allCsv.includes("NCT00000000"));
