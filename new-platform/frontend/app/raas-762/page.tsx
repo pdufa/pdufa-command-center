@@ -10,32 +10,33 @@ import css from "../raas-history/page.module.css";
 
 export const metadata:Metadata={
  title:"RAAS · 762 Trial Scoring Setup | PDUFA",
- description:"All 762 research NCT rows with TOP/BOTTOM 30-metric scoring checklists, missing evidence, search, filters and score history."
+ description:"762 exact research NCTs, each assigned a single 30-metric registry-posting checklist, with missing evidence, filters and NCT history."
 };
 export default function Raas762Page(){
  return <main className={css.root} data-raas-primary-scoring-setup="762-nct-rows">
   <header className={css.header}>
    <Link className={css.back} href="/tools">← TOOLS</Link>
    <h1>RAAS · 762-trial scoring setup</h1>
-   <p><strong>One trial per row, all 762 NCTs.</strong> The 30 TOP and
-    30 BOTTOM metric slots, missing-review status and unified trial history
-    are accessible directly in the scoring table below.</p>
+   <p><strong>One trial per row, all 762 NCTs.</strong> Each trial has one
+    30-metric checklist assigned to its current Before/Past registry-posting
+    spreadsheet, with missing-review status and unified NCT history.</p>
   </header>
   <p className={css.notice} data-raas-stage-application-boundary="top-bottom-only">
-   <strong>RAAS scoring scope:</strong> Only the two TOP/BOTTOM issuer-readout
-   spreadsheets receive stage-specific RAAS metric assessments.
-   This 762-NCT registry table prepares research evidence and missing-metric
-   checklists. Appearing here does not classify a trial, authorize scoring,
-   or add the 11,000+ POOL to RAAS.{" "}
+   <strong>RAAS research scope:</strong> Exactly 762 Before/Past registry-
+   classified trial rows, not the 11,000+ POOL. The registry-posting
+   classification is NOT a dated issuer readout. Any separate issuer-
+   verified TOP/BOTTOM classification, FDA prediction, and full RAAS score
+   still require independent source review.{" "}
    <Link href="/tools#raas-top-bottom-sheets">
     Open the TOP/BOTTOM Phase 3 spreadsheets</Link>.
   </p>
   <Raas762ScoringWorkspace/>
   <p className={css.disclaimer}>
    <strong>Current score audit:</strong> {status.uniqueNctsWithActualProvisionalMetricScores}
-   {" "}of {status.researchTrials} NCTs have at least one source-checked provisional
-   metric review; {status.fullValidatedRaasScores} independently validated full
-   RAAS ratings. This is the entire saved 762-trial research universe, not
+   {" "}of {status.researchTrials} NCTs have a saved provisional metric review
+   somewhere in the two-stage research ledger (not necessarily in their current
+   registry-posting category); {status.fullValidatedRaasScores} independently validated
+   full RAAS ratings. This is the saved 762-trial registry research universe, not
    a claim that 762/762 scores are complete or that all meet current
    $300M–$10B Phase 3 PDUFA Pipeline restrictions.
   </p>
