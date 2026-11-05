@@ -358,6 +358,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
   <header className={css.header}>
    <Link href="/tools" className={css.back}>← TOP / BOTTOM spreadsheets</Link>
    <h1>RAAS · 60-metric validation worklist</h1>
+   <p><Link href="/raas-review-queue">Open the exact-NCT source-reviewed metric queue awaiting external independent sign-off</Link></p>
    <p>Thirty TOP pre-readout metrics and thirty BOTTOM post-readout metrics, each with its required source, current evidence leads, missing verification and calibration status.</p>
   </header>
   <div className={css.stats}>
