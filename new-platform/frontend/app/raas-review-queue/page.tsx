@@ -33,11 +33,11 @@ export default async function IndependentMetricReviewQueuePage({
  searchParams
 }:{searchParams:Promise<Params>}){
  const params=await searchParams;
- const initialNctId=/^NCT\\d{8}$/.test(first(params.nctId))?
+ const initialNctId=/^NCT\d{8}$/.test(first(params.nctId))?
   first(params.nctId):"";
  const initialMetricId=/^(pre|post)-[1-6]-[1-5]$/.test(first(params.metricId))?
   first(params.metricId):"";
- const existingNctId=/^NCT\\d{8}$/.test(first(params.reviewNctId))?
+ const existingNctId=/^NCT\d{8}$/.test(first(params.reviewNctId))?
   first(params.reviewNctId):"";
  const existingMetricId=/^(pre|post)-[1-6]-[1-5]$/.test(first(params.reviewMetricId))?
   first(params.reviewMetricId):"";
