@@ -41,6 +41,9 @@ on:
       - 'new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs'
       - 'new-platform/frontend/scripts/raas-fda-nightly-compare.cjs'
       - 'new-platform/frontend/tests/raas-fda-nightly-compare.test.cjs'
+      - 'scripts/telegram_raas_source_change_alert.py'
+      - 'tests/test_telegram_raas_source_change_alert.py'
+      - 'scripts/telegram_scan_alert.py'
       - 'new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json'
       - 'new-platform/frontend/app/raas-worklist/page.tsx'
       - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
@@ -85,6 +88,9 @@ on:
       - 'new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs'
       - 'new-platform/frontend/scripts/raas-fda-nightly-compare.cjs'
       - 'new-platform/frontend/tests/raas-fda-nightly-compare.test.cjs'
+      - 'scripts/telegram_raas_source_change_alert.py'
+      - 'tests/test_telegram_raas_source_change_alert.py'
+      - 'scripts/telegram_scan_alert.py'
       - 'new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json'
       - 'new-platform/frontend/app/raas-worklist/page.tsx'
       - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
@@ -114,6 +120,8 @@ jobs:
         run: |
           node --test new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs
           node --test new-platform/frontend/tests/raas-fda-nightly-compare.test.cjs
+      - name: Verify Telegram research evidence-change alerts cannot claim FDA decisions
+        run: python -m unittest discover -s tests -p 'test_telegram_raas_source_change_alert.py' -v
       - name: Restore last completed nightly RAAS saved research baseline (scheduled/manual only)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         uses: actions/cache/restore@v4
@@ -231,6 +239,14 @@ jobs:
         with:
           path: .cache/raas-fda-last-nightly-readiness.json
           key: raas-fda-nightly-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Telegram notice only for valid prior-run SAVED evidence metadata change
+        if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scripts/telegram_raas_source_change_alert.py --report "${{ runner.temp }}/raas-fda-threeway-nightly-readiness.json" --run-url "$RUN_URL"
       - name: Telegram RAAS accuracy result after reporting
         if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         continue-on-error: true
