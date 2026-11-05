@@ -117,9 +117,10 @@ test("mobile RAAS review board offers single file handoff for each exact stage",
 
 test("valid ClinicalTrials.gov NCT IDs survive both RAAS review page deep-link filters",()=>{
  const page=fs.readFileSync(path.join(root,"app/raas-review-queue/page.tsx"),"utf8");
- const terms=[...page.matchAll(/const (?:initialNctId|existingNctId)=(\\/[^/]+\\/)\\.test/g)];
+ const terms=page.split("\n").filter(line=>line.includes("const initialNctId=")||line.includes("const existingNctId="));
  assert.equal(terms.length,2);
- for(const [,literal] of terms){
+ for(const line of terms){
+  const literal=line.slice(line.indexOf("=/")+1,line.indexOf("/.test(")+1);
   const rx=new RegExp(literal.slice(1,-1));
   assert.equal(rx.test("NCT05208047"),true);
   assert.equal(rx.test("NCT0520804"),false);
