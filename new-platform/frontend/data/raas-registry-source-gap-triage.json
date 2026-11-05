@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_REGISTRY_NO_METRIC_LEAD_TRIAGE_NOT_RAAS_GRADES",
+  "auditedAsOf": "2026-11-05",
+  "note": "Exact six NCTs with zero metric-specific leads in the saved ClinicalTrials.gov index. External references are investigation leads and never establish RAAS metric grades, readout classifications, PDUFA eligibility or FDA predictions. When registry evidence updates this audit must be rechecked.",
+  "records": [
+    {
+      "nctId": "NCT00017407",
+      "classification": "UNRESOLVED_HISTORICAL_EVIDENCE",
+      "referenceUrl": null,
+      "referenceKind": "NONE_EXACT_MATCH_VERIFIED",
+      "summary": "Completed historical Phase 3 lung cancer trial; no stored primary endpoint and no posted registry results. A direct NCT-linked results publication was not verified in this audit.",
+      "nextAction": "Retrieve the protocol, original sponsor report and exact-NCT outcome publication if one exists; confirm ISIS 3521 combination, comparator and primary endpoint."
+    },
+    {
+      "nctId": "NCT00033904",
+      "classification": "EXACT_NCT_PRIMARY_PUBLICATION_CANDIDATE",
+      "referenceUrl": "https://pubmed.ncbi.nlm.nih.gov/18602688/",
+      "referenceKind": "PEER_REVIEWED_ARTICLE_IDENTIFIES_EXACT_NCT",
+      "summary": "A 2008 Lancet Phase 3 renal-cell carcinoma publication explicitly identifies NCT00033904 and reports recurrence-free survival. Research lead only; no grade or independent verification recorded.",
+      "nextAction": "Independently reconcile study arms, intention-to-treat population, endpoint, hazard ratio, confidence interval and article-to-registry identity before research grading."
+    },
+    {
+      "nctId": "NCT00039000",
+      "classification": "EXACT_NCT_PROTOCOL_MIRROR_ONLY",
+      "referenceUrl": "https://stanfordhealthcare.org/trials/s/NCT00039000.html",
+      "referenceKind": "ACADEMIC_CLINICAL_TRIAL_LISTING",
+      "summary": "Stanford's trial listing identifies the exact melanoma HSPPC-96 NCT and comparator plan. This is a protocol source, not an outcome publication.",
+      "nextAction": "Find a dated exact-NCT melanoma Phase 3 primary results article, negative findings and original sponsor disclosures."
+    },
+    {
+      "nctId": "NCT00048113",
+      "classification": "UNRESOLVED_HISTORICAL_EVIDENCE",
+      "referenceUrl": null,
+      "referenceKind": "NONE_EXACT_MATCH_VERIFIED",
+      "summary": "Completed historical alicaforsen Crohn's disease trial without a saved primary endpoint. Related-drug publications must not be attributed to this exact study without a trial identifier match.",
+      "nextAction": "Match ISIS 2302-CS20 protocol to primary publication using exact NCT, study code, population, regimen and endpoint."
+    },
+    {
+      "nctId": "NCT00048295",
+      "classification": "UNRESOLVED_HISTORICAL_EVIDENCE",
+      "referenceUrl": null,
+      "referenceKind": "NONE_EXACT_MATCH_VERIFIED",
+      "summary": "Completed historical alicaforsen Crohn's disease trial without a saved primary endpoint. Related-drug publications must not be attributed to this exact study without a trial identifier match.",
+      "nextAction": "Match ISIS 2302-CS21 protocol to primary publication using exact NCT, study code, population, regimen and endpoint."
+    },
+    {
+      "nctId": "NCT00486980",
+      "classification": "WITHDRAWN_NO_PARTICIPANTS",
+      "referenceUrl": "https://clinicaltrials.gov/study/NCT00486980",
+      "referenceKind": "ORIGINAL_REGISTRY_STATUS",
+      "summary": "Registry explicitly states withdrawn for administrative dose-ranging-plan revision and actual enrollment of zero; not an efficacy failure or a trial outcome.",
+      "nextAction": "Exclude from active evidence scoring and current PDUFA candidate eligibility. Preserve historical withdrawn-trial record and distinguish from completed studies."
+    }
+  ]
+}
