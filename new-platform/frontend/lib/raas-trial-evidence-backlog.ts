@@ -26,6 +26,7 @@ export type TrialEvidenceBacklogItem={
  hasPrimaryComparisons:boolean;hasConfidenceIntervals:boolean;hasSeriousEventDenominators:boolean;
  primaryContrastCount:number;primaryNumericCICount:number;saeDenominatorGroupCount:number;
  sourceIntegrityIssues:RegistrySourceIssue[];
+ sourceIntegrityIssueCount:number;sourceIntegrityIssueCodes:string;
  reviewedTop:number;reviewedBottom:number;
  missingTopMetricIds:string[];missingBottomMetricIds:string[];
  ambiguousProgramReviews:boolean;nextEvidenceAction:string;
@@ -121,6 +122,8 @@ export function buildTrialEvidenceBacklog(rawIndex:unknown):TrialEvidenceBacklog
    primaryNumericCICount:sourceAudit.comparisonsWithNumericCI,
    saeDenominatorGroupCount:sourceAudit.safetyGroupsWithDenominators,
    sourceIntegrityIssues:sourceAudit.issues,
+   sourceIntegrityIssueCount:sourceAudit.issues.length,
+   sourceIntegrityIssueCodes:[...new Set(sourceAudit.issues.map(i=>i.code))].join("; "),
    reviewedTop,reviewedBottom,
    missingTopMetricIds:stageMetricIds.pre.filter(id=>!topIds.has(id)),
    missingBottomMetricIds:stageMetricIds.post.filter(id=>!bottomIds.has(id)),
