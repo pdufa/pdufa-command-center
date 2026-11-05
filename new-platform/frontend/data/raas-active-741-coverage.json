@@ -9,7 +9,7 @@
   "classifedClinicalSlotCount": 50,
   "classifiedSourceAcceptedGrades": 26,
   "classifiedMissingGrades": 24,
-  "completeClassifiedClinicalScores": 0,
+  "completeClassifiedClinicalScores": 1,
   "old30MetricDataPreserved": true,
   "currentCapEligibility": "UNVERIFIED_FOR_ALL_HISTORICAL_ROWS",
   "note": "Unclassified NCTs each have five research fields available but no assumed TOP/BOTTOM stage and no overall numerical score. Financial/FDA-regulatory/commercial/investment-risk rankings are retired; FDA/PDUFA facts tracked separately."
