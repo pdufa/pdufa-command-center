@@ -82,12 +82,13 @@ test("762-row workspace has accessible 50-row pages, missing-value states and no
  const code=source("app/Raas762ScoringWorkspace.tsx");
  for(const marker of ["data-raas-762-scoring-workspace","records.length!==762",
   "new Set(x.records.map(r=>r.nctId)).size!==762",
-  "stageResearchReviewsForUnverifiedTrial(trial,\"pre\")",
-  "stageResearchReviewsForUnverifiedTrial(trial,\"post\")",
-  "remainingTop:30-topReviewed","remainingBottom:30-bottomReviewed",
+  'const stage=x.postedResults?"post":"pre"',
+  "stageResearchReviewsForUnverifiedTrial(trial,stage)",
+  "remaining:30-reviewed","rows.length*30",
+  "researchStageOnly={x.stage}",
   "Not validated","N/A · never 0/100","RaasMetricGradebook",
   "RaasTrialHistoryButton","PAGE_SIZE=50",
-  "caseRow(x)","source-verified-rows-unvalidated-scores","/raas-all-trials-partial-metric-ratings.csv"]){
+  "caseRow(x)","source-verified-rows-unvalidated-scores","22,860 assigned"]){
   assert.ok(code.includes(marker),"Missing primary workspace safeguard: "+marker);
  }
  assert.match(code,/aria-label="RAAS 762 exact NCT scoring row table"/);
