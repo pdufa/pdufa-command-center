@@ -136,8 +136,8 @@ test("published clinical primary-study leads are exact classified NCT metric res
   assert.equal(task.stage,lead.stage);
   assert.equal(task.numericProvisionalGrade,null);
   assert.equal(lead.approvedNumericGrade,null);
-  assert.match(lead.sourceUrl,/^https:\\/\\//);
-  assert.match(lead.referenceUrl,/^https:\\/\\//);
+  assert.ok(lead.sourceUrl.startsWith("https://"));
+  assert.ok(lead.referenceUrl.startsWith("https://"));
   assert.ok(lead.reportedResult.length>40);
   assert.ok(lead.reviewNeeded.length>40);
   assert.ok(!seen.has(lead.nctId+"|"+lead.metricId));
@@ -145,7 +145,7 @@ test("published clinical primary-study leads are exact classified NCT metric res
  }
  const panel=sourceText("app/RaasTopBottomCompletionPanel.tsx");
  assert.match(panel,/publishedByMetric/);
- assert.match(panel,/lead\\.approvedNumericGrade!==null/);
+ assert.ok(panel.includes("lead.approvedNumericGrade!==null"));
  assert.match(panel,/data-raas-published-ungraded-lead/);
  assert.match(panel,/Published clinical source · not a RAAS grade/);
 });
