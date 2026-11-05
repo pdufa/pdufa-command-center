@@ -91,18 +91,28 @@ export function fullReviewedTrialCandidate(
  * reviewed-only mean to an approved overall RAAS score.
  * Fail closed for one NCT used by multiple drug/indication programs.
  */
+/** Resolve one unambiguous recorded therapy/indication for an NCT review.
+ * This is a stage-specific *research identity*, not verified TOP/BOTTOM.
+ */
+export function uniquelyReviewedUnverifiedProgram(
+ trial:{nctId:string;ticker:string},stage:RaasStage,
+ feed:ReviewedMetricFeed=savedReviews
+):{nctId:string;ticker:string;drug:string;indication:string}|null{
+ if(!/^NCT\d{8}$/.test(trial.nctId)||!trial.ticker?.trim()||
+  !allowed.has(stage))return null;
+ const candidates=feed.records.filter(r=>r.nctId===trial.nctId&&
+  same(r.ticker,trial.ticker)&&r.stage===stage);
+ if(!candidates.length)return null;
+ const programs=new Set(candidates.map(r=>JSON.stringify([norm(r.drug),norm(r.indication)])));
+ if(programs.size!==1)return null;
+ const first=candidates[0];
+ return {nctId:trial.nctId,ticker:trial.ticker,
+  drug:first.drug,indication:first.indication};
+}
 export function stageResearchReviewsForUnverifiedTrial(
  trial:{nctId:string;ticker:string},stage:RaasStage,
  feed:ReviewedMetricFeed=savedReviews
 ):ReviewedTrialCandidate|null{
- if(!/^NCT\d{8}$/.test(trial.nctId)||!trial.ticker?.trim())return null;
- const candidates=feed.records.filter(r=>r.nctId===trial.nctId&&
-  same(r.ticker,trial.ticker)&&r.stage===stage);
- if(!candidates.length)return null;
- const programKeys=new Set(candidates.map(r=>JSON.stringify([norm(r.drug),norm(r.indication)])));
- if(programKeys.size!==1)return null;
- const first=candidates[0];
- return fullReviewedTrialCandidate({
-  nctId:trial.nctId,ticker:trial.ticker,drug:first.drug,indication:first.indication
- },stage,false,feed);
+ const program=uniquelyReviewedUnverifiedProgram(trial,stage,feed);
+ return program?fullReviewedTrialCandidate(program,stage,false,feed):null;
 }

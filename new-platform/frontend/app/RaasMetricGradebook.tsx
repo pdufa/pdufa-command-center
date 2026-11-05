@@ -4,6 +4,7 @@ import {createPortal} from "react-dom";
 import type {ReadoutRow} from "../lib/phase3-public-readout";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import {buildRaasMetricGradebook} from "../lib/raas-metric-gradebook";
+import {uniquelyReviewedUnverifiedProgram} from "../lib/raas-reviewed-full-score";
 import {loadRegistryEvidenceIndex,registryTrialFor,
  type RegistryTrialEvidence} from "../lib/raas-registry-evidence";
 
@@ -16,6 +17,17 @@ export default function RaasMetricGradebook({row,bucket}:{
  const [registry,setRegistry]=useState<RegistryTrialEvidence|null>(null);
  const activeStage=bucket??reviewStage;
  const stageVerified=bucket!==null;
+ // Some registry-only NCTs have a unique exact-trial research review but
+ // no issuer-verified TOP/BOTTOM stage. Display those documented metric
+ // ingredients without ever classifying the trial or approving a full score.
+ const reviewedProgram=!row.evidence?
+  uniquelyReviewedUnverifiedProgram({nctId:row.nctId,ticker:row.ticker},
+   activeStage):null;
+ const metricTrial={
+  nctId:row.nctId,ticker:row.ticker,
+  drug:row.evidence?.drug??reviewedProgram?.drug,
+  indication:row.evidence?.indication??reviewedProgram?.indication
+ };
  const trigger=useRef<HTMLButtonElement>(null);
  useEffect(()=>{
   if(!open)return;
@@ -28,10 +40,13 @@ export default function RaasMetricGradebook({row,bucket}:{
   });
   return ()=>{active=false;};
  },[open,row.nctId,row.ticker,row.evidence?.drug]);
- const book=useMemo(()=>open?buildRaasMetricGradebook({
-  nctId:row.nctId,ticker:row.ticker,
-  drug:row.evidence?.drug,indication:row.evidence?.indication
- },activeStage,registry,stageVerified):null,[open,activeStage,registry,stageVerified,row.nctId,row.ticker,row.evidence?.drug,row.evidence?.indication]);
+ const book=useMemo(()=>open?buildRaasMetricGradebook(metricTrial,
+  activeStage,registry,stageVerified):null,
+  // Program identity derives from the exact NCT/ticker/stage saved review.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [open,activeStage,registry,stageVerified,row.nctId,row.ticker,
+   row.evidence?.drug,row.evidence?.indication,reviewedProgram?.drug,
+   reviewedProgram?.indication]);
  useEffect(()=>{
   if(!open)return;
   const handler=(event:KeyboardEvent)=>{if(event.key==="Escape")setOpen(false);};
