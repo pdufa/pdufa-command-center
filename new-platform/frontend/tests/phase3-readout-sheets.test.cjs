@@ -24,12 +24,13 @@ test("741 distinct census NCTs are classified exactly once into pre/post/unknown
     known.add(entry.nctId);
   }
   assert.equal(manifest.entries.filter(e=>e.kind==="PRE_AS_OF_CHECK").length,2);
-  assert.equal(manifest.entries.filter(e=>e.kind==="POST_PUBLIC_READOUT").length,3);
-  assert.equal(census.length-known.size,736);
+  assert.equal(manifest.entries.filter(e=>e.kind==="POST_PUBLIC_READOUT").length,8);
+  assert.equal(census.length-known.size,731);
 });
 test("pre-release is a dated issuer check, not absence of ClinicalTrials.gov results",()=>{
   assert.deepEqual(new Set(manifest.sourceFiles),new Set([
-    "data/phase3_pre_readout_evidence.csv","data/post_phase3_discoveries.csv"
+    "data/phase3_pre_readout_evidence.csv","data/post_phase3_discoveries.csv",
+    "data/phase3_issuer_readout_additions_2026-11-05.json"
   ]));
   for(const pre of manifest.entries.filter(e=>e.kind==="PRE_AS_OF_CHECK"))
     assert.equal(pre.evidenceDate,"2026-10-11");
