@@ -18,7 +18,7 @@ export type RaasReadoutStageReviewItem={
 };
 const FIELDS=[
  "nctId","ticker","company","registryStatus","registrySourceUrl",
- "researchCensusDate","lastIssuerReadoutSourceSnapshot","stage",
+ "researchCensusDate","lastIssuerReadoutSourceSnapshot","stage","reviewStatus",
  "exactNctToIssuerProgramConfirmed","latestDatedIssuerReadoutOrNegativeCheckVerified",
  "sourceDate","issuerEvidenceUrl","requiredProof","nextAction",
  "topRaasScore","bottomRaasScore"
@@ -82,7 +82,7 @@ export function buildRaasReadoutStageReviewQueue(data:ReadoutClassification){
  rows.sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId));
  const csv=[FIELDS.join(","),...rows.map(x=>csvLine([
   x.nctId,x.ticker,x.company,x.registryStatus,x.registrySourceUrl,
-  x.researchCensusDate,x.lastIssuerReadoutSourceSnapshot,x.stage,
+  x.researchCensusDate,x.lastIssuerReadoutSourceSnapshot,x.stage,x.reviewStatus,
   x.exactNctToIssuerProgramConfirmed,x.latestDatedIssuerReadoutOrNegativeCheckVerified,
   x.sourceDate,x.issuerEvidenceUrl,x.requiredProof,x.nextAction,
   x.topRaasScore,x.bottomRaasScore
