@@ -11,18 +11,18 @@ const {buildRaasIndependentReviewQueue}=require("../lib/raas-independent-review-
 
 test("queue captures all actual reviewed source metrics and never invents signed independent ratings",()=>{
  const q=buildRaasIndependentReviewQueue();
- assert.equal(q.total,82);
- assert.equal(q.items.length,82);
- assert.equal(q.uniqueNcts,17);
+ assert.equal(q.total,83);
+ assert.equal(q.items.length,83);
+ assert.equal(q.uniqueNcts,18);
  assert.equal(q.currentFdaPhase3Metrics,5);
  assert.equal(q.currentTopPhase3Metrics,27);
- assert.equal(q.otherResearchMetrics,50);
- assert.equal(q.aiPending,82);
+ assert.equal(q.otherResearchMetrics,51);
+ assert.equal(q.aiPending,83);
  assert.equal(q.markedIndependentWithoutAuditedReceipt,0);
  assert.equal(q.independentlyVerifiedSignoffs,0);
  assert.equal(q.approvedRaasScores,0);
  assert.equal(q.calibratedFdaForecasts,0);
- assert.equal(new Set(q.items.map(x=>x.id)).size,82);
+ assert.equal(new Set(q.items.map(x=>x.id)).size,83);
  assert.ok(q.items.every(x=>x.approvedOverallRaasScore===null&&
   x.calibratedFdaProbability===null));
 });
