@@ -15,10 +15,29 @@ export default function ToolsPage(){
       <p className={styles.eyebrow}>PDUFA · RESEARCH TOOLS</p>
       <h1>TOOLS</h1>
     </header>
+    <section data-tools-primary-raas-top-bottom="true" style={{
+     border:"2px solid #43885f",borderRadius:11,background:"#f0f9f3",
+     padding:15,margin:"14px 0"}}>
+     <h2 style={{margin:"0 0 7px",fontSize:19,color:"#15472d"}}>
+      RAAS priority · TOP and BOTTOM trial spreadsheets
+     </h2>
+     <p style={{fontSize:13,lineHeight:1.55,margin:"0 0 12px"}}>
+      Use only verified issuer-readout TOP/BOTTOM rows for RAAS metric ratings
+      and their 30-metric evidence worklists. The 11,000+ POOL is not scored.
+      Open the separate issuer-source verification queue for trials whose
+      stage is still unknown.
+     </p>
+     <Link href="/raas-top-bottom" style={{
+      display:"inline-flex",padding:"11px 16px",borderRadius:8,
+      background:"#d7eedf",border:"1px solid #43885f",
+      fontWeight:800,color:"#16492c",textDecoration:"none"}}>
+      Open TOP and BOTTOM RAAS spreadsheets
+     </Link>
+    </section>
     <section data-tools-primary-raas-762="true" style={{border:"2px solid #77a98a",
       borderRadius:11,background:"#f5fcf6",padding:15,margin:"14px 0 18px"}}>
       <h2 style={{margin:"0 0 7px",fontSize:19,color:"#164d30"}}>
-       Priority 1 · RAAS scoring setup — 762 trials
+       Supporting evidence preparation · 762 NCT records
       </h2>
       <p style={{margin:"0 0 12px",fontSize:13,lineHeight:1.5}}>
        Open one row per NCT, the 30 TOP + 30 BOTTOM scoring checklists,
@@ -28,7 +47,7 @@ export default function ToolsPage(){
       <Link href="/raas-762" style={{display:"inline-flex",padding:"11px 16px",
        borderRadius:8,border:"1px solid #6ea582",background:"#deefdf",
        color:"#154d2f",fontWeight:800,textDecoration:"none"}}>
-       Open 762-trial RAAS scoring workspace
+       Open 762-trial source evidence preparation
       </Link>
     </section>
     <details data-tools-segment="pool" style={{margin:"12px 0",border:"1px solid #a5c7b2",borderRadius:10,background:"#f9fcfa"}}>
