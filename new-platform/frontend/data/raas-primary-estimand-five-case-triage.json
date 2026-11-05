@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FIVE_PRIMARY_CONTRAST_ESTIMAND_TRIAGE_NOT_HUMAN_ADJUDICATION",
+  "sourceAsOf": "2026-11-04T23:44:45+00:00",
+  "triagedOn": "2026-11-04",
+  "disposition": "AUTOMATED_SCIENTIFIC_SOURCE_REVIEW_ONLY_PENDING_HUMAN_VALIDATION",
+  "warning": "All five are source-interpretation investigations; even a documented arithmetic explanation is not an independent medical/statistical signoff, RAAS grade, FDA probability or retrospective point-in-time prediction.",
+  "cases": [
+    {
+      "nctId": "NCT00803205",
+      "ticker": "PTCT",
+      "outcomeIndex": 1,
+      "comparisonIndex": 0,
+      "sourceHash": "011649b0c5756df1652800308032737c61c29c9aa3ec9affe4e448a72c0e1919",
+      "category": "MODEL_ESTIMAND_RECONCILIATION_OPEN",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00803205",
+      "corroborationUrl": "https://pubmed.ncbi.nlm.nih.gov/24836205/",
+      "title": "Ataluren vs placebo — Week 48 percent-predicted FEV1",
+      "rawObservation": "Recorded arm changes -2.534 and -5.500 imply a simple difference of 2.966; the saved reported contrast is 2.7540 (95% CI -0.756 to 6.264, p=0.1235). The 2014 trial publication rounds group values to -2.5% and -5.5% and the difference to 3.0%.",
+      "interpretation": "The difference is small relative to the published interval, but the saved registry does not preserve enough analysis-population/model detail to establish why 2.754 differs from 2.966. Do not call it a registry error or efficacy success.",
+      "neededBeforeClosure": "Inspect the original primary analysis/SAP and the exact analysis population, adjusted estimand, missing-data approach and rounding before marking the numerical contrast reconciled."
+    },
+    {
+      "nctId": "NCT02040090",
+      "ticker": "KMDA",
+      "outcomeIndex": 0,
+      "comparisonIndex": 0,
+      "sourceHash": "c5f1ce27cddef7ed17207da87484fd4cf411b5efc76306b877dae6419657c630",
+      "category": "COUNT_VS_PROPORTION_EXPLAINED_UNCERTIFIED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02040090",
+      "corroborationUrl": "https://www.fda.gov/media/107665/download",
+      "title": "KamRAB vs HRIG — Day 14 anti-rabies antibody threshold",
+      "rawObservation": "The registry compact index shows 55 and 58 responders (counts) but the reported -0.018 is a difference in proportions. The FDA clinical review describes 55/56 in the KamRAB group and 58/58 in the comparator group; 55/56 minus 58/58 equals approximately -0.017857, which rounds to -0.018.",
+      "interpretation": "The numerical discrepancy was a unit/denominator mismatch in the old raw-count subtraction, not evidence that the original trial results are inconsistent. This reproducible arithmetic does not independently certify clinical non-inferiority.",
+      "neededBeforeClosure": "Preserve the exact as-treated denominators and the FDA review's 90% confidence-interval/non-inferiority analysis. Require independent adjudication for any RAAS metric."
+    },
+    {
+      "nctId": "NCT02362672",
+      "ticker": "NKTR",
+      "outcomeIndex": 0,
+      "comparisonIndex": 0,
+      "sourceHash": "0e6f0cbb7f4d5fe089728de3cf577797043bfd41e0007d754221ebc694e1f139",
+      "category": "DISPLAY_ROUNDING_COMPATIBLE_UNCERTIFIED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02362672",
+      "corroborationUrl": "https://clinicaltrials.gov/study/NCT02362672",
+      "title": "NKTR-181 vs placebo — weekly pain score change",
+      "rawObservation": "The displayed arm scores are 0.9 and 1.5 (one decimal place), yielding -0.6 by direct subtraction, versus a saved reported contrast of -0.55 (p=0.0019). Two arm values rounded to tenths can together shift a difference by up to approximately 0.10, so the 0.05 gap is rounding-compatible.",
+      "interpretation": "Displayed precision is insufficient to establish a real contrast discrepancy. Statistical adjustment and the exact estimand still require source review; this is not independent efficacy verification.",
+      "neededBeforeClosure": "Inspect the original trial statistical analysis and unrounded outcome estimates if a precise treatment-effect reconciliation is required."
+    },
+    {
+      "nctId": "NCT03687372",
+      "ticker": "ACRS",
+      "outcomeIndex": 0,
+      "comparisonIndex": 0,
+      "sourceHash": "6997c4bf9e660b2f68594dfafa6fba5466aac469c4ca791a621609c4677a827d",
+      "category": "MULTIPLE_OUTCOME_CLASSES_NOT_PAIRABLE",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT03687372",
+      "corroborationUrl": "https://clinicaltrials.gov/study/NCT03687372",
+      "title": "A-101 vs vehicle — common wart clearance Day 60",
+      "rawObservation": "The primary outcome stores five measurements for each OG treatment group across wart-number classes: treatment 40,33,2,2,3 and vehicle 13,10,1,1,1. The prior code retained only the last pair (3 and 1), then incorrectly compared its difference 2 with the model-reported 3.22.",
+      "interpretation": "A repeated OG identifier does not identify a single comparable analysis row. The compact source omits the class labels; 3.22 cannot be re-derived by subtracting an arbitrary group pair. This is a source-flattening interpretation problem, not proven clinical inconsistency.",
+      "neededBeforeClosure": "Retain class-level labels from the full original ClinicalTrials.gov outcome measure and verify model type, population denominators and analysis statistic."
+    },
+    {
+      "nctId": "NCT04374136",
+      "ticker": "ALEC",
+      "outcomeIndex": 0,
+      "comparisonIndex": 0,
+      "sourceHash": "41ccb7a1a67d4c5debeb0f33437a6f048d7fc09b959a876ec770eb445641adc8",
+      "category": "MULTIPLE_TIMEPOINT_VALUES_NOT_PAIRABLE",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04374136",
+      "corroborationUrl": "https://clinicaltrials.gov/study/NCT04374136",
+      "title": "AL001 vs placebo — symptomatic FTD CDR plus NACC FTLD-SB",
+      "rawObservation": "The source index contains three pairs for the same OG IDs: 9.686/8.177, 6.765/5.771 and 4.477/4.628. The prior code kept only the last pair (-0.151) while the reported mean-difference statistic is 1.509. The first saved pair has arithmetic difference exactly 1.509.",
+      "interpretation": "The match of 1.509 to the first pair is a strong lead that the old mismatch came from overwritten repeated observations. Because the compact index omits time-point/class labels, this does not establish which pair belongs to the reported comparison. Do not claim efficacy or FDA outcome based on this arithmetic.",
+      "neededBeforeClosure": "Inspect complete original 48/72/96-week outcome classes and the statistical analysis plan to identify the prespecified model, endpoint time and estimated contrast."
+    }
+  ]
+}
