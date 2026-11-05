@@ -18,6 +18,8 @@ LABELS = {
     "raas-end": "✅ RAAS ACCURACY — COMPLETED",
     "system-edit": "🛠 PDUFA SYSTEM — CODE UPDATED",
     "prediction-change": "📈 RAAS — VERIFIED PREDICTION CHANGE",
+    "scan-start": "▶️ PDUFA / RAAS — SCAN STARTED",
+    "scan-end": "✅ PDUFA / RAAS — SCAN COMPLETED",
     "test": "🔔 PDUFA / RAAS — TELEGRAM TEST",
 }
 
@@ -26,7 +28,7 @@ def message(kind, status="", details="", url=""):
         raise ValueError("unknown event")
     label = LABELS[kind]
     if kind.endswith("-end") and status != "success":
-        label = "❌ " + ("PDUFA PIPELINE" if kind == "pipeline-end" else "RAAS ACCURACY") + " — FAILED / INCOMPLETE"
+        label = "❌ " + ("PDUFA PIPELINE" if kind == "pipeline-end" else ("RAAS ACCURACY" if kind == "raas-end" else "PDUFA / RAAS SCAN")) + " — FAILED / INCOMPLETE"
     parts = [label]
     if status:
         parts.append("Workflow status: " + status[:70])
