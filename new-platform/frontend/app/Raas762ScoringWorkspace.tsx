@@ -36,7 +36,7 @@ type ScoringRow={
 function setupRows(index:RegistryEvidenceIndex):ScoringRow[]{
  return index.records.map(x=>{
   const trial={nctId:x.nctId,ticker:x.ticker};
-  const stage=x.postedResults?"post":"pre";
+  const stage:"pre"|"post"=x.postedResults?"post":"pre";
   const review=stageResearchReviewsForUnverifiedTrial(trial,stage);
   const reviewed=review?.reviewedCount??0;
   return {evidence:x,trial:caseRow(x),stage,reviewed,
