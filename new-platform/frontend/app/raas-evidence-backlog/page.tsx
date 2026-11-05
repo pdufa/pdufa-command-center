@@ -11,12 +11,17 @@ export const metadata:Metadata={
 export default function RaasEvidenceBacklogPage(){
  return <main className={css.root} data-raas-762-evidence-backlog="research-gaps-only">
   <header className={css.header}>
-   <Link className={css.back} href="/raas-scan">← RAAS 60-metric scan</Link>
+   <Link className={css.back} href="/raas-762">← RAAS 762-trial scoring table</Link>
    <h1>RAAS · all-trial evidence gap queue</h1>
    <p>Prioritized work across all 762 saved Phase 3 research trial identifiers.
     Expand each trial to see exactly what the registered source contains,
     the documented TOP/BOTTOM review counts, and the next missing evidence step.</p>
   </header>
+  <p className={css.notice} data-raas-backlog-primary-link="762-scoring">
+   <strong>Primary task:</strong>{" "}
+   <Link href="/raas-762">Return to all 762 rows, TOP/BOTTOM scoring details and score histories</Link>.
+   This evidence backlog is a supporting review queue.
+  </p>
   <p className={css.disclaimer}><strong>Research triage, not 762 approved scores.</strong>
    The saved registry index verifies trial-level source availability; it does not establish
    the current $300M–$10B live Pipeline, an accepted FDA application, an eligible

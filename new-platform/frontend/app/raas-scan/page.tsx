@@ -25,6 +25,9 @@ export default function RaasScanPage(){
    <header className={css.header}>
     <Link className={css.back} href="/tools">← Back to TOOLS</Link>
     <h1>RAAS · 60-metric scan status</h1>
+    <p><strong>Primary task: set up 762 trial rows.</strong>
+     {" "}<Link href="/raas-762">Open the dedicated 762-trial scoring workspace first</Link>.
+     The technical scan and FDA accuracy diagnostics remain supplementary.</p>
     <p>Source readiness was checked against the exact committed evidence snapshot. An executed source audit is not the same as a historically calibrated RAAS investment score.</p>
    </header>
    <div className={css.stats}>
