@@ -231,10 +231,18 @@ def assemble_discovery(
     rows = validate_saved_worklist(report, as_of)
     needed = {SEARCH_TERMS[r["ticker"]][0] for r in rows}
     guard(set(observed) == needed, "INCOMPLETE_INGREDIENT_QUERY_SET")
-    evidence = {
-        term: parse_public_ingredient(*observed[term][:2], term, checked_at)
-        for term in sorted(needed)
-    }
+    evidence = {}
+    for term in sorted(needed):
+        payload, status, _detail = observed[term]
+        try:
+            evidence[term] = parse_public_ingredient(payload, status, term,
+                                                     checked_at)
+        except ValueError:
+            # One malformed FDA response is a source-quality gap,
+            # not authority to mark a case absent or abort other lookups.
+            evidence[term] = parse_public_ingredient(
+                None, "MALFORMED_RESPONSE", term, checked_at)
+
     records = []
     for r in sorted(rows, key=lambda x: x["caseKey"]):
         term, sponsor_alias = SEARCH_TERMS[r["ticker"]]
