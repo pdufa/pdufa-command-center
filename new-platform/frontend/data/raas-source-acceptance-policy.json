@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_RESEARCH_SOURCE_ACCEPTANCE_POLICY",
+  "effectiveDate": "2026-11-05",
+  "sourceAcceptance": "USER_ACCEPTED_DOCUMENTED_PUBLISHED_SOURCES",
+  "externalHumanReviewerRequiredToGradeDocumentedMetric": false,
+  "externalHumanReviewerRequiredForCompleteResearchScore": false,
+  "fullResearchScoreRequires": "ALL_30_EXACT_PROGRAM_STAGE_MATCHED_DOCUMENTED_METRICS_AND_ISSUER_CLASSIFIED_STAGE",
+  "independentValidationStatus": "SEPARATE_OPTIONAL_REVIEW_NOT_CLAIMED",
+  "fdaForecastValidation": "SEPARATE_CALIBRATION_REQUIRED",
+  "missingMetricPolicy": "N_A_NO_IMPUTATION",
+  "notes": "The user accepts source documents as trusted research inputs. This does not assert independent human attestation, guarantee accuracy, fabricate missing clinical evidence, or create FDA prediction probabilities."
+}
