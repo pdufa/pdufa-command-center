@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_PHASE3_ISSUER_AND_REGISTRY_DUAL_SOURCE_READOUT_CROSSWALK_RESEARCH_ONLY",
+  "recoveryReviewAt": "2026-11-05",
+  "originalResearchCensusDate": "2026-10-26",
+  "classifiedIssuerEvidenceSnapshotAsOf": "2026-11-01",
+  "dualSourceMatchingMethod": "Same exact NCT in ClinicalTrials.gov and named Phase 3 trial in dated issuer release; confirm ticker, therapy and indication; never infer FDA disposition or RAAS score.",
+  "counts": {
+    "newBottomReadoutRecords": 5,
+    "verifiedFdaRegulatoryOutcomes": 0,
+    "validatedOverallRaasScores": 0
+  },
+  "records": [
+    {
+      "nctId": "NCT05186818",
+      "ticker": "CYTK",
+      "issuerTrialName": "SEQUOIA-HCM",
+      "drug": "aficamten",
+      "indication": "symptomatic obstructive hypertrophic cardiomyopathy",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2023-12-27",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2023/Cytokinetics-Announces-Positive-Results-From-SEQUOIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-With-Obstructive-Hypertrophic-Cardiomyopathy-12-27-2023/default.aspx",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT05186818",
+      "reviewNote": "Issuer disclosed the Phase 3 SEQUOIA-HCM topline result; registry links SEQUOIA-HCM to this exact NCT. This is a Phase 3 result, not an FDA decision."
+    },
+    {
+      "nctId": "NCT05767346",
+      "ticker": "CYTK",
+      "issuerTrialName": "MAPLE-HCM",
+      "drug": "aficamten",
+      "indication": "symptomatic obstructive hypertrophic cardiomyopathy",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2025-05-13",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Announces-Positive-Topline-Results-From-MAPLE-HCM-05-13-2025/default.aspx",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT05767346",
+      "reviewNote": "Issuer announced Phase 3 MAPLE-HCM topline results. This NCT is different from SEQUOIA-HCM and ACACIA-HCM. Published readout is not the pending FDA supplemental NDA decision."
+    },
+    {
+      "nctId": "NCT06081894",
+      "ticker": "CYTK",
+      "issuerTrialName": "ACACIA-HCM",
+      "drug": "aficamten",
+      "indication": "symptomatic non-obstructive hypertrophic cardiomyopathy",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2026-05-05",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT06081894",
+      "reviewNote": "Issuer published ACACIA-HCM topline results with dual primary endpoints. Registry lists exact ACACIA-HCM NCT. Does not establish FDA supplemental approval or a pending PDUFA outcome."
+    },
+    {
+      "nctId": "NCT03697109",
+      "ticker": "CORT",
+      "issuerTrialName": "GRACE",
+      "drug": "relacorilant",
+      "indication": "endogenous hypercortisolism (Cushing's syndrome)",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2024-05-28",
+      "evidenceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-announces-primary-endpoint-met-pivotal-phase-3-grace",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT03697109",
+      "reviewNote": "Issuer published pivotal Phase 3 GRACE randomized-withdrawal primary endpoint, not the separate GRADIENT trial. Earlier Cushing's CRL and later resubmission remain separate FDA review cycles."
+    },
+    {
+      "nctId": "NCT04308590",
+      "ticker": "CORT",
+      "issuerTrialName": "GRADIENT",
+      "drug": "relacorilant",
+      "indication": "hypercortisolism caused by cortisol-secreting adrenal adenomas or hyperplasia",
+      "kind": "POST_PUBLIC_READOUT",
+      "evidenceDate": "2024-10-30",
+      "evidenceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3",
+      "registryTrialUrl": "https://clinicaltrials.gov/study/NCT04308590",
+      "reviewNote": "Issuer disclosed Phase 3 GRADIENT findings. The between-group systolic BP primary endpoint comparison was not statistically significant; this is a post-readout classification, NOT a success rating, NDA approval, or PASS forecast."
+    }
+  ]
+}
