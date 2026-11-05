@@ -4,8 +4,14 @@
  */
 import type {RaasStage} from "./raas-metric-specs";
 import {RAAS_METRIC_CATALOG} from "./raas-metric-specs";
-import {fullReviewedTrialCandidate,uniquelyReviewedUnverifiedProgram}
- from "./raas-reviewed-full-score";
+import {fullReviewedTrialCandidate,uniquelyReviewedUnverifiedProgram,
+ parseReviewedMetricFeed} from "./raas-reviewed-full-score";
+import originalReview from "../data/raas-reviewed-metric-assessments.json";
+import clinicalSupplement from "../data/raas-clinical-five-reviewed-increment.json";
+const activeFeed=parseReviewedMetricFeed({
+ schemaVersion:1,scope:"RAAS_EXPLICIT_METRIC_REVIEWS_RESEARCH_ONLY" as const,
+ sourceAsOf:"2026-11-05",records:[...originalReview.records,...clinicalSupplement.records]
+});
 
 export const ACTIVE_RAAS_VERSION="CLINICAL_FIVE_2026_11_05";
 export type ClinicalKey="efficacy"|"clinicalBenefit"|"statistics"|"reproducibility"|"safety";
@@ -50,7 +56,7 @@ export function clinicalFiveForTrial(
 ):ClinicalFiveResult{
  const program=trial.drug?.trim()&&trial.indication?.trim()?trial:
   uniquelyReviewedUnverifiedProgram(trial,stage);
- const reviewed=program?fullReviewedTrialCandidate(program,stage,stageVerified):null;
+ const reviewed=program?fullReviewedTrialCandidate(program,stage,stageVerified,activeFeed):null;
  const byMetric=new Map((reviewed?.grades??[]).map(x=>[x.metricId,x]));
  const factors:ClinicalFactor[]=clinicalFiveDefinitions(stage).map(x=>{
   const grade=byMetric.get(x.id);
