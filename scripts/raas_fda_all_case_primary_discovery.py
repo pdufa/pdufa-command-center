@@ -230,7 +230,7 @@ def load_documented_other_cycles(as_of: str) -> dict[str, dict]:
             "DIFFERENT_INDICATION_ORIGINAL_APPROVAL_NOT_CUSHINGS_RESUBMISSION",
         } and isinstance(row.get("historicalFdaActionDate"), str) and
               row["historicalFdaActionDate"] <= as_of and
-              re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}",
+              re.fullmatch(r"\d{4}-\d{2}-\d{2}",
                            row["historicalFdaActionDate"]) is not None,
               "OTHER_CYCLE_CHRONOLOGY")
         guard(isinstance(row.get("historicalFdaSourceUrl"), str) and
