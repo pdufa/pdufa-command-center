@@ -1,20 +1,31 @@
 {
-  "started_at": "2026-11-04T04:20:05.814190+00:00",
+  "started_at": "2026-11-05T04:20:24.725521+00:00",
   "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-11-04",
+  "scope": "Industry Phase 2/3 records updated since 2024-11-05",
   "source_max_age_days": 180,
-  "studies_scanned": 15558,
-  "matched_trials": 3710,
+  "studies_scanned": 15552,
+  "matched_trials": 3713,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [],
-  "finished_at": "2026-11-04T04:20:37.864067+00:00",
-  "stored_trials": 7405,
-  "phase2_programs": 1053,
+  "new_master_programs": [
+    {
+      "ticker": "LYEL",
+      "drug": "rondecabtagene autoleucel",
+      "nct_id": "NCT07188558"
+    },
+    {
+      "ticker": "NTLA",
+      "drug": "NTLA-2001",
+      "nct_id": "NCT06128629"
+    }
+  ],
+  "finished_at": "2026-11-05T04:21:02.635388+00:00",
+  "stored_trials": 7409,
+  "phase2_programs": 1060,
   "master_programs": 133,
-  "review_trials": 3080,
+  "review_trials": 3082,
   "market_cap_verified_tickers": 417,
   "market_cap_listing_excluded_tickers": 1,
   "market_cap_source_unavailable": 1,
