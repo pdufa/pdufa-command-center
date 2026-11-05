@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_ORIGINAL_GOAL_OUTCOME_EVIDENCE_CANDIDATES_UNADJUDICATED",
+  "note": "Append-only source lead metadata only. Zero official original-goal outcomes independently adjudicated. A sponsor press release, an FDA-looking URL, a signed document digest, or a later final approval is not sufficient to certify the exact original PDUFA goal disposition. Confidential reviewer documents must remain in a controlled private archive. Never infer prospective prediction accuracy from retrospectively identified outcomes.",
+  "records": []
+}
