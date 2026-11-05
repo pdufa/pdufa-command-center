@@ -920,10 +920,10 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
   return <section className={css.sheet} aria-label={pre?"Top pre-release spreadsheet":"Bottom post-release spreadsheet"}>
     <details className={css.sheetAccordion}>
       <summary className={css.sheetHeading}>
-        <div><h3>{pre?"TOP SPREADSHEET · 3 · PHASE 3 DATA NOT RELEASED (AS LAST CHECKED)":"BOTTOM SPREADSHEET · P · PHASE 3 DATA RELEASED"}</h3>
+        <div><h3>{pre?"TOP SPREADSHEET · $300M–$10B PHASE 3 UNIVERSE":"BOTTOM SPREADSHEET · P · PHASE 3 DATA RELEASED"}</h3>
           <p>{caption}</p></div>
         <strong className={css.sheetSummaryCount}>
-          {number(rows.length)} documented trials · {number(matched.length)} matching
+          {pre?"Cap-screened Phase 3 intake + ":""}{number(rows.length)} issuer-checked trials · {number(matched.length)} matching
         </strong>
       </summary>
       {pre&&classification&&<CapScreenedTopPhase3Spreadsheet classification={classification} query={query}/>}
