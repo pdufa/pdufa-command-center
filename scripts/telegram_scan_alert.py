@@ -9,6 +9,7 @@ import json
 import os
 import sys
 import urllib.request
+import urllib.error
 
 LABELS = {
     "pipeline-start": "▶️ PDUFA PIPELINE — LAUNCHING",
@@ -65,9 +66,32 @@ def main(argv=None):
         if not payload.get("ok"):
             print("::warning::Telegram rejected notification; check bot credentials and chat permissions.")
             return 1
+    except urllib.error.HTTPError as error:
+        # Never display the exception URL: it contains the bot token.
+        if error.code == 400:
+            try:
+                detail = str(json.load(error).get("description", "")).lower()
+            except Exception:
+                detail = ""
+            if "chat not found" in detail:
+                hint = "Chat not found: check TELEGRAM_CHAT_ID and press Start on YOUR newly created bot."
+            elif "blocked by the user" in detail:
+                hint = "Bot blocked by user: unblock it and press Start in Telegram."
+            else:
+                hint = "Bad request: check numeric chat ID and bot setup."
+        elif error.code == 401:
+            hint = "Unauthorized bot token: recopy the entire token from BotFather."
+        elif error.code == 403:
+            hint = "Bot cannot message this chat: check the selected chat and press Start/unblock the bot."
+        elif error.code == 404:
+            hint = "Telegram bot endpoint not found: verify the complete bot token."
+        else:
+            hint = "Telegram rejected the request."
+        print(f"::warning::Telegram HTTP {error.code}: {hint}")
+        return 1
     except Exception:
-        # Exception string often contains the bot token embedded in the URL.
-        print("::warning::Telegram delivery failed; request details hidden to protect bot token.")
+        # Never show exception text: it may contain the token-bearing URL.
+        print("::warning::Telegram request failed (transport or parsing); details hidden to protect bot token.")
         return 1
     print("Telegram alert accepted by Telegram API.")
     return 0

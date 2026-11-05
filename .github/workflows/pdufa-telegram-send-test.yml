@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/pdufa-telegram-send-test.yml'
+      - 'scripts/telegram_scan_alert.py'
 
 permissions:
   contents: read
