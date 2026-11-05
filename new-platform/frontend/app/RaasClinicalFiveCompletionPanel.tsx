@@ -48,6 +48,13 @@ export default function RaasClinicalFiveCompletionPanel({data}:{
   </p>
   <p style={{fontSize:13}}><a href="/raas-741-active-five-clinical.csv" download
    style={{fontWeight:700,color:"#145e37",textDecoration:"underline"}}>Download all 741 historical trials · five clinical assessment fields each (CSV)</a></p>
+  <p style={{fontSize:13}} data-raas-recovered-unclassified-clinical-reviews="true">
+   <strong>50 additional historical research-only clinical grades</strong> are now
+   visible for 13 source-reviewed NCTs in the all-trial matrix
+   (including 4 with all five individual grades).
+   These trials still lack a documented issuer TOP/BOTTOM classification, so the scores
+   remain provisional and do not create an approved overall RAAS or FDA probability.
+  </p>
   <p style={{fontSize:13}}>
    <a href="/raas-741-five-clinical-score-matrix.csv" download
     style={{fontWeight:750,color:"#145e37",textDecoration:"underline"}}>

@@ -64,3 +64,22 @@ test("unverified stage never produces a full clinical score, nor reinterprets mi
  const source=JSON.parse(fs.readFileSync(path.join(root,"data/raas-reviewed-metric-assessments.json"),"utf8"));
  assert.equal(source.records.length,96);
 });
+
+test("previously saved research-only grades appear for 13 unclassified NCTs without fabricating a stage",()=>{
+ const csv=fs.readFileSync(path.join(root,"public/raas-741-five-clinical-score-matrix.csv"),"utf8");
+ const rows=csv.trim().split(/\r?\n/).slice(1).map(line=>line.slice(1,-1).split('","'));
+ const recovered=rows.filter(r=>r[4]==="UNVERIFIED"&&Number(r[13])>0);
+ assert.equal(recovered.length,13);
+ assert.equal(recovered.reduce((n,r)=>n+Number(r[13]),0),50);
+ assert.equal(recovered.filter(r=>Number(r[13])===5).length,4);
+ assert.ok(recovered.every(r=>r[15]===""));
+ const exception=recovered.filter(r=>r[16]==="REVIEWED_SOURCE_STAGE_DIFFERS_FROM_REGISTRY_PREVIEW");
+ assert.equal(exception.length,1);
+ assert.equal(exception[0][0],"NCT05208047");
+ assert.equal(exception[0][6],"pre");
+ assert.equal(exception[0][7],"post");
+ const coverage=JSON.parse(fs.readFileSync(path.join(root,"data/raas-active-741-coverage.json"),"utf8"));
+ assert.equal(coverage.recordedClinicalGradesAcross741,96);
+ assert.equal(coverage.issuerStageClassifiedTrials,10);
+ assert.equal(coverage.stageUnverifiedTrials,731);
+});

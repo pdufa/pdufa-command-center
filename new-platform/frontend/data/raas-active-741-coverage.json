@@ -14,7 +14,7 @@
   "currentCapEligibility": "UNVERIFIED_FOR_ALL_HISTORICAL_ROWS",
   "note": "Unclassified NCTs each have five research fields available but no assumed TOP/BOTTOM stage and no overall numerical score. Financial/FDA-regulatory/commercial/investment-risk rankings are retired; FDA/PDUFA facts tracked separately.",
   "newClinicalSourceAcceptedMetricReviews": 20,
-  "researchCoverageStatus": "8 newly source-assessed research factors; 5 remain missing (3 safety and 2 MLTX statistical/safety), not imputed.",
+  "researchCoverageStatus": "The 46 classified ratings and 50 distinct preexisting research-only metric grades on 13 unclassified NCTs are surfaced separately. Four classified ratings remain unsupported by currently published data; missing scores are N/A.",
   "registryResearchPreview": {
     "sourceAsOf": "2026-11-05",
     "unclassifiedWithPostedResults": 325,
@@ -45,5 +45,11 @@
       "metricId": "post-1-5",
       "reason": "IZAR-1 comparative treatment-arm adverse event rates and denominators remain undisclosed in topline."
     }
-  ]
+  ],
+  "unverifiedResearchReviewedTrials": 13,
+  "unverifiedResearchMetricGrades": 50,
+  "unverifiedResearchFiveOfFiveRows": 4,
+  "unverifiedResearchStageMismatchCount": 1,
+  "recordedClinicalGradesAcross741": 96,
+  "recoveredResearchScoresSource": "EXISTING_EXACT_PROGRAM_REVIEW_FEED_NOT_NEW_ISSUER_READOUTS"
 }
