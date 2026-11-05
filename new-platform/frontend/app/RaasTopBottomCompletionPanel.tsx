@@ -3,8 +3,8 @@ import {useMemo,useState} from "react";
 import publishedClinicalLeads from "../data/raas-classified-published-metric-leads.json";
 import sourcePolicy from "../data/raas-source-acceptance-policy.json";
 import type {ReadoutClassification} from "../lib/phase3-public-readout";
-import {buildRaasTopBottomCompletion,type RaasClassifiedCompletionTask}
- from "../lib/raas-top-bottom-completion";
+import {buildRaasTopBottomCompletion,type RaasClassifiedCompletionTask,
+ type RaasPublishedMetricLead} from "../lib/raas-top-bottom-completion";
 
 const buttonStyle={
  padding:"9px 12px",border:"1px solid #8fbea0",borderRadius:7,
@@ -30,11 +30,11 @@ export default function RaasTopBottomCompletionPanel({
  // Scholarly outcome measurements are review leads, not gradebook entries.
  // Fail closed on mismatched NCT, drug, ticker, stage, or already rated metric.
  const publishedByMetric=useMemo(()=>{
-  const keyed=new Map<string,typeof publishedClinicalLeads.records>();
+  const keyed=new Map<string,RaasPublishedMetricLead[]>();
   if(!plan)return keyed;
   const rows=new Map([...data.pre,...data.post].map(x=>[x.nctId,x]));
   const tasks=new Map(plan.tasks.map(t=>[t.nctId+"|"+t.metricId,t]));
-  for(const lead of publishedClinicalLeads.records){
+  for(const lead of publishedClinicalLeads.records as RaasPublishedMetricLead[]){
    const row=rows.get(lead.nctId),task=tasks.get(lead.nctId+"|"+lead.metricId);
    if(!row||!row.evidence||!task||task.numericProvisionalGrade!==null||
     row.ticker!==lead.ticker||row.evidence.drug!==lead.drug||
