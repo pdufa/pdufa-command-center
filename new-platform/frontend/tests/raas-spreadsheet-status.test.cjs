@@ -53,6 +53,7 @@ test("Misidentified or wrong-therapy rows cannot inherit scores or mapped areas"
  assert.equal(wrongTherapy.exploratoryTimingScore,null);
 });
 test("historical status exports remain archived while TOP/BOTTOM CSV carries clinical-five columns",()=>{
+ const root=require("node:path").join(__dirname,"..");
  const active=fs.readFileSync(path.join(root,"app/Phase3ReadoutSheets.tsx"),"utf8");
  const earlier=fs.readFileSync(path.join(root,"app/Phase3RegistryPostingSheets.tsx"),"utf8");
  const stage=fs.readFileSync(path.join(root,"app/RaasSpreadsheetStatus.tsx"),"utf8");
