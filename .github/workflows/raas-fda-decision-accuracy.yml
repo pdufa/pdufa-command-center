@@ -31,6 +31,14 @@ on:
       - 'data/fda_directional_100pct_freezes.csv'
       - 'new-platform/frontend/data/raas-2025-nine-archived-goal-original-source-triage.json'
       - 'tests/raas_2025_original_goal_triage.test.cjs'
+      - 'new-platform/frontend/lib/raas-fda-three-way-research-scorecard.ts'
+      - 'new-platform/frontend/lib/raas-fda-forecast-freeze-receipt-audit.ts'
+      - 'new-platform/frontend/lib/raas-fda-original-goal-outcome-audit.ts'
+      - 'new-platform/frontend/data/raas-fda-three-way-scorecard-pairs.json'
+      - 'new-platform/frontend/data/raas-fda-forecast-freeze-receipts.json'
+      - 'new-platform/frontend/data/raas-fda-original-goal-outcome-candidates.json'
+      - 'new-platform/frontend/scripts/raas-fda-nightly-evidence-report.cjs'
+      - 'new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs'
       - 'new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json'
       - 'new-platform/frontend/app/raas-worklist/page.tsx'
       - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
@@ -65,6 +73,14 @@ on:
       - 'data/fda_directional_100pct_freezes.csv'
       - 'new-platform/frontend/data/raas-2025-nine-archived-goal-original-source-triage.json'
       - 'tests/raas_2025_original_goal_triage.test.cjs'
+      - 'new-platform/frontend/lib/raas-fda-three-way-research-scorecard.ts'
+      - 'new-platform/frontend/lib/raas-fda-forecast-freeze-receipt-audit.ts'
+      - 'new-platform/frontend/lib/raas-fda-original-goal-outcome-audit.ts'
+      - 'new-platform/frontend/data/raas-fda-three-way-scorecard-pairs.json'
+      - 'new-platform/frontend/data/raas-fda-forecast-freeze-receipts.json'
+      - 'new-platform/frontend/data/raas-fda-original-goal-outcome-candidates.json'
+      - 'new-platform/frontend/scripts/raas-fda-nightly-evidence-report.cjs'
+      - 'new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs'
       - 'new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json'
       - 'new-platform/frontend/app/raas-worklist/page.tsx'
       - 'new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs'
@@ -88,6 +104,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install locked frontend dependencies for read-only RAAS FDA evidence audit
+        run: npm ci --prefix new-platform/frontend --no-audit --no-fund
+      - name: Verify nightly original-goal FDA evidence report and no false forecasts
+        run: node --test new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs
       - name: Telegram RAAS audit started (scheduled/manual only)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
@@ -134,6 +154,13 @@ jobs:
         run: |
           export RAAS_FDA_EVALUATION_AS_OF_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           python scripts/raas_fda_decision_accuracy_audit.py
+      - name: Inventory exact-case FDA freeze receipts, original goals and evidence gaps (read-only)
+        env:
+          RAAS_FDA_NIGHTLY_REPORT_JSON: ${{ runner.temp }}/raas-fda-threeway-nightly-readiness.json
+          RAAS_FDA_NIGHTLY_REPORT_CSV: ${{ runner.temp }}/raas-fda-threeway-nightly-case-worklist.csv
+        run: |
+          export RAAS_FDA_EVALUATION_AS_OF_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          node new-platform/frontend/scripts/raas-fda-nightly-evidence-report.cjs
       - name: Produce as-of V2 candidate source-readiness worklist (no model predictions)
         env:
           RAAS_V2_SOURCE_STATUS_JSON: ${{ runner.temp }}/raas-v2-prospective-source-readiness.json
@@ -166,6 +193,8 @@ jobs:
           name: raas-fda-three-way-decision-validation
           path: |
             ${{ runner.temp }}/raas-fda-three-way-prediction-accuracy.json
+            ${{ runner.temp }}/raas-fda-threeway-nightly-readiness.json
+            ${{ runner.temp }}/raas-fda-threeway-nightly-case-worklist.csv
             ${{ runner.temp }}/raas-fda-historical-source-review-queue.csv
             ${{ runner.temp }}/raas-fda-upcoming-original-goal-review-queue.csv
             ${{ runner.temp }}/raas-v2-prospective-source-readiness.json
