@@ -4,7 +4,7 @@
   "sourceAsOf": "2026-11-02",
   "policy": "raas-provisional-review-v1",
   "proposedMetrics": 60,
-  "sourceConfirmedReadoutTrials": 5,
+  "sourceConfirmedReadoutTrials": 10,
   "experimentalHistoryEvents": 6,
   "experimentalTrialsWithMetrics": 4,
   "distinctSourceGradedMetricSlots": 6,
