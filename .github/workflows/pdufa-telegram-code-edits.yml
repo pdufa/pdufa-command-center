@@ -1,0 +1,37 @@
+name: PDUFA Telegram system edit alerts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'scripts/**'
+      - 'new-platform/frontend/app/**'
+      - 'new-platform/frontend/lib/**'
+      - 'new-platform/backend/app/**'
+
+permissions:
+  contents: read
+
+jobs:
+  notify-code-edit:
+    # Automated snapshot commits are not user-initiated system edits.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Telegram notification for code and workflow edits
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          EDITOR: ${{ github.actor }}
+          EDIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+        run: |
+          python scripts/telegram_scan_alert.py --event system-edit \
+            --details "Commit by $EDITOR: ${EDIT_MESSAGE:0:450}. This confirms a GitHub code update, not successful Vercel deployment." \
+            --url "$COMMIT_URL"

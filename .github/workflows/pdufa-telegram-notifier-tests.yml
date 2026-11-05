@@ -1,0 +1,30 @@
+name: Validate Telegram scan notifier
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/telegram_scan_alert.py'
+      - 'tests/test_telegram_scan_alert.py'
+      - '.github/workflows/pdufa-telegram-*.yml'
+      - '.github/workflows/pdufa-overnight-sequential.yml'
+      - '.github/workflows/raas-fda-decision-accuracy.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/telegram_scan_alert.py'
+      - 'tests/test_telegram_scan_alert.py'
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p 'test_telegram_scan_alert.py' -v

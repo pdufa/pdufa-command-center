@@ -56,8 +56,23 @@ jobs:
           python -m unittest discover -s tests -p 'test_nightly_dispatch_shell.py' -v
           python -m unittest discover -s tests -p 'test_retired_workflow_dependencies.py' -v
 
-  clinical:
+  notify-start:
     needs: validate
+    if: github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.validate.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Telegram notice before real clinical collection
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SCAN_MODE: ${{ inputs.scan_mode }}
+        run: python scripts/telegram_scan_alert.py --event pipeline-start --details "Validation passed; launching source collection ($SCAN_MODE)." --url "$RUN_URL"
+  clinical:
+    needs: [validate, notify-start]
     if: github.event_name == 'workflow_dispatch' && !inputs.validate_only
     uses: ./.github/workflows/pdufa-nightly-clinical.yml
     with:
@@ -175,3 +190,24 @@ jobs:
           done
           echo "::error::Dated RESULTS publication failed; scan evidence remains archived."
           exit 1
+
+  notify-finish:
+    needs: [validate, clinical, report, sources, shared-data, scoring-and-repair, result, archive]
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Telegram verified final result after results publication
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RESULT_STATUS: ${{ needs.result.result }}
+          ARCHIVE_STATUS: ${{ needs.archive.result }}
+        shell: bash
+        run: |
+          if [[ "$RESULT_STATUS" == "success" && "$ARCHIVE_STATUS" == "success" ]]; then STATUS=success; else STATUS=failure; fi
+          python scripts/telegram_scan_alert.py --event pipeline-end --status "$STATUS" \
+            --details "Execution: $RESULT_STATUS; dated RESULTS publication: $ARCHIVE_STATUS." --url "$RUN_URL"
