@@ -71,6 +71,17 @@ export default function RaasScanPage(){
      </div>
     </details>
    </section>
+   <section className={css.section} data-raas-independent-review-queue-link="true">
+    <div className={css.sectionTitle}>
+     <h2>Independent RAAS review assignments</h2>
+     <span>Prioritize trial-specific source and benchmark verification</span>
+    </div>
+    <p className={css.notice}>The 82 source-checked individual research findings
+     still need external independent adjudication. The review queue
+     preserves NCT, therapy, stage, metric, source date and critical risks.
+     It cannot itself approve any grade or predict PASS/CRL/EXTENSION.</p>
+    <p><Link href="/raas-review-queue">Open individual independent review assignments and CSV export</Link></p>
+   </section>
    <RaasFullUniverseScores/>
    <section className={css.section} data-raas-self-audit={selfAudit.status}>
     <div className={css.sectionTitle}>
