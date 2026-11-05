@@ -5,6 +5,7 @@
 import {parseRegistryEvidenceIndex,type RegistryEvidenceIndex} from "./raas-registry-evidence";
 import {parseReviewedMetricFeed} from "./raas-reviewed-full-score";
 import {RAAS_METRIC_CATALOG} from "./raas-metric-specs";
+import {auditRegistrySourceTrial,type RegistrySourceIssue} from "./raas-registry-source-integrity";
 import reviewed from "../data/raas-reviewed-metric-assessments.json";
 import currentPhase3 from "../data/raas-current-pipeline-pre-candidate-snapshots.json";
 import currentFda from "../data/raas-current-accepted-fda-applications.json";
@@ -23,6 +24,9 @@ export type TrialEvidenceBacklogItem={
  sourceUrl:string;sourceDate:string;sourceHash:string;
  postedResults:boolean;postedPrimaryOutcomeCount:number;
  hasPrimaryComparisons:boolean;hasConfidenceIntervals:boolean;hasSeriousEventDenominators:boolean;
+ primaryContrastCount:number;primaryNumericCICount:number;saeDenominatorGroupCount:number;
+ sourceIntegrityIssues:RegistrySourceIssue[];
+ sourceIntegrityIssueCount:number;sourceIntegrityIssueCodes:string;
  reviewedTop:number;reviewedBottom:number;
  missingTopMetricIds:string[];missingBottomMetricIds:string[];
  ambiguousProgramReviews:boolean;nextEvidenceAction:string;
@@ -35,6 +39,7 @@ export type TrialEvidenceBacklog={
  provisionalMetricReviews:number;postedResults:number;protocolOnly:number;
  unverifiedStages:number;currentFdaPhase3:number;currentPhase3Top:number;
  trialsWithComparativeRegistryEvidence:number;trialsWithConfidenceIntervals:number;
+ sourceIntegrityFlaggedTrials:number;sourceIntegrityFindings:number;
  independentReviewedMetrics:0;approvedScores:0;calibratedFdaPredictions:0;
 };
 const stageMetricIds={
@@ -57,6 +62,7 @@ export function buildTrialEvidenceBacklog(rawIndex:unknown):TrialEvidenceBacklog
   .map(x=>[x.trialNctId,x]));
  const dated=new Map(readout.entries.map(x=>[x.nctId,x]));
  const items=registry.records.map(r=>{
+  const sourceAudit=auditRegistrySourceTrial(r,registry.sourceAsOf);
   const knownReview=(recordsByNct.get(r.nctId)??[]).filter(x=>x.ticker===r.ticker);
   const programIds=new Set(knownReview.map(x=>
    JSON.stringify([x.drug.trim().toLowerCase(),x.indication.trim().toLowerCase()])));
@@ -112,6 +118,12 @@ export function buildTrialEvidenceBacklog(rawIndex:unknown):TrialEvidenceBacklog
    sourceHash:r.sourceHash,postedResults:r.postedResults,
    postedPrimaryOutcomeCount:r.postedPrimaryOutcomeCount,
    hasPrimaryComparisons,hasConfidenceIntervals,hasSeriousEventDenominators,
+   primaryContrastCount:sourceAudit.primaryComparisons,
+   primaryNumericCICount:sourceAudit.comparisonsWithNumericCI,
+   saeDenominatorGroupCount:sourceAudit.safetyGroupsWithDenominators,
+   sourceIntegrityIssues:sourceAudit.issues,
+   sourceIntegrityIssueCount:sourceAudit.issues.length,
+   sourceIntegrityIssueCodes:[...new Set(sourceAudit.issues.map(i=>i.code))].join("; "),
    reviewedTop,reviewedBottom,
    missingTopMetricIds:stageMetricIds.pre.filter(id=>!topIds.has(id)),
    missingBottomMetricIds:stageMetricIds.post.filter(id=>!bottomIds.has(id)),
@@ -138,5 +150,7 @@ export function buildTrialEvidenceBacklog(rawIndex:unknown):TrialEvidenceBacklog
   currentPhase3Top:items.filter(x=>x.priority==="CURRENT_PHASE3_TOP").length,
   trialsWithComparativeRegistryEvidence:items.filter(x=>x.hasPrimaryComparisons).length,
   trialsWithConfidenceIntervals:items.filter(x=>x.hasConfidenceIntervals).length,
+  sourceIntegrityFlaggedTrials:items.filter(x=>x.sourceIntegrityIssues.length>0).length,
+  sourceIntegrityFindings:items.reduce((n,x)=>n+x.sourceIntegrityIssues.length,0),
   independentReviewedMetrics:0,approvedScores:0,calibratedFdaPredictions:0};
 }

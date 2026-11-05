@@ -32,6 +32,7 @@ export default function EvidenceBacklogClient(){
  const [stage,setStage]=useState<"all"|EvidenceBacklogStage>("all");
  const [results,setResults]=useState<"all"|"posted"|"protocol"|"comparison">("all");
  const [reviewed,setReviewed]=useState<"all"|"has"|"none">("all");
+ const [integrity,setIntegrity]=useState<"all"|"flagged"|"not-flagged">("all");
  const [page,setPage]=useState(0);
  useEffect(()=>{
   let alive=true;
@@ -51,11 +52,12 @@ export default function EvidenceBacklogClient(){
     (results==="protocol"&&!x.postedResults)||
     (results==="comparison"&&x.hasPrimaryComparisons))&&
    (reviewed==="all"||(x.reviewedTop+x.reviewedBottom>0)===(reviewed==="has"))&&
+   (integrity==="all"||(x.sourceIntegrityIssueCount>0)===(integrity==="flagged"))&&
    (!text||[
     x.nctId,x.ticker,x.trialName||"",...x.conditions,...x.interventions,
     x.applicationKey||""
    ].some(v=>v.toLowerCase().includes(text))));
- },[backlog,q,priority,stage,results,reviewed]);
+ },[backlog,q,priority,stage,results,reviewed,integrity]);
  const pages=Math.max(1,Math.ceil(filtered.length/count));
  const current=Math.min(page,pages-1);
  const shown=filtered.slice(current*count,(current+1)*count);
@@ -71,7 +73,9 @@ export default function EvidenceBacklogClient(){
     [backlog.provisionalMetricReviews,"Individually reviewed provisional metrics"],
     [backlog.postedResults,"Trials with posted registry results"],
     [backlog.unverifiedStages,"Readout stages still unverified"],
-    [backlog.independentReviewedMetrics,"Certified independent metric reviews"]
+    [backlog.independentReviewedMetrics,"Certified independent metric reviews"],
+    [backlog.trialsWithComparativeRegistryEvidence,"Trials with source-reported primary comparisons"],
+    [backlog.sourceIntegrityFlaggedTrials,"Registry trials with source-interpretation flags"]
    ].map(([v,label])=><div key={label} style={{...base,padding:14,background:"#f5faf6"}}>
     <strong style={{display:"block",fontSize:25}}>{v}</strong>
     <span style={{fontSize:11,lineHeight:1.5}}>{label}</span>
@@ -83,6 +87,8 @@ export default function EvidenceBacklogClient(){
    FDA odds, or a complete 30/30 RAAS score. For unverified stages, both TOP and BOTTOM
    missing-metric lists are potential worklists only; neither is assigned as the
    required stage. The two stages must never be combined into a 60-point rating.
+   Source-interpretation flags highlight observations to check against original
+   ClinicalTrials.gov result tables; they are not findings of source error.
   </p>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"end",margin:"18px 0"}}>
    <label style={{display:"grid",gap:5,fontSize:12,fontWeight:700}}>
@@ -129,8 +135,18 @@ export default function EvidenceBacklogClient(){
      <option value="none">No metric reviews</option>
     </select>
    </label>
+   <label style={{display:"grid",gap:5,fontSize:12,fontWeight:700}}>
+    Source interpretation audit
+    <select value={integrity} aria-label="Filter clinical source interpretation flags"
+     onChange={e=>{setIntegrity(e.target.value as typeof integrity);reset();}} style={base}>
+     <option value="all">All source audits</option>
+     <option value="flagged">Needs source interpretation review</option>
+     <option value="not-flagged">No rule-based flags</option>
+    </select>
+   </label>
    <button type="button" style={base} onClick={()=>{
-    setQ("");setPriority("all");setStage("all");setResults("all");setReviewed("all");reset();
+    setQ("");setPriority("all");setStage("all");setResults("all");
+    setReviewed("all");setIntegrity("all");reset();
    }}>Clear selections</button>
    <a href="/api/raas-evidence-backlog" download style={{...base,fontWeight:700}}>
     Export 762-trial evidence gaps (CSV)
@@ -156,6 +172,9 @@ export default function EvidenceBacklogClient(){
       <small>Provisional TOP {x.reviewedTop}/30 · BOTTOM {x.reviewedBottom}/30</small>
       <small>{x.postedResults?"Registry results posted":"Protocol only"} ·
        {x.hasPrimaryComparisons?" comparison source available":" no comparative primary analysis"}</small>
+      <small>{x.sourceIntegrityIssueCount>0?
+       x.sourceIntegrityIssueCount+" source-interpretation flag(s) · verify original result":
+       "No rule-based source-integrity flags"}</small>
      </span>
      <strong style={{fontSize:12,flex:"0 1 130px"}}>View required evidence ▸</strong>
     </summary>
@@ -178,6 +197,29 @@ export default function EvidenceBacklogClient(){
       <strong>Documented FDA application research:</strong> {x.applicationKey},
       {" "}goal {x.acceptedPdufaGoal} as of the saved sponsor snapshot.
       Reverify FDA deadline and status; no FDA outcome or approval odds inferred.</p>}
+     <p style={{margin:0}}><strong>Exact raw source evidence captured:</strong>
+      {" "}{x.primaryContrastCount} primary between-arm comparisons,
+      {" "}{x.primaryNumericCICount} comparisons with numeric confidence limits,
+      {" "}{x.saeDenominatorGroupCount} registered serious-adverse-event group observations with denominators.
+      Registry OG outcome arm IDs and EG adverse-event arm IDs are separate namespaces
+      and must be independently reconciled; these counts are not efficacy or safety grades.</p>
+     {x.sourceIntegrityIssues.length>0&&<details
+      data-raas-registry-source-interpretation-review={x.nctId}
+      style={{padding:10,border:"1px solid #cfbca8",borderRadius:8}}>
+      <summary style={{cursor:"pointer",fontWeight:750}}>
+       Check {x.sourceIntegrityIssues.length} flagged original source interpretation(s)
+      </summary>
+      {x.sourceIntegrityIssues.map((flag,i)=><div key={i}
+       style={{padding:"7px 0",borderBottom:"1px solid #dce6dc"}}>
+       <strong>{flag.code.replaceAll("_"," ")}</strong>
+       {" "}· {flag.path} · reported {flag.reportedValue}
+       <p style={{margin:"3px 0 0"}}>{flag.explanation}</p>
+      </div>)}
+      <p style={{margin:"8px 0 0"}}>
+       A source interpretation flag is not proof that the original study data
+       is wrong. Confirm the reported scale, arms and methods before grading.
+      </p>
+     </details>}
      <p style={{margin:0}}><strong>Unreviewed potential metric IDs:</strong>
       {" "}TOP {x.missingTopMetricIds.length}/30
       {" "}({x.missingTopMetricIds.slice(0,7).join(", ")}{x.missingTopMetricIds.length>7?", …":""});
@@ -188,6 +230,10 @@ export default function EvidenceBacklogClient(){
      </p>
      <div style={{display:"flex",gap:13,flexWrap:"wrap"}}>
       <a href={x.sourceUrl} target="_blank" rel="noopener noreferrer">Exact registry trial</a>
+      <a href={"/api/raas-registry-source-packet?"+new URLSearchParams({
+       nctId:x.nctId,ticker:x.ticker}).toString()}
+       download data-raas-registry-source-packet={x.nctId}
+       style={{fontWeight:750}}>Download raw clinical evidence packet (JSON)</a>
       {x.stageSourceUrl&&<a href={x.stageSourceUrl} target="_blank" rel="noopener noreferrer">Dated stage source</a>}
       <Link href="/raas-review-queue">Source-reviewed metric packets</Link>
       <Link href="/raas-worklist">60-metric source requirements</Link>
