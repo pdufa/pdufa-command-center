@@ -10,7 +10,7 @@ import leads from "../data/raas-v2-top8-2026-source-intake.json";
 import accuracy from "../data/raas-fda-three-way-accuracy-site-snapshot.json";
 
 type Status="PHASE2_OUT_OF_SCOPE"|"ORIGINAL_GOAL_ALREADY_ELAPSED"|
- "UNVERIFIED_APPLICATION_OR_REVIEW_CYCLE"|"INDEPENDENT_CALIBRATION_REQUIRED";
+ "UNVERIFIED_APPLICATION_OR_REVIEW_CYCLE"|"EXACT_CYCLE_AND_CALIBRATION_NOT_VERIFIED";
 type EvidenceRequirement={
  id:string;label:string;status:"SOURCE_LEAD_NOT_CERTIFIED"|"MISSING"|"OUT_OF_SCOPE";
  note:string
@@ -47,7 +47,7 @@ export type ThreeWayFDAFreezePreflightPlan={
  scope:"RAAS_UNAPPROVED_FDA_THREE_WAY_FREEZE_HANDOFF_PLAN";
  snapshotAsOf:string;total:number;phase2Excluded:number;
  originalGoalElapsed:number;unverifiedApplicationOrCycle:number;
- needsIndependentCalibration:number;
+ needsExactCycleAndCalibration:number;
  frozenVerifiedThreeWayForecasts:0;certifiedThreeWayAccuracy:null;
  records:ThreeWayFDAFreezePreflight[];
 };
@@ -130,7 +130,7 @@ export function buildThreeWayFDAFreezePreflightPlan(
    "ORIGINAL_GOAL_ALREADY_ELAPSED":
    row.eligible==="NOT_YET_VERIFIED"?
    "UNVERIFIED_APPLICATION_OR_REVIEW_CYCLE":
-   "INDEPENDENT_CALIBRATION_REQUIRED";
+   "EXACT_CYCLE_AND_CALIBRATION_NOT_VERIFIED";
   const identity={
    version:"raas-fda-original-goal-preflight-2026-11-04-v1",
    key:row.key,ticker:row.ticker,drug:row.drug,indication:row.indication,
@@ -179,8 +179,8 @@ export function buildThreeWayFDAFreezePreflightPlan(
    r.preflightStatus==="ORIGINAL_GOAL_ALREADY_ELAPSED").length,
   unverifiedApplicationOrCycle:records.filter(r=>
    r.preflightStatus==="UNVERIFIED_APPLICATION_OR_REVIEW_CYCLE").length,
-  needsIndependentCalibration:records.filter(r=>
-   r.preflightStatus==="INDEPENDENT_CALIBRATION_REQUIRED").length,
+  needsExactCycleAndCalibration:records.filter(r=>
+   r.preflightStatus==="EXACT_CYCLE_AND_CALIBRATION_NOT_VERIFIED").length,
   frozenVerifiedThreeWayForecasts:0,certifiedThreeWayAccuracy:null,records
  };
 }
