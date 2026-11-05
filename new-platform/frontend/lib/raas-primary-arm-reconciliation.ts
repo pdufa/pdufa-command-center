@@ -58,7 +58,7 @@ export function buildPrimaryContrastReconciliationLedger(raw:unknown):
   for(const [oi,outcome] of r.primaryResults.entries()){
    const names=new Map((outcome.groups||[]).map(g=>[g.id,g.title]));
    const measured=new Map((outcome.measurements||[]).map(m=>
-    [m.groupId,number(m.value)]));
+    [m.groupId,number(m.value)] as const));
    for(const [ci,c] of (outcome.comparisons||[]).entries()){
     const id=r.nctId+"|primary-"+oi+"|comparison-"+ci;
     if(seen.has(id))throw Error("RAAS_ARM_RECONCILIATION_DUPLICATE_COMPARISON");
