@@ -78,6 +78,7 @@ export default function Raas762ScoringWorkspace(){
  const partial=useMemo(()=>rows.filter(r=>r.hasPartial).length,[rows]);
  const posted=useMemo(()=>rows.filter(r=>r.evidence.postedResults).length,[rows]);
  const withLeads=useMemo(()=>rows.filter(r=>r.sourceLeads.length>0).length,[rows]);
+ const sourceGaps=useMemo(()=>rows.filter(r=>r.sourceLeads.length===0),[rows]);
  const filtered=useMemo(()=>{
   const q=search.trim().toLowerCase();
   return rows.filter(x=>
@@ -131,6 +132,57 @@ export default function Raas762ScoringWorkspace(){
    Registry source leads identify possible review materials only; they do not count
    as scored or independently reviewed metrics.
   </p>
+  <details data-raas-registry-source-gap-queue="requires-primary-source-research"
+   style={{margin:"16px 0",border:"1px solid #b8cdbd",borderRadius:9,padding:12}}>
+   <summary style={{cursor:"pointer",fontWeight:700,fontSize:14}}>
+    Source discovery worklist · {sourceGaps.length} NCTs with no eligible registry metric lead
+   </summary>
+   <p style={{fontSize:13,lineHeight:1.5}}>
+    These trials have no metric-specific lead in the saved registry extract.
+    They are not scored as failures. First recover the dated primary endpoint,
+    trial protocol and reported results from the registry, sponsor disclosures,
+    publications or original FDA materials. Verify the exact drug, indication and
+    NCT before promoting any evidence into a provisional metric assessment.
+    A trial shown as completed does not establish successful efficacy.
+   </p>
+   <button type="button" style={{...control,marginBottom:10}}
+    onClick={()=>{setSearch("");setEvidenceFilter("all");setScoreFilter("all");
+     setLeadFilter("no-leads");setPage(0)}}>
+    Filter main table to source gaps
+   </button>
+   <div role="region" aria-label="RAAS registry source discovery worklist"
+    tabIndex={0} style={{overflowX:"auto"}}>
+    <table style={{width:"100%",borderCollapse:"collapse",minWidth:690,fontSize:12}}>
+     <thead><tr style={{background:"#eaf4ed"}}>
+      {["Trial / issuer","Registry status","Drug and indication",
+       "Saved registry evidence","Next source research"].map(h=><th key={h}
+       scope="col" style={{...cell,textAlign:"left"}}>{h}</th>)}
+     </tr></thead>
+     <tbody>{sourceGaps.map(x=><tr key={x.trial.nctId}>
+      <td style={cell}><strong>{x.trial.ticker}</strong>
+       <small style={{display:"block"}}><a href={x.trial.sourceUrl}
+        target="_blank" rel="noopener noreferrer">{x.trial.nctId}</a></small></td>
+      <td style={cell}>{x.evidence.registryStatus}</td>
+      <td style={cell}>{x.evidence.registeredInterventions.slice(0,2).join(", ")||"Drug unspecified"}
+       <small style={{display:"block"}}>
+        {x.evidence.registeredConditions.slice(0,2).join(", ")||"Indication unspecified"}
+       </small></td>
+      <td style={cell}>
+       {x.evidence.postedResults?"Registry results posted":"No posted registry results"};
+       {" "}{x.evidence.primaryDefinitions.length===0?
+        "primary endpoint not described in saved extract":
+        "primary endpoint listed but no eligible metric lead"}.
+       <small style={{display:"block"}}>
+        Registry updated: {x.evidence.registryLastUpdated||"date unavailable"}
+       </small></td>
+      <td style={cell}>Locate dated protocol/endpoint and any sponsor or
+       published readout. Match exact NCT, drug and indication;
+       independently assess efficacy, risk and comparators.
+      </td>
+     </tr>)}</tbody>
+    </table>
+   </div>
+  </details>
   <div style={{display:"flex",flexWrap:"wrap",gap:12,margin:"14px 0",fontSize:13}}>
    <a href="/raas-trial-score-ledger.csv" download>Export 762 rows · trial ledger (CSV)</a>
    <a href="/raas-active-phase3-source-screen.csv" download>
