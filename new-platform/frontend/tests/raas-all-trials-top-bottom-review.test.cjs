@@ -60,7 +60,7 @@ test("unverified trials may review both 30-metric stages without pretending to b
  assert.match(modal,/data-raas-whatif-stage=\{value\}/);
  assert.match(modal,/stageVerified=bucket!==null/);
  assert.match(modal,/bucket\?\?researchStageOnly\?\?reviewStage/);
- assert.match(modal,/Choosing a checklist does not classify the trial/);
+ assert.match(modal,/Choosing a research checklist does not verify the issuer readout/);
  assert.doesNotMatch(modal,/if\(!bucket\)return/);
  assert.match(page,/data-raas-registry-review-queues="true"/);
  assert.match(page,/Registry results posted|Registry-posted results/);
