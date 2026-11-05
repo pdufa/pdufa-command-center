@@ -72,7 +72,7 @@ test("the primary scoring route and tools index put the 762 rows first",()=>{
  assert.match(client,/RaasTrialHistoryButton row=\{x\.trial\} bucket=\{null\}/);
  assert.match(client,/PAGE_SIZE=50/);
  assert.match(client,/records\.length!==762/);
- assert.match(client,/const stage:\"pre\"\\|\"post\"=x\.postedResults\?"post":"pre"/);
+ assert.ok(client.includes('const stage:"pre"|"post"=x.postedResults?"post":"pre"'));
  assert.match(client,/remaining:30-reviewed/);
  assert.match(client,/rows\.length\*30/);
  assert.match(client,/Not validated/);
