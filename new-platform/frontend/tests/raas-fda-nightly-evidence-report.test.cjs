@@ -24,7 +24,7 @@ test("nightly as-of report reconciles all eleven research cycles without a fabri
  assert.equal(r.threeWayScorecard.evidenceGates.length,6);
  assert.equal(r.records.length,11);
  assert.equal(new Set(r.records.map(x=>x.caseKey)).size,11);
- assert.match(r.sourceSignature,/^[0-9a-f]{64}$/);
+ assert.match(r.auditStateFingerprint,/^[0-9a-f]{64}$/);
  assert.equal(r.sourceChangedSincePreviousRun,null);
  assert.ok(r.records.every(x=>x.decision==="ABSTAIN"&&
   x.claimedValidatedProbability===null&&
@@ -56,7 +56,7 @@ test("nightly future dates mark original goal expiration and saved snapshot age,
  assert.ok(late.records.every(x=>x.savedSourceSnapshotStaleOver30Days));
  assert.equal(late.counts.independentlyAdjudicatedOriginalGoalOutcomes,0);
  assert.equal(late.counts.independentlyAuthenticatedForecasts,0);
- assert.notEqual(first.sourceSignature,late.sourceSignature);
+ assert.notEqual(first.auditStateFingerprint,late.auditStateFingerprint);
  assert.equal(first.sourceChangeComparisonStatus,"NO_PREVIOUS_RUN_ARTIFACT_PROVIDED");
 });
 test("invalid time and backdating before saved snapshot fail closed",()=>{
