@@ -75,7 +75,7 @@ test("each missing source task carries exact-trial issuer, registry, metric comp
 });
 test("unverified inventory and duplicate/incorrect stage data fail closed rather than receiving ratings",()=>{
  assert.throws(()=>build({...classified,
-  pre:[classified.pre[0],classified.pre[0]],total:742}),
+  pre:[...classified.pre,classified.pre[0]],total:742}),
   /RAAS_TOP_BOTTOM_DUPLICATE_CLASSIFIED_NCT/);
  assert.throws(()=>build({...classified,
   post:[...classified.post,classified.pre[0]],total:742}),
