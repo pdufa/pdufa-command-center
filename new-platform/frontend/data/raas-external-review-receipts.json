@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_EXTERNAL_REVIEW_RECEIPTS_UNAUTHENTICATED_INTAKE",
+  "note": "No independent reviewer receipts received. Never store personal contact information or raw signed reports in this public repository. If future structured receipt references are added, their shape and source fingerprint are checked, but identity/independence/signature still require a separately documented human audit. This ledger cannot approve any RAAS score or FDA probability.",
+  "records": []
+}
