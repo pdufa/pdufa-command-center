@@ -82,7 +82,7 @@ test("762-row workspace has accessible 50-row pages, missing-value states and no
  const code=source("app/Raas762ScoringWorkspace.tsx");
  for(const marker of ["data-raas-762-scoring-workspace","records.length!==762",
   "new Set(x.records.map(r=>r.nctId)).size!==762",
-  'const stage=x.postedResults?"post":"pre"',
+  'const stage:"pre"|"post"=x.postedResults?"post":"pre"',
   "stageResearchReviewsForUnverifiedTrial(trial,stage)",
   "remaining:30-reviewed","rows.length*30",
   "researchStageOnly={x.stage}",
