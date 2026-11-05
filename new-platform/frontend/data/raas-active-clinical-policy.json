@@ -23,5 +23,11 @@
   "activeScoreRequirement": "FIVE_EXACT_TRIAL_STAGE_REVIEWED_SCIENTIFIC_FACTORS",
   "stageUnverifiedPolicy": "SHOW_FIVE_RESEARCH_QUESTIONS_NO_OVERALL_SCORE",
   "fdaPdufaTracking": "PRESERVE_FACTUAL_DATES_AND_OUTCOMES_NOT_RATING_INPUTS",
-  "predictionCalibration": "SEPARATE_NOT_CLAIMED"
+  "predictionCalibration": "SEPARATE_NOT_CLAIMED",
+  "researchSourceTrust": "ORIGINAL_PUBLIC_REPORTING_ACCEPTED_AT_FACE_VALUE_NO_SECOND_VERIFICATION_PASS",
+  "redundantIndependentDataVerificationRequired": false,
+  "externalHumanScoreApprovalRequired": false,
+  "evidenceNeededForNumericGrade": "SCORABLE_REPORTED_DATA_OR_TRANSPARENT_RUBRIC_BASED_EVALUATION",
+  "unknownDataHandling": "KEEP_N_A_DO_NOT_INVENT",
+  "trialIdentityAndReadoutMatchingRequired": true
 }

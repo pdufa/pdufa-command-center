@@ -9,5 +9,22 @@
   "independentValidationStatus": "SEPARATE_OPTIONAL_REVIEW_NOT_CLAIMED",
   "fdaForecastValidation": "SEPARATE_CALIBRATION_REQUIRED",
   "missingMetricPolicy": "N_A_NO_IMPUTATION",
-  "notes": "The user accepts source documents as trusted research inputs. This does not assert independent human attestation, guarantee accuracy, fabricate missing clinical evidence, or create FDA prediction probabilities."
+  "notes": "User explicitly accepts dated original publications and issuer disclosures at face value as research facts, without a duplicate independent verification pass or reviewer signoff. This is a source-trust policy, not an assurance of the truth or reliability of sponsor claims. It never creates an unreported observation, trial classification, statistical result, five-factor grade, or FDA decision probability.",
+  "acceptanceMode": "SOURCE_REPORTED_FACTS_ACCEPTED_AT_FACE_VALUE_FOR_RESEARCH",
+  "treatPublishedMeasurementsAsResearchInputsWithoutIndependentReverification": true,
+  "requireSecondSourceForVerbatimPublishedFact": false,
+  "requireExternalHumanSourceVerification": false,
+  "acceptedOriginalSources": [
+    "ClinicalTrials.gov trial record",
+    "peer-reviewed published trial report",
+    "dated issuer press release or presentation",
+    "original FDA publication"
+  ],
+  "minimumSafeguards": [
+    "Exact trial NCT/ticker/drug/indication matching",
+    "Correct source-reported numeric fact and trial phase",
+    "Separate TOP/BOTTOM readout classification from registry posting",
+    "Missing scores remain N/A",
+    "No calibrated FDA forecast inferred"
+  ]
 }
