@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_FDA_THREE_WAY_RESEARCH_SCORECARD_PAIRS_UNVERIFIED",
+  "note": "Empty research-only cohort diagnostic input. Only externally witnessed predecision three-way forecasts paired to independently adjudicated original-goal FDA actions may enter this research scorecard. A matching claimed timestamp, arbitrary evidence digest, or manual row is not proof of authentication. All score statistics remain explicitly unapproved. Never substitute retrospective examples or missing forecasts.",
+  "records": []
+}
