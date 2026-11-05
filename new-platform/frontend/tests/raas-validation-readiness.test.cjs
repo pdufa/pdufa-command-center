@@ -18,7 +18,7 @@ const inputs=()=>({
 test("numeric pilot metrics never become validated RAAS or FDA predictive accuracy",()=>{
  const result=gate.readiness(inputs());
  assert.equal(result.proposedMetrics,60);
- assert.equal(result.sourceConfirmedReadoutTrials,5);
+ assert.equal(result.sourceConfirmedReadoutTrials,10);
  assert.equal(result.readyToValidateOverallRaas,false);
  assert.equal(result.validatedRaasAccuracy,null);
  assert.equal(result.validatedFdaThreeWayAccuracy,null);
