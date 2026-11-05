@@ -156,7 +156,7 @@ test("published clinical primary-study leads are exact classified NCT metric res
 test("external human reviewer handoff contains all 300 exact-NCT metrics with four ungraded published leads",()=>{
  const result=build(classified);
  const csv=result.independentReviewHandoffCsv;
- const rows=csv.trimEnd().split("\\r\\n");
+ const rows=csv.trimEnd().split("\r\n");
  assert.equal(rows.length,301);
  assert.match(rows[0],/signatureOrAuditReceiptId/);
  assert.match(rows[0],/reviewerIdentity/);
