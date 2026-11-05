@@ -84,6 +84,9 @@ test("762-row workspace has accessible 50-row pages, missing-value states and no
   "new Set(x.records.map(r=>r.nctId)).size!==762",
   'const stage:"pre"|"post"=x.postedResults?"post":"pre"',
   "stageResearchReviewsForUnverifiedTrial(trial,stage)",
+  "registryMetricLeads(x,stage,trial)",
+  "leadMetricCount", "x.sourceLeads.length", "setLeadFilter(\"all\")",
+  "View sources and measurements", "No matching registry lead",
   "remaining:30-reviewed","rows.length*30",
   "researchStageOnly={x.stage}",
   "Not validated","N/A · never 0/100","RaasMetricGradebook",
@@ -100,4 +103,19 @@ test("762-row workspace has accessible 50-row pages, missing-value states and no
   compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.ESNext,
    target:ts.ScriptTarget.ES2022},reportDiagnostics:true});
  assert.equal((compiled.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
+});
+
+test("registry source leads remain distinct from independently reviewed RAAS grades",()=>{
+ const code=source("app/Raas762ScoringWorkspace.tsx");
+ assert.match(code,/const sourceLeads=registryMetricLeads\(x,stage,trial\)/);
+ assert.match(code,/new Set\(sourceLeads\.flatMap\(lead=>lead\.metricIds\)\)\.size/);
+ assert.match(code,/Registry source leads identify possible review materials only/);
+ assert.match(code,/Registry source leads/);
+ assert.match(code,/Needs source discovery/);
+ assert.match(code,/No matching registry lead/);
+ assert.match(code,/x\.sourceLeads\.length===0/);
+ assert.match(code,/lead\.sourceUrl/);
+ assert.match(code,/x\.reviewed\/30/);
+ assert.match(code,/Not validated/);
+ assert.doesNotMatch(code,/approvedOverallScore:\s*x\.leadMetricCount/);
 });
