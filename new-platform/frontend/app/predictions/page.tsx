@@ -93,8 +93,12 @@ export default function PredictionsPage(){
    <p style={muted}>
     <a href="/api/raas-fda-threeway-scorecard">
      Open FDA three-way research scorecard (JSON)</a>.
-    Research holdout results are never automatically certified, and
-    no RAAS trading signal is released by this audit.
+    {" "}The <a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/raas-fda-decision-accuracy.yml"
+     target="_blank" rel="noopener noreferrer">existing nightly FDA accuracy workflow</a>
+    {" "}also publishes a dated per-application evidence-gap JSON report and CSV worklist.
+    This page uses saved source snapshots, not the latest workflow artifact or
+    a live FDA-action feed. Research holdout results are never automatically certified,
+    and no RAAS trading signal is released by this audit.
    </p>
   </section>
   <section style={{...panel,marginBottom:15}}
