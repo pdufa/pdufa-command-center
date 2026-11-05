@@ -7,11 +7,12 @@
   "issuerStageClassifiedTrials": 10,
   "stageUnverifiedTrials": 731,
   "classifedClinicalSlotCount": 50,
-  "classifiedSourceAcceptedGrades": 37,
-  "classifiedMissingGrades": 13,
-  "completeClassifiedClinicalScores": 4,
+  "classifiedSourceAcceptedGrades": 45,
+  "classifiedMissingGrades": 5,
+  "completeClassifiedClinicalScores": 6,
   "old30MetricDataPreserved": true,
   "currentCapEligibility": "UNVERIFIED_FOR_ALL_HISTORICAL_ROWS",
   "note": "Unclassified NCTs each have five research fields available but no assumed TOP/BOTTOM stage and no overall numerical score. Financial/FDA-regulatory/commercial/investment-risk rankings are retired; FDA/PDUFA facts tracked separately.",
-  "newClinicalSourceAcceptedMetricReviews": 11
+  "newClinicalSourceAcceptedMetricReviews": 19,
+  "researchCoverageStatus": "8 newly source-assessed research factors; 5 remain missing (3 safety and 2 MLTX statistical/safety), not imputed."
 }
