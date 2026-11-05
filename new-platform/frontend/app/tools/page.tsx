@@ -39,7 +39,7 @@ export default function ToolsPage(){
         <PoolStageExplorer/>
       </div>
     </details>
-    <details id="raas-top-bottom-sheets" data-tools-segment="phase3" style={{margin:"12px 0",border:"1px solid #a5c7b2",borderRadius:10,background:"#f9fcfa"}}>
+    <details data-tools-segment="phase3" id="raas-top-bottom-sheets" style={{margin:"12px 0",border:"1px solid #a5c7b2",borderRadius:10,background:"#f9fcfa"}}>
       <summary style={{cursor:"pointer",padding:"15px 12px",fontWeight:800,color:"#164f35",minHeight:48}}>
         Phase 3 · Public Data Release — TOP 3 and BOTTOM P
       </summary>
