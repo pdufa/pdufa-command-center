@@ -1135,7 +1135,7 @@ export default function Phase3ReadoutSheets(){
               <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
               <td>{row.ticker}</td><td>{row.company}</td><td>{row.status.replaceAll("_"," ")}</td>
               <td>Not verified — research required</td>
-              <td>No RAAS score assigned: not in either verified TOP or BOTTOM spreadsheet</td>
+              <td>No new RAAS score: not in either verified TOP or BOTTOM spreadsheet. <RaasTrialHistoryButton row={row} bucket={null}/></td>
             </tr>)}</tbody>
           </table>
         </div>
