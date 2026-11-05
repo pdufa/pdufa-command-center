@@ -61,7 +61,7 @@ test("queue route, filters, secure source URLs, and CSV handoff remain available
  for(const fragment of ["data-raas-independent-review-queue","ReviewQueueClient","independentlyVerifiedSignoffs"])
   assert.ok(page.includes(fragment));
  for(const fragment of ["data-raas-review-item","sourceUrl","benchmarkSourceUrl",
-   "Clear filters","Export review tasks","Previous 20","Next 20","aria-label","signed attributable review"])
+   "Clear filters","Export review tasks","Previous 20","Next 20","aria-label","attributable independent reviewer identity"])
   assert.ok(client.includes(fragment),fragment);
  for(const [source,name] of [[page,"page.tsx"],[client,"ReviewQueueClient.tsx"]]){
   const output=ts.transpileModule(source,{fileName:name,reportDiagnostics:true,
