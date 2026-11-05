@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_EXACT_CLASSIFIED_PUBLISHED_CLINICAL_EVIDENCE_LEADS_UNGRADED",
   "reviewedAsOf": "2026-11-05",
-  "warning": "Exact-NCT published observations are research leads only, not independent metric assessments or valid 0-100 grades, FDA probabilities, or a matched peer efficacy ranking. Do not infer clinical benefit from p values alone.",
+  "warning": "Exact-NCT published observations are research leads only, not independent metric assessments or valid 0-100 grades, FDA probabilities, or a matched peer efficacy ranking. Do not infer clinical benefit from p values alone. The previously ungraded GRACE post-1-1 lead is now tracked in the 2026-11-05 AI source-crosschecked provisional metric feed (NOT independently validated).",
   "records": [
     {
       "nctId": "NCT05186818",
@@ -47,21 +47,6 @@
       "referenceUrl": "https://pubmed.ncbi.nlm.nih.gov/38739079/",
       "referenceContext": "SEQUOIA-HCM is a separate placebo-controlled trial of the same therapy and obstructive HCM but is not a head-to-head comparison of the MAPLE active control or a calibrated effect-size cutoff.",
       "reviewNeeded": "Reconcile MAPLE protocol, active comparator, missing data, multiplicity and safety; avoid pooling placebo and metoprolol controls as equivalent.",
-      "approvedNumericGrade": null
-    },
-    {
-      "nctId": "NCT03697109",
-      "ticker": "CORT",
-      "stage": "BOTTOM",
-      "drug": "relacorilant",
-      "metricId": "post-1-1",
-      "sourceType": "PEER_REVIEWED_PRIMARY_TRIAL",
-      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41730814/",
-      "sourceTitle": "GRACE Phase 3 randomized-withdrawal efficacy and safety publication",
-      "reportedResult": "62 responders randomized in the withdrawal phase (30 relacorilant, 32 placebo); hypertension loss-of-response odds ratio 0.17 (95% CI 0.04 to 0.77), P=0.022, in the prespecified randomized-withdrawal analysis.",
-      "referenceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-announces-primary-endpoint-met-pivotal-phase-3-grace",
-      "referenceContext": "The earlier dated issuer release independently documents the disclosed endpoint but is the same sponsor program, not an independent therapeutic efficacy benchmark.",
-      "reviewNeeded": "Account for open-label responder enrichment, the small randomized-withdrawal cohort, and confidence interval width; verify prespecified comparator and FDA-relevant population.",
       "approvedNumericGrade": null
     }
   ]
