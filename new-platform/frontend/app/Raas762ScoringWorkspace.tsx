@@ -28,21 +28,20 @@ function caseRow(x:RegistryTrialEvidence):ReadoutRow{
  };
 }
 type ScoringRow={
- evidence:RegistryTrialEvidence;trial:ReadoutRow;topReviewed:number;
- bottomReviewed:number;independentReviews:number;
- hasPartial:boolean;remainingTop:number;remainingBottom:number
+ evidence:RegistryTrialEvidence;trial:ReadoutRow;
+ /** Research-only category from exact registry posting; NOT issuer readout. */
+ stage:"pre"|"post";reviewed:number;independentReviews:number;
+ hasPartial:boolean;remaining:number
 };
 function setupRows(index:RegistryEvidenceIndex):ScoringRow[]{
  return index.records.map(x=>{
   const trial={nctId:x.nctId,ticker:x.ticker};
-  const top=stageResearchReviewsForUnverifiedTrial(trial,"pre");
-  const bottom=stageResearchReviewsForUnverifiedTrial(trial,"post");
-  const topReviewed=top?.reviewedCount??0,bottomReviewed=bottom?.reviewedCount??0;
-  return {evidence:x,trial:caseRow(x),topReviewed,bottomReviewed,
-   independentReviews:(top?.independentReviewedCount??0)+
-    (bottom?.independentReviewedCount??0),
-   hasPartial:topReviewed+bottomReviewed>0,
-   remainingTop:30-topReviewed,remainingBottom:30-bottomReviewed
+  const stage=x.postedResults?"post":"pre";
+  const review=stageResearchReviewsForUnverifiedTrial(trial,stage);
+  const reviewed=review?.reviewedCount??0;
+  return {evidence:x,trial:caseRow(x),stage,reviewed,
+   independentReviews:review?.independentReviewedCount??0,
+   hasPartial:reviewed>0,remaining:30-reviewed
   };
  }).sort((a,b)=>Number(b.hasPartial)-Number(a.hasPartial)||
   Number(b.evidence.postedResults)-Number(a.evidence.postedResults)||
@@ -100,11 +99,11 @@ export default function Raas762ScoringWorkspace(){
    gap:10,margin:"14px 0"}} data-raas-762-scoring-summary="true">
    {[
     {value:rows.length,label:"Trial rows set up"},
-    {value:partial,label:"Trial rows with partial reviews"},
-    {value:rows.length-partial,label:"Trial rows awaiting first metric review"},
-    {value:0,label:"Full independently validated RAAS scores"},
-    {value:posted,label:"Trial rows with posted registry results"},
-    {value:rows.length-posted,label:"Trial rows with protocol-only evidence"}
+    {value:rows.length-posted,label:"Before · no registry results posted"},
+    {value:posted,label:"Past · registry results posted"},
+    {value:rows.length*30,label:"Assigned 30-metric review slots"},
+    {value:partial,label:"Rows with provisional reviews in assigned category"},
+    {value:0,label:"Full independently validated RAAS scores"}
    ].map(x=><div key={x.label} style={{background:"#fff",border:"1px solid #bfd6c7",
     borderRadius:9,padding:12}}>
     <strong style={{display:"block",fontSize:24,fontVariantNumeric:"tabular-nums"}}>{x.value}</strong>
@@ -112,17 +111,16 @@ export default function Raas762ScoringWorkspace(){
    </div>)}
   </div>
   <p style={{fontSize:13,lineHeight:1.55,margin:"12px 0",color:"#385944"}}>
-   <strong>Research preparation only. RAAS ratings belong to TOP/BOTTOM spreadsheets, never the 11,000+ POOL.</strong> Every one of the 762
-   NCTs has one row; each row opens separate TOP and BOTTOM 30-metric checklists,
-   so all 60 metric slots are available without inventing values. Metrics
-   requiring evidence remain N/A, not zero or neutral. A partially reviewed
-   metric is not a validated overall RAAS score. This inventory does not itself
-   certify the current $300M–$10B Pipeline or FDA PDUFA eligibility.
+   <strong>Research preparation only. RAAS applies to the 762 Before/Past spreadsheet rows, never the 11,000+ POOL.</strong>
+   Each exact NCT has ONE active 30-metric checklist based on whether ClinicalTrials.gov
+   results are posted: Before (not posted) or Past (posted). There are 22,860 assigned
+   review slots, not 1,524 duplicate stage rows. Previous research and rating
+   changes remain in the same NCT history. Registry posting does NOT independently
+   verify issuer readout timing, a calibrated score or FDA eligibility.
+   Missing metric grades remain N/A, never invented zero or neutral values.
   </p>
   <div style={{display:"flex",flexWrap:"wrap",gap:12,margin:"14px 0",fontSize:13}}>
    <a href="/raas-trial-score-ledger.csv" download>Export 762 rows · trial ledger (CSV)</a>
-   <a href="/raas-all-trials-partial-metric-ratings.csv" download>
-    Export TOP/BOTTOM research metrics · 1,524 stage rows (CSV)</a>
    <a href="/raas-active-phase3-source-screen.csv" download>
     Export current Phase 3 source prescreen (CSV)</a>
   </div>
@@ -149,9 +147,9 @@ export default function Raas762ScoringWorkspace(){
     <select aria-label="Filter 762 registry evidence" value={evidenceFilter}
      onChange={e=>{setEvidenceFilter(e.target.value as EvidenceFilter);setPage(0)}}
      style={control}>
-     <option value="all">All source states</option>
-     <option value="posted">Results posted</option>
-     <option value="protocol">Protocol only</option>
+     <option value="all">Both spreadsheet categories</option>
+     <option value="posted">Past · results posted</option>
+     <option value="protocol">Before · results not posted</option>
     </select>
    </label>
    <button type="button" style={control}
@@ -161,15 +159,15 @@ export default function Raas762ScoringWorkspace(){
   </div>
   <p role="status" style={{fontSize:12,color:"#3a6049"}}>
    {filtered.length} matching NCTs · displaying {shown.length} on this page.
-   Partial metric reviews are provisional and can occur in both stages.
+   Reviews are counted only in each trial's current registry-posting category.
   </p>
   <div role="region" aria-label="RAAS 762 exact NCT scoring row table" tabIndex={0}
    style={{overflowX:"auto",maxWidth:"100%",border:"1px solid #c5d8ca",borderRadius:8}}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:750,fontSize:13}}>
     <thead style={{background:"#eaf4ed",color:"#19452c"}}>
      <tr>
-      {["NCT / ticker","Registry evidence","TOP reviewed","BOTTOM reviewed",
-       "Overall RAAS","60-metric score details","Cross-stage history"].map(h=>
+      {["NCT / ticker","Spreadsheet category","Reviewed metrics","Awaiting review",
+       "Overall RAAS","30-metric score details","Cross-stage history"].map(h=>
        <th key={h} scope="col" style={{...cell,textAlign:"left",fontSize:12}}>{h}</th>)}
      </tr>
     </thead>
@@ -182,21 +180,21 @@ export default function Raas762ScoringWorkspace(){
        {x.evidence.registeredConditions.slice(0,2).join(", ")||"Condition not supplied"}
       </small>
      </td>
-     <td style={cell}>{x.evidence.postedResults?"Results posted":"Protocol only"}
-      <span style={{display:"block",fontSize:11,color:"#52705c"}}>
-       {x.evidence.registryStatus.replaceAll("_"," ").toLowerCase()}
-      </span>
+     <td style={cell}><strong>{x.stage==="pre"?"Before":"Past"}</strong>
+      <small style={{display:"block",color:"#52705c"}}>
+       {x.evidence.postedResults?"Results posted":"Results not posted"}
+      </small>
      </td>
-     <td style={cell}><strong>{x.topReviewed}/30</strong>
-      <small style={{display:"block"}}>{x.remainingTop} lacking metric reviews</small></td>
-     <td style={cell}><strong>{x.bottomReviewed}/30</strong>
-      <small style={{display:"block"}}>{x.remainingBottom} lacking metric reviews</small></td>
+     <td style={cell}><strong>{x.reviewed}/30</strong>
+      <small style={{display:"block"}}>Provisional review only</small></td>
+     <td style={cell}><strong>{x.remaining}/30</strong>
+      <small style={{display:"block"}}>Missing graded evidence</small></td>
      <td style={cell}><strong>Not validated</strong>
       <small style={{display:"block"}}>N/A · never 0/100</small>
       {x.independentReviews>0&&<small style={{display:"block"}}>
        {x.independentReviews} independent reviews</small>}
      </td>
-     <td style={cell}><RaasMetricGradebook row={x.trial} bucket={null}/></td>
+     <td style={cell}><RaasMetricGradebook row={x.trial} bucket={null} researchStageOnly={x.stage}/></td>
      <td style={cell}><RaasTrialHistoryButton row={x.trial} bucket={null}/></td>
     </tr>)}</tbody>
    </table>
