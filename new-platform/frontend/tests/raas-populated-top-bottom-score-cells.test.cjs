@@ -82,9 +82,12 @@ test("NO stage, no issuer source, cross-therapy or cross-NCT identities cannot g
   /EXACT_ISSUER_SOURCE_REQUIRED/);
  assert.throws(()=>grades("pre",{...source,ticker:"WRONG"}),
   /EXACT_ISSUER_SOURCE_REQUIRED/);
- assert.throws(()=>grades("pre",{...source,evidence:{
+ const unrelated=grades("pre",{...source,evidence:{
   ...source.evidence,drug:"UNRELATED",indication:"WRONG"
- }}),/^(?!NEVER).*/);
+ }});
+ assert.equal(unrelated.gradedMetrics,0);
+ assert.equal(unrelated.missingMetrics,30);
+ assert.ok(unrelated.provisionalGrades.every(x=>x.grade===null));
 });
 test("the matching therapy cannot borrow another trial's or another stage's provisional grades",()=>{
  const source=result.post.find(x=>x.nctId==="NCT06445023");
