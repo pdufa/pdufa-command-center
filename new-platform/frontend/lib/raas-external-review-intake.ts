@@ -3,7 +3,6 @@
  * reviewer's identity, independence, signature, or clinical conclusions were
  * authenticated. Nothing in this module can approve RAAS/FDA predictions.
  */
-import "server-only";
 import {createHash} from "node:crypto";
 import type {RaasReviewQueueItem} from "./raas-independent-review-queue";
 import {buildRaasIndependentReviewQueue} from "./raas-independent-review-queue";
@@ -77,7 +76,7 @@ export function auditRaasExternalReviewReceipts(
   if(!nonempty(receiptId,8,120)||usedIds.has(receiptId))reasons.push("DUPLICATE_OR_INVALID_RECEIPT_ID");
   usedIds.add(receiptId);
   if(!item)reasons.push("UNKNOWN_EXACT_TRIAL_AND_METRIC");
-  else if(r.sourceFingerprint!==sourceFrozenFingerprint(item))
+  else if(r?.sourceFingerprint!==sourceFrozenFingerprint(item))
    reasons.push("SOURCE_VERSION_CHANGED_OR_MISMATCHED");
   if(!nonempty(r?.reviewerReference,3,120))reasons.push("MISSING_REVIEWER_REFERENCE");
   if(!nonempty(r?.reviewerAffiliation,3,200))reasons.push("MISSING_REVIEWER_AFFILIATION");
