@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "RAAS_PUBLIC_CLINICALTRIALS_EVIDENCE_INVENTORY",
   "cohort": "data/phase3_all_years_300m_10b_trials.csv",
-  "capturedAt": "2026-11-04T15:42:58Z",
+  "capturedAt": "2026-11-05T18:58:06Z",
   "source": "ClinicalTrials.gov API v2 exact-NCT public records",
   "caution": "Registry entry, sponsor and result posting are neither FDA PDUFA approval nor a verified RAAS TOP/BOTTOM stage. Do not equate a reported p value, result, or protocol with a validated numerical RAAS score.",
   "summary": {
