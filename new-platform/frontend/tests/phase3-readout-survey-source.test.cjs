@@ -58,11 +58,18 @@ test("IZAR-1 keeps blinded placebo comparison unavailable and no efficacy effect
 });
 test("source-matched issuer data populates survey coverage, but not validated final readiness",()=>{
  const feed=verifiedReadoutSurveyFeed(reviewed,manifest);
+ // The verified survey research feed contains three specific NCTs.
+ // Newly classified readouts have issuer evidence but must NOT borrow survey
+ // grades until their own exact-NCT research records are reviewed.
  for(const item of manifest.entries.filter(x=>x.kind==="POST_PUBLIC_READOUT")){
   const c=readoutResearchCoverage(row(item),"post",feed);
-  assert.ok(c.verified>=2);
-  assert.equal(c.ready,false);
-  assert.ok(c.groupsVerified<5);
+  if(feed.records.some(x=>x.nctId===item.nctId)){
+   assert.ok(c&&c.verified>=2);
+   assert.equal(c.ready,false);
+   assert.ok(c.groupsVerified<5);
+  }else{
+   assert.equal(c,null,"Unreviewed readout must not inherit an older NCT survey");
+  }
  }
  for(const item of manifest.entries.filter(x=>x.kind==="PRE_AS_OF_CHECK"))
   assert.equal(readoutResearchCoverage(row(item),"pre",feed),null);
