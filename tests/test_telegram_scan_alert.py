@@ -1,5 +1,9 @@
 import os
+import io
+import json
 import unittest
+import urllib.error
+from contextlib import redirect_stdout
 from unittest.mock import patch
 from scripts.telegram_scan_alert import main, message
 
@@ -23,6 +27,22 @@ class TelegramScanAlertTests(unittest.TestCase):
         with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "", "TELEGRAM_CHAT_ID": ""}):
             self.assertEqual(main(["--event", "test"]), 1)
             self.assertEqual(main(["--event", "pipeline-start"]), 0)
+
+    def test_diagnostic_reveals_chat_not_found_but_not_token(self):
+        token = "12345:super-secret-should-never-print"
+        response_body = io.BytesIO(json.dumps({"description": "Bad Request: chat not found"}).encode())
+        error = urllib.error.HTTPError(
+            url="https://api.telegram.org/bot" + token + "/sendMessage",
+            code=400, msg="Bad Request", hdrs={}, fp=response_body)
+        output = io.StringIO()
+        with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": token, "TELEGRAM_CHAT_ID": "12345"}):
+            with patch("urllib.request.urlopen", side_effect=error):
+                with redirect_stdout(output):
+                    result = main(["--event", "test"])
+        self.assertEqual(result, 1)
+        self.assertIn("Chat not found", output.getvalue())
+        self.assertNotIn(token, output.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
