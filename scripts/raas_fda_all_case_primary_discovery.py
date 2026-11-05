@@ -228,8 +228,8 @@ def load_documented_other_cycles(as_of: str) -> dict[str, dict]:
         guard(row.get("classification") in {
             "PARENT_ORIGINAL_NDA_NOT_PENDING_EFFICACY_SUPPLEMENT",
             "DIFFERENT_INDICATION_ORIGINAL_APPROVAL_NOT_CUSHINGS_RESUBMISSION",
-        } and row.get("historicalFdaActionDate") <= as_of and
-              isinstance(row.get("historicalFdaActionDate"), str) and
+        } and isinstance(row.get("historicalFdaActionDate"), str) and
+              row["historicalFdaActionDate"] <= as_of and
               re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}",
                            row["historicalFdaActionDate"]) is not None,
               "OTHER_CYCLE_CHRONOLOGY")
