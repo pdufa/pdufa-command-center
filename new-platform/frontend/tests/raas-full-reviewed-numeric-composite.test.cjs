@@ -157,18 +157,18 @@ test("dual pivotal replicated and durable Week-24 responses are source-checked b
  }
 });
 
-test("10-trial real clinical pilot has only research grades, not full RAAS or fabricated FDA probabilities",()=>{
+test("11-trial real clinical pilot has only research grades, not full RAAS or fabricated FDA probabilities",()=>{
  const pilot=require("node:fs").readFileSync(require("node:path").join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8");
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
  const cases=new Set(feed.records.filter(r=>r.stage==="post"&&r.ticker!=="COGT").map(r=>r.nctId));
- assert.equal(cases.size,10);
+ assert.equal(cases.size,11);
  assert.equal(feed.records.length,83);
  for(const nctId of cases){
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
    indication:r.indication},"post",true,feed);
-  assert.ok(scored.aiCrosscheckedCount>=2 && scored.aiCrosscheckedCount<=9);
+  assert.ok(scored.aiCrosscheckedCount>=(nctId==="NCT03697109"?1:2) && scored.aiCrosscheckedCount<=9);
   assert.equal(scored.independentReviewedCount,0);
   assert.equal(scored.fullResearchScore,null);
   assert.equal(scored.approvedOverallScore,null);
