@@ -12,8 +12,12 @@ const style={border:"1px solid #cadfd0",borderRadius:8,padding:"9px 12px",
  background:"white",color:"#184d34",fontSize:13};
 const perPage=20;
 
-export default function ReviewQueueClient({queue}:{queue:RaasIndependentReviewQueue}){
+export default function ReviewQueueClient({
+ queue,initialNctId="",initialMetricId=""
+}:{queue:RaasIndependentReviewQueue;initialNctId?:string;initialMetricId?:string}){
  const [text,setText]=useState("");
+ const [nct,setNct]=useState(initialNctId);
+ const [metric,setMetric]=useState(initialMetricId);
  const [priority,setPriority]=useState<"all"|RaasReviewPriority>("all");
  const [stage,setStage]=useState<"all"|"pre"|"post">("all");
  const [page,setPage]=useState(0);
@@ -22,16 +26,26 @@ export default function ReviewQueueClient({queue}:{queue:RaasIndependentReviewQu
   return queue.items.filter(item=>
    (priority==="all"||item.priority===priority)&&
    (stage==="all"||item.stage===stage)&&
+   (!nct||item.nctId===nct)&&
+   (!metric||item.metricId===metric)&&
    (!needle||[item.ticker,item.nctId,item.drug,item.indication,
     item.metricId,item.metricName,item.trialName||"",item.applicationKey||""]
     .some(value=>value.toLowerCase().includes(needle))));
- },[queue.items,priority,stage,text]);
+ },[queue.items,priority,stage,text,nct,metric]);
  const count=Math.max(1,Math.ceil(filtered.length/perPage));
  const current=Math.min(page,count-1);
  const shown=filtered.slice(current*perPage,(current+1)*perPage);
  const resetPage=()=>setPage(0);
  return <>
   <div style={{display:"flex",flexWrap:"wrap",gap:10,alignItems:"end",margin:"16px 0"}}>
+   {nct&&<div style={style}>
+    Exact NCT {nct} · <button type="button" style={{border:0,background:"none",color:"#235b40"}}
+     onClick={()=>{setNct("");resetPage();}}>Clear trial</button>
+   </div>}
+   {metric&&<div style={style}>
+    Metric {metric} · <button type="button" style={{border:0,background:"none",color:"#235b40"}}
+     onClick={()=>{setMetric("");resetPage();}}>Clear metric</button>
+   </div>}
    <label style={{display:"grid",gap:4,fontSize:12,fontWeight:650}}>
     Find trial or metric
     <input value={text} onChange={e=>{setText(e.target.value);resetPage();}}
@@ -58,7 +72,7 @@ export default function ReviewQueueClient({queue}:{queue:RaasIndependentReviewQu
     </select>
    </label>
    <button type="button" style={style}
-    onClick={()=>{setText("");setPriority("all");setStage("all");resetPage();}}>
+    onClick={()=>{setText("");setNct("");setMetric("");setPriority("all");setStage("all");resetPage();}}>
     Clear filters
    </button>
    <a href="/api/raas-independent-review-queue" download
