@@ -47,6 +47,10 @@ const identity=(task:RaasIndependentReviewQueue["items"][number])=>
 export function buildRaasReviewAssignmentPlan(
  queue:RaasIndependentReviewQueue=buildRaasIndependentReviewQueue()
 ):RaasReviewAssignmentPlan{
+ // Check exact task identity before passing it to the external receipt auditor.
+ // The independently audited receipt parser also fails closed on duplicates.
+ if(new Set(queue.items.map(item=>item.id)).size!==queue.items.length)
+  throw Error("RAAS_ASSIGNMENT_DUPLICATE_EXACT_TASK");
  const receipts=auditRaasExternalReviewReceipts(receiptLedger,queue.items);
  const receiptByTask=new Map<string,Set<RaasReviewAssignmentTask["receiptState"]>>();
  for(const check of receipts.checks){
