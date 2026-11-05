@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "scope": "RAAS_HISTORICAL_SIX_REGISTRY_SOURCE_GAP_RESEARCH_ONLY",
+  "researchedAsOf": "2026-11-05",
+  "sourceIndexAsOf": "2026-11-05",
+  "warning": "These original-source research leads do not modify the saved ClinicalTrials.gov results-posted status, establish issuer TOP/BOTTOM readout classification, approve a numeric RAAS metric, or calibrate FDA predictions. Program-level sponsor releases require exact NCT identity reconciliation.",
+  "records": [
+    {
+      "nctId": "NCT00017407",
+      "evidenceType": "SOURCE_SEARCH_PENDING",
+      "sourceTitle": null,
+      "sourceUrl": null,
+      "sourceDate": null,
+      "identityBasis": "ISIS-3521-CS17 registry identifier only",
+      "summary": "The saved NCT record has no primary endpoint definition or posted efficacy results. Publications on different aprinocarsen regimens cannot be assigned to this trial.",
+      "nextAction": "Locate exact ISIS-3521-CS17 trial report or dated sponsor release for the carboplatin/paclitaxel randomization, then verify protocol endpoints and outcomes.",
+      "scoreEligible": false
+    },
+    {
+      "nctId": "NCT00033904",
+      "evidenceType": "EXACT_NCT_PUBLICATION_LEAD",
+      "sourceTitle": "Wood et al., Lancet 2008, adjuvant vitespen versus observation in renal-cell carcinoma",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18602688/",
+      "sourceDate": "2008-07-12",
+      "identityBasis": "Publication explicitly states NCT00033904",
+      "summary": "Primary endpoint is recurrence-free survival; the published intention-to-treat analysis did not show a statistically significant difference versus observation. Detailed eligibility and critical-bias review remain outstanding.",
+      "nextAction": "Independently recheck original publication, reported population, censoring, effect size and confidence limits; do not generate a score from the abstract alone.",
+      "scoreEligible": false
+    },
+    {
+      "nctId": "NCT00039000",
+      "evidenceType": "ALIAS_MATCHED_PUBLICATION_LEAD",
+      "sourceTitle": "Testori et al., JCO 2008, C-100-21 Phase III vitespen melanoma trial",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18281670/",
+      "sourceDate": "2008-02-20",
+      "identityBasis": "Clinical registry NCT00039000 lists study alias C-100-21; publication identifies the C-100-21 study",
+      "summary": "Publication reports overall survival not significantly different from physician's choice by intention-to-treat; exact protocol/crosswalk and full-text verification still required.",
+      "nextAction": "Audit the C-100-21 to NCT00039000 linkage against original protocol and full publication before using any patient-level or metric data.",
+      "scoreEligible": false
+    },
+    {
+      "nctId": "NCT00048113",
+      "evidenceType": "PROGRAM_LEVEL_SPONSOR_LEAD_UNMAPPED",
+      "sourceTitle": "Ionis/Isis sponsor release: two alicaforsen Phase III Crohn's trials",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/isis-pharmaceuticals-announces-results-alicaforsen-phase-3",
+      "sourceDate": "2004-12-02",
+      "identityBasis": "Sponsor release names two alicaforsen trials but not NCT00048113 or the CS20 identifier",
+      "summary": "The sponsor reports no significant difference for induction of clinical remission by week 12 across the two trial program. This does not establish a per-NCT effect size.",
+      "nextAction": "Match ISIS 2302-CS20 to NCT00048113 using original sponsor protocol/publication and identify the correct individual-arm readout before grading.",
+      "scoreEligible": false
+    },
+    {
+      "nctId": "NCT00048295",
+      "evidenceType": "PROGRAM_LEVEL_SPONSOR_LEAD_UNMAPPED",
+      "sourceTitle": "Ionis/Isis sponsor release: two alicaforsen Phase III Crohn's trials",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/isis-pharmaceuticals-announces-results-alicaforsen-phase-3",
+      "sourceDate": "2004-12-02",
+      "identityBasis": "Sponsor release names two alicaforsen trials but not NCT00048295 or the CS21 identifier",
+      "summary": "The sponsor reports no significant difference for induction of clinical remission by week 12 across the two trial program. This does not establish a per-NCT effect size.",
+      "nextAction": "Match ISIS 2302-CS21 to NCT00048295 using original sponsor protocol/publication and identify the correct individual-arm readout before grading.",
+      "scoreEligible": false
+    },
+    {
+      "nctId": "NCT00486980",
+      "evidenceType": "EXACT_REGISTRY_WITHDRAWAL_NO_ENROLMENT",
+      "sourceTitle": "ClinicalTrials.gov NCT00486980 withdrawn before enrollment",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00486980",
+      "sourceDate": "2026-06-01",
+      "identityBasis": "Original registry record directly identifies NCT00486980",
+      "summary": "BioCryst reports administrative withdrawal after revised dose-ranging plans and actual enrollment of 0. The record cannot support an observed Phase III efficacy outcome.",
+      "nextAction": "Classify as withdrawn with zero actual enrollment for source triage; do not assign clinical efficacy/failure metric grades or extrapolate from other peramivir trials.",
+      "scoreEligible": false
+    }
+  ]
+}
