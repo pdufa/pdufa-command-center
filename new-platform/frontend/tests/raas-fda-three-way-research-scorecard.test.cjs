@@ -165,7 +165,7 @@ test("Predictions page visibly labels missing accuracy and contains gate descrip
  assert.match(page,/Not measurable/);
  assert.match(page,/threeWayScorecard\.readinessGates/);
  assert.match(page,/raas-fda-threeway-scorecard/);
- assert.match(page,/not automatically certified/);
+ assert.match(page,/never automatically certified/);
  const diagnostics=ts.transpileModule(page,{fileName:"predictions.tsx",
   reportDiagnostics:true,compilerOptions:{
    target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext,
