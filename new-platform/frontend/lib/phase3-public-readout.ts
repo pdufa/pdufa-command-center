@@ -1,4 +1,5 @@
 import type {Phase3CensusTrial} from "./phase3-census-rows";
+import addedSource from "../data/phase3_issuer_readout_additions_2026-11-05.json";
 
 /** Exact-NCT, dated release evidence. Registry results postings do not enter this gate. */
 export type ReadoutKind="PRE_AS_OF_CHECK"|"POST_PUBLIC_READOUT";
@@ -6,6 +7,7 @@ export type ReadoutEvidence={
   nctId:string;ticker:string;kind:ReadoutKind;
   evidenceDate:string;evidenceUrl:string;drug:string;indication:string;
   primaryEndpointP?:{display:string;endpoint:string;sourceUrl:string};
+  issuerTrialName?:string;registryTrialUrl?:string;
 };
 export type ReadoutRow=Phase3CensusTrial&{evidence:ReadoutEvidence|null};
 export type ReadoutClassification={
@@ -14,6 +16,7 @@ export type ReadoutClassification={
   total:number;
 };
 const SCOPE="HISTORICAL_US_LISTED_300M_10B_PHASE3_LEAD_SPONSOR_RESEARCH";
+const NEW_SOURCE="data/phase3_issuer_readout_additions_2026-11-05.json";
 const sourceUrlOk=(s:unknown):s is string=>
   typeof s==="string"&&/^https:\/\/[^\s<>"']+$/.test(s);
 const dayOk=(s:unknown):s is string=>
@@ -30,12 +33,25 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
     !dayOk(censusDate)||!dayOk(sourceAsOf)||
     censusDate>sourceAsOf||
     !Array.isArray(sourceFiles)||
-    sourceFiles.length!==2||
+    ![2,3].includes(sourceFiles.length)||
     !sourceFiles.includes("data/phase3_pre_readout_evidence.csv")||
     !sourceFiles.includes("data/post_phase3_discoveries.csv")||
+    (sourceFiles.length===3&&!sourceFiles.includes(NEW_SOURCE))||
     !Array.isArray(entries)||entries.length>census.length)return fail();
   const censusIds=new Map(census.map(row=>[row.nctId,row]));
   if(censusIds.size!==741||census.length!==741)return fail();
+  const hasManualReview=sourceFiles.includes(NEW_SOURCE);
+  const provenance=addedSource.records;
+  const expectedCrosswalk=new Map(provenance.map(x=>[x.nctId,x]));
+  if(hasManualReview&&
+     (addedSource.schemaVersion!==1||
+      addedSource.scope!=="RAAS_PHASE3_ISSUER_AND_REGISTRY_DUAL_SOURCE_READOUT_CROSSWALK_RESEARCH_ONLY"||
+      addedSource.classifiedIssuerEvidenceSnapshotAsOf!==sourceAsOf||
+      expectedCrosswalk.size!==5||
+      addedSource.counts.newBottomReadoutRecords!==5||
+      addedSource.counts.verifiedFdaRegulatoryOutcomes!==0||
+      addedSource.counts.validatedOverallRaasScores!==0))return fail();
+  const matchedCrosswalk=new Set<string>();
   const known=new Map<string,ReadoutEvidence>();
   for(const item of entries as unknown[]){
     if(!item||typeof item!=="object"||Array.isArray(item))return fail();
@@ -44,6 +60,24 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
     const evidenceDate=row.evidenceDate,evidenceUrl=row.evidenceUrl;
     const drug=row.drug,indication=row.indication;
     const rawP=row.primaryEndpointP;
+    const trialName=row.issuerTrialName,registryTrialUrl=row.registryTrialUrl;
+    const hasIdentity=trialName!==undefined||registryTrialUrl!==undefined;
+    if(hasIdentity&&
+      (kind!=="POST_PUBLIC_READOUT"||
+       typeof trialName!=="string"||!/^[A-Za-z0-9 -]{3,90}$/.test(trialName)||
+       registryTrialUrl!=="https://clinicaltrials.gov/study/"+nctId))
+      return fail();
+    if(hasManualReview&&expectedCrosswalk.has(String(nctId))){
+     const verified=expectedCrosswalk.get(String(nctId))!;
+     if(row.kind!==verified.kind||row.ticker!==verified.ticker||
+      trialName!==verified.issuerTrialName||
+      registryTrialUrl!==verified.registryTrialUrl||
+      row.drug!==verified.drug||row.indication!==verified.indication||
+      row.evidenceDate!==verified.evidenceDate||
+      row.evidenceUrl!==verified.evidenceUrl)return fail();
+     matchedCrosswalk.add(String(nctId));
+    }
+    if(hasManualReview&&!hasIdentity&&expectedCrosswalk.has(String(nctId)))return fail();
     let primaryEndpointP:ReadoutEvidence["primaryEndpointP"];
     if(rawP!==undefined){
       if(kind!=="POST_PUBLIC_READOUT"||!rawP||typeof rawP!=="object"||Array.isArray(rawP))return fail();
@@ -62,9 +96,11 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
       typeof drug!=="string"||typeof indication!=="string"||
       drug.length>300||indication.length>300)return fail();
     known.set(nctId,{
-      nctId,ticker,kind:kind as ReadoutKind,evidenceDate,evidenceUrl,drug,indication,primaryEndpointP
+      nctId,ticker,kind:kind as ReadoutKind,evidenceDate,evidenceUrl,drug,indication,primaryEndpointP,
+      ...(hasIdentity?{issuerTrialName:trialName as string,registryTrialUrl:registryTrialUrl as string}:{})
     });
   }
+  if(hasManualReview&&matchedCrosswalk.size!==expectedCrosswalk.size)return fail();
   const pre:ReadoutRow[]=[],post:ReadoutRow[]=[],unverified:ReadoutRow[]=[];
   for(const row of census){
     const evidence=known.get(row.nctId)||null;
