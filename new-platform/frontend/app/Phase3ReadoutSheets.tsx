@@ -7,6 +7,9 @@ import css from "./Phase3ReadoutSheets.module.css";
 import TrialRaasDisclosure from "./TrialRaasDisclosure";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
+import RaasClassifiedComponentsCell from "./RaasClassifiedComponentsCell";
+import {exactClassifiedRaasComponentGrades}
+ from "../lib/raas-classified-component-grades";
 import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
 import {buildTopBottomRaasMetricWorklist}
  from "../lib/raas-top-bottom-spreadsheet-worklist";
@@ -104,9 +107,23 @@ function downloadTopBottomRaasWorklist(bucket:"pre"|"post",rows:ReadoutRow[]){
  document.body.appendChild(a);a.click();a.remove();
  window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+function documentedRaasStageExportFields(stage:"pre"|"post",row:ReadoutRow){
+ const report=exactClassifiedRaasComponentGrades(stage,row);
+ return [
+  report.gradedMetrics,report.missingMetrics,
+  ...report.provisionalGrades.map(metric=>metric.grade===null?"":metric.grade)
+ ];
+}
 function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
+  const perMetricHeaders=bucket==="unverified"?[]:[
+   "Source-reviewed RAAS component grades (of 30; NOT full score)",
+   "RAAS metric grades awaiting source review (of 30)",
+   ...RAAS_METRIC_CATALOG[bucket].flatMap(group=>group.metrics.map(metric=>
+    "RAAS provisional "+metric.id+" (blank if not reviewed)"))
+  ];
   const fields=["NCT","Ticker","Company",...(bucket==="post"?["Factor P (Phase 3 primary endpoint p-value)"]:[]),"ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication","Release evidence","Registry link",
-    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","Research source coverage % (NOT RAAS score)","Timing-only exploratory pilot (NOT RAAS score)","RAAS validation status"];
+    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","Research source coverage % (NOT RAAS score)","Timing-only exploratory pilot (NOT RAAS score)","RAAS validation status",
+     ...perMetricHeaders];
   const table=[fields,...rows.map(row=>[
     row.nctId,row.ticker,row.company,...(bucket==="post"?[row.evidence?.primaryEndpointP?.display||"Not reported"]:[]),row.status,
     bucket==="pre"?"No public issuer release verified as of source check":
@@ -115,7 +132,8 @@ function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
     row.evidence?.evidenceUrl||"",row.sourceUrl,
     ...raasSpreadsheetExport({nctId:row.nctId,ticker:row.ticker,
      drug:row.evidence?.drug,indication:row.evidence?.indication,
-     classifiedStage:bucket==="unverified"?null:bucket})
+     classifiedStage:bucket==="unverified"?null:bucket}),
+    ...(bucket==="unverified"?[]:documentedRaasStageExportFields(bucket,row))
   ])];
   const csv="\ufeff"+table.map(r=>r.map(csvCell).join(",")).join("\r\n")+"\r\n";
   const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
@@ -773,6 +791,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
             ? <a className={css.factorPValue} href={row.evidence.primaryEndpointP.sourceUrl} target="_blank" rel="noopener noreferrer" title={row.evidence.primaryEndpointP.endpoint+" · issuer source"}>{row.evidence.primaryEndpointP.display}</a>
             : <span className={css.factorPMissing} title="Exact Phase 3 primary endpoint p-value not verified in the referenced public readout">Not reported</span>}
         </td>}<td>
+          <RaasClassifiedComponentsCell row={row} bucket={bucket}/>
           <TrialRaasDisclosure row={row} bucket={bucket} researchStatus={researchStatus}
             coverage={researchFor(row)} benefitFeed={benefitFeed} onResearchRequest={onRaasOpen}/>
           <RaasMetricGradebook row={row} bucket={bucket}/>
