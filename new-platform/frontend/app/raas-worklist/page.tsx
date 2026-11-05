@@ -19,7 +19,7 @@ import type {RaasStage} from "../../lib/raas-metric-specs";
 import css from "./page.module.css";
 
 export const metadata:Metadata={
- title:"RAAS TOP/BOTTOM · 60 Metric Validation Worklist | PDUFA",
+ title:"RAAS Historical Archive · Retired 60-Metric Worklist | PDUFA",
  description:"All 60 risk-adjusted appreciation assessment metrics, exact-trial source evidence and unapproved calibration gaps."
 };
 type Params={stage?:string|string[];nctId?:string|string[];ticker?:string|string[];
@@ -357,7 +357,7 @@ export default async function RaasWorklistPage({searchParams}:{searchParams:Prom
  return <main className={css.root} data-raas-validation-worklist={data.scope}>
   <header className={css.header}>
    <Link href="/tools" className={css.back}>← TOP / BOTTOM spreadsheets</Link>
-   <h1>RAAS · 60-metric validation worklist</h1>
+   <h1>Historical RAAS archive · retired 60-metric validation worklist</h1>\n   <p><strong>This page is an archived source and methodology record only.</strong> The active RAAS now scores five clinical factors per trial; financial, FDA-regulatory, commercial and investment-risk rankings are excluded. FDA/PDUFA tracking remains factual and separate. <Link href="/raas-top-bottom">Open current five-factor clinical RAAS</Link>.</p>
    <p><Link href="/raas-review-queue">Open the exact-NCT source-reviewed metric queue awaiting external independent sign-off</Link></p>
    <p>Thirty TOP pre-readout metrics and thirty BOTTOM post-readout metrics, each with its required source, current evidence leads, missing verification and calibration status.</p>
   </header>
