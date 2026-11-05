@@ -1,7 +1,9 @@
 "use client";
 import {useMemo,useState} from "react";
 import Link from "next/link";
-import type {RaasRegistryRevisionReviewInbox}
+import {matchesRaasRevisionReviewTriage,
+ type RaasRegistryRevisionReviewInbox,type RaasReviewChangeFocus,
+ type RaasReviewPriorPacketFilter}
  from "../../lib/raas-registry-revision-review-inbox";
 
 const style={border:"1px solid #c7dbc9",borderRadius:7,
@@ -17,6 +19,8 @@ export default function RegistryRevisionInboxClient({
  const [metric,setMetric]=useState(initialMetricId);
  const [stage,setStage]=useState<"all"|"pre"|"post">("all");
  const [version,setVersion]=useState<"all"|"current"|"superseded">("all");
+ const [focus,setFocus]=useState<RaasReviewChangeFocus>("all");
+ const [prior,setPrior]=useState<RaasReviewPriorPacketFilter>("all");
  const [page,setPage]=useState(0);
  const filtered=useMemo(()=>inbox.tasks.filter(t=>
   (!nct||[t.nctId,t.ticker].some(x=>x.toLowerCase().includes(nct.trim().toLowerCase())))&&
@@ -25,13 +29,14 @@ export default function RegistryRevisionInboxClient({
   (stage==="all"||t.metricStage===stage)&&
   (version==="all"||
    (version==="current"&&t.sourceMatch==="MATCHES_SAVED_REGISTRY")||
-   (version==="superseded"&&t.sourceMatch!=="MATCHES_SAVED_REGISTRY"))
- ),[inbox.tasks,nct,metric,stage,version]);
+   (version==="superseded"&&t.sourceMatch!=="MATCHES_SAVED_REGISTRY"))&&
+  matchesRaasRevisionReviewTriage(t,focus,prior)
+ ),[inbox.tasks,nct,metric,stage,version,focus,prior]);
  const pages=Math.max(1,Math.ceil(filtered.length/limit));
  const current=Math.min(page,pages-1);
  const shown=filtered.slice(current*limit,(current+1)*limit);
  const clear=()=>{setNct("");setMetric("");setStage("all");
-  setVersion("all");setPage(0);};
+  setVersion("all");setFocus("all");setPrior("all");setPage(0);};
  const sourceReady=inbox.auditState!=="AWAITING_FIRST_COMPARATIVE_SCAN";
  return <section data-raas-registry-metric-review-inbox="unapproved"
   id="raas-source-change-review-inbox"
@@ -93,6 +98,29 @@ export default function RegistryRevisionInboxClient({
      <option value="superseded">Superseded or unsynced</option>
     </select>
    </label>
+   <label style={{display:"grid",gap:4,fontWeight:700,fontSize:11}}>
+    Clinical source-change focus
+    <select aria-label="Filter RAAS source-change alerts by clinical review focus"
+     value={focus}
+     onChange={e=>{setFocus(e.target.value as RaasReviewChangeFocus);setPage(0);}}
+     style={style}>
+     <option value="all">All clinical/design changes</option>
+     <option value="primary">Posted or changed primary results</option>
+     <option value="safety">Changed serious adverse-event results</option>
+     <option value="design">Changed endpoint, design or trial context</option>
+    </select>
+   </label>
+   <label style={{display:"grid",gap:4,fontWeight:700,fontSize:11}}>
+    Previous provisional review
+    <select aria-label="Filter RAAS alerts by existing provisional review packet"
+     value={prior}
+     onChange={e=>{setPrior(e.target.value as RaasReviewPriorPacketFilter);setPage(0);}}
+     style={style}>
+     <option value="all">All review histories</option>
+     <option value="existing">Has exact-NCT/metric provisional research</option>
+     <option value="new">No matching provisional research</option>
+    </select>
+   </label>
    <button type="button" onClick={clear} style={style}>Clear selections</button>
    <a href="/api/raas-registry-revision-review-tasks" download
     style={{...style,fontWeight:750}}>Export review alerts (CSV)</a>
@@ -102,6 +130,11 @@ export default function RegistryRevisionInboxClient({
    {filtered.length} matching metric alerts · showing{" "}
    {filtered.length?current*limit+1:0}–{Math.min((current+1)*limit,filtered.length)}
    {" "}· no approved metrics
+  </p>
+  <p style={{fontSize:11,margin:0}}>
+   The filters group official source-change categories and exact trial/metric
+   research overlap. They do not rank clinical severity, authenticate a reviewer,
+   change historical grades or establish FDA PASS/CRL/EXTENSION probabilities.
   </p>
   {shown.length===0?<p style={{...style,padding:14,background:"#f7faf7"}}>
    {sourceReady?

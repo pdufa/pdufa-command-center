@@ -9,7 +9,8 @@ require.extensions[".ts"]=(mod,file)=>mod._compile(ts.transpileModule(
 const registry=require("../public/raas-registry-evidence-index.json");
 const status=require("../data/raas-registry-evidence-change-status.json");
 const history=require("../data/raas-registry-evidence-change-history.json");
-const {buildRaasRegistryRevisionReviewInbox:build}=
+const {buildRaasRegistryRevisionReviewInbox:build,
+ matchesRaasRevisionReviewTriage:matchesTriage}=
  require("../lib/raas-registry-revision-review-inbox.ts");
 const {buildRaasIndependentReviewQueue}=
  require("../lib/raas-independent-review-queue.ts");
@@ -179,4 +180,38 @@ test("review queue, source history and trial workbench provide two-way exact met
   assert.equal((compiled.diagnostics||[]).filter(x=>
    x.category===ts.DiagnosticCategory.Error).length,0);
  }
+});
+
+test("clinical-review focus and previous-packet filters preserve exact-metric, ungraded routing",()=>{
+ const primary=makeEvent("d",t1);
+ const primaryTasks=build(fresh([primary]),fakeStatus([primary]),registry,queue).tasks;
+ const existing=primaryTasks.find(x=>x.metricId==="post-1-1");
+ assert.ok(existing);
+ assert.equal(matchesTriage(existing,"primary","existing"),true);
+ assert.equal(matchesTriage(existing,"primary","new"),false);
+ assert.equal(matchesTriage(existing,"safety","all"),false);
+ assert.equal(matchesTriage(existing,"design","all"),false);
+ const safety={...makeEvent("e",t1),
+  changeCategories:["SERIOUS_ADVERSE_EVENT_RESULTS_CHANGED"],
+  candidateResearchMetricIds:["post-1-5"]};
+ const safetyTask=build(fresh([safety]),fakeStatus([safety]),registry,queue).tasks[0];
+ assert.equal(matchesTriage(safetyTask,"safety","all"),true);
+ assert.equal(matchesTriage(safetyTask,"primary","all"),false);
+ const design={...makeEvent("f",t1),
+  changeCategories:["TRIAL_DESIGN_CHANGED"],candidateResearchMetricIds:["pre-1-2"]};
+ const designTask=build(fresh([design]),fakeStatus([design]),registry,queue).tasks[0];
+ assert.equal(matchesTriage(designTask,"design","all"),true);
+ assert.equal(matchesTriage(designTask,"safety","all"),false);
+ for(const task of [existing,safetyTask,designTask]){
+  assert.equal(matchesTriage(task,"all","all"),true);
+  assert.equal(task.approvedRaasMetricGrade,null);
+  assert.equal(task.approvedRaasScore,null);
+  assert.equal(task.calibratedFdaForecast,null);
+ }
+ const source=fs.readFileSync(path.join(root,
+  "app/raas-review-queue/RegistryRevisionInboxClient.tsx"),"utf8");
+ assert.match(source,/matchesRaasRevisionReviewTriage\(t,focus,prior\)/);
+ assert.match(source,/Clinical source-change focus/);
+ assert.match(source,/Previous provisional review/);
+ assert.match(source,/setFocus\("all"\);setPrior\("all"\)/);
 });
