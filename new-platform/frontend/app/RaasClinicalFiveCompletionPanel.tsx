@@ -30,9 +30,7 @@ export default function RaasClinicalFiveCompletionPanel({data}:{
    ...report.cells.map(x=>[x.nctId,x.ticker,x.stage,x.name,x.grade,x.finding??"",
     x.sourceUrl??"",x.benchmarkSourceUrl??"",x.assessedAt??"",x.score]
     .map(csvCell).join(","))];
-  const blob=new Blob(["\uFEFF"+lines.join("\r
-")+"\r
-"],{type:"text/csv;charset=utf-8"});
+  const blob=new Blob(["\uFEFF"+lines.join("\r\n")+"\r\n"],{type:"text/csv;charset=utf-8"});
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download="raas-active-five-clinical-factors.csv";
   document.body.appendChild(a);a.click();a.remove();
