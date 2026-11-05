@@ -102,14 +102,14 @@ export default function Raas762ScoringWorkspace(){
    const url=URL.createObjectURL(blob);
    const anchor=document.createElement("a");
    anchor.href=url;
-   anchor.download="raas-762-all-45720-metric-evidence-slots.csv";
+   anchor.download="raas-top-bottom-22860-metric-evidence-slots.csv";
    document.body.appendChild(anchor);
    anchor.click();anchor.remove();
    window.setTimeout(()=>URL.revokeObjectURL(url),2000);
    setExportMessage(
     "Prepared "+result.summary.metricSlots.toLocaleString()+
-    " exact-NCT metric rows; "+result.summary.provisionalReviewSlots+
-    " provisional source-checked grades; "+
+    " TOP/BOTTOM metric rows; "+result.summary.provisionalReviewSlots+
+    " provisional matching-stage grades; "+
     result.summary.metricSlotsRequiringReviewedGrades.toLocaleString()+
     " not yet graded. No full RAAS score was inferred.");
   }catch(error){
@@ -148,25 +148,27 @@ export default function Raas762ScoringWorkspace(){
    metric is not a validated overall RAAS score. This inventory does not itself
    certify the current $300M–$10B Pipeline or FDA PDUFA eligibility.
   </p>
-  <section data-raas-762-all-metric-queue="45720-exact-slots"
+  <section data-raas-top-bottom-metric-queue="22860-exact-slots"
    style={{margin:"15px 0",border:"1px solid #9ac4a6",borderRadius:10,
     padding:"14px 15px",background:"#f4faf5"}}>
    <strong style={{display:"block",fontSize:16,color:"#174b30"}}>
-    All 762 trials × 60 scoring requirements = 45,720 metric rows
+    425 TOP × 30 + 337 BOTTOM × 30 = 22,860 metric rows
    </strong>
    <p style={{fontSize:13,lineHeight:1.5,margin:"8px 0"}}>
-    Each export row identifies the exact NCT, TOP/BOTTOM stage, metric,
+    Only the TOP and BOTTOM spreadsheet populations are scored: one
+    research checklist per NCT. Each row identifies the exact NCT, stage, metric,
     required evidence, benchmark, source lead, source date, next review
     action and any genuinely recorded provisional component score.
-    The 82 existing AI-assisted findings are retained, not repeated
-    across stages. Unreviewed grades and full RAAS scores remain blank.
+    The 71 matching-stage provisional review findings are included in
+    their correct sheet; the other 11 are retained as opposite-stage history,
+    not reassigned. Unreviewed grades and full RAAS scores remain blank.
    </p>
    <button type="button" onClick={()=>{void downloadMetricQueue()}}
     disabled={exportBusy} aria-busy={exportBusy}
     data-raas-762-export-45720="true"
     style={{...control,background:"#d8eee0",fontWeight:750,padding:"11px 14px"}}>
     {exportBusy?"Preparing exact metric worklist…":
-     "Download all 45,720 metric evidence rows (CSV)"}
+     "Download TOP and BOTTOM metric evidence rows (CSV)"}
    </button>
    <p role="status" style={{fontSize:12,color:"#3d674d",margin:"8px 0 0"}}>
     {exportMessage||"Missing grades are empty; registry facts are research source leads, not RAAS or FDA predictions."}
