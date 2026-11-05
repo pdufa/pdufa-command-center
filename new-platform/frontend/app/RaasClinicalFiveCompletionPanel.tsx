@@ -30,7 +30,9 @@ export default function RaasClinicalFiveCompletionPanel({data}:{
    ...report.cells.map(x=>[x.nctId,x.ticker,x.stage,x.name,x.grade,x.finding??"",
     x.sourceUrl??"",x.benchmarkSourceUrl??"",x.assessedAt??"",x.score]
     .map(csvCell).join(","))];
-  const blob=new Blob(["\uFEFF"+lines.join("\r\n")+"\r\n"],{type:"text/csv;charset=utf-8"});
+  const blob=new Blob(["\uFEFF"+lines.join("\r
+")+"\r
+"],{type:"text/csv;charset=utf-8"});
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download="raas-active-five-clinical-factors.csv";
   document.body.appendChild(a);a.click();a.remove();
@@ -46,7 +48,9 @@ export default function RaasClinicalFiveCompletionPanel({data}:{
    Historical 30-metric finance, FDA-regulatory, market and risk assessments
    are archived and excluded from active RAAS.
   </p>
-  <p style={{fontSize:13}}><a href="/raas-741-active-five-clinical.csv" download\n   style={{fontWeight:700,color:"#145e37",textDecoration:"underline"}}>Download all 741 historical trials · five clinical assessment fields each (CSV)</a></p>\n  <div style={{display:"flex",gap:15,flexWrap:"wrap",fontSize:13,margin:"12px 0"}}>
+  <p style={{fontSize:13}}><a href="/raas-741-active-five-clinical.csv" download
+   style={{fontWeight:700,color:"#145e37",textDecoration:"underline"}}>Download all 741 historical trials · five clinical assessment fields each (CSV)</a></p>
+  <div style={{display:"flex",gap:15,flexWrap:"wrap",fontSize:13,margin:"12px 0"}}>
    <strong>{report.cells.length} classified clinical slots</strong>
    <strong>{report.graded} graded</strong><strong>{report.missing} N/A</strong>
    <strong>{report.complete} complete five-factor research scores</strong>
