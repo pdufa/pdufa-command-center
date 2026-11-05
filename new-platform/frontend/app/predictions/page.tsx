@@ -8,6 +8,8 @@ import accuracy from "../../data/raas-fda-three-way-accuracy-site-snapshot.json"
 import {buildRaasPredictionQueue,summarizeRaasPredictionQueue} from "../../lib/raas-prediction-queue";
 import {buildThreeWayFDAFreezePreflightPlan}
  from "../../lib/raas-fda-three-way-freeze-preflight";
+import {currentRaasFdaForecastFreezeReceiptAudit}
+ from "../../lib/raas-fda-forecast-freeze-receipt-audit";
 
 export const metadata:Metadata={
  title:"RAAS Predictions — FDA PASS / CRL / EXTENSION | PDUFA",
@@ -17,6 +19,7 @@ const queue=buildRaasPredictionQueue(accepted.applications,leads.records,accepte
 const summary=summarizeRaasPredictionQueue(queue);
 const freezePreflight=buildThreeWayFDAFreezePreflightPlan();
 const preflightByCase=new Map(freezePreflight.records.map(x=>[x.caseKey,x]));
+const receiptAudit=currentRaasFdaForecastFreezeReceiptAudit();
 const panel={border:"1px solid #c6d7cc",background:"#fff",borderRadius:10,padding:"14px"} as const;
 const muted={fontSize:13,color:"#455c50",lineHeight:1.5} as const;
 const stats={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:10,margin:"15px 0"} as const;
@@ -42,6 +45,30 @@ export default function PredictionsPage(){
    <Fact value={allTrial.fullValidatedRaasScores} label="Fully validated 30/30 RAAS scores"/>
    <Fact value={accuracy.predecisionThreeWayIndependentlyVerifiedForecasts} label="Independently verified three-way forecasts"/>
   </div>
+  <section style={{...panel,marginBottom:15}}
+   data-raas-fda-freeze-receipt-audit="PENDING_INDEPENDENT_VALIDATION">
+   <h2>Prospective forecast freeze receipt audit</h2>
+   <div style={stats}>
+    <Fact value={receiptAudit.submitted} label="Submitted forecast freeze receipt metadata"/>
+    <Fact value={receiptAudit.pendingIndependentAuthentication}
+     label="Structurally complete; independent authentication outstanding"/>
+    <Fact value={receiptAudit.blocked} label="Blocked: identity, chronology, duplicate, or probability error"/>
+    <Fact value={receiptAudit.independentlyAuthenticatedForecasts}
+     label="Independently authenticated prospective FDA forecasts"/>
+   </div>
+   <p style={muted}>RAAS now checks an immutable-identity three-class freeze receipt
+    against the exact application and original deadline, source snapshot,
+    dated witness evidence, duplicated case submissions, and probabilities
+    totaling 100%. Even a structurally complete receipt is not a certified
+    freeze or an accuracy result without external authentication.
+   </p>
+   <p style={muted}>
+    <a href="/api/raas-fda-freeze-receipt-audit">
+     Open the saved FDA freeze receipt audit (JSON)</a>.
+    No website entry, unsigned template, or recorded checksum proves a
+    historical prediction was actually published before a decision.
+   </p>
+  </section>
   <section style={{...panel,marginBottom:15}} data-raas-fda-forecast-cohort="true">
    <h2>FDA decision queue · {summary.total} distinct application/cycle leads</h2>
    <p style={muted}>Dated sources: accepted-application research {accepted.sourceAsOf}; issuer-goal lead research {leads.asOf}.
@@ -90,6 +117,9 @@ export default function PredictionsPage(){
           Download this case’s unsigned seven-check forecast preflight (JSON)
          </a>
         </p>
+        <p style={muted}>Recorded prospective receipts for this case:{" "}
+         {receiptAudit.checks.filter(x=>x.caseKey===r.key).length}.
+         {" "}No recorded receipt is automatically authenticated or approved.</p>
         <details>
          <summary style={{cursor:"pointer",fontWeight:700}}>Show seven source and calibration requirements</summary>
          <ul style={{paddingLeft:20}}>
