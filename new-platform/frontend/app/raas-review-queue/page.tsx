@@ -5,12 +5,15 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import {buildRaasIndependentReviewQueue} from "../../lib/raas-independent-review-queue";
 import {currentReviewIntakeAudit} from "../../lib/raas-external-review-intake";
+import {buildRaasReviewAssignmentPlan}
+ from "../../lib/raas-review-assignment-plan";
 import {buildRaasRegistryRevisionReviewInbox}
  from "../../lib/raas-registry-revision-review-inbox";
 import savedRegistry from "../../public/raas-registry-evidence-index.json";
 import savedHistory from "../../data/raas-registry-evidence-change-history.json";
 import savedChangeStatus from "../../data/raas-registry-evidence-change-status.json";
 import RegistryRevisionInboxClient from "./RegistryRevisionInboxClient";
+import RaasReviewAssignmentBoard from "./RaasReviewAssignmentBoard";
 import ReviewQueueClient from "./ReviewQueueClient";
 import css from "../raas-history/page.module.css";
 
@@ -20,6 +23,7 @@ export const metadata:Metadata={
 };
 const queue=buildRaasIndependentReviewQueue();
 const receiptAudit=currentReviewIntakeAudit();
+const assignmentPlan=buildRaasReviewAssignmentPlan(queue);
 const revisionInbox=buildRaasRegistryRevisionReviewInbox(
  savedHistory,savedChangeStatus,savedRegistry,queue);
 type Params={nctId?:string|string[];metricId?:string|string[];
@@ -91,6 +95,7 @@ export default async function IndependentMetricReviewQueuePage({
     This website does not accept public review uploads or automatically release scores.
    </p>
   </section>
+  <RaasReviewAssignmentBoard plan={assignmentPlan}/>
   <p className={css.notice}>To expand from these 82 already source-checked metric
    research tasks to every registered study, open
    {" "}<Link href="/raas-evidence-backlog">the complete 762-trial evidence-gap queue</Link>.
