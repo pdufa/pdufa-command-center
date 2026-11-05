@@ -1,0 +1,50 @@
+name: Telegram — all active scans 24/7
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/telegram_scan_monitor.py'
+      - 'scripts/telegram_scan_alert.py'
+      - 'tests/test_telegram_scan_monitor.py'
+      - '.github/workflows/pdufa-telegram-24x7.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: pdufa-telegram-24x7-monitor-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit-test run discovery and notification suppression
+        run: python -m unittest discover -s tests -p 'test_telegram_scan_monitor.py' -v
+      - name: Restore notification deduplication history
+        if: github.event_name != 'pull_request'
+        uses: actions/cache@v4
+        with:
+          path: .cache/pdufa-telegram-monitor-state.json
+          key: pdufa-telegram-24x7-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            pdufa-telegram-24x7-
+      - name: Inspect active scans and send new Telegram events
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PDUFA_TELEGRAM_MONITOR_STATE: .cache/pdufa-telegram-monitor-state.json
+        run: python scripts/telegram_scan_monitor.py
