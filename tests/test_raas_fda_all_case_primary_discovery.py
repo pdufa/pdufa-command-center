@@ -249,6 +249,27 @@ class RaasAllCaseFdaDiscoveryTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "OTHER_CYCLE_NOT_ALLOWED_AS_TARGET_APPROVAL"):
                     tool.load_documented_other_cycles(UTC[:10])
 
+    def test_documented_historical_fda_date_is_strict_iso_and_not_a_future_action(self):
+        from unittest.mock import patch
+        from tempfile import TemporaryDirectory
+        from pathlib import Path
+        from scripts import raas_fda_all_case_primary_discovery as tool
+        self.assertEqual(
+            {r["historicalFdaActionDate"] for r in
+             tool.load_documented_other_cycles(UTC[:10]).values()},
+            {"2025-12-19", "2026-03-25"},
+        )
+        with TemporaryDirectory() as directory:
+            test_path = Path(directory) / "other_cycle.json"
+            original = json.loads(tool.OTHER_CYCLE_SOURCE.read_text())
+            for bad_date in ("2026-13-40", "2027-01-01", "not-a-date", None):
+                modified = json.loads(json.dumps(original))
+                modified["records"][0]["historicalFdaActionDate"] = bad_date
+                test_path.write_text(json.dumps(modified))
+                with patch.object(tool, "OTHER_CYCLE_SOURCE", test_path):
+                    with self.assertRaises(ValueError):
+                        tool.load_documented_other_cycles(UTC[:10])
+
     def test_explicit_source_status_for_live_network_errors_is_nonfatal(self):
         from unittest.mock import patch
         import urllib.error
