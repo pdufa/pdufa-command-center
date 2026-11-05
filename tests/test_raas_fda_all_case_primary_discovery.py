@@ -14,7 +14,10 @@ SIG = "a" * 64
 
 def row(ticker, i):
     return {
-        "caseKey": f"{ticker}-CASE-{i}",
+        "caseKey": {
+            "CYTK": "CYTK|MYQORZO_HCM_20261114",
+            "CORT": "RELACORILANT_CUSHINGS_US_20261217",
+        }.get(ticker, f"{ticker}-CASE-{i}"),
         "ticker": ticker,
         "sourceFingerprint": SIG,
         "originalFirstGoalDate": "2026-11-30",
@@ -176,6 +179,99 @@ class RaasAllCaseFdaDiscoveryTests(unittest.TestCase):
         del observed["AFICAMTEN"]
         with self.assertRaisesRegex(ValueError, "INCOMPLETE_INGREDIENT_QUERY_SET"):
             assemble_discovery(worklist(), UTC, observed)
+
+    def test_known_cytk_parent_nda_and_cort_oncology_approval_do_not_match_future_cycles(self):
+        observed = {
+            key: (None, "HTTP_404_NO_PUBLIC_MATCH", None)
+            for key in {v[0] for v in SEARCH_TERMS.values()}
+        }
+        observed["AFICAMTEN"] = (
+            payload("AFICAMTEN", "CYTOKINETICS", "NDA219083", "20260205"),
+            "AVAILABLE", None)
+        observed["RELACORILANT"] = (
+            payload("RELACORILANT", "CORCEPT THERAP", "NDA220641", "20260325"),
+            "AVAILABLE", None)
+        result = assemble_discovery(worklist(), UTC, observed)
+        self.assertEqual(result["documentedOtherCycleHistoricalContexts"], 2)
+        self.assertEqual(result["observedOtherCyclePublishedLeads"], 2)
+        self.assertEqual(result["independentlyCertifiedPendingReviewCycles"], 0)
+        self.assertEqual(result["independentlyAdjudicatedOriginalGoalFdaOutcomes"], 0)
+        self.assertEqual(result["independentlyAuthenticatedProspectiveForecasts"], 0)
+        self.assertEqual(result["autoTradingSignals"], 0)
+        for ticker, classification in [
+            ("CYTK", "PARENT_ORIGINAL_NDA_NOT_PENDING_EFFICACY_SUPPLEMENT"),
+            ("CORT",
+             "DIFFERENT_INDICATION_ORIGINAL_APPROVAL_NOT_CUSHINGS_RESUBMISSION"),
+        ]:
+            item = next(r for r in result["records"] if r["ticker"] == ticker)
+            self.assertEqual(item["knownOtherCyclePublishedLeadCount"], 1)
+            lead = item["matchingPublishedApplicationLeads"][0]
+            self.assertEqual(lead["knownOtherCycleClassification"], classification)
+            self.assertIs(lead["documentedDifferentHistoricalIndicationOrCycle"],
+                          True)
+            self.assertIs(lead["mayBeCountedAsTargetPdufaPassCrlExtension"], False)
+            self.assertIs(item["knownOtherCycleHistoricalFdaDocument"][
+                "validHistoricalActionForTargetCycle"], False)
+            self.assertIs(item["exactFDAApplicationAndReviewCycleIndependentlyCertified"],
+                          False)
+            self.assertIs(item[
+                "officialOriginalGoalPassCrlExtensionIndependentlyAdjudicated"], False)
+
+    def test_other_cycle_doc_is_known_even_when_public_fda_api_returns_no_match(self):
+        observed = {
+            key: (None, "HTTP_404_NO_PUBLIC_MATCH", None)
+            for key in {v[0] for v in SEARCH_TERMS.values()}
+        }
+        result = assemble_discovery(worklist(), UTC, observed)
+        self.assertEqual(result["observedOtherCyclePublishedLeads"], 0)
+        self.assertEqual(result["documentedOtherCycleHistoricalContexts"], 2)
+        for row in result["records"]:
+            if row["ticker"] in {"CYTK", "CORT"}:
+                self.assertIsNotNone(row["knownOtherCycleHistoricalFdaDocument"])
+                self.assertEqual(row["knownOtherCyclePublishedLeadCount"], 0)
+        self.assertEqual(result["independentlyAdjudicatedOriginalGoalFdaOutcomes"], 0)
+
+    def test_historical_other_cycle_data_must_match_exact_keys_and_fda_host(self):
+        from unittest.mock import patch
+        from tempfile import TemporaryDirectory
+        from pathlib import Path
+        from scripts import raas_fda_all_case_primary_discovery as tool
+        self.assertEqual(len(tool.load_documented_other_cycles(UTC[:10])), 2)
+        with TemporaryDirectory() as directory:
+            file = Path(directory) / "audit.json"
+            source = json.loads(tool.OTHER_CYCLE_SOURCE.read_text())
+            source["records"][0]["ticker"] = "UNRELATED"
+            file.write_text(json.dumps(source))
+            with patch.object(tool, "OTHER_CYCLE_SOURCE", file):
+                with self.assertRaisesRegex(ValueError, "OTHER_CYCLE_EXACT_IDENTITY"):
+                    tool.load_documented_other_cycles(UTC[:10])
+            source["records"][0]["ticker"] = "CYTK"
+            source["records"][0]["validHistoricalActionForTargetCycle"] = True
+            file.write_text(json.dumps(source))
+            with patch.object(tool, "OTHER_CYCLE_SOURCE", file):
+                with self.assertRaisesRegex(ValueError, "OTHER_CYCLE_NOT_ALLOWED_AS_TARGET_APPROVAL"):
+                    tool.load_documented_other_cycles(UTC[:10])
+
+    def test_documented_historical_fda_date_is_strict_iso_and_not_a_future_action(self):
+        from unittest.mock import patch
+        from tempfile import TemporaryDirectory
+        from pathlib import Path
+        from scripts import raas_fda_all_case_primary_discovery as tool
+        self.assertEqual(
+            {r["historicalFdaActionDate"] for r in
+             tool.load_documented_other_cycles(UTC[:10]).values()},
+            {"2025-12-19", "2026-03-25"},
+        )
+        with TemporaryDirectory() as directory:
+            test_path = Path(directory) / "other_cycle.json"
+            original = json.loads(tool.OTHER_CYCLE_SOURCE.read_text())
+            for bad_date in ("2026-13-40", "2027-01-01", "not-a-date", None):
+                modified = json.loads(json.dumps(original))
+                modified["records"][0]["historicalFdaActionDate"] = bad_date
+                test_path.write_text(json.dumps(modified))
+                with patch.object(tool, "OTHER_CYCLE_SOURCE", test_path):
+                    with self.assertRaises(ValueError):
+                        tool.load_documented_other_cycles(UTC[:10])
 
     def test_explicit_source_status_for_live_network_errors_is_nonfatal(self):
         from unittest.mock import patch
