@@ -5,6 +5,7 @@ export const dynamic="force-dynamic";
 const fields=[
  "nctId","ticker","outcomeIndex","comparisonIndex","outcomeTitle",
  "outcomeTimeFrame","outcomeUnit","groupIds","groupNames","groupValues",
+ "groupMeasurementSeries","armValueMultiplicity","roundingUncertainty",
  "reportedStatisticType","reportedStatisticRaw","reportedCILower",
  "reportedCIUpper","pValueRaw","method","observedFirstMinusSecond",
  "absoluteGapToEitherDirection","gapThreshold","signal",

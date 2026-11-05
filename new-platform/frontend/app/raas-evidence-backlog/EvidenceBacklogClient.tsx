@@ -13,6 +13,7 @@ import {buildPrimaryContrastReconciliationLedger,
  type PrimaryContrastReconciliationLedger,type PrimaryContrastReconciliation}
  from "../../lib/raas-primary-arm-reconciliation";
 import TrialPrimaryArmReconciliations from "./TrialPrimaryArmReconciliations";
+import PrimaryFiveCaseTriage from "./PrimaryFiveCaseTriage";
 
 const priorities:Record<EvidenceBacklogPriority,string>={
  FDA_ACCEPTED_PHASE3:"FDA-accepted Phase 3 · verify action",
@@ -135,7 +136,7 @@ export default function EvidenceBacklogClient(){
     [clinicalLedger?.totalSourceFacts??0,"Source-linked clinical fact records (ungraded)"],
     [clinicalLedger?.rawNumericFacts??0,"Raw numeric efficacy, precision and safety observations"],
     [comparators?.comparisons??0,"Original primary statistical contrasts with named arms"],
-    [comparators?.rawArmDiscrepancies??0,"Raw arm difference discrepancies requiring estimand review"]
+    [comparators?.rawArmDiscrepancies??0,"Remaining raw arm numerical gaps after source-interpretation screening"]
    ].map(([v,label])=><div key={label} style={{...base,padding:14,background:"#f5faf6"}}>
     <strong style={{display:"block",fontSize:25}}>{v}</strong>
     <span style={{fontSize:11,lineHeight:1.5}}>{label}</span>
@@ -156,6 +157,7 @@ export default function EvidenceBacklogClient(){
    observation, source date and source checksum, but are NOT independently
    adjudicated scores or historical point-in-time predictions.
   </p>
+  {comparators&&<PrimaryFiveCaseTriage ledger={comparators}/>}
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"end",margin:"18px 0"}}>
    <label style={{display:"grid",gap:5,fontSize:12,fontWeight:700}}>
     Find NCT / ticker / indication
