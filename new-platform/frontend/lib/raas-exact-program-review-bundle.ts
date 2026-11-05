@@ -7,17 +7,34 @@ import {buildRaasReviewAssignmentPlan} from "./raas-review-assignment-plan";
 import {frozenReviewPacket} from "./raas-external-review-intake";
 import {RAAS_PROVISIONAL_RUBRICS} from "./raas-provisional-rubric-engine";
 import {RAAS_SPEC_VERSION} from "./raas-metric-specs";
+import {auditRaasReviewProgramSourceGates}
+ from "./raas-review-source-alert-gate";
+import {buildRaasRegistryRevisionReviewInbox}
+ from "./raas-registry-revision-review-inbox";
+import {buildRaasIndependentReviewQueue}
+ from "./raas-independent-review-queue";
+import savedRegistry from "../public/raas-registry-evidence-index.json";
+import savedChangeStatus from "../data/raas-registry-evidence-change-status.json";
+import savedChangeHistory from "../data/raas-registry-evidence-change-history.json";
 
 const checksum=(value:unknown)=>createHash("sha256")
  .update(JSON.stringify(value),"utf8").digest("hex");
+const currentQueue=buildRaasIndependentReviewQueue();
+const currentPlan=buildRaasReviewAssignmentPlan(currentQueue);
+const currentRevisionInbox=buildRaasRegistryRevisionReviewInbox(
+ savedChangeHistory,savedChangeStatus,savedRegistry,currentQueue);
+const currentSourceGates=auditRaasReviewProgramSourceGates(
+ currentPlan,currentRevisionInbox,savedRegistry);
+const sourceGateByProgram=new Map(currentSourceGates.gates.map(g=>[g.programId,g]));
 
 /** The task lookup, rather than a ticker or NCT alone, prevents mixing
  * indications or the TOP and BOTTOM stage for the same study.
  */
 export function buildRaasExactProgramReviewBundle(taskId:string){
- const plan=buildRaasReviewAssignmentPlan();
- const group=plan.groups.find(g=>g.tasks.some(t=>t.taskId===taskId));
+ const group=currentPlan.groups.find(g=>g.tasks.some(t=>t.taskId===taskId));
  if(!group)return null;
+ const sourceChangeReview=sourceGateByProgram.get(group.id);
+ if(!sourceChangeReview)throw Error("RAAS_BUNDLE_SOURCE_GATE_MISSING_EXACT_PROGRAM");
  if(group.tasks.length!==group.provisionalMetrics)
   throw Error("RAAS_BUNDLE_TASK_PARITY");
  const defined=RAAS_PROVISIONAL_RUBRICS.filter(r=>r.stage===group.stage);
@@ -81,7 +98,8 @@ export function buildRaasExactProgramReviewBundle(taskId:string){
    certifiedIndependentMetrics:0,approvedStageScore:null,
    calibratedFdaForecast:null
   },
-  requirements
+  requirements,
+  sourceChangeReview
  };
  const integrity={
   digestAlgorithm:"SHA-256" as const,
@@ -98,7 +116,11 @@ export function buildRaasExactProgramReviewBundle(taskId:string){
    "Record a signed independent report in a private archive, then submit only a minimal fingerprint-bound receipt reference via audited change control.",
    "An authenticated receipt is necessary but not sufficient for adjudicating clinical correctness. No part of this bundle approves RAAS metrics, stage scores or FDA PASS/CRL/EXTENSION probabilities."
   ],
-  handoffState:"READY_FOR_EXTERNAL_HUMAN_REVIEW_NOT_CERTIFIED" as const,
+  handoffState:sourceChangeReview.status==="RECHECK_SOURCE_REVISIONS"?
+   "SOURCE_RECHECK_REQUIRED_BEFORE_SIGNOFF_NOT_CERTIFIED" as const:
+   sourceChangeReview.status==="SOURCE_AUDIT_INCOMPLETE_OR_UNSYNCED"?
+   "SOURCE_AUDIT_RECONCILIATION_REQUIRED_NOT_CERTIFIED" as const:
+   "READY_FOR_EXTERNAL_HUMAN_REVIEW_NOT_CERTIFIED" as const,
   approvedOverallRaasScore:null,
   calibratedFdaProbabilities:null
  };
