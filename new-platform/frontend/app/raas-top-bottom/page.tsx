@@ -5,7 +5,7 @@ import css from "../raas-history/page.module.css";
 
 export const metadata:Metadata={
  title:"RAAS TOP and BOTTOM Phase 3 Trial Spreadsheets | PDUFA",
- description:"Review the two dated, issuer-classified TOP/BOTTOM Phase 3 spreadsheets, exact-NCT 30-metric RAAS worklists and source verification gaps."
+ description:"Review the two dated, issuer-classified TOP/BOTTOM Phase 3 spreadsheets, five-factor clinical RAAS worklists and source verification gaps."
 };
 export default function RaasTopBottomPage(){
  return <main className={css.root} data-raas-primary-score-scope="TOP_BOTTOM_ONLY">
@@ -14,7 +14,7 @@ export default function RaasTopBottomPage(){
    <h1>RAAS · TOP and BOTTOM spreadsheets</h1>
    <p><strong>Only source-classified trials in these two spreadsheets
     receive TOP/BOTTOM RAAS research metric assessments.</strong>
-    Each stage has 30 distinct evidence-based metrics. Expanded ingredients,
+    Each stage has five clinical-science assessments. Expanded ingredients,
     history and stage-specific CSV exports stay with the trial.</p>
    <p><strong>Not scored here:</strong> the 11,000+ trial POOL;
     unclassified Phase 3 trials; and the 762-NCT registry-only research

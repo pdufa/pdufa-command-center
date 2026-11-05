@@ -6,14 +6,12 @@ import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from 
 import css from "./Phase3ReadoutSheets.module.css";
 import TrialRaasDisclosure from "./TrialRaasDisclosure";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
-import RaasMetricGradebook from "./RaasMetricGradebook";
-import RaasClassifiedComponentsCell from "./RaasClassifiedComponentsCell";
-import RaasTopBottomCompletionPanel from "./RaasTopBottomCompletionPanel";
-import {exactClassifiedRaasComponentGrades}
- from "../lib/raas-classified-component-grades";
+import RaasClinicalFiveCell from "./RaasClinicalFiveCell";
+import RaasClinicalFiveCompletionPanel from "./RaasClinicalFiveCompletionPanel";
+import {clinicalFiveForTrial,clinicalFiveDefinitions}
+ from "../lib/raas-clinical-five";
 import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
-import {buildTopBottomRaasMetricWorklist}
- from "../lib/raas-top-bottom-spreadsheet-worklist";
+
 import {buildRaasReadoutStageReviewQueue}
  from "../lib/raas-readout-stage-review-queue";
 import RaasAllClassifiedLiveReview from "./RaasAllClassifiedLiveReview";
@@ -101,12 +99,19 @@ function csvCell(v:string|number){
  * spreadsheets, never the 11k POOL or unverified registry research rows.
  */
 function downloadTopBottomRaasWorklist(bucket:"pre"|"post",rows:ReadoutRow[]){
- const report=buildTopBottomRaasMetricWorklist(bucket,rows);
- const blob=new Blob(["\ufeff",report.csv],{type:"text/csv;charset=utf-8"});
- const url=URL.createObjectURL(blob);
- const a=document.createElement("a");
- a.href=url;
- a.download="raas-"+(bucket==="pre"?"TOP":"BOTTOM")+"-stage-only-metric-reviews.csv";
+ const lines=[["nctId","ticker","stage","factor","grade","finding","source","benchmark","assessmentDate"].map(csvCell).join(",")];
+ for(const row of rows){
+  const report=clinicalFiveForTrial({nctId:row.nctId,ticker:row.ticker,
+   drug:row.evidence?.drug,indication:row.evidence?.indication},bucket,true);
+  for(const factor of report.factors)lines.push([
+   row.nctId,row.ticker,bucket==="pre"?"TOP":"BOTTOM",factor.name,
+   factor.grade??"",factor.finding??"",factor.sourceUrl??"",
+   factor.benchmarkSourceUrl??"",factor.assessedAt??""
+  ].map(csvCell).join(","));
+ }
+ const blob=new Blob(["\uFEFF"+lines.join("\r\n")+"\r\n"],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="raas-"+(bucket==="pre"?"TOP":"BOTTOM")+"-five-clinical-assessments.csv";
  document.body.appendChild(a);a.click();a.remove();
  window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -120,31 +125,30 @@ function downloadUnclassifiedSourceReview(csv:string){
  window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function documentedRaasStageExportFields(stage:"pre"|"post",row:ReadoutRow){
- const report=exactClassifiedRaasComponentGrades(stage,row);
- return [
-  report.gradedMetrics,report.missingMetrics,
-  ...report.provisionalGrades.map(metric=>metric.grade===null?"":metric.grade)
- ];
+ const report=clinicalFiveForTrial({nctId:row.nctId,ticker:row.ticker,
+  drug:row.evidence?.drug,indication:row.evidence?.indication},stage,true);
+ return [report.graded,report.missing,
+  ...report.factors.map(f=>f.grade===null?"":f.grade)];
 }
 function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
   const perMetricHeaders=bucket==="unverified"?[]:[
-   "Source-reviewed RAAS component grades (of 30; NOT full score)",
-   "RAAS metric grades awaiting source review (of 30)",
-   ...RAAS_METRIC_CATALOG[bucket].flatMap(group=>group.metrics.map(metric=>
-    "RAAS provisional "+metric.id+" (blank if not reviewed)"))
+   "Source-accepted clinical grades (of 5)",
+   "Missing clinical grades (of 5)",
+   ...clinicalFiveDefinitions(bucket).map(f=>"RAAS clinical "+f.name)
   ];
-  const fields=["NCT","Ticker","Company",...(bucket==="post"?["Factor P (Phase 3 primary endpoint p-value)"]:[]),"ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication","Release evidence","Registry link",
-    "RAAS phase","Approved RAAS score (0-100)","RAAS source areas mapped (of 30)","Research source coverage % (NOT RAAS score)","Timing-only exploratory pilot (NOT RAAS score)","RAAS validation status",
-     ...perMetricHeaders];
+  const fields=["NCT","Ticker","Company",...(bucket==="post"?["Factor P (Phase 3 primary endpoint p-value)"]:[]),
+   "ClinicalTrials.gov status","Release classification","Evidence date","Drug","Indication",
+   "Release evidence","Registry link","RAAS stage","Five-factor clinical research score",
+   ...perMetricHeaders];
   const table=[fields,...rows.map(row=>[
     row.nctId,row.ticker,row.company,...(bucket==="post"?[row.evidence?.primaryEndpointP?.display||"Not reported"]:[]),row.status,
     bucket==="pre"?"No public issuer release verified as of source check":
       bucket==="post"?"Public issuer Phase 3 readout confirmed":"Unverified",
     row.evidence?.evidenceDate||"",row.evidence?.drug||"",row.evidence?.indication||"",
     row.evidence?.evidenceUrl||"",row.sourceUrl,
-    ...raasSpreadsheetExport({nctId:row.nctId,ticker:row.ticker,
-     drug:row.evidence?.drug,indication:row.evidence?.indication,
-     classifiedStage:bucket==="unverified"?null:bucket}),
+    bucket==="unverified"?"UNVERIFIED":bucket==="pre"?"TOP":"BOTTOM",
+    bucket==="unverified"?"":clinicalFiveForTrial({nctId:row.nctId,ticker:row.ticker,
+     drug:row.evidence?.drug,indication:row.evidence?.indication},bucket,true).researchScore??"",
     ...(bucket==="unverified"?[]:documentedRaasStageExportFields(bucket,row))
   ])];
   const csv="\ufeff"+table.map(r=>r.map(csvCell).join(",")).join("\r\n")+"\r\n";
@@ -162,44 +166,28 @@ function downloadCsv(bucket:Bucket,rows:ReadoutRow[]){
  * These are requirements, NOT sourced or calibrated 0-100 ratings.
  */
 function StageSurveyIngredients({bucket}:{bucket:RaasStage}){
- const isTop=bucket==="pre";
- const groups=RAAS_METRIC_CATALOG[bucket];
- return <section className={css.stageSurveyIngredients}
-   data-raas-stage-survey-ingredients={bucket}
-   aria-label={isTop?"TOP pre-readout survey ingredients":"BOTTOM post-readout survey ingredients"}>
-   <div className={css.stageSurveyHeading}>
-     <strong>{isTop?"TOP · pre-readout prediction ingredients":
-       "BOTTOM · post-readout assessment ingredients"}</strong>
-     <p>{isTop?
-       "Before Phase 3 results: evaluate earlier efficacy, trial design, probability of a successful readout, valuation, downside, and pre-readout exit timing.":
-       "After Phase 3 results: evaluate reported efficacy, effect sizes, FDA and manufacturing risks, remaining valuation upside, financing, and PDUFA exit timing."}</p>
-     <small>6 stage-specific RAAS categories · 30 distinct metrics · no independently calibrated ratings yet</small>
-   </div>
-   <div className={css.stageSurveyGroups}>
-     {groups.map((group,i)=><details className={css.stageSurveyGroup} key={group.id}>
-       <summary className={css.stageSurveyGroupHeading}>
-         <span><strong>{i+1}. {group.name}</strong>
-           <small>{group.weight}% specification weight · {group.metrics.length} ingredients</small></span>
-         <span className={css.stageSurveyChevron} aria-hidden="true">▸</span>
-       </summary>
-       <div className={css.stageSurveyGroupIngredients}>
-         {group.metrics.map((metric,j)=><article key={metric.id}>
-           <strong>{j+1}. {metric.name}</strong>
-           <p><b>Evidence:</b> {metric.requiredEvidence}</p>
-           <p><b>Evaluation:</b> {metric.scoreRule}</p>
-           <p><b>Risk:</b> {metric.criticalRisk}</p>
-           <small>Not graded · {metric.id}</small>
-         </article>)}
-       </div>
-     </details>)}
-   </div>
-   <p className={css.stageSurveyFootnote}>The original 5 groups / 20 surveys / 38 questions below
-     are a common research intake for TOP and BOTTOM, not two independent
-     RAAS scorecards. The phase-specific ingredients above are different
-     and cannot be scored until independently verified.</p>
+ const factors=clinicalFiveDefinitions(bucket);
+ return <section className={css.stageSurveyIngredients} data-raas-stage-survey-ingredients={bucket}>
+  <div className={css.stageSurveyHeading}>
+   <strong>{bucket==="pre"?"TOP · before Phase 3 results":"BOTTOM · after Phase 3 results"}</strong>
+   <p>Five clinical RAAS assessments only. Financial, FDA-regulatory,
+    commercial and investment-risk rankings have been retired.</p>
+   <small>5 equal-weight clinical research factors · missing evidence stays N/A</small>
+  </div>
+  <div className={css.stageSurveyGroups}>
+   {factors.map((f,i)=><details key={f.id} className={css.stageSurveyGroup}>
+    <summary className={css.stageSurveyGroupHeading}>
+     <strong>{i+1}. {f.name}</strong><span aria-hidden="true">▸</span>
+    </summary>
+    <div className={css.stageSurveyGroupIngredients}>
+     <article><p><b>Evidence:</b> {f.requiredEvidence}</p>
+      <p><b>Evaluation:</b> {f.scoreRule}</p>
+      <p><b>Clinical uncertainty:</b> {f.criticalRisk}</p></article>
+    </div>
+   </details>)}
+  </div>
  </section>;
 }
-
 /** Source-backed survey navigator. A recorded research input is not a rating or stock forecast. */
 function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
  row:ReadoutRow;bucket:"pre"|"post";feed:BenefitFeed|null;
@@ -811,10 +799,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
             ? <a className={css.factorPValue} href={row.evidence.primaryEndpointP.sourceUrl} target="_blank" rel="noopener noreferrer" title={row.evidence.primaryEndpointP.endpoint+" · issuer source"}>{row.evidence.primaryEndpointP.display}</a>
             : <span className={css.factorPMissing} title="Exact Phase 3 primary endpoint p-value not verified in the referenced public readout">Not reported</span>}
         </td>}<td>
-          <RaasClassifiedComponentsCell row={row} bucket={bucket}/>
-          <TrialRaasDisclosure row={row} bucket={bucket} researchStatus={researchStatus}
-            coverage={researchFor(row)} benefitFeed={benefitFeed} onResearchRequest={onRaasOpen}/>
-          <RaasMetricGradebook row={row} bucket={bucket}/>
+          <RaasClinicalFiveCell row={row} bucket={bucket}/>
           <RaasTrialHistoryButton row={row} bucket={bucket}/>
         </td>{showSurveys&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"details")}
@@ -945,7 +930,7 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
         <button type="button" disabled={!matched.length}
           data-raas-stage-only-export={bucket==="pre"?"TOP":"BOTTOM"}
           onClick={()=>downloadTopBottomRaasWorklist(bucket,matched)}>
-          Export {bucket==="pre"?"TOP":"BOTTOM"} RAAS · 30 metrics per classified trial
+          Export {bucket==="pre"?"TOP":"BOTTOM"} RAAS · 5 clinical assessments per trial
         </button>
         <button type="button" className={css.sheetSegmentAllButton}
           onClick={toggleAllSegments}
@@ -1069,7 +1054,7 @@ export default function Phase3ReadoutSheets(){
     <div className={css.title}>
       <h2>Phase 3 · Public Data Release</h2>
       <p>Open only the section you want to work with. All segments start collapsed.</p>
-      <p><a href="/raas-worklist" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>TOP + BOTTOM · 60 RAAS metric validation steps, missing evidence and approval status</a></p>
+      <p><a href="/raas-top-bottom" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>TOP + BOTTOM · 5 clinical factors, missing evidence and history</a></p>
       <p><a href="/raas-top-bottom" style={{fontWeight:800,color:"#176945",textDecoration:"underline"}}>Dedicated TOP + BOTTOM scoring workspace</a></p>
       <p><a href="/raas-scan" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>RAAS full-universe trial assessments · all available cap-screened Phase 3 candidates, with scores and History</a></p>
       <p><a href="/raas-scan" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>RAAS rating-system accuracy and expandable history · global self-audit</a></p>
@@ -1143,7 +1128,7 @@ export default function Phase3ReadoutSheets(){
       is automatically scored.
      </p>
     </section>
-    <RaasTopBottomCompletionPanel data={data}/>
+    <RaasClinicalFiveCompletionPanel data={data}/>
     <RaasAllClassifiedLiveReview data={data}/>
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
@@ -1201,7 +1186,7 @@ export default function Phase3ReadoutSheets(){
               <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
               <td>{row.ticker}</td><td>{row.company}</td><td>{row.status.replaceAll("_"," ")}</td>
               <td>Not verified — research required</td>
-              <td>No new RAAS score: not in either verified TOP or BOTTOM spreadsheet. <RaasTrialHistoryButton row={row} bucket={null}/></td>
+              <td><RaasClinicalFiveCell row={row} bucket={null}/> <RaasTrialHistoryButton row={row} bucket={null}/></td>
             </tr>)}</tbody>
           </table>
         </div>

@@ -3,11 +3,10 @@ import {useEffect,useMemo,useState} from "react";
 import {loadRegistryEvidenceIndex,registryMetricLeads,type RegistryEvidenceIndex,
  type RegistryMetricLead,type RegistryTrialEvidence}
  from "../lib/raas-registry-evidence";
-import {stageResearchReviewsForUnverifiedTrial}
- from "../lib/raas-reviewed-full-score";
+import {clinicalFiveForTrial} from "../lib/raas-clinical-five";
 import type {ReadoutRow} from "../lib/phase3-public-readout";
 import type {Phase3CensusRegistryStatus} from "../lib/phase3-census-rows";
-import RaasMetricGradebook from "./RaasMetricGradebook";
+import RaasClinicalFiveCell from "./RaasClinicalFiveCell";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import historicalSixGapSources from "../data/raas-historical-six-gap-source-leads.json";
 
@@ -42,13 +41,15 @@ function setupRows(index:RegistryEvidenceIndex):ScoringRow[]{
  return index.records.map(x=>{
   const trial={nctId:x.nctId,ticker:x.ticker};
   const stage:"pre"|"post"=x.postedResults?"post":"pre";
-  const review=stageResearchReviewsForUnverifiedTrial(trial,stage);
-  const reviewed=review?.reviewedCount??0;
-  const sourceLeads=registryMetricLeads(x,stage,trial);
+  const review=clinicalFiveForTrial(trial,stage,false);
+  const reviewed=review.graded;
+  const sourceLeads=registryMetricLeads(x,stage,trial).map(lead=>({
+   ...lead,metricIds:lead.metricIds.filter(id=>id.startsWith(stage+"-1-"))
+  })).filter(lead=>lead.metricIds.length>0);
   const leadMetricCount=new Set(sourceLeads.flatMap(lead=>lead.metricIds)).size;
   return {evidence:x,trial:caseRow(x),stage,reviewed,
-   independentReviews:review?.independentReviewedCount??0,
-   hasPartial:reviewed>0,remaining:30-reviewed,sourceLeads,leadMetricCount
+   independentReviews:0,
+   hasPartial:reviewed>0,remaining:5-reviewed,sourceLeads,leadMetricCount
   };
  }).sort((a,b)=>Number(b.hasPartial)-Number(a.hasPartial)||
   Number(b.evidence.postedResults)-Number(a.evidence.postedResults)||
@@ -113,7 +114,7 @@ export default function Raas762ScoringWorkspace(){
     {value:rows.length,label:"Trial rows set up"},
     {value:rows.length-posted,label:"Before · no registry results posted"},
     {value:posted,label:"Past · registry results posted"},
-    {value:rows.length*30,label:"Assigned 30-metric review slots"},
+    {value:rows.length*5,label:"Active five-factor clinical assessment slots"},
     {value:partial,label:"Rows with provisional reviews in assigned category"},
     {value:withLeads,label:"Rows with ungraded registry source leads"},
     {value:0,label:"Full independently validated RAAS scores"}
@@ -125,9 +126,9 @@ export default function Raas762ScoringWorkspace(){
   </div>
   <p style={{fontSize:13,lineHeight:1.55,margin:"12px 0",color:"#385944"}}>
    <strong>Research preparation only. RAAS applies to the 762 Before/Past spreadsheet rows, never the 11,000+ POOL.</strong>
-   Each exact NCT has ONE active 30-metric checklist based on whether ClinicalTrials.gov
-   results are posted: Before (not posted) or Past (posted). There are 22,860 assigned
-   review slots, not 1,524 duplicate stage rows. Previous research and rating
+   Each exact NCT has ONE active five-factor clinical checklist based on whether ClinicalTrials.gov
+   results are posted: Before (not posted) or Past (posted). There are 3,810 clinical
+   assessment slots, not duplicate stage rows. Previous research and rating
    changes remain in the same NCT history. Registry posting does NOT independently
    verify issuer readout timing, a calibrated score or FDA eligibility.
    Missing metric grades remain N/A, never invented zero or neutral values.
@@ -266,7 +267,7 @@ export default function Raas762ScoringWorkspace(){
     <thead style={{background:"#eaf4ed",color:"#19452c"}}>
      <tr>
       {["NCT / ticker","Spreadsheet category","Registry source leads","Reviewed metrics","Awaiting review",
-       "Overall RAAS","30-metric score details","Cross-stage history"].map(h=>
+       "Overall RAAS","Five clinical factors","Cross-stage history"].map(h=>
        <th key={h} scope="col" style={{...cell,textAlign:"left",fontSize:12}}>{h}</th>)}
      </tr>
     </thead>
@@ -285,7 +286,7 @@ export default function Raas762ScoringWorkspace(){
       </small>
      </td>
      <td style={cell}>
-      <strong>{x.leadMetricCount}/30 possible metric areas</strong>
+      <strong>{x.leadMetricCount}/5 possible metric areas</strong>
       <small style={{display:"block"}}>{x.sourceLeads.length} ungraded source leads</small>
       {x.sourceLeads.length>0&&<details style={{marginTop:5}}>
        <summary style={{cursor:"pointer",color:"#135c45"}}>View sources and measurements</summary>
@@ -307,16 +308,16 @@ export default function Raas762ScoringWorkspace(){
        No matching registry lead; additional primary-source research needed
       </small>}
      </td>
-     <td style={cell}><strong>{x.reviewed}/30</strong>
+     <td style={cell}><strong>{x.reviewed}/5</strong>
       <small style={{display:"block"}}>Provisional review only</small></td>
-     <td style={cell}><strong>{x.remaining}/30</strong>
+     <td style={cell}><strong>{x.remaining}/5</strong>
       <small style={{display:"block"}}>Missing graded evidence</small></td>
      <td style={cell}><strong>Not validated</strong>
       <small style={{display:"block"}}>N/A · never 0/100</small>
       {x.independentReviews>0&&<small style={{display:"block"}}>
        {x.independentReviews} independent reviews</small>}
      </td>
-     <td style={cell}><RaasMetricGradebook row={x.trial} bucket={null} researchStageOnly={x.stage}/></td>
+     <td style={cell}><RaasClinicalFiveCell row={x.trial} bucket={null} researchStageOnly={x.stage}/></td>
      <td style={cell}><RaasTrialHistoryButton row={x.trial} bucket={null}/></td>
     </tr>)}</tbody>
    </table>

@@ -10,7 +10,7 @@ import css from "../raas-history/page.module.css";
 
 export const metadata:Metadata={
  title:"RAAS · 762 Trial Scoring Setup | PDUFA",
- description:"762 exact research NCTs, each assigned a single 30-metric registry-posting checklist, with missing evidence, filters and NCT history."
+ description:"762 exact research NCTs, each assigned a single five-factor clinical research checklist, with missing evidence, filters and NCT history."
 };
 export default function Raas762Page(){
  return <main className={css.root} data-raas-primary-scoring-setup="762-nct-rows">
@@ -18,7 +18,7 @@ export default function Raas762Page(){
    <Link className={css.back} href="/tools">← TOOLS</Link>
    <h1>RAAS · 762-trial scoring setup</h1>
    <p><strong>One trial per row, all 762 NCTs.</strong> Each trial has one
-    30-metric checklist assigned to its current Before/Past registry-posting
+    five-factor clinical checklist assigned to its current Before/Past registry-posting
     spreadsheet, with missing-review status and unified NCT history.</p>
   </header>
   <p className={css.notice} data-raas-stage-application-boundary="top-bottom-only">
@@ -26,7 +26,7 @@ export default function Raas762Page(){
    classified trial rows, not the 11,000+ POOL. The registry-posting
    classification is NOT a dated issuer readout. Any separate issuer-
    verified TOP/BOTTOM classification, FDA prediction, and full RAAS score
-   still require independent source review.{" "}
+   still require separate issuer evidence, not a guess.{" "}
    <Link href="/tools#raas-top-bottom-sheets">
     Open the TOP/BOTTOM Phase 3 spreadsheets</Link>.
   </p>
