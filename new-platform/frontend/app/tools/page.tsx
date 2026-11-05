@@ -1,4 +1,5 @@
 import type {Metadata} from "next";
+import Link from "next/link";
 import PoolStageExplorer from "../PoolStageExplorer";
 import Phase3ReadoutSheets from "../Phase3ReadoutSheets";
 import Phase3RegistryPostingSheets from "../Phase3RegistryPostingSheets";
@@ -14,6 +15,22 @@ export default function ToolsPage(){
       <p className={styles.eyebrow}>PDUFA · RESEARCH TOOLS</p>
       <h1>TOOLS</h1>
     </header>
+    <section data-tools-primary-raas-762="true" style={{border:"2px solid #77a98a",
+      borderRadius:11,background:"#f5fcf6",padding:15,margin:"14px 0 18px"}}>
+      <h2 style={{margin:"0 0 7px",fontSize:19,color:"#164d30"}}>
+       Priority 1 · RAAS scoring setup — 762 trials
+      </h2>
+      <p style={{margin:"0 0 12px",fontSize:13,lineHeight:1.5}}>
+       Open one row per NCT, the 30 TOP + 30 BOTTOM scoring checklists,
+       missing evidence, provisional review status and expandable history.
+       Incomplete scores stay N/A; this is separate from FDA prediction research.
+      </p>
+      <Link href="/raas-762" style={{display:"inline-flex",padding:"11px 16px",
+       borderRadius:8,border:"1px solid #6ea582",background:"#deefdf",
+       color:"#154d2f",fontWeight:800,textDecoration:"none"}}>
+       Open 762-trial RAAS scoring workspace
+      </Link>
+    </section>
     <details data-tools-segment="pool" style={{margin:"12px 0",border:"1px solid #a5c7b2",borderRadius:10,background:"#f9fcfa"}}>
       <summary style={{cursor:"pointer",padding:"15px 12px",fontWeight:800,color:"#164f35",minHeight:48}}>
         POOL development stages and FDA designations
