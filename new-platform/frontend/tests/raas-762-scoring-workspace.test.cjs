@@ -87,7 +87,7 @@ test("762-row workspace has accessible 50-row pages, missing-value states and no
   "remainingTop:30-topReviewed","remainingBottom:30-bottomReviewed",
   "Not validated","N/A · never 0/100","RaasMetricGradebook",
   "RaasTrialHistoryButton","PAGE_SIZE=50",
-  "caseRow(x)","source-backed","/raas-all-trials-partial-metric-ratings.csv"]){
+  "caseRow(x)","source-verified-rows-unvalidated-scores","/raas-all-trials-partial-metric-ratings.csv"]){
   assert.ok(code.includes(marker),"Missing primary workspace safeguard: "+marker);
  }
  assert.match(code,/aria-label="RAAS 762 exact NCT scoring row table"/);
