@@ -9,7 +9,7 @@ import {raasSpreadsheetSummary} from "../lib/raas-spreadsheet-status";
 import {raasRegistryCoverage} from "../lib/raas-stage-source-coverage";
 import {rawRaasRegistryDesignDiagnostic} from "../lib/raas-raw-registry-design";
 import {raasClinicalReportingDiagnostic} from "../lib/raas-clinical-reporting-diagnostic";
-import {fullReviewedTrialCandidate} from "../lib/raas-reviewed-full-score";
+import {fullReviewedTrialCandidate,stageResearchReviewsForUnverifiedTrial} from "../lib/raas-reviewed-full-score";
 import type {RaasStage} from "../lib/raas-metric-specs";
 import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 import RaasMetricGradebook from "./RaasMetricGradebook";
@@ -130,6 +130,8 @@ export default function RaasFullUniverseScores(){
   const trial={nctId:x.row.nctId,ticker:x.row.ticker,drug:x.row.evidence?.drug};
   const registry=registryTrialFor(registryIndex,trial);
   return {...x,registry,
+   researchTop:stageResearchReviewsForUnverifiedTrial(trial,"pre"),
+   researchBottom:stageResearchReviewsForUnverifiedTrial(trial,"post"),
    topRegistryCoverage:raasRegistryCoverage(trial,"pre",registry),
    bottomRegistryCoverage:raasRegistryCoverage(trial,"post",registry),
    rawDesignDiagnostic:rawRaasRegistryDesignDiagnostic(registry,trial),
@@ -139,9 +141,12 @@ export default function RaasFullUniverseScores(){
   top:assessments.filter(x=>x.stage==="pre").length,
   bottom:assessments.filter(x=>x.stage==="post").length,
   unverified:assessments.filter(x=>x.stage===null).length,
-  numericallyGraded:assessments.filter(x=>x.metricCount>0).length,
-  aiSourceCrosschecks:assessments.reduce((n,x)=>n+x.aiSourceCrosschecks,0),
-  independentMetricReviews:assessments.reduce((n,x)=>n+x.independentReviewedCount,0),
+  numericallyGraded:indexed.filter(x=>x.metricCount>0||
+   (x.researchTop?.reviewedCount??0)>0||(x.researchBottom?.reviewedCount??0)>0).length,
+  aiSourceCrosschecks:indexed.reduce((n,x)=>n+(x.researchTop?.aiCrosscheckedCount??0)+
+   (x.researchBottom?.aiCrosscheckedCount??0),0),
+  independentMetricReviews:indexed.reduce((n,x)=>n+(x.researchTop?.independentReviewedCount??0)+
+   (x.researchBottom?.independentReviewedCount??0),0),
   fullOverall:assessments.filter(x=>x.overallScore!==null).length,
   rawDesignGraded:indexed.filter(x=>x.rawDesignDiagnostic?.score!==null&&
    x.rawDesignDiagnostic?.score!==undefined).length,
@@ -155,7 +160,10 @@ export default function RaasFullUniverseScores(){
   const q=query.trim().toLowerCase();
   return indexed.filter(x=>
    (stage==="all"||(stage==="unverified"?x.stage===null:x.stage===stage))&&
-   (rating==="all"||(rating==="scored"?x.metricCount>0:x.metricCount===0))&&
+   (rating==="all"||(
+     (x.metricCount>0||(x.researchTop?.reviewedCount??0)>0||
+      (x.researchBottom?.reviewedCount??0)>0)===(rating==="scored")
+   ))&&
    (registryFilter==="all"||(registryFilter==="posted"?x.registry?.postedResults===true:
     registryFilter==="protocol"?x.registry?.postedResults===false:!x.registry))&&
    (!q||[x.row.nctId,x.row.ticker,x.row.company,
@@ -236,7 +244,7 @@ export default function RaasFullUniverseScores(){
   <div className={css.stats} data-raas-universe-summary="true">
    <div><strong>{short(assessments.length)}</strong><span>Unique NCTs evaluated for available score rules</span></div>
    <div><strong>{short(stats.numericallyGraded)}</strong><span>Trials with a source-backed experimental metric (not overall RAAS)</span></div>
-   <div data-raas-ai-source-crosschecks="true"><strong>{short(stats.aiSourceCrosschecks)}</strong><span>AI source-and-independent-literature clinical checks · provisional only</span></div>
+   <div data-raas-ai-source-crosschecks="true"><strong>{short(stats.aiSourceCrosschecks)}</strong><span>AI source-crosschecked TOP/BOTTOM provisional metric reviews · not approved predictions</span></div>
    <div data-raas-independent-reviews="true"><strong>{short(stats.independentMetricReviews)}</strong><span>Independently adjudicated metric reviews · full RAAS still requires 30/30 per stage</span></div>
    <div><strong>{short(stats.top)} / {short(stats.bottom)}</strong><span>Issuer-evidenced TOP / BOTTOM</span></div>
    <div><strong>{short(stats.unverified)}</strong><span>Unverified readout-stage trials · not assumed TOP</span></div>
@@ -264,6 +272,13 @@ export default function RaasFullUniverseScores(){
    <div><strong>{short(registryIndex.summary.trialsWithSafetyRiskDenominators??0)}</strong>
     <span>Trials with serious-event affected/at-risk counts (ungraded)</span></div>
   </div>}
+  <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-reviewed-visible="true">
+   <strong>Stage-specific reviewed metric ratings now appear in each trial row below.</strong>
+   TOP and BOTTOM research reviews remain separate even when readout stage is UNVERIFIED.
+   A reviewed-only mean is calculated from the metrics that have sources and benchmarks;
+   the remaining metric inputs stay N/A and no overall RAAS score is inferred.
+   Open <strong>30 metrics</strong> for the right-side detailed review.
+  </p>
   <p style={{fontSize:13,lineHeight:1.5,margin:"12px 0"}} data-raas-ledger-download="true">
    <a href="/raas-trial-score-ledger.csv" download
     style={{fontWeight:700,color:"#135b3b",textDecoration:"underline"}}>
@@ -405,7 +420,7 @@ export default function RaasFullUniverseScores(){
    <strong> {stats.fullOverall} approved overall scores</strong> · {stats.aiSourceCrosschecks} AI source checks (not approved). Missing full scores are N/A.</p>
   <div style={{overflowX:"auto",maxWidth:"100%"}} role="region" aria-label="Entire selected RAAS trial assessment table" tabIndex={0}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:810,fontSize:12}}>
-    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","AI benchmark checks","Source / missing evidence","Raw trial-design grade","Clinical reporting grade","TOP source coverage","BOTTOM source coverage","Registry facts","All 30 metrics","History"].map(c=>
+    <thead><tr>{["Trial · company","Classification","Overall RAAS","Experimental component","Metrics graded","AI benchmark checks","Source / missing evidence","Reviewed-only TOP / BOTTOM research","Raw trial-design grade","Clinical reporting grade","TOP source coverage","BOTTOM source coverage","Registry facts","All 30 metrics","History"].map(c=>
      <th key={c} scope="col" style={{...cell,textAlign:"left",borderBottom:"2px solid #98bda3"}}>{c}</th>)}</tr></thead>
     <tbody>{visible.map(x=><tr key={x.row.nctId} data-raas-nct={x.row.nctId}>
      <td style={cell}><strong>{x.row.ticker}</strong> · <a href={x.row.sourceUrl}
@@ -425,13 +440,30 @@ export default function RaasFullUniverseScores(){
      <td style={cell}><strong>{x.stage?x.metricCount+"/30":"0 verified / 30"}</strong>
       <span style={{display:"block",fontSize:11}}>No missing input scored as zero</span></td>
      <td style={cell} data-raas-row-ai-crosschecks={x.row.nctId}>
-      <strong>{x.aiSourceCrosschecks}/30</strong>
-      <span style={{display:"block",fontSize:11}}>AI source crosschecks; {x.independentReviewedCount} independently reviewed; not a full RAAS score</span>
+      <strong>{(x.researchTop?.aiCrosscheckedCount??0)+(x.researchBottom?.aiCrosscheckedCount??0)} provisional</strong>
+      <span style={{display:"block",fontSize:11}}>AI source crosschecks across distinct TOP/BOTTOM research reviews; {(x.researchTop?.independentReviewedCount??0)+(x.researchBottom?.independentReviewedCount??0)} independent; not overall RAAS</span>
      </td>
      <td style={cell}>{x.sourceUrl?<a href={x.sourceUrl} target="_blank"
       rel="noopener noreferrer">Component source · {x.sourceDate}</a>:
       x.stage===null?"TOP and BOTTOM checklists available · public readout stage still unverified":
       "Source-backed rule and required inputs not yet available"}</td>
+     <td style={cell} data-raas-reviewed-partial-nct={x.row.nctId}>
+      {(["pre","post"] as const).map(s=>{
+       const review=s==="pre"?x.researchTop:x.researchBottom;
+       return <div key={s} style={{marginBottom:7}}>
+        <strong>{s==="pre"?"TOP":"BOTTOM"}: {review?review.reviewedCount:0}/30</strong>
+        <span style={{display:"block",fontSize:11}}>
+         {review?.observedMean!==null&&review?.observedMean!==undefined?
+          review.observedMean+"/100 observed-only mean":"No reviewed metric mean"}
+        </span>
+        {review&&<span style={{display:"block",fontSize:11}}>
+         {review.weightedCoveragePercent}% RAAS model weight reviewed ·
+         {review.independentReviewedCount} independently approved
+        </span>}
+       </div>;
+      })}
+      <small>Research metrics, not an overall RAAS score or verified stage</small>
+     </td>
      <td style={cell} data-raas-raw-design-grade={x.row.nctId}>
       <strong>{x.rawDesignDiagnostic?.score===null||!x.rawDesignDiagnostic?"N/A":
        x.rawDesignDiagnostic.score+"/100"}</strong>

@@ -6,7 +6,7 @@ require.extensions[".ts"]=(module,file)=>module._compile(ts.transpileModule(
  compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,esModuleInterop:true}}
 ).outputText,file);
 const {RAAS_METRIC_CATALOG}=require("../lib/raas-metric-specs.ts");
-const {parseReviewedMetricFeed,fullReviewedTrialCandidate}=require("../lib/raas-reviewed-full-score.ts");
+const {parseReviewedMetricFeed,fullReviewedTrialCandidate,stageResearchReviewsForUnverifiedTrial}=require("../lib/raas-reviewed-full-score.ts");
 const trial={nctId:"NCT12345678",ticker:"TEST",drug:"Experimental Drug",
  indication:"Test indication"};
 const make=(stage,metricId,i)=>({
@@ -305,4 +305,26 @@ test("MLTX IZAR-2 reviewed as separate PRE trial and COGT GIST PEAK as POST acce
  assert.equal(b.approvedOverallScore,null);
  assert.equal(fullReviewedTrialCandidate(peak,"pre",true,feed).reviewedCount,0);
  assert.equal(fullReviewedTrialCandidate({...peak,drug:"bezuclastinib"},"post",true,feed).reviewedCount,0);
+});
+
+test("stage-specific source reviews surface by exact NCT/ticker before stage verification, without fake full RAAS",()=>{
+ const exact=stageResearchReviewsForUnverifiedTrial({nctId:"NCT06445023",ticker:"CLDX"},"post");
+ assert.equal(exact.reviewedCount,3);
+ assert.equal(exact.aiCrosscheckedCount,3);
+ assert.equal(exact.independentReviewedCount,0);
+ assert.equal(exact.fullResearchScore,null);
+ assert.equal(exact.approvedOverallScore,null);
+ assert.equal(stageResearchReviewsForUnverifiedTrial({nctId:"NCT06445023",ticker:"CLDX"},"pre"),null);
+ assert.equal(stageResearchReviewsForUnverifiedTrial({nctId:"NCT06445023",ticker:"WRONG"},"post"),null);
+ assert.equal(stageResearchReviewsForUnverifiedTrial({nctId:"NCT00000000",ticker:"CLDX"},"post"),null);
+});
+test("one NCT associated with multiple compound/indication identities fails closed rather than leaking research grades",()=>{
+ const feed=makeFeed("pre");
+ const split=parseReviewedMetricFeed({...feed,records:feed.records.map((r,i)=>
+  i===0?{...r,drug:"Another therapy"}:r)});
+ assert.equal(stageResearchReviewsForUnverifiedTrial({nctId:trial.nctId,ticker:trial.ticker},"pre",split),null);
+ const stable=stageResearchReviewsForUnverifiedTrial({nctId:trial.nctId,ticker:trial.ticker},"pre",feed);
+ assert.equal(stable.reviewedCount,30);
+ assert.equal(stable.fullResearchScore,null);
+ assert.equal(stable.approvedOverallScore,null);
 });
