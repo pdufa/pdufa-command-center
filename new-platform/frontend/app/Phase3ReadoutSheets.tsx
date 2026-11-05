@@ -10,6 +10,8 @@ import RaasMetricGradebook from "./RaasMetricGradebook";
 import {raasSpreadsheetExport} from "../lib/raas-spreadsheet-status";
 import {buildTopBottomRaasMetricWorklist}
  from "../lib/raas-top-bottom-spreadsheet-worklist";
+import {buildRaasReadoutStageReviewQueue}
+ from "../lib/raas-readout-stage-review-queue";
 import RaasAllClassifiedLiveReview from "./RaasAllClassifiedLiveReview";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 import {BENEFIT_GROUPS,benefitForTrial,parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
@@ -101,6 +103,15 @@ function downloadTopBottomRaasWorklist(bucket:"pre"|"post",rows:ReadoutRow[]){
  const a=document.createElement("a");
  a.href=url;
  a.download="raas-"+(bucket==="pre"?"TOP":"BOTTOM")+"-stage-only-metric-reviews.csv";
+ document.body.appendChild(a);a.click();a.remove();
+ window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+/** Source-review export for unverified NCTs; no RAAS stage or grade. */
+function downloadUnclassifiedSourceReview(csv:string){
+ const blob=new Blob(["\ufeff",csv],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download="raas-top-bottom-unclassified-issuer-source-review.csv";
  document.body.appendChild(a);a.click();a.remove();
  window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -1020,6 +1031,8 @@ export default function Phase3ReadoutSheets(){
     return sortReadout(applyColumnFilters(pageRows,unknownFilters,readoutValue),
       unknownSort,unknownDesc);
   },[data,query,unknownFilters,unknownSort,unknownDesc]);
+  const stageReviewQueue=useMemo(
+   ()=>data?buildRaasReadoutStageReviewQueue(data):null,[data]);
   const pages=Math.ceil(unknown.length/LIMIT);
   const activePage=Math.min(unknownPage,Math.max(0,pages-1));
   if(loading)return <section className={css.root} role="status">Loading dated Phase 3 release spreadsheets…</section>;
@@ -1028,7 +1041,8 @@ export default function Phase3ReadoutSheets(){
     <div className={css.title}>
       <h2>Phase 3 · Public Data Release</h2>
       <p>Open only the section you want to work with. All segments start collapsed.</p>
-      <p><a href="/raas-worklist" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>Open TOP + BOTTOM · all 60 RAAS metric validation steps, missing evidence and approval status</a></p>
+      <p><a href="/raas-worklist" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>TOP + BOTTOM · 60 RAAS metric validation steps, missing evidence and approval status</a></p>
+      <p><a href="/raas-top-bottom" style={{fontWeight:800,color:"#176945",textDecoration:"underline"}}>Dedicated TOP + BOTTOM scoring workspace</a></p>
       <p><a href="/raas-scan" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>RAAS full-universe trial assessments · all available cap-screened Phase 3 candidates, with scores and History</a></p>
       <p><a href="/raas-scan" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>RAAS rating-system accuracy and expandable history · global self-audit</a></p>
     </div>
@@ -1087,6 +1101,20 @@ export default function Phase3ReadoutSheets(){
         </div>
       </div>
     </details>}
+    <section data-raas-stage-gate-summary="top-bottom-only" style={{
+     border:"1px solid #b7d5c3",padding:"12px 14px",borderRadius:9,
+     margin:"12px 0",background:"#f4faf6"}}>
+     <strong style={{display:"block",fontSize:15}}>
+      RAAS scoring applies only to the TOP and BOTTOM spreadsheets
+     </strong>
+     <p style={{fontSize:13,margin:"7px 0 0"}}>
+      {data.pre.length} source-classified TOP trials · {data.post.length}
+      {" "}source-classified BOTTOM trials · {data.unverified.length}
+      {" "}awaiting exact issuer-readout verification.
+      Neither the 11,000+ POOL nor the 762-NCT registry evidence inventory
+      is automatically scored.
+     </p>
+    </section>
     <RaasAllClassifiedLiveReview data={data}/>
     <Spreadsheet bucket="pre" rows={data.pre} query={query}
       showSurveys={showSurveys} showSynthesis={showSynthesis}
@@ -1111,10 +1139,19 @@ export default function Phase3ReadoutSheets(){
     <details className={css.unverified}>
       <summary><strong>Release status not verified · {number(data.unverified.length)} trials</strong> <span>Expand for research queue</span></summary>
       <div className={css.pendingBody}>
-        <p>These NCTs are neither assumed pre-release nor post-release. They require dated issuer announcement searches or other direct public-results evidence. A missing registry posting is not evidence of an unreleased readout.</p>
+        <p>These NCTs are neither assumed pre-release nor post-release.
+         Each needs an exact NCT, issuer, therapy and indication matched to
+         a dated issuer readout or an independently documented negative
+         issuer-source check. A missing registry posting cannot establish
+         a pre-readout stage. This queue assigns no RAAS score.</p>
         <div className={css.actions}>
           <strong>{number(unknown.length)} matching unverified NCTs</strong>
           <button type="button" onClick={()=>downloadCsv("unverified",unknown)}>Export unverified CSV</button>
+          <button type="button" disabled={!stageReviewQueue}
+           data-raas-source-review-export="unclassified-no-ratings"
+           onClick={()=>stageReviewQueue&&downloadUnclassifiedSourceReview(stageReviewQueue.csv)}>
+           Export {data.unverified.length} exact-NCT issuer evidence review tasks · no scores
+          </button>
         </div>
         <TrialColumnFilterBar title="Unverified readout queue" fields={unknownColumns}
           filters={unknownFilters} onChange={next=>{setUnknownFilters(next);setUnknownPage(0)}}
