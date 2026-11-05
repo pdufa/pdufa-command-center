@@ -186,3 +186,31 @@ export function buildRaasRegistryRevisionReviewInbox(
   independentlyApprovedMetrics:0,approvedRaasScores:0,calibratedFdaForecasts:0,tasks
  };
 }
+
+/** Change-category and existing-packet filters are triage only, never a
+ * relative clinical severity score, reviewer approval or FDA forecast.
+ * One source update can belong to multiple clinical-review focus categories.
+ */
+export type RaasReviewChangeFocus="all"|"primary"|"safety"|"design";
+export type RaasReviewPriorPacketFilter="all"|"existing"|"new";
+export function matchesRaasRevisionReviewTriage(
+ task:Pick<RaasRegistryRevisionReviewTask,
+  "changeCategories"|"matchingExistingProvisionalResearchReviews">,
+ focus:RaasReviewChangeFocus,prior:RaasReviewPriorPacketFilter
+):boolean{
+ const categories=new Set(task.changeCategories);
+ const focusMatch=focus==="all"||
+  (focus==="primary"&&[
+   "RESULTS_FIRST_POSTED","RESULTS_POSTING_REVERSED",
+   "PRIMARY_OUTCOME_RESULTS_CHANGED"
+  ].some(category=>categories.has(category)))||
+  (focus==="safety"&&categories.has("SERIOUS_ADVERSE_EVENT_RESULTS_CHANGED"))||
+  (focus==="design"&&[
+   "PRIMARY_ENDPOINT_PROTOCOL_CHANGED","TRIAL_DESIGN_CHANGED",
+   "TRIAL_CONTEXT_CHANGED"
+  ].some(category=>categories.has(category)));
+ const priorMatch=prior==="all"||
+  (prior==="existing"&&task.matchingExistingProvisionalResearchReviews>0)||
+  (prior==="new"&&task.matchingExistingProvisionalResearchReviews===0);
+ return focusMatch&&priorMatch;
+}
