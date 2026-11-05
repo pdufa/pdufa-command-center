@@ -5,6 +5,10 @@ import {loadRegistryEvidenceIndex} from "../../lib/raas-registry-evidence";
 import {buildTrialEvidenceBacklog,type EvidenceBacklogPriority,
  type TrialEvidenceBacklog,type EvidenceBacklogStage}
  from "../../lib/raas-trial-evidence-backlog";
+import {buildRaasRegistryClinicalFactLedger,
+ type RaasRegistryClinicalFactLedger,type RaasRegistryClinicalFact}
+ from "../../lib/raas-registry-clinical-fact-ledger";
+import TrialClinicalEvidenceFacts from "./TrialClinicalEvidenceFacts";
 
 const priorities:Record<EvidenceBacklogPriority,string>={
  FDA_ACCEPTED_PHASE3:"FDA-accepted Phase 3 · verify action",
@@ -26,6 +30,7 @@ const base={
 const count=25;
 export default function EvidenceBacklogClient(){
  const [backlog,setBacklog]=useState<TrialEvidenceBacklog|null>(null);
+ const [clinicalLedger,setClinicalLedger]=useState<RaasRegistryClinicalFactLedger|null>(null);
  const [error,setError]=useState("");
  const [q,setQ]=useState("");
  const [priority,setPriority]=useState<"all"|EvidenceBacklogPriority>("all");
@@ -33,16 +38,31 @@ export default function EvidenceBacklogClient(){
  const [results,setResults]=useState<"all"|"posted"|"protocol"|"comparison">("all");
  const [reviewed,setReviewed]=useState<"all"|"has"|"none">("all");
  const [integrity,setIntegrity]=useState<"all"|"flagged"|"not-flagged">("all");
+ const [rawFacts,setRawFacts]=useState<"all"|"numeric"|"contrast"|"sae"|"none">("all");
  const [page,setPage]=useState(0);
  useEffect(()=>{
   let alive=true;
   void loadRegistryEvidenceIndex().then(index=>{
    if(!alive)return;
    if(!index){setError("The exact 762-NCT registry index is unavailable. The evidence backlog cannot be verified.");return;}
-   try{setBacklog(buildTrialEvidenceBacklog(index));}
+   try{
+    const next=buildTrialEvidenceBacklog(index);
+    const clinical=buildRaasRegistryClinicalFactLedger(index);
+    if(next.totalTrials!==clinical.registryNcts||
+       next.sourceAsOf!==clinical.sourceAsOf)throw Error("RAAS_SOURCE_FACT_BACKLOG_MISMATCH");
+    setClinicalLedger(clinical);setBacklog(next);
+   }
    catch(e){setError(e instanceof Error?e.message:"Evidence sources failed verification");}
   });return ()=>{alive=false;};
  },[]);
+ const factsByNct=useMemo(()=>{
+  const mapped=new Map<string,RaasRegistryClinicalFact[]>();
+  for(const fact of clinicalLedger?.facts??[]){
+   const rows=mapped.get(fact.nctId)??[];
+   rows.push(fact);mapped.set(fact.nctId,rows);
+  }
+  return mapped;
+ },[clinicalLedger]);
  const filtered=useMemo(()=>{
   const text=q.toLowerCase().trim();
   return (backlog?.items??[]).filter(x=>
@@ -53,11 +73,19 @@ export default function EvidenceBacklogClient(){
     (results==="comparison"&&x.hasPrimaryComparisons))&&
    (reviewed==="all"||(x.reviewedTop+x.reviewedBottom>0)===(reviewed==="has"))&&
    (integrity==="all"||(x.sourceIntegrityIssueCount>0)===(integrity==="flagged"))&&
+   (rawFacts==="all"||(()=>{
+    const facts=factsByNct.get(x.nctId)??[];
+    if(rawFacts==="none")return facts.length===0;
+    if(rawFacts==="numeric")return facts.some(f=>f.measurementValue!==null);
+    if(rawFacts==="contrast")return facts.some(f=>
+     f.kind==="POSTED_PRIMARY_CONTRAST_RAW_MEASUREMENT");
+    return facts.some(f=>f.kind==="POSTED_SAE_AFFECTED_RATE_RAW_MEASUREMENT");
+   })())&&
    (!text||[
     x.nctId,x.ticker,x.trialName||"",...x.conditions,...x.interventions,
     x.applicationKey||""
    ].some(v=>v.toLowerCase().includes(text))));
- },[backlog,q,priority,stage,results,reviewed,integrity]);
+ },[backlog,q,priority,stage,results,reviewed,integrity,rawFacts,factsByNct]);
  const pages=Math.max(1,Math.ceil(filtered.length/count));
  const current=Math.min(page,pages-1);
  const shown=filtered.slice(current*count,(current+1)*count);
@@ -75,7 +103,9 @@ export default function EvidenceBacklogClient(){
     [backlog.unverifiedStages,"Readout stages still unverified"],
     [backlog.independentReviewedMetrics,"Certified independent metric reviews"],
     [backlog.trialsWithComparativeRegistryEvidence,"Trials with source-reported primary comparisons"],
-    [backlog.sourceIntegrityFlaggedTrials,"Registry trials with source-interpretation flags"]
+    [backlog.sourceIntegrityFlaggedTrials,"Registry trials with source-interpretation flags"],
+    [clinicalLedger?.totalSourceFacts??0,"Source-linked clinical fact records (ungraded)"],
+    [clinicalLedger?.rawNumericFacts??0,"Raw numeric efficacy, precision and safety observations"]
    ].map(([v,label])=><div key={label} style={{...base,padding:14,background:"#f5faf6"}}>
     <strong style={{display:"block",fontSize:25}}>{v}</strong>
     <span style={{fontSize:11,lineHeight:1.5}}>{label}</span>
@@ -89,6 +119,9 @@ export default function EvidenceBacklogClient(){
    required stage. The two stages must never be combined into a 60-point rating.
    Source-interpretation flags highlight observations to check against original
    ClinicalTrials.gov result tables; they are not findings of source error.
+   Separately mapped clinical source facts retain exact NCT, original
+   observation, source date and source checksum, but are NOT independently
+   adjudicated scores or historical point-in-time predictions.
   </p>
   <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"end",margin:"18px 0"}}>
    <label style={{display:"grid",gap:5,fontSize:12,fontWeight:700}}>
@@ -144,10 +177,25 @@ export default function EvidenceBacklogClient(){
      <option value="not-flagged">No rule-based flags</option>
     </select>
    </label>
+   <label style={{display:"grid",gap:5,fontSize:12,fontWeight:700}}>
+    Original clinical observation
+    <select value={rawFacts} aria-label="Filter extracted primary and safety observations"
+     onChange={e=>{setRawFacts(e.target.value as typeof rawFacts);reset();}} style={base}>
+     <option value="all">All clinical source records</option>
+     <option value="numeric">Has numerical source observation</option>
+     <option value="contrast">Has reported primary contrast</option>
+     <option value="sae">Has serious-event affected rate</option>
+     <option value="none">No extractable source fact</option>
+    </select>
+   </label>
    <button type="button" style={base} onClick={()=>{
     setQ("");setPriority("all");setStage("all");setResults("all");
-    setReviewed("all");setIntegrity("all");reset();
+    setReviewed("all");setIntegrity("all");setRawFacts("all");reset();
    }}>Clear selections</button>
+   <a href="/api/raas-registry-clinical-facts" download
+    style={{...base,fontWeight:700}}>
+    Export original clinical source facts (CSV)
+   </a>
    <a href="/api/raas-evidence-backlog" download style={{...base,fontWeight:700}}>
     Export 762-trial evidence gaps (CSV)
    </a>
@@ -220,6 +268,7 @@ export default function EvidenceBacklogClient(){
        is wrong. Confirm the reported scale, arms and methods before grading.
       </p>
      </details>}
+     <TrialClinicalEvidenceFacts facts={factsByNct.get(x.nctId)??[]} nctId={x.nctId}/>
      <p style={{margin:0}}><strong>Unreviewed potential metric IDs:</strong>
       {" "}TOP {x.missingTopMetricIds.length}/30
       {" "}({x.missingTopMetricIds.slice(0,7).join(", ")}{x.missingTopMetricIds.length>7?", …":""});
