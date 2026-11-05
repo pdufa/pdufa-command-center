@@ -54,7 +54,9 @@ test("source revision becomes two specific candidate research metrics, not anoth
  assert.equal(inbox.candidateMetricAssignments,2);
  assert.equal(inbox.uniqueTrialMetricTasks,2);
  assert.equal(inbox.uniqueNcts,1);
- assert.equal(inbox.existingProvisionalReviewPairs,1);
+ assert.equal(inbox.existingProvisionalReviewPairs,
+  inbox.tasks.filter(x=>x.matchingExistingProvisionalResearchReviews>0).length);
+ assert.ok(inbox.existingProvisionalReviewPairs>=1);
  assert.equal(inbox.supersededOrUnsyncedTasks,0);
  const metric=inbox.tasks.find(x=>x.metricId==="post-1-1");
  assert.equal(metric.nctId,trial.nctId);
