@@ -10,6 +10,8 @@ import {buildThreeWayFDAFreezePreflightPlan}
  from "../../lib/raas-fda-three-way-freeze-preflight";
 import {currentRaasFdaForecastFreezeReceiptAudit}
  from "../../lib/raas-fda-forecast-freeze-receipt-audit";
+import {currentRaasFdaOriginalGoalOutcomeAudit}
+ from "../../lib/raas-fda-original-goal-outcome-audit";
 
 export const metadata:Metadata={
  title:"RAAS Predictions — FDA PASS / CRL / EXTENSION | PDUFA",
@@ -20,6 +22,8 @@ const summary=summarizeRaasPredictionQueue(queue);
 const freezePreflight=buildThreeWayFDAFreezePreflightPlan();
 const preflightByCase=new Map(freezePreflight.records.map(x=>[x.caseKey,x]));
 const receiptAudit=currentRaasFdaForecastFreezeReceiptAudit();
+const originalGoalAudit=currentRaasFdaOriginalGoalOutcomeAudit();
+const outcomeCaseByKey=new Map(originalGoalAudit.cases.map(x=>[x.caseKey,x]));
 const panel={border:"1px solid #c6d7cc",background:"#fff",borderRadius:10,padding:"14px"} as const;
 const muted={fontSize:13,color:"#455c50",lineHeight:1.5} as const;
 const stats={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:10,margin:"15px 0"} as const;
@@ -67,6 +71,33 @@ export default function PredictionsPage(){
      Open the saved FDA freeze receipt audit (JSON)</a>.
     No website entry, unsigned template, or recorded checksum proves a
     historical prediction was actually published before a decision.
+   </p>
+  </section>
+  <section style={{...panel,marginBottom:15}}
+   data-raas-fda-original-goal-outcome-audit="UNADJUDICATED">
+   <h2>FDA original-goal outcome review · independent evidence queue</h2>
+   <div style={stats}>
+    <Fact value={originalGoalAudit.exactReviewCycleResearchCases}
+     label="Distinct application/review-cycle source leads"/>
+    <Fact value={originalGoalAudit.pendingNoEvidence}
+     label="Original-goal outcome evidence not submitted"/>
+    <Fact value={originalGoalAudit.blockedResearchCases}
+     label="Outcome-source submissions blocked for review"/>
+    <Fact value={originalGoalAudit.independentlyAdjudicatedOriginalGoalLabels}
+     label="Independently adjudicated original-goal FDA outcomes"/>
+   </div>
+   <p style={muted}>
+    A later FDA approval cannot automatically be recorded as PASS at the original
+    goal. RAAS preserves the original goal separately from revised target dates,
+    checks exact NDA/BLA/supplement identity and evidence publication chronology,
+    and requires independent verification of PASS, CRL, or EXTENSION. These
+    postdecision documents cannot be used to retroactively create forecasts.
+   </p>
+   <p style={muted}>
+    <a href="/api/raas-fda-original-goal-outcomes">
+     Open FDA outcome evidence review audit (JSON)</a>.
+    {" "}{originalGoalAudit.qualifiedForecastOutcomePairs} qualified prospective
+    forecast/outcome pairs; three-way predictive accuracy remains unvalidated.
    </p>
   </section>
   <section style={{...panel,marginBottom:15}} data-raas-fda-forecast-cohort="true">
@@ -136,6 +167,25 @@ export default function PredictionsPage(){
           has been approved.
          </p>
         </details>
+       </div>}
+       {outcomeCaseByKey.has(r.key)&&<div
+        data-raas-fda-exact-original-goal-outcome={r.key}
+        style={{border:"1px solid #d6e5dc",borderRadius:8,padding:11,margin:"10px 0"}}>
+        <p style={{margin:"0 0 8px"}}>
+         <strong>Original FDA goal outcome:</strong>{" "}
+         {outcomeCaseByKey.get(r.key)!.status.replaceAll("_"," ").toLowerCase()}.
+         {" "}Confirmed PASS / CRL / EXTENSION: <strong>none adjudicated</strong>.
+        </p>
+        <p style={{margin:"0 0 8px"}}>
+         <a href={"/api/raas-fda-original-goal-outcomes?"+
+          new URLSearchParams({case:r.key}).toString()} download>
+          Download this application’s seven-step original-goal outcome review (JSON)
+         </a>
+        </p>
+        <p style={muted}>Evidence candidates submitted for this case:{" "}
+         {outcomeCaseByKey.get(r.key)!.recordedEvidenceCount}.
+         {" "}Even a sourced candidate cannot automatically validate an FDA
+         action or previously unsigned RAAS forecast.</p>
        </div>}
        <p><strong>Blockers and why RAAS abstains:</strong></p>
        <ul style={{paddingLeft:22}}>{r.blockers.map(b=><li key={b} style={{marginBottom:5}}>{b}</li>)}</ul>
