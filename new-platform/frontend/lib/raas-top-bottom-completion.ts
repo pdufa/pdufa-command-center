@@ -25,7 +25,8 @@ export type RaasClassifiedCompletionTask={
 };
 type TrialSummary={
  nctId:string;ticker:string;stage:"TOP"|"BOTTOM";
- reviewed:number;missing:number;approvedOverallScore:null;
+ reviewed:number;missing:number;sourceAcceptedResearchScore:number|null;
+ approvedOverallScore:null;
  sourceUrl:string;issuerEvidenceDate:string;
 };
 export type RaasTopBottomCompletion={
@@ -179,7 +180,9 @@ export function buildRaasTopBottomCompletion(data:ReadoutClassification):
    reviewedCount+=reviewed;
    trials.push({
     nctId:row.nctId,ticker:row.ticker,stage:grade.stage,
-    reviewed,missing:30-reviewed,approvedOverallScore:null,
+    reviewed,missing:30-reviewed,
+    sourceAcceptedResearchScore:grade.sourceAcceptedResearchScore,
+    approvedOverallScore:null,
     sourceUrl:grade.sourceUrl,issuerEvidenceDate:grade.sourceAsOf
    });
    if(stage==="pre")topSlots+=30;
@@ -205,8 +208,8 @@ export function buildRaasTopBottomCompletion(data:ReadoutClassification):
      requiredIndependentBenchmark:rubric.benchmarkRequirement,
      criticalRisk:m.criticalRisk,scoreRule:m.scoreRule,
      nextAction:hasGrade?
-      "Reverify exact primary-source finding, comparator and uncertainty with independent reviewer; provisional grade is not validated.":
-      "Find exact-trial, same-therapy primary evidence; verify dated comparator, effect size, uncertainty, critical risks and independent reviewer before assigning a numeric metric grade.",
+      "Source accepted for research scoring; optional independent validation is not a blocker.":
+      "Locate exact-trial same-therapy evidence; assess comparator, effects, uncertainty and risks, then assign a supported provisional metric grade without a separate human signoff.",
      independentValidationStatus:"NOT_COMPLETED",
      approvedOverallScore:null,calibratedFdaApprovalProbability:null
     };
