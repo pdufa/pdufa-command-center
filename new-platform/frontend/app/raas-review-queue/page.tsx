@@ -4,6 +4,7 @@
 import type {Metadata} from "next";
 import Link from "next/link";
 import {buildRaasIndependentReviewQueue} from "../../lib/raas-independent-review-queue";
+import {currentReviewIntakeAudit} from "../../lib/raas-external-review-intake";
 import ReviewQueueClient from "./ReviewQueueClient";
 import css from "../raas-history/page.module.css";
 
@@ -12,6 +13,7 @@ export const metadata:Metadata={
  description:"Source-backed, exact-trial RAAS metrics awaiting external independent verification and calibration."
 };
 const queue=buildRaasIndependentReviewQueue();
+const receiptAudit=currentReviewIntakeAudit();
 export default function IndependentMetricReviewQueuePage(){
  return <main className={css.root} data-raas-independent-review-queue="source-reviewed-pending">
   <header className={css.header}>
@@ -46,6 +48,27 @@ export default function IndependentMetricReviewQueuePage(){
    Neither prior AI research nor an FDA-accepted application establishes FDA success odds,
    a PASS/CRL/EXTENSION prediction, or a 30/30 RAAS rating.
   </p>
+  <section className={css.section} data-raas-external-review-intake="AUTHENTICATION_REQUIRED">
+   <div className={css.sectionTitle}>
+    <h2>External reviewer receipt audit</h2>
+    <span>Receiving a document does not validate the reviewer</span>
+   </div>
+   <div className={css.stats}>
+    <div><strong>{receiptAudit.submitted}</strong><span>External signed-document references submitted</span></div>
+    <div><strong>{receiptAudit.pendingExternalAuthentication}</strong><span>Structurally complete receipts, pending human authentication</span></div>
+    <div><strong>{receiptAudit.blocked}</strong><span>Receipts blocked by identity, date, source revision or missing fields</span></div>
+    <div><strong>{receiptAudit.certifiedIndependentSignoffs}</strong><span>Externally certified independent review sign-offs</span></div>
+   </div>
+   <p className={css.notice}>Each downloadable review packet has a SHA-256 checksum
+    binding its exact NCT, therapy, indication, RAAS stage and metric to the
+    primary/benchmark evidence and risk assessment. Changed evidence invalidates
+    the prior packet for matching. The checksum proves only integrity of the
+    recorded packet, <strong>not medical accuracy or source authenticity</strong>.
+    A submitted receipt is not an independent clinical validation until
+    a separate authenticated reviewer and evidence adjudication are completed.
+    This website does not accept public review uploads or automatically release scores.
+   </p>
+  </section>
   <ReviewQueueClient queue={queue}/>
   <p className={css.foot} style={{marginTop:20}}>
    The queue is re-derived from the checked-in research ledger on deployment.
