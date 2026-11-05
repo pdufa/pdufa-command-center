@@ -125,8 +125,10 @@ test("quoted commas and line breaks are safely parsed; malformed quoting is reje
  const parsed=parseReviewerWorksheetCsv(joined);
  assert.equal(parsed.length,61);
  assert.equal(parsed.find(x=>x[5]==="post-1-1")[24],r[24]);
- assert.throws(()=>parseReviewerWorksheetCsv(original+'\r\n"unclosed'),
+ assert.throws(()=>parseReviewerWorksheetCsv('header,"unclosed'),
   /RAAS_WORKSHEET_UNCLOSED_CSV_QUOTE/);
+ assert.throws(()=>parseReviewerWorksheetCsv(original+'\r\n"extra"'),
+  /RAAS_WORKSHEET_TOO_MANY_ROWS/);
  assert.throws(()=>auditReviewerWorksheetCsv("bad,header\r\n",docket),
   /RAAS_WORKSHEET_WRONG_SCHEMA_DOWNLOAD_LATEST/);
 });
