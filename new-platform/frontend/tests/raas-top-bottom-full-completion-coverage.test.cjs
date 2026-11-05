@@ -2,6 +2,7 @@
 const test=require("node:test"),assert=require("node:assert/strict");
 const fs=require("node:fs"),path=require("node:path"),ts=require("typescript");
 const root=path.resolve(__dirname,"..");
+const sourceText=p=>fs.readFileSync(path.join(root,p),"utf8");
 require.extensions[".ts"]=(mod,file)=>mod._compile(ts.transpileModule(
  fs.readFileSync(file,"utf8"),{fileName:file,
  compilerOptions:{module:ts.ModuleKind.CommonJS,
@@ -116,4 +117,35 @@ test("iPhone TOP/BOTTOM UI shows full coverage and exports without scoring the u
    target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}
  });
  assert.equal((compiled.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
+});
+
+test("published clinical primary-study leads are exact classified NCT metric research, not imputed grades",()=>{
+ const source=JSON.parse(sourceText("data/raas-classified-published-metric-leads.json"));
+ assert.equal(source.schemaVersion,1);
+ assert.equal(source.scope,"RAAS_EXACT_CLASSIFIED_PUBLISHED_CLINICAL_EVIDENCE_LEADS_UNGRADED");
+ assert.equal(source.records.length,4);
+ const plan=build(classified);
+ const byTask=new Map(plan.tasks.map(x=>[x.nctId+"|"+x.metricId,x]));
+ const byTrial=new Map([...classified.pre,...classified.post].map(x=>[x.nctId,x]));
+ const seen=new Set();
+ for(const lead of source.records){
+  const trial=byTrial.get(lead.nctId),task=byTask.get(lead.nctId+"|"+lead.metricId);
+  assert.ok(trial&&task);
+  assert.equal(trial.ticker,lead.ticker);
+  assert.equal(trial.evidence.drug,lead.drug);
+  assert.equal(task.stage,lead.stage);
+  assert.equal(task.numericProvisionalGrade,null);
+  assert.equal(lead.approvedNumericGrade,null);
+  assert.match(lead.sourceUrl,/^https:\\/\\//);
+  assert.match(lead.referenceUrl,/^https:\\/\\//);
+  assert.ok(lead.reportedResult.length>40);
+  assert.ok(lead.reviewNeeded.length>40);
+  assert.ok(!seen.has(lead.nctId+"|"+lead.metricId));
+  seen.add(lead.nctId+"|"+lead.metricId);
+ }
+ const panel=sourceText("app/RaasTopBottomCompletionPanel.tsx");
+ assert.match(panel,/publishedByMetric/);
+ assert.match(panel,/lead\\.approvedNumericGrade!==null/);
+ assert.match(panel,/data-raas-published-ungraded-lead/);
+ assert.match(panel,/Published clinical source · not a RAAS grade/);
 });
