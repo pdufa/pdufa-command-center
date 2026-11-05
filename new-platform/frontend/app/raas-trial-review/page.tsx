@@ -5,6 +5,7 @@ import registry from "../../public/raas-registry-evidence-index.json";
 import {buildTrialMetricReviewDossier}
  from "../../lib/raas-trial-metric-review-dossier";
 import ReviewDossierClient from "./ReviewDossierClient";
+import RaasWorksheetPreflight from "./RaasWorksheetPreflight";
 import css from "../raas-history/page.module.css";
 export const metadata:Metadata={
  title:"RAAS · Exact Trial 60-Metric Review | PDUFA",
@@ -47,7 +48,7 @@ export default async function RaasTrialReviewPage({
     new URLSearchParams({nctId,ticker}).toString()}
     data-raas-review-worksheet-download="true">
     Download editable 60-metric review worksheet (CSV)</a></p>
-  </section><ReviewDossierClient dossier={dossier}/></>:
+  </section><RaasWorksheetPreflight key={dossier.trial.nctId+":"+dossier.trial.ticker} dossier={dossier}/><ReviewDossierClient dossier={dossier}/></>:
    <section className={css.notice} role="alert">
     The requested NCT/ticker combination has no exact matching saved
     research record. No alternative program or trial was substituted.
