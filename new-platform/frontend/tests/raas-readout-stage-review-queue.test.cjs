@@ -56,7 +56,7 @@ test("duplicated or mismatched research identities fail closed",()=>{
  const n=data.unverified[0],c=data.pre[0];
  const mutate=x=>({ ...data, unverified:[x,...data.unverified.slice(1)] });
  for(const row of [
-  {...n,ticker:"OTHER"},
+  {...n,ticker:"other untrusted"},
   {...n,nctId:"NOT-A-REAL-NCT"},
   {...n,sourceUrl:"https://example.test/not-the-nct"},
   {...n,evidence:c.evidence},
@@ -85,7 +85,7 @@ test("unverified CSV preserves source roster, contains explicit review tasks and
  assert.ok(columns.includes("nextAction"));
  assert.ok(!columns.includes("approvedOverallRaasScore"));
  assert.equal((a.csv.match(/UNVERIFIED/g)||[]).length,736);
- assert.equal((a.csv.match(/NEEDS_ISSUER/g)||[]).length,0);
+ assert.equal((a.csv.match(/NEEDS_ISSUER/g)||[]).length,736);
 });
 test("direct TOP and BOTTOM route is primary, while POOL and 762 stay separated",()=>{
  const page=source("app/raas-top-bottom/page.tsx");
