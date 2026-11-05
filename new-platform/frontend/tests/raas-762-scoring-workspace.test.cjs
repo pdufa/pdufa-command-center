@@ -54,9 +54,9 @@ test("all 762 trial identities have 30 TOP and 30 BOTTOM research metric rows",(
  assert.equal(status.researchTrials,762);
  assert.equal(status.trialStageRows,1524);
 });
-test("partial metrics remain 18 NCTs, zero independently validated full RAAS and zero FDA probabilities",()=>{
- assert.equal(status.uniqueNctsWithActualProvisionalMetricScores,20);
- assert.equal(status.totalAiCrosscheckedMetricReviews,86);
+test("partial metrics now cover 21 NCTs, zero independently validated full RAAS and zero FDA probabilities",()=>{
+ assert.equal(status.uniqueNctsWithActualProvisionalMetricScores,21);
+ assert.equal(status.totalAiCrosscheckedMetricReviews,96);
  assert.equal(status.totalIndependentMetricReviews,0);
  assert.equal(status.fullValidatedRaasScores,0);
  assert.equal(status.calibratedFdaPredictions,0);

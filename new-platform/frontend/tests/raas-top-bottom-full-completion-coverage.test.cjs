@@ -15,7 +15,7 @@ const census=fs.readFileSync(path.join(root,"public/phase3-census-2026-10-26.csv
 const evidence=JSON.parse(fs.readFileSync(path.join(root,
  "public/phase3-public-readout-evidence-2026-11-01.json"),"utf8"));
 const classified=classifyPhase3Readouts(evidence,parsePhase3CensusCsv(census).rows);
-test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 20 rated, 280 absent",()=>{
+test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 30 rated, 270 absent",()=>{
  const result=build(classified),s=result.summary;
  assert.equal(s.scoredScope,"SOURCE_CLASSIFIED_TOP_BOTTOM_ONLY");
  assert.equal(s.researchSourceCensus,741);
@@ -26,10 +26,10 @@ test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 20 rated, 280
  assert.equal(s.topMetricSlots,60);
  assert.equal(s.bottomMetricSlots,240);
  assert.equal(s.allMetricSlots,300);
- assert.equal(s.provisionalMetricGrades,20);
- assert.equal(s.missingMetricGrades,280);
+ assert.equal(s.provisionalMetricGrades,30);
+ assert.equal(s.missingMetricGrades,270);
  assert.equal(s.publishedUngradedMetricLeads,0);
- assert.equal(s.missingWithoutPublishedMetricLead,280);
+ assert.equal(s.missingWithoutPublishedMetricLead,270);
  assert.equal(s.independentFullScores,0);
  assert.equal(s.calibratedFdaProbabilities,0);
  assert.equal(s.gradingSetupReady,true);
@@ -39,12 +39,12 @@ test("all ten exact TOP/BOTTOM NCTs reconcile 300 metric statuses: 20 rated, 280
  assert.deepEqual(Object.fromEntries(result.trials.map(x=>[x.nctId,[x.reviewed,x.missing]])),{
   NCT06445023:[3,27],NCT06455202:[3,27],
   NCT06641076:[0,30],NCT07363577:[5,25],NCT07671911:[5,25],
-  NCT05186818:[2,28],NCT05767346:[1,29],NCT06081894:[0,30],
+  NCT05186818:[4,26],NCT05767346:[4,26],NCT06081894:[5,25],
   NCT03697109:[1,29],NCT04308590:[0,30]
  });
  assert.equal(new Set(result.tasks.map(t=>t.nctId+"|"+t.stage+"|"+t.metricId)).size,300);
- assert.equal(result.tasks.filter(x=>x.status==="SOURCE_CHECKED_PROVISIONAL_ONLY").length,20);
- assert.equal(result.tasks.filter(x=>x.status==="NO_SOURCE_REVIEWED_GRADE").length,280);
+ assert.equal(result.tasks.filter(x=>x.status==="SOURCE_CHECKED_PROVISIONAL_ONLY").length,30);
+ assert.equal(result.tasks.filter(x=>x.status==="NO_SOURCE_REVIEWED_GRADE").length,270);
  assert.ok(result.tasks.every(t=>t.independentValidationStatus==="NOT_COMPLETED"&&
   t.approvedOverallScore===null&&t.calibratedFdaApprovalProbability===null));
 });
@@ -73,7 +73,7 @@ test("each missing source task carries exact-trial issuer, registry, metric comp
  const all=plan.allCsv.trimEnd().split("\r\n");
  const missing=plan.missingOnlyCsv.trimEnd().split("\r\n");
  assert.equal(all.length,301);
- assert.equal(missing.length,281);
+ assert.equal(missing.length,271);
  assert.equal(missing[0],all[0]);
  assert.ok(missing.slice(1).every(x=>x.includes("NO_SOURCE_REVIEWED_GRADE")));
  assert.ok(!plan.allCsv.includes("NCT00000000"));
@@ -161,9 +161,9 @@ test("external review remains optional for all 300 exact-NCT metrics",()=>{
  assert.match(rows[0],/signatureOrAuditReceiptId/);
  assert.match(rows[0],/reviewerIdentity/);
  assert.match(rows[0],/independentlyAdjudicatedMetricGrade/);
- assert.equal(rows.filter(x=>x.includes("PROVISIONAL_NOT_INDEPENDENTLY_VERIFIED")).length,20);
+ assert.equal(rows.filter(x=>x.includes("PROVISIONAL_NOT_INDEPENDENTLY_VERIFIED")).length,30);
  assert.equal(rows.filter(x=>x.includes("PUBLISHED_UNGRADED_LEAD")).length,0);
- assert.equal(rows.filter(x=>x.includes("UNSCORED_MISSING_EVIDENCE")).length,280);
+ assert.equal(rows.filter(x=>x.includes("UNSCORED_MISSING_EVIDENCE")).length,270);
  assert.equal(rows.filter(x=>x.includes("2_REVIEW_PUBLISHED_SOURCE")).length,0);
  assert.match(csv,/NCT05186818/);
  assert.match(csv,/NEJMoa2401424/);
@@ -221,7 +221,7 @@ test("accepted CYTK trial publications become three exact-NCT source-backed rese
   assert.equal(task.approvedOverallScore,null);
   assert.equal(task.calibratedFdaApprovalProbability,null);
  }
- assert.equal(completion.summary.provisionalMetricGrades,20);
- assert.equal(completion.summary.missingMetricGrades,280);
+ assert.equal(completion.summary.provisionalMetricGrades,30);
+ assert.equal(completion.summary.missingMetricGrades,270);
  assert.equal(completion.summary.publishedUngradedMetricLeads,0);
 });

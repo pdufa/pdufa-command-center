@@ -106,7 +106,7 @@ test("live exact-trial Celldex source checks contain six provisional grades and 
  const raw=JSON.parse(fs.readFileSync(path.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(raw);
- assert.equal(feed.records.length,86);
+ assert.equal(feed.records.length,96);
  assert.ok(feed.records.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"));
  for(const nctId of ["NCT06445023","NCT06455202"]){
   const x=fullReviewedTrialCandidate({nctId,ticker:"CLDX",drug:"barzolvolimab",
@@ -157,13 +157,13 @@ test("dual pivotal replicated and durable Week-24 responses are source-checked b
  }
 });
 
-test("11-trial real clinical pilot has only research grades, not full RAAS or fabricated FDA probabilities",()=>{
+test("14-trial real clinical pilot has only research grades, not full RAAS or fabricated FDA probabilities",()=>{
  const pilot=require("node:fs").readFileSync(require("node:path").join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8");
  const feed=parseReviewedMetricFeed(JSON.parse(pilot));
  const cases=new Set(feed.records.filter(r=>r.stage==="post"&&r.ticker!=="COGT").map(r=>r.nctId));
- assert.equal(cases.size,13);
- assert.equal(feed.records.length,86);
+ assert.equal(cases.size,14);
+ assert.equal(feed.records.length,96);
  for(const nctId of cases){
   const r=feed.records.find(x=>x.nctId===nctId);
   const scored=fullReviewedTrialCandidate({nctId,ticker:r.ticker,drug:r.drug,
@@ -181,7 +181,7 @@ test("Actual trial-specific safety and pre-action CMC findings remain distinct f
  const j=JSON.parse(fs.readFileSync(p.join(__dirname,"../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const x=parseReviewedMetricFeed(j),safety=x.records.filter(r=>r.metricId==="post-1-5");
  const cmc=x.records.filter(r=>r.metricId==="post-3-4");
- assert.equal(safety.length,8);
+ assert.equal(safety.length,11);
  assert.equal(cmc.length,2);
  assert.deepEqual(cmc.map(r=>r.nctId).sort(),["NCT04576949","NCT05206370"]);
  for(const r of cmc){
@@ -197,12 +197,12 @@ test("Actual trial-specific safety and pre-action CMC findings remain distinct f
  }
 });
 
-test("Eight CI/multiplicity reviews and six shared-NDA filing/target metrics are genuine, explicitly historical and unvalidated",()=>{
+test("Eleven CI/multiplicity reviews and six shared-NDA filing/target metrics are genuine, explicitly historical and unvalidated",()=>{
  const p=require("node:path"),src=JSON.parse(fs.readFileSync(p.join(__dirname,
   "../data/raas-reviewed-metric-assessments.json"),"utf8"));
  const feed=parseReviewedMetricFeed(src);
  const ci=feed.records.filter(r=>r.metricId==="post-1-3"&&r.ticker!=="COGT");
- assert.equal(ci.length,8);
+ assert.equal(ci.length,11);
  assert.ok(ci.every(r=>r.independentReview==="AI_SOURCE_CROSSCHECKED"&&
   r.benchmarkSourceUrl.includes("fda.gov")&&/CI|interval|confidence/i.test(r.observedResult)));
  const expected=["post-3-1","post-3-5","post-6-1"];

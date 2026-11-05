@@ -19,11 +19,11 @@ const queue=buildRaasIndependentReviewQueue();
 const plan=buildRaasReviewAssignmentPlan(queue);
 const inbox=buildRaasRegistryRevisionReviewInbox(history,status,registry,queue);
 
-test("saved registry source audit maps exactly to all 18 program-stage review handoffs",()=>{
+test("saved registry source audit maps exactly to all 21 program-stage review handoffs",()=>{
  const gates=audit(plan,inbox,registry);
- assert.equal(gates.totalPrograms,20);
+ assert.equal(gates.totalPrograms,21);
  assert.equal(gates.gates.length,plan.groups.length);
- assert.equal(new Set(gates.gates.map(g=>g.programId)).size,20);
+ assert.equal(new Set(gates.gates.map(g=>g.programId)).size,21);
  assert.equal(gates.approvedRaasScores,0);
  assert.equal(gates.calibratedFdaForecasts,0);
  for(const g of gates.gates){
@@ -42,7 +42,7 @@ test("saved registry source audit maps exactly to all 18 program-stage review ha
   assert.match(g.explanation,/source|registry|comparison/i);
  }
  assert.equal(gates.needRevisionRecheck+gates.sourceAuditUnconfirmed+
-  gates.noRecordedMetricRevisions,20);
+  gates.noRecordedMetricRevisions,21);
 });
 test("a newly flagged clinical revision stops a clean source assertion for only its exact stage",()=>{
  const co=plan.groups.find(x=>x.nctId==="NCT05208047");

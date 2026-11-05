@@ -11,7 +11,7 @@ const {uniquelyReviewedUnverifiedProgram,stageResearchReviewsForUnverifiedTrial}
 const {buildRaasMetricGradebook}
  =require("../lib/raas-metric-gradebook.ts");
 
-test("exact-NCT/therapy unverified-stage drawer exposes 18 trials' saved reviewed metrics",()=>{
+test("exact-NCT/therapy unverified-stage drawer exposes 21 trials' saved reviewed metrics",()=>{
  const seen=new Set(),byStage=new Map();
  for(const source of reviews.records){
   const stageKey=source.nctId+"|"+source.stage;
@@ -20,8 +20,8 @@ test("exact-NCT/therapy unverified-stage drawer exposes 18 trials' saved reviewe
   else byStage.set(stageKey,source);
   seen.add(source.nctId);
  }
- assert.equal(reviews.records.length,86);
- assert.equal(seen.size,20);
+ assert.equal(reviews.records.length,96);
+ assert.equal(seen.size,21);
  let visibleGrades=0;
  for(const r of byStage.values()){
   const trial={nctId:r.nctId,ticker:r.ticker};
@@ -38,7 +38,7 @@ test("exact-NCT/therapy unverified-stage drawer exposes 18 trials' saved reviewe
   assert.equal(book.categories.flatMap(x=>x.rows).length,30);
   visibleGrades+=book.reviewedCandidate.reviewedCount;
  }
- assert.equal(visibleGrades,86);
+ assert.equal(visibleGrades,96);
 });
 test("ambiguous same NCT+stage but different therapy must not pick a research grade",()=>{
  const r=reviews.records[0];

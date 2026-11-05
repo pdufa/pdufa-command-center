@@ -29,8 +29,8 @@ test("All 762 exact registry trials are represented once, without score promotio
   x.calibratedFdaProbability===null));
 });
 test("Every review is counted only for the exact NCT+issuer and separately in TOP/BOTTOM",()=>{
- assert.equal(report.provisionalMetricReviews,86);
- assert.equal(report.trialsWithAnyProvisionalMetrics,20);
+ assert.equal(report.provisionalMetricReviews,96);
+ assert.equal(report.trialsWithAnyProvisionalMetrics,21);
  assert.equal(report.provisionalMetricReviews,
   report.items.reduce((n,x)=>n+x.reviewedTop+x.reviewedBottom,0));
  for(const item of report.items){
