@@ -208,7 +208,7 @@ export default function Phase3UnifiedClassifications(){
       Registry-status exceptions: {audit.exceptions.unknownRegistryNcts.join(", ")||"none"}.
      </p>
      <p style={{fontSize:12,margin:"8px 0"}}><strong>
-      <a href="/api/phase3-missing-data-audit?format=csv">Download missing-data audit · 762 trial rows × 46 columns (CSV)</a>
+      <a href="/api/phase3-missing-data-audit?format=csv">Download missing-data audit · 762 trial rows × 46 columns (CSV)</a>{" · "}<strong><a href="/phase3-outstanding">Rank all 762 trials and companies by missing data</a></strong>
      </strong></p>
      <details>
       <summary style={{cursor:"pointer",fontWeight:650,fontSize:13}}>Expand missing data by all 30 analytical questions</summary>
