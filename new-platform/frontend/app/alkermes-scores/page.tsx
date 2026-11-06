@@ -23,7 +23,7 @@ const safetyPrimary=rows.filter(r=>r.studyPurpose==="SAFETY_PRIMARY").length;
 const efficacyPrimary=rows.length-safetyPrimary;
 // The five-factor clinical rubric contains three efficacy-focused metrics that
 // do not apply to safety-only extension studies without an efficacy hypothesis.
-const notApplicableClinical=safetyPrimary*3;
+const notApplicableClinical=rows.reduce((n,r)=>n+r.notApplicableClinicalFactors.length,0);
 const applicableClinical=rows.length*5-notApplicableClinical;
 const applicableClinicalPending=applicableClinical-clinicalGraded;
 const numeric=(v:number|null)=>v===null?"N/A":v.toFixed(1)+"/100";
@@ -48,7 +48,7 @@ export default function AlkermesTrialScorePage(){
   </div>
   <section className="panel">
    <h2>All 34 trials and five clinical factors</h2>
-   <p>{safetyPrimary} safety-primary studies and their extensions are assessed for applicability separately. Three efficacy-focused factors per safety-only study are counted as <strong>not applicable ({notApplicableClinical} total)</strong>, not as failures. There are <strong>{applicableClinicalPending} applicable factor assessments still awaiting evidence</strong>. A complete 5/5 research composite is not appropriate for a safety-only primary study. A future Phase 3 endpoint cannot be scored as if the outcome were already observed.</p>
+   <p>{safetyPrimary} safety-primary studies and their extensions are assessed for applicability separately. In these studies, efficacy-specific metrics and unmeasured efficacy durability are marked <strong>not applicable ({notApplicableClinical} total)</strong>, never zero or failures. <strong>{applicableClinicalPending} applicable metric assessments remain without a source-supported grade</strong>. A full efficacy composite is inappropriate for safety-only studies. Ongoing Phase 3 results are not invented from earlier Phase 2 evidence.</p>
    <p><strong>Evidence coverage</strong> and <strong>design diagnostics</strong> are documentation measures, NOT efficacy scores. Clinical grades use the ordinal 0, 25, 50, 75, 100 rubric, with full composite shown only when all five are graded and the trial's readout stage is documented.</p>
    <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
     <table style={{borderCollapse:"collapse",width:"100%",minWidth:1230,fontSize:13}}>
@@ -62,7 +62,7 @@ export default function AlkermesTrialScorePage(){
       <td style={{padding:"10px 8px",minWidth:155}}>{r.studyPurpose==="SAFETY_PRIMARY"?"Safety-primary":"Efficacy / comparative"}<div style={{fontSize:11}}>{r.clinicalStage==="pre"?"Prior-evidence scoring":r.clinicalStage==="post"?"Observed-result scoring":"Unclassified stage"}</div></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{r.evidenceCoverage.toFixed(1)}%</strong><div style={{fontSize:11}}>{r.unscoredQuestions}/30 analytical questions unscored</div></td>
       <td style={{padding:"10px 8px"}}>{r.designDiagnostic}/100<div style={{fontSize:11}}>Not clinical</div></td>
-      <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{r.assessed.graded}/{r.studyPurpose==="SAFETY_PRIMARY"?2:5}</strong><div style={{fontSize:11}}>{r.studyPurpose==="SAFETY_PRIMARY"?"3 factors N/A by design":"All 5 factors applicable"}</div></td>
+      <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{r.assessed.graded}/{5-r.notApplicableClinicalFactors.length}</strong><div style={{fontSize:11}}>{r.notApplicableClinicalFactors.length?String(r.notApplicableClinicalFactors.length)+" factors N/A by study purpose":"All 5 factors applicable"}</div></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{numeric(r.assessed.researchScore)}</strong></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}>
        {r.historicalPrimaryOutcome==="MET"?"MET":
@@ -79,8 +79,8 @@ export default function AlkermesTrialScorePage(){
          {r.assessed.factors.map(f=><div key={f.id} style={{flex:"0 0 190px",background:"#fff",border:"1px solid #bed8c7",borderRadius:8,padding:10}}>
           <strong style={{display:"block",fontSize:12}}>{f.name}</strong>
           <strong style={{display:"block",fontSize:20,margin:"7px 0"}}>{f.grade===null?"N/A":f.grade+"/100"}</strong>
-          <div style={{fontSize:12}}>{f.finding?.replaceAll("_"," ")||(r.studyPurpose==="SAFETY_PRIMARY"&&!["reproducibility","safety"].includes(f.key)?"Not applicable — safety-primary study":"Still requires supporting trial evidence")}</div>
-          <p style={{fontSize:11,margin:"8px 0"}}>{f.grade===null&&r.studyPurpose==="SAFETY_PRIMARY"&&!["reproducibility","safety"].includes(f.key)?"No original efficacy hypothesis; this is not a zero score or an efficacy failure.":f.grade===null?f.requiredEvidence:"Source-accepted research grade; not a validated FDA forecast."}</p>
+          <div style={{fontSize:12}}>{f.finding?.replaceAll("_"," ")||(r.notApplicableClinicalFactors.includes(f.key)?"Not applicable — no efficacy outcome measured":"Still requires supporting trial evidence")}</div>
+          <p style={{fontSize:11,margin:"8px 0"}}>{f.grade===null&&r.notApplicableClinicalFactors.includes(f.key)?"This study did not test the clinical effect represented by this factor. No grade is applicable; this is not a zero score or efficacy failure.":f.grade===null?f.requiredEvidence:"Source-accepted research grade; not a validated FDA forecast."}</p>
           {f.sourceUrl&&<a href={f.sourceUrl} target="_blank" rel="noopener noreferrer" style={{fontSize:11}}>Original source</a>}
           {f.benchmarkSourceUrl&&<p style={{fontSize:11}}><a href={f.benchmarkSourceUrl} target="_blank" rel="noopener noreferrer">Comparator / benchmark</a></p>}
           {f.assessedAt&&<small>Reviewed {f.assessedAt}</small>}
