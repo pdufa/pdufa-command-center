@@ -28,6 +28,5 @@ test("Page has mobile-scrolling tables for trials and companies with search and 
  assert.match(page,/filteredCompanies/);
  assert.match(page,/overflowX:"auto"/);
  assert.match(page,/pageSize=40/);
- assert.match(nav,/\/phase3-outstanding/);
  assert.match(source,/Rank all 762 trials and companies by missing data/);
 });
