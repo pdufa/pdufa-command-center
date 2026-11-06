@@ -1,6 +1,7 @@
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import adjudications from "../../../data/phase3EndpointAdjudications20261105.json";
+import issuerEvidence from "../../../data/phase3CompanyWebsiteEvidence20261105.json";
 import preData from "../../../data/phase3PreDataBatch20261105.json";
 import officialResearch from "../../../data/phase3PreDataOfficialResearch.json";
 import {UNIVERSAL_PHASE3_QUESTIONS} from "../../../lib/phase3-universal-questions";
@@ -10,6 +11,7 @@ import {phase3OnlineRecord,phase3OnlineSourceFact,PHASE3_ONLINE_TRIAL_COUNT,PHAS
 export const dynamic="force-dynamic";
 
 const endpointByNct=new Map(adjudications.records.map(x=>[x.nctId,x] as const));
+const issuerByNct=new Map(issuerEvidence.records.map(x=>[x.nctId,x] as const));
 const registryByNct=new Map(registryCrosswalk.records.map(x=>[x.nctId,x] as const));
 const preDataByNct=new Map(preData.trials.map(x=>[x.nctId,x] as const));
 const officialByNct=new Set(officialResearch.records.map(x=>x.nctId));
@@ -33,6 +35,7 @@ function statusFor(
  if(q.number===1&&e?.endpointOutcome==="PRIMARY_ENDPOINT_NOT_MET")return "OBSERVED_PRIMARY_ENDPOINT_NOT_MET";
  if(q.number===1&&e?.endpointOutcome==="NO_BINARY_PASS_FAIL")return "DOCUMENTED_NON_BINARY_ENDPOINT";
  if(q.number===29&&e)return "DOCUMENTED_PUBLIC_READOUT";
+ if(q.number===3&&issuerByNct.get(r.nctId)?.safetyEvidence)return "SOURCE_FACT_ONLY";
  if(q.observation)return "SOURCE_FACT_ONLY";
  if(q.number===11&&registryByNct.get(r.nctId)?.comparators)return "SOURCE_FACT_ONLY";
  if(q.number===25&&r.registrySourceUrl)return "SOURCE_FACT_ONLY";
@@ -58,7 +61,8 @@ export async function GET(request:Request){
     UNIVERSAL_PHASE3_QUESTIONS.length!==30||
     preData.trials.length!==253||
     officialResearch.records.length!==253||
-    adjudications.records.length!==33||PHASE3_ONLINE_TRIAL_COUNT!==762||
+    adjudications.records.length!==43||issuerEvidence.records.length!==23||issuerByNct.size!==23||
+    PHASE3_ONLINE_TRIAL_COUNT!==762||
     registryCrosswalk.records.length!==762||registryByNct.size!==762){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
@@ -119,6 +123,8 @@ export async function GET(request:Request){
   unverifiedFDAApplication:rows.filter(r=>r.unverifiedFDAApplication).length,
   unverifiedPDUFADate:rows.filter(r=>r.unverifiedPDUFADate).length,
   missingAdjudicatedEndpoint:rows.filter(r=>!r.hasEndpointAdjudication).length,
+  issuerInvestorRelationsEvidence:rows.filter(r=>issuerByNct.has(r.nctId)).length,
+  withoutSavedIssuerInvestorRelationsEvidence:rows.filter(r=>!issuerByNct.has(r.nctId)).length,
   outsideDatedMarketCapScreen:rows.filter(r=>r.outsideDatedMarketCapScreen).length,
   onlineRegistryRecords:PHASE3_ONLINE_TRIAL_COUNT,
   onlinePrimaryEndpointCount:rows.filter(r=>r.onlinePrimaryEndpoint).length,
@@ -130,9 +136,10 @@ export async function GET(request:Request){
  if(assessment.totalSlots!==22860||
     assessment.predicted+assessment.observed+assessment.sourceFacts+assessment.unscored!==total||
     assessment.trialsWithNumericalPredictions!==4||
-    assessment.trialsWithOutcomeAdjudication!==33||
+    assessment.trialsWithOutcomeAdjudication!==43||
     fields.unknownRegistryStatus!==3||
     fields.missingDrugField!==103||
+    fields.issuerInvestorRelationsEvidence!==23||
     fields.onlinePrimaryEndpointCount!==756||fields.registryResultsPosted!==337||
     fields.pubmedNctArticleLeads!==288){
   return Response.json({error:"Missingness audit reconciliation failed"},{status:503});
@@ -151,7 +158,8 @@ export async function GET(request:Request){
   },
   notes:[
    "Unscored means no verified source fact or defensible numerical prediction is stored for that question; it does not prove evidence is absent publicly.",
-   "Source-fact columns document available registry facts, not favorable clinical or FDA predictions.",
+   "Source-fact columns document available registry and issuer investor-relations facts, not favorable clinical or FDA predictions.",
+   "Issuer investor-relations evidence is matched by exact NCT; safety summaries are source facts and not numerical forecasts or independent risk scores.",
    "Crosswalk identifies registered DRUG-type interventions in 657 studies; other intervention types such as biologics, devices, or vaccines are not automatically labeled DRUG.",
    "Not every historical or pre-readout Phase 3 trial has an FDA application or PDUFA date.",
    "Online registry primary outcome documentation, comparator arms and posted results have been imported as source facts, never as numeric drug-success forecasts."
