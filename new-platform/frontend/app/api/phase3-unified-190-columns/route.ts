@@ -41,8 +41,8 @@ const writeRow=(cells:unknown[])=>cells.map(escaped).join(",");
 export async function GET(){
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
-    endpointByNct.size!==19||endpointAdjudications.records.length!==19||
-    endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId&&r.classificationCode.startsWith("P3_POST_DATA")))){
+    endpointByNct.size!==20||endpointAdjudications.records.length!==20||
+    endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
  }
  const rows=[writeRow(HEADERS)];
