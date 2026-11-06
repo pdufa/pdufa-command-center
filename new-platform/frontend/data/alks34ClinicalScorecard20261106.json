@@ -4,8 +4,8 @@
   "scope": "ALKS_EXACT_NCT_34_CLINICAL_RATINGS_WITH_UNSCORED_GAPS",
   "description": "Company ALKS 34 trial research source and clinical-five scorecard; clinical grades only after exact trial evidence and rubric; not FDA probabilities",
   "count": 34,
-  "observedPrimaryClassified": 14,
-  "documentedClinicalMetricReviews": 110,
+  "observedPrimaryClassified": 15,
+  "documentedClinicalMetricReviews": 115,
   "notes": [
     "Evidence coverage and design diagnostic are documentation scores, not clinical predictions.",
     "For all 34 exact NCTs, only source-supported clinical grades are numeric. Missing clinical factors remain null.",
@@ -15,7 +15,8 @@
     "Ongoing studies can have five prior-evidence research factors scored, which are not published Phase 3 efficacy results.",
     "A full clinical five-factor score requires five individual exact-stage accepted reviews, not simply five available registry fields.",
     "Primary outcomes for safety-only studies are generally descriptive nonbinary safety counts; full five-factor clinical efficacy composite is not applicable without actual efficacy endpoint measurements.",
-    "Original source reviews can be expanded as new source data become available, preserving NCT identities."
+    "Original source reviews can be expanded as new source data become available, preserving NCT identities.",
+    "NCT01436032 was registered as Phase 3 but its published report called the stopped-at-50 study Phase II; five-factor reviews are retrospective evidence grades, not a confirmatory efficacy readout."
   ],
   "records": [
     {
@@ -108,7 +109,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "TERMINATED_EARLY_PUBLISHED_EXPLORATORY_ONLY",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 5,
       "applicabilityNote": "Registry labels Phase 3, but original 2018 investigators describe a Phase II experiment stopped early. Efficacy findings are post hoc, not a formally successful pivotal endpoint. Product rights later transferred to Recro Pharma."
     },
     {
