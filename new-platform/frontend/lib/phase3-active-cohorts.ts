@@ -79,7 +79,7 @@ function reconcile():{
    drug:r.drug||matched!.drug};
  });
  const counts=Object.fromEntries(ledger.classifications.map(c=>[c.code,0])) as typeof ledger.counts;
- patched.forEach(r=>{assert(counts[r.classificationCode]!==undefined,"UNRECOGNIZED_CLASS");counts[r.classificationCode]++;});
+ patched.forEach(r=>{assert(Object.prototype.hasOwnProperty.call(counts,r.classificationCode),"UNRECOGNIZED_CLASS");const key=r.classificationCode as keyof typeof counts;counts[key]++;});
  const withCounts={...ledger,asOf:ACTIVE_PHASE3_COHORT_AS_OF,counts,
   note:ledger.note+" Read-only reconciliation: five independently source-matched issuer outcomes promoted from PRE to POST; historical source preserved.",
   rows:patched};
