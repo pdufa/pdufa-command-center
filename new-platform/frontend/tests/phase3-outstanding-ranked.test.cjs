@@ -1,0 +1,33 @@
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs"),path=require("node:path");
+const root=path.resolve(__dirname,"..");
+const api=fs.readFileSync(path.join(root,"app/api/phase3-outstanding-ranked/route.ts"),"utf8");
+const page=fs.readFileSync(path.join(root,"app/phase3-outstanding/page.tsx"),"utf8");
+const nav=fs.readFileSync(path.join(root,"app/GlobalNavigation.tsx"),"utf8");
+const source=fs.readFileSync(path.join(root,"app/Phase3UnifiedClassifications.tsx"),"utf8");
+const ledger=JSON.parse(fs.readFileSync(path.join(root,"public/phase3-unified-classifications-2026-11-05.json"),"utf8"));
+test("Ranks all 762 NCTs dynamically by missing 30-question assessments",()=>{
+ assert.equal(ledger.rows.length,762);
+ assert.equal(new Set(ledger.rows.map(r=>r.nctId)).size,762);
+ assert.match(api,/getMissingAudit/);
+ assert.match(api,/format=csv/);
+ assert.match(api,/parsed.length!==762/);
+ assert.match(api,/records\.sort\(\(a,b\)=>b\.unscored-a\.unscored/);
+ assert.match(api,/totalUnscored!==totalByCompany/);
+ assert.match(api,/format==="trials.csv"/);
+ assert.match(api,/format==="companies.csv"/);
+ assert.match(api,/company:meta\.company/);
+});
+test("Page has mobile-scrolling tables for trials and companies with search and paging",()=>{
+ assert.match(page,/All 762 trials/);
+ assert.match(page,/Companies \(\{data\.companiesCount\}\)/);
+ assert.match(page,/Most outstanding first/);
+ assert.match(page,/See trials/);
+ assert.match(page,/filteredTrials/);
+ assert.match(page,/filteredCompanies/);
+ assert.match(page,/overflowX:"auto"/);
+ assert.match(page,/pageSize=40/);
+ assert.match(nav,/\/phase3-outstanding/);
+ assert.match(source,/Rank all 762 trials and companies by missing data/);
+});
