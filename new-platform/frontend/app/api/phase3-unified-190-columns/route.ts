@@ -128,7 +128,7 @@ export async function GET(request:Request){
      "Issuer reports primary endpoint met; interpret evidence and limitations from the exact source":
    (r.classificationCode==="P3_TERMINATED"?"Trial terminated; an efficacy FAIL is not established by trial status":
     r.classificationCode==="P3_WITHDRAWN"?"Trial withdrawn; an efficacy FAIL is not established by trial status":
-    "No source-qualified Phase 3 primary-endpoint determination available in the saved evidence");
+    "No source-qualified Phase 3 primary-endpoint determination available in the saved evidence"));
   const fullPassRationale=passRationale+(endpoint?.qualification?" | Qualification: "+endpoint.qualification:"");
   const slots=phase3QuestionSlots(r.nctId);
   const predictions=slots.filter(q=>Boolean(q.answer)).length;
