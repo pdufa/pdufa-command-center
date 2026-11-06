@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-06",
-  "totalReviewed": 94,
+  "totalReviewed": 100,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 67,
+    "PRIMARY_ENDPOINT_MET": 72,
     "PRIMARY_ENDPOINT_NOT_MET": 17,
-    "NO_BINARY_PASS_FAIL": 10
+    "NO_BINARY_PASS_FAIL": 11
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
-  "note": "Source-cited retrospective trial endpoint adjudications; mixed multicomponent results and absent US FDA outcomes preserved. No implication of clinical approval probability.",
+  "note": "100 distinct historical exact-NCT outcomes including 14 peer-reviewed Sinovac immunogenicity/clinical endpoint classifications. Regulatory actions and RAAS forecasts stay separate.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -1037,6 +1037,84 @@
       "recoveryBatch": "SVA_EIGHT_PUBLISHED_VACCINE_TRIALS_20261106",
       "evidenceType": "PUBLISHED_PHASE3_IMMUNOGENICITY_EXACT_NCT",
       "qualification": "Research-only observed Phase 3 antibody endpoint; not US FDA approval or future PDUFA prediction."
+    },
+    {
+      "nctId": "NCT01636245",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Three Sinovac EV71 lots met prespecified pairwise GMT equivalence bounds (95% confidence interval of log GMT differences within ±0.176); n=1400 and reported seropositivity 99.7–100%. This is lot-equivalence immunogenicity, not prevention efficacy.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/24108780/",
+      "sourceDate": "2013-10-09",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT01636245",
+      "identityCrosswalk": "NCT01636245 exact NCT appears explicitly in original published paper and ClinicalTrials.gov record; study is a separate trial not pooled with another NCT.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_ADDITIONAL_EXACT_PUBLISHED_20261106",
+      "evidenceType": "EXACT_NCT_PEER_REVIEWED_HISTORICAL_PHASE3_ENDPOINT",
+      "qualification": "Retrospective vaccine immunogenicity/clinical result only. Does not establish a US FDA decision, PDUFA date, market access, or calibrated trial score."
+    },
+    {
+      "nctId": "NCT03526978",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Randomized Sinovac sIPV vs IPV Phase 3 (per-protocol n=553 vs 562) demonstrated noninferiority for poliovirus types 1, 2, 3 seroconversion. Fever was more common in investigational arm (61.6% vs 49.8%); seroconversion is a surrogate, not clinical protection efficacy.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/30958543/",
+      "sourceDate": "2019-10-08",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03526978",
+      "identityCrosswalk": "NCT03526978 exact NCT appears explicitly in original published paper and ClinicalTrials.gov record; study is a separate trial not pooled with another NCT.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_ADDITIONAL_EXACT_PUBLISHED_20261106",
+      "evidenceType": "EXACT_NCT_PEER_REVIEWED_HISTORICAL_PHASE3_ENDPOINT",
+      "qualification": "Retrospective vaccine immunogenicity/clinical result only. Does not establish a US FDA decision, PDUFA date, market access, or calibrated trial score."
+    },
+    {
+      "nctId": "NCT06049927",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Multicenter blinded Phase 3 of 3300 infants 6–35 months: full-dose and half-dose Sinovac quadrivalent influenza vaccine met immunogenicity noninferiority to licensed half-dose trivalent comparator for shared strains. No vaccine-related serious adverse events reported; immunologic surrogate outcome only.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/41391373/",
+      "sourceDate": "2025-12-13",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT06049927",
+      "identityCrosswalk": "NCT06049927 exact NCT appears explicitly in original published paper and ClinicalTrials.gov record; study is a separate trial not pooled with another NCT.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_ADDITIONAL_EXACT_PUBLISHED_20261106",
+      "evidenceType": "EXACT_NCT_PEER_REVIEWED_HISTORICAL_PHASE3_ENDPOINT",
+      "qualification": "Retrospective vaccine immunogenicity/clinical result only. Does not establish a US FDA decision, PDUFA date, market access, or calibrated trial score."
+    },
+    {
+      "nctId": "NCT05431725",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "Randomized Phase 3 Sinovac-QIV versus Vaxigrip-Tetra humoral/cellular analyses: HAI response increased in both arms, with reported GMT fold increase 9–10 versus 7–8. Exact trial has published immune measurements but no single confirmed binary pivotal success criterion adjudicated in this research pass.",
+      "evidenceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12796199/",
+      "sourceDate": "2025-12-07",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT05431725",
+      "identityCrosswalk": "NCT05431725 exact NCT appears explicitly in original published paper and ClinicalTrials.gov record; study is a separate trial not pooled with another NCT.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_ADDITIONAL_EXACT_PUBLISHED_20261106",
+      "evidenceType": "EXACT_NCT_PEER_REVIEWED_HISTORICAL_PHASE3_ENDPOINT",
+      "qualification": "Retrospective vaccine immunogenicity/clinical result only. Does not establish a US FDA decision, PDUFA date, market access, or calibrated trial score."
+    },
+    {
+      "nctId": "NCT03822754",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Trial A (sIPV followed by two bOPV doses): randomized double-blind Phase 3 trial in 240 infants, with Sabin-strain inactivated polio vaccine versus conventional IPV in the same oral polio schedule; reported prespecified noninferiority of seroconversion against poliovirus types 1 and 3. Two separate randomization cohorts; seroconversion surrogate rather than direct poliomyelitis efficacy.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/31660344/",
+      "sourceDate": "2019-08-26",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03822754",
+      "identityCrosswalk": "Published article explicitly identifies both studies separately: Trial A NCT03822754 and Trial B NCT03822767. This row represents only Trial A (sIPV followed by two bOPV doses).",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_SEQUENTIAL_POLIO_TWO_EXACT_NCT_20261106",
+      "evidenceType": "PEER_REVIEWED_TWO_SEPARATE_PHASE3_TRIALS",
+      "qualification": "Historical immunogenicity noninferiority only; not direct infection-prevention efficacy, US FDA approval or prospective RAAS prediction."
+    },
+    {
+      "nctId": "NCT03822767",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Trial B (two sIPV followed by one bOPV dose): randomized double-blind Phase 3 trial in 240 infants, with Sabin-strain inactivated polio vaccine versus conventional IPV in the same oral polio schedule; reported prespecified noninferiority of seroconversion against poliovirus types 1 and 3. Two separate randomization cohorts; seroconversion surrogate rather than direct poliomyelitis efficacy.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/31660344/",
+      "sourceDate": "2019-08-26",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03822767",
+      "identityCrosswalk": "Published article explicitly identifies both studies separately: Trial A NCT03822754 and Trial B NCT03822767. This row represents only Trial B (two sIPV followed by one bOPV dose).",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_SEQUENTIAL_POLIO_TWO_EXACT_NCT_20261106",
+      "evidenceType": "PEER_REVIEWED_TWO_SEPARATE_PHASE3_TRIALS",
+      "qualification": "Historical immunogenicity noninferiority only; not direct infection-prevention efficacy, US FDA approval or prospective RAAS prediction."
     }
   ]
 }
