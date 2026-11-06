@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 63,
+  "totalReviewed": 71,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 50,
-    "PRIMARY_ENDPOINT_NOT_MET": 8,
-    "NO_BINARY_PASS_FAIL": 5
+    "PRIMARY_ENDPOINT_MET": 54,
+    "PRIMARY_ENDPOINT_NOT_MET": 11,
+    "NO_BINARY_PASS_FAIL": 6
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
   "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions.",
@@ -634,6 +634,110 @@
       "identityCrosswalk": "Exact registry NCT03812510 = A-101-WART-303; hydrogen peroxide; Common Wart",
       "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03812510",
       "qualification": "Historical observation only. Open-label descriptive outcomes are not efficacy successes."
+    },
+    {
+      "nctId": "NCT01814800",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "RI-002 ADMA-003 achieved its predefined SBI-rate endpoint in the single-arm PIDD trial: no serious bacterial infections. A threshold-based success, not randomized superiority.",
+      "evidenceUrl": "https://www.globenewswire.com/news-release/2014/12/03/688334/33130/en/ADMA-Biologics-Announces-Positive-Top-Line-Phase-III-Data-for-Primary-Immune-Deficiency-Disease-PIDD-Patients.html",
+      "sourceDate": "2014-12-03",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "COMPANY_WEBSITE_PASS_20261106",
+      "identityCrosswalk": "Exact registry NCT01814800 = ADMA-003; Pharmacokinetics, Efficacy, and Safety Study of RI-002 (IGIV) in Subjects With Primary Immunodeficiency Diseases (PIDD)",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT01814800",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
+    },
+    {
+      "nctId": "NCT00033904",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "C-100-12 Part I recurrence-free survival: HR .923 (95% CI .729-1.169), p=.506; primary endpoint not met. Publication expressly names NCT00033904. Exploratory subgroup signals do not establish a Part II outcome.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/18602688/",
+      "sourceDate": "2008-07-03",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "COMPANY_WEBSITE_PASS_20261106",
+      "identityCrosswalk": "Exact registry NCT00033904 = C-100-12 Part I; Survival Study Of Oncophage® vs. Observation In Patients With Kidney Cancer",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00033904",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
+    },
+    {
+      "nctId": "NCT00039000",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "C-100-21 overall ITT survival: 9.4 versus 10.7 months; HR 1.157, nominal one-sided p=.157. Primary superiority was not demonstrated. Selected patients receiving >=10 doses are a separate, potentially biased subgroup.",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/1098972/000115752306005819/a5161907ex99_1.txt",
+      "sourceDate": "2006-06-05",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "COMPANY_WEBSITE_PASS_20261106",
+      "identityCrosswalk": "Exact registry NCT00039000 = C-100-21; Study of Heat Shock Protein-Peptide Complex (HSPPC-96) Versus IL-2/DTIC for Stage IV Melanoma",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00039000",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
+    },
+    {
+      "nctId": "NCT04374136",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "INFRONT-3 did not meet its clinical co-primary CDR plus NACC FTLD-SB endpoint at 96 weeks. Significant plasma-progranulin biomarker change does not establish clinical efficacy.",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/1653087/000119312525245102/alec-ex99_1.htm",
+      "sourceDate": "2025-10-21",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "COMPANY_WEBSITE_PASS_20261106",
+      "identityCrosswalk": "Exact registry NCT04374136 = AL001-3; A Phase 3 Study to Evaluate Efficacy and Safety of AL001 in Frontotemporal Dementia (INFRONT-3)",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT04374136",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
+    },
+    {
+      "nctId": "NCT06586112",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Issuer explicitly reports ONWARD1 met all primary and secondary endpoints. No averaged program response rate or pooled safety rate assigned to this individual trial.",
+      "evidenceUrl": "https://investors.alumis.com/news-releases/news-release-details/alumis-envudeucitinib-delivers-leading-skin-clearance-among-next",
+      "sourceDate": "2026-01-06",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "COMPANY_WEBSITE_PASS_20261106",
+      "identityCrosswalk": "Exact registry NCT06586112 = ESK-001-016; A Study to Evaluate the Efficacy and Safety of ESK-001 in Patients With Moderate to Severe Plaque Psoriasis",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT06586112",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
+    },
+    {
+      "nctId": "NCT06588738",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Issuer explicitly reports ONWARD2 met all primary and secondary endpoints. No averaged program response rate or pooled safety rate assigned to this individual trial.",
+      "evidenceUrl": "https://investors.alumis.com/news-releases/news-release-details/alumis-envudeucitinib-delivers-leading-skin-clearance-among-next",
+      "sourceDate": "2026-01-06",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "COMPANY_WEBSITE_PASS_20261106",
+      "identityCrosswalk": "Exact registry NCT06588738 = ESK-001-017; A Study in Patients With Moderate to Severe Plaque Psoriasis to Evaluate the Efficacy and Safety of ESK-001",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT06588738",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
+    },
+    {
+      "nctId": "NCT04701164",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "GBS-02 ANX005 30 mg/kg met week-8 GBS-DS primary endpoint: proportional odds ratio 2.4, p=.0058. No success inferred for the 75 mg/kg comparison or other Annexon studies.",
+      "evidenceUrl": "https://ir.annexonbio.com/news-releases/news-release-details/annexon-announces-positive-topline-results-pivotal-phase-3-trial",
+      "sourceDate": "2024-06-04",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "COMPANY_WEBSITE_PASS_20261106",
+      "identityCrosswalk": "Exact registry NCT04701164 = ANX005-GBS-02; Efficacy and Safety of ANX005 in Subjects With Guillain-Barré Syndrome",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT04701164",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
+    },
+    {
+      "nctId": "NCT03428360",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "42-1703 is a single-arm diazepam buccal-film safety study: 84 with >=1 TEAE and 18 with >=1 serious TEAE in the primary outcome table. No prespecified binary efficacy success threshold.",
+      "evidenceUrl": "https://clinicaltrials.gov/study/NCT03428360",
+      "sourceDate": "2021-08-05",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "COMPANY_WEBSITE_PASS_20261106",
+      "identityCrosswalk": "Exact registry NCT03428360 = 42-1703; Safety and Tolerability Study of Diazepam Buccal Film (DBF) in Subjects With Epilepsy",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03428360",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
     }
   ]
 }

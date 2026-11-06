@@ -1,0 +1,135 @@
+{
+  "asOf": "2026-11-06",
+  "scope": "Reviewed source/transport log; URL availability alone is not trial adjudication.",
+  "sources": [
+    {
+      "name": "abvx-hbv",
+      "url": "https://ir.abivax.com/news-releases/news-release-details/analysis-ongoing-abx203-phase-iibiii-trial-chronic-hepatitis-b",
+      "blocker": "HTTP Error 503: Service Unavailable",
+      "alternateAccess": "Original manufacturer HTML read successfully through web reader; shell failure is transport-specific."
+    },
+    {
+      "name": "abvx-covid",
+      "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-follows-dsmb-recommendation-stop-phase-2b3-mir-age-covid/",
+      "httpStatus": 200,
+      "bytes": 47806,
+      "sha256": "7517449d362aab03d5199f7b829edc92ac7378f2a2c6bee47b1aeab5e3eb3749"
+    },
+    {
+      "name": "alec-readout",
+      "url": "https://www.sec.gov/Archives/edgar/data/1653087/000119312525245102/alec-ex99_1.htm",
+      "httpStatus": 200,
+      "bytes": 37582,
+      "sha256": "42025019e353b8ecdfeacef4fcc68f300877ced7304c9293e04bf4b02c40d6a1"
+    },
+    {
+      "name": "alms-readout",
+      "url": "https://investors.alumis.com/news-releases/news-release-details/alumis-envudeucitinib-delivers-leading-skin-clearance-among-next",
+      "blocker": "HTTP Error 503: Service Unavailable",
+      "alternateAccess": "Original manufacturer HTML read successfully through web reader; shell failure is transport-specific."
+    },
+    {
+      "name": "annx-readout",
+      "url": "https://ir.annexonbio.com/news-releases/news-release-details/annexon-announces-positive-topline-results-pivotal-phase-3-trial",
+      "blocker": "HTTP Error 503: Service Unavailable",
+      "alternateAccess": "Original manufacturer HTML read successfully through web reader; shell failure is transport-specific."
+    },
+    {
+      "name": "agen-brava",
+      "url": "https://investor.agenusbio.com/news/news-details/2021/Agenus-Provides-Update-on-Balstilimab-Development-10-22-2021/default.aspx",
+      "blocker": "HTTP Error 403: Forbidden",
+      "alternateAccess": "Original manufacturer HTML read successfully through web reader; shell failure is transport-specific."
+    },
+    {
+      "name": "alt-performa",
+      "url": "https://altimmune.gcs-web.com/node/17931",
+      "blocker": "HTTP Error 503: Service Unavailable",
+      "alternateAccess": "Original manufacturer HTML read successfully through web reader; shell failure is transport-specific."
+    },
+    {
+      "name": "aqst-fda",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2024/218623Orig1s000MedR.pdf",
+      "httpStatus": 200,
+      "bytes": 984931,
+      "sha256": "b4f8f7e19f85271e7bd5a315964d4500627bedfa9d73534ba3b468b9d6829f47"
+    },
+    {
+      "url": "https://aquestive.com/content/uploads/Aquestive-Corporate-Presentation-June-2019.pdf",
+      "blocker": "HTTP 404; authoritative FDA review and registry used instead."
+    },
+    {
+      "name": "adma-2014",
+      "url": "https://www.globenewswire.com/news-release/2014/12/03/688334/33130/en/ADMA-Biologics-Announces-Positive-Top-Line-Phase-III-Data-for-Primary-Immune-Deficiency-Disease-PIDD-Patients.html",
+      "httpStatus": 200,
+      "bytes": 77694,
+      "sha256": "b99b03ac87a3e7d0a6b1c53bae454a4c58735f83eb7af04d0866404be98f54ec"
+    },
+    {
+      "name": "adma-asceniv-label",
+      "url": "https://www.fda.gov/media/122525/download",
+      "httpStatus": 200,
+      "bytes": 476080,
+      "sha256": "880f10d8e8ecb64f04433e0d2d5882fb41fd8f020add5c57cd6fbaff5a8fe668"
+    },
+    {
+      "name": "adma-bivigam-label",
+      "url": "https://www.fda.gov/media/84782/download",
+      "httpStatus": 200,
+      "bytes": 559917,
+      "sha256": "4d7c5e15bd3f44ff86bb79f4835505031259c6ed7b59f429ed00d7b33d0ec619"
+    },
+    {
+      "name": "adma-asceniv-stats",
+      "url": "https://www.fda.gov/media/132756/download",
+      "httpStatus": 200,
+      "bytes": 484419,
+      "sha256": "bbd03de9dd84dd4c1dbe32b66028bab017d784dc19678a5e6ef0d9b9fe085638"
+    },
+    {
+      "name": "alms-sec",
+      "url": "https://www.sec.gov/Archives/edgar/data/1847367/000110465926001073/tm262035d1_ex99-2.htm",
+      "httpStatus": 200,
+      "bytes": 36546,
+      "sha256": "858985cce47de58525c8fa56c78eb01100085f92ff2b64f311a23916b2eafc68"
+    },
+    {
+      "name": "agen-rcc",
+      "url": "https://www.sec.gov/Archives/edgar/data/1098972/000115752306002979/a5109442ex99-1.txt",
+      "httpStatus": 200,
+      "bytes": 7899,
+      "sha256": "8c148f2c683a24ec97d7b3510776a1631adbfd58cc01e674f347d03ddfc5e3b5"
+    },
+    {
+      "name": "agen-melanoma",
+      "url": "https://www.sec.gov/Archives/edgar/data/1098972/000115752306005819/a5161907ex99_1.txt",
+      "httpStatus": 200,
+      "bytes": 10143,
+      "sha256": "f5e04c01ef1cf98d5241d33f7bcf74cc1d282df5202ccbe7fd5793ed97516292"
+    },
+    {
+      "url": "https://www.fda.gov/media/106661/download",
+      "sha256": "a4a3f9f79d86678720ccc83b5e3f60746584b5497789cdb846c0d91ee9b41f51",
+      "httpStatus": 200,
+      "documentLocator": "Final Clinical Review - Bivigam.pdf; NABI-7101",
+      "blocker": "Archived review lacks a clear publication date; date not invented. Later undated draft label gives different rate/CI; analysis reconciliation remains pending."
+    },
+    {
+      "url": "https://annexonbio.com/wp-content/uploads/2026/07/EAN-2026-PROs_ePoster_Draft_v4.00_18Jun2026_Final.pdf",
+      "access": "WEB_READER",
+      "documentDate": "2026-06-27",
+      "scope": "Exact-NCT PRO poster, conference date; primary result not retroactively predicted."
+    }
+  ],
+  "publicationCrosschecks": [
+    {
+      "pmid": "18602688",
+      "accessUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:18602688&format=json&resultType=core",
+      "publicationDate": "2008-07-03"
+    },
+    {
+      "pmid": "18281670",
+      "accessUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:18281670&format=json&resultType=core",
+      "publicationDate": "2008-02-01"
+    }
+  ]
+}
