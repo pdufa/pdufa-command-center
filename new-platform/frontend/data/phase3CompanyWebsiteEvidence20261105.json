@@ -203,7 +203,15 @@
       "specificEvidence": "Sustained Hb response at least 1.5 g/dL: 40% mitapivat vs 0% placebo, two-sided p<0.0001.",
       "safetyEvidence": "Sponsor reported safety consistent with earlier evidence.",
       "regulatory": "Clinical trial outcome is independent of FDA decision; issuer information may discuss program-level NDA only.",
-      "crosswalk": "ACTIVATE adult nonregularly transfused PK deficiency = NCT03548220; distinct from ACTIVATE-T."
+      "crosswalk": "ACTIVATE adult nonregularly transfused PK deficiency = NCT03548220; distinct from ACTIVATE-T.",
+      "regulatoryProgramId": "NDA_216196_PYRUKYND_ADULT_PKD",
+      "regulatoryEvidenceStatus": "FDA_APPROVED_HISTORICAL",
+      "regulatoryReviewType": "PRIORITY",
+      "regulatoryEvidence": "FDA approved mitapivat/PYRUKYND Feb 17, 2022 for hemolytic anemia in adults with pyruvate kinase deficiency, based on ACTIVATE NCT03548220 and ACTIVATE-T NCT03559699. Historical drug/indication-level approval, not trial efficacy score.",
+      "regulatoryEvidenceUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshot-pyrukynd",
+      "pdufaGoalDate": "2022-02-17",
+      "pdufaEvidenceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2022/216196Orig1s000IntegratedR.pdf",
+      "regulatorySourceDate": "2022-02-17"
     },
     {
       "nctId": "NCT03559699",
@@ -217,7 +225,15 @@
       "specificEvidence": "Transfusion reduction response ≥33% in 10/27 patients (37%), one-sided p=0.0002 vs prespecified ≤10% null.",
       "safetyEvidence": "Sponsor reports headaches and enzyme elevations; no randomized safety comparator.",
       "regulatory": "Clinical trial outcome is independent of FDA decision; issuer information may discuss program-level NDA only.",
-      "crosswalk": "ACTIVATE-T adults regularly transfused = NCT03559699, open-label single-arm study."
+      "crosswalk": "ACTIVATE-T adults regularly transfused = NCT03559699, open-label single-arm study.",
+      "regulatoryProgramId": "NDA_216196_PYRUKYND_ADULT_PKD",
+      "regulatoryEvidenceStatus": "FDA_APPROVED_HISTORICAL",
+      "regulatoryReviewType": "PRIORITY",
+      "regulatoryEvidence": "FDA approved mitapivat/PYRUKYND Feb 17, 2022 for hemolytic anemia in adults with pyruvate kinase deficiency, based on ACTIVATE NCT03548220 and ACTIVATE-T NCT03559699. Historical drug/indication-level approval, not trial efficacy score.",
+      "regulatoryEvidenceUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshot-pyrukynd",
+      "pdufaGoalDate": "2022-02-17",
+      "pdufaEvidenceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2022/216196Orig1s000IntegratedR.pdf",
+      "regulatorySourceDate": "2022-02-17"
     },
     {
       "nctId": "NCT05144256",
@@ -259,7 +275,15 @@
       "specificEvidence": "Week-5 CMAI score primary endpoint met: mean improvement 15.4 with AXS-05 vs 11.5 placebo, p=0.010.",
       "safetyEvidence": "Company reports aggregate Alzheimer's agitation trial tolerability, not standalone approval.",
       "regulatory": "Clinical trial outcome is independent of FDA decision; issuer information may discuss program-level NDA only.",
-      "crosswalk": "NCT03226522 registry titles ADVANCE-1 and AXS-05-AD-301; a Phase 2/3 study included in Phase 3 census."
+      "crosswalk": "NCT03226522 registry titles ADVANCE-1 and AXS-05-AD-301; a Phase 2/3 study included in Phase 3 census.",
+      "regulatoryProgramId": "NDA_215430_S018_AUVELITY_AD_AGITATION",
+      "regulatoryEvidenceStatus": "FDA_APPROVED_HISTORICAL",
+      "regulatoryReviewType": "PRIORITY",
+      "regulatoryEvidence": "FDA approved AUVELITY/AXS-05 April 30, 2026 for agitation associated with dementia due to Alzheimer's disease following priority-review sNDA. Indication-level approval across the clinical development program; ADVANCE-2 NCT05557409 individually failed its primary endpoint.",
+      "regulatoryEvidenceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-non-antipsychotic-drug-treat-agitation-associated-dementia",
+      "pdufaGoalDate": "2026-04-30",
+      "pdufaEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312525337644/axsm-ex99_2.htm",
+      "regulatorySourceDate": "2026-04-30"
     },
     {
       "nctId": "NCT05557409",
@@ -273,7 +297,15 @@
       "specificEvidence": "Week-5 CMAI total-score primary endpoint not significant: -13.8 AXS-05 vs -12.6 placebo in 408 randomized patients.",
       "safetyEvidence": "Sponsor reports aggregate tolerability; does not imply efficacy.",
       "regulatory": "Clinical trial outcome is independent of FDA decision; issuer information may discuss program-level NDA only.",
-      "crosswalk": "NCT05557409 is explicitly named ADVANCE-2 in registry; not ADVANCE-1."
+      "crosswalk": "NCT05557409 is explicitly named ADVANCE-2 in registry; not ADVANCE-1.",
+      "regulatoryProgramId": "NDA_215430_S018_AUVELITY_AD_AGITATION",
+      "regulatoryEvidenceStatus": "FDA_APPROVED_HISTORICAL",
+      "regulatoryReviewType": "PRIORITY",
+      "regulatoryEvidence": "FDA approved AUVELITY/AXS-05 April 30, 2026 for agitation associated with dementia due to Alzheimer's disease following priority-review sNDA. Indication-level approval across the clinical development program; ADVANCE-2 NCT05557409 individually failed its primary endpoint.",
+      "regulatoryEvidenceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-non-antipsychotic-drug-treat-agitation-associated-dementia",
+      "pdufaGoalDate": "2026-04-30",
+      "pdufaEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312525337644/axsm-ex99_2.htm",
+      "regulatorySourceDate": "2026-04-30"
     },
     {
       "nctId": "NCT04797715",
@@ -287,7 +319,15 @@
       "specificEvidence": "Randomized-withdrawal primary time to agitation relapse met: HR 0.275, p=0.014.",
       "safetyEvidence": "Overall sponsor program safety does not quantify ACCORD-1-specific SAE rate.",
       "regulatory": "Clinical trial outcome is independent of FDA decision; issuer information may discuss program-level NDA only.",
-      "crosswalk": "NCT04797715 corresponds to ACCORD-1 randomized-withdrawal study; distinct from ACCORD-2."
+      "crosswalk": "NCT04797715 corresponds to ACCORD-1 randomized-withdrawal study; distinct from ACCORD-2.",
+      "regulatoryProgramId": "NDA_215430_S018_AUVELITY_AD_AGITATION",
+      "regulatoryEvidenceStatus": "FDA_APPROVED_HISTORICAL",
+      "regulatoryReviewType": "PRIORITY",
+      "regulatoryEvidence": "FDA approved AUVELITY/AXS-05 April 30, 2026 for agitation associated with dementia due to Alzheimer's disease following priority-review sNDA. Indication-level approval across the clinical development program; ADVANCE-2 NCT05557409 individually failed its primary endpoint.",
+      "regulatoryEvidenceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-non-antipsychotic-drug-treat-agitation-associated-dementia",
+      "pdufaGoalDate": "2026-04-30",
+      "pdufaEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312525337644/axsm-ex99_2.htm",
+      "regulatorySourceDate": "2026-04-30"
     },
     {
       "nctId": "NCT04947553",
@@ -301,7 +341,15 @@
       "specificEvidence": "Primary time to agitation relapse met in randomized-withdrawal study: HR 0.276, p=0.001; secondary relapse prevention p=0.001.",
       "safetyEvidence": "Sponsor described 29.3% vs 32.1% double-blind adverse-event rates.",
       "regulatory": "Clinical trial outcome is independent of FDA decision; issuer information may discuss program-level NDA only.",
-      "crosswalk": "NCT04947553 is ACCORD-2 open-label plus double-blind randomized withdrawal study."
+      "crosswalk": "NCT04947553 is ACCORD-2 open-label plus double-blind randomized withdrawal study.",
+      "regulatoryProgramId": "NDA_215430_S018_AUVELITY_AD_AGITATION",
+      "regulatoryEvidenceStatus": "FDA_APPROVED_HISTORICAL",
+      "regulatoryReviewType": "PRIORITY",
+      "regulatoryEvidence": "FDA approved AUVELITY/AXS-05 April 30, 2026 for agitation associated with dementia due to Alzheimer's disease following priority-review sNDA. Indication-level approval across the clinical development program; ADVANCE-2 NCT05557409 individually failed its primary endpoint.",
+      "regulatoryEvidenceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-non-antipsychotic-drug-treat-agitation-associated-dementia",
+      "pdufaGoalDate": "2026-04-30",
+      "pdufaEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312525337644/axsm-ex99_2.htm",
+      "regulatorySourceDate": "2026-04-30"
     },
     {
       "nctId": "NCT05059223",
@@ -316,7 +364,15 @@
       "safetyEvidence": "In SYMPHONY, AXS-12 treatment adverse events included dry mouth (n=6), nausea (n=6), and constipation (n=4), primarily mild to moderate; AE discontinuations n=1 in each treatment group; no serious adverse events were reported.",
       "regulatory": "2026-11-02 issuer results describe AXS-12 NDA under FDA review with PDUFA target action date May 1, 2027 for cataplexy in narcolepsy. This applies to the drug/indication application, not an individual trial.",
       "crosswalk": "NCT05059223 is SYMPHONY Phase 3 narcolepsy study; distinct from ENCORE.",
-      "regulatoryUrl": "https://www.globenewswire.com/news-release/2026/11/02/3392981/0/en/axsome-therapeutics-reports-third-quarter-2026-financial-results-and-provides-business-update.html"
+      "regulatoryUrl": "https://www.globenewswire.com/news-release/2026/11/02/3392981/0/en/axsome-therapeutics-reports-third-quarter-2026-financial-results-and-provides-business-update.html",
+      "regulatoryProgramId": "AXS12_Cataplexy_Narcolepsy_NDA",
+      "regulatoryEvidenceStatus": "ISSUER_REPORTED_NDA_UNDER_FDA_REVIEW",
+      "regulatoryReviewType": "NOT_VERIFIED",
+      "regulatoryEvidence": "Axsome investor relations November 2, 2026 reports FDA NDA review for AXS-12/reboxetine for cataplexy in narcolepsy with May 1, 2027 PDUFA target action date. Both SYMPHONY and ENCORE are supporting Phase 3 studies; no FDA outcome has occurred.",
+      "regulatoryEvidenceUrl": "https://www.globenewswire.com/news-release/2026/11/02/3392981/33090/en/axsome-therapeutics-reports-third-quarter-2026-financial-results-and-provides-business-update.html",
+      "pdufaGoalDate": "2027-05-01",
+      "pdufaEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526442628/axsm-ex99_1.htm",
+      "regulatorySourceDate": "2026-11-02"
     },
     {
       "nctId": "NCT05113745",
@@ -331,7 +387,18 @@
       "safetyEvidence": "ENCORE six-month open-label safety: nausea 5.9%, tachycardia 5.9%; AE discontinuations 17.6% of 68 participants. In double blind: treatment-related AEs 4.5% continued AXS-12 versus 15.0% placebo; no new safety signal identified.",
       "regulatory": "2026-11-02 issuer results describe AXS-12 NDA under FDA review with PDUFA target action date May 1, 2027 for cataplexy in narcolepsy. Drug/indication application-level milestone, not trial-specific approval.",
       "crosswalk": "NCT05113745 is ENCORE long-term randomized withdrawal Phase 3; not SYMPHONY.",
-      "regulatoryUrl": "https://www.globenewswire.com/news-release/2026/11/02/3392981/0/en/axsome-therapeutics-reports-third-quarter-2026-financial-results-and-provides-business-update.html"
+      "regulatoryUrl": "https://www.globenewswire.com/news-release/2026/11/02/3392981/0/en/axsome-therapeutics-reports-third-quarter-2026-financial-results-and-provides-business-update.html",
+      "regulatoryProgramId": "AXS12_Cataplexy_Narcolepsy_NDA",
+      "regulatoryEvidenceStatus": "ISSUER_REPORTED_NDA_UNDER_FDA_REVIEW",
+      "regulatoryReviewType": "NOT_VERIFIED",
+      "regulatoryEvidence": "Axsome investor relations November 2, 2026 reports FDA NDA review for AXS-12/reboxetine for cataplexy in narcolepsy with May 1, 2027 PDUFA target action date. Both SYMPHONY and ENCORE are supporting Phase 3 studies; no FDA outcome has occurred.",
+      "regulatoryEvidenceUrl": "https://www.globenewswire.com/news-release/2026/11/02/3392981/33090/en/axsome-therapeutics-reports-third-quarter-2026-financial-results-and-provides-business-update.html",
+      "pdufaGoalDate": "2027-05-01",
+      "pdufaEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526442628/axsm-ex99_1.htm",
+      "regulatorySourceDate": "2026-11-02"
     }
-  ]
+  ],
+  "regulatoryApplicationLinkCount": 8,
+  "regulatoryApplicationProgramCount": 3,
+  "regulatoryApplicationScope": "Eight trial-to-application links for three separate drug/indication FDA programs. Trials and FDA approvals are not one-to-one: ADVANCE-2 failed efficacy although the AXS-05 program received FDA approval. Historical 2022/2026 dates are not upcoming PDUFA catalysts."
 }
