@@ -13,6 +13,9 @@ export default function ToolsPage(){
    <h2 style={{margin:"0 0 7px",fontSize:19}}>TOP and BOTTOM Phase 3 spreadsheets</h2>
    <p>Surveys and ratings are cancelled. Trial tables, market-cap screens and source evidence remain active.</p>
    <Link href="/raas-top-bottom">Open TOP and BOTTOM trial spreadsheets</Link>
+   <p style={{margin:"10px 0 0",fontSize:13}}><strong>762-trial missing-data recheck:</strong>{" "}
+    <Link href="/api/phase3-missing-data-audit?format=csv">Download evidence gaps for all 30 analytical questions (CSV)</Link>.
+    Expand “Phase 3 · Public Data Release” below for the interactive per-question audit.</p>
   </section>
   <details data-tools-segment="pool" style={{margin:"12px 0",border:"1px solid #a5c7b2",borderRadius:10,padding:12}}>
    <summary style={{cursor:"pointer",fontWeight:800}}>POOL development stages and FDA designations</summary>
