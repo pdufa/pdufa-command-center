@@ -1,3 +1,4 @@
+import {UNIVERSAL_PHASE3_QUESTIONS,sourceObservation,missingQuestionEvidence,phase3PreDataSourceFactCount,type SourceObservation} from "./phase3-universal-questions";
 /** Source-linked, pre-readout analytical predictions; never issuer/registry results.
  * Questions 4–30 are newly specified pre-readout analytical questions where
  * the original ordered list was not recoverable. They must not be mistaken for
@@ -88,22 +89,34 @@ const izar2:readonly Phase3Answer[]=[
  {"number":30,"heading":"Future PsA regulatory package","question":"Will IZAR-2 ultimately contribute positive evidence for a PsA regulatory submission?","prediction":"PASS","score":65,"summary":"A supportive result is more likely than not, but filing and FDA decisions remain separate.","reason":"FDA and EMA gave supportive feedback on the planned IZAR program in 2024. The sponsor described IZAR-1 as positive; if IZAR-2 is also positive, it could contribute to a later PsA submission. There is no completed IZAR-2 result or PsA PDUFA decision as of the assessment.","asOf":"2026-11-05","evidenceCutoff":"Available prior to IZAR-2 primary readout on 2026-11-05","sources":[{"label":"FDA/EMA Phase 3 design discussions (Jun 2024)","url":"https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-immunotherapeutics-announces-positive-regulatory"},{"label":"IZAR-1 Week 16 disclosure (Aug 2026)","url":"https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial"},{"label":"MoonLake Q3 business update (Nov 2026)","url":"https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and"}]}
 ];
 const PREDICTIONS:Readonly<Record<string,readonly Phase3Answer[]>>={"NCT06641089":izar2};
-export type Phase3QuestionSlot={number:number;heading:string;answer:Phase3Answer|null};
+export type Phase3QuestionSlot={number:number;heading:string;question:string;answer:Phase3Answer|null;observation:SourceObservation|null;missingEvidence:string};
 export function phase3QuestionSlots(nctId:string):Phase3QuestionSlot[]{
  const known=PREDICTIONS[nctId]||[];
  const byNumber=new Map(known.map(answer=>[answer.number,answer] as const));
- return Array.from({length:PHASE3_QUESTION_COUNT},(_,i)=>{
+ return UNIVERSAL_PHASE3_QUESTIONS.map((generic,i)=>{
   const number=i+1,answer=byNumber.get(number)||null;
-  return {number,heading:answer?.heading||PHASE3_QUESTION_TITLES[number-1],answer};
+  return {number,heading:answer?.heading||generic.heading,
+   question:answer?.question||generic.question,answer,
+   observation:answer?null:sourceObservation(nctId,number),
+   missingEvidence:answer?"":missingQuestionEvidence(nctId,number)};
  });
 }
 export function phase3AnalysisCsvHeaders():string[]{
- return phase3QuestionSlots("").map(q=>"Q"+q.number+" — "+q.heading+" (pre-readout prediction)");
+ return Array.from({length:PHASE3_QUESTION_COUNT},(_,i)=>"Q"+(i+1)+" — evidence-based analysis");
 }
 export function phase3AnalysisCsvValues(nctId:string):string[]{
  return phase3QuestionSlots(nctId).map(q=>q.answer?
-  q.answer.prediction+" — favorable-outcome score "+q.answer.score+"/100 (subjective, not calibrated); predicted, NOT a reported result; "+q.answer.summary:"");
+   q.heading+": "+q.answer.prediction+" — favorable-outcome score "+q.answer.score+
+   "/100 (subjective, not calibrated); predicted, NOT a reported result; "+
+   q.answer.summary+" Evidence: "+q.answer.reason:
+  q.observation?
+   q.heading+": SOURCE FACT DOCUMENTED — "+q.observation.documentationScore+
+   "/100 documentation only, NOT drug outcome probability; "+q.observation.description:
+   q.heading+": NO OUTCOME SCORE — "+q.missingEvidence);
 }
 export function phase3CompletedQuestions(nctId:string):number{
  return phase3QuestionSlots(nctId).filter(x=>x.answer).length;
+}
+export function phase3DocumentedQuestionFacts(nctId:string):number{
+ return phase3PreDataSourceFactCount(nctId);
 }
