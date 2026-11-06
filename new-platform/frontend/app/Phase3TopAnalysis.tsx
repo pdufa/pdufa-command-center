@@ -9,7 +9,7 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
   </summary>
   <div style={{fontSize:12,lineHeight:1.5,marginTop:7}}>
    <p><strong>Pre-readout predictions only.</strong> No Phase 3 efficacy result is inferred. No surveys or ratings.</p>
-   {questions.map(q=><details key={q.number} defaultOpen={q.number===2&&!!q.answer} style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
+   {questions.map(q=><details key={q.number} open={q.number===2&&!!q.answer} style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
     <summary style={{cursor:"pointer"}}>
      Q{q.number} · {q.heading}{q.answer?" — predicted "+q.answer.prediction:" — not assessed"}
     </summary>
