@@ -16,7 +16,8 @@
     "A full clinical five-factor score requires five individual exact-stage accepted reviews, not simply five available registry fields.",
     "Primary outcomes for safety-only studies are generally descriptive nonbinary safety counts; full five-factor clinical efficacy composite is not applicable without actual efficacy endpoint measurements.",
     "Original source reviews can be expanded as new source data become available, preserving NCT identities.",
-    "NCT01436032 was registered as Phase 3 but its published report called the stopped-at-50 study Phase II; five-factor reviews are retrospective evidence grades, not a confirmatory efficacy readout."
+    "NCT01436032 was registered as Phase 3 but its published report called the stopped-at-50 study Phase II; five-factor reviews are retrospective evidence grades, not a confirmatory efficacy readout.",
+    "Each of 34 trial identities has a numerical type-specific unvalidated research grade: 19 five-factor efficacy/comparative composites and 15 single-factor source-reviewed safety-only grades. These are not comparable, calibrated regulatory probabilities, or replacement five-factor scores for safety-only studies."
   ],
   "records": [
     {
@@ -1213,7 +1214,12 @@
     }
   ],
   "reviewedDispositionCount": 34,
-  "clinicalNctWithSourceReviewedGrade": 33,
-  "fullFiveFactorResearchRatingCount": 18,
-  "ungradedClinicalFactorCount": 60
+  "clinicalNctWithSourceReviewedGrade": 34,
+  "fullFiveFactorResearchRatingCount": 19,
+  "ungradedClinicalFactorCount": 55,
+  "typeSpecificResearchScoreCount": 34,
+  "safetyOnlyResearchGradeCount": 15,
+  "notApplicableClinicalFactorCount": 55,
+  "applicableClinicalFactorCount": 115,
+  "ungradedApplicableClinicalFactorCount": 0
 }
