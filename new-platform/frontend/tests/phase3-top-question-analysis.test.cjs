@@ -1,6 +1,6 @@
 const test=require("node:test");const assert=require("node:assert/strict");const fs=require("node:fs");const path=require("node:path");
 const root=path.resolve(__dirname,"..");const read=p=>fs.readFileSync(path.join(root,p),"utf8");
-test("TOP 30-question pre-readout analysis retains three documented predictions",()=>{
+test("TOP 30-question pre-readout analysis retains 30 documented predictions",()=>{
  const data=read("lib/phase3-top-questions.ts");
  assert.match(data,/PHASE3_QUESTION_COUNT=30/);
  assert.match(data,/NCT06641089/);
@@ -10,7 +10,8 @@ test("TOP 30-question pre-readout analysis retains three documented predictions"
  assert.match(data,/score:75/);
  assert.match(data,/score:70/);
  assert.match(data,/score:80/);
- assert.match(data,/Heading not yet defined/);
+ assert.match(data,/PHASE3_QUESTION_TITLES/);
+ assert.match(data,/number:30/);
  assert.match(data,/predicted, NOT a reported result/);
 });
 test("TOP research case remains outside membership and CSV appends 30 question columns",()=>{
@@ -36,8 +37,20 @@ test("Every completed question has a prediction-confidence score and CSV conveys
  const data=read("lib/phase3-top-questions.ts");
  const ui=read("app/Phase3TopAnalysis.tsx");
  assert.match(data,/score:number/);
- assert.match(data,/confidence score /);
+ assert.match(data,/favorable-outcome score /);
  assert.match(data,/not calibrated/);
  assert.match(ui,/data-question-score=\{q.number\}/);
  assert.match(ui,/not a reported result or statistically calibrated probability/);
+});
+
+test("All 30 question headings have answers for IZAR-2 with subjective scores",()=>{
+ const data=read("lib/phase3-top-questions.ts");
+ const ui=read("app/Phase3TopAnalysis.tsx");
+ const ids=[...data.matchAll(/"number":(\d+),"heading":/g)].map(x=>Number(x[1]));
+ assert.equal(ids.length,27);
+ assert.deepEqual(ids,Array.from({length:27},(_,i)=>i+4));
+ assert.match(data,/Formal risankizumab superiority/);
+ assert.match(data,/Cross-trial consistency/);
+ assert.match(data,/Future PsA regulatory package/);
+ assert.match(ui,/q.answer.score/);
 });

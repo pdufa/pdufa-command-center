@@ -8,10 +8,10 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
    Analysis · {completed}/{PHASE3_QUESTION_COUNT} documented
   </summary>
   <div style={{fontSize:12,lineHeight:1.5,marginTop:7}}>
-   <p><strong>Pre-readout predictions only.</strong> No Phase 3 efficacy result is inferred. Question scores are subjective 0–100 confidence indicators, not calibrated probabilities; RAAS surveys remain cancelled.</p>
+   <p><strong>Pre-readout predictions only.</strong> No Phase 3 efficacy result is inferred. Question scores (0–100) are subjective favorable-outcome assessments, not calibrated probabilities or reported results. RAAS surveys remain cancelled.</p>
    {questions.map(q=><details key={q.number} open={(q.number===2||q.number===3)&&!!q.answer} style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
     <summary style={{cursor:"pointer"}}>
-     Q{q.number} · {q.heading}{q.answer?" — predicted "+q.answer.prediction:" — not assessed"}
+     Q{q.number} · {q.heading}{q.answer?" — "+q.answer.prediction+" · "+q.answer.score+"/100":" — not assessed"}
     </summary>
     {q.answer?<div>
      <p><strong>{q.answer.question}</strong></p>
@@ -21,7 +21,7 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
        <div style={{fontSize:34,lineHeight:1.12,fontWeight:900,letterSpacing:"0.05em",color:"#155e34"}}>{q.answer.prediction}</div>
        <div data-question-score={q.number} style={{fontSize:27,lineHeight:1.16,fontWeight:850,color:"#155e34"}}>{q.answer.score}<span style={{fontSize:15,fontWeight:650}}>/100</span></div>
       </div>
-      <div style={{fontSize:11,color:"#38624a",marginTop:4}}>Subjective prediction-confidence score · not a reported result or statistically calibrated probability</div>
+      <div style={{fontSize:11,color:"#38624a",marginTop:4}}>Subjective favorable-outcome score · not a reported result or statistically calibrated probability</div>
       <p style={{margin:"6px 0 0"}}>{q.answer.summary}</p>
      </div>
      <p><strong>Reason:</strong> {q.answer.reason}</p>
