@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 48,
+  "totalReviewed": 51,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 39,
-    "PRIMARY_ENDPOINT_NOT_MET": 6,
+    "PRIMARY_ENDPOINT_MET": 41,
+    "PRIMARY_ENDPOINT_NOT_MET": 7,
     "NO_BINARY_PASS_FAIL": 3
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
@@ -454,6 +454,42 @@
       "sourceDate": "2023-09-05",
       "reviewedAt": "2026-11-06",
       "qualification": "Not an efficacy PASS. Later correction and interim versus final denominator differences remain under review."
+    },
+    {
+      "nctId": "NCT03485911",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "24-week attack-rate reduction versus placebo: 150 mg 44%, p<0.001; 110 mg 30%, p=0.024.",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/882796/000117184319003529/exh_991.htm",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "reviewedAt": "2026-11-06",
+      "sourceDate": "2019-05-21",
+      "identityCrosswalk": "Official registry: NCT03485911 = BCX7353-302 = APeX-2; drug berotralstat (BCX7353); indication HAE.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03485911",
+      "qualification": "Historical result only, no retrospective prediction. APeX-J is a separate 19-patient Japanese study; avoralstat is a separate drug from berotralstat."
+    },
+    {
+      "nctId": "NCT02303626",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "Neither 500 mg nor 300 mg three times daily significantly reduced mean HAE attack rate versus placebo over 12 weeks.",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/882796/000117184316007701/f8k_020816.htm",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "reviewedAt": "2026-11-06",
+      "sourceDate": "2016-02-08",
+      "identityCrosswalk": "Official registry: NCT02303626 = BCX4161-301 = OPuS-2; drug avoralstat (BCX4161); indication HAE.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02303626",
+      "qualification": "Historical result only, no retrospective prediction. APeX-J is a separate 19-patient Japanese study; avoralstat is a separate drug from berotralstat."
+    },
+    {
+      "nctId": "NCT03873116",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "150 mg reduced 24-week HAE attack rate: 1.11 versus 2.18 attacks/month, p=0.003. This result is specific to 150 mg; it does not establish 110 mg success.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/33247955/",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
+      "reviewedAt": "2026-11-06",
+      "sourceDate": "2020-12-23",
+      "identityCrosswalk": "Official registry: NCT03873116 = BCX7353-301 = APeX-J; drug berotralstat (BCX7353); indication HAE.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03873116",
+      "qualification": "Historical result only, no retrospective prediction. APeX-J is a separate 19-patient Japanese study; avoralstat is a separate drug from berotralstat."
     }
   ]
 }

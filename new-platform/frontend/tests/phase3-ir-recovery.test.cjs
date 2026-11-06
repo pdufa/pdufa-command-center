@@ -44,10 +44,10 @@ test('actual audit and 190-column CSV reconcile all 762 identities and all 30 qu
  }
  for(const key in sums)assert.equal(report.assessment[key],sums[key]);
  assert.equal(report.assessment.predicted,61);assert.equal(report.assessment.trialsWithNumericalPredictions,4);
- assert.deepEqual(report.endpointOutcomes,{PRIMARY_ENDPOINT_MET:39,PRIMARY_ENDPOINT_NOT_MET:6,NO_BINARY_PASS_FAIL:3});
- assert.equal(report.fields.missingAdjudicatedEndpoint,714);
- assert.equal(report.fields.investorRelationsRegulatoryTrialLinks,13);
- assert.equal(report.fields.investorRelationsFDAApplicationPrograms,5);
+ assert.deepEqual(report.endpointOutcomes,{PRIMARY_ENDPOINT_MET:41,PRIMARY_ENDPOINT_NOT_MET:7,NO_BINARY_PASS_FAIL:3});
+ assert.equal(report.fields.missingAdjudicatedEndpoint,711);
+ assert.equal(report.fields.investorRelationsRegulatoryTrialLinks,14);
+ assert.equal(report.fields.investorRelationsFDAApplicationPrograms,6);
  assert.equal(report.fields.unverifiedPDUFADate,754); // approval dates never become goal dates
  const ardelyx=report.investorRelationsCoverage.find(c=>c.ticker==='ARDX');
  assert.equal(ardelyx.matchedTrials,7);assert.equal(ardelyx.trials.length,10);
@@ -65,7 +65,8 @@ test('actual audit and 190-column CSV reconcile all 762 identities and all 30 qu
 });
 test('new evidence has unique exact-NCT question keys and explicit dates, scope and correction blockers',()=>{
  assert.ok(research.irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId))));
- assert.equal(ir.assessmentRecords.length,48);
+ assert.equal(ir.assessmentRecords.filter(r=>r.nctId.startsWith('NCT')&&ir.records.find(t=>t.nctId===r.nctId)?.ticker==='ARDX').length,48);
+ assert.equal(ir.assessmentRecords.length,68);
  assert.equal(new Set(endpoints.records.map(r=>r.nctId)).size,endpoints.records.length);
  assert.equal(endpoints.totalReviewed,endpoints.records.length);
  for(const [key,count] of Object.entries(endpoints.counts))assert.equal(count,endpoints.records.filter(r=>r.endpointOutcome===key).length);
@@ -74,4 +75,22 @@ test('new evidence has unique exact-NCT question keys and explicit dates, scope 
  assert.equal(research.isObservedStatus('DOCUMENTED_SOURCE_FACT'),false);
  assert.equal(research.isSourceFactStatus('REQUIRES_INTERPRETATION'),false);
  assert.equal(research.irResearchIntegrity(new Set(['NCT00000000'])),false);
+});
+
+test('BioCryst drug and country distinctions survive efficacy and regulatory overlays',async()=>{
+ const response=await csvRoute.GET(new Request('http://local/export'));
+ const rows=parseCsv(await response.text());
+ const opus=rows.find(r=>r[0]==='NCT02303626'),japan=rows.find(r=>r[0]==='NCT03873116');
+ assert.equal(opus[20],'FAIL_DOCUMENTED_PRIMARY_ENDPOINT');
+ assert.equal(opus[14],'NOT_VERIFIED');
+ assert.equal(japan[14],'NOT_VERIFIED');
+ assert.match(japan[21],/specific to 150 mg/);
+ const apex=rows.find(r=>r[0]==='NCT03485911');
+ assert.equal(apex[14],'FDA_APPROVED_HISTORICAL');
+ assert.equal(apex[16],'');
+ assert.equal(apex[40+3*5],'DOCUMENTED_SOURCE_FACT');
+ for(const nct of ['NCT02303626','NCT03485911','NCT03873116']){
+  const r=rows.find(r=>r[0]===nct);
+  for(let q=0;q<30;q++){assert.equal(r[40+q*5+1],'');assert.equal(r[40+q*5+2],'');}
+ }
 });

@@ -1,0 +1,105 @@
+{
+  "checkedAt": "2026-11-06T14:27:05.253146+00:00",
+  "sources": [
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT02303626",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02303626",
+      "sha256": "9930c4e12e42c4e9cb24baf66e0f3338cbdb1e675041dfd5fcd7590f32274dff",
+      "bytes": 48543,
+      "registryIdentity": {
+        "nctId": "NCT02303626",
+        "orgStudyIdInfo": {
+          "id": "BCX4161-301"
+        },
+        "organization": {
+          "fullName": "BioCryst Pharmaceuticals",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "12-Week Safety and Efficacy Study of BCX4161 as an Oral Prophylaxis Against HAE Attacks",
+        "officialTitle": "OPuS-2: A Multicenter, Randomized, Double-blind, Placebo-controlled, Parallel Group Study to Evaluate the Efficacy and Safety of Two Dose Levels of BCX4161 for 12 Weeks as an Oral Prophylaxis Treatment for Attacks of Hereditary Angioedema",
+        "acronym": "OPuS-2"
+      }
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT03485911",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT03485911",
+      "sha256": "0ccbbd367d7dd5a66b9cc1668c3e4726334df12f8c6284a76385a5d7e37ca3e6",
+      "bytes": 85312,
+      "registryIdentity": {
+        "nctId": "NCT03485911",
+        "orgStudyIdInfo": {
+          "id": "BCX7353-302"
+        },
+        "organization": {
+          "fullName": "BioCryst Pharmaceuticals",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "Efficacy and Safety Study of BCX7353 as an Oral Treatment for the Prevention of Attacks in HAE",
+        "officialTitle": "A Phase 3, Randomized, Double-blind, Placebo-controlled, Parallel Group Study to Evaluate the Efficacy and Safety of Two Dose Levels of BCX7353 as an Oral Treatment for the Prevention of Attacks in Subjects With Hereditary Angioedema",
+        "acronym": "APeX-2"
+      }
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT03873116",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT03873116",
+      "sha256": "945460dbd272d09d1f165c0463403420cd1ba340d0f56e9b6813ee50049b1aba",
+      "bytes": 78839,
+      "registryIdentity": {
+        "nctId": "NCT03873116",
+        "orgStudyIdInfo": {
+          "id": "BCX7353-301"
+        },
+        "organization": {
+          "fullName": "BioCryst Pharmaceuticals",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "Study to Evaluate the Efficacy and Safety of BCX7353 as an Oral Treatment for the Prevention of HAE Attacks in Japan",
+        "officialTitle": "A Phase 3, Randomized, Double-blind, Placebo-controlled, Parallel-group Study to Evaluate the Efficacy and Safety of Two Dose Levels of BCX7353 as an Oral Treatment for the Prevention of Attacks in Subjects With Hereditary Angioedema",
+        "acronym": "APeX-J"
+      }
+    },
+    {
+      "url": "https://ir.biocryst.com/news-releases/news-release-details/biocrysts-oral-bcx7353-meets-primary-endpoint-phase-3-apex-2",
+      "blocker": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/33247955/",
+      "httpStatus": 203,
+      "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/33247955/",
+      "sha256": "c579355c433aef61b98199f5a27e60718c92c611abffb4c1de5187c79d6e9757",
+      "bytes": 5590
+    },
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2020/214094s000lbl.pdf",
+      "httpStatus": 200,
+      "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2020/214094s000lbl.pdf",
+      "sha256": "efb08b49ee2ed7b1bbba8dee6b86a8ee9761c735f5b80999a6c196c3f8ff6ce0",
+      "bytes": 429364
+    },
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2020/214094Orig1s000Approv.pdf",
+      "httpStatus": 200,
+      "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2020/214094Orig1s000Approv.pdf",
+      "sha256": "dd1f1e1a0be68dd20adf815e8fe90d68d8f33a0fe5feffa15d943a0f17aada93",
+      "bytes": 860919
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/882796/000117184316007701/f8k_020816.htm",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/882796/000117184316007701/f8k_020816.htm",
+      "sha256": "d6a58abbdcd79334c7bc86e2838079682782ef04bcd0bd9811935ccd8e66af51",
+      "bytes": 9781
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/882796/000117184319003529/exh_991.htm",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/882796/000117184319003529/exh_991.htm",
+      "sha256": "f62b733e5cb5ae2d5176112ba0a7e2dba19effe49e22f7aafb9f804808255dfa",
+      "bytes": 10911
+    }
+  ],
+  "fallback": "Issuer IR read successfully via web tool, shell returned 503; the same issuer release in SEC Exhibit 99.1 is the selected evidence URL. PubMed web read confirmed the exact APeX-J abstract; shell returned 203."
+}

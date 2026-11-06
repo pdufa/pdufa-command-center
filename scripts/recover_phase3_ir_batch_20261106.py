@@ -159,7 +159,12 @@ write(DATA / 'phase3EndpointAdjudications20261105.json', endpoints)
 queue = dict(schemaVersion=1, asOf='2026-11-06', baselineCommit='a7cc2e0c8e4131c3f1885ab00e7a057b70d5c0f1',
              baselineLiveAudit='https://pdufa-new-dashboard.vercel.app/api/phase3-missing-data-audit',
              baselineUnscored=14675, scope='Every census trial; review status does not imply numerical scoring.', companies=[])
+queue_path = DATA / 'phase3InvestorRelationsResearchQueue20261106.json'
+previous_companies = {c['ticker']:c for c in read(queue_path)['companies']} if queue_path.exists() else {}
 for ticker in sorted({r['ticker'] for r in ledger['rows']}):
+    if ticker != 'ARDX' and ticker in previous_companies:
+        queue['companies'].append(previous_companies[ticker])
+        continue
     trials = [r for r in ledger['rows'] if r['ticker']==ticker]
     existing = [r for r in ir['records'] if r['ticker']==ticker]
     matched = {r['nctId'] for r in existing}
