@@ -2,6 +2,7 @@ import ledger from "../../../public/phase3-unified-classifications-2026-11-05.js
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
+import issuerEvidence from "../../../data/phase3CompanyWebsiteEvidence20261105.json";
 import {UNIVERSAL_PHASE3_QUESTIONS} from "../../../lib/phase3-universal-questions";
 import {phase3QuestionSlots} from "../../../lib/phase3-top-questions";
 import {PHASE3_ONLINE_TRIAL_COUNT,phase3OnlineRecord,phase3OnlineSourceFact,phase3OnlineCoverageLabel,phase3OnlineReviewLeads} from "../../../lib/phase3-online-source-evidence";
@@ -33,6 +34,7 @@ const questionHeaders = UNIVERSAL_PHASE3_QUESTIONS.flatMap((q,i)=>{
 });
 const HEADERS=[...baseHeaders,...extendedHeaders,...questionHeaders];
 const endpointByNct=new Map(endpointAdjudications.records.map(x=>[x.nctId,x] as const));
+const issuerByNct=new Map(issuerEvidence.records.map(x=>[x.nctId,x] as const));
 const registryByNct=new Map(registryCrosswalk.records.map(r=>[r.nctId,r] as const));
 
 const escaped=(input:unknown):string=>{
@@ -60,7 +62,8 @@ export async function GET(request:Request){
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
     PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
-    endpointByNct.size!==33||endpointAdjudications.records.length!==33||
+    endpointByNct.size!==43||endpointAdjudications.records.length!==43||
+    issuerByNct.size!==23||issuerEvidence.records.length!==23||
     endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
  }
@@ -68,6 +71,7 @@ export async function GET(request:Request){
  let passedCount=0,failedCount=0;
  for(const r of ledger.rows){
   const endpoint=endpointByNct.get(r.nctId);
+  const issuer=issuerByNct.get(r.nctId);
   const onlineRecord=phase3OnlineRecord(r.nctId);
   const registry=registryByNct.get(r.nctId);
   const liveRegistry=liveByNct.get(r.nctId);
@@ -125,6 +129,9 @@ export async function GET(request:Request){
     fullPassRationale,endpointEvidenceUrl];
    if(q.number===29&&endpoint)return ["DOCUMENTED_PUBLIC_READOUT","","",
     "Public Phase 3 readout or results exist. "+fullPassRationale,endpointEvidenceUrl];
+   if(q.number===3&&issuer?.safetyEvidence)return ["SOURCE_FACT_ONLY","","",
+    "Official issuer investor-relations safety disclosure: "+issuer.safetyEvidence+
+    " | Safety acceptability is not independently scored.",issuer.companyUrl];
    if(liveRegistry){
     const url=liveRegistry.registryUrl;
     const fact=(description:string)=>["SOURCE_FACT_ONLY","","",description,url];
