@@ -23,7 +23,7 @@ type DailyRow = {
   start_delay_minutes?: number;
   scan_night_source?: "GUARDED_SCHEDULER_INPUT" | "ACTUAL_START_DATE_FALLBACK" | "HISTORICAL_REPORT_RECONCILIATION";
   timing_evidence_url?: string;
-  sections: Partial<Record<"master"|"pipeline"|"designations"|"gem_jr"|"gem", SectionCounts>>;
+  sections: Partial<Record<"master"|"pipeline"|"designations", SectionCounts>>;
   notes?: string[];
 };
 type DailyLedger = { schema_version: number; updated_at_utc?: string; days: DailyRow[] };

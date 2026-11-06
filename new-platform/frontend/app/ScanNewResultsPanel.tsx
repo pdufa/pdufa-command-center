@@ -8,7 +8,7 @@ function shown(n: number | null) {
 function category(row: NewFromScanRow) {
   return row.kind === "NEW_PROGRAM" ? "NEW MASTER PROGRAM" :
     row.kind === "NEW_PHASE3_RESULT" ? "NEW PHASE 3 RESULT" :
-    "NEW SAVED CANDIDATE";
+    "NEW RESULT";
 }
 
 export default function ScanNewResultsPanel({
@@ -23,7 +23,7 @@ export default function ScanNewResultsPanel({
     : null;
   const primary = [
     {key:"pipeline",label:"PIPELINE",desc:"New master programs",value:summary?.pipelineNewPrograms ?? null},
-    {key:"phase3-result",label:"PHASE 3 RESULTS",desc:"New posted Phase 3 results (historic source count)",value:summary?.gemJrNewResultRecords ?? null},
+    {key:"phase3-result",label:"PHASE 3 RESULTS",desc:"New posted Phase 3 results (source-record count)",value:summary?.phase3NewResultRecords ?? null},
   ];
   const known = summary && primary.some(x => x.value !== null);
   return <section className="scans-new-results" aria-label="New from scan — latest published additions">

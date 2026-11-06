@@ -24,10 +24,6 @@ type Report = {
     required_findings_unresolved?: number; sources?: SourceRow[];
     missing_required_source_families?: string[];
   } | null;
-  gem?: { generated_at_utc?: string; status?: string; observed_phase3_rows?: number;
-    two_benchmark_candidate_count?: number; strict_entry_gate_shortlist_count?: number;
-    blocking_or_review_flags?: string[];
-  } | null;
 };
 
 type ScanAction = "VERIFY_ALL" | "REVERIFY_PARTIAL" | "RESCAN_ALL";

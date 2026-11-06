@@ -9,9 +9,7 @@ const BASE = "https://raw.githubusercontent.com/pdufa/pdufa-command-center/main/
 const FILES = {
   clinical: "nightly_scan_report.json",
   sources: "pdufa_source_report.json",
-  gem: "gem_scan_block_report.json",
   pipelineState: "phase_pipeline_state.json",
-  membership: "gem_stage_membership.json",
   daily: "daily_scan_results.json",
   scoring: "nightly_scoring_audit.json",
 } as const;
@@ -42,23 +40,21 @@ export async function GET(req: NextRequest) {
       catch { return [name, null] as const; }
     }),
   );
-  const [clinical, sources, gem, pipelineState, membership, daily, scoring] = [
+  const [clinical, sources, pipelineState, daily, scoring] = [
     entries.find(([name]) => name === "clinical")?.[1],
     entries.find(([name]) => name === "sources")?.[1],
-    entries.find(([name]) => name === "gem")?.[1],
     entries.find(([name]) => name === "pipelineState")?.[1],
-    entries.find(([name]) => name === "membership")?.[1],
     entries.find(([name]) => name === "daily")?.[1],
     entries.find(([name]) => name === "scoring")?.[1],
   ];
-  if (!clinical && !sources && !gem) {
+  if (!clinical && !sources) {
     return NextResponse.json({ error: "Original published scans temporarily unavailable" },
                              { status: 503, headers: { "Cache-Control": "private, no-store" } });
   }
   return NextResponse.json({
-    status: [clinical, sources, gem].every(Boolean) ? "PUBLISHED" : "PARTIAL_PUBLISHED",
-    clinical, sources, gem, daily, scoring,
-    newFromScan: newFromScanSummary(clinical, gem, pipelineState, membership),
+    status: [clinical, sources].every(Boolean) ? "PUBLISHED" : "PARTIAL_PUBLISHED",
+    clinical, sources, daily, scoring,
+    newFromScan: newFromScanSummary(clinical, pipelineState),
     caveat: "Read-only original Streamlit reports. Does not certify new-platform storage or trading readiness.",
   }, { headers: { "Cache-Control": "private, no-store" } });
 }

@@ -1,7 +1,7 @@
-"""Bounded, process-local workspace change feed.
+"""Versioned Pipeline-only workspace change feed.
 
-Version hashes are content-derived. A worker restart or unknown base version
-returns a full-reset instruction rather than an unsafe partial patch.
+Old tier membership is not an active payload, input or version component.
+Changes are fail-closed on stale sources or duplicate immutable identities.
 """
 from __future__ import annotations
 
@@ -32,30 +32,18 @@ def _index(rows):
 def _view(snapshot):
     if snapshot.get("mode") == "STALE_PREVIOUS_FETCH" or snapshot.get("sourceHealth", {}).get("state") == "STALE":
         raise ValueError("Stale published sources cannot be versioned as current")
-    return {
-        "PIPELINE": _index(snapshot["pipeline"]),
-        "GEM_JR": _index(snapshot["members"]["GEM_JR"]["rows"]),
-        "GEM": _index(snapshot["members"]["GEM"]["rows"]),
-    }
+    return {"PIPELINE": _index(snapshot["pipeline"])}
 
 
 def publish(snapshot, since=None):
-    """Return either a complete-reset marker or changes against a known version."""
+    """Return full reset on an unknown version, otherwise Pipeline-only changes."""
     current = _view(snapshot)
-    # Retain compact fingerprints instead of multiple full copies of all records.
-    fingerprints = {stage: {key: hashlib.sha256(_canonical(row).encode("utf-8")).hexdigest()
-                             for key, row in rows.items()} for stage, rows in current.items()}
-    # Fetch timestamps change every source poll even when no candidate changes.
-    # Hash actual rows and stable stage membership metadata, not fetchedAt/asOf.
-    stable = {
-        "stages": current,
-        "order": {stage: list(rows) for stage, rows in current.items()},
-        "membership": {
-            stage: {k: v for k, v in snapshot["members"][stage].items()
-                    if k not in ("rows", "asOf")}
-            for stage in ("GEM_JR", "GEM")
-        },
+    fingerprints = {
+        stage: {key: hashlib.sha256(_canonical(row).encode("utf-8")).hexdigest()
+                for key, row in rows.items()}
+        for stage, rows in current.items()
     }
+    stable = {"stages": current, "order": {stage: list(rows) for stage, rows in current.items()}}
     digest = hashlib.sha256(_canonical(stable).encode("utf-8")).hexdigest()
     with _LOCK:
         previous = _HISTORY.get(since) if since else None
@@ -64,28 +52,20 @@ def publish(snapshot, since=None):
         while len(_HISTORY) > _MAX_VERSIONS:
             _HISTORY.popitem(last=False)
     if since == digest:
-        return {"version": digest, "unchanged": True, "reset": False,
-                "asOf": snapshot.get("asOf")}
+        return {"version": digest, "unchanged": True, "reset": False, "asOf": snapshot.get("asOf")}
     if previous is None:
         return {"version": digest, "unchanged": False, "reset": True,
                 "reason": "Unknown or expired base version; fetch full workspace"}
-    changes = {}
-    for stage in ("PIPELINE", "GEM_JR", "GEM"):
-        before, after = previous[stage], current[stage]
-        after_hashes = fingerprints[stage]
-        changes[stage] = {
-            "upsert": [row for key, row in after.items()
-                       if key not in before or before[key] != after_hashes[key]],
-            "remove": [key for key in before if key not in after],
-            "count": len(after),
-            "order": list(after),
-        }
-    return {"version": digest, "baseVersion": since, "unchanged": False,
-            "reset": False, "changes": changes,
-            "asOf": snapshot.get("asOf"),
-            "membersMetadata": {
-                stage: {key: value for key, value in snapshot["members"][stage].items() if key != "rows"}
-                for stage in ("GEM_JR", "GEM")
-            },
-            "metadata": {key: value for key, value in snapshot.items()
-                         if key not in ("pipeline", "members")}}
+    before, after = previous["PIPELINE"], current["PIPELINE"]
+    changed = {
+        "upsert": [row for key, row in after.items() if key not in before or before[key] != fingerprints["PIPELINE"][key]],
+        "remove": [key for key in before if key not in after],
+        "count": len(after),
+        "order": list(after),
+    }
+    return {
+        "version": digest, "baseVersion": since, "unchanged": False, "reset": False,
+        "changes": {"PIPELINE": changed},
+        "asOf": snapshot.get("asOf"),
+        "metadata": {key: value for key, value in snapshot.items() if key != "pipeline"},
+    }

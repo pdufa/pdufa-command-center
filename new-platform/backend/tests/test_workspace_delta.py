@@ -6,7 +6,6 @@ def snapshot(rows, as_of="2026-10-19T10:00:00Z"):
     return {
         "mode": "LIVE_READ_ONLY_GITHUB_SOURCE", "asOf": as_of,
         "pipeline": rows,
-        "members": {"GEM_JR": {"rows": []}, "GEM": {"rows": []}},
         "sourceHealth": {"state": "COMPLETE_PUBLISHED"},
     }
 
