@@ -7,7 +7,7 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
  const facts=phase3DocumentedQuestionFacts(nctId);
  const [expanded,setExpanded]=useState(false);
  const [openQuestions,setOpenQuestions]=useState<number[]>(nctId==="NCT06641089"?[2,3]:[]);
- return <details data-phase3-analysis={nctId} onToggle={e=>setExpanded(e.currentTarget.open)}
+ return <details data-phase3-analysis={nctId} onToggle={e=>{if(e.currentTarget===e.target)setExpanded(e.currentTarget.open);}}
   style={{minWidth:230,maxWidth:510}}>
   <summary style={{cursor:"pointer",fontWeight:750}}>
    {PHASE3_QUESTION_COUNT} questions · {predictions} predictions · {facts} source facts
@@ -16,8 +16,9 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
    <p><strong>Pre-readout research only.</strong> Predictions, source documentation and missing evidence
     are separate. Source-documentation scores are NOT approval probabilities. RAAS surveys remain cancelled.</p>
    {questions.map(q=><details key={q.number} open={openQuestions.includes(q.number)}
-    onToggle={e=>setOpenQuestions(old=>e.currentTarget.open?
-     old.includes(q.number)?old:[...old,q.number]:old.filter(x=>x!==q.number))}
+    onToggle={e=>{const nowOpen=e.currentTarget.open;
+     setOpenQuestions(old=>nowOpen?
+       old.includes(q.number)?old:[...old,q.number]:old.filter(x=>x!==q.number));}}
     style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
     <summary style={{cursor:"pointer"}}>
      Q{q.number} · {q.heading}{q.answer?" · "+q.answer.prediction+" "+q.answer.score+"/100":
@@ -69,8 +70,8 @@ export function TopPhase3ResearchExample(){
   <p style={{fontSize:12,margin:"5px 0"}}>
    Sonelokimab · psoriatic arthritis · Phase 3 NCT06641089. Public primary
    readout has not been released; MoonLake expects initial Week 16 results in Q1 2027.
-   This is an <strong>analysis example, not an added cap-screen-qualified trial</strong>,
-   and is not included in TOP source counts.
+   This example is also in the dated candidate batch. It is <strong>not issuer-confirmed
+   unreleased</strong> and is not automatically counted as FDA/PDUFA-qualified.
   </p>
   <p style={{fontSize:12,margin:"5px 0"}}>
    <a href="https://clinicaltrials.gov/study/NCT06641089" target="_blank" rel="noopener noreferrer">ClinicalTrials.gov</a>{" · "}

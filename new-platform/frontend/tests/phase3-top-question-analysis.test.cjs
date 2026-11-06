@@ -16,7 +16,7 @@ test("TOP 30-question pre-readout analysis retains 30 documented predictions",()
 });
 test("TOP research case remains outside membership and CSV appends 30 question columns",()=>{
  const ui=read("app/Phase3TopAnalysis.tsx");
- assert.match(ui,/not included in TOP source counts/);
+ assert.match(ui,/This example is also in the dated candidate batch/);
  assert.match(ui,/RAAS surveys remain cancelled/);
  const csv=read("lib/raas-cap-screened-top-phase3.ts");
  assert.match(csv,/phase3AnalysisCsvHeaders\(\)/);

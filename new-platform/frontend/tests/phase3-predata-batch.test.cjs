@@ -17,7 +17,7 @@ test("All 253 dated Phase 3 pre-readout candidate rows have unique NCT identitie
 });
 test("All 30 universal questions avoid inventing efficacy predictions",()=>{
  const q=read("lib/phase3-universal-questions.ts");
- assert.equal((q.match(/\{heading:/g)||[]).length,30);
+ assert.equal((q.match(/^ \{heading:/gm)||[]).length,30);
  assert.match(q,/documentationScore:100/);
  assert.match(q,/sourceObservation/);
  assert.match(q,/Statistical analysis plan/);
