@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 22,
+  "totalReviewed": 24,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 18,
+    "PRIMARY_ENDPOINT_MET": 20,
     "PRIMARY_ENDPOINT_NOT_MET": 2,
     "NO_BINARY_PASS_FAIL": 2
   },
@@ -207,6 +207,24 @@
       "evidenceType": "ISSUER_PHASE3_READOUT_EXACT_NCT",
       "reviewedAt": "2026-11-05",
       "qualification": "Observed primary endpoint only. Planned NDA by end of 2026 is not a verified FDA acceptance or approval."
+    },
+    {
+      "nctId": "NCT05507203",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ABTECT-1 (Abivax Study ABX464-105): obefazimod 50 mg daily and 25 mg daily each met the prespecified Phase 3 Week 8 clinical remission primary endpoint versus placebo (50 mg placebo-adjusted +19.3%, p<0.0001; 25 mg placebo-adjusted +21.4%, p<0.0001). Sponsor Phase 3 induction readout published July 22, 2025; exact NCT linked to Study 105 on ClinicalTrials.gov.",
+      "evidenceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week",
+      "evidenceType": "ISSUER_PHASE3_READOUT_REGISTRY_STUDY_NUMBER_MATCH",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint success applies to specified doses; not FDA approval."
+    },
+    {
+      "nctId": "NCT05507216",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ABTECT-2 (Abivax Study ABX464-106): obefazimod 50 mg daily met the prespecified Phase 3 Week 8 clinical remission primary endpoint versus placebo (placebo-adjusted +13.4%, p=0.0001); the separate 25 mg arm did not meet significance (p=0.1034). Sponsor induction readout published July 22, 2025; exact NCT linked to Study 106.",
+      "evidenceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week",
+      "evidenceType": "ISSUER_PHASE3_READOUT_REGISTRY_STUDY_NUMBER_MATCH",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Mixed-dose result. Trial-level PASS refers to 50 mg prespecified primary comparison only; 25 mg missed significance. Not FDA approval."
     }
   ]
 }
