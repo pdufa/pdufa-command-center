@@ -138,6 +138,8 @@ export async function GET(request:Request){
      return ["SOURCE_FACT_ONLY","","","Issuer mentions patient-reported outcomes: "+investor.specificEvidence,investor.companyUrl];
     if(q.number===24&&/discontinuation/i.test(investor.safetyEvidence||""))
      return ["SOURCE_FACT_ONLY","","","Issuer-reported retention/discontinuation fact: "+investor.safetyEvidence,investor.companyUrl];
+    if(q.number===30&&investor.regulatoryUrl&&/NDA under FDA review.*PDUFA/i.test(investor.regulatory||""))
+     return ["SOURCE_FACT_ONLY","","","Drug/indication-level issuer regulatory milestone, NOT an individual trial approval or predicted outcome: "+investor.regulatory,investor.regulatoryUrl];
    }
    if(liveRegistry){
     const url=liveRegistry.registryUrl;
