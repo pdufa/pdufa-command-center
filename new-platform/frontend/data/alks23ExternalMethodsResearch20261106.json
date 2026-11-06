@@ -23,7 +23,8 @@
     "No production 30-question ratings, FDA outcome predictions, historical trial labels or registry numeric clinical-five research grades were changed.",
     "Second pass: Five additional exact-NCT methods searches and eight earlier official/publication source crosschecks reused; all 23 missing-attachment NCTs now have at least one trial-specific design or methods source, NOT a full protocol or SAP.",
     "Newly researched sources include official registry descriptions, registry mirrors and journal articles, which have different evidentiary strength. No registry-only statement is promoted to an independently verified statistical analysis.",
-    "Historical P=0.336 for NCT00501631 was taken from pre-existing stored exact-trial registry primary statistics and does not modify the original endpoint adjudication."
+    "Historical P=0.336 for NCT00501631 was taken from pre-existing stored exact-trial registry primary statistics and does not modify the original endpoint adjudication.",
+    "For mirror-documented legacy NCTs, external research date is left null when original publication/record revision date is not established; asOf is source-review date, not trial event date."
   ],
   "records": [
     {
@@ -250,14 +251,14 @@
       "fullSapLocatedViaThisExternalResearch": false,
       "externalEvidenceDisposition": "ADDITIONAL_TRIAL_METHODS_OR_DESIGN_EVIDENCE_REVIEWED",
       "sourceType": "REGISTRY_MIRROR_EXACT_NCT_SAFETY_EXTENSION",
-      "sourceDate": "2010-12-01",
+      "sourceDate": null,
       "sourceUrl": "https://trial.medpath.com/clinical-trial/ef74499bb16557c9/nct01218971-alk21-003ext-medisorb-naltrexone-vivitrol",
       "findings": [
         "ALK21-003EXT was a continuation of ALK21-003 (NCT01218958), enrolling 332 completers for 48 weeks or 13 additional monthly naltrexone injections at 190 or 380 mg.",
         "Extension maintained masked dose allocation but there was no placebo arm within this extension; previously placebo-randomized participants were reassigned to active naltrexone.",
         "Stored ClinicalTrials.gov primary endpoint counts 143 in the 380-mg combined arm and 130 in the 190-mg combined arm who reported treatment-emergent adverse events."
       ],
-      "limitations": "Open-label/no placebo extension cannot be interpreted as independent efficacy superiority or as randomly comparable old and new exposures; review individual source versions and arm denominators.",
+      "limitations": "Active-only extension with dose assignment masked but no placebo arm cannot be interpreted as independent efficacy superiority or as randomly comparable old and new exposures; review individual source versions and arm denominators.",
       "sourceQuestionLeads": [
         "Q06",
         "Q09",
@@ -286,7 +287,7 @@
       "fullSapLocatedViaThisExternalResearch": false,
       "externalEvidenceDisposition": "ADDITIONAL_TRIAL_METHODS_OR_DESIGN_EVIDENCE_REVIEWED",
       "sourceType": "REGISTRY_MIRROR_EXACT_NCT_SAFETY_DESIGN",
-      "sourceDate": "2010-11-17",
+      "sourceDate": null,
       "sourceUrl": "https://trial.medpath.com/clinical-trial/c5df6b84ab2785cd/nct01218997-randomized-open-label-safety-study-medisorb-naltrexone",
       "findings": [
         "ALK21-006 was a randomized open-label safety comparison of monthly IM VIVITROL 380 mg versus oral naltrexone 50 mg daily in a 6:1 assignment ratio for up to one year.",
@@ -394,7 +395,7 @@
       "fullSapLocatedViaThisExternalResearch": false,
       "externalEvidenceDisposition": "ADDITIONAL_TRIAL_METHODS_OR_DESIGN_EVIDENCE_REVIEWED",
       "sourceType": "REGISTRY_EXACT_NCT_ENFORCED_ABSTINENCE_COMPARISON",
-      "sourceDate": "2011-01-01",
+      "sourceDate": null,
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00501631",
       "findings": [
         "ALK21-014 studied VIVITROL 380 mg versus matching IM placebo once every four weeks after 7–21 days of enforced inpatient abstinence for alcohol dependence.",
