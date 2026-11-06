@@ -188,6 +188,27 @@
       "requiresUserDirection": false,
       "hardToResolve": [],
       "scope": "Partial sponsor-registered evidence for 2 historical long-term naltrexone safety extensions; no independent efficacy conclusion. Remaining 32 Alkermes trials not reviewed in this batch."
+    },
+    {
+      "ticker": "SUPN",
+      "company": "Supernus Pharmaceuticals, Inc.",
+      "trials": 19,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://ir.supernus.com/",
+      "manufacturerUrl": "https://www.supernus.com/",
+      "exactRegistryTrials": [
+        "NCT03247530",
+        "NCT03247517",
+        "NCT03247543",
+        "NCT03247556",
+        "NCT04016779",
+        "NCT02618408",
+        "NCT02618434"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [],
+      "scope": "Reviewed 7/19 census studies with exact protocol/NCT crosswalks. Five SPN-812 positive readouts (one 600 mg dose nonsignificant in P304), two SPN-810 negative trials; remaining 12 SUPN trials not reviewed in this batch. No FDA approval or numerical RAAS prediction inferred."
     }
   ]
 }
