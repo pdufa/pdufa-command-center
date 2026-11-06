@@ -87,6 +87,7 @@ export async function GET(request:Request){
    (r.classificationCode==="P3_TERMINATED"?"Trial terminated; an efficacy FAIL is not established by trial status":
     r.classificationCode==="P3_WITHDRAWN"?"Trial withdrawn; an efficacy FAIL is not established by trial status":
     "No source-qualified Phase 3 primary-endpoint determination available in the saved evidence");
+  const fullPassRationale=passRationale+(endpoint?.qualification?" | Qualification: "+endpoint.qualification:"");
   const slots=phase3QuestionSlots(r.nctId);
   const predictions=slots.filter(q=>Boolean(q.answer)).length;
   const observations=slots.filter(q=>!q.answer&&Boolean(q.observation)).length;
@@ -102,7 +103,7 @@ export async function GET(request:Request){
    r.registrySourceUrl,r.classificationEvidence
   ];
   const extra=[
-   passing,passRationale,endpoint?endpointEvidenceUrl:observedPass?endpointEvidenceUrl:"",
+   passing,fullPassRationale,endpoint?endpointEvidenceUrl:observedPass?endpointEvidenceUrl:"",
    endpoint?.reviewedAt||r.readoutSourceDate||"",
    endpoint?.evidenceType||r.readoutEvidenceType||"NOT_VERIFIED",
    r.classificationCode,Boolean(endpoint)||r.classificationVerified,
@@ -119,11 +120,11 @@ export async function GET(request:Request){
     q.answer.score,q.answer.summary+" | "+q.answer.reason,
     q.answer.sources.map(s=>s.url).join(" | ")];
    if(q.number===1&&(observedPass||observedFail))return [observedPass?"OBSERVED_PRIMARY_ENDPOINT_MET":"OBSERVED_PRIMARY_ENDPOINT_NOT_MET","","",
-    passRationale+"; observed result, not a prospective prediction",endpointEvidenceUrl];
+    fullPassRationale+"; observed result, not a prospective prediction",endpointEvidenceUrl];
    if(q.number===1&&noBinary)return ["DOCUMENTED_NON_BINARY_ENDPOINT","","",
-    passRationale,endpointEvidenceUrl];
+    fullPassRationale,endpointEvidenceUrl];
    if(q.number===29&&endpoint)return ["DOCUMENTED_PUBLIC_READOUT","","",
-    "Public Phase 3 readout or results exist. "+passRationale,endpointEvidenceUrl];
+    "Public Phase 3 readout or results exist. "+fullPassRationale,endpointEvidenceUrl];
    if(liveRegistry){
     const url=liveRegistry.registryUrl;
     const fact=(description:string)=>["SOURCE_FACT_ONLY","","",description,url];
