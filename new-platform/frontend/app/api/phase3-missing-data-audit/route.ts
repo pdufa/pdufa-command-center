@@ -36,6 +36,7 @@ function statusFor(
  if(q.number===1&&e?.endpointOutcome==="NO_BINARY_PASS_FAIL")return "DOCUMENTED_NON_BINARY_ENDPOINT";
  if(q.number===29&&e)return "DOCUMENTED_PUBLIC_READOUT";
  if(q.number===3&&issuerByNct.get(r.nctId)?.safetyEvidence)return "SOURCE_FACT_ONLY";
+ if(q.number===30&&issuerByNct.get(r.nctId)?.regulatoryEvidenceStatus)return "SOURCE_FACT_ONLY";
  if(q.observation)return "SOURCE_FACT_ONLY";
  if(q.number===11&&registryByNct.get(r.nctId)?.comparators)return "SOURCE_FACT_ONLY";
  if(q.number===25&&r.registrySourceUrl)return "SOURCE_FACT_ONLY";
@@ -62,6 +63,7 @@ export async function GET(request:Request){
     preData.trials.length!==253||
     officialResearch.records.length!==253||
     adjudications.records.length!==43||issuerEvidence.records.length!==23||issuerByNct.size!==23||
+    issuerEvidence.records.filter(x=>Boolean(x.regulatoryEvidenceStatus)).length!==8||
     PHASE3_ONLINE_TRIAL_COUNT!==762||
     registryCrosswalk.records.length!==762||registryByNct.size!==762){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
@@ -97,8 +99,8 @@ export async function GET(request:Request){
    onlineStatisticalAnalyses:Boolean(online?.resultsAnalysisCount),
    pubmedArticleLeads:Boolean(online?.pubmedPMIDs.length),
    secFilingLeads:Boolean((online?.secFilingMentions||0)>0),
-   unverifiedFDAApplication:r.fdaApplicationStatus==="NOT_VERIFIED",
-   unverifiedPDUFADate:!r.pdufaGoalDate,
+   unverifiedFDAApplication:r.fdaApplicationStatus==="NOT_VERIFIED"&&!issuerByNct.get(r.nctId)?.regulatoryEvidenceStatus,
+   unverifiedPDUFADate:!r.pdufaGoalDate&&!issuerByNct.get(r.nctId)?.pdufaGoalDate,
    outsideDatedMarketCapScreen:!r.inDatedMarketCapScreen,
    ...c,questionStatuses:statuses
   });
@@ -125,6 +127,8 @@ export async function GET(request:Request){
   missingAdjudicatedEndpoint:rows.filter(r=>!r.hasEndpointAdjudication).length,
   issuerInvestorRelationsEvidence:rows.filter(r=>issuerByNct.has(r.nctId)).length,
   withoutSavedIssuerInvestorRelationsEvidence:rows.filter(r=>!issuerByNct.has(r.nctId)).length,
+  linkedFDAApplicationTrialRecords:rows.filter(r=>Boolean(issuerByNct.get(r.nctId)?.regulatoryEvidenceStatus)).length,
+  distinctFDAApplicationPrograms:3,
   outsideDatedMarketCapScreen:rows.filter(r=>r.outsideDatedMarketCapScreen).length,
   onlineRegistryRecords:PHASE3_ONLINE_TRIAL_COUNT,
   onlinePrimaryEndpointCount:rows.filter(r=>r.onlinePrimaryEndpoint).length,
@@ -140,6 +144,8 @@ export async function GET(request:Request){
     fields.unknownRegistryStatus!==3||
     fields.missingDrugField!==103||
     fields.issuerInvestorRelationsEvidence!==23||
+    fields.linkedFDAApplicationTrialRecords!==8||fields.unverifiedFDAApplication!==754||
+    fields.unverifiedPDUFADate!==754||
     fields.onlinePrimaryEndpointCount!==756||fields.registryResultsPosted!==337||
     fields.pubmedNctArticleLeads!==288){
   return Response.json({error:"Missingness audit reconciliation failed"},{status:503});
@@ -160,6 +166,8 @@ export async function GET(request:Request){
    "Unscored means no verified source fact or defensible numerical prediction is stored for that question; it does not prove evidence is absent publicly.",
    "Source-fact columns document available registry and issuer investor-relations facts, not favorable clinical or FDA predictions.",
    "Issuer investor-relations evidence is matched by exact NCT; safety summaries are source facts and not numerical forecasts or independent risk scores.",
+   "Eight NCT links refer to three distinct drug-indication FDA application programs; an FDA approval does not retroactively turn every associated trial into a clinical efficacy success.",
+   "The 2022 and 2026 PDUFA goal dates are historical; the 2027 date is an upcoming issuer-reported FDA action target, not an approval forecast.",
    "Crosswalk identifies registered DRUG-type interventions in 657 studies; other intervention types such as biologics, devices, or vaccines are not automatically labeled DRUG.",
    "Not every historical or pre-readout Phase 3 trial has an FDA application or PDUFA date.",
    "Online registry primary outcome documentation, comparator arms and posted results have been imported as source facts, never as numeric drug-success forecasts."
