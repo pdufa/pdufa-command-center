@@ -77,7 +77,7 @@ test('Axsome outcomes and endpoint/status conflicts remain visible independently
  assert.equal(r.ratedTrials,0);assert.equal(r.fdaPredictions,0);
 });
 test('aggregate evidence counts equal actual records and all trial records have provenance',()=>{
- for(const scope of ['alkermes','axsome','census']){
+ for(const scope of ['alkermes','axsome','sinovac','census']){
   const r=phaseFirstReport(scope);let count=0;const actual={};
   for(const t of r.trials){assert.equal(t.evidence.length,36);assert.equal(t.factors.length,5);assert.equal(t.pipeline.automaticTransfer,false);
    for(const e of t.evidence){actual[e.status]=(actual[e.status]||0)+1;count++;assert.equal(e.reviewedAt,'2026-11-06');assert.ok(e.searchedSourceUrl.startsWith('https://'));
@@ -89,7 +89,7 @@ test('aggregate evidence counts equal actual records and all trial records have 
 });
 test('API summary fits deployment response budget; details and CSV use exact identifiers',async()=>{
  const {GET}=require('../app/api/phase-first/route.ts');
- for(const scope of ['alkermes','axsome','census']){
+ for(const scope of ['alkermes','axsome','sinovac','census']){
   const response=await GET(new Request('https://local/api/phase-first?scope='+scope));assert.equal(response.status,200);
   const text=await response.text();assert.ok(Buffer.byteLength(text)<4_000_000);const r=JSON.parse(text);assert.equal(r.trials[0].evidence.length,0);
  }
@@ -106,4 +106,56 @@ test('trial-based history retains separate scope snapshots with stable fingerpri
  const ledger=require('../data/phaseFirstRatingHistory20261106.json');assert.equal(new Set(ledger.records.map(r=>r.eventId)).size,ledger.records.length);
  for(const r of ledger.records){assert.equal(r.continuityKey,r.payload.trialId);assert.match(r.evidenceFingerprint,/^[a-f0-9]{64}$/);}
  assert.equal(GET(new Request('https://local/api/phase-first/history')).status,400);
+});
+
+test('Sinovac is next by prevalence; all27 individually verified phases retain trading restriction',()=>{
+ const counts=new Map();for(const r of census.rows)counts.set(r.ticker,(counts.get(r.ticker)||0)+1);
+ assert.deepEqual([...counts].sort((a,b)=>b[1]-a[1]).slice(0,3),[['ALKS',34],['AXSM',28],['SVA',27]]);
+ const r=phaseFirstReport('sinovac');assert.equal(r.trialCount,27);assert.deepEqual(r.byPhase,{'Phase 3':27});
+ assert.equal(r.trials.filter(t=>t.status==='COMPLETED').length,17);
+ assert.equal(r.ratedTrials,0);assert.equal(r.fdaPredictions,0);
+ for(const t of r.trials){assert.match(t.pipeline.companyRestriction,/Excluded|halt/);assert.equal(t.pipeline.automaticTransfer,false);assert.equal(t.raasScore,null);}
+ const all=phaseFirstReport('census');assert.equal(all.trials.filter(t=>t.ticker==='SVA'&&t.pipeline.companyRestriction).length,27);
+ assert.equal(phaseFirstReport('axsome').trials.some(t=>t.pipeline.companyRestriction),false);
+ const queue=require('../data/phase3InvestorRelationsResearchQueue20261106.json').companies.find(c=>c.ticker==='SVA');
+ assert.equal(queue.searchStatus,'PARTIALLY_REVIEWED');
+ assert.equal(queue.trials.filter(t=>t.identityMatched).length,27);
+ for(const t of queue.trials)assert.equal(new Set(t.questionReview.map(q=>q.number)).size,30);
+});
+test('Sinovac original SAPs and published immune response do not invent clinical verdicts',()=>{
+ const r=phaseFirstReport('sinovac'),byId=new Map(r.trials.map(t=>[t.trialId,t]));
+ for(const n of ['NCT05850364','NCT06049927']){
+  assert.equal(evidence(byId.get(n),'power').status,'AVAILABLE');assert.match(evidence(byId.get(n),'power').sourceUrl,new RegExp(n));
+  assert.match(evidence(byId.get(n),'uncertainty').sourceUrl,/SAP_001.pdf/);
+ }
+ assert.match(evidence(byId.get('NCT05850364'),'uncertainty').evidence,/LOCF/);
+ assert.match(evidence(byId.get('NCT06049927'),'uncertainty').evidence,/Multiple|multiple/);
+ assert.match(evidence(byId.get('NCT05850364'),'phase3Results').evidence,/unadjudicated/);
+ assert.equal(evidence(byId.get('NCT05245552'),'phase3Results').status,'MISSING');
+ assert.equal(evidence(byId.get('NCT07211152'),'phase3Results').status,'MISSING');
+ assert.equal(evidence(byId.get('NCT06734832'),'phase3Results').status,'PENDING');
+ assert.equal(evidence(byId.get('NCT07611513'),'priorEfficacySafety').confidence,'MODERATE');
+ for(const t of r.trials){assert.equal(t.fdaPrediction.probabilities,null);assert.notEqual(evidence(t,'fdaOutcome').status,'AVAILABLE');}
+ const adjudications=require('../data/phase3EndpointAdjudications20261105.json').records;
+ assert.equal(adjudications.filter(x=>byId.has(x.nctId)).length,14);
+ assert.equal(adjudications.some(x=>x.nctId==='NCT05850364'),false);
+});
+test('nine exact-trial30-question facts are sourced and nonnumeric without duplicate slots',()=>{
+ const evidenceData=require('../data/sinovacPhaseFirstEvidence20261106.json');
+ const ir=require('../data/phase3CompanyWebsiteEvidence20261105.json').assessmentRecords;
+ const slots=ir.map(r=>r.nctId+':'+r.assessmentNumber);assert.equal(new Set(slots).size,slots.length);
+ assert.equal(evidenceData.questionFacts.length,9);
+ for(const fact of evidenceData.questionFacts){
+  const stored=ir.find(r=>r.nctId===fact.nctId&&r.assessmentNumber===fact.assessmentNumber);
+  assert.ok(stored);assert.equal(stored.classification,'DOCUMENTED_SOURCE_FACT');assert.equal(stored.evidence,fact.evidence);
+  assert.equal(stored.score,undefined);assert.equal(stored.prediction,undefined);
+ }
+ assert.equal(ir.some(r=>r.nctId==='NCT05245552'&&[13,14,15].includes(r.assessmentNumber)),false);
+});
+test('released918 history events stay byte-equivalent in their canonical JSON representation',()=>{
+ const history=require('../data/phaseFirstRatingHistory20261106.json');
+ const hash=require('node:crypto').createHash('sha256').update(JSON.stringify(history.records.slice(0,918))).digest('hex');
+ assert.equal(hash,'72f2635c5d228dbd96cc75dcb7a2e5d8fdfbc19278e6859c171550842085f746');
+ const sva=history.records.filter(r=>r.sourceScope==='sinovac');assert.equal(sva.length,27);
+ assert.equal(new Set(sva.map(r=>r.continuityKey)).size,27);
 });

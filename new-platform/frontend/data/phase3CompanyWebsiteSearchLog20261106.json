@@ -247,13 +247,34 @@
         "NCT07611513",
         "NCT07793227"
       ],
-      "requiresUserDirection": false,
+      "requiresUserDirection": true,
       "hardToResolve": [
         "SVA Nasdaq trading remains halted according to its filed 2025 Form 20-F; restored listing compliance does not prove active trading. Keep SVA historical 27-NCT research corpus but do not use for tradable US market-cap shortlist until verified.",
         "2026 issuer press releases emphasize China NMPA approval and NDA review; no trial-level US FDA PDUFA date established from these company-wide statements.",
-        "Fourteen historical published trial readouts now classified; thirteen NCT outcomes remain unadjudicated or ongoing. No five-factor clinical RAAS score available."
+        "Fourteen historical published trial readouts now classified; thirteen NCT outcomes remain unadjudicated or ongoing. No five-factor clinical RAAS score available.",
+        "NCT05245552 / PRO-QINF-3003: completed, no exact-trial public final readout found in reviewed sources.",
+        "NCT07211152 / PRO-QINF-3006: completed pregnancy study; no exact-trial final publication located.",
+        "NCT05850364: publisher full text403; adjusted joint noninferiority verdict remains unresolved despite available abstract and SAP."
       ],
-      "scope": "27/27 exact-NCT registry primary endpoints and numeric documentary scores; 14/27 peer-reviewed historical outcome classifications, 0 full clinical-five scores; US trading halted flag, no verified PDUFA."
+      "scope": "27/27 exact-NCT registry primary endpoints and numeric documentary scores; 14/27 peer-reviewed historical outcome classifications, 0 full clinical-five scores; US trading halted flag, no verified PDUFA.",
+      "phaseFirstBatch": {
+        "reviewedAt": "2026-11-06",
+        "registryTrialsReviewed": 27,
+        "additionalDocumentsReviewed": 9,
+        "phaseSpecificFacts": 14,
+        "newLegacyQuestionFacts": 9,
+        "sources": [
+          "https://cdn.clinicaltrials.gov/large-docs/64/NCT05850364/SAP_001.pdf",
+          "https://cdn.clinicaltrials.gov/large-docs/64/NCT05850364/Prot_000.pdf",
+          "https://cdn.clinicaltrials.gov/large-docs/27/NCT06049927/SAP_001.pdf",
+          "https://cdn.clinicaltrials.gov/large-docs/27/NCT06049927/Prot_000.pdf",
+          "https://pubmed.ncbi.nlm.nih.gov/42659917/",
+          "https://www.sec.gov/Archives/edgar/data/1084201/000119312526258534/sva-20251231.htm",
+          "https://www.sec.gov/Archives/edgar/data/1084201/000119312526353263/sva-ex99_1.htm",
+          "https://www.sec.gov/Archives/edgar/data/1084201/000121390026065846/ea029349001ex99-1.htm",
+          "https://www.sinovac.com/en-us/news/SINOVAC_Reports_Unaudited_First_Half_of_2026_Financial_Results"
+        ]
+      }
     }
   ]
 }

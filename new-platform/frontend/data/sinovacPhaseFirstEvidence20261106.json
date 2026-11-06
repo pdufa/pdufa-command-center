@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "company": "Sinovac Biotech",
+  "ticker": "SVA",
+  "reviewedAt": "2026-11-06",
+  "scope": "All27 exact-NCT Sinovac records in existing762-trial census; historical and non-US research, not tradable Pipeline admission",
+  "sources": [
+    {
+      "id": "SIPV_SAP",
+      "url": "https://cdn.clinicaltrials.gov/large-docs/64/NCT05850364/SAP_001.pdf",
+      "date": "2024-10-28",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "PRO-sIPV-4001 SAP v1.0, sections4.3,7.9,7.11, pages7-8 and20.",
+      "sha256": "c785220ce4614e47a4ef4d54bae8042fc627fe33dd97e5f834f6ce839bedddfb"
+    },
+    {
+      "id": "SIPV_PROTOCOL",
+      "url": "https://cdn.clinicaltrials.gov/large-docs/64/NCT05850364/Prot_000.pdf",
+      "date": "2024-03-27",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "Registry-linked original protocol downloaded; scanned PDF, no full OCR interpretation claimed.",
+      "sha256": "904534a2d3079228e42331e0b923f85b8bbc7659fb605779e065ab545bb48070"
+    },
+    {
+      "id": "QINF_SAP",
+      "url": "https://cdn.clinicaltrials.gov/large-docs/27/NCT06049927/SAP_001.pdf",
+      "date": "2024-06-18",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "PRO-QINF-3005 SAP v1.0, sections4.3,5,6.10,6.11, pages7-8,20-23.",
+      "sha256": "03e4e94cfdca87eea3de963ec6deb1e08fb768fe22fbb95d847fa2294c2bcadf"
+    },
+    {
+      "id": "QINF_PROTOCOL",
+      "url": "https://cdn.clinicaltrials.gov/large-docs/27/NCT06049927/Prot_000.pdf",
+      "date": "2023-11-01",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "Original registry-linked protocol, exact sponsor protocol PRO-QINF-3005.",
+      "sha256": "cf5600311e8ba2aa2011591f00f22d1b47be4727ceaae10b2da7457f60ba8c5f"
+    },
+    {
+      "id": "SIPV_PUBLICATION",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42659917/",
+      "date": "2026-08-27",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "E-publication date from official PubMed XML; issue date2026-10-03. Publisher full text403; abstract retrieved via official NCBI efetch.",
+      "sha256": "d016540f8a0e5f188dee977c154c842cbeed330b1fc95a156bf0f2c061a7dadb"
+    },
+    {
+      "id": "2025_20F",
+      "url": "https://www.sec.gov/Archives/edgar/data/1084201/000119312526258534/sva-20251231.htm",
+      "date": "2026-06-05",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "Original20-F confirms trading halt and distinguishes filing compliance from resumption."
+    },
+    {
+      "id": "2026_H1_SEC",
+      "url": "https://www.sec.gov/Archives/edgar/data/1084201/000119312526353263/sva-ex99_1.htm",
+      "date": "2026-08-17",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "NMPA rabies approval and HFMD2 review are Chinese application milestones, not USFDA/PDUFA."
+    },
+    {
+      "id": "2025_RESULTS_SEC",
+      "url": "https://www.sec.gov/Archives/edgar/data/1084201/000121390026065846/ea029349001ex99-1.htm",
+      "date": "2026-06-05",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "Program-level prior HFMD4 Phase2 findings; no trial-specific efficacy numbers or FDA milestone inferred."
+    },
+    {
+      "id": "2026_H1_MANUFACTURER",
+      "url": "https://www.sinovac.com/en-us/news/SINOVAC_Reports_Unaudited_First_Half_of_2026_Financial_Results",
+      "date": "2026-08-17",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original document reviewed",
+      "note": "Manufacturer IR reviewed; SEC exhibit supplies accessible complete text."
+    }
+  ],
+  "records": [
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "protocol",
+      "sourceId": "SIPV_PROTOCOL",
+      "evidence": "Original PRO-sIPV-4001 protocol attachment located and downloaded. Scanned pages were not fully OCR-reviewed.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "sap",
+      "sourceId": "SIPV_SAP",
+      "evidence": "Exact PRO-sIPV-4001 SAP v1.0 downloaded and reviewed; plan availability is not a finding of analytic adequacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "power",
+      "sourceId": "SIPV_SAP",
+      "evidence": "SAP plans overall power80%, serotype power93.3%, one-sided alpha0.025, control seroconversion90%, NI margin-10 percentage points;233/group inflated to360/group for dropout and failed blood collection.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "uncertainty",
+      "sourceId": "SIPV_SAP",
+      "evidence": "SAP section7.9 specifies LOCF for missing FAS immunogenicity values and no imputation of missing safety values. These are planned methods, not proof that missingness is harmless. SAP section7.11 requires noninferiority for all three poliovirus serotypes jointly. It specifies no type-I adjustment under this intersection rule and allocates type-II error for overall80% power; no interim analysis planned.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "phase3Results",
+      "sourceId": "SIPV_PUBLICATION",
+      "evidence": "Published exact-NCT trial:1442 infants randomized. C1/S1 seroconversion: typeI90.3%/87.0%, typeII91.7%/91.3%, typeIII86.4%/92.3%. Overall prespecified NI decision remains unadjudicated; subgroup rates alone do not establish success.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "endpointPerformance",
+      "sourceId": "SIPV_PUBLICATION",
+      "evidence": "Publication uses a site-stratified CMH comparison and NI criterion: lower95% CI for seroconversion difference greater than-10 percentage points. The adjusted decision by all required serotypes is not resolved from the abstract.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "safety",
+      "sourceId": "SIPV_PUBLICATION",
+      "evidence": "Within7 days, adverse reactions were92.8% with coadministration versus95.5% with staggered vaccination. These are AR rates, not serious adverse event rates.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "biologicalActivity",
+      "sourceId": "SIPV_PUBLICATION",
+      "evidence": "Seroconversion is an immunogenicity outcome, not direct clinical poliomyelitis-prevention efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentId": "mechanism",
+      "sourceId": "SIPV_SAP",
+      "evidence": "Sabin-strain inactivated poliovirus vaccine supplies poliovirus antigen; an immune-response mechanism is distinct from clinical protection.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-sIPV-4001"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentId": "protocol",
+      "sourceId": "QINF_PROTOCOL",
+      "evidence": "Original PRO-QINF-3005 protocol attachment located and reviewed for exact study identity.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-QINF-3005"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentId": "sap",
+      "sourceId": "QINF_SAP",
+      "evidence": "Exact PRO-QINF-3005 SAP v1.0 downloaded and reviewed; not the distinct PRO-QINF-3003 trial.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-QINF-3005"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentId": "power",
+      "sourceId": "QINF_SAP",
+      "evidence": "SAP plans overall80% power, one-sided alpha0.025 and joint SCR/GMT noninferiority across four strains; type-II error is allocated0.16 to SCR and0.04 to GMT. SCR margin-10 percentage points; GMT-ratio lower bound at least2/3.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-QINF-3005"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentId": "uncertainty",
+      "sourceId": "QINF_SAP",
+      "evidence": "SAP section6.10 specifies10 multiple imputations under MAR for the primary estimand in FAS/mFAS with Rubin pooling; additional sensitivity analyses are specified. This is a plan, not proof that the MAR assumption holds. SAP section6.11 uses joint four-strain SCR/GMT conditions, subsequent absolute SCR/SPR criteria, and fixed-sequence testing of0.5mL before0.25mL. Adequacy requires interpretation; merely listing multiple endpoints is not a positive grade.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "protocol": "PRO-QINF-3005"
+    },
+    {
+      "nctId": "NCT07611513",
+      "assessmentId": "priorEfficacySafety",
+      "sourceId": "2025_RESULTS_SEC",
+      "evidence": "Issuer reports favorable prior Phase2 safety/immunogenicity for the HFMD4 program. No Phase2 NCT or numerical effect was independently matched here; these qualitative supporting statements are not outcomes of this Phase3 trial.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "MODERATE",
+      "protocol": "PRO-QEV-3001",
+      "evidenceScope": "PROGRAM_LEVEL_PRIOR_SUPPORT_NOT_TRIAL_OUTCOME"
+    }
+  ],
+  "questionFacts": [
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 13,
+      "sourceId": "SIPV_SAP",
+      "evidence": "SAP plans overall power80%, serotype power93.3%, one-sided alpha0.025, control seroconversion90%, NI margin-10 percentage points;233/group inflated to360/group for dropout and failed blood collection.",
+      "sourceLocator": "section4.3, pages7-8"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 14,
+      "sourceId": "SIPV_SAP",
+      "evidence": "SAP section7.9 specifies LOCF for missing FAS immunogenicity values and no imputation of missing safety values. These are planned methods, not proof that missingness is harmless.",
+      "sourceLocator": "section7.9, page20"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 15,
+      "sourceId": "SIPV_SAP",
+      "evidence": "SAP section7.11 requires noninferiority for all three poliovirus serotypes jointly. It specifies no type-I adjustment under this intersection rule and allocates type-II error for overall80% power; no interim analysis planned.",
+      "sourceLocator": "section7.11, page20"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 1,
+      "sourceId": "SIPV_PUBLICATION",
+      "evidence": "Published C1/S1 seroconversion rates differ by serotype; overall prespecified NI is not adjudicated. This source fact is not a PASS/FAIL or a forecast.",
+      "sourceLocator": "PubMed abstract, Results"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 3,
+      "sourceId": "SIPV_PUBLICATION",
+      "evidence": "Reported7-day AR rates92.8% versus95.5%; no inferred serious-event or discontinuation rates.",
+      "sourceLocator": "PubMed abstract, Results"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 29,
+      "sourceId": "SIPV_PUBLICATION",
+      "evidence": "Exact NCT05850364 appears in the published trial report. Public results exist despite no registry results tables; no primary-endpoint verdict inferred.",
+      "sourceLocator": "PubMed abstract, Methods; e-publication2026-08-27"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentNumber": 13,
+      "sourceId": "QINF_SAP",
+      "evidence": "SAP plans overall80% power, one-sided alpha0.025 and joint SCR/GMT noninferiority across four strains; type-II error is allocated0.16 to SCR and0.04 to GMT. SCR margin-10 percentage points; GMT-ratio lower bound at least2/3.",
+      "sourceLocator": "section4.3, pages7-8"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentNumber": 14,
+      "sourceId": "QINF_SAP",
+      "evidence": "SAP section6.10 specifies10 multiple imputations under MAR for the primary estimand in FAS/mFAS with Rubin pooling; additional sensitivity analyses are specified. This is a plan, not proof that the MAR assumption holds.",
+      "sourceLocator": "section6.10, pages20-22"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentNumber": 15,
+      "sourceId": "QINF_SAP",
+      "evidence": "SAP section6.11 uses joint four-strain SCR/GMT conditions, subsequent absolute SCR/SPR criteria, and fixed-sequence testing of0.5mL before0.25mL. Adequacy requires interpretation; merely listing multiple endpoints is not a positive grade.",
+      "sourceLocator": "section6.11, pages22-23"
+    }
+  ],
+  "eligibilityNote": "Excluded from actionable shortlist: Nasdaq trading halt remains documented; tradable market capitalization and exact USFDA application linkage are not verified.",
+  "eligibilitySourceUrl": "https://www.sec.gov/Archives/edgar/data/1084201/000119312526258534/sva-20251231.htm",
+  "programMilestones": [
+    {
+      "sourceId": "2026_H1_SEC",
+      "evidence": "NMPA approved PVRV-SF August4,2026; HFMD2 marketing application accepted July10,2026 with priority review. These are program-level China milestones, not USFDA outcomes or PDUFA dates."
+    },
+    {
+      "sourceId": "2025_RESULTS_SEC",
+      "evidence": "HFMD2 first-season primary data obtained March2026, qualitative issuer report only; no exact-NCT final efficacy figures accepted."
+    }
+  ],
+  "blockers": [
+    {
+      "nctId": "NCT05245552",
+      "issue": "Completed PRO-QINF-3003; no exact-trial public final readout found using NCT, protocol and manufacturer/publication searches. Do not substitute PRO-QINF-3005 results."
+    },
+    {
+      "nctId": "NCT07211152",
+      "issue": "Completed pregnant-women study PRO-QINF-3006; no exact-NCT public final readout found in reviewed sources."
+    },
+    {
+      "nctId": "NCT05850364",
+      "issue": "Published results and original SAP exist; all-serotype adjusted NI decision remains unadjudicated. Publisher full text returned403; official PubMed abstract and registry SAP used."
+    },
+    {
+      "nctId": "NCT06734832",
+      "issue": "Issuer has qualitative HFMD2 program update and NMPA review, but no numerical exact-NCT final verdict accepted; registry still recruiting."
+    },
+    {
+      "issue": "Ten registry trials are ongoing/not-yet-recruiting; pending results are not treated as failed efficacy or missing completed outcomes."
+    },
+    {
+      "issue": "SVA trading halt and absent verified USFDA application linkage retain research-only restriction; five-metric benchmark reviews remain unavailable."
+    }
+  ]
+}

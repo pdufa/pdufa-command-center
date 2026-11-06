@@ -20,7 +20,7 @@ test('cumulative manufacturer passes preserve exact identity and do not claim al
  const report=await (await audit.GET(new Request('http://local/api/audit'))).json();
  assert.equal(report.companyWebsiteResearch.companiesSearchedThisBatch,log.companies.length);
  assert.equal(report.companyWebsiteResearch.companiesWithPartialReview+report.companyWebsiteResearch.companiesAwaitingWebsiteReview,137);
- assert.deepEqual(new Set(report.companyWebsiteResearch.hardToResolveCompanies.map(c=>c.ticker)),new Set(['ABVX','ADMA','AGEN']));
+ assert.deepEqual(new Set(report.companyWebsiteResearch.hardToResolveCompanies.map(c=>c.ticker)),new Set(['ABVX','ADMA','AGEN','SVA']));
  assert.equal(report.assessment.predicted,61);assert.equal(report.assessment.trialsWithNumericalPredictions,4);
  assert.equal(report.fields.missingAdjudicatedEndpoint,762-endpoints.records.length);
  assert.deepEqual(report.endpointOutcomes,Object.fromEntries(['PRIMARY_ENDPOINT_MET','PRIMARY_ENDPOINT_NOT_MET','NO_BINARY_PASS_FAIL'].map(k=>[k,endpoints.records.filter(r=>r.endpointOutcome===k).length])));

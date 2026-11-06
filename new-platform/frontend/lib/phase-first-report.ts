@@ -12,6 +12,8 @@ import {phase3DeepRegistryRecord,PHASE3_DEEP_REGISTRY_AS_OF} from "./phase3-deep
 import endpointAdjudications from "../data/phase3EndpointAdjudications20261105.json";
 import axsomeRegistry from "../data/axsomePhaseFirstRegistry20261106.json";
 import axsomeEvidence from "../data/axsomePhaseFirstEvidence20261106.json";
+import sinovacRegistry from "../data/sinovacPhaseFirstRegistry20261106.json";
+import sinovacEvidence from "../data/sinovacPhaseFirstEvidence20261106.json";
 
 const AS_OF="2026-11-06";
 const oldById=new Map(legacyAlks.records.map(r=>[r.nctId,r]));
@@ -70,16 +72,19 @@ export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalCon
  const vibrance=trial.trialId==="NCT06358950"?{url:"https://alkermes.gcs-web.com/news-releases/news-release-details/lancet-neurology-publishes-data-alkermes-positive-vibrance-1",date:"2026-08-24",text:"Vibrance-1 Phase 2 placebo-controlled study: reported improvements in wakefulness, sleepiness and selected cataplexy comparisons. This trial remains Phase 2; later Brilliance trials are separate."}:
   trial.trialId==="NCT06555783"?{url:"https://investor.alkermes.com/news-releases/news-release-details/alkermes-presents-detailed-positive-results-vibrance-2-phase-2",date:"2026-06-17",text:"Vibrance-2 Phase 2: MWT prespecified significance reported for 14 mg (p=.049) and 18 mg (p=.047). Do not assume every dose met every primary comparison. No new clinical grade is inferred."}:null;
  if(vibrance)additional.proofOfConcept=vibrance;
- if(ticker==="AXSM"){
-  for(const fact of axsomeEvidence.records.filter(r=>r.nctId===trial.trialId)){
-   const source=axsomeEvidence.sources.find(s=>s.id===fact.sourceId);
+ const companyEvidence=ticker==="AXSM"?axsomeEvidence:ticker==="SVA"?sinovacEvidence:null;
+ if(companyEvidence){
+  for(const fact of companyEvidence.records.filter(r=>r.nctId===trial.trialId)){
+   const source=companyEvidence.sources.find(s=>s.id===fact.sourceId);
    if(!source)throw Error("PHASE_FIRST_SOURCE_NOT_FOUND");
    additional[fact.assessmentId]={text:fact.evidence,url:source.url,date:source.date,
-    confidence:source.url.includes("www.axsome.com")?"MODERATE":"HIGH",
+    confidence:fact.confidence==="MODERATE"||source.url.includes("www.axsome.com")?"MODERATE":"HIGH",
     status:("status" in fact?fact.status:undefined) as import("./phase-first-clinical").EvidenceStatus|undefined};
   }
  }
  return {ticker,drug,indication,programId:program?.id??"REGISTRY_INTERVENTION:"+drug.toLowerCase(),
+  pipelineRestriction:ticker==="SVA"?sinovacEvidence.eligibilityNote:null,
+  pipelineRestrictionSource:ticker==="SVA"?sinovacEvidence.eligibilitySourceUrl:null,
   programPhase:program?.phase??null,programSourceUrl:program?.sourceUrl??null,
   legacyStage:stage,stageVerified,safetyPrimary,
   notApplicableFactors:old?.notApplicableClinicalFactors??(safetyPrimary?["efficacy","clinicalBenefit","statistics","reproducibility"]:[]),
@@ -92,19 +97,20 @@ const surveySections=[{key:"A",name:"Medical Impact",min:1,max:5},{key:"B",name:
 // Existing three-level survey identifiers remain unchanged; this overlay does
 // not replace their stored responses or silently turn documentation into grades.
 export const PHASE_FIRST_SURVEY_HIERARCHY=surveySections.map(g=>({...g,surveys:BENEFIT_GROUPS.filter(s=>s.number>=g.min&&s.number<=g.max).map(s=>({number:s.number,name:s.name,questions:s.fields.map(f=>({id:f.id,label:f.label}))}))}));
-export type PhaseFirstScope="alkermes"|"axsome"|"census";
+export type PhaseFirstScope="alkermes"|"axsome"|"sinovac"|"census";
 const caches:Partial<Record<PhaseFirstScope,ReturnType<typeof build>>>={};
 function build(scope:PhaseFirstScope){
- const raw=(scope==="alkermes"?[...alksRegistry.records,...international.records]:scope==="axsome"?axsomeRegistry.records:
-  censusRegistry.records.map(t=>axsomeRegistry.records.find(a=>a.trialId===t.trialId)??t)) as unknown as PhaseTrial[];
+ const freshById=new Map([...axsomeRegistry.records,...sinovacRegistry.records].map(t=>[t.trialId,t]));
+ const raw=(scope==="alkermes"?[...alksRegistry.records,...international.records]:scope==="axsome"?axsomeRegistry.records:scope==="sinovac"?sinovacRegistry.records:
+  censusRegistry.records.map(t=>freshById.get(t.trialId)??t)) as unknown as PhaseTrial[];
  if(new Set(raw.map(r=>r.trialId)).size!==raw.length)throw Error("PHASE_FIRST_DUPLICATE_TRIAL");
  const trials=raw.map(t=>evaluatePhaseFirst(t,phaseFirstContext(t,scope==="alkermes"),AS_OF));
  const byPhase:Record<string,number>={},evidenceCounts:Record<string,number>={};
  for(const t of trials){byPhase[t.phase.label]=(byPhase[t.phase.label]??0)+1;
   for(const [s,count] of Object.entries(t.evidenceCounts))evidenceCounts[s]=(evidenceCounts[s]??0)+count;}
  return {modelVersion:PHASE_FIRST_VERSION,asOf:AS_OF,scope,trialCount:trials.length,
-  sourceScope:scope==="alkermes"?"Alkermes sponsor/collaborator search plus verified current compound/Avadel aliases; associations do not establish current ownership.":scope==="axsome"?"Axsome: all 28 exact-NCT records in the existing census, not an exhaustive historical/acquired-program census.":"Existing exact-NCT 762-trial research census; analysis never admits a row to restricted Pipeline.",
-  companyResearch:scope==="axsome"?{company:axsomeEvidence.company,documentsReviewed:axsomeEvidence.sources.length,factsRecorded:axsomeEvidence.records.length,blockers:axsomeEvidence.blockers}:null,
+  sourceScope:scope==="alkermes"?"Alkermes sponsor/collaborator search plus verified current compound/Avadel aliases; associations do not establish current ownership.":scope==="axsome"?"Axsome: all 28 exact-NCT records in the existing census, not an exhaustive historical/acquired-program census.":scope==="sinovac"?sinovacEvidence.scope:"Existing exact-NCT 762-trial research census; analysis never admits a row to restricted Pipeline.",
+  companyResearch:scope==="axsome"?{company:axsomeEvidence.company,documentsReviewed:axsomeEvidence.sources.length,factsRecorded:axsomeEvidence.records.length,blockers:axsomeEvidence.blockers,eligibilityNote:null,eligibilitySourceUrl:null}:scope==="sinovac"?{company:sinovacEvidence.company,documentsReviewed:sinovacEvidence.sources.length,factsRecorded:sinovacEvidence.records.length,blockers:sinovacEvidence.blockers,eligibilityNote:sinovacEvidence.eligibilityNote,eligibilitySourceUrl:sinovacEvidence.eligibilitySourceUrl}:null,
   currentAlkermesPrograms:scope==="alkermes"?CURRENT_ALKERMES_PROGRAMS:[],
   legacyAlkermesTrials:legacyAlks.records.length,byPhase,evidenceCounts,
   ratedTrials:trials.filter(t=>t.overallRating!==null).length,
