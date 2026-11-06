@@ -75,6 +75,14 @@ def collect(tickers, fetch, now):
                 row["response_sha256"] = hashlib.sha256(raw).hexdigest()
                 cap, disposition = extract_summary(json.loads(raw))
                 row["disposition"] = disposition
+                if cap is None and disposition == "UNPARSABLE_MARKETCAP":
+                    summary = json.loads(raw).get("data", {}).get("summaryData", {})
+                    field = summary.get("MarketCap", {})
+                    raw_value = field.get("value") if isinstance(field, dict) else None
+                    row["market_cap_field_type"] = type(raw_value).__name__
+                    row["market_cap_field_present"] = "MarketCap" in summary
+                    row["market_cap_field_empty"] = raw_value is None or raw_value == ""
+                    # Do not expose arbitrary source payload or infer a missing value.
                 if cap is not None:
                     row["market_cap_usd"] = cap
                     row["range_at_retrieval"] = "BELOW_300M" if cap < LOW else ("ABOVE_10B" if cap > HIGH else "IN_RANGE")
