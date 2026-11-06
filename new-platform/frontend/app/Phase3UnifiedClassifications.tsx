@@ -23,6 +23,8 @@ type MissingAudit={
  missingDetailedOfficialResearch:number;storedProtocol:number;missingStoredProtocol:number;
  unverifiedFDAApplication:number;unverifiedPDUFADate:number;
  missingAdjudicatedEndpoint:number;outsideDatedMarketCapScreen:number;
+ onlineRegistryRecords:number;onlinePrimaryEndpointCount:number;registryResultsPosted:number;
+ registryStatisticalAnalyses:number;pubmedNctArticleLeads:number;secNctFilingLeads:number;
  };perQuestion:{number:number;heading:string;predictions:number;observed:number;sourceFacts:number;unscored:number}[];
  exceptions:{unknownRegistryNcts:string[];outsideMarketCapScreenNcts:string[]};
 };
@@ -144,6 +146,7 @@ export default function Phase3UnifiedClassifications(){
     </p>
     <p style={{fontSize:12,margin:"6px 0"}}>
      <strong><a href="/api/phase3-live-registry-backfill">Download current registry evidence for all 762 trials (CSV)</a></strong>{" · "}
+     <a href="/api/phase3-source-coverage?format=csv">Recovered source facts for 762 trials (CSV)</a>{" · "}
      <a href="/phase3-six-source-harvest-summary-20261105.json">Six-source coverage report (JSON)</a>
     </p>
     <p style={{fontSize:11,margin:"6px 0 0"}}>AACT, FDA and international sources were also probed; access and NCT-to-application matching limitations are documented in the report.
@@ -161,10 +164,13 @@ export default function Phase3UnifiedClassifications(){
       {audit.assessment.trialsWithNumericalPredictions} trials.
      </p>
      <p style={{fontSize:12,margin:"8px 0"}}>
-      <strong>Registry research:</strong> {audit.fields.detailedOfficialResearch} saved detailed records;{" "}
-      {audit.fields.missingDetailedOfficialResearch} without detailed research in this dataset.
-      <strong> Protocol summaries:</strong> {audit.fields.storedProtocol} stored,{" "}
-      {audit.fields.missingStoredProtocol} not stored across the full census.
+      <strong>Current online recovery:</strong> {audit.fields.onlineRegistryRecords} registry records;{" "}
+      {audit.fields.onlinePrimaryEndpointCount} primary outcome fields;{" "}
+      {audit.fields.registryResultsPosted} posted registry results;{" "}
+      {audit.fields.registryStatisticalAnalyses} posted statistical analyses.
+      <strong> Earlier local cache:</strong> {audit.fields.detailedOfficialResearch} detailed records
+      and {audit.fields.storedProtocol} protocol summaries. The earlier cache counts
+      do not reflect today's online source availability.
      </p>
      <p style={{fontSize:12,margin:"8px 0"}}>
       <strong>Important missingness:</strong> {audit.fields.missingDrugField} separately named drug fields empty
@@ -196,8 +202,9 @@ export default function Phase3UnifiedClassifications(){
       </div>
      </details>
      <p style={{fontSize:11,margin:"8px 0 0"}}>Scope: {audit.scope}.
-      An UNSCORED question is not proof that no public evidence exists, and a source fact is not a scientific
-      prediction. Verified FDA application and PDUFA dates can be inapplicable for earlier-stage trials.</p>
+      An UNSCORED question is not proof that no public evidence exists.
+      A registry fact, PubMed mention, or SEC hit is not a favorable scientific prediction.
+      FDA application and PDUFA dates can be inapplicable for earlier-stage trials.</p>
     </>}
    </section>
    <p role="status" style={{fontSize:12}}>Showing {shown.length} of {filtered.length} matching trials · source classification as of {data.asOf}. Dated registry status is not proof of trial results.</p>
