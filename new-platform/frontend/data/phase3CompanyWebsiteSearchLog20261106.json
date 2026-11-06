@@ -215,7 +215,7 @@
       "company": "Sinovac Biotech Co., Ltd",
       "trials": 27,
       "reviewedAt": "2026-11-06",
-      "status": "PARTIAL_SOURCE_REVIEW_12_TRIAL_READOUTS_FOUND",
+      "status": "PARTIAL_SOURCE_REVIEW_14_TRIAL_READOUTS_FOUND",
       "officialInvestorRelationsUrl": "https://www.sinovac.com/en-us/news/release",
       "manufacturerUrl": "https://www.sinovac.com/",
       "exactRegistryTrials": [
@@ -251,9 +251,9 @@
       "hardToResolve": [
         "SVA Nasdaq trading remains halted according to its filed 2025 Form 20-F; restored listing compliance does not prove active trading. Keep SVA historical 27-NCT research corpus but do not use for tradable US market-cap shortlist until verified.",
         "2026 issuer press releases emphasize China NMPA approval and NDA review; no trial-level US FDA PDUFA date established from these company-wide statements.",
-        "All 27 registry primary outcome descriptions cross-checked; 12 exact-NCT published source adjudications saved and 15 still require original readout evidence. No full five-factor clinical RAAS grade established."
+        "Fourteen historical published trial readouts now classified; thirteen NCT outcomes remain unadjudicated or ongoing. No five-factor clinical RAAS score available."
       ],
-      "scope": "27/27 exact-NCT registry primary endpoints reconciled; 12/27 peer/issuer historical outcome adjudications, 27/27 numerical documentation scores, 0/27 full validated clinical-five scores. SVA US trading flag remains research-only."
+      "scope": "27/27 exact-NCT registry primary endpoints and numeric documentary scores; 14/27 peer-reviewed historical outcome classifications, 0 full clinical-five scores; US trading halted flag, no verified PDUFA."
     }
   ]
 }
