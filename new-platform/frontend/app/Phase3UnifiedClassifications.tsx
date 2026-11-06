@@ -58,7 +58,7 @@ export default function Phase3UnifiedClassifications(){
  const perPage=50;
  useEffect(()=>{
   const controller=new AbortController();
-  fetch("/phase3-unified-classifications-2026-11-05.json",{cache:"no-store",signal:controller.signal})
+  fetch("/api/phase3-corrected-classifications",{cache:"no-store",signal:controller.signal})
    .then(async r=>{if(!r.ok)throw new Error("Classification source unavailable");return await r.json() as Snapshot;})
    .then(d=>{
     if(d.total!==762||d.rows.length!==762||
