@@ -1,9 +1,11 @@
 import discoveryAvenues from "../../../data/phase3DiscoveryAvenues20261106.json";
 import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
+import ionisEvidence from "../../../data/ionisPhase3Evidence20261106.json";
+import {activePhase3Cohorts} from "../../../lib/phase3-active-cohorts";
 import companySearchLog from "../../../data/phase3CompanyWebsiteSearchLog20261106.json";
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,isObservedStatus,isSourceFactStatus,requiresResearchStatus,investorRelationsCoverage} from "../../../lib/phase3-ir-research";
-import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
+const ledger=activePhase3Cohorts.snapshot;
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import adjudications from "../../../data/phase3EndpointAdjudications20261105.json";
 import investorRelationsEvidence from "../../../data/phase3CompanyWebsiteEvidence20261105.json";
@@ -17,6 +19,7 @@ export const dynamic="force-dynamic";
 
 const endpointByNct=new Map(adjudications.records.map(x=>[x.nctId,x] as const));
 const agiosFacts=new Map(agiosEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
+const ionisFacts=new Map(ionisEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 const investorByNct=new Map(investorRelationsEvidence.records.map(x=>[x.nctId,x] as const));
 const registryByNct=new Map(registryCrosswalk.records.map(x=>[x.nctId,x] as const));
 const preDataByNct=new Map(preData.trials.map(x=>[x.nctId,x] as const));
@@ -40,10 +43,16 @@ function statusFor(
  if(q.number===1&&e?.endpointOutcome==="PRIMARY_ENDPOINT_MET")return "OBSERVED_PRIMARY_ENDPOINT_MET";
  if(q.number===1&&e?.endpointOutcome==="PRIMARY_ENDPOINT_NOT_MET")return "OBSERVED_PRIMARY_ENDPOINT_NOT_MET";
  if(q.number===1&&e?.endpointOutcome==="NO_BINARY_PASS_FAIL")return "DOCUMENTED_NON_BINARY_ENDPOINT";
- if(q.number===29&&e)return "DOCUMENTED_PUBLIC_READOUT";
+ if(q.number===1&&!e&&r.classificationVerified&&r.readoutEvidenceUrl){
+  if(r.readoutOutcome==="PRIMARY_ENDPOINT_MET")return "OBSERVED_PRIMARY_ENDPOINT_MET";
+  if(r.readoutOutcome==="PRIMARY_ENDPOINT_NOT_MET")return "OBSERVED_PRIMARY_ENDPOINT_NOT_MET";
+  if(r.readoutOutcome==="NO_BINARY_PASS_FAIL")return "DOCUMENTED_NON_BINARY_ENDPOINT";
+ }
+ if(q.number===29&&(e||r.classificationVerified&&r.readoutEvidenceUrl&&r.classificationCode==="P3_POST_DATA_ISSUER"))return "DOCUMENTED_PUBLIC_READOUT";
  const researched=irAssessment(r.nctId,q.number);
  if(researched)return researched.classification;
  if(agiosFacts.has(r.nctId+"#"+q.number))return "SOURCE_FACT_ONLY";
+ if(ionisFacts.has(r.nctId+"#"+q.number))return "SOURCE_FACT_ONLY";
  const ir=investorByNct.get(r.nctId);
  if(q.number===30&&ir?.regulatoryEvidenceStatus&&ir.regulatoryEvidenceUrl)return "SOURCE_FACT_ONLY";
  if(ir?.companyUrl){
@@ -85,7 +94,8 @@ export async function GET(request:Request){
     investorByNct.size!==investorRelationsEvidence.records.length||
     PHASE3_ONLINE_TRIAL_COUNT!==762||
     registryCrosswalk.records.length!==762||registryByNct.size!==762||
-    agiosEvidence.trials.length!==9||agiosFacts.size!==agiosEvidence.facts.length){
+    agiosEvidence.trials.length!==9||agiosFacts.size!==agiosEvidence.facts.length||
+    ionisEvidence.trials.length!==12||ionisFacts.size!==ionisEvidence.facts.length){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
  const perQuestion:QuestionAudit[]=UNIVERSAL_PHASE3_QUESTIONS.map((q,i)=>({
