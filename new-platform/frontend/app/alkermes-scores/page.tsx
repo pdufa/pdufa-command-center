@@ -2,6 +2,7 @@ import Link from "next/link";
 import source from "../../data/alks34ClinicalScorecard20261106.json";
 import deepResults from "../../data/alks34RegistryDeepResults20261106.json";
 import researchAudit from "../../data/alks34ProtocolSafetyApplicabilityAudit20261106.json";
+import externalMethods from "../../data/alks23ExternalMethodsResearch20261106.json";
 import {clinicalFiveForTrial} from "../../lib/raas-clinical-five";
 
 export const metadata={title:"Alkermes 34-Trial Clinical Scoring | PDUFA Command Center"};
@@ -147,6 +148,31 @@ export default function AlkermesTrialScorePage(){
        </details>
       </td>
      </tr>})}</tbody>
+    </table>
+   </div>
+  </section>
+  <section className="panel" style={{marginTop:18}} data-alks-external-methods-backfill="2026-11-06">
+   <h2>External research for the 23 missing protocol/SAP attachments</h2>
+   <p>Of the 23 studies without both attachments in our stored registry snapshot, <strong>{externalMethods.summary.originalPeerReviewedOrFdaOrRegistryMethodsReviewed}</strong> now have an exact-study regulatory, peer-reviewed or official registry methods source crosschecked here; <strong>{externalMethods.summary.notYetIndividuallyResearchedOutsideStoredRegistry}</strong> still need individual outside-source review. One pivotal aripiprazole lauroxil study has an <strong>independent FDA statistical review</strong> discussing the sponsor's prespecified analysis, multiple testing, missing-data sensitivity checks and attrition. This is not a substitute for the original full protocol/SAP, and no additional complete original protocol or SAP has been found in this pass. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/data/alks23ExternalMethodsResearch20261106.json" target="_blank" rel="noopener noreferrer">Full 23-trial source research (JSON)</a>.</p>
+   <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+    <table style={{borderCollapse:"collapse",width:"100%",minWidth:650,fontSize:12}}>
+     <thead><tr style={{textAlign:"left",background:"#e7f1e9"}}>
+      {["Trial","Study purpose","Methods evidence","Research findings"].map(h=><th key={h} scope="col" style={{padding:"10px 8px",borderBottom:"2px solid #aac8b3"}}>{h}</th>)}
+     </tr></thead>
+     <tbody>{externalMethods.records.map(r=><tr key={r.nctId} data-alks-external-methods-trial={r.nctId} style={{verticalAlign:"top",borderBottom:"1px solid #d8e7dc"}}>
+      <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><a href={r.registryUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
+      <td style={{padding:"10px 8px"}}>{r.studyPurpose==="SAFETY_PRIMARY"?"Safety-primary":"Efficacy/comparative"}</td>
+      <td style={{padding:"10px 8px"}}>{r.sourceUrl?"Source reviewed":"Further source search needed"}<div style={{fontSize:11}}>{r.sourceType?.replaceAll("_"," ")||"Not yet reviewed outside the stored registry"}</div></td>
+      <td style={{padding:"10px 8px"}}><details data-alks-external-methods-expand={r.nctId}>
+       <summary style={{cursor:"pointer",fontWeight:700}}>Evidence and limitations ▸</summary>
+       <p><strong>Protocol/SAP status:</strong> Neither complete original document attached in stored registry snapshot. This pass does not establish that no public copy exists elsewhere.</p>
+       {r.sourceUrl&&<p><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">Open original methods / FDA review source</a></p>}
+       {r.findings.map((v,i)=><p key={i}>{v}</p>)}
+       {r.additionalSources.map((v,i)=><p key={i}><a href={v.url} target="_blank" rel="noopener noreferrer">Additional {v.type.replaceAll("_"," ").toLowerCase()} source</a></p>)}
+       <p><strong>Limitations:</strong> {r.limitations}</p>
+       {r.sourceQuestionLeads.length>0&&<p><strong>Possible 30-question evidence leads:</strong> {r.sourceQuestionLeads.join(", ")}. These do not automatically change an unreviewed production question status or award a grade.</p>}
+      </details></td>
+     </tr>)}</tbody>
     </table>
    </div>
   </section>
