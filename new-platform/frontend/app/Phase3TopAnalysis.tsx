@@ -8,8 +8,8 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
    Analysis · {completed}/{PHASE3_QUESTION_COUNT} documented
   </summary>
   <div style={{fontSize:12,lineHeight:1.5,marginTop:7}}>
-   <p><strong>Pre-readout predictions only.</strong> No Phase 3 efficacy result is inferred. No surveys or ratings.</p>
-   {questions.map(q=><details key={q.number} open={q.number===2&&!!q.answer} style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
+   <p><strong>Pre-readout predictions only.</strong> No Phase 3 efficacy result is inferred. Question scores are subjective 0–100 confidence indicators, not calibrated probabilities; RAAS surveys remain cancelled.</p>
+   {questions.map(q=><details key={q.number} open={(q.number===2||q.number===3)&&!!q.answer} style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
     <summary style={{cursor:"pointer"}}>
      Q{q.number} · {q.heading}{q.answer?" — predicted "+q.answer.prediction:" — not assessed"}
     </summary>
@@ -17,7 +17,11 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
      <p><strong>{q.answer.question}</strong></p>
      <div data-phase3-prediction={q.answer.prediction} style={{margin:"10px 0",padding:"10px 12px",border:"2px solid #a4c9ad",borderRadius:8,background:"#f0f8f2"}}>
       <div style={{fontSize:12,fontWeight:750,letterSpacing:"0.07em",color:"#24583a"}}>PREDICTED · NOT REPORTED</div>
-      <div style={{fontSize:34,lineHeight:1.12,fontWeight:900,letterSpacing:"0.05em",color:"#155e34"}}>{q.answer.prediction}</div>
+      <div style={{display:"flex",alignItems:"baseline",gap:14,flexWrap:"wrap"}}>
+       <div style={{fontSize:34,lineHeight:1.12,fontWeight:900,letterSpacing:"0.05em",color:"#155e34"}}>{q.answer.prediction}</div>
+       <div data-question-score={q.number} style={{fontSize:27,lineHeight:1.16,fontWeight:850,color:"#155e34"}}>{q.answer.score}<span style={{fontSize:15,fontWeight:650}}>/100</span></div>
+      </div>
+      <div style={{fontSize:11,color:"#38624a",marginTop:4}}>Subjective prediction-confidence score · not a reported result or statistically calibrated probability</div>
       <p style={{margin:"6px 0 0"}}>{q.answer.summary}</p>
      </div>
      <p><strong>Reason:</strong> {q.answer.reason}</p>
