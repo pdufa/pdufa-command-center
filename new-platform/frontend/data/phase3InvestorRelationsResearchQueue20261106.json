@@ -2686,92 +2686,1786 @@
     {
       "ticker": "BCRX",
       "company": "BioCryst Pharmaceuticals",
-      "officialInvestorRelationsUrl": null,
-      "searchStatus": "NOT_YET_REVIEWED",
+      "officialInvestorRelationsUrl": "https://ir.biocryst.com/",
+      "searchStatus": "PARTIALLY_REVIEWED",
       "trials": [
         {
           "nctId": "NCT00486980",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT00610935",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT00957996",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT00958776",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT01224795",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT02303626",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_NOT_MET"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT02369159",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT02635724",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT02670720",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT03472040",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT03485911",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 4,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 5,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 6,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT03873116",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT04933721",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT05453968",
           "identityMatched": false,
           "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 8,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 9,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 10,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 11,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 12,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 23,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 24,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 25,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         }
       ],
       "blockers": []
