@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 26,
+  "totalReviewed": 28,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 22,
+    "PRIMARY_ENDPOINT_MET": 24,
     "PRIMARY_ENDPOINT_NOT_MET": 2,
     "NO_BINARY_PASS_FAIL": 2
   },
@@ -243,6 +243,24 @@
       "evidenceType": "ISSUER_PHASE3_MIXED_DUAL_PRIMARY_ENDPOINTS",
       "reviewedAt": "2026-11-05",
       "qualification": "One of two co-primary outcomes did not achieve statistical significance; the favorable trial-level label must not conceal that. Sponsor reported FDA sNDA review and Feb 1, 2027 PDUFA date in Nov 5, 2026 corporate update, independent FDA confirmation not established."
+    },
+    {
+      "nctId": "NCT06347003",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Arrowhead SHASTA-3 Phase 3 plozasiran in severe hypertriglyceridemia met its prespecified Month 12 primary triglyceride-reduction endpoint versus placebo (median 79% reduction from baseline; p<0.0001). Sponsor Aug 30, 2026 readout explicitly identifies NCT06347003 for SHASTA-3.",
+      "evidenceUrl": "https://ir.arrowheadpharma.com/news-releases/news-release-details/arrowhead-pharmaceuticals-presents-phase-3-shasta-3-and-shasta-4",
+      "evidenceType": "ISSUER_PHASE3_READOUT_EXACT_NCT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Reported primary endpoint only. Pooled acute pancreatitis analysis spans SHASTA-3 and SHASTA-4, not per-study outcome. Planned sNDA is not an approved application."
+    },
+    {
+      "nctId": "NCT06347016",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Arrowhead SHASTA-4 Phase 3 plozasiran in severe hypertriglyceridemia met its prespecified Month 12 primary triglyceride-reduction endpoint versus placebo (median 81% reduction from baseline; p<0.0001). Sponsor Aug 30, 2026 readout explicitly identifies NCT06347016 for SHASTA-4.",
+      "evidenceUrl": "https://ir.arrowheadpharma.com/news-releases/news-release-details/arrowhead-pharmaceuticals-presents-phase-3-shasta-3-and-shasta-4",
+      "evidenceType": "ISSUER_PHASE3_READOUT_EXACT_NCT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Reported primary endpoint only. Pooled acute pancreatitis analysis spans SHASTA-3 and SHASTA-4, not per-study outcome. Planned sNDA is not an approved application."
     }
   ]
 }
