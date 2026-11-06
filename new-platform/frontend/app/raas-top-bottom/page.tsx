@@ -9,7 +9,7 @@ export default function RaasTopBottomPage(){
   <header className={css.header}>
    <Link className={css.back} href="/tools">← TOOLS</Link>
    <h1>Phase 3 · TOP and BOTTOM spreadsheets</h1>
-   <p><strong>Legacy surveys remain retired.</strong> Source-backed clinical ratings, evidence completeness and saved RAAS scores appear only where the reviewed data supports them. Original trial histories remain preserved.</p>
+   <p><strong>Surveys and ratings cancelled</strong> refers to the retired legacy survey/questionnaire system. Separate phase-first clinical ratings, evidence completeness and saved RAAS grades are shown only when the source review supports them. Original trial histories remain preserved.</p>
    <p>Reconciled active Phase 3 studies: <strong>238 Pre-Data</strong> and <strong>20 Post-Data</strong>. Completed, terminated, withdrawn and unknown-status trials remain in the historical research census, not the active spreadsheets.</p>
   </header>
   <Phase3SourceOnlySheets/>
