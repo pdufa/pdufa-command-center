@@ -1,0 +1,1604 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-06",
+  "sourceSnapshotAt": "2026-11-06T05:10:52.943Z",
+  "scope": "ALKS_34_EXACT_NCT_REGISTRY_POSTED_PRIMARY_AND_SAFETY",
+  "note": "Trial-specific ClinicalTrials.gov source facts from stored deep registry extraction. Nonposted results are not treated as failure; safety and efficacy endpoints are different. Observed values are not independent AI predictions.",
+  "count": 34,
+  "postedResultsCount": 27,
+  "records": [
+    {
+      "nctId": "NCT04987229",
+      "registryStatus": "ENROLLING_BY_INVITATION",
+      "primaryOutcomes": "Incidence of adverse events",
+      "primaryTimeframes": "Up to 52 weeks",
+      "postedResults": false,
+      "results": [],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "",
+      "otherAdverseEventsByArm": "",
+      "seriousAdverseEventTerms": 0,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04987229"
+    },
+    {
+      "nctId": "NCT06767683",
+      "registryStatus": "RECRUITING",
+      "primaryOutcomes": "Incidence of Treatment-Emergent Adverse Events",
+      "primaryTimeframes": "Up to 248 Weeks",
+      "postedResults": false,
+      "results": [],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "",
+      "otherAdverseEventsByArm": "",
+      "seriousAdverseEventTerms": 0,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06767683"
+    },
+    {
+      "nctId": "NCT01436032",
+      "registryStatus": "TERMINATED",
+      "primaryOutcomes": "Sum of the time-weighted pain intensity differences (SPID) as recorded on the Visual Analog Scale (VAS) from baseline (time 0) to 24 hours following the first dose of study medication (SPID 24)",
+      "primaryTimeframes": "0 to 24 hours",
+      "postedResults": false,
+      "results": [],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "",
+      "otherAdverseEventsByArm": "",
+      "seriousAdverseEventTerms": 0,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01436032"
+    },
+    {
+      "nctId": "NCT05303064",
+      "registryStatus": "RECRUITING",
+      "primaryOutcomes": "Change from baseline in body mass index (BMI) Zscore at week 12",
+      "primaryTimeframes": "12 weeks",
+      "postedResults": false,
+      "results": [],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "",
+      "otherAdverseEventsByArm": "",
+      "seriousAdverseEventTerms": 0,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05303064"
+    },
+    {
+      "nctId": "NCT07455383",
+      "registryStatus": "RECRUITING",
+      "primaryOutcomes": "Change in mean sleep latency (MSL) on Maintenance of Wakefulness Test (MWT) from baseline to Week 12 by dose level",
+      "primaryTimeframes": "Baseline to Week 12",
+      "postedResults": false,
+      "results": [],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "",
+      "otherAdverseEventsByArm": "",
+      "seriousAdverseEventTerms": 0,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT07455383"
+    },
+    {
+      "nctId": "NCT07502443",
+      "registryStatus": "RECRUITING",
+      "primaryOutcomes": "Change in mean sleep latency (MSL) on Maintenance of Wakefulness Test (MWT) from baseline to Week 12 by dose level",
+      "primaryTimeframes": "Baseline to Week 12",
+      "postedResults": false,
+      "results": [],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "",
+      "otherAdverseEventsByArm": "",
+      "seriousAdverseEventTerms": 0,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT07502443"
+    },
+    {
+      "nctId": "NCT07540897",
+      "registryStatus": "RECRUITING",
+      "primaryOutcomes": "Change in mean sleep latency (MSL) on Maintenance of Wakefulness Test (MWT) from baseline to Week 12 by dose level",
+      "primaryTimeframes": "Baseline to Week 12",
+      "postedResults": false,
+      "results": [],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "",
+      "otherAdverseEventsByArm": "",
+      "seriousAdverseEventTerms": 0,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT07540897"
+    },
+    {
+      "nctId": "NCT00156923",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number of Participants Reporting at Least 1 Treatment-emergent Adverse Event (TEAE)",
+      "primaryTimeframes": "Up to 3.5 years of monthly treatment",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Participants Reporting at Least 1 Treatment-emergent Adverse Event (TEAE)",
+          "timeFrame": "Up to 3.5 years of monthly treatment",
+          "measurements": [
+            {
+              "arm": "Medisorb Naltrexone 380 mg",
+              "value": "49",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Medisorb Naltrexone 190 mg",
+              "value": "51",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Medisorb Naltrexone 380 mg: 9/56 | Medisorb Naltrexone 190 mg: 9/52",
+      "otherAdverseEventsByArm": "Medisorb Naltrexone 380 mg: 51/56 | Medisorb Naltrexone 190 mg: 49/52",
+      "seriousAdverseEventTerms": 21,
+      "infectionEventTerms": "Bronchitis NOS | Upper respiratory tract infection NOS | Influenza",
+      "participantFlowGroups": "Overall Study: STARTED / Medisorb Naltrexone 380 mg 56 | Overall Study: STARTED / Medisorb Naltrexone 190 mg 52 | Overall Study: COMPLETED / Medisorb Naltrexone 380 mg 22 | Overall Study: COMPLETED / Medisorb Naltrexone 190 mg 20 | Overall Study: NOT COMPLETED / Medisorb Naltrexone 380 mg 34 | Overall Study: NOT COMPLETED / Medisorb Naltrexone 190 mg 32",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00156923"
+    },
+    {
+      "nctId": "NCT00156936",
+      "registryStatus": "TERMINATED",
+      "primaryOutcomes": "Number of Subjects Who Reported at Least 1 Treatment-emergent Adverse Event (TEAE) While on Study.",
+      "primaryTimeframes": "Up to 3 years",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Subjects Who Reported at Least 1 Treatment-emergent Adverse Event (TEAE) While on Study.",
+          "timeFrame": "Up to 3 years",
+          "measurements": [
+            {
+              "arm": "Medisorb Naltrexone 380 mg (VIVITROL)",
+              "value": "62",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Oral Naltrexone to Medisorb Naltrexone 380 mg (VIVITROL)",
+              "value": "11",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Medisorb Naltrexone 380 mg (VIVITROL): 9/92 | Oral Naltrexone to Medisorb Naltrexone 380 mg (VIVITROL): 2/16",
+      "otherAdverseEventsByArm": "Medisorb Naltrexone 380 mg (VIVITROL): 62/92 | Oral Naltrexone to Medisorb Naltrexone 380 mg (VIVITROL): 11/16",
+      "seriousAdverseEventTerms": 14,
+      "infectionEventTerms": "Bronchitis acute NOS | Pneumonia bacterial NOS | Pneumonia streptococcal | Staphylococcal infection NOS | Upper respiratory infection | Influenza | Sinusitis NOS | Respiratory tract infection NOS | Urinary tract infection NOS | Lymph gland infection | Upper respiratory tract infection NOS",
+      "participantFlowGroups": "Overall Study: STARTED / Medisorb Naltrexone 380 mg (VIVITROL) 92 | Overall Study: STARTED / Oral Naltrexone to Medisorb Naltrexone 380 mg (VIVITROL) 16 | Overall Study: COMPLETED / Medisorb Naltrexone 380 mg (VIVITROL) 20 | Overall Study: COMPLETED / Oral Naltrexone to Medisorb Naltrexone 380 mg (VIVITROL) 5 | Overall Study: NOT COMPLETED / Medisorb Naltrexone 380 mg (VIVITROL) 72 | Overall Study: NOT COMPLETED / Oral Naltrexone to Medisorb Naltrexone 380 mg (VIVITROL) 11",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00156936"
+    },
+    {
+      "nctId": "NCT01218971",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number of Participants Reporting at Least 1 Treatment-emergent Adverse Event (TEAE) While in Study",
+      "primaryTimeframes": "Up to 48 weeks (13 injections), not including base study",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Participants Reporting at Least 1 Treatment-emergent Adverse Event (TEAE) While in Study",
+          "timeFrame": "Up to 48 weeks (13 injections), not including base study",
+          "measurements": [
+            {
+              "arm": "Medisorb Naltrexone 380 mg",
+              "value": "143",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Medisorb Naltrexone 190 mg",
+              "value": "130",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Medisorb Naltrexone 380mg--Combined: 6/175 | Medisorb Naltrexone 190mg--Combined: 12/157 | Placebo to 380mg: 2/60 | 380mg to 380mg: 4/115 | Placebo to 190mg: 2/55 | 190mg to 190mg: 10/102",
+      "otherAdverseEventsByArm": "Medisorb Naltrexone 380mg--Combined: 143/175 | Medisorb Naltrexone 190mg--Combined: 130/157 | Placebo to 380mg: 51/60 | 380mg to 380mg: 92/115 | Placebo to 190mg: 46/55 | 190mg to 190mg: 84/102",
+      "seriousAdverseEventTerms": 18,
+      "infectionEventTerms": "Pneumonia NOS | Upper respiratory tract infection NOS | Sinusitis NOS | Influenza | Bronchitis NOS | Influenza like illness",
+      "participantFlowGroups": "Overall Study: STARTED / Medisorb Naltrexone 380 mg 175 | Overall Study: STARTED / Medisorb Naltrexone 190 mg 157 | Overall Study: COMPLETED / Medisorb Naltrexone 380 mg 71 | Overall Study: COMPLETED / Medisorb Naltrexone 190 mg 77 | Overall Study: NOT COMPLETED / Medisorb Naltrexone 380 mg 104 | Overall Study: NOT COMPLETED / Medisorb Naltrexone 190 mg 80",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01218971"
+    },
+    {
+      "nctId": "NCT01218997",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number of Subjects Reporting at Least 1 Treatment-emergent Adverse Event (TEAE) While on Study",
+      "primaryTimeframes": "up to 1 year",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Subjects Reporting at Least 1 Treatment-emergent Adverse Event (TEAE) While on Study",
+          "timeFrame": "up to 1 year",
+          "measurements": [
+            {
+              "arm": "Medisorb Naltrexone 380 mg (VIVITROL)",
+              "value": "336",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Oral Naltrexone 50 mg",
+              "value": "53",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Medisorb Naltrexone 380 mg (VIVITROL): 49/371 | Oral Naltrexone 50 mg: 5/65",
+      "otherAdverseEventsByArm": "Medisorb Naltrexone 380 mg (VIVITROL): 336/371 | Oral Naltrexone 50 mg: 53/65",
+      "seriousAdverseEventTerms": 42,
+      "infectionEventTerms": "Upper respiratory tract infection NOS | Influenza | Sinusitis NOS | Urinary tract infection NOS | Influenza like illness",
+      "participantFlowGroups": "Overall Study: STARTED / Medisorb Naltrexone 380 mg (VIVITROL) 371 | Overall Study: STARTED / Oral Naltrexone 50 mg 65 | Overall Study: COMPLETED / Medisorb Naltrexone 380 mg (VIVITROL) 126 | Overall Study: COMPLETED / Oral Naltrexone 50 mg 24 | Overall Study: NOT COMPLETED / Medisorb Naltrexone 380 mg (VIVITROL) 245 | Overall Study: NOT COMPLETED / Oral Naltrexone 50 mg 41",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01218997"
+    },
+    {
+      "nctId": "NCT02669758",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number of Participants With Adverse Events (AEs)",
+      "primaryTimeframes": "Up to 52 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Participants With Adverse Events (AEs)",
+          "timeFrame": "Up to 52 weeks",
+          "measurements": [
+            {
+              "arm": "ALKS 3831",
+              "value": "136",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "ALKS 3831: 8/277",
+      "otherAdverseEventsByArm": "ALKS 3831: 102/277",
+      "seriousAdverseEventTerms": 6,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 3831 277 | Overall Study: COMPLETED / ALKS 3831 183 | Overall Study: NOT COMPLETED / ALKS 3831 94",
+      "participantFlowDiscontinuations": "Overall Study: Withdrawal by Subject / ALKS 3831 43 | Overall Study: Lost to Follow-up / ALKS 3831 19 | Overall Study: Adverse Event / ALKS 3831 16 | Overall Study: Non-Compliance with Study Drug / ALKS 3831 8 | Overall Study: Lack of Efficacy / ALKS 3831 5 | Overall Study: Pregnancy / ALKS 3831 1 | Overall Study: Study noncompliance / ALKS 3831 1 | Overall Study: Protocol Violation / ALKS 3831 1",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02669758"
+    },
+    {
+      "nctId": "NCT00834080",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number of Subjects Reporting at Least 1 Treatment-emergent Adverse Event (TEAE) While on Study.",
+      "primaryTimeframes": "2 years (Baseline to end of study)",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Subjects Reporting at Least 1 Treatment-emergent Adverse Event (TEAE) While on Study.",
+          "timeFrame": "2 years (Baseline to end of study)",
+          "measurements": [
+            {
+              "arm": "VIVITROL",
+              "value": "37",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Medisorb Naltrexone 380 mg (VIVITROL): 2/38",
+      "otherAdverseEventsByArm": "Medisorb Naltrexone 380 mg (VIVITROL): 37/38",
+      "seriousAdverseEventTerms": 2,
+      "infectionEventTerms": "Upper respiratory tract infection | Bronchitis | Sinusitis | Urinary tract infection | Influenza",
+      "participantFlowGroups": "Overall Study: STARTED / VIVITROL 38 | Overall Study: COMPLETED / VIVITROL 15 | Overall Study: NOT COMPLETED / VIVITROL 23",
+      "participantFlowDiscontinuations": "Overall Study: Adverse Event / VIVITROL 7 | Overall Study: Lost to Follow-up / VIVITROL 7 | Overall Study: Withdrawal by Subject / VIVITROL 5 | Overall Study: Other - Pregnancy / VIVITROL 1 | Overall Study: Other - False positive tests of the UDS / VIVITROL 1 | Overall Study: Physician Decision / VIVITROL 1 | Overall Study: Subject Relocated / VIVITROL 1",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00834080"
+    },
+    {
+      "nctId": "NCT02085135",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number of Subjects With Adverse Events (AEs)",
+      "primaryTimeframes": "8 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Subjects With Adverse Events (AEs)",
+          "timeFrame": "8 weeks",
+          "measurements": [
+            {
+              "arm": "1-Week Titration",
+              "value": "27",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "2-Week Titration",
+              "value": "28",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "1-Week Titration: 0/34 | 2-Week Titration: 0/32",
+      "otherAdverseEventsByArm": "1-Week Titration: 23/34 | 2-Week Titration: 28/32",
+      "seriousAdverseEventTerms": 0,
+      "infectionEventTerms": "Influenza",
+      "participantFlowGroups": "Overall Study: STARTED / 1-Week Titration 34 | Overall Study: STARTED / 2-Week Titration 32 | Overall Study: COMPLETED / 1-Week Titration 23 | Overall Study: COMPLETED / 2-Week Titration 23 | Overall Study: NOT COMPLETED / 1-Week Titration 11 | Overall Study: NOT COMPLETED / 2-Week Titration 9",
+      "participantFlowDiscontinuations": "Overall Study: Adverse Event / 1-Week Titration 4 | Overall Study: Adverse Event / 2-Week Titration 7 | Overall Study: Lost to Follow-up / 1-Week Titration 2 | Overall Study: Lost to Follow-up / 2-Week Titration 2 | Overall Study: Withdrawal by Subject / 1-Week Titration 3 | Overall Study: Withdrawal by Subject / 2-Week Titration 0 | Overall Study: Lack of Efficacy / 1-Week Titration 2 | Overall Study: Lack of Efficacy / 2-Week Titration 0",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02085135"
+    },
+    {
+      "nctId": "NCT02141399",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Incidence of Adverse Events (AEs)",
+      "primaryTimeframes": "Up to 56 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Incidence of Adverse Events (AEs)",
+          "timeFrame": "Up to 56 weeks",
+          "measurements": [
+            {
+              "arm": "ALKS 5461",
+              "value": "1124",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "ALKS 5461: 47/1485",
+      "otherAdverseEventsByArm": "ALKS 5461: 1124/1485",
+      "seriousAdverseEventTerms": 55,
+      "infectionEventTerms": "Pneumonia | Upper respiratory tract infection",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 5461 1485 | Overall Study: COMPLETED / ALKS 5461 741 | Overall Study: NOT COMPLETED / ALKS 5461 744",
+      "participantFlowDiscontinuations": "Overall Study: Adverse Event / ALKS 5461 158 | Overall Study: Lack of Efficacy / ALKS 5461 62 | Overall Study: Lost to Follow-up / ALKS 5461 151 | Overall Study: Non-compliance with study drug / ALKS 5461 18 | Overall Study: Other / ALKS 5461 45 | Overall Study: Physician Decision / ALKS 5461 17 | Overall Study: Pregnancy / ALKS 5461 3 | Overall Study: Protocol Violation / ALKS 5461 38 | Overall Study: Withdrawal by Subject / ALKS 5461 238 | Overall Study: Failure to meet eligibility criteria / ALKS 5461 14",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02141399"
+    },
+    {
+      "nctId": "NCT03187769",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Percent Change From Baseline in Body Weight at Week 12",
+      "primaryTimeframes": "Baseline and 12 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Percent Change From Baseline in Body Weight at Week 12",
+          "timeFrame": "Baseline and 12 weeks",
+          "measurements": [
+            {
+              "arm": "ALKS 3831",
+              "value": "4.91",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Olanzapine",
+              "value": "6.77",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": ".012",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "ALKS 3831"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 1,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "ALKS 3831: 8/211 | Olanzapine: 8/215",
+      "otherAdverseEventsByArm": "ALKS 3831: 134/211 | Olanzapine: 136/215",
+      "seriousAdverseEventTerms": 9,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 3831 211 | Overall Study: STARTED / Olanzapine 215 | Overall Study: COMPLETED / ALKS 3831 165 | Overall Study: COMPLETED / Olanzapine 161 | Overall Study: NOT COMPLETED / ALKS 3831 46 | Overall Study: NOT COMPLETED / Olanzapine 54",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT03187769"
+    },
+    {
+      "nctId": "NCT03201757",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Incidence of Adverse Events | Change From Baseline in Clinical Global Impression-Severity (CGI-S) Scale",
+      "primaryTimeframes": "Up to 48 months | Up to 48 months",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Incidence of Adverse Events",
+          "timeFrame": "Up to 48 months",
+          "measurements": [
+            {
+              "arm": "ALKS 3831",
+              "value": "314",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        },
+        {
+          "title": "Change From Baseline in Clinical Global Impression-Severity (CGI-S) Scale",
+          "timeFrame": "Up to 48 months",
+          "measurements": [
+            {
+              "arm": "ALKS 3831",
+              "value": "-.24",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "ALKS 3831: 35/523",
+      "otherAdverseEventsByArm": "ALKS 3831: 314/523",
+      "seriousAdverseEventTerms": 41,
+      "infectionEventTerms": "Large intestine infection | Pneumonia | Upper respiratory tract infection",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 3831 523 | Overall Study: COMPLETED / ALKS 3831 188 | Overall Study: NOT COMPLETED / ALKS 3831 335",
+      "participantFlowDiscontinuations": "Overall Study: Withdrawal by Subject / ALKS 3831 133 | Overall Study: Adverse Event / ALKS 3831 44 | Overall Study: Lost to Follow-up / ALKS 3831 37 | Overall Study: Pregnancy / ALKS 3831 2 | Overall Study: Lack of Efficacy / ALKS 3831 1 | Overall Study: Protocol Violation / ALKS 3831 20 | Overall Study: Study Terminated at Site by Sponsor Due to Regional War / ALKS 3831 1 | Overall Study: Not Yet Determined / ALKS 3831 5 | Overall Study: Logistical Difficulties Due to Regional Wars & COVID-19 / ALKS 3831 72 | Overall Study: Other / ALKS 3831 20",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT03201757"
+    },
+    {
+      "nctId": "NCT03610048",
+      "registryStatus": "TERMINATED",
+      "primaryOutcomes": "Number of Subjects With Treatment-emergent Adverse Events (TEAEs)",
+      "primaryTimeframes": "Up to 68 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Subjects With Treatment-emergent Adverse Events (TEAEs)",
+          "timeFrame": "Up to 68 weeks",
+          "measurements": [
+            {
+              "arm": "ALKS 5461",
+              "value": "108",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "ALKS 5461: 4/175",
+      "otherAdverseEventsByArm": "ALKS 5461: 85/175",
+      "seriousAdverseEventTerms": 4,
+      "infectionEventTerms": "Upper respiratory tract infection | Urinary tract infection",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 5461 175 | Overall Study: Completed Treatment / ALKS 5461 15 | Overall Study: COMPLETED / ALKS 5461 14 | Overall Study: NOT COMPLETED / ALKS 5461 161",
+      "participantFlowDiscontinuations": "Overall Study: Study terminated by sponsor / ALKS 5461 84 | Overall Study: Adverse Event / ALKS 5461 32 | Overall Study: Withdrawal by Subject / ALKS 5461 31 | Overall Study: Lost to Follow-up / ALKS 5461 8 | Overall Study: Other / ALKS 5461 4 | Overall Study: Physician Decision / ALKS 5461 1 | Overall Study: Pregnancy / ALKS 5461 1",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT03610048"
+    },
+    {
+      "nctId": "NCT00501631",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Cumulative Percentage of Participants by Heavy Drinking Rate",
+      "primaryTimeframes": "up to 12 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Cumulative Percentage of Participants by Heavy Drinking Rate",
+          "timeFrame": "up to 12 weeks",
+          "measurements": [
+            {
+              "arm": "Vivitrol",
+              "value": "40.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "47.3",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Vivitrol",
+              "value": "59.2",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "59.5",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Vivitrol",
+              "value": "65.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "72.3",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Vivitrol",
+              "value": "74.3",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "79.1",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Vivitrol",
+              "value": "80.9",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "83.1",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Vivitrol",
+              "value": "83.6",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "85.1",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.336",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Vivitrol vs Placebo"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 1,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "VIVITROL 380 mg (Double-blind Period): 29/152 | Placebo for VIVITROL 380 mg (Double-blind Period): 27/148",
+      "otherAdverseEventsByArm": "VIVITROL 380 mg (Double-blind Period): 135/152 | Placebo for VIVITROL 380 mg (Double-blind Period): 133/148",
+      "seriousAdverseEventTerms": 24,
+      "infectionEventTerms": "Influenza like illness",
+      "participantFlowGroups": "Part A (Double-blind Period): STARTED / VIVITROL 380 mg 152 | Part A (Double-blind Period): STARTED / Placebo for VIVITROL 380 mg 148 | Part A (Double-blind Period): COMPLETED / VIVITROL 380 mg 90 | Part A (Double-blind Period): COMPLETED / Placebo for VIVITROL 380 mg 99 | Part A (Double-blind Period): NOT COMPLETED / VIVITROL 380 mg 62 | Part A (Double-blind Period): NOT COMPLETED / Placebo for VIVITROL 380 mg 49 | Part B (Open-label Period): STARTED / VIVITROL 380 mg 90 | Part B (Open-label Period): STARTED / Placebo for VIVITROL 380 mg 99 | Part B (Open-label Period): COMPLETED / VIVITROL 380 mg 37 | Part B (Open-label Period): COMPLETED / Placebo for VIVITROL 380 mg 48 | Part B (Open-label Period): NOT COMPLETED / VIVITROL 380 mg 53 | Part B (Open-label Period): NOT COMPLETED / Placebo for VIVITROL 380 mg 51",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00501631"
+    },
+    {
+      "nctId": "NCT01218958",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Percentage of Heavy Drinking Days Over the Treatment Period",
+      "primaryTimeframes": "Baseline through Week 24 (168 days)",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Percentage of Heavy Drinking Days Over the Treatment Period",
+          "timeFrame": "Baseline through Week 24 (168 days)",
+          "measurements": [
+            {
+              "arm": "Medisorb Naltrexone 190 mg",
+              "value": "14.75",
+              "lowerLimit": "3.23",
+              "upperLimit": "44.58"
+            },
+            {
+              "arm": "Medisorb Naltrexone 380 mg",
+              "value": "10.23",
+              "lowerLimit": "1.16",
+              "upperLimit": "33.33"
+            },
+            {
+              "arm": "Placebo Groups (Pooled)",
+              "value": "19.77",
+              "lowerLimit": "6.01",
+              "upperLimit": "50.15"
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.0245",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Medisorb Naltrexone 380 mg vs Placebo Groups (Pooled)"
+            },
+            {
+              "pValue": "0.0744",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Medisorb Naltrexone 190 mg vs Placebo Groups (Pooled)"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 2,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Medisorb Naltrexone 190 mg: 10/210 | Medisorb Naltrexone 380 mg: 11/205 | Placebo Groups (Pooled): 15/209",
+      "otherAdverseEventsByArm": "Medisorb Naltrexone 190 mg: 190/210 | Medisorb Naltrexone 380 mg: 187/205 | Placebo Groups (Pooled): 181/209",
+      "seriousAdverseEventTerms": 20,
+      "infectionEventTerms": "Pneumonia NOS | Interstitial pneumonia | Eosinophilic pneumonia acute | Upper respiratory tract infection NOS",
+      "participantFlowGroups": "Overall Study: STARTED / Medisorb Naltrexone 190 mg 210 | Overall Study: STARTED / Medisorb Naltrexone 380 mg 205 | Overall Study: STARTED / Placebo Groups (Pooled) 209 | Overall Study: COMPLETED / Medisorb Naltrexone 190 mg 126 | Overall Study: COMPLETED / Medisorb Naltrexone 380 mg 124 | Overall Study: COMPLETED / Placebo Groups (Pooled) 128 | Overall Study: NOT COMPLETED / Medisorb Naltrexone 190 mg 84 | Overall Study: NOT COMPLETED / Medisorb Naltrexone 380 mg 81 | Overall Study: NOT COMPLETED / Placebo Groups (Pooled) 81",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01218958"
+    },
+    {
+      "nctId": "NCT01626456",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number of Subjects With Treatment-emergent Adverse Events (TEAEs)",
+      "primaryTimeframes": "52 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Subjects With Treatment-emergent Adverse Events (TEAEs)",
+          "timeFrame": "52 weeks",
+          "measurements": [
+            {
+              "arm": "ALKS 9072, Low",
+              "value": "51",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 9072, High",
+              "value": "190",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "ALKS 9072, Low: 0/110 | ALKS 9072, High: 15/368",
+      "otherAdverseEventsByArm": "ALKS 9072, Low: 16/110 | ALKS 9072, High: 59/368",
+      "seriousAdverseEventTerms": 17,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 9072, Low 110 | Overall Study: STARTED / ALKS 9072, High 368 | Overall Study: COMPLETED / ALKS 9072, Low 75 | Overall Study: COMPLETED / ALKS 9072, High 251 | Overall Study: NOT COMPLETED / ALKS 9072, Low 35 | Overall Study: NOT COMPLETED / ALKS 9072, High 117",
+      "participantFlowDiscontinuations": "Overall Study: Withdrawal by Subject / ALKS 9072, Low 21 | Overall Study: Withdrawal by Subject / ALKS 9072, High 46 | Overall Study: Adverse Event / ALKS 9072, Low 2 | Overall Study: Adverse Event / ALKS 9072, High 27 | Overall Study: Lost to Follow-up / ALKS 9072, Low 2 | Overall Study: Lost to Follow-up / ALKS 9072, High 27 | Overall Study: Lack of Efficacy / ALKS 9072, Low 6 | Overall Study: Lack of Efficacy / ALKS 9072, High 7 | Overall Study: Physician Decision / ALKS 9072, Low 1 | Overall Study: Physician Decision / ALKS 9072, High 4 | Overall Study: Protocol Violation / ALKS 9072, Low 1 | Overall Study: Protocol Violation / ALKS 9072, High 1 | Overall Study: Site Closure / ALKS 9072, Low 2 | Overall Study: Site Closure / ALKS 9072, High 3 | Overall Study: Incarceration / ALKS 9072, Low 0 | Overall Study: Incarceration / ALKS 9072, High 2",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01626456"
+    },
+    {
+      "nctId": "NCT02537574",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Proportion of Subjects Who Receive and Tolerate a VIVITROL Injection",
+      "primaryTimeframes": "1 week",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Proportion of Subjects Who Receive and Tolerate a VIVITROL Injection",
+          "timeFrame": "1 week",
+          "measurements": [
+            {
+              "arm": "NTX/BUP",
+              "value": "57",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "NTX/PBO-B",
+              "value": "51",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "PBO-N/PBO-B",
+              "value": "57",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.940",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "NTX/BUP vs PBO-N/PBO-B"
+            },
+            {
+              "pValue": "0.383",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "NTX/PBO-B vs PBO-N/PBO-B"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 2,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "NTX/BUP: 2/126 | NTX/PBO-B: 1/126 | PBO-N/PBO-B: 2/126",
+      "otherAdverseEventsByArm": "NTX/BUP: 18/126 | NTX/PBO-B: 12/126 | PBO-N/PBO-B: 19/126",
+      "seriousAdverseEventTerms": 5,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Overall Study: STARTED / NTX/BUP 126 | Overall Study: STARTED / NTX/PBO-B 126 | Overall Study: STARTED / PBO-N/PBO-B 126 | Overall Study: COMPLETED / NTX/BUP 27 | Overall Study: COMPLETED / NTX/PBO-B 23 | Overall Study: COMPLETED / PBO-N/PBO-B 18 | Overall Study: NOT COMPLETED / NTX/BUP 99 | Overall Study: NOT COMPLETED / NTX/PBO-B 103 | Overall Study: NOT COMPLETED / PBO-N/PBO-B 108",
+      "participantFlowDiscontinuations": "Overall Study: Adverse Event / NTX/BUP 1 | Overall Study: Adverse Event / NTX/PBO-B 3 | Overall Study: Adverse Event / PBO-N/PBO-B 2 | Overall Study: Lost to Follow-up / NTX/BUP 40 | Overall Study: Lost to Follow-up / NTX/PBO-B 51 | Overall Study: Lost to Follow-up / PBO-N/PBO-B 55 | Overall Study: Noncompliance with study drug / NTX/BUP 0 | Overall Study: Noncompliance with study drug / NTX/PBO-B 1 | Overall Study: Noncompliance with study drug / PBO-N/PBO-B 1 | Overall Study: Physician Decision / NTX/BUP 2 | Overall Study: Physician Decision / NTX/PBO-B 0 | Overall Study: Physician Decision / PBO-N/PBO-B 0 | Overall Study: Protocol Violation / NTX/BUP 4 | Overall Study: Protocol Violation / NTX/PBO-B 2 | Overall Study: Protocol Violation / PBO-N/PBO-B 3 | Overall Study: Withdrawal by Subject / NTX/BUP 37 | Overall Study: Withdrawal by Subject / NTX/PBO-B 27 | Overall Study: Withdrawal by Subject / PBO-N/PBO-B 29 | Overall Study: Lack of Efficacy / NTX/BUP 14 | Overall Study: Lack of Efficacy / NTX/PBO-B 16 | Overall Study: Lack of Efficacy / PBO-N/PBO-B 15 | Overall Study: Duplicate Patient / NTX/BUP 1 | Overall Study: Duplicate Patient / NTX/PBO-B 0 | Overall Study: Duplicate Patient / PBO-N/PBO-B 0 | Overall Study: Patient not Stable / NTX/BUP 0 | Overall Study: Patient not Stable / NTX/PBO-B 1 | Overall Study: Patient not Stable / PBO-N/PBO-B 0 | Overall Study: Incarceration / NTX/BUP 0 | Overall Study: Incarceration / NTX/PBO-B 1 | Overall Study: Incarceration / PBO-N/PBO-B 0 | Overall Study: Failed Naloxone Challenge / NTX/BUP 0 | Overall Study: Failed Naloxone Challenge / NTX/PBO-B 1 | Overall Study: Failed Naloxone Challenge / PBO-N/PBO-B 0 | Overall Study: Transportation Issues / NTX/BUP 0 | Overall Study: Transportation Issues / NTX/PBO-B 0 | Overall Study: Transportation Issues / PBO-N/PBO-B 1 | Overall Study: Subject did not want last Vivitrol Injec / NTX/BUP 0 | Overall Study: Subject did not want last Vivitrol Injec / NTX/PBO-B 0 | Overall Study: Subject did not want last Vivitrol Injec / PBO-N/PBO-B 1 | Overall Study: Noncompliance with Protocol / NTX/BUP 0",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02537574"
+    },
+    {
+      "nctId": "NCT02873208",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number of Subjects With Adverse Events",
+      "primaryTimeframes": "Up to 52 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number of Subjects With Adverse Events",
+          "timeFrame": "Up to 52 weeks",
+          "measurements": [
+            {
+              "arm": "ALKS 3831",
+              "value": "161",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "93",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "61",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "7",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "82",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "79",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "15",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "5",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "4",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "1",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "0",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "ALKS 3831: 5/265",
+      "otherAdverseEventsByArm": "ALKS 3831: 103/265",
+      "seriousAdverseEventTerms": 6,
+      "infectionEventTerms": "Upper respiratory tract infection",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 3831 265 | Overall Study: COMPLETED / ALKS 3831 167 | Overall Study: NOT COMPLETED / ALKS 3831 98",
+      "participantFlowDiscontinuations": "Overall Study: Withdrawal by Subject / ALKS 3831 36 | Overall Study: Lost to Follow-up / ALKS 3831 22 | Overall Study: Adverse Event / ALKS 3831 15 | Overall Study: Non-compliance with study drug / ALKS 3831 12 | Overall Study: Protocol Violation / ALKS 3831 8 | Overall Study: Pregnancy / ALKS 3831 2 | Overall Study: Incarceration / ALKS 3831 1 | Overall Study: Lack of Efficacy / ALKS 3831 1 | Overall Study: Physician Decision / ALKS 3831 1",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02873208"
+    },
+    {
+      "nctId": "NCT03345979",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Change From Baseline in the Positive and Negative Syndrome Scale (PANSS) Total Score at Week 4",
+      "primaryTimeframes": "Baseline and 4 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Change From Baseline in the Positive and Negative Syndrome Scale (PANSS) Total Score at Week 4",
+          "timeFrame": "Baseline and 4 weeks",
+          "measurements": [
+            {
+              "arm": "Aripiprazole Lauroxil",
+              "value": "-17.4",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Paliperidone Palmitate",
+              "value": "-20.1",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "<.001",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Aripiprazole Lauroxil"
+            },
+            {
+              "pValue": "<.001",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Paliperidone Palmitate"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 2,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "Aripiprazole Lauroxil: 8/99 | Paliperidone Palmitate: 7/101",
+      "otherAdverseEventsByArm": "Aripiprazole Lauroxil: 39/99 | Paliperidone Palmitate: 50/101",
+      "seriousAdverseEventTerms": 15,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Overall Study: STARTED / Aripiprazole Lauroxil 99 | Overall Study: STARTED / Paliperidone Palmitate 101 | Overall Study: COMPLETED / Aripiprazole Lauroxil 56 | Overall Study: COMPLETED / Paliperidone Palmitate 43 | Overall Study: NOT COMPLETED / Aripiprazole Lauroxil 43 | Overall Study: NOT COMPLETED / Paliperidone Palmitate 58",
+      "participantFlowDiscontinuations": "Overall Study: Withdrawal by Subject / Aripiprazole Lauroxil 20 | Overall Study: Withdrawal by Subject / Paliperidone Palmitate 31 | Overall Study: Adverse Event / Aripiprazole Lauroxil 10 | Overall Study: Adverse Event / Paliperidone Palmitate 11 | Overall Study: Lost to Follow-up / Aripiprazole Lauroxil 8 | Overall Study: Lost to Follow-up / Paliperidone Palmitate 9 | Overall Study: Lack of Efficacy / Aripiprazole Lauroxil 4 | Overall Study: Lack of Efficacy / Paliperidone Palmitate 2 | Overall Study: Protocol Violation / Aripiprazole Lauroxil 1 | Overall Study: Protocol Violation / Paliperidone Palmitate 3 | Overall Study: Physician Decision / Aripiprazole Lauroxil 0 | Overall Study: Physician Decision / Paliperidone Palmitate 2",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT03345979"
+    },
+    {
+      "nctId": "NCT00678418",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Percentage (%) of Opioid-free Weeks Per Subject in Double-blind Period (Part A)",
+      "primaryTimeframes": "20 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Percentage (%) of Opioid-free Weeks Per Subject in Double-blind Period (Part A)",
+          "timeFrame": "20 weeks",
+          "measurements": [
+            {
+              "arm": "VIVITROL® 380 mg",
+              "value": "90.0",
+              "lowerLimit": "20.0",
+              "upperLimit": "100.0"
+            },
+            {
+              "arm": "Placebo",
+              "value": "35.0",
+              "lowerLimit": "0.0",
+              "upperLimit": "95.0"
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.0002",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "VIVITROL® 380 mg vs Placebo"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 1,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "VIVITROL® 380 mg: 3/126 | Placebo: 4/124",
+      "otherAdverseEventsByArm": "VIVITROL® 380 mg: 63/126 | Placebo: 40/124",
+      "seriousAdverseEventTerms": 9,
+      "infectionEventTerms": "Acute sinusitis | HIV infection WHO clinical stage III | Herpes virus infection | Lobar pneumonia | Influenza | Respiratory tract infection | Bronchitis",
+      "participantFlowGroups": "Part A (Double Blind): STARTED / VIVITROL® 380 mg 126 | Part A (Double Blind): STARTED / Placebo 124 | Part A (Double Blind): COMPLETED / VIVITROL® 380 mg 67 | Part A (Double Blind): COMPLETED / Placebo 47 | Part A (Double Blind): NOT COMPLETED / VIVITROL® 380 mg 59 | Part A (Double Blind): NOT COMPLETED / Placebo 77 | Part B (Open Label): STARTED / VIVITROL® 380 mg 114 | Part B (Open Label): STARTED / Placebo 0 | Part B (Open Label): COMPLETED / VIVITROL® 380 mg 71 | Part B (Open Label): COMPLETED / Placebo 0 | Part B (Open Label): NOT COMPLETED / VIVITROL® 380 mg 43 | Part B (Open Label): NOT COMPLETED / Placebo 0",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00678418"
+    },
+    {
+      "nctId": "NCT01469039",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "The Change From Baseline at Day 85 in Positive and Negative Syndrome Scale (PANSS) Total Score",
+      "primaryTimeframes": "Data collected from baseline to day 85",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "The Change From Baseline at Day 85 in Positive and Negative Syndrome Scale (PANSS) Total Score",
+          "timeFrame": "Data collected from baseline to day 85",
+          "measurements": [
+            {
+              "arm": "Aripiprazole Lauroxil 441 mg",
+              "value": "-20.9",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Aripiprazole Lauroxil 882 mg",
+              "value": "-21.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "-9.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "<0.001",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Aripiprazole Lauroxil 441 mg"
+            },
+            {
+              "pValue": "<0.001",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Aripiprazole Lauroxil 882 mg"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 2,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Aripiprazole Lauroxil 441 mg: 3/207 | Aripiprazole Lauroxil 882 mg: 4/208 | Placebo: 4/207",
+      "otherAdverseEventsByArm": "Aripiprazole Lauroxil 441 mg: 66/207 | Aripiprazole Lauroxil 882 mg: 68/208 | Placebo: 76/207",
+      "seriousAdverseEventTerms": 11,
+      "infectionEventTerms": "Pneumonia",
+      "participantFlowGroups": "Overall Study: STARTED / Aripiprazole Lauroxil 441 mg 207 | Overall Study: STARTED / Aripiprazole Lauroxil 882 mg 208 | Overall Study: STARTED / Placebo 208 | Overall Study: COMPLETED / Aripiprazole Lauroxil 441 mg 130 | Overall Study: COMPLETED / Aripiprazole Lauroxil 882 mg 135 | Overall Study: COMPLETED / Placebo 95 | Overall Study: NOT COMPLETED / Aripiprazole Lauroxil 441 mg 77 | Overall Study: NOT COMPLETED / Aripiprazole Lauroxil 882 mg 73 | Overall Study: NOT COMPLETED / Placebo 113",
+      "participantFlowDiscontinuations": "",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01469039"
+    },
+    {
+      "nctId": "NCT01895452",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Number and Percentage of Subjects With Treatment-emergent Adverse Events (TEAEs)",
+      "primaryTimeframes": "Up to 12 months",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Number and Percentage of Subjects With Treatment-emergent Adverse Events (TEAEs)",
+          "timeFrame": "Up to 12 months",
+          "measurements": [
+            {
+              "arm": "ALKS 9072, Low",
+              "value": "21",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 9072, High",
+              "value": "94",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": []
+        }
+      ],
+      "primaryAnalysesCount": 0,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "ALKS 9072, Low: 0/65 | ALKS 9072, High: 4/226",
+      "otherAdverseEventsByArm": "ALKS 9072, Low: 11/65 | ALKS 9072, High: 26/226",
+      "seriousAdverseEventTerms": 6,
+      "infectionEventTerms": "Pneumonia",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 9072, Low 65 | Overall Study: STARTED / ALKS 9072, High 226 | Overall Study: COMPLETED / ALKS 9072, Low 61 | Overall Study: COMPLETED / ALKS 9072, High 198 | Overall Study: NOT COMPLETED / ALKS 9072, Low 4 | Overall Study: NOT COMPLETED / ALKS 9072, High 28",
+      "participantFlowDiscontinuations": "Overall Study: Adverse Event / ALKS 9072, Low 1 | Overall Study: Adverse Event / ALKS 9072, High 4 | Overall Study: Lost to Follow-up / ALKS 9072, Low 1 | Overall Study: Lost to Follow-up / ALKS 9072, High 5 | Overall Study: Pregnancy / ALKS 9072, Low 0 | Overall Study: Pregnancy / ALKS 9072, High 1 | Overall Study: Withdrawal by Subject / ALKS 9072, Low 2 | Overall Study: Withdrawal by Subject / ALKS 9072, High 14 | Overall Study: Underlying disease / ALKS 9072, Low 0 | Overall Study: Underlying disease / ALKS 9072, High 3 | Overall Study: Noncompliance with study drug / ALKS 9072, Low 0 | Overall Study: Noncompliance with study drug / ALKS 9072, High 1",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT01895452"
+    },
+    {
+      "nctId": "NCT02218008",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Change in Montgomery Asberg Depression Rating Scale (MADRS)-6 Score Using Average of Changes From Baseline to Week 3 Through the End of Treatment Period (Week 5 for Stage 1, Week 6 for Stage 2) | Change in MADRS-10 Score Using Average of Changes From Baseline to Week 3 Through the End of Treatment Period (Week 5 for Stage 1, Week 6 for Stage 2) | Change From Baseline to End of Treatment in the MADRS-10",
+      "primaryTimeframes": "Baseline and 5 weeks (Stage 1) and baseline and 6 weeks (Stage 2), combined together for the overall estimate of treatment effect | 5-6 Weeks (5 weeks for Stage 1 and 6 weeks for Stage 2) | 5-6 Weeks (5 weeks for Stage 1 and 6 weeks for Stage 2)",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Change in Montgomery Asberg Depression Rating Scale (MADRS)-6 Score Using Average of Changes From Baseline to Week 3 Through the End of Treatment Period (Week 5 for Stage 1, Week 6 for Stage 2)",
+          "timeFrame": "Baseline and 5 weeks (Stage 1) and baseline and 6 weeks (Stage 2), combined together for the overall estimate of treatment effect",
+          "measurements": [
+            {
+              "arm": "Placebo S1",
+              "value": "-5.6",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 1mg/1mg S1",
+              "value": "-6.0",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 2mg/2mg S1",
+              "value": "-6.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo S2",
+              "value": "-1.5",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 1mg/1mg S2",
+              "value": "-2.2",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 2mg/2mg S2",
+              "value": "-3.2",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.018",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Placebo S1 vs ALKS 5461 2mg/2mg S1 vs Placebo S2 vs ALKS 5461 2mg/2mg S2"
+            }
+          ]
+        },
+        {
+          "title": "Change in MADRS-10 Score Using Average of Changes From Baseline to Week 3 Through the End of Treatment Period (Week 5 for Stage 1, Week 6 for Stage 2)",
+          "timeFrame": "5-6 Weeks (5 weeks for Stage 1 and 6 weeks for Stage 2)",
+          "measurements": [
+            {
+              "arm": "Placebo S1",
+              "value": "-8.1",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 1mg/1mg S1",
+              "value": "-8.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 2mg/2mg S1",
+              "value": "-10.3",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo S2",
+              "value": "-2.1",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 1mg/1mg S2",
+              "value": "-3.2",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 2mg/2mg S2",
+              "value": "-3.7",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.026",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Placebo S1 vs ALKS 5461 2mg/2mg S1 vs Placebo S2 vs ALKS 5461 2mg/2mg S2"
+            }
+          ]
+        },
+        {
+          "title": "Change From Baseline to End of Treatment in the MADRS-10",
+          "timeFrame": "5-6 Weeks (5 weeks for Stage 1 and 6 weeks for Stage 2)",
+          "measurements": [
+            {
+              "arm": "Placebo S1",
+              "value": "-9.2",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 1mg/1mg S1",
+              "value": "-10.3",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 2mg/2mg S1",
+              "value": "-10.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo S2",
+              "value": "-1.9",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 1mg/1mg S2",
+              "value": "-3.4",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 2mg/2mg S2",
+              "value": "-3.6",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.076",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Placebo S1 vs ALKS 5461 2mg/2mg S1 vs Placebo S2 vs ALKS 5461 2mg/2mg S2"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 3,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Placebo S1: 1/280 | ALKS 5461 1mg/1mg S1: 0/63 | ALKS 5461 2mg/2mg S1: 2/63 | Placebo S2: 1/62 | ALKS 5461 1mg/1mg S2: 0/62 | ALKS 5461 2mg/2mg S2: 0/63",
+      "otherAdverseEventsByArm": "Placebo S1: 72/280 | ALKS 5461 1mg/1mg S1: 25/63 | ALKS 5461 2mg/2mg S1: 28/63 | Placebo S2: 11/62 | ALKS 5461 1mg/1mg S2: 6/62 | ALKS 5461 2mg/2mg S2: 10/63",
+      "seriousAdverseEventTerms": 4,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Stage 1 (S1): STARTED / Placebo S1 280 | Stage 1 (S1): STARTED / ALKS 5461 1mg/1mg S1 63 | Stage 1 (S1): STARTED / ALKS 5461 2mg/2mg S1 63 | Stage 1 (S1): STARTED / Placebo S2 0 | Stage 1 (S1): STARTED / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): STARTED / ALKS 5461 2mg/2mg S2 0 | Stage 1 (S1): COMPLETED / Placebo S1 258 | Stage 1 (S1): COMPLETED / ALKS 5461 1mg/1mg S1 56 | Stage 1 (S1): COMPLETED / ALKS 5461 2mg/2mg S1 48 | Stage 1 (S1): COMPLETED / Placebo S2 0 | Stage 1 (S1): COMPLETED / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): COMPLETED / ALKS 5461 2mg/2mg S2 0 | Stage 1 (S1): NOT COMPLETED / Placebo S1 22 | Stage 1 (S1): NOT COMPLETED / ALKS 5461 1mg/1mg S1 7 | Stage 1 (S1): NOT COMPLETED / ALKS 5461 2mg/2mg S1 15 | Stage 1 (S1): NOT COMPLETED / Placebo S2 0 | Stage 1 (S1): NOT COMPLETED / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): NOT COMPLETED / ALKS 5461 2mg/2mg S2 0 | Stage 2 (S2): STARTED / Placebo S1 0 | Stage 2 (S2): STARTED / ALKS 5461 1mg/1mg S1 0 | Stage 2 (S2): STARTED / ALKS 5461 2mg/2mg S1 0 | Stage 2 (S2): STARTED / Placebo S2 62 | Stage 2 (S2): STARTED / ALKS 5461 1mg/1mg S2 62 | Stage 2 (S2): STARTED / ALKS 5461 2mg/2mg S2 63 | Stage 2 (S2): COMPLETED / Placebo S1 0 | Stage 2 (S2): COMPLETED / ALKS 5461 1mg/1mg S1 0 | Stage 2 (S2): COMPLETED / ALKS 5461 2mg/2mg S1 0 | Stage 2 (S2): COMPLETED / Placebo S2 58 | Stage 2 (S2): COMPLETED / ALKS 5461 1mg/1mg S2 58 | Stage 2 (S2): COMPLETED / ALKS 5461 2mg/2mg S2 57 | Stage 2 (S2): NOT COMPLETED / Placebo S1 0 | Stage 2 (S2): NOT COMPLETED / ALKS 5461 1mg/1mg S1 0 | Stage 2 (S2): NOT COMPLETED / ALKS 5461 2mg/2mg S1 0 | Stage 2 (S2): NOT COMPLETED / Placebo S2 4 | Stage 2 (S2): NOT COMPLETED / ALKS 5461 1mg/1mg S2 4 | Stage 2 (S2): NOT COMPLETED / ALKS 5461 2mg/2mg S2 6",
+      "participantFlowDiscontinuations": "Stage 1 (S1): Adverse Event / Placebo S1 6 | Stage 1 (S1): Adverse Event / ALKS 5461 1mg/1mg S1 5 | Stage 1 (S1): Adverse Event / ALKS 5461 2mg/2mg S1 11 | Stage 1 (S1): Adverse Event / Placebo S2 0 | Stage 1 (S1): Adverse Event / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): Adverse Event / ALKS 5461 2mg/2mg S2 0 | Stage 1 (S1): Withdrawal by Subject / Placebo S1 6 | Stage 1 (S1): Withdrawal by Subject / ALKS 5461 1mg/1mg S1 1 | Stage 1 (S1): Withdrawal by Subject / ALKS 5461 2mg/2mg S1 1 | Stage 1 (S1): Withdrawal by Subject / Placebo S2 0 | Stage 1 (S1): Withdrawal by Subject / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): Withdrawal by Subject / ALKS 5461 2mg/2mg S2 0 | Stage 1 (S1): Lack of Efficacy / Placebo S1 3 | Stage 1 (S1): Lack of Efficacy / ALKS 5461 1mg/1mg S1 0 | Stage 1 (S1): Lack of Efficacy / ALKS 5461 2mg/2mg S1 0 | Stage 1 (S1): Lack of Efficacy / Placebo S2 0 | Stage 1 (S1): Lack of Efficacy / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): Lack of Efficacy / ALKS 5461 2mg/2mg S2 0 | Stage 1 (S1): Lost to Follow-up / Placebo S1 3 | Stage 1 (S1): Lost to Follow-up / ALKS 5461 1mg/1mg S1 0 | Stage 1 (S1): Lost to Follow-up / ALKS 5461 2mg/2mg S1 1 | Stage 1 (S1): Lost to Follow-up / Placebo S2 0 | Stage 1 (S1): Lost to Follow-up / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): Lost to Follow-up / ALKS 5461 2mg/2mg S2 0 | Stage 1 (S1): Non-compliance with Study Drug / Placebo S1 2 | Stage 1 (S1): Non-compliance with Study Drug / ALKS 5461 1mg/1mg S1 1 | Stage 1 (S1): Non-compliance with Study Drug / ALKS 5461 2mg/2mg S1 0 | Stage 1 (S1): Non-compliance with Study Drug / Placebo S2 0 | Stage 1 (S1): Non-compliance with Study Drug / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): Non-compliance with Study Drug / ALKS 5461 2mg/2mg S2 0 | Stage 1 (S1): Non-compliance; drug use / Placebo S1 1 | Stage 1 (S1): Non-compliance; drug use / ALKS 5461 1mg/1mg S1 0 | Stage 1 (S1): Non-compliance; drug use / ALKS 5461 2mg/2mg S1 0 | Stage 1 (S1): Non-compliance; drug use / Placebo S2 0 | Stage 1 (S1): Non-compliance; drug use / ALKS 5461 1mg/1mg S2 0 | Stage 1 (S1): Non-compliance; drug use / ALKS 5461 2mg/2mg S2 0 | Stage 1 (S1): Pregnancy / Placebo S1 0 | Stage 1 (S1): Pregnancy / ALKS 5461 1mg/1mg S1 0 | Stage 1 (S1): Pregnancy / ALKS 5461 2mg/2mg S1 1 | Stage 1 (S1): Pregnancy / Placebo S2 0",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02218008"
+    },
+    {
+      "nctId": "NCT02634346",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Change From Baseline in Positive and Negative Syndrome Scale (PANSS) Total Score at Week 4",
+      "primaryTimeframes": "4 weeks",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Change From Baseline in Positive and Negative Syndrome Scale (PANSS) Total Score at Week 4",
+          "timeFrame": "4 weeks",
+          "measurements": [
+            {
+              "arm": "ALKS 3831",
+              "value": "-23.9",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Olanzapine",
+              "value": "-22.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "-17.5",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "<0.001",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "ALKS 3831 vs Placebo"
+            },
+            {
+              "pValue": "0.004",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Olanzapine vs Placebo"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 2,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "ALKS 3831: 1/134 | Olanzapine: 1/133 | Placebo: 0/134",
+      "otherAdverseEventsByArm": "ALKS 3831: 50/134 | Olanzapine: 45/133 | Placebo: 24/134",
+      "seriousAdverseEventTerms": 2,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Overall Study: STARTED / ALKS 3831 134 | Overall Study: STARTED / Olanzapine 133 | Overall Study: STARTED / Placebo 134 | Overall Study: COMPLETED / ALKS 3831 122 | Overall Study: COMPLETED / Olanzapine 119 | Overall Study: COMPLETED / Placebo 111 | Overall Study: NOT COMPLETED / ALKS 3831 12 | Overall Study: NOT COMPLETED / Olanzapine 14 | Overall Study: NOT COMPLETED / Placebo 23",
+      "participantFlowDiscontinuations": "Overall Study: Withdrawal by Subject / ALKS 3831 8 | Overall Study: Withdrawal by Subject / Olanzapine 9 | Overall Study: Withdrawal by Subject / Placebo 8 | Overall Study: Adverse Event / ALKS 3831 2 | Overall Study: Adverse Event / Olanzapine 2 | Overall Study: Adverse Event / Placebo 7 | Overall Study: Lack of Efficacy / ALKS 3831 1 | Overall Study: Lack of Efficacy / Olanzapine 2 | Overall Study: Lack of Efficacy / Placebo 8 | Overall Study: Lost to Follow-up / ALKS 3831 1 | Overall Study: Lost to Follow-up / Olanzapine 0 | Overall Study: Lost to Follow-up / Placebo 0 | Overall Study: Protocol Violation / ALKS 3831 0 | Overall Study: Protocol Violation / Olanzapine 1 | Overall Study: Protocol Violation / Placebo 0",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02634346"
+    },
+    {
+      "nctId": "NCT02694328",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Percent Change From Baseline in Body Weight at Week 24 | Percentage of Participants With >/= 10% Weight Gain at Week 24",
+      "primaryTimeframes": "Baseline and Week 24 | Baseline and Week 24",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Percent Change From Baseline in Body Weight at Week 24",
+          "timeFrame": "Baseline and Week 24",
+          "measurements": [
+            {
+              "arm": "Olanzapine",
+              "value": "6.59",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "4.21",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.003",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "ALKS 3831"
+            }
+          ]
+        },
+        {
+          "title": "Percentage of Participants With >/= 10% Weight Gain at Week 24",
+          "timeFrame": "Baseline and Week 24",
+          "measurements": [
+            {
+              "arm": "Olanzapine",
+              "value": "29.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 3831",
+              "value": "17.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.003",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Olanzapine vs ALKS 3831"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 2,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "Olanzapine: 7/276 | ALKS 3831: 10/274",
+      "otherAdverseEventsByArm": "Olanzapine: 159/276 | ALKS 3831: 146/274",
+      "seriousAdverseEventTerms": 16,
+      "infectionEventTerms": "Influenza",
+      "participantFlowGroups": "Overall Study: STARTED / Olanzapine 276 | Overall Study: STARTED / ALKS 3831 274 | Overall Study: COMPLETED / Olanzapine 176 | Overall Study: COMPLETED / ALKS 3831 176 | Overall Study: NOT COMPLETED / Olanzapine 100 | Overall Study: NOT COMPLETED / ALKS 3831 98",
+      "participantFlowDiscontinuations": "Overall Study: Adverse Event / Olanzapine 27 | Overall Study: Adverse Event / ALKS 3831 33 | Overall Study: Withdrawal by Subject / Olanzapine 27 | Overall Study: Withdrawal by Subject / ALKS 3831 23 | Overall Study: Lost to Follow-up / Olanzapine 26 | Overall Study: Lost to Follow-up / ALKS 3831 22 | Overall Study: Noncompliant with study drug / Olanzapine 11 | Overall Study: Noncompliant with study drug / ALKS 3831 8 | Overall Study: Incarceration / Olanzapine 1 | Overall Study: Incarceration / ALKS 3831 1 | Overall Study: Lack of Efficacy / Olanzapine 1 | Overall Study: Lack of Efficacy / ALKS 3831 2 | Overall Study: Pregnancy / Olanzapine 1 | Overall Study: Pregnancy / ALKS 3831 1 | Overall Study: Protocol Violation / Olanzapine 6 | Overall Study: Protocol Violation / ALKS 3831 5 | Overall Study: Abnormal Laboratory Value / Olanzapine 0 | Overall Study: Abnormal Laboratory Value / ALKS 3831 3",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02694328"
+    },
+    {
+      "nctId": "NCT02696434",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Proportion of Subjects Who Receive and Tolerate a VIVITROL Injection on Day 8",
+      "primaryTimeframes": "8 days",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Proportion of Subjects Who Receive and Tolerate a VIVITROL Injection on Day 8",
+          "timeFrame": "8 days",
+          "measurements": [
+            {
+              "arm": "NTX + BUP",
+              "value": "35",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "PBO NTX + BUP",
+              "value": "38",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.407",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "NTX + BUP vs PBO NTX + BUP"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 1,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "NTX + BUP: 0/50 | PBO NTX + BUP: 1/51",
+      "otherAdverseEventsByArm": "NTX + BUP: 36/50 | PBO NTX + BUP: 34/51",
+      "seriousAdverseEventTerms": 2,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Overall Study: STARTED / NTX + BUP 50 | Overall Study: STARTED / PBO NTX + BUP 51 | Overall Study: COMPLETED / NTX + BUP 28 | Overall Study: COMPLETED / PBO NTX + BUP 33 | Overall Study: NOT COMPLETED / NTX + BUP 22 | Overall Study: NOT COMPLETED / PBO NTX + BUP 18",
+      "participantFlowDiscontinuations": "Overall Study: Adverse Event / NTX + BUP 3 | Overall Study: Adverse Event / PBO NTX + BUP 1 | Overall Study: Lost to Follow-up / NTX + BUP 5 | Overall Study: Lost to Follow-up / PBO NTX + BUP 4 | Overall Study: Withdrawal by Subject / NTX + BUP 14 | Overall Study: Withdrawal by Subject / PBO NTX + BUP 12 | Overall Study: Physician Decision / NTX + BUP 0 | Overall Study: Physician Decision / PBO NTX + BUP 1",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02696434"
+    },
+    {
+      "nctId": "NCT03188185",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Change From Baseline to the End of Treatment (EOT) in the Montgomery Asberg Depression Rating Scale-10 (MADRS-10) Scores",
+      "primaryTimeframes": "Baseline and 5 weeks for Stage 1, Baseline and 6 weeks for Stage 2",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Change From Baseline to the End of Treatment (EOT) in the Montgomery Asberg Depression Rating Scale-10 (MADRS-10) Scores",
+          "timeFrame": "Baseline and 5 weeks for Stage 1, Baseline and 6 weeks for Stage 2",
+          "measurements": [
+            {
+              "arm": "S1: Placebo",
+              "value": "-11.4",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "S1: ALKS 5461 2mg/2mg",
+              "value": "-13.9",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "S2: Placebo",
+              "value": "-4.2",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "S2: ALKS 5461 2mg/2mg",
+              "value": "-4.7",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.128",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "S1: Placebo vs S1: ALKS 5461 2mg/2mg vs S2: Placebo vs S2: ALKS 5461 2mg/2mg"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 1,
+      "hasPublicProtocol": true,
+      "hasPublicSAP": true,
+      "seriousAdverseEventsByArm": "S1: Placebo: 0/198 | S1: ALKS 5461 2mg/2mg: 1/80 | S2: Placebo: 1/64 | S2: ALKS 5461 2mg/2mg: 0/63",
+      "otherAdverseEventsByArm": "S1: Placebo: 43/198 | S1: ALKS 5461 2mg/2mg: 56/80 | S2: Placebo: 3/64 | S2: ALKS 5461 2mg/2mg: 29/63",
+      "seriousAdverseEventTerms": 2,
+      "infectionEventTerms": "",
+      "participantFlowGroups": "Stage 1: STARTED / S1: Placebo 198 | Stage 1: STARTED / S1: ALKS 5461 2mg/2mg 80 | Stage 1: STARTED / S2: Placebo 0 | Stage 1: STARTED / S2: ALKS 5461 2mg/2mg 0 | Stage 1: COMPLETED / S1: Placebo 179 | Stage 1: COMPLETED / S1: ALKS 5461 2mg/2mg 64 | Stage 1: COMPLETED / S2: Placebo 0 | Stage 1: COMPLETED / S2: ALKS 5461 2mg/2mg 0 | Stage 1: NOT COMPLETED / S1: Placebo 19 | Stage 1: NOT COMPLETED / S1: ALKS 5461 2mg/2mg 16 | Stage 1: NOT COMPLETED / S2: Placebo 0 | Stage 1: NOT COMPLETED / S2: ALKS 5461 2mg/2mg 0 | Stage 2: STARTED / S1: Placebo 0 | Stage 2: STARTED / S1: ALKS 5461 2mg/2mg 0 | Stage 2: STARTED / S2: Placebo 64 | Stage 2: STARTED / S2: ALKS 5461 2mg/2mg 63 | Stage 2: COMPLETED / S1: Placebo 0 | Stage 2: COMPLETED / S1: ALKS 5461 2mg/2mg 0 | Stage 2: COMPLETED / S2: Placebo 55 | Stage 2: COMPLETED / S2: ALKS 5461 2mg/2mg 57 | Stage 2: NOT COMPLETED / S1: Placebo 0 | Stage 2: NOT COMPLETED / S1: ALKS 5461 2mg/2mg 0 | Stage 2: NOT COMPLETED / S2: Placebo 9 | Stage 2: NOT COMPLETED / S2: ALKS 5461 2mg/2mg 6",
+      "participantFlowDiscontinuations": "Stage 1: Adverse Event / S1: Placebo 4 | Stage 1: Adverse Event / S1: ALKS 5461 2mg/2mg 12 | Stage 1: Adverse Event / S2: Placebo 0 | Stage 1: Adverse Event / S2: ALKS 5461 2mg/2mg 0 | Stage 1: Lack of Efficacy / S1: Placebo 0 | Stage 1: Lack of Efficacy / S1: ALKS 5461 2mg/2mg 2 | Stage 1: Lack of Efficacy / S2: Placebo 0 | Stage 1: Lack of Efficacy / S2: ALKS 5461 2mg/2mg 0 | Stage 1: Lost to Follow-up / S1: Placebo 6 | Stage 1: Lost to Follow-up / S1: ALKS 5461 2mg/2mg 1 | Stage 1: Lost to Follow-up / S2: Placebo 0 | Stage 1: Lost to Follow-up / S2: ALKS 5461 2mg/2mg 0 | Stage 1: Withdrawal by Subject / S1: Placebo 9 | Stage 1: Withdrawal by Subject / S1: ALKS 5461 2mg/2mg 0 | Stage 1: Withdrawal by Subject / S2: Placebo 0 | Stage 1: Withdrawal by Subject / S2: ALKS 5461 2mg/2mg 0 | Stage 1: Identified as a professional patient / S1: Placebo 0 | Stage 1: Identified as a professional patient / S1: ALKS 5461 2mg/2mg 1 | Stage 1: Identified as a professional patient / S2: Placebo 0 | Stage 1: Identified as a professional patient / S2: ALKS 5461 2mg/2mg 0 | Stage 2: Adverse Event / S1: Placebo 0 | Stage 2: Adverse Event / S1: ALKS 5461 2mg/2mg 0 | Stage 2: Adverse Event / S2: Placebo 2 | Stage 2: Adverse Event / S2: ALKS 5461 2mg/2mg 4 | Stage 2: Lack of Efficacy / S1: Placebo 0 | Stage 2: Lack of Efficacy / S1: ALKS 5461 2mg/2mg 0 | Stage 2: Lack of Efficacy / S2: Placebo 3 | Stage 2: Lack of Efficacy / S2: ALKS 5461 2mg/2mg 0 | Stage 2: Lost to Follow-up / S1: Placebo 0 | Stage 2: Lost to Follow-up / S1: ALKS 5461 2mg/2mg 0 | Stage 2: Lost to Follow-up / S2: Placebo 1 | Stage 2: Lost to Follow-up / S2: ALKS 5461 2mg/2mg 0 | Stage 2: Physician Decision / S1: Placebo 0 | Stage 2: Physician Decision / S1: ALKS 5461 2mg/2mg 0 | Stage 2: Physician Decision / S2: Placebo 0 | Stage 2: Physician Decision / S2: ALKS 5461 2mg/2mg 1 | Stage 2: Withdrawal by Subject / S1: Placebo 0 | Stage 2: Withdrawal by Subject / S1: ALKS 5461 2mg/2mg 0 | Stage 2: Withdrawal by Subject / S2: Placebo 3 | Stage 2: Withdrawal by Subject / S2: ALKS 5461 2mg/2mg 1",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT03188185"
+    },
+    {
+      "nctId": "NCT02158533",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Change From Baseline to Week 5 in the Montgomery Asberg Depression Rating Scale (MADRS) Total Score",
+      "primaryTimeframes": "Baseline and 5 weeks for each stage",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Change From Baseline to Week 5 in the Montgomery Asberg Depression Rating Scale (MADRS) Total Score",
+          "timeFrame": "Baseline and 5 weeks for each stage",
+          "measurements": [
+            {
+              "arm": "Placebo S1",
+              "value": "-11.1",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 0.5mg/0.5mg S1",
+              "value": "-8.4",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 2mg/2mg S1",
+              "value": "-13.0",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo S2",
+              "value": "-2.2",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 0.5mg/0.5mg S2",
+              "value": "-4.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "ALKS 5461 2mg/2mg S2",
+              "value": "-3.9",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.109",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Placebo S1 vs ALKS 5461 2mg/2mg S1 vs Placebo S2 vs ALKS 5461 2mg/2mg S2"
+            },
+            {
+              "pValue": "0.975",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "Placebo S1 vs ALKS 5461 0.5mg/0.5mg S1 vs Placebo S2 vs ALKS 5461 0.5mg/0.5mg S2"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 2,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Placebo S1: 1/265 | ALKS 5461 0.5mg/0.5mg S1: 0/59 | ALKS 5461 2mg/2mg S1: 0/60 | Placebo S2: 0/56 | ALKS 5461 0.5mg/0.5mg S2: 0/56 | ALKS 5461 2mg/2mg S2: 0/56",
+      "otherAdverseEventsByArm": "Placebo S1: 81/265 | ALKS 5461 0.5mg/0.5mg S1: 32/59 | ALKS 5461 2mg/2mg S1: 36/60 | Placebo S2: 11/56 | ALKS 5461 0.5mg/0.5mg S2: 13/56 | ALKS 5461 2mg/2mg S2: 22/56",
+      "seriousAdverseEventTerms": 1,
+      "infectionEventTerms": "Upper respiratory tract infection",
+      "participantFlowGroups": "Stage 1: STARTED / Placebo S1 265 | Stage 1: STARTED / ALKS 5461 0.5mg/0.5mg S1 59 | Stage 1: STARTED / ALKS 5461 2mg/2mg S1 60 | Stage 1: STARTED / Placebo S2 0 | Stage 1: STARTED / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: STARTED / ALKS 5461 2mg/2mg S2 0 | Stage 1: COMPLETED / Placebo S1 251 | Stage 1: COMPLETED / ALKS 5461 0.5mg/0.5mg S1 51 | Stage 1: COMPLETED / ALKS 5461 2mg/2mg S1 52 | Stage 1: COMPLETED / Placebo S2 0 | Stage 1: COMPLETED / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: COMPLETED / ALKS 5461 2mg/2mg S2 0 | Stage 1: NOT COMPLETED / Placebo S1 14 | Stage 1: NOT COMPLETED / ALKS 5461 0.5mg/0.5mg S1 8 | Stage 1: NOT COMPLETED / ALKS 5461 2mg/2mg S1 8 | Stage 1: NOT COMPLETED / Placebo S2 0 | Stage 1: NOT COMPLETED / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: NOT COMPLETED / ALKS 5461 2mg/2mg S2 0 | Stage 2: STARTED / Placebo S1 0 | Stage 2: STARTED / ALKS 5461 0.5mg/0.5mg S1 0 | Stage 2: STARTED / ALKS 5461 2mg/2mg S1 0 | Stage 2: STARTED / Placebo S2 56 | Stage 2: STARTED / ALKS 5461 0.5mg/0.5mg S2 56 | Stage 2: STARTED / ALKS 5461 2mg/2mg S2 56 | Stage 2: COMPLETED / Placebo S1 0 | Stage 2: COMPLETED / ALKS 5461 0.5mg/0.5mg S1 0 | Stage 2: COMPLETED / ALKS 5461 2mg/2mg S1 0 | Stage 2: COMPLETED / Placebo S2 53 | Stage 2: COMPLETED / ALKS 5461 0.5mg/0.5mg S2 52 | Stage 2: COMPLETED / ALKS 5461 2mg/2mg S2 50 | Stage 2: NOT COMPLETED / Placebo S1 0 | Stage 2: NOT COMPLETED / ALKS 5461 0.5mg/0.5mg S1 0 | Stage 2: NOT COMPLETED / ALKS 5461 2mg/2mg S1 0 | Stage 2: NOT COMPLETED / Placebo S2 3 | Stage 2: NOT COMPLETED / ALKS 5461 0.5mg/0.5mg S2 4 | Stage 2: NOT COMPLETED / ALKS 5461 2mg/2mg S2 6",
+      "participantFlowDiscontinuations": "Stage 1: Adverse Event / Placebo S1 6 | Stage 1: Adverse Event / ALKS 5461 0.5mg/0.5mg S1 4 | Stage 1: Adverse Event / ALKS 5461 2mg/2mg S1 7 | Stage 1: Adverse Event / Placebo S2 0 | Stage 1: Adverse Event / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: Adverse Event / ALKS 5461 2mg/2mg S2 0 | Stage 1: Withdrawal by Subject / Placebo S1 3 | Stage 1: Withdrawal by Subject / ALKS 5461 0.5mg/0.5mg S1 2 | Stage 1: Withdrawal by Subject / ALKS 5461 2mg/2mg S1 1 | Stage 1: Withdrawal by Subject / Placebo S2 0 | Stage 1: Withdrawal by Subject / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: Withdrawal by Subject / ALKS 5461 2mg/2mg S2 0 | Stage 1: Lack of Efficacy / Placebo S1 1 | Stage 1: Lack of Efficacy / ALKS 5461 0.5mg/0.5mg S1 0 | Stage 1: Lack of Efficacy / ALKS 5461 2mg/2mg S1 0 | Stage 1: Lack of Efficacy / Placebo S2 0 | Stage 1: Lack of Efficacy / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: Lack of Efficacy / ALKS 5461 2mg/2mg S2 0 | Stage 1: Lost to Follow-up / Placebo S1 3 | Stage 1: Lost to Follow-up / ALKS 5461 0.5mg/0.5mg S1 1 | Stage 1: Lost to Follow-up / ALKS 5461 2mg/2mg S1 0 | Stage 1: Lost to Follow-up / Placebo S2 0 | Stage 1: Lost to Follow-up / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: Lost to Follow-up / ALKS 5461 2mg/2mg S2 0 | Stage 1: Failure to Meet Eligibility Criteria / Placebo S1 0 | Stage 1: Failure to Meet Eligibility Criteria / ALKS 5461 0.5mg/0.5mg S1 1 | Stage 1: Failure to Meet Eligibility Criteria / ALKS 5461 2mg/2mg S1 0 | Stage 1: Failure to Meet Eligibility Criteria / Placebo S2 0 | Stage 1: Failure to Meet Eligibility Criteria / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: Failure to Meet Eligibility Criteria / ALKS 5461 2mg/2mg S2 0 | Stage 1: Non-compliance with study visits / Placebo S1 1 | Stage 1: Non-compliance with study visits / ALKS 5461 0.5mg/0.5mg S1 0 | Stage 1: Non-compliance with study visits / ALKS 5461 2mg/2mg S1 0 | Stage 1: Non-compliance with study visits / Placebo S2 0 | Stage 1: Non-compliance with study visits / ALKS 5461 0.5mg/0.5mg S2 0 | Stage 1: Non-compliance with study visits / ALKS 5461 2mg/2mg S2 0 | Stage 2: Adverse Event / Placebo S1 0 | Stage 2: Adverse Event / ALKS 5461 0.5mg/0.5mg S1 0 | Stage 2: Adverse Event / ALKS 5461 2mg/2mg S1 0 | Stage 2: Adverse Event / Placebo S2 0",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02158533"
+    },
+    {
+      "nctId": "NCT02158546",
+      "registryStatus": "COMPLETED",
+      "primaryOutcomes": "Change From Baseline to End of Treatment (Week 6) in the Montgomery Asberg Depression Rating Scale (MADRS) Total Score",
+      "primaryTimeframes": "Baseline and week 6",
+      "postedResults": true,
+      "results": [
+        {
+          "title": "Change From Baseline to End of Treatment (Week 6) in the Montgomery Asberg Depression Rating Scale (MADRS) Total Score",
+          "timeFrame": "Baseline and week 6",
+          "measurements": [
+            {
+              "arm": "ALKS 5461 2mg/2mg",
+              "value": "-4.8",
+              "lowerLimit": "",
+              "upperLimit": ""
+            },
+            {
+              "arm": "Placebo",
+              "value": "-4.6",
+              "lowerLimit": "",
+              "upperLimit": ""
+            }
+          ],
+          "analyses": [
+            {
+              "pValue": "0.782",
+              "pValueModifier": "",
+              "method": "",
+              "groupComparison": "ALKS 5461 2mg/2mg vs Placebo"
+            }
+          ]
+        }
+      ],
+      "primaryAnalysesCount": 1,
+      "hasPublicProtocol": false,
+      "hasPublicSAP": false,
+      "seriousAdverseEventsByArm": "Group 1 ALKS 5461 2mg/2mg: 0/147 | Group 1 Placebo: 1/148 | Group 2 ALKS 5461 2mg/2mg: 0/15 | Group 2 Placebo: 0/15",
+      "otherAdverseEventsByArm": "Group 1 ALKS 5461 2mg/2mg: 39/147 | Group 1 Placebo: 24/148 | Group 2 ALKS 5461 2mg/2mg: 11/15 | Group 2 Placebo: 8/15",
+      "seriousAdverseEventTerms": 1,
+      "infectionEventTerms": "Upper respiratory tract infection | Influenza",
+      "participantFlowGroups": "Overall Study: STARTED / Group 1 - ALKS 5461 2mg/2mg 152 | Overall Study: STARTED / Group 1 - Placebo 153 | Overall Study: STARTED / Group 2 ALKS 5461 2mg/2mg 18 | Overall Study: STARTED / Group 2 - Placebo 19 | Overall Study: COMPLETED / Group 1 - ALKS 5461 2mg/2mg 133 | Overall Study: COMPLETED / Group 1 - Placebo 136 | Overall Study: COMPLETED / Group 2 ALKS 5461 2mg/2mg 14 | Overall Study: COMPLETED / Group 2 - Placebo 13 | Overall Study: NOT COMPLETED / Group 1 - ALKS 5461 2mg/2mg 19 | Overall Study: NOT COMPLETED / Group 1 - Placebo 17 | Overall Study: NOT COMPLETED / Group 2 ALKS 5461 2mg/2mg 4 | Overall Study: NOT COMPLETED / Group 2 - Placebo 6",
+      "participantFlowDiscontinuations": "Overall Study: Physician Decision / Group 1 - ALKS 5461 2mg/2mg 0 | Overall Study: Physician Decision / Group 1 - Placebo 1 | Overall Study: Physician Decision / Group 2 ALKS 5461 2mg/2mg 0 | Overall Study: Physician Decision / Group 2 - Placebo 0 | Overall Study: Non-compliance / Group 1 - ALKS 5461 2mg/2mg 0 | Overall Study: Non-compliance / Group 1 - Placebo 1 | Overall Study: Non-compliance / Group 2 ALKS 5461 2mg/2mg 0 | Overall Study: Non-compliance / Group 2 - Placebo 1 | Overall Study: Failure to meet eligibility criteria / Group 1 - ALKS 5461 2mg/2mg 0 | Overall Study: Failure to meet eligibility criteria / Group 1 - Placebo 1 | Overall Study: Failure to meet eligibility criteria / Group 2 ALKS 5461 2mg/2mg 0 | Overall Study: Failure to meet eligibility criteria / Group 2 - Placebo 0 | Overall Study: Lack of Efficacy / Group 1 - ALKS 5461 2mg/2mg 1 | Overall Study: Lack of Efficacy / Group 1 - Placebo 1 | Overall Study: Lack of Efficacy / Group 2 ALKS 5461 2mg/2mg 0 | Overall Study: Lack of Efficacy / Group 2 - Placebo 0 | Overall Study: Adverse Event / Group 1 - ALKS 5461 2mg/2mg 2 | Overall Study: Adverse Event / Group 1 - Placebo 2 | Overall Study: Adverse Event / Group 2 ALKS 5461 2mg/2mg 0 | Overall Study: Adverse Event / Group 2 - Placebo 0 | Overall Study: Withdrawal by Subject / Group 1 - ALKS 5461 2mg/2mg 6 | Overall Study: Withdrawal by Subject / Group 1 - Placebo 2 | Overall Study: Withdrawal by Subject / Group 2 ALKS 5461 2mg/2mg 1 | Overall Study: Withdrawal by Subject / Group 2 - Placebo 0 | Overall Study: Lost to Follow-up / Group 1 - ALKS 5461 2mg/2mg 5 | Overall Study: Lost to Follow-up / Group 1 - Placebo 4 | Overall Study: Lost to Follow-up / Group 2 ALKS 5461 2mg/2mg 0 | Overall Study: Lost to Follow-up / Group 2 - Placebo 1 | Overall Study: Site Excluded / Group 1 - ALKS 5461 2mg/2mg 5 | Overall Study: Site Excluded / Group 1 - Placebo 5 | Overall Study: Site Excluded / Group 2 ALKS 5461 2mg/2mg 3 | Overall Study: Site Excluded / Group 2 - Placebo 4",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02158546"
+    }
+  ]
+}
