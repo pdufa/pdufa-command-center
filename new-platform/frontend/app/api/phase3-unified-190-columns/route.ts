@@ -1,6 +1,7 @@
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,requiresResearchStatus} from "../../../lib/phase3-ir-research";
-import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
+import {activePhase3Cohorts} from "../../../lib/phase3-active-cohorts";
+import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
@@ -11,6 +12,8 @@ import {PHASE3_ONLINE_TRIAL_COUNT,phase3OnlineRecord,phase3OnlineSourceFact,phas
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
+const ledger=activePhase3Cohorts.snapshot;
+const agiosFacts=new Map(agiosEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 
 /** One Phase 3 trial per exact NCT; predictions never count as observed PASS/FAIL. */
 const baseHeaders = [
@@ -48,7 +51,22 @@ const escaped=(input:unknown):string=>{
 const writeRow=(cells:unknown[])=>cells.map(escaped).join(",");
 
 export async function GET(request:Request){
- const includeLive=new URL(request.url).searchParams.get("live")==="1";
+ const params=new URL(request.url).searchParams;
+ const includeLive=params.get("live")==="1";
+ const cohort=params.get("cohort")||"all";
+ const ticker=(params.get("ticker")||"").trim().toUpperCase();
+ const nctId=(params.get("nctId")||"").trim().toUpperCase();
+ if(!["all","active","pre","post"].includes(cohort)||!/^([A-Z0-9.]{1,8})?$/.test(ticker)||
+  !/^(NCT\\d{8})?$/.test(nctId))
+  return Response.json({error:"Invalid cohort, ticker or exact NCT selector"},{status:400});
+ const preIds=new Set(activePhase3Cohorts.pre.map(r=>r.nctId));
+ const postIds=new Set(activePhase3Cohorts.post.map(r=>r.nctId));
+ const included=(r:(typeof ledger.rows)[number])=>
+  (!ticker||r.ticker===ticker)&&(!nctId||r.nctId===nctId)&&
+  (cohort==="all"||(cohort==="pre"&&preIds.has(r.nctId))||
+   (cohort==="post"&&postIds.has(r.nctId))||
+   (cohort==="active"&&(preIds.has(r.nctId)||postIds.has(r.nctId))));
+ const includedCount=ledger.rows.filter(included).length;
  type LiveRegistry=Awaited<ReturnType<typeof loadLivePhase3Registry>>["rows"][number]["registry"];
  let liveByNct=new Map<string,LiveRegistry>();
  if(includeLive){
@@ -68,7 +86,11 @@ export async function GET(request:Request){
     !irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
     !populationGeographyIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
     investorByNct.size!==investorRelationsEvidence.records.length||
-    endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
+    endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))||
+    agiosEvidence.trials.length!==9||agiosFacts.size!==agiosEvidence.facts.length||
+    agiosEvidence.trials.some(t=>!(t.cohort==="PRE_DATA"?preIds:postIds).has(t.nctId))||
+    agiosEvidence.facts.some(f=>!agiosEvidence.trials.some(t=>t.nctId===f.nctId)||
+      f.question<1||f.question>30||f.score!==null||!f.sourceUrl.startsWith("https://"))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
  }
  const rows=[writeRow(HEADERS)];
@@ -142,6 +164,10 @@ export async function GET(request:Request){
     researched.evidence+" | Published: "+researched.publicationDate+" | Scope: "+researched.evidenceScope+
      ("chronologyQualification" in researched&&researched.chronologyQualification?" | Chronology: "+researched.chronologyQualification:""),
     researched.sourceUrl];
+   const agiosFact=agiosFacts.get(r.nctId+"#"+q.number);
+   if(agiosFact)return [agiosFact.status,"","",
+    agiosFact.evidence+" | Published: "+agiosFact.sourceDate+" | Source fact only; no forecast or clinical score inferred",
+    agiosFact.sourceUrl];
    // Issuer investor-relations statements are historical SOURCE FACTS, not subjective predictive scores.
    if(q.number===30&&investor?.regulatoryEvidenceStatus&&investor?.regulatoryEvidenceUrl)
     return ["SOURCE_FACT_ONLY","","",
@@ -241,9 +267,9 @@ export async function GET(request:Request){
   if(values.length!==190){
    return Response.json({error:"Question-field alignment failed"},{status:503});
   }
-  rows.push(writeRow(values));
+  if(included(r))rows.push(writeRow(values));
  }
- if(rows.length!==763||passedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_MET||
+ if(rows.length!==includedCount+1||passedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_MET||
     failedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET){
   return Response.json({error:"Trial/pass reconciliation failed"},{status:503});
  }
