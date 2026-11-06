@@ -31,7 +31,7 @@ test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",(
  const known=new Set(ledger.rows.map(r=>r.nctId));
  assert.equal(adjudications.totalReviewed,30);
  assert.equal(adjudications.records.length,30);
- assert.equal(new Set(adjudications.records.map(r=>r.nctId)).size,28);
+ assert.equal(new Set(adjudications.records.map(r=>r.nctId)).size,30);
  assert.ok(adjudications.records.every(r=>known.has(r.nctId)&&r.evidenceUrl&&r.rationale));
  assert.equal(adjudications.counts.PRIMARY_ENDPOINT_MET,26);
  assert.equal(adjudications.counts.PRIMARY_ENDPOINT_NOT_MET,2);
