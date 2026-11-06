@@ -14,6 +14,7 @@ import axsomeRegistry from "../data/axsomePhaseFirstRegistry20261106.json";
 import axsomeEvidence from "../data/axsomePhaseFirstEvidence20261106.json";
 import sinovacRegistry from "../data/sinovacPhaseFirstRegistry20261106.json";
 import sinovacEvidence from "../data/sinovacPhaseFirstEvidence20261106.json";
+import agiosEvidence from "../data/agiosPhase3Evidence20261106.json";
 
 const AS_OF="2026-11-06";
 const oldById=new Map(legacyAlks.records.map(r=>[r.nctId,r]));
@@ -80,6 +81,19 @@ export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalCon
    additional[fact.assessmentId]={text:fact.evidence,url:source.url,date:source.date,
     confidence:fact.confidence==="MODERATE"||source.url.includes("www.axsome.com")?"MODERATE":"HIGH",
     status:("status" in fact?fact.status:undefined) as import("./phase-first-clinical").EvidenceStatus|undefined};
+  }
+ }
+ // Issuer/registry evidence for nine Agios active trials supplements only factual
+ // phase-applicable documentation. It NEVER generates a clinical factor grade.
+ if(ticker==="AGIO"){
+  const fields:Record<number,string>={3:"safety",9:"design",12:"enrollment",
+   17:"secondary",24:"tolerability",27:"comparator"};
+  for(const fact of agiosEvidence.facts){
+   if(fact.nctId!==trial.trialId)continue;
+   const key=fields[fact.question];
+   if(!key||additional[key])continue;
+   additional[key]={text:fact.evidence+" Source fact, not a reviewed clinical grade.",
+    url:fact.sourceUrl,date:fact.sourceDate,confidence:"HIGH"};
   }
  }
  return {ticker,drug,indication,programId:program?.id??"REGISTRY_INTERVENTION:"+drug.toLowerCase(),

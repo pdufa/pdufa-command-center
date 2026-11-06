@@ -1,4 +1,5 @@
 import discoveryAvenues from "../../../data/phase3DiscoveryAvenues20261106.json";
+import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
 import companySearchLog from "../../../data/phase3CompanyWebsiteSearchLog20261106.json";
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,isObservedStatus,isSourceFactStatus,requiresResearchStatus,investorRelationsCoverage} from "../../../lib/phase3-ir-research";
@@ -15,6 +16,7 @@ import {phase3OnlineRecord,phase3OnlineSourceFact,PHASE3_ONLINE_TRIAL_COUNT,PHAS
 export const dynamic="force-dynamic";
 
 const endpointByNct=new Map(adjudications.records.map(x=>[x.nctId,x] as const));
+const agiosFacts=new Map(agiosEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 const investorByNct=new Map(investorRelationsEvidence.records.map(x=>[x.nctId,x] as const));
 const registryByNct=new Map(registryCrosswalk.records.map(x=>[x.nctId,x] as const));
 const preDataByNct=new Map(preData.trials.map(x=>[x.nctId,x] as const));
@@ -41,6 +43,7 @@ function statusFor(
  if(q.number===29&&e)return "DOCUMENTED_PUBLIC_READOUT";
  const researched=irAssessment(r.nctId,q.number);
  if(researched)return researched.classification;
+ if(agiosFacts.has(r.nctId+"#"+q.number))return "SOURCE_FACT_ONLY";
  const ir=investorByNct.get(r.nctId);
  if(q.number===30&&ir?.regulatoryEvidenceStatus&&ir.regulatoryEvidenceUrl)return "SOURCE_FACT_ONLY";
  if(ir?.companyUrl){
@@ -81,7 +84,8 @@ export async function GET(request:Request){
     !populationGeographyIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
     investorByNct.size!==investorRelationsEvidence.records.length||
     PHASE3_ONLINE_TRIAL_COUNT!==762||
-    registryCrosswalk.records.length!==762||registryByNct.size!==762){
+    registryCrosswalk.records.length!==762||registryByNct.size!==762||
+    agiosEvidence.trials.length!==9||agiosFacts.size!==agiosEvidence.facts.length){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
  const perQuestion:QuestionAudit[]=UNIVERSAL_PHASE3_QUESTIONS.map((q,i)=>({

@@ -1,0 +1,359 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-06",
+  "ticker": "AGIO",
+  "company": "Agios Pharmaceuticals",
+  "scope": "Nine active Phase 3 census NCTs; source facts for existing 190-column export; not newly validated current PDUFA pipeline membership.",
+  "guardrails": [
+    "Source facts never become prediction scores.",
+    "PRE_DATA means no verified public readout in saved source set, not proof of no result.",
+    "Mixed RISE UP co-primary outcomes remain distinct.",
+    "No historical archive/RAAS data overwritten."
+  ],
+  "trials": [
+    {
+      "nctId": "NCT04770753",
+      "cohort": "POST_DATA",
+      "drug": "Mitapivat",
+      "program": "ENERGIZE",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT04770753"
+    },
+    {
+      "nctId": "NCT04770779",
+      "cohort": "POST_DATA",
+      "drug": "Mitapivat",
+      "program": "ENERGIZE-T",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT04770779"
+    },
+    {
+      "nctId": "NCT05031780",
+      "cohort": "POST_DATA",
+      "drug": "Mitapivat",
+      "program": "RISE UP",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT05031780"
+    },
+    {
+      "nctId": "NCT05144256",
+      "cohort": "POST_DATA",
+      "drug": "Mitapivat",
+      "program": "ACTIVATE-KidsT",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT05144256"
+    },
+    {
+      "nctId": "NCT05175105",
+      "cohort": "POST_DATA",
+      "drug": "Mitapivat",
+      "program": "ACTIVATE-Kids",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT05175105"
+    },
+    {
+      "nctId": "NCT07506863",
+      "cohort": "PRE_DATA",
+      "drug": "Mitapivat",
+      "reviewStatus": "PUBLIC_READOUT_NOT_VERIFIED_IN_DATED_CENSUS",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT07506863"
+    },
+    {
+      "nctId": "NCT07517133",
+      "cohort": "PRE_DATA",
+      "drug": "Mitapivat",
+      "reviewStatus": "PUBLIC_READOUT_NOT_VERIFIED_IN_DATED_CENSUS",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT07517133"
+    },
+    {
+      "nctId": "NCT07656415",
+      "cohort": "PRE_DATA",
+      "drug": "Mitapivat",
+      "reviewStatus": "PUBLIC_READOUT_NOT_VERIFIED_IN_DATED_CENSUS",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT07656415"
+    },
+    {
+      "nctId": "NCT07859423",
+      "cohort": "PRE_DATA",
+      "drug": "AG-236",
+      "reviewStatus": "PUBLIC_READOUT_NOT_VERIFIED_IN_DATED_CENSUS",
+      "registryEvidenceUrl": "https://clinicaltrials.gov/study/NCT07859423"
+    }
+  ],
+  "facts": [
+    {
+      "nctId": "NCT05031780",
+      "question": 9,
+      "evidence": "207 patients randomized 2:1 to mitapivat 100 mg twice daily (138) or placebo (69), double-blind for 52 weeks; design description, not a score.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+      "sourceDate": "2025-11-19",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 12,
+      "evidence": "207 randomized participants: mitapivat n=138; placebo n=69. Enrollment does not alone establish adequate power.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+      "sourceDate": "2025-11-19",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 17,
+      "evidence": "Two prespecified secondary hemolysis outcomes met; PROMIS Fatigue secondary endpoint did not meet statistical significance (p=0.7112).",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+      "sourceDate": "2025-11-19",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 18,
+      "evidence": "PROMIS Fatigue secondary change from baseline was -2.72 vs -2.25 for placebo (two-sided p=0.7112); not significant.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+      "sourceDate": "2025-11-19",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 24,
+      "evidence": "Double-blind completion: 120/138 mitapivat patients (87.0%) and 56/69 placebo patients (81.2%). These are completion figures, not a safety grade.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+      "sourceDate": "2025-11-19",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 30,
+      "evidence": "Agios disclosed original PDUFA goal Nov 1, 2026, then issuer-reported three-month major-amendment extension to Feb 1, 2027. Independent FDA application/cycle verification is still required; not a trial efficacy prediction.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-new-pdufa-goal-date-february-1-2027-mitapivat",
+      "sourceDate": "2026-10-30",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770753",
+      "question": 9,
+      "evidence": "ENERGIZE randomized 130 patients to mitapivat vs 64 to placebo, with a 24-week double-blind period. Randomization is a documented design fact, not a grade.",
+      "sourceUrl": "https://investor.agios.com/node/16881",
+      "sourceDate": "2024-01-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770753",
+      "question": 12,
+      "evidence": "194 patients enrolled, 130 active and 64 placebo. Enrollment alone does not establish statistical strength.",
+      "sourceUrl": "https://investor.agios.com/node/16881",
+      "sourceDate": "2024-01-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770753",
+      "question": 17,
+      "evidence": "Both key secondary endpoints (FACIT-Fatigue and hemoglobin change) were reported statistically significant; exact-NCT primary outcome is separately adjudicated.",
+      "sourceUrl": "https://investor.agios.com/node/16881",
+      "sourceDate": "2024-01-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 9,
+      "evidence": "ENERGIZE-T randomized 171 patients to mitapivat vs 87 placebo for a 48-week double-blind period. Design adequacy not independently scored.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-phase-3-energize-t-study-mitapivat-met-primary",
+      "sourceDate": "2024-06-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 12,
+      "evidence": "258 patients enrolled, 171 active and 87 placebo. Enrollment alone is not proof of statistical power.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-phase-3-energize-t-study-mitapivat-met-primary",
+      "sourceDate": "2024-06-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 17,
+      "evidence": "The three reported key secondary transfusion-reduction endpoints achieved statistical significance. Do not conflate with primary endpoint or approval.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-phase-3-energize-t-study-mitapivat-met-primary",
+      "sourceDate": "2024-06-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 24,
+      "evidence": "48-week double-blind discontinuation due to adverse events: 5.8% mitapivat versus 1.2% placebo; descriptive safety fact, not a safety score.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-phase-3-energize-t-study-mitapivat-met-primary",
+      "sourceDate": "2024-06-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07506863",
+      "question": 27,
+      "evidence": "Mitapivat and matching placebo recorded as interventions; comparator presence is not proof of efficacy.",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT07506863",
+      "sourceDate": "2026-11-06",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07517133",
+      "question": 27,
+      "evidence": "Mitapivat and matching placebo recorded as interventions; comparator presence is not proof of efficacy.",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT07517133",
+      "sourceDate": "2026-11-06",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07656415",
+      "question": 27,
+      "evidence": "Mitapivat and matching placebo recorded as interventions; comparator presence is not proof of efficacy.",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT07656415",
+      "sourceDate": "2026-11-06",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07859423",
+      "question": 27,
+      "evidence": "AG-236 and placebo recorded as interventions; Phase 2/3 study labeling does not establish Phase 3 results.",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT07859423",
+      "sourceDate": "2026-11-06",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05144256",
+      "question": 9,
+      "evidence": "ACTIVATE-KidsT used a randomized 32-week double-blind design, 32 patients assigned mitapivat and 17 placebo; registry/issuer design fact, not trial-grade evidence.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+      "sourceDate": "2024-08-01",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05144256",
+      "question": 12,
+      "evidence": "49 pediatric patients enrolled, 32 mitapivat and 17 placebo. These enrollment counts do not establish statistical power.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+      "sourceDate": "2024-08-01",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05144256",
+      "question": 17,
+      "evidence": "Secondary endpoints transfusion-free response (6/32 vs 0) and normal hemoglobin response (4/32 vs 0) favored mitapivat; the prespecified statistical primary criterion was nevertheless NOT met.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+      "sourceDate": "2024-08-01",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05144256",
+      "question": 24,
+      "evidence": "No treatment discontinuations due to adverse events; 30/32 mitapivat and 16/17 placebo completed the 32-week double-blind period.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+      "sourceDate": "2024-08-01",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05144256",
+      "question": 3,
+      "evidence": "Similar proportion of participants reported adverse events in mitapivat and placebo groups; no treatment discontinuations for adverse events. Descriptive safety fact only.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+      "sourceDate": "2024-08-01",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05175105",
+      "question": 9,
+      "evidence": "ACTIVATE-Kids randomized 19 pediatric patients to mitapivat and 11 to placebo for a 20-week double-blind period; trial design fact.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+      "sourceDate": "2025-02-13",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05175105",
+      "question": 12,
+      "evidence": "30 pediatric patients enrolled, 19 treated and 11 placebo; sample size alone does not establish statistical strength.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+      "sourceDate": "2025-02-13",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05175105",
+      "question": 17,
+      "evidence": "Indirect bilirubin, lactate dehydrogenase and haptoglobin markers reportedly improved with mitapivat compared with placebo; source describes observed change rather than separately scored secondary hypothesis tests.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+      "sourceDate": "2025-02-13",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05175105",
+      "question": 24,
+      "evidence": "All 30 randomized children completed the double-blind period; no treatment discontinuations for adverse events or any other reason.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+      "sourceDate": "2025-02-13",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05175105",
+      "question": 3,
+      "evidence": "Safety profile was reported consistent with adult PK-deficiency observations, with no treatment discontinuations due to adverse events. Descriptive, not a safety grade.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+      "sourceDate": "2025-02-13",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770753",
+      "question": 24,
+      "evidence": "ENERGIZE 24-week period: adverse events led to study discontinuation in 4/130 (3.1%) mitapivat participants versus 0/64 placebo; unadjusted descriptive safety fact.",
+      "sourceUrl": "https://investor.agios.com/node/16881",
+      "sourceDate": "2024-01-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 3,
+      "evidence": "RISE UP: adverse events reported in 134/138 (97.1%) mitapivat and 68/69 (98.6%) placebo patients; incidence alone does not grade benefit-risk.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+      "sourceDate": "2025-11-19",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770753",
+      "question": 3,
+      "evidence": "ENERGIZE adverse-event incidence described as similar across groups; discontinuations due to adverse events were 4/130 (3.1%) treated and 0/64 placebo.",
+      "sourceUrl": "https://investor.agios.com/node/16881",
+      "sourceDate": "2024-01-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 3,
+      "evidence": "ENERGIZE-T adverse-event incidence described as similar across groups; discontinuations due to adverse events 5.8% treated vs 1.2% placebo.",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-phase-3-energize-t-study-mitapivat-met-primary",
+      "sourceDate": "2024-06-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    }
+  ]
+}
