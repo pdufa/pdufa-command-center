@@ -60,7 +60,7 @@ export async function GET(request:Request){
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
     PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
-    endpointByNct.size!==28||endpointAdjudications.records.length!==28||
+    endpointByNct.size!==30||endpointAdjudications.records.length!==30||
     endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
  }
