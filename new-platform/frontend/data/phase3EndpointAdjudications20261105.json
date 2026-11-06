@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 76,
+  "totalReviewed": 82,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 55,
+    "PRIMARY_ENDPOINT_MET": 61,
     "PRIMARY_ENDPOINT_NOT_MET": 12,
     "NO_BINARY_PASS_FAIL": 9
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
-  "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions.",
+  "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions. | Lexicon 2026-11-06: six exact-NCT historical readouts, dose-specific CKD3, approval/CRL kept indication-specific.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -803,6 +803,84 @@
       "recoveryBatch": "ACAD_ALKS_HISTORICAL_PASS_20261106",
       "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
       "qualification": "Historical endpoint designation only; does not estimate future FDA approval probability."
+    },
+    {
+      "nctId": "NCT02384941",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Both 200 mg and 400 mg sotagliflozin met week-24 HbA1c primary endpoint versus optimized insulin plus placebo: HbA1c changes -0.43%, -0.48% vs placebo -0.07%, each p<0.001.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/29937430/",
+      "sourceDate": "2018-06-24",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "LEXICON_SOTAGLIFLOZIN_20261106",
+      "identityCrosswalk": "inTandem1 publication specifically identifies NCT02384941; Lexicon 2023 10-K reports independent inTandem1 outcomes.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02384941",
+      "evidenceType": "PEER_REVIEWED_EXACT_NCT_RESULTS",
+      "qualification": "Observed historical efficacy outcome only; it is not a prospective RAAS prediction, FDA approval probability, or stand-alone regulatory verdict."
+    },
+    {
+      "nctId": "NCT02421510",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Both 200 mg and 400 mg sotagliflozin met week-24 HbA1c primary endpoint: placebo-adjusted -0.37% and -0.35% respectively, both p<0.001.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/29937431/",
+      "sourceDate": "2018-06-24",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "LEXICON_SOTAGLIFLOZIN_20261106",
+      "identityCrosswalk": "inTandem2 peer-reviewed publication explicitly identifies NCT02421510; separate from inTandem1.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02421510",
+      "evidenceType": "PEER_REVIEWED_EXACT_NCT_RESULTS",
+      "qualification": "Observed historical efficacy outcome only; it is not a prospective RAAS prediction, FDA approval probability, or stand-alone regulatory verdict."
+    },
+    {
+      "nctId": "NCT02531035",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Primary composite HbA1c <7.0% at week 24 without severe hypoglycemia or DKA: 28.6% (200/699) on sotagliflozin 400 mg versus 15.2% (107/703) on placebo, p<0.001.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/28899222/",
+      "sourceDate": "2017-09-13",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "LEXICON_SOTAGLIFLOZIN_20261106",
+      "identityCrosswalk": "InTandem3 original NEJM publication explicitly identifies NCT02531035 and its single 400 mg dose.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02531035",
+      "evidenceType": "PEER_REVIEWED_EXACT_NCT_RESULTS",
+      "qualification": "Observed historical efficacy outcome only; it is not a prospective RAAS prediction, FDA approval probability, or stand-alone regulatory verdict."
+    },
+    {
+      "nctId": "NCT03315143",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "FDA-reviewed composite cardiovascular primary endpoint met in patients with type 2 diabetes and CKD: 5.6 vs 7.5 events/100 patient-years, HR 0.75 (95% CI 0.63-0.88), p<0.001 (FDA snapshot).",
+      "evidenceUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-inpefa",
+      "sourceDate": "2023-05-26",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "LEXICON_SOTAGLIFLOZIN_20261106",
+      "identityCrosswalk": "FDA INPEFA drug-trials snapshot explicitly names SCORED NCT03315143 and distinguishes it from SOLOIST NCT03521934.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03315143",
+      "evidenceType": "FDA_SNAPSHOT_AND_PEER_REVIEWED_EXACT_NCT",
+      "qualification": "Observed historical efficacy outcome only; it is not a prospective RAAS prediction, FDA approval probability, or stand-alone regulatory verdict."
+    },
+    {
+      "nctId": "NCT03521934",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "FDA-reviewed composite cardiovascular primary endpoint met after worsening heart failure in type 2 diabetes: 51.3 vs 76.4 events/100 patient-years, HR 0.67 (95% CI 0.53-0.85), p=0.001.",
+      "evidenceUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-inpefa",
+      "sourceDate": "2023-05-26",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "LEXICON_SOTAGLIFLOZIN_20261106",
+      "identityCrosswalk": "FDA INPEFA drug-trials snapshot explicitly names SOLOIST NCT03521934 and distinguishes it from SCORED NCT03315143.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03521934",
+      "evidenceType": "FDA_SNAPSHOT_AND_PEER_REVIEWED_EXACT_NCT",
+      "qualification": "Observed historical efficacy outcome only; it is not a prospective RAAS prediction, FDA approval probability, or stand-alone regulatory verdict."
+    },
+    {
+      "nctId": "NCT03242252",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Week-26 HbA1c primary comparison met for 400 mg but not 200 mg in stage 3 CKD: placebo-adjusted -0.24% (p=0.0021) for 400 mg and -0.10% (p=0.2095) for 200 mg; dose-specific mixed primary results, not both doses succeeding.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/36782093/",
+      "sourceDate": "2023-02-13",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "LEXICON_SOTAGLIFLOZIN_20261106",
+      "identityCrosswalk": "CKD3 study publication names exact NCT03242252, distinct from NCT03242018 CKD4.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03242252",
+      "evidenceType": "PEER_REVIEWED_EXACT_NCT_RESULTS",
+      "qualification": "Only the 400 mg comparison was significant; 200 mg was not. Do not classify both doses as successful."
     }
   ]
 }
