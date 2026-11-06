@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "asOf": "2026-11-05",
-  "totalReviewed": 86,
+  "asOf": "2026-11-06",
+  "totalReviewed": 94,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 60,
+    "PRIMARY_ENDPOINT_MET": 67,
     "PRIMARY_ENDPOINT_NOT_MET": 17,
-    "NO_BINARY_PASS_FAIL": 9
+    "NO_BINARY_PASS_FAIL": 10
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
-  "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions. Additional 2026-11-06 pre-registry source recovery includes three Ionis primary failures; no primary efficacy adjudication for zero-enrollment withdrawn peramivir NCT00486980.",
+  "note": "Source-cited retrospective trial endpoint adjudications; mixed multicomponent results and absent US FDA outcomes preserved. No implication of clinical approval probability.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -933,6 +933,110 @@
       "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00048295",
       "evidenceType": "ORIGINAL_ISSUER_PAIRED_TRIAL_READOUT_PLUS_PUBLICATION",
       "qualification": "Historical primary endpoint non-success only; no FDA outcome or new trading prediction."
+    },
+    {
+      "nctId": "NCT01507857",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Original randomized placebo-controlled pivotal trial in 10,007 children met EV71-associated HFMD/herpangina primary endpoint: efficacy 94.8% (95% CI 87.2–97.9), P<0.001; cases 13/5041 vaccine vs 106/5028 placebo. Historical China-based clinical endpoint only.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/24571754/",
+      "sourceDate": "2014-02-27",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT01507857",
+      "identityCrosswalk": "Exact NCT explicitly identified in cited clinical publication, matched to ClinicalTrials.gov registry.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_FIVE_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_PRIMARY_ENDPOINT_EXACT_NCT",
+      "qualification": "Historical clinical vaccine endpoint only; not a US FDA filing/PDUFA action, market score, or calibrated RAAS probability."
+    },
+    {
+      "nctId": "NCT02451969",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Published randomized Phase III PPV23 vaccine immunogenicity trial reports all 23 serotype antibody seroconversion tests met prespecified -10% noninferiority lower-bound standard versus commercial PPV23. This is immune noninferiority, not proven prevention of pneumococcal infection.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/30215583/",
+      "sourceDate": "2018-09-21",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02451969",
+      "identityCrosswalk": "Exact NCT explicitly identified in cited clinical publication, matched to ClinicalTrials.gov registry.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_FIVE_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_PRIMARY_ENDPOINT_EXACT_NCT",
+      "qualification": "Historical clinical vaccine endpoint only; not a US FDA filing/PDUFA action, market score, or calibrated RAAS probability."
+    },
+    {
+      "nctId": "NCT03853993",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Randomized quadrivalent versus trivalent influenza vaccine trial (n=2320) reports noninferiority for H1N1, H3N2, B/Victoria and B/Yamagata immunogenicity and B-strain superiority against omitted-lineage trivalent control. This measures antibody response, not demonstrated field prevention.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/32732142/",
+      "sourceDate": "2020-07-27",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03853993",
+      "identityCrosswalk": "Exact NCT explicitly identified in cited clinical publication, matched to ClinicalTrials.gov registry.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_FIVE_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_PRIMARY_ENDPOINT_EXACT_NCT",
+      "qualification": "Historical clinical vaccine endpoint only; not a US FDA filing/PDUFA action, market score, or calibrated RAAS probability."
+    },
+    {
+      "nctId": "NCT03859141",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "Children 6–35 months quadrivalent influenza comparison (n=2146) demonstrated noninferiority for several shared strains, but B/Victoria did NOT reach the prespecified criterion. Mixed multi-strain immune endpoint; do not label unequivocal success or blanket failure without original joint testing hierarchy.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/32347785/",
+      "sourceDate": "2020-04-26",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03859141",
+      "identityCrosswalk": "Exact NCT explicitly identified in cited clinical publication, matched to ClinicalTrials.gov registry.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_FIVE_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_PRIMARY_ENDPOINT_EXACT_NCT",
+      "qualification": "Historical clinical vaccine endpoint only; not a US FDA filing/PDUFA action, market score, or calibrated RAAS probability."
+    },
+    {
+      "nctId": "NCT07357545",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Exact-NCT serum-free rabies vaccine trial tested standard five-dose and two four-dose PEP regimens in 2,000 randomized volunteers. The published trial reports all Sinovac groups met prespecified noninferiority for D14/D42 seroconversion and D14 geometric mean antibody concentration against licensed comparator. China's NMPA approval is not a US FDA outcome.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/42456561/",
+      "sourceDate": "2026-08-13",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT07357545",
+      "identityCrosswalk": "Exact NCT explicitly identified in cited clinical publication, matched to ClinicalTrials.gov registry.",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_FIVE_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_PRIMARY_ENDPOINT_EXACT_NCT",
+      "qualification": "Historical clinical vaccine endpoint only; not a US FDA filing/PDUFA action, market score, or calibrated RAAS probability."
+    },
+    {
+      "nctId": "NCT03909074",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Randomized controlled 36–71-month EV71 vaccine Phase III trial reports immunogenicity noninferiority against licensed vaccine in older children (GMT 370.0 vs 296.2) and similar adverse-reaction incidence. The registered outcomes are antibody seroconversion and geometric mean titers, not field protection.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/33269798/",
+      "sourceDate": "2020-12-03",
+      "identityCrosswalk": "Exact NCT stated in original indexed trial report; matched ClinicalTrials.gov protocol.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03909074",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_EIGHT_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_IMMUNOGENICITY_EXACT_NCT",
+      "qualification": "Research-only observed Phase 3 antibody endpoint; not US FDA approval or future PDUFA prediction."
+    },
+    {
+      "nctId": "NCT04386707",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Randomized Phase III three-commercial-lot Sabin IPV study reports all three poliovirus types met prespecified lot-to-lot GMT equivalence intervals 0.67–1.50 and pooled immunogenicity seroconversion noninferiority to control IPV for types 1, 2 and 3. These are surrogate immune endpoints.",
+      "evidenceUrl": "https://www.mdpi.com/2076-393X/10/2/254",
+      "sourceDate": "2022-02-08",
+      "identityCrosswalk": "Exact NCT stated in original indexed trial report; matched ClinicalTrials.gov protocol.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT04386707",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_EIGHT_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_IMMUNOGENICITY_EXACT_NCT",
+      "qualification": "Research-only observed Phase 3 antibody endpoint; not US FDA approval or future PDUFA prediction."
+    },
+    {
+      "nctId": "NCT05386810",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Five-dose multidose Sabin IPV randomized blinded Phase III stage II comparison reported pairwise lot GMT ratios for types 1–3 within prespecified equivalence range 0.67–1.50 and seroconversion noninferiority to both control groups (98.02%, 94.07%, 98.77% across types). Lot consistency and immunogenicity, not clinical polio prevention.",
+      "evidenceUrl": "https://www.sciencedirect.com/science/article/pii/S1201971223000206",
+      "sourceDate": "2023-01-18",
+      "identityCrosswalk": "Exact NCT stated in original indexed trial report; matched ClinicalTrials.gov protocol.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT05386810",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_EIGHT_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_IMMUNOGENICITY_EXACT_NCT",
+      "qualification": "Research-only observed Phase 3 antibody endpoint; not US FDA approval or future PDUFA prediction."
     }
   ]
 }
