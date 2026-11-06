@@ -1,3 +1,4 @@
+import {irAssessment,irResearchIntegrity,requiresResearchStatus} from "../../../lib/phase3-ir-research";
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
@@ -62,8 +63,9 @@ export async function GET(request:Request){
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
     PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
-    endpointByNct.size!==43||endpointAdjudications.records.length!==43||
-    investorRelationsEvidence.records.filter(x=>Boolean(x.regulatoryEvidenceStatus)).length!==8||
+    endpointByNct.size!==endpointAdjudications.records.length||
+    !irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
+    investorByNct.size!==investorRelationsEvidence.records.length||
     endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
  }
@@ -99,8 +101,9 @@ export async function GET(request:Request){
    r.nctId,r.ticker,r.company,r.classification,r.classificationCode,
    liveRegistry?.registryStatus||r.registryStatus,r.rosterStatus,
    liveRegistry?.sourceUpdated||r.registryAsOf,
-   r.readoutEvidenceType==="NOT_VERIFIED"&&onlineRecord?.resultsPosted?"CTGOV_RESULTS_POSTED_UNADJUDICATED":r.readoutEvidenceType,
-   r.readoutSourceDate,outcome,r.drug||liveRegistry?.drugInterventions||registry?.drugInterventions||"",
+   endpoint?.evidenceType||(r.readoutEvidenceType==="NOT_VERIFIED"&&onlineRecord?.resultsPosted?"CTGOV_RESULTS_POSTED_UNADJUDICATED":r.readoutEvidenceType),
+   endpoint&&"sourceDate" in endpoint?endpoint.sourceDate:r.readoutSourceDate,
+   outcome,r.drug||liveRegistry?.drugInterventions||registry?.drugInterventions||"",
    r.indication,liveRegistry?.interventionNames||r.registeredInterventions,
    investor?.regulatoryEvidenceStatus||r.fdaApplicationStatus,
    investor?.regulatoryReviewType&&investor.regulatoryReviewType!=="NOT_VERIFIED"?investor.regulatoryReviewType:r.fdaReviewType,
@@ -132,6 +135,10 @@ export async function GET(request:Request){
     fullPassRationale,endpointEvidenceUrl];
    if(q.number===29&&endpoint)return ["DOCUMENTED_PUBLIC_READOUT","","",
     "Public Phase 3 readout or results exist. "+fullPassRationale,endpointEvidenceUrl];
+   const researched=irAssessment(r.nctId,q.number);
+   if(researched)return [researched.classification,"","",
+    researched.evidence+" | Published: "+researched.publicationDate+" | Scope: "+researched.evidenceScope,
+    researched.sourceUrl];
    // Issuer investor-relations statements are historical SOURCE FACTS, not subjective predictive scores.
    if(q.number===30&&investor?.regulatoryEvidenceStatus&&investor?.regulatoryEvidenceUrl)
     return ["SOURCE_FACT_ONLY","","",
@@ -215,7 +222,7 @@ export async function GET(request:Request){
   });
   const statuses=Array.from({length:30},(_,i)=>questions[i*5]);
   const countedPredictions=statuses.filter(x=>x==="PREDICTED_PRE_READOUT").length;
-  const countedEvidence=statuses.filter(x=>x!=="PREDICTED_PRE_READOUT"&&x!=="UNSCORED").length;
+  const countedEvidence=statuses.filter(x=>x!=="PREDICTED_PRE_READOUT"&&!requiresResearchStatus(String(x))&&x!=="NOT_PUBLICLY_DISCLOSED").length;
   extra[13]=countedPredictions;
   extra[14]=countedEvidence;
   extra[15]=30-countedPredictions-countedEvidence;

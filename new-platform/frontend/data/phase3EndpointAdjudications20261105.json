@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 43,
+  "totalReviewed": 48,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 35,
+    "PRIMARY_ENDPOINT_MET": 39,
     "PRIMARY_ENDPOINT_NOT_MET": 6,
-    "NO_BINARY_PASS_FAIL": 2
+    "NO_BINARY_PASS_FAIL": 3
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
   "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions.",
@@ -396,6 +396,64 @@
       "evidenceType": "COMPANY_IR_OR_ISSUER_DISTRIBUTED_TRIAL_RESULT",
       "reviewedAt": "2026-11-05",
       "qualification": "Responder/exposure-selected withdrawal evidence; not randomized initial treatment for all."
+    },
+    {
+      "nctId": "NCT02621892",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Composite response 27.0% versus 18.7%, p=0.02, over at least 6/12 weeks.",
+      "evidenceUrl": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-reports-successful-phase-3-t3mpo-1-trial-tenapanor",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2017-05-12",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "T3MPO-1 = TEN-01-301 = NCT02621892; FDA label section 14 explicitly identifies protocol and NCT.",
+      "identityEvidenceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/211801s000lbl.pdf",
+      "qualification": "Historical issuer result; no retrospective prediction. Primary success does not establish success of every secondary endpoint."
+    },
+    {
+      "nctId": "NCT02686138",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Composite response 36.5% versus 23.7%, p<0.001, over at least 6/12 weeks.",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/1437402/000119312517307919/d648753d8k.htm",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2017-10-11",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "T3MPO-2 = TEN-01-302 = NCT02686138; FDA label section 14 explicitly identifies protocol and NCT.",
+      "identityEvidenceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/211801s000lbl.pdf",
+      "qualification": "Historical issuer result; no retrospective prediction. Primary success does not establish success of every secondary endpoint."
+    },
+    {
+      "nctId": "NCT03427125",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Enriched efficacy set (n=131): withdrawal-period phosphorus LS mean difference -1.4 mg/dL, p<0.0001.",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/1437402/000119312519304803/d843175d8k.htm",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2019-12-03",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "PHREEDOM = TEN-02-301 = NCT03427125; FDA label section 14 explicitly identifies protocol and NCT.",
+      "identityEvidenceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2024/213931Orig1s000Lbl.pdf",
+      "qualification": "Historical issuer result; no retrospective prediction. Primary analysis is enriched, not the full randomized population."
+    },
+    {
+      "nctId": "NCT03824587",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Week-4 phosphorus reduction 0.84 versus 0.19 mg/dL with background binders, p=0.0004.",
+      "evidenceUrl": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-announces-positive-results-pivotal-phase-3-amplify-study",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2019-09-03",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "AMPLIFY = TEN-02-202 = NCT03824587; FDA label section 14 explicitly identifies protocol and NCT.",
+      "identityEvidenceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2024/213931Orig1s000Lbl.pdf",
+      "qualification": "Historical issuer result; no retrospective prediction. Primary success does not establish success of every secondary endpoint."
+    },
+    {
+      "nctId": "NCT02727751",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "T3MPO-3 is an open-label safety extension without a binary efficacy hypothesis.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/37668173/",
+      "evidenceType": "PEER_REVIEWED_SAFETY_EXTENSION",
+      "sourceDate": "2023-09-05",
+      "reviewedAt": "2026-11-06",
+      "qualification": "Not an efficacy PASS. Later correction and interim versus final denominator differences remain under review."
     }
   ]
 }
