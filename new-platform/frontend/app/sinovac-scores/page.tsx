@@ -61,7 +61,7 @@ export default function SinovacScoresPage(){
   <section className="panel" style={{marginTop:18}}>
    <h2>What is and is not complete</h2>
    <p>27/27 registry identities, registered primary endpoints and numeric documentary scores are complete. {known}/27 exact-NCT historical readouts have been source adjudicated; the rest remain unresolved or ongoing. No full five-factor clinical composite is awarded without the required evidence. Some positive vaccine immune-response results are surrogate endpoints and cannot establish US FDA approval.</p>
-   <p>Snapshot {data.asOf}. <Link href="/pipeline">Return to Pipeline</Link>.</p>
+   <p>Snapshot {data.asOf}. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/sva-27-documentation-and-outcome-scores-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Download 27 trial scores (CSV)</a>. <Link href="/pipeline">Return to Pipeline</Link>.</p>
   </section>
  </main>;
 }
