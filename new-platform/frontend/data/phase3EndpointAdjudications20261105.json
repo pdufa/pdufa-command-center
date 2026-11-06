@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-06",
-  "totalReviewed": 91,
+  "totalReviewed": 94,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 64,
+    "PRIMARY_ENDPOINT_MET": 67,
     "PRIMARY_ENDPOINT_NOT_MET": 17,
     "NO_BINARY_PASS_FAIL": 10
   },
@@ -998,6 +998,45 @@
       "recoveryBatch": "SVA_FIVE_PUBLISHED_VACCINE_TRIALS_20261106",
       "evidenceType": "PUBLISHED_PHASE3_PRIMARY_ENDPOINT_EXACT_NCT",
       "qualification": "Historical clinical vaccine endpoint only; not a US FDA filing/PDUFA action, market score, or calibrated RAAS probability."
+    },
+    {
+      "nctId": "NCT03909074",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Randomized controlled 36–71-month EV71 vaccine Phase III trial reports immunogenicity noninferiority against licensed vaccine in older children (GMT 370.0 vs 296.2) and similar adverse-reaction incidence. The registered outcomes are antibody seroconversion and geometric mean titers, not field protection.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/33269798/",
+      "sourceDate": "2020-12-03",
+      "identityCrosswalk": "Exact NCT stated in original indexed trial report; matched ClinicalTrials.gov protocol.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03909074",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_EIGHT_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_IMMUNOGENICITY_EXACT_NCT",
+      "qualification": "Research-only observed Phase 3 antibody endpoint; not US FDA approval or future PDUFA prediction."
+    },
+    {
+      "nctId": "NCT04386707",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Randomized Phase III three-commercial-lot Sabin IPV study reports all three poliovirus types met prespecified lot-to-lot GMT equivalence intervals 0.67–1.50 and pooled immunogenicity seroconversion noninferiority to control IPV for types 1, 2 and 3. These are surrogate immune endpoints.",
+      "evidenceUrl": "https://www.mdpi.com/2076-393X/10/2/254",
+      "sourceDate": "2022-02-08",
+      "identityCrosswalk": "Exact NCT stated in original indexed trial report; matched ClinicalTrials.gov protocol.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT04386707",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_EIGHT_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_IMMUNOGENICITY_EXACT_NCT",
+      "qualification": "Research-only observed Phase 3 antibody endpoint; not US FDA approval or future PDUFA prediction."
+    },
+    {
+      "nctId": "NCT05386810",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Five-dose multidose Sabin IPV randomized blinded Phase III stage II comparison reported pairwise lot GMT ratios for types 1–3 within prespecified equivalence range 0.67–1.50 and seroconversion noninferiority to both control groups (98.02%, 94.07%, 98.77% across types). Lot consistency and immunogenicity, not clinical polio prevention.",
+      "evidenceUrl": "https://www.sciencedirect.com/science/article/pii/S1201971223000206",
+      "sourceDate": "2023-01-18",
+      "identityCrosswalk": "Exact NCT stated in original indexed trial report; matched ClinicalTrials.gov protocol.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT05386810",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_EIGHT_PUBLISHED_VACCINE_TRIALS_20261106",
+      "evidenceType": "PUBLISHED_PHASE3_IMMUNOGENICITY_EXACT_NCT",
+      "qualification": "Research-only observed Phase 3 antibody endpoint; not US FDA approval or future PDUFA prediction."
     }
   ]
 }
