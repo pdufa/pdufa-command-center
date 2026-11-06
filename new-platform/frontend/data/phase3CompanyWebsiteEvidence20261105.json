@@ -3,7 +3,7 @@
   "researchDate": "2026-11-05",
   "purpose": "Incremental verified company-website review for studies missing adjudications in the 762-NCT census",
   "companyCount": 6,
-  "trialCount": 10,
+  "trialCount": 13,
   "scope": "Official issuer announcements cross-linked by exact NCT, study code, drug and indication; not independently verified FDA approval or calibrated trading predictions.",
   "records": [
     {
@@ -119,35 +119,77 @@
       "regulatory": "Issuer planned sNDA submission before end of 2026, not independently FDA verified.",
       "crosswalk": "Arrowhead official issuer release states SHASTA-4 is NCT06347016."
     },
-      {
-        "nctId": "NCT04576949",
-        "ticker": "ACHV",
-        "company": "Achieve Life Sciences",
-        "study": "ORCA-2",
-        "drug": "cytisinicline",
-        "sourceDate": "2022-04-27",
-        "companyUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001564590-22-015873/achv-ex991_7.htm",
-        "endpointInterpretation": "PRIMARY_MET",
-        "specificEvidence": "Sponsor reported both 6- and 12-week continuous abstinence primary comparisons met versus placebo: 25.3% vs 4.4%, and 32.6% vs 7.0%, respectively; both p<0.0001.",
-        "safetyEvidence": "Sponsor reported no treatment-related serious adverse events. JAMA 2023 publication PMID 37432430 confirms trial NCT04576949 and reports 6- and 12-week endpoint effects.",
-        "regulatory": "Achieve announced a June 22, 2026 FDA cytisinicline NDA Complete Response Letter citing third-party manufacturing and labeling, with no clinical efficacy or safety deficiencies identified. A regulatory CRL is not a Phase 3 endpoint failure.",
-        "regulatoryUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
-        "crosswalk": "JAMA 2023 trial publication PMID 37432430 explicitly identifies ORCA-2 as NCT04576949; official sponsor release identifies ORCA-2."
-      },
-      {
-        "nctId": "NCT05206370",
-        "ticker": "ACHV",
-        "company": "Achieve Life Sciences",
-        "study": "ORCA-3",
-        "drug": "cytisinicline",
-        "sourceDate": "2023-05-23",
-        "companyUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/175/achieve-life-sciences-reports-statistically-significant-smoking-cessation-benefit-for-cytisinicline-in-second-confirmatory-phase-3-clinical-trial",
-        "endpointInterpretation": "PRIMARY_MET",
-        "specificEvidence": "Sponsor reported primary continuous smoking abstinence significantly higher than placebo: 14.8% vs 6.0% for 6-week treatment (p=0.0008), and 30.3% vs 9.4% for 12-week treatment (p<0.0001).",
-        "safetyEvidence": "Sponsor reported no treatment-related serious adverse events. JAMA Internal Medicine 2025 trial publication PMID 40257755 independently reports both primary endpoint comparisons.",
-        "regulatory": "Achieve announced a June 22, 2026 FDA cytisinicline NDA Complete Response Letter citing third-party manufacturing and labeling, with no clinical efficacy or safety deficiencies identified. A regulatory CRL is not a Phase 3 endpoint failure.",
-        "regulatoryUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
-        "crosswalk": "JAMA Internal Medicine 2025 trial publication PMID 40257755 identifies ORCA-3 as NCT05206370; sponsor's May 2023 release identifies ORCA-3."
-      }
+    {
+      "nctId": "NCT04576949",
+      "ticker": "ACHV",
+      "company": "Achieve Life Sciences",
+      "study": "ORCA-2",
+      "drug": "cytisinicline",
+      "sourceDate": "2022-04-27",
+      "companyUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001564590-22-015873/achv-ex991_7.htm",
+      "endpointInterpretation": "PRIMARY_MET",
+      "specificEvidence": "Sponsor reported both 6- and 12-week continuous abstinence primary comparisons met versus placebo: 25.3% vs 4.4%, and 32.6% vs 7.0%, respectively; both p<0.0001.",
+      "safetyEvidence": "Sponsor reported no treatment-related serious adverse events. JAMA 2023 publication PMID 37432430 confirms trial NCT04576949 and reports 6- and 12-week endpoint effects.",
+      "regulatory": "Achieve announced a June 22, 2026 FDA cytisinicline NDA Complete Response Letter citing third-party manufacturing and labeling, with no clinical efficacy or safety deficiencies identified. A regulatory CRL is not a Phase 3 endpoint failure.",
+      "regulatoryUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+      "crosswalk": "JAMA 2023 trial publication PMID 37432430 explicitly identifies ORCA-2 as NCT04576949; official sponsor release identifies ORCA-2."
+    },
+    {
+      "nctId": "NCT05206370",
+      "ticker": "ACHV",
+      "company": "Achieve Life Sciences",
+      "study": "ORCA-3",
+      "drug": "cytisinicline",
+      "sourceDate": "2023-05-23",
+      "companyUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/175/achieve-life-sciences-reports-statistically-significant-smoking-cessation-benefit-for-cytisinicline-in-second-confirmatory-phase-3-clinical-trial",
+      "endpointInterpretation": "PRIMARY_MET",
+      "specificEvidence": "Sponsor reported primary continuous smoking abstinence significantly higher than placebo: 14.8% vs 6.0% for 6-week treatment (p=0.0008), and 30.3% vs 9.4% for 12-week treatment (p<0.0001).",
+      "safetyEvidence": "Sponsor reported no treatment-related serious adverse events. JAMA Internal Medicine 2025 trial publication PMID 40257755 independently reports both primary endpoint comparisons.",
+      "regulatory": "Achieve announced a June 22, 2026 FDA cytisinicline NDA Complete Response Letter citing third-party manufacturing and labeling, with no clinical efficacy or safety deficiencies identified. A regulatory CRL is not a Phase 3 endpoint failure.",
+      "regulatoryUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+      "crosswalk": "JAMA Internal Medicine 2025 trial publication PMID 40257755 identifies ORCA-3 as NCT05206370; sponsor's May 2023 release identifies ORCA-3."
+    },
+    {
+      "nctId": "NCT02970292",
+      "ticker": "ACAD",
+      "company": "Acadia Pharmaceuticals",
+      "study": "ENHANCE-1 (ACP-103-034)",
+      "drug": "pimavanserin",
+      "sourceDate": "2019-07-22",
+      "companyUrl": "https://acadia.com/en-us/media/news-releases/acadia-pharmaceuticals-announces-top-line-results-phase-3",
+      "endpointInterpretation": "PRIMARY_NOT_MET",
+      "specificEvidence": "Sponsor reported adjunctive pimavanserin missed the prespecified full-population primary PANSS total score change at week 6 (p=0.0940). Exploratory/regional positive findings do not change primary endpoint FAIL.",
+      "safetyEvidence": "Company characterized tolerability as consistent with prior studies; this is not a quantitative safety determination.",
+      "regulatory": "The clinical efficacy endpoint was not met in ENHANCE-1. FDA application or PDUFA outcome is not inferred.",
+      "crosswalk": "ClinicalTrials.gov NCT02970292 identifies ENHANCE-1 protocol ACP-103-034 (396 participants); sponsor July 22, 2019 release identifies the same 396-person study."
+    },
+    {
+      "nctId": "NCT04531982",
+      "ticker": "ACAD",
+      "company": "Acadia Pharmaceuticals",
+      "study": "ADVANCE-2 (ACP-103-064)",
+      "drug": "pimavanserin",
+      "sourceDate": "2024-03-11",
+      "companyUrl": "https://acadia.com/en-us/media/news-releases/acadia-pharmaceuticals-announces-top-line-results-phase-3-1",
+      "endpointInterpretation": "PRIMARY_NOT_MET",
+      "specificEvidence": "Sponsor reported the week-26 Negative Symptom Assessment-16 primary endpoint did not reach statistical significance: change -11.8 pimavanserin vs -11.1 placebo, p=0.4825. Independent peer-reviewed ADVANCE-2 analysis PMID 40181715 reports P=.48.",
+      "safetyEvidence": "Sponsor reported a similar tolerability profile to earlier studies; the peer-reviewed report described 30.4% and 40.3% treatment-emergent adverse-event rates for pimavanserin and placebo, respectively.",
+      "regulatory": "Failed clinical primary endpoint is distinct from any FDA application decision.",
+      "crosswalk": "EudraCT 2019-003343-29 links ADVANCE-2 and protocol ACP-103-064 to NCT04531982; ClinicalTrials.gov protocol for NCT04531982 gives the same study and endpoint."
+    },
+    {
+      "nctId": "NCT03325556",
+      "ticker": "ACAD",
+      "company": "Acadia Pharmaceuticals",
+      "study": "HARMONY",
+      "drug": "pimavanserin",
+      "sourceDate": "2021-07-21",
+      "companyUrl": "https://acadia.com/en-us/media/news-releases/new-england-journal-medicine-publishes-results-phase-3-harmony",
+      "endpointInterpretation": "PRIMARY_MET",
+      "specificEvidence": "In the prespecified randomized withdrawal phase, time to psychosis relapse was improved: 12 of 95 (13%) continued pimavanserin vs 28 of 99 (28%) switched to placebo; hazard ratio 0.35 (95% CI 0.17–0.73), two-sided p=0.005. Trial stopped early at prespecified efficacy interim analysis.",
+      "safetyEvidence": "Double-blind adverse events occurred in 41.0% on pimavanserin and 36.6% on placebo. This efficacy result applies to prior responders in the randomized-withdrawal trial, not all dementia patients.",
+      "regulatory": "Prespecified clinical primary endpoint met; not evidence that a dementia-related psychosis label was FDA-approved.",
+      "crosswalk": "NEJM primary report DOI 10.1056/NEJMoa2034634 and PMID 34289275 identify HARMONY as NCT03325556."
+    }
   ]
 }

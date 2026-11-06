@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 30,
+  "totalReviewed": 33,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 26,
-    "PRIMARY_ENDPOINT_NOT_MET": 2,
+    "PRIMARY_ENDPOINT_MET": 27,
+    "PRIMARY_ENDPOINT_NOT_MET": 4,
     "NO_BINARY_PASS_FAIL": 2
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
-  "note": "30 source-adjudicated exact-NCT endpoint outcomes; registry recruitment status and FDA decisions are distinct from primary endpoint PASS/FAIL. Includes two peer-reviewed Achieve Life Sciences ORCA trials that received a separate NDA-level manufacturing/labeling CRL.",
+  "note": "33 exact-NCT Phase 3 endpoint research adjudications; registry status and FDA regulatory decisions remain separate from clinical endpoint PASS/FAIL. Newly added Acadia HARMONY, ENHANCE-1 and ADVANCE-2 publications/issuer readouts retain study-specific protocol and population.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -279,6 +279,33 @@
       "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS_AND_ISSUER_READOUT",
       "reviewedAt": "2026-11-05",
       "qualification": "Positive clinical primary-endpoint result, not an FDA approval. On 2026-06-22 the company announced its cytisinicline NDA had received an FDA Complete Response Letter dated 2026-06-20 for third-party manufacturing and unfinished labeling, with no efficacy or safety deficiencies identified."
+    },
+    {
+      "nctId": "NCT02970292",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "Acadia ENHANCE-1 (ACP-103-034) Phase 3 adjunctive pimavanserin for schizophrenia: full-population week-6 PANSS total-score primary endpoint missed statistical significance (p=0.0940), despite positive regional and secondary/exploratory analyses. Sponsor July 22, 2019 readout explicitly describes 396 randomized participants; registry NCT02970292 verifies the same study code, title and enrollment.",
+      "evidenceUrl": "https://acadia.com/en-us/media/news-releases/acadia-pharmaceuticals-announces-top-line-results-phase-3",
+      "evidenceType": "ISSUER_EXACT_STUDY_READOUT_REGISTRY_NCT_CROSSWALK",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary schizophrenia efficacy endpoint FAIL; secondary/subgroup signals are not an override. Not an FDA CRL, drug approval status, or trading conclusion."
+    },
+    {
+      "nctId": "NCT04531982",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "Acadia ADVANCE-2 (ACP-103-064) Phase 3 adjunctive pimavanserin for predominant negative symptoms of schizophrenia failed the prespecified 26-week NSA-16 primary endpoint: treatment -11.8 vs placebo -11.1, p=0.4825. Sponsor March 11, 2024 announcement and peer-reviewed PMID 40181715 agree. Trial ID verified by NCT04531982 protocol and EudraCT 2019-003343-29.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/40181715/",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS_AND_ISSUER_EXACT_STUDY",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint FAIL, not a regulatory application decision. Do not substitute positive phase-2 ADVANCE evidence for the distinct negative phase-3 ADVANCE-2 study."
+    },
+    {
+      "nctId": "NCT03325556",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Acadia HARMONY (NCT03325556) randomized-withdrawal Phase 3 pimavanserin in dementia-related psychosis met the prespecified primary endpoint of time to relapse after open-label stabilization. 12/95 (13%) of continuing-pimavanserin participants relapsed vs 28/99 (28%) placebo; hazard ratio 0.35 (95% CI 0.17–0.73), two-sided p=0.005. Trial stopped at prespecified interim efficacy analysis. Published NEJM 2021 report explicitly identifies NCT03325556.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/34289275/",
+      "evidenceType": "PEER_REVIEWED_EXACT_NCT_PHASE3_PRIMARY_RESULT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Positive randomized-withdrawal clinical relapse-prevention result applies to initial responders; does not imply efficacy in the entire screened population or FDA labeling approval for dementia-related psychosis."
     }
   ]
 }
