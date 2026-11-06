@@ -1,4 +1,5 @@
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
+import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
 import {UNIVERSAL_PHASE3_QUESTIONS} from "../../../lib/phase3-universal-questions";
 import {phase3QuestionSlots} from "../../../lib/phase3-top-questions";
 
@@ -14,7 +15,7 @@ const baseHeaders = [
 ];
 const extendedHeaders = [
  "Passing Classification","Passing Classification Rationale","Passing Evidence URL",
- "Passing Evidence Date","Passing Evidence Type","Results Publication Group",
+ "Passing Evidence Reviewed At","Passing Evidence Type","Results Publication Group",
  "Readout Evidence Verified","Registry State Group","Registry Source As Of",
  "Market Cap Source Status","In Dated $300M–$10B Screen","FDA Application Verified",
  "PDUFA Date Verified","Predictions Completed","Documented Source Facts",
@@ -27,6 +28,7 @@ const questionHeaders = UNIVERSAL_PHASE3_QUESTIONS.flatMap((q,i)=>{
   p+"Evidence / missing information",p+"Source URL(s)"];
 });
 const HEADERS=[...baseHeaders,...extendedHeaders,...questionHeaders];
+const endpointByNct=new Map(endpointAdjudications.records.map(x=>[x.nctId,x] as const));
 
 const escaped=(input:unknown):string=>{
  let s=input===null||input===undefined?"":String(input);
@@ -38,37 +40,46 @@ const writeRow=(cells:unknown[])=>cells.map(escaped).join(",");
 
 export async function GET(){
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
-    new Set(ledger.rows.map(r=>r.nctId)).size!==762){
+    new Set(ledger.rows.map(r=>r.nctId)).size!==762||
+    endpointByNct.size!==19||endpointAdjudications.records.length!==19||
+    endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId&&r.classificationCode.startsWith("P3_POST_DATA")))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
  }
  const rows=[writeRow(HEADERS)];
- let passedCount=0;
+ let passedCount=0,failedCount=0;
  for(const r of ledger.rows){
-  const observedPass=r.classificationVerified&&
-   r.readoutOutcome==="PRIMARY_ENDPOINT_MET"&&Boolean(r.readoutEvidenceUrl);
+  const endpoint=endpointByNct.get(r.nctId);
+  const outcome=endpoint?.endpointOutcome||r.readoutOutcome;
+  const endpointEvidenceUrl=endpoint?.evidenceUrl||r.readoutEvidenceUrl||"";
+  const observedPass=outcome==="PRIMARY_ENDPOINT_MET"&&
+   Boolean(endpointEvidenceUrl)&&(Boolean(endpoint)||r.classificationVerified);
+  const observedFail=outcome==="PRIMARY_ENDPOINT_NOT_MET"&&
+   Boolean(endpointEvidenceUrl)&&Boolean(endpoint);
+  const noBinary=outcome==="NO_BINARY_PASS_FAIL";
   if(observedPass)passedCount++;
-  const passing=observedPass?"PASS_DOCUMENTED_PRIMARY_ENDPOINT":"UNDETERMINED";
-  const passRationale=observedPass?
-   "Dated exact-NCT issuer evidence says primary endpoint met; this is not FDA approval":
-   r.classificationCode==="P3_TERMINATED"?"Trial terminated; primary-endpoint FAIL not established by this record":
-   r.classificationCode==="P3_WITHDRAWN"?"Trial withdrawn; primary-endpoint FAIL not established by this record":
-   r.classificationCode.startsWith("P3_POST_DATA")?
-    "Public results located, but primary-endpoint PASS/FAIL not adjudicated":
-    "No independently adjudicated primary-endpoint PASS/FAIL in the saved ledger";
+  if(observedFail)failedCount++;
+  const passing=observedPass?"PASS_DOCUMENTED_PRIMARY_ENDPOINT":
+   observedFail?"FAIL_DOCUMENTED_PRIMARY_ENDPOINT":
+   noBinary?"NON_BINARY_ENDPOINT":"UNDETERMINED";
+  const passRationale=endpoint?.rationale||
+   (r.classificationCode==="P3_TERMINATED"?"Trial terminated; an efficacy FAIL is not established by trial status":
+    r.classificationCode==="P3_WITHDRAWN"?"Trial withdrawn; an efficacy FAIL is not established by trial status":
+    "No source-qualified Phase 3 primary-endpoint determination available in the saved evidence");
   const slots=phase3QuestionSlots(r.nctId);
   const predictions=slots.filter(q=>Boolean(q.answer)).length;
   const observations=slots.filter(q=>!q.answer&&Boolean(q.observation)).length;
   const base=[
    r.nctId,r.ticker,r.company,r.classification,r.classificationCode,
    r.registryStatus,r.rosterStatus,r.registryAsOf,r.readoutEvidenceType,
-   r.readoutSourceDate,r.readoutOutcome,r.drug,r.indication,r.registeredInterventions,
-   r.fdaApplicationStatus,r.fdaReviewType,r.pdufaGoalDate,r.readoutEvidenceUrl,
+   r.readoutSourceDate,outcome,r.drug,r.indication,r.registeredInterventions,
+   r.fdaApplicationStatus,r.fdaReviewType,r.pdufaGoalDate,endpointEvidenceUrl,
    r.registrySourceUrl,r.classificationEvidence
   ];
   const extra=[
-   passing,passRationale,observedPass?r.readoutEvidenceUrl:"",
-   observedPass?r.readoutSourceDate:"",observedPass?r.readoutEvidenceType:"NOT_VERIFIED",
-   r.classificationCode,r.classificationVerified,
+   passing,passRationale,endpoint?endpointEvidenceUrl:observedPass?endpointEvidenceUrl:"",
+   endpoint?.reviewedAt||r.readoutSourceDate||"",
+   endpoint?.evidenceType||r.readoutEvidenceType||"NOT_VERIFIED",
+   r.classificationCode,Boolean(endpoint)||r.classificationVerified,
    r.registryStatus,r.registryAsOf,r.marketCapSourceStatus,r.inDatedMarketCapScreen,
    r.fdaApplicationStatus!=="NOT_VERIFIED",Boolean(r.pdufaGoalDate),
    predictions,observations,30-predictions-observations,
@@ -81,9 +92,12 @@ export async function GET(){
    if(q.answer)return ["PREDICTED_PRE_READOUT",q.answer.prediction,
     q.answer.score,q.answer.summary+" | "+q.answer.reason,
     q.answer.sources.map(s=>s.url).join(" | ")];
-   if(q.number===1&&observedPass)return ["OBSERVED_PRIMARY_ENDPOINT_MET","","",
-    "Issuer-reported primary endpoint met; this is an observed readout, not a forecast",
-    r.readoutEvidenceUrl];
+   if(q.number===1&&(observedPass||observedFail))return [observedPass?"OBSERVED_PRIMARY_ENDPOINT_MET":"OBSERVED_PRIMARY_ENDPOINT_NOT_MET","","",
+    passRationale+"; observed result, not a prospective prediction",endpointEvidenceUrl];
+   if(q.number===1&&noBinary)return ["DOCUMENTED_NON_BINARY_ENDPOINT","","",
+    passRationale,endpointEvidenceUrl];
+   if(q.number===29&&endpoint)return ["DOCUMENTED_PUBLIC_READOUT","","",
+    "Public Phase 3 readout or results exist. "+passRationale,endpointEvidenceUrl];
    if(q.observation)return ["SOURCE_FACT_ONLY","","",
     q.observation.description,q.observation.sourceUrl];
    if(q.number===25&&r.registrySourceUrl)return ["SOURCE_FACT_ONLY","","",
@@ -95,19 +109,29 @@ export async function GET(){
      r.registrySourceUrl];
    return ["UNSCORED","","",q.missingEvidence,""];
   });
+  const statuses=Array.from({length:30},(_,i)=>questions[i*5]);
+  const countedPredictions=statuses.filter(x=>x==="PREDICTED_PRE_READOUT").length;
+  const countedEvidence=statuses.filter(x=>x!=="PREDICTED_PRE_READOUT"&&x!=="UNSCORED").length;
+  extra[13]=countedPredictions;
+  extra[14]=countedEvidence;
+  extra[15]=30-countedPredictions-countedEvidence;
+  extra[17]=endpoint?"PUBLIC_ENDPOINT_EVIDENCE_REVIEWED":
+   countedPredictions?"REVIEWED_PRE_READOUT_PREDICTIONS":
+   countedEvidence?"PARTIAL_REGISTRY_SOURCE_FACTS":"NO_REVIEWED_QUESTION_EVIDENCE";
   const values=[...base,...extra,...questions];
   if(values.length!==190){
    return Response.json({error:"Question-field alignment failed"},{status:503});
   }
   rows.push(writeRow(values));
  }
- if(rows.length!==763||passedCount!==ledger.rows.filter(r=>r.classificationVerified&&r.readoutOutcome==="PRIMARY_ENDPOINT_MET"&&Boolean(r.readoutEvidenceUrl)).length){
+ if(rows.length!==763||passedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_MET||
+    failedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET){
   return Response.json({error:"Trial/pass reconciliation failed"},{status:503});
  }
  return new Response("\uFEFF"+rows.join("\r\n")+"\r\n",{
   status:200,headers:{
    "Content-Type":"text/csv; charset=utf-8",
-   "Content-Disposition":'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-05.csv"',
+   "Content-Disposition":'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-05-adjudicated.csv"',
    "Cache-Control":"no-store"
   }
  });
