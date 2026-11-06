@@ -28,9 +28,13 @@ def test_every_external_methods_row_matches_one_of_original_23_attachment_gaps()
 def test_literature_source_coverage_keeps_missing_attached_documents_missing():
     external = read("alks23ExternalMethodsResearch20261106.json")
     rows = external["records"]
-    examined = [r for r in rows if r["sourceUrl"]]
-    assert len(examined) == external["summary"]["originalPeerReviewedOrFdaOrRegistryMethodsReviewed"] == 10
-    assert len(rows)-len(examined) == external["summary"]["notYetIndividuallyResearchedOutsideStoredRegistry"] == 13
+    reviewed = [r for r in rows if r["sourceType"] != "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED"]
+    carried = [r for r in rows if r["sourceType"] == "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED"]
+    assert len(reviewed) == external["summary"]["originalPeerReviewedOrFdaOrRegistryMethodsReviewed"] == 15
+    assert len(carried) == external["summary"]["sourceCrosschecksAlreadyInUpstreamAudit"] == 8
+    assert len(rows) == external["summary"]["sourceLinkedTrialDesignOrMethods"] == 23
+    assert external["summary"]["notYetIndividuallyResearchedOutsideStoredRegistry"] == 0
+    assert all(r["sourceUrl"] for r in rows)
     assert external["summary"]["fullOriginalProtocolsNewlyLocated"] == 0
     assert external["summary"]["fullOriginalSapsNewlyLocated"] == 0
     assert external["summary"]["completedProductionThirtyQuestionRescores"] == 0
@@ -39,8 +43,6 @@ def test_literature_source_coverage_keeps_missing_attached_documents_missing():
     assert all(not r["fullProtocolLocatedViaThisExternalResearch"] and
                not r["fullSapLocatedViaThisExternalResearch"] and
                not r["productionQuestionStatusesUpdated"] for r in rows)
-    assert all(r["sourceUrl"] or r["externalEvidenceDisposition"] == "EXTERNAL_METHODS_NOT_YET_REVIEWED"
-               for r in rows)
 
 
 def test_exact_nct_fda_review_and_peer_reviewed_program_boundaries():
@@ -60,6 +62,10 @@ def test_exact_nct_fda_review_and_peer_reviewed_program_boundaries():
     assert "0.782" in " ".join(forward3["findings"])
     assert by_id["NCT01218958"]["sourceType"] == "PROGRAM_CROSSWALKED_PEER_REVIEWED_METHODS"
     assert "NCT01626456" in " ".join(by_id["NCT01895452"]["findings"])
+    assert "NCT01218958" in " ".join(by_id["NCT01218971"]["findings"])
+    assert "NCT01218997" in by_id and by_id["NCT01218997"]["sourceUrl"]
+    assert "NCT00834080" in by_id and "38 participants" in " ".join(by_id["NCT00834080"]["findings"])
+    assert "0.336" in " ".join(by_id["NCT00501631"]["findings"])
 
 
 def test_web_site_shows_23_gap_ledger_with_source_urls_and_caveats():
