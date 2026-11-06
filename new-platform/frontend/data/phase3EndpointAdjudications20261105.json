@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "asOf": "2026-11-05",
-  "totalReviewed": 83,
+  "asOf": "2026-11-06",
+  "totalReviewed": 84,
   "counts": {
     "PRIMARY_ENDPOINT_MET": 60,
-    "PRIMARY_ENDPOINT_NOT_MET": 14,
+    "PRIMARY_ENDPOINT_NOT_MET": 15,
     "NO_BINARY_PASS_FAIL": 9
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
-  "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions.",
+  "note": "84 exact-NCT retrospectively adjudicated primary outcomes. Includes original Ionis Affinitak 2003 prespecified survival failure; alternate analyses must not override the prespecified primary. Historical clinical endpoint facts are not FDA decisions or calibrated predictions.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -894,6 +894,19 @@
       "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
       "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
       "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
+    },
+    {
+      "nctId": "NCT00017407",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "ISIS 3521 (aprinocarsen/Affinitak) with carboplatin plus paclitaxel versus chemotherapy alone in 616 advanced NSCLC patients: prespecified overall-survival primary log-rank test p=0.81 (median 10.0 vs 9.7 months). An alternative stratified log-rank p=0.048 does not supersede the original primary endpoint failure.",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/874015/000110465903004359/j8575_ex99d1.htm",
+      "sourceDate": "2003-03-17",
+      "identityCrosswalk": "NCT00017407 is the Phase 3 carboplatin/paclitaxel ± ISIS 3521 NSCLC trial; registry: https://clinicaltrials.gov/study/NCT00017407; exact chemotherapy regimen and 616-subject issuer release match, distinct from the 670-subject gemcitabine/cisplatin aprinocarsen study.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00017407",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "IONS_AFFINITAK_ORIGINAL_PRIMARY_20261106",
+      "evidenceType": "ORIGINAL_ISSUER_SEC_FILED_PRESS_RELEASE_MATCHED_REGISTRY",
+      "qualification": "Historical actual Phase 3 original primary endpoint, not an FDA action, validated RAAS probability, or a present trading signal."
     }
   ]
 }
