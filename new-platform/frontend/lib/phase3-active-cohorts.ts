@@ -69,7 +69,7 @@ function reconcile():{
  assert(unique.size===762,"NCT_DUPLICATE");
  const promotions=new Set<string>([...PROMOTED_ISSUER_NCTS,...IONIS_VERIFIED_READOUTS.map(r=>r.nctId)]);
  assert(promotions.size===8,"PROMOTION_DUPLICATE");
- const ionisCorrections=new Map(IONIS_VERIFIED_READOUTS.map(r=>[r.nctId,r] as const));
+ const ionisCorrections=new Map<string,(typeof IONIS_VERIFIED_READOUTS)[number]>(IONIS_VERIFIED_READOUTS.map(r=>[r.nctId,r]));
  assert(IONIS_VERIFIED_READOUTS.every(r=>iso(r.evidenceDate)&&r.evidenceDate<=ACTIVE_PHASE3_COHORT_AS_OF&&
   r.evidenceUrl.startsWith("https://")&&ledger.rows.some(x=>x.nctId===r.nctId&&x.ticker==="IONS")),"IONIS_READOUT_SOURCE");
  const patched:BaseRow[]=ledger.rows.map(r=>{
