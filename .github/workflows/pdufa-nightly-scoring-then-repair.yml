@@ -58,126 +58,20 @@ jobs:
         run: python -m pytest -q tests/test_nightly_scoring_audit.py tests/test_post_scan_repair.py tests/test_scan_recovery_triage.py tests/test_score_input_audit.py tests/test_scoring_tab_navigation.py
 
   scoring:
-    name: 1 — Audit scoring inputs after completed nightly scan
-    if: >-
-      inputs.source_run_id != '' ||
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.head_repository.full_name == github.repository &&
-       github.event.workflow_run.head_branch == 'main')
+    name: 1 — Surveys and ratings cancelled · source-run handoff only
+    if: github.event_name == 'workflow_run' || inputs.source_run_id != ''
     runs-on: ubuntu-latest
-    timeout-minutes: 12
     outputs:
-      source_run_id: ${{ steps.source.outputs.source_run_id }}
-      source_workflow: ${{ steps.source.outputs.source_workflow }}
-      source_conclusion: ${{ steps.source.outputs.source_conclusion }}
+      source_run_id: ${{ steps.handoff.outputs.source_run_id }}
     steps:
-      - name: Checkout trusted main and saved score snapshots
-        uses: actions/checkout@v4
-        with:
-          ref: main
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Verify completed nightly source run
-        id: source
+      - name: Preserve source run identity without scoring or RAAS history changes
+        id: handoff
         env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_ID: ${{ inputs.source_run_id || github.event.workflow_run.id }}
-          SERIAL_CONCLUSION: ${{ inputs.source_conclusion }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id || github.event.workflow_run.id }}
         shell: bash
         run: |
-          set -euo pipefail
-          [[ "$SOURCE_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_ID" > "$RUNNER_TEMP/nightly-source.json"
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_ID/jobs?per_page=100" > "$RUNNER_TEMP/nightly-jobs.json"
-          python - "$RUNNER_TEMP/nightly-source.json" "$GITHUB_OUTPUT" "$RUNNER_TEMP/nightly-jobs.json" <<'PY'
-          import json, os, sys
-          with open(sys.argv[1], encoding="utf-8") as f:
-              run = json.load(f)
-          from scripts.nightly_sequence import completed_source_stage, WORKFLOW_NAME
-          serial = os.environ.get("SERIAL_CONCLUSION", "")
-          if serial:
-              with open(sys.argv[3], encoding="utf-8") as f:
-                  jobs = json.load(f).get("jobs", [])
-              context = completed_source_stage(
-                  run, jobs, current_run_id=os.environ["GITHUB_RUN_ID"],
-                  conclusion=serial, repository=os.environ["GITHUB_REPOSITORY"])
-              source_name, source_conclusion = WORKFLOW_NAME, context["conclusion"]
-          else:
-              approved = {"PDUFA Nightly Scan Report Publisher",
-                          "PDUFA Nightly FDA SEC Financial Market Issuer Sources"}
-              if (run.get("name") not in approved or
-                  run.get("head_branch") != "main" or
-                  (run.get("head_repository") or {}).get("full_name") != os.environ["GITHUB_REPOSITORY"] or
-                  run.get("status") != "completed" or
-                  run.get("conclusion") not in ("success", "failure", "timed_out", "cancelled", "skipped")):
-                  raise SystemExit("Unverified or unexpected completed nightly source")
-              source_name, source_conclusion = run["name"], run["conclusion"]
-          with open(sys.argv[2], "a", encoding="utf-8") as out:
-              print("source_run_id=" + str(run["id"]), file=out)
-              print("source_workflow=" + source_name, file=out)
-              print("source_conclusion=" + source_conclusion, file=out)
-          print("Verified completed source stage #" + str(run["id"]) + ": " + source_name)
-          PY
-      - name: Install scoring test runner
-        run: python -m pip install pytest
-      - name: Test score lineage, overlap and missing-input rules
-        id: scoring_tests
-        continue-on-error: true
-        run: python -m pytest -q tests/test_score_input_audit.py tests/test_scoring_tab_navigation.py tests/test_nightly_scoring_audit.py
-      - name: Generate dated nightly scoring report
-        env:
-          SOURCE_ID: ${{ steps.source.outputs.source_run_id }}
-          SOURCE_NAME: ${{ steps.source.outputs.source_workflow }}
-          SOURCE_CONCLUSION: ${{ steps.source.outputs.source_conclusion }}
-        run: |
-          python -m scripts.nightly_scoring_audit \
-            --source-run-id "$SOURCE_ID" \
-            --source-workflow "$SOURCE_NAME" \
-            --source-conclusion "$SOURCE_CONCLUSION" \
-            --out data/nightly_scoring_audit.json
-      - name: Append unified TOP/BOTTOM RAAS research history on saved evidence changes
-        # Unscored research captures only; no invented historical score or FDA probability.
-        run: node scripts/raas_trial_history_capture.cjs
-      - name: Capture source-verified experimental RAAS metric changes without composites
-        # The method is only a pilot, not an approved 30-metric investment score.
-        run: node scripts/raas_trial_provisional_metric_capture.cjs
-      - name: Capture source-restricted BOTTOM clinical contrast pilot grades
-        run: node scripts/raas_post_clinical_provisional_capture.cjs
-      - name: Append separate RAAS methodology self-audit evidence snapshots
-        # Audit progress only: never infer predictive accuracy from raw counts.
-        run: node scripts/raas_self_audit_history_capture.cjs
-      - name: Publish latest scoring-input findings on dashboard
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/nightly_scoring_audit.json new-platform/frontend/data/raas-trial-score-history.json new-platform/frontend/data/raas-self-audit-history.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Publish nightly scoring input audit"
-            for attempt in 1 2 3; do
-              if git pull --rebase origin main && git push origin HEAD:main; then
-                exit 0
-              fi
-              sleep 5
-            done
-            echo "::error::Unable to publish nightly scoring audit"
-            exit 1
-          fi
-      - name: Archive scoring report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pdufa-nightly-scoring-${{ github.run_id }}
-          path: data/nightly_scoring_audit.json
-          if-no-files-found: warn
-          retention-days: 30
-      - name: Signal unverified scoring tests
-        if: steps.scoring_tests.outcome == 'failure'
-        run: |
-          echo "::error::Scoring regression failure; do not infer score quality."
-          exit 1
+          echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "Survey, rating, scoring, and RAAS history updates cancelled by user."
 
   error-check:
     name: 2 — Check Gmail and GitHub after scoring

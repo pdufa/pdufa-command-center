@@ -1,53 +1,14 @@
-name: TOOLS production horizontal-rating browser smoke
+name: "CANCELLED — Browser tests for retired rating controls"
+# Cancelled by user on 2026-11-05. Previous source retained in Git history.
+# No cron, workflow_run, push or pull_request triggers, and no survey/rating actions.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'new-platform/frontend/tests/tools-rating-live-browser-e2e.mjs'
-      - 'new-platform/frontend/app/Phase3ReadoutSheets.tsx'
-      - 'new-platform/frontend/app/Phase3ReadoutSheets.module.css'
-      - 'new-platform/frontend/lib/final-survey-readiness.ts'
-      - 'new-platform/frontend/lib/final-survey-scoring-protocol.ts'
-      - 'new-platform/frontend/tests/final-survey-scoring-protocol.test.cjs'
-      - 'new-platform/frontend/lib/phase3-survey-source.ts'
-      - 'new-platform/frontend/lib/phase3-scientific-evidence-audit.ts'
-      - 'new-platform/frontend/lib/phase3-registry-concordance.ts'
-      - 'new-platform/frontend/data/phase3-protocol-registry-checks.json'
-      - 'new-platform/frontend/tests/phase3-registry-concordance.test.cjs'
-      - 'new-platform/frontend/lib/phase3-published-arithmetic.ts'
-      - 'new-platform/frontend/app/api/phase3-readout-survey/route.ts'
-      - 'new-platform/frontend/data/phase3-readout-survey-research.json'
-      - '.github/workflows/tools-rating-live-browser.yml'
 permissions:
   contents: read
 jobs:
-  webkit-tools:
+  cancelled:
+    name: "Cancelled — no surveys or ratings"
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
-    defaults:
-      run:
-        working-directory: new-platform/frontend
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Install audited Playwright WebKit runner
-        run: |
-          npm install --no-audit --no-fund --no-save playwright@1.56.1
-          npx playwright install --with-deps webkit
-      - name: Verify desktop and iPhone TOOLS rating, filters and outline
-        run: node tests/tools-rating-live-browser-e2e.mjs
-      - name: Save screenshots only if an interaction fails
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: tools-production-rating-browser-failure
-          path: new-platform/frontend/test-results/tools-rating-production/
-          retention-days: 3
-          if-no-files-found: ignore
+      - name: Confirm retirement without source or scoring changes
+        run: echo "Cancelled by user. No rating, survey, export or scoring job will run."
