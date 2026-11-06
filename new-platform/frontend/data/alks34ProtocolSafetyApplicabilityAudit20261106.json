@@ -19,7 +19,7 @@
     "efficacyOrComparativePrimaryTrials": 19,
     "clinicalFactorsNotApplicable": 55,
     "unscoredUniversalQuestionSlotsInSnapshot": 546,
-    "supplementalOfficialOrPeerReviewedSourceCrosschecks": 5,
+    "supplementalOfficialOrPeerReviewedSourceCrosschecks": 9,
     "safetyPrimaryTrialsWithCoPrimaryClinicalMeasure": 1,
     "primaryObjectiveOnlyNaQuestionTriageCount": 42
   },
@@ -30,7 +30,8 @@
     "A normalized primary outcome P-value from a registered study is historical observed evidence, not a prospective forecast.",
     "Special source NCT06767683 is a July 2026 interim extension report plus an October 2026 abstract, not final registry results or a randomized Phase 3 readout.",
     "Conservative proposed primary-objective question applicability does not rewrite the universal question count, forecast score, or missing-data audit.",
-    "Exception: NCT03201757 is safety-prioritized but has co-primary CGI-S severity; no automatic Q01/Q19/Q20 N/A label, and no implied randomized comparative efficacy."
+    "Exception: NCT03201757 is safety-prioritized but has co-primary CGI-S severity; no automatic Q01/Q19/Q20 N/A label, and no implied randomized comparative efficacy.",
+    "Four ongoing Phase 3 trial designs source-crosschecked from sponsor's April 2026 Brilliance initiation, July 2026 exact Study 304 ID mapping, and current ENLIGHTEN-Youth registry, without imputing readouts."
   ],
   "records": [
     {
@@ -297,7 +298,13 @@
         "notApplicableQuestionRule": "Primary-objective N/A labels are research triage, NOT changes to production Q01–Q30 statuses or to program-level questions; a safety trial may contain exploratory efficacy measurements."
       },
       "remainingAssessmentQuestionsSnapshot": 20,
-      "additionalSourceEvidence": null
+      "additionalSourceEvidence": {
+        "evidenceType": "OFFICIAL_REGISTRY_PHASE3_DESIGN_NO_READOUT",
+        "sourceDate": "2026-08-14",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT05303064",
+        "observations": "ENLIGHTEN-Youth (ALKS 3831-A312) is a 52-week randomized, quadruple-masked, active-control trial comparing olanzapine/samidorphan with olanzapine; registered primary BMI Z-score change at week 12, plus prespecified weight-gain, PANSS/YMRS, treatment discontinuation and safety secondaries. First study enrollment began June 2022; no observed primary BMI-Z comparison was posted in the stored snapshot.",
+        "limitations": "As of registry's August 2026 update the study remained recruiting; estimated completion date is not confirmation of trial results, and full attached protocol/SAP are not in stored snapshot."
+      }
     },
     {
       "nctId": "NCT07455383",
@@ -348,7 +355,13 @@
         "notApplicableQuestionRule": "Primary-objective N/A labels are research triage, NOT changes to production Q01–Q30 statuses or to program-level questions; a safety trial may contain exploratory efficacy measurements."
       },
       "remainingAssessmentQuestionsSnapshot": 18,
-      "additionalSourceEvidence": null
+      "additionalSourceEvidence": {
+        "evidenceType": "ISSUER_CONFIRMED_PHASE3_ENTRY_DESIGN_NOT_READOUT",
+        "sourceDate": "2026-04-01",
+        "sourceUrl": "https://alkermes.gcs-web.com/news-releases/news-release-details/alkermes-announces-initiation-phase-3-brilliance-studies",
+        "observations": "Brilliance NT1 Study 302 was announced as initiated with Phase 3 program on April 1, 2026; planned 12-week randomized, double-blind placebo-controlled trial with two alixorexton dosing regimens versus placebo, primary MWT mean sleep latency change, supportive ESS, weekly cataplexy rate, cognition, fatigue and safety outcomes. Rationale builds from Vibrance-1 Phase 2, not an observed pivotal trial success.",
+        "limitations": "Sponsor launch notice and registered design are prior evidence only; no Phase 3 primary readout, arm-level safety results, or attached SAP in stored registry snapshot."
+      }
     },
     {
       "nctId": "NCT07502443",
@@ -399,7 +412,13 @@
         "notApplicableQuestionRule": "Primary-objective N/A labels are research triage, NOT changes to production Q01–Q30 statuses or to program-level questions; a safety trial may contain exploratory efficacy measurements."
       },
       "remainingAssessmentQuestionsSnapshot": 18,
-      "additionalSourceEvidence": null
+      "additionalSourceEvidence": {
+        "evidenceType": "ISSUER_CONFIRMED_PHASE3_ENTRY_DESIGN_NOT_READOUT",
+        "sourceDate": "2026-04-01",
+        "sourceUrl": "https://alkermes.gcs-web.com/news-releases/news-release-details/alkermes-announces-initiation-phase-3-brilliance-studies",
+        "observations": "Brilliance NT2 Study 303 Phase 3 initiated with 12-week randomized double-blind placebo-controlled design, three alixorexton dosing regimens versus placebo, planned ~180 participants at initial announcement, primary MWT mean sleep latency change, supportive ESS, fatigue, cognition, disease severity and safety. Phase 2 Vibrance-2 observations informed dose selection; they are not Phase 3 success.",
+        "limitations": "Initial planned sample size may change with registry amendments; no observed Phase 3 primary readout or full SAP attachment in stored registry snapshot."
+      }
     },
     {
       "nctId": "NCT07540897",
@@ -450,7 +469,14 @@
         "notApplicableQuestionRule": "Primary-objective N/A labels are research triage, NOT changes to production Q01–Q30 statuses or to program-level questions; a safety trial may contain exploratory efficacy measurements."
       },
       "remainingAssessmentQuestionsSnapshot": 18,
-      "additionalSourceEvidence": null
+      "additionalSourceEvidence": {
+        "evidenceType": "ISSUER_CONFIRMED_PHASE3_STUDY_304_DESIGN_NOT_READOUT",
+        "sourceDate": "2026-07-13",
+        "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-alixorexton-demonstrated-sustained-improvement",
+        "designSourceUrl": "https://alkermes.gcs-web.com/news-releases/news-release-details/alkermes-announces-initiation-phase-3-brilliance-studies",
+        "observations": "Alkermes identified NCT07540897 as Brilliance NT1 Study 304 in the July 13, 2026 source. Its Study 304 design was described at the April 1 Phase 3 Brilliance launch as 12-week randomized double-blind placebo-controlled NT1 study with two alixorexton regimens, primary MWT mean sleep latency and supporting ESS, cataplexy, fatigue, cognition, disease-severity and safety measurements. Study 304's NCT ID was not yet published in the April 1 release.",
+        "limitations": "July source is a program study-ID crosswalk, not an efficacy readout; no attached full SAP or observed Phase 3 primary endpoint result in stored snapshot."
+      }
     },
     {
       "nctId": "NCT00156923",
