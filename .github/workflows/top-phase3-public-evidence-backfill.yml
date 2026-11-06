@@ -1,0 +1,63 @@
+name: "TOP Phase 3 official public evidence research (not RAAS)"
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/top-phase3-public-evidence-backfill.yml
+      - scripts/top_phase3_public_evidence_backfill.py
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: top-phase3-original-source-evidence
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check research collector
+        run: python -m py_compile scripts/top_phase3_public_evidence_backfill.py
+      - name: Fetch all exact NCT registry records and matching Phase 2 research leads
+        run: python scripts/top_phase3_public_evidence_backfill.py --workers 6
+      - name: Check output completeness without making clinical claims
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("new-platform/frontend/data/phase3PreDataOfficialResearch.json")
+          j=json.loads(p.read_text())
+          assert len(j["records"])==253==j["counts"]["candidates"]
+          assert len(set(x["nctId"] for x in j["records"]))==253
+          assert j["counts"]["officialRegistryRecords"]+j["counts"]["errors"]==253
+          assert all(x.get("registry",{}).get("nctId",x["nctId"])==x["nctId"] for x in j["records"])
+          assert "approvalProbability" not in j and "predictions" not in j
+          print(j["counts"])
+          PY
+      - name: Save official source receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: top-phase3-source-evidence
+          path: new-platform/frontend/data/phase3PreDataOfficialResearch.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Publish source research to main
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- new-platform/frontend/data/phase3PreDataOfficialResearch.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Populate TOP Phase 3 exact trial and earlier Phase 2 source research"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep 8
+          done
+          exit 1
