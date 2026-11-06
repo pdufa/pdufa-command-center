@@ -5,7 +5,7 @@
   "description": "Company ALKS 34 trial research source and clinical-five scorecard; clinical grades only after exact trial evidence and rubric; not FDA probabilities",
   "count": 34,
   "observedPrimaryClassified": 14,
-  "documentedClinicalMetricReviews": 95,
+  "documentedClinicalMetricReviews": 110,
   "notes": [
     "Evidence coverage and design diagnostic are documentation scores, not clinical predictions.",
     "For all 34 exact NCTs, only source-supported clinical grades are numeric. Missing clinical factors remain null.",
@@ -13,7 +13,9 @@
     "Historical outcomes must not be treated as prospective predictions.",
     "All 34 records have primary-purpose disposition; safety-primary studies are not awarded arbitrary efficacy ratings.",
     "Ongoing studies can have five prior-evidence research factors scored, which are not published Phase 3 efficacy results.",
-    "A full clinical five-factor score requires five individual exact-stage accepted reviews, not simply five available registry fields."
+    "A full clinical five-factor score requires five individual exact-stage accepted reviews, not simply five available registry fields.",
+    "Primary outcomes for safety-only studies are generally descriptive nonbinary safety counts; full five-factor clinical efficacy composite is not applicable without actual efficacy endpoint measurements.",
+    "Original source reviews can be expanded as new source data become available, preserving NCT identities."
   ],
   "records": [
     {
@@ -44,7 +46,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "ONGOING_SAFETY_EXTENSION_NO_RESULT",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -75,7 +77,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "ONGOING_SAFETY_EXTENSION_NO_RESULT",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -137,7 +139,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "ONGOING_PIVOTAL_PRE_READOUT",
-      "clinicalReviewedMetricCount": 2,
+      "clinicalReviewedMetricCount": 5,
       "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome."
     },
     {
@@ -248,8 +250,8 @@
       "historicalPrimaryOutcome": null,
       "historicalOutcomeExplanation": null,
       "historicalOutcomeSource": null,
-      "clinicalProgramDrug": null,
-      "clinicalProgramIndication": null,
+      "clinicalProgramDrug": "long-acting injectable naltrexone (VIVITROL)",
+      "clinicalProgramIndication": "alcohol dependence",
       "clinicalStageVerified": true,
       "registryUrl": "https://clinicaltrials.gov/study/NCT00156923",
       "scoringSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/reports/phase3-missingness-2026-11-06/phase3-trials-ranked-762.csv",
@@ -261,7 +263,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -279,8 +281,8 @@
       "historicalPrimaryOutcome": null,
       "historicalOutcomeExplanation": null,
       "historicalOutcomeSource": null,
-      "clinicalProgramDrug": null,
-      "clinicalProgramIndication": null,
+      "clinicalProgramDrug": "long-acting injectable naltrexone (VIVITROL)",
+      "clinicalProgramIndication": "alcohol or opioid dependence",
       "clinicalStageVerified": true,
       "registryUrl": "https://clinicaltrials.gov/study/NCT00156936",
       "scoringSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/reports/phase3-missingness-2026-11-06/phase3-trials-ranked-762.csv",
@@ -292,7 +294,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -310,8 +312,8 @@
       "historicalPrimaryOutcome": null,
       "historicalOutcomeExplanation": null,
       "historicalOutcomeSource": null,
-      "clinicalProgramDrug": null,
-      "clinicalProgramIndication": null,
+      "clinicalProgramDrug": "Medisorb naltrexone 190 mg and 380 mg",
+      "clinicalProgramIndication": "alcohol dependence",
       "clinicalStageVerified": true,
       "registryUrl": "https://clinicaltrials.gov/study/NCT01218971",
       "scoringSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/reports/phase3-missingness-2026-11-06/phase3-trials-ranked-762.csv",
@@ -323,7 +325,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -341,8 +343,8 @@
       "historicalPrimaryOutcome": null,
       "historicalOutcomeExplanation": null,
       "historicalOutcomeSource": null,
-      "clinicalProgramDrug": null,
-      "clinicalProgramIndication": null,
+      "clinicalProgramDrug": "long-acting injectable naltrexone (VIVITROL)",
+      "clinicalProgramIndication": "alcohol dependence",
       "clinicalStageVerified": true,
       "registryUrl": "https://clinicaltrials.gov/study/NCT01218997",
       "scoringSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/reports/phase3-missingness-2026-11-06/phase3-trials-ranked-762.csv",
@@ -354,7 +356,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -403,8 +405,8 @@
       "historicalPrimaryOutcome": null,
       "historicalOutcomeExplanation": null,
       "historicalOutcomeSource": null,
-      "clinicalProgramDrug": null,
-      "clinicalProgramIndication": null,
+      "clinicalProgramDrug": "Medisorb naltrexone (VIVITROL) 380 mg",
+      "clinicalProgramIndication": "opioid dependence in healthcare professionals",
       "clinicalStageVerified": true,
       "registryUrl": "https://clinicaltrials.gov/study/NCT00834080",
       "scoringSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/reports/phase3-missingness-2026-11-06/phase3-trials-ranked-762.csv",
@@ -416,7 +418,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -434,8 +436,8 @@
       "historicalPrimaryOutcome": null,
       "historicalOutcomeExplanation": null,
       "historicalOutcomeSource": null,
-      "clinicalProgramDrug": null,
-      "clinicalProgramIndication": null,
+      "clinicalProgramDrug": "ALKS 5461 (buprenorphine/samidorphan)",
+      "clinicalProgramIndication": "major depressive disorder",
       "clinicalStageVerified": true,
       "registryUrl": "https://clinicaltrials.gov/study/NCT02085135",
       "scoringSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/reports/phase3-missingness-2026-11-06/phase3-trials-ranked-762.csv",
@@ -447,7 +449,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -478,7 +480,7 @@
       "sourceDocumentCount": 2,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -571,7 +573,7 @@
       "sourceDocumentCount": 2,
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
-      "clinicalReviewedMetricCount": 0,
+      "clinicalReviewedMetricCount": 1,
       "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
     },
     {
@@ -602,7 +604,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
-      "clinicalReviewedMetricCount": 4,
+      "clinicalReviewedMetricCount": 5,
       "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
     },
     {
@@ -1036,7 +1038,7 @@
       "sourceDocumentCount": 0,
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
-      "clinicalReviewedMetricCount": 4,
+      "clinicalReviewedMetricCount": 5,
       "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
     },
     {
@@ -1071,5 +1073,8 @@
       "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
     }
   ],
-  "reviewedDispositionCount": 34
+  "reviewedDispositionCount": 34,
+  "clinicalNctWithSourceReviewedGrade": 33,
+  "fullFiveFactorResearchRatingCount": 18,
+  "ungradedClinicalFactorCount": 60
 }
