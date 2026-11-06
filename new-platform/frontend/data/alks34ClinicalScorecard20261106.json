@@ -48,7 +48,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "ONGOING_SAFETY_EXTENSION_NO_RESULT",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT06767683",
@@ -79,7 +86,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "ONGOING_SAFETY_EXTENSION_NO_RESULT",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT01436032",
@@ -110,7 +124,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "TERMINATED_EARLY_PUBLISHED_EXPLORATORY_ONLY",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Registry labels Phase 3, but original 2018 investigators describe a Phase II experiment stopped early. Efficacy findings are post hoc, not a formally successful pivotal endpoint. Product rights later transferred to Recro Pharma."
+      "applicabilityNote": "Registry labels Phase 3, but original 2018 investigators describe a Phase II experiment stopped early. Efficacy findings are post hoc, not a formally successful pivotal endpoint. Product rights later transferred to Recro Pharma.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT05303064",
@@ -141,7 +157,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "ONGOING_PIVOTAL_PRE_READOUT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome."
+      "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT07455383",
@@ -172,7 +190,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "ONGOING_PIVOTAL_PRE_READOUT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome."
+      "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT07502443",
@@ -203,7 +223,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "ONGOING_PIVOTAL_PRE_READOUT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome."
+      "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT07540897",
@@ -234,7 +256,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "ONGOING_PIVOTAL_PRE_READOUT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome."
+      "applicabilityNote": "Phase 3 primary result is not yet posted. Ratings refer to prior same-program evidence, not an observed Phase 3 outcome.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT00156923",
@@ -265,7 +289,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT00156936",
@@ -296,7 +327,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT01218971",
@@ -327,7 +365,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT01218997",
@@ -358,7 +403,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT02669758",
@@ -389,7 +441,13 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 2,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT00834080",
@@ -420,7 +478,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT02085135",
@@ -451,7 +516,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT02141399",
@@ -482,7 +554,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT03187769",
@@ -513,7 +592,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT03201757",
@@ -544,7 +625,13 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 2,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT03610048",
@@ -575,7 +662,14 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 1,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics",
+        "reproducibility"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT00501631",
@@ -606,7 +700,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT01218958",
@@ -637,7 +733,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT01626456",
@@ -668,7 +766,13 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 2,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT02537574",
@@ -699,7 +803,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT02873208",
@@ -730,7 +836,13 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 2,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT03345979",
@@ -761,7 +873,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT00678418",
@@ -792,7 +906,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT01469039",
@@ -823,7 +939,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT01895452",
@@ -854,7 +972,13 @@
       "studyPurpose": "SAFETY_PRIMARY",
       "researchDisposition": "POSTED_SAFETY_PRIMARY_NOT_EFFICACY_TRIAL",
       "clinicalReviewedMetricCount": 2,
-      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study."
+      "applicabilityNote": "Registered primary endpoint is adverse-event incidence. Missing efficacy and clinical-benefit grades are not automatically failures or zeroes; this is a safety-focused study.",
+      "notApplicableClinicalFactors": [
+        "efficacy",
+        "clinicalBenefit",
+        "statistics"
+      ],
+      "notApplicableClinicalReason": "This study's prespecified purpose is long-term safety. It does not provide a controlled efficacy hypothesis. Any clinical efficacy, patient-benefit or formal efficacy-statistics factor (and efficacy durability when unmeasured) is structurally inapplicable; safety remains assessed from its reported safety evidence."
     },
     {
       "nctId": "NCT02218008",
@@ -885,7 +1009,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT02634346",
@@ -916,7 +1042,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT02694328",
@@ -947,7 +1075,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT02696434",
@@ -978,7 +1108,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT03188185",
@@ -1009,7 +1141,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT02158533",
@@ -1040,7 +1174,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     },
     {
       "nctId": "NCT02158546",
@@ -1071,7 +1207,9 @@
       "studyPurpose": "EFFICACY_OR_COMPARATIVE_PRIMARY",
       "researchDisposition": "PUBLISHED_EFFICACY_OR_COMPARATIVE_RESULT",
       "clinicalReviewedMetricCount": 5,
-      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical."
+      "applicabilityNote": "Original clinical endpoint or published result is available; only source-supported ordinal ratings are numerical.",
+      "notApplicableClinicalFactors": [],
+      "notApplicableClinicalReason": null
     }
   ],
   "reviewedDispositionCount": 34,
