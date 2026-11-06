@@ -416,13 +416,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2011-04-27",
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21529928/",
-      "benchmarkSourceUrl": "Registry specified opioid-free weeks as the randomized primary comparison.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT00678418",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "Randomized 250 patients to injectable naltrexone or placebo; median confirmed opioid-free weeks 90% vs 35%, p=0.0002.",
       "uncertaintyReview": "Effect supported in a 24-week randomized trial, but generalization outside the enrolled detoxified and counseled population and longer-term comparative durability remain uncertain.",
       "criticalRiskReview": "No evidence that this single placebo-controlled study proves superiority to all maintenance strategies.",
       "reviewerMethod": "Source-accepted clinical efficacy research grade 75: strong prespecified placebo-controlled opioid abstinence difference; not an FDA forecast.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Registry specified opioid-free weeks as the randomized primary comparison."
     },
     {
       "nctId": "NCT00678418",
@@ -435,13 +436,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2011-04-27",
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/21529928/",
-      "benchmarkSourceUrl": "Measured opioid use, counseling, craving and retention vs randomized placebo.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT00678418",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "Median opioid-free weeks 90% vs 35%; median retention over 168 days versus 96 days; lower cravings and relapse were documented.",
       "uncertaintyReview": "Retention and craving are patient-relevant, but long-term functionality, overdose outcomes and real-world access are not established by this 24-week trial.",
       "criticalRiskReview": "Addiction-relapse outcomes may depend on supervised detoxification and structured counseling not universally available.",
       "reviewerMethod": "Source-accepted patient-benefit grade 75 using randomized abstinence and retention evidence, with careful context.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Measured opioid use, counseling, craving and retention vs randomized placebo."
     },
     {
       "nctId": "NCT00678418",
@@ -494,13 +496,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2015-08-01",
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/26114240/",
-      "benchmarkSourceUrl": "Prespecified PANSS Day-85 change versus placebo for both doses.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT01469039",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "Randomized 623 patients; 441 mg and 882 mg aripiprazole lauroxil placebo-adjusted PANSS improvements -10.9 and -11.9 points, both p<0.001.",
       "uncertaintyReview": "The source supports short-term 12-week efficacy; full trial SAP and longitudinal efficacy outside the population are not reviewed.",
       "criticalRiskReview": "Effects and tolerability in acutely ill schizophrenia patients do not alone establish durability or superiority to active alternatives.",
       "reviewerMethod": "Source-accepted grade 75: sizeable randomized placebo-controlled PANSS separation, observed not predicted.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Prespecified PANSS Day-85 change versus placebo for both doses."
     },
     {
       "nctId": "NCT01469039",
@@ -513,13 +516,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2015-08-01",
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/26114240/",
-      "benchmarkSourceUrl": "Trial included PANSS and CGI-I as randomized symptom endpoints.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT01469039",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "PANSS and CGI-I improvement versus placebo were statistically significant and paper authors described the symptom changes as clinically meaningful.",
       "uncertaintyReview": "Formal health-related quality of life and functional outcomes were not reported in the abstract.",
       "criticalRiskReview": "Symptom scale change is not equivalent to long-term recovery or independent functioning.",
       "reviewerMethod": "Grade 75 based on magnitude and concordant secondary clinical global improvement, not a QoL claim.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Trial included PANSS and CGI-I as randomized symptom endpoints."
     },
     {
       "nctId": "NCT01469039",
@@ -572,13 +576,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2016-01-21",
       "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-announces-topline-results-forward-3-and-forward-4-two",
-      "benchmarkSourceUrl": "The predeclared MADRS primary outcome, not any later reanalysis, defines the observed endpoint result.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT02158533",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "Alkermes explicitly reported FORWARD-4 did not meet its originally prespecified MADRS primary endpoint, despite subsequent exploratory/supportive analyses.",
       "uncertaintyReview": "Public announcement does not establish the full effect estimate or detailed planned alpha; failure designation refers to original primary analysis only.",
       "criticalRiskReview": "Reanalyzed or pooled endpoints cannot be treated as a success on the original primary endpoint.",
       "reviewerMethod": "Grade 0 for original primary endpoint failure; this is a retrospective efficacy metric, not an FDA decision.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "The predeclared MADRS primary outcome, not any later reanalysis, defines the observed endpoint result."
     },
     {
       "nctId": "NCT02158546",
@@ -591,13 +596,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2016-01-21",
       "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-announces-topline-results-forward-3-and-forward-4-two",
-      "benchmarkSourceUrl": "The predeclared MADRS endpoint is the benchmark; different trial results remain separate.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT02158546",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "Alkermes explicitly reported FORWARD-3 did not meet its originally prespecified MADRS primary endpoint.",
       "uncertaintyReview": "Full numerical effect size and subgroup results were not provided in the company topline.",
       "criticalRiskReview": "A later positive separate FORWARD-5 study cannot reverse the original FORWARD-3 result.",
       "reviewerMethod": "Grade 0 for primary-endpoint failure; no invented numeric effect size.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "The predeclared MADRS endpoint is the benchmark; different trial results remain separate."
     },
     {
       "nctId": "NCT02218008",
@@ -610,13 +616,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2016-10-20",
       "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-announces-positive-topline-results-forward-5-pivotal",
-      "benchmarkSourceUrl": "Registered sequential-parallel design with planned MADRS-6 outcome distinguishes this NCT from FORWARD-3/4.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT02218008",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "FORWARD-5 2mg/2mg arm met prespecified MADRS-6 primary endpoint versus placebo at p=0.018; 1mg/1mg arm was not significantly separated.",
       "uncertaintyReview": "Magnitude, confidence interval and full protocol sensitivity analyses were not included in the brief public topline.",
       "criticalRiskReview": "Earlier FORWARD-3 and FORWARD-4 failures weaken reproducibility across the pivotal program; FDA later requested more efficacy evidence.",
       "reviewerMethod": "Mixed clinical efficacy grade 50: one reported positive randomized endpoint with conflicting independent phase 3 trials and incomplete effect estimates.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Registered sequential-parallel design with planned MADRS-6 outcome distinguishes this NCT from FORWARD-3/4."
     },
     {
       "nctId": "NCT02634346",
@@ -629,13 +636,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2017-06-29",
       "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-announces-positive-preliminary-topline-results-phase-3/",
-      "benchmarkSourceUrl": "Randomized PANSS primary Week-4 comparison against placebo and active olanzapine arm.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT02634346",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "ENLIGHTEN-1 (403 patients) met prespecified PANSS at four weeks versus placebo (p<0.001); CGI-S secondary endpoint also met (p=0.002).",
       "uncertaintyReview": "The original topline does not show complete placebo-adjusted effect confidence intervals or prespecified missing-data sensitivity analyses.",
       "criticalRiskReview": "Other efficacy and safety claims should not be extrapolated from 4-week symptoms to chronic treatment.",
       "reviewerMethod": "Mixed 50 efficacy rating from exact randomized result with some numerical magnitude and full SAP details outstanding.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Randomized PANSS primary Week-4 comparison against placebo and active olanzapine arm."
     },
     {
       "nctId": "NCT02634346",
@@ -648,13 +656,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2017-06-29",
       "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-announces-positive-preliminary-topline-results-phase-3/",
-      "benchmarkSourceUrl": "Trial's prespecified PANSS and CGI-S clinical assessments are complementary but not direct quality-of-life measures.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT02634346",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "PANSS symptom and CGI-S severity scales improved against placebo in acute schizophrenia over 4 weeks.",
       "uncertaintyReview": "Longer-term quality-of-life, hospitalization, functioning and patient-preference outcomes not established by this short pivotal study.",
       "criticalRiskReview": "Statistical changes in scales are not automatically persistent patient-important improvements.",
       "reviewerMethod": "Mixed 50 patient-benefit grade due to symptom and clinician global severity results but no long-term function data.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Trial's prespecified PANSS and CGI-S clinical assessments are complementary but not direct quality-of-life measures."
     },
     {
       "nctId": "NCT02634346",
@@ -707,13 +716,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2018-11-29",
       "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-announces-positive-topline-results-enlighten-2-phase-3/",
-      "benchmarkSourceUrl": "Registered six-month co-primary mean weight and ≥10% weight-gain thresholds against olanzapine.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT02694328",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "ENLIGHTEN-2 randomized 561 people and met both co-primary endpoints: weight gain 4.21% versus 6.59% (p=0.003), and ≥10% gain 17.8% versus 29.8% (p=0.003).",
       "uncertaintyReview": "Six-month benefit is well quantified; full imputation/sensitivity and longer-term effect durability require review.",
       "criticalRiskReview": "Body-weight benefit does not prove superior metabolic outcomes or lifelong benefit-risk versus alternatives.",
       "reviewerMethod": "Grade 75 for clinically relevant co-primary weight effects in a randomized active-controlled design.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Registered six-month co-primary mean weight and ≥10% weight-gain thresholds against olanzapine."
     },
     {
       "nctId": "NCT02694328",
@@ -726,13 +736,14 @@
       "assessedAt": "2026-11-06",
       "sourceDate": "2018-11-29",
       "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-announces-positive-topline-results-enlighten-2-phase-3/",
-      "benchmarkSourceUrl": "Registered co-primary weight outcomes and active comparator define patient-relevant effects.",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT02694328",
       "benchmarkId": "Exact-NCT registered endpoint and randomized comparator benchmark",
       "observedResult": "Mean weight-gain percentage and ≥10% weight-gain risk were significantly lower than olanzapine; secondary ≥7% weight-gain risk was 27.5% vs 42.7%, p=0.001.",
       "uncertaintyReview": "The report does not directly quantify quality of life or cardiometabolic endpoints beyond body-weight endpoints.",
       "criticalRiskReview": "Weight differences may not translate proportionately into long-term cardiovascular risk reduction.",
       "reviewerMethod": "Grade 75 for clinically patient-relevant weight reduction and concordant prespecified secondary endpoint.",
-      "independentReview": "AI_SOURCE_CROSSCHECKED"
+      "independentReview": "AI_SOURCE_CROSSCHECKED",
+      "benchmarkContext": "Registered co-primary weight outcomes and active comparator define patient-relevant effects."
     },
     {
       "nctId": "NCT02694328",
