@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 28,
+  "totalReviewed": 30,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 24,
+    "PRIMARY_ENDPOINT_MET": 26,
     "PRIMARY_ENDPOINT_NOT_MET": 2,
     "NO_BINARY_PASS_FAIL": 2
   },
-  "scope": "762 Phase 3 trial census; 19 public-readout subset",
-  "note": "22 source-adjudicated exact-NCT primary-endpoint outcomes; no registry recruitment status or FDA approval inferred. Includes issuer site findings for ABTECT Maintenance and LUCIDITY.",
+  "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
+  "note": "30 source-adjudicated exact-NCT endpoint outcomes; registry recruitment status and FDA decisions are distinct from primary endpoint PASS/FAIL. Includes two peer-reviewed Achieve Life Sciences ORCA trials that received a separate NDA-level manufacturing/labeling CRL.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -261,6 +261,24 @@
       "evidenceType": "ISSUER_PHASE3_READOUT_EXACT_NCT",
       "reviewedAt": "2026-11-05",
       "qualification": "Reported primary endpoint only. Pooled acute pancreatitis analysis spans SHASTA-3 and SHASTA-4, not per-study outcome. Planned sNDA is not an approved application."
+    },
+    {
+      "nctId": "NCT04576949",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Achieve ORCA-2 Phase 3 cytisinicline smoking-cessation study met its prespecified biochemically confirmed continuous abstinence primary comparisons versus placebo: 6-week 25.3% vs 4.4%, and 12-week 32.6% vs 7.0% (both p<0.0001 in sponsor release). Exact NCT confirmed in peer-reviewed JAMA 2023 trial report PMID 37432430.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS_AND_ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Positive clinical primary-endpoint result, not an FDA approval. On 2026-06-22 the company announced its cytisinicline NDA had received an FDA Complete Response Letter dated 2026-06-20 for third-party manufacturing and unfinished labeling, with no efficacy or safety deficiencies identified."
+    },
+    {
+      "nctId": "NCT05206370",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Achieve ORCA-3 confirmatory Phase 3 cytisinicline trial met both prespecified continuous smoking abstinence primary comparisons: 6-week 14.8% vs 6.0% placebo (sponsor p=0.0008); 12-week 30.3% vs 9.4% placebo (sponsor p<0.0001). Exact NCT confirmed by peer-reviewed JAMA Internal Medicine 2025 report PMID 40257755.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS_AND_ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Positive clinical primary-endpoint result, not an FDA approval. On 2026-06-22 the company announced its cytisinicline NDA had received an FDA Complete Response Letter dated 2026-06-20 for third-party manufacturing and unfinished labeling, with no efficacy or safety deficiencies identified."
     }
   ]
 }
