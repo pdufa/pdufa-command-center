@@ -16,6 +16,9 @@ type Registry={
  postedPrimaryOutcomeCount:number;postedPrimaryAnalysesCount:number;
  firstPostedPrimaryResult:string;firstPostedPrimaryPValues:string;
  seriousAdverseEventTerms:number;otherAdverseEventTerms:number;
+ participantFlowGroups:string;participantFlowDiscontinuations:string;
+ seriousAdverseEventsByArm:string;otherAdverseEventsByArm:string;
+ infectionEventTerms:string;primaryResultDetails:string;
  publicationPMIDs:string;internationalIds:string;registryUrl:string;
 };
 type FetchStatus={batch:number;status:"retrieved"|"failed";count:number;error?:string};
@@ -30,7 +33,10 @@ const names=[
  "Public document count","Public study protocol available","Public statistical analysis plan available",
  "Posted primary result measures","Posted primary-result statistical tests",
  "First posted primary result (descriptive; not a PASS/FAIL verdict)","First primary statistical p-values (not an automatic verdict)",
- "Serious adverse-event terms posted","Other adverse-event terms posted"
+ "Serious adverse-event terms posted","Other adverse-event terms posted",
+ "Participant flow started/completed by arm","Participant flow discontinuations by arm",
+ "Serious adverse-event counts by arm","Other adverse-event counts by arm",
+ "Reported infection-related event terms","Primary result details (all endpoints and analyses)"
 ];
 const csv=(cell:unknown)=>{
  let s=cell===null||cell===undefined?"":String(cell).replace(/[\r\n]+/g," ");
@@ -99,6 +105,29 @@ export async function loadLivePhase3Registry(){
         (a.method?" ("+text(a.method)+")":"")).join("; ");
       const largeDocs=arr(docs.largeDocs);
       const seriousEvents=arr(adverse.seriousEvents),otherEvents=arr(adverse.otherEvents);
+      const eventGroups=arr(adverse.eventGroups);
+      const flow=obj(results.participantFlowModule),flowGroups=arr(flow.groups),
+       flowPeriods=arr(flow.periods);
+      const flows=flowPeriods.flatMap(period=>arr(period.milestones).flatMap(m=>arr(m.achievements)
+       .map(y=>text(period.title)+": "+text(m.type)+" / "+
+        text(flowGroups.find(g=>text(g.id)===text(y.groupId))?.title||y.groupId)+
+        " "+text(y.numSubjects))));
+      const dropouts=flowPeriods.flatMap(period=>arr(period.dropWithdraws).flatMap(m=>arr(m.reasons)
+       .map(y=>text(period.title)+": "+text(m.type)+" / "+
+        text(flowGroups.find(g=>text(g.id)===text(y.groupId))?.title||y.groupId)+
+        " "+text(y.numSubjects))));
+      const outcomeDetails=primaryResults.map(m=>({
+       title:text(m.title),timeFrame:text(m.timeFrame),
+       measurements:arr(m.classes).flatMap(cl=>arr(cl.categories)).flatMap(cat=>arr(cat.measurements))
+        .slice(0,16).map(y=>({
+         arm:text(arr(m.groups).find(g=>text(g.id)===text(y.groupId))?.title||y.groupId),
+         value:text(y.value),lowerLimit:text(y.lowerLimit),upperLimit:text(y.upperLimit)
+        })),
+       analyses:arr(m.analyses).slice(0,12).map(a=>({
+        pValue:text(a.pValue),pValueModifier:text(a.pValueModifier),method:text(a.method),
+        groupComparison:arr(a.groupIds).map(y=>text(arr(m.groups).find(g=>text(g.id)===text(y))?.title||y)).join(" vs ")
+       }))
+      }));
       const completion=obj(status.resultsFirstPostDateStruct);
       const registryUrl="https://clinicaltrials.gov/study/"+nct;
       const registry:Registry={
@@ -135,6 +164,13 @@ export async function loadLivePhase3Registry(){
        firstPostedPrimaryPValues:pValues,
        seriousAdverseEventTerms:seriousEvents.length,
        otherAdverseEventTerms:otherEvents.length,
+       participantFlowGroups:flows.slice(0,40).join(" | "),
+       participantFlowDiscontinuations:dropouts.slice(0,40).join(" | "),
+       seriousAdverseEventsByArm:eventGroups.map(g=>text(g.title)+": "+text(g.seriousNumAffected)+"/"+text(g.seriousNumAtRisk)).join(" | "),
+       otherAdverseEventsByArm:eventGroups.map(g=>text(g.title)+": "+text(g.otherNumAffected)+"/"+text(g.otherNumAtRisk)).join(" | "),
+       infectionEventTerms:[...seriousEvents,...otherEvents].filter(e=>/infection|pneumonia|influenza|sinusitis|bronchitis|covid|upper respiratory/i.test(text(e.term)))
+        .slice(0,18).map(e=>text(e.term)).join(" | "),
+       primaryResultDetails:JSON.stringify(outcomeDetails),
        publicationPMIDs:arr(refs.references).filter(x=>x.type==="RESULT"||x.type==="DERIVED")
         .map(x=>text(x.pmid)).filter(Boolean).slice(0,8).join("; "),
        internationalIds:arr(ident.secondaryIdInfos).map(x=>text(x.id)).filter(Boolean).slice(0,8).join("; "),
@@ -174,6 +210,9 @@ export async function GET(request:Request){
   postedPrimaryResults:observed.filter(r=>(r.registry?.postedPrimaryOutcomeCount||0)>0).length,
   primaryResultPValues:observed.filter(r=>Boolean(r.registry?.firstPostedPrimaryPValues)).length,
   seriousAdverseEventTables:observed.filter(r=>(r.registry?.seriousAdverseEventTerms||0)>0).length,
+  participantFlowResults:observed.filter(r=>Boolean(r.registry?.participantFlowGroups)).length,
+  participantDiscontinuationTables:observed.filter(r=>Boolean(r.registry?.participantFlowDiscontinuations)).length,
+  infectionSafetyTerms:observed.filter(r=>Boolean(r.registry?.infectionEventTerms)).length,
   statusChanges:observed.filter(r=>r.registry!.registryStatus!==r.original.registryStatus).map(r=>({
    nctId:r.original.nctId,previous:r.original.registryStatus,current:r.registry!.registryStatus
   }))
@@ -194,13 +233,16 @@ export async function GET(request:Request){
    g?.protocolOrSAPDocuments,g?.publicationPMIDs,g?.internationalIds,g?.registryUrl,
    g?.documentCount,g?.hasPublicProtocol,g?.hasPublicSAP,g?.postedPrimaryOutcomeCount,
    g?.postedPrimaryAnalysesCount,g?.firstPostedPrimaryResult,g?.firstPostedPrimaryPValues,
-   g?.seriousAdverseEventTerms,g?.otherAdverseEventTerms]))];
- if(csvRows.length!==763||names.length!==36)
+   g?.seriousAdverseEventTerms,g?.otherAdverseEventTerms,
+   g?.participantFlowGroups,g?.participantFlowDiscontinuations,
+   g?.seriousAdverseEventsByArm,g?.otherAdverseEventsByArm,
+   g?.infectionEventTerms,g?.primaryResultDetails]))];
+ if(csvRows.length!==763||names.length!==42)
   return Response.json({error:"Export shape mismatch"},{status:503});
  return new Response("\uFEFF"+csvRows.join("\r\n")+"\r\n",{
   headers:{
    "Content-Type":"text/csv; charset=utf-8",
-   "Content-Disposition":'attachment; filename="Phase3-762-Live-Registry-Evidence-Backfill-With-Results.csv"',
+   "Content-Disposition":'attachment; filename="Phase3-762-Live-Registry-Evidence-Backfill-With-Statistical-Safety-Results.csv"',
    "Cache-Control":"no-store",
    "X-Trials-Fetched":String(observed.length),
    "X-Failed-Registry-Batches":String(failedBatches)
