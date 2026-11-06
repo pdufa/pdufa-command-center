@@ -7,7 +7,9 @@ import copy
 import json
 import tempfile
 import unittest
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from scripts.verify_pdufa_archive import ARCHIVE, check_archive
 
@@ -64,9 +66,18 @@ class ArchiveIntegrityTests(unittest.TestCase):
     def test_guarded_scan_start_delay_is_validated_against_original_timestamps(self):
         def mark(report):
             latest = report["days"][0]
+            # Build the timing fixture from this record's actual Pacific date.
+            # A hardcoded October timestamp becomes invalid as the archive grows.
+            target_local = datetime.combine(
+                date.fromisoformat(latest["date_pacific"]),
+                time(20),
+                tzinfo=ZoneInfo("America/Los_Angeles"),
+            )
+            target_utc = target_local.astimezone(timezone.utc)
+            started_utc = target_utc + timedelta(minutes=15, seconds=44)
             latest.update({
-                "run_started_at_utc": "2026-10-31T03:15:44+00:00",
-                "scheduled_8pm_pacific_utc": "2026-10-31T03:00:00+00:00",
+                "run_started_at_utc": started_utc.isoformat(),
+                "scheduled_8pm_pacific_utc": target_utc.isoformat(),
                 "start_delay_minutes": 15,
                 "scan_night_source": "GUARDED_SCHEDULER_INPUT",
             })
@@ -83,7 +94,10 @@ class ArchiveIntegrityTests(unittest.TestCase):
 
         def corrupt_target(report):
             mark(report)
-            report["days"][0]["scheduled_8pm_pacific_utc"] = "2026-10-31T04:00:00+00:00"
+            claimed = report["days"][0]["scheduled_8pm_pacific_utc"]
+            report["days"][0]["scheduled_8pm_pacific_utc"] = (
+                datetime.fromisoformat(claimed) + timedelta(hours=1)
+            ).isoformat()
 
         errors, _ = self.check_mutation(corrupt_target)
         self.assertTrue(any("8 PM Pacific target mismatch" in value for value in errors))
