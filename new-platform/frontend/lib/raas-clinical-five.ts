@@ -10,7 +10,7 @@ import originalReview from "../data/raas-reviewed-metric-assessments.json";
 import clinicalSupplement from "../data/raas-clinical-five-reviewed-increment.json";
 const activeFeed=parseReviewedMetricFeed({
  schemaVersion:1,scope:"RAAS_EXPLICIT_METRIC_REVIEWS_RESEARCH_ONLY" as const,
- sourceAsOf:"2026-11-05",records:[...originalReview.records,...clinicalSupplement.records]
+ sourceAsOf:clinicalSupplement.sourceAsOf,records:[...originalReview.records,...clinicalSupplement.records]
 });
 
 export const ACTIVE_RAAS_VERSION="CLINICAL_FIVE_2026_11_05";
