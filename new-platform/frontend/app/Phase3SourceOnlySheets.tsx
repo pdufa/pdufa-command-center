@@ -213,14 +213,17 @@ export default function Phase3SourceOnlySheets(){
   <p><strong>Scores:</strong> Existing phase-reviewed clinical rating, evidence completeness and saved RAAS score are shown separately.
    N/A or Not scored means the score is not yet supported; a partial research grade is not a calibrated FDA probability.
    <a href="/phase-first"> Review detailed phase-first evidence and expandable rating history</a>.</p>
-  <p><strong>190-field coverage:</strong> {coverageLoading?"Checking all 258 records…":
-    coverageTotals?<>{coverageTotals.documentedQuestions} / {coverageTotals.questionSlots} question slots have documented source evidence;{" "}
-     {coverageTotals.unscoredQuestions} remain unscored.
-     Existing clinical ratings: {coverageTotals.clinicalRatedTrials}; saved RAAS scores: {coverageTotals.raasScoredTrials}.</>:
-     "Coverage unavailable."}
-    {" "}<a href="/api/phase3-unified-190-columns?cohort=active">Download all 258 × 190 fields</a>
-    {" · "}<a href="/api/phase3-active-190-coverage?format=csv">Missing-data and score-coverage report</a>
-   </p>
+  <p><strong>190-field coverage:</strong>{" "}
+   {coverageLoading?"Checking all 258 records…":
+    coverageTotals?
+     String(coverageTotals.documentedQuestions)+" / "+String(coverageTotals.questionSlots)+
+     " questions have source evidence; "+String(coverageTotals.unscoredQuestions)+
+     " remain unscored. Existing clinical ratings: "+String(coverageTotals.clinicalRatedTrials)+
+     "; saved RAAS scores: "+String(coverageTotals.raasScoredTrials)+"."
+    :"Coverage unavailable."}
+   {" "}<a href="/api/phase3-unified-190-columns?cohort=active">Download all 258 × 190 fields</a>
+   {" · "}<a href="/api/phase3-active-190-coverage?format=csv">Missing-data and score-coverage report</a>
+  </p>
    {scoreError&&<p role="alert">{scoreError}. The spreadsheet rows and 190-column exports remain available.</p>}
    {coverageError&&<p role="alert">{coverageError}. Individual trial exports remain available.</p>}
   <Sheet kind="PRE_DATA" rows={pre} query={query} scores={scores} scoreLoading={scoreLoading} coverage={coverage} coverageLoading={coverageLoading}/>
