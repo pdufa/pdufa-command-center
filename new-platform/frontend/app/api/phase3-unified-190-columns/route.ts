@@ -151,7 +151,7 @@ export async function GET(request:Request){
     if([13,14,15].includes(q.number)&&liveRegistry.hasPublicSAP)
      return fact("Public statistical analysis plan located in registry. The plan has not been critically reviewed "+
       "for power, missing-data handling or multiplicity: "+liveRegistry.protocolOrSAPDocuments);
-    if(q.number===17&&liveRegistry.secondaryOutcomeCount>0)
+    if(q.number===17&&(liveRegistry.secondaryOutcomeCount??0)>0)
      return fact("Official registry lists "+liveRegistry.secondaryOutcomeCount+
       " secondary outcomes; no efficacy inference made.");
     if(q.number===23&&liveRegistry.seriousAdverseEventTerms>0)
