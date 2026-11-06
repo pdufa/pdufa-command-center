@@ -1,4 +1,5 @@
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
+import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
 import {UNIVERSAL_PHASE3_QUESTIONS} from "../../../lib/phase3-universal-questions";
 import {phase3QuestionSlots} from "../../../lib/phase3-top-questions";
@@ -30,6 +31,7 @@ const questionHeaders = UNIVERSAL_PHASE3_QUESTIONS.flatMap((q,i)=>{
 });
 const HEADERS=[...baseHeaders,...extendedHeaders,...questionHeaders];
 const endpointByNct=new Map(endpointAdjudications.records.map(x=>[x.nctId,x] as const));
+const registryByNct=new Map(registryCrosswalk.records.map(r=>[r.nctId,r] as const));
 
 const escaped=(input:unknown):string=>{
  let s=input===null||input===undefined?"":String(input);
@@ -42,7 +44,7 @@ const writeRow=(cells:unknown[])=>cells.map(escaped).join(",");
 export async function GET(){
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
-    PHASE3_ONLINE_TRIAL_COUNT!==762||
+    PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
     endpointByNct.size!==20||endpointAdjudications.records.length!==20||
     endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
@@ -52,6 +54,7 @@ export async function GET(){
  for(const r of ledger.rows){
   const endpoint=endpointByNct.get(r.nctId);
   const onlineRecord=phase3OnlineRecord(r.nctId);
+  const registry=registryByNct.get(r.nctId);
   const outcome=endpoint?.endpointOutcome||r.readoutOutcome;
   const endpointEvidenceUrl=endpoint?.evidenceUrl||r.readoutEvidenceUrl||"";
   const observedPass=outcome==="PRIMARY_ENDPOINT_MET"&&
@@ -75,7 +78,7 @@ export async function GET(){
    r.nctId,r.ticker,r.company,r.classification,r.classificationCode,
    r.registryStatus,r.rosterStatus,r.registryAsOf,
    r.readoutEvidenceType==="NOT_VERIFIED"&&onlineRecord?.resultsPosted?"CTGOV_RESULTS_POSTED_UNADJUDICATED":r.readoutEvidenceType,
-   r.readoutSourceDate,outcome,r.drug,r.indication,r.registeredInterventions,
+   r.readoutSourceDate,outcome,r.drug||registry?.drugInterventions||"",r.indication,r.registeredInterventions,
    r.fdaApplicationStatus,r.fdaReviewType,r.pdufaGoalDate,
    endpointEvidenceUrl||(onlineRecord?.resultsPosted?"https://clinicaltrials.gov/study/"+r.nctId:""),
    r.registrySourceUrl,r.classificationEvidence
@@ -91,7 +94,7 @@ export async function GET(){
    "UNIVERSAL_PHASE3_30_QUESTION_EVIDENCE_AWARE_V1",
    predictions?"REVIEWED_PRE_READOUT_PREDICTIONS":
     observations?"PARTIAL_REGISTRY_SOURCE_FACTS":"NO_REVIEWED_QUESTION_EVIDENCE",
-   ledger.asOf,"Research classifications are not final clinical or FDA verdicts"
+   ledger.asOf+" | drug/comparator source "+registryCrosswalk.asOf,"Research classifications are not final clinical or FDA verdicts"
   ];
   const questions=slots.flatMap(q=>{
    if(q.answer)return ["PREDICTED_PRE_READOUT",q.answer.prediction,
@@ -105,6 +108,10 @@ export async function GET(){
     "Public Phase 3 readout or results exist. "+passRationale,endpointEvidenceUrl];
    if(q.observation)return ["SOURCE_FACT_ONLY","","",
     q.observation.description,q.observation.sourceUrl];
+   if(q.number===11&&registry?.comparators)return ["SOURCE_FACT_ONLY","","",
+    "Official registry comparator arm(s): "+registry.comparators+
+    "; presence of a comparator is NOT proof of statistical adequacy or efficacy",
+    r.registrySourceUrl];
    if(q.number===25&&r.registrySourceUrl)return ["SOURCE_FACT_ONLY","","",
     "Dated registry recruitment status: "+r.registryStatus+" (as of "+r.registryAsOf+")",
     r.registrySourceUrl];
@@ -145,7 +152,7 @@ export async function GET(){
  return new Response("\uFEFF"+rows.join("\r\n")+"\r\n",{
   status:200,headers:{
    "Content-Type":"text/csv; charset=utf-8",
-   "Content-Disposition":'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-05-online-sources.csv"',
+   "Content-Disposition":'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-06-enriched.csv"',
    "Cache-Control":"no-store"
   }
  });
