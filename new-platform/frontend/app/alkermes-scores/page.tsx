@@ -5,7 +5,7 @@ import {clinicalFiveForTrial} from "../../lib/raas-clinical-five";
 export const metadata={title:"Alkermes 34-Trial Clinical Scoring | PDUFA Command Center"};
 
 const rows=source.records.map(r=>{
- const stage=r.clinicalStageVerified?"post":"pre";
+ const stage=r.clinicalStage==="post"?"post":"pre";
  const assessed=clinicalFiveForTrial({
   nctId:r.nctId,ticker:r.ticker,
   drug:r.clinicalProgramDrug||r.drug,
@@ -16,47 +16,55 @@ const rows=source.records.map(r=>{
 const clinicalGraded=rows.reduce((n,r)=>n+r.assessed.graded,0);
 const completed=rows.filter(r=>r.assessed.researchScore!==null).length;
 const knownResults=rows.filter(r=>r.historicalPrimaryOutcome!==null).length;
+const allCategorized=rows.filter(r=>Boolean(r.researchDisposition)).length;
+const safetyPrimary=rows.filter(r=>r.studyPurpose==="SAFETY_PRIMARY").length;
 const numeric=(v:number|null)=>v===null?"N/A":v.toFixed(1)+"/100";
 
 export default function AlkermesTrialScorePage(){
  return <main className="shell" data-alks-source-scoring="2026-11-06" style={{maxWidth:1320}}>
   <div className="topline">PDUFA COMMAND CENTER · ALKS · 34 EXACT NCT TRIALS</div>
   <h1>Alkermes — Clinical scoring</h1>
-  <p>All 34 historical Alkermes Phase 3 records are present. The five clinical metrics are rated individually only where there is exact-trial, dated original-source evidence. <strong>Unknown measurements remain N/A, never an invented zero, midpoint or FDA approval probability.</strong></p>
+  <p><strong>All 34 NCTs have now been classified by primary purpose and observed evidence.</strong> Clinical grades are individual research assessments from documented sources. Safety-extension studies are not treated as failed efficacy trials. <strong>Unknown results stay N/A, never zero, a neutral midpoint or a predicted FDA probability.</strong></p>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:12,margin:"20px 0"}}>
    {[
-    ["Trial records",String(rows.length)],
+    ["Trial records classified",allCategorized+" / "+rows.length],
     ["Clinical factors graded",clinicalGraded+" / "+rows.length*5],
     ["Complete five-factor ratings",completed+" / "+rows.length],
-    ["Observed primary results",knownResults+" / "+rows.length]
+    ["Primary outcomes adjudicated",knownResults+" / "+rows.length]
    ].map(([label,value])=><section key={label} style={{background:"#f4faf5",border:"1px solid #bdd7c5",borderRadius:9,padding:15}}>
     <div style={{fontSize:24,fontWeight:800,color:"#194b2e"}}>{value}</div>
     <div style={{fontSize:13,color:"#416451"}}>{label}</div>
    </section>)}
   </div>
   <section className="panel">
-   <h2>Every trial and its five scientific factors</h2>
+   <h2>All 34 trials and five clinical factors</h2>
+   <p>{safetyPrimary} safety-primary studies and their extensions are assessed for applicability separately. A complete 5/5 research composite is not necessarily appropriate for a safety-only primary study. A future Phase 3 endpoint cannot be scored as if the outcome were already observed.</p>
    <p><strong>Evidence coverage</strong> and <strong>design diagnostics</strong> are documentation measures, NOT efficacy scores. Clinical grades use the ordinal 0, 25, 50, 75, 100 rubric, with full composite shown only when all five are graded and the trial's readout stage is documented.</p>
    <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
-    <table style={{borderCollapse:"collapse",width:"100%",minWidth:1030,fontSize:13}}>
+    <table style={{borderCollapse:"collapse",width:"100%",minWidth:1230,fontSize:13}}>
      <thead><tr style={{textAlign:"left",background:"#e7f1e9"}}>
-      {["Exact trial","Drug / indication","Registry status","Evidence coverage","Design diagnostic","Clinical grades","Five-factor score","Primary outcome","Details"].map(h=><th key={h} scope="col" style={{padding:"11px 8px",borderBottom:"2px solid #aac8b3"}}>{h}</th>)}
+      {["Exact trial","Drug / indication","Registry status","Study purpose","Evidence coverage","Design diagnostic","Clinical grades","Five-factor score","Primary outcome","Details"].map(h=><th key={h} scope="col" style={{padding:"11px 8px",borderBottom:"2px solid #aac8b3"}}>{h}</th>)}
      </tr></thead>
      <tbody>{rows.map(r=><tr key={r.nctId} data-alks-scored-trial={r.nctId} style={{borderBottom:"1px solid #d8e7dc",verticalAlign:"top"}}>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><a href={r.registryUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
       <td style={{padding:"10px 8px",minWidth:190}}><strong>{r.clinicalProgramDrug||r.drug}</strong><div style={{fontSize:11,color:"#486650",marginTop:4}}>{r.clinicalProgramIndication||r.indication}</div></td>
       <td style={{padding:"10px 8px"}}>{r.registryStatus.replaceAll("_"," ")}</td>
+      <td style={{padding:"10px 8px",minWidth:155}}>{r.studyPurpose==="SAFETY_PRIMARY"?"Safety-primary":"Efficacy / comparative"}<div style={{fontSize:11}}>{r.clinicalStage==="pre"?"Prior-evidence scoring":r.clinicalStage==="post"?"Observed-result scoring":"Unclassified stage"}</div></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{r.evidenceCoverage.toFixed(1)}%</strong><div style={{fontSize:11}}>{r.unscoredQuestions}/30 analytical questions unscored</div></td>
       <td style={{padding:"10px 8px"}}>{r.designDiagnostic}/100<div style={{fontSize:11}}>Not clinical</div></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{r.assessed.graded}/5</strong></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{numeric(r.assessed.researchScore)}</strong></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}>
        {r.historicalPrimaryOutcome==="MET"?"MET":
-        r.historicalPrimaryOutcome==="NOT_MET"?"NOT MET":"Not adjudicated"}
+        r.historicalPrimaryOutcome==="NOT_MET"?"NOT MET":
+        r.historicalPrimaryOutcome==="NO_BINARY_PASS_FAIL"?"NON-BINARY":
+        r.studyPurpose==="SAFETY_PRIMARY"?"SAFETY ENDPOINT":"Not adjudicated"}
       </td>
       <td style={{padding:"10px 8px"}}>
        <details data-alks-five-factor-expand={r.nctId}>
         <summary style={{cursor:"pointer",fontWeight:700,whiteSpace:"nowrap"}}>Five factors ▸</summary>
+        <p style={{fontSize:12}}><strong>Primary outcome:</strong> {r.sourcePrimaryEndpoint}</p>
+        <p style={{fontSize:12}}><strong>Evidence disposition:</strong> {r.researchDisposition.replaceAll("_"," ")}. {r.applicabilityNote}</p>
         <div style={{display:"flex",gap:8,overflowX:"auto",maxWidth:"min(700px,65vw)",padding:"12px 4px"}}>
          {r.assessed.factors.map(f=><div key={f.id} style={{flex:"0 0 190px",background:"#fff",border:"1px solid #bed8c7",borderRadius:8,padding:10}}>
           <strong style={{display:"block",fontSize:12}}>{f.name}</strong>
@@ -69,7 +77,7 @@ export default function AlkermesTrialScorePage(){
          </div>)}
         </div>
         {r.historicalOutcomeExplanation&&<p style={{fontSize:12}}><strong>Observed primary result:</strong> {r.historicalOutcomeExplanation} {r.historicalOutcomeSource&&<a href={r.historicalOutcomeSource} target="_blank" rel="noopener noreferrer">Outcome evidence</a>}</p>}
-        {!r.clinicalStageVerified&&<p style={{fontSize:12}}>Pre/post readout has not been adjudicated for this exact NCT. A complete post-readout score is unavailable.</p>}
+        {!r.clinicalStageVerified&&<p style={{fontSize:12}}>The stage or current result is not sufficiently established for a complete clinical score.</p>}
        </details>
       </td>
      </tr>)}</tbody>
