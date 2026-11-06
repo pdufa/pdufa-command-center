@@ -39,7 +39,7 @@ export function phase3OnlineSourceFact(nctId:string,question:number):OnlineSourc
    fact("Official registry lists "+r.secondaryEndpointCount+" secondary outcomes; efficacy NOT predicted"):null;
   case 25:return r.registryStatus?
    fact("Online registry recruitment status at source check: "+r.registryStatus+"; trial outcome separate"):null;
-  case 27:return r.interventions.some(v=>/\\bplacebo\\b/i.test(v))?
+  case 27:return r.interventions.some(v=>/\bplacebo\b/i.test(v))?
    fact("Placebo named in registered interventions; comparator adequacy NOT assessed"):null;
   case 29:return r.resultsPosted?
    fact("ClinicalTrials.gov has posted trial results; public issuer readout and exact primary endpoint success are NOT inferred"):null;
