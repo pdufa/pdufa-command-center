@@ -71,7 +71,7 @@ test("190-field export reuses exact subset and labels protocol observations with
  assert.match(exportSource,/const needed=ledger\.rows\.filter\(included\)\.map\(r=>r\.nctId\)/);
  assert.match(exportSource,/loadLivePhase3Registry\(needed\)/);
  for(const question of [6,18,19,26]){
-  assert.match(exportSource,new RegExp("q\\.number==="+question+"&&liveRegistry\\."));
+  assert.match(exportSource,new RegExp("q\\.number==="+question+"&&\\(?liveRegistry\\."));
  }
  assert.match(exportSource,/const fact=\(description:string\)=>\["SOURCE_FACT_ONLY","","",description,url\]/);
  assert.match(exportSource,/HEADERS\.length!==190/);
