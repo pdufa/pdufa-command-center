@@ -13,10 +13,14 @@ const rows=source.records.map(r=>{
   drug:r.clinicalProgramDrug||r.drug,
   indication:r.clinicalProgramIndication||r.indication
  },stage,r.clinicalStageVerified);
- return {...r,assessed,registry:registryByNct.get(r.nctId)};
+ const typeSpecificScore=r.studyPurpose==="SAFETY_PRIMARY"?
+  (assessed.factors.find(f=>f.key==="safety")?.grade??null):assessed.researchScore;
+ return {...r,assessed,typeSpecificScore,registry:registryByNct.get(r.nctId)};
 });
 const clinicalGraded=rows.reduce((n,r)=>n+r.assessed.graded,0);
-const completed=rows.filter(r=>r.assessed.researchScore!==null).length;
+const completed=rows.filter(r=>r.studyPurpose!=="SAFETY_PRIMARY"&&r.assessed.researchScore!==null).length;
+const safetyRated=rows.filter(r=>r.studyPurpose==="SAFETY_PRIMARY"&&r.typeSpecificScore!==null).length;
+const typeSpecificRated=rows.filter(r=>r.typeSpecificScore!==null).length;
 const knownResults=rows.filter(r=>r.historicalPrimaryOutcome!==null).length;
 const allCategorized=rows.filter(r=>Boolean(r.researchDisposition)).length;
 const safetyPrimary=rows.filter(r=>r.studyPurpose==="SAFETY_PRIMARY").length;
@@ -32,12 +36,14 @@ export default function AlkermesTrialScorePage(){
  return <main className="shell" data-alks-source-scoring="2026-11-06" style={{maxWidth:1320}}>
   <div className="topline">PDUFA COMMAND CENTER · ALKS · 34 EXACT NCT TRIALS</div>
   <h1>Alkermes — Clinical scoring</h1>
-  <p><strong>All 34 NCTs have now been classified by primary purpose and observed evidence.</strong> Clinical grades are individual research assessments from documented sources. Safety-extension studies are not treated as failed efficacy trials. <strong>Unknown results stay N/A, never zero, a neutral midpoint or a predicted FDA probability.</strong></p>
+  <p><strong>All 34 NCTs have a type-specific source-reviewed research grade.</strong> Efficacy/comparative trials receive a five-factor research score; safety-primary trials receive their actual graded safety factor, clearly labeled as <strong>safety only</strong>. These different scores must not be ranked as if they measure the same outcome. Neither is an FDA approval probability.</p>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:12,margin:"20px 0"}}>
    {[
     ["Trial records classified",allCategorized+" / "+rows.length],
+    ["Type-specific scores",typeSpecificRated+" / "+rows.length],
     ["Applicable clinical factors graded",clinicalGraded+" / "+applicableClinical],
-    ["Complete five-factor efficacy ratings",completed+" / "+efficacyPrimary],
+    ["Complete efficacy five-factor scores",completed+" / "+efficacyPrimary],
+    ["Safety-only grades",safetyRated+" / "+safetyPrimary],
     ["Non-applicable clinical factors",String(notApplicableClinical)],
     ["Applicable factors needing evidence",String(applicableClinicalPending)],
     ["Primary outcomes adjudicated",knownResults+" / "+rows.length]
@@ -48,12 +54,12 @@ export default function AlkermesTrialScorePage(){
   </div>
   <section className="panel">
    <h2>All 34 trials and five clinical factors</h2>
-   <p>{safetyPrimary} safety-primary studies and their extensions are assessed for applicability separately. In these studies, efficacy-specific metrics and unmeasured efficacy durability are marked <strong>not applicable ({notApplicableClinical} total)</strong>, never zero or failures. <strong>{applicableClinicalPending} applicable metric assessments remain without a source-supported grade</strong>. A full efficacy composite is inappropriate for safety-only studies. Ongoing Phase 3 results are not invented from earlier Phase 2 evidence.</p>
+   <p><strong>{typeSpecificRated}/{rows.length} trials have a type-specific numeric score:</strong> {efficacyPrimary} five-factor efficacy/comparative assessments and {safetyPrimary} safety-only grades. The {notApplicableClinical} efficacy-oriented components that do not apply to safety-primary studies remain N/A, not failures. <strong>{applicableClinicalPending} applicable component grades are still missing.</strong> Ongoing Phase 3 efficacy results are not inferred from earlier Phase 2 findings.</p>
    <p><strong>Evidence coverage</strong> and <strong>design diagnostics</strong> are documentation measures, NOT efficacy scores. Clinical grades use the ordinal 0, 25, 50, 75, 100 rubric, with full composite shown only when all five are graded and the trial's readout stage is documented.</p>
    <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
     <table style={{borderCollapse:"collapse",width:"100%",minWidth:1230,fontSize:13}}>
      <thead><tr style={{textAlign:"left",background:"#e7f1e9"}}>
-      {["Exact trial","Drug / indication","Registry status","Study purpose","Evidence coverage","Design diagnostic","Clinical grades","Five-factor score","Primary outcome","Details"].map(h=><th key={h} scope="col" style={{padding:"11px 8px",borderBottom:"2px solid #aac8b3"}}>{h}</th>)}
+      {["Exact trial","Drug / indication","Registry status","Study purpose","Evidence coverage","Design diagnostic","Clinical grades","Type-specific research score","Primary outcome","Details"].map(h=><th key={h} scope="col" style={{padding:"11px 8px",borderBottom:"2px solid #aac8b3"}}>{h}</th>)}
      </tr></thead>
      <tbody>{rows.map(r=><tr key={r.nctId} data-alks-scored-trial={r.nctId} style={{borderBottom:"1px solid #d8e7dc",verticalAlign:"top"}}>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><a href={r.registryUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
@@ -63,7 +69,7 @@ export default function AlkermesTrialScorePage(){
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{r.evidenceCoverage.toFixed(1)}%</strong><div style={{fontSize:11}}>{r.unscoredQuestions}/30 analytical questions unscored</div></td>
       <td style={{padding:"10px 8px"}}>{r.designDiagnostic}/100<div style={{fontSize:11}}>Not clinical</div></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{r.assessed.graded}/{5-r.notApplicableClinicalFactors.length}</strong><div style={{fontSize:11}}>{r.notApplicableClinicalFactors.length?String(r.notApplicableClinicalFactors.length)+" factors N/A by study purpose":"All 5 factors applicable"}</div></td>
-      <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><strong>{numeric(r.assessed.researchScore)}</strong></td>
+      <td style={{padding:"10px 8px",whiteSpace:"nowrap"}} data-alks-type-score={r.nctId}><strong>{numeric(r.typeSpecificScore)}</strong><div style={{fontSize:11}}>{r.studyPurpose==="SAFETY_PRIMARY"?"Safety only — 1 factor":r.clinicalStage==="pre"?"Five-factor prior evidence":"Five-factor observed evidence"}</div></td>
       <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}>
        {r.historicalPrimaryOutcome==="MET"?"MET":
         r.historicalPrimaryOutcome==="NOT_MET"?"NOT MET":
@@ -110,7 +116,7 @@ export default function AlkermesTrialScorePage(){
   <section className="panel" style={{marginTop:18}}>
    <h2>Research exclusions and remaining work</h2>
    <p>Historical safety extensions and terminated studies cannot automatically be treated as pivotal efficacy successes or failures. Published results should be linked to the original endpoints, regulatory correspondence and the exact trial drug/indication. A null grade is an explicit research gap, not a negative result.</p>
-   <p>Data snapshot: {source.asOf}. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-trial-five-clinical-scores-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Download all 34 clinical scorecards (CSV)</a>. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-clinical-factor-dispositions-2026-11-06.json" target="_blank" rel="noopener noreferrer">All 170 factor classifications and original sources</a>. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-trial-evidence-scoring-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Original data-gaps audit</a>. <Link href="/pipeline">Back to Pipeline</Link>.</p>
+   <p>Data snapshot: {source.asOf}. The type-specific score is an unvalidated research rating, not a clinical-success probability. Five-factor and safety-only values are not directly comparable. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-trial-five-clinical-scores-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Download all 34 clinical scorecards (CSV)</a>. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-clinical-factor-dispositions-2026-11-06.json" target="_blank" rel="noopener noreferrer">All 170 factor classifications and original sources</a>. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-trial-evidence-scoring-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Original data-gaps audit</a>. <Link href="/pipeline">Back to Pipeline</Link>.</p>
   </section>
  </main>;
 }
