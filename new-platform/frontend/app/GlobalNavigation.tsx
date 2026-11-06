@@ -9,6 +9,7 @@ const links=[
  {label:"SCAN",href:"/scans"},
  {label:"PREDICTIONS",href:"/predictions"},
  {label:"ALKS SCORES",href:"/alkermes-scores"},
+ {label:"SVA SCORES",href:"/sinovac-scores"},
  {label:"#1",href:"/patient-population"},
  {label:"SYSTEM STATUS",href:"/installation-audit"}
 ];
