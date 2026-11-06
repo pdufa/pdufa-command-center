@@ -51,7 +51,7 @@ export async function GET(request:Request){
     UNIVERSAL_PHASE3_QUESTIONS.length!==30||
     preData.trials.length!==253||
     officialResearch.records.length!==253||
-    adjudications.records.length!==19){
+    adjudications.records.length!==20){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
  const perQuestion:QuestionAudit[]=UNIVERSAL_PHASE3_QUESTIONS.map((q,i)=>({
@@ -109,7 +109,7 @@ export async function GET(request:Request){
  if(assessment.totalSlots!==22860||
     assessment.predicted+assessment.observed+assessment.sourceFacts+assessment.unscored!==total||
     assessment.trialsWithNumericalPredictions!==4||
-    assessment.trialsWithOutcomeAdjudication!==19||
+    assessment.trialsWithOutcomeAdjudication!==20||
     fields.unknownRegistryStatus!==3||
     fields.missingDrugField!==753){
   return Response.json({error:"Missingness audit reconciliation failed"},{status:503});
