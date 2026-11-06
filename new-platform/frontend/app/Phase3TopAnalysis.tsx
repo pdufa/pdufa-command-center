@@ -9,13 +9,17 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
   </summary>
   <div style={{fontSize:12,lineHeight:1.5,marginTop:7}}>
    <p><strong>Pre-readout predictions only.</strong> No Phase 3 efficacy result is inferred. No surveys or ratings.</p>
-   {questions.map(q=><details key={q.number} style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
+   {questions.map(q=><details key={q.number} defaultOpen={q.number===2&&!!q.answer} style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
     <summary style={{cursor:"pointer"}}>
      Q{q.number} · {q.heading}{q.answer?" — predicted "+q.answer.prediction:" — not assessed"}
     </summary>
     {q.answer?<div>
      <p><strong>{q.answer.question}</strong></p>
-     <p><strong>My prediction: {q.answer.prediction}.</strong> {q.answer.summary}</p>
+     <div data-phase3-prediction={q.answer.prediction} style={{margin:"10px 0",padding:"10px 12px",border:"2px solid #a4c9ad",borderRadius:8,background:"#f0f8f2"}}>
+      <div style={{fontSize:12,fontWeight:750,letterSpacing:"0.07em",color:"#24583a"}}>PREDICTED · NOT REPORTED</div>
+      <div style={{fontSize:34,lineHeight:1.12,fontWeight:900,letterSpacing:"0.05em",color:"#155e34"}}>{q.answer.prediction}</div>
+      <p style={{margin:"6px 0 0"}}>{q.answer.summary}</p>
+     </div>
      <p><strong>Reason:</strong> {q.answer.reason}</p>
      <p>Prediction recorded: {q.answer.asOf}. Evidence baseline: {q.answer.evidenceCutoff}.</p>
      <p><strong>Actual IZAR-2 Phase 3 result:</strong> not reported as of 2026-11-05.</p>

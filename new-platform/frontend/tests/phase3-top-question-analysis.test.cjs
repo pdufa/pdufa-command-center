@@ -19,3 +19,11 @@ test("TOP research case remains outside membership and CSV appends 30 question c
  const page=read("app/Phase3SourceOnlySheets.tsx");
  assert.match(page,/<TopPhase3ResearchExample\/>/);
 });
+
+test("Q2 opens with large predicted PASS instead of reported result",()=>{
+ const ui=read("app/Phase3TopAnalysis.tsx");
+ assert.match(ui,/defaultOpen=\{q.number===2&&!!q.answer\}/);
+ assert.match(ui,/fontSize:34/);
+ assert.match(ui,/PREDICTED · NOT REPORTED/);
+ assert.match(ui,/data-phase3-prediction=\{q.answer.prediction\}/);
+});
