@@ -1,9 +1,11 @@
 import snapshot from "../public/phase3-source-coverage-20261105.json";
+import {phase3DeepRegistryRecord,phase3DeepRegistrySourceFact,PHASE3_DEEP_REGISTRY_TRIAL_COUNT,PHASE3_DEEP_REGISTRY_UNIQUE_NCT_COUNT} from "./phase3-deep-registry-results";
 
 /** Source facts are documentary observations only, NEVER numeric predictions or endpoint PASS/FAIL. */
 const sourceByNct=new Map(snapshot.rows.map(r=>[r.nctId,r] as const));
 export const PHASE3_ONLINE_SOURCE_DATE=snapshot.asOf;
 export const PHASE3_ONLINE_TRIAL_COUNT=snapshot.trials;
+export const PHASE3_DEEP_SOURCE_INTEGRITY=PHASE3_DEEP_REGISTRY_TRIAL_COUNT===762&&PHASE3_DEEP_REGISTRY_UNIQUE_NCT_COUNT===762;
 export type OnlineSourceFact={description:string;sourceUrl:string;status:"SOURCE_FACT_ONLY"};
 
 export function phase3OnlineRecord(nctId:string){return sourceByNct.get(nctId);}
@@ -11,6 +13,7 @@ export function phase3OnlineCoverageLabel(nctId:string):string{
  const r=sourceByNct.get(nctId);if(!r)return "NO_ONLINE_RECHECK";
  return [
   "CTGOV_REGISTRY_RECHECKED",
+  phase3DeepRegistryRecord(nctId)?.hasPostedResults?"CTGOV_DEEP_PRIMARY_RESULTS_SAVED":"CTGOV_NO_POSTED_PRIMARY_RESULTS",
   r.resultsPosted?"CTGOV_RESULTS_POSTED":"CTGOV_RESULTS_NOT_POSTED",
   "REGISTRY_STATISTICAL_ANALYSES_"+r.resultsAnalysisCount,
   "REGISTRY_DOCUMENTS_"+r.documentCount,
@@ -20,6 +23,8 @@ export function phase3OnlineCoverageLabel(nctId:string):string{
 }
 export function phase3OnlineSourceFact(nctId:string,question:number):OnlineSourceFact|null{
  const r=sourceByNct.get(nctId);if(!r)return null;
+ const detailed=phase3DeepRegistrySourceFact(nctId,question);
+ if(detailed)return detailed;
  const sourceUrl="https://clinicaltrials.gov/study/"+nctId;
  const fact=(description:string):OnlineSourceFact=>({description,sourceUrl,status:"SOURCE_FACT_ONLY"});
  switch(question){
