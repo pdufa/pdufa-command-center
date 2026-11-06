@@ -2,6 +2,7 @@ import discoveryAvenues from "../../../data/phase3DiscoveryAvenues20261106.json"
 import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
 import ionisEvidence from "../../../data/ionisPhase3Evidence20261106.json";
 import {activePhase3Cohorts} from "../../../lib/phase3-active-cohorts";
+import {activeOfficialRegistryRecord,activeOfficialRegistryIntegrity} from "../../../lib/phase3-active-official-registry";
 import companySearchLog from "../../../data/phase3CompanyWebsiteSearchLog20261106.json";
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,isObservedStatus,isSourceFactStatus,requiresResearchStatus,investorRelationsCoverage} from "../../../lib/phase3-ir-research";
@@ -63,6 +64,30 @@ function statusFor(
   if(q.number===30&&ir.regulatoryUrl&&/NDA under FDA review.*PDUFA/i.test(ir.regulatory||""))return "SOURCE_FACT_ONLY";
  }
  if(populationGeographyFact(r.nctId,q.number))return "DOCUMENTED_SOURCE_FACT";
+ const official=activeOfficialRegistryRecord(r.nctId);
+ if(official){
+  const qn=q.number;
+  if(qn===1&&official.postedPrimaryOutcomeCount>0)return "SOURCE_FACT_ONLY";
+  if(qn===3&&official.adverseEventsPosted)return "SOURCE_FACT_ONLY";
+  if(qn===6&&official.eligibilityCriteria)return "SOURCE_FACT_ONLY";
+  if(qn===7&&official.primaryOutcomes)return "SOURCE_FACT_ONLY";
+  if(qn===8&&official.primaryTimeframes)return "SOURCE_FACT_ONLY";
+  if(qn===9&&official.allocation)return "SOURCE_FACT_ONLY";
+  if(qn===10&&official.masking)return "SOURCE_FACT_ONLY";
+  if(qn===11&&official.comparators)return "SOURCE_FACT_ONLY";
+  if(qn===12&&official.enrollment!==null)return "SOURCE_FACT_ONLY";
+  if([13,14,15].includes(qn)&&official.hasPublicSAP)return "SOURCE_FACT_ONLY";
+  if(qn===18&&official.patientReportedOutcomeTitles)return "SOURCE_FACT_ONLY";
+  if(qn===19&&official.subgroupOutcomeTitles)return "SOURCE_FACT_ONLY";
+  if(qn===22&&official.infectionEventTerms)return "SOURCE_FACT_ONLY";
+  if(qn===24&&official.participantFlowDiscontinuations)return "SOURCE_FACT_ONLY";
+  if(qn===26&&(official.siteCount>0||official.countries))return "SOURCE_FACT_ONLY";
+  if(qn===17&&official.secondaryOutcomeCount>0)return "SOURCE_FACT_ONLY";
+  if(qn===23&&official.seriousAdverseEventTerms>0)return "SOURCE_FACT_ONLY";
+  if(qn===25&&official.registryStatus)return "SOURCE_FACT_ONLY";
+  if(qn===27&&/\bplacebo\b/i.test(official.interventionNames))return "SOURCE_FACT_ONLY";
+  if(qn===29&&official.registryResultsPosted)return "SOURCE_FACT_ONLY";
+ }
  if(q.observation)return "SOURCE_FACT_ONLY";
  if(q.number===11&&registryByNct.get(r.nctId)?.comparators)return "SOURCE_FACT_ONLY";
  if(q.number===25&&r.registrySourceUrl)return "SOURCE_FACT_ONLY";
@@ -95,7 +120,8 @@ export async function GET(request:Request){
     PHASE3_ONLINE_TRIAL_COUNT!==762||
     registryCrosswalk.records.length!==762||registryByNct.size!==762||
     agiosEvidence.trials.length!==9||agiosFacts.size!==agiosEvidence.facts.length||
-    ionisEvidence.trials.length!==12||ionisFacts.size!==ionisEvidence.facts.length){
+    ionisEvidence.trials.length!==12||ionisFacts.size!==ionisEvidence.facts.length||
+    !activeOfficialRegistryIntegrity(new Set([...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId)))){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
  const perQuestion:QuestionAudit[]=UNIVERSAL_PHASE3_QUESTIONS.map((q,i)=>({
