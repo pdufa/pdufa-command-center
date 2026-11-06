@@ -1,4 +1,5 @@
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
+import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
 import {UNIVERSAL_PHASE3_QUESTIONS} from "../../../lib/phase3-universal-questions";
@@ -6,6 +7,7 @@ import {phase3QuestionSlots} from "../../../lib/phase3-top-questions";
 import {PHASE3_ONLINE_TRIAL_COUNT,phase3OnlineRecord,phase3OnlineSourceFact,phase3OnlineCoverageLabel,phase3OnlineReviewLeads} from "../../../lib/phase3-online-source-evidence";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 /** One Phase 3 trial per exact NCT; predictions never count as observed PASS/FAIL. */
 const baseHeaders = [
@@ -41,7 +43,20 @@ const escaped=(input:unknown):string=>{
 };
 const writeRow=(cells:unknown[])=>cells.map(escaped).join(",");
 
-export async function GET(){
+export async function GET(request:Request){
+ const includeLive=new URL(request.url).searchParams.get("live")==="1";
+ type LiveRegistry=Awaited<ReturnType<typeof loadLivePhase3Registry>>["rows"][number]["registry"];
+ let liveByNct=new Map<string,LiveRegistry>();
+ if(includeLive){
+  try{
+   const live=await loadLivePhase3Registry();
+   if(live.failedBatches>0||live.rows.some(row=>!row.registry))
+    return Response.json({error:"Live registry collection incomplete; use default snapshot or retry"},{status:503});
+   liveByNct=new Map(live.rows.map(row=>[row.original.nctId,row.registry] as const));
+  }catch(e){
+   return Response.json({error:e instanceof Error?e.message:"Live registry unavailable"},{status:503});
+  }
+ }
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
     PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
@@ -55,6 +70,7 @@ export async function GET(){
   const endpoint=endpointByNct.get(r.nctId);
   const onlineRecord=phase3OnlineRecord(r.nctId);
   const registry=registryByNct.get(r.nctId);
+  const liveRegistry=liveByNct.get(r.nctId);
   const outcome=endpoint?.endpointOutcome||r.readoutOutcome;
   const endpointEvidenceUrl=endpoint?.evidenceUrl||r.readoutEvidenceUrl||"";
   const observedPass=outcome==="PRIMARY_ENDPOINT_MET"&&
@@ -76,9 +92,11 @@ export async function GET(){
   const observations=slots.filter(q=>!q.answer&&Boolean(q.observation)).length;
   const base=[
    r.nctId,r.ticker,r.company,r.classification,r.classificationCode,
-   r.registryStatus,r.rosterStatus,r.registryAsOf,
+   liveRegistry?.registryStatus||r.registryStatus,r.rosterStatus,
+   liveRegistry?.sourceUpdated||r.registryAsOf,
    r.readoutEvidenceType==="NOT_VERIFIED"&&onlineRecord?.resultsPosted?"CTGOV_RESULTS_POSTED_UNADJUDICATED":r.readoutEvidenceType,
-   r.readoutSourceDate,outcome,r.drug||registry?.drugInterventions||"",r.indication,r.registeredInterventions,
+   r.readoutSourceDate,outcome,r.drug||liveRegistry?.drugInterventions||registry?.drugInterventions||"",
+   r.indication,liveRegistry?.interventionNames||r.registeredInterventions,
    r.fdaApplicationStatus,r.fdaReviewType,r.pdufaGoalDate,
    endpointEvidenceUrl||(onlineRecord?.resultsPosted?"https://clinicaltrials.gov/study/"+r.nctId:""),
    r.registrySourceUrl,r.classificationEvidence
@@ -106,6 +124,47 @@ export async function GET(){
     passRationale,endpointEvidenceUrl];
    if(q.number===29&&endpoint)return ["DOCUMENTED_PUBLIC_READOUT","","",
     "Public Phase 3 readout or results exist. "+passRationale,endpointEvidenceUrl];
+   if(liveRegistry){
+    const url=liveRegistry.registryUrl;
+    const fact=(description:string)=>["SOURCE_FACT_ONLY","","",description,url];
+    if(q.number===1&&liveRegistry.postedPrimaryOutcomeCount>0)
+     return fact("Official registry results list "+liveRegistry.postedPrimaryOutcomeCount+
+      " primary measure(s). "+liveRegistry.firstPostedPrimaryResult+
+      (liveRegistry.firstPostedPrimaryPValues?" | Reported statistical values: "+liveRegistry.firstPostedPrimaryPValues:"")+
+      ". This is NOT an independently adjudicated primary-endpoint PASS/FAIL.");
+    if(q.number===3&&liveRegistry.adverseEventsPosted)
+     return fact("Official registry adverse-event data posted, "+
+      liveRegistry.seriousAdverseEventTerms+" serious-event terms; safety acceptability has not been judged.");
+    if(q.number===7&&liveRegistry.primaryOutcomes)
+     return fact("Live registry primary outcome(s): "+liveRegistry.primaryOutcomes);
+    if(q.number===8&&liveRegistry.primaryTimeframes)
+     return fact("Live registry primary timeframe(s): "+liveRegistry.primaryTimeframes);
+    if(q.number===9&&liveRegistry.allocation)
+     return fact("Live registry allocation: "+liveRegistry.allocation+"; design adequacy not assessed.");
+    if(q.number===10&&liveRegistry.masking)
+     return fact("Live registry masking: "+liveRegistry.masking+"; blinding adequacy not assessed.");
+    if(q.number===11&&liveRegistry.comparators)
+     return fact("Official comparator arms: "+liveRegistry.comparators+"; adequacy not determined.");
+    if(q.number===12&&liveRegistry.enrollment!==null)
+     return fact("Live registry enrollment: "+liveRegistry.enrollment+
+      " ("+liveRegistry.enrollmentType+"); statistical power not inferred.");
+    if([13,14,15].includes(q.number)&&liveRegistry.hasPublicSAP)
+     return fact("Public statistical analysis plan located in registry. The plan has not been critically reviewed "+
+      "for power, missing-data handling or multiplicity: "+liveRegistry.protocolOrSAPDocuments);
+    if(q.number===17&&liveRegistry.secondaryOutcomeCount>0)
+     return fact("Official registry lists "+liveRegistry.secondaryOutcomeCount+
+      " secondary outcomes; no efficacy inference made.");
+    if(q.number===23&&liveRegistry.seriousAdverseEventTerms>0)
+     return fact("Official registry reports "+liveRegistry.seriousAdverseEventTerms+
+      " serious-event terms; treatment-attributable risk and rates not assessed.");
+    if(q.number===25&&liveRegistry.registryStatus)
+     return fact("Live registry status: "+liveRegistry.registryStatus+
+      "; status is distinct from primary endpoint success.");
+    if(q.number===27&&/\\bplacebo\\b/i.test(liveRegistry.interventionNames))
+     return fact("Live registry names placebo in interventions; comparator adequacy not assessed.");
+    if(q.number===29&&liveRegistry.registryResultsPosted)
+     return fact("Official trial results have been posted; PASS/FAIL not independently adjudicated.");
+   }
    if(q.observation)return ["SOURCE_FACT_ONLY","","",
     q.observation.description,q.observation.sourceUrl];
    if(q.number===11&&registry?.comparators)return ["SOURCE_FACT_ONLY","","",
@@ -152,7 +211,9 @@ export async function GET(){
  return new Response("\uFEFF"+rows.join("\r\n")+"\r\n",{
   status:200,headers:{
    "Content-Type":"text/csv; charset=utf-8",
-   "Content-Disposition":'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-06-enriched.csv"',
+   "Content-Disposition":includeLive?
+     'attachment; filename="Phase3-762-Trials-190-Columns-Live-Registry-2026-11-06.csv"':
+     'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-06-enriched.csv"',
    "Cache-Control":"no-store"
   }
  });
