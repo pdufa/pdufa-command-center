@@ -1,3 +1,4 @@
+import {irAssessment,irResearchIntegrity,isObservedStatus,isSourceFactStatus,requiresResearchStatus,investorRelationsCoverage} from "../../../lib/phase3-ir-research";
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import adjudications from "../../../data/phase3EndpointAdjudications20261105.json";
@@ -15,7 +16,7 @@ const investorByNct=new Map(investorRelationsEvidence.records.map(x=>[x.nctId,x]
 const registryByNct=new Map(registryCrosswalk.records.map(x=>[x.nctId,x] as const));
 const preDataByNct=new Map(preData.trials.map(x=>[x.nctId,x] as const));
 const officialByNct=new Set(officialResearch.records.map(x=>x.nctId));
-type QuestionAudit={number:number;heading:string;predictions:number;observed:number;sourceFacts:number;unscored:number};
+type QuestionAudit={number:number;heading:string;predictions:number;observed:number;sourceFacts:number;unscored:number;verifiedFacts:number;numericalAssessments:number;observedOutcomes:number;requiringResearch:number;notPubliclyAvailable:number;requiresInterpretation:number};
 type TrialAudit={
  nctId:string;ticker:string;classificationCode:string;registryStatus:string;
  missingDrug:boolean;unknownRegistryStatus:boolean;hasDetailedOfficialResearch:boolean;
@@ -35,6 +36,8 @@ function statusFor(
  if(q.number===1&&e?.endpointOutcome==="PRIMARY_ENDPOINT_NOT_MET")return "OBSERVED_PRIMARY_ENDPOINT_NOT_MET";
  if(q.number===1&&e?.endpointOutcome==="NO_BINARY_PASS_FAIL")return "DOCUMENTED_NON_BINARY_ENDPOINT";
  if(q.number===29&&e)return "DOCUMENTED_PUBLIC_READOUT";
+ const researched=irAssessment(r.nctId,q.number);
+ if(researched)return researched.classification;
  const ir=investorByNct.get(r.nctId);
  if(q.number===30&&ir?.regulatoryEvidenceStatus&&ir.regulatoryEvidenceUrl)return "SOURCE_FACT_ONLY";
  if(ir?.companyUrl){
@@ -53,9 +56,9 @@ function statusFor(
 }
 const counts=(statuses:string[])=>({
  predicted:statuses.filter(x=>x==="PREDICTED_PRE_READOUT").length,
- observed:statuses.filter(x=>x.startsWith("OBSERVED_")||x.startsWith("DOCUMENTED_")).length,
- sourceFacts:statuses.filter(x=>x==="SOURCE_FACT_ONLY").length,
- unscored:statuses.filter(x=>x==="UNSCORED").length
+ observed:statuses.filter(x=>isObservedStatus(x)).length,
+ sourceFacts:statuses.filter(x=>isSourceFactStatus(x)).length,
+ unscored:statuses.filter(x=>requiresResearchStatus(x)||x==="NOT_PUBLICLY_DISCLOSED").length
 });
 const escapeCsv=(v:unknown)=>{
  let s=v===null||v===undefined?"":String(v).replace(/[\r\n]+/g," ");
@@ -69,14 +72,15 @@ export async function GET(request:Request){
     UNIVERSAL_PHASE3_QUESTIONS.length!==30||
     preData.trials.length!==253||
     officialResearch.records.length!==253||
-    adjudications.records.length!==43||
-    investorRelationsEvidence.records.filter(x=>Boolean(x.regulatoryEvidenceStatus)).length!==8||
+    endpointByNct.size!==adjudications.records.length||
+    !irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
+    investorByNct.size!==investorRelationsEvidence.records.length||
     PHASE3_ONLINE_TRIAL_COUNT!==762||
     registryCrosswalk.records.length!==762||registryByNct.size!==762){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
  const perQuestion:QuestionAudit[]=UNIVERSAL_PHASE3_QUESTIONS.map((q,i)=>({
-  number:i+1,heading:q.heading,predictions:0,observed:0,sourceFacts:0,unscored:0
+  number:i+1,heading:q.heading,predictions:0,observed:0,sourceFacts:0,unscored:0,verifiedFacts:0,numericalAssessments:0,observedOutcomes:0,requiringResearch:0,notPubliclyAvailable:0,requiresInterpretation:0
  }));
  const rows:TrialAudit[]=[];
  for(const r of ledger.rows){
@@ -90,9 +94,15 @@ export async function GET(request:Request){
   for(let i=0;i<30;i++){
    const q=perQuestion[i],st=statuses[i];
    if(st==="PREDICTED_PRE_READOUT")q.predictions++;
-   else if(st==="SOURCE_FACT_ONLY")q.sourceFacts++;
-   else if(st==="UNSCORED")q.unscored++;
-   else q.observed++;
+   else if(isSourceFactStatus(st))q.sourceFacts++;
+   else if(isObservedStatus(st))q.observed++;
+   else q.unscored++;
+   if(isSourceFactStatus(st)||isObservedStatus(st))q.verifiedFacts++;
+   if(st==="PREDICTED_PRE_READOUT")q.numericalAssessments++;
+   if(isObservedStatus(st))q.observedOutcomes++;
+   if(requiresResearchStatus(st))q.requiringResearch++;
+   if(st==="NOT_PUBLICLY_DISCLOSED")q.notPubliclyAvailable++;
+   if(st==="REQUIRES_INTERPRETATION")q.requiresInterpretation++;
   }
   rows.push({
    nctId:r.nctId,ticker:r.ticker,classificationCode:r.classificationCode,
@@ -142,16 +152,14 @@ export async function GET(request:Request){
   pubmedNctArticleLeads:rows.filter(r=>r.pubmedArticleLeads).length,
   secNctFilingLeads:rows.filter(r=>r.secFilingLeads).length
  };
- if(assessment.totalSlots!==22860||
+ const derivedOutcomes=Object.fromEntries(Object.keys(adjudications.counts).map(key=>
+  [key,adjudications.records.filter(r=>r.endpointOutcome===key).length]));
+ if(assessment.totalSlots!==rows.length*30||
     assessment.predicted+assessment.observed+assessment.sourceFacts+assessment.unscored!==total||
-    assessment.trialsWithNumericalPredictions!==4||
-    assessment.trialsWithOutcomeAdjudication!==43||
-    fields.unknownRegistryStatus!==3||
-    fields.missingDrugField!==103||
-    fields.investorRelationsRegulatoryTrialLinks!==8||fields.investorRelationsFDAApplicationPrograms!==3||
-    fields.unverifiedFDAApplication!==754||fields.unverifiedPDUFADate!==754||
-    fields.onlinePrimaryEndpointCount!==756||fields.registryResultsPosted!==337||
-    fields.pubmedNctArticleLeads!==288){
+    adjudications.records.some(e=>!rows.some(r=>r.nctId===e.nctId))||
+    Object.entries(adjudications.counts).some(([key,value])=>derivedOutcomes[key]!==value)||
+    Object.values(derivedOutcomes).reduce((a,b)=>a+b,0)!==adjudications.records.length||
+    perQuestion.some(q=>q.predictions+q.observed+q.sourceFacts+q.unscored!==rows.length)){
   return Response.json({error:"Missingness audit reconciliation failed"},{status:503});
  }
  const report={
@@ -161,7 +169,8 @@ export async function GET(request:Request){
   scope:"Saved numerical assessments plus the online exact-NCT 762-registry, PubMed and SEC source discovery; publication and filing hits remain research leads, not adjudicated clinical outcomes",
   trials:rows.length,questionsPerTrial:30,columnsInAssessmentExport:190,
   assessment,fields,perQuestion,
-  endpointOutcomes:adjudications.counts,
+  endpointOutcomes:derivedOutcomes,
+  investorRelationsCoverage:investorRelationsCoverage(),
   exceptions:{
    unknownRegistryNcts:rows.filter(r=>r.unknownRegistryStatus).map(r=>r.nctId),
    outsideMarketCapScreenNcts:rows.filter(r=>r.outsideDatedMarketCapScreen).map(r=>r.nctId)
@@ -171,8 +180,9 @@ export async function GET(request:Request){
    "Source-fact columns document available registry facts, not favorable clinical or FDA predictions.",
    "Crosswalk identifies registered DRUG-type interventions in 657 studies; other intervention types such as biologics, devices, or vaccines are not automatically labeled DRUG.",
    "Not every historical or pre-readout Phase 3 trial has an FDA application or PDUFA date.",
-   "Eight linked trial rows represent only three drug-indication FDA application programs; clinical endpoint outcomes remain distinct from the program-level FDA decision.",
-   "Historical PDUFA action dates are 2022-02-17 and 2026-04-30; issuer-reported future AXS-12 target date is 2027-05-01.",
+   "Application links and distinct programs are counted from records; trial efficacy remains distinct from FDA decisions.",
+   "Approval dates are not inferred to be PDUFA goal dates. Historical dates are not upcoming catalysts.",
+   "NOT_PUBLICLY_DISCLOSED requires affirmative review evidence; an unreviewed or blocked source remains research pending.",
    "Online registry primary outcome documentation, comparator arms and posted results have been imported as source facts, never as numeric drug-success forecasts."
   ]
  };

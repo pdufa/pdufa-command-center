@@ -1,0 +1,300 @@
+{
+  "checkedAt": "2026-11-06T14:16:56.665754+00:00",
+  "scope": "HTTP validation only is not scientific validation; web-tool fallback reads documented separately.",
+  "sources": [
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT02621892",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02621892",
+      "bytes": 44014,
+      "sha256": "f54b47999a14921d6135986080d1e4d2b0a4e8c785f821936ee3728b2816da7d",
+      "registryIdentity": {
+        "nctId": "NCT02621892",
+        "orgStudyIdInfo": {
+          "id": "TEN-01-301"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "A 12-Week Study With a 4-Week Randomized Withdrawal Period to Evaluate the Efficacy and Safety of Tenapanor for the Treatment of IBS-C",
+        "officialTitle": "A 12-Week, Randomized, Double-Blind, Placebo-Controlled Study With a 4-Week Randomized Withdrawal Period to Evaluate the Efficacy and Safety of Tenapanor for the Treatment of Constipation-Predominant Irritable Bowel Syndrome (IBS-C)",
+        "acronym": "T3MPO-1"
+      }
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT02675998",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02675998",
+      "bytes": 28526,
+      "sha256": "48dcbf5d7acac52da0fa5c7b438f30bad9e6826186a5ab61f0ac92d4d12153d5",
+      "registryIdentity": {
+        "nctId": "NCT02675998",
+        "orgStudyIdInfo": {
+          "id": "TEN-02-201"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "An 8-Week Study to Evaluate Tenapanor in the Treatment of Hyperphosphatemia in End-Stage Renal Disease Patients on Hemodialysis (ESRD-HD)",
+        "officialTitle": "An 8-week, Multicenter, Randomized, Double-Blind, Parallel Group Study With a 4-week, Placebo-Controlled, Randomized Withdrawal Period to Evaluate the Efficacy, Safety, and Tolerability of Tenapanor to Treat Hyperphosphatemia in End-Stage Renal Disease Patients on Hemodialysis (ESRD-HD)"
+      }
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT02686138",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02686138",
+      "bytes": 51634,
+      "sha256": "14c20fd01a41dffbbf39a1ebb5faf8abf5187b835e8eb76c859599f5a2902fab",
+      "registryIdentity": {
+        "nctId": "NCT02686138",
+        "orgStudyIdInfo": {
+          "id": "TEN-01-302"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "A 26-Week Study to Evaluate the Efficacy and Safety of Tenapanor in IBS-C",
+        "officialTitle": "A 26-Week, Randomized, Double-Blind, Placebo-Controlled Study to Evaluate the Efficacy and Safety of Tenapanor for the Treatment of Constipation-Predominant Irritable Bowel Syndrome (IBS-C)",
+        "acronym": "T3MPO-2"
+      }
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT03427125",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT03427125",
+      "bytes": 29017,
+      "sha256": "43e12d562eaa12e27524f821cf561fab21ab871a5b5824a4a5aac3cad0758c70",
+      "registryIdentity": {
+        "nctId": "NCT03427125",
+        "orgStudyIdInfo": {
+          "id": "TEN-02-301"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "A Phase 3 Study of Tenapanor to Treat Hyperphosphatemia in ESRD Patients on Dialysis",
+        "officialTitle": "A 26-Wk, Phase 3, Open Label (OL) Study With a 12-Wk, Placebo-Controlled, Randomized Withdrawal Period and an OL Safety Extension to Evaluate the Safety and Efficacy of Tenapanor to Treat Hyperphosphatemia in CKD Patients on Dialysis"
+      }
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT03824587",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT03824587",
+      "bytes": 36574,
+      "sha256": "8d55a8778bb4f050e55023393e999a5232382a0bc1cb06684048d05ebabad9b1",
+      "registryIdentity": {
+        "nctId": "NCT03824587",
+        "orgStudyIdInfo": {
+          "id": "TEN-02-202"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "Study to Evaluate the Efficacy of Tenapanor as Adjunctive Therapy to Phosphate Binder Therapy",
+        "officialTitle": "A Randomized, Double-Blind, Placebo-Controlled Study to Evaluate the Efficacy of Tenapanor as Adjunctive Therapy to Phosphate Binder Therapy in End-Stage Renal Disease (ESRD) Subjects With Hyperphosphatemia"
+      }
+    },
+    {
+      "url": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-announces-positive-results-pivotal-phase-3-amplify-study",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-announces-positive-results-pivotal-phase-3-amplify-study",
+      "bytes": 54503,
+      "sha256": "d369f69b6c273c1f6e991e01b724c628aa4018f9a8729bab6b2832f86cb185ad"
+    },
+    {
+      "url": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-reports-successful-phase-3-t3mpo-1-trial-tenapanor",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-reports-successful-phase-3-t3mpo-1-trial-tenapanor",
+      "bytes": 60205,
+      "sha256": "d5b2e1b0e526bf8900dfb53df26857467e629c042fd108d70b69309bc977ac8a"
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8183489/",
+      "httpStatus": 200,
+      "finalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8183489/",
+      "bytes": 21406,
+      "sha256": "74f27be0c187c5c25b27ecb407cf98697ec175c9ab936f4476cea6bf5f4ecac1"
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42096282/",
+      "httpStatus": 200,
+      "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42096282/",
+      "bytes": 105919,
+      "sha256": "ef32a1ac14355c7504a17587cfb55d3ec702679080587313940969ec95eb9fa3"
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42447341/",
+      "httpStatus": 203,
+      "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42447341/",
+      "bytes": 5590,
+      "sha256": "50dcb666d3f364b8b94380367eceb0a2c9ecff79e180716185632c98a49c15ab"
+    },
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/211801s000lbl.pdf",
+      "httpStatus": 200,
+      "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2019/211801s000lbl.pdf",
+      "bytes": 591258,
+      "sha256": "4ca7f1ceb6110175223daceaa97b4969881c29fbc06fa884942d4ebad2049791"
+    },
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2024/213931Orig1s000Lbl.pdf",
+      "httpStatus": 200,
+      "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2024/213931Orig1s000Lbl.pdf",
+      "bytes": 1715619,
+      "sha256": "a65094613f9369a8daf02fb9b57a0d35fecb82d8bda6bdb589ce6de7667db2a7"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1437402/000119312517307919/d648753d8k.htm",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1437402/000119312517307919/d648753d8k.htm",
+      "bytes": 37719,
+      "sha256": "8b4f69940117ec01e6be203d40165ab96da8c4e2dbcc06ed7085fcab7d405e1a"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1437402/000119312519304803/d843175d8k.htm",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1437402/000119312519304803/d843175d8k.htm",
+      "bytes": 28356,
+      "sha256": "a120e333161d8841e140a8a1fe4c9197c0d21872feff3ccc05064f804f5432ff"
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT02727751",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02727751",
+      "bytes": 10306,
+      "sha256": "ee7bba31f9017d5afa6d497ad530183f16524bd41b19dedef7011b12bf293206",
+      "registryIdentity": {
+        "nctId": "NCT02727751",
+        "orgStudyIdInfo": {
+          "id": "TEN-01-303"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "A Long-Term Safety Study of Tenapanor for the Treatment of IBS-C",
+        "officialTitle": "An Open Label Long-Term Safety Study of Tenapanor for the Treatment of Constipation-Predominant Irritable Bowel Syndrome (IBS-C)",
+        "acronym": "T3MPO-3"
+      },
+      "registryPhases": [
+        "PHASE3"
+      ]
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT07382167",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT07382167",
+      "bytes": 49539,
+      "sha256": "e2bb2d69a5a8c6f05b77180ef3ef1a3e914f2bdad986fc67b03c21ad4f58f3a1",
+      "registryIdentity": {
+        "nctId": "NCT07382167",
+        "orgStudyIdInfo": {
+          "id": "TEN-03-301"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "A 26-Wk Study to Assess Safety & Efficacy of Tenapanor for T/t of Chronic Idiopathic Constipation in Adults",
+        "officialTitle": "A 26-Week, Multi-Center, Randomized, Double-Blind, Placebo-Controlled Study to Assess the Safety and Efficacy of Tenapanor for the Treatment of Chronic Idiopathic Constipation (CIC) in Adults"
+      },
+      "registryPhases": [
+        "PHASE3"
+      ]
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT01923428",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT01923428",
+      "bytes": 19299,
+      "sha256": "77b9e3e29df0f75bc7e9add52c9c68032cddb38b3c7e4d6ca07aa69d0988e163",
+      "registryIdentity": {
+        "nctId": "NCT01923428",
+        "orgStudyIdInfo": {
+          "id": "D5612C00001"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "The Efficacy of AZD1722 in Constipation Predominant Irritable Bowel Syndrome (IBS-C)",
+        "officialTitle": "A Randomized, Double-Blind, Placebo-Controlled Study to Assess the Safety and Efficacy of AZD1722 for the Treatment of Constipation-Predominant Irritable Bowel Syndrome (IBS-C)"
+      },
+      "registryPhases": [
+        "PHASE2",
+        "PHASE3"
+      ]
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05643534",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05643534",
+      "bytes": 17905,
+      "sha256": "63fb60e010604b9388df67586f3a56beed7887f7caf03b376e889c8911a433ac",
+      "registryIdentity": {
+        "nctId": "NCT05643534",
+        "orgStudyIdInfo": {
+          "id": "TEN-01-304"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "Study to Assess Safety and Efficacy of Tenapanor for Treatment of IBS-C in Pediatric Patients 12 to Less Than 18 Years",
+        "officialTitle": "A 12-Week, Randomized, Double-Blind, Placebo-Controlled, Phase 3 Study to Assess the Safety and Efficacy of Tenapanor for the Treatment of Irritable Bowel Syndrome With Constipation (IBS-C) in Pediatric Patients 12 to Less Than 18 Years Old"
+      },
+      "registryPhases": [
+        "PHASE3"
+      ]
+    },
+    {
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05905926",
+      "httpStatus": 200,
+      "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05905926",
+      "bytes": 9280,
+      "sha256": "30dbb90c6a113a30bd228bef812df6e1d2b7224731713bbbd2c73e594b73495b",
+      "registryIdentity": {
+        "nctId": "NCT05905926",
+        "orgStudyIdInfo": {
+          "id": "TEN-01-306"
+        },
+        "organization": {
+          "fullName": "Ardelyx",
+          "class": "INDUSTRY"
+        },
+        "briefTitle": "Safety Study of Tenapanor for the Treatment of Pediatric Patients (6 to Less Than 18 Years Old) With IBS-C",
+        "officialTitle": "An Open-Label Long-Term Safety Study of Tenapanor for the Treatment of Irritable Bowel Syndrome With Constipation (IBS-C) in Pediatric Patients 6 to Less Than 18 Years Old"
+      },
+      "registryPhases": [
+        "PHASE3"
+      ]
+    },
+    {
+      "url": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-successfully-completes-t3mpo-3-safety-extension-study",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-successfully-completes-t3mpo-3-safety-extension-study",
+      "bytes": 46110,
+      "sha256": "8e0213daf65b5613168081adb3246898649da8c1b08a6ea1fa75d51dc7edbc1f"
+    },
+    {
+      "url": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-completes-enrollment-phase-3-accel-clinical-trial",
+      "blocker": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://ir.ardelyx.com/news-releases/news-release-details/ardelyx-reports-third-quarter-2026-financial-results-and",
+      "blocker": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/37668173/",
+      "httpStatus": 203,
+      "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/37668173/",
+      "bytes": 5590,
+      "sha256": "49b77bb39c8c19f6d6ea9087f3156c8ae21f0350243bee8fc0a0b886482177e8"
+    }
+  ]
+}
