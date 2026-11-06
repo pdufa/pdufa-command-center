@@ -16,6 +16,7 @@ const links=[
   {href:"/results",title:"RESULTS — Dated Scan Reports",desc:"Saved daily research results and historical scan evidence."},
   {href:"/restrictions",title:"RESTRICTIONS — Pipeline Eligibility",desc:"Three hard scope gates and status of verification before commercial assessments."},
   {href:"/predictions",title:"PREDICTIONS — FDA Outcome Research",desc:"Research-only outcome evidence; no unsupported regulatory probability."},
+  {href:"/alkermes-scores",title:"ALKS — 34-Trial Clinical Scores",desc:"Evidence-graded scientific factors for all Alkermes trials, with explicit missing ratings and original-source links."},
 ];
 export default function Home() {
  const [auth,setAuth]=useState<AuthState>("checking");
