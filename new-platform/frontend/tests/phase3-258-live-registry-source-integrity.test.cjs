@@ -76,3 +76,27 @@ test("190-field export reuses exact subset and labels protocol observations with
  assert.match(exportSource,/const fact=\(description:string\)=>\["SOURCE_FACT_ONLY","","",description,url\]/);
  assert.match(exportSource,/HEADERS\.length!==190/);
 });
+
+test("dated official SAP files and subgroup outcome labels increase documentary coverage, not clinical scores",()=>{
+ const {phase3OnlineSourceFact}=require("../lib/phase3-online-source-evidence.ts");
+ const {sourceObservation}=require("../lib/phase3-universal-questions.ts");
+ const activeIds=[...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId);
+ const sap=activeIds.filter(id=>phase3OnlineSourceFact(id,13)!==null);
+ assert.equal(sap.length,10);
+ for(const id of sap){
+  for(const q of [13,14,15]){
+   const observed=phase3OnlineSourceFact(id,q);
+   assert.equal(observed.status,"SOURCE_FACT_ONLY");
+   assert.match(observed.sourceUrl,new RegExp(id+"$"));
+   assert.match(observed.description,/NOT been critically reviewed/);
+  }
+ }
+ const subgroup=activeIds.filter(id=>sourceObservation(id,19)!==null);
+ assert.equal(subgroup.length,2);
+ for(const id of subgroup){
+  const observed=sourceObservation(id,19);
+  assert.match(observed.description,/no claim of subgroup effect/);
+  assert.equal(observed.documentationScore,100);
+  assert.match(observed.sourceUrl,new RegExp(id+"$"));
+ }
+});
