@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-05",
+  "totalReviewed": 19,
+  "counts": {
+    "PRIMARY_ENDPOINT_MET": 16,
+    "PRIMARY_ENDPOINT_NOT_MET": 1,
+    "NO_BINARY_PASS_FAIL": 2
+  },
+  "scope": "762 Phase 3 trial census; 19 public-readout subset",
+  "note": "Observed primary endpoint conclusions, not FDA approvals. Review sources under the exact NCT. Single-arm/descriptive PK trials are not forced into binary PASS/FAIL.",
+  "records": [
+    {
+      "nctId": "NCT04770753",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ENERGIZE hemoglobin response: 55/130 (42%) mitapivat versus 1/64 (2%) placebo, p<0.0001.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT04770779",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ENERGIZE-T transfusion reduction: 52/171 (30%) mitapivat versus 11/87 (13%) placebo, p=0.0003.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05453968",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "Pediatric berotralstat study primary endpoint characterizes pharmacokinetics; no hypothesis-test-based endpoint pass is established.",
+      "evidenceUrl": "https://cdn.clinicaltrials.gov/large-docs/68/NCT05453968/Prot_000.pdf",
+      "evidenceType": "PROTOCOL_PK_ENDPOINT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT06445023",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Celldex reports EMBARQ-CSU1 met UAS7 Week 12 primary endpoint and all key secondaries.",
+      "evidenceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT06455202",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Celldex reports EMBARQ-CSU2 met UAS7 Week 12 primary endpoint and all key secondaries.",
+      "evidenceUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05711940",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Compass Pathways reports its Phase 3 primary endpoint was met; this is a readout, not FDA approval.",
+      "evidenceUrl": "https://ir.compasspathways.com/News--Events-/news/news-details/2026/Compass-Pathways-Successfully-Achieves-Primary-Endpoint-in-Second-Phase-3-Trial-Evaluating-COMP360-Psilocybin-for-Treatment-Resistant-Depression/",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT03697109",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "GRACE randomized-withdrawal primary endpoint met, odds ratio 0.17 and p=0.02; separate FDA approval status must not be inferred.",
+      "evidenceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-announces-primary-endpoint-met-pivotal-phase-3-grace",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT04308590",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "GRADIENT prespecified systolic-blood-pressure comparison versus placebo was not statistically significant, despite favorable within-group and secondary signals.",
+      "evidenceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05257408",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ROSELLA reported meeting progression-free and overall-survival dual primary endpoints.",
+      "evidenceUrl": "https://ir.corcept.com/news-releases/news-release-details/overall-survival-primary-endpoint-met-corcepts-pivotal-phase-3",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05186818",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "SEQUOIA-HCM primary peak oxygen uptake improvement significant, p=0.000002.",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2023/Cytokinetics-Announces-Positive-Results-From-SEQUOIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-With-Obstructive-Hypertrophic-Cardiomyopathy-12-27-2023/default.aspx",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05767346",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "MAPLE-HCM primary peak oxygen uptake improvement versus metoprolol met statistical significance.",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Announces-Positive-Topline-Results-From-MAPLE-HCM-05-13-2025/default.aspx",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT06081894",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ACACIA-HCM met both KCCQ-CSS and peak oxygen uptake co-primary endpoints, p=0.021 and p=0.003.",
+      "evidenceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT02598661",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "IMerge 8-week transfusion independence primary endpoint achieved by 39.8% on imetelstat versus 15.0% placebo, p<0.001.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT06641076",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "MoonLake reports IZAR-1 Week 16 ACR50 primary endpoint met for 60mg induction regimen.",
+      "evidenceUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+      "evidenceType": "ISSUER_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05210790",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "VERIFY primary phlebotomy-free clinical response achieved by 77% on rusfertide versus 33% placebo, p<0.0001.",
+      "evidenceUrl": "https://ascopubs.org/doi/full/10.1200/JCO-26-00992",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05774756",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "TRANSCEND setmelanotide achieved statistically greater reduction in BMI than placebo at Week 52.",
+      "evidenceUrl": "https://www.nejm.org/doi/10.1056/NEJMoa2512275",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT04544293",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "IMPALA-2 molgramostim primary DLCO improvement versus placebo at 24 weeks, p<0.001.",
+      "evidenceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2410542",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05243550",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "ENVISION single-arm Week 12/three-month complete response was 191/240 (79.6%); no prespecified pass/fail hypothesis established here.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/39446087/",
+      "evidenceType": "PEER_REVIEWED_SINGLE_ARM_RESULT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT04716231",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ORIGIN 3 prespecified Week 36 interim primary UPCR reduction significant versus placebo, p<0.001.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+      "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    }
+  ]
+}
