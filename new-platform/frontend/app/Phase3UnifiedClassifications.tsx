@@ -123,7 +123,7 @@ export default function Phase3UnifiedClassifications(){
           <strong>Primary-endpoint adjudication:</strong> {endpointByNct.get(r.nctId)?.rationale}
          </p>}
          {endpointByNct.get(r.nctId)&&<p><a href={endpointByNct.get(r.nctId)?.evidenceUrl}
-          rel="noopener noreferrer" target="_blank">Primary endpoint source</a></p>
+          rel="noopener noreferrer" target="_blank">Primary endpoint source</a></p>}
          <p style={{margin:"4px 0"}}>Registry as of: {r.registryAsOf}</p>
          {r.drug&&<p style={{margin:"4px 0"}}>Drug: {r.drug}</p>}
          {r.indication&&<p style={{margin:"4px 0"}}>Indication: {r.indication}</p>}
