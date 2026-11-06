@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
+import endpointAdjudications from "../data/phase3EndpointAdjudications20261105.json";
 
 type TrialRow={
  nctId:string;ticker:string;company:string;registryStatus:string;rosterStatus:string;
@@ -13,9 +14,18 @@ type TrialRow={
 type Snapshot={schemaVersion:number;asOf:string;total:number;note:string;
  classifications:{code:string;label:string}[];counts:Record<string,number>;rows:TrialRow[]};
 const cell={padding:"8px 10px",borderBottom:"1px solid #d9e5de",textAlign:"left" as const,verticalAlign:"top" as const};
+const endpointByNct=new Map(endpointAdjudications.records.map(r=>[r.nctId,r] as const));
+const endpointClass=(r:TrialRow):string=>{
+ const result=endpointByNct.get(r.nctId)?.endpointOutcome||r.readoutOutcome;
+ return result==="PRIMARY_ENDPOINT_MET"?"PASS_DOCUMENTED_PRIMARY_ENDPOINT":
+  result==="PRIMARY_ENDPOINT_NOT_MET"?"FAIL_DOCUMENTED_PRIMARY_ENDPOINT":
+  result==="NO_BINARY_PASS_FAIL"?"NON_BINARY_ENDPOINT":"UNDETERMINED";
+};
 const labels:Record<string,string>={
  NOT_INDEPENDENTLY_REVIEWED:"Unreviewed",
  PRIMARY_ENDPOINT_MET:"Primary endpoint met",
+ PRIMARY_ENDPOINT_NOT_MET:"Primary endpoint not met",
+ NO_BINARY_PASS_FAIL:"No binary PASS/FAIL determination",
  NOT_VERIFIED:"Not verified"
 };
 export default function Phase3UnifiedClassifications(){
@@ -23,6 +33,7 @@ export default function Phase3UnifiedClassifications(){
  const [error,setError]=useState("");
  const [query,setQuery]=useState("");
  const [classification,setClassification]=useState("ALL");
+ const [passingFilter,setPassingFilter]=useState("ALL");
  const [page,setPage]=useState(0);
  const perPage=50;
  useEffect(()=>{
@@ -43,16 +54,17 @@ export default function Phase3UnifiedClassifications(){
   const term=query.trim().toLowerCase();
   return (data?.rows||[]).filter(r=>
    (classification==="ALL"||r.classificationCode===classification)&&
+   (passingFilter==="ALL"||endpointClass(r)===passingFilter)&&
    (!term||[r.nctId,r.ticker,r.company,r.registryStatus,r.classification,
     r.drug||"",r.indication||"",r.registeredInterventions||""]
     .some(v=>v.toLowerCase().includes(term))));
- },[data,query,classification]);
+ },[data,query,classification,passingFilter]);
  const maxPage=Math.max(1,Math.ceil(filtered.length/perPage));
  const currentPage=Math.min(page,maxPage-1);
  const shown=filtered.slice(currentPage*perPage,(currentPage+1)*perPage);
  return <section data-phase3-unified-census="762" style={{margin:"14px 0 22px",padding:14,border:"2px solid #7ea18b",borderRadius:12}}>
   <h2 style={{margin:"0 0 7px"}}>Unified Phase 3 master spreadsheet · 762 trials</h2>
-  <p style={{fontSize:13,margin:"0 0 10px"}}>One unique NCT per row. <strong>Classification is based on observed evidence, not assumed 425/337 counts.</strong> The original registry state and readout evidence are retained separately. Only exact-NCT evidence supports a documented primary-endpoint PASS; unadjudicated trials remain undetermined, not FAIL. A full 190-column assessment export is available below. FDA statuses are not asserted without an application-level source.</p>
+  <p style={{fontSize:13,margin:"0 0 10px"}}>One unique NCT per row. <strong>Classification is based on observed evidence, not assumed 425/337 counts.</strong> The original registry state, registered outcome and released readout evidence are retained separately. Source-qualified primary-endpoint PASS and FAIL refer to clinical results, not FDA approval. Unreviewed and descriptive studies remain explicitly distinguished. All 762 records have a 190-column export, but not all 190 fields have scored scientific results.</p>
   {!data?<p role="status">{error||"Loading classifications for 762 trials…"}</p>:<>
    <div style={{display:"flex",flexWrap:"wrap",gap:8,margin:"10px 0 14px"}}>
     {data.classifications.map(c=><button type="button" key={c.code} onClick={()=>{setClassification(classification===c.code?"ALL":c.code);setPage(0)}}
@@ -63,6 +75,26 @@ export default function Phase3UnifiedClassifications(){
     <button type="button" onClick={()=>{setClassification("ALL");setPage(0)}} aria-pressed={classification==="ALL"}
       style={{padding:"7px 10px",border:"1px solid #a2b9aa",borderRadius:8,background:"transparent",color:"inherit",cursor:"pointer",fontSize:12}}>All 762</button>
    </div>
+   <p style={{fontSize:13,margin:"10px 0"}}><strong>Outcome scrutiny:</strong>{" "}
+    {endpointAdjudications.totalReviewed} of {data.total} exact-NCT public result records reviewed.{" "}
+    <strong>{endpointAdjudications.counts.PRIMARY_ENDPOINT_MET} primary endpoints met</strong>,{" "}
+    <strong>{endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET} not met</strong>,{" "}
+    {endpointAdjudications.counts.NO_BINARY_PASS_FAIL} descriptive/non-binary,{" "}
+    {data.total-endpointAdjudications.totalReviewed} without source-adjudicated primary endpoint status.
+    Source review is not equivalent to completing every predictive assessment.</p>
+   <div style={{display:"flex",gap:7,flexWrap:"wrap",margin:"10px 0"}}>
+    {[
+      ["ALL","All passing classifications",data.total],
+      ["PASS_DOCUMENTED_PRIMARY_ENDPOINT","PASS",endpointAdjudications.counts.PRIMARY_ENDPOINT_MET],
+      ["FAIL_DOCUMENTED_PRIMARY_ENDPOINT","FAIL",endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET],
+      ["NON_BINARY_ENDPOINT","Non-binary",endpointAdjudications.counts.NO_BINARY_PASS_FAIL],
+      ["UNDETERMINED","Undetermined",data.total-endpointAdjudications.totalReviewed]
+     ].map(([code,label,count])=><button type="button" key={String(code)}
+      aria-pressed={passingFilter===code}
+      onClick={()=>{setPassingFilter(String(code));setPage(0)}}
+      style={{padding:"6px 9px",border:"1px solid #9bb3a3",borderRadius:8,background:"transparent",color:"inherit",cursor:"pointer"}}>
+      {label} ({count})</button>)}
+   </div>
    <label style={{display:"block",fontSize:13}}>Search the entire unified trial spreadsheet
     <input type="search" value={query} onChange={e=>{setQuery(e.target.value);setPage(0)}}
      placeholder="Ticker, NCT, company, indication, classification" style={{display:"block",padding:9,width:"100%",maxWidth:510,marginTop:5}}/>
@@ -72,19 +104,26 @@ export default function Phase3UnifiedClassifications(){
    <div role="region" aria-label="Unified Phase 3 trial classifications" style={{overflowX:"auto",maxHeight:630,overflowY:"auto"}}>
     <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:1000}}>
      <thead><tr>{["Ticker","Trial / NCT","Company","Registry status","Trial classification","Passing classification","Result","FDA / PDUFA","Evidence / details"].map(x=><th key={x} scope="col" style={{...cell,position:"sticky",top:0,background:"var(--surface,#f7f9f8)",zIndex:1}}>{x}</th>)}</tr></thead>
-     <tbody>{shown.map(r=><tr key={r.nctId} data-nct-id={r.nctId} data-trial-classification={r.classificationCode} data-passing-classification={r.classificationVerified&&r.readoutOutcome==="PRIMARY_ENDPOINT_MET"&&r.readoutEvidenceUrl?"PASS_DOCUMENTED_PRIMARY_ENDPOINT":"UNDETERMINED"}>
+     <tbody>{shown.map(r=><tr key={r.nctId} data-nct-id={r.nctId} data-trial-classification={r.classificationCode} data-passing-classification={endpointClass(r)}>
       <td style={cell}>{r.ticker}</td>
       <td style={cell}><a href={r.registrySourceUrl} rel="noopener noreferrer" target="_blank">{r.nctId}</a></td>
       <td style={cell}>{r.company}</td>
       <td style={cell}>{r.registryStatus.replaceAll("_"," ")}</td>
       <td style={cell}><strong>{r.classification}</strong></td>
-      <td style={cell}>{r.classificationVerified&&r.readoutOutcome==="PRIMARY_ENDPOINT_MET"&&r.readoutEvidenceUrl?<strong>PASS · documented primary endpoint</strong>:"Undetermined"}</td>
-      <td style={cell}>{labels[r.readoutOutcome]||r.readoutOutcome.replaceAll("_"," ")}</td>
+      <td style={cell}>{endpointClass(r)==="PASS_DOCUMENTED_PRIMARY_ENDPOINT"?<strong>PASS · primary endpoint met</strong>:
+       endpointClass(r)==="FAIL_DOCUMENTED_PRIMARY_ENDPOINT"?<strong>FAIL · primary endpoint not met</strong>:
+       endpointClass(r)==="NON_BINARY_ENDPOINT"?"Descriptive / not binary":"Undetermined"}</td>
+      <td style={cell}>{labels[endpointByNct.get(r.nctId)?.endpointOutcome||r.readoutOutcome]||(endpointByNct.get(r.nctId)?.endpointOutcome||r.readoutOutcome).replaceAll("_"," ")}</td>
       <td style={cell}>{r.fdaApplicationStatus==="NOT_VERIFIED"?"FDA application not verified":r.fdaApplicationStatus}{r.pdufaGoalDate?" · "+r.pdufaGoalDate:""}</td>
       <td style={cell}>
        <details><summary style={{cursor:"pointer",fontWeight:650}}>Sources & status</summary>
         <div style={{padding:"8px 0",minWidth:240}}>
          <p style={{margin:"4px 0"}}>{r.classificationEvidence}</p>
+         {endpointByNct.get(r.nctId)&&<p style={{margin:"4px 0"}}>
+          <strong>Primary-endpoint adjudication:</strong> {endpointByNct.get(r.nctId)?.rationale}
+         </p>}
+         {endpointByNct.get(r.nctId)&&<p><a href={endpointByNct.get(r.nctId)?.evidenceUrl}
+          rel="noopener noreferrer" target="_blank">Primary endpoint source</a></p>
          <p style={{margin:"4px 0"}}>Registry as of: {r.registryAsOf}</p>
          {r.drug&&<p style={{margin:"4px 0"}}>Drug: {r.drug}</p>}
          {r.indication&&<p style={{margin:"4px 0"}}>Indication: {r.indication}</p>}
