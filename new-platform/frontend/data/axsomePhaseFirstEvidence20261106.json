@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "company": "Axsome Therapeutics",
+  "ticker": "AXSM",
+  "reviewedAt": "2026-11-06",
+  "scope": "28 exact-NCT records in the existing census; not all acquired or historical trials",
+  "sources": [
+    {
+      "id": "Q3_2026",
+      "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526442628/axsm-ex99_1.htm",
+      "date": "2026-11-02",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Latest issuer business update; forecast dates are not completed outcomes."
+    },
+    {
+      "id": "AXS02_IDMC",
+      "url": "https://www.sec.gov/Archives/edgar/data/1579428/000110465918001374/a18-2496_1ex99d1.htm",
+      "date": "2018-01-09",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "CREATE-1 futility and COAST-1 continuation are distinct interim decisions."
+    },
+    {
+      "id": "STRIDE1",
+      "url": "https://www.globenewswire.com/en/news-release/2020/03/30/2008163/33090/en/Axsome-Therapeutics-Announces-Topline-Results-of-the-STRIDE-1-Phase-3-Trial-in-Treatment-Resistant-Depression-and-Expert-Call-to-Discuss-Clinical-Implications.html",
+      "date": "2020-03-30",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Issuer-origin release; failed Week-6 primary endpoint is preserved."
+    },
+    {
+      "id": "FOCUS",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-focus-phase-3-trial-of-solriam-11946",
+      "date": "2025-03-25",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Manufacturer text obtained through indexed web reader; direct manufacturer fetch returned HTTP403. Dose-specific figures must not be generalized to 300mg."
+    },
+    {
+      "id": "PARADIGM",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-topline-results-of-paradigm-ph-11956",
+      "date": "2025-04-01",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Manufacturer indexed text reviewed. Direct source HTTP403; no subgroup benefit substituted for failed overall primary."
+    },
+    {
+      "id": "SYMPHONY",
+      "url": "https://www.globenewswire.com/news-release/2024/03/25/2851469/33090/en/Axsome-Therapeutics-Announces-AXS-12-Achieves-Primary-Endpoint-in-the-SYMPHONY-Phase-3-Trial-in-Narcolepsy.html",
+      "date": "2024-03-25",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Issuer-origin release reviewed; exact trial acronym matched to registry protocol."
+    },
+    {
+      "id": "ENCORE",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-axs-12-achieves-primary-endpoi-11721",
+      "date": "2024-11-26",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Manufacturer indexed text reviewed; randomized withdrawal and open-label safety populations distinguished."
+    },
+    {
+      "id": "EMERGE",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-symbravo-meloxicam-and-rizatri-11856",
+      "date": "2025-02-24",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Manufacturer indexed text reviewed. Registry primary endpoint labels differ from release: reconciliation required."
+    },
+    {
+      "id": "AXS12_ACCEPTANCE",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
+      "date": "2026-07-15",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Acceptance independently corroborated by SEC8-K and latest Nov2 business update."
+    },
+    {
+      "id": "AXS12_8K",
+      "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526304039/axsm-20260715.htm",
+      "date": "2026-07-15",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "SEC8-K confirms AXS-12 NDA acceptance; application-level milestone, not trial efficacy."
+    },
+    {
+      "id": "Q3_10Q",
+      "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526443752/axsm-20260930.htm",
+      "date": "2026-11-02",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Latest 10-Q search excerpt reviewed: AXS-14 historical refuse-to-file is distinct from a CRL and does not establish FORWARD application linkage."
+    },
+    {
+      "id": "GEMINI_PUBLICATION",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/35649167/",
+      "date": "2022-05-30",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "Exact GEMINI publication identifier verified; unrelated PMID34510411 rejected. Numerical findings come from exact-NCT registry, not unreviewed full text."
+    },
+    {
+      "id": "FOCUS2_INITIATION",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-initiates-focus-2-phase-3-trial-of-solri-13176",
+      "date": "2026-07-07",
+      "reviewedAt": "2026-11-06",
+      "reviewMethod": "Original source reviewed via web reader; search excerpts used only where explicitly noted",
+      "note": "First patient dosing stated; no completed outcomes inferred."
+    }
+  ],
+  "records": [
+    {
+      "nctId": "NCT02504008",
+      "assessmentId": "mechanism",
+      "sourceId": "AXS02_IDMC",
+      "evidence": "AXS-02 is an oral osteoclast inhibitor; a mechanistic observation does not establish analgesic efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT02504008",
+      "assessmentId": "safety",
+      "sourceId": "AXS02_IDMC",
+      "evidence": "IDMC reviewed safety in CREATE-1 and reported acceptable tolerability; no trial-specific event counts were disclosed in this interim statement.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT02746068",
+      "assessmentId": "mechanism",
+      "sourceId": "AXS02_IDMC",
+      "evidence": "AXS-02 is an oral osteoclast inhibitor; a mechanistic observation does not establish analgesic efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT02746068",
+      "assessmentId": "safety",
+      "sourceId": "AXS02_IDMC",
+      "evidence": "IDMC reviewed safety in COAST-1 and reported acceptable tolerability; no trial-specific event counts were disclosed in this interim statement.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT02504008",
+      "assessmentId": "status",
+      "sourceId": "AXS02_IDMC",
+      "evidence": "Registry status is UNKNOWN (last updated 2018-03-23), whereas issuer disclosed IDMC recommendation to stop CREATE-1 for futility. Do not present this as an active trial. A reconciled final registry status is unresolved.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "status": "CONFLICTING"
+    },
+    {
+      "nctId": "NCT02504008",
+      "assessmentId": "phase3Results",
+      "sourceId": "AXS02_IDMC",
+      "evidence": "CREATE-1 interim analysis (81 participants): IDMC recommended stopping for futility. This is an interim futility outcome, not a fabricated final primary p-value.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT02504008",
+      "assessmentId": "biologicalActivity",
+      "sourceId": "AXS02_IDMC",
+      "evidence": "Serum CTx reduction versus placebo p<0.0001 was pharmacologic activity, not the pain primary endpoint.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT02746068",
+      "assessmentId": "uncertainty",
+      "sourceId": "AXS02_IDMC",
+      "evidence": "COAST-1 interim sample-size/safety review included 77 subjects and recommended continuation; this is not proof of primary-endpoint success.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT02741791",
+      "assessmentId": "phase3Results",
+      "sourceId": "STRIDE1",
+      "evidence": "STRIDE-1 Week-6 MADRS primary endpoint did not meet significance: reductions 11.6 with AXS-05 versus 9.4 with bupropion, p=0.117. Later MDD approval does not change this result.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT02741791",
+      "assessmentId": "uncertainty",
+      "sourceId": "STRIDE1",
+      "evidence": "Active-comparator primary comparison at Week6 was nonsignificant; earlier and averaged secondary comparisons do not replace it.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05972044",
+      "assessmentId": "phase3Results",
+      "sourceId": "FOCUS",
+      "evidence": "FOCUS randomized 516 adults. At Week6, 150mg AISRS reduction was 17.7 versus 14.3 with placebo, p=0.039. These figures do not establish a positive 300mg primary comparison.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05972044",
+      "assessmentId": "endpointPerformance",
+      "sourceId": "FOCUS",
+      "evidence": "150mg clinical response (AISRS improvement at least30%) was 53.5% versus41.3% with placebo; CGI-S secondary p=0.017. Clinical importance requires separate evaluation.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT06360419",
+      "assessmentId": "phase3Results",
+      "sourceId": "PARADIGM",
+      "evidence": "PARADIGM did not achieve statistical significance on MADRS in the overall randomized population. Any EDS subgroup findings remain separate and do not turn the overall trial into a primary-endpoint success.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05059223",
+      "assessmentId": "phase3Results",
+      "sourceId": "SYMPHONY",
+      "evidence": "SYMPHONY weekly cataplexy primary at Week5: reductions83% with AXS-12 versus66% with placebo, p=0.018.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05113745",
+      "assessmentId": "phase3Results",
+      "sourceId": "ENCORE",
+      "evidence": "ENCORE:68 enrolled in open-label treatment;42 entered randomized withdrawal. Cataplexy withdrawal comparison favored continued AXS-12, p=0.017. Do not use68 as randomized efficacy denominator.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05113745",
+      "assessmentId": "safety",
+      "sourceId": "ENCORE",
+      "evidence": "Among68 ENCORE participants, nausea and tachycardia each occurred in5.9%; AE discontinuations17.6%.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05113745",
+      "assessmentId": "tolerability",
+      "sourceId": "ENCORE",
+      "evidence": "ENCORE AE discontinuations were17.6% over the reported long-term experience; the blinded period separately had0 AXS-12 and1 placebo AE discontinuation.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05550207",
+      "assessmentId": "phase3Results",
+      "sourceId": "EMERGE",
+      "evidence": "EMERGE issuer reports improved mTOQ-4 (5.2 versus2.8, p<0.001) after switching96 patients from prior oral CGRP treatment. Open-label within-person comparison is not a randomized active-control superiority result.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05550207",
+      "assessmentId": "primary",
+      "sourceId": "EMERGE",
+      "evidence": "Issuer labels mTOQ-4 as primary, but current registry lists headache pain relief and most-bothersome-symptom percentages. Reconcile protocol/registry history before an unqualified primary-endpoint adjudication.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "status": "CONFLICTING"
+    },
+    {
+      "nctId": "NCT05059223",
+      "assessmentId": "ndaSubmission",
+      "sourceId": "AXS12_8K",
+      "evidence": "AXS-12 cataplexy NDA was submitted and accepted. Trial linkage is by AXS-12/narcolepsy and named SYMPHONY/ENCORE program, not individual approval.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05059223",
+      "assessmentId": "fdaAcceptance",
+      "sourceId": "AXS12_8K",
+      "evidence": "SEC8-K July15,2026 confirms FDA accepted the AXS-12 NDA for filing.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05059223",
+      "assessmentId": "pdufa",
+      "sourceId": "Q3_2026",
+      "evidence": "AXS-12 cataplexy PDUFA: May1,2027. Future application deadline, not FDA outcome or prediction.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05059223",
+      "assessmentId": "fdaOutcome",
+      "sourceId": "Q3_2026",
+      "evidence": "AXS-12 under FDA review Nov2,2026; outcome pending.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "status": "PENDING"
+    },
+    {
+      "nctId": "NCT05113745",
+      "assessmentId": "ndaSubmission",
+      "sourceId": "AXS12_8K",
+      "evidence": "AXS-12 cataplexy NDA was submitted and accepted. Trial linkage is by AXS-12/narcolepsy and named SYMPHONY/ENCORE program, not individual approval.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05113745",
+      "assessmentId": "fdaAcceptance",
+      "sourceId": "AXS12_8K",
+      "evidence": "SEC8-K July15,2026 confirms FDA accepted the AXS-12 NDA for filing.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05113745",
+      "assessmentId": "pdufa",
+      "sourceId": "Q3_2026",
+      "evidence": "AXS-12 cataplexy PDUFA: May1,2027. Future application deadline, not FDA outcome or prediction.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT05113745",
+      "assessmentId": "fdaOutcome",
+      "sourceId": "Q3_2026",
+      "evidence": "AXS-12 under FDA review Nov2,2026; outcome pending.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH",
+      "status": "PENDING"
+    },
+    {
+      "nctId": "NCT07717879",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "Solriamfetol: DNRI, TAAR1/5-HT1A agonist. Program rationale, not trial efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT07717892",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "Solriamfetol: DNRI, TAAR1/5-HT1A agonist. Program rationale, not trial efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT06413433",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "Solriamfetol: DNRI, TAAR1/5-HT1A agonist. Program rationale, not trial efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT06568367",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "Solriamfetol: DNRI, TAAR1/5-HT1A agonist. Program rationale, not trial efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT07484217",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "Solriamfetol: DNRI, TAAR1/5-HT1A agonist. Program rationale, not trial efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT06878976",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "Solriamfetol: DNRI, TAAR1/5-HT1A agonist. Program rationale, not trial efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT07773883",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "Solriamfetol: DNRI, TAAR1/5-HT1A agonist. Program rationale, not trial efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT07398417",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "AXS-14: selective norepinephrine reuptake inhibitor; study results pending.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT07637162",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "AXS-14: selective norepinephrine reuptake inhibitor; study results pending.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT07766655",
+      "assessmentId": "mechanism",
+      "sourceId": "Q3_2026",
+      "evidence": "AXS-05: dextromethorphan-bupropion, NMDA antagonist/sigma1 agonist; rationale, not smoking-cessation efficacy.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    },
+    {
+      "nctId": "NCT07717879",
+      "assessmentId": "phase3Entry",
+      "sourceId": "FOCUS2_INITIATION",
+      "evidence": "FOCUS-2 first patient dosing announced July7,2026; this documents initiation of the child ADHD trial, not the separate adolescent FOCUS-3 trial.",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "confidence": "HIGH"
+    }
+  ],
+  "blockers": [
+    {
+      "sourceUrl": "https://www.axsome.com",
+      "issue": "Direct manufacturer pages returned HTTP403; indexed manufacturer text, original issuer releases and SEC originals used. No access controls bypassed."
+    },
+    {
+      "nctId": "NCT02746068",
+      "issue": "COAST-1 registry UNKNOWN; no final efficacy readout verified after historical interim continuation."
+    },
+    {
+      "nctId": "NCT02504008",
+      "issue": "Registry UNKNOWN conflicts with historical issuer stop-for-futility disclosure."
+    },
+    {
+      "nctId": "NCT05550207",
+      "issue": "EMERGE issuer/registry primary-endpoint labels differ; no silent reconciliation."
+    },
+    {
+      "issue": "Dated independent benchmark reviews required before new five-metric scientific grades or calibrated FDA predictions. Missing is scoped to reviewed sources, not proof of nonpublication."
+    }
+  ]
+}

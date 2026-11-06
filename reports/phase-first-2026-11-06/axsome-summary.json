@@ -1,0 +1,284 @@
+{
+  "modelVersion": "PHASE_FIRST_CLINICAL_2026_11_06_V1",
+  "asOf": "2026-11-06",
+  "scope": "axsome",
+  "trialCount": 28,
+  "sourceScope": "Axsome: all 28 exact-NCT records in the existing census, not an exhaustive historical/acquired-program census.",
+  "companyResearch": {
+    "company": "Axsome Therapeutics",
+    "documentsReviewed": 13,
+    "factsRecorded": 38,
+    "blockers": [
+      {
+        "sourceUrl": "https://www.axsome.com",
+        "issue": "Direct manufacturer pages returned HTTP403; indexed manufacturer text, original issuer releases and SEC originals used. No access controls bypassed."
+      },
+      {
+        "nctId": "NCT02746068",
+        "issue": "COAST-1 registry UNKNOWN; no final efficacy readout verified after historical interim continuation."
+      },
+      {
+        "nctId": "NCT02504008",
+        "issue": "Registry UNKNOWN conflicts with historical issuer stop-for-futility disclosure."
+      },
+      {
+        "nctId": "NCT05550207",
+        "issue": "EMERGE issuer/registry primary-endpoint labels differ; no silent reconciliation."
+      },
+      {
+        "issue": "Dated independent benchmark reviews required before new five-metric scientific grades or calibrated FDA predictions. Missing is scoped to reviewed sources, not proof of nonpublication."
+      }
+    ]
+  },
+  "currentAlkermesPrograms": [],
+  "legacyAlkermesTrials": 34,
+  "byPhase": {
+    "Phase 3": 27,
+    "Phase 2 / Phase 3": 1
+  },
+  "evidenceCounts": {
+    "AVAILABLE": 319,
+    "MISSING": 369,
+    "PENDING": 196,
+    "NOT YET EXPECTED": 80,
+    "NOT APPLICABLE": 42,
+    "CONFLICTING": 2
+  },
+  "ratedTrials": 0,
+  "fullyCoveredRatings": 0,
+  "scoredComponents": 0,
+  "fdaPredictions": 0,
+  "notes": [
+    "Clinical research rating, evidence completeness, regulatory readiness and calibrated FDA probability are distinct.",
+    "Partial means normalize existing 20% factor weights only over eligible scored components. They are not complete five-factor scores or cross-phase ranks.",
+    "Missing and conflicting evidence are research gaps; pending and not-yet-expected milestones are excluded from evidence completeness.",
+    "Current phase is source-verified per registry snapshot, not inferred from the program's most advanced phase. Original source dates and staleness remain visible.",
+    "Existing clinical grades/history, survey responses, RAAS calibration and Pipeline eligibility are read-only. No GEM/GEM JR model is activated."
+  ],
+  "requirementsPerTrial": 36,
+  "byRequirement": [
+    {
+      "id": "phase",
+      "label": "Verified individual-trial phase",
+      "AVAILABLE": 28
+    },
+    {
+      "id": "status",
+      "label": "Recruitment/completion status",
+      "CONFLICTING": 1,
+      "AVAILABLE": 27
+    },
+    {
+      "id": "indication",
+      "label": "Indication and intended clinical benefit",
+      "AVAILABLE": 28
+    },
+    {
+      "id": "mechanism",
+      "label": "Mechanism of action",
+      "AVAILABLE": 12,
+      "MISSING": 16
+    },
+    {
+      "id": "preclinical",
+      "label": "Preclinical rationale",
+      "MISSING": 28
+    },
+    {
+      "id": "safety",
+      "label": "Initial / cumulative safety results",
+      "AVAILABLE": 11,
+      "MISSING": 7,
+      "PENDING": 10
+    },
+    {
+      "id": "tolerability",
+      "label": "Tolerability and discontinuations",
+      "MISSING": 9,
+      "AVAILABLE": 9,
+      "PENDING": 10
+    },
+    {
+      "id": "pkPd",
+      "label": "PK/PD results",
+      "MISSING": 18,
+      "PENDING": 10
+    },
+    {
+      "id": "doseEscalation",
+      "label": "Dose-escalation evidence",
+      "NOT APPLICABLE": 28
+    },
+    {
+      "id": "biologicalActivity",
+      "label": "Early biological activity",
+      "AVAILABLE": 1,
+      "MISSING": 17,
+      "PENDING": 10
+    },
+    {
+      "id": "priorPhase1",
+      "label": "Phase 1 findings supporting this trial",
+      "MISSING": 28
+    },
+    {
+      "id": "proofOfConcept",
+      "label": "Proof of concept",
+      "MISSING": 16,
+      "NOT APPLICABLE": 4,
+      "PENDING": 8
+    },
+    {
+      "id": "doseSelection",
+      "label": "Dose selection rationale",
+      "MISSING": 28
+    },
+    {
+      "id": "earlyEfficacy",
+      "label": "Early efficacy estimates",
+      "MISSING": 16,
+      "NOT APPLICABLE": 4,
+      "PENDING": 8
+    },
+    {
+      "id": "endpointPerformance",
+      "label": "Endpoint performance",
+      "MISSING": 9,
+      "AVAILABLE": 9,
+      "PENDING": 10
+    },
+    {
+      "id": "uncertainty",
+      "label": "Statistical uncertainty",
+      "MISSING": 11,
+      "AVAILABLE": 7,
+      "PENDING": 10
+    },
+    {
+      "id": "phase3Entry",
+      "label": "Phase 3 entry documentation",
+      "AVAILABLE": 28
+    },
+    {
+      "id": "design",
+      "label": "Trial design",
+      "AVAILABLE": 28
+    },
+    {
+      "id": "primary",
+      "label": "Primary endpoints",
+      "AVAILABLE": 27,
+      "CONFLICTING": 1
+    },
+    {
+      "id": "secondary",
+      "label": "Secondary endpoints",
+      "AVAILABLE": 3,
+      "MISSING": 25
+    },
+    {
+      "id": "comparator",
+      "label": "Comparator / control",
+      "AVAILABLE": 28
+    },
+    {
+      "id": "enrollment",
+      "label": "Enrollment",
+      "AVAILABLE": 28
+    },
+    {
+      "id": "power",
+      "label": "Statistical power assumptions",
+      "MISSING": 28
+    },
+    {
+      "id": "protocol",
+      "label": "Public protocol",
+      "MISSING": 20,
+      "AVAILABLE": 8
+    },
+    {
+      "id": "sap",
+      "label": "Statistical analysis plan",
+      "MISSING": 20,
+      "AVAILABLE": 8
+    },
+    {
+      "id": "priorEfficacySafety",
+      "label": "Prior efficacy and safety evidence",
+      "MISSING": 28
+    },
+    {
+      "id": "phase3Results",
+      "label": "Available Phase 3 outcomes",
+      "AVAILABLE": 15,
+      "MISSING": 3,
+      "PENDING": 8,
+      "NOT APPLICABLE": 2
+    },
+    {
+      "id": "benefitRisk",
+      "label": "Benefit–risk evidence",
+      "MISSING": 16,
+      "NOT APPLICABLE": 4,
+      "PENDING": 8
+    },
+    {
+      "id": "pivotalResults",
+      "label": "Pivotal results supporting an application",
+      "PENDING": 12,
+      "MISSING": 6,
+      "NOT YET EXPECTED": 10
+    },
+    {
+      "id": "ndaSubmission",
+      "label": "NDA/BLA submission",
+      "PENDING": 12,
+      "MISSING": 4,
+      "AVAILABLE": 2,
+      "NOT YET EXPECTED": 10
+    },
+    {
+      "id": "fdaAcceptance",
+      "label": "FDA acceptance",
+      "PENDING": 12,
+      "MISSING": 4,
+      "AVAILABLE": 2,
+      "NOT YET EXPECTED": 10
+    },
+    {
+      "id": "pdufa",
+      "label": "Assigned PDUFA target",
+      "PENDING": 12,
+      "AVAILABLE": 6,
+      "NOT YET EXPECTED": 10
+    },
+    {
+      "id": "adcom",
+      "label": "Advisory committee information, if applicable",
+      "PENDING": 18,
+      "NOT YET EXPECTED": 10
+    },
+    {
+      "id": "inspections",
+      "label": "FDA review / inspection information",
+      "PENDING": 12,
+      "MISSING": 6,
+      "NOT YET EXPECTED": 10
+    },
+    {
+      "id": "labelManufacturing",
+      "label": "Labeling and manufacturing evidence",
+      "PENDING": 12,
+      "MISSING": 6,
+      "NOT YET EXPECTED": 10
+    },
+    {
+      "id": "fdaOutcome",
+      "label": "Approval / CRL / extension outcome",
+      "PENDING": 14,
+      "AVAILABLE": 4,
+      "NOT YET EXPECTED": 10
+    }
+  ]
+}

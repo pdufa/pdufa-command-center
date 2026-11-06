@@ -38,6 +38,7 @@ export default function AlkermesTrialScorePage(){
  return <main className="shell" data-alks-source-scoring="2026-11-06" style={{maxWidth:1320}}>
   <div className="topline">PDUFA COMMAND CENTER · ALKS · 34 EXACT NCT TRIALS</div>
   <h1>Alkermes — Clinical scoring</h1>
+  <p><Link href="/phase-first">Open phase-first analysis for all identified Alkermes phases</Link> · Original 34-trial ratings and history below are preserved.</p>
   <p><strong>All 34 NCTs have a type-specific source-reviewed research grade.</strong> Efficacy/comparative trials receive a five-factor research score; safety-primary trials receive their actual graded safety factor, clearly labeled as <strong>safety only</strong>. These different scores must not be ranked as if they measure the same outcome. Neither is an FDA approval probability.</p>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:12,margin:"20px 0"}}>
    {[
