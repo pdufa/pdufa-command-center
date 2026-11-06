@@ -10,20 +10,20 @@ const sources=require('../data/phase3CompanyBatchRegistrySources20261106.json');
 const log=require('../data/phase3CompanyWebsiteSearchLog20261106.json');
 const audit=require('../app/api/phase3-missing-data-audit/route.ts');
 const fact=(n,q)=>ir.assessmentRecords.find(r=>r.nctId===n&&r.assessmentNumber===q);
-test('eight company passes preserve exact identity and do not claim all-company completion',async()=>{
- assert.equal(log.companyUniverse,137);assert.equal(log.companies.length,8);
+test('cumulative manufacturer passes preserve exact identity and do not claim all-company completion',async()=>{
+ assert.equal(log.companyUniverse,137);assert.ok(log.companies.length>=8);assert.equal(new Set(log.companies.map(c=>c.ticker)).size,log.companies.length);
  assert.equal(sources.records.length,23);
  for(const r of sources.records){
   assert.equal(r.registry.protocolSection.identificationModule.nctId,r.nctId);
   assert.ok(r.publicationDate<=r.retrievedAt);assert.match(r.sourceSha256,/^[a-f0-9]{64}$/);
  }
  const report=await (await audit.GET(new Request('http://local/api/audit'))).json();
- assert.equal(report.companyWebsiteResearch.companiesSearchedThisBatch,8);
- assert.equal(report.companyWebsiteResearch.companiesAwaitingWebsiteReview,124);
+ assert.equal(report.companyWebsiteResearch.companiesSearchedThisBatch,log.companies.length);
+ assert.equal(report.companyWebsiteResearch.companiesWithPartialReview+report.companyWebsiteResearch.companiesAwaitingWebsiteReview,137);
  assert.deepEqual(new Set(report.companyWebsiteResearch.hardToResolveCompanies.map(c=>c.ticker)),new Set(['ABVX','ADMA','AGEN']));
  assert.equal(report.assessment.predicted,61);assert.equal(report.assessment.trialsWithNumericalPredictions,4);
- assert.equal(report.fields.missingAdjudicatedEndpoint,691);
- assert.deepEqual(report.endpointOutcomes,{PRIMARY_ENDPOINT_MET:54,PRIMARY_ENDPOINT_NOT_MET:11,NO_BINARY_PASS_FAIL:6});
+ assert.equal(report.fields.missingAdjudicatedEndpoint,762-endpoints.records.length);
+ assert.deepEqual(report.endpointOutcomes,Object.fromEntries(['PRIMARY_ENDPOINT_MET','PRIMARY_ENDPOINT_NOT_MET','NO_BINARY_PASS_FAIL'].map(k=>[k,endpoints.records.filter(r=>r.endpointOutcome===k).length])));
 });
 test('futility, withdrawn, continuation and pooled program evidence cannot invent efficacy passes',()=>{
  const observed=new Map(endpoints.records.map(r=>[r.nctId,r.endpointOutcome]));

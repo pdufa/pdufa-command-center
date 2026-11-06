@@ -152,6 +152,42 @@
       "requiresUserDirection": false,
       "hardToResolve": [],
       "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    },
+    {
+      "ticker": "ACAD",
+      "company": "ACADIA Pharmaceuticals Inc.",
+      "trials": 23,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://ir.acadia.com/overview/",
+      "manufacturerUrl": "https://acadia.com/en-us/media/news-releases/",
+      "exactRegistryTrials": [
+        "NCT00477672",
+        "NCT00658567",
+        "NCT01174004",
+        "NCT00550238"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [
+        "ACP-103-014 formal efficacy hypothesis listed N/A in FDA review following early termination; retain interpretation flag despite descriptive nonsignificant CI."
+      ],
+      "scope": "Partial sponsor and exact-NCT crosswalk: 012 failure, 014 early-stop inconclusive, 020 pivotal success, 015 nonbinary safety extension. This is not a complete 23-trial/30-question pass."
+    },
+    {
+      "ticker": "ALKS",
+      "company": "Alkermes, Inc.",
+      "trials": 34,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://investor.alkermes.com/investor-relations",
+      "manufacturerUrl": "https://investor.alkermes.com/press-releases",
+      "exactRegistryTrials": [
+        "NCT00156923",
+        "NCT00156936"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [],
+      "scope": "Partial sponsor-registered evidence for 2 historical long-term naltrexone safety extensions; no independent efficacy conclusion. Remaining 32 Alkermes trials not reviewed in this batch."
     }
   ]
 }

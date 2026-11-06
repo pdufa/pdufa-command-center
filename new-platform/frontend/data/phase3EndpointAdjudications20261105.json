@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 71,
+  "totalReviewed": 76,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 54,
-    "PRIMARY_ENDPOINT_NOT_MET": 11,
-    "NO_BINARY_PASS_FAIL": 6
+    "PRIMARY_ENDPOINT_MET": 55,
+    "PRIMARY_ENDPOINT_NOT_MET": 12,
+    "NO_BINARY_PASS_FAIL": 9
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
   "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions.",
@@ -738,6 +738,71 @@
       "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03428360",
       "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
       "qualification": "Historical source result only; no new prediction or pooled/continuation-trial substitution."
+    },
+    {
+      "nctId": "NCT00477672",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "ACP-103-012 first pivotal PD psychosis study did not meet SAPS-H+D day-42 primary efficacy endpoint: -5.9 placebo, -5.8 pimavanserin 10 mg, -6.7 pimavanserin 40 mg; neither active arm significant.",
+      "evidenceUrl": "https://acadia.com/en-us/media/news-releases/acadia-pharmaceuticals-announces-results-phase-iii-trial",
+      "sourceDate": "2009-09-01",
+      "identityCrosswalk": "Registry NCT00477672 = ACP-103-012, 298 randomized participants.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00477672",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "ACAD_ALKS_HISTORICAL_PASS_20261106",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical endpoint designation only; does not estimate future FDA approval probability."
+    },
+    {
+      "nctId": "NCT01174004",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ACP-103-020 met the primary SAPS-PD day-43 endpoint: -5.79 pimavanserin versus -2.73 placebo; difference -3.06 points, p=0.001.",
+      "evidenceUrl": "https://acadia.com/en-us/media/news-releases/acadia-announces-pimavanserin-meets-primary-and-key-secondary",
+      "sourceDate": "2012-11-27",
+      "identityCrosswalk": "Registry NCT01174004 = ACP-103-020; same NCT in Lancet publication PMID 24183563.",
+      "identityEvidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/24183563/",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "ACAD_ALKS_HISTORICAL_PASS_20261106",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical endpoint designation only; does not estimate future FDA approval probability."
+    },
+    {
+      "nctId": "NCT00550238",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "ACP-103-015 is a single-arm, open-label safety/tolerability extension with no randomized efficacy primary threshold; 459-person long-term cohort does not constitute an independently positive efficacy trial.",
+      "evidenceUrl": "https://www.clinicaltrialsregister.eu/ctr-search/trial/2007-003035-22/results",
+      "sourceDate": "2019-06-14",
+      "identityCrosswalk": "EU Clinical Trials Register explicitly lists ACP-103-015, NCT00550238.",
+      "identityEvidenceUrl": "https://www.clinicaltrialsregister.eu/ctr-search/trial/2007-003035-22/results",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "ACAD_ALKS_HISTORICAL_PASS_20261106",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical endpoint designation only; does not estimate future FDA approval probability."
+    },
+    {
+      "nctId": "NCT00156923",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "ALK21-010 is a long-term naltrexone safety extension whose primary outcome is participant TEAE count; no binary efficacy threshold or placebo arm.",
+      "evidenceUrl": "https://clinicaltrials.gov/study/NCT00156923",
+      "sourceDate": "2010-12-03",
+      "identityCrosswalk": "Registry NCT00156923=ALK21-010; study is extension of ALK21-003EXT.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00156923",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "ACAD_ALKS_HISTORICAL_PASS_20261106",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical endpoint designation only; does not estimate future FDA approval probability."
+    },
+    {
+      "nctId": "NCT00156936",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "ALK21-006EXT is an open-label long-term safety extension with TEAE primary outcome. Termination for business reasons is not an efficacy failure.",
+      "evidenceUrl": "https://clinicaltrials.gov/study/NCT00156936",
+      "sourceDate": "2010-11-03",
+      "identityCrosswalk": "Registry NCT00156936=ALK21-006EXT; study is extension of ALK21-006.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00156936",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "ACAD_ALKS_HISTORICAL_PASS_20261106",
+      "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
+      "qualification": "Historical endpoint designation only; does not estimate future FDA approval probability."
     }
   ]
 }
