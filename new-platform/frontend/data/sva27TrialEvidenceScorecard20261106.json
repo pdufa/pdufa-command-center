@@ -9,8 +9,8 @@
   "documentedQuestionSlots": 271,
   "unscoredQuestionSlots": 539,
   "registryResultsPosted": 0,
-  "historicalPrimaryOutcomesSourced": 5,
-  "historicalPrimaryMet": 4,
+  "historicalPrimaryOutcomesSourced": 8,
+  "historicalPrimaryMet": 7,
   "historicalPrimaryMixed": 1,
   "unvalidatedClinicalFiveScores": 0,
   "tradeGate": {
@@ -45,7 +45,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "To evaluate the non-inferiority of immune response to polio vaccination, when administered concomitantly with routine vaccines | To evaluate the safety in terms of ARs (Vaccine-related AEs）",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT05850364",
       "protocolStored": false,
@@ -53,7 +53,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": "https://pubmed.ncbi.nlm.nih.gov/42659917/",
+      "otherPublishedResearchNote": "2026 randomized multicountry poliovirus noninferiority article reports seroconversion by serotype, but full prespecified adjusted confidence interval decision remains unadjudicated."
     },
     {
       "nctId": "NCT07416110",
@@ -71,7 +73,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Geometric Mean Concentration (GMC) of rabies neutralizing antibodies among susceptible participants (RVNA titer <0.5 IU/mL before vaccination) in each group",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07416110",
       "protocolStored": true,
@@ -79,7 +81,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT02451969",
@@ -97,7 +101,7 @@
       "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
       "observedPrimaryOutcomeRationale": "Published randomized Phase III PPV23 vaccine immunogenicity trial reports all 23 serotype antibody seroconversion tests met prespecified -10% noninferiority lower-bound standard versus commercial PPV23. This is immune noninferiority, not proven prevention of pneumococcal infection.",
       "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/30215583/",
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The seroconversion rates (SCR) of each of the 23 pneumococcal serotypes",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT02451969",
       "protocolStored": false,
@@ -105,7 +109,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03526978",
@@ -123,7 +129,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The seroconversion rates (SCRs) of each group after primary immunization.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03526978",
       "protocolStored": false,
@@ -131,7 +137,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03822754",
@@ -149,7 +157,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The difference between experimental group and control group of type I,III neutralizing antibody seroconversion rate after primary immunization. And the lower limit of 95% confidence intervals of the difference value.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03822754",
       "protocolStored": false,
@@ -157,7 +165,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03822767",
@@ -175,7 +185,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The difference between experimental group and control group of type I,III neutralizing antibody seroconversion rate after primary immunization. And the lower limit of 95% confidence intervals of the difference value.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03822767",
       "protocolStored": false,
@@ -183,7 +193,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03853993",
@@ -201,7 +213,7 @@
       "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
       "observedPrimaryOutcomeRationale": "Randomized quadrivalent versus trivalent influenza vaccine trial (n=2320) reports noninferiority for H1N1, H3N2, B/Victoria and B/Yamagata immunogenicity and B-strain superiority against omitted-lineage trivalent control. This measures antibody response, not demonstrated field prevention.",
       "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/32732142/",
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The lower limit of 95% confidence intervals (95%CI) of the ratio of geometric mean titer of hemagglutination inhibition (HI) antibody titer (experimental group/control group)≥2/3. | The lower limit of 95% CI of the difference of HI antibody seroconversion rate (experimental group-control group)≥-10%",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03853993",
       "protocolStored": false,
@@ -209,7 +221,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03859141",
@@ -227,7 +241,7 @@
       "observedPrimaryOutcome": "NO_BINARY_PASS_FAIL",
       "observedPrimaryOutcomeRationale": "Children 6–35 months quadrivalent influenza comparison (n=2146) demonstrated noninferiority for several shared strains, but B/Victoria did NOT reach the prespecified criterion. Mixed multi-strain immune endpoint; do not label unequivocal success or blanket failure without original joint testing hierarchy.",
       "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/32347785/",
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The lower limit of 95% confidence intervals (95%CI) of geometric mean titer (GMT) ratio (experimental group/control group) of hemagglutination inhibition (HI) antibody titer≥2/3. | The lower limit of 95% CI of the seroconversion rate difference (experimental group-control group)≥-10%.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03859141",
       "protocolStored": false,
@@ -235,7 +249,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03909074",
@@ -250,10 +266,10 @@
       "unscoredQuestionCount": 20,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
+      "observedPrimaryOutcomeRationale": "Randomized controlled 36–71-month EV71 vaccine Phase III trial reports immunogenicity noninferiority against licensed vaccine in older children (GMT 370.0 vs 296.2) and similar adverse-reaction incidence. The registered outcomes are antibody seroconversion and geometric mean titers, not field protection.",
+      "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/33269798/",
+      "registeredPrimaryEndpoint": "The seroconversion rates (SCR) of the EV71 neutralizing antibody calculated based on the cutoff value of 1:8 | The Geometric mean titer (GMT) of the EV71 neutralizing antibody in the susceptible population",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03909074",
       "protocolStored": false,
@@ -261,7 +277,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT04386707",
@@ -276,10 +294,10 @@
       "unscoredQuestionCount": 20,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
+      "observedPrimaryOutcomeRationale": "Randomized Phase III three-commercial-lot Sabin IPV study reports all three poliovirus types met prespecified lot-to-lot GMT equivalence intervals 0.67–1.50 and pooled immunogenicity seroconversion noninferiority to control IPV for types 1, 2 and 3. These are surrogate immune endpoints.",
+      "observedPrimarySource": "https://www.mdpi.com/2076-393X/10/2/254",
+      "registeredPrimaryEndpoint": "Immunogenicity index-Geometric mean titer of neutralizing antibody | Immunogenicity index-Seroconversion rates of neutralizing antibody",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT04386707",
       "protocolStored": false,
@@ -287,7 +305,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT05245552",
@@ -305,7 +325,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Immunogenicity index of seroconversion rate | Immunogenicity index of seroprotection rate | Immunogenicity index of GMT | Safety index of the incidence of adverse reaction | Safety index of the incidence of adverse reaction | Safety index of the incidence of abnormal blood biochemical indexes",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT05245552",
       "protocolStored": false,
@@ -313,7 +333,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT05386810",
@@ -328,10 +350,10 @@
       "unscoredQuestionCount": 20,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
+      "observedPrimaryOutcomeRationale": "Five-dose multidose Sabin IPV randomized blinded Phase III stage II comparison reported pairwise lot GMT ratios for types 1–3 within prespecified equivalence range 0.67–1.50 and seroconversion noninferiority to both control groups (98.02%, 94.07%, 98.77% across types). Lot consistency and immunogenicity, not clinical polio prevention.",
+      "observedPrimarySource": "https://www.sciencedirect.com/science/article/pii/S1201971223000206",
+      "registeredPrimaryEndpoint": "Safety index-incidence of adverse reactions | Immunogenicity index-Geometric mean titers (GMT) | Immunogenicity index- seroconversion rate of neutralizing antibody",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT05386810",
       "protocolStored": false,
@@ -339,7 +361,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT05431725",
@@ -357,7 +381,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Seroconversion rates of HI antibody | GMTs of HI antibody",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT05431725",
       "protocolStored": false,
@@ -365,7 +389,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": "https://www.nature.com/articles/s41467-025-67102-y",
+      "otherPublishedResearchNote": "2025 subset immunogenicity report found both vaccines increased antibody titers; not a verified noninferiority primary pass or US FDA action."
     },
     {
       "nctId": "NCT06049927",
@@ -383,7 +409,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Seroconversion rates of HI antibody | Geometric Mean Titers (GMTs) of HI antibody | Number of Participants With Seroprotection to Influenza Vaccine Antigens",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT06049927",
       "protocolStored": false,
@@ -391,7 +417,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07211152",
@@ -409,7 +437,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The seroconversion rates (SCRs) of hemagglutination inhibition (HI) antibodies against each antigen 28 days after vaccination. | The seroprotection rates (SPRs) of hemagglutination inhibition (HI) antibodies against each antigen 28 days after vaccination. | The geometric mean titers (GMTs) of hemagglutination inhibition (HI) antibodies against each antigen 28 days after vaccination. | The geometric mean increase (GMI) of hemagglutination inhibition (HI) antibodies against each antigen 28 days after vaccination. | Incidence of adverse reactions within 28 days after vaccination",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07211152",
       "protocolStored": false,
@@ -417,7 +445,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07357545",
@@ -435,7 +465,7 @@
       "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
       "observedPrimaryOutcomeRationale": "Exact-NCT serum-free rabies vaccine trial tested standard five-dose and two four-dose PEP regimens in 2,000 randomized volunteers. The published trial reports all Sinovac groups met prespecified noninferiority for D14/D42 seroconversion and D14 geometric mean antibody concentration against licensed comparator. China's NMPA approval is not a US FDA outcome.",
       "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/42456561/",
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Seroconversion rate of rabies neutralizing antibodies in pre-vaccination negative subjects of each group | Seroconversion rate of serum rabies neutralizing antibody in pre-vaccination negative subjects of each group | GMC of rabies neutralizing antibodies in pre-vaccination negative subjects of each group",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07357545",
       "protocolStored": false,
@@ -443,7 +473,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT06734832",
@@ -461,7 +493,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Evaluate the primary vaccine efficacy of the trial vaccine against HFMD caused by CA16 infection compared to the control vaccine. | Evaluate whether the neutralizing antibody levels against EV71 in the trial group are non-inferior to those in the control group after two doses of vaccination.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT06734832",
       "protocolStored": true,
@@ -469,7 +501,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07055295",
@@ -487,7 +521,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Proportion of participants achieving a RVNA titer ≥0.5 IU/mL | Proportion of participants achieving a RVNA titer ≥0.5 IU/mL",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07055295",
       "protocolStored": true,
@@ -495,7 +529,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07055893",
@@ -513,7 +549,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Proportion of participants achieving a rabies virus neutralizing antibody (RVNA) titer ≥0.5 IU/mL",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07055893",
       "protocolStored": true,
@@ -521,7 +557,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07505810",
@@ -539,7 +577,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "seroconversion rates (%) of Nm antibodies for serogroups A, C, Y, W135 | GMTs (1:) of Nm antibodies for serogroups A, C, Y, W135",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07505810",
       "protocolStored": true,
@@ -547,7 +585,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07505823",
@@ -565,7 +605,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "seroconversion rates (%) of Nm antibodies for serogroups A, C, Y, W135 | GMTs (1:) of Nm antibodies for serogroups A, C, Y, W135",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07505823",
       "protocolStored": true,
@@ -573,7 +613,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07505836",
@@ -591,7 +633,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "seroconversion rates (%) of Nm antibodies for serogroups A, C, Y, W135 | GMTs (1:) of Nm antibodies for serogroups A, C, Y, W135",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07505836",
       "protocolStored": true,
@@ -599,7 +641,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07505888",
@@ -617,7 +661,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Seroconversion rates (%) of Nm antibodies for serogroups A, C, Y, W135 | GMTs (1:) of Nm antibodies for serogroups A, C, Y, W135",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07505888",
       "protocolStored": true,
@@ -625,7 +669,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07793227",
@@ -643,7 +689,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Seroconversion rate of anti-HAV antibodies",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07793227",
       "protocolStored": true,
@@ -651,7 +697,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT01507857",
@@ -669,7 +717,7 @@
       "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
       "observedPrimaryOutcomeRationale": "Original randomized placebo-controlled pivotal trial in 10,007 children met EV71-associated HFMD/herpangina primary endpoint: efficacy 94.8% (95% CI 87.2–97.9), P<0.001; cases 13/5041 vaccine vs 106/5028 placebo. Historical China-based clinical endpoint only.",
       "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/24571754/",
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The incidence rate of Hand, Foot and Mouth disease caused by EV71 within one year observation period after the second vaccination",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT01507857",
       "protocolStored": false,
@@ -677,7 +725,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT01636245",
@@ -695,7 +745,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "The GMT of anti-EV71 antibodies in serum 28 days after the two-dose regimen",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT01636245",
       "protocolStored": false,
@@ -703,7 +753,9 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4070950/",
+      "otherPublishedResearchNote": "2014 cross-reactive antibody assay reports 30 sera from this exact lot trial; not a full primary lot-consistency analysis."
     },
     {
       "nctId": "NCT07611513",
@@ -721,7 +773,7 @@
       "observedPrimaryOutcome": null,
       "observedPrimaryOutcomeRationale": null,
       "observedPrimarySource": null,
-      "registeredPrimaryEndpoint": null,
+      "registeredPrimaryEndpoint": "Evaluate the protective efficacy of the investigational vaccine against HFMD caused by any serotype of EV71, CA16, CA10 and CA6 infection compared to placebo. | Evaluate the protective efficacy of the investigational vaccine against HFMD caused by CA6 infection compared to placebo. | Evaluate the protective efficacy of the investigational vaccine against HFMD caused by CA16 infection compared to placebo.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT07611513",
       "protocolStored": true,
@@ -729,7 +781,11 @@
       "usFdaApplicationVerified": false,
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
-      "sourceAsOf": "2026-11-06"
+      "sourceAsOf": "2026-11-06",
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     }
-  ]
+  ],
+  "exactTrialPrimaryEndpointsCaptured": 27,
+  "independentlyPublishedResearchNotYetPrimaryAdjudicated": 3
 }
