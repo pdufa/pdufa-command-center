@@ -3,26 +3,26 @@
   "asOf": "2026-11-06",
   "ticker": "IONS",
   "company": "Ionis Pharmaceuticals, Inc.",
-  "scope": "Exactly 12 ongoing or recruiting NCTs from the saved 762-study, dated $300M–$10B historical Phase 3 census. Phase 1/3 mixed, extension and safety-only status remain distinct.",
+  "scope": "Exactly 12 active Phase 3 census study IDs, including newly source-confirmed post-readout FUSION, FDA supporting zilganersen study, and peer-reviewed OASISplus extension.",
   "warnings": [
     "No new numerical clinical grade or RAAS FDA approval probability is created from source facts.",
     "Open-label extensions are not interchangeable with the parent randomized pivotal studies.",
-    "NCT05392114 has exact-NCT published open-label results requiring a separate TOP/BOTTOM readout-stage review; the historical 238/20 snapshot is not silently rewritten.",
-    "Registry-derived source dates are the historical updates indicated by the linked source, not continuous live monitoring."
+    "Registry-derived source dates are the historical updates indicated by the linked source, not continuous live monitoring.",
+    "Three older Pre-Data labels are corrected by exact-trial issuer, FDA or peer-reviewed evidence; active count stays 258."
   ],
   "trials": [
     {
       "nctId": "NCT04768972",
       "drug": "ION363",
       "indication": "Amyotrophic lateral sclerosis (FUS mutation)",
-      "cohort": "PRE_DATA",
+      "cohort": "POST_DATA",
       "registryUrl": "https://clinicaltrials.gov/study/NCT04768972"
     },
     {
       "nctId": "NCT04849741",
       "drug": "Zilganersen (ION373)",
       "indication": "Alexander disease",
-      "cohort": "PRE_DATA",
+      "cohort": "POST_DATA",
       "registryUrl": "https://clinicaltrials.gov/study/NCT04849741"
     },
     {
@@ -50,7 +50,7 @@
       "nctId": "NCT05392114",
       "drug": "Donidalorsen",
       "indication": "Hereditary angioedema",
-      "cohort": "PRE_DATA",
+      "cohort": "POST_DATA",
       "registryUrl": "https://clinicaltrials.gov/study/NCT05392114"
     },
     {
@@ -127,9 +127,9 @@
     {
       "nctId": "NCT04849741",
       "question": 12,
-      "evidence": "54 participants actual in zilganersen Alexander-disease study; registry-derived historical update July 11, 2025, still visible August 2026. This is not an efficacy grade.",
-      "sourceUrl": "https://dashboard.datalookout.com/trial/NCT04849741",
-      "sourceDate": "2026-08-21",
+      "evidence": "FDA states NCT04849741 included 49 randomized controlled patients aged 2 years or older plus four patients under age 2 in an open-label substudy; 53 patients in these components, not 54.",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "sourceDate": "2026-09-03",
       "status": "SOURCE_FACT_ONLY",
       "score": null
     },
@@ -235,7 +235,7 @@
     {
       "nctId": "NCT05392114",
       "question": 29,
-      "evidence": "Peer-reviewed one-year OASISplus OLE cohort evidence exists for this exact NCT. Pre-Data label in saved census refers to missing issuer/posted-registry adjudication; stage reconciliation is required before changing cohort counts.",
+      "evidence": "Published peer-reviewed exact-NCT OASISplus one-year open-label extension cohort report dated Feb 23, 2026: 83 patients; primary safety described with 22/83 reporting treatment-related adverse events, no related serious AEs. Nonbinary endpoint interpretation.",
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
       "sourceDate": "2026-02-23",
       "status": "SOURCE_FACT_ONLY",
@@ -409,6 +409,69 @@
       "evidence": "Target enrollment 30 participants for CHAMPION (anticipated), with the registry reporting September 2026 study start.",
       "sourceUrl": "https://www.allclinicaltrials.com/study/NCT07782827",
       "sourceDate": "2026-10-20",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 3,
+      "evidence": "Ionis reports most ulefnersen FUSION adverse events were mild or moderate. Sponsor topline safety statement is descriptive and not an independent safety grade.",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+      "sourceDate": "2026-09-22",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 17,
+      "evidence": "Issuer reports statistically significant secondary endpoints including serum neurofilament light chain change and time to death/permanent ventilation/rescue or progression-related withdrawal; trial-level results, not an FDA decision.",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+      "sourceDate": "2026-09-22",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 29,
+      "evidence": "Exact FUSION (ION363 / ulefnersen) Phase 3 topline issuer readout dated Sept 22, 2026: prespecified primary functional/survival joint-rank test reported positive, p=0.0005. Observed outcome not a prospective forecast.",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+      "sourceDate": "2026-09-22",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 9,
+      "evidence": "FDA identifies the supporting NCT04849741 pivotal main study as a 49-patient multicenter randomized controlled comparison and a separate four-patient open-label pediatric substudy; do not merge the design arms.",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "sourceDate": "2026-09-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 29,
+      "evidence": "FDA explicitly identifies NCT04849741 as an efficacy-and-safety supporting clinical study of approved zilganersen (ZANVASTRO). This is approval evidence, not a separately adjudicated binary trial primary endpoint.",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "sourceDate": "2026-09-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 30,
+      "evidence": "FDA approved ZANVASTRO (zilganersen) for Alexander disease on Sept 3, 2026; application-level historical approval explicitly crosswalked to study NCT04849741. FDA outcome is NOT a numeric RAAS probability.",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "sourceDate": "2026-09-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 18,
+      "evidence": "OASISplus one-year open-label extension patients reported mean AE-QoL improvement at Week 52: 28.1 points Q4W, 26.7 points Q8W; uncontrolled comparison, not placebo adjusted.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "sourceDate": "2026-02-23",
       "status": "SOURCE_FACT_ONLY",
       "score": null
     }
