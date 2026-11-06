@@ -29,5 +29,5 @@ test("All 30 universal questions avoid inventing efficacy predictions",()=>{
  const panel=read("app/Phase3PreDataBatch.tsx");
  assert.match(panel,/Export all/);
  assert.match(panel,/phase3AnalysisCsvValues\(t.nctId\)/);
- assert.match(panel,/NOT a verified unreleased roster/);
+ assert.match(panel,/not all independently confirmed unpublished/);
 });
