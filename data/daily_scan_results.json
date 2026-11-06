@@ -1,7 +1,64 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-05T04:35:22.086671+00:00",
+  "updated_at_utc": "2026-11-06T04:15:36.620444+00:00",
   "days": [
+    {
+      "date_pacific": "2026-11-05",
+      "run_id": 42161397218,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42161397218",
+      "status": "RUN_FAILED",
+      "run_started_at_utc": "2026-11-06T04:15:14+00:00",
+      "scheduled_8pm_pacific_utc": "2026-11-06T04:00:00+00:00",
+      "start_delay_minutes": 15,
+      "scan_night_source": "GUARDED_SCHEDULER_INPUT",
+      "registered_at_utc": "2026-11-06T04:15:36.619752+00:00",
+      "sections": {
+        "master": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Same-run inventory evidence unavailable."
+        },
+        "pipeline": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Full mandatory Pipeline qualification totals are not established by clinical source collection."
+        },
+        "designations": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "FDA special designation grant records and dates require authoritative verification."
+        },
+        "gem_jr": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Retired: historical GEM JR membership retained only in prior saved dates; no active screen."
+        },
+        "gem": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Retired: historical GEM membership retained only in prior saved dates; no active screen."
+        }
+      },
+      "notes": [
+        "The published source report does not match this exact overnight run; counts deliberately withheld.",
+        "Nightly workflow conclusion: failure."
+      ]
+    },
     {
       "date_pacific": "2026-11-04",
       "run_id": 41966647172,
