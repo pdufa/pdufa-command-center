@@ -119,7 +119,7 @@ def run(workers):
     if p["resultsFirstPosted"] and p["resultsFirstPosted"]>"2026-11-05":
      p={**p,"registeredResults":None,"hasResults":False,"afterCutoffExcluded":True}
     past.append(p)
-   v["priorPhase2"]={"state":matched["state"],"query":matched["query"],"truncated":matched["truncated"],"matches":past}
+   v["priorPhase2"]={"state":matched["state"],"query":matched["query"],"truncated":matched.get("truncated",False),"matches":past}
   else:v["priorPhase2"]={"state":"NO_UNAMBIGUOUS_SAME_DRUG_QUERY","matches":[]}
   output.append(v)
  def hasp(v):
