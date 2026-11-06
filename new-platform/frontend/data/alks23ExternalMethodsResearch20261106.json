@@ -457,14 +457,15 @@
       "fullSapLocatedViaThisExternalResearch": false,
       "externalEvidenceDisposition": "FDA_INDEPENDENT_STATISTICAL_REVIEW_AVAILABLE",
       "sourceType": "INDEPENDENT_FDA_STATISTICAL_REVIEW",
-      "sourceDate": "2015-06-18",
+      "sourceDate": "2015-06-08",
       "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2015/207533Orig1s000StatR.pdf",
       "findings": [
         "FDA reviewed sponsor ALK9072-003 (NCT01469039) and confirmed both aripiprazole lauroxil doses 441 mg and 882 mg were statistically superior to placebo on PANSS change to Day 85.",
         "Study randomized 1:1:1 to aripiprazole lauroxil 441 mg, 882 mg or IM placebo; active groups also received blinded oral aripiprazole for the first 21 days whereas placebo received matching oral placebo.",
         "Primary ANCOVA used last-observation-carried-forward (LOCF) with study region, treatment and baseline PANSS. FDA identified the 42.1% dropout as a concern with LOCF, requested MMRM and alternative missingness sensitivity analyses; observed-case MMRM still showed both treatments significant at p<0.001.",
         "An unblinded sample-size re-estimation at 271 participants used Cui-Hung-Wang combination with Hommel type-I-error control. FDA says final SAP was submitted before unblinding and unblinding occurred after 2014-03-31 database lock.",
-        "These are publicly documented contents of a regulatory statistical review, not the attached original complete SAP document."
+        "These are publicly documented contents of a regulatory statistical review, not the attached original complete SAP document.",
+        "The FDA statistical review was electronically signed on June 4 and June 8, 2015 (Reference ID 3774690); date reflects final listed concurring signature."
       ],
       "limitations": "Historic 2015 FDA assessment and design-specific missingness caveat; no current Phase 3 forecast; oral lead-in complicates attribution of early efficacy exclusively to injectable formulation.",
       "sourceQuestionLeads": [
