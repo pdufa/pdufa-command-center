@@ -71,7 +71,7 @@ test("every TOOLS page top section and Phase 3 upper control group is closed ind
  const styles=fs.readFileSync(path.resolve(__dirname,"../app/Phase3ReadoutSheets.module.css"),"utf8");
  assert.match(page,/<details data-tools-segment="pool"/);
  assert.match(page,/<details data-tools-segment="phase3"/);
- assert.equal((page.match(/<details/g)||[]).length,3);
+ assert.equal((page.match(/<details/g)||[]).length,2);
  assert.doesNotMatch(page,/<details[^>]*\sopen(?:\s|=|>)/);
  for(const segment of ["overview","search","survey-ratings","survey-synthesis"])
    assert.ok(sheets.includes('data-segment="phase3-'+segment+'"'),"Missing "+segment+" accordion");

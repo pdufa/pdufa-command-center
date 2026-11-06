@@ -87,24 +87,23 @@ test("unverified CSV preserves source roster, contains explicit review tasks and
  assert.equal((a.csv.match(/UNVERIFIED/g)||[]).length,731);
  assert.equal((a.csv.match(/NEEDS_ISSUER/g)||[]).length,731);
 });
-test("direct TOP and BOTTOM route is primary, while POOL and 762 stay separated",()=>{
+test("active TOP and BOTTOM route preserves issuer evidence and cancels all survey/rating UI",()=>{
  const page=source("app/raas-top-bottom/page.tsx");
  const tools=source("app/tools/page.tsx");
- const sheets=source("app/Phase3ReadoutSheets.tsx");
- assert.match(page,/data-raas-primary-score-scope="TOP_BOTTOM_ONLY"/);
- assert.match(page,/<Phase3ReadoutSheets\/>/);
- assert.match(page,/11,000\+ trial POOL/);
- assert.match(tools,/data-tools-primary-raas-top-bottom/);
+ const sourceOnly=source("app/Phase3SourceOnlySheets.tsx");
+ const historical=source("app/Phase3ReadoutSheets.tsx");
+ assert.match(page,/data-phase3-no-surveys-ratings="true"/);
+ assert.match(page,/<Phase3SourceOnlySheets\/>/);
+ assert.match(page,/Surveys and ratings cancelled/);
+ assert.match(tools,/data-tools-primary-phase3/);
  assert.match(tools,/href="\/raas-top-bottom"/);
- assert.match(tools,/data-tools-primary-raas-762/);
- assert.ok(tools.indexOf("data-tools-primary-raas-top-bottom")<
-   tools.indexOf("data-tools-primary-raas-762"));
- assert.match(sheets,/buildRaasReadoutStageReviewQueue\(data\)/);
- assert.match(sheets,/data-raas-source-review-export="unclassified-no-ratings"/);
- assert.match(sheets,/downloadUnclassifiedSourceReview\(stageReviewQueue.csv\)/);
- assert.match(sheets,/data-raas-stage-gate-summary="top-bottom-only"/);
- assert.match(sheets,/downloadTopBottomRaasWorklist\(bucket,matched\)/);
- assert.doesNotMatch(sheets,/downloadTopBottomRaasWorklist\("unverified"/);
+ assert.doesNotMatch(tools,/<Phase3RegistryPostingSheets\/>/);
+ assert.match(sourceOnly,/data-surveys-ratings-cancelled="true"/);
+ assert.match(sourceOnly,/data\.unverified/);
+ assert.doesNotMatch(sourceOnly,/RaasClinicalFiveCell/);
+ assert.match(historical,/buildRaasReadoutStageReviewQueue\(data\)/);
+ assert.match(historical,/data-raas-source-review-export="unclassified-no-ratings"/);
+ assert.match(historical,/downloadUnclassifiedSourceReview\(stageReviewQueue.csv\)/);
  const output=ts.transpileModule(page,{fileName:"raas-top-bottom/page.tsx",
   reportDiagnostics:true,compilerOptions:{module:ts.ModuleKind.ESNext,
   jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}});

@@ -64,19 +64,19 @@ test("partial metrics now cover 21 NCTs, zero independently validated full RAAS 
  assert.equal(registry.summary.protocolOnly,425);
  assert.equal(registry.summary.sourceFetchErrorsInLatestRun,0);
 });
-test("primary route exists and is linked from TOOLS, RAAS scan and evidence-gap worklist",()=>{
+test("retired 762 scoring route and RAAS scan show no active ratings while preserving archived source data",()=>{
  const page=source("app/raas-762/page.tsx");
  const tools=source("app/tools/page.tsx");
  const scan=source("app/raas-scan/page.tsx");
- const backlog=source("app/raas-evidence-backlog/page.tsx");
- assert.match(page,/data-raas-primary-scoring-setup/);
- assert.match(page,/Raas762ScoringWorkspace/);
- assert.match(tools,/data-tools-primary-raas-762/);
- assert.match(tools,/href="\/raas-762"/);
- assert.match(scan,/href="\/raas-762"/);
- assert.match(backlog,/href="\/raas-762"/);
- assert.match(scan,/data-raas-readiness-executed/);
- assert.match(page,/fullValidatedRaasScores/);
+ const sourceOnly=source("app/Phase3SourceOnlySheets.tsx");
+ assert.match(page,/data-raas-ratings-retired="raas-762"/);
+ assert.match(scan,/data-raas-ratings-retired="raas-scan"/);
+ assert.match(tools,/data-tools-primary-phase3/);
+ assert.match(tools,/href="\/raas-top-bottom"/);
+ assert.match(sourceOnly,/data-surveys-ratings-cancelled/);
+ assert.match(sourceOnly,/<CapScreenedTopPhase3Spreadsheet classification=\{data\} query=\{query\}\/>/);
+ assert.doesNotMatch(sourceOnly,/<RaasClinicalFiveCell/);
+ assert.match(page,/Historical source records and trial data are preserved/);
 });
 test("762-row clinical research workspace keeps source safeguards and five-factor stage coverage",()=>{
  const ui=source("app/Raas762ScoringWorkspace.tsx");

@@ -65,13 +65,12 @@ test("Phase 3 Results cannot be slipped into TOP, and no registry posting is tre
  assert.throws(()=>splitCapScreenedTopPhase3(r,classified),
   /TOP_CAP_SCREENED_PHASE3_STAGE_OR_ID_INVALID/);
  const s=read("app/CapScreenedTopPhase3Spreadsheet.tsx");
- assert.match(s,/RaasClinicalFiveCell row=\{row\} bucket=\{null\}/);
- assert.match(s,/researchStageOnly="pre"/);
- assert.match(s,/readout status is established/);
+ assert.doesNotMatch(s,/RaasClinicalFiveCell|RaasTrialHistoryButton/);
  assert.match(s,/excludedKnownPost/);
  assert.match(s,/readout-unverified|not automatically confirmed pre-readout/i);
- const page=read("app/Phase3ReadoutSheets.tsx");
- assert.match(page,/<CapScreenedTopPhase3Spreadsheet classification=\{classification\} query=\{query\}\/>/);
+ const page=read("app/Phase3SourceOnlySheets.tsx");
+ assert.match(page,/<CapScreenedTopPhase3Spreadsheet classification=\{data\} query=\{query\}\/>/);
  const original=read("app/raas-top-bottom/page.tsx");
- assert.match(original, /TOP now includes the current/);
+ assert.match(original,/Surveys and ratings cancelled/);
+ assert.doesNotMatch(original,/RaasClinicalFiveCompletionPanel/);
 });
