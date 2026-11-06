@@ -48,6 +48,8 @@ test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",(
  assert.ok(adjudications.records.some(r=>r.nctId==="NCT05206370"&&r.endpointOutcome==="PRIMARY_ENDPOINT_MET"));
  assert.equal(issuer.trialCount,23);
  assert.equal(issuer.companyCount,7);
+ assert.equal(issuer.regulatoryApplicationLinkCount,8);
+ assert.equal(issuer.records.filter(r=>Boolean(r.regulatoryEvidenceStatus)).length,8);
  assert.equal(new Set(issuer.records.map(r=>r.nctId)).size,23);
  for(const nct of ["NCT03548220","NCT03559699","NCT05175105","NCT03226522","NCT04797715","NCT04947553","NCT05059223","NCT05113745"]){
   assert.ok(adjudications.records.some(r=>r.nctId===nct&&r.endpointOutcome==="PRIMARY_ENDPOINT_MET"),"Missing issuer primary PASS "+nct);
@@ -57,6 +59,10 @@ test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",(
  }
  assert.match(route,/issuerByNct/);
  assert.match(audit,/issuerInvestorRelationsEvidence/);
+ assert.match(audit,/fields\.unverifiedFDAApplication!==754/);
+ assert.match(audit,/fields\.unverifiedPDUFADate!==754/);
+ assert.match(route,/issuer\?\.pdufaGoalDate\|\|r\.pdufaGoalDate/);
+ assert.match(audit,/q\.number===30&&issuerByNct/);
  assert.match(audit,/issuerByNct\.get\(r\.nctId\)\?\.safetyEvidence/);
  assert.match(route,/PASS_DOCUMENTED_PRIMARY_ENDPOINT/);
  assert.match(route,/FAIL_DOCUMENTED_PRIMARY_ENDPOINT/);
