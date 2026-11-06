@@ -95,6 +95,9 @@ export default function Phase3UnifiedClassifications(){
  },[data,query,classification,passingFilter,lifecycle]);
  const lifecycleCounts={ACTIVE:0,HISTORICAL:0,VERIFY:0};
  for(const t of data?.rows??[])lifecycleCounts[trialLifecycle(t.registryStatus)]++;
+ const statusScoped=(data?.rows||[]).filter(r=>lifecycle==="ALL"||trialLifecycle(r.registryStatus)===lifecycle);
+ const scopedClassCount=(code:string)=>statusScoped.filter(r=>r.classificationCode===code).length;
+ const scopedOutcomeCount=(code:string)=>statusScoped.filter(r=>code==="ALL"||endpointClass(r)===code).length;
  const maxPage=Math.max(1,Math.ceil(filtered.length/perPage));
  const currentPage=Math.min(page,maxPage-1);
  const shown=filtered.slice(currentPage*perPage,(currentPage+1)*perPage);
@@ -108,10 +111,10 @@ export default function Phase3UnifiedClassifications(){
     {data.classifications.map(c=><button type="button" key={c.code} onClick={()=>{setClassification(classification===c.code?"ALL":c.code);setPage(0)}}
       aria-pressed={classification===c.code}
       style={{padding:"7px 10px",borderRadius:8,cursor:"pointer",fontSize:12,border:classification===c.code?"2px solid #287c53":"1px solid #a2b9aa",background:"transparent",color:"inherit",textAlign:"left"}}>
-      {c.label} <strong>({data.counts[c.code]})</strong>
+      {c.label} <strong>({scopedClassCount(c.code)})</strong>
      </button>)}
     <button type="button" onClick={()=>{setClassification("ALL");setPage(0)}} aria-pressed={classification==="ALL"}
-      style={{padding:"7px 10px",border:"1px solid #a2b9aa",borderRadius:8,background:"transparent",color:"inherit",cursor:"pointer",fontSize:12}}>All 762</button>
+      style={{padding:"7px 10px",border:"1px solid #a2b9aa",borderRadius:8,background:"transparent",color:"inherit",cursor:"pointer",fontSize:12}}>All {statusScoped.length}</button>
    </div>
    <p style={{fontSize:13,margin:"10px 0"}}><strong>Outcome scrutiny:</strong>{" "}
     {endpointAdjudications.totalReviewed} of {data.total} exact-NCT public result records reviewed.{" "}
@@ -122,11 +125,11 @@ export default function Phase3UnifiedClassifications(){
     Source review is not equivalent to completing every predictive assessment.</p>
    <div style={{display:"flex",gap:7,flexWrap:"wrap",margin:"10px 0"}}>
     {[
-      ["ALL","All passing classifications",data.total],
-      ["PASS_DOCUMENTED_PRIMARY_ENDPOINT","PASS",endpointAdjudications.counts.PRIMARY_ENDPOINT_MET],
-      ["FAIL_DOCUMENTED_PRIMARY_ENDPOINT","FAIL",endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET],
-      ["NON_BINARY_ENDPOINT","Non-binary",endpointAdjudications.counts.NO_BINARY_PASS_FAIL],
-      ["UNDETERMINED","Undetermined",data.total-endpointAdjudications.totalReviewed]
+      ["ALL","All passing classifications",scopedOutcomeCount("ALL")],
+      ["PASS_DOCUMENTED_PRIMARY_ENDPOINT","PASS",scopedOutcomeCount("PASS_DOCUMENTED_PRIMARY_ENDPOINT")],
+      ["FAIL_DOCUMENTED_PRIMARY_ENDPOINT","FAIL",scopedOutcomeCount("FAIL_DOCUMENTED_PRIMARY_ENDPOINT")],
+      ["NON_BINARY_ENDPOINT","Non-binary",scopedOutcomeCount("NON_BINARY_ENDPOINT")],
+      ["UNDETERMINED","Undetermined",scopedOutcomeCount("UNDETERMINED")]
      ].map(([code,label,count])=><button type="button" key={String(code)}
       aria-pressed={passingFilter===code}
       onClick={()=>{setPassingFilter(String(code));setPage(0)}}
