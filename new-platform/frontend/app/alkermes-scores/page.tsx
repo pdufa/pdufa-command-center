@@ -1,9 +1,11 @@
 import Link from "next/link";
 import source from "../../data/alks34ClinicalScorecard20261106.json";
+import deepResults from "../../data/alks34RegistryDeepResults20261106.json";
 import {clinicalFiveForTrial} from "../../lib/raas-clinical-five";
 
 export const metadata={title:"Alkermes 34-Trial Clinical Scoring | PDUFA Command Center"};
 
+const registryByNct=new Map(deepResults.records.map(r=>[r.nctId,r] as const));
 const rows=source.records.map(r=>{
  const stage=r.clinicalStage==="post"?"post":"pre";
  const assessed=clinicalFiveForTrial({
@@ -11,7 +13,7 @@ const rows=source.records.map(r=>{
   drug:r.clinicalProgramDrug||r.drug,
   indication:r.clinicalProgramIndication||r.indication
  },stage,r.clinicalStageVerified);
- return {...r,assessed};
+ return {...r,assessed,registry:registryByNct.get(r.nctId)};
 });
 const clinicalGraded=rows.reduce((n,r)=>n+r.assessed.graded,0);
 const completed=rows.filter(r=>r.assessed.researchScore!==null).length;
@@ -85,6 +87,19 @@ export default function AlkermesTrialScorePage(){
          </div>)}
         </div>
         {r.historicalOutcomeExplanation&&<p style={{fontSize:12}}><strong>Observed primary result:</strong> {r.historicalOutcomeExplanation} {r.historicalOutcomeSource&&<a href={r.historicalOutcomeSource} target="_blank" rel="noopener noreferrer">Outcome evidence</a>}</p>}
+        {r.registry&&<details style={{margin:"10px 0",border:"1px solid #c9decf",borderRadius:7,padding:9}}>
+         <summary style={{cursor:"pointer",fontWeight:700}}>ClinicalTrials.gov primary results, safety events &amp; withdrawals ▸</summary>
+         <p style={{fontSize:12}}><strong>Registry:</strong> {r.registry.postedResults?"Results posted":"Results not posted"} · <a href={r.registry.sourceUrl} target="_blank" rel="noopener noreferrer">Original trial record</a></p>
+         {r.registry.results.map((result,i)=><div key={i} style={{margin:"8px 0",padding:8,background:"#f4faf5",borderRadius:5}}>
+           <strong style={{display:"block",fontSize:12}}>{result.title}</strong>
+           {result.measurements.length>0&&<p style={{fontSize:12}}>{result.measurements.map(z=>z.arm+": "+z.value+(z.lowerLimit&&z.upperLimit?" (registered interval "+z.lowerLimit+"–"+z.upperLimit+")":"")).join(" · ")}</p>}
+           {result.analyses.map((a,j)=><p key={j} style={{fontSize:12}}><strong>Reported statistical analysis:</strong> {a.groupComparison} · p{a.pValueModifier||"="}{a.pValue||"unreported"}</p>)}
+          </div>)}
+         {r.registry.seriousAdverseEventsByArm&&<p style={{fontSize:12}}><strong>Serious adverse events by arm:</strong> {r.registry.seriousAdverseEventsByArm}</p>}
+         {r.registry.otherAdverseEventsByArm&&<p style={{fontSize:12}}><strong>Other adverse events by arm:</strong> {r.registry.otherAdverseEventsByArm}</p>}
+         {r.registry.participantFlowDiscontinuations&&<p style={{fontSize:12}}><strong>Withdrawal reasons:</strong> {r.registry.participantFlowDiscontinuations}</p>}
+         <p style={{fontSize:11}}>Registered observations are not direct evidence of causation, and single-arm safety extension data are not efficacy results. No unreported endpoint value is inferred.</p>
+        </details>}
         {!r.clinicalStageVerified&&<p style={{fontSize:12}}>The stage or current result is not sufficiently established for a complete clinical score.</p>}
        </details>
       </td>
