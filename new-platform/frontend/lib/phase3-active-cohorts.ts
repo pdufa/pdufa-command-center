@@ -84,8 +84,7 @@ function reconcile():{
     classificationVerified:true,readoutEvidenceType:newReadout.evidenceType,
     readoutSourceDate:newReadout.evidenceDate,readoutEvidenceUrl:newReadout.evidenceUrl,
     readoutOutcome:newReadout.outcome,drug:newReadout.drug,
-    ...(r.nctId==="NCT04849741"?{fdaApplicationStatus:"FDA_APPROVED_HISTORICAL",
-     fdaReviewType:"PRIORITY"}:{})};
+    ...(r.nctId==="NCT04849741"?{fdaApplicationStatus:"FDA_APPROVED_HISTORICAL"}:{})};
   }
   const matched=matchedIssuer(r.nctId);
   assert(matched,"PROMOTION_SOURCE_"+r.nctId);
@@ -107,7 +106,7 @@ function reconcile():{
  const counts=Object.fromEntries(ledger.classifications.map(c=>[c.code,0])) as typeof ledger.counts;
  patched.forEach(r=>{assert(Object.prototype.hasOwnProperty.call(counts,r.classificationCode),"UNRECOGNIZED_CLASS");const key=r.classificationCode as keyof typeof counts;counts[key]++;});
  const withCounts={...ledger,asOf:ACTIVE_PHASE3_COHORT_AS_OF,counts,
-  note:ledger.note+" Read-only reconciliation: five independently source-matched issuer outcomes promoted from PRE to POST; historical source preserved.",
+  note:ledger.note+" Read-only reconciliation: eight issuer, FDA and peer-reviewed source-matched outcomes promoted from PRE to POST; historical source preserved.",
   rows:patched};
  const pre:ActivePhase3Trial[]=[],post:ActivePhase3Trial[]=[];
  let historical=0,verify=0;
