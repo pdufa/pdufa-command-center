@@ -29,17 +29,17 @@ test("The 762-row assessment has exactly 190 columns (20 legacy + 20 analysis + 
 });
 test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",()=>{
  const known=new Set(ledger.rows.map(r=>r.nctId));
- assert.equal(adjudications.totalReviewed,26);
- assert.equal(adjudications.records.length,26);
- assert.equal(new Set(adjudications.records.map(r=>r.nctId)).size,26);
+ assert.equal(adjudications.totalReviewed,28);
+ assert.equal(adjudications.records.length,28);
+ assert.equal(new Set(adjudications.records.map(r=>r.nctId)).size,28);
  assert.ok(adjudications.records.every(r=>known.has(r.nctId)&&r.evidenceUrl&&r.rationale));
- assert.equal(adjudications.counts.PRIMARY_ENDPOINT_MET,22);
+ assert.equal(adjudications.counts.PRIMARY_ENDPOINT_MET,24);
  assert.equal(adjudications.counts.PRIMARY_ENDPOINT_NOT_MET,2);
  assert.equal(adjudications.counts.NO_BINARY_PASS_FAIL,2);
  const failed=adjudications.records.find(r=>r.endpointOutcome==="PRIMARY_ENDPOINT_NOT_MET");
  assert.equal(failed.nctId,"NCT04308590");
  assert.ok(adjudications.records.some(r=>r.nctId==="NCT05021536"&&r.endpointOutcome==="PRIMARY_ENDPOINT_NOT_MET"));
- assert.equal(762-26,736);
+ assert.equal(762-28,734);
  assert.match(route,/PASS_DOCUMENTED_PRIMARY_ENDPOINT/);
  assert.match(route,/FAIL_DOCUMENTED_PRIMARY_ENDPOINT/);
  assert.match(route,/"NON_BINARY_ENDPOINT"/);
