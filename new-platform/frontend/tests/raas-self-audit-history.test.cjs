@@ -65,8 +65,9 @@ test("self-rating history and third trial spreadsheet are wired",()=>{
  assert.match(trials,/<RaasTrialHistoryButton row=\{row\} bucket=\{null\}\/>/);
  assert.match(button,/bucket:RaasStage\|null/);
  assert.match(button,/UNVERIFIED/);
- assert.match(workflow,/node scripts\/raas_self_audit_history_capture\.cjs/);
- assert.match(workflow,/raas-self-audit-history\.json/);
+ assert.match(workflow,/Surveys and ratings cancelled/);
+ assert.doesNotMatch(workflow,/node scripts\/raas_self_audit_history_capture\.cjs/);
+ assert.doesNotMatch(workflow,/raas-self-audit-history\.json/);
  for(const [src,file] of [[auditPage,"page.tsx"],[meta,"RaasSelfAuditHistoryButton.tsx"],
   [trials,"Phase3ReadoutSheets.tsx"],[button,"RaasTrialHistoryButton.tsx"]]){
   const out=ts.transpileModule(src,{fileName:file,reportDiagnostics:true,

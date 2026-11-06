@@ -113,8 +113,9 @@ test("all TOP and BOTTOM rows receive the same history control; overlay opens ri
  assert.match(css,/\.expanded\{display:flex;min-width:760px/);
  assert.match(css,/\.left\{flex:0 0 185px/);
  assert.match(css,/\.right\{flex:1/);
- assert.match(workflow,/node scripts\/raas_trial_history_capture\.cjs/);
- assert.match(workflow,/git add data\/nightly_scoring_audit\.json new-platform\/frontend\/data\/raas-trial-score-history\.json/);
+ assert.match(workflow,/Surveys and ratings cancelled/);
+ assert.doesNotMatch(workflow,/node scripts\/raas_trial_history_capture\.cjs/);
+ assert.doesNotMatch(workflow,/git add data\/nightly_scoring_audit\.json new-platform\/frontend\/data\/raas-trial-score-history\.json/);
 });
 test("new TSX history control parses without syntax diagnostics",()=>{
  for(const [source,name] of [[ui,"RaasTrialHistoryButton.tsx"],[table,"Phase3ReadoutSheets.tsx"]]){
