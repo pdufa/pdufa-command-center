@@ -269,7 +269,8 @@ export async function GET(request:Request){
   }
   if(included(r))rows.push(writeRow(values));
  }
- if(rows.length!==includedCount+1||passedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_MET||
+ if((cohort==="all"&&!ticker&&!nctId&&rows.length!==763)||
+    rows.length!==includedCount+1||passedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_MET||
     failedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET){
   return Response.json({error:"Trial/pass reconciliation failed"},{status:503});
  }
