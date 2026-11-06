@@ -30,7 +30,7 @@ function statusFor(
  if(q.number===29&&e)return "DOCUMENTED_PUBLIC_READOUT";
  if(q.observation)return "SOURCE_FACT_ONLY";
  if(q.number===25&&r.registrySourceUrl)return "SOURCE_FACT_ONLY";
- if(q.number===27&&/\\bplacebo\\b/i.test(r.registeredInterventions||""))return "SOURCE_FACT_ONLY";
+ if(q.number===27&&/\bplacebo\b/i.test(r.registeredInterventions||""))return "SOURCE_FACT_ONLY";
  return "UNSCORED";
 }
 const counts=(statuses:string[])=>({
@@ -41,7 +41,7 @@ const counts=(statuses:string[])=>({
 });
 const escapeCsv=(v:unknown)=>{
  let s=v===null||v===undefined?"":String(v).replace(/[\r\n]+/g," ");
- if(/^[=+\\-@]/.test(s))s="'"+s;
+ if(/^[=+@-]/.test(s))s="'"+s;
  return '"'+s.replace(/"/g,'""')+'"';
 };
 const csv=(v:unknown[])=>v.map(escapeCsv).join(",");
