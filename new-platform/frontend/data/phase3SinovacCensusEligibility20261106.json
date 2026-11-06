@@ -12,7 +12,10 @@
     "completedRegistryRecords": 17,
     "ongoingOrFutureRecords": 10,
     "endpointAdjudications": 0,
-    "exactOriginalSourceTrialReviews": 3
+    "exactOriginalSourceTrialReviews": 3,
+    "originalRegistryPrimaryEndpointDefinitions": 27,
+    "originalRegistryResultsPosted": 0,
+    "originalRegistryPublicProtocols": 2
   },
   "manufacturerEvidence": [
     {
@@ -44,9 +47,9 @@
     "activeTradingShortlist": "HOLD_EXCLUDE_PENDING_TRADABILITY_AND_US_FDA_EVIDENCE",
     "researchCensus": "RETAIN_ALL_27"
   },
-  "sourcePassStatus": "3_OF_27_ORIGINAL_TRIAL_RECORDS_EXPLICITLY_OPENED_AND_MATCHED_TO_PROGRAM; OTHER_24_HAVE_CENSUS_REGISTRY_LINK_ONLY",
+  "sourcePassStatus": "27_OF_27_ORIGINAL_REGISTRY_PRIMARY_ENDPOINTS_RECONCILED_FROM_ARCHIVED_SNAPSHOT; 3_OF_27_FRESH_WEB_CROSSCHECKS; ZERO_POSTED_RESULTS",
   "noFalseCompletenessClaim": true,
-  "nextResearch": "Recheck the trading halt independently. Examine the remaining 24 original NCT records and only then adjudicate exact primary readouts/US FDA actions if source-supported. Do not delete historical trials or collapse distinct vaccines/programs.",
+  "nextResearch": "Use these 27 exact primary endpoint definitions to search publications, manufacturer reports and regulator decision documents. No posted CTG results; do not convert registry endpoint text into MET/NOT_MET. Recheck trading and FDA PDUFA eligibility first.",
   "records": [
     {
       "nctId": "NCT01507857",
@@ -60,7 +63,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT01507857",
+        "registeredPrimaryOutcomes": "The incidence rate of Hand, Foot and Mouth disease caused by EV71 within one year observation period after the second vaccination",
+        "registeredPrimaryTimeframes": "From 28 days after the second vaccination to one year",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT01636245",
@@ -74,7 +89,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT01636245",
+        "registeredPrimaryOutcomes": "The GMT of anti-EV71 antibodies in serum 28 days after the two-dose regimen",
+        "registeredPrimaryTimeframes": "28 days after first vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT02451969",
@@ -88,7 +115,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT02451969",
+        "registeredPrimaryOutcomes": "The seroconversion rates (SCR) of each of the 23 pneumococcal serotypes",
+        "registeredPrimaryTimeframes": "28 days",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT03526978",
@@ -102,7 +141,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT03526978",
+        "registeredPrimaryOutcomes": "The seroconversion rates (SCRs) of each group after primary immunization.",
+        "registeredPrimaryTimeframes": "90 days",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT03822754",
@@ -116,7 +167,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT03822754",
+        "registeredPrimaryOutcomes": "The difference between experimental group and control group of type I,III neutralizing antibody seroconversion rate after primary immunization. And the lower limit of 95% confidence intervals of the difference value.",
+        "registeredPrimaryTimeframes": "30 days",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT03822767",
@@ -130,7 +193,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT03822767",
+        "registeredPrimaryOutcomes": "The difference between experimental group and control group of type I,III neutralizing antibody seroconversion rate after primary immunization. And the lower limit of 95% confidence intervals of the difference value.",
+        "registeredPrimaryTimeframes": "30 days",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT03853993",
@@ -144,7 +219,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT03853993",
+        "registeredPrimaryOutcomes": "The lower limit of 95% confidence intervals (95%CI) of the ratio of geometric mean titer of hemagglutination inhibition (HI) antibody titer (experimental group/control group)≥2/3. | The lower limit of 95% CI of the difference of HI antibody seroconversion rate (experimental group-control group)≥-10%",
+        "registeredPrimaryTimeframes": "28 days after the injection | 28 days after the injection",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT03859141",
@@ -158,7 +245,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT03859141",
+        "registeredPrimaryOutcomes": "The lower limit of 95% confidence intervals (95%CI) of geometric mean titer (GMT) ratio (experimental group/control group) of hemagglutination inhibition (HI) antibody titer≥2/3. | The lower limit of 95% CI of the seroconversion rate difference (experimental group-control group)≥-10%.",
+        "registeredPrimaryTimeframes": "28 days after two doses immunization | 28 days after two doses immunization",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT03909074",
@@ -172,7 +271,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT03909074",
+        "registeredPrimaryOutcomes": "The seroconversion rates (SCR) of the EV71 neutralizing antibody calculated based on the cutoff value of 1:8 | The Geometric mean titer (GMT) of the EV71 neutralizing antibody in the susceptible population",
+        "registeredPrimaryTimeframes": "30 days after two doses | 30 days after two doses",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT04386707",
@@ -186,7 +297,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT04386707",
+        "registeredPrimaryOutcomes": "Immunogenicity index-Geometric mean titer of neutralizing antibody | Immunogenicity index-Seroconversion rates of neutralizing antibody",
+        "registeredPrimaryTimeframes": "The 30th day after the third dose vaccination | The 30th day after the third dose vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT05245552",
@@ -200,7 +323,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT05245552",
+        "registeredPrimaryOutcomes": "Immunogenicity index of seroconversion rate | Immunogenicity index of seroprotection rate | Immunogenicity index of GMT | Safety index of the incidence of adverse reaction | Safety index of the incidence of adverse reaction | Safety index of the incidence of abnormal blood biochemical indexes",
+        "registeredPrimaryTimeframes": "28 days after full schedule immunization | 28 days after full schedule immunization | 28 days after full schedule immunization | 0-28 days after each dose | 0-7 days after each dose | 3 days after each dose",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT05386810",
@@ -214,7 +349,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT05386810",
+        "registeredPrimaryOutcomes": "Safety index-incidence of adverse reactions | Immunogenicity index-Geometric mean titers (GMT) | Immunogenicity index- seroconversion rate of neutralizing antibody",
+        "registeredPrimaryTimeframes": "Within 30 days after each dose | 30 days after primary immunization | 30 days after primary immunization",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT05431725",
@@ -228,7 +375,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT05431725",
+        "registeredPrimaryOutcomes": "Seroconversion rates of HI antibody | GMTs of HI antibody",
+        "registeredPrimaryTimeframes": "At day 28 after the last dose | At day 28 after the last dose",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT05850364",
@@ -242,7 +401,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT05850364",
+        "registeredPrimaryOutcomes": "To evaluate the non-inferiority of immune response to polio vaccination, when administered concomitantly with routine vaccines | To evaluate the safety in terms of ARs (Vaccine-related AEs）",
+        "registeredPrimaryTimeframes": "28 days | 7 days",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": true,
+        "hasPublicSAP": true,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT06049927",
@@ -256,7 +427,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT06049927",
+        "registeredPrimaryOutcomes": "Seroconversion rates of HI antibody | Geometric Mean Titers (GMTs) of HI antibody | Number of Participants With Seroprotection to Influenza Vaccine Antigens",
+        "registeredPrimaryTimeframes": "28 days after full schedule immunization | 28 days after full schedule immunization | 28 days after full schedule immunization",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": true,
+        "hasPublicSAP": true,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT06734832",
@@ -270,7 +453,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT06734832",
+        "registeredPrimaryOutcomes": "Evaluate the primary vaccine efficacy of the trial vaccine against HFMD caused by CA16 infection compared to the control vaccine. | Evaluate whether the neutralizing antibody levels against EV71 in the trial group are non-inferior to those in the control group after two doses of vaccination.",
+        "registeredPrimaryTimeframes": "1 year | 60 days",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07055295",
@@ -284,7 +479,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07055295",
+        "registeredPrimaryOutcomes": "Proportion of participants achieving a RVNA titer ≥0.5 IU/mL | Proportion of participants achieving a RVNA titer ≥0.5 IU/mL",
+        "registeredPrimaryTimeframes": "Day 42 after the first dose of vaccination | Day 28 after the first dose of vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07055893",
@@ -298,7 +505,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07055893",
+        "registeredPrimaryOutcomes": "Proportion of participants achieving a rabies virus neutralizing antibody (RVNA) titer ≥0.5 IU/mL",
+        "registeredPrimaryTimeframes": "Day 14 and Day 28 after the first dose vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07211152",
@@ -312,7 +531,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07211152",
+        "registeredPrimaryOutcomes": "The seroconversion rates (SCRs) of hemagglutination inhibition (HI) antibodies against each antigen 28 days after vaccination. | The seroprotection rates (SPRs) of hemagglutination inhibition (HI) antibodies against each antigen 28 days after vaccination. | The geometric mean titers (GMTs) of hemagglutination inhibition (HI) antibodies against each antigen 28 days after vaccination. | The geometric mean increase (GMI) of hemagglutination inhibition (HI) antibodies against each antigen 28 days after vaccination. | Incidence of adverse reactions within 28 days after vaccination",
+        "registeredPrimaryTimeframes": "28 days after vaccination | 28 days after vaccination | 28 days after vaccination | 28 days after vaccination | 28 days after vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07357545",
@@ -326,7 +557,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07357545",
+        "registeredPrimaryOutcomes": "Seroconversion rate of rabies neutralizing antibodies in pre-vaccination negative subjects of each group | Seroconversion rate of serum rabies neutralizing antibody in pre-vaccination negative subjects of each group | GMC of rabies neutralizing antibodies in pre-vaccination negative subjects of each group",
+        "registeredPrimaryTimeframes": "Day 14 after the first dose vaccination | Day 42 after the first dose vaccination | Day 14 after the first dose vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07416110",
@@ -346,7 +589,19 @@
       },
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07416110",
+        "registeredPrimaryOutcomes": "Geometric Mean Concentration (GMC) of rabies neutralizing antibodies among susceptible participants (RVNA titer <0.5 IU/mL before vaccination) in each group",
+        "registeredPrimaryTimeframes": "Day 14 after the first-dose vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07505810",
@@ -366,7 +621,19 @@
       },
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07505810",
+        "registeredPrimaryOutcomes": "seroconversion rates (%) of Nm antibodies for serogroups A, C, Y, W135 | GMTs (1:) of Nm antibodies for serogroups A, C, Y, W135",
+        "registeredPrimaryTimeframes": "Day 30 after three-dose vaccination | Day 30 after three-dose vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07505823",
@@ -380,7 +647,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07505823",
+        "registeredPrimaryOutcomes": "seroconversion rates (%) of Nm antibodies for serogroups A, C, Y, W135 | GMTs (1:) of Nm antibodies for serogroups A, C, Y, W135",
+        "registeredPrimaryTimeframes": "Day 30 after two-dose vaccination | Day 30 after two-dose vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07505836",
@@ -394,7 +673,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07505836",
+        "registeredPrimaryOutcomes": "seroconversion rates (%) of Nm antibodies for serogroups A, C, Y, W135 | GMTs (1:) of Nm antibodies for serogroups A, C, Y, W135",
+        "registeredPrimaryTimeframes": "Day 30 after two-dose vaccination | Day 30 after two-dose vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07505888",
@@ -408,7 +699,19 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07505888",
+        "registeredPrimaryOutcomes": "Seroconversion rates (%) of Nm antibodies for serogroups A, C, Y, W135 | GMTs (1:) of Nm antibodies for serogroups A, C, Y, W135",
+        "registeredPrimaryTimeframes": "Day 30 after vaccination | Day 30 after vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07611513",
@@ -428,7 +731,19 @@
       },
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07611513",
+        "registeredPrimaryOutcomes": "Evaluate the protective efficacy of the investigational vaccine against HFMD caused by any serotype of EV71, CA16, CA10 and CA6 infection compared to placebo. | Evaluate the protective efficacy of the investigational vaccine against HFMD caused by CA6 infection compared to placebo. | Evaluate the protective efficacy of the investigational vaccine against HFMD caused by CA16 infection compared to placebo.",
+        "registeredPrimaryTimeframes": "From day 15 after full-course vaccination to the data cutoff date when the pre-specified number of primary HFMD cases is reached (case-driven primary analysis) | From day 15 after full-course vaccination to the data cutoff date when the pre-specified number of primary HFMD cases is reached (case-driven primary analysis)From day 15 after the full-course vaccination to data cutoff date of primary analysis | From day 15 after full-course vaccination to the data cutoff date when the pre-specified number of primary HFMD cases is reached (case-driven primary analysis)",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     },
     {
       "nctId": "NCT07793227",
@@ -442,7 +757,26 @@
       "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
-      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK"
+      "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
+      "registryPrimaryEndpointSnapshot": {
+        "sourceSnapshotDate": "2026-11-05",
+        "sourceUrl": "https://clinicaltrials.gov/study/NCT07793227",
+        "registeredPrimaryOutcomes": "Seroconversion rate of anti-HAV antibodies",
+        "registeredPrimaryTimeframes": "30 days after the second vaccination",
+        "hasPostedResults": false,
+        "postedPrimaryOutcomeCount": 0,
+        "postedPrimaryAnalysesCount": 0,
+        "hasPublicProtocol": false,
+        "hasPublicSAP": false,
+        "sourceFiles": "phase3RegistryDeepResults20261105Part01-06.json"
+      }
     }
-  ]
+  ],
+  "registryDeepSource": {
+    "sourceFileSet": "new-platform/frontend/data/phase3RegistryDeepResults20261105Part01-06.json",
+    "date": "2026-11-05",
+    "matchedBy": "EXACT_NCT",
+    "count": 27,
+    "note": "Existing original registry snapshots have endpoint definitions for every trial; no posted outcomes or confirmatory statistical analysis found in Sinovac records. This is reused documentary data, not newly published evidence."
+  }
 }
