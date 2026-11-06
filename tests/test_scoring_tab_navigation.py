@@ -19,6 +19,7 @@ def test_active_navigation_links_pipeline_tools_scan_and_predictions_without_gem
         "COMPARE TRIALS": "/compare-trials",
         "SCAN": "/scans",
         "PREDICTIONS": "/predictions",
+        "ALKS SCORES": "/alkermes-scores",
         "#1": "/patient-population",
         "SYSTEM STATUS": "/installation-audit",
     }
