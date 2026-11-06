@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T04:39:46.620Z",
+  "censusAsOf": "2026-11-05",
+  "nctCount": 762,
+  "scope": "One completed online discovery pass against all 762 exact NCTs. Source matches are evidence leads, not primary-endpoint adjudications, FDA decisions or calibrated predictions.",
+  "sources": {
+    "clinicalTrialsGov": {
+      "apiBatchCalls": 31,
+      "failedBatches": 0,
+      "nctRecordsRetrieved": 762,
+      "statusChangedSinceSavedLedger": 1,
+      "stillUnknownStatus": 3,
+      "interventionNamesRetrieved": 762,
+      "primaryOutcomesRetrieved": 756,
+      "postedResults": 337,
+      "postedStatisticalAnalyses": 189,
+      "publicDocuments": 248,
+      "publicationReferences": 267,
+      "internationalSecondaryIds": 221
+    },
+    "pubMed": {
+      "queryBatches": 39,
+      "queryErrors": 0,
+      "candidateArticleIds": 616,
+      "articlesParsed": 615,
+      "exactNctArticleReferences": 765,
+      "trialsWithExactNctArticleMentions": 288,
+      "fetchErrors": 0
+    },
+    "secEdgar": {
+      "exactNctQueriesAttempted": 762,
+      "queryErrors": 5,
+      "rateLimitResponses": 0,
+      "trialsWithExactNctFilingMentions": 202,
+      "matchingFilingMentions": 1038
+    },
+    "fda": {
+      "drugsFdaProbeHttpStatus": 200,
+      "completeResponseLettersProbeHttpStatus": 200,
+      "nctToApplicationCrosswalk": "NOT_ESTABLISHED",
+      "interpretation": "Brand or sponsor name match does not establish exact trial NDA/PDUFA status"
+    },
+    "aact": {
+      "landingHttpStatus": 200,
+      "queryMode": "CREDENTIALS_REQUIRED",
+      "interpretation": "Registry mirror database accessible upon separate account setup"
+    },
+    "international": {
+      "ctisPublicPortal": 200,
+      "ctisUnauthenticatedApi": 403,
+      "euLegacyRegisterPublicPortal": 200,
+      "whoTrialSearchPublicPortal": 200,
+      "exactNctCrosswalk": "NOT_COMPLETED"
+    }
+  },
+  "reconciliation": {
+    "registryStatusChanged": [
+      {
+        "nctId": "NCT06672237",
+        "previous": "RECRUITING",
+        "current": "ACTIVE_NOT_RECRUITING"
+      }
+    ],
+    "missingRegistryStatusNct": [
+      "NCT05021536",
+      "NCT02504008",
+      "NCT02746068"
+    ]
+  },
+  "warnings": [
+    "Published registry results and statistical-analysis tables are not equivalent to a verified clinical PASS.",
+    "Exact NCT mentions in PubMed articles and SEC filings require document-level scientific interpretation.",
+    "FDA approval and CRLs are indexed by drug/application, not reliably by NCT alone.",
+    "AACT, CTIS and WHO were tested for access; bulk automated verified mapping was not completed for them.",
+    "Findings may overlap across sources, and a missing source hit does not prove evidence absent."
+  ]
+}
