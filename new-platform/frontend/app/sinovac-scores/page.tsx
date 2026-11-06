@@ -20,6 +20,7 @@ export default function SinovacScores(){
    {[
     ["Census trial records",data.records.length+" / "+data.censusCount],
     ["Documentary Q slots",data.documentedQuestionSlots+" / "+data.questionTotal],
+    ["Primary endpoints identified",data.exactTrialPrimaryEndpointsCaptured+" / "+data.records.length],
     ["Historical outcomes",outcomes.length+" / "+data.records.length],
     ["Primary MET",String(data.historicalPrimaryMet)],
     ["Mixed outcome",String(data.historicalPrimaryMixed)],
@@ -44,9 +45,11 @@ export default function SinovacScores(){
       <td style={{padding:9}}>N/A<div style={{fontSize:11}}>Five-factor clinical grade not established</div></td>
       <td style={{padding:9}}><strong>{scoreLabel(r)}</strong></td>
       <td style={{padding:9}}>
-       {r.observedPrimarySource?<a href={r.observedPrimarySource} target="_blank" rel="noopener noreferrer">Published NCT-linked result</a>:<span>Registry only — no adjudicated outcome</span>}
+       {r.observedPrimarySource?<a href={r.observedPrimarySource} target="_blank" rel="noopener noreferrer">Published NCT-linked result</a>:r.otherPublishedResearchSource?<a href={r.otherPublishedResearchSource} target="_blank" rel="noopener noreferrer">Published study — not adjudicated</a>:<span>Registry only — no adjudicated outcome</span>}
        <details><summary style={{cursor:"pointer",fontWeight:600}}>Evidence notes ▸</summary>
+        <p><strong>Registered primary outcome:</strong> {r.registeredPrimaryEndpoint}</p>
         <p>{r.observedPrimaryOutcomeRationale||"No exact-NCT public primary-endpoint conclusion accepted yet. Do not infer efficacy from the registry status."}</p>
+        {r.otherPublishedResearchSource&&<p><a href={r.otherPublishedResearchSource} target="_blank" rel="noopener noreferrer">Other published study evidence (not primary adjudication)</a>: {r.otherPublishedResearchNote}</p>}
         <p>{r.clinicalScoreReason}</p>
        </details>
       </td>
