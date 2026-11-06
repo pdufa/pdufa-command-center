@@ -1,0 +1,213 @@
+{
+  "asOf": "2026-11-06",
+  "records": [
+    {
+      "trialId": "ISRCTN70607799",
+      "nctId": null,
+      "title": "ALKS 4510 first-in-human safety, tolerability and PK study",
+      "protocol": "ALKS 4510-101",
+      "acronym": null,
+      "sponsor": "Alkermes, Inc.",
+      "phases": [
+        "PHASE1"
+      ],
+      "studyType": "INTERVENTIONAL",
+      "status": "COMPLETED",
+      "whyStopped": null,
+      "indications": [
+        "Healthy volunteers"
+      ],
+      "interventions": [
+        {
+          "name": "ALKS 4510",
+          "type": "DRUG"
+        },
+        {
+          "name": "Placebo",
+          "type": "DRUG"
+        }
+      ],
+      "arms": [
+        {
+          "label": "ALKS 4510",
+          "type": "EXPERIMENTAL"
+        },
+        {
+          "label": "Placebo",
+          "type": "PLACEBO_COMPARATOR"
+        }
+      ],
+      "design": {
+        "allocation": "RANDOMIZED",
+        "masking": "DOUBLE",
+        "interventionModel": "PARALLEL"
+      },
+      "enrollment": null,
+      "primary": [
+        {
+          "measure": "Treatment-emergent adverse events through dosing and safety follow-up to 17 days"
+        }
+      ],
+      "secondary": [
+        {
+          "measure": "ALKS 4510 plasma pharmacokinetics including Cmax, Tmax, AUC and half-life"
+        }
+      ],
+      "start": {
+        "date": "2025-05-12",
+        "type": "UNSPECIFIED"
+      },
+      "primaryCompletion": null,
+      "firstPosted": null,
+      "sourceDate": "2025-05-20",
+      "sourceUrl": "https://www.isrctn.com/pdf/ISRCTN70607799",
+      "retrievedAt": "2026-11-06",
+      "hasResults": false,
+      "results": {},
+      "documents": [],
+      "sourceNotes": [
+        "Original registry PDF read through web reader; NCT crosswalk not located. Phase 1 is the individual-trial phase, regardless of later program advances."
+      ],
+      "sourceConflicts": [
+        "Registry describes healthy volunteers but healthy-volunteer eligibility checkbox says No. This population-field inconsistency needs reconciliation."
+      ],
+      "sourceSha256": "f7aa1e080785b58c5649488b5cd5fc4cf8c743e1073faf4c68882e84b09054fa"
+    },
+    {
+      "trialId": "ISRCTN98204977",
+      "nctId": null,
+      "title": "ALKS 2680 first-in-human safety, tolerability and PK study",
+      "protocol": "2022-08-0914",
+      "acronym": null,
+      "sponsor": "Alkermes, Inc.",
+      "phases": [
+        "PHASE1"
+      ],
+      "studyType": "INTERVENTIONAL",
+      "status": "COMPLETED",
+      "whyStopped": null,
+      "indications": [
+        "Healthy volunteers",
+        "Narcolepsy / idiopathic hypersomnia"
+      ],
+      "interventions": [
+        {
+          "name": "ALKS 2680",
+          "type": "DRUG"
+        },
+        {
+          "name": "Placebo",
+          "type": "DRUG"
+        }
+      ],
+      "arms": [
+        {
+          "label": "ALKS 2680",
+          "type": "EXPERIMENTAL"
+        },
+        {
+          "label": "Placebo",
+          "type": "PLACEBO_COMPARATOR"
+        }
+      ],
+      "design": {
+        "allocation": "RANDOMIZED",
+        "masking": "DOUBLE",
+        "interventionModel": "PARALLEL"
+      },
+      "enrollment": null,
+      "primary": [
+        {
+          "measure": "Safety, tolerability and pharmacokinetics of single and multiple doses"
+        }
+      ],
+      "secondary": [
+        {
+          "measure": "Food/formulation effects and early biological activity in hypersomnia cohorts"
+        }
+      ],
+      "start": null,
+      "primaryCompletion": null,
+      "firstPosted": null,
+      "sourceDate": "2026-08-05",
+      "sourceUrl": "https://www.isrctn.com/pdf/ISRCTN98204977",
+      "retrievedAt": "2026-11-06",
+      "hasResults": true,
+      "results": {},
+      "documents": [],
+      "sourceNotes": [
+        "Original registry PDF read through web reader; NCT crosswalk not located. Phase 1 is the individual-trial phase, regardless of later program advances."
+      ],
+      "sourceConflicts": [],
+      "sourceSha256": "cd9ac10af345ac24c728be03c90a3af24ea3678a510a729f8b936b7e8c8c9c6b"
+    },
+    {
+      "trialId": "ISRCTN46120216",
+      "nctId": null,
+      "title": "ALKS 7290 first-in-human safety, tolerability and PK study",
+      "protocol": "ALKS 7290-101",
+      "acronym": null,
+      "sponsor": "Alkermes, Inc.",
+      "phases": [
+        "PHASE1"
+      ],
+      "studyType": "INTERVENTIONAL",
+      "status": "COMPLETED",
+      "whyStopped": null,
+      "indications": [
+        "Healthy volunteers",
+        "ADHD"
+      ],
+      "interventions": [
+        {
+          "name": "ALKS 7290",
+          "type": "DRUG"
+        },
+        {
+          "name": "Placebo",
+          "type": "DRUG"
+        }
+      ],
+      "arms": [
+        {
+          "label": "ALKS 7290",
+          "type": "EXPERIMENTAL"
+        },
+        {
+          "label": "Placebo",
+          "type": "PLACEBO_COMPARATOR"
+        }
+      ],
+      "design": {
+        "allocation": "RANDOMIZED",
+        "masking": "DOUBLE",
+        "interventionModel": "PARALLEL"
+      },
+      "enrollment": null,
+      "primary": [
+        {
+          "measure": "Safety/tolerability and food effect in healthy volunteers and ADHD participants"
+        }
+      ],
+      "secondary": [
+        {
+          "measure": "Plasma pharmacokinetics over 14 days"
+        }
+      ],
+      "start": null,
+      "primaryCompletion": null,
+      "firstPosted": null,
+      "sourceDate": "2026-08-24",
+      "sourceUrl": "https://www.isrctn.com/pdf/ISRCTN46120216",
+      "retrievedAt": "2026-11-06",
+      "hasResults": false,
+      "results": {},
+      "documents": [],
+      "sourceNotes": [
+        "Original registry PDF read through web reader; NCT crosswalk not located. Phase 1 is the individual-trial phase, regardless of later program advances."
+      ],
+      "sourceConflicts": [],
+      "sourceSha256": "fc2ed87362cebd93b92c369b1eb95bd549f788fd84ef178752f33e150e4894ca"
+    }
+  ]
+}
