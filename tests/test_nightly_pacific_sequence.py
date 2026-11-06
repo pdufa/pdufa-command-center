@@ -289,7 +289,18 @@ class AwaitedWorkflowTests(unittest.TestCase):
         self.assertIn('Refresh validated PIPELINE early-clinical feed after sources / publish', (ROOT / 'scripts/nightly_sequence.py').read_text())
         self.assertNotIn('ref: ${{ github.sha }}',source)
         scoring = read('pdufa-nightly-scoring-then-repair.yml')
-        self.assertIn('completed_source_stage(', scoring)
+        # The scoring stage was intentionally retired; it now only hands off
+        # the exact source run ID. Preserve serial error checks and repair
+        # without requiring removed scoring or RAAS mutations.
+        handoff = job(scoring, 'scoring')
+        self.assertIn('name: 1 — Surveys and ratings cancelled · source-run handoff only', handoff)
+        self.assertIn('source_run_id: ${{ steps.handoff.outputs.source_run_id }}', handoff)
+        self.assertIn('SOURCE_RUN_ID: ${{ inputs.source_run_id || github.event.workflow_run.id }}', handoff)
+        self.assertIn('echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"', handoff)
+        self.assertIn('Preserve source run identity without scoring or RAAS history changes', handoff)
+        self.assertNotIn('completed_source_stage(', handoff)
+        self.assertNotIn('python scripts/nightly_scoring_audit.py', handoff)
+        self.assertNotIn('python scripts/raas', handoff)
         self.assertIn('needs: scoring', job(scoring,'error-check'))
         self.assertIn('needs: [scoring, error-check]', job(scoring,'safe-repair'))
 
