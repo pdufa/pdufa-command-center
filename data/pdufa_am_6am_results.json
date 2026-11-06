@@ -1,10 +1,10 @@
 {
   "clinical": {
     "overnight_report_published": true,
-    "published_at_utc": "2026-11-05T04:21:49.292773+00:00",
+    "published_at_utc": "2026-11-06T04:50:32.833718+00:00",
     "runs": {
       "2": {
-        "changed_trials": 43,
+        "changed_trials": 70,
         "collector_status": "COMPLETE",
         "new_records": null
       },
@@ -16,10 +16,10 @@
       "4": {
         "changed_trials": null,
         "collector_status": "COMPLETE",
-        "new_records": 1
+        "new_records": 2
       }
     },
-    "source_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41966647172",
+    "source_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42164211710",
     "status": "PARTIAL"
   },
   "gem": {
@@ -34,29 +34,29 @@
     "strict_entry_gate_shortlist_count": null,
     "verified_phase3_tracking": null
   },
-  "generated_at_pacific": "2026-11-05T12:57:57.134842-08:00",
-  "generated_at_utc": "2026-11-05T20:57:57.134842+00:00",
+  "generated_at_pacific": "2026-11-06T12:18:45.607650-08:00",
+  "generated_at_utc": "2026-11-06T20:18:45.607650+00:00",
   "notice": "Read-only snapshot. SEC-verified individual closings do not prove two independent post-Phase-3 financings. A pending/stale component must not be represented as newly verified.",
-  "overnight_scan_window_started_pacific": "2026-11-04T20:00:00-08:00",
+  "overnight_scan_window_started_pacific": "2026-11-05T20:00:00-08:00",
   "publication_delayed_after_6am": true,
   "readiness": "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS",
   "report_type": "PDUFA_6AM_PACIFIC_MORNING_RESULTS",
   "scheduled_display_time_pacific": "06:00",
   "schema_version": 1,
-  "snapshot_date_pacific": "2026-11-05",
+  "snapshot_date_pacific": "2026-11-06",
   "sources": {
     "new_claims": 0,
     "newly_resolved_claims": 0,
     "overnight_report_published": true,
     "public_ir_sec_leads_checked": 15,
     "public_ir_sec_recheck_status": "COMPLETE_RESEARCH_ONLY",
-    "published_at_utc": "2026-11-05T04:32:17.430639+00:00",
+    "published_at_utc": "2026-11-06T05:01:35.958884+00:00",
     "required_findings_cleared": 961,
     "required_findings_due": 986,
     "required_findings_unresolved": 25,
     "required_source_coverage_percent": 97.5,
     "sec_transactions_verified": 8,
-    "source_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41966647172",
+    "source_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42164211710",
     "status": "PARTIAL"
   },
   "trade_entry_eligible_from_morning_snapshot": false
