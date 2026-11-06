@@ -5,12 +5,14 @@
   "upstreamAuditFile": "new-platform/frontend/data/alks34ProtocolSafetyApplicabilityAudit20261106.json",
   "summary": {
     "registryProtocolAndSapAttachmentGaps": 23,
-    "originalPeerReviewedOrFdaOrRegistryMethodsReviewed": 10,
-    "notYetIndividuallyResearchedOutsideStoredRegistry": 13,
+    "originalPeerReviewedOrFdaOrRegistryMethodsReviewed": 15,
+    "notYetIndividuallyResearchedOutsideStoredRegistry": 0,
     "independentFdaStatisticalReviews": 1,
     "fullOriginalProtocolsNewlyLocated": 0,
     "fullOriginalSapsNewlyLocated": 0,
-    "completedProductionThirtyQuestionRescores": 0
+    "completedProductionThirtyQuestionRescores": 0,
+    "sourceCrosschecksAlreadyInUpstreamAudit": 8,
+    "sourceLinkedTrialDesignOrMethods": 23
   },
   "notes": [
     "This pass is SOURCE-BACKFILL of published methods, FDA statistical evaluation and official registry designs; those sources are NOT equivalent to a full attached original sponsor protocol and SAP.",
@@ -18,7 +20,10 @@
     "Exact NCT links are required; NCT01218958 linked through Alkermes ALK21-003 study code, dates, interventions and cohort because its 2005 main paper predates 2010 registry posting.",
     "The sponsor's FORWARD-3/-4/-5 trials have differing primary analyses; do not substitute post hoc results for original primary pass/fail.",
     "FDA's aripiprazole lauroxil independent review demonstrates SAP was submitted pre-unblinding, but the FDA report is not itself the complete original SAP.",
-    "No production 30-question ratings, FDA outcome predictions, historical trial labels or registry numeric clinical-five research grades were changed."
+    "No production 30-question ratings, FDA outcome predictions, historical trial labels or registry numeric clinical-five research grades were changed.",
+    "Second pass: Five additional exact-NCT methods searches and eight earlier official/publication source crosschecks reused; all 23 missing-attachment NCTs now have at least one trial-specific design or methods source, NOT a full protocol or SAP.",
+    "Newly researched sources include official registry descriptions, registry mirrors and journal articles, which have different evidentiary strength. No registry-only statement is promoted to an independently verified statistical analysis.",
+    "Historical P=0.336 for NCT00501631 was taken from pre-existing stored exact-trial registry primary statistics and does not modify the original endpoint adjudication."
   ],
   "records": [
     {
@@ -31,12 +36,14 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
+      "externalEvidenceDisposition": "SOURCE_ALREADY_REVIEWED_IN_UPSTREAM_AUDIT",
+      "sourceType": "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED",
+      "sourceDate": "2026-06-02",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04987229",
+      "findings": [
+        "Open-label, single-group 52-week safety extension for ages 10-17 who completed pediatric studies ALKS 3831-A311 or A312, or qualified after A312 weight-gain discontinuation; parent study eligibility is not new randomized extension efficacy evidence."
+      ],
+      "limitations": "Study recruiting by invitation; protocol/SAP documents not present in stored registry snapshot, primary safety results not posted.",
       "sourceQuestionLeads": [],
       "additionalSources": [],
       "productionQuestionStatusesUpdated": false
@@ -51,14 +58,21 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
+      "externalEvidenceDisposition": "SOURCE_ALREADY_REVIEWED_IN_UPSTREAM_AUDIT",
+      "sourceType": "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED",
+      "sourceDate": "2026-07-13",
+      "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-alixorexton-demonstrated-sustained-improvement",
+      "findings": [
+        "In an open-label extension cohort inherited from phase 2 Vibrance-1 and Vibrance-2, 78 narcolepsy type 1 and 63 narcolepsy type 2 participants entered the extension; 70 and 51 remained on treatment at the cutoff. Sponsor reported no serious treatment-emergent adverse events in these evaluated NT1/NT2 extension cohorts, with predominantly mild-to-moderate adverse events; NT1 common events included headache, urinary urgency/frequency, nasopharyngitis; NT2 included insomnia, headache, urinary frequency, upper respiratory infection. Week-24 wakefulness and sleepiness observations were descriptive and nonrandomized in the extension."
+      ],
+      "limitations": "Interim selected parent-phase-2 completers; not randomized comparison, not full trial population (IH and later Phase 3 entrants also eligible), not complete five-year safety readout; no trial-wide final results or efficacy success/failure inferred.",
       "sourceQuestionLeads": [],
-      "additionalSources": [],
+      "additionalSources": [
+        {
+          "type": "EARLIER_AUDIT_ABSTRACT",
+          "url": "https://onlinelibrary.wiley.com/doi/full/10.1111/jsr.70459"
+        }
+      ],
       "productionQuestionStatusesUpdated": false
     },
     {
@@ -71,12 +85,14 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
+      "externalEvidenceDisposition": "SOURCE_ALREADY_REVIEWED_IN_UPSTREAM_AUDIT",
+      "sourceType": "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED",
       "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
+      "sourceUrl": "https://www.dovepress.com/safety-and-efficacy-of-an-intravenous-nanocrystal-formulation-of-melox-peer-reviewed-fulltext-article-JPR",
+      "findings": [
+        "Terminated for business reasons after 50 of about 200 planned subjects; original analysis summarized safety and disposition, and later published efficacy comparisons were exploratory/post hoc, not a prespecified pivotal pass."
+      ],
+      "limitations": "Registry labels Phase 3, but original 2018 investigators describe a Phase II experiment stopped early. Efficacy findings are post hoc, not a formally successful pivotal endpoint. Product rights later transferred to Recro Pharma.",
       "sourceQuestionLeads": [],
       "additionalSources": [],
       "productionQuestionStatusesUpdated": false
@@ -91,12 +107,14 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
+      "externalEvidenceDisposition": "SOURCE_ALREADY_REVIEWED_IN_UPSTREAM_AUDIT",
+      "sourceType": "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED",
+      "sourceDate": "2026-08-14",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05303064",
+      "findings": [
+        "ENLIGHTEN-Youth (ALKS 3831-A312) is a 52-week randomized, quadruple-masked, active-control trial comparing olanzapine/samidorphan with olanzapine; registered primary BMI Z-score change at week 12, plus prespecified weight-gain, PANSS/YMRS, treatment discontinuation and safety secondaries. First study enrollment began June 2022; no observed primary BMI-Z comparison was posted in the stored snapshot."
+      ],
+      "limitations": "As of registry's August 2026 update the study remained recruiting; estimated completion date is not confirmation of trial results, and full attached protocol/SAP are not in stored snapshot.",
       "sourceQuestionLeads": [],
       "additionalSources": [],
       "productionQuestionStatusesUpdated": false
@@ -111,12 +129,14 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
+      "externalEvidenceDisposition": "SOURCE_ALREADY_REVIEWED_IN_UPSTREAM_AUDIT",
+      "sourceType": "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED",
+      "sourceDate": "2026-04-01",
+      "sourceUrl": "https://alkermes.gcs-web.com/news-releases/news-release-details/alkermes-announces-initiation-phase-3-brilliance-studies",
+      "findings": [
+        "Brilliance NT1 Study 302 was announced as initiated with Phase 3 program on April 1, 2026; planned 12-week randomized, double-blind placebo-controlled trial with two alixorexton dosing regimens versus placebo, primary MWT mean sleep latency change, supportive ESS, weekly cataplexy rate, cognition, fatigue and safety outcomes. Rationale builds from Vibrance-1 Phase 2, not an observed pivotal trial success."
+      ],
+      "limitations": "Sponsor launch notice and registered design are prior evidence only; no Phase 3 primary readout, arm-level safety results, or attached SAP in stored registry snapshot.",
       "sourceQuestionLeads": [],
       "additionalSources": [],
       "productionQuestionStatusesUpdated": false
@@ -131,12 +151,14 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
+      "externalEvidenceDisposition": "SOURCE_ALREADY_REVIEWED_IN_UPSTREAM_AUDIT",
+      "sourceType": "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED",
+      "sourceDate": "2026-04-01",
+      "sourceUrl": "https://alkermes.gcs-web.com/news-releases/news-release-details/alkermes-announces-initiation-phase-3-brilliance-studies",
+      "findings": [
+        "Brilliance NT2 Study 303 Phase 3 initiated with 12-week randomized double-blind placebo-controlled design, three alixorexton dosing regimens versus placebo, planned ~180 participants at initial announcement, primary MWT mean sleep latency change, supportive ESS, fatigue, cognition, disease severity and safety. Phase 2 Vibrance-2 observations informed dose selection; they are not Phase 3 success."
+      ],
+      "limitations": "Initial planned sample size may change with registry amendments; no observed Phase 3 primary readout or full SAP attachment in stored registry snapshot.",
       "sourceQuestionLeads": [],
       "additionalSources": [],
       "productionQuestionStatusesUpdated": false
@@ -151,12 +173,14 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
+      "externalEvidenceDisposition": "SOURCE_ALREADY_REVIEWED_IN_UPSTREAM_AUDIT",
+      "sourceType": "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED",
+      "sourceDate": "2026-07-13",
+      "sourceUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-alixorexton-demonstrated-sustained-improvement",
+      "findings": [
+        "Alkermes identified NCT07540897 as Brilliance NT1 Study 304 in the July 13, 2026 source. Its Study 304 design was described at the April 1 Phase 3 Brilliance launch as 12-week randomized double-blind placebo-controlled NT1 study with two alixorexton regimens, primary MWT mean sleep latency and supporting ESS, cataplexy, fatigue, cognition, disease-severity and safety measurements. Study 304's NCT ID was not yet published in the April 1 release."
+      ],
+      "limitations": "July source is a program study-ID crosswalk, not an efficacy readout; no attached full SAP or observed Phase 3 primary endpoint result in stored snapshot.",
       "sourceQuestionLeads": [],
       "additionalSources": [],
       "productionQuestionStatusesUpdated": false
@@ -171,12 +195,14 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
+      "externalEvidenceDisposition": "SOURCE_ALREADY_REVIEWED_IN_UPSTREAM_AUDIT",
+      "sourceType": "PRIOR_AUDIT_SOURCE_CROSSCHECK_REUSED",
+      "sourceDate": "2017-07-11",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00156923",
+      "findings": [
+        "Nonrandomized, no-placebo long-term safety extension of ALK21-003-EXT (NCT01218971); 190 mg/380 mg injectable naltrexone carried forward with up to 3.5 years monthly dosing. A comparison between these selected extension arms is not randomized efficacy proof."
+      ],
+      "limitations": "Registered AE counts and safety outcomes are descriptive; no SAP attachment in stored snapshot.",
       "sourceQuestionLeads": [],
       "additionalSources": [],
       "productionQuestionStatusesUpdated": false
@@ -222,14 +248,30 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
-      "sourceQuestionLeads": [],
-      "additionalSources": [],
+      "externalEvidenceDisposition": "ADDITIONAL_TRIAL_METHODS_OR_DESIGN_EVIDENCE_REVIEWED",
+      "sourceType": "REGISTRY_MIRROR_EXACT_NCT_SAFETY_EXTENSION",
+      "sourceDate": "2010-12-01",
+      "sourceUrl": "https://trial.medpath.com/clinical-trial/ef74499bb16557c9/nct01218971-alk21-003ext-medisorb-naltrexone-vivitrol",
+      "findings": [
+        "ALK21-003EXT was a continuation of ALK21-003 (NCT01218958), enrolling 332 completers for 48 weeks or 13 additional monthly naltrexone injections at 190 or 380 mg.",
+        "Extension maintained masked dose allocation but there was no placebo arm within this extension; previously placebo-randomized participants were reassigned to active naltrexone.",
+        "Stored ClinicalTrials.gov primary endpoint counts 143 in the 380-mg combined arm and 130 in the 190-mg combined arm who reported treatment-emergent adverse events."
+      ],
+      "limitations": "Open-label/no placebo extension cannot be interpreted as independent efficacy superiority or as randomly comparable old and new exposures; review individual source versions and arm denominators.",
+      "sourceQuestionLeads": [
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q11",
+        "Q22",
+        "Q24"
+      ],
+      "additionalSources": [
+        {
+          "type": "CANONICAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT01218971"
+        }
+      ],
       "productionQuestionStatusesUpdated": false
     },
     {
@@ -242,14 +284,31 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
-      "sourceQuestionLeads": [],
-      "additionalSources": [],
+      "externalEvidenceDisposition": "ADDITIONAL_TRIAL_METHODS_OR_DESIGN_EVIDENCE_REVIEWED",
+      "sourceType": "REGISTRY_MIRROR_EXACT_NCT_SAFETY_DESIGN",
+      "sourceDate": "2010-11-17",
+      "sourceUrl": "https://trial.medpath.com/clinical-trial/c5df6b84ab2785cd/nct01218997-randomized-open-label-safety-study-medisorb-naltrexone",
+      "findings": [
+        "ALK21-006 was a randomized open-label safety comparison of monthly IM VIVITROL 380 mg versus oral naltrexone 50 mg daily in a 6:1 assignment ratio for up to one year.",
+        "Safety monitoring included ECGs, labs, injection-site evaluations and naltrexone metabolite levels; study participants received standard psychosocial support.",
+        "The stored exact-NCT registry reports 336 participants with a treatment-emergent AE in injectable arm and 53 in oral arm; these are events/affected subjects by arm, not an efficacy advantage."
+      ],
+      "limitations": "Unblinded safety trial with large unequal arms; comparison must account for exposure/dose and denominators. Full original protocol and SAP remain unattached.",
+      "sourceQuestionLeads": [
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q11",
+        "Q22",
+        "Q23",
+        "Q24"
+      ],
+      "additionalSources": [
+        {
+          "type": "CANONICAL_REGISTRY",
+          "url": "https://clinicaltrials.gov/study/NCT01218997"
+        }
+      ],
       "productionQuestionStatusesUpdated": false
     },
     {
@@ -262,14 +321,29 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
-      "sourceQuestionLeads": [],
-      "additionalSources": [],
+      "externalEvidenceDisposition": "ADDITIONAL_TRIAL_METHODS_OR_DESIGN_EVIDENCE_REVIEWED",
+      "sourceType": "PEER_REVIEWED_EXACT_NCT_SAFETY_METHODS",
+      "sourceDate": "2017-05-01",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/28358754/",
+      "findings": [
+        "ALK21-021 evaluated monthly XR-naltrexone 380 mg in opioid-dependent healthcare professionals: single-arm open-label multisite study after at least two weeks' detoxification.",
+        "38 participants enrolled after 49 screened; 21/38 (55.3%) received at least 12 injections and seven stopped because of adverse events.",
+        "Follow-up included monthly opioid urine tests, safety assessments, craving and quality-of-life questionnaires; no comparative efficacy conclusion is justified."
+      ],
+      "limitations": "Selected healthcare professional cohort (mostly nurses and female participants) limits generalizability; single-arm outcomes cannot establish treatment effect against a control.",
+      "sourceQuestionLeads": [
+        "Q06",
+        "Q19",
+        "Q22",
+        "Q23",
+        "Q24"
+      ],
+      "additionalSources": [
+        {
+          "type": "REGISTRY_PUBLICATION_CROSSWALK",
+          "url": "https://clinicaltrials.gg/study/NCT00834080"
+        }
+      ],
       "productionQuestionStatusesUpdated": false
     },
     {
@@ -282,14 +356,30 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
-      "sourceQuestionLeads": [],
-      "additionalSources": [],
+      "externalEvidenceDisposition": "ADDITIONAL_TRIAL_METHODS_OR_DESIGN_EVIDENCE_REVIEWED",
+      "sourceType": "OFFICIAL_REGISTRY_EXACT_NCT_TITRATION_DESIGN",
+      "sourceDate": "2019-08-14",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02085135",
+      "findings": [
+        "FORWARD-1 (ALK5461-210) was randomized and double blind but its primary intent was comparative tolerability of a one-week versus a two-week titration schedule for ALKS 5461, not a pivotal efficacy superiority claim.",
+        "66 participants actually enrolled at nine trial sites, and the registry has the trial's original protocol information and submission history.",
+        "Stored primary adverse-event counts were 27 in one-week titration group and 28 in two-week titration group; this is safety/tolerability evidence only."
+      ],
+      "limitations": "Do not aggregate this tolerability trial with FORWARD-3/-4/-5 as a controlled antidepressant efficacy replication. Full sponsor SAP or protocol file not attached in stored extract.",
+      "sourceQuestionLeads": [
+        "Q05",
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q22",
+        "Q24"
+      ],
+      "additionalSources": [
+        {
+          "type": "REGISTRY_VERSION_HISTORY",
+          "url": "https://clinicaltrials.gov/study/NCT02085135?tab=history"
+        }
+      ],
       "productionQuestionStatusesUpdated": false
     },
     {
@@ -302,14 +392,30 @@
       "fullSapRegistryAttachment": false,
       "fullProtocolLocatedViaThisExternalResearch": false,
       "fullSapLocatedViaThisExternalResearch": false,
-      "externalEvidenceDisposition": "EXTERNAL_METHODS_NOT_YET_REVIEWED",
-      "sourceType": null,
-      "sourceDate": null,
-      "sourceUrl": null,
-      "findings": [],
-      "limitations": "Not yet individually investigated outside stored registry extract; no claim that full protocol or SAP is absent from all public sources.",
-      "sourceQuestionLeads": [],
-      "additionalSources": [],
+      "externalEvidenceDisposition": "ADDITIONAL_TRIAL_METHODS_OR_DESIGN_EVIDENCE_REVIEWED",
+      "sourceType": "REGISTRY_EXACT_NCT_ENFORCED_ABSTINENCE_COMPARISON",
+      "sourceDate": "2011-01-01",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00501631",
+      "findings": [
+        "ALK21-014 studied VIVITROL 380 mg versus matching IM placebo once every four weeks after 7–21 days of enforced inpatient abstinence for alcohol dependence.",
+        "Original 12-week primary outcome was cumulative distribution of heavy drinking days as percentage of the treatment observation period.",
+        "Stored exact-NCT registry results list VIVITROL versus placebo primary analysis P=0.336; this trial's historical primary outcome was previously classified NOT_MET, not altered by this methods review."
+      ],
+      "limitations": "Placebo comparison and enforced-abstinence population differ materially from ALK21-003; do not attribute a favorable primary endpoint to this trial. Full SAP and full protocol remain unattached.",
+      "sourceQuestionLeads": [
+        "Q06",
+        "Q09",
+        "Q10",
+        "Q11",
+        "Q14",
+        "Q20"
+      ],
+      "additionalSources": [
+        {
+          "type": "REGISTRY_MIRROR_DETAILS",
+          "url": "https://trial.medpath.com/clinical-trial/276f336d51a4896b/nct00501631-efficacy-safety-vivitrol-adults-alcohol-dependence"
+        }
+      ],
       "productionQuestionStatusesUpdated": false
     },
     {
