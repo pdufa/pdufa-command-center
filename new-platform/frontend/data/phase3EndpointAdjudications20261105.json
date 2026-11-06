@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 24,
+  "totalReviewed": 26,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 20,
+    "PRIMARY_ENDPOINT_MET": 22,
     "PRIMARY_ENDPOINT_NOT_MET": 2,
     "NO_BINARY_PASS_FAIL": 2
   },
@@ -225,6 +225,24 @@
       "evidenceType": "ISSUER_PHASE3_READOUT_REGISTRY_STUDY_NUMBER_MATCH",
       "reviewedAt": "2026-11-05",
       "qualification": "Mixed-dose result. Trial-level PASS refers to 50 mg prespecified primary comparison only; 25 mg missed significance. Not FDA approval."
+    },
+    {
+      "nctId": "NCT04181723",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Acadia LAVENDER trial of trofinetide in Rett syndrome met both prespecified Week 12 co-primary outcomes: RSBQ p=0.0175 and CGI-I p=0.0030. Published trial paper explicitly identifies NCT04181723; company press release Dec 6, 2021.",
+      "evidenceUrl": "https://acadia.com/en-us/media/news-releases/acadia-pharmaceuticals-announces-positive-top-line-results-1",
+      "evidenceType": "ISSUER_RELEASE_PLUS_PEER_REVIEWED_EXACT_NCT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Phase 3 outcomes met, distinct from any subsequent FDA decision; peer reviewed: https://www.nature.com/articles/s41591-023-02398-1"
+    },
+    {
+      "nctId": "NCT05031780",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Agios RISE UP sickle cell disease trial has TWO prespecified primary endpoints: hemoglobin response MET (40.6% mitapivat versus 2.9% placebo, two-sided p<0.0001); annualized sickle cell pain crises DID NOT meet significance (p=0.1213). The trial's prespecified success criterion allowed significance for at least one primary endpoint. Thus this is MIXED primary-endpoint evidence, not success on every primary endpoint. Official sponsor readout Nov 19, 2025.",
+      "evidenceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+      "evidenceType": "ISSUER_PHASE3_MIXED_DUAL_PRIMARY_ENDPOINTS",
+      "reviewedAt": "2026-11-05",
+      "qualification": "One of two co-primary outcomes did not achieve statistical significance; the favorable trial-level label must not conceal that. Sponsor reported FDA sNDA review and Feb 1, 2027 PDUFA date in Nov 5, 2026 corporate update, independent FDA confirmation not established."
     }
   ]
 }
