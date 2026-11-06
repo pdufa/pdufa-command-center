@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T04:39:46.620Z",
+  "generatedAt": "2026-11-06T04:45:38.157Z",
   "censusAsOf": "2026-11-05",
   "nctCount": 762,
-  "scope": "One completed online discovery pass against all 762 exact NCTs. Source matches are evidence leads, not primary-endpoint adjudications, FDA decisions or calibrated predictions.",
+  "scope": "Completed live online source discovery on 762 NCT identifiers; save exact NCT registry detail via /api/phase3-live-registry-backfill. Source leads do not constitute clinical endpoint adjudication.",
   "sources": {
     "clinicalTrialsGov": {
       "apiBatchCalls": 31,
@@ -30,10 +30,10 @@
     },
     "secEdgar": {
       "exactNctQueriesAttempted": 762,
-      "queryErrors": 5,
+      "queryErrors": 0,
       "rateLimitResponses": 0,
-      "trialsWithExactNctFilingMentions": 202,
-      "matchingFilingMentions": 1038
+      "trialsWithExactNctFilingMentions": 203,
+      "matchingFilingMentions": 1039
     },
     "fda": {
       "drugsFdaProbeHttpStatus": 200,
@@ -74,5 +74,8 @@
     "FDA approval and CRLs are indexed by drug/application, not reliably by NCT alone.",
     "AACT, CTIS and WHO were tested for access; bulk automated verified mapping was not completed for them.",
     "Findings may overlap across sources, and a missing source hit does not prove evidence absent."
+  ],
+  "notes": [
+    "Full harvest was executed in the remote sandbox; this GitHub file stores reconciled coverage counts, not all raw source documents."
   ]
 }
