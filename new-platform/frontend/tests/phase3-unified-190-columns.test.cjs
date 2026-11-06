@@ -7,6 +7,8 @@ const route=fs.readFileSync(path.join(root,"app/api/phase3-unified-190-columns/r
 const screen=fs.readFileSync(path.join(root,"app/Phase3UnifiedClassifications.tsx"),"utf8");
 const questionDef=fs.readFileSync(path.join(root,"lib/phase3-universal-questions.ts"),"utf8");
 const adjudications=JSON.parse(fs.readFileSync(path.join(root,"data/phase3EndpointAdjudications20261105.json"),"utf8"));
+const drugCrosswalk=JSON.parse(fs.readFileSync(path.join(root,"data/phase3RegistryDrugComparatorCrosswalk20261106.json"),"utf8"));
+const audit=fs.readFileSync(path.join(root,"app/api/phase3-missing-data-audit/route.ts"),"utf8");
 const headerCount=(name)=>{
  const m=route.match(new RegExp("const "+name+" = \\[([\\s\\S]*?)\\];"));
  assert.ok(m,"Missing column group "+name);
@@ -29,7 +31,7 @@ test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",(
  const known=new Set(ledger.rows.map(r=>r.nctId));
  assert.equal(adjudications.totalReviewed,20);
  assert.equal(adjudications.records.length,20);
- assert.equal(new Set(adjudications.records.map(r=>r.nctId)).size,19);
+ assert.equal(new Set(adjudications.records.map(r=>r.nctId)).size,20);
  assert.ok(adjudications.records.every(r=>known.has(r.nctId)&&r.evidenceUrl&&r.rationale));
  assert.equal(adjudications.counts.PRIMARY_ENDPOINT_MET,16);
  assert.equal(adjudications.counts.PRIMARY_ENDPOINT_NOT_MET,2);
@@ -50,4 +52,17 @@ test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",(
  assert.match(screen,/Passing classification/);
  assert.match(screen,/data-passing-classification/);
  assert.match(screen,/setPassingFilter/);
+});
+
+test("Live registry drug and comparator evidence are imported without inventing clinical PASS/FAIL",()=>{
+ const m=new Map(drugCrosswalk.records.map(r=>[r.nctId,r]));
+ assert.equal(drugCrosswalk.records.length,762);
+ assert.equal(m.size,762);
+ assert.equal(drugCrosswalk.records.filter(r=>Boolean(r.drugInterventions)).length,657);
+ assert.equal(drugCrosswalk.records.filter(r=>Boolean(r.comparators)).length,532);
+ assert.equal(ledger.rows.filter(r=>Boolean(r.drug)||Boolean(m.get(r.nctId)?.drugInterventions)).length,659);
+ assert.match(route,/registryByNct/);
+ assert.match(route,/r\.drug\|\|registry\?\.drugInterventions/);
+ assert.match(route,/registry\?\.comparators/);
+ assert.match(audit,/fields\.missingDrugField!==103/);
 });
