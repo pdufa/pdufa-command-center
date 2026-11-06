@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 20,
+  "totalReviewed": 22,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 16,
+    "PRIMARY_ENDPOINT_MET": 18,
     "PRIMARY_ENDPOINT_NOT_MET": 2,
     "NO_BINARY_PASS_FAIL": 2
   },
   "scope": "762 Phase 3 trial census; 19 public-readout subset",
-  "note": "Observed primary endpoint conclusions, not FDA approvals. Review exact NCT sponsor and intervention. Some trials have unknown registry status but published results; preserve both independently.",
+  "note": "22 source-adjudicated exact-NCT primary-endpoint outcomes; no registry recruitment status or FDA approval inferred. Includes issuer site findings for ABTECT Maintenance and LUCIDITY.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -189,6 +189,24 @@
       "evidenceType": "ISSUER_READOUT_AND_SEC_8K",
       "reviewedAt": "2026-11-05",
       "qualification": "Exact-NCT sponsor drug/indication/readout crosswalk; primary endpoint miss only; not a new FDA or trading decision"
+    },
+    {
+      "nctId": "NCT05535946",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "ABTECT Maintenance (Study 107) obefazimod Phase 3 Week 44 clinical remission primary endpoint met for both 25 mg and 50 mg once-daily arms versus placebo (50.8% and 51.3% vs 10.4%; both p<0.0001). Exact NCT linked by the sponsor announcement (ABTECT program listing) and registry sponsor protocol ABX464-107. Public announcement June 1, 2026.",
+      "evidenceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
+      "evidenceType": "ISSUER_PHASE3_READOUT_EXACT_NCT_PROGRAM_CROSSWALK",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Observed primary endpoint only. This does not prove NDA filed or FDA approval."
+    },
+    {
+      "nctId": "NCT06747468",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "LUCIDITY Phase 3 avexitide study in post-bariatric hypoglycemia met the prespecified primary composite of Level 2/3 hypoglycemic events through Week 16: 55% reduction compared with placebo, p=0.000003. Amylyx official news announcement August 18, 2026 explicitly ties LUCIDITY to NCT06747468.",
+      "evidenceUrl": "https://investors.amylyx.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+      "evidenceType": "ISSUER_PHASE3_READOUT_EXACT_NCT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Observed primary endpoint only. Planned NDA by end of 2026 is not a verified FDA acceptance or approval."
     }
   ]
 }
