@@ -1,11 +1,13 @@
 import Link from "next/link";
 import source from "../../data/alks34ClinicalScorecard20261106.json";
 import deepResults from "../../data/alks34RegistryDeepResults20261106.json";
+import researchAudit from "../../data/alks34ProtocolSafetyApplicabilityAudit20261106.json";
 import {clinicalFiveForTrial} from "../../lib/raas-clinical-five";
 
 export const metadata={title:"Alkermes 34-Trial Clinical Scoring | PDUFA Command Center"};
 
 const registryByNct=new Map(deepResults.records.map(r=>[r.nctId,r] as const));
+const evidenceAuditByNct=new Map(researchAudit.records.map(r=>[r.nctId,r] as const));
 const rows=source.records.map(r=>{
  const stage=r.clinicalStage==="post"?"post":"pre";
  const assessed=clinicalFiveForTrial({
@@ -15,7 +17,7 @@ const rows=source.records.map(r=>{
  },stage,r.clinicalStageVerified);
  const typeSpecificScore=r.studyPurpose==="SAFETY_PRIMARY"?
   (assessed.factors.find(f=>f.key==="safety")?.grade??null):assessed.researchScore;
- return {...r,assessed,typeSpecificScore,registry:registryByNct.get(r.nctId)};
+ return {...r,assessed,typeSpecificScore,registry:registryByNct.get(r.nctId),evidenceAudit:evidenceAuditByNct.get(r.nctId)};
 });
 const clinicalGraded=rows.reduce((n,r)=>n+r.assessed.graded,0);
 const completed=rows.filter(r=>r.studyPurpose!=="SAFETY_PRIMARY"&&r.assessed.researchScore!==null).length;
@@ -110,6 +112,41 @@ export default function AlkermesTrialScorePage(){
        </details>
       </td>
      </tr>)}</tbody>
+    </table>
+   </div>
+  </section>
+  <section className="panel" style={{marginTop:18}} data-alks-protocol-safety-audit="2026-11-06">
+   <h2>Protocol, statistics and safety evidence audit</h2>
+   <p>The independent audit links all 34 exact NCT identities to recorded primary endpoints, protocol/SAP attachment status, published registry primary statistics, arm-level adverse-event summaries, and participant retention. <strong>{researchAudit.summary.publicProtocolAndSAPInSnapshot}/34</strong> have a full protocol and statistical-analysis-plan attachment in the stored registry extract; the other <strong>{researchAudit.summary.protocolAndSapNotAttachedInSnapshot}</strong> are still document-search gaps, not proof the documents do not exist. <strong>{researchAudit.summary.primaryOutcomeStatisticalAnalysesPosted}</strong> trials have posted primary statistical analyses. <strong>{researchAudit.summary.armLevelSeriousAERecords}</strong> have arm-level serious adverse-event summaries and <strong>{researchAudit.summary.participantFlowRecords}</strong> participant-flow records.</p>
+   <p>Safety-only trials receive explicit primary-objective N/A labels for questions about confirmatory efficacy; these are <strong>research triage only</strong> and do not overwrite the separate 30-question production assessment or turn missing results into successes. An open-label extension cannot establish a randomized efficacy comparison. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/data/alks34ProtocolSafetyApplicabilityAudit20261106.json" target="_blank" rel="noopener noreferrer">View full source-linked research audit (JSON)</a>.</p>
+   <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+    <table style={{borderCollapse:"collapse",width:"100%",minWidth:920,fontSize:12}}>
+     <thead><tr style={{textAlign:"left",background:"#e7f1e9"}}>
+      {["Exact trial","Protocol / SAP attachments","Primary analyses","Safety and retention","Review details"].map(h=><th key={h} scope="col" style={{padding:"10px 8px",borderBottom:"2px solid #aac8b3"}}>{h}</th>)}
+     </tr></thead>
+     <tbody>{rows.map(r=>{const a=r.evidenceAudit;return <tr key={r.nctId} data-alks-evidence-trial={r.nctId} style={{borderBottom:"1px solid #d8e7dc",verticalAlign:"top"}}>
+      <td style={{padding:"10px 8px",whiteSpace:"nowrap"}}><a href={r.registryUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
+      <td style={{padding:"10px 8px"}}>{a?.sourceDocuments.registryProtocolAttached?"Attached":"Not attached in registry"} / {a?.sourceDocuments.registrySapAttached?"Attached":"Not attached in registry"}</td>
+      <td style={{padding:"10px 8px"}}>{a?.evidence.postedPrimaryAnalysesCount||0} registered analysis records</td>
+      <td style={{padding:"10px 8px"}}>{a?.safety.seriousAdverseEventsByArm?"Arm-level SAE available":"No arm-level SAE posted"} · {a?.retention.participantFlowByArm?"Flow available":"No posted flow"}</td>
+      <td style={{padding:"10px 8px"}}>
+       <details data-alks-evidence-expand={r.nctId}><summary style={{cursor:"pointer",fontWeight:700}}>Sources and evidence ▸</summary>
+        {a&&<div style={{maxWidth:660,marginTop:10}}>
+         <p><strong>Registered primary objective:</strong> {a.primaryEndpoint.definition} ({a.primaryEndpoint.timeframe}).</p>
+         <p><strong>Comparator in registry snapshot:</strong> {a.registeredComparator||"No comparator listed; do not infer a randomized comparator."}</p>
+         <p><strong>Document status:</strong> {a.sourceDocuments.disposition.replaceAll("_"," ")}. This is a snapshot attachment check, not an exhaustive public-document search.</p>
+         {a.evidence.reportedPrimaryStatistics.map((v,i)=><p key={i}><strong>Primary statistic:</strong> {v.primaryEndpoint} · {v.comparison||"Comparison not specified"} · p{v.pValueModifier||"="}{v.pValue||"not reported"}. <a href={v.sourceUrl} target="_blank" rel="noopener noreferrer">Registry</a></p>)}
+         {a.safety.seriousAdverseEventsByArm&&<p><strong>Serious adverse-event summaries:</strong> {a.safety.seriousAdverseEventsByArm}</p>}
+         {a.safety.otherNonSeriousAdverseEventsByArm&&<p><strong>Other adverse-event summaries:</strong> {a.safety.otherNonSeriousAdverseEventsByArm}</p>}
+         {a.retention.participantFlowByArm&&<p><strong>Participant flow:</strong> {a.retention.participantFlowByArm}</p>}
+         {a.retention.discontinuationReasonsByArm&&<p><strong>Discontinuation reasons:</strong> {a.retention.discontinuationReasonsByArm}</p>}
+         {a.reviewApplicability.universalThirtyQuestionPrimaryObjectiveOnlyNotApplicable.length>0&&<p><strong>Safety-primary question triage (not applied to universal ratings):</strong> {a.reviewApplicability.universalThirtyQuestionPrimaryObjectiveOnlyNotApplicable.map(x=>x.question+" "+x.heading).join("; ")}. These questions do not test this study's registered primary safety objective.</p>}
+         {a.additionalSourceEvidence&&<p><strong>Additional source crosscheck ({a.additionalSourceEvidence.evidenceType}):</strong> {a.additionalSourceEvidence.observations} <a href={a.additionalSourceEvidence.sourceUrl} target="_blank" rel="noopener noreferrer">Original report</a>. <strong>Limitations:</strong> {a.additionalSourceEvidence.limitations}</p>}
+         <p><small>Observed evidence is not a prospective forecast. AE events are not proof of causation; extension cohorts cannot be compared as if randomized.</small></p>
+        </div>}
+       </details>
+      </td>
+     </tr>})}</tbody>
     </table>
    </div>
   </section>
