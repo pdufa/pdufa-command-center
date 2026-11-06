@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-06",
+  "scope": "Exact-NCT observed clinical or FDA facts for active 258-trial research. These are not numerical clinical ratings, FDA probabilities or pre-readout predictions.",
+  "warnings": [
+    "Published results are treated as post-readout observations only; publications cannot be used to backtest a prospective forecast unless before prediction cutoff.",
+    "Positive efficacy data and medical safety warnings never convert automatically to a clinical factor score.",
+    "Co-primary outcomes remain separate: e.g. RISE UP pain-crisis p=0.1213 did not establish significance."
+  ],
+  "facts": [
+    {
+      "nctId": "NCT04770753",
+      "question": 20,
+      "sourceDate": "2025-07-05",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+      "evidence": "Peer-reviewed exact NCT ENERGIZE trial: Hb response met by 55/130 (42.3%) receiving mitapivat versus 1/64 (1.6%) receiving placebo; adjusted treatment difference approximately 41 percentage points. Observed comparative efficacy, not a score for clinical importance; independent minimal clinically important difference (MCID) not adjudicated.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 20,
+      "sourceDate": "2026-09-12",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+      "evidence": "Peer-reviewed ENERGIZE-T exact-NCT result: transfusion-reduction response in 52/171 (30%) mitapivat vs 11/87 (13%) placebo, adjusted treatment difference 18 percentage points (95% CI 8-27; p=0.0003). Observed outcome; no independent benefit-importance grade inferred.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 24,
+      "sourceDate": "2026-09-12",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+      "evidence": "ENERGIZE-T report: 238/258 patients (92%) completed the randomized double-blind period; study-treatment discontinuation for adverse events in 10 mitapivat patients (6%) and 1 placebo patient (1%). Cohort-level facts do not establish expected future retention.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 20,
+      "sourceDate": "2026-10-24",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42913682/",
+      "evidence": "RISE UP exact-NCT Lancet data must keep mixed co-primary evidence: hemoglobin response in 56/138 (41%) mitapivat vs 2/69 (3%) placebo, adjusted difference 38 percentage points, p<0.0001; sickle-cell pain-crisis rates 2.6 vs 3.1/year, p=0.1213 (not statistically significant). Do NOT mark both co-primary endpoints as successful.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 21,
+      "sourceDate": "2026-10-24",
+      "sourceUrl": "https://www.sciencedirect.com/science/article/pii/S0140673626014807",
+      "evidence": "RISE UP exact-NCT Lancet trial reported Hb improvements observed early and lasting median approximately 50 weeks during the randomized double-blind treatment period. This is within-trial follow-up, not evidence of sustained benefit after therapy is discontinued or an approved durability score.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05257408",
+      "question": 20,
+      "sourceDate": "2026-03-25",
+      "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+      "evidence": "FDA ROSELLA exact-NCT approval review: median PFS 6.5 vs 5.5 months with combination versus nab-paclitaxel alone (HR 0.70; 95% CI 0.54-0.91; p=0.0076); median OS 16.0 vs 11.9 months (HR 0.65; 95% CI 0.51-0.83; p=0.0004). Observed randomized effects, not numeric clinical-importance grades.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05257408",
+      "question": 23,
+      "sourceDate": "2026-03-25",
+      "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+      "evidence": "FDA relacorilant label/approval summary warns of neutropenia, severe infections, adrenal insufficiency and other risks. Warning presence is documented, not an independent adverse-event incidence comparison or acceptable-safety rating.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05257408",
+      "question": 28,
+      "sourceDate": "2026-03-25",
+      "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+      "evidence": "FDA approved relacorilant (Lifyorli) plus nab-paclitaxel on March 25, 2026 for the ROSELLA-specific platinum-resistant ovarian/fallopian/peritoneal cancer population, explicitly citing NCT05257408. Historical exact-trial regulatory result, not forecast for other indications or programs.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT02598661",
+      "question": 20,
+      "sourceDate": "2024-01-20",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+      "evidence": "Phase 3 IMerge randomized exact-NCT Lancet report: at least 8-week red blood cell transfusion independence achieved by 47/118 (40%) imetelstat vs 9/60 (15%) placebo, treatment difference 25 percentage points (95% CI 9.9-36.9; p=0.0008). Severe cytopenias reported in treatment arm; no automatic clinical-importance score.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT02598661",
+      "question": 21,
+      "sourceDate": "2024-01-20",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+      "evidence": "Phase 3 IMerge exact NCT published durable transfusion-independence analysis: duration among transfusion-independent responders approximately 51.6 weeks with imetelstat compared with 13.3 weeks with placebo. Selected responder-duration result, not unconditional duration in all randomized participants.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 20,
+      "sourceDate": "2026-02-23",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "evidence": "OASISplus exact-NCT open-label extension Year-1 cohort: mean Angioedema Quality of Life improvement at 52 weeks was 28.1 points (Q4W) and 26.7 (Q8W), compared with OASIS-HAE baseline; no concurrent randomized comparator. Paper describes threshold-based meaningful improvement; no trial-level calibrated clinical rating.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 21,
+      "sourceDate": "2026-02-23",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "evidence": "OASISplus exact-NCT 1-year open-label extension: 83 rolled-over patients, 75 completed Year 1, median donidalorsen exposure 392.3 days. Mean HAE attack-rate reductions from earlier OASIS-HAE baseline were 94% (Q4W) and 95% (Q8W) through 52 weeks; non-randomized extension cannot establish placebo-adjusted long-term effect.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 24,
+      "sourceDate": "2026-02-23",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "evidence": "OASISplus one-year open-label extension: 75/83 (90.4%) completed Year 1, 22/83 (27%) had treatment-related TEAEs, with no treatment-related serious AEs reported. Descriptive follow-up evidence only.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 28,
+      "sourceDate": "2026-09-03",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "evidence": "FDA September 3, 2026 approval of zilganersen (ZANVASTRO) explicitly identifies exact supporting pivotal study NCT04849741 in Alexander disease. Historical FDA result; not a retrospective clinical prediction, and no stand-alone binary primary endpoint score inferred.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05774756",
+      "question": 20,
+      "sourceDate": "2026-07-08",
+      "sourceUrl": "https://www.nejm.org/doi/10.1056/NEJMoa2512275",
+      "evidence": "TRANSCEND exact-NCT randomized data at 52 weeks: least-squares mean BMI change −16.5% setmelanotide versus +3.3% placebo (p<0.001); maximal hunger score changes −2.73 versus −1.45 (p=0.009). Serious adverse events occurred in 28% versus 8%. Observed endpoint values are not a safety or clinical-importance grade.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05774756",
+      "question": 21,
+      "sourceDate": "2026-07-08",
+      "sourceUrl": "https://www.nejm.org/doi/10.1056/NEJMoa2512275",
+      "evidence": "TRANSCEND exact-NCT published randomized 52-week BMI and hunger treatment results. Follow-up is 52 weeks on trial therapy; evidence of maintained benefit after discontinuation has not been established by this source, so no durability grade is inferred.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT04544293",
+      "question": 20,
+      "sourceDate": "2025-08-20",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40834301/",
+      "evidence": "IMPALA-2 exact-NCT randomized report in autoimmune pulmonary alveolar proteinosis: mean DLCO change at Week 24 of 9.8 percentage points molgramostim vs 3.8 placebo, difference 6.0 points (95% CI 2.5-9.4; p<0.001). SGRQ-T difference reported; another SGRQ-A comparison not statistically significant, affecting secondary endpoint hierarchy. No independent clinical-importance grade.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT04544293",
+      "question": 21,
+      "sourceDate": "2025-08-20",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40834301/",
+      "evidence": "IMPALA-2 exact-NCT randomized Week-48 observation: DLCO change 11.6 percentage points with molgramostim versus 4.7 placebo, both measured relative to baseline (p<0.001 for between-group contrast). On-treatment 48-week follow-up, not long-term post-treatment durability.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    }
+  ]
+}
