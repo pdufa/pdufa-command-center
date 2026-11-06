@@ -6,13 +6,19 @@ const path=require("node:path");
 const Module=require("node:module");
 const ts=require("typescript");
 const root=path.resolve(__dirname,"..");
-const sourcePath=path.join(root,"lib/phase3-active-cohorts.ts");
-const compiled=ts.transpileModule(fs.readFileSync(sourcePath,"utf8"),{
- compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}
-}).outputText;
-const unit=new Module(sourcePath,module);unit.filename=sourcePath;unit.paths=module.paths;
-unit._compile(compiled,sourcePath);
-const {activePhase3Cohorts:result,PROMOTED_ISSUER_NCTS}=unit.exports;
+function loadTs(file,imports={}){
+ const compiled=ts.transpileModule(fs.readFileSync(file,"utf8"),{
+  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}
+ }).outputText;
+ const unit=new Module(file,module);unit.filename=file;unit.paths=module.paths;
+ const regularRequire=unit.require.bind(unit);
+ unit.require=(specifier)=>Object.prototype.hasOwnProperty.call(imports,specifier)?imports[specifier]:regularRequire(specifier);
+ unit._compile(compiled,file);
+ return unit.exports;
+}
+const policy=loadTs(path.join(root,"lib/pdufa-selected-restrictions.ts"));
+const {activePhase3Cohorts:result,PROMOTED_ISSUER_NCTS}=loadTs(
+ path.join(root,"lib/phase3-active-cohorts.ts"),{"./pdufa-selected-restrictions":policy});
 const original=JSON.parse(fs.readFileSync(path.join(root,"public/phase3-unified-classifications-2026-11-05.json"),"utf8"));
 const active=new Set(["RECRUITING","NOT_YET_RECRUITING","ACTIVE_NOT_RECRUITING","ENROLLING_BY_INVITATION"]);
 test("Exactly 238 Pre-Data and 20 Post-Data, all 258 unique active NCTs",()=>{
