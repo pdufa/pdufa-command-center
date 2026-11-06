@@ -110,7 +110,7 @@ export default function AlkermesTrialScorePage(){
   <section className="panel" style={{marginTop:18}}>
    <h2>Research exclusions and remaining work</h2>
    <p>Historical safety extensions and terminated studies cannot automatically be treated as pivotal efficacy successes or failures. Published results should be linked to the original endpoints, regulatory correspondence and the exact trial drug/indication. A null grade is an explicit research gap, not a negative result.</p>
-   <p>Data snapshot: {source.asOf}. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-trial-five-clinical-scores-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Download all 34 clinical scorecards (CSV)</a>. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-trial-evidence-scoring-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Original data-gaps audit</a>. <Link href="/pipeline">Back to Pipeline</Link>.</p>
+   <p>Data snapshot: {source.asOf}. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-trial-five-clinical-scores-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Download all 34 clinical scorecards (CSV)</a>. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-clinical-factor-dispositions-2026-11-06.json" target="_blank" rel="noopener noreferrer">All 170 factor classifications and original sources</a>. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/alks-34-trial-evidence-scoring-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Original data-gaps audit</a>. <Link href="/pipeline">Back to Pipeline</Link>.</p>
   </section>
  </main>;
 }
