@@ -27,9 +27,7 @@
     "Historical observed endpoints sourced from exact-NCT clinical publications are not FDA decisions.",
     "No market signal or dated price is inferred during SVA trading halt.",
     "ClinicalTrials.gov may have no results posted even when a peer-reviewed clinical publication is available.",
-    "All 27 registered primary endpoint descriptions cross-reconciled with original 2026-11-05 ClinicalTrials.gov deep registry snapshots; none has saved registry-posted results in that baseline. Journal readouts are separate sources.",
-    "SVA US shares reported trading halted since 2019 in 2025 Form 20-F filed June 2026; continue to exclude from tradable US shortlist pending authoritative evidence of trading resumption.",
-    "Original-source recovery now covers 14 of 27 Sinovac historical primary endpoint classes (12 met, 2 mixed/nonbinary); remaining 13 are unadjudicated, frequently ongoing. Clinical-five RAAS ratings still unavailable."
+    "Source-reconciled 14 exact-NCT historical outcomes (12 met, 2 mixed); other 13 remain unknown or ongoing. All original published leads, source snapshots and nonclinical documentary ratings retained."
   ],
   "records": [
     {
@@ -57,7 +55,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": "https://pubmed.ncbi.nlm.nih.gov/42659917/",
+      "otherPublishedResearchNote": "2026 randomized multicountry poliovirus noninferiority article reports seroconversion by serotype, but full prespecified adjusted confidence interval decision remains unadjudicated."
     },
     {
       "nctId": "NCT07416110",
@@ -84,7 +83,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT02451969",
@@ -111,7 +111,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03526978",
@@ -138,7 +139,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03822754",
@@ -165,7 +167,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03822767",
@@ -192,7 +195,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03853993",
@@ -219,7 +223,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03859141",
@@ -246,7 +251,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT03909074",
@@ -273,7 +279,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT04386707",
@@ -300,7 +307,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT05245552",
@@ -327,7 +335,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT05386810",
@@ -354,7 +363,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT05431725",
@@ -381,7 +391,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": "https://www.nature.com/articles/s41467-025-67102-y",
+      "otherPublishedResearchNote": "2025 subset immunogenicity report found both vaccines increased antibody titers; not a verified noninferiority primary pass or US FDA action."
     },
     {
       "nctId": "NCT06049927",
@@ -408,7 +419,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07211152",
@@ -435,7 +447,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07357545",
@@ -462,7 +475,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT06734832",
@@ -489,7 +503,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07055295",
@@ -516,7 +531,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07055893",
@@ -543,7 +559,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07505810",
@@ -570,7 +587,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07505823",
@@ -597,7 +615,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07505836",
@@ -624,7 +643,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07505888",
@@ -651,7 +671,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT07793227",
@@ -678,7 +699,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT01507857",
@@ -705,7 +727,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     },
     {
       "nctId": "NCT01636245",
@@ -732,7 +755,8 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4070950/",
+      "otherPublishedResearchNote": "2014 cross-reactive antibody assay reports 30 sera from this exact lot trial; not a full primary lot-consistency analysis."
     },
     {
       "nctId": "NCT07611513",
@@ -759,10 +783,13 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
+      "otherPublishedResearchSource": null,
+      "otherPublishedResearchNote": null
     }
   ],
-  "historicalPrimaryNotMet": 0,
+  "exactTrialPrimaryEndpointsCaptured": 27,
+  "independentlyPublishedResearchNotYetPrimaryAdjudicated": 3,
   "registryPrimaryEndpointsDocumented": 27,
-  "numericalDocumentationScores": 27
+  "numericalDocumentationScores": 27,
+  "historicalPrimaryNotMet": 0
 }
