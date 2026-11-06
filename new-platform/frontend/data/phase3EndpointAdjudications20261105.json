@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 57,
+  "totalReviewed": 63,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 46,
+    "PRIMARY_ENDPOINT_MET": 50,
     "PRIMARY_ENDPOINT_NOT_MET": 8,
-    "NO_BINARY_PASS_FAIL": 3
+    "NO_BINARY_PASS_FAIL": 5
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
   "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions.",
@@ -562,6 +562,78 @@
       "identityCrosswalk": "Exact registry NCT05552326, sponsor protocol ISIS 678354-CS6; CORE2-TIMI 72b, olezarsen. Indication: Severe Hypertriglyceridemia",
       "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT05552326",
       "qualification": "Observed historical result, not a prospective prediction. Dose, external-comparator and pooled-program distinctions remain explicit."
+    },
+    {
+      "nctId": "NCT02667236",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "SEBK-301: complete clearance of four lesions at day 106: 9/223 active versus 0/227 vehicle; issuer p<0.002. FDA statistical review independently supports success.",
+      "evidenceUrl": "https://investor.aclaristx.com/static-files/01e1e9f5-563a-412b-bc6c-a51de0a8837c",
+      "sourceDate": "2016-11-15",
+      "reviewedAt": "2026-11-06",
+      "evidenceType": "EXACT_PROTOCOL_ISSUER_FDA_REGISTRY_CROSSWALK",
+      "identityCrosswalk": "Exact registry NCT02667236 = A-101-SEBK-301; hydrogen peroxide; Seborrheic Keratosis",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02667236",
+      "qualification": "Historical observation only. Open-label descriptive outcomes are not efficacy successes."
+    },
+    {
+      "nctId": "NCT02667275",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "SEBK-302: complete clearance of four lesions at day 106: 19/244 active versus 0/243 vehicle; issuer p<0.0001.",
+      "evidenceUrl": "https://investor.aclaristx.com/static-files/01e1e9f5-563a-412b-bc6c-a51de0a8837c",
+      "sourceDate": "2016-11-15",
+      "reviewedAt": "2026-11-06",
+      "evidenceType": "EXACT_PROTOCOL_ISSUER_FDA_REGISTRY_CROSSWALK",
+      "identityCrosswalk": "Exact registry NCT02667275 = A-101-SEBK-302; hydrogen peroxide; Seborrheic Keratosis",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02667275",
+      "qualification": "Historical observation only. Open-label descriptive outcomes are not efficacy successes."
+    },
+    {
+      "nctId": "NCT02667288",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "SEBK-303 is a separate open-label single-group study, not a pivotal-trial extension. Registry primary clearance at day 148: 16/147; no randomized efficacy comparison or binary success threshold.",
+      "evidenceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2017/209305Orig1s000MedR.pdf",
+      "sourceDate": "2017-11-21",
+      "reviewedAt": "2026-11-06",
+      "evidenceType": "EXACT_PROTOCOL_ISSUER_FDA_REGISTRY_CROSSWALK",
+      "identityCrosswalk": "Exact registry NCT02667288 = A-101-SEBK-303; hydrogen peroxide; Seborrheic Keratosis",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02667288",
+      "qualification": "Historical observation only. Open-label descriptive outcomes are not efficacy successes."
+    },
+    {
+      "nctId": "NCT03687372",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "THWART-1 (WART-301): all baseline warts clear at day 60 in 40/254 active versus 13/249 vehicle; p=0.0003.",
+      "evidenceUrl": "https://investor.aclaristx.com/news-releases/news-release-details/aclaris-therapeutics-101-45-topical-solution-meets-primary-and-1",
+      "sourceDate": "2019-10-24",
+      "reviewedAt": "2026-11-06",
+      "evidenceType": "EXACT_PROTOCOL_ISSUER_FDA_REGISTRY_CROSSWALK",
+      "identityCrosswalk": "Exact registry NCT03687372 = A-101-WART-301; hydrogen peroxide; Common Wart",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03687372",
+      "qualification": "Historical observation only. Open-label descriptive outcomes are not efficacy successes."
+    },
+    {
+      "nctId": "NCT03691831",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "THWART-2 (WART-302): all baseline warts clear at day 60 in 33/251 active versus 8/251 vehicle; issuer p<0.0001. Registry displays p=0.0001 without a modifier; original-source precision retained.",
+      "evidenceUrl": "https://investor.aclaristx.com/news-releases/news-release-details/aclaris-therapeutics-101-45-topical-solution-meets-primary-and-0",
+      "sourceDate": "2019-09-16",
+      "reviewedAt": "2026-11-06",
+      "evidenceType": "EXACT_PROTOCOL_ISSUER_FDA_REGISTRY_CROSSWALK",
+      "identityCrosswalk": "Exact registry NCT03691831 = A-101-WART-302; hydrogen peroxide; Common Wart",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03691831",
+      "qualification": "Historical observation only. Open-label descriptive outcomes are not efficacy successes."
+    },
+    {
+      "nctId": "NCT03812510",
+      "endpointOutcome": "NO_BINARY_PASS_FAIL",
+      "rationale": "WART-303 is an open-label safety extension with no efficacy pass/fail threshold. TEAEs: 70/163 previously-active and 116/213 previously-vehicle participants; all received active extension treatment. These are prior-treatment strata, not concurrent active/control arms.",
+      "evidenceUrl": "https://clinicaltrials.gov/study/NCT03812510",
+      "sourceDate": "2020-11-23",
+      "reviewedAt": "2026-11-06",
+      "evidenceType": "EXACT_PROTOCOL_ISSUER_FDA_REGISTRY_CROSSWALK",
+      "identityCrosswalk": "Exact registry NCT03812510 = A-101-WART-303; hydrogen peroxide; Common Wart",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03812510",
+      "qualification": "Historical observation only. Open-label descriptive outcomes are not efficacy successes."
     }
   ]
 }
