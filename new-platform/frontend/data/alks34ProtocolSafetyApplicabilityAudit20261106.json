@@ -19,7 +19,9 @@
     "efficacyOrComparativePrimaryTrials": 19,
     "clinicalFactorsNotApplicable": 55,
     "unscoredUniversalQuestionSlotsInSnapshot": 546,
-    "supplementalOfficialOrPeerReviewedSourceCrosschecks": 4
+    "supplementalOfficialOrPeerReviewedSourceCrosschecks": 5,
+    "safetyPrimaryTrialsWithCoPrimaryClinicalMeasure": 1,
+    "primaryObjectiveOnlyNaQuestionTriageCount": 42
   },
   "notes": [
     "This is a research supplement for ALKS only; existing numerical clinical research grades, historical outcome classifications, 762-trial production Q01–Q30 statuses, and FDA decision predictions are unchanged.",
@@ -27,7 +29,8 @@
     "Safety-primary trials have no binary efficacy pass/fail, even when safety results are posted.",
     "A normalized primary outcome P-value from a registered study is historical observed evidence, not a prospective forecast.",
     "Special source NCT06767683 is a July 2026 interim extension report plus an October 2026 abstract, not final registry results or a randomized Phase 3 readout.",
-    "Conservative proposed primary-objective question applicability does not rewrite the universal question count, forecast score, or missing-data audit."
+    "Conservative proposed primary-objective question applicability does not rewrite the universal question count, forecast score, or missing-data audit.",
+    "Exception: NCT03201757 is safety-prioritized but has co-primary CGI-S severity; no automatic Q01/Q19/Q20 N/A label, and no implied randomized comparative efficacy."
   ],
   "records": [
     {
@@ -1359,30 +1362,17 @@
           "clinicalBenefit",
           "statistics"
         ],
-        "universalThirtyQuestionPrimaryObjectiveOnlyNotApplicable": [
-          {
-            "question": "Q01",
-            "heading": "Primary efficacy endpoint success",
-            "disposition": "NOT_APPLICABLE_TO_PRIMARY_SAFETY_OBJECTIVE",
-            "reason": "The registered primary objective is adverse-event incidence rather than a confirmatory efficacy test."
-          },
-          {
-            "question": "Q19",
-            "heading": "Consistent subgroup treatment benefit",
-            "disposition": "NOT_APPLICABLE_TO_PRIMARY_SAFETY_OBJECTIVE",
-            "reason": "No confirmatory subgroup efficacy benefit is required to satisfy this safety-primary extension's registered primary objective."
-          },
-          {
-            "question": "Q20",
-            "heading": "Anticipated primary clinical benefit",
-            "disposition": "NOT_APPLICABLE_TO_PRIMARY_SAFETY_OBJECTIVE",
-            "reason": "Benefit forecasting cannot be inferred from an adverse-event-count primary endpoint; any exploratory efficacy must be evaluated separately."
-          }
-        ],
-        "notApplicableQuestionRule": "Primary-objective N/A labels are research triage, NOT changes to production Q01–Q30 statuses or to program-level questions; a safety trial may contain exploratory efficacy measurements."
+        "universalThirtyQuestionPrimaryObjectiveOnlyNotApplicable": [],
+        "notApplicableQuestionRule": "The registered primary outcomes include both adverse-event incidence and CGI-S clinical severity change; do not automatically exempt Q01/Q19/Q20 or claim a randomized efficacy test. Review both outcomes under single-arm study constraints."
       },
       "remainingAssessmentQuestionsSnapshot": 16,
-      "additionalSourceEvidence": null
+      "additionalSourceEvidence": {
+        "evidenceType": "PEER_REVIEWED_LONG_TERM_SAFETY_AND_CGIS",
+        "sourceDate": "2024-12-04",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39630083/",
+        "observations": "Published four-year open-label ALKS 3831 study reports persistent clinical severity control by CGI-S and long-term safety; the registry has both AE incidence and CGI-S among primary outcomes. The study is single-arm, so there is no randomized controlled efficacy superiority inference.",
+        "limitations": "Observational extension with selected participants and attrition; CGI-S symptom stability does not establish controlled efficacy superiority or FDA approval likelihood."
+      }
     },
     {
       "nctId": "NCT03610048",
