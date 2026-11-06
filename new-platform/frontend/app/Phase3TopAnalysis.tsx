@@ -1,38 +1,65 @@
 "use client";
-import {phase3QuestionSlots,phase3CompletedQuestions,PHASE3_QUESTION_COUNT} from "../lib/phase3-top-questions";
+import {useState} from "react";
+import {phase3QuestionSlots,phase3CompletedQuestions,phase3DocumentedQuestionFacts,PHASE3_QUESTION_COUNT} from "../lib/phase3-top-questions";
 const tableCell={padding:"8px",borderBottom:"1px solid #d6e6db",textAlign:"left" as const};
 export function TopPhase3Analysis({nctId}:{nctId:string}){
- const questions=phase3QuestionSlots(nctId),completed=phase3CompletedQuestions(nctId);
- return <details data-phase3-analysis={nctId} style={{minWidth:235,maxWidth:500}}>
-  <summary style={{cursor:"pointer",fontWeight:700}}>
-   Analysis · {completed}/{PHASE3_QUESTION_COUNT} documented
+ const questions=phase3QuestionSlots(nctId),predictions=phase3CompletedQuestions(nctId);
+ const facts=phase3DocumentedQuestionFacts(nctId);
+ const [expanded,setExpanded]=useState(false);
+ const [openQuestions,setOpenQuestions]=useState<number[]>(nctId==="NCT06641089"?[2,3]:[]);
+ return <details data-phase3-analysis={nctId} onToggle={e=>setExpanded(e.currentTarget.open)}
+  style={{minWidth:230,maxWidth:510}}>
+  <summary style={{cursor:"pointer",fontWeight:750}}>
+   {PHASE3_QUESTION_COUNT} questions · {predictions} predictions · {facts} source facts
   </summary>
-  <div style={{fontSize:12,lineHeight:1.5,marginTop:7}}>
-   <p><strong>Pre-readout predictions only.</strong> No Phase 3 efficacy result is inferred. Question scores (0–100) are subjective favorable-outcome assessments, not calibrated probabilities or reported results. RAAS surveys remain cancelled.</p>
-   {questions.map(q=><details key={q.number} open={(q.number===2||q.number===3)&&!!q.answer} style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
+  {expanded&&<div style={{fontSize:12,lineHeight:1.5,marginTop:7}}>
+   <p><strong>Pre-readout research only.</strong> Predictions, source documentation and missing evidence
+    are separate. Source-documentation scores are NOT approval probabilities. RAAS surveys remain cancelled.</p>
+   {questions.map(q=><details key={q.number} open={openQuestions.includes(q.number)}
+    onToggle={e=>setOpenQuestions(old=>e.currentTarget.open?
+     old.includes(q.number)?old:[...old,q.number]:old.filter(x=>x!==q.number))}
+    style={{padding:"7px 0",borderTop:"1px solid #d6e6db"}}>
     <summary style={{cursor:"pointer"}}>
-     Q{q.number} · {q.heading}{q.answer?" — "+q.answer.prediction+" · "+q.answer.score+"/100":" — not assessed"}
+     Q{q.number} · {q.heading}{q.answer?" · "+q.answer.prediction+" "+q.answer.score+"/100":
+      q.observation?" · source documented":" · not scored"}
     </summary>
+    <div><p><strong>{q.question}</strong></p>
     {q.answer?<div>
-     <p><strong>{q.answer.question}</strong></p>
-     <div data-phase3-prediction={q.answer.prediction} style={{margin:"10px 0",padding:"10px 12px",border:"2px solid #a4c9ad",borderRadius:8,background:"#f0f8f2"}}>
+     <div data-phase3-prediction={q.answer.prediction} style={{margin:"10px 0",padding:"10px 12px",
+      border:"2px solid #a4c9ad",borderRadius:8,background:"#f0f8f2"}}>
       <div style={{fontSize:12,fontWeight:750,letterSpacing:"0.07em",color:"#24583a"}}>PREDICTED · NOT REPORTED</div>
       <div style={{display:"flex",alignItems:"baseline",gap:14,flexWrap:"wrap"}}>
-       <div style={{fontSize:34,lineHeight:1.12,fontWeight:900,letterSpacing:"0.05em",color:"#155e34"}}>{q.answer.prediction}</div>
-       <div data-question-score={q.number} style={{fontSize:27,lineHeight:1.16,fontWeight:850,color:"#155e34"}}>{q.answer.score}<span style={{fontSize:15,fontWeight:650}}>/100</span></div>
+       <div style={{fontSize:34,lineHeight:1.12,fontWeight:900,letterSpacing:"0.05em",color:q.answer.prediction==="FAIL"?"#9d2424":"#155e34"}}>{q.answer.prediction}</div>
+       <div data-question-score={q.number} style={{fontSize:27,fontWeight:850,color:"#155e34"}}>
+        {q.answer.score}<span style={{fontSize:15,fontWeight:650}}>/100</span>
+       </div>
       </div>
-      <div style={{fontSize:11,color:"#38624a",marginTop:4}}>Subjective favorable-outcome score · not a reported result or statistically calibrated probability</div>
+      <div style={{fontSize:11,color:"#38624a",marginTop:4}}>
+       Subjective favorable-outcome score · not a reported result or statistically calibrated probability
+      </div>
       <p style={{margin:"6px 0 0"}}>{q.answer.summary}</p>
      </div>
      <p><strong>Reason:</strong> {q.answer.reason}</p>
-     <p>Prediction recorded: {q.answer.asOf}. Evidence baseline: {q.answer.evidenceCutoff}.</p>
-     <p><strong>Actual IZAR-2 Phase 3 result:</strong> not reported as of 2026-11-05.</p>
-     <ul>{q.answer.sources.map(s=><li key={s.url}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a></li>)}</ul>
-    </div>:<p>Reserved for the original Question {q.number}. Its wording and analysis have not been established; no result has been invented.</p>}
+     <p>Prediction recorded {q.answer.asOf}; evidence cutoff: {q.answer.evidenceCutoff}.</p>
+     <p><strong>Actual Phase 3 results:</strong> not included in this prediction.</p>
+     <ul>{q.answer.sources.map(s=><li key={s.url}>
+      <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a></li>)}</ul>
+    </div>:q.observation?<div>
+     <p style={{fontSize:15,fontWeight:800,color:"#155e34"}}>DOCUMENTED SOURCE FACT · {q.observation.documentationScore}/100</p>
+     <p><strong>Documentation-only score.</strong> It confirms the registry field appears in the saved
+      source; it does not predict trial PASS, clinical benefit, FDA approval or a PDUFA decision.</p>
+     <p>{q.observation.description}</p>
+     <a href={q.observation.sourceUrl} target="_blank" rel="noopener noreferrer">Source registry</a>
+    </div>:<div>
+     <p><strong>NOT SCORED.</strong> Available evidence cannot support a trial-outcome prediction.</p>
+     <p><strong>Evidence needed:</strong> {q.missingEvidence}</p>
+    </div>}
+    </div>
    </details>)}
-  </div>
+  </div>}
  </details>;
 }
+
 /** A visible analysis example, kept explicitly outside the market-cap-screened
  * membership and source counts until the live CSV verifies inclusion. */
 export function TopPhase3ResearchExample(){

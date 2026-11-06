@@ -4,6 +4,7 @@ import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import CapScreenedTopPhase3Spreadsheet from "./CapScreenedTopPhase3Spreadsheet";
 import {TopPhase3ResearchExample} from "./Phase3TopAnalysis";
+import Phase3PreDataBatch from "./Phase3PreDataBatch";
 const tableStyle={width:"100%",borderCollapse:"collapse" as const,fontSize:13};
 const cell={padding:"9px",borderBottom:"1px solid #d8e2dc",textAlign:"left" as const};
 function Rows({rows,query}:{rows:ReadoutRow[];query:string}){
@@ -37,7 +38,7 @@ export default function Phase3SourceOnlySheets(){
   return()=>controller.abort();
  },[]);
  const q=useMemo(()=>query.trim().toLowerCase(),[query]);
- if(!data)return <p role="status">{status}</p>;
+ if(!data)return <><Phase3PreDataBatch query={query}/><p role="status">{status}</p></>;
  return <section data-surveys-ratings-cancelled="true" style={{padding:"8px 0"}}>
   <p role="status"><strong>Surveys and ratings: cancelled.</strong> Source-only Phase 3 spreadsheets remain available; no clinical grades or scorecards are generated here.</p>
   <label style={{display:"block",margin:"12px 0"}}>Search ticker, NCT, company, therapy or indication
@@ -46,6 +47,7 @@ export default function Phase3SourceOnlySheets(){
   <details open style={{border:"1px solid #b0cbb9",borderRadius:9,padding:12,margin:"12px 0"}}>
    <summary style={{fontWeight:750,cursor:"pointer"}}>TOP · Phase 3 before a documented public readout ({data.pre.length} issuer-classified historical)</summary>
    <TopPhase3ResearchExample/>
+   <Phase3PreDataBatch query={query}/>
    <CapScreenedTopPhase3Spreadsheet classification={data} query={query}/>
    <Rows rows={data.pre} query={q}/>
   </details>
