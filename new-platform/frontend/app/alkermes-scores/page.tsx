@@ -79,8 +79,8 @@ export default function AlkermesTrialScorePage(){
          {r.assessed.factors.map(f=><div key={f.id} style={{flex:"0 0 190px",background:"#fff",border:"1px solid #bed8c7",borderRadius:8,padding:10}}>
           <strong style={{display:"block",fontSize:12}}>{f.name}</strong>
           <strong style={{display:"block",fontSize:20,margin:"7px 0"}}>{f.grade===null?"N/A":f.grade+"/100"}</strong>
-          <div style={{fontSize:12}}>{f.finding?.replaceAll("_"," ")||(r.notApplicableClinicalFactors.includes(f.key)?"Not applicable — no efficacy outcome measured":"Still requires supporting trial evidence")}</div>
-          <p style={{fontSize:11,margin:"8px 0"}}>{f.grade===null&&r.notApplicableClinicalFactors.includes(f.key)?"This study did not test the clinical effect represented by this factor. No grade is applicable; this is not a zero score or efficacy failure.":f.grade===null?f.requiredEvidence:"Source-accepted research grade; not a validated FDA forecast."}</p>
+          <div style={{fontSize:12}}>{f.finding?.replaceAll("_"," ")||((r.notApplicableClinicalFactors as readonly string[]).includes(f.key)?"Not applicable — no efficacy outcome measured":"Still requires supporting trial evidence")}</div>
+          <p style={{fontSize:11,margin:"8px 0"}}>{f.grade===null&&(r.notApplicableClinicalFactors as readonly string[]).includes(f.key)?"This study did not test the clinical effect represented by this factor. No grade is applicable; this is not a zero score or efficacy failure.":f.grade===null?f.requiredEvidence:"Source-accepted research grade; not a validated FDA forecast."}</p>
           {f.sourceUrl&&<a href={f.sourceUrl} target="_blank" rel="noopener noreferrer" style={{fontSize:11}}>Original source</a>}
           {f.benchmarkSourceUrl&&<p style={{fontSize:11}}><a href={f.benchmarkSourceUrl} target="_blank" rel="noopener noreferrer">Comparator / benchmark</a></p>}
           {f.assessedAt&&<small>Reviewed {f.assessedAt}</small>}
