@@ -6,6 +6,7 @@
  */
 import type {ReadoutClassification,ReadoutRow} from "./phase3-public-readout";
 import type {RaasScreenedTrialRoster} from "./raas-full-universe-roster";
+import {phase3AnalysisCsvHeaders,phase3AnalysisCsvValues} from "./phase3-top-questions";
 export type CapScreenedTopPhase3={
  sourceAsOf:string;
  candidates:ReadoutRow[];
@@ -53,7 +54,7 @@ export function capScreenedTopPhase3Csv(
   .replace(/"/g,'""')+'"';
  const headers=["NCT","Ticker","Company","Drug / therapy","Indication",
   "Recorded development stage","Readout status","Cap-screen source as of",
-  "Market-cap range","Registry source"];
+  "Market-cap range","Registry source",...phase3AnalysisCsvHeaders()];
  const present=[...split.alreadyTop,...split.candidates]
   .sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId));
  const verified=new Set(split.alreadyTop.map(x=>x.nctId));
@@ -64,7 +65,7 @@ export function capScreenedTopPhase3Csv(
   const vals=[row.nctId,row.ticker,row.company,d.drug,d.indication,
    d.recordedStage,verified.has(row.nctId)?"TOP_AS_OF_SAVED_ISSUER_CHECK":"READOUT_UNVERIFIED",
    split.sourceAsOf,"$300M–$10B (dated verified issuer screen)",
-   row.sourceUrl];
+   row.sourceUrl,...phase3AnalysisCsvValues(row.nctId)];
   out.push(vals.map(quote).join(","));
  }
  return "\uFEFF"+out.join("\r\n")+"\r\n";

@@ -6,6 +6,7 @@ import {RAAS_RESTRICTED_TOP_PHASE3_CSV_QUERY,parseRaasScreenedPhase3Csv,
 import {splitCapScreenedTopPhase3,capScreenedTopPhase3Csv}
  from "../lib/raas-cap-screened-top-phase3";
 
+import {TopPhase3Analysis} from "./Phase3TopAnalysis";
 const PAGE_SIZE=50;
 const th={padding:"9px 10px",textAlign:"left" as const,borderBottom:"2px solid #94bba3"};
 const td={padding:"9px 10px",borderBottom:"1px solid #d6e6db",verticalAlign:"top" as const};
@@ -90,7 +91,7 @@ export default function CapScreenedTopPhase3Spreadsheet({classification,query}:{
     tabIndex={0} style={{overflowX:"auto",maxWidth:"100%"}}>
     <table style={{width:"100%",minWidth:900,borderCollapse:"collapse",fontSize:13}}>
      <thead><tr>{["#","Ticker","Trial / NCT","Company","Drug / therapy",
-      "Indication","Phase 3 readout"]
+      "Indication","Phase 3 readout","30-question analysis"]
       .map(label=><th scope="col" style={th} key={label}>{label}</th>)}</tr></thead>
      <tbody>{visible.map((row,i)=>{
       const detail=roster.details.get(row.nctId);
@@ -103,6 +104,7 @@ export default function CapScreenedTopPhase3Spreadsheet({classification,query}:{
        <td style={td}>{detail?.drug||"Not documented"}</td>
        <td style={td}>{detail?.indication||"Not documented"}</td>
        <td style={td}>Not issuer-verified · TOP candidate only</td>
+       <td style={td}><TopPhase3Analysis nctId={row.nctId}/></td>
       </tr>;
      })}</tbody>
     </table>

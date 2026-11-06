@@ -3,6 +3,7 @@ import {useEffect,useMemo,useState} from "react";
 import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
 import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from "../lib/phase3-public-readout";
 import CapScreenedTopPhase3Spreadsheet from "./CapScreenedTopPhase3Spreadsheet";
+import {TopPhase3ResearchExample} from "./Phase3TopAnalysis";
 const tableStyle={width:"100%",borderCollapse:"collapse" as const,fontSize:13};
 const cell={padding:"9px",borderBottom:"1px solid #d8e2dc",textAlign:"left" as const};
 function Rows({rows,query}:{rows:ReadoutRow[];query:string}){
@@ -44,6 +45,7 @@ export default function Phase3SourceOnlySheets(){
   </label>
   <details open style={{border:"1px solid #b0cbb9",borderRadius:9,padding:12,margin:"12px 0"}}>
    <summary style={{fontWeight:750,cursor:"pointer"}}>TOP · Phase 3 before a documented public readout ({data.pre.length} issuer-classified historical)</summary>
+   <TopPhase3ResearchExample/>
    <CapScreenedTopPhase3Spreadsheet classification={data} query={query}/>
    <Rows rows={data.pre} query={q}/>
   </details>
