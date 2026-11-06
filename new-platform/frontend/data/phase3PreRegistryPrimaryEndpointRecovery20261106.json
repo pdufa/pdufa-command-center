@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-06",
+  "scope": "SIX_OLDER_PHASE3_CENSUS_TRIALS_WITHOUT_REGISTRY_PRIMARY_OUTCOME_FIELD",
+  "sourceBasis": "Original 2026-11-05 ClinicalTrials.gov archived deep snapshot plus NCT-linked original issuer releases and publications",
+  "originalCensus": 762,
+  "hasRegistryPrimaryOutcomeField": 756,
+  "originalRegistryFieldMissing": 6,
+  "historicalPrimaryEndpointsRecoveredFromPublications": 5,
+  "terminalZeroEnrollmentNoEndpointApplicable": 1,
+  "recordTriageCount": 6,
+  "triageCompletenessPercent": 100,
+  "scientificMetricCompletenessPercent": null,
+  "endpointAdjudicationCountPriorMain": 83,
+  "newPrimaryOutcomeAdjudicationsProposed": 3,
+  "sourcePolicy": "Supplement historical original documents; do not alter original ClinicalTrials.gov snapshot or falsely call journal-described endpoints registered. A withdrawn/unstarted trial stays without an observed efficacy result. Do not impute FDA decisions or RAAS scores.",
+  "records": [
+    {
+      "nctId": "NCT00017407",
+      "ticker": "IONS",
+      "study": "ISIS 3521 (Affinitak)/LY900003 plus carboplatin/paclitaxel, advanced non-small cell lung cancer",
+      "primaryEndpoint": "Overall survival; primary log-rank comparison of Affinitak plus chemotherapy against chemotherapy alone",
+      "status": "PUBLICATION_DEFINED_PRIMARY_ENDPOINT",
+      "outcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "outcomeEvidence": "Company reported primary log-rank p=0.81, median overall survival 10.0 versus 9.7 months. Later stratified analyses do not reverse the primary trial result.",
+      "sourceUrl": "https://ir.ionis.com/node/9891",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00017407",
+      "caveat": "This source is a 2003 issuer result, not a late-added registered outcome. Do not conflate second 2004 ALERT trial using gemcitabine/cisplatin."
+    },
+    {
+      "nctId": "NCT00033904",
+      "ticker": "AGEN",
+      "study": "C-100-12, vitespen HSPPC-96 renal carcinoma adjuvant trial",
+      "primaryEndpoint": "Recurrence-free survival",
+      "status": "PUBLICATION_DEFINED_PRIMARY_ENDPOINT",
+      "outcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "outcomeEvidence": "ITT recurrence-free survival HR 0.923 (95% CI 0.729–1.169), p=0.506; already adjudicated in original ledger.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18602688/",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00033904",
+      "caveat": "Only cohort Part I RFS outcome; do not infer a Part II success."
+    },
+    {
+      "nctId": "NCT00039000",
+      "ticker": "AGEN",
+      "study": "C-100-21, vitespen HSPPC-96 stage IV melanoma trial",
+      "primaryEndpoint": "Overall survival",
+      "status": "PUBLICATION_DEFINED_PRIMARY_ENDPOINT",
+      "outcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "outcomeEvidence": "Primary intention-to-treat overall survival was not improved versus physician's choice; source reports HR 1.16 and p=0.32.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/18281670/",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00039000",
+      "caveat": "Do not promote selected high-dose exposure survival subgroup to primary success."
+    },
+    {
+      "nctId": "NCT00048113",
+      "ticker": "IONS",
+      "study": "ISIS 2302-CS20 alicaforsen North America Crohn's disease",
+      "primaryEndpoint": "Clinical remission by week 12, Crohn's Disease Activity Index (CDAI) ≤150",
+      "status": "PUBLICATION_DEFINED_PRIMARY_ENDPOINT",
+      "outcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "outcomeEvidence": "Issuer disclosed two matching Phase III studies failed to significantly induce clinical remission versus placebo; peer-reviewed 2007 paper confirms neither individual study nor pooled analysis met primary endpoint.",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/isis-pharmaceuticals-announces-results-alicaforsen-phase-3",
+      "benchmarkSourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17296530/",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00048113",
+      "caveat": "Exact NCT maps to protocol ISIS 2302-CS20. Combined 33.9% versus 34.5% remission is pooled across both Phase III studies and must not be assigned as trial-specific arm rates."
+    },
+    {
+      "nctId": "NCT00048295",
+      "ticker": "IONS",
+      "study": "ISIS 2302-CS21 alicaforsen Europe/Israel Crohn's disease",
+      "primaryEndpoint": "Clinical remission by week 12, Crohn's Disease Activity Index (CDAI) ≤150",
+      "status": "PUBLICATION_DEFINED_PRIMARY_ENDPOINT",
+      "outcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "outcomeEvidence": "Issuer disclosed both parallel Phase III studies did not significantly improve week-12 clinical remission; peer-reviewed report confirms neither individual nor pooled primary comparison met.",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/isis-pharmaceuticals-announces-results-alicaforsen-phase-3",
+      "benchmarkSourceUrl": "https://pubmed.ncbi.nlm.nih.gov/17296530/",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00048295",
+      "caveat": "Exact NCT maps to protocol ISIS 2302-CS21; do not infer trial-specific percentage from published pooled efficacy table."
+    },
+    {
+      "nctId": "NCT00486980",
+      "ticker": "BCRX",
+      "study": "BCX1812-312, intramuscular peramivir for uncomplicated influenza",
+      "primaryEndpoint": null,
+      "status": "NOT_APPLICABLE_WITHDRAWN_WITH_ZERO_ENROLLED",
+      "outcome": null,
+      "outcomeEvidence": "Original ClinicalTrials.gov states withdrawn for administrative reasons after revised dose-ranging plan; actual enrollment zero, so no completed observed primary efficacy endpoint exists.",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT00486980",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00486980",
+      "caveat": "Planned efficacy/safety study is identifiable but exact prespecified primary outcome measure is not recorded. Do not borrow time-to-alleviation from other peramivir trials, and do not call it an efficacy failure."
+    }
+  ]
+}
