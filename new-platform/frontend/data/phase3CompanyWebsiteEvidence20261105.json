@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "researchDate": "2026-11-05",
   "purpose": "Incremental verified company-website review for studies missing adjudications in the 762-NCT census",
-  "companyCount": 5,
-  "trialCount": 8,
+  "companyCount": 6,
+  "trialCount": 10,
   "scope": "Official issuer announcements cross-linked by exact NCT, study code, drug and indication; not independently verified FDA approval or calibrated trading predictions.",
   "records": [
     {
@@ -118,6 +118,36 @@
       "safetyEvidence": "Issuer reports tolerability consistent with earlier studies; per-study safety cannot be inferred from pooled comparison.",
       "regulatory": "Issuer planned sNDA submission before end of 2026, not independently FDA verified.",
       "crosswalk": "Arrowhead official issuer release states SHASTA-4 is NCT06347016."
-    }
+    },
+      {
+        "nctId": "NCT04576949",
+        "ticker": "ACHV",
+        "company": "Achieve Life Sciences",
+        "study": "ORCA-2",
+        "drug": "cytisinicline",
+        "sourceDate": "2022-04-27",
+        "companyUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001564590-22-015873/achv-ex991_7.htm",
+        "endpointInterpretation": "PRIMARY_MET",
+        "specificEvidence": "Sponsor reported both 6- and 12-week continuous abstinence primary comparisons met versus placebo: 25.3% vs 4.4%, and 32.6% vs 7.0%, respectively; both p<0.0001.",
+        "safetyEvidence": "Sponsor reported no treatment-related serious adverse events. JAMA 2023 publication PMID 37432430 confirms trial NCT04576949 and reports 6- and 12-week endpoint effects.",
+        "regulatory": "Achieve announced a June 22, 2026 FDA cytisinicline NDA Complete Response Letter citing third-party manufacturing and labeling, with no clinical efficacy or safety deficiencies identified. A regulatory CRL is not a Phase 3 endpoint failure.",
+        "regulatoryUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+        "crosswalk": "JAMA 2023 trial publication PMID 37432430 explicitly identifies ORCA-2 as NCT04576949; official sponsor release identifies ORCA-2."
+      },
+      {
+        "nctId": "NCT05206370",
+        "ticker": "ACHV",
+        "company": "Achieve Life Sciences",
+        "study": "ORCA-3",
+        "drug": "cytisinicline",
+        "sourceDate": "2023-05-23",
+        "companyUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/175/achieve-life-sciences-reports-statistically-significant-smoking-cessation-benefit-for-cytisinicline-in-second-confirmatory-phase-3-clinical-trial",
+        "endpointInterpretation": "PRIMARY_MET",
+        "specificEvidence": "Sponsor reported primary continuous smoking abstinence significantly higher than placebo: 14.8% vs 6.0% for 6-week treatment (p=0.0008), and 30.3% vs 9.4% for 12-week treatment (p<0.0001).",
+        "safetyEvidence": "Sponsor reported no treatment-related serious adverse events. JAMA Internal Medicine 2025 trial publication PMID 40257755 independently reports both primary endpoint comparisons.",
+        "regulatory": "Achieve announced a June 22, 2026 FDA cytisinicline NDA Complete Response Letter citing third-party manufacturing and labeling, with no clinical efficacy or safety deficiencies identified. A regulatory CRL is not a Phase 3 endpoint failure.",
+        "regulatoryUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+        "crosswalk": "JAMA Internal Medicine 2025 trial publication PMID 40257755 identifies ORCA-3 as NCT05206370; sponsor's May 2023 release identifies ORCA-3."
+      }
   ]
 }
