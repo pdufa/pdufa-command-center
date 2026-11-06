@@ -5,8 +5,6 @@ import {RAAS_RESTRICTED_TOP_PHASE3_CSV_QUERY,parseRaasScreenedPhase3Csv,
  type RaasScreenedTrialRoster} from "../lib/raas-full-universe-roster";
 import {splitCapScreenedTopPhase3,capScreenedTopPhase3Csv}
  from "../lib/raas-cap-screened-top-phase3";
-import RaasClinicalFiveCell from "./RaasClinicalFiveCell";
-import RaasTrialHistoryButton from "./RaasTrialHistoryButton";
 
 const PAGE_SIZE=50;
 const th={padding:"9px 10px",textAlign:"left" as const,borderBottom:"2px solid #94bba3"};
@@ -92,7 +90,7 @@ export default function CapScreenedTopPhase3Spreadsheet({classification,query}:{
     tabIndex={0} style={{overflowX:"auto",maxWidth:"100%"}}>
     <table style={{width:"100%",minWidth:900,borderCollapse:"collapse",fontSize:13}}>
      <thead><tr>{["#","Ticker","Trial / NCT","Company","Drug / therapy",
-      "Indication","Phase 3 readout","Five clinical assessments","Trial history"]
+      "Indication","Phase 3 readout"]
       .map(label=><th scope="col" style={th} key={label}>{label}</th>)}</tr></thead>
      <tbody>{visible.map((row,i)=>{
       const detail=roster.details.get(row.nctId);
@@ -105,9 +103,6 @@ export default function CapScreenedTopPhase3Spreadsheet({classification,query}:{
        <td style={td}>{detail?.drug||"Not documented"}</td>
        <td style={td}>{detail?.indication||"Not documented"}</td>
        <td style={td}>Not issuer-verified · TOP candidate only</td>
-       <td style={td}><RaasClinicalFiveCell row={row} bucket={null}
-        researchStageOnly="pre"/></td>
-       <td style={td}><RaasTrialHistoryButton row={row} bucket={null}/></td>
       </tr>;
      })}</tbody>
     </table>
@@ -122,8 +117,7 @@ export default function CapScreenedTopPhase3Spreadsheet({classification,query}:{
    </div>
    <p style={{fontSize:12,margin:"9px 0 0",color:"#3d604c"}}>
     Confirmed historical TOP entries stay in the existing issuer-checked TOP
-    rows below. No candidate receives an issuer-verified TOP score until its
-    trial-specific readout status is established.
+    rows below. Surveys and ratings are cancelled; the trial evidence remains.
    </p>
   </>}
  </section>;
