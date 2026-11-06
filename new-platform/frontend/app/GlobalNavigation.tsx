@@ -9,7 +9,6 @@ const links=[
  {label:"SCAN",href:"/scans"},
  {label:"PREDICTIONS",href:"/predictions"},
  {label:"#1",href:"/patient-population"},
- {label:"MISSING DATA",href:"/phase3-outstanding"},
  {label:"SYSTEM STATUS",href:"/installation-audit"}
 ];
 export default function GlobalNavigation(){
