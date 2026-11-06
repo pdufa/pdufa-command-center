@@ -15,6 +15,7 @@ import axsomeEvidence from "../data/axsomePhaseFirstEvidence20261106.json";
 import sinovacRegistry from "../data/sinovacPhaseFirstRegistry20261106.json";
 import sinovacEvidence from "../data/sinovacPhaseFirstEvidence20261106.json";
 import agiosEvidence from "../data/agiosPhase3Evidence20261106.json";
+import ionisEvidence from "../data/ionisPhase3Evidence20261106.json";
 
 const AS_OF="2026-11-06";
 const oldById=new Map(legacyAlks.records.map(r=>[r.nctId,r]));
@@ -94,6 +95,20 @@ export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalCon
    if(!key||additional[key])continue;
    additional[key]={text:fact.evidence+" Source fact, not a reviewed clinical grade.",
     url:fact.sourceUrl,date:fact.sourceDate,confidence:"HIGH"};
+  }
+ }
+ // Additional dated Ionis source observations improve evidence coverage only.
+ // No numerical factor grade, predicted efficacy or FDA probability is generated.
+ if(ticker==="IONS"){
+  const fields:Record<number,string>={3:"safety",7:"primary",9:"design",12:"enrollment",
+   17:"secondary",24:"tolerability",27:"comparator",29:"phase3Results",30:"fdaOutcome"};
+  for(const fact of ionisEvidence.facts){
+   if(fact.nctId!==trial.trialId)continue;
+   const key=fields[fact.question];
+   if(!key||additional[key])continue;
+   additional[key]={text:fact.evidence+" Descriptive exact-trial source evidence, not a reviewed grade.",
+    url:fact.sourceUrl,date:fact.sourceDate,
+    confidence:/^(https:\/\/www\.fda\.gov|https:\/\/ir\.ionis)/.test(fact.sourceUrl)?"HIGH":"MODERATE"};
   }
  }
  return {ticker,drug,indication,programId:program?.id??"REGISTRY_INTERVENTION:"+drug.toLowerCase(),
