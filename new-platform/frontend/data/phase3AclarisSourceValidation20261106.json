@@ -1,0 +1,109 @@
+{
+  "asOf": "2026-11-06",
+  "sources": [
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2017/209305Orig1s000MedR.pdf",
+      "httpStatus": 200,
+      "bytes": 1857396,
+      "sha256": "cee4c1247043aedef271e7155bf6311c6aae0c7bd198be3a85054ea6f0eea204",
+      "reviewNote": "Original full document reviewed; only trial-specific sections used."
+    },
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2017/209305Orig1s000StatR.pdf",
+      "httpStatus": 200,
+      "bytes": 297329,
+      "sha256": "6a22c0aadf06b0b7527e9da5a3f2900480d2b02f419d4071af535a97df16b5d0",
+      "reviewNote": "Original full document reviewed; only trial-specific sections used."
+    },
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2017/209305Orig1s000ltr.pdf",
+      "httpStatus": 200,
+      "bytes": 42743,
+      "sha256": "867a0d97f443424a22fc430ed0d2428be0e333312c9e7d4c94f07c7728320349",
+      "reviewNote": "Original full document reviewed; only trial-specific sections used."
+    },
+    {
+      "url": "https://cdn.clinicaltrials.gov/large-docs/72/NCT03687372/Prot_002.pdf",
+      "httpStatus": 200,
+      "bytes": 1300235,
+      "sha256": "eda0e256eda85a9f4d8b1172399bb04e314bedd6db04c510e7ca41ed998ab297",
+      "reviewNote": "Original full document reviewed; only trial-specific sections used."
+    },
+    {
+      "url": "https://cdn.clinicaltrials.gov/large-docs/31/NCT03691831/Prot_001.pdf",
+      "httpStatus": 200,
+      "bytes": 1303312,
+      "sha256": "a78a5f583a5462be9f5ab158b11ec10811a04c77b24ac6a6e4968948120aea19",
+      "reviewNote": "Original full document reviewed; only trial-specific sections used."
+    },
+    {
+      "url": "https://cdn.clinicaltrials.gov/large-docs/10/NCT03812510/Prot_000.pdf",
+      "httpStatus": 200,
+      "bytes": 1201394,
+      "sha256": "f6c463953844c1cf001e4f8f59fef638775db1d5e8694fae28077e9e0fff36b2",
+      "reviewNote": "Original full document reviewed; only trial-specific sections used."
+    },
+    {
+      "url": "https://cdn.clinicaltrials.gov/large-docs/72/NCT03687372/SAP_000.pdf",
+      "httpStatus": 200,
+      "bytes": 972907,
+      "sha256": "b85bf16ecd2781096147764d0677acb7e3bfef907386f3bffda45100d2fd3026",
+      "reviewNote": "WART-301 SAP cover identifies 301 but running headers refer to 302; use exact-identity protocol for imported 301 methods."
+    },
+    {
+      "url": "https://cdn.clinicaltrials.gov/large-docs/31/NCT03691831/SAP_002.pdf",
+      "httpStatus": 200,
+      "bytes": 983016,
+      "sha256": "eb8af2be0c52f5e94effd8bb49c243791ee350f01824373bb1511063dafaea37",
+      "reviewNote": "Original full document reviewed; only trial-specific sections used."
+    },
+    {
+      "url": "https://cdn.clinicaltrials.gov/large-docs/10/NCT03812510/SAP_002.pdf",
+      "httpStatus": 200,
+      "bytes": 810758,
+      "sha256": "a4f2199e061ac283edadac0c523dc155b3889f31c10ffe93689990b70b3f601f",
+      "reviewNote": "Original full document reviewed; only trial-specific sections used."
+    },
+    {
+      "url": "https://investor.aclaristx.com/node/9811/pdf",
+      "blocker": "HTTP 503 through shell",
+      "alternateAccess": "WEB_READER original manufacturer HTML read successfully",
+      "alternateUrl": "https://investor.aclaristx.com/news-releases/news-release-details/aclaris-therapeutics-101-45-topical-solution-meets-primary-and-1"
+    },
+    {
+      "url": "https://investor.aclaristx.com/node/9746/pdf",
+      "blocker": "HTTP 503 through shell",
+      "alternateAccess": "WEB_READER original manufacturer HTML read successfully",
+      "alternateUrl": "https://investor.aclaristx.com/news-releases/news-release-details/aclaris-therapeutics-101-45-topical-solution-meets-primary-and-0"
+    },
+    {
+      "url": "https://www.aclaristx.com/pipeline/",
+      "access": "WEB_READER",
+      "role": "MANUFACTURER_FALLBACK_SEARCH"
+    },
+    {
+      "url": "https://www.aclaristx.com/publications/",
+      "access": "WEB_READER",
+      "role": "MANUFACTURER_FALLBACK_SEARCH"
+    },
+    {
+      "url": "https://www.aclaristx.com/clinicaltrials",
+      "access": "WEB_READER",
+      "role": "MANUFACTURER_FALLBACK_SEARCH"
+    },
+    {
+      "url": "https://investor.aclaristx.com/static-files/01e1e9f5-563a-412b-bc6c-a51de0a8837c",
+      "access": "WEB_READER",
+      "publicationDate": "2016-11-15",
+      "role": "TRIAL_SPECIFIC_SEBK_RESULTS"
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1557746/000155837021001717/acrs-20201231x10k.htm",
+      "httpStatus": 200,
+      "bytes": 3131894,
+      "sha256": "791670a17bf1158abbb87eb5ca356f6ae954e593dad59dad7c70ebb6f2b297b7",
+      "reviewNote": "2020 annual report: wart asset remains investigational, seeking third-party partners. Not current regulatory-status proof."
+    }
+  ],
+  "qualification": "Transport success is distinct from identity and scientific adjudication."
+}

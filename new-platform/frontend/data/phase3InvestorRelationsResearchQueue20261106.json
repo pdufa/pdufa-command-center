@@ -264,47 +264,778 @@
     {
       "ticker": "ACRS",
       "company": "Aclaris Therapeutics, Inc.",
-      "officialInvestorRelationsUrl": null,
-      "searchStatus": "NOT_YET_REVIEWED",
+      "officialInvestorRelationsUrl": "https://investor.aclaristx.com/",
+      "searchStatus": "PARTIALLY_REVIEWED",
       "trials": [
         {
           "nctId": "NCT02667236",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 8,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 9,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 10,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 11,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 12,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 25,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT02667275",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 8,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 9,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 10,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 11,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 12,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "REQUIRES_INTERPRETATION"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 25,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT02667288",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_NON_BINARY_ENDPOINT"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 8,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 9,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 10,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 11,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 12,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 13,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 14,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 15,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 25,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT03687372",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 8,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 9,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 10,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 11,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 12,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 13,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 14,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 15,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 22,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 25,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT03691831",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 8,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 9,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 10,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 11,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 12,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 13,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 14,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 15,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 21,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 22,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 25,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         },
         {
           "nctId": "NCT03812510",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_NON_BINARY_ENDPOINT"
+            },
+            {
+              "number": 2,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 4,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 5,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 6,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 7,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 8,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 9,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 10,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 11,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 12,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 13,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 14,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 15,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 16,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 17,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 18,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 19,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 20,
+              "status": "REQUIRES_INTERPRETATION"
+            },
+            {
+              "number": 21,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 22,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 25,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 26,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 27,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 28,
+              "status": "NOT_YET_REVIEWED"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "NOT_YET_REVIEWED"
+            }
+          ]
         }
       ],
-      "blockers": []
+      "blockers": [
+        "USER_DIRECTION_REQUESTED: Q18 patient-reported outcome instruments/results and Q20 clinical-importance thresholds not located in reviewed manufacturer IR/science pages, registry results, protocols or FDA reviews. Not classified as NOT_PUBLICLY_DISCLOSED.",
+        "USER_DIRECTION_REQUESTED: WART-301/302/303 exact 45% wart NDA acceptance/FDA correspondence and any target date not located in reviewed manufacturer disclosures. Eskata 40% approval cannot be borrowed.",
+        "REQUIRES_INTERPRETATION: SEBK-302 completion versus FDA discontinuation definitions; WART-303 enrolled versus safety denominators. Source values preserved.",
+        "ACCESS_BLOCKER: manufacturer THWART PDF downloads returned HTTP 503 through shell; original manufacturer HTML was read through web reader instead."
+      ]
     },
     {
       "ticker": "ADMA",
