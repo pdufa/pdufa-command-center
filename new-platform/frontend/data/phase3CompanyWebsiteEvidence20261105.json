@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "researchDate": "2026-11-05",
   "purpose": "Incremental verified company-website review for studies missing adjudications in the 762-NCT census",
-  "companyCount": 4,
-  "trialCount": 6,
+  "companyCount": 5,
+  "trialCount": 8,
   "scope": "Official issuer announcements cross-linked by exact NCT, study code, drug and indication; not independently verified FDA approval or calibrated trading predictions.",
   "records": [
     {
@@ -90,6 +90,34 @@
       "regulatory": "Company November 5, 2026 release says sNDA review was extended and reports February 1, 2027 PDUFA date; company statement only, not independent FDA confirmation.",
       "regulatoryUrl": "https://investor.agios.com/news-releases/news-release-details/agios-reports-third-quarter-2026-financial-results-and-provides",
       "crosswalk": "Issuer release explicitly cites RISE UP NCT05031780."
+    },
+    {
+      "nctId": "NCT06347003",
+      "ticker": "ARWR",
+      "company": "Arrowhead Pharmaceuticals",
+      "study": "SHASTA-3",
+      "drug": "plozasiran",
+      "sourceDate": "2026-08-30",
+      "companyUrl": "https://ir.arrowheadpharma.com/news-releases/news-release-details/arrowhead-pharmaceuticals-presents-phase-3-shasta-3-and-shasta-4",
+      "endpointInterpretation": "PRIMARY_MET",
+      "specificEvidence": "Month 12 median triglyceride reduction versus placebo endpoint met (79% median reduction from baseline, p<0.0001). Pooled acute pancreatitis result applies across SHASTA-3 and -4.",
+      "safetyEvidence": "Issuer reports tolerability consistent with earlier studies; per-study safety cannot be inferred from pooled comparison.",
+      "regulatory": "Issuer planned sNDA submission before end of 2026, not independently FDA verified.",
+      "crosswalk": "Arrowhead official issuer release states SHASTA-3 is NCT06347003."
+    },
+    {
+      "nctId": "NCT06347016",
+      "ticker": "ARWR",
+      "company": "Arrowhead Pharmaceuticals",
+      "study": "SHASTA-4",
+      "drug": "plozasiran",
+      "sourceDate": "2026-08-30",
+      "companyUrl": "https://ir.arrowheadpharma.com/news-releases/news-release-details/arrowhead-pharmaceuticals-presents-phase-3-shasta-3-and-shasta-4",
+      "endpointInterpretation": "PRIMARY_MET",
+      "specificEvidence": "Month 12 median triglyceride reduction versus placebo endpoint met (81% median reduction from baseline, p<0.0001). Pooled acute pancreatitis result applies across SHASTA-3 and -4.",
+      "safetyEvidence": "Issuer reports tolerability consistent with earlier studies; per-study safety cannot be inferred from pooled comparison.",
+      "regulatory": "Issuer planned sNDA submission before end of 2026, not independently FDA verified.",
+      "crosswalk": "Arrowhead official issuer release states SHASTA-4 is NCT06347016."
     }
   ]
 }
