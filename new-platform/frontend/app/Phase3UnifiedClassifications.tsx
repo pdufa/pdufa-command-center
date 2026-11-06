@@ -3,6 +3,7 @@ import {useEffect,useMemo,useState} from "react";
 import endpointAdjudications from "../data/phase3EndpointAdjudications20261105.json";
 import liveCoverageSummary from "../public/phase3-six-source-harvest-summary-20261105.json";
 import issuerResearch from "../data/phase3CompanyWebsiteEvidence20261105.json";
+import {trialLifecycle,type TrialLifecycle} from "../lib/pdufa-selected-restrictions";
 
 type TrialRow={
  nctId:string;ticker:string;company:string;registryStatus:string;rosterStatus:string;
@@ -52,6 +53,7 @@ export default function Phase3UnifiedClassifications(){
  const [query,setQuery]=useState("");
  const [classification,setClassification]=useState("ALL");
  const [passingFilter,setPassingFilter]=useState("ALL");
+ const [lifecycle,setLifecycle]=useState<TrialLifecycle|"ALL">("ACTIVE");
  const [page,setPage]=useState(0);
  const perPage=50;
  useEffect(()=>{
@@ -84,12 +86,18 @@ export default function Phase3UnifiedClassifications(){
  const filtered=useMemo(()=>{
   const term=query.trim().toLowerCase();
   return (data?.rows||[]).filter(r=>
+   (lifecycle==="ALL"||trialLifecycle(r.registryStatus)===lifecycle)&&
    (classification==="ALL"||r.classificationCode===classification)&&
    (passingFilter==="ALL"||endpointClass(r)===passingFilter)&&
    (!term||[r.nctId,r.ticker,r.company,r.registryStatus,r.classification,
     r.drug||"",r.indication||"",r.registeredInterventions||""]
     .some(v=>v.toLowerCase().includes(term))));
- },[data,query,classification,passingFilter]);
+ },[data,query,classification,passingFilter,lifecycle]);
+ const lifecycleCounts={ACTIVE:0,HISTORICAL:0,VERIFY:0};
+ for(const t of data?.rows??[])lifecycleCounts[trialLifecycle(t.registryStatus)]++;
+ const statusScoped=(data?.rows||[]).filter(r=>lifecycle==="ALL"||trialLifecycle(r.registryStatus)===lifecycle);
+ const scopedClassCount=(code:string)=>statusScoped.filter(r=>r.classificationCode===code).length;
+ const scopedOutcomeCount=(code:string)=>statusScoped.filter(r=>code==="ALL"||endpointClass(r)===code).length;
  const maxPage=Math.max(1,Math.ceil(filtered.length/perPage));
  const currentPage=Math.min(page,maxPage-1);
  const shown=filtered.slice(currentPage*perPage,(currentPage+1)*perPage);
@@ -97,14 +105,16 @@ export default function Phase3UnifiedClassifications(){
   <h2 style={{margin:"0 0 7px"}}>Unified Phase 3 master spreadsheet · 762 trials</h2>
   <p style={{fontSize:13,margin:"0 0 10px"}}>One unique NCT per row. <strong>Classification is based on observed evidence, not assumed 425/337 counts.</strong> The original registry state, registered outcome and released readout evidence are retained separately. Source-qualified primary-endpoint PASS and FAIL refer to clinical results, not FDA approval. Unreviewed and descriptive studies remain explicitly distinguished. All 762 records have a 190-column export, but not all 190 fields have scored scientific results.</p>
   {!data?<p role="status">{error||"Loading classifications for 762 trials…"}</p>:<>
+   <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",margin:"10px 0 12px"}}><label>Study lifecycle <select aria-label="Study lifecycle" value={lifecycle} onChange={e=>{setLifecycle(e.target.value as TrialLifecycle|"ALL");setPage(0);}}><option value="ACTIVE">Active studies ({lifecycleCounts.ACTIVE})</option><option value="HISTORICAL">Closed / historical ({lifecycleCounts.HISTORICAL})</option><option value="VERIFY">Status verification ({lifecycleCounts.VERIFY})</option><option value="ALL">All {data.total} studies</option></select></label><a href="/restrictions">23 selected Pipeline restrictions ⓘ</a></div>
+   <p style={{fontSize:12}}>Closed trials are hidden from the active-study view only; preserved historical outcomes and completed studies with ongoing FDA programs remain available for RAAS and PDUFA monitoring.</p>
    <div style={{display:"flex",flexWrap:"wrap",gap:8,margin:"10px 0 14px"}}>
     {data.classifications.map(c=><button type="button" key={c.code} onClick={()=>{setClassification(classification===c.code?"ALL":c.code);setPage(0)}}
       aria-pressed={classification===c.code}
       style={{padding:"7px 10px",borderRadius:8,cursor:"pointer",fontSize:12,border:classification===c.code?"2px solid #287c53":"1px solid #a2b9aa",background:"transparent",color:"inherit",textAlign:"left"}}>
-      {c.label} <strong>({data.counts[c.code]})</strong>
+      {c.label} <strong>({scopedClassCount(c.code)})</strong>
      </button>)}
     <button type="button" onClick={()=>{setClassification("ALL");setPage(0)}} aria-pressed={classification==="ALL"}
-      style={{padding:"7px 10px",border:"1px solid #a2b9aa",borderRadius:8,background:"transparent",color:"inherit",cursor:"pointer",fontSize:12}}>All 762</button>
+      style={{padding:"7px 10px",border:"1px solid #a2b9aa",borderRadius:8,background:"transparent",color:"inherit",cursor:"pointer",fontSize:12}}>All {statusScoped.length}</button>
    </div>
    <p style={{fontSize:13,margin:"10px 0"}}><strong>Outcome scrutiny:</strong>{" "}
     {endpointAdjudications.totalReviewed} of {data.total} exact-NCT public result records reviewed.{" "}
@@ -115,11 +125,11 @@ export default function Phase3UnifiedClassifications(){
     Source review is not equivalent to completing every predictive assessment.</p>
    <div style={{display:"flex",gap:7,flexWrap:"wrap",margin:"10px 0"}}>
     {[
-      ["ALL","All passing classifications",data.total],
-      ["PASS_DOCUMENTED_PRIMARY_ENDPOINT","PASS",endpointAdjudications.counts.PRIMARY_ENDPOINT_MET],
-      ["FAIL_DOCUMENTED_PRIMARY_ENDPOINT","FAIL",endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET],
-      ["NON_BINARY_ENDPOINT","Non-binary",endpointAdjudications.counts.NO_BINARY_PASS_FAIL],
-      ["UNDETERMINED","Undetermined",data.total-endpointAdjudications.totalReviewed]
+      ["ALL","All passing classifications",scopedOutcomeCount("ALL")],
+      ["PASS_DOCUMENTED_PRIMARY_ENDPOINT","PASS",scopedOutcomeCount("PASS_DOCUMENTED_PRIMARY_ENDPOINT")],
+      ["FAIL_DOCUMENTED_PRIMARY_ENDPOINT","FAIL",scopedOutcomeCount("FAIL_DOCUMENTED_PRIMARY_ENDPOINT")],
+      ["NON_BINARY_ENDPOINT","Non-binary",scopedOutcomeCount("NON_BINARY_ENDPOINT")],
+      ["UNDETERMINED","Undetermined",scopedOutcomeCount("UNDETERMINED")]
      ].map(([code,label,count])=><button type="button" key={String(code)}
       aria-pressed={passingFilter===code}
       onClick={()=>{setPassingFilter(String(code));setPage(0)}}
