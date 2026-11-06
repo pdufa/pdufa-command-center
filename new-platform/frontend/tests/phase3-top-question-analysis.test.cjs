@@ -11,7 +11,7 @@ test("TOP 30-question pre-readout analysis retains 30 documented predictions",()
  assert.match(data,/score:70/);
  assert.match(data,/score:80/);
  assert.match(data,/PHASE3_QUESTION_TITLES/);
- assert.match(data,/number:30/);
+ assert.match(data,/"number":30/);
  assert.match(data,/predicted, NOT a reported result/);
 });
 test("TOP research case remains outside membership and CSV appends 30 question columns",()=>{
@@ -27,7 +27,7 @@ test("TOP research case remains outside membership and CSV appends 30 question c
 
 test("Q2 opens with large predicted PASS instead of reported result",()=>{
  const ui=read("app/Phase3TopAnalysis.tsx");
- assert.match(ui,/defaultOpen=\{q.number===2&&!!q.answer\}/);
+ assert.match(ui,/open=\{\(q.number===2\|\|q.number===3\)&&!!q.answer\}/);
  assert.match(ui,/fontSize:34/);
  assert.match(ui,/PREDICTED · NOT REPORTED/);
  assert.match(ui,/data-phase3-prediction=\{q.answer.prediction\}/);
