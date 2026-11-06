@@ -1,0 +1,157 @@
+{
+  "asOf": "2026-11-06",
+  "companyUniverse": 137,
+  "policy": "Incremental company passes; unsearched companies remain pending. Hard cases are not NOT_PUBLICLY_DISCLOSED.",
+  "discoverySources": [
+    "https://www.biopharmawatch.com/PDUFA-calendar",
+    "https://www.fdatracker.com/fda-calendar/",
+    "https://www.assyro.com/tools/pdufa-calendar/2026",
+    "https://checkrare.com/2026-orphan-drugs-pdufa-dates-and-fda-approvals/"
+  ],
+  "discoveryBlockers": [
+    "FDA Tracker enhanced calendar requires login; public alternatives used."
+  ],
+  "companies": [
+    {
+      "ticker": "ABVX",
+      "company": "Abivax S.A.",
+      "trials": 6,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://ir.abivax.com/",
+      "manufacturerUrl": "https://www.abivax.com/",
+      "exactRegistryTrials": [
+        "NCT02249988",
+        "NCT03905109",
+        "NCT04393038",
+        "NCT05507203",
+        "NCT05507216",
+        "NCT05535946"
+      ],
+      "requiresUserDirection": true,
+      "hardToResolve": [
+        "NCT02249988 / ABX203-002: final trial-specific endpoint table not located after archived 2016/2017 releases and registry search. Interim futility is documented; no final verdict invented."
+      ],
+      "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    },
+    {
+      "ticker": "ADMA",
+      "company": "ADMA Biologics, Inc.",
+      "trials": 2,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://ir.admabiologics.com/",
+      "manufacturerUrl": "https://www.admabiologics.com/",
+      "exactRegistryTrials": [
+        "NCT00538915",
+        "NCT01814800"
+      ],
+      "requiresUserDirection": true,
+      "hardToResolve": [
+        "NCT00538915 / NABI-7101: old manufacturer/sponsor and undated FDA review versus later label analysis differ. Need a dated exact-analysis crosswalk for binary verdict; registry observations retained."
+      ],
+      "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    },
+    {
+      "ticker": "AGEN",
+      "company": "Agenus Inc.",
+      "trials": 4,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://investor.agenusbio.com/",
+      "manufacturerUrl": "https://www.agenusbio.com/pipeline/",
+      "exactRegistryTrials": [
+        "NCT00033904",
+        "NCT00039000",
+        "NCT00126178",
+        "NCT04943627"
+      ],
+      "requiresUserDirection": true,
+      "hardToResolve": [
+        "NCT00126178 / C-100-12 Part 2: no separate outcome located. Part 1 NCT00033904 results must not be borrowed. Older Antigenics sponsor name searched."
+      ],
+      "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    },
+    {
+      "ticker": "ALEC",
+      "company": "Alector Inc.",
+      "trials": 2,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://investors.alector.com/",
+      "manufacturerUrl": "https://www.alector.com/pipeline/",
+      "exactRegistryTrials": [
+        "NCT04374136",
+        "NCT06111014"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [],
+      "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    },
+    {
+      "ticker": "ALMS",
+      "company": "Alumis Inc",
+      "trials": 3,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://investors.alumis.com/",
+      "manufacturerUrl": "https://www.alumis.com/pipeline/",
+      "exactRegistryTrials": [
+        "NCT06586112",
+        "NCT06588738",
+        "NCT06846541"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [],
+      "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    },
+    {
+      "ticker": "ALT",
+      "company": "Altimmune, Inc.",
+      "trials": 1,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://ir.altimmune.com/",
+      "manufacturerUrl": "https://altimmune.com/pipeline/",
+      "exactRegistryTrials": [
+        "NCT07795164"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [],
+      "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    },
+    {
+      "ticker": "ANNX",
+      "company": "Annexon, Inc.",
+      "trials": 4,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://ir.annexonbio.com/",
+      "manufacturerUrl": "https://annexonbio.com/pipeline/",
+      "exactRegistryTrials": [
+        "NCT04701164",
+        "NCT06510816",
+        "NCT07020819",
+        "NCT07807969"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [],
+      "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    },
+    {
+      "ticker": "AQST",
+      "company": "Aquestive Therapeutics",
+      "trials": 1,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://investors.aquestive.com/",
+      "manufacturerUrl": "https://aquestive.com/pipeline/",
+      "exactRegistryTrials": [
+        "NCT03428360"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [],
+      "scope": "Manufacturer/IR source pass completed; not all 30 scientific judgments completed. Registry and no-result statuses are distinct from absent public information."
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import discoveryAvenues from "../../../data/phase3DiscoveryAvenues20261106.json";
+import companySearchLog from "../../../data/phase3CompanyWebsiteSearchLog20261106.json";
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,isObservedStatus,isSourceFactStatus,requiresResearchStatus,investorRelationsCoverage} from "../../../lib/phase3-ir-research";
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
@@ -187,6 +188,13 @@ export async function GET(request:Request){
   assessment,fields,perQuestion,
   endpointOutcomes:derivedOutcomes,
   investorRelationsCoverage:investorRelationsCoverage(),
+  companyWebsiteResearch:{
+   ...companySearchLog,
+   companiesSearchedThisBatch:companySearchLog.companies.length,
+   companiesWithPartialReview:investorRelationsCoverage().filter(c=>c.searchStatus==="PARTIALLY_REVIEWED").length,
+   companiesAwaitingWebsiteReview:investorRelationsCoverage().filter(c=>c.searchStatus!=="PARTIALLY_REVIEWED"&&c.searchStatus!=="COMPLETE").length,
+   hardToResolveCompanies:companySearchLog.companies.filter(c=>c.requiresUserDirection)
+  },
   discoveryAvenues,
   exceptions:{
    unknownRegistryNcts:rows.filter(r=>r.unknownRegistryStatus).map(r=>r.nctId),
