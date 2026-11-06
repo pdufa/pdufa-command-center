@@ -19,11 +19,23 @@ export const PROMOTED_ISSUER_NCTS=[
  "NCT05175105", // AGIO: ACTIVATE-Kids
  "NCT06747468", // AMLX: avexitide
 ] as const;
+/** Newly verified dated readouts: prospective scores MUST NOT use these post-readout facts. */
+export const IONIS_VERIFIED_READOUTS=[
+ {nctId:"NCT04768972",evidenceDate:"2026-09-22",evidenceUrl:"https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+  evidenceType:"ISSUER_READOUT",outcome:"PRIMARY_ENDPOINT_MET",drug:"ulefnersen (ION363)",
+  evidence:"FUSION FUS-ALS Phase 3 primary joint-rank functional/survival endpoint reported met, p=0.0005; not an FDA application or approval."},
+ {nctId:"NCT04849741",evidenceDate:"2026-09-03",evidenceUrl:"https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+  evidenceType:"FDA_APPROVAL_SUPPORTING_TRIAL",outcome:"NO_BINARY_PASS_FAIL",drug:"zilganersen (ZANVASTRO)",
+  evidence:"FDA approved zilganersen for Alexander disease Sept 3, 2026 and explicitly identifies NCT04849741 as supporting study; approval does not supply an independent binary primary-endpoint adjudication."},
+ {nctId:"NCT05392114",evidenceDate:"2026-02-23",evidenceUrl:"https://pubmed.ncbi.nlm.nih.gov/41767175/",
+  evidenceType:"PEER_REVIEWED_OPEN_LABEL_RESULTS",outcome:"NO_BINARY_PASS_FAIL",drug:"donidalorsen",
+  evidence:"Exact-NCT one-year OASISplus open-label extension report: 83 participants in OLE subgroup; safety primary descriptive, attack-rate reductions are uncontrolled."}
+] as const;
 export type ActivePhase3Cohort="PRE_DATA"|"POST_DATA";
 type BaseRow=(typeof ledger.rows)[number];
 export type ActivePhase3Trial=BaseRow&{
  cohort:ActivePhase3Cohort;
- evidenceBasis:"ISSUER_READOUT"|"REGISTRY_RESULTS_POSTED"|"PUBLIC_READOUT_NOT_VERIFIED";
+ evidenceBasis:"ISSUER_READOUT"|"REGISTRY_RESULTS_POSTED"|"FDA_APPROVAL_SUPPORTING_TRIAL"|"PEER_REVIEWED_RESULTS"|"PUBLIC_READOUT_NOT_VERIFIED";
  originalClassificationCode:string;
  correctionApplied:boolean;
 };
@@ -55,12 +67,26 @@ function reconcile():{
  assert(ledger.total===762&&ledger.rows.length===762,"762_LENGTH");
  const unique=new Set(ledger.rows.map(r=>r.nctId));
  assert(unique.size===762,"NCT_DUPLICATE");
- const promotions=new Set<string>(PROMOTED_ISSUER_NCTS);
- assert(promotions.size===5,"PROMOTION_DUPLICATE");
+ const promotions=new Set<string>([...PROMOTED_ISSUER_NCTS,...IONIS_VERIFIED_READOUTS.map(r=>r.nctId)]);
+ assert(promotions.size===8,"PROMOTION_DUPLICATE");
+ const ionisCorrections=new Map(IONIS_VERIFIED_READOUTS.map(r=>[r.nctId,r] as const));
+ assert(IONIS_VERIFIED_READOUTS.every(r=>iso(r.evidenceDate)&&r.evidenceDate<=ACTIVE_PHASE3_COHORT_AS_OF&&
+  r.evidenceUrl.startsWith("https://")&&ledger.rows.some(x=>x.nctId===r.nctId&&x.ticker==="IONS")),"IONIS_READOUT_SOURCE");
  const patched:BaseRow[]=ledger.rows.map(r=>{
   if(!promotions.has(r.nctId))return r;
   assert(trialLifecycle(r.registryStatus)==="ACTIVE"&&
    r.classificationCode==="P3_PRE_DATA_CANDIDATE","PROMOTION_STAGE_"+r.nctId);
+  const newReadout=ionisCorrections.get(r.nctId);
+  if(newReadout){
+   return {...r,classificationCode:"P3_POST_DATA_ISSUER",
+    classification:"P3 POST-DATA · verified public readout",
+    classificationEvidence:newReadout.evidence,
+    classificationVerified:true,readoutEvidenceType:newReadout.evidenceType,
+    readoutSourceDate:newReadout.evidenceDate,readoutEvidenceUrl:newReadout.evidenceUrl,
+    readoutOutcome:newReadout.outcome,drug:newReadout.drug,
+    ...(r.nctId==="NCT04849741"?{fdaApplicationStatus:"FDA_APPROVED_HISTORICAL",
+     fdaReviewType:"PRIORITY"}:{})};
+  }
   const matched=matchedIssuer(r.nctId);
   assert(matched,"PROMOTION_SOURCE_"+r.nctId);
   const e=endpoints.get(r.nctId)!;
@@ -94,15 +120,17 @@ function reconcile():{
    pre.push({...row,cohort:"PRE_DATA",evidenceBasis:"PUBLIC_READOUT_NOT_VERIFIED",
     originalClassificationCode:prev.classificationCode,correctionApplied:false});
   }else if(row.classificationCode==="P3_POST_DATA_ISSUER"||row.classificationCode==="P3_POST_DATA_REGISTRY"){
-   post.push({...row,cohort:"POST_DATA",evidenceBasis:row.classificationCode==="P3_POST_DATA_ISSUER"?"ISSUER_READOUT":"REGISTRY_RESULTS_POSTED",
+   post.push({...row,cohort:"POST_DATA",evidenceBasis:row.readoutEvidenceType==="FDA_APPROVAL_SUPPORTING_TRIAL"?"FDA_APPROVAL_SUPPORTING_TRIAL":
+    row.readoutEvidenceType==="PEER_REVIEWED_OPEN_LABEL_RESULTS"?"PEER_REVIEWED_RESULTS":
+    row.classificationCode==="P3_POST_DATA_ISSUER"?"ISSUER_READOUT":"REGISTRY_RESULTS_POSTED",
     originalClassificationCode:prev.classificationCode,correctionApplied:promotions.has(row.nctId)});
   }else throw Error("ACTIVE_PHASE3_UNCLASSIFIED_"+row.nctId);
  }
  const byTicker=(a:ActivePhase3Trial,b:ActivePhase3Trial)=>a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId);
  pre.sort(byTicker);post.sort(byTicker);
- assert(pre.length===238&&post.length===20&&historical===501&&verify===3,"RECONCILED_COUNTS");
+ assert(pre.length===235&&post.length===23&&historical===501&&verify===3,"RECONCILED_COUNTS");
  assert(new Set([...pre,...post].map(r=>r.nctId)).size===258,"COHORT_DUPLICATE");
- assert(post.filter(r=>r.correctionApplied).length===5,"PROMOTIONS_NOT_EXACTLY_FIVE");
+ assert(post.filter(r=>r.correctionApplied).length===8,"PROMOTIONS_NOT_EXACTLY_EIGHT");
  assert(patched.length===762,"PRESERVE_ARCHIVE");
  return {asOf:ACTIVE_PHASE3_COHORT_AS_OF,sourceAsOf:ledger.asOf,totalPool:762,activeTotal:258,
   counts:{PRE_DATA:pre.length,POST_DATA:post.length,HISTORICAL:historical,VERIFY:verify},
