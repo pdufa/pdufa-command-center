@@ -46,6 +46,9 @@ test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",(
  assert.ok(adjudications.records.some(r=>r.nctId==="NCT04576949"&&r.endpointOutcome==="PRIMARY_ENDPOINT_MET"));
  assert.ok(adjudications.records.some(r=>r.nctId==="NCT05206370"&&r.endpointOutcome==="PRIMARY_ENDPOINT_MET"));
  for(const nct of ["NCT03548220","NCT03559699","NCT05144256","NCT05175105","NCT03226522","NCT05557409","NCT04797715","NCT04947553","NCT05059223","NCT05113745"])assert.ok(adjudications.records.some(r=>r.nctId===nct&&r.evidenceUrl));
+ assert.match(route,/investorByNct/);
+ assert.match(audit,/investorByNct/);
+ assert.match(route,/Issuer-reported safety\/tolerability/);
  assert.match(route,/PASS_DOCUMENTED_PRIMARY_ENDPOINT/);
  assert.match(route,/FAIL_DOCUMENTED_PRIMARY_ENDPOINT/);
  assert.match(route,/"NON_BINARY_ENDPOINT"/);
