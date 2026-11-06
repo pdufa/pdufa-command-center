@@ -1,6 +1,7 @@
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,requiresResearchStatus} from "../../../lib/phase3-ir-research";
 import {activePhase3Cohorts,IONIS_VERIFIED_READOUTS} from "../../../lib/phase3-active-cohorts";
+import {activeOfficialRegistryRecord,activeOfficialRegistryIntegrity,ACTIVE_OFFICIAL_REGISTRY_AS_OF} from "../../../lib/phase3-active-official-registry";
 import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
 import ionisEvidence from "../../../data/ionisPhase3Evidence20261106.json";
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
@@ -85,6 +86,7 @@ export async function GET(request:Request){
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
     PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
+    !activeOfficialRegistryIntegrity(new Set([...preIds,...postIds]))||
     endpointByNct.size!==endpointAdjudications.records.length||
     !irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
     !populationGeographyIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
@@ -107,7 +109,9 @@ export async function GET(request:Request){
   const investor=investorByNct.get(r.nctId);
   const onlineRecord=phase3OnlineRecord(r.nctId);
   const registry=registryByNct.get(r.nctId);
-  const liveRegistry=liveByNct.get(r.nctId);
+  // A fresh live fetch takes precedence; otherwise use the saved exact-NCT
+  // official snapshot, not an unverified or invented score.
+  const liveRegistry=liveByNct.get(r.nctId)||activeOfficialRegistryRecord(r.nctId);
   const outcome=endpoint?.endpointOutcome||r.readoutOutcome;
   const endpointEvidenceUrl=endpoint?.evidenceUrl||r.readoutEvidenceUrl||"";
   const observedPass=outcome==="PRIMARY_ENDPOINT_MET"&&
@@ -160,7 +164,7 @@ export async function GET(request:Request){
    "UNIVERSAL_PHASE3_30_QUESTION_EVIDENCE_AWARE_V1",
    predictions?"REVIEWED_PRE_READOUT_PREDICTIONS":
     observations?"PARTIAL_REGISTRY_SOURCE_FACTS":"NO_REVIEWED_QUESTION_EVIDENCE",
-   ledger.asOf+" | drug/comparator source "+registryCrosswalk.asOf,"Research classifications are not final clinical or FDA verdicts"
+   ledger.asOf+" | official registry source "+ACTIVE_OFFICIAL_REGISTRY_AS_OF+" | drug/comparator source "+registryCrosswalk.asOf,"Research classifications are not final clinical or FDA verdicts"
   ];
   const questions=slots.flatMap(q=>{
    if(q.answer)return ["PREDICTED_PRE_READOUT",q.answer.prediction,
