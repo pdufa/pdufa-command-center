@@ -165,7 +165,8 @@ export default function Phase3SourceOnlySheets(){
   </div>
   <p><strong>235 Pre-Data + 23 Post-Data = 258</strong>. These are active Phase 3 research classifications;
    the remaining {data.counts.HISTORICAL} closed and {data.counts.VERIFY} unverified-status trials do not appear in either active spreadsheet.</p>
-  <p><strong>Five previously misclassified issuer readouts were moved into Post-Data.</strong> Existing underlying source records, history and RAAS research were not deleted.</p>
+  <p><strong>Eight source-reconciled readouts are now classified Post-Data.</strong> Five issuer corrections and three newly sourced Ionis studies have been reconciled; prior records and score history remain preserved.</p>
+  <p><a href="/api/phase3-unified-190-columns?cohort=active">Download all 258 trials (190-column CSV)</a> · <a href="/api/phase3-active-190-coverage?format=csv">Download per-trial evidence and score coverage (CSV)</a></p>
   <label style={{display:"block",margin:"12px 0"}}>Search both spreadsheets by ticker, NCT, company, drug, indication or status
    <input type="search" value={query} onChange={e=>setQuery(e.target.value)}
     placeholder="Find trial" style={{display:"block",width:"100%",maxWidth:440,padding:9,marginTop:5}}/>
