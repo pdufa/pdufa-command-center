@@ -28,6 +28,15 @@ export function phase3OnlineSourceFact(nctId:string,question:number):OnlineSourc
  const sourceUrl="https://clinicaltrials.gov/study/"+nctId;
  const fact=(description:string):OnlineSourceFact=>({description,sourceUrl,status:"SOURCE_FACT_ONLY"});
  switch(question){
+  case 13:
+  case 14:
+  case 15:{
+   const deep=phase3DeepRegistryRecord(nctId);
+   return deep?.hasPublicSAP?
+    fact("A public statistical analysis plan is linked from the exact-NCT trial registry: "+
+     deep.protocolOrSAPDocuments+
+     ". Publication confirms the document exists; statistical power adequacy, missing-data handling and multiplicity validity have NOT been critically reviewed."):null;
+  }
   case 3:return r.resultsPosted&&r.resultsAnalysisCount>0?
    fact("Registry result analyses exist, but safety/tolerability has NOT been adjudicated; no safety prediction follows."):null;
   case 7:return r.primaryEndpoint?

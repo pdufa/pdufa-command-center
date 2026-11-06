@@ -1,4 +1,5 @@
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
+import {activePhase3Cohorts} from "../../../lib/phase3-active-cohorts";
 
 export const dynamic="force-dynamic";
 export const maxDuration=60;
@@ -20,6 +21,7 @@ type Registry={
  seriousAdverseEventsByArm:string;otherAdverseEventsByArm:string;
  infectionEventTerms:string;primaryResultDetails:string;
  publicationPMIDs:string;internationalIds:string;registryUrl:string;
+ eligibilityCriteria:string;eligibilityAges:string;eligibilitySex:string;siteCount:number;countries:string;patientReportedOutcomeTitles:string;subgroupOutcomeTitles:string;
 };
 type FetchStatus={batch:number;status:"retrieved"|"failed";count:number;error?:string};
 const names=[
@@ -48,10 +50,16 @@ const split=<T,>(a:readonly T[],size:number):T[][]=>
  Array.from({length:Math.ceil(a.length/size)},(_,i)=>a.slice(i*size,i*size+size) as T[]);
 const sleep=(ms:number)=>new Promise<void>(resolve=>setTimeout(resolve,ms));
 
-export async function loadLivePhase3Registry(){
+export async function loadLivePhase3Registry(selectedNctIds?:readonly string[]){
  if(ledger.total!==762||ledger.rows.length!==762||new Set(ledger.rows.map(x=>x.nctId)).size!==762)
   throw Error("762-trial census integrity failed");
- const batches=split(ledger.rows.map(x=>x.nctId),25);
+ const valid=new Set(ledger.rows.map(x=>x.nctId));
+ const ids=selectedNctIds?new Set(selectedNctIds):valid;
+ if(ids.size!==(selectedNctIds?.length??ledger.rows.length)||[...ids].some(x=>!valid.has(x)))
+  throw Error("Exact-NCT scope failed integrity check");
+ const targets=ledger.rows.filter(x=>ids.has(x.nctId));
+ if(targets.length!==ids.size)throw Error("Requested NCTs not found");
+ const batches=split(targets.map(x=>x.nctId),25);
  const found=new Map<string,Registry>();
  const statuses:FetchStatus[]=[];
  let next=0;
@@ -79,11 +87,20 @@ export async function loadLivePhase3Registry(){
       const status=obj(p.statusModule),design=obj(p.designModule),
        designInfo=obj(design.designInfo),masking=obj(designInfo.maskingInfo),
        arms=obj(p.armsInterventionsModule),outcomes=obj(p.outcomesModule),
+       eligibility=obj(p.eligibilityModule),locations=obj(p.contactsLocationsModule),
        refs=obj(p.referencesModule),results=obj(study.resultsSection),
        outcomeModule=obj(results.outcomeMeasuresModule),adverse=obj(results.adverseEventsModule),
        docs=obj(obj(study.documentSection).largeDocumentModule);
       const interventions=arr(arms.interventions);
       const primary=arr(outcomes.primaryOutcomes);
+       const secondary=arr(outcomes.secondaryOutcomes);
+       const participantSites=arr(locations.locations);
+       const patientReportedOutcomeTitles=[...primary,...secondary].filter(x=>
+        /quality.of.life|patient.report|pain|fatigue|functional|symptom|PROMIS|EQ-5D|SF-36|\bPRO\b/i.test(text(x.measure)))
+        .map(x=>text(x.measure)).filter(Boolean).slice(0,8).join(" | ");
+       const subgroupOutcomeTitles=[...primary,...secondary].filter(x=>
+        /subgroup|stratified|interaction|by age|by sex|by gender|by race/i.test(text(x.measure)))
+        .map(x=>text(x.measure)).filter(Boolean).slice(0,8).join(" | ");
       const analytics=arr(outcomeModule.outcomeMeasures);
       const primaryResults=analytics.filter(x=>text(x.type)==="PRIMARY");
       const primaryAnalyses=primaryResults.flatMap(x=>arr(x.analyses));
@@ -174,6 +191,12 @@ export async function loadLivePhase3Registry(){
        publicationPMIDs:arr(refs.references).filter(x=>x.type==="RESULT"||x.type==="DERIVED")
         .map(x=>text(x.pmid)).filter(Boolean).slice(0,8).join("; "),
        internationalIds:arr(ident.secondaryIdInfos).map(x=>text(x.id)).filter(Boolean).slice(0,8).join("; "),
+       eligibilityCriteria:text(eligibility.eligibilityCriteria).slice(0,1400),
+       eligibilityAges:[text(eligibility.minimumAge),text(eligibility.maximumAge)].filter(Boolean).join("–"),
+       eligibilitySex:text(eligibility.sex),
+       siteCount:participantSites.length,
+       countries:[...new Set(participantSites.map(x=>text(x.country)).filter(Boolean))].sort().join(" | "),
+       patientReportedOutcomeTitles,subgroupOutcomeTitles,
        registryUrl
       };
       found.set(nct,registry);
@@ -186,19 +209,22 @@ export async function loadLivePhase3Registry(){
   }
  }
  await Promise.all(Array.from({length:5},()=>worker()));
- const rows=ledger.rows.map(original=>({original,registry:found.get(original.nctId)||null}));
+ const rows=targets.map(original=>({original,registry:found.get(original.nctId)||null}));
  return {rows,statuses,failedBatches:statuses.filter(x=>x.status==="failed").length};
 }
 
 export async function GET(request:Request){
  let data:Awaited<ReturnType<typeof loadLivePhase3Registry>>;
- try{data=await loadLivePhase3Registry();}
+ const scope=new URL(request.url).searchParams.get("cohort")||"all";
+  if(!["all","active"].includes(scope))return Response.json({error:"Invalid cohort selector"},{status:400});
+  const activeIds=[...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId);
+  try{data=await loadLivePhase3Registry(scope==="active"?activeIds:undefined);}
  catch(e){return Response.json({error:e instanceof Error?e.message:"Registry audit failed"},{status:503});}
  const {rows,statuses,failedBatches}=data;
  const observed=rows.filter(r=>r.registry!==null);
  const summary={
   asOf:new Date().toISOString(),scope:"Official registry facts; DOES NOT establish clinical endpoint PASS/FAIL or FDA approval",
-  census:762,studiesFetched:observed.length,studiesNotFetched:762-observed.length,
+  census:rows.length,studiesFetched:observed.length,studiesNotFetched:rows.length-observed.length,
   batchCount:statuses.length,failedBatches,
   primaryOutcomesAvailable:observed.filter(r=>Boolean(r.registry?.primaryOutcomes)).length,
   drugInterventionsAvailable:observed.filter(r=>Boolean(r.registry?.drugInterventions)).length,
@@ -237,12 +263,12 @@ export async function GET(request:Request){
    g?.participantFlowGroups,g?.participantFlowDiscontinuations,
    g?.seriousAdverseEventsByArm,g?.otherAdverseEventsByArm,
    g?.infectionEventTerms,g?.primaryResultDetails]))];
- if(csvRows.length!==763||names.length!==42)
+ if(csvRows.length!==rows.length+1||names.length!==42)
   return Response.json({error:"Export shape mismatch"},{status:503});
  return new Response("\uFEFF"+csvRows.join("\r\n")+"\r\n",{
   headers:{
    "Content-Type":"text/csv; charset=utf-8",
-   "Content-Disposition":'attachment; filename="Phase3-762-Live-Registry-Evidence-Backfill-With-Statistical-Safety-Results.csv"',
+   "Content-Disposition":'attachment; filename="Phase3-'+rows.length+'-Live-Registry-Evidence-Backfill-With-Statistical-Safety-Results.csv"',
    "Cache-Control":"no-store",
    "X-Trials-Fetched":String(observed.length),
    "X-Failed-Registry-Batches":String(failedBatches)

@@ -89,6 +89,11 @@ export function sourceObservation(nctId:string,number:number):SourceObservation|
   case 17:return registry?.secondaryOutcomes?.length?doc(
    "Registered secondary outcomes (presence only, NOT predicted efficacy): "+
    registry.secondaryOutcomes.slice(0,3).map(x=>x.measure).join("; ")):null;
+  case 19:{
+   const subgroup=(registry?.secondaryOutcomes||[]).filter(x=>/subgroup|stratified|interaction|by age|by sex|by gender|by race/i.test(x.measure));
+   return subgroup.length?doc("Registered subgroup-labelled outcomes (existence only; no claim of subgroup effect or multiplicity adequacy): "+
+    subgroup.slice(0,3).map(x=>x.measure).join("; ")):null;
+  }
   case 18:{
    const pro=registry?.secondaryOutcomes?.filter(x=>/quality.of.life|patient.report|functional|symptom|pain|fatigue/i.test(x.measure))||[];
    return pro.length?doc("Registered patient symptom/quality-of-life outcome(s), NOT observed benefits: "+
